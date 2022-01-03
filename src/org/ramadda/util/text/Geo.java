@@ -19,6 +19,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.geo.Address;
 import org.ramadda.util.geo.Feature;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.geo.Place;
@@ -776,27 +777,30 @@ public abstract class Geo extends Processor {
             if (rowCnt++ == 0) {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
-		row.add("address", "city", "state", "zip", "country");
+		row.add("address", "city", "county","state", "zip", "country");
                 return row;
             }
 	    try {
-		//		System.err.println(latColumn +" " + lonColumn);		System.err.println(row);
 		String slat =row.getString(latColumn).trim();
 		String slon =row.getString(lonColumn).trim();		
 		if(slat.length()==0 || slon.length()==0) {
-		    row.add("","","","","");
+		    row.add("","","","","","");
 		    return row;
 		}
                 double latValue =
                     Double.parseDouble(slat);
                 double lonValue =
                     Double.parseDouble(slon);
-		String[] result = GeoUtils.getAddressFromLatLon(latValue,lonValue);
-		if(result!=null) {
+		Address address = GeoUtils.getAddressFromLatLon(latValue,lonValue);
+		if(address!=null) {
 		    int idx =0;
-		    row.add(result[idx++],result[idx++],result[idx++],result[idx++],result[idx++],result[idx++]);
+		    row.add(address.getAddress(),address.getCity(),
+			    address.getCounty(),
+			    address.getState(), 
+			    address.getPostalCode(),
+			    address.getCountry());
 		} else {
-		    row.add("","","","","");
+		    row.add("","","","","","");
 		}
 		return row;
             } catch (Exception exc) {
