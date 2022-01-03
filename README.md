@@ -47,6 +47,34 @@ and run:
 java  -Xmx2048m org.ramadda.repository.server.JettyServer
 </pre>
 
+# Making a release
+
+From the top-level directory just do: 
+<pre>
+ant release
+</pre>
+
+This does:
+<pre>
+ant purge;  //does a clean and deletes  the dist directory.
+ant plugins; //builds most of the plugins and makes the allplugins.zip file
+ant ramadda
+</pre>
+
+The allplugins.zip gets copied into the
+ramadda/repository/resources/plugins
+dir and is included in the ramadda release.
+
+The result of the release target is:
+<pre>
+dist/repository.war  - The war to be used by Tomcat
+dist/ramadda<version>.zip  - The zip file that holds the stand-alone RAMADDA release (which uses Jetty)
+dist/repositoryclient.jar  - Used by 3rd party clients (e.g., IDV, JGRASS) 
+dist/repositoryclient.zip  - To run the stand-alone command line client
+</pre>
+
+
+
 # Plugins
 To build the plugins run:
 <pre>
@@ -71,31 +99,6 @@ file or when you run ant do:
      ant -Dtclsh=&lt;path to tclsh&gt;
 </pre>
 
-# Making a release
-
-Just do: 
-<pre>
-ant release
-</pre>
-
-This does:
-<pre>
-ant purge;  //does a clean and deletes  the dist directory.
-ant plugins; //builds most of the plugins and makes the allplugins.zip file
-ant ramadda
-</pre>
-
-The allplugins.zip gets copied into the
-ramadda/repository/resources/plugins
-dir and is included in the ramadda release.
-
-The result of the release target is:
-<pre>
-dist/repository.war  - The war to be used by Tomcat
-dist/ramadda<version>.zip  - The zip file that holds the stand-alone RAMADDA release (which uses Jetty)
-dist/repositoryclient.jar  - Used by 3rd party clients (e.g., IDV, JGRASS) 
-dist/repositoryclient.zip  - To run the stand-alone command line client
-</pre>
 
 # RAMADDA Source  Tree
 
