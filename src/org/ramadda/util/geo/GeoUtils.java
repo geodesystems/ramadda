@@ -523,7 +523,7 @@ public class GeoUtils {
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-            Bounds bounds) {
+					       Bounds bounds) {
         try {
             return getLocationFromAddressInner(address, bounds);
         } catch (Exception exc) {
