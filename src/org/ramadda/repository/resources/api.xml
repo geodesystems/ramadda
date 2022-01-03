@@ -11,7 +11,6 @@
      <api request="/clearstate"       method="processClearState"/>
      <api request="/docs"             method="processDocs"/>
      <api request="/colortables"      method="processColorTables"/>
-     <api request="/geocode"          method="processGeocode"/>
      <api request="/favicon.ico"      method="processFavIcon"/>
      <api request="/base.js"          method="processBaseJs"/>          
   </group>
@@ -57,6 +56,7 @@
     <api request="/wms"             method="processWms"/>
     <api request="/regions.json"    method="processRegions"/>    
     <api request="/map/getaddress"    method="processGetAddress"/>    
+    <api request="/geocode"          method="processGeocode"/>
     <api request="/map/extra/*"   method="processExtraJS"/>
   </group>
 
