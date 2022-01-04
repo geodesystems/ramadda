@@ -2114,9 +2114,7 @@ public class EntryManager extends RepositoryManager {
             }
 
 
-            List<String> resources = new ArrayList<String>();
-            List<Entry>  parents   = new ArrayList<Entry>();
-            List<String> origNames = new ArrayList<String>();
+	    List<NewEntryInfo> infos = new ArrayList<NewEntryInfo>();
 
 
             String       resource  = "";
@@ -2208,9 +2206,7 @@ public class EntryManager extends RepositoryManager {
 		String name = request.getString("upload_name_"+i);
 		String contents = request.getString("upload_file_"+i);
 		File tmpFile = getStorageManager().decodeFileContents(request, name, contents);
-		origNames.add(name);
-		resources.add(tmpFile.toString());
-		parents.add(parentEntry);
+		infos.add(new NewEntryInfo(name, tmpFile.toString(), parentEntry));
 	    }
 
 
@@ -2254,9 +2250,7 @@ public class EntryManager extends RepositoryManager {
                     int fileCnt = 0;
                     for (File f : files) {
                         if (f.isFile()) {
-                            resources.add(f.toString());
-                            origNames.add(f.toString());
-                            parents.add(parentEntry);
+			    infos.add(new NewEntryInfo(f.toString(),f.toString(), parentEntry));
                             fileCnt++;
                         }
                     }
@@ -2270,14 +2264,10 @@ public class EntryManager extends RepositoryManager {
 					      new Result("", message));
                     }
                 } else {
-                    resources.add(serverFile.toString());
-                    origNames.add(resourceName);
-                    parents.add(parentEntry);
+		    infos.add(new NewEntryInfo(resourceName,serverFile.toString(), parentEntry));
                 }
             } else if ( !unzipArchive) {
-                resources.add(resource);
-                origNames.add(resourceName);
-                parents.add(parentEntry);
+		infos.add(new NewEntryInfo(resourceName,resource, parentEntry));
             } else {
                 hasZip = true;
                 Hashtable<String, Entry> nameToGroup = new Hashtable<String,
@@ -2334,9 +2324,7 @@ public class EntryManager extends RepositoryManager {
                         } finally {
                             IOUtil.close(fos);
                         }
-                        parents.add(parent);
-                        resources.add(f.toString());
-                        origNames.add(name);
+			infos.add(new NewEntryInfo(name,f.toString(), parent));
                     }
                 } finally {
                     IOUtil.close(fis);
@@ -2358,12 +2346,8 @@ public class EntryManager extends RepositoryManager {
 
             File originalFile = null;
 
-            for (int resourceIdx = 0; resourceIdx < resources.size();
-		 resourceIdx++) {
-                Entry parent = parents.get(resourceIdx);
-                resourceName = (String) resources.get(resourceIdx);
-                String theResource = (String) resources.get(resourceIdx);
-                String origName    = (String) origNames.get(resourceIdx);
+	    for(NewEntryInfo info: infos) {
+                String theResource = info.resource;
                 if (isFile && (serverFile == null)) {
                     if (forUpload) {
                         theResource =
@@ -2384,8 +2368,6 @@ public class EntryManager extends RepositoryManager {
                                : request.getAnonymousEncodedString(ARG_NAME,
 								   BLANK));
 
-
-
                 if (name.indexOf("${") >= 0) {}
                 if ((name.trim().length() == 0)
 		    && typeHandler.okToSetNewNameDefault()) {
@@ -2393,7 +2375,7 @@ public class EntryManager extends RepositoryManager {
                         typeHandler.getTypeProperty("nameTemplate",
 						    (String) null);
                     if (nameTemplate == null) {
-                        name = IOUtil.getFileTail(origName);
+                        name = IOUtil.getFileTail(info.name);
                         if (request.get(ARG_MAKENAME, false)) {
                             name = name.replaceAll("_", " ");
                             name = IOUtil.stripExtension(name);
@@ -2424,7 +2406,7 @@ public class EntryManager extends RepositoryManager {
                     pattern = pattern.replaceAll("_DIGIT_", "\\\\d");
                     pattern = ".*(" + pattern + ").*";
                     Matcher matcher =
-                        Pattern.compile(pattern).matcher(origName);
+                        Pattern.compile(pattern).matcher(info.name);
                     if (matcher.find()) {
                         String dateString = matcher.group(1);
                         Date dttm = RepositoryUtil.makeDateFormat(
@@ -2467,7 +2449,7 @@ public class EntryManager extends RepositoryManager {
 							 (String) null);
                     if (nameTemplate == null) {
                         name = typeHandlerToUse.getDefaultEntryName(
-								    resourceName);
+								    info.name);
                     }
                 }
                 entry = typeHandlerToUse.createEntry(id);
@@ -2490,7 +2472,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
 
-                entry.initEntry(name, description, parent, request.getUser(),
+                entry.initEntry(name, description, info.parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 category, entryOrder,
 				createDate.getTime(),
@@ -2498,10 +2480,10 @@ public class EntryManager extends RepositoryManager {
                                 theDateRange[0].getTime(),
                                 theDateRange[1].getTime(), null);
                 if (forUpload) {
-                    initUploadedEntry(request, entry, parent);
+                    initUploadedEntry(request, entry, info.parent);
                 }
 
-                setEntryState(request, entry, parent, newEntry);
+                setEntryState(request, entry, info.parent, newEntry);
                 entries.add(entry);
             }
 	} else {
@@ -2722,6 +2704,19 @@ public class EntryManager extends RepositoryManager {
             return new Result(BLANK,sb);
 
         }
+
+    }
+
+
+    private static class NewEntryInfo {
+	String name;
+	Entry parent;
+	String resource;
+	public NewEntryInfo(String _name, String _resource, Entry _parent) {
+	    name = _name;
+	    resource = _resource;
+	    parent = _parent;
+	}
 
     }
 
