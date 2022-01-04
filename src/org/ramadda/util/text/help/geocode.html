@@ -20,9 +20,7 @@ HERE_API_KEY=
 </pre>
 
 
-
-
-With the following file:
+To geocode, e.g.,  with the following file:
 <pre class=examples>
 city,state
 Boulder,CO
@@ -30,7 +28,7 @@ Laramie,WY
 Buffalo,NY
 </pre>
 
-To geocode
+Run:
 <pre class=examples>
 seesv -geocode city,state "" "" ...
 </pre>
@@ -47,7 +45,7 @@ seesv -geocode columns "country:" "" ...
 </pre>
 
 
-The prefix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
+The suffix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
 <pre class=examples>
 city
 Boulder
@@ -60,7 +58,6 @@ You can geocode with:
 <pre>
 seesv -geocode city "" "CO"
 </pre>
-
 
 
 
