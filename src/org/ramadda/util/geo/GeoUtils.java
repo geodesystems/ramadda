@@ -108,6 +108,28 @@ public class GeoUtils {
     /**  */
     private static boolean haveInitedKeys = false;
 
+    /** _more_ */
+    private static Hashtable statesMap;
+
+    /** _more_ */
+    private static Hashtable<String, Place> citiesMap;
+
+    /** _more_ */
+    private static final String[] citySuffixes = new String[] { " city",
+            " town", " cdp", " village" };
+
+    /** _more_ */
+    private static final String[] countySuffixes = new String[] {
+        "county", "city", "borough", "municipality", "parish", "census area",
+        "city and borough"
+    };
+
+
+    /** _more_ */
+    private static HashSet noPlaceSet = new HashSet();
+
+
+
     /**
      */
     private static void initKeys() {
@@ -337,7 +359,7 @@ public class GeoUtils {
      *
      * @param lat _more_
      * @param lon _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -360,7 +382,7 @@ public class GeoUtils {
      *
      * @param lat _more_
      * @param lon _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -421,7 +443,7 @@ public class GeoUtils {
      *
      * @param lat _more_
      * @param lon _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -503,18 +525,6 @@ public class GeoUtils {
 
 
     /**
-     * Look up the location of the given address
-     *
-     * @param address The address
-     *
-     * @return The location or null if not found
-     */
-    public static Place getLocationFromAddress(String address) {
-        return getLocationFromAddress(address, null);
-    }
-
-
-    /**
      * _more_
      *
      * @param address _more_
@@ -523,31 +533,25 @@ public class GeoUtils {
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-					       Bounds bounds) {
+            Bounds bounds) {
         try {
-            return getLocationFromAddressInner(address, bounds);
+            Place place = getLocationFromAddressInner(address, bounds, false);
+            if (place != null) {
+                if (Double.isNaN(place.getLatitude())) {
+                    return null;
+                }
+                if ( !place.within(bounds)) {
+                    return null;
+                }
+            }
+
+            return place;
         } catch (Exception exc) {
             exc.printStackTrace();
 
             throw new RuntimeException(exc);
         }
     }
-
-    /** _more_ */
-    private static Hashtable statesMap;
-
-    /** _more_ */
-    private static Hashtable<String, Place> citiesMap;
-
-    /** _more_ */
-    private static final String[] citySuffixes = new String[] { " city",
-            " town", " cdp", " village" };
-
-    /** _more_ */
-    private static final String[] countySuffixes = new String[] {
-        "county", "city", "borough", "municipality", "parish", "census area",
-        "city and borough"
-    };
 
 
 
@@ -623,7 +627,7 @@ public class GeoUtils {
      * @param fields _more_
      * @param lat _more_
      * @param lon _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -722,34 +726,13 @@ public class GeoUtils {
         return statesMap;
     }
 
-    /** _more_ */
-    private static HashSet noPlaceSet = new HashSet();
-
-
-
-    /**
-     * _more_
-     *
-     * @param address _more_
-     * @param bounds _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private static Place getLocationFromAddressInner(String address,
-            Bounds bounds)
-            throws Exception {
-        return getLocationFromAddressInner(address, bounds, false);
-    }
-
 
     /**
      *
      * @param address _more_
      * @param bounds _more_
      * @param debug _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -757,40 +740,44 @@ public class GeoUtils {
             Bounds bounds, boolean debug)
             throws Exception {
 
-        if (address == null) {
+        //      debug = true;
+        if ( !Utils.stringDefined(address)) {
             return null;
         }
         address = address.trim();
-        if (address.length() == 0) {
-            return null;
-        }
-        if (address.toLowerCase().startsWith("from:")) {
-            address = address.substring(5);
-        } else if (address.toLowerCase().startsWith("to:")) {
-            address = address.substring(3);
+        String _address = address.toLowerCase();
+
+        if (_address.startsWith("from:")) {
+            address  = address.substring(5);
+            _address = _address.substring(5);
+        } else if (_address.startsWith("to:")) {
+            address  = address.substring(3);
+            _address = _address.substring(3);
         }
         boolean doCountry = false;
-        if (address.toLowerCase().startsWith("country:")) {
+        if (_address.startsWith("country:")) {
             address   = address.substring("country:".length()).trim();
+            _address  = _address.substring("country:".length()).trim();
             doCountry = true;
         }
         boolean doState = false;
-        if (address.toLowerCase().startsWith("state:")) {
-            address = address.substring("state:".length()).trim();
-            doState = true;
+        if (_address.startsWith("state:")) {
+            address  = address.substring("state:".length()).trim();
+            _address = _address.substring("state:".length()).trim();
+            doState  = true;
         }
 
         boolean doZip = false;
-        if (address.toLowerCase().startsWith("zip:")) {
-            address = address.substring("zip:".length()).trim();
+        if (_address.startsWith("zip:")) {
+            address  = address.substring("zip:".length()).trim();
+            _address = _address.substring("zip:".length()).trim();
             if (address.length() > 5) {
                 address = address.substring(0, 5);
             }
             doZip = true;
         }
-        String  _address = address.toLowerCase();
         boolean doCounty = false;
-        if (address.toLowerCase().startsWith("county:")) {
+        if (_address.startsWith("county:")) {
             address  = address.substring("county:".length()).trim();
             _address = _address.substring("county:".length()).trim();
             doCounty = true;
@@ -802,12 +789,9 @@ public class GeoUtils {
             _address = _address.substring("city:".length()).trim();
             doCity   = true;
         }
-        //        System.err.println ("address:" + address +" " + doZip);
-
         if (address.length() == 0) {
             return null;
         }
-
 
         GeoResource resource = null;
         Place       place    = null;
@@ -815,7 +799,6 @@ public class GeoUtils {
         if (doZip) {
             resource = GeoResource.RESOURCE_ZIPCODES;
         }
-
 
         if (doCity) {
             //abbrev to name
@@ -900,7 +883,6 @@ public class GeoUtils {
 
         if (doCounty) {
             resource = GeoResource.RESOURCE_COUNTIES;
-
             int index = _address.indexOf(",");
             if (index < 0) {
                 return resource.getPlace(_address);
@@ -969,7 +951,6 @@ public class GeoUtils {
             return place;
         }
 
-
         if (resource != null) {
             place = resource.getPlace(address);
             if (place == null) {
@@ -984,7 +965,6 @@ public class GeoUtils {
 
 
         if (place != null) {
-            //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
             return place;
         }
 
@@ -1020,7 +1000,6 @@ public class GeoUtils {
             }
         }
 
-
         if (addressToLocation != null) {
             place = addressToLocation.get(address);
         }
@@ -1029,15 +1008,7 @@ public class GeoUtils {
                 System.out.println("found in cached address list");
             }
 
-            if ((bounds == null)
-                    || bounds.contains(place.getLatitude(),
-                                       place.getLongitude())) {
-                if (Double.isNaN(place.getLatitude())) {
-                    return null;
-                }
-
-                return place;
-            }
+            return place;
         }
 
         if ((address.length() == 0) || address.equals(",")) {
@@ -1048,22 +1019,53 @@ public class GeoUtils {
         String latString      = null;
         String lonString      = null;
         String encodedAddress = StringUtil.replace(address, " ", "%20");
-        String name           = null;
+        String name           = address;
+        place = null;
 
-        if (hereKey != null) {
-            String url = HtmlUtils.url(
-                             "https://geocode.search.hereapi.com/v1/geocode",
-                             "q", encodedAddress, "apiKey", hereKey);
-            String result = IO.doGet(new URL(url));
-            latString = StringUtil.findPattern(result,
-                    "\"lat\"\\s*:\\s*([-\\d\\.]+),");
-            lonString = StringUtil.findPattern(result,
-                    "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+        if ((place == null) && (googleKey != null)) {
+            String result = null;
+            try {
+                //https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
+                String url =
+                    "https://maps.googleapis.com/maps/api/geocode/json?address="
+                    + encodedAddress + "&key=" + googleKey;
+                if (bounds != null) {
+                    url += "&bounds=" + bounds.getSouth() + ","
+                           + bounds.getWest() + "|" + bounds.getNorth() + ","
+                           + bounds.getEast();
+                }
+                result = IO.readContents(url, GeoUtils.class);
+
+                name = StringUtil.findPattern(result,
+                        "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
+                if (name == null) {
+                    name = address;
+                }
+                latString = StringUtil.findPattern(result,
+                        "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+                lonString = StringUtil.findPattern(result,
+                        "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+                if ((latString != null) && (lonString != null)) {
+                    place = new Place(name, latString, lonString);
+                }
+                if (place == null) {
+                    JSONObject json = new JSONObject(result);
+                    System.err.println("google error:"
+                                       + json.getString("error_message"));
+                }
+
+            } catch (Exception exc) {
+                System.err.println("exc:" + exc);
+            }
             if (debug) {
-                System.err.println("here:" + latString + " " + lonString);
+                System.err.println("google:" + place);
             }
         }
-        if ((latString == null) && (geocodeioKey != null)) {
+
+        if ((place != null) && !place.within(bounds)) {
+            place = null;
+        }
+        if ((place == null) && (geocodeioKey != null)) {
             String url = "https://api.geocod.io/v1.6/geocode?";
             url += HtmlUtils.arg("q", address, true);
             url += "&";
@@ -1074,50 +1076,40 @@ public class GeoUtils {
                     "\"lat\"\\s*:\\s*([-\\d\\.]+),");
             lonString = StringUtil.findPattern(result,
                     "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+            if ((latString != null) && (lonString != null)) {
+                place = new Place(name, latString, lonString);
+            }
+
             if (debug) {
-                System.err.println("geocodeio:" + latString + " "
-                                   + lonString);
+                System.err.println("geocodeio:" + place);
             }
         }
 
-        if ((latString == null) && (googleKey != null)) {
-            String result = null;
-            try {
-                //                https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
-                String url =
-                    "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + encodedAddress + "&key=" + googleKey;
-                if (bounds != null) {
-                    url += "&bounds=" + bounds.getSouth() + ","
-                           + bounds.getWest() + "|" + bounds.getNorth() + ","
-                           + bounds.getEast();
-                }
-                if (debug) {
-                    System.err.println("google url:" + url);
-                }
-                result = IO.readContents(url, GeoUtils.class);
-
-                name = StringUtil.findPattern(result,
-                        "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
-                latString = StringUtil.findPattern(result,
-                        "\"lat\"\\s*:\\s*([-\\d\\.]+),");
-                lonString = StringUtil.findPattern(result,
-                        "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
-            } catch (Exception exc) {
-                System.err.println("exc:" + exc);
+        if ((place != null) && !place.within(bounds)) {
+            place = null;
+        }
+        if ((place == null) && (hereKey != null)) {
+            String url = HtmlUtils.url(
+                             "https://geocode.search.hereapi.com/v1/geocode",
+                             "q", encodedAddress, "apiKey", hereKey);
+            String result = IO.doGet(new URL(url));
+            latString = StringUtil.findPattern(result,
+                    "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+            lonString = StringUtil.findPattern(result,
+                    "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+            if ((latString != null) && (lonString != null)) {
+                place = new Place(name, latString, lonString);
             }
             if (debug) {
-                if (latString == null) {
-                    System.err.println("geocode null result:" + result);
-                } else {
-                    System.err.println("google:" + latString + " "
-                                       + lonString);
-                }
+                System.err.println("here:" + place);
             }
         }
 
 
-        if (latString == null) {
+        if ((place != null) && !place.within(bounds)) {
+            place = null;
+        }
+        if (place == null) {
             //fall back to us census
             String url =
                 "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?format=json&benchmark=2020&address="
@@ -1127,43 +1119,41 @@ public class GeoUtils {
                     "\"y\"\\s*:\\s*([-\\d\\.]+)");
             lonString = StringUtil.findPattern(result,
                     "\"x\"\\s*:\\s*([-\\d\\.]+)\\s*");
+            if ((latString != null) && (lonString != null)) {
+                place = new Place(name, latString, lonString);
+            }
             if (debug) {
-                if (latString == null) {
-                    System.err.println("null census result:" + encodedAddress
-                                       + " result:" + result);
-                } else {
-                    System.err.println("census:" + latString + " "
-                                       + lonString);
-                }
+                System.err.println("census:" + place);
             }
         }
-        if ((latString != null) && (lonString != null)) {
-            place = new Place((name == null)
-                              ? address
-                              : name, new Double(latString),
-                                      new Double(lonString));
+
+        if (place != null) {
             if (addressToLocation != null) {
                 addressToLocation.put(address, place);
             }
             if (cacheWriter != null) {
-                cacheWriter.println(address + cacheDelimiter
-                                    + place.getName() + cacheDelimiter
-                                    + place.getLatitude() + cacheDelimiter
-                                    + place.getLongitude());
-                cacheWriter.flush();
+                synchronized (cacheWriter) {
+                    cacheWriter.println(address + cacheDelimiter
+                                        + place.getName() + cacheDelimiter
+                                        + place.getLatitude()
+                                        + cacheDelimiter
+                                        + place.getLongitude());
+                    cacheWriter.flush();
+                }
             }
 
             return place;
         } else {
             if (cacheWriter != null) {
-                cacheWriter.println(address + cacheDelimiter + Double.NaN
-                                    + cacheDelimiter + Double.NaN);
-                cacheWriter.flush();
+                synchronized (cacheWriter) {
+                    //                cacheWriter.println(address + cacheDelimiter + Double.NaN + cacheDelimiter + Double.NaN);
+                    //                cacheWriter.flush();
+                }
             }
-
         }
 
         return null;
+
 
     }
 
@@ -1202,7 +1192,7 @@ public class GeoUtils {
         //      System.err.println("b64:" + b64);
         String json =
             IO.doPost(new URL("https://api.precisely.com/oauth/token"),
-                      "grant_type=client_credentials", "Authorization",
+                      "grant_type=client_credetnials", "Authorization",
                       "Basic " + b64, "Content-Type",
                       "application/x-www-form-urlencoded");
         //      System.err.println(json);

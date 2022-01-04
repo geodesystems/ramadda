@@ -6,10 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+
+
+import org.ramadda.util.geo.Bounds;
 
 import org.w3c.dom.*;
 
@@ -81,6 +83,19 @@ public class Place {
         this.latitude  = lat;
         this.longitude = lon;
     }
+
+
+    /**
+     
+     *
+     * @param name _more_
+     * @param lat _more_
+     * @param lon _more_
+     */
+    public Place(String name, String lat, String lon) {
+        this(name, Double.parseDouble(lat), Double.parseDouble(lon));
+    }
+
 
 
     /**
@@ -266,6 +281,20 @@ public class Place {
     public static Place getPlace(String id) throws Exception {
         return GeoResource.getPlaceFromAll(id);
     }
+
+    /**
+     *
+     * @param bounds _more_
+      * @return _more_
+     */
+    public boolean within(Bounds bounds) {
+        if (bounds == null) {
+            return true;
+        }
+
+        return bounds.contains(getLatitude(), getLongitude());
+    }
+
 
     /**
      * _more_
