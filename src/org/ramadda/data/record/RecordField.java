@@ -487,10 +487,11 @@ public class RecordField {
             items.add("canedit");
             items.add(Json.quote(canEdit));
         }
-        String values = (String) getProperty("values", null);
+	Object values = getProperty("values", null);
         if (values != null) {
             items.add("values");
-            items.add(Json.quote(values));
+	    if(values instanceof List) values = Utils.join((List)values,",");
+            items.add(Json.quote(values.toString()));
         }
 
         items.add("chartable");
