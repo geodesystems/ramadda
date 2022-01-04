@@ -163,7 +163,7 @@
 </type>
 
 
-  <type name="type_image"  description="Image" foruser="true" category="Media" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
+  <type name="type_image"  description="Image" foruser="true" category="Media" pattern="(.*\.webp|.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
     <property name="icon" value="/icons/image.png"/>
     <property name="file.accept" value="image/*"/>
   
