@@ -1527,10 +1527,19 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+
     public String getEntriesList(Request request, Appendable sb,
                                  List entries, boolean doForm,
                                  boolean showCrumbs, boolean showDetails, boolean showIcon, String nameTemplate) 
-            throws Exception {	
+            throws Exception {
+	return getEntriesList(request, sb, entries, doForm, showCrumbs, showDetails, false, null,null);
+    }
+
+
+    public String getEntriesList(Request request, Appendable sb,
+                                 List entries, boolean doForm,
+                                 boolean showCrumbs, boolean showDetails, boolean showIcon, String nameTemplate, Hashtable props) 
+            throws Exception {		
 
 	if(nameTemplate!=null)
 	    request.put("nameTemplate",nameTemplate);
@@ -1553,6 +1562,11 @@ public class OutputHandler extends RepositoryManager {
         boolean isMobile       = request.isMobile();
         boolean showDate       = true;
         boolean showCreateDate = getPageHandler().showEntryTableCreateDate();
+	if(props!=null) {
+	    showDate = Utils.getProperty(props,"showDate",showDate);
+	    showCreateDate = Utils.getProperty(props,"showCreateDate",showCreateDate);
+	}
+
         if (isMobile) {
             showCreateDate = false;
             showDate       = false;
