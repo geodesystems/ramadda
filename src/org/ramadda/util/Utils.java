@@ -1547,7 +1547,7 @@ public class Utils extends IO {
         }
         path = path.replaceAll("\\?.*?$", "").toLowerCase();
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")
-                || path.endsWith(".gif") || path.endsWith(".png")
+                || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".webp")
                 || path.endsWith(".bmp")) {
             return true;
         }
