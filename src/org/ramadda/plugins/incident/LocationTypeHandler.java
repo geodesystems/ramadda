@@ -123,7 +123,7 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
             return;
         }
         String fullAddress = address + "," + city + "," + state;
-        Place  place       = GeoUtils.getLocationFromAddress(fullAddress);
+        Place  place       = GeoUtils.getLocationFromAddress(fullAddress,null);
         if (place == null) {
             System.err.println("no geo for address:" + fullAddress);
         } else {

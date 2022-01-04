@@ -1012,7 +1012,7 @@ public class PhoneHarvester extends Harvester {
 
 
         Place place = org.ramadda.util.geo.GeoUtils.getLocationFromAddress(
-                          info.getFromZip());
+									   info.getFromZip(),null);
         if (place != null) {
             entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
         }
@@ -1138,7 +1138,7 @@ public class PhoneHarvester extends Harvester {
 
 
         Place place = org.ramadda.util.geo.GeoUtils.getLocationFromAddress(
-                          info.getFromZip());
+									   info.getFromZip(),null);
         if (place != null) {
             entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
         }

@@ -128,7 +128,7 @@ public class LocationPhoneHarvester extends PhoneHarvester {
                         date.getTime(), date.getTime(), values);
 
 
-        Place place = GeoUtils.getLocationFromAddress(info.getFromZip());
+        Place place = GeoUtils.getLocationFromAddress(info.getFromZip(),null);
         if (place != null) {
             entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
         }
