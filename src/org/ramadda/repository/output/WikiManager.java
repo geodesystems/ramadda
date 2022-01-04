@@ -123,7 +123,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
-                            new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
+                            new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true",ATTR_SHOWICON,"true"),
                             new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
                             new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null),
@@ -3591,7 +3591,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
                               sb, children, true, false, showDetails,
-								showIcon,getProperty(wikiUtil, props,"nameTemplate",(String)null));
+								showIcon,getProperty(wikiUtil, props,"nameTemplate",(String)null),props);
             if (getProperty(wikiUtil, props, "form", false)) {
                 return treePrefix + link + HU.br() + sb.toString();
             } else {
@@ -3636,7 +3636,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean includeSnippet = getProperty(wikiUtil, props,
 						 "includeSnippet", false);
             boolean showicon = getShowIcon(wikiUtil, props, false);
-
 
             boolean linkResource = getProperty(wikiUtil, props,
                                        ATTR_LINKRESOURCE, false);
