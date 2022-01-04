@@ -19,6 +19,7 @@ package org.ramadda.util.text;
 import org.json.*;
 
 import org.ramadda.util.IO;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
@@ -2203,6 +2204,9 @@ public class CsvUtil {
                 new Arg("column", "key column", "type", "columns"),
                 new Arg("csv file", "File to get lat/lon from", "type",
                         "file"), "key idx", "lat idx", "lon idx"),
+        new Cmd("-bounds", 
+		"Geocode within bounds", 
+		new Arg("north"),new Arg("west"),new Arg("south"),new Arg("east")),
         new Cmd("-getaddress", "Get address from lat/lon",
                 new Arg("latitude", "latitude column"),
                 new Arg("latitude", "latitude column")),		
@@ -3222,6 +3226,15 @@ public class CsvUtil {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
+	defineFunction("-bounds",4,(ctx,args,i) -> {
+		ctx.setBounds(new Bounds(Double.parseDouble(args.get(++i)),
+					 Double.parseDouble(args.get(++i)),
+					 Double.parseDouble(args.get(++i)),
+					 Double.parseDouble(args.get(++i))));
+		return i;
+	    });
+
+
 	defineFunction("-geocodeifneeded",5,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(),args.get(++i),
 						  args.get(++i)));
@@ -4569,17 +4582,6 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
-	if(false) {
-	String pre = "\b\b\b\b\b\b\b\b\b\b\b";
-	System.err.print(pre+StringUtil.padRight("XXX",10," "));
-	ucar.unidata.util.Misc.sleepSeconds(1);
-	System.err.print(pre+StringUtil.padRight("ZZZZZZZZ",10," "));
-	ucar.unidata.util.Misc.sleepSeconds(1);
-	System.err.print(pre+StringUtil.padRight("a",10," "));
-	System.err.println("");
-	System.exit(0);
-	}
-
 	GeoUtils.setCacheDir(new File("."));
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.setCsvContext(new CsvContext() {

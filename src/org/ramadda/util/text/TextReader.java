@@ -13,6 +13,9 @@ import org.ramadda.util.NamedChannel;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.geo.Bounds;
+
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -251,6 +254,9 @@ public class TextReader implements Cloneable {
     public boolean verbose = false;
 
     public boolean cleanInput = false;
+
+    private Bounds bounds;
+
 
     /**
      * _more_
@@ -744,6 +750,7 @@ public class TextReader implements Cloneable {
         that.output     = output;
         that.outputFile = outputFile;
         that.writer     = null;
+        that.bounds = this.bounds;
 
         if (debug) {
             that.debugSB = this.debugSB;
@@ -1952,6 +1959,25 @@ public class TextReader implements Cloneable {
     public boolean getPositionStart() {
         return positionStart;
     }
+
+    /**
+       Set the Bounds property.
+
+       @param value The new value for Bounds
+    **/
+    public void setBounds (Bounds value) {
+	bounds = value;
+    }
+
+    /**
+       Get the Bounds property.
+
+       @return The Bounds
+    **/
+    public Bounds getBounds () {
+	return bounds;
+    }
+
 
     /**
      *

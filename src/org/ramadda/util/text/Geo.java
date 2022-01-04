@@ -295,10 +295,18 @@ public abstract class Geo extends Processor {
             }
 
 	    if(ifNeeded) {
-		if(Utils.stringDefined(row.getString(latIndex)) &&
-		   Utils.stringDefined(row.getString(lonIndex))) {
-		    return row;
+		String slat = row.getString(latIndex);
+		String slon = row.getString(lonIndex);		
+		if(Utils.stringDefined(slat) && Utils.stringDefined(slon)) {
+		    try {
+			if(!Double.isNaN(Double.parseDouble(slat)) && !Double.isNaN(Double.parseDouble(slat))) {
+			    //			    System.err.println("not needed:"+ slat +" " + slon);
+			    return row;
+			}
+		    } catch(Exception ignore) {
+		    }
 		}
+		//		System.err.println("needed:"+ slat +" " + slon);
 	    }
 
             List<Integer> indices = getIndices(ctx);
@@ -329,7 +337,7 @@ public abstract class Geo extends Processor {
 
 
                 if (doAddress) {
-                    place = GeoUtils.getLocationFromAddress(key.toString());
+                    place = GeoUtils.getLocationFromAddress(key.toString(),ctx.getBounds());
                 } else {
                     String   tok    = key.toString();
                     double[] bounds = map.get(tok);
@@ -946,7 +954,7 @@ public abstract class Geo extends Processor {
             }
 
 
-            Place place = GeoUtils.getLocationFromAddress(key.toString());
+            Place place = GeoUtils.getLocationFromAddress(key.toString(),null);
             if (place != null) {
                 add(ctx, row, new Integer(place.getPopulation()));
             } else {
