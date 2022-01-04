@@ -4722,10 +4722,10 @@ public class TypeHandler extends RepositoryManager {
 			if(entry==null) {
 			    String icon = HU.img("fas fa-upload");
 			    formContent += HU.div(HU.div(icon+" Or drag files here",HU.cssClass("ramadda-file-dnd-label")),HU.cssClass("ramadda-file-dnd-target")+HU.id(inputId+"_dnd"));
-						  
-					      
-			    formContent+=HtmlUtils.script("Ramadda.initFormUpload("+HU.comma(HU.squote(inputId),HU.squote(inputId+"_dnd"))+");");
 			}
+						  
+			
+			formContent+=HtmlUtils.script("Ramadda.initFormUpload("+HU.comma(HU.squote(inputId),entry!=null?"null":HU.squote(inputId+"_dnd"))+");");
                         tabContent.add(HtmlUtils.inset(formContent, 8));
                     }
                     if (showUrl) {
@@ -4799,64 +4799,41 @@ public class TypeHandler extends RepositoryManager {
 					 tabContent.get(0) + extra);
                         }
                     } else {
-                        //                if (entry.getResource().isFile()) {
-                        //If its the admin then show the full path
                         if (showFile
                                 && Utils.stringDefined(
                                     entry.getResource().getPath())) {
-                            if (request.getUser().getAdmin()) {
-                                sb.append(formEntry(request,
-                                        msgLabel("Resource"),
-                                        entry.getResource().getPath()));
-                            } else {
-                                sb.append(
-                                    formEntry(
-                                        request, msgLabel("Resource"),
-                                        getStorageManager().getFileTail(
-                                            entry)));
-                            }
+			    String resource = request.getUser().getAdmin()?entry.getResource().getPath():
+				getStorageManager().getFileTail(entry);
+			    HU.formEntry(sb,HU.b("Resource: ") + resource);
+			    /*
+			      sb.append(
+			      formEntry(
+			      request, msgLabel("Resource"),
+			      getStorageManager().getFileTail(
+			      entry)));
+			    */
                         }
-                        if (showFile) {
-                            if (tabTitles.size() > 1) {
-                                if (showFile) {
-                                    sb.append(formEntryTop(request,
-                                            msgLabel("New Resource"),
-                                            OutputHandler.makeTabs(tabTitles,
-                                                tabContent, true) + extra));
-                                }
-                            } else if (tabTitles.size() == 1) {
-                                sb.append(formEntry(request,
-                                        tabTitles.get(0) + ":",
-                                        tabContent.get(0) + extra));
-                            }
-                        } else {
-                            if (tabTitles.size() > 1) {
-                                sb.append(formEntryTop(request,
-                                        msgLabel("New Resource"),
-                                        OutputHandler.makeTabs(tabTitles,
-                                            tabContent, true) + extra));
-                            } else if (tabTitles.size() == 1) {
-                                sb.append(formEntry(request,
-                                        tabTitles.get(0) + ":",
-                                        tabContent.get(0) + extra));
-                            }
-                        }
+			if (tabTitles.size() > 1) {
+			    HU.formEntry(sb,HU.b("New Resource:<br>") +
+					 OutputHandler.makeTabs(tabTitles,
+								tabContent, true) + extra);
+			} else if (tabTitles.size() == 1) {
+			    HU.formEntry(sb,HU.b(tabTitles.get(0) + ":<br>")+
+					 tabContent.get(0) + extra);
+			}
 
-
-                        if (showFile) {
-                            if (entry.getResource().isStoredFile()) {
-                                String formContent =
-                                    HtmlUtils.fileInput(ARG_FILE, size);
-                                /*                            sb.append(
-                                                              formEntry(request,
-                                                              msgLabel("Upload new file"), formContent));
-                                */
-                            }
-                        }
-                        /*                } else {
-                                          sb.append(formEntry(request,msgLabel("Resource"),
-                                          entry.getResource().getPath()));
-                                          }*/
+			/*
+			if (tabTitles.size() > 1) {
+			    sb.append(formEntryTop(request,
+						   msgLabel("New Resource"),
+						   OutputHandler.makeTabs(tabTitles,
+									  tabContent, true) + extra));
+			} else if (tabTitles.size() == 1) {
+			    sb.append(formEntry(request,
+						tabTitles.get(0) + ":",
+						tabContent.get(0) + extra));
+			}
+			*/
                     }
 
                     continue;
