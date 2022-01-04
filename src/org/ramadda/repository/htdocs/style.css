@@ -113,7 +113,7 @@ select, input, password, .fileinput, textarea {
 
 .fileinput_label {
     display:inline-block;
-    width:300px;
+    width:400px;
 }
 
 .fileinput_label_empty {
