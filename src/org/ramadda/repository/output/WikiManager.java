@@ -3021,6 +3021,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String frontStyle = getProperty(wikiUtil, props, "frontStyle","");
             String backStyle = getProperty(wikiUtil, props, "backStyle","");	    
             SimpleDateFormat sdf =         new SimpleDateFormat(getProperty(wikiUtil,props,"dateFormat","MMM dd, yyyy"));
+            SimpleDateFormat sdf2 =         new SimpleDateFormat(getProperty(wikiUtil,props,"dateFormat","yyyy-MM-dd HH:mm"));	    
             boolean showicon = getShowIcon(wikiUtil, props, false);
             if (doingGrid) {
 		//                showicon = false;
@@ -3100,13 +3101,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		String inner = my_getWikiInclude(wikiUtil, newRequest,
 						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
+		List<Metadata> tagList =null;
 		if(addTags) {
-		    List<Metadata> metadataList =
+		    tagList = 
 			getMetadataManager().findMetadata(request, child,
 							  new String[]{"enum_tag","content.keyword"}, false);
-		    if(metadataList!=null && metadataList.size()>0) {
+		    if(tagList!=null && tagList.size()>0) {
 			content.append("<div class=metadata-tags>");
-			for(Metadata metadata: metadataList) {
+			for(Metadata metadata: tagList) {
 			    String mtd = metadata.getAttr(1);
 			    HU.div(content,mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
 			}
@@ -3134,6 +3136,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     //                    content.append(HU.br());
                     content.append(HU.leftRight("", href));
                 }
+		String theContent;
 		if(flipCards) {
 		    String url = getEntryManager().getEntryUrl(request, child);
                     String href = HU.href(url, linklabel.isEmpty()
@@ -3153,16 +3156,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			myFrontStyle+="background:#eee;";
 			front = back;
 		    }
-
-
-
-
-		    contents.add(HU.makeFlipCard(front,back,
-						 HU.style("width",HU.makeDim(width,"px"),"height",height+"px"),
-						 HU.attrs("style",myFrontStyle),
-						 HU.attrs("style",backStyle)));
+		    String flipAttrs = 
+			HU.style("width",HU.makeDim(width,"px"),"height",height+"px");
+		    theContent= HU.makeFlipCard(front,back,
+						flipAttrs,
+						HU.attrs("style",myFrontStyle),
+						HU.attrs("style",backStyle));
+		    theContent = makeComponent(request, wikiUtil, child, theContent,sdf2);
+		} else {
+		    theContent = content.toString();
 		}
-		else contents.add(content.toString());
+		contents.add(theContent);
             }
 
 
@@ -3179,9 +3183,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 return sb.toString();
 	    } else if (flipCards) {
+		String id = Utils.getGuid();
+		sb.append(HU.open("div",HU.id(id)));
+		sb.append(HU.div("",HU.id(id+"_header")));		
 		for(String c: contents) {
 		    sb.append(c);
 		}
+		sb.append(HU.close("div",HU.id(id)));
+		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
 		return sb.toString();
             } else if (doingGrid) {
 
@@ -3219,8 +3228,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      maxHeight + "px;");
                     innerStyle.append("overflow-y: auto;");
                 }
-                sb.append(HU.open(HU.TAG_DIV, HU.cssClass("ramadda-grid")));
+		String id = Utils.getGuid();
+                sb.append(HU.open(HU.TAG_DIV, HU.id(id)));
+		sb.append(HU.div("",HU.id(id+"_header")));		
+                sb.append(HU.open(HU.TAG_DIV, HU.cssClass("ramadda-grid")+HU.id(id)));
                 sb.append("\n");
+		StringBuilder buff = new StringBuilder();
+
                 int    rowCnt   = 0;
                 int    colCnt   = 10000;
                 int    weight   = 12 / columns;
@@ -3238,55 +3252,60 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         colCnt++;
                         if (colCnt >= columns) {
                             if (rowCnt > 0) {
-                                sb.append(HU.close(HU.TAG_DIV));
+                                buff.append(HU.close(HU.TAG_DIV));
                                 if (showLine) {
-                                    sb.append("<hr>");
+                                    buff.append("<hr>");
                                 } else {
-                                    //                                sb.append(HU.br());
+                                    //                                buff.append(HU.br());
                                 }
                             }
                             rowCnt++;
-                            HU.open(sb, HU.TAG_DIV, HU.cssClass("row"));
+                            HU.open(buff, HU.TAG_DIV, HU.cssClass("row"));
                             colCnt = 0;
                         }
                         String weightString = "" + weight;
                         if ((weights != null) && (i < weights.size())) {
                             weightString = weights.get(i);
                         }
-                        HU.open(sb, HU.TAG_DIV,
+                        HU.open(buff, HU.TAG_DIV,
                                 HU.cssClass("col-md-" + weightString
                                             + " ramadda-col"));
                     }
-                    HU.open(sb, HU.TAG_DIV, boxClass + boxStyle);
+		    StringBuilder comp = new StringBuilder();
+
+                    HU.open(comp, HU.TAG_DIV, boxClass + boxStyle);
                     if (showHeading) {
 			String title  = titles.get(i);
 			String label = title;
 			if (showicon) {
 			    label = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + label;
 			}
-                        HU.div(sb, HU.href(urls.get(i), label),  HU.title(title) + headingClass);
+                        HU.div(comp, HU.href(urls.get(i), label),  HU.title(title) + headingClass);
                     }
                     String displayHtml = contents.get(i);
-                    HU.div(sb, displayHtml,
+                    HU.div(comp, displayHtml,
                            HU.cssClass("bs-inner")
                            + HU.attr("style", innerStyle.toString()));
-                    HU.close(sb, HU.TAG_DIV);
+                    HU.close(comp, HU.TAG_DIV);
+		    buff.append(makeComponent(request, wikiUtil, child, comp.toString(),sdf2));
                     if (width == null) {
-                        HU.close(sb, HU.TAG_DIV);
+                        HU.close(buff, HU.TAG_DIV);
                     }
-                    sb.append("\n");
+                    buff.append("\n");
                 }
 
                 //Close the div if there was anything
                 if (width == null) {
                     if (rowCnt > 0) {
-                        HU.close(sb, HU.TAG_DIV);
+                        HU.close(buff, HU.TAG_DIV);
                     }
                 }
 
                 //Close the grid div
-                HU.close(sb, HU.TAG_DIV);
-
+                HU.close(buff, HU.TAG_DIV);
+                HU.close(buff, HU.TAG_DIV);		
+		sb.append(buff);
+		//		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
                 return sb.toString();
             } else if (doingSlideshow) {
                 // for slideshow
@@ -3869,6 +3888,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return null;
     }
 
+
+    private  String makeComponent(Request request, WikiUtil wikiUtil,Entry child, String contents, SimpleDateFormat sdf2) throws Exception {
+	String author = Utils.getDefined(child.getUser().getName(),child.getUserId());
+	String compAttrs = 
+	    HU.cssClass("ramadda-component") +
+	    HU.attr("component-title",child.getName()) +
+	    HU.attr("component-date",sdf2.format(new Date(child.getStartDate()))) +
+	    HU.attr("component-author",author);
+	List<Metadata> tagList = 
+	    getMetadataManager().findMetadata(request, child,
+					      new String[]{"enum_tag","content.keyword"}, false);
+	if(tagList!=null) {
+	    StringBuilder tags = null;
+	    for(Metadata metadata: tagList) {
+		String mtd = metadata.getAttr(1);
+		if(tags==null) tags = new StringBuilder();
+		else tags.append(",");
+		tags.append(mtd);
+	    }
+	    if(tags!=null)
+		compAttrs+=HU.attr("component-tags",tags.toString());
+	}
+	return HU.div(contents,compAttrs);
+    }
 
 
     public boolean checkIf(WikiUtil wikiUtil, Request request,Entry entry, Hashtable props) {
