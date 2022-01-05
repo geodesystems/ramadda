@@ -142,6 +142,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         "showSnippet","false",
                                         "showSnippetHover","true",
                                         "showLink","false","showHeading","true"), 
+                            new WikiTag(WIKI_TAG_FLIPCARDS, null, 
+                                        "inner","300", 
+					"width","300",
+					"addTags","false",
+					"frontStyle","",
+					"backStyle",""),					
                             new WikiTag(WIKI_TAG_MAP,
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
@@ -2979,6 +2985,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    || theTag.equals(WIKI_TAG_ACCORDIAN)
                    || theTag.equals(WIKI_TAG_SLIDESHOW)
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
+                   || theTag.equals(WIKI_TAG_FLIPCARDS)		   
                    || theTag.equals(WIKI_TAG_GRID)) {
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
@@ -2995,6 +3002,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<String> urls     = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
             String       dfltTag  = WIKI_TAG_SIMPLE;
+            boolean flipCards = theTag.equals(WIKI_TAG_FLIPCARDS);
 
             if (getProperty(wikiUtil, props, ATTR_USEDESCRIPTION) != null) {
                 boolean useDescription = getProperty(wikiUtil, props,
@@ -3007,6 +3015,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+	    if(flipCards) dfltTag = "card";
+            boolean showDate = getProperty(wikiUtil, props, "showDate",
+					  false);
+            String frontStyle = getProperty(wikiUtil, props, "frontStyle","");
+            String backStyle = getProperty(wikiUtil, props, "backStyle","");	    
+            SimpleDateFormat sdf =         new SimpleDateFormat(getProperty(wikiUtil,props,"dateFormat","MMM dd, yyyy"));
             boolean showicon = getShowIcon(wikiUtil, props, false);
             if (doingGrid) {
 		//                showicon = false;
@@ -3018,17 +3032,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean addTags = getProperty(wikiUtil, props, "addTags",
 					  false);
 
-            boolean showHeading = getProperty(wikiUtil, props, "showHeading",
-                                      true);
-            boolean headingSmall = getProperty(wikiUtil, props,
-                                       "headingSmall", true);
+            boolean showHeading = !flipCards && getProperty(wikiUtil, props, "showHeading",
+							   true);
+            boolean headingSmall = !flipCards && getProperty(wikiUtil, props,
+							     "headingSmall", true);
             String headingClass = headingSmall
                                   ? HU.cssClass(
                                       "ramadda-subheading ramadda-subheading-small")
                                   : HU.cssClass("ramadda-subheading");
 
-            boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
-                                           true);
+            boolean showLink = !flipCards && getProperty(wikiUtil, props, ATTR_SHOWLINK,
+							 true);
 
             boolean includeUrl = getProperty(wikiUtil, props, "includeurl",
                                              false);
@@ -3063,7 +3077,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             tmpProps.remove(ATTR_ENTRY);
             tmpProps.remove(ATTR_ENTRIES);
             tmpProps.remove(ATTR_FIRST);
-            if (doingGrid) {
+            if (doingGrid || flipCards) {
                 tmpProps.put("showHeading", "false");
                 if (tmpProps.get(ATTR_SHOWICON) == null) {
                     tmpProps.put(ATTR_SHOWICON, "true");
@@ -3084,7 +3098,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 tmpProps.put("defaultToCard", "true");
 		String inner = my_getWikiInclude(wikiUtil, newRequest,
-							originalEntry, child, tag, tmpProps, "", true);
+						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
 		if(addTags) {
 		    List<Metadata> metadataList =
@@ -3120,7 +3134,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     //                    content.append(HU.br());
                     content.append(HU.leftRight("", href));
                 }
-                contents.add(content.toString());
+		if(flipCards) {
+		    String url = getEntryManager().getEntryUrl(request, child);
+                    String href = HU.href(url, linklabel.isEmpty()
+                            ? getEntryDisplayName(child)
+					  : linklabel);		    
+		    String back = href;
+		    if(showDate) {
+			back +="<br>" + sdf.format(new Date(child.getStartDate()));
+		    }
+		    back = HU.div(back,HU.cssClass("ramadda-flip-card-label"));
+		    List<Entry> tmp = new ArrayList<Entry>();
+		    tmp.add(child);
+		    String front = content.toString();
+		    // a hack
+		    String myFrontStyle = frontStyle;
+		    if(front.replaceAll(" ","").equals("<divclass=\"ramadda-card\"></div>")) {
+			myFrontStyle+="background:#eee;";
+			front = back;
+		    }
+
+
+
+
+		    contents.add(HU.makeFlipCard(front,back,
+						 HU.style("width",HU.makeDim(width,"px"),"height",height+"px"),
+						 HU.attrs("style",myFrontStyle),
+						 HU.attrs("style",backStyle)));
+		}
+		else contents.add(content.toString());
             }
 
 
@@ -3136,6 +3178,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                   : null), null);
 
                 return sb.toString();
+	    } else if (flipCards) {
+		for(String c: contents) {
+		    sb.append(c);
+		}
+		return sb.toString();
             } else if (doingGrid) {
 
                 List<String> weights = null;

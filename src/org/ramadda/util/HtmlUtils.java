@@ -6343,7 +6343,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
 
+    public static String makeFlipCard(String front, String back, String flipCardAttrs,String frontAttrs,String backAttrs) {
+	return "<div class='ramadda-flip-card' "+ flipCardAttrs+"> <div class='ramadda-flip-card-inner'>" +
+	    "<div class='ramadda-flip-card-front' " + frontAttrs+">" +
+	    front +
 
+	    "</div><div class='ramadda-flip-card-back' " + backAttrs+">" +
+	    back +
+	    "</div></div></div>";
+    }
 
 
 
