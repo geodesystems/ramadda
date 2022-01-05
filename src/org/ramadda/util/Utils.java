@@ -715,6 +715,14 @@ public class Utils extends IO {
     }
 
 
+    public static String getDefined(String dflt, String ...args) {
+	for(String s: args) {
+	    if(Utils.stringDefined(s)) return s;
+	}
+	return null;
+    }    
+
+
     /**
      * _more_
      *
