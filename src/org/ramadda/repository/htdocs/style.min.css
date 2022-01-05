@@ -267,6 +267,16 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     text-decoration:none;
 }
 
+.ramadda-button-bar {
+    border-radius: 0;
+    margin:0px;
+}
+
+.ramadda-button-on {
+    background:#aaa;
+}
+
+
 .ramadda-button-blue {
     background:#286090;
     border:1px #286090 solid;
@@ -1023,6 +1033,13 @@ a.ramadda-menubar-button:hover {
 
 
 
+.ramadda-component {
+    display:inline-block;
+}
+
+.ramadda-group-header {
+    font-weight:bold;
+}
 
 .ramadda-grid {
     vertical-align:top;
