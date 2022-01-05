@@ -407,7 +407,106 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	} else {
             $("#img_" + uid).attr('src', Ramadda.originalImages[uid]);
 	}
+    },
+
+
+    Components: {
+	init: function(id) {
+	    let container = $("#" + id);
+	    let header = $("#" + id +"_header");
+	    header.css("text-align","center");
+	    let hdr = 
+		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar ramadda-button-on","layout","grid",ID,id+"_button_grid"],"Grid") +
+		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","date",ID,id+"_button_date"],"Date") +
+		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","title",ID,id+"_button_title"],"Title")+	    
+		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","tag",ID,id+"_button_tag"],"Tag")+
+		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","author",ID,id+"_button_author"],"Author");			
+	    header.append(HU.div([],hdr));
+
+
+	    let components = container.find(".ramadda-component");
+	    components.each(function() {
+		let date = $(this).attr("component-date");
+		if(!date) return;
+		let dttm = Utils.parseDate(date)
+		$(this).attr("component-day",Utils.formatDateWithFormat(dttm,"mmmm dd yyyy"));
+		$(this).attr("component-month",Utils.formatDateWithFormat(dttm,"mmmm yyyy"));
+		$(this).attr("component-year",Utils.formatDateWithFormat(dttm,"yyyy"));		
+	    });
+	
+	    let buttons = header.find(".ramadda-button");
+	    buttons.click(function(){
+		buttons.removeClass("ramadda-button-on");
+		$(this).addClass("ramadda-button-on");	    
+		let layout = $(this).attr("layout");
+		if(layout=="grid") Ramadda.Components.layout(container,components,null);
+		else if(layout=="title") Ramadda.Components.layout(container,components,"component-title");		
+		else if(layout=="date") Ramadda.Components.layout(container,components,"component-month");		
+		else if(layout=="tag") Ramadda.Components.layout(container,components,"component-tags");
+		else if(layout=="author") Ramadda.Components.layout(container,components,"component-author");
+	    });
+	},
+	layout: function(container,components,by) {
+	    container.find(".ramadda-group").each(function() {
+		$(this).detach();
+	    });
+	    if(by==null) {
+		components.each(function() {
+		    $(this).detach();
+		    container.append($(this));
+		});
+		return;
+	    } else {
+		let isDate = by=="component-month";
+		let values = [];
+		let valueMap = {};
+		components.each(function() {
+		    let attr = $(this).attr(by)||"";
+		    if(by=="component-tag") {
+			let tags = attr.split(",");
+			attr = tags[0];
+		    }
+		    if(!valueMap[attr]) {
+			valueMap[attr] = [];
+			let dttm = null;
+			if(isDate) {
+			    let date = $(this).attr("component-date");
+			    let dttm = date?Utils.parseDate(date):null;
+			    values.push([attr,dttm]);
+			} else {
+			    values.push(attr);
+			}
+		    }
+		    valueMap[attr].push($(this));
+		});
+		if(isDate) {
+		    values = values.sort((a,b)=>{
+			a = a[1];
+			b = b[1];
+			if(!a || !b) return 0;
+			if(!a) return 1;
+			if(!b) return -1;
+			return a.getTime()-b.getTime();
+		    });
+		} else {
+		    values = values.sort();
+		}
+		values.forEach(value=>{
+		    if(isDate) value = value[0];
+		    let group = container.append($(HU.div([CLASS,"ramadda-group"],HU.div([CLASS,"ramadda-group-header"],value))));
+		    valueMap[value].forEach(child=>{
+			group.append(child);
+		    })
+		});
+
+
+	    }
+   
+	    
+	},
     }
+
+    
 }
 
 
