@@ -414,25 +414,48 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	init: function(id) {
 	    let container = $("#" + id);
 	    let header = $("#" + id +"_header");
-	    header.css("text-align","center");
-	    let hdr = 
-		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar ramadda-button-on","layout","grid",ID,id+"_button_grid"],"Grid") +
-		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","date",ID,id+"_button_date"],"Date") +
-		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","title",ID,id+"_button_title"],"Title")+	    
-		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","tag",ID,id+"_button_tag"],"Tag")+
-		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","author",ID,id+"_button_author"],"Author");			
-	    header.append(HU.div([],hdr));
-
-
+	    let hasTags = false;
+	    let hasLocations = false;
 	    let components = container.find(".ramadda-component");
+	    let years = {};	    
+	    let months = {};
+	    let days = {};	    
 	    components.each(function() {
 		let date = $(this).attr("component-date");
 		if(!date) return;
 		let dttm = Utils.parseDate(date)
-		$(this).attr("component-day",Utils.formatDateWithFormat(dttm,"mmmm dd yyyy"));
-		$(this).attr("component-month",Utils.formatDateWithFormat(dttm,"mmmm yyyy"));
-		$(this).attr("component-year",Utils.formatDateWithFormat(dttm,"yyyy"));		
+		let tmp;
+		$(this).attr("component-day",tmp = Utils.formatDateWithFormat(dttm,"mmmm d yyyy"));
+		days[tmp]  =true;
+		$(this).attr("component-month",tmp = Utils.formatDateWithFormat(dttm,"mmmm yyyy"));
+		months[tmp]  =true;
+		$(this).attr("component-year",tmp = Utils.formatDateWithFormat(dttm,"yyyy"));		
+		years[tmp] = true;
+		if($(this).attr('component-latitude')) hasLocations = true;
+		if(Utils.stringDefined($(this).attr('component-tags'))) {
+		    hasTags = true;
+		}
 	    });
+	    header.css("text-align","center");
+	    let hdr = 
+		HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar ramadda-button-on","layout","grid"],"Grid");
+	    if(Object.keys(years).length>1)
+		hdr += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","year"],"Year");
+	    if(Object.keys(months).length>1)
+		hdr+=HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","month"],"Month");
+	    if(Object.keys(days).length>1)	    
+		hdr+=HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","day"],"Day");		
+	    hdr += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","title"],"Title");	    
+	    if(hasTags)
+		hdr +=HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","tags"],"Tag");
+
+	    hdr+= HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","author"],"Author");			
+	    if(hasLocations) {
+		hdr += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button ramadda-button-bar","layout","map"],"Map");			
+	    }
+	    header.append(HU.div([],hdr));
+
+
 	
 	    let buttons = header.find(".ramadda-button");
 	    buttons.click(function(){
@@ -440,29 +463,57 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		$(this).addClass("ramadda-button-on");	    
 		let layout = $(this).attr("layout");
 		if(layout=="grid") Ramadda.Components.layout(container,components,null);
-		else if(layout=="title") Ramadda.Components.layout(container,components,"component-title");		
-		else if(layout=="date") Ramadda.Components.layout(container,components,"component-month");		
-		else if(layout=="tag") Ramadda.Components.layout(container,components,"component-tags");
-		else if(layout=="author") Ramadda.Components.layout(container,components,"component-author");
+		else  Ramadda.Components.layout(container,components,"component-" + layout);
 	    });
 	},
 	layout: function(container,components,by) {
 	    container.find(".ramadda-group").each(function() {
 		$(this).detach();
 	    });
+	    if(container.mapId)
+		$("#"+ container.mapId).detach();
+	    if(container.ramaddaMap) {
+		ramaddaMapRemove(container.ramaddaMap);
+		container.ramaddaMap = null;
+	    }
 	    if(by==null) {
+		components.show();
 		components.each(function() {
 		    $(this).detach();
 		    container.append($(this));
 		});
 		return;
+	    } else if(by=='component-map') {
+		components.hide();
+		let id = Utils.getUniqueId();
+		container.mapId = id;
+		container.append(HU.div([ID,id,STYLE,HU.css("width","100%","height","500px")]));
+		let params={};
+		let map = new RepositoryMap(id,params);
+		container.ramaddaMap = map;
+		map.initMap(false);
+		components.each(function() {
+		    let  url = $(this).attr("component-url");		    
+		    let lat = +$(this).attr("component-latitude");
+		    let lon = +$(this).attr("component-longitude");		    
+		    if(!Utils.isNumber(lat)) return;
+		    let image = $(this).attr("component-image");		    
+		    let popup = HU.center(HU.b($(this).attr("component-title")));		    
+		    if(image) popup +=HU.image(image,[WIDTH,"300px"]);
+		    if(url) popup=HU.href(url,popup);
+		    let point = new MapUtils.createLonLat(lon,lat);
+		    map.addPoint("", point, {pointRadius:6, strokeWidth:1, strokeColor:'#000', fillColor:"blue"},popup);
+		});
+		map.centerOnMarkers();
 	    } else {
-		let isDate = by=="component-month";
+		components.show();
+
+		let isDate = 		by=="component-day" || by=="component-month" || by=="component-year";
 		let values = [];
 		let valueMap = {};
 		components.each(function() {
 		    let attr = $(this).attr(by)||"";
-		    if(by=="component-tag") {
+		    if(by=="component-tags") {
 			let tags = attr.split(",");
 			attr = tags[0];
 		    }
@@ -486,7 +537,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			if(!a || !b) return 0;
 			if(!a) return 1;
 			if(!b) return -1;
-			return a.getTime()-b.getTime();
+			return b.getTime()-a.getTime();
 		    });
 		} else {
 		    values = values.sort();

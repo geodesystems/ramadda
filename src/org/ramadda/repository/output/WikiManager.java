@@ -137,6 +137,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					ATTR_SHOWICON, "true",
 					"includeChildren","false",
 					"addTags","false",
+					"showDisplayHeader","false",
 					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
 					"#weights","3,6,3",
                                         "showSnippet","false",
@@ -3190,9 +3191,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    sb.append(c);
 		}
 		sb.append(HU.close("div",HU.id(id)));
-		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
+		getMapManager().addMapImports(request, sb);
+		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+",{});");
 		return sb.toString();
             } else if (doingGrid) {
+                boolean addHeader = getProperty(wikiUtil, props, "showDisplayHeader",
+						false);
 
                 List<String> weights = null;
                 boolean showLine = getProperty(wikiUtil, props, "showLine",
@@ -3287,7 +3291,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                            HU.cssClass("bs-inner")
                            + HU.attr("style", innerStyle.toString()));
                     HU.close(comp, HU.TAG_DIV);
-		    buff.append(makeComponent(request, wikiUtil, child, comp.toString(),sdf2));
+		    if(addHeader)
+			buff.append(makeComponent(request, wikiUtil, child, comp.toString(),sdf2));
+		    else
+			buff.append(comp.toString());
                     if (width == null) {
                         HU.close(buff, HU.TAG_DIV);
                     }
@@ -3305,7 +3312,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HU.close(buff, HU.TAG_DIV);
                 HU.close(buff, HU.TAG_DIV);		
 		sb.append(buff);
-		//		HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
+		if(addHeader) {
+		    getMapManager().addMapImports(request, sb);
+		    HU.script(sb, "Ramadda.Components.init(" + HU.squote(id)+");");
+		}
                 return sb.toString();
             } else if (doingSlideshow) {
                 // for slideshow
@@ -3893,9 +3903,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	String author = Utils.getDefined(child.getUser().getName(),child.getUserId());
 	String compAttrs = 
 	    HU.cssClass("ramadda-component") +
+	    HU.attr("component-url",getEntryManager().getEntryURL(request, child)) +
 	    HU.attr("component-title",child.getName()) +
 	    HU.attr("component-date",sdf2.format(new Date(child.getStartDate()))) +
 	    HU.attr("component-author",author);
+	if (child.isImage()) {
+	    String imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
+										 request, child);
+	    
+	    compAttrs+=
+		HU.attr("component-image",imageUrl);
+	}
+
+	if(child.hasLocationDefined()) {
+	    compAttrs+=
+		HU.attr("component-latitude",""+child.getLatitude()) +
+		HU.attr("component-longitude",""+child.getLongitude());
+
+	}
 	List<Metadata> tagList = 
 	    getMetadataManager().findMetadata(request, child,
 					      new String[]{"enum_tag","content.keyword"}, false);
