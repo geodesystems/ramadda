@@ -487,7 +487,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		components.hide();
 		let id = Utils.getUniqueId();
 		container.mapId = id;
-		container.append(HU.div([ID,id,STYLE,HU.css("width","100%","height","500px")]));
+		container.append(HU.div([ID,id,STYLE,HU.css("width","100%","height","400px")]));
 		let params={};
 		let map = new RepositoryMap(id,params);
 		container.ramaddaMap = map;
