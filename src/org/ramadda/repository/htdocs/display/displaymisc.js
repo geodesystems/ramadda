@@ -997,6 +997,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'includeDate',ex:'true',d:true},
 	{p:'includeRowIndex',ex:'true',d:false},	
 	{p:'fancy',ex:'true',d:true},
+	{p:'maxLength',ex:'500',d:-1, tt:'If string is gt maxLength then scroll it'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
 	{p:'linkField'},
@@ -1160,7 +1161,18 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
  	    let aggId = "";
 	    let aggIds = [];
+	    let templates = {};
+	    fields.forEach((f,idx)=>{
+		let template = this.getProperty(f.getId()+"_template");
+		if(template) templates[f.getId()] = template;
+	    });
+
+
 	    let handleColumn=((field,record,v,tdAttrs)=>{
+		let template = templates[field.getId()];
+		if(template) {
+		    return this.getRecordHtml(record,null, template);
+		}
 		if(!aggByField)
 		    return HU.td(tdAttrs,v);
 		if(field.getId() != aggByField.getId()) {
@@ -1184,6 +1196,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(this.getProperty(f.getId()+".nowrap",false))
 		    attrs.push("nowrap","true");
 	    });
+
+	    let maxLength = this.getMaxLength();
+	    let maxHeight = this.getProperty("maxHeight","200px");
 
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
@@ -1224,8 +1239,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		fields.forEach((f,idx)=>{
 		    let value = d[f.getIndex()]
 		    let sv =  this.formatFieldValue(f,record,String(value));
-		    if(sv.length>500) {
-			sv = HU.div([STYLE,"max-height:200px;overflow-y:auto;"],sv);
+		    if(sv.length>maxLength) {
+			sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
 		    }
 		    if(f.canEdit()) {
 			let value = v;
