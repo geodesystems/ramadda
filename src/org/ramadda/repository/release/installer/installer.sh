@@ -7,27 +7,26 @@
 
 OS_REDHAT="redhat"
 OS_AMAZON="amazon_linux"
+
+##For now only amazon linux is supported 
 os=$OS_AMAZON
 
+RAMADDA_DOWNLOAD="https://geodesystems.com/repository/release/latest/ramaddaserver.zip"
 INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PARENT_DIR=`dirname $INSTALLER_DIR`
+YUM_ARG=""
+
 USER_DIR=$PARENT_DIR
 SERVICE_NAME="ramadda"
+SERVICE_DIR="/etc/rc.d/init.d"
 RAMADDA_INSTALL_DIR=${PARENT_DIR}/${SERVICE_NAME}
 SERVER_DIR=$RAMADDA_INSTALL_DIR/ramaddaserver
 SERVICE_SCRIPT=${SERVER_DIR}/ramaddaService.sh
-
-
-BASEDIR=/mnt/ramadda
+BASE_DIR=/mnt/ramadda
+RAMADDA_HOME_DIR=$BASE_DIR/repository
+MOUNT_DIR=""
 
 promptUser=1
-yumArg=""
-
-mkdir -p  ${RAMADDA_INSTALL_DIR}
-
-RAMADDA_DOWNLOAD="https://geodesystems.com/repository/release/latest/ramaddaserver.zip"
-
-SERVICE_DIR="/etc/rc.d/init.d"
 
 
 
@@ -54,7 +53,7 @@ do
 	    ;;
 	-y)
 	    promptUser=0
-	    yumArg=--assumeyes
+	    YUM_ARG=--assumeyes
 	    ;;
 	*)
 	    echo "Unknown argument $1"
@@ -67,24 +66,25 @@ done
 #echo "target os: $os"
 
 if [ "$os" == "${OS_REDHAT}" ]; then
-    pgsql=pgsql
-    pgService=postgresql-server
-    pgInstall=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
+    PG_SERVICE=postgresql-server
+    PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
 else
-    pgsql=pgsql
-    pgService=postgresql
-    pgInstall=postgresql-server
+    PG_SERVICE=postgresql
+    PG_INSTALL=postgresql-server
 fi
 
+PG_DIR=/var/lib/pgsql
+PG_DATA_DIR=${PG_DIR}/data
+PG_REAL_DIR="${BASE_DIR}/pgsql"
 
 
 
 yumInstall() {
     local target="$1"
-    if [ "$yumArg" == "" ]; then
+    if [ "$YUM_ARG" == "" ]; then
 	yum install ${target}
     else 
-	yum install ${yumArg} ${target}
+	yum install ${YUM_ARG} ${target}
     fi
 }
 
@@ -144,9 +144,8 @@ ask() {
     fi
 }
 
-mntDir=""
 
-domnt() {
+do_mount() {
     header  "Volume Installation";
     echo "The database and the RAMADDA home directory will be installed on /mnt/ramadda"
     echo "We need to mount a volume as /mnt/ramadda"
@@ -156,46 +155,45 @@ domnt() {
 	if [ -b "$i" ]; then
             askYesNo  "Do you want to mount the volume: $i "  "y"
             if [ "$response" == "y" ]; then
-		mntDir="$i"
+		MOUNT_DIR="$i"
 		break;
             fi
 	fi
     done
 
-
     ##/dev/xvdb       /mnt/ramadda   ext4    defaults,nofail        0       2
-    while [ "$mntDir" == "" ]; do
+    while [ "$MOUNT_DIR" == "" ]; do
 	ask  "Enter the volume to mount, e.g., /dev/xvdb  [<volume>|n] "  ""
 	echo "RES: $response"
 	if [ "$response" == "" ] ||  [ "$response" == "n"  ]; then
             break;
 	fi
 	if [ -b $response ]; then
-            mntDir="$response"
+            MOUNT_DIR="$response"
             break;
 	fi
 	echo "Volume does not exist: $response"
     done
 
-    echo "MNT: $mntDir"
+    echo "Mounting: $MOUNT_DIR"
 
-    if [ "$mntDir" != "" ]; then
-	mntState=$( file -s $mntDir );
+    if [ "$MOUNT_DIR" != "" ]; then
+	mntState=$( file -s $MOUNT_DIR );
 	case $mntState in
 	    *files*)
-		echo "$mntDir is already mounted";
+		echo "$MOUNT_DIR is already mounted";
 		;;
 	    *)
-		echo "Mounting $BASEDIR on $mntDir"
+		echo "Mounting $BASE_DIR on $MOUNT_DIR"
 		if [ ! -f /etc/fstab.bak ]; then
 		    cp  /etc/fstab /etc/fstab.bak
 		fi
-		sed -e 's/.*$BASEDIR.*//g' /etc/fstab | sed -e 's/.*added ramadda.*//g' > dummy.fstab
+		sed -e 's/.*$BASE_DIR.*//g' /etc/fstab | sed -e 's/.*added ramadda.*//g' > dummy.fstab
 		mv dummy.fstab /etc/fstab
-		printf "\n#added by ramadda installer.sh\n${mntDir}   $BASEDIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
-		mkfs -t ext4 $mntDir
-		mkdir $BASEDIR
-		mount $mntDir $BASEDIR
+		printf "\n#added by ramadda installer.sh\n${MOUNT_DIR}   $BASE_DIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
+		mkfs -t ext4 $MOUNT_DIR
+		mkdir $BASE_DIR
+		mount $MOUNT_DIR $BASE_DIR
 		mount -a
 		;;
 	esac
@@ -203,7 +201,7 @@ domnt() {
 }
 
 
-dobasedir() {
+do_basedir() {
     dfltDir="";
     if [ -d "${USER_DIR}" ]; then
 	dfltDir="${USER_DIR}/ramadda";
@@ -213,46 +211,46 @@ dobasedir() {
 	dfltDir="/mnt/ramadda";
     fi
 
-    while [ "$BASEDIR" == "" ]; do
+    while [ "$BASE_DIR" == "" ]; do
 	ask   "Enter base directory: [$dfltDir]:" $dfltDir  "The base directory holds the repository and pgsql sub-directories"
 	if [ "$response" == "" ]; then
             break;
 	fi
-	BASEDIR=$response;
+	BASE_DIR=$response;
 	break
     done
 }
 
 
-dopostgres() {
+do_postgres() {
     header   "Database Installation";
     askYesNo  "Install Postgres database"  "y"
     if [ "$response" == "y" ]; then
-	yum install -y  ${pgInstall} > /dev/null
+	amazon-linux-extras install postgresql13 vim epel
+	yum install -y  ${PG_INSTALL} > /dev/null
 	postgresql-setup initdb
-
-	if  [ -d ${postgresDir} ] ; then
-	    if  [ ! -h ${postgresDir} ]; then
-		echo "Moving ${postgresDir} to $PGDIR"
-		mv  ${postgresDir} $PGDIR
-		ln  -s -f  $PGDIR ${postgresDir}
-		chown -R postgres ${postgresDir}
-		chown -R postgres ${PGDIR}
+	if  [ -d ${PG_DIR} ] ; then
+	    if  [ ! -h ${PG_DIR} ]; then
+		echo "Moving ${PG_DIR} to $PG_REAL_DIR"
+		mv  ${PG_DIR} $PG_REAL_DIR
+		ln  -s -f  $PG_REAL_DIR ${PG_DIR}
+		chown -R postgres ${PG_DIR}
+		chown -R postgres ${PG_REAL_DIR}
 	    fi
 	else
-	    echo "Warning: ${postgresDir} does not exist"	
+	    echo "Warning: ${PG_DIR} does not exist"	
 	fi
 
 	if [ "$os" == "${OS_REDHAT}" ]; then
 	    systemctl enable postgresql
 	    systemctl start postgresql.service
 	else
-	    chkconfig ${pgService} on
-	    service ${pgService} start
+	    chkconfig ${PG_SERVICE} on
+	    service ${PG_SERVICE} start
 	fi
 
-	if [ ! -f ${postgresDataDir}/pg_hba.conf.bak ]; then
-            cp ${postgresDataDir}/pg_hba.conf ${postgresDataDir}/pg_hba.conf.bak
+	if [ ! -f ${PG_DATA_DIR}/pg_hba.conf.bak ]; then
+            cp ${PG_DATA_DIR}/pg_hba.conf ${PG_DATA_DIR}/pg_hba.conf.bak
 	fi
 
 	postgresPassword="password$RANDOM-$RANDOM"
@@ -268,9 +266,9 @@ host    all             all             ::1/128                 ident
 "
 
 
-	printf "${postgresAuth}" > ${postgresDataDir}/pg_hba.conf
+	printf "${postgresAuth}" > ${PG_DATA_DIR}/pg_hba.conf
 
-	service ${pgService} reload
+	service ${PG_SERVICE} reload
 
 	printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${postgresPassword}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
 	chmod 644 /tmp/postgres.sql
@@ -282,22 +280,22 @@ host    all             all             ::1/128                 ident
 }
 
 
-##dobasedir
 
-if [ ! -d "$BASEDIR" ]; then
-    domnt;
+
+mkdir -p  ${RAMADDA_INSTALL_DIR}
+
+##do_basedir
+
+if [ ! -d "$BASE_DIR" ]; then
+    do_mount;
 else
-    echo "$BASEDIR already mounted"
+    echo "$BASE_DIR already mounted"
 fi
 
 
-RAMADDA_HOME_DIR=$BASEDIR/repository
 mkdir -p $RAMADDA_HOME_DIR
-postgresDir=/var/lib/${pgsql}
-postgresDataDir=${postgresDir}/data
-PGDIR="${BASEDIR}/${pgsql}"
 
-tmpdir=`dirname $BASEDIR`
+tmpdir=`dirname $BASE_DIR`
 permissions=$(stat -c %a $tmpdir)
 if [ "$permissions" == "700" ]; then
     chmod 755 "$tmpdir"
@@ -305,8 +303,8 @@ fi
 
 
 
-if [ ! -d "$PGDIR" ]; then
-    dopostgres;
+if [ ! -d "$PG_REAL_DIR" ]; then
+    do_postgres;
 else
     echo "PostgreSQL already installed"
 fi
@@ -398,7 +396,7 @@ printf  "ramadda.install.password=${install_password}" > ${RAMADDA_HOME_DIR}/ins
 service ${SERVICE_NAME} restart
 
 header "Installation complete";
-printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tPostgres directory: ${PGDIR}\n\tLog file: ${RAMADDA_INSTALL_DIR}/ramadda.log\n\tService script: ${SERVICE_SCRIPT}\n"
+printf "RAMADDA is installed. \n\tRAMADDA home directory: ${RAMADDA_HOME_DIR}\n\tPostgres directory: ${PG_REAL_DIR}\n\tLog file: ${RAMADDA_INSTALL_DIR}/ramadda.log\n\tService script: ${SERVICE_SCRIPT}\n"
 printf "Finish the configuration at https://${host}/repository\n"
 printf "The installation password is ${install_password}\n"
 printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection\n"
