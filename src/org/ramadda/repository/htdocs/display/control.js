@@ -941,8 +941,6 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 
 function RamaddaMenuDisplay(displayManager, id, properties) {
     const ID_MENU = "menu";
-    const ID_PREV = "prev";
-    const ID_NEXT = "next";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MENU, properties);
     let myProps = [
 	{label:'Record Menu'},
