@@ -151,7 +151,13 @@ a.display-container {
 }
 
 
+.display-filter-items {
+    display: inline-block;
+}
+
+
 .display-filter-item-button {
+    display: inline-block;
     border-radius: 8px;
     border: 2px solid rgba(0,0,0,0);
     margin-left:4px;
@@ -163,11 +169,19 @@ a.display-container {
     background: #fff;
 }
 
-.display-filter-item-button-selected {
-    background: #ddd;
-    border: 2px solid #000;
+.display-filter-item-button.ramadda-button {
+    background:#E5E5E5;
 }
 
+.display-filter-item-selected {
+    background: #ddd;
+    border: 2px solid #000;
+    background:green;
+}
+
+.display-filter-item-selected.ramadda-button {
+    background:#aaa !important;
+}
 
 
 .display-filter-label {
@@ -2849,3 +2863,8 @@ table.dataTable tfoot td {
     display:inline-block;
     white-space:nowrap;
 }
+
+.display-td tr {
+    background:transparent !important;
+}
+
