@@ -1504,6 +1504,21 @@ var Utils =  {
 				value = "<pre class=thin_pre>" + value.trim()+"</pre>"
 			    return value;
 			}
+			if(t.attrs["showUrl"]) {
+			    let label = t.attrs['label'] || value;
+			    value = HU.href(value,label,['target','_other','style',t.attrs['style']||'']);
+			}
+			if(t.attrs['delimiter'] && t.attrs['fields']) {
+			    let l = [];
+			    if(Utils.stringDefined(value)) l.push(value);
+			    t.attrs['fields'].split(",").forEach(f=>{
+				let v=  source[f];
+				if(Utils.stringDefined(v)) l.push(v);
+			    });
+			    value = Utils.join(l,t.attrs['delimiter']);
+			}
+
+
 			if(t.attrs["urlField"]) {
 			    let url =  source[t.attrs["urlField"]];
 			    if(Utils.stringDefined(url)) {
@@ -1551,6 +1566,14 @@ var Utils =  {
 			    //value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
 			}
 			if(t.attrs["image"]) {
+			    if(Utils.stringDefined(value) && t.attrs['urlPrefix']) {
+				value  = t.attrs['urlPrefix']+value;
+			    }
+
+			    if(!Utils.stringDefined(value) && t.attrs['defaultUrl']) {
+				value = t.attrs['defaultUrl'];
+			    }
+
 			    if(value!="") {
 				let title = "";
 				if(t.attrs["title"]) {
@@ -1558,7 +1581,7 @@ var Utils =  {
 				    for(a in source)
 					title = title.replace("{" + a+"}",source[a]);
 				}
-				let attrs = ["title", title];
+				let attrs = ["title", title,'data-caption',title];
 				if(t.attrs["height"]) {
 				    attrs.push("height");
 				    attrs.push(t.attrs["height"]);
@@ -1568,7 +1591,15 @@ var Utils =  {
 				}
 				attrs.push("loading");
 				attrs.push("lazy");
-				value = HtmlUtils.image(value,attrs);
+				let url = value;
+				value = HtmlUtils.image(url,attrs);
+				if(t.attrs['doPopup']) {
+				    if(!t.attrs['popupBase']) {
+					t.attrs['popupBase'] = "gallery"+Utils.getUniqueId();
+				    }
+				    let base = t.attrs['popupBase'];
+				    value = HU.href(url,value,[CLASS,"popup_image","data-fancybox","fancybox","data-caption",title,'title',title]);
+				}
 			    }
 			}
 
@@ -1623,6 +1654,34 @@ var Utils =  {
 			    }
 			}
 
+
+
+			if(t.attrs['cropLength'] && value.length>+t.attrs['cropLength']) {
+			    let idx = +t.attrs['cropLength'];
+			    while(idx>=0) {
+				if(value[idx]==' ' ||value[idx]=='\n' ||value[idx]=='\t') {
+				    break;
+				}
+				idx--;
+			    }
+			    if(idx==0) {
+				while(idx<value.length) {
+				    if(value[idx]==' ' ||value[idx]=='\n' ||value[idx]=='\t') {
+					break;
+				    }
+				    idx++;
+				}
+			    }
+			    let id = Utils.getUniqueId();
+
+			    let pre = value.substring(0,idx) +HU.span([ID,id+"_ellipsis"], "...");
+			    let post = HU.span([ID,id+"_post",STYLE,HU.css('display','none')], value.substring(idx));			    
+			    let toggle = HU.div(['onclick',"Utils.toggleShowMore('" + id+"')",ID,id,CLASS,'ramadda-showmore ramadda-clickable'], "Show More " + HU.getIconImage("fas fa-sort-down"));			
+			    value = pre + post + toggle;
+			}
+
+
+
 			if(t.attrs["maxwidth"]) {
 			    let width = t.attrs["maxwidth"];
 			    value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
@@ -1662,6 +1721,21 @@ var Utils =  {
 		    return s;
 		}
 	       };
+    },
+    toggleShowMore: function(id) {
+	let toggle = $("#" + id);
+	let open = toggle.attr('open');
+	open = !open;
+	toggle.attr('open',open);
+	if(open) {
+	    $('#'+id+'_ellipsis').hide();
+	    $('#'+id+'_post').show();	    
+	    toggle.html("Show Less " + HU.getIconImage("fas fa-sort-up"));			
+	} else {
+	    $('#'+id+'_ellipsis').show();
+	    $('#'+id+'_post').hide();	    
+	    toggle.html("Show More " + HU.getIconImage("fas fa-sort-down"));			
+	}
     },
     formatNumberComma: function(number) {
 	if(!Utils.isDefined(number)) {
