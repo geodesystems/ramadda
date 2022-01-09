@@ -267,6 +267,11 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     text-decoration:none;
 }
 
+
+.ramadda-button:hover {
+    border:var(--highlight-border) !important;    
+}
+
 .ramadda-button-bar {
     border-radius: 0;
     margin:0px;
@@ -518,6 +523,16 @@ i.fa, i.fas,i.fab {
     white-space: nowrap;
     color: var(--nav-color);
 }
+
+.ramadda-showmore {
+    color:#4774CC;
+    white-space:nowrap;
+}
+
+.ramadda-showmore span i   {
+    color:#4774CC;
+}
+
 
 .ramadda-nav-left-toggle  {
     position:absolute;
@@ -2147,7 +2162,7 @@ table.dataTable.no-footer {
 }
 
 .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > td, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > td {
-    vertical-align: top;
+    vertical-align: top !important;
 }        
 
 table.dataTable tbody td {
