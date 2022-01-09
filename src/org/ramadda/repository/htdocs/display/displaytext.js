@@ -509,6 +509,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
+	{p:"templateStyle",ex:'display:inline-block;',tt:'Style for the wrapper div'},	
 	{p:"emptyMessage"},
 	{p:"select",ex:"max|min|<|>|=|<=|>=|contains"},
 	{p:"selectField"},
@@ -738,6 +739,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
             var colorBy = this.getColorByInfo(selected);
 
+
 	    let attrs = {};
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
@@ -849,7 +851,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents += '<div class="row-tight row">';
 		}
 		var colCnt = 0;
-		var style = this.getProperty("templateStyle","");
+		var style = this.getTemplateStyle("");
 		let handleSelectOnClick = this.getPropertyHandleSelectOnClick(true);
 
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
@@ -888,7 +890,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			if(!f.isEnabled() || !f.getField) return;
 			rowAttrs["filter." + f.getField().getId()] =  f.getFieldValues();
 		    });
-		    var recordStyle = style;
+		    let recordStyle = style;
 		    if(color) {
 			if(this.getProperty("colorBackground",false)) {
 			    recordStyle = HU.css("background",color) + recordStyle;
@@ -897,7 +899,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
+		    let tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
@@ -943,11 +945,19 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents += HU.close(DIV);
 		}
 	    }
+
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.setContents(contents,true);
+	    HU.createFancyBox( this.jq(ID_DISPLAY_CONTENTS).find("a.popup_image"), {
+                caption : function( instance, item ) {
+		    let caption =   $(this).attr('data-caption');
+		    if(!Utils.stringDefined(caption)) caption = $(this).attr('title') || '';
+		    return caption;
+                }});
+
 	    this.addFieldClickHandler(null,null,false);
-	    var recordElements = this.find(".display-template-record");
+	    let recordElements = this.find(".display-template-record");
 	    this.makeTooltips(recordElements, selected);
 	    this.makePopups(recordElements, selected);
 	    let _this = this;

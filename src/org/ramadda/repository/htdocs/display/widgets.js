@@ -219,8 +219,8 @@ function DisplayAnimation(display, enabled,attrs) {
     attrs = attrs||{};
     $.extend(dflt,attrs);
     const ID_RUN = "animrun";
-    const ID_NEXT = "animnext";
-    const ID_PREV= "animprev";
+    const ID_ANIM_NEXT = "animnext";
+    const ID_ANIM_PREV= "animprev";
     const ID_BEGIN= "animbegin";
     const ID_END= "animend";
     const ID_SLIDER = "slider";
@@ -498,10 +498,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		buttons +=   HtmlUtils.span([ID, this.getDomId(ID_SETTINGS),TITLE,"Settings"], HtmlUtils.getIconImage("fas fa-cog")); 
 		if(!short)
 		    buttons +=   HtmlUtils.span([ID, this.getDomId(ID_BEGIN),TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
-		buttons += HtmlUtils.span([ID, this.getDomId(ID_PREV), TITLE,"Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
+		buttons += HtmlUtils.span([ID, this.getDomId(ID_ANIM_PREV), TITLE,"Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
 		if(!short)
 		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_RUN),  TITLE,"Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
-		buttons +=HtmlUtils.span([ID, this.getDomId(ID_NEXT), TITLE,"Next"], HtmlUtils.getIconImage("fa-step-forward"));
+		buttons +=HtmlUtils.span([ID, this.getDomId(ID_ANIM_NEXT), TITLE,"Next"], HtmlUtils.getIconImage("fa-step-forward"));
 		if(!short)
 		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_END), TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
 	    }
@@ -668,8 +668,8 @@ function DisplayAnimation(display, enabled,attrs) {
 
 	    });
             this.btnRun = this.jq(ID_RUN);
-            this.btnPrev = this.jq(ID_PREV);
-            this.btnNext = this.jq(ID_NEXT);
+            this.btnPrev = this.jq(ID_ANIM_PREV);
+            this.btnNext = this.jq(ID_ANIM_NEXT);
             this.btnBegin = this.jq(ID_BEGIN);
             this.btnEnd = this.jq(ID_END);
             this.label = this.jq(ID_ANIMATION_LABEL);

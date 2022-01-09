@@ -97,6 +97,10 @@ const ID_FILTER_COUNT = "filtercount";
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
+const ID_NEXT = "next";
+const ID_PREV = "prev";
+const ID_PREVNEXT_LABEL = "prevnext_label";
+
 const PROP_DISPLAY_FILTER = "displayFilter";
 const PROP_EXCLUDE_ZERO = "excludeZero";
 const PROP_EXCLUDE_NAN = "excludeUndefined";
@@ -1318,6 +1322,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'background',ex:'color'},
 	{p:'showProgress',ex:true},
 	{p:'loadingMessage',ex:'',tt:'Message to show when loading data'},	
+	{p:'showRecordPager',ex:true,tt:'Show the prev/next pager'},
+	{p:'recordPagerNumber',d:100,tt:'How many records to show'},	
+	{p:'noun',ex:'images'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
@@ -3292,11 +3299,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return records;
 	},
 	filterData: function(records, fields, args) {
-	    if(this.recordListOverride) return this.recordListOverride;
+	    if(this.recordListOverride) {
+		return this.recordListOverride;
+	    }
 	    let opts = {
 		doGroup:false,
 		skipFirst:false,
-		applyDateRange: true
+		applyDateRange: true,
+		recordOk:null
 	    }
 	    if(args)
 		$.extend(opts,args);
@@ -3627,6 +3637,61 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    } else if(this.getSelectLast()) {
 		this.propagateEventRecordSelection({record:records[records.length-1]});
 	    }
+	    if(opts.recordOk) {
+		records=records.filter(record=>{
+		    if(opts.recordOk(record)) return record;
+		    return null;});
+	    }
+
+	    if(this.getShowRecordPager()) {
+		let number = +this.getRecordPagerNumber();
+		if(this.rowStartIndex>=records.length) {
+		    this.rowStartIndex=Math.max(0, records.length-(records.length%number)-1);
+		}
+		let tmp = [];
+		let rowIdx;
+		let cnt = 0;
+		for (rowIdx = this.rowStartIndex; (rowIdx < records.length) && (cnt<number); rowIdx++) {
+		    cnt++;
+
+		    let record = records[rowIdx];
+		    tmp.push(record);
+		}
+		let header = "";
+		if(this.rowStartIndex>0) {
+		    header += HU.span([ID,this.domId(ID_PREV)],"Previous")+" ";
+		}
+
+		if(rowIdx<records.length) {
+		    header += HU.span([ID,this.domId(ID_NEXT)],"Next") +" ";
+		}
+		header  += HU.span([ID,this.domId(ID_PREVNEXT_LABEL)]);
+		if(header!="") {
+		    header = HU.div([STYLE,HU.css('margin-right','10px', "display","inline-block")],header);
+		    this.jq(ID_HEADER2_PREFIX).html(header);
+		    this.jq(ID_HEADER2).css("text-align","left");
+		}
+		if(number<records.length) {
+		    this.jq(ID_PREVNEXT_LABEL).html("Showing " + (this.rowStartIndex+1) +" - " +(this.rowStartIndex+cnt) +
+						    " of " + records.length +" " + this.getNoun(""));
+		}
+		this.jq(ID_PREV).button().click(()=>{
+		    this.rowStartIndex-=  +this.getRecordPagerNumber();
+		    if(this.rowStartIndex<0) this.rowStartIndex=0;
+		    this.forceUpdateUI();
+		});
+		this.jq(ID_NEXT).button().click(()=>{
+		    let num = +this.getRecordPagerNumber();
+		    this.rowStartIndex+=num;
+		    this.forceUpdateUI();
+		});
+		records = tmp;
+	    }
+
+
+
+
+
             return this.handleResult("filterData",records);
         },
 	//TODO: this will support a handler pattern that allows for insertion
@@ -5970,25 +6035,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    f.initWidget(inputFunc);
 	    });
 
+
 	    this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
 		let parent = $(this);
 		$(this).find(".display-filter-item").click(function(event){
-		    var isAll = $(this).hasClass("display-filter-item-all");
-		    var selectClazz = "display-filter-item-" + displayType +"-selected"
-		    var wasSelected = $(this).hasClass(selectClazz);
-		    var fieldId = $(this).attr("fieldId");
-		    var multiples = _this.getProperty(fieldId +".filterMultiple",false);
+		    let isAll = $(this).hasClass("display-filter-item-all");
+		    let selectClazz = "display-filter-item-selected"
+		    let wasSelected = $(this).hasClass(selectClazz);
+		    let fieldId = $(this).attr("fieldId");
+		    let multiples = _this.getProperty(fieldId +".filterMultiple",false);
 		    if(!event.metaKey || isAll || !multiples) {
 			parent.find(".display-filter-item").removeClass(selectClazz);
 		    } else {
 			parent.find(".display-filter-item-all").removeClass(selectClazz);
 		    }
-		    if(wasSelected  && event.metaKey) {
+		    if(wasSelected) {
+		//		    if(wasSelected  && event.metaKey) {
 			$(this).removeClass(selectClazz);
 		    } else {
 			$(this).addClass(selectClazz);
 		    }
-		    var values = [];
+		    let values = [];
 		    parent.find("." + selectClazz).each(function() {
 			values.push($(this).attr("data-value").replace(/,/g,"_comma_"));
 		    });
@@ -5996,7 +6063,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			parent.find(".display-filter-item-all").addClass(selectClazz);
 			values.push(FILTER_ALL);
 		    }
-		    var value =  Utils.join(values,",");
+		    let value =  Utils.join(values,",");
 		    parent.attr("data-value", value);
 		    $("#"+parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?SPACE:value);
 		    inputFunc(parent,null, values);
@@ -6004,6 +6071,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    });
 	    this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
+		if($(this).attr("istext")) return;
 		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}
 		HtmlUtils.hidePopupObject();
@@ -6242,7 +6310,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	macroChanged: function() {
 	    this.pageSkip = 0;
 	},
+	rowStartIndex:0,
 	dataFilterChanged: function(args) {
+	    this.rowStartIndex=0;
 	    args = args||{};
 	    args.dataFilterChanged = true;
 	    this.callUpdateUI(args);

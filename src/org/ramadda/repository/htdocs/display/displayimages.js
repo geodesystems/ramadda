@@ -409,17 +409,27 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 function RamaddaImagesDisplay(displayManager, id, properties) {
     const ID_GALLERY = "gallery";
-    const ID_NEXT = "next";
-    const ID_PREV = "prev";
     const ID_IMAGES = "images";
+    if(!Utils.isDefined(properties["showRecordPager"])) {
+	properties["showRecordPager"] = true;
+    }
+    if(!Utils.isDefined(properties["noun"])) {
+	properties["noun"] = "images";
+    }    
+    if(Utils.isDefined(properties["numberOfImages"])) {
+	properties["recordPagerNumber"] = properties["numberOfImages"];
+    }
+
+
     let myProps = [
 	{label:'Image Gallery Properties'},
 	{p:'imageField',ex:''},
+	{p:'urlPrefix'},
+	{p:'template',ex:''},
 	{p:'labelFields',ex:''},
 	{p:'topLabelTemplate',ex:''},	
 	{p:'bottomLabelTemplate',ex:''},	
 	{p:'tooltipFields',ex:''},
-	{p:'numberOfImages',ex:'100'},	
 	{p:'includeBlanks',ex:'true'},
 	{p:'blockWidth',ex:'150'},
 	{p:'imageWidth',ex:'150'},
@@ -431,14 +441,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'minHeightGallery',ex:150},
 	{p:'maxHeightGallery',ex:150},	
 	{p:'columns',ex:'5'},
-	{p:'noun',ex:'images'},
     ];
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-	startIndex:0,
 	dataFilterChanged: function() {
-	    this.startIndex=0;
 	    this.updateUI();
 	},
         handleEventRecordSelection: function(source, args) {
@@ -450,29 +457,46 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {
-            let records = this.filterData();
-            if(!records) return;
 	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
-	    let imageField = this.getFieldById(null, this.getProperty("imageField"));
+	    let imageField = null;
+            let records = this.filterData(null,null,{recordOk:record=>{
+		if(imageField == null) imageField = this.getFieldById(null, this.getProperty("imageField"));
+		if(!imageField) {
+		    imageField = this.getFieldByType(null,"image");
+		}
+		if(!imageField) {
+		    return false;
+		}
+		return true;
+		let image = record.getValue(imageField.getIndex());
+		if(!Utils.stringDefined(image) && !includeBlanks) {
+		    return false;
+		}
+		return true;
+	    }});
+            if(!records) return;
+
 	    if(!imageField) {
-		imageField = this.getFieldByType(null,"image");
+		this.setDisplayMessage("No image field in data");
+		return false;
 	    }
+
+	    let urlPrefix = this.getUrlPrefix();
 	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    let tooltipClick = this.getProperty("tooltipClick");
             let pointData = this.getData();
             let fields = pointData.getRecordFields();
 
             let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields", null, true));
-            let topLabelTemplate = this.getPropertyTopLabelTemplate();
+            let template = this.getTemplate();
+            let topLabelTemplate = this.getTopLabelTemplate();
             let bottomLabelTemplate = this.getPropertyBottomLabelTemplate();	    
             let tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields", null, true));
-	    if(!imageField) {
-		this.setDisplayMessage("No image field in data");
-		return;
-	    }
+
+
+
 	    let decorate = this.getPropertyDecorate(true);
 	    let columns = +this.getPropertyColumns(0);
-	    let number = +this.getPropertyNumberOfImages(50);
 	    let colorBy = this.getColorByInfo(records);
 	    let width = this.getPropertyImageWidth();
 	    let blockWidth = this.getBlockWidth("200px");	    
@@ -501,17 +525,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    baseStyle+=HU.css(WIDTH,width);
 	    }
 	    baseStyle+=this.getProperty("blockStyle","");
-	    if(this.startIndex<0) this.startIndex=0;
-	    if(this.startIndex>records.length) this.startIndex=records.length-number;
 	    let cnt = 1;
-            for (let rowIdx = this.startIndex; rowIdx < records.length; rowIdx++) {
-		let record = records[rowIdx];
+	    records.forEach((record,rowIdx)=>{
                 let row = this.getDataValues(record);
 		let image = record.getValue(imageField.getIndex());
-		if(image=="" && !includeBlanks) {
-		    continue;
-		}
-		if(cnt++>number) break;
+		if(urlPrefix) image = urlPrefix+image;
 		displayedRecords.push(record);
 		this.idToRecord[record.getId()] = record;
 		let topLabel = null;
@@ -556,15 +574,26 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    style+=HU.css(BACKGROUND,c);
 		}
 
-		style+=HU.css("vertical-align","top","width",blockWidth);
-		if(doPopup) {
-		    img = HU.href(image,img,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
-		} else if(urlField&& !tooltipClick) {
-		    img = HU.href(urlField.getValue(record),img,["target","_target"]);
+		let recordContents;
+		let block;
+		if(template) {
+		    let row = this.getDataValues(record);
+		    block = recordContents= this.applyRecordTemplate(record, row,fields,template);
+		    style+=HU.css("text-align","left");
+		} else {
+		    style+=HU.css("vertical-align","top","width",blockWidth);
+		    if(doPopup) {
+			img = HU.href(image,img,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
+		    } else if(urlField&& !tooltipClick) {
+			img = HU.href(urlField.getValue(record),img,["target","_target"]);
+		    }
+		    recordContents = HU.div([CLASS,class2], topLbl + img + lbl);
 		}
-		let block = 
+
+
+		block = 
 		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
-			   HU.div([CLASS,class2], topLbl + img + lbl));
+			   recordContents);
 		if(columns) {
 		    if(++columnCnt>=columns) {
 			columnCnt=0;
@@ -574,7 +603,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		} else {
 		    contents += block;
 		}
-	    }
+	    });
 	    if(columns) {
 		contents = "<table border=0 width=100%><tr valign=top>";
 		for(let col=0;true;col++) {
@@ -585,26 +614,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    } else {
 	    }
 
-	    let header = "";
-	    if(this.startIndex>0) {
-		header += HU.span([ID,this.domId(ID_PREV)],"Previous")+" ";
-	    }
-	    if(this.startIndex+number<records.length) {
-		header += HU.span([ID,this.domId(ID_NEXT)],"Next") +" ";
-	    }
-	    cnt--;
-	    if(number<records.length) {
-		header += "Showing " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
-		header += " of " + records.length +" " + this.getNoun("images");
-	    }
-
-	    if(header!="") {
-		header = HU.div([STYLE,HU.css('margin-right','10px', "display","inline-block")],header);
-		this.jq(ID_HEADER2_PREFIX).html(header);
-		this.jq(ID_HEADER2).css("text-align","left");
-	    }
-	    header ="";
-
 	    if(this.getPropertyMinHeightGallery() || this.getPropertyMaxHeightGallery()) {
 		let css = "";
 		if(this.getPropertyMinHeightGallery()) css+=HU.css("min-height",HU.getDimension(this.getPropertyMinHeightGallery()));
@@ -613,7 +622,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    }
 
 	    contents  = HU.div([CLASS,"ramadda-grid"],contents);
-            this.setContents(header + contents);
+            this.setContents(contents);
 	    let blocks = this.find(".display-images-block");
 	    let _this = this;
 	    blocks.mouseenter(function() {
@@ -643,14 +652,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                     }});
 		
 	    }
-	    this.jq(ID_PREV).button().click(()=>{
-		this.startIndex-=number;
-		this.updateUI();
-	    });
-	    this.jq(ID_NEXT).button().click(()=>{
-		this.startIndex+=number;
-		this.updateUI();
-	    });
 
 	    if(this.getProperty("propagateEventRecordList",false)) {
 		this.getDisplayManager().notifyEvent(DisplayEvent.recordList, this, {
@@ -888,8 +889,6 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 
 function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
-    const ID_PREV = "prev";
-    const ID_NEXT = "next";
 //    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
     let myProps = [

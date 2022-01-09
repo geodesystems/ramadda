@@ -1279,7 +1279,7 @@ function BoundsFilter(display, properties) {
 function RecordFilter(display,filterFieldId, properties) {
     const ID_TEXT = "_text_";
     this.id = filterFieldId;
-    this.isText = this.id == ID_TEXT;
+    this.isText = (this.id == ID_TEXT);
     let fields;
     if(this.isText) {
 	fields = display.getFieldsByType(null, "string");
@@ -1299,7 +1299,8 @@ function RecordFilter(display,filterFieldId, properties) {
     }
     let getAttr = (suffix,dflt)=>{
 	let key = this.getId()+"." + suffix;
-	let v = display.getProperty(key,dflt);
+	let v = display.getProperty(key);
+	if(!Utils.isDefined(v)) v = display.getProperty(suffix,dflt);
 	return v;
     };
     let label = "";
@@ -1314,15 +1315,15 @@ function RecordFilter(display,filterFieldId, properties) {
 	hideFilterWidget: display.getProperty("hideFilterWidget",false, true),
 	displayType:getAttr("filterDisplay","menu"),
 	label:   label,
-	suffix:  getAttr("filterSuffix",""),
 	depends: getAttr("filterDepends",null),
 	dateIds: [],
-	prefix:display.getProperty(this.getId() +".filterPrefix"),
-	suffix:display.getProperty(this.getId() +".filterSuffix"),
+	prefix:display.getProperty(this.getId() +".filterPrefix",""),
+	suffix:display.getProperty(this.getId() +".filterSuffix",""),
 	startsWith:display.getProperty(this.getId() +".filterStartsWith",false),
 	ops:Utils.split(display.getProperty(this.getId() +".filterOps"),";",true,true),
 	labelField:display.getFieldById(null,display.getProperty(this.getId() +".labelField"))
     });
+
 
 
     if(this.ops) {
@@ -1363,9 +1364,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	},
 	isFieldNumeric:function() {
+	    if(this.isText) return false;
 	    return this.getField().isNumeric();
 	},
 	isFieldEnumeration: function() {
+	    if(this.isText) return false;
 	    return this.getField().isFieldEnumeration();
 	},
 	isFieldMultiEnumeration: function() {
@@ -1398,8 +1401,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!this.isEnabled()) {
 		return;
 	    }
-	    //	    if (prefix) pattern = prefix + value;
-	    //	    if (suffix) pattern = value + suffix;
 	    let value=null;
 	    let _values =[];
 	    let values=null;
@@ -1775,7 +1776,6 @@ function RecordFilter(display,filterFieldId, properties) {
             let widget;
 	    let widgetId = this.widgetId = this.getFilterId(this.getId());
 	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
-	    let suffix =   this.getProperty(this.getId()+".filterSuffix","");
 
             if(this.ops) {
 		let labels =[];
@@ -1790,6 +1790,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		widget = HU.select("",attrs,enums,selected);
 	    } else   if(this.isFieldEnumeration()) {
+
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
@@ -1809,6 +1810,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let buttons = "";
 		    let colorMap = Utils.parseMap(this.getProperty(this.getId() +".filterColorByMap"));
 		    let useImage = this.displayType == "image";
+		    let useButton = this.displayType == "button";
 		    let imageAttrs = [];
 		    let imageMap = Utils.getNameValue(this.getProperty(this.getId() +".filterImages"));
 		    if(useImage) {
@@ -1845,9 +1847,12 @@ function RecordFilter(display,filterFieldId, properties) {
 			let style = this.getProperty(this.getId() +".filterItemStyle","");
 			if(color) {
 			    style += " background-color:" + color +"; ";
+			} else {
+			    style += " border:1px solid #ccc; "
 			}
 			
-			let clazz = " display-filter-item display-filter-item-" + this.displayType +" ";
+			let clazz = " ramadda-hoverable ramadda-clickable display-filter-item display-filter-item-" + this.displayType +" ";
+			if(useButton) clazz+=" ramadda-button ";
 			if(v == dfltValue) {
 			    clazz+=  " display-filter-item-" + this.displayType +"-selected ";
 			}
@@ -1870,11 +1875,13 @@ function RecordFilter(display,filterFieldId, properties) {
 			buttons+="\n";
 		    }
 
+
 		    if(useImage && this.getProperty(this.getId() +".filterShowButtonsLabel")) {
 			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
 		    }
-		    bottom[0]+= HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
-					       this.getId()], buttons);
+		    bottom[0]+= this.prefix + 
+			HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
+				       this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
 		} else if(this.getProperty(this.getId() +".filterCheckbox")) {
@@ -2002,6 +2009,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    attrs.push(widgetLabel);
 		}
 
+		attrs.push("istext",this.isText);
                 widget =HtmlUtils.input("",dfltValue,attrs);
 		let values=fieldMap[this.getId()].values;
 		let seen = {};
@@ -2019,19 +2027,23 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(!this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
 		    widgetLabel = "";
 		}
-		else
-		    widgetLabel = widgetLabel+": ";
+		else {
+		    if(!Utils.stringDefined(widgetLabel)) widgetLabel = "";
+		    else widgetLabel = widgetLabel+": ";
+		}
 		let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
 		if(labelVertical) widgetLabel = widgetLabel+"<br>";
 		if(vertical) {
-		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+suffix);
+		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
-		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+suffix);
+		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+this.suffix);
 		}
 	    }
 	    if(!vertical)
 		widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
+	    if(this.prefix) widget = this.prefix+widget;
+
 	    return widget;
 	},
 	getEnums: function(records) {
