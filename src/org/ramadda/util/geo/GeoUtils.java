@@ -137,7 +137,7 @@ public class GeoUtils {
             return;
         }
         if (googleKey == null) {
-            setGoogleKey(System.getenv("GOOGLE_API_KEY"));
+	    setGoogleKey(System.getenv("GOOGLE_API_KEY"));
         }
         if (geocodeioKey == null) {
             setGeocodeioKey(System.getenv("GEOCIDEIO_API_KEY"));
@@ -536,6 +536,7 @@ public class GeoUtils {
             Bounds bounds) {
         try {
             Place place = getLocationFromAddressInner(address, bounds, false);
+	    //	    System.err.println("PLACE:"  + place);
             if (place != null) {
                 if (Double.isNaN(place.getLatitude())) {
                     return null;
@@ -740,7 +741,7 @@ public class GeoUtils {
             Bounds bounds, boolean debug)
             throws Exception {
 
-        //      debug = true;
+	debug = true;
         if ( !Utils.stringDefined(address)) {
             return null;
         }
@@ -788,9 +789,20 @@ public class GeoUtils {
             address  = address.substring("city:".length()).trim();
             _address = _address.substring("city:".length()).trim();
             doCity   = true;
+	    //For when there is no city, just a state
+	    if(address.startsWith(",")) {
+		doState = true;
+		doCity = false;
+		address=address.substring(1).trim();
+		_address=_address.substring(1).trim();		
+	    }
         }
         if (address.length() == 0) {
             return null;
+        }
+
+        if (debug) {
+            System.err.println("address:" + address);
         }
 
         GeoResource resource = null;
@@ -868,7 +880,7 @@ public class GeoUtils {
 
                 if (state != null) {
                     place = GeoResource.RESOURCE_CITIES.getPlace(city + ","
-                            + state);
+								 + state);
                     if (place != null) {
                         return place;
                     }
@@ -914,13 +926,11 @@ public class GeoUtils {
                     return place;
                 }
                 if (debug) {
-                    System.out.println("try 2:" + county + "," + state
-                                       + " place:" + place);
+		    //                    System.out.println("try 2:" + county + "," + state  + " place:" + place);
                 }
                 for (String suffix : countySuffixes) {
                     if (debug) {
-                        System.out.println("suffix: " + county + " " + suffix
-                                           + "," + state);
+                        //System.out.println("suffix: " + county + " " + suffix + "," + state);
                     }
                     place = resource.getPlace(county + " " + suffix + ","
                             + state);
@@ -947,8 +957,10 @@ public class GeoUtils {
         if (doCountry) {
             resource = GeoResource.RESOURCE_COUNTRIES;
             place    = resource.getPlace(address);
-
-            return place;
+	    if(place!=null) {
+		return place;
+	    }
+	    //            return place;
         }
 
         if (resource != null) {
@@ -956,11 +968,12 @@ public class GeoUtils {
             if (place == null) {
                 if ( !noPlaceSet.contains(address)) {
                     noPlaceSet.add(address);
-                    System.err.println("no place:" + address);
+		    //                    System.err.println("no place:" + address);
                 }
             }
-
-            return place;
+	    if(place!=null) {
+		return place;
+	    }
         }
 
 
@@ -968,9 +981,7 @@ public class GeoUtils {
             return place;
         }
 
-        if (debug) {
-            System.err.println("address:" + address);
-        }
+
         initKeys();
         //geocodeioKey = null;
         //hereKey = null;
@@ -1001,14 +1012,13 @@ public class GeoUtils {
         }
 
         if (addressToLocation != null) {
-            place = addressToLocation.get(address);
-        }
-        if (place != null) {
-            if (debug) {
-                System.out.println("found in cached address list");
-            }
-
-            return place;
+	    place = addressToLocation.get(address);
+	    if (place != null) {
+		if (debug) {
+		    System.out.println("found in cached address list");
+		}
+		return place;
+	    }
         }
 
         if ((address.length() == 0) || address.equals(",")) {
