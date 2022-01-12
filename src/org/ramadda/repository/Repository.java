@@ -4268,11 +4268,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected Result getHtdocsFile(Request request) throws Exception {
+	boolean debug = false;
         request.setCORSHeaderOnResponse();
         String path       = request.getRequestPath();
-	System.err.println("\n* path 1:" + path);
-        path       = path.replaceAll("//", "/");
-	System.err.println("\tpath clean:" + path);
+	if(debug)
+	    System.err.println("\n* path 1:" + path);
+	//Right off the bat exclude any path with .. as, if it is a non-hacker request from a browser then
+	//there should never be a relative path element
+        path       = path.replaceAll("//+", "/");
+	if(path.indexOf("..")>=0) {
+	    if(debug) System.err.println("\t404:" + path);
+	    return make404(request);
+	}
+	if(path.endsWith("/")) {
+	    if(debug) System.err.println("\t404:" + path);
+	    return make404(request);
+	}
+	//This should never happen
+	if(path.equals("")) {
+	    if(debug) System.err.println("\t404:" + path);
+	    return make404(request);
+	}
+
+	if(debug)
+	    System.err.println("\tpath clean:" + path);
         String urlBase    = getUrlBase();
 	if (path.startsWith(urlBase)) {
             int length = urlBase.length();
@@ -4315,7 +4334,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else {
                 fullPath = root + path;
             }
-	    System.err.println("\ttrying path:" + fullPath);
+	    if(debug)
+		System.err.println("\ttrying path:" + fullPath);
             try {
 		//		File file = new File(fullPath);
 		//		System.err.println("\tFile:" + file.exists()+" " + file.getParentFile());
@@ -4324,7 +4344,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		//		}
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
-		System.err.println("\tgot it:" + fullPath);
+		if(debug)
+		    System.err.println("\tgot it:" + fullPath);
                 htdocsPathCache.put(path, fullPath);
                 if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
@@ -4374,7 +4395,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         String pluginPath = getPluginManager().getHtdocsMap().get(path);
         if (pluginPath != null) {
-	    System.err.println("\tpluginPath:" + pluginPath);
+	    if(debug)
+		System.err.println("\tpluginPath:" + pluginPath);
             //We can go directly here instead of thru the storagemanager which checks the white list
             InputStream inputStream = IOUtil.getInputStream(pluginPath,
 							    getClass());
@@ -4473,25 +4495,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //                                          entry.getId()));
         }
 
+	if(debug)
+	    System.err.println("\t404");
+	return make404(request);
+    }
 
+
+    private  Result make404(Request request) throws Exception {
         String userAgent = request.getHeaderArg(HtmlUtils.HTTP_USER_AGENT);
         if (userAgent == null) {
             userAgent = "Unknown";
         }
-
-	System.err.println("\t404");
         getLogManager().log(request,
                             "Unknown request:" + request.getUrl()
                             + " user-agent:" + userAgent + " ip:"
                             + request.getIp());
 
-        Result result = makeErrorResult(request, "Unknown request " + path);
+        Result result = makeErrorResult(request, "Unknown request " + request.getRequestPath());
         result.setResponseCode(Result.RESPONSE_NOTFOUND);
 
         return result;
 
 
     }
+
 
     /**
      * _more_

@@ -2293,9 +2293,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         //Path can be a file, a URL, a file URL or a system resource
         File f = new File(path);
         if (f.exists()) {
-	    System.err.println("checkPath:" + f);
             checkReadFile(f);
-	    System.err.println("checkPath:" + f);
             return;
         }
 
@@ -2457,7 +2455,6 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public InputStream getInputStream(String path) throws Exception {
         checkPath(path);
-
         return Utils.getInputStream(path, getClass());
     }
 
