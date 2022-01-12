@@ -5,8 +5,10 @@ MYDIR=`dirname $0`
 #This assumes the directory structure:
 
 
+export RAMADDA_BASE=/mnt/ramadda
+export RAMADDA_HOME="${RAMADDA_BASE}/home"
 export ANT_OPTS="-Xmx1500m"
-export ANT_HOME="/home/ec2-user/ant"
+export ANT_HOME="${RAMADDA_HOME}/ant"
 export PATH=${ANT_HOME}/bin:$PATH:$HOME/bin
 
 #the github source tree
@@ -33,6 +35,7 @@ GRANDPARENT=`dirname $PARENT`
 GREATPARENT=`dirname $GRANDPARENT`
 BASEDIR=${GREATPARENT}
 echo "BASE=${BASEDIR}"
+
 
 RUNTIME_DIR=${BASEDIR}/runtime
 SOURCE=${BASEDIR}/source/ramadda
