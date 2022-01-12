@@ -314,7 +314,14 @@ fi
 echo "Installing base packages - wget, unzip & java"
 yum install -y wget > /dev/null
 yum install -y unzip > /dev/null
-yum install -y java > /dev/null
+yum install -y emacs > /dev/null
+yum install -y git > /dev/null
+
+#java
+yum install java-1.8.0-openjdk-devel
+sudo /usr/sbin/alternatives --config java
+sudo /usr/sbin/alternatives --config javac
+#yum install -y java > /dev/null
 
 echo "Fixing the localhost name problem"
 sed -e 's/HOSTNAME=localhost.localdomain/HOSTNAME=ramadda.localdomain/g' /etc/sysconfig/network> dummy.network

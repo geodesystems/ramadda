@@ -1353,7 +1353,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return _more_
      */
     public boolean isProcessFile(File file) {
-        return IOUtil.isADescendent(getProcessDir(), file);
+        return IO.isADescendent(getProcessDir(), file);
 
     }
 
@@ -2145,7 +2145,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public boolean isInDownloadArea(File file) {
         for (File dir : okToReadFromDirs) {
-            if (IOUtil.isADescendent(dir, file)) {
+            if (IO.isADescendent(dir, file)) {
                 return true;
             }
         }
@@ -2181,15 +2181,14 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public boolean isLocalFileOk(File file) {
         boolean ok = false;
-        //        System.err.println ("StorageManager: isLocalFileOk:" +file);
+	//	    System.err.println ("      isLocalFileOk:" +parent +" " + child);
         for (File parent : getRepository().getLocalFilePaths()) {
-            //            System.err.println ("      Checking:" +parent);
-            if (IOUtil.isADescendent(parent, file)) {
-                //                System.err.println ("      OK");
+	    //	    System.err.println ("      Checking:" +parent);
+            if (IO.isADescendent(parent, file)) {
+		//System.err.println ("      OK");
                 return true;
             }
         }
-
         //        System.err.println ("      NOT OK");
         return false;
     }
@@ -2203,8 +2202,8 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     private void throwBadFile(File f) {
         throw new IllegalArgumentException(
-            "The file:" + f
-            + " is not under one of the allowable file system directories", null);
+					   "The file:" + f.getName()
+					   + " does not exist or cannot be read", null);
     }
 
     /**
@@ -2218,11 +2217,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         if (getRepository().isReadOnly()) {
             throw new IllegalArgumentException("Unable to write to file");
         }
-        if (IOUtil.isADescendent(getRepositoryDir(), file)) {
+        if (IO.isADescendent(getRepositoryDir(), file)) {
             return file;
         }
         for (File dir : okToWriteToDirs) {
-            if (IOUtil.isADescendent(dir, file)) {
+            if (IO.isADescendent(dir, file)) {
                 return file;
             }
         }
@@ -2262,7 +2261,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
 
         //Check if its in the storage dir
-        if (IOUtil.isADescendent(getRepositoryDir(), file)) {
+        if (IO.isADescendent(getRepositoryDir(), file)) {
             return file;
         }
 
@@ -2294,8 +2293,9 @@ public class StorageManager extends RepositoryManager implements PointFile
         //Path can be a file, a URL, a file URL or a system resource
         File f = new File(path);
         if (f.exists()) {
+	    System.err.println("checkPath:" + f);
             checkReadFile(f);
-
+	    System.err.println("checkPath:" + f);
             return;
         }
 
@@ -2535,7 +2535,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public boolean shouldCrypt(File file) {
         //We only crypt files stored under the RAMADDA home dir
-        if (IOUtil.isADescendent(getRepositoryDir(), file)) {
+        if (IO.isADescendent(getRepositoryDir(), file)) {
             return true;
         }
 

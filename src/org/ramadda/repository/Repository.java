@@ -4269,7 +4269,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getHtdocsFile(Request request) throws Exception {
         request.setCORSHeaderOnResponse();
-        String path       = request.getRequestPath().replaceAll("//", "/");
+        String path       = request.getRequestPath();
+	System.err.println("\n* path 1:" + path);
+        path       = path.replaceAll("//", "/");
+	System.err.println("\tpath clean:" + path);
         String urlBase    = getUrlBase();
 	if (path.startsWith(urlBase)) {
             int length = urlBase.length();
@@ -4290,9 +4293,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (path.endsWith("asm.data")) {
             mimeType = "application/octet-stream";
         }
-
-
-
 
         boolean decorate = true;
         if (path.startsWith("/raw")) {
@@ -4315,9 +4315,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else {
                 fullPath = root + path;
             }
+	    System.err.println("\ttrying path:" + fullPath);
             try {
+		//		File file = new File(fullPath);
+		//		System.err.println("\tFile:" + file.exists()+" " + file.getParentFile());
+		//		if(file.exists()) {
+		//		    getStorageManager().checkLocalFile(file);
+		//		}
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
+		System.err.println("\tgot it:" + fullPath);
                 htdocsPathCache.put(path, fullPath);
                 if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
@@ -4367,6 +4374,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         String pluginPath = getPluginManager().getHtdocsMap().get(path);
         if (pluginPath != null) {
+	    System.err.println("\tpluginPath:" + pluginPath);
             //We can go directly here instead of thru the storagemanager which checks the white list
             InputStream inputStream = IOUtil.getInputStream(pluginPath,
 							    getClass());
@@ -4471,6 +4479,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             userAgent = "Unknown";
         }
 
+	System.err.println("\t404");
         getLogManager().log(request,
                             "Unknown request:" + request.getUrl()
                             + " user-agent:" + userAgent + " ip:"

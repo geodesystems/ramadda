@@ -31,6 +31,7 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedList;
 
@@ -7391,7 +7392,7 @@ public class EntryManager extends RepositoryManager {
         String resourceType;
 
         //Is it a ramadda managed file?
-        if (IOUtil.isADescendent(getStorageManager().getRepositoryDir(),
+        if (IO.isADescendent(getStorageManager().getRepositoryDir(),
                                  newFile)) {
             resourceType = Resource.TYPE_STOREDFILE;
         } else {

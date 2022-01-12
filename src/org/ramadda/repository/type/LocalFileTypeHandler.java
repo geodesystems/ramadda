@@ -24,6 +24,8 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 
+import org.ramadda.util.IO;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -148,7 +150,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        if ( !IOUtil.isADescendent(baseFile, file)) {
+        if ( !IO.isADescendent(baseFile, file)) {
             throw new IllegalArgumentException("Bad file path:" + subPath);
         }
 
@@ -663,7 +665,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        if ( !IOUtil.isADescendent(localFileInfo.getRootDir(), file)) {
+        if ( !IO.isADescendent(localFileInfo.getRootDir(), file)) {
             throw new IllegalArgumentException("Bad file path:" + entryNames);
         }
         String subId =

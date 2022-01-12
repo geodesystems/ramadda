@@ -18,6 +18,7 @@ package org.ramadda.service;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.IO;
 
 import ucar.unidata.util.IOUtil;
 
@@ -68,7 +69,7 @@ public class ServiceUtil {
         String task = commands.get(1);
         if (task.equals(COMMAND_MV)) {
             File entryFile = new File(commands.get(2));
-            if ( !IOUtil.isADescendent(input.getProcessDir(), entryFile)) {
+            if ( !IO.isADescendent(input.getProcessDir(), entryFile)) {
                 throw new IllegalArgumentException(
                     "Cannot move the entry file. Can only move temp files");
             }
