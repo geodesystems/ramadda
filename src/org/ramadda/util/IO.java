@@ -98,7 +98,7 @@ public class IO {
         File f = new File(file);
         if (okToWriteToDirs.size() > 0) {
             for (File dir : okToWriteToDirs) {
-                if (IOUtil.isADescendent(dir, f)) {
+                if (isADescendent(dir, f)) {
                     return true;
                 }
             }
@@ -121,7 +121,7 @@ public class IO {
         if (okToReadFromDirs.size() > 0) {
             boolean ok = false;
             for (File dir : okToReadFromDirs) {
-                if (IOUtil.isADescendent(dir, f)) {
+                if (isADescendent(dir, f)) {
                     ok = true;
                 }
             }
@@ -614,6 +614,7 @@ public class IO {
         if (isUrl) {
             return readUrl(contentName);
         }
+
         return IOUtil.readContents(contentName, dflt);
     }
 
@@ -765,7 +766,9 @@ public class IO {
         connection.setRequestProperty("charset", "utf-8");
         for (int i = 0; i < args.length; i += 2) {
             //      System.err.println(args[i]+":" + args[i+1]);
-	    if(args[i+1]==null)continue;
+            if (args[i + 1] == null) {
+                continue;
+            }
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         if (body != null) {
@@ -784,12 +787,13 @@ public class IO {
                                + "\nURL:" + url + "\nreturn code:"
                                + connection.getResponseCode() + "\nBody:"
                                + body);
-	    String error = readError(connection);
+            String error = readError(connection);
             System.err.println(error);
             System.err.println(connection.getHeaderFields());
-	    exc.printStackTrace();
-	    throw new RuntimeException("Error reading URL:" + error);
-	    //            throw exc;
+            exc.printStackTrace();
+
+            throw new RuntimeException("Error reading URL:" + error);
+            //            throw exc;
             //            System.err.println(connection.getContent());
         }
     }
@@ -1084,34 +1088,37 @@ public class IO {
      *
      * @param files files
      * @param out output
+     * @param rowSkip _more_
      *
      * @throws Exception On badness
      */
-    public static void append(List<String> files, OutputStream out, int rowSkip)
+    public static void append(List<String> files, OutputStream out,
+                              int rowSkip)
             throws Exception {
-        PrintWriter          writer    = new PrintWriter(out);
-        String               delimiter = ",";
-        for (int i=0;i<files.size();i++) {
-	    BufferedReader br = new BufferedReader(
-						   new InputStreamReader(new FileInputStream(files.get(i))));
-	    int skip = rowSkip;
-	    while(true) {
-		String  line = br.readLine();
-		if (line == null) {
-		    break;
-		}
-		if(i>0) {
-		    if(skip-->0) {
-			continue;
-		    } 
-		}
+        PrintWriter writer    = new PrintWriter(out);
+        String      delimiter = ",";
+        for (int i = 0; i < files.size(); i++) {
+            BufferedReader br = new BufferedReader(
+                                    new InputStreamReader(
+                                        new FileInputStream(files.get(i))));
+            int skip = rowSkip;
+            while (true) {
+                String line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                if (i > 0) {
+                    if (skip-- > 0) {
+                        continue;
+                    }
+                }
                 writer.print(line);
-		writer.print("\n");
+                writer.print("\n");
                 writer.flush();
             }
         }
     }
-    
+
 
     /**
      * _more_
@@ -1160,6 +1167,47 @@ public class IO {
         }
 
         return !haveDescendentFiles;
+    }
+
+
+    /**
+     *
+     * @param parent _more_
+     * @param child _more_
+      * @return _more_
+     */
+    public static boolean isADescendent(File parent, File child) {
+        if ((parent == null) || (child == null)) {
+            return false;
+        }
+
+        try {
+	    //Convert this to get of "..", etc
+            child = new File(child.getCanonicalPath());
+
+            return isADescendentInner(parent, child);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+
+    }
+
+    /**
+     *
+     * @param parent _more_
+     * @param child _more_
+      * @return _more_
+     */
+    private static boolean isADescendentInner(File parent, File child) {
+        if ((parent == null) || (child == null)) {
+            return false;
+        }
+        if (parent.equals(child)) {
+            return true;
+        }
+        File newParent = child.getParentFile();
+
+        return isADescendentInner(parent, newParent);
     }
 
 
@@ -1346,22 +1394,5 @@ public class IO {
             }
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
