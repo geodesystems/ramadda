@@ -1183,10 +1183,8 @@ public class IO {
 
         try {
 	    //Convert this to get of "..", etc
-	    System.err.println("isDescendent:" + parent +" child:" + child);
             parent = new File(parent.getCanonicalPath());
             child = new File(child.getCanonicalPath());
-	    System.err.println("\tafter:" + parent +" child:" + child);
             return isADescendentInner(parent, child);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
