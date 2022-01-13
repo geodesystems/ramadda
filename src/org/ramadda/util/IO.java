@@ -1184,6 +1184,7 @@ public class IO {
         try {
 	    //Convert this to get of "..", etc
 	    System.err.println("isDescendent:" + parent +" child:" + child);
+            parent = new File(parent.getCanonicalPath());
             child = new File(child.getCanonicalPath());
 	    System.err.println("\tafter:" + parent +" child:" + child);
             return isADescendentInner(parent, child);
@@ -1203,9 +1204,9 @@ public class IO {
         if ((parent == null) || (child == null)) {
             return false;
         }
-	System.err.println("\tparent: " + parent +" child:" + child);
+	//	System.err.println("\tparent: " + parent +" child:" + child);
         if (parent.equals(child)) {
-	    System.err.println("\tparent equals child");
+	    //	    System.err.println("\tparent equals child");
             return true;
         }
         File newParent = child.getParentFile();
@@ -1223,6 +1224,14 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+	if(true) {
+	    File f = new File("/Users/jeffmc/test2");
+	    System.err.println(f.getCanonicalPath());
+	    return;
+
+	}
+
 
         final PipedOutputStream pos       = new PipedOutputStream();
         final PipedInputStream  pis       = new PipedInputStream(pos);
