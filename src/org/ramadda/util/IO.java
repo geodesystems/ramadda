@@ -1183,8 +1183,9 @@ public class IO {
 
         try {
 	    //Convert this to get of "..", etc
+	    System.err.println("isDescendent:" + parent +" child:" + child);
             child = new File(child.getCanonicalPath());
-
+	    System.err.println("\tafter:" + parent +" child:" + child);
             return isADescendentInner(parent, child);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -1202,7 +1203,9 @@ public class IO {
         if ((parent == null) || (child == null)) {
             return false;
         }
+	System.err.println("\tparent: " + parent +" child:" + child);
         if (parent.equals(child)) {
+	    System.err.println("\tparent equals child");
             return true;
         }
         File newParent = child.getParentFile();
