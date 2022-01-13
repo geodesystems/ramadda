@@ -6,10 +6,10 @@ MYDIR=`dirname $0`
 
 
 export RAMADDA_BASE=/mnt/ramadda
-export RAMADDA_HOME="${RAMADDA_BASE}/home"
 export ANT_OPTS="-Xmx1500m"
-export ANT_HOME="${RAMADDA_HOME}/ant"
+export ANT_HOME="${RAMADDA_BASE}/home/ant"
 export PATH=${ANT_HOME}/bin:$PATH:$HOME/bin
+
 
 #the github source tree
 #/some/dir/source/ramadda  
