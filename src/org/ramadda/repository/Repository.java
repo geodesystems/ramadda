@@ -4275,7 +4275,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    System.err.println("\n* path 1:" + path);
 	//Right off the bat exclude any path with .. as, if it is a non-hacker request from a browser then
 	//there should never be a relative path element
-        path       = path.replaceAll("//+", "/");
+        path       = path.replaceAll("//+", "/").replaceAll("/+$","");
+	System.err.println(path);
 	if(path.indexOf("..")>=0) {
 	    if(debug) System.err.println("\t404:" + path);
 	    return make404(request);
