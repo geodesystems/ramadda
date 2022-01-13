@@ -3956,6 +3956,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    public boolean initWikiEditor(Request request, Appendable sb) throws Exception {
+        if (request.getExtraProperty("didace") == null) {
+            request.putExtraProperty("didace", "true");
+            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/wiki.js"));
+            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.js"));
+	    return true;
+	}
+	return false;
+    }
+	
+
+
     public String embedJson(Request request, String json) throws Exception {
         StringBuilder sb = new StringBuilder();
 	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
@@ -7162,10 +7174,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
 
-        boolean isMap = displayType.equals("map") || displayType.equals("editablemap") || displayType.equals("entrylist") ||
-	    displayType.equals("notebook");	
+        boolean isNotebook =   displayType.equals("notebook");	
+
+
+        boolean isMap = displayType.equals("map") || displayType.equals("editablemap") || displayType.equals("entrylist") || isNotebook;
 	//	System.err.println("type:" + displayType +" map:" + isMap);
         this.addDisplayImports(request, sb, isMap);
+
+	if(isNotebook) {
+	    initWikiEditor(request,  sb);
+	}
+
+
         List<String> topProps = new ArrayList<String>();
         if (propList == null) {
             propList = new ArrayList<String>();
