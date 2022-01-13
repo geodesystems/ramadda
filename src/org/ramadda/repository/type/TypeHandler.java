@@ -2401,7 +2401,7 @@ public class TypeHandler extends RepositoryManager {
             .getString(Tables.ENTRIES
                 .COL_NODOT_DESCRIPTION), parent, user, resource, results
                     .getString(Tables.ENTRIES
-                        .COL_NODOT_DATATYPE), order, createDate.getTime(), dbm
+			       .COL_NODOT_DATATYPE), order, createDate.getTime(), dbm
                             .getDate(results, Tables.ENTRIES
                                 .COL_NODOT_CHANGEDATE, createDate)
                                     .getTime(), dbm
@@ -5127,10 +5127,8 @@ public class TypeHandler extends RepositoryManager {
         } else {
             sb.append(textWidget);
         }
-        if (request.getExtraProperty("didace") == null) {
-            request.putExtraProperty("didace", "true");
-            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/wiki.js"));
-            HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.js"));
+
+	if(getWikiManager().initWikiEditor(request,  sb)) {
             if ((formInfo != null) && !readOnly) {
                 formInfo.appendExtraJS(
                     "HtmlUtil.handleWikiEditorSubmit();\n");
