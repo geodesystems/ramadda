@@ -1641,7 +1641,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	long t1 = System.currentTimeMillis();
         loadTypeHandlers();
 	long t2 = System.currentTimeMillis();
-	System.err.println("loadTypeHandlers:" + (t2-t1));
+	//System.err.println("loadTypeHandlers:" + (t2-t1));
         loadOutputHandlers();
         getApiManager().loadApi();
         getPageHandler().loadResources();
@@ -4276,7 +4276,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	//Right off the bat exclude any path with .. as, if it is a non-hacker request from a browser then
 	//there should never be a relative path element
         path       = path.replaceAll("//+", "/").replaceAll("/+$","");
-	System.err.println(path);
+	//System.err.println(path);
 	if(path.indexOf("..")>=0) {
 	    if(debug) System.err.println("\t404:" + path);
 	    return make404(request);
