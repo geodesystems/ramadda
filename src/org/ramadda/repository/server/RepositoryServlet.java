@@ -337,6 +337,15 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                                            lastModified.getTime());
                 }
 
+		//Some headers to tighten up security
+		response.setHeader("Referrer-Policy","no-referrer");
+		response.setHeader("X-Frame-Options", "SAMEORIGIN");
+		response.setHeader("X-Content-Type-Options", "nosniff");
+
+
+
+
+
                 if (repositoryResult.getCacheOk()) {
                     //                    response.setHeader("Cache-Control",  "public,max-age=259200");
                     response.setHeader("Expires", "Tue, 08 Jan 2028 07:41:19 GMT");
