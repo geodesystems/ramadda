@@ -1960,7 +1960,7 @@ public class TypeHandler extends RepositoryManager {
         File f = newEntry.getResource().getTheFile();
         //Check that it is a stored file
         File storageDir = new File(getStorageManager().getStorageDir());
-        if ( !IOUtil.isADescendent(storageDir, f)) {
+        if (!IO.isADescendent(storageDir, f)) {
             //      System.err.println("not in storage");
             return false;
         }
