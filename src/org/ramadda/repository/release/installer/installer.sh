@@ -5,144 +5,8 @@
 #
 
 
-OS_REDHAT="redhat"
-OS_AMAZON="amazon_linux"
-
-##For now only amazon linux is supported 
-os=$OS_AMAZON
-
-RAMADDA_DOWNLOAD="https://geodesystems.com/repository/release/latest/ramaddaserver.zip"
 INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-PARENT_DIR=`dirname $INSTALLER_DIR`
-YUM_ARG=""
-
-USER_DIR=$PARENT_DIR
-SERVICE_NAME="ramadda"
-SERVICE_DIR="/etc/rc.d/init.d"
-RAMADDA_INSTALL_DIR=${PARENT_DIR}/${SERVICE_NAME}
-SERVER_DIR=$RAMADDA_INSTALL_DIR/ramaddaserver
-SERVICE_SCRIPT=${SERVER_DIR}/ramaddaService.sh
-BASE_DIR=/mnt/ramadda
-RAMADDA_HOME_DIR=$BASE_DIR/repository
-MOUNT_DIR=""
-
-promptUser=1
-
-
-
-usage() {
-    echo "installer.sh -os redhat -y (assume yes installer) -help "
-    exit
-}
-
-header() {
-    local msg="$1"
-    printf "\n*** ${msg} ***\n";
-}
-
-
-while [ $# != 0 ]
-do
-    case $1 in 
-	-os)
-	    shift
-	    os=$1;
-	    ;;
-	-help)
-	    usage
-	    ;;
-	-y)
-	    promptUser=0
-	    YUM_ARG=--assumeyes
-	    ;;
-	*)
-	    echo "Unknown argument $1"
-	    usage
-	    ;;
-    esac
-    shift
-done
-
-#echo "target os: $os"
-
-if [ "$os" == "${OS_REDHAT}" ]; then
-    PG_SERVICE=postgresql-server
-    PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
-else
-    PG_SERVICE=postgresql
-    PG_INSTALL=postgresql-server
-fi
-
-PG_DIR=/var/lib/pgsql
-PG_DATA_DIR=${PG_DIR}/data
-PG_REAL_DIR="${BASE_DIR}/pgsql"
-
-
-
-yumInstall() {
-    local target="$1"
-    if [ "$YUM_ARG" == "" ]; then
-	yum install ${target}
-    else 
-	yum install ${YUM_ARG} ${target}
-    fi
-}
-
-askYesNo() {
-    local msg="$1"
-    local dflt="$2"
-
-    if [ $promptUser == 0 ]; then
-	response="$dflt";
-	return;
-    fi
-
-    read -p "${msg}?  [y|A(all)|n]: " response
-    if [ "$response" == "A" ]; then
-	promptUser=0;
-	response="$dflt";
-	return;
-    fi
-
-    case $response in y|Y) 
-            response='y'
-            ;;  
-	"")
-	    response="$dflt";
-	    ;;
-
-        *) response='n'
-            ;;
-    esac
-
-    if [ "$response" == "" ]; then
-	response="$dflt";
-    fi
-    if [ "$response" == "" ]; then
-	response="n";
-    fi
-
-}
-
-ask() {
-    local msg="$1";
-    local dflt="$2";
-    local extra="$3"
-    if [ $promptUser == 0 ]; then
-	response="$dflt";
-        return;
-    fi
-
-    if [ "$extra" != "" ]; then
-        printf "\n# $extra\n"
-    fi
-
-    read -p "${msg} " response;
-
-    if [ "$response" == "" ]; then
-	response="$dflt";
-    fi
-}
+sh "${INSTALLER_DIR}/lib.sh"
 
 
 do_mount() {
@@ -222,65 +86,6 @@ do_basedir() {
 }
 
 
-do_postgres() {
-    header   "Database Installation";
-    askYesNo  "Install Postgres database"  "y"
-    if [ "$response" == "y" ]; then
-	amazon-linux-extras install postgresql13 vim epel
-	yum install -y  ${PG_INSTALL} > /dev/null
-	postgresql-setup initdb
-	if  [ -d ${PG_DIR} ] ; then
-	    if  [ ! -h ${PG_DIR} ]; then
-		echo "Moving ${PG_DIR} to $PG_REAL_DIR"
-		mv  ${PG_DIR} $PG_REAL_DIR
-		ln  -s -f  $PG_REAL_DIR ${PG_DIR}
-		chown -R postgres ${PG_DIR}
-		chown -R postgres ${PG_REAL_DIR}
-	    fi
-	else
-	    echo "Warning: ${PG_DIR} does not exist"	
-	fi
-
-	if [ "$os" == "${OS_REDHAT}" ]; then
-	    systemctl enable postgresql
-	    systemctl start postgresql.service
-	else
-	    chkconfig ${PG_SERVICE} on
-	    service ${PG_SERVICE} start
-	fi
-
-	if [ ! -f ${PG_DATA_DIR}/pg_hba.conf.bak ]; then
-            cp ${PG_DATA_DIR}/pg_hba.conf ${PG_DATA_DIR}/pg_hba.conf.bak
-	fi
-
-	postgresPassword="password$RANDOM-$RANDOM"
-	postgresUser="ramadda"
-	postgresAuth="
-#	
-#written out by the RAMADDA installer
-#
-host repository ${postgresUser} 127.0.0.1/32  password
-local   all             all                                     peer
-host    all             all             127.0.0.1/32            ident
-host    all             all             ::1/128                 ident
-"
-
-
-	printf "${postgresAuth}" > ${PG_DATA_DIR}/pg_hba.conf
-
-	service ${PG_SERVICE} reload
-
-	printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${postgresPassword}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
-	chmod 644 /tmp/postgres.sql
-	echo "Creating repository database and adding ramadda user"
-	su -c "psql -f /tmp/postgres.sql"  - postgres > /dev/null
-	rm -f ${INSTALLER_DIR}/postgres.sql
-	printf "ramadda.db=postgres\nramadda.db.postgres.user=ramadda\nramadda.db.postgres.password=${postgresPassword}"  > ${RAMADDA_HOME_DIR}/db.properties
-    fi
-}
-
-
-
 
 mkdir -p  ${RAMADDA_INSTALL_DIR}
 
@@ -302,13 +107,10 @@ if [ "$permissions" == "700" ]; then
 fi
 
 
-
-if [ ! -d "$PG_REAL_DIR" ]; then
-    do_postgres;
-else
-    echo "PostgreSQL already installed"
+askYesNo "Install postgres"  "y"
+if [ "$response" == "y" ]; then
+    installPostgres
 fi
-
 
 
 echo "Installing base packages - wget, unzip & java"
