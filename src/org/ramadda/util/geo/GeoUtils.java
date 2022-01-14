@@ -115,8 +115,8 @@ public class GeoUtils {
     private static Hashtable<String, Place> citiesMap;
 
     /** _more_ */
-    private static final String[] citySuffixes = new String[] { " city",
-            " town", " cdp", " village" };
+    private static final String[] citySuffixes = new String[] { "city",
+            "town", "cdp", "village" };
 
     /** _more_ */
     private static final String[] countySuffixes = new String[] {
@@ -140,7 +140,7 @@ public class GeoUtils {
 	    setGoogleKey(System.getenv("GOOGLE_API_KEY"));
         }
         if (geocodeioKey == null) {
-            setGeocodeioKey(System.getenv("GEOCIDEIO_API_KEY"));
+            setGeocodeioKey(System.getenv("GEOCODEIO_API_KEY"));
         }
         if (hereKey == null) {
             setHereKey(System.getenv("HERE_API_KEY"));
@@ -741,7 +741,7 @@ public class GeoUtils {
             Bounds bounds, boolean debug)
             throws Exception {
 
-	debug = true;
+	//	debug = true;
         if ( !Utils.stringDefined(address)) {
             return null;
         }
@@ -868,7 +868,7 @@ public class GeoUtils {
                             }
                             for (String suffix : citySuffixes) {
                                 //                          System.out.println(city + suffix+"," + st);
-                                place2 = citiesMap.get(cityTok + suffix + ","
+                                place2 = citiesMap.get(cityTok + " " + suffix + ","
                                         + st);
                                 if (place2 != null) {
                                     return place2;
