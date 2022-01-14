@@ -1364,7 +1364,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void handleRow(TextReader ctx, Appendable writer, Row row)
+        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
                 throws Exception {
             String  theTemplate   = template;
             boolean firstRow = rowCnt++ == 0;
@@ -1433,6 +1433,7 @@ public abstract class Processor extends CsvOperator {
             } else {
                 writer.append(theTemplate);
             }
+	    writer.flush();
         }
 
 
@@ -1448,7 +1449,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void writeCsv(TextReader ctx, Appendable writer,
+        public void writeCsv(TextReader ctx, PrintWriter writer,
                              List<Row> rows)
                 throws Exception {
             if (prefix != null) {
