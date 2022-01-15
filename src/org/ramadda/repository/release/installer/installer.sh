@@ -6,7 +6,7 @@
 
 
 INSTALLER_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-sh "${INSTALLER_DIR}/lib.sh"
+source "${INSTALLER_DIR}/lib.sh"
 
 
 do_mount() {
@@ -96,7 +96,6 @@ if [ ! -d "$BASE_DIR" ]; then
 else
     echo "$BASE_DIR already mounted"
 fi
-
 
 mkdir -p $RAMADDA_HOME_DIR
 

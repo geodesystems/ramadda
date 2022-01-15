@@ -139,7 +139,7 @@ if [ "$os" == "${OS_REDHAT}" ]; then
     export PG_SERVICE=postgresql-server
     export PG_INSTALL=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
 else
-    export PG_SERVICE=postgresql
+    export PG_SERVICE=postgresql.service
     export PG_INSTALL=postgresql-server
 fi
 
@@ -148,48 +148,58 @@ export PG_DATA_DIR=${PG_DIR}/data
 export PG_REAL_DIR="${BASE_DIR}/pgsql"
 
 installPostgres() {
-    echo "Installing postgresql13"
-    amazon-linux-extras install postgresql13 vim epel
+    echo "Installing postgresql13 with"
+    printf "\tamazon-linux-extras install postgresql13 vim epel\n\tyum install -y  ${PG_INSTALL}\n"
+    amazon-linux-extras install postgresql13 vim epel > /dev/null
     yum install -y  ${PG_INSTALL} > /dev/null
-    postgresql-setup initdb
-    if [ "$os" == "${OS_REDHAT}" ]; then
-	systemctl enable postgresql
-	systemctl start postgresql.service
-    else
-	chkconfig ${PG_SERVICE} on
-	service ${PG_SERVICE} start
+    if  [ ! -d ${PG_DIR} ] ; then
+	echo "setting up postgres"
+	postgresql-setup --initdb --unit postgresql
     fi
+    echo "adding postgres service"
+    systemctl enable ${PG_SERVICE}
+    systemctl start ${PG_SERVICE}
+#	chkconfig  on ${PG_SERVICE}
+#	service ${PG_SERVICE} start
+
 
     ##if /var/lib/pgsql exists and it isn't a link
-    if  [ -d ${PG_DIR} ] and [ ! -h ${PG_DIR} ]; then
-	if  [  -d ${PG_REAL_DIR} ] ; then
-	    echo "Looks like ${PG_REAL_DIR} already exists. Moving ${PG_DIR} to ${PG_DIR}.bak and making a link to ${PG_REAL_DIR}"
-	    mv ${PG_DIR} ${PG_DIR}.bak
+    if  [ -d ${PG_DIR} ]; then 
+	if [ ! -h ${PG_DIR} ]; then 
+	    if  [  -d ${PG_REAL_DIR} ] ; then
+		echo "Looks like ${PG_REAL_DIR} already exists. Moving ${PG_DIR} to ${PG_DIR}.bak"
+		mv ${PG_DIR} ${PG_DIR}.bak
+	    else
+		echo "Moving ${PG_DIR} to $PG_REAL_DIR"
+		mv  ${PG_DIR} $PG_REAL_DIR
+	    fi
+	    echo "linking $PG_DIR to $PG_REAL_DIR"
+	    ln  -s -f  $PG_REAL_DIR ${PG_DIR}
+	    chown -R postgres ${PG_DIR}
+	    chown -R postgres ${PG_REAL_DIR}
 	else
-	    echo "Moving ${PG_DIR} to $PG_REAL_DIR"
-	    mv  ${PG_DIR} $PG_REAL_DIR
+	    echo "Looks like ${PG_DIR} is already linked to ${PG_REAL_DIR}"
 	fi
-	ln  -s -f  $PG_REAL_DIR ${PG_DIR}
-	chown -R postgres ${PG_DIR}
-	chown -R postgres ${PG_REAL_DIR}
     else
 	echo "Warning: ${PG_DIR} does not exist"	
     fi
 
-    postgresPassword="password$RANDOM-$RANDOM"
-    postgresUser="ramadda"
 
+
+    PG_PASSWORD="password$RANDOM-$RANDOM"
+    PG_USER="ramadda"
 
     if [ ! -f ${PG_DATA_DIR}/pg_hba.conf.bak ]; then
 	#If we haven't updated pg_hba then 
+	echo "adding $PG_USER to  ${PG_DATA_DIR}/pg_hba.conf "
         cp ${PG_DATA_DIR}/pg_hba.conf ${PG_DATA_DIR}/pg_hba.conf.bak
 	postgresAuth="
 #	
 #written out by the RAMADDA installer
 #
-host repository ${postgresUser} 127.0.0.1/32  password
+host repository ${PG_USER} 127.0.0.1/32  password
 #For now add this as I can't get the password to work
-local   repository      ${postgresUser}                                  trust
+local   repository      ${PG_USER}                                  trust
 local   all             all                                     peer
 host    all             all             127.0.0.1/32            ident
 host    all             all             ::1/128                 ident
@@ -197,15 +207,20 @@ host    all             all             ::1/128                 ident
 
 
 	printf "${postgresAuth}" > ${PG_DATA_DIR}/pg_hba.conf
+	systemctl reload postgresql.service
 	service ${PG_SERVICE} reload
     fi
 
-    printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${postgresPassword}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
+    systemctl reload postgresql.service
+#    service ${PG_SERVICE} reload
+
+    printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${PG_PASSWORD}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
     chmod 644 /tmp/postgres.sql
-    echo "Creating repository database and adding ramadda user"
+    echo "Creating repository database, adding ramadda user and setting privileges and password"
     su -c "psql -f /tmp/postgres.sql"  - postgres > /dev/null
     rm -f ${INSTALLER_DIR}/postgres.sql
-    printf "ramadda.db=postgres\nramadda.db.postgres.user=ramadda\nramadda.db.postgres.password=${postgresPassword}"  > ${RAMADDA_HOME_DIR}/db.properties
+    echo "writing properties to ${RAMADDA_HOME_DIR}/db.properties"
+    printf "ramadda.db=postgres\nramadda.db.postgres.user=ramadda\nramadda.db.postgres.password=${PG_PASSWORD}"  > ${RAMADDA_HOME_DIR}/db.properties
 
     
 }
