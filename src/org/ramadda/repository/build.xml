@@ -159,6 +159,8 @@
     <target name="installer" depends="init,clean">
         <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
         <mkdir dir="${installer_dir}"/>
+        <copy overwrite="true" file="${ramadda_dir}/release/installer/lib.sh" todir="${installer_dir}"/>
+        <copy overwrite="true" file="${ramadda_dir}/release/installer/postgres.sh" todir="${installer_dir}"/>	
         <copy overwrite="true" file="${ramadda_dir}/release/installer/installer.sh" todir="${installer_dir}">
             <filterset>
                 <filter token="VERSION" value="${version}"/>
@@ -182,7 +184,7 @@
                 <filter token="VERSION" value="${version}"/>
                 <filter token="RELEASE_VERSION" value="${release_version}"/>
             </filterset>
-          </copy>
+        </copy>
         <zip destfile="${dist_dir}/ramaddainstaller.zip">
          <zipfileset dir="${installer_dir}" includes="*" prefix="ramaddainstaller"/>
         </zip>
