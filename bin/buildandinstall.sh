@@ -6,7 +6,7 @@ MYDIR=`dirname $0`
 
 
 export RAMADDA_BASE=/mnt/ramadda
-export ANT_OPTS="-Xmx1500m"
+export ANT_OPTS="-Xmx1000m"
 export ANT_HOME="${RAMADDA_BASE}/home/ant"
 export PATH=${ANT_HOME}/bin:$PATH:$HOME/bin
 
