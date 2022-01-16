@@ -25,11 +25,6 @@ if [ -z "$JAVA_MEMORY" ]; then
 fi
 
 
-if [ -z "$JAVA_PERMGEN" ]; then
-    JAVA_PERMGEN=256m
-fi
-
-
 
 ##See if there is one in the release dir
 RAMADDA_ENV_FILE=${RAMADDA_DIR}/ramaddaenv.sh
