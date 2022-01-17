@@ -145,15 +145,12 @@ export PG_REAL_DIR="${BASE_DIR}/pgsql"
 installPostgres() {
     echo "Installing postgresql13 with"
     printf "\tamazon-linux-extras install postgresql13 vim epel\n\tyum install -y  ${PG_INSTALL}\n"
-    amazon-linux-extras install postgresql13 vim epel > /dev/null
-    yum install -y  ${PG_INSTALL} > /dev/null
+    amazon-linux-extras install postgresql13 vim epel 
+    yum install -y  ${PG_INSTALL} 
     if  [ ! -d ${PG_DIR} ] ; then
 	echo "setting up postgres"
-	postgresql-setup --initdb --unit postgresql
+	postgresql-setup --initdb
     fi
-    echo "adding postgres service"
-    systemctl enable ${PG_SERVICE}
-    systemctl start ${PG_SERVICE}
 #	chkconfig  on ${PG_SERVICE}
 #	service ${PG_SERVICE} start
 
@@ -178,6 +175,10 @@ installPostgres() {
     else
 	echo "Warning: ${PG_DIR} does not exist"	
     fi
+
+    echo "adding postgres service"
+    systemctl enable ${PG_SERVICE}
+    systemctl start ${PG_SERVICE}
 
 
 
