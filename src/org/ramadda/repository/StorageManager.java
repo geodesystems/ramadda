@@ -2180,20 +2180,20 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return  true if ok
      */
     public boolean isLocalFileOk(File file) {
-	boolean debug = true;
+	boolean debug = false;
 	if(debug)
-	    System.err.println ("isLocalFileOk:" +file);
+	    getLogManager().logError("isLocalFileOk:" +file);
         for (File parent : getRepository().getLocalFilePaths()) {
 	    if(debug)
-		System.err.println ("\tChecking:" +parent);
+		getLogManager().logError ("\tChecking:" +parent);
             if (IO.isADescendent(parent, file)) {
 		if(debug)
-		    System.err.println ("\tfile is OK");
+		    getLogManager().logError ("\tfile is OK");
                 return true;
             }
         }
 	if(debug)
-	    System.err.println ("\tfile is NOT OK");
+	    getLogManager().logError ("\tfile is NOT OK");
         return false;
     }
 
