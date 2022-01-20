@@ -63,7 +63,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
 
-
+import java.security.*;	    
 
 
 /**
@@ -1129,6 +1129,16 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    for (Provider provider: Security.getProviders()) {
+		System.out.println(provider.getName());
+		for (String key: provider.stringPropertyNames())
+		    System.out.println("\t" + key + "\t" + provider.getProperty(key));
+	    }
+	}
+
+
+
 	InputStream fis = new FileInputStream(args[0]);
 	byte[] b = decodeBase64(IOUtil.readBytes(fis));
 	IOUtil.writeBytes(new File("out.pdf"),b);

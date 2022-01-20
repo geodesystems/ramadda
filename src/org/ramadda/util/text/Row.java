@@ -164,6 +164,11 @@ public class Row {
                : o.toString();
     }
 
+    public byte[] getBytes(int index) throws UnsupportedEncodingException {
+	String s = getString(index);
+	return s.getBytes("UTF-8");
+    }
+
     /**
      * _more_
      *

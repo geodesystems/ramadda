@@ -57,6 +57,15 @@ import java.util.regex.Pattern;
 import javax.script.*;
 
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+
+
+
 /**
  * Class description
  *
@@ -6177,6 +6186,146 @@ public abstract class Converter extends Processor {
             return row;
         }
     }
+
+
+    public static class B64Encode extends Converter {
+
+
+        /**
+         */
+        public B64Encode(TextReader ctx,List<String> cols) {
+	    super(cols);
+	}
+
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		for(int i: getIndices(ctx)) {
+		    row.add(row.getString(i)+" base64");
+		}
+            } else {
+		for(int i: getIndices(ctx)) {
+		    row.add(new String(Utils.encodeBase64(row.getString(i))));
+		}
+            }
+            return row;
+        }
+
+
+    }
+
+
+    public static class B64Decode extends Converter {
+
+        /**
+         */
+        public B64Decode(TextReader ctx,List<String> cols) {
+	    super(cols);
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		for(int i: getIndices(ctx)) {
+		    row.add(row.getString(i)+" value");
+		}
+            } else {
+		for(int i: getIndices(ctx)) {
+		    row.add(new String(Utils.decodeBase64(row.getString(i).getBytes())));
+		}
+            }
+            return row;
+        }
+    }
+
+
+    public static class Rot13 extends Converter {
+
+        /**
+         */
+        public Rot13(TextReader ctx,List<String> cols) {
+	    super(cols);
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		for(int i: getIndices(ctx)) {
+		    row.add(row.getString(i)+" rot13");
+		}
+            } else {
+		for(int i: getIndices(ctx)) {
+		    row.add(new String(Utils.rot13(row.getString(i))));
+		}
+            }
+            return row;
+        }
+    }
+
+    
+
+    public static class Crypt extends Converter {
+	protected Cipher cipher;
+        public Crypt(boolean encrypt, TextReader ctx,List<String> cols,String cipherSpec,String key) throws Exception {
+	    super(cols);
+	    if(!Utils.stringDefined(cipherSpec)) cipherSpec = "AES/CBC/PKCS5Padding";
+	    cipherSpec = "AES_128/CFB/NoPadding";
+	    byte[]b = key.getBytes();
+	    if(b.length<8) throw new RuntimeException("Key length must be greater than or equals to 8");
+	    DESKeySpec dks = new DESKeySpec(b);
+	    SecretKey desKey =
+		SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
+	    Cipher cipher = Cipher.getInstance(cipherSpec); 
+	    cipher.init(encrypt?Cipher.ENCRYPT_MODE:Cipher.DECRYPT_MODE, desKey);
+	}
+    }
+
+    public static class Encrypt extends Crypt {
+
+        /**
+         */
+        public Encrypt(TextReader ctx,List<String> cols,String cipherSpec,String key) throws Exception {
+	    super(true,ctx,cols,cipherSpec, key);
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		for(int i: getIndices(ctx)) {
+		    row.add(row.getString(i)+" encrypt");
+		}
+            } else {
+		try {
+		    for(int i: getIndices(ctx)) {
+			row.add(new String(cipher.doFinal(row.getBytes(i))));
+		    }
+		} catch(Exception exc) {
+		    fatal(ctx,"Error encrypting", exc);
+		}
+            }
+            return row;
+        }
+    }
+
+
+
+
+
+
 
 
     /**
