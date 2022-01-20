@@ -46,6 +46,14 @@ yumInstall() {
     fi
 }
 
+pause() {
+    local msg="$1"
+    if [ "$msg" == "" ]; then
+	msg="pause "
+    fi
+    read -p "${msg}"
+}
+
 askYesNo() {
     local msg="$1"
     local dflt="$2"
@@ -139,21 +147,18 @@ else
 fi
 
 export PG_DIR=/var/lib/pgsql
-export PG_DATA_DIR=${PG_DIR}/data
+export PG_HBA=${PG_DIR}/data/pg_hba.conf
 export PG_REAL_DIR="${BASE_DIR}/pgsql"
 
 installPostgres() {
-    echo "Installing postgresql13 with"
+    echo "Installing PostgreSQL 13 with:"
     printf "\tamazon-linux-extras install postgresql13 vim epel\n\tyum install -y  ${PG_INSTALL}\n"
-    amazon-linux-extras install postgresql13 vim epel 
+    amazon-linux-extras install -y postgresql13 epel 
     yum install -y  ${PG_INSTALL} 
-    if  [ ! -d ${PG_DIR} ] ; then
+    if  [ ! -f ${PG_HBA} ] ; then
 	echo "setting up postgres"
 	postgresql-setup --initdb
     fi
-#	chkconfig  on ${PG_SERVICE}
-#	service ${PG_SERVICE} start
-
 
     ##if /var/lib/pgsql exists and it isn't a link
     if  [ -d ${PG_DIR} ]; then 
@@ -167,28 +172,29 @@ installPostgres() {
 	    fi
 	    echo "linking $PG_DIR to $PG_REAL_DIR"
 	    ln  -s -f  $PG_REAL_DIR ${PG_DIR}
-	    chown -R postgres ${PG_DIR}
-	    chown -R postgres ${PG_REAL_DIR}
 	else
 	    echo "Looks like ${PG_DIR} is already linked to ${PG_REAL_DIR}"
 	fi
     else
 	echo "Warning: ${PG_DIR} does not exist"	
+	exit
     fi
 
-    echo "adding postgres service"
-    systemctl enable ${PG_SERVICE}
-    systemctl start ${PG_SERVICE}
+    chown -R postgres ${PG_DIR}
+    chown -R postgres ${PG_REAL_DIR}
 
 
 
     PG_PASSWORD="password$RANDOM-$RANDOM"
     PG_USER="ramadda"
 
-    if [ ! -f ${PG_DATA_DIR}/pg_hba.conf.bak ]; then
+    ls ${PG_HBA}
+
+
+    if [ ! -f ${PG_HBA}.bak ]; then
 	#If we haven't updated pg_hba then 
-	echo "adding $PG_USER to  ${PG_DATA_DIR}/pg_hba.conf "
-        cp ${PG_DATA_DIR}/pg_hba.conf ${PG_DATA_DIR}/pg_hba.conf.bak
+	echo "adding $PG_USER to  ${PG_HBA}"
+        cp ${PG_HBA} ${PG_HBA}.bak
 	postgresAuth="
 #	
 #written out by the RAMADDA installer
@@ -202,14 +208,14 @@ host    all             all             ::1/128                 ident
 "
 
 
-	printf "${postgresAuth}" > ${PG_DATA_DIR}/pg_hba.conf
-	systemctl reload postgresql.service
-	service ${PG_SERVICE} reload
+	printf "${postgresAuth}" > ${PG_HBA}
     fi
 
-    systemctl reload postgresql.service
-#    service ${PG_SERVICE} reload
+    echo "adding postgres service"
+    systemctl enable ${PG_SERVICE}
+    systemctl start ${PG_SERVICE}
 
+    
     printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${PG_PASSWORD}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
     chmod 644 /tmp/postgres.sql
     echo "Creating repository database, adding ramadda user and setting privileges and password"
