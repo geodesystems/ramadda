@@ -601,6 +601,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //NOTE: Only do this for now so we can have snotel data
         trustAllCertificates();
 
+	//In later java versions this disables serialization
+	//ObjectInputFilter.Config.setSerialFilter(info -> ObjectInputFilter.Status.REJECTED);
+	//this disables jndi
+	javax.naming.spi.NamingManager.setInitialContextFactoryBuilder(env -> { throw new javax.naming.NamingException("JNDI disabled"); });
+
         setPort(port);
         LogUtil.setTestMode(true);
         //This takes a second or two so do it in a thread
@@ -4112,7 +4117,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
-        boolean debug      = false;
+        boolean debug      = true;
 
 
         boolean sslEnabled = isSSLEnabled(request);
