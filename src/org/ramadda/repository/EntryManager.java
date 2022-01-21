@@ -1769,21 +1769,24 @@ public class EntryManager extends RepositoryManager {
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(Object actionId) throws Exception {
 			try {
-			    System.err.println("doing download");
 			    Result result = doProcessEntryChange(request, false,
 								 actionId);
-			    System.err.println("result:" + result.getRedirectUrl());
-			    getActionManager().setContinueHtml(actionId,
-							       HU.href(result.getRedirectUrl(),
-								       msg("Continue")));
+			    String url = result.getRedirectUrl();
+			    if(url!=null) {
+				getActionManager().setContinueHtml(actionId,
+								   HU.href(url,  msg("Continue")));
+			    } else {
+				String content = result.getStringContent();
+				getActionManager().setContinueHtml(actionId,
+								   content);
+			    }
+			    
 			} catch(Exception exc) {
-			    System.err.println("Error downloading:" + exc);
-			    exc.printStackTrace();
+			    logError("",exc);
 			}
 		    }
 		};
 
-	    System.err.println("do action");
             return getActionManager().doAction(request, action,
 					       "Downloading file", "");
 
@@ -1834,7 +1837,6 @@ public class EntryManager extends RepositoryManager {
 	    oldFileName = getStorageManager().getFileTail(oldFile.getName());
 	} else {
 	    oldFileName = entry.getTypeHandler().getDefaultFilename();
-	    System.err.println("default file:" + oldFileName);
 	}
 	File tmpFile = getStorageManager().getTmpFile(request,oldFileName);
         OutputStream  toStream   = getStorageManager().getFileOutputStream(tmpFile);
@@ -1921,7 +1923,6 @@ public class EntryManager extends RepositoryManager {
     private Result doProcessEntryChange(Request request, boolean forUpload,
                                         Object actionId)
 	throws Exception {
-	System.err.println("doProcessEntryChange");
 	Entry  parentEntry=null;
 	Entry entry = null;
         if (request.defined(ARG_GROUP)) {
@@ -1931,11 +1932,8 @@ public class EntryManager extends RepositoryManager {
             entry = getEntry(request);
 	}
 	try {
-	    Result result =  doProcessEntryChangeInner(request,  forUpload, actionId, parentEntry, entry);
-	    System.err.println("GOT RESULT:" + result);
-	    return result;
+	    return  doProcessEntryChangeInner(request,  forUpload, actionId, parentEntry, entry);
 	} catch(Exception exc) {
-	    System.err.println("ERROR:"+ exc);
 	    logError("", exc);
 	    StringBuilder sb = new StringBuilder();
             Throwable     inner     = LogUtil.getInnerException(exc);
@@ -1975,7 +1973,6 @@ public class EntryManager extends RepositoryManager {
 					     Object actionId, Entry parentEntry, Entry entry)
 	throws Exception {
 
-	System.err.println("doProcessEntryChangeInner");
         User user = request.getUser();
         if (forUpload) {
             logInfo("upload doProcessEntryChange user = " + user);
@@ -2105,7 +2102,6 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().checkLocalFile(serverFile);
         }
 
-	System.err.println("entry:" + entry);
         if (entry == null) {
 
             if (forUpload) {
@@ -2163,14 +2159,12 @@ public class EntryManager extends RepositoryManager {
             }
 
             if (serverFile != null) {
-		System.err.println("isservderFile");
                 isFile   = true;
                 resource = filename;
                 if (forUpload) {
                     fatalError(request, "No filename specified");
                 }
             } else if (filename != null) {
-		System.err.println("isFile");
                 //A File was uploaded
                 isFile   = true;
                 resource = filename;
@@ -2181,15 +2175,12 @@ public class EntryManager extends RepositoryManager {
 
                 //A URL was selected
                 resource = urlArgument.trim();
-		System.err.println("URL:" + resource);
                 if ( !request.get(ARG_RESOURCE_DOWNLOAD, false)) {
                     unzipArchive = false;
                 } else {
                     isFile = true;
-		    System.err.println("downloading");
                     File newFile = downloadUrl(request, resource, actionId,
 					       parentEntry);
-		    System.err.println("new file:" + newFile);
                     if (newFile == null) {
                         return new Result(
 					  request.entryUrl(
@@ -2235,10 +2226,8 @@ public class EntryManager extends RepositoryManager {
 
 
 	    if(hasUpload) {
-		System.err.println("hasUpload");
 		isFile = true;
 	    } else if (serverFile != null) {
-		System.err.println("serverfile");
                 if ( !serverFile.exists()) {
                     StringBuilder message =
                         new StringBuilder(
@@ -2293,7 +2282,6 @@ public class EntryManager extends RepositoryManager {
 		    infos.add(new NewEntryInfo(resourceName,serverFile.toString(), parentEntry));
                 }
             } else if ( !unzipArchive) {
-		System.err.println("!unzip :" + resource);
 		infos.add(new NewEntryInfo(resourceName,resource, parentEntry));
             } else {
                 hasZip = true;
@@ -2508,14 +2496,12 @@ public class EntryManager extends RepositoryManager {
                                 createDate.getTime(),
                                 theDateRange[0].getTime(),
                                 theDateRange[1].getTime(), null);
-		System.err.println("new entry:" + entry);
                 if (forUpload) {
                     initUploadedEntry(request, entry, info.parent);
                 }
 
                 setEntryState(request, entry, info.parent, newEntry);
                 entries.add(entry);
-		System.err.println("OK");
             }
 	} else {
             boolean fileUpload      = false;
@@ -2661,8 +2647,7 @@ public class EntryManager extends RepositoryManager {
                 }
 	    }
         } catch (Exception exc) {
-	    System.err.println("Error:" + exc);
-	    exc.printStackTrace();
+	    logError("", exc);
             Throwable inner = LogUtil.getInnerException(exc);
             if (parentEntry != null) {
                 String msg =
@@ -2681,11 +2666,8 @@ public class EntryManager extends RepositoryManager {
 	}
 
 
-	System.err.println("entries:" + entries);
         if (forUpload) {
             entry = (Entry) entries.get(0);
-	    System.err.println("forUpload");
-
             return new Result(
 			      request.entryUrl(
 					       getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
@@ -2695,28 +2677,22 @@ public class EntryManager extends RepositoryManager {
         }
 
 	if(request.responseAsJson()) {
-	    System.err.println("asJson");
 	    List<String> ids = new ArrayList<String>();
 	    for(Entry e: entries) {
 		ids.add(Json.quote(e.getId()));
 	    }
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(Json.map("entries",Json.list(ids)));
-	    System.err.println("sb:" + sb);
 	    return new Result("", sb, Json.MIMETYPE);
 	}
-	System.err.println("ENTRIES.size:" + entries.size());
 
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
-	    System.err.println("done");
 
             if (entry.getTypeHandler().returnToEditForm()) {
-		System.err.println("R3");
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
             } else {
-		System.err.println("R2");
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
             }
@@ -2732,8 +2708,6 @@ public class EntryManager extends RepositoryManager {
 							getRepository().translate(
 										  request, "files uploaded"))));
         } else {
-	    System.err.println("no entries");
-
 	    StringBuilder sb = new StringBuilder();
 	    if(parentEntry!=null)
 		getPageHandler().entrySectionOpen(request, parentEntry, sb,
