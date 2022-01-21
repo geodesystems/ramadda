@@ -28,7 +28,6 @@ do_mount() {
     ##/dev/xvdb       /mnt/ramadda   ext4    defaults,nofail        0       2
     while [ "$MOUNT_DIR" == "" ]; do
 	ask  "Enter the volume to mount, e.g., /dev/xvdb  [<volume>|n] "  ""
-	echo "RES: $response"
 	if [ "$response" == "" ] ||  [ "$response" == "n"  ]; then
             break;
 	fi
@@ -55,7 +54,10 @@ do_mount() {
 		sed -e 's/.*$BASE_DIR.*//g' /etc/fstab | sed -e 's/.*added ramadda.*//g' > dummy.fstab
 		mv dummy.fstab /etc/fstab
 		printf "\n#added by ramadda installer.sh\n${MOUNT_DIR}   $BASE_DIR ext4 defaults,nofail   0 2\n" >> /etc/fstab
-		mkfs -t ext4 $MOUNT_DIR
+		askYesNo "Do you want to make the file system on ${MOUNT_DIR}?"  "y"
+		if [ "$response" == "y" ]; then
+		    mkfs -t ext4 $MOUNT_DIR
+		fi
 		mkdir $BASE_DIR
 		mount $MOUNT_DIR $BASE_DIR
 		mount -a
