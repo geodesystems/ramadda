@@ -2705,6 +2705,7 @@ public class EntryManager extends RepositoryManager {
 	    System.err.println("sb:" + sb);
 	    return new Result("", sb, Json.MIMETYPE);
 	}
+	System.err.println("ENTRIES.size:" + entries.size());
 
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
