@@ -29,7 +29,9 @@
 ##params set from args
 
 BIN_DIR=`dirname $0`
-CERTBOT=${BIN_DIR}/certbot-auto
+#CERTBOT=${BIN_DIR}/certbot-auto
+#CERTBOT=/usr/local/bin/certbot-auto
+CERTBOT=/bin/certbot
 WHAT=new
 RAMADDA_HOME=/mnt/ramadda/repository 
 FIRST_DOMAIN=
