@@ -8,6 +8,7 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import java.io.InputStream;
@@ -137,6 +138,9 @@ public class Result {
     public Result(String redirectUrl) {
         this.redirectUrl    = redirectUrl;
         this.shouldDecorate = false;
+	System.err.println("Result: redirecting to:" + redirectUrl);
+	System.err.println(Utils.getStack(5));
+
     }
 
 

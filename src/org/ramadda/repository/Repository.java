@@ -4015,6 +4015,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
+	    System.err.println("redirecting:" + request.getUrl());
             debugSession(request, "redirecting to ssl:" + request.getUrl());
 
             return sslRedirect;
@@ -4119,7 +4120,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
         boolean debug      = true;
 
-
         boolean sslEnabled = isSSLEnabled(request);
 
         //check for the sub-repositories
@@ -4128,7 +4128,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         if (debug) {
             System.err.println("checkForSslRedirect allSsl:" + allSsl
-                               + " request secrure:" + request.getSecure());
+                               + " request secure:" + request.getSecure());
         }
         if (sslEnabled) {
             if (allSsl && !request.getSecure()) {
