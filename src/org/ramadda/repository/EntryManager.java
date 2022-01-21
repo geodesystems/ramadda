@@ -1766,11 +1766,18 @@ public class EntryManager extends RepositoryManager {
         if (download) {
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(Object actionId) throws Exception {
-			Result result = doProcessEntryChange(request, false,
-							     actionId);
-			getActionManager().setContinueHtml(actionId,
-							   HU.href(result.getRedirectUrl(),
-								   msg("Continue")));
+			try {
+			    System.err.println("doing download");
+			    Result result = doProcessEntryChange(request, false,
+								 actionId);
+			    System.err.println("result:" + result.getRedirectUrl());
+			    getActionManager().setContinueHtml(actionId,
+							       HU.href(result.getRedirectUrl(),
+								       msg("Continue")));
+			} catch(Exception exc) {
+			    System.err.println("Error downloading:" + exc);
+			    exc.printStackTrace();
+			}
 		    }
 		};
 
@@ -2161,12 +2168,15 @@ public class EntryManager extends RepositoryManager {
 
                 //A URL was selected
                 resource = urlArgument.trim();
+		System.err.println("URL:" + resource);
                 if ( !request.get(ARG_RESOURCE_DOWNLOAD, false)) {
                     unzipArchive = false;
                 } else {
                     isFile = true;
+		    System.err.println("downloading");
                     File newFile = downloadUrl(request, resource, actionId,
 					       parentEntry);
+		    System.err.println("new file:" + newFile);
                     if (newFile == null) {
                         return new Result(
 					  request.entryUrl(
@@ -2676,10 +2686,14 @@ public class EntryManager extends RepositoryManager {
 
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
+	    System.err.println("done");
+
             if (entry.getTypeHandler().returnToEditForm()) {
+		System.err.println("R3");
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
             } else {
+		System.err.println("R2");
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
             }
