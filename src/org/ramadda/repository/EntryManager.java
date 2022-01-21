@@ -2232,8 +2232,10 @@ public class EntryManager extends RepositoryManager {
 
 
 	    if(hasUpload) {
+		System.err.println("hasUpload");
 		isFile = true;
 	    } else if (serverFile != null) {
+		System.err.println("serverfile");
                 if ( !serverFile.exists()) {
                     StringBuilder message =
                         new StringBuilder(
@@ -2288,6 +2290,7 @@ public class EntryManager extends RepositoryManager {
 		    infos.add(new NewEntryInfo(resourceName,serverFile.toString(), parentEntry));
                 }
             } else if ( !unzipArchive) {
+		System.err.println("!unzip :" + resource);
 		infos.add(new NewEntryInfo(resourceName,resource, parentEntry));
             } else {
                 hasZip = true;
@@ -2367,6 +2370,7 @@ public class EntryManager extends RepositoryManager {
 
             File originalFile = null;
 
+	    System.err.println("infos:" + infos.size());
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
                 if (isFile && (serverFile == null)) {
@@ -2476,6 +2480,7 @@ public class EntryManager extends RepositoryManager {
                 entry = typeHandlerToUse.createEntry(id);
 
 
+
                 if (theDateRange[0] == null) {
                     //Don't try to extract the date from the name of the file
                     //Its more trouble than worth due to bad matches
@@ -2493,6 +2498,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
 
+
                 entry.initEntry(name, description, info.parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 category, entryOrder,
@@ -2500,6 +2506,7 @@ public class EntryManager extends RepositoryManager {
                                 createDate.getTime(),
                                 theDateRange[0].getTime(),
                                 theDateRange[1].getTime(), null);
+		System.err.println("new entry:" + entry);
                 if (forUpload) {
                     initUploadedEntry(request, entry, info.parent);
                 }
@@ -2644,8 +2651,6 @@ public class EntryManager extends RepositoryManager {
             insertEntries(request, entries, newEntry, false);
 
 
-
-
             if (newEntry) {
                 for (Entry theNewEntry : entries) {
                     theNewEntry.getTypeHandler().doFinalEntryInitialization(
@@ -2719,6 +2724,8 @@ public class EntryManager extends RepositoryManager {
 							getRepository().translate(
 										  request, "files uploaded"))));
         } else {
+	    System.err.println("no entries");
+
 	    StringBuilder sb = new StringBuilder();
 	    if(parentEntry!=null)
 		getPageHandler().entrySectionOpen(request, parentEntry, sb,
