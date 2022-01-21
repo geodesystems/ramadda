@@ -1931,8 +1931,11 @@ public class EntryManager extends RepositoryManager {
             entry = getEntry(request);
 	}
 	try {
-	    return doProcessEntryChangeInner(request,  forUpload, actionId, parentEntry, entry);
+	    Result result =  doProcessEntryChangeInner(request,  forUpload, actionId, parentEntry, entry);
+	    System.err.println("GOT RESULT:" + result);
+	    return result;
 	} catch(Exception exc) {
+	    System.err.println("ERROR:"+ exc);
 	    logError("", exc);
 	    StringBuilder sb = new StringBuilder();
             Throwable     inner     = LogUtil.getInnerException(exc);
@@ -2513,6 +2516,7 @@ public class EntryManager extends RepositoryManager {
 
                 setEntryState(request, entry, info.parent, newEntry);
                 entries.add(entry);
+		System.err.println("OK");
             }
 	} else {
             boolean fileUpload      = false;
@@ -2677,8 +2681,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
+	System.err.println("entries:" + entries);
         if (forUpload) {
             entry = (Entry) entries.get(0);
+	    System.err.println("forUpload");
 
             return new Result(
 			      request.entryUrl(
@@ -2689,6 +2695,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 	if(request.responseAsJson()) {
+	    System.err.println("asJson");
 	    List<String> ids = new ArrayList<String>();
 	    for(Entry e: entries) {
 		ids.add(Json.quote(e.getId()));
