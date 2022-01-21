@@ -1763,7 +1763,9 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryChange(final Request request) throws Exception {
         boolean download = request.get(ARG_RESOURCE_DOWNLOAD, false);
         request.ensureAuthToken();
+	System.err.println("processEntryChange");
         if (download) {
+	    System.err.println("download");
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(Object actionId) throws Exception {
 			try {
@@ -1781,10 +1783,13 @@ public class EntryManager extends RepositoryManager {
 		    }
 		};
 
+	    System.err.println("do action");
             return getActionManager().doAction(request, action,
 					       "Downloading file", "");
 
         }
+
+
 
         return doProcessEntryChange(request, false, null);
     }
@@ -1916,6 +1921,7 @@ public class EntryManager extends RepositoryManager {
     private Result doProcessEntryChange(Request request, boolean forUpload,
                                         Object actionId)
 	throws Exception {
+	System.err.println("doProcessEntryChange");
 	Entry  parentEntry=null;
 	Entry entry = null;
         if (request.defined(ARG_GROUP)) {
@@ -1966,6 +1972,7 @@ public class EntryManager extends RepositoryManager {
 					     Object actionId, Entry parentEntry, Entry entry)
 	throws Exception {
 
+	System.err.println("doProcessEntryChangeInner");
         User user = request.getUser();
         if (forUpload) {
             logInfo("upload doProcessEntryChange user = " + user);
@@ -2095,6 +2102,7 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().checkLocalFile(serverFile);
         }
 
+	System.err.println("entry:" + entry);
         if (entry == null) {
 
             if (forUpload) {
@@ -2152,12 +2160,14 @@ public class EntryManager extends RepositoryManager {
             }
 
             if (serverFile != null) {
+		System.err.println("isservderFile");
                 isFile   = true;
                 resource = filename;
                 if (forUpload) {
                     fatalError(request, "No filename specified");
                 }
             } else if (filename != null) {
+		System.err.println("isFile");
                 //A File was uploaded
                 isFile   = true;
                 resource = filename;
