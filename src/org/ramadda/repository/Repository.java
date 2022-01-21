@@ -4015,9 +4015,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
-	    System.err.println("redirecting:" + request.getUrl());
             debugSession(request, "redirecting to ssl:" + request.getUrl());
-
             return sslRedirect;
         }
 
@@ -4118,7 +4116,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
-        boolean debug      = true;
+        boolean debug      = false;
 
         boolean sslEnabled = isSSLEnabled(request);
 

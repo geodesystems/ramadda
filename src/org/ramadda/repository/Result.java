@@ -138,9 +138,6 @@ public class Result {
     public Result(String redirectUrl) {
         this.redirectUrl    = redirectUrl;
         this.shouldDecorate = false;
-	System.err.println("Result: redirecting to:" + redirectUrl);
-	System.err.println(Utils.getStack(5));
-
     }
 
 
