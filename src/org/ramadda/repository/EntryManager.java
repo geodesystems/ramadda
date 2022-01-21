@@ -2373,7 +2373,6 @@ public class EntryManager extends RepositoryManager {
 
             File originalFile = null;
 
-	    System.err.println("infos:" + infos.size());
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
                 if (isFile && (serverFile == null)) {
@@ -2660,8 +2659,10 @@ public class EntryManager extends RepositoryManager {
                     theNewEntry.getTypeHandler().doFinalEntryInitialization(
 									    request, theNewEntry, false);
                 }
-            }
+	    }
         } catch (Exception exc) {
+	    System.err.println("Error:" + exc);
+	    exc.printStackTrace();
             Throwable inner = LogUtil.getInnerException(exc);
             if (parentEntry != null) {
                 String msg =
@@ -2677,8 +2678,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             throw exc;
-        }
-
+	}
 
 
 	System.err.println("entries:" + entries);
