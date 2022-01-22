@@ -852,7 +852,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      * @return _more_
      */
     public boolean shouldProcessResource(Request request, Entry entry) {
-        return entry.getResource().hasResource();
+        return entry.getResource().hasResource() && entry.getTypeHandler().getTypeProperty("record.processresource",true);
     }
 
 

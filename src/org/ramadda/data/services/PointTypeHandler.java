@@ -139,19 +139,32 @@ public class PointTypeHandler extends RecordTypeHandler {
                                    boolean fromImport)
             throws Exception {
 
+	//Check for some of the files that act like CSV but aren't
+	/*
+	String resource = entry.getResource().getPath();
+	if(Utils.stringDefined(resource)) {
+	    resource = resource.toLowerCase();
+	    if(resource.endsWith(".pdf")) {
+		return;
+	    }
+	}
+	*/
+
         if (entry.getXmlNode() != null) {
-            return;
-        }
-
-        if (anySuperTypesOfThisType()) {
-            super.initializeNewEntry(request, entry, fromImport);
-
             return;
         }
 
         if ( !shouldProcessResource(request, entry)) {
             return;
         }
+
+
+        if (anySuperTypesOfThisType()) {
+            super.initializeNewEntry(request, entry, fromImport);
+            return;
+        }
+
+
 
         if (fromImport) {
             return;
