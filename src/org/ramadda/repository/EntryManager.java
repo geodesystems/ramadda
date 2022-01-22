@@ -1763,9 +1763,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryChange(final Request request) throws Exception {
         boolean download = request.get(ARG_RESOURCE_DOWNLOAD, false);
         request.ensureAuthToken();
-	System.err.println("processEntryChange");
         if (download) {
-	    System.err.println("download");
             ActionManager.Action action = new ActionManager.Action() {
 		    public void run(Object actionId) throws Exception {
 			try {
