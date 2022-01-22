@@ -4583,7 +4583,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     public String wikify(Request request, String wiki) throws Exception {
-        return makeWikiUtil(request, false).wikify(wiki, null);
+        return makeWikiUtil(request, false).wikify(wiki, this);
     }
 
 
