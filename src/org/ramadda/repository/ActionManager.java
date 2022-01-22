@@ -131,6 +131,7 @@ public class ActionManager extends RepositoryManager {
                         + action.getName(), false));
             }
         }
+
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
             actions.remove(id);
@@ -301,7 +302,6 @@ public class ActionManager extends RepositoryManager {
      * @return _more_
      */
     private Object addAction(String msg, String continueHtml, Entry entry) {
-
         String id = getRepository().getGUID();
         actions.put(id, new ActionInfo(msg, continueHtml, entry));
 
@@ -345,16 +345,35 @@ public class ActionManager extends RepositoryManager {
 
 
     /**
+     *
+     * @param request _more_
+     * @param runnable _more_
+     * @param name _more_
+     * @param continueHtml _more_
+     * @param entry _more_
+      * @return _more_
+     */
+    public Result doJsonAction(Request request, final Action runnable,
+                               String name, String continueHtml,
+                               Entry entry) {
+        Object actionId = runAction(runnable, name, continueHtml, entry);
+        String json = Json.map("actionid", Json.quote(actionId.toString()));
+
+        return new Result(json, Result.TYPE_JSON);
+    }
+
+
+    /**
      * _more_
      *
      * @param runnable _more_
      * @param name _more_
      * @param continueHtml _more_
      *
-     * @return _more_
+     * @return the action id
      */
-    protected Object runAction(final Action runnable, String name,
-                               String continueHtml) {
+    public Object runAction(final Action runnable, String name,
+                            String continueHtml) {
         return runAction(runnable, name, continueHtml, null);
     }
 
@@ -366,10 +385,10 @@ public class ActionManager extends RepositoryManager {
      * @param continueHtml _more_
      * @param entry _more_
      *
-     * @return _more_
+     * @return the action id
      */
-    protected Object runAction(final Action runnable, String name,
-                               String continueHtml, Entry entry) {
+    public Object runAction(final Action runnable, String name,
+                            String continueHtml, Entry entry) {
         final Object actionId = addAction(name, continueHtml, entry);
         Misc.run(new Runnable() {
             public void run() {
@@ -397,7 +416,26 @@ public class ActionManager extends RepositoryManager {
      * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
-    public interface Action {
+    public abstract static class Action {
+
+        /**  */
+        boolean returnJson = false;
+
+
+        /**
+         
+         */
+        public Action() {}
+
+        /**
+         
+         *
+         * @param returnJson _more_
+         */
+        public Action(boolean returnJson) {
+            this.returnJson = returnJson;
+        }
+
 
         /**
          * _more_
@@ -443,6 +481,7 @@ public class ActionManager extends RepositoryManager {
 
         /** _more_ */
         private Entry entry;
+
 
         /**
          * _more_
