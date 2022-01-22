@@ -7,6 +7,7 @@
 
   <type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"  super="type_document_tabular"    handler="org.ramadda.data.docs.TabularTypeHandler"         category="Data" >
      <property name="icon" value="/icons/csv.png"/>
+    <property name="record.processresource" value="false"/>    
   </type>
 
   <type name="type_document_xml"  description="XML File" pattern="(.*\.xml)"  super="type_document_tabular"  category="Data">
