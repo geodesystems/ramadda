@@ -4371,10 +4371,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     html = html.replace("${hostname}",
                                         request.getServerName());
 
-
 		    //                    if ((path.indexOf(".wiki.") >= 0) || html.startsWith(WIKI_PREFIX)) {
-                        html = getWikiManager().wikify(request, html);
-			//                    }
+		    html = getWikiManager().wikify(request, html);
+		    //                    }
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
                     //If its just sitting on the server then don't decorate
@@ -6111,6 +6110,34 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return result;
     }
     
+
+    public Result processTestAction(Request request) throws Exception {
+	//Make the action
+	ActionManager.Action action = new ActionManager.Action() {
+		public void run(Object actionId) throws Exception {
+		    //In a real scenario you can pass around the actionId and check if cancel was called, 
+		    //update the actionMessage and call setContinueHtml when you are done
+		    
+		    //Run for 10 seconds
+		    for(int i=0;i<10;i++) {
+			//check if cancel was called
+			if(!getActionManager().getActionOk(actionId)) {
+			    //cancel was called
+			    System.err.println("Test action: cancel was called");
+			    return;
+			}
+			//post a status message
+			getActionManager().setActionMessage(actionId,"test step: " + i);
+			Misc.sleepSeconds(1);
+		    }
+		    //We are done
+		    getActionManager().setContinueHtml(actionId,"done message");
+		}
+	    };
+	//This runs the action and makes the json return
+	return getActionManager().doJsonAction(request, action,  "", "",null);
+    }
+
 
     /**
      * _more_

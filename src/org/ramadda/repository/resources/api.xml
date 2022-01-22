@@ -12,7 +12,8 @@
      <api request="/docs"             method="processDocs"/>
      <api request="/colortables"      method="processColorTables"/>
      <api request="/favicon.ico"      method="processFavIcon"/>
-     <api request="/base.js"          method="processBaseJs"/>          
+     <api request="/base.js"          method="processBaseJs"/>
+     <api request="/testaction"       method="processTestAction"/>               
   </group>
 
 
