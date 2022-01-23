@@ -2435,6 +2435,7 @@ public class Admin extends RepositoryManager {
 
 
     public void listMissingFiles(Request request, Appendable sb) throws Exception {
+	String pattern = request.getString("pattern","");
 	Statement statement =
 	    getDatabaseManager().select(
 					SqlUtil.comma(
@@ -2454,6 +2455,8 @@ public class Admin extends RepositoryManager {
 	int missingCnt = 0;
 	StringBuilder buff= new StringBuilder();
 	buff.append("<table><tr><td><b>Entry</b></td><td><b>Missing File</b></td></tr>");
+	
+	boolean even = true;
 	while ((results = iter.getNext()) != null) {
 	    cnt++;
 	    if((cnt %1000)==0) System.err.println("cnt:" +cnt);
@@ -2465,12 +2468,18 @@ public class Admin extends RepositoryManager {
 	    if (f.exists()) {
 		continue;
 	    }
+	    if ((pattern != null) && (pattern.length() > 0)) {
+		if(resource.matches(pattern)) continue;
+	    }
+
+	    even=!even;
 	    missingCnt++;
 	    Entry entry = getEntryManager().getEntry(request, id);
+	    String clazz = even?"ramadda-row-even":"ramadda-row-odd";
 	    if(entry==null)
-		buff.append("<tr><td>NULL Entry " + id +"</td><td>" + f +"</td></tr>");
+		buff.append("<tr class=" + clazz+"  valign=top><td>NULL Entry " + id +"</td><td>" + f +"</td></tr>");
 	    else
-		buff.append("<tr><td>" +getEntryManager().getEntryLink(request,entry,true,"") +"</td><td>" + f+"</td></tr>");
+		buff.append("<tr class=" + clazz +" valign=top><td>" +getEntryManager().getEntryLink(request,entry,true,"") +"</td><td>" + f+"</td></tr>");
 	}
 	buff.append("</table>");
 
@@ -2531,6 +2540,10 @@ public class Admin extends RepositoryManager {
         missingSB.append(HtmlUtils.sectionOpen(null, false));
         missingSB.append(HtmlUtils.h3("List missing files"));
         request.formPostWithAuthToken(missingSB, URL_ADMIN_CLEANUP, "");
+        missingSB.append("Skip pattern: " +  HtmlUtils.input("pattern",request.getString("pattern",""),
+							     HtmlUtils.SIZE_50));
+	missingSB.append("<br>");
+
         missingSB.append(HtmlUtils.submit(msg("List missing files"),
                                            ACTION_LISTMISSING));
         missingSB.append(HtmlUtils.sectionClose());
@@ -2562,7 +2575,7 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
         } else if (request.defined(ACTION_LISTMISSING)) {
-	    sb.append(HtmlUtils.h3("Missing Files"));
+	    sb.append(missingSB);
 	    listMissingFiles(request, sb);
             return makeResult(request, "Missing Files", sb);
         } else if (request.defined(ACTION_CHANGEPATHS)) {
