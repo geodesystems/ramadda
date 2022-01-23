@@ -83,6 +83,8 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
 
+    public static final String ACTION_LISTMISSING = "action.listmissing";    
+
     /** _more_ */
     public static final String ACTION_CLEARCACHE = "action.clearcache";
 
@@ -2432,6 +2434,55 @@ public class Admin extends RepositoryManager {
     }
 
 
+    public void listMissingFiles(Request request, Appendable sb) throws Exception {
+	Statement statement =
+	    getDatabaseManager().select(
+					SqlUtil.comma(
+						      Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
+						      Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
+					Clause.or(
+						  new Clause[]{
+						      Clause.eq(Tables.ENTRIES.COL_RESOURCE_TYPE,Resource.TYPE_LOCAL_FILE),
+						      Clause.eq(Tables.ENTRIES.COL_RESOURCE_TYPE,Resource.TYPE_FILE),
+						      Clause.eq(Tables.ENTRIES.COL_RESOURCE_TYPE,Resource.TYPE_STOREDFILE)}),
+					getDatabaseManager().makeOrderBy(Tables.ENTRIES.COL_CREATEDATE,true));
+						      
+	SqlUtil.Iterator iter =
+	    getDatabaseManager().getIterator(statement);
+	ResultSet   results;
+	int cnt = 0;
+	int missingCnt = 0;
+	StringBuilder buff= new StringBuilder();
+	buff.append("<table><tr><td><b>Entry</b></td><td><b>Missing File</b></td></tr>");
+	while ((results = iter.getNext()) != null) {
+	    cnt++;
+	    if((cnt %1000)==0) System.err.println("cnt:" +cnt);
+	    int    col = 1;
+	    String id  = results.getString(col++);
+	    String resource = getStorageManager().resourceFromDB(
+								 results.getString(col++));
+	    File f = new File(resource);
+	    if (f.exists()) {
+		continue;
+	    }
+	    missingCnt++;
+	    Entry entry = getEntryManager().getEntry(request, id);
+	    if(entry==null)
+		buff.append("<tr><td>NULL Entry " + id +"</td><td>" + f +"</td></tr>");
+	    else
+		buff.append("<tr><td>" +getEntryManager().getEntryLink(request,entry,true,"") +"</td><td>" + f+"</td></tr>");
+	}
+	buff.append("</table>");
+
+	sb.append("Total entries: #" + cnt+"<br>");
+	if(missingCnt>0)
+	    sb.append("Missing: #" + missingCnt+"<br>");
+
+	sb.append(buff);
+
+    }
+
+
     /**
      * _more_
      *
@@ -2448,7 +2499,6 @@ public class Admin extends RepositoryManager {
         StringBuilder filePathSB = new StringBuilder();
         filePathSB.append(HtmlUtils.sectionOpen(null, false));
         filePathSB.append(HtmlUtils.h3("Change file paths"));
-
         request.formPostWithAuthToken(filePathSB, URL_ADMIN_CLEANUP, "");
         filePathSB.append(
             "Change the stored file path for all entries that match the following pattern");
@@ -2477,6 +2527,17 @@ public class Admin extends RepositoryManager {
         filePathSB.append(HtmlUtils.formClose());
 
 
+        StringBuilder missingSB = new StringBuilder();
+        missingSB.append(HtmlUtils.sectionOpen(null, false));
+        missingSB.append(HtmlUtils.h3("List missing files"));
+        request.formPostWithAuthToken(missingSB, URL_ADMIN_CLEANUP, "");
+        missingSB.append(HtmlUtils.submit(msg("List missing files"),
+                                           ACTION_LISTMISSING));
+        missingSB.append(HtmlUtils.sectionClose());
+        missingSB.append(HtmlUtils.formClose());
+
+
+
 
         if (request.defined(ACTION_STOP)) {
             runningCleanup = false;
@@ -2500,6 +2561,10 @@ public class Admin extends RepositoryManager {
             return new Result(request.makeUrl(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
+        } else if (request.defined(ACTION_LISTMISSING)) {
+	    sb.append(HtmlUtils.h3("Missing Files"));
+	    listMissingFiles(request, sb);
+            return makeResult(request, "Missing Files", sb);
         } else if (request.defined(ACTION_CHANGEPATHS)) {
             if (request.defined(ARG_CHANGEPATHS_PATTERN)) {
                 StringBuilder tmp = new StringBuilder();
@@ -2611,6 +2676,7 @@ public class Admin extends RepositoryManager {
 
 
             sb.append(filePathSB);
+            sb.append(missingSB);	    
 
             if (getRepository().getShutdownEnabled()) {
                 request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
@@ -2624,7 +2690,7 @@ public class Admin extends RepositoryManager {
             }
 
 
-        }
+	}
         sb.append("</form>");
         if (status.length() > 0) {
             sb.append(msgHeader("Cleanup Status"));
