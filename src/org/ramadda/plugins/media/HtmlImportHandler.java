@@ -9,7 +9,9 @@ package org.ramadda.plugins.media;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.TypeHandler;
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -216,8 +218,8 @@ public class HtmlImportHandler extends ImportHandler {
                             IOUtil.getFileTail(link.getUrl().toString()));
                     FileOutputStream fos = new FileOutputStream(tmpFile);
                     if (IOUtil.writeTo(
-                            IOUtil.getInputStream(link.getUrl().toString()),
-                            fos) == 0) {
+				       IO.getInputStream(link.getUrl().toString()),
+				       fos) == 0) {
                         errors.add("Failed to read url:" + link.getUrl());
                         IOUtil.close(fos);
 
