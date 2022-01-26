@@ -192,4 +192,44 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 
 
 
+<type name="type_document_collection"  isgroup="true" description="Document Collection"
+      handler="org.ramadda.repository.type.TypeHandler" category="Documents"
+      help="A collection of documents"      >
+     <property name="icon" value="/icons/folder.png"/>
+     <property name="form.resource.show" value="false"/>
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
++center
+{{display_simplesearch width=200px  inputSize=100% 
+ancestor=this 
+placeholder="Search in documents"
+ orderBy=createdate_ascending 
+}}
+{{display_simplesearch width=800px 
+ancestor=this
+inputSize=20 doPageSearch=false doTagSearch=true
+placeholder="Search in page"
+orderBy=createdate_ascending 
+}}
+-center
+{{grid tag=card
+addTags=true
+ sortby=name
+inner-height=200
+width=300px
+columns=3
+showIcon=true
+includeChildren=false
+showSnippet=false
+showSnippetHover=true
+showLink=false
+showHeading=true
+}} 
+-section
+]]>
+</wiki>
+</type>
+
+
 </types>
