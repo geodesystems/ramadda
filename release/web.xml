@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+  <display-name>Geode Systems RAMADDA Data Repository</display-name>
+  <description>
+    RAMADDA is an open data collection management framework that enables a data provider or a community of users to upload, organize, manage and share large data holdings. It is designed to run in a wide array of contexts, ranging from local desktop use to real time and case-study data archives. Its HTML interface provides end-user support for configuration, browsing, search, creation, update and management of the data repository. 
+  </description>
+
+  <context-param>
+    <param-name>args</param-name>
+    <param-value></param-value>
+<!--
+To change the ramadda home dir use:
+    <param-value>-Dramadda_home=/web/repository</param-value>
+-->
+  </context-param>
+
+
+  <servlet>
+    <servlet-name>RepositoryServlet</servlet-name>
+    <servlet-class>org.ramadda.repository.server.RepositoryServlet</servlet-class>
+  </servlet>
+
+   <!-- The mapping for the default servlet -->
+   <servlet-mapping>
+      <servlet-name>RepositoryServlet</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+
+</web-app>
