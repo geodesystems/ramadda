@@ -482,14 +482,16 @@ function  ConvertForm(inputId, entry) {
 	    cmds = " " + cmds +" ";
 	    this.insertText(cmds);
 	},
-	insertColumnIndex:function(index,plain) {
-	    if(this.columnInput && $("#" + this.columnInput).length>0) {
-		let v = $("#" + this.columnInput).val()||"";
+	insertColumnIndex:function(index,plain,id) {
+	    if(!id) id = this.columnInput;
+	    if(id && $("#" + id).length>0) {
+		let v = $("#" + id).val()||"";
 		v = v.trim();
+		if(v!="") v+="\n";
 		if(v!="" && !v.endsWith(",")) v +=plain?"":",";
 		index = String(index).split(",").join("\n");
-		v+=index;
-		$("#" + this.columnInput).val(v);	    
+		v+=index+"\n";
+		$("#" + id).val(v);	    
 		return;
 	    }
 	    if(!plain) index = index+",";
@@ -917,16 +919,17 @@ function  ConvertForm(inputId, entry) {
 				output.find(".csv-summary").hide();
 			});
 
-			let ids = [];
-			output.find( ".csv-id").each(function() {
-			    ids.push($(this).attr('fieldid'));
+			this.columnIds =  [];
+			let idComps = output.find( ".csv-id");
+			idComps.each(function() {
+			    _this.columnIds.push($(this).attr('fieldid'));
 			});
 			this.jq("addfields").click(()=>{
-			    let f = ids.join(",");
+			    let f = this.columnIds.join(",");
 			    this.insertColumnIndex(f,true);
 			});
 
-			output.find( ".csv-id").css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id').click(function() {
+			idComps.css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id').click(function() {
 			    let id = $(this).attr('fieldid');
 			    if(!id) return;
 			    _this.insertColumnIndex(id,true);
@@ -1074,8 +1077,28 @@ function  ConvertForm(inputId, entry) {
 		let id = this.domId("csvcommand" + idx);
 		let desc = a.description||"";
 //		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
-		desc = desc.replace(/\n/g,"<br>");		
-		desc =  HU.div([STYLE,HU.css('max-width','500px','vertical-align','top')],desc);
+		desc = desc.trim().replace(/\n/g,"<br>");		
+		let getExtra = ()=>{
+		    let extra = "";
+		    if((a.type=="column" || a.type=="columns") && this.columnIds) {
+			extra +=HU.span(['inputid',id,TITLE,"Add column",CLASS,"ramadda-clickable seesv-column-button","columnid",id],HU.getIconImage("fa-plus"));
+		    }
+		    return extra;
+		};
+
+		let getDesc = (oneLine)=>{
+		    let extra = getExtra();
+		    if(extra=="" && desc=="") return "";
+		    if(extra!="" && desc!="") {
+			if(oneLine)
+			    desc = extra +" " +desc;
+			else
+			    desc = desc+"<br>" + extra;
+		    }
+
+		    return   HU.div([STYLE,HU.css('max-width','500px','vertical-align','top')],desc);
+		}
+
 
 		if(!this.headerInput && cmd.command=="-addheader" && a.id=="properties") {
 		    this.headerInput = id;
@@ -1091,11 +1114,8 @@ function  ConvertForm(inputId, entry) {
 		    let delim = a.delimiter||",";
 		    let lines = v.split(delim);
 		    v = lines.join("\n");
-		    if(!this.columnInput && (a.type == "columns" || a.type == "column")) this.columnInput = id;
 		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "10", "rows",a.rows||"5",ID,id]),
-				 			  desc]));
-		    
-
+				 			  getDesc()]));
 		} else if(a.values || a.type=="enumeration") {
 		    let values
 		    if(a.values) {
@@ -1104,18 +1124,26 @@ function  ConvertForm(inputId, entry) {
 			console.log(JSON.stringify(a));
 			value="foo,bar";
 		    }
-		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(",")),desc]));
+		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(",")),getDesc()]));
+		} else if(a.type=="column") {
+		    let size = a.size || 5;
+		    let title = a.tooltip || "";
+		    let input;
+//		    if(this.columnIds) {
+//			input  = HU.select("",[ID,id,TITLE, title],this.columnIds,v);
+//		    } else {
+			input  = HU.input("",v,[ID,id,"size",size,TITLE, title]);
+//		    }
+		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(true)]));
 		} else {
 		    let size = a.size ||30;
 		    if(a.type=="number") size=a.size||5;
-		    if(a.type=="column") size=a.size||5;
 		    let placeholder = a.placeholder || "";
 		    let title = a.tooltip || "";
 		    if(a.type=="pattern" && !a.placeholder)
 			title = "Escapes- _leftparen_, _rightparen_, _leftbracket_, _rightbracket_, _dot_, _dollar_, _star_, _plus_, _nl_"
-		    if(!this.columnInput && (a.type == "columns" || a.type == "column")) this.columnInput = id;
 		    let input = HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]);
-		    inner+=HU.formEntry(label,HU.hbox([input, desc]));
+		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(true)]));
 		}
 	    });
 	    inner+=HU.formTableClose();
@@ -1134,6 +1162,22 @@ function  ConvertForm(inputId, entry) {
 	    }
 	    inner = HU.div([STYLE,HU.css('margin','5px')], inner);
 	    let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
+	    let _this = this;
+	    dialog.find(".seesv-column-button").click(function() {
+		if(!_this.columnIds) return;
+		let inputId = $(this).attr('inputid');
+		let html = "";
+		_this.columnIds.forEach(id=>{
+		    html+=HU.div([CLASS,"ramadda-clickable","columnid",id],id);
+		});
+		html = HU.div([STYLE,HU.css('margin','5px')], html);
+		let popup =   HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:$(this)});
+		popup.find(".ramadda-clickable").click(function() {
+		    let id = $(this).attr("columnid");
+		    _this.insertColumnIndex(id,true,inputId);
+		});
+	    });
+
 	    let submit = () =>{
 		this.columnInput = null;
 		let args = "";
