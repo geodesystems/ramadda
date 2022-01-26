@@ -13,7 +13,8 @@
         <property file="${basedir}/build.properties"/>
         <property name="ramadda_relpath" value="org/ramadda/repository" />
         <property name="ramadda_dir" value="${src_dir}/${ramadda_relpath}" />
-        <property name="release_dir" value="${dist_dir}/${release_name}" />
+        <property name="release_dir" value="${basedir}/release" />
+        <property name="release_target_dir" value="${dist_dir}/${release_name}" />
         <property name="tmpjar_dir" value="${dist_dir}/tmpjardir" />
         <property name="srcrelease_dir" value="${release_name}src${_version}" />
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
@@ -24,7 +25,7 @@
         <property name="clientbase" value="ramaddaclient" />
 
         <mkdir dir="${dist_dir}"/>
-        <copy overwrite="true" file="${ramadda_dir}/release/README" todir="${dist_dir}">
+        <copy overwrite="true" file="${release_dir}/README" todir="${dist_dir}">
             <filterset>
                 <filter token="DATE" value="${date}"/>
                 <filter token="VERSION" value="${version}"/>
@@ -145,7 +146,7 @@
          <zipfileset dir="${lib_dir}" includes="commons-httpclient-3.1.jar" fullpath="${clientbase}/lib/commons-httpclient-3.1.jar"/>
          <zipfileset dir="${lib_dir}" includes="commons-logging-1.1.jar" fullpath="${clientbase}/lib/commons-logging-1.1.jar"/>
          <zipfileset dir="${lib_dir}" includes="commons-codec-1.11.jar" fullpath="${clientbase}/lib/commons-codec-1.11.jar"/>
-         <zipfileset dir="${ramadda_dir}/release" includes="README.CLIENT" fullpath="${clientbase}/README"/>
+         <zipfileset dir="${release_dir}" includes="README.CLIENT" fullpath="${clientbase}/README"/>
          <zipfileset dir="${ramadda_dir}/client" includes="ramaddaclient.sh" fullpath="${clientbase}/ramaddaclient.sh"/>
          <zipfileset dir="${ramadda_dir}/client" includes="search.sh" fullpath="${clientbase}/search.sh"/>
          <zipfileset dir="${ramadda_dir}/client" includes="install.sh" fullpath="${clientbase}/install.sh"/>
@@ -159,27 +160,27 @@
     <target name="installer" depends="init,clean">
         <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
         <mkdir dir="${installer_dir}"/>
-        <copy overwrite="true" file="${ramadda_dir}/release/installer/lib.sh" todir="${installer_dir}"/>
-        <copy overwrite="true" file="${ramadda_dir}/release/installer/postgres.sh" todir="${installer_dir}"/>	
-        <copy overwrite="true" file="${ramadda_dir}/release/installer/installer.sh" todir="${installer_dir}">
+        <copy overwrite="true" file="${release_dir}/installer/lib.sh" todir="${installer_dir}"/>
+        <copy overwrite="true" file="${release_dir}/installer/postgres.sh" todir="${installer_dir}"/>	
+        <copy overwrite="true" file="${release_dir}/installer/installer.sh" todir="${installer_dir}">
             <filterset>
                 <filter token="VERSION" value="${version}"/>
                 <filter token="RELEASE_VERSION" value="${release_version}"/>
             </filterset>
 
         </copy>
-        <copy overwrite="true" file="${ramadda_dir}/release/installer/aws.sh" todir="${installer_dir}">
+        <copy overwrite="true" file="${release_dir}/installer/aws.sh" todir="${installer_dir}">
             <filterset>
                 <filter token="VERSION" value="${version}"/>
                 <filter token="RELEASE_VERSION" value="${release_version}"/>
             </filterset>
           </copy>
-        <copy overwrite="true" file="${ramadda_dir}/release/installer/update.sh" todir="${installer_dir}">
+        <copy overwrite="true" file="${release_dir}/installer/update.sh" todir="${installer_dir}">
             <filterset>
                 <filter token="VERSION" value="${version}"/>
             </filterset>
           </copy>
-        <copy overwrite="true" file="${ramadda_dir}/release/installer/README" todir="${installer_dir}">
+        <copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}">
             <filterset>
                 <filter token="VERSION" value="${version}"/>
                 <filter token="RELEASE_VERSION" value="${release_version}"/>
@@ -283,23 +284,23 @@
 
     <target name="zip" depends="init">
         <zip destfile="${dist_dir}/${ramadda_zip}">
-          <zipfileset dir="${release_dir}" prefix="${release_name}"/>
+          <zipfileset dir="${release_target_dir}" prefix="${release_name}"/>
         </zip>
      </target>
 
 
     <target name="ramadda.zip" depends="init,ramadda.jar">
-        <mkdir dir="${release_dir}"/>
+        <mkdir dir="${release_target_dir}"/>
         <delete includeemptydirs="true">
-            <fileset dir="${release_dir}" includes="**/*"/>
+            <fileset dir="${release_target_dir}" includes="**/*"/>
         </delete>
-        <mkdir dir="${release_dir}/lib"/>
-        <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/${unidata_jar}" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/ramaddatika.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  todir="${release_dir}" overwrite="true">
-          <fileset dir="${ramadda_dir}/release/standalone">
+        <mkdir dir="${release_target_dir}/lib"/>
+        <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/${unidata_jar}" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddatika.jar" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  todir="${release_target_dir}" overwrite="true">
+          <fileset dir="${release_dir}/standalone">
               <exclude name="**/init.sh"/>
           </fileset>
           <filterset>
@@ -309,13 +310,13 @@
           </filterset>
         </copy>
 
-        <copy  file="${lib_dir}/ramaddatds.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/servlet-api.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/jetty.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddatds.jar" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/servlet-api.jar" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/jetty.jar" todir="${release_target_dir}/lib" overwrite="true" />
         <delete file="${lib_dir}/repository.tar"/>
         <delete file="${dist_dir}/${ramadda_zip}"/>
         <zip destfile="${dist_dir}/${ramadda_zip}">
-          <zipfileset dir="${release_dir}" prefix="${release_name}"/>
+          <zipfileset dir="${release_target_dir}" prefix="${release_name}"/>
         </zip>
     </target>
 
@@ -328,8 +329,8 @@
       <delete>
            <fileset file="${dist_dir}/${ramadda_war}"/>
        </delete>
-      <war webxml="${ramadda_dir}/release/web.xml" destfile="${dist_dir}/${ramadda_war}">
-          <webinf file="${ramadda_dir}/release/repository.properties"/>
+      <war webxml="${release_dir}/web.xml" destfile="${dist_dir}/${ramadda_war}">
+          <webinf file="${release_dir}/repository.properties"/>
           <lib file="${dist_dir}/${ramadda_jar}"/>
           <lib file="${lib_dir}/ramaddalib.jar"/>
           <lib file="${lib_dir}/ramaddatds.jar"/>
