@@ -2299,7 +2299,8 @@ public class CsvUtil {
 
         /*  Output   */
         new Cmd(true, "Output"), 
-	new Cmd("-print", "Text output"),
+	new Cmd("-print", "Delimited output"),
+	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use tab for tab")),	
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
         new Cmd("-table", "Print table and stats"),	
@@ -4074,14 +4075,12 @@ public class CsvUtil {
 		String last = args.get(args.size() - 1);
 		if (last.equals("-print") || last.equals("-p")) {
 		    ctx.addProcessor(
-				     new Processor.Printer(ctx.getPrintFields(), false));
+				     new Processor.Printer(ctx.getPrintFields(), false,","));
 		} else if (last.equals("-table")) {
 		    ctx.addProcessor(new RowCollector.Html(ctx));
 		}
 		return -1;
 	    });
-
-
 
 	defineFunction(new String[]{"-progress","-dots"},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Dots(new Integer(args.get(++i))));
@@ -4174,7 +4173,7 @@ public class CsvUtil {
 
 	defineFunction("-dump",0,(ctx,args,i) -> {
 		ctx.addProcessor(
-				 new Processor.Printer(ctx.getPrintFields(), false));
+				 new Processor.Printer(ctx.getPrintFields(), false,","));
 		return i;
 	    });
 
@@ -4184,13 +4183,13 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction(new String[]{"-print","-p"}, 0,(ctx,args,i) -> {
+	defineFunction(new String[]{"-print","-p","-printdelim"}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		if (ctx.getProperty("seenPrint")!=null) {
 		    return i;
 		}
 		ctx.putProperty("seenPrint","true");
-		ctx.addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
+		ctx.addProcessor(new Processor.Printer(ctx.getPrintFields(), false,","));
 		return i;
 	    });
 

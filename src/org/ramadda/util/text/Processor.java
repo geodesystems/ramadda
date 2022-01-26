@@ -1276,8 +1276,10 @@ public abstract class Processor extends CsvOperator {
          * @param addHeader _more_
          * @param trim _more_
          */
-        public Printer(boolean addHeader, boolean trim) {
+        public Printer(boolean addHeader, boolean trim, String delimiter) {
             this(addHeader);
+	    this.delimiter = delimiter;
+	    if(this.delimiter.equals("tab")) this.delimiter = "\t";
             this.trim = trim;
         }
 
@@ -1377,7 +1379,7 @@ public abstract class Processor extends CsvOperator {
 		if(theTemplate!=null) return;
             } else {
 		if (delimiter != null) {
-		    writer.append(delimiter);
+		    //		    writer.append(delimiter);
 		}
             }
             List    values        = row.getValues();
@@ -1386,7 +1388,7 @@ public abstract class Processor extends CsvOperator {
 		for (int colIdx = 0; colIdx < values.size(); colIdx++) {
 		    Object v = values.get(colIdx);
                     if (colIdx > 0) {
-                        writer.append(",");
+                        writer.append(delimiter);
                     }
                     if (v != null) {
                         String sv = v.toString();
@@ -1401,7 +1403,7 @@ public abstract class Processor extends CsvOperator {
                         }
                         boolean addQuote = false;
                         if (escapeColumns) {
-                            addQuote = (sv.indexOf(",") >= 0)
+                            addQuote = (sv.indexOf(delimiter) >= 0)
 				|| (sv.indexOf("\n") >= 0);
                             if (sv.indexOf("\"") >= 0) {
                                 addQuote = true;
