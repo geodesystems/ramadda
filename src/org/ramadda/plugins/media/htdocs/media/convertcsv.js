@@ -18,11 +18,13 @@ function  ConvertForm(inputId, entry) {
     const ID_PRE = "csvpre";
 
     $.extend(this,{
+
 	entry:entry,
 	editor:null,
 	inputId: inputId||"convertcsv_input",
 	baseId: inputId||"convertcsv_input",
 	applyToSiblings:false,
+	allColumnIds:[],
 	save: true,
 	doCommands:true,
 	commands:null,
@@ -39,7 +41,15 @@ function  ConvertForm(inputId, entry) {
 	jq: function(id) {
 	    return $("#"+this.domId(id));
 	},
+	addColumnId: function(id) {
+	    if(!this.allColumnIds.includes(id))
+		this.allColumnIds.push(id);
+	    if(!this.columnIds.includes(id))
+		this.columnIds.push(id);
+	},
 	init: function(){
+	    this.allColumns = [];
+
 	    let _this  =this;
 	    let text = $("#" + this.baseId +"_lastinput").html();
 	    if(text!=null) {
@@ -711,6 +721,7 @@ function  ConvertForm(inputId, entry) {
 
 	    };
 	    let jqxhr = $.getJSON( url, (data) =>{
+//		console.log(typeof jqxhr.getAllResponseHeaders());
 		if(data.error!=null) {
 		    this.output(HtmlUtil.tag("pre",[],"Error:" + window.atob(data.error)));
 		    return;
@@ -922,7 +933,7 @@ function  ConvertForm(inputId, entry) {
 			this.columnIds =  [];
 			let idComps = output.find( ".csv-id");
 			idComps.each(function() {
-			    _this.columnIds.push($(this).attr('fieldid'));
+			    _this.addColumnId($(this).attr('fieldid'));
 			});
 			this.jq("addfields").click(()=>{
 			    let f = this.columnIds.join(",");
@@ -1080,7 +1091,7 @@ function  ConvertForm(inputId, entry) {
 		desc = desc.trim().replace(/\n/g,"<br>");		
 		let getExtra = ()=>{
 		    let extra = "";
-		    if((a.type=="column" || a.type=="columns") && this.columnIds) {
+		    if((a.type=="column" || a.type=="columns") && this.allColumnIds.length>0) {
 			extra +=HU.span(['inputid',id,TITLE,"Add column",CLASS,"ramadda-clickable seesv-column-button","columnid",id],HU.getIconImage("fa-plus"));
 		    }
 		    return extra;
@@ -1164,10 +1175,10 @@ function  ConvertForm(inputId, entry) {
 	    let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
 	    let _this = this;
 	    dialog.find(".seesv-column-button").click(function() {
-		if(!_this.columnIds) return;
+		if(_this.allColumnIds.length==0) return;
 		let inputId = $(this).attr('inputid');
 		let html = "";
-		_this.columnIds.forEach(id=>{
+		_this.allColumnIds.forEach(id=>{
 		    html+=HU.div([CLASS,"ramadda-clickable","columnid",id],id);
 		});
 		html = HU.div([STYLE,HU.css('margin','5px')], html);
