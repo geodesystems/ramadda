@@ -6394,9 +6394,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			l.call( "Javascript", "+js_newline_", "-js"),
 			l.call( "Code", "```_newline__newline_", "```"),
 			l.call( "Property", "{{property name=value", "}}"));	
-
-        Utils.appendAll(
-            misc1,
+        Utils.appendAll(misc1,
 	    l.call( "Title", ":title {{name link=true}}", ""),
 	    l.call( "Heading", ":heading your heading", ""),
 	    l.call( "Heading-1", ":h1 your heading", ""),
