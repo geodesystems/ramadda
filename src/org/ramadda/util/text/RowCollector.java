@@ -434,6 +434,38 @@ public class RowCollector extends Processor {
 	    }
 	}
 
+	private  static class Bin extends Count {
+	    String label;
+
+
+	    Bin(double min,double max) {this.min = min;this.max = max;}
+	    public boolean firstBin() {
+		return (min==Double.NEGATIVE_INFINITY);
+	    }
+
+	    public boolean lastBin() {
+		return (max==Double.POSITIVE_INFINITY);
+	    }
+	    
+	    public boolean inRange(double v) {
+		if(firstBin()) {
+		    return v<max;
+		}
+		return v>=min && v<max;
+	    }
+
+	    public String getLabel() {
+		if(label!=null) return label;
+		if(min==Double.NEGATIVE_INFINITY)
+		    return "<" + Utils.format(max);
+		if(max==Double.POSITIVE_INFINITY)
+		    return ">" + Utils.format(min);		
+		return Utils.format(min) +" - " + Utils.format(max);		
+	    }
+	    public String toString() {
+		return "bin min:" + min + " max:" + max +" count:" + count;
+	    }
+	}
 
 
 
@@ -2747,6 +2779,7 @@ public class RowCollector extends Processor {
 	    }
 
 	    for(Bin bin: bins) {
+		if(bin.totals==null) continue;
 		if(bin.firstBin() && bin.count==0) continue;
 		Row    row = new Row();
 		newRows.add(row);
@@ -2777,43 +2810,6 @@ public class RowCollector extends Processor {
 
 
 
-	private  class Bin extends Count {
-	    String label;
-	    double min;
-	    double max;
-	    int count;
-	    double[]totals;
-	    double[]mins;
-	    double[]maxs; 	    	    
-
-	    Bin(double min,double max) {this.min = min;this.max = max;}
-	    public boolean firstBin() {
-		return (min==Double.NEGATIVE_INFINITY);
-	    }
-
-	    public boolean lastBin() {
-		return (max==Double.POSITIVE_INFINITY);
-	    }
-	    
-	    public boolean inRange(double v) {
-		if(firstBin()) {
-		    return v<max;
-		}
-		return v>=min && v<max;
-	    }
-
-	    public String getLabel() {
-		if(label!=null) return label;
-		if(min==Double.NEGATIVE_INFINITY)
-		    return "<" + Utils.format(max);
-		if(max==Double.POSITIVE_INFINITY)
-		    return ">" + Utils.format(min);		
-		return Utils.format(min) +" - " + Utils.format(max);		
-	    }
-	    public String toString() {
-		return "bin min:" + min + " max:" + max +" count:" + count;
-	    }
-	}
 
 
     }
