@@ -682,15 +682,6 @@ a.ramadda-entry-nav-page {
 }
 
 
-a.ramadda-menubar-button:link, a.ramadda-menubar-button {
-    color:rgb(85, 85, 85);
-    text-decoration:none;
-}
-
-a.ramadda-menubar-button:hover {
-    text-decoration: underline;
-    color:#000;
-}
 
 .csv_header_field {
     color:blue;
@@ -710,18 +701,13 @@ a.ramadda-menubar-button:hover {
     cursor:pointer !important;
 }
 
-.ramadda-menubar-button:hover {
-    text-decoration: underline;
-    cursor:pointer;
-}
-
 .ramadda-menubar-button {
     display:inline-block;
     border-right:var(--basic-border);
     padding-left:8px;
     padding-right:8px;
-    padding-top:5px;
-    padding-bottom:5px;
+    padding-top:2px;
+    padding-bottom:2px;
 }
 
 .ramadda-menubar-button-last {
@@ -732,14 +718,41 @@ a.ramadda-menubar-button:hover {
     border-right:0px #ccc solid;
 }
 
+
+a.ramadda-menubar-button:link, a.ramadda-menubar-button {
+    color:rgb(85, 85, 85);
+    text-decoration:none;
+}
+
+a.ramadda-menubar-button:hover {
+    text-decoration: underline;
+    color:#000;
+}
+
+
+.ramadda-menubar-button:hover {
+    text-decoration: underline;
+    cursor:pointer;
+}
+
+
 .ramadda-popup-link .ramadda-menubar-button {
     border:0px;
     border-right:var(--basic-border);
 }
 
 .ramadda-page-title  {
-    font-size:200%;
+    font-size:175%;
     text-align:center;
+}
+
+.ramadda-page-title  a:hover {
+    text-decoration:underline;
+}
+
+.ramadda-page-ltitle  {
+    font-size:175%;
+    text-align:left;
 }
 
 .ramadda-page-subtitle  {
