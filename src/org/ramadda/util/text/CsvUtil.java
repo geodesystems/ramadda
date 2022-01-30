@@ -1726,12 +1726,13 @@ public class CsvUtil {
         new Cmd("-notsame", "Pass through where the 2 columns don't have the same value",
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),			
-        new Cmd("-unique", "Pass through unique values", new Arg("columns")),
-        new Cmd("-dups", "Pass through duplicate values", new Arg("columns")),
+        new Cmd("-unique", "Pass through unique values", new Arg("columns","","type","columns")),
+        new Cmd("-dups", "Pass through duplicate values", new Arg("columns","","type","columns")),
         new Cmd("-sample", "Pass through rows based on probablity",
                 new Arg("probablity", "0-1 probability of passing through a row")),
-        new Cmd("-maxvalue",  "Pass through the row that has the max value in the group of columns defined by the key column", new Arg("key column"),
-                new Arg("value column")),
+        new Cmd("-maxvalue",  "Pass through the row that has the max value in the group of columns defined by the key column",
+		new Arg("key column","","type","column"),
+                new Arg("value column","","type","column")),
         new Cmd("-eq", "Pass through rows that the column value equals the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
         new Cmd("-ne", "Pass through rows that the column value does not equal the given value",
@@ -2211,12 +2212,12 @@ public class CsvUtil {
 		new Arg("columns", "Address columns", "type", "columns"),
                 new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
                 new Arg("suffix"),
-                new Arg("latitude", "latitude column"),
-                new Arg("longitude", "longitude column")),		
+                new Arg("latitude", "latitude column","type","column"),
+                new Arg("longitude", "longitude column","type","column")),		
         new Cmd("-geocodeaddressdb", "Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column", 
-                new Arg("columns"), "prefix", "suffix"),
+                new Arg("columns","columns","type","columns"), "prefix", "suffix"),
         new Cmd("-geocodejoin", "Geocode with file",
-                new Arg("column", "key column", "type", "columns"),
+                new Arg("column", "key column", "type", "column"),
                 new Arg("csv file", "File to get lat/lon from", "type",
                         "file"), "key idx", "lat idx", "lon idx"),
         new Cmd("-bounds", 
@@ -4497,7 +4498,7 @@ public class CsvUtil {
     private void outputScript(List<String> args, TextReader ctx) throws Exception {
 	PrintWriter pw        = new PrintWriter(getOutputStream());
 	pw.println("#!/bin/sh");
-	pw.println("#the SEESV environment variable needs to point to the seesv.sh script in RAMADDA's SeeSV  release");
+	pw.println("#the SEESV environment variable needs to point to the directory holding the seesv.sh script in RAMADDA's SeeSV  release");
 	pw.println("#");
 	pw.print("sh ${SEESV}/seesv.sh ");	
 	boolean seenPrint = false;
