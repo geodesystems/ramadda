@@ -393,7 +393,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
             }
             CsvUtil prevCsvUtil = null;
-
             for (int i = 0; i < llines.size(); i++) {
                 List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
@@ -424,15 +423,17 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                     || args.contains("-toxml")
                                     || args.contains("-db");
                 //              System.err.println("args:" + args);
-                if ( !args.contains("-print") && !args.contains("-p")
-                        && !args.contains("-explode")
-                        && !args.contains("-script") && !hasOutput
-                        && !args.contains("-printheader")
-                        && !args.contains("-template")
-                        && !args.contains("-raw") && !args.contains("-stats")
-                        && !args.contains("-record")
-                        && !args.contains("-table")
-                        && !args.contains("-db")) {
+                if ( !args.contains("-print")
+		     && !args.contains("-p")
+		     && !args.contains("-explode")
+		     && !args.contains("-script") && !hasOutput
+		     && !args.contains("-printheader")
+		     && !args.contains("-template")
+		     && !args.contains("-raw")
+		     && !args.contains("-stats")
+		     && !args.contains("-record")
+		     && !args.contains("-table")
+		     && !args.contains("-db")) {
                     //              System.err.println("adding print");
                     args.add("-print");
                 }
@@ -508,11 +509,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
                         break;
                     }
                 }
+
                 if ( !csvUtil.getOkToRun()) {
                     String r = "stopped";
                     String s = new String(Utils.encodeBase64(r));
                     s = Json.mapAndQuote("result", s);
-
                     return new Result(s, "application/json");
                 }
 
@@ -536,13 +537,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     StringBuffer html = new StringBuffer();
                     for (String newFile : newFiles) {
                         File f = new File(newFile);
-                        /*
-                          File dir = f.getParentFile();
-                          String xml = "<entry name=\"foo\"><description><![CDATA[Hello]]></description></entry>";
-                          IOUtil.writeFile(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"), xml);
-                          System.err.println(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"));
-                        */
-
                         String id =
                             getEntryManager().getProcessFileTypeHandler()
                                 .getSynthId(getEntryManager()
