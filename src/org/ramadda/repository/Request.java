@@ -1417,6 +1417,7 @@ public class Request implements Constants, Cloneable {
     }
 
 
+
     /** _more_ */
     private static Pattern checker;
 
@@ -1705,6 +1706,13 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public String getBase64String(String key, String dflt) {
+	String raw = getUnsafeString(key, null);
+	if(raw==null) return dflt;
+	return new String(Utils.decodeBase64(raw));
+    }
+			   
+
     /**
      * _more_
      *
@@ -1718,10 +1726,9 @@ public class Request implements Constants, Cloneable {
             //Don't run the checker for now
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
-
         String s = getCheckedString(key, dflt, checker);
-
-        return HtmlUtils.sanitizeString(s);
+        s = HtmlUtils.sanitizeString(s);
+	return s;
     }
 
 
@@ -1751,7 +1758,7 @@ public class Request implements Constants, Cloneable {
      * @param pattern _more_
      *
      * @return _more_
-     */
+     */ 
     public String getCheckedString(String key, String dflt, Pattern pattern) {
         String v = (String) getValue(key, (String) null);
         if (v == null) {
