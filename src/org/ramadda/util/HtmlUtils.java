@@ -386,6 +386,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static String hiddenBase64(String name, Object value) {
+	String s = value.toString();
+        return hidden(name, Utils.encodeBase64(s), "");
+    }
+
+
     /**
      * _more_
      *
@@ -827,7 +833,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String quote(String s) {
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
-
         return sb.toString();
     }
 
@@ -844,7 +849,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable quote(Appendable sb, String s) {
         try {
             sb.append("\"");
-            s = s.replaceAll("\"", "\\\"");
+	    //            s = s.replaceAll("\"", "\\\"");
+            s = s.replaceAll("\"", "&quot;");	    
             sb.append(s);
             sb.append("\"");
         } catch (IOException ioe) {
@@ -5155,113 +5161,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public static String urlEncode(String s) {
-        try {
-            return java.net.URLEncoder.encode(urlEncodeSpace(s), "UTF-8");
-        } catch (Exception exc) {
-            System.err.println("error encoding arg(3):" + s + " " + exc);
-            exc.printStackTrace();
-
-            return "";
-        }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public static String urlDecode(String s) {
-        try {
-            return java.net.URLDecoder.decode(s, "UTF-8");
-        } catch (Exception exc) {
-            System.err.println("error decoding:" + s + " " + exc);
-            exc.printStackTrace();
-
-            return "";
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public static String urlEncodeSpace(String s) {
-        return s.replaceAll(" ", "+");
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public static String urlEncodeExceptSpace(String s) {
-        try {
-            s = s.replace(" ", "_SPACE_");
-            s = java.net.URLEncoder.encode(s, "UTF-8");
-            s = s.replace("_SPACE_", " ");
-
-            return s;
-        } catch (Exception exc) {
-            System.err.println("error encoding arg(4):" + s + " " + exc);
-            exc.printStackTrace();
-
-            return "";
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param input _more_
-     *
-     * @return _more_
-     */
-    public static String entityEncode(String input) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < input.length(); ++i) {
-            char ch = input.charAt(i);
-            if (((ch >= 'a') && (ch <= 'z')) || ((ch >= 'A') && (ch <= 'Z'))
-                    || ((ch >= '0') && (ch <= '9'))) {
-                sb.append(ch);
-            } else {
-                sb.append("&#" + (int) ch + ";");
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     *
-     * @param input _more_
-     *
-     * @return _more_
-     */
-    public static String entityDecode(String input) {
-        return StringEscapeUtils.unescapeHtml3(input);
-
-    }
 
 
 
@@ -6179,6 +6078,114 @@ public class HtmlUtils implements HtmlUtilsConstants {
         s = s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
         return s;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static String urlEncode(String s) {
+        try {
+            return java.net.URLEncoder.encode(urlEncodeSpace(s), "UTF-8");
+        } catch (Exception exc) {
+            System.err.println("error encoding arg(3):" + s + " " + exc);
+            exc.printStackTrace();
+
+            return "";
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static String urlDecode(String s) {
+        try {
+            return java.net.URLDecoder.decode(s, "UTF-8");
+        } catch (Exception exc) {
+            System.err.println("error decoding:" + s + " " + exc);
+            exc.printStackTrace();
+
+            return "";
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static String urlEncodeSpace(String s) {
+        return s.replaceAll(" ", "+");
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static String urlEncodeExceptSpace(String s) {
+        try {
+            s = s.replace(" ", "_SPACE_");
+            s = java.net.URLEncoder.encode(s, "UTF-8");
+            s = s.replace("_SPACE_", " ");
+
+            return s;
+        } catch (Exception exc) {
+            System.err.println("error encoding arg(4):" + s + " " + exc);
+            exc.printStackTrace();
+
+            return "";
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param input _more_
+     *
+     * @return _more_
+     */
+    public static String entityEncode(String input) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length(); ++i) {
+            char ch = input.charAt(i);
+            if (((ch >= 'a') && (ch <= 'z')) || ((ch >= 'A') && (ch <= 'Z'))
+                    || ((ch >= '0') && (ch <= '9'))) {
+                sb.append(ch);
+            } else {
+                sb.append("&#" + (int) ch + ";");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     *
+     * @param input _more_
+     *
+     * @return _more_
+     */
+    public static String entityDecode(String input) {
+        return StringEscapeUtils.unescapeHtml3(input);
     }
 
 
