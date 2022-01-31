@@ -69,6 +69,13 @@ if {[llength $urls]} {
     set cnt 0
     foreach url $urls {
 	incr cnt
+
+        if {[regexp {sleep(.*)} $url match pause]} {
+	    set pause [string trim $pause]
+	    puts stderr "sleep:$pause"
+	    exec sleep $pause
+	    continue
+	}
 	capture ""  "Page $cnt" $url 0 $sleep
     }
 } else {
