@@ -771,10 +771,10 @@ public class UserManager extends RepositoryManager {
                 getRepositoryBase().URL_USER_LOGIN)));
 
         if (request.defined(ARG_REDIRECT)) {
-            String redirect = request.getUnsafeString(ARG_REDIRECT, "");
+            String redirect = request.getBase64String(ARG_REDIRECT, "");
             //Um, a bit of a hack
             if (redirect.indexOf("logout") < 0) {
-                sb.append(HtmlUtils.hidden(ARG_REDIRECT, redirect));
+                sb.append(HtmlUtils.hidden(ARG_REDIRECT, Utils.encodeBase64(redirect)));
             }
         }
         sb.append(HtmlUtils.formTable());
@@ -3093,9 +3093,7 @@ public class UserManager extends RepositoryManager {
                         getPageHandler().showDialogNote(
                             msg("You are logged in")));
                     if (request.exists(ARG_REDIRECT)) {
-                        destUrl = new String(
-                            Utils.decodeBase64(
-                                request.getUnsafeString(ARG_REDIRECT, "")));
+                        destUrl =  request.getBase64String(ARG_REDIRECT, "");
                         //Gack  - make sure we don't redirect to the logout page
                         if (destUrl.indexOf("logout") < 0) {
                             return new Result(destUrl);
