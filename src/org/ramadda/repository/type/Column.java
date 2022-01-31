@@ -3467,7 +3467,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                                       getDatabaseManager().getIterator(
                                           statement), 1);
                 long t3 = System.currentTimeMillis();
-                System.err.println("TIME:" + (t2 - t1) + " " + (t3 - t2));
+		//                System.err.println("TIME:" + (t2 - t1) + " " + (t3 - t2));
+
                 List<TwoFacedObject> list = new ArrayList();
                 for (int i = 0; i < values.length; i++) {
                     if (values[i] == null) {
