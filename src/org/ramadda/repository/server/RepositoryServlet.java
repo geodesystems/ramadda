@@ -298,6 +298,13 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
+
+		//Some headers to tighten up security
+		response.setHeader("Referrer-Policy","no-referrer");
+		response.setHeader("X-Frame-Options", "SAMEORIGIN");
+		response.setHeader("X-Content-Type-Options", "nosniff");		
+
+
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
                 if (standAloneServer != null) {
@@ -336,15 +343,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     response.addDateHeader("Last-Modified",
                                            lastModified.getTime());
                 }
-
-		//Some headers to tighten up security
-		response.setHeader("Referrer-Policy","no-referrer");
-		response.setHeader("X-Frame-Options", "SAMEORIGIN");
-		response.setHeader("X-Content-Type-Options", "nosniff");
-
-
-
-
 
                 if (repositoryResult.getCacheOk()) {
                     //                    response.setHeader("Cache-Control",  "public,max-age=259200");
