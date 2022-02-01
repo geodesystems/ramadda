@@ -1990,6 +1990,8 @@ public abstract class DataProvider extends CsvOperator {
             tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             tabula = csvUtil.getProperty("RAMADDA_TABULA");
+	    if(tabula==null)
+		tabula = csvUtil.getProperty("ramadda_tabula");		
         }
 
 
