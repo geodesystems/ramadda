@@ -1915,6 +1915,9 @@ public class CsvUtil {
                 new Arg("source_columns", "source key columns"),
 		new Arg("default_value", "default value")),
 
+
+
+
         new Cmd("-normal", "Normalize the strings",
                 new Arg("columns", "Columns", "type", "columns")
 		),
@@ -1945,6 +1948,10 @@ public class CsvUtil {
 		new Arg("name", "New column name"),
 		new Arg("start", "Start index"),
 		new Arg("end", "End index")),		
+        new Cmd("-fromheading", "Extract column values from headings",
+                new Arg("columns", "Columns of headings", "type", "columns"),
+                new Arg("names", "Comma separated list of new column names", "type", "list"),
+                new Arg("pattern", "Regexp to apply to header with () defining column values")),				
         /** *  Change values * */
         new Cmd(true, "Change"),
         new Cmd("-change", "Change columns",
@@ -3217,7 +3224,11 @@ public class CsvUtil {
 	defineFunction("-between_indices",4,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Between(args.get(++i), args.get(++i),args.get(++i), args.get(++i)));
 		return i;
-	    });			
+	    });
+	defineFunction("-fromheading",3,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.FromHeading(getCols(args.get(++i)), args.get(++i), args.get(++i)));
+		return i;
+	    });				
 
 
 	defineFunction("-gender",1,(ctx,args,i) -> {

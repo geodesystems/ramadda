@@ -704,6 +704,7 @@ public class Filter extends Processor {
 
                     return ok;
                 }
+		if(idx>=row.size()) continue;
                 String v = row.getString(idx);
                 if (blank) {
                     ok = doNegate(v.equals(""));

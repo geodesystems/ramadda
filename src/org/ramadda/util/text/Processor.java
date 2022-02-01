@@ -852,6 +852,87 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
+    public static class FromHeading extends Processor {
+
+        /**  */
+        private List<String> names;
+        private List<String> values;	
+
+	Pattern pattern;
+
+
+
+        /**
+         *
+         *
+         * @param col _more_
+         * @param name _more_
+         * @param start _more_
+         * @param end _more_
+         */
+        public FromHeading(List<String> cols, String names, String pattern) {
+            super(cols);
+            this.names  = Utils.split(names,",");
+            this.pattern = Pattern.compile(pattern);
+	    values = new ArrayList<String>();
+	    for(String s: this.names) values.add("");
+        }
+
+
+        /**
+         * @param ctx _more
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    String corpus;
+            List<Integer> indices = getIndices(ctx);
+	    if(indices.size()==1) {
+		System.out.println("row:" + row);
+		corpus = row.getString(indices.get(0));
+	    } else {
+		StringBuilder sb = new StringBuilder();
+		for(int i: indices) {
+		    if(i>=0 && i<row.size())  {
+			sb.append(row.getString(i));
+			sb.append(" ");
+		    }
+		}
+		corpus = sb.toString().trim();
+	    }
+            Matcher matcher = pattern.matcher(corpus);
+            if ( !matcher.find()) {
+		if (rowCnt++ == 0) {
+		    for(String name: names) row.add(name);
+		    return row;
+		}
+		for(String v: values) row.add(v);
+		return row;
+	    } else {
+		//		System.out.println ("MATCH:" + corpus);
+		values = new ArrayList<String>();
+		for(int i=0;i<matcher.groupCount();i++) {
+		    String v = matcher.group(i+1);
+		    values.add(v);
+		}
+		return null;
+	    }
+        }
+    }
+
+    
+
 
     /**
      * Class description

@@ -1980,13 +1980,13 @@ public abstract class DataProvider extends CsvOperator {
         /**  */
         String tabula;
 
+	private int rowCnt=0;
 
         /**
          * _more_
          * @param csvUtil _more_
          */
         public Pdf(CsvUtil csvUtil) {
-
             tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             tabula = csvUtil.getProperty("RAMADDA_TABULA");
@@ -2005,6 +2005,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
+	    this.ctx = ctx;
             Runtime rt = Runtime.getRuntime();
             if (tabula == null) {
                 throw new IllegalArgumentException(
@@ -2014,6 +2015,7 @@ public abstract class DataProvider extends CsvOperator {
             Process  proc     = rt.exec(commands);
             stdInput = new BufferedReader(
                 new InputStreamReader(proc.getInputStream()));
+
 
             BufferedReader stdError = new BufferedReader(
                                           new InputStreamReader(
@@ -2035,10 +2037,22 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public Row readRow() throws Exception {
-            String line = stdInput.readLine();
-            if (line == null) {
-                return null;
-            }
+            String line = null;
+
+	    while(true) {
+		line = stdInput.readLine();
+		if (line == null) {
+		    return null;
+		}
+		rowCnt++;
+		if (rowCnt <= ctx.getSkipLines()) {
+		    ctx.addHeaderLine(line);
+		    continue;
+		}
+		break;
+	    }
+
+
             List<String> toks = Utils.tokenizeColumns(line, tokenizer);
 
             return new Row(toks);
