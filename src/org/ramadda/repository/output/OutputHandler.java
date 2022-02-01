@@ -2586,7 +2586,7 @@ public class OutputHandler extends RepositoryManager {
 	    this.entry = entry;
 	    this.outputHandler = outputHandler;
 	    this.state = state;
-	    newWay = outputHandler.getRepository().getProperty("ramadda.streamoutput",newWay);
+	    newWay = outputHandler.getRepository().getStreamOutput();
 	    OutputStream outputStream  = request.getOutputStream();
 	    if(outputStream==null || !request.getCanStreamResult()) newWay = false;
 	    //	    System.err.println("ResultHandler newWay:" + newWay);

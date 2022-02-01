@@ -528,6 +528,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private boolean corsOk = true;
 
+    private boolean streamOutput = false;
+
 
     /** _more_ */
     private boolean cdnOk = false;
@@ -4544,6 +4546,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         commentsEnabled       =  getProperty("ramadda.enable_comments", false);
 	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, false);
         corsOk                = getProperty(PROP_CORS_OK, false);
+	streamOutput          =  getProperty("ramadda.streamoutput",false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,   false);
         cdnOk                 = getProperty(PROP_CDNOK, true);
     }
@@ -4647,6 +4650,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public boolean getCdnOk() {
         return cdnOk;
     }
+
+
+    
+    /**
+       Get the StreamOutput property.
+       
+       @return The StreamOutput
+    **/
+    public boolean getStreamOutput () {
+	return streamOutput;
+    }
+
+
+
 
     /**
      * _more_
