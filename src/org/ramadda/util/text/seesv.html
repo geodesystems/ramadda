@@ -36,7 +36,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 225 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 233 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -860,7 +860,7 @@ How many rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
+Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1224,6 +1224,17 @@ Start index<br>
 End index<br>
 <br>
 </ul>
+</div><a name='-fromheading'></a><div class=command> <i><a href='#-fromheading'>-fromheading</a></i>  &lt;columns&gt;  &lt;names&gt;  &lt;pattern&gt; </div><div class=command-block>Extract column values from headings<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Columns of headings<br>
+<i>names</i>
+Comma separated list of new column names<br>
+<i>pattern</i>
+Regexp to apply to header with () defining column values<br>
+<br>
+</ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
 <div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
@@ -1562,13 +1573,34 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
-<div class=header>Commands: <a href='#-md'>-md</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
+<div class=header>Commands: <a href='#-md'>-md</a> <a href='#-tob64'>-tob64</a> <a href='#-fromb64'>-fromb64</a> <a href='#-rot13'>-rot13</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>type</i>
  values:MD5,SHA-1,SHA-256 <br>
+<br>
+</ul>
+</div><a name='-tob64'></a><div class=command> <i><a href='#-tob64'>-tob64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-fromb64'></a><div class=command> <i><a href='#-fromb64'>-fromb64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-rot13'></a><div class=command> <i><a href='#-rot13'>-rot13</a></i>  &lt;columns&gt; </div><div class=command-block>Rot 13<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div><a name='-uuid'></a><div class=command> <i><a href='#-uuid'>-uuid</a></i> </div><div class=command-block>Add a UUID field<br>
@@ -1927,11 +1959,11 @@ New column name<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Geospatial'></a><b style='font-size:120%;'>Geospatial</b><br>
-<div class=header>Commands: <a href='#-geocode'>-geocode</a> <a href='#-geocodeaddressdb'>-geocodeaddressdb</a> <a href='#-geocodejoin'>-geocodejoin</a> <a href='#-statename'>-statename</a> <a href='#-geoname'>-geoname</a> <a href='#-geocontains'>-geocontains</a> <a href='#-elevation'>-elevation</a> <a href='#-mercator'>-mercator</a> <a href='#-region'>-region</a> <a href='#-population'>-population</a> <a href='#-neighborhood'>-neighborhood</a> </div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
+<div class=header>Commands: <a href='#-geocode'>-geocode</a> <a href='#-geocodeifneeded'>-geocodeifneeded</a> <a href='#-geocodeaddressdb'>-geocodeaddressdb</a> <a href='#-geocodejoin'>-geocodejoin</a> <a href='#-bounds'>-bounds</a> <a href='#-getaddress'>-getaddress</a> <a href='#-statename'>-statename</a> <a href='#-geoname'>-geoname</a> <a href='#-geocontains'>-geocontains</a> <a href='#-elevation'>-elevation</a> <a href='#-mercator'>-mercator</a> <a href='#-region'>-region</a> <a href='#-population'>-population</a> <a href='#-neighborhood'>-neighborhood</a> </div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
-Column indices. Can include ranges, e.g. 0-5<br>
+Address columns<br>
 <i>prefix</i>
 optional prefix e.g., state: or county: or country:<br>
 <i>suffix</i>
@@ -1941,7 +1973,7 @@ optional prefix e.g., state: or county: or country:<br>
 
 
 
-You can use Google or geocode.io for geo coding by setting the following environment variables.
+You can use Google or geocode.io for geocoding by setting the following environment variables.
 Else, this defaults to using US Census geocode API.
 <p>
 To use Google geocoding set the environment variable:
@@ -1954,8 +1986,13 @@ To use geocod.io set the environment variable:
 GEOCIDEIO_API_KEY=...
 </pre>
 
+For here.com set:
+<pre>
+HERE_API_KEY=
+</pre>
 
-With the following file:
+
+To geocode, e.g.,  with the following file:
 <pre class=examples>
 city,state
 Boulder,CO
@@ -1963,7 +2000,7 @@ Laramie,WY
 Buffalo,NY
 </pre>
 
-To geocode
+Run:
 <pre class=examples>
 seesv -geocode city,state "" "" ...
 </pre>
@@ -1980,7 +2017,7 @@ seesv -geocode columns "country:" "" ...
 </pre>
 
 
-The prefix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
+The suffix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
 <pre class=examples>
 city
 Boulder
@@ -1997,12 +2034,26 @@ seesv -geocode city "" "CO"
 
 
 
-
-<p></div><a name='-geocodeaddressdb'></a><div class=command> <i><a href='#-geocodeaddressdb'>-geocodeaddressdb</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column<br>
+<p></div><a name='-geocodeifneeded'></a><div class=command> <i><a href='#-geocodeifneeded'>-geocodeifneeded</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt;  &lt;latitude&gt;  &lt;longitude&gt; </div><div class=command-block>Geocode if needed<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
-Column indices. Can include ranges, e.g. 0-5<br>
+Address columns<br>
+<i>prefix</i>
+optional prefix e.g., state: or county: or country:<br>
+<i>suffix</i>
+<br>
+<i>latitude</i>
+latitude column<br>
+<i>longitude</i>
+longitude column<br>
+<br>
+</ul>
+</div><a name='-geocodeaddressdb'></a><div class=command> <i><a href='#-geocodeaddressdb'>-geocodeaddressdb</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+columns<br>
 <i>prefix</i>
 <br>
 <i>suffix</i>
@@ -2048,6 +2099,33 @@ seesv -geocodejoin precinct precincts.csv precinct latitude longitude
 </pre>
 
 
+<p></div><a name='-bounds'></a><div class=command> <i><a href='#-bounds'>-bounds</a></i>  &lt;north&gt;  &lt;west&gt;  &lt;south&gt;  &lt;east&gt; </div><div class=command-block>Geocode within bounds<br>
+<b>Arguments:</b><br>
+<ul>
+<i>north</i>
+<br>
+<i>west</i>
+<br>
+<i>south</i>
+<br>
+<i>east</i>
+<br>
+<br>
+</ul>
+</div><a name='-getaddress'></a><div class=command> <i><a href='#-getaddress'>-getaddress</a></i>  &lt;latitude&gt;  &lt;latitude&gt; </div><div class=command-block>Get address from lat/lon<br>
+<b>Arguments:</b><br>
+<ul>
+<i>latitude</i>
+latitude column<br>
+<i>latitude</i>
+latitude column<br>
+<br>
+</ul>
+
+
+
+This function takes a latitude and longitude column and does an address lookup using either
+geocod.io or here.com apis. See above for the API keys that need to be set. 
 <p></div><a name='-statename'></a><div class=command> <i><a href='#-statename'>-statename</a></i>  &lt;column&gt; </div><div class=command-block>Add state name from state ID<br>
 <b>Arguments:</b><br>
 <ul>
@@ -2175,7 +2253,7 @@ seesv -region name
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>prefix</i>
-e.g., state: or county:<br>
+e.g., state: or county: or city:<br>
 <i>suffix</i>
 <br>
 <br>
@@ -2198,7 +2276,7 @@ and set the environment variable:
 PRECISELY_API_KEY=
 </pre>
 
-Call
+Call:
 <pre>
 seesv -neighborhood latitude_column longitude_column
 </pre>  
@@ -2317,13 +2395,13 @@ start, end, etc<br>
 <b>Arguments:</b><br>
 <ul>
 <i>program_id</i>
-matches with seesv.ext.<program_id>=/path<br>
+matches with seesv.ext.&lt;program_id&gt;=/path<br>
 <br>
 </ul>
 The -ext command allows one to integrate external programs into the processing flow.
 
 <pre>
-  -ext &lt;id&gt; &lt;args&gt;
+  -ext &lt;id&gt; &lt;arguments&gt;
 </pre>
 
 The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
@@ -2331,18 +2409,26 @@ The <i>id</i> is used to look up an environment variable (or RAMADDA runtime pro
 seesv_ext_&lt;id&gt;=/path/to/executable
 </pre>
 
-The executable is called with the given arguments. As the ext command
-processes a row it writes a comma separated line to the stdin of the process.
-A csv line should then be written by the process to stdout.
+Any command line arguments given up to but not including an argument that begins with "-" are
+passed in to the executable. The executable is called with the given arguments.
+Each row that is processed is converted into a CSV string which is passed to the external command.
+A CSV text string is then read from the external command.
 This line is then passed on in the processing flow.
-If you want to skip a line the return "_null_".
+If you want to skip a line the return the string "_null_".
 
 
 
 
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands: <a href='#-print'>-print</a> <a href='#-printheader'>-printheader</a> <a href='#-raw'>-raw</a> <a href='#-table'>-table</a> <a href='#-stats'>-stats</a> <a href='#-record'>-record</a> <a href='#-toxml'>-toxml</a> <a href='#-tojson'>-tojson</a> <a href='#-todb'>-todb</a> <a href='#-template'>-template</a> <a href='#-addheader'>-addheader</a> <a href='#-db'>-db</a> <a href='#-dbprops'>-dbprops</a> <a href='#-fields'>-fields</a> <a href='#-run'>-run</a> <a href='#-progress'>-progress</a> <a href='#-debugrows'>-debugrows</a> <a href='#-script'>-script</a> <a href='#-args'>-args</a> <a href='#-pointheader'>-pointheader</a> </div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Text output<br>
+<div class=header>Commands: <a href='#-print'>-print</a> <a href='#-printdelim'>-printdelim</a> <a href='#-printheader'>-printheader</a> <a href='#-raw'>-raw</a> <a href='#-table'>-table</a> <a href='#-stats'>-stats</a> <a href='#-record'>-record</a> <a href='#-toxml'>-toxml</a> <a href='#-tojson'>-tojson</a> <a href='#-todb'>-todb</a> <a href='#-template'>-template</a> <a href='#-addheader'>-addheader</a> <a href='#-db'>-db</a> <a href='#-dbprops'>-dbprops</a> <a href='#-fields'>-fields</a> <a href='#-run'>-run</a> <a href='#-progress'>-progress</a> <a href='#-debugrows'>-debugrows</a> <a href='#-script'>-script</a> <a href='#-args'>-args</a> <a href='#-pointheader'>-pointheader</a> </div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+<br>
+</ul>
+</div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
+<b>Arguments:</b><br>
+<ul>
+<i>delimiter</i>
+Delimiter - ,|^ etc. Use tab for tab<br>
 <br>
 </ul>
 </div><a name='-printheader'></a><div class=command> <i><a href='#-printheader'>-printheader</a></i> </div><div class=command-block>Print header<br>

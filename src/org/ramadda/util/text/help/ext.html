@@ -1,7 +1,7 @@
 The -ext command allows one to integrate external programs into the processing flow.
 
 <pre>
-  -ext &lt;id&gt; &lt;args&gt;
+  -ext &lt;id&gt; &lt;arguments&gt;
 </pre>
 
 The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
@@ -9,11 +9,12 @@ The <i>id</i> is used to look up an environment variable (or RAMADDA runtime pro
 seesv_ext_&lt;id&gt;=/path/to/executable
 </pre>
 
-The executable is called with the given arguments. As the ext command
-processes a row it writes a comma separated line to the stdin of the process.
-A csv line should then be written by the process to stdout.
+Any command line arguments given up to but not including an argument that begins with "-" are
+passed in to the executable. The executable is called with the given arguments.
+Each row that is processed is converted into a CSV string which is passed to the external command.
+A CSV text string is then read from the external command.
 This line is then passed on in the processing flow.
-If you want to skip a line the return "_null_".
+If you want to skip a line the return the string "_null_".
 
 
 
