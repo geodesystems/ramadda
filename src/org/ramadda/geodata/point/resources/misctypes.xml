@@ -39,6 +39,50 @@
 
   </type>
 
+  <type name="type_point_purpleair"  description="Purple Air Dataa" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler">
+     <property name="icon" value="/point/purpleair.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.properties.show" value="false"/>     
+     <column  name="sensor_id"  label="Sensor ID" type="string"/>
+     <column  name="private_key"  label="Private Key"  type="password"/>
+     <column  name="model"  label="Model" type="string" editable="false"/>
+     <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
+     <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
+<property name="record.properties">
+header.standard=true
+fields=date[type=date],humidity[type=double unit="%"],temperature[type=double unit="celsius"],pressure[type=double unit=mb],voc[type=double ],ozone1[type=double unit=ppb],pm1.0[type=double ],pm2.5[type=double ],pm10.0[type=double ],0.3_um_count[type=double ],0.5_um_count[type=double ],1.0_um_count[type=double ],2.5_um_count[type=double ],5.0_um_count[type=double ],10.0_um_count[type=double ]
+</property>
+<wiki>
+<![CDATA[
++section  title="Purple Air Station: {{name}}"
+{{description}}
+----
++row
++col-md-8
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0"}}
+{{resource  message="" title="Download Data"}}
+-col
++col-md-4
+{{map showSearchLocation="false" }}
+<table class="formtable">
+     {{field name="model"  row.label="Model:"}}
+     {{field name="hardware"  row.label="Hardware:"}}
+     {{field name="location_type"  row.label="Location Type:"}}
+     {{field name="altitude"  row.label="Altitude:"}}
+</table>
+-col
+-row
+]]>
+
+</wiki>
+
+  </type>
+
+
 
 
   <type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
