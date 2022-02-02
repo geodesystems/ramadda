@@ -7129,6 +7129,9 @@ public class TypeHandler extends RepositoryManager {
     public String getFieldHtml(Request request, Entry entry, String name,
                                boolean raw)
             throws Exception {
+	if(name.equals("altitude")) return ""+entry.getAltitude();
+	if(name.equals("latitude")) return ""+entry.getLatitude();
+	if(name.equals("longitude")) return ""+entry.getLongitude();		
         //TODO: support name, desc, etc.
         return null;
     }
