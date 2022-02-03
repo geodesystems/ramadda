@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb  1 23:25:34 MST 2022";
+var build_date="RAMADDA build date: Thu Feb  3 00:05:47 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -5345,6 +5345,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return true;
 	},
 	setDisplayMessage:function(msg) {
+	    if(this.dataLoadFailed) {
+		return;
+	    }
 	    if(!Utils.stringDefined(msg)) {
 		this.jq(ID_DISPLAY_MESSAGE).html("").hide();
 		return;
@@ -9741,6 +9744,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
 	handleNoData: function(pointData,reload) {
+	    this.dataLoadFailed  =true;
 	    let debug = displayDebug.handleNoData;
 	    this.jq(ID_PAGE_COUNT).html("");
             if (!reload) {
@@ -16784,6 +16788,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 
         displayData: function(reload, debug) {
+	    if(this.dataLoadFailed) {
+		return;
+	    } 
+
 	    if(debug)
 		console.log(this.type +" displayData " + this.getId() +" " + this.type);
 
@@ -16825,7 +16833,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             if (!this.hasData()) {
-                this.clearChart();
+		this.clearChart();
 		this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
