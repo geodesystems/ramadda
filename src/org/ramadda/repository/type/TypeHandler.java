@@ -206,9 +206,6 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_HANDLER = "handler";
 
-
-
-
     /** _more_ */
     public static final int MATCH_UNKNOWN = 0;
 
@@ -361,6 +358,9 @@ public class TypeHandler extends RepositoryManager {
     private int priority;
 
 
+    List<String[]>actions = new ArrayList<String[]>();
+
+
     /**
      * ctor
      *
@@ -488,6 +488,16 @@ public class TypeHandler extends RepositoryManager {
 
             defaultChildrenEntries = Utils.getAttributeOrTag(node,
                     TAG_CHILDREN, (String) null);
+
+
+            List actionNodes = XmlUtil.findChildren(node, "action");
+            for (int i = 0; i < actionNodes.size(); i++) {
+                Element actionNode = (Element) actionNodes.get(i);
+		System.err.println("adding action");
+		actions.add(new String[]{XmlUtil.getAttribute(actionNode,"name"),
+					 XmlUtil.getAttribute(actionNode,"label")});
+	    }
+
 
 
             List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
@@ -1347,8 +1357,11 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.processEntryAction(request, entry);
         }
-
-        return new Result("Error", new StringBuilder("Unknown entry action"));
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request,entry, sb,"");
+	sb.append(getPageHandler().showDialogError("Unknown entry action"));
+	getPageHandler().entrySectionClose(request,entry, sb);
+        return new Result("Error", sb);
     }
 
 
@@ -2653,9 +2666,17 @@ public class TypeHandler extends RepositoryManager {
     public void getEntryLinks(Request request, Entry entry, List<Link> links)
             throws Exception {
 
+        if ( !request.getUser().getAnonymous()) {
+	    for(String[]action: actions) {
+		links.add(new Link(getEntryActionUrl(request, entry, action[0]),ICON_EDIT,
+				   action[1],
+				   OutputType.TYPE_FILE));
+	    }
+	}
+
+
         if (parent != null) {
             parent.getEntryLinks(request, entry, links);
-
             return;
         }
 
@@ -2714,6 +2735,7 @@ public class TypeHandler extends RepositoryManager {
                                         OutputType.TYPE_FILE));
             links.add(makeHRLink(OutputType.TYPE_FILE));
         }
+
 
 
 
