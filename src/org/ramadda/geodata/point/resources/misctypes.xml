@@ -74,6 +74,7 @@ fields=date[type=date],humidity[type=double unit="%"],temperature[type=double un
 {{map showSearchLocation="false" }}
 <table class="formtable">
      {{field name="sensor_id"  row.label="Sensor ID:"}}
+     {{field name="active"  row.label="Active:"}}
      {{field name="model"  row.label="Model:"}}
      {{field name="hardware"  row.label="Hardware:"}}
      {{field name="location_type"  row.label="Location Type:"}}
