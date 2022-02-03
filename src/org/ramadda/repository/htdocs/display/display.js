@@ -2308,6 +2308,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return true;
 	},
 	setDisplayMessage:function(msg) {
+	    if(this.dataLoadFailed) {
+		return;
+	    }
 	    if(!Utils.stringDefined(msg)) {
 		this.jq(ID_DISPLAY_MESSAGE).html("").hide();
 		return;
@@ -6704,6 +6707,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
 	handleNoData: function(pointData,reload) {
+	    this.dataLoadFailed  =true;
 	    let debug = displayDebug.handleNoData;
 	    this.jq(ID_PAGE_COUNT).html("");
             if (!reload) {

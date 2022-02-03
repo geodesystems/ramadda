@@ -631,6 +631,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 
         displayData: function(reload, debug) {
+	    if(this.dataLoadFailed) {
+		return;
+	    } 
+
 	    if(debug)
 		console.log(this.type +" displayData " + this.getId() +" " + this.type);
 
@@ -672,7 +676,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             if (!this.hasData()) {
-                this.clearChart();
+		this.clearChart();
 		this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
