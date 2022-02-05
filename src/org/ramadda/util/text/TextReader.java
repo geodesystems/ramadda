@@ -1015,6 +1015,15 @@ public class TextReader implements Cloneable {
 
 
 
+    public int countLines() throws Exception {
+	int numLines = 0;
+	while(readLine()!=null) {
+	    numLines++;
+        }
+	return numLines;
+    }
+
+
     /**
      * _more_
      *

@@ -552,7 +552,9 @@ public class CsvUtil {
         }
 	this.inputFiles = files;
         boolean      doConcat      = false;
-        boolean      doAppend      = false;	
+        boolean      doAppend      = false;
+        boolean      doLast        = false;
+        int          lastLines     = 0;			
 	int appendSkip = 1;
         boolean      doHeader      = false;
         boolean      doRaw         = false;
@@ -664,9 +666,13 @@ public class CsvUtil {
                 doAppend = true;
 		appendSkip = Integer.parseInt(args.get(++i));
                 continue;
-            }	    
+            }
 
-
+            if (arg.equals("-chop")) {
+                doLast = true;
+		lastLines = Integer.parseInt(args.get(++i));
+                continue;
+            }	    	    
 
             if (arg.equals("-raw")) {
                 doRaw = true;
@@ -721,7 +727,9 @@ public class CsvUtil {
         if (doConcat) {
             IO.concat(files, getOutputStream());
 	} else if (doAppend) {
-            IO.append(files, getOutputStream(),appendSkip);	    
+            IO.append(files, getOutputStream(),appendSkip);
+	} else if (doLast) {
+            lastLines(new File(files.get(0)), getOutputStream(),lastLines);	    	    
         } else if (doHeader) {
             header(files, myTextReader, doPoint);
         } else if (doRaw) {
@@ -1172,6 +1180,32 @@ public class CsvUtil {
         writer.flush();
         writer.close();
     }
+
+    public void lastLines(File file, OutputStream os, int lines)
+	throws Exception {
+	BufferedReader br = new BufferedReader(new InputStreamReader(makeInputStream(file.toString())));
+	TextReader textReader = new TextReader(br);
+	//??	textReader.setCleanInput(true);
+	int numLines = textReader.countLines();
+	br.close();
+	br = new BufferedReader(new InputStreamReader(makeInputStream(file.toString())));
+	textReader = new TextReader(br);
+	int linesToSkip = numLines-lines;
+	//??	textReader.setCleanInput(true);
+	PrintWriter pw = new PrintWriter(os);
+	String line = textReader.readLine();
+	pw.println(line);
+	//	System.err.println("last lines:" + lines +" total lines:" + numLines +" toSkip:" + linesToSkip);
+	while(--linesToSkip>0 && (line=textReader.readLine())!=null ) {
+	}
+	while((line=textReader.readLine())!=null) {
+	    pw.println(line);
+	}
+	
+	pw.flush();
+	pw.close();
+    }
+
 
     /**
      *     _more_
@@ -1684,7 +1718,10 @@ public class CsvUtil {
         new Cmd("-cat", "Concat the columns in one or more csv files", "*.csv"),
         new Cmd("-append", "Append the files, skipping the given rows in the latter files",
 		new Arg("skip","Number of rows to skip"),
-		new Arg("files","*.csv")),	
+		new Arg("files","*.csv")),
+        new Cmd("-chop", "Write out last N lines. include the header",
+		new Arg("numlines","Number of lines to leave"),
+		new Arg("file","*.csv")),		
         /** *  Filter * */
         new Cmd(true, "Filter"),
         new Cmd("-skiplines", "Skip number of raw lines.",
@@ -4634,6 +4671,15 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	/*
+	System.out.println("a,b,c,d,e");
+	for(int i=0;i<100000;i++) {
+	    System.out.println(i+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456));
+	}
+	if(true) return;
+	*/
+
+
 	GeoUtils.setCacheDir(new File("."));
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.setCsvContext(new CsvContext() {
