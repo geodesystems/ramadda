@@ -2348,7 +2348,8 @@ public class CsvUtil {
 	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use tab for tab")),	
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
-        new Cmd("-table", "Print table and stats"),	
+        new Cmd("-table", "Print table and stats"),
+        new Cmd("-cols", "Print text columns",new Arg("width","Column width")),		
         new Cmd("-stats", "Print summary stats"),
         new Cmd("-record", "Print records"),
         new Cmd("-toxml", "Generate XML", new Arg("outer tag"),new Arg("inner tag")),
@@ -4218,6 +4219,11 @@ public class CsvUtil {
 		ctx.addProcessor(new RowCollector.Html(ctx));
 		return i;
 	    });
+
+	defineFunction("-cols",1, (ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Cols(Integer.parseInt(args.get((++i)))));
+		return i;
+	    });	
 
 
 	defineFunction("-dump",0,(ctx,args,i) -> {

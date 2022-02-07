@@ -1565,6 +1565,51 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    public static class Cols extends Processor {
+
+        private int width;
+
+        /**
+         * ctor
+         */
+        public Cols(int width) {
+	    this.width = width;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            PrintWriter pw = ctx.getWriter();
+	    for(int i=0;i<row.size();i++) {
+		String s = row.getString(i);
+		if(s.length()<width) {
+		    s = StringUtil.padLeft(s,width);
+		} else if(s.length()>width) {
+		    s = s.substring(0,width);
+		}
+		pw.print(s);
+	    }
+	    pw.println("");
+
+
+	    return row;
+        }
+
+
+    }
+
+    
+
 
 
 
