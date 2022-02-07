@@ -112,39 +112,39 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     private void runInBackground() throws Exception {
+	int freq = getRepository().getProperty("purpleair.frequency",15);
         Request searchRequest = getRepository().getAdminRequest();
         searchRequest.put(ARG_TYPE, "type_point_purpleair");
         Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
         int minute = cal.get(cal.MINUTE);
-        int sec    = cal.get(cal.SECOND);
-        int diff   = 60 - minute;
-        //Sleep until the next hour
-        //      Misc.sleepSeconds(diff*60 - sec);
-        Misc.sleepSeconds(10);
+	int minutesToWait = freq-(minute%freq);
+	System.err.println("PurpleAir thread frequency:" + freq +" minutes to start:" +  minutesToWait);
+	Misc.sleepSeconds(minutesToWait*60);
+	//        Misc.sleepSeconds(10);
         while (true) {
+	    System.err.println("PurplAair fetching data");
             StringBuilder tmp = new StringBuilder();
             List<Entry> entries = getEntryManager().getEntries(searchRequest,
 							       tmp);
             for (Entry entry : entries) {
                 if ( !entry.getValue(IDX_ACTIVE).toString().equals("true")) {
-                    System.err.println("skipping:" + entry);
+                    System.err.println("\tskipping:" + entry);
                     continue;
                 }
                 try {
-                    System.err.println("fetching:" + entry);
                     fetchData(entry);
                 } catch (Exception exc) {
                     getLogManager().logError(
                         "Error fetching purple air data:" + entry, exc);
                 }
             }
-            //For now sleep for 60 minutes
 	    //            Misc.sleepSeconds(10);
-	    Misc.sleepSeconds(60 * 60);
+	    Misc.sleepSeconds(freq*60);
         }
     }
+
 
 
     /**
@@ -156,11 +156,14 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private void fetchData(Entry entry) throws Exception {
         Sensor sensor = readSensor(entry, DATA_FIELDS);
         if (sensor == null) {
+	    System.err.println("\tfetching failed to read sensor data:" + entry);
             return;
         }
         StringBuilder row = new StringBuilder(
                                 DateUtil.getTimeAsISO8601(
-                                    sensor.date.getTime()));
+							  sensor.date.getTime()));
+
+	System.err.println("\tfetching:" + entry +" dttm:"+ sensor.date);
         for (String field : FIELDS_LIST) {
             double d = sensor.data.optDouble(field);
             row.append(",");

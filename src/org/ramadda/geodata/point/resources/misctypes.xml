@@ -45,7 +45,10 @@
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
-     <property name="form.properties.show" value="false"/>     
+     <property name="form.properties.show" value="false"/>
+     <property name="map.chart.fields" value="temperature,pm2.5"/>          
+
+
      <column  name="sensor_id"  label="Sensor ID" type="string"/>
      <column  name="private_key"  label="Private Key"  type="password"/>
      <column  name="active"  label="Active"  type="boolean" default="true"/>     
@@ -64,9 +67,9 @@ fields=date[type=date],humidity[type=double unit="%"],temperature[type=double un
 +row
 +col-md-8
 {{group showMenu="true" }}
+{{display_linechart fields="pm2.5" }}
 {{display_linechart fields="temperature" }}
 {{display_linechart fields="humidity" }}
-{{display_linechart fields="voc" }}
 -col
 +col-md-4
 {{resource  message="" title="Download Data"}}
