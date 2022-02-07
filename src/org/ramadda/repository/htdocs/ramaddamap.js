@@ -1007,8 +1007,9 @@ RepositoryMap.prototype = {
         this.getMap().updateSize();
         this.centerOnMarkers(this.dfltBounds);
     },
-    makePopup: function(projPoint, text) {
-	let size  =  new OpenLayers.Size(this.params.popupWidth||200, this.params.popupHeight||200);
+    makePopup: function(projPoint, text, props) {
+	props = props||{};
+	let size  =  new OpenLayers.Size(props.width|| this.params.popupWidth||200, props.height || this.params.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
 				     projPoint,
 				     size,
@@ -4504,6 +4505,7 @@ RepositoryMap.prototype = {
 	    return;
 	}
 
+	let inputProps = marker.inputProps || {};
 
         this.hiliteBox(id);
         let _this = this;
@@ -4614,28 +4616,22 @@ RepositoryMap.prototype = {
 	    return
 	}
 
-
-
-
-	if(simplePopup || this.simplePopup) {
-	    /* makePopup always makes a simpler popup just keep this here as fallback
-	      popup = new OpenLayers.Popup("popup",
-	      projPoint, null, HtmlUtils.div(["style",""],markerText), true);*/
-            popup = this.makePopup( projPoint,markerText);
-	} else {
-            popup = this.makePopup( projPoint,markerText);
-	} 
-
-        if (marker.inputProps && marker.inputProps.minSizeX) {
-            popup.minSize = new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);
+	let props = {};
+        if (inputProps.chartType) {
+	    props.width=400;
+	}
+        let popup = this.makePopup( projPoint,markerText,props);
+        if (inputProps.minSizeX) {
+            popup.minSize = new OpenLayers.Size(inputProps.minSizeX, inputProps.minSizeY);
         }
+
 
         marker.popupText = popup;
         popup.marker = marker;
         this.getMap().addPopup(popup);
         this.currentPopup = popup;
 
-        if (marker.inputProps && marker.inputProps.chartType) {
+        if (inputProps.chartType) {
             this.popupChart(marker.inputProps);
         }
 
