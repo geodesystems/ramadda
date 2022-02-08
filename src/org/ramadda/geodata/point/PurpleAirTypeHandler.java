@@ -8,10 +8,11 @@ package org.ramadda.geodata.point;
 
 import org.json.*;
 
-import org.ramadda.repository.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
+
+import org.ramadda.repository.*;
 
 
 import org.ramadda.repository.auth.Permission;
@@ -97,6 +98,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             Misc.run(new Runnable() {
                 public void run() {
                     try {
+                        //Wait a minute for RAMADDA to start up
+                        Misc.sleepSeconds(60);
                         runInBackground();
                     } catch (Exception exc) {
                         getLogManager().logError(
@@ -107,27 +110,39 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         }
     }
 
+
+    /**
+     */
+    private void sleepUntil() {
+        int freq = getRepository().getProperty("purpleair.frequency", 60);
+        Date              now = new Date();
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(now);
+        int minute        = cal.get(cal.MINUTE);
+        int seconds       = cal.get(cal.SECOND) + minute * 60;
+        int secondsToWait = (freq * 60) - (seconds % (freq * 60));
+        int minutesToWait = freq - (minute % freq);
+        System.err.println("PurpleAir thread frequency:" + freq
+                           + " waiting: " + (secondsToWait / 60) + ":"
+                           + (secondsToWait % 60));
+        Misc.sleepSeconds(minutesToWait * 60);
+        //        Misc.sleepSeconds(10);
+    }
+
+
     /**
      *
      * @throws Exception _more_
      */
     private void runInBackground() throws Exception {
-	int freq = getRepository().getProperty("purpleair.frequency",15);
         Request searchRequest = getRepository().getAdminRequest();
         searchRequest.put(ARG_TYPE, "type_point_purpleair");
-        Date              now = new Date();
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(now);
-        int minute = cal.get(cal.MINUTE);
-	int minutesToWait = freq-(minute%freq);
-	System.err.println("PurpleAir thread frequency:" + freq +" minutes to start:" +  minutesToWait);
-	Misc.sleepSeconds(minutesToWait*60);
-	//        Misc.sleepSeconds(10);
+        sleepUntil();
         while (true) {
-	    System.err.println("PurplAair fetching data");
+            System.err.println("PurplAair fetching data");
             StringBuilder tmp = new StringBuilder();
             List<Entry> entries = getEntryManager().getEntries(searchRequest,
-							       tmp);
+                                      tmp);
             for (Entry entry : entries) {
                 if ( !entry.getValue(IDX_ACTIVE).toString().equals("true")) {
                     System.err.println("\tskipping:" + entry);
@@ -140,8 +155,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                         "Error fetching purple air data:" + entry, exc);
                 }
             }
-	    //            Misc.sleepSeconds(10);
-	    Misc.sleepSeconds(freq*60);
+            //            Misc.sleepSeconds(10);
+            sleepUntil();
         }
     }
 
@@ -156,14 +171,16 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private void fetchData(Entry entry) throws Exception {
         Sensor sensor = readSensor(entry, DATA_FIELDS);
         if (sensor == null) {
-	    System.err.println("\tfetching failed to read sensor data:" + entry);
+            System.err.println("\tfetching failed to read sensor data:"
+                               + entry);
+
             return;
         }
         StringBuilder row = new StringBuilder(
                                 DateUtil.getTimeAsISO8601(
-							  sensor.date.getTime()));
+                                    sensor.date.getTime()));
 
-	System.err.println("\tfetching:" + entry +" dttm:"+ sensor.date);
+        System.err.println("\tfetching:" + entry + " dttm:" + sensor.date);
         for (String field : FIELDS_LIST) {
             double d = sensor.data.optDouble(field);
             row.append(",");
@@ -246,7 +263,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      *
      *
      * @version        $version$, Thu, Feb 3, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class Sensor {
 
@@ -257,7 +274,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         JSONObject data;
 
         /**
-         
+         *
          *
          * @param date _more_
          * @param data _more_
@@ -273,7 +290,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      *
      * @param entry _more_
      * @param fields _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -315,7 +332,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -344,9 +361,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             sb.append(
                 getPageHandler().showDialogQuestion(
                     "Are you sure you want to clear the file?",
-                    HU.href(
+                    HU.div(HU.href(
                         getEntryActionUrl(request, entry, "clearfile")
-                        + "&confirm=true", "Yes, clear the file")));
+                        + "&confirm=true", "Yes, clear the file"), HU.cssClass(
+                            "ramadda-button"))));
         }
 
         getPageHandler().entrySectionClose(request, entry, sb);
