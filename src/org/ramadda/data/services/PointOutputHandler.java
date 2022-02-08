@@ -968,10 +968,20 @@ public class PointOutputHandler extends RecordOutputHandler {
             extra += "&" + RecordFormHandler.ARG_RECORD_SKIP + "=" + skip;
         }
 
-        return request.entryUrl(getRepository().URL_ENTRY_DATA, entry) + "&"
+        String last = ((props == null)
+                       ? null
+                       : (String) props.get("last"));
+        if (last != null) {
+            extra += "&" + RecordFormHandler.ARG_RECORD_LAST + "=" +last;
+        }
+
+
+
+        String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry) + "&"
                                     + RecordFormHandler.ARG_MAX + "=" + max
                                     + extra;
 
+	return url;
     }
 
 

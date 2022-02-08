@@ -302,6 +302,9 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_RECORD_SKIP = "record.skip";
 
+    /** url arg */
+    public static final String ARG_RECORD_LAST = "record.last";    
+
 
 
 }

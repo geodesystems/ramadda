@@ -508,7 +508,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
         //Explicitly set the properties to force a call to initProperties
-        //        System.err.println ("doMakeRecordFile.setProperties:" + properties);
+	//	System.err.println ("doMakeRecordFile.setProperties:" + properties);
         recordFile.setProperties(properties);
 
         return recordFile;

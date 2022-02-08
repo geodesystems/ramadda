@@ -433,6 +433,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		     && !args.contains("-stats")
 		     && !args.contains("-record")
 		     && !args.contains("-table")
+		     && !args.contains("-cols")		     
 		     && !args.contains("-db")) {
                     //              System.err.println("adding print");
                     args.add("-print");
