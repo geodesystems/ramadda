@@ -99,7 +99,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                 public void run() {
                     try {
                         //Wait a minute for RAMADDA to start up
-                        Misc.sleepSeconds(60);
+			Misc.sleepSeconds(60);
+			//			Misc.sleepSeconds(5);			
                         runInBackground();
                     } catch (Exception exc) {
                         getLogManager().logError(
@@ -114,6 +115,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**
      */
     private void sleepUntil() {
+	//        Misc.sleepSeconds(10);
+	//	if(true) return;
+
         int freq = getRepository().getProperty("purpleair.frequency", 60);
         Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
@@ -149,7 +153,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                     continue;
                 }
                 try {
-                    fetchData(entry);
+                    fetchData(searchRequest, entry);
                 } catch (Exception exc) {
                     getLogManager().logError(
                         "Error fetching purple air data:" + entry, exc);
@@ -168,7 +172,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void fetchData(Entry entry) throws Exception {
+    private void fetchData(Request request,Entry entry) throws Exception {
+	boolean debug = entry.getName().indexOf("AZTEC")>=0;
+	debug = true;
         Sensor sensor = readSensor(entry, DATA_FIELDS);
         if (sensor == null) {
             System.err.println("\tfetching failed to read sensor data:"
@@ -176,11 +182,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
             return;
         }
-        StringBuilder row = new StringBuilder(
-                                DateUtil.getTimeAsISO8601(
-                                    sensor.date.getTime()));
+        StringBuilder row = new StringBuilder(Utils.formatIso(sensor.date));
 
-        System.err.println("\tfetching:" + entry + " dttm:" + sensor.date);
+	if(debug)
+	    System.err.println("\tfetching:" + entry + " dttm:" + sensor.date);
         for (String field : FIELDS_LIST) {
             double d = sensor.data.optDouble(field);
             row.append(",");
@@ -191,6 +196,13 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         FileOutputStream fos  = new FileOutputStream(file, true);
         fos.write(row.toString().getBytes());
         fos.close();
+	entry.getResource().setFileSize(file.length());
+
+
+	int points = entry.getValue(IDX_RECORD_COUNT,0);
+	entry.setValue(IDX_RECORD_COUNT,points+1);	
+	getEntryManager().updateEntry(request, entry);
+
     }
 
     /**
@@ -355,6 +367,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             FileOutputStream fos  = new FileOutputStream(file);
             fos.write(FILE_HEADER.getBytes());
             fos.close();
+	    entry.setValue(IDX_RECORD_COUNT,0);
+	    entry.getResource().setFileSize(file.length());
+	    getEntryManager().updateEntry(request, entry);
             sb.append(
                 getPageHandler().showDialogNote("OK, file has been cleared"));
         } else {

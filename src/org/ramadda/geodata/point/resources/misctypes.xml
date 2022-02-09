@@ -57,7 +57,7 @@
      <column  name="location_type"  label="Location Type" type="enumeration" values="outside,inside" editable="false"/>     
 <property name="record.properties">
 skiplines=1
-fields=date[type=date],humidity[type=double unit="%"],temperature[type=double unit="celsius"],pressure[type=double unit=mb],voc[type=double ],ozone1[type=double unit=ppb],pm1.0[type=double ],pm2.5[type=double ],pm10.0[type=double ],0.3_um_count[type=double ],0.5_um_count[type=double ],1.0_um_count[type=double ],2.5_um_count[type=double ],5.0_um_count[type=double ],10.0_um_count[type=double ]
+fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit="%"],temperature[type=double unit="celsius"],pressure[type=double unit=mb],voc[type=double ],ozone1[type=double unit=ppb],pm1.0[type=double ],pm2.5[type=double ],pm10.0[type=double ],0.3_um_count[type=double ],0.5_um_count[type=double ],1.0_um_count[type=double ],2.5_um_count[type=double ],5.0_um_count[type=double ],10.0_um_count[type=double ]
 </property>
 <wiki>
 <![CDATA[
@@ -80,8 +80,9 @@ fields=date[type=date],humidity[type=double unit="%"],temperature[type=double un
      {{field name="active"  row.label="Active:"}}
      {{field name="model"  row.label="Model:"}}
      {{field name="hardware"  row.label="Hardware:"}}
-     {{field name="location_type"  row.label="Location Type:"}}
+     {{field name="location_type"  row.label="Location:"}}
      {{field name="altitude"  row.label="Altitude:"}}
+     {{field name="numberofpoints"  row.label="# Records:"}}
 </table>
 -col
 -row
