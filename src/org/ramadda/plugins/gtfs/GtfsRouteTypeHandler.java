@@ -210,7 +210,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(HtmlUtils.formEntry(msgLabel("Route ID"),
                                       entry.getValue(IDX_ID, "")));
         sb.append(HtmlUtils.formEntry(msgLabel("Route Type"),
-                                      getFieldHtml(request, entry,props,
+                                      getFieldHtml(request, entry,new Hashtable(),
                                           "route_type", true)));
         /*
         sb.append(
