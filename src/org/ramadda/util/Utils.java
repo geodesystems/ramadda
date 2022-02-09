@@ -162,6 +162,7 @@ public class Utils extends IO {
 
 
 
+
     /**
      * _more_
      *
@@ -1210,10 +1211,24 @@ public class Utils extends IO {
      * @return _more_
      */
     public static SimpleDateFormat makeDateFormat(String format) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	return makeDateFormat(format,"UTC");
+    }
 
+    public static SimpleDateFormat makeDateFormat(String format,String timezone) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+	if(timezone!=null)
+	    sdf.setTimeZone(TimeZone.getTimeZone(timezone));
         return sdf;
+    }
+
+
+    /**
+       return the first non-null value in the args
+     */
+    public static Object getNonNull(Object ...args) {
+	for(Object a: args)
+	    if(a!=null)return a;
+	return null;
     }
 
 
