@@ -76,13 +76,16 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 :p
 {{map showSearchLocation="false" }}
 <table class="formtable">
+     {{field name="numberofpoints"  row.label="#&nbsp;Records:"}}
+     {{field name="startdate"  format="yyyy-MM-dd HH:mm Z" row.label="Start:"}}
+     {{field name="enddate"  format="yyyy-MM-dd HH:mm Z" row.label="End:"}}
+     {{field name="altitude"  row.label="Altitude:"}}
      {{field name="sensor_id"  row.label="Sensor ID:"}}
      {{field name="active"  row.label="Active:"}}
      {{field name="model"  row.label="Model:"}}
      {{field name="hardware"  row.label="Hardware:"}}
      {{field name="location_type"  row.label="Location:"}}
-     {{field name="altitude"  row.label="Altitude:"}}
-     {{field name="numberofpoints"  row.label="# Records:"}}
+
 </table>
 -col
 -row
