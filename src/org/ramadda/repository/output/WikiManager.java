@@ -2164,7 +2164,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		String  decimalFormat = getProperty(wikiUtil,props,"decimalFormat",null);
 		boolean raw = getProperty(wikiUtil, props, "raw",false);
                 String fieldValue =
-                    entry.getTypeHandler().getFieldHtml(request, entry, name,raw);
+                    entry.getTypeHandler().getFieldHtml(request, entry, props, name,raw);
                 if (fieldValue != null) {
 		    if(decimalFormat!=null) {
 			try {

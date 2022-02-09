@@ -1056,7 +1056,7 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public String getFieldHtml(Request request, Entry entry, String name,
+    public String getFieldHtml(Request request, Entry entry,  Hashtable props, String name,
                                boolean raw)
             throws Exception {
         Object[] values = getEntryValues(entry);
@@ -1083,7 +1083,7 @@ public class GenericTypeHandler extends TypeHandler {
             }
         }
 
-        return super.getFieldHtml(request, entry, name, raw);
+        return super.getFieldHtml(request, entry, props, name, raw);
     }
 
     /**

@@ -493,7 +493,6 @@ public class TypeHandler extends RepositoryManager {
             List actionNodes = XmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
                 Element actionNode = (Element) actionNodes.get(i);
-		System.err.println("adding action");
 		actions.add(new String[]{XmlUtil.getAttribute(actionNode,"name"),
 					 XmlUtil.getAttribute(actionNode,"label")});
 	    }
@@ -7148,9 +7147,23 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getFieldHtml(Request request, Entry entry, String name,
+    public String getFieldHtml(Request request, Entry entry, Hashtable props, String name,
                                boolean raw)
             throws Exception {
+	if(name.equals("startdate")) {
+	    Date dttm = new Date(entry.getStartDate());
+	    String fmt = (String) props.get("format");
+	    if(fmt==null) return Utils.formatIso(dttm);
+	    return Utils.makeDateFormat(fmt,(String)Utils.getNonNull(props.get("timezone"),"UTC")).format(dttm);
+	}
+	if(name.equals("enddate")) {
+	    Date dttm = new Date(entry.getEndDate());
+	    String fmt = (String) props.get("format");
+	    if(fmt==null) return Utils.formatIso(dttm);
+	    return Utils.makeDateFormat(fmt,(String)Utils.getNonNull(props.get("timezone"),"UTC")).format(dttm);
+	}
+
+
 	if(name.equals("altitude")) return ""+entry.getAltitude();
 	if(name.equals("latitude")) return ""+entry.getLatitude();
 	if(name.equals("longitude")) return ""+entry.getLongitude();		
