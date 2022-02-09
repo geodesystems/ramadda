@@ -986,6 +986,9 @@ public interface Constants {
     public static final String ARG_MAX = "max";
 
     /** _more_ */
+    public static final String ARG_LAST = "last";    
+
+    /** _more_ */
     public static final String ARG_MAXLAT = "maxlat";
 
     /** _more_ */
