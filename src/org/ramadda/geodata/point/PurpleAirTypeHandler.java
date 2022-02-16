@@ -125,8 +125,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    Misc.sleepSeconds(10);
 	    return;
 	}
-
-        int freq = getRepository().getProperty("purpleair.frequency", 60);
+        int freq = getRepository().getProperty("purpleair.frequency", 30);
         Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
@@ -277,9 +276,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         if (sensor == null) {
             return;
         }
+	String name = sensor.data.getString("name");
         if ( !Utils.stringDefined(entry.getName())) {
-            entry.setName(sensor.data.getString("name"));
+            entry.setName(name);
         }
+	String alias = "purpleair_" + Utils.makeID(name);
+	getMetadataManager().addMetadataAlias(entry, alias);
         entry.setLatitude(sensor.data.getDouble("latitude"));
         entry.setLongitude(sensor.data.getDouble("longitude"));
         entry.setAltitude(sensor.data.getDouble("altitude"));
