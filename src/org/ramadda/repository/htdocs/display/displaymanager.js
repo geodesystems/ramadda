@@ -348,6 +348,16 @@ function DisplayManager(argId, argProperties) {
                 jsonUrl += "&todate=" + toDate;
             }
 
+
+//	    jsonUrl=jsonUrl+"&FOO+BAR";
+            let pattern = new RegExp(/startdate=([^&$]+)(&|$)/);
+	    if(match = jsonUrl.match(pattern)) {
+		let sep  = match[2];
+		jsonUrl = jsonUrl.replace(pattern,"startdate=-1 month" + sep);
+		console.log("URL:" + jsonUrl);
+	    }
+
+
             if (this.hasGeoMacro(jsonUrl)) {
                 var lon = props.lon;
                 var lat = props.lat;
