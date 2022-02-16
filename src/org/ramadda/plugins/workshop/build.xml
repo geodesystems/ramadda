@@ -3,19 +3,33 @@
 
     <target name="all" depends="workshop,plugin"/>
 
-    <target name="plugin">
+    <target name="plugin" depends="workshop">
       <property name="plugin" value="workshop"/>
       <property name="plugin_group" value="coreplugins"/>
       <ant antfile="${basedir}/build.xml" target="plugin_build" />
     </target>
 
 
-
-    <target name="workshop">
+    <target name="workshop" depends="libtcl">
       <property file="${basedir}/build.properties"/>
       <echo message="Generating workshop content"/>
       <exec dir="${basedir}/src/org/ramadda/plugins/workshop/content" executable="${tclsh}">
           <arg value="${basedir}/bin/idvdocgen/generate.tcl"/> 
       </exec>
     </target>
+
+    <target name="libtcl">
+<!--
+    copy the lib.tcl.template to lib.tcl so we get the version added
+-->
+      <copy overwrite="true" file="${basedir}/src/org/ramadda/plugins/workshop/content/lib.tcl.template" toFile="${basedir}/src/org/ramadda/plugins/workshop/content/lib.tcl">
+        <filterset>
+          <filter token="RELEASE" value="${release_name}"/>
+          <filter token="VERSION" value="${version}"/>
+        </filterset>
+      </copy>
+    </target>
+    
+
+
 </project>
