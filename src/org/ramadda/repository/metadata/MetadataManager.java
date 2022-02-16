@@ -926,6 +926,18 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    public void addMetadataAlias(Entry entry, String value) throws Exception {
+	addMetadata(entry,ContentMetadataHandler.TYPE_ALIAS, value);
+    }
+
+    public void addMetadata(Entry entry, String type,String value) throws Exception {
+        addMetadata(entry,
+		    new Metadata(getRepository().getGUID(),
+				 entry.getId(),
+				 type, false,value,Metadata.DFLT_ATTR,Metadata.DFLT_ATTR,Metadata.DFLT_ATTR,Metadata.DFLT_EXTRA));
+    }
+
+
     /**
      * _more_
      *
