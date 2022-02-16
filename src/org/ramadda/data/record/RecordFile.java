@@ -997,6 +997,20 @@ public abstract class RecordFile {
             }
             int  cnt = 0;
             long t1  = System.currentTimeMillis();
+	    boolean haveStartDate = visitInfo.getStartDate()!=null;
+	    long startDate =0L;
+	    if(haveStartDate) {
+		System.err.println("startDate:" + visitInfo.getStartDate());
+		startDate = visitInfo.getStartDate().getTime();
+	    }
+
+	    boolean haveEndDate = visitInfo.getEndDate()!=null;
+	    long endDate =0L;
+	    if(haveEndDate) {
+		System.err.println("endDate:" + visitInfo.getEndDate());
+		endDate = visitInfo.getEndDate().getTime();
+	    }
+
 
             while (true) {
                 if ((visitInfo.getStop() > 0)
@@ -1015,6 +1029,21 @@ public abstract class RecordFile {
                         if ( !processAfterReading(visitInfo, record)) {
                             continue;
                         }
+			if(haveStartDate) {
+			    if(record.getRecordTime()<startDate) {
+				System.err.println("\tskipping startDate:" + new Date(record.getRecordTime()));
+				continue;
+			    }
+			}
+			if(haveEndDate) {
+			    if(record.getRecordTime()>endDate) {
+				System.err.println("\tskipping endDate:" + new Date(record.getRecordTime()));
+				//This assumes that the dates in the data are ordered
+				break;
+
+			    }
+			}
+
                         if ((filter == null)
                                 || filter.isRecordOk(record, visitInfo)) {
                             cnt++;

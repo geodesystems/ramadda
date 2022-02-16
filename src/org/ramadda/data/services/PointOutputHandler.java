@@ -47,8 +47,10 @@ import org.ramadda.util.grid.LatLonGrid;
 import org.w3c.dom.Element;
 
 
+
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -637,11 +639,22 @@ public class PointOutputHandler extends RecordOutputHandler {
                 memoryCheck("POINT: memory before:");
                 VisitInfo visitInfo = new VisitInfo(VisitInfo.QUICKSCAN_NO);
                 if (request.defined(ARG_MAX)) {
-                    visitInfo.setMax(request.get(ARG_MAX, 1000));
+                    visitInfo.setMax(request.get(ARG_MAX, 5000));
+                }
+                if (request.defined(ARG_LAST)) {
+                    visitInfo.setLast(request.get(ARG_LAST, 1000));
                 }
                 if (request.defined(ARG_SKIP)) {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
                 }
+                if (request.defined("startdate")) {
+		    Date dttm = Utils.parseRelativeDate(new Date(), request.getString("startdate",""),0);
+		    System.err.println("setting visitinfo.startDate:" +dttm);
+		    visitInfo.setStartDate(dttm);
+                }
+                if (request.defined("enddate")) {
+                    visitInfo.setEndDate(Utils.parseRelativeDate(new Date(), request.getString("enddate",""),0));
+                }				
 
                 getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, visitInfo);
@@ -876,7 +889,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public String getJsonUrl(Request request, Entry entry, Hashtable props,
                              List<String> displayProps)
             throws Exception {
-        String max = null;
+
         PointTypeHandler typeHandler =
             (PointTypeHandler) entry.getTypeHandler();
 
@@ -945,15 +958,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String       value = ((toks.size() > 1)
                                       ? toks.get(1)
                                       : "");
-                extra += "&";
-                extra += HtmlUtils.arg(arg, value);
+                extra += "&" + HtmlUtils.arg(arg, value);
             }
-        }
-        if (props != null) {
-            max = (String) props.get("max");
-        }
-        if (max == null) {
-            max = "5000";
         }
 
         String path = entry.getResource().getPath();
@@ -961,26 +967,42 @@ public class PointOutputHandler extends RecordOutputHandler {
             extra += "&latitude=${latitude}&longitude=${longitude}";
         }
 
-        String skip = ((props == null)
-                       ? null
-                       : (String) props.get("skip"));
-        if (skip != null) {
-            extra += "&" + RecordFormHandler.ARG_RECORD_SKIP + "=" + skip;
+
+        String max = null;
+        if (props != null) {
+            max = (String) props.get(ARG_MAX);
+        }
+        if (max == null) {
+            max = "5000";
         }
 
-        String last = ((props == null)
-                       ? null
-                       : (String) props.get("last"));
-        if (last != null) {
-            extra += "&" + RecordFormHandler.ARG_RECORD_LAST + "=" +last;
-        }
+	extra +="&"+ HU.arg(RecordFormHandler.ARG_MAX, max);
+	
+
+	if(props!=null) {
+	    String skip =  (String) props.get("skip");
+	    if (skip != null) {
+		extra += "&" + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
+	    }
+	    String last = (String) props.get("last");
+	    if (last != null) {
+		extra += "&" + HU.arg(RecordFormHandler.ARG_RECORD_LAST,last);
+	    }
+
+	    String startDate =  (String) props.get("request.startdate");
+	    if (startDate != null) {
+		extra += "&" + HU.arg("startdate" ,startDate);
+	    }
+
+	    String endDate =  (String) props.get("request.enddate");
+	    if (endDate != null) {
+		extra += "&" + HU.arg("enddate" ,endDate);
+	    }
+	}
 
 
 
-        String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry) + "&"
-                                    + RecordFormHandler.ARG_MAX + "=" + max
-                                    + extra;
-
+        String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry)  + extra;
 	return url;
     }
 

@@ -50,6 +50,13 @@ public class VisitInfo {
     private int max = -1;
 
     /** _more_ */
+    private int last = -1;    
+
+    private Date startDate;
+
+    private Date endDate;    
+
+    /** _more_ */
     private RecordIO recordIO;
 
     /** _more_ */
@@ -308,6 +315,61 @@ public class VisitInfo {
     }
 
 
+    /**
+       Set the Last property.
+
+       @param value The new value for Last
+    **/
+    public void setLast (int value) {
+	last = value;
+    }
+
+    /**
+       Get the Last property.
+
+       @return The Last
+    **/
+    public int getLast () {
+	return last;
+    }
+
+    /**
+       Set the StartDate property.
+
+       @param value The new value for StartDate
+    **/
+    public void setStartDate (Date value) {
+	startDate = value;
+    }
+
+    /**
+       Get the StartDate property.
+
+       @return The StartDate
+    **/
+    public Date getStartDate () {
+	return startDate;
+    }
+
+    /**
+       Set the EndDate property.
+
+       @param value The new value for EndDate
+    **/
+    public void setEndDate (Date value) {
+	endDate = value;
+    }
+
+    /**
+       Get the EndDate property.
+
+       @return The EndDate
+    **/
+    public Date getEndDate () {
+	return endDate;
+    }
+
+
 
     /**
      *  Set the Stop property.
@@ -315,7 +377,7 @@ public class VisitInfo {
      *  @param value The new value for Stop
      */
     public void setStop(int value) {
-        stop = value;
+	stop = value;
     }
 
     /**
