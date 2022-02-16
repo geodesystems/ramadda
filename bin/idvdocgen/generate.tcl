@@ -1817,7 +1817,6 @@ proc gen::processFile {from to fileIdx template} {
     set body [gen::getBody       $from]
     array set A [gen::initMacroArray]
 
-
     set body [gen::addGlossary   $from $body ]
     set body [gen::processSlideShow $from $to $body]
     set body [gen::processIfs $from $body]
@@ -2598,13 +2597,15 @@ proc gen::findTemplate {name {dflt Template.html}} {
 
 ##check if we have one in the content/templates dir
     if {[file exists [file join templates $name]]} {
-	return [gen::getFile [file join templates $name]]
+	   set template  [gen::getFile [file join templates $name]]
+	   return $template
     }
 
 
 ##Next, check if there is a dflt
     if {[file exists $dflt]} {
-	return [gen::getFile $dflt]
+	set template [gen::getFile $dflt]
+	return $template
     }
 
 
@@ -2783,20 +2784,13 @@ proc gen::writeFiles  {} {
     set top [list]
     set ::filesToCopy [list]
     set target [gen::getTargetDir]
-    
-
-
     gen::walkTree [file join $state(topDir)  [gen::getIndexFile]]
-
     if {[file exists schedule.tcl]} {
 ###        source schedule.tcl
     }
-
     set ::fileIdx 0
-
-
-
     set files [list]
+#    set ::lessonTemplate "FOO"
     foreach file [gen::getAllNavFiles]  {
         lappend files $file
         gen::processFile $file [file join $target $file]   $::fileIdx      $::lessonTemplate
