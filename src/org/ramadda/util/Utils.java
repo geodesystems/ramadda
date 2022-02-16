@@ -142,6 +142,13 @@ public class Utils extends IO {
         TimeZone.getTimeZone("UTC");
 
 
+    /** timezone */
+    public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
+
+    /** _more_          */
+    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
+
     /** _more_ */
     public static final SimpleDateFormat sdf;
 
@@ -1080,8 +1087,8 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static String[] findPatterns(String s, String regexp)
-            throws Exception {
-        Pattern pattern = Pattern.compile(regexp);
+            throws Exception 
+{        Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(s);
         if ( !matcher.find()) {
             return null;
@@ -1130,6 +1137,12 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    for(String s: args) {
+		System.err.println(s+" = " + parseRelativeDate(new Date(),s,0));
+	    }
+	    System.exit(0);
+	}
 	if(true) {
 	    for (Provider provider: Security.getProviders()) {
 		System.out.println(provider.getName());
@@ -3340,6 +3353,98 @@ public class Utils extends IO {
 
         return null;
     }
+
+
+    /**
+     * this combines a couple of methods from ucar.unidata.util.DateUtil
+     */
+    public static Date parseRelativeDate(Date baseDate, String s, int roundDays) {
+        Calendar cal = Calendar.getInstance(TIMEZONE_GMT);
+        cal.setTimeInMillis(baseDate.getTime());
+        Date dttm = null;
+        if (s.equals("now")) {
+            return cal.getTime();
+        } else if (s.equals("today")) {
+            dttm = cal.getTime();
+        } else if (s.equals("yesterday")) {
+            dttm = new Date(cal.getTime().getTime() - DateUtil.daysToMillis(1));
+        } else if (s.equals("tomorrow")) {
+            dttm = new Date(cal.getTime().getTime() + DateUtil.daysToMillis(1));
+        } else if (s.startsWith("last ") || s.startsWith("next ")) {
+            List toks = StringUtil.split(s, " ", true, true);
+            if (toks.size() != 2) {
+                throw new IllegalArgumentException("Bad time format:" + s);
+            }
+            int    factor = (toks.get(0).equals("last")
+                             ? -1
+                             : +1);
+            String unit   = (String) toks.get(1);
+            if (unit.equals("week")) {
+                cal.add(Calendar.WEEK_OF_MONTH, factor);
+            } else if (unit.equals("month")) {
+                cal.add(Calendar.MONTH, factor);
+            } else if (unit.equals("year")) {
+                cal.add(Calendar.YEAR, factor);
+            } else if (unit.equals("century")) {
+                cal.add(Calendar.YEAR, factor * 100);
+            } else if (unit.equals("millenium")) {
+                cal.add(Calendar.YEAR, factor * 1000);
+            } else {
+                throw new IllegalArgumentException("Bad time format:" + s
+                        + " unknown time field:" + unit);
+            }
+            dttm = cal.getTime();
+        }
+
+	if(dttm==null) {
+	    Pattern pattern = Pattern.compile("([\\+\\-0-9]+) +(second|minute|hour|day|week|month|year|decade|century|millenium)s?");
+	    Matcher matcher = pattern.matcher(s);
+	    if(matcher.find()) {	    
+		String quantity=matcher.group(1).trim();
+		String what=matcher.group(2).trim();	    
+		long   factor = 1;
+		if (quantity.startsWith("+")) {
+		    quantity = quantity.substring(1);
+		} else if (quantity.startsWith("-")) {
+		    quantity      = quantity.substring(1);
+		    factor = -1;
+		}
+		long delta = factor * new Integer(quantity).intValue();
+		long   milliseconds = 0;
+		if (what.startsWith("second")) {
+		    milliseconds = delta * 1000;
+		} else if (what.startsWith("minute")) {
+		    milliseconds = 60 * delta * 1000;
+		} else if (what.startsWith("hour")) {
+		    milliseconds = 60 * 60 * delta * 1000;
+		} else if (what.startsWith("day")) {
+		    milliseconds = 24 * 60 * 60 * delta * 1000;
+		} else if (what.startsWith("week")) {
+		    milliseconds = 7 * 24 * 60 * 60 * delta * 1000;
+		} else if (what.startsWith("month")) {
+		    milliseconds = 30 * 24 * 60 * 60 * delta * 1000;
+		} else if (what.startsWith("year")) {
+		    milliseconds = 365 * 24 * 60 * 60 * delta * 1000;
+		} else if (what.startsWith("century")) {
+		    milliseconds = 100 * 365 * 24 * 60 * 60 * delta * 1000;
+		} else if (what.startsWith("millenium")) {
+		    milliseconds = 1000 * 365 * 24 * 60 * 60 * delta * 1000;
+		}
+		dttm =  new Date(baseDate.getTime()+milliseconds);
+	    }
+	}
+	if(dttm==null) {
+	    dttm  =parseDate(s);
+	}
+
+	if(dttm==null) {
+	    throw new RuntimeException("Unable to parse date:" + s);
+	}
+
+	return dttm;
+	//	return DateUtil.roundByDay(dttm, roundDays);
+    }
+
 
 
 
