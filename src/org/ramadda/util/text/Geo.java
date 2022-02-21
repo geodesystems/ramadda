@@ -777,6 +777,36 @@ public abstract class Geo extends Processor {
 
     }
 
+
+    public static class DecodeLatLon extends Geo {
+
+
+        /**
+         * @param file _more_
+         * @param lat _more_
+         * @param lon _more_
+         */
+        public DecodeLatLon(String col) {
+            super(col);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+            }
+	    int idx = getIndex(ctx);
+	    String slat =row.getString(idx).trim();
+	    row.set(idx,""+Misc.decodeLatLon(slat));
+	    return row;
+	}
+    }
+
     
     public static class GetAddress extends Geo {
 
