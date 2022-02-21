@@ -38,7 +38,7 @@
 </wiki>
   </type>
 
-  <type name="type_point_purpleair"  description="Purple Air Data" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler">
+  <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler">
     <action name="clearfile" label="Clear File"/>
      <property name="icon" value="/point/purpleair.png"/>
      <property name="form.resource.show" value="false"/>

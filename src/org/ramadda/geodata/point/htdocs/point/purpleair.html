@@ -1,0 +1,74 @@
+<html>
+<title>Purple Air</title>
+<body>
+<div class="ramadda-section">
+
+<h2>Purple Air API</h2>
+Sensor data from Purple Air sensors can be read and displayed in RAMADDA.
+The data is provided by Purple Air through their <a href="https://api.purpleair.com/">API</a> and requires an API key. To 
+get the key send a request to <a mailto:contact@purpleair.com>contact@purpleair.com</a>. Once you have the key add a 
+property to your repository.properties file (in the RAMADDA home directory) and restart your RAMADDA.
+<pre>
+purpleair.api.key=key here
+</pre>
+
+With the API key specified RAMADDA will periodically access the API for each Purple Air entry
+you have created and get current data. RAMADDA will fetch the following fields:
+<pre>
+  humidity
+  temperature
+  pressure
+  voc
+  ozone1
+  pm1.0
+  pm2.5
+  pm10.0
+  0.3_um_count
+  0.5_um_count
+  1.0_um_count
+  2.5_um_count
+  5.0_um_count
+  10.0_um_count
+</pre>
+
+
+<h2>Purple Air Data Frequency</h2>
+
+The default frequency for fetching data is  every 30 minutes. This can be changed with a property
+in repository.properties:
+<pre>
+purpleair.frequency=30
+</pre>
+
+
+<h2>Purple Air Entries</h2>
+Once the API key is configured you can create new Purple Air Sensor entries. Go to the RAMADDA folder you want
+to add the entries to and from the entry popup menu select "Pick a Type...". From the list under Geoscience/Point Data select
+"Purple Air Sensor". The only field you need to specify is the Sensor ID. The ID is a numeric ID and should be able to be accessed
+through your Purple Air account.
+
+Alternatively, you can access IDs for any public sensor from the map at <a href="https://map.purpleair.com/">https://map.purpleair.com/</a>. Click  on the sensor of interest and you should see the below popup:
+
+<center><img src=purpleair_popup.png width=200></center>
+
+Hover over the "Get This widget" link to see the ID in the embed HTML, e.g. 112686, or in the Download Data link.
+<p>
+
+When a new Purple Air Sensor entry is created RAMADDA will fetch, through the API, the metadata for the sensor, e.g. name, location, model, etc.   If the sensor is a private sensor you can enter the private key when creating the entry. The private key is available through your Purple Air account.
+<p>
+
+The default display for a Purple Air Sensor entry is shown below. Note, initially there is no data but over time the data will be fetched from the API. 
+<center><img border=1 src=purpleair_entry.png width=600></center>
+If you want to stop fetching then, go the Edit page for the entry  and set Active to No.
+<center><img border=1 src=purpleair_edit.png width=600></center>
+
+<h2>Purple Air Data File</h2>
+The data that is collected from the API is appended to a CSV file. This file can be downloaded from the sensor entry page.
+Over time these files can grow to be quite large (depending on the API fetch frequency).
+The default display only shows the past (TBD) weeks worth of data. You can clear out the entire file for an sensor entry
+through the entrie's popup Clear File menu.
+
+</div>
+</body>
+</html>
+
