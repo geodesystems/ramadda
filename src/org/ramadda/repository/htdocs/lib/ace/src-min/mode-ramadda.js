@@ -1577,6 +1577,9 @@ var tagMap = lang.createMap({
 		}, {
                     token : ["bracket"],
 		    regex: ".*(\{\{).*"
+		}, {
+                    token : ["wiki-editor-entryid"],
+		    regex: "([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)"
 		},
 		{token : "keyword",
                     regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
