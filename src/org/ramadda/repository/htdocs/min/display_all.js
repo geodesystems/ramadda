@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  9 11:53:07 MST 2022";
+var build_date="RAMADDA build date: Wed Feb 23 00:11:46 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -11531,6 +11531,16 @@ function DisplayManager(argId, argProperties) {
             if (toDate != null) {
                 jsonUrl += "&todate=" + toDate;
             }
+
+
+//	    jsonUrl=jsonUrl+"&FOO+BAR";
+            let pattern = new RegExp(/startdate=([^&$]+)(&|$)/);
+	    if(match = jsonUrl.match(pattern)) {
+		let sep  = match[2];
+//		jsonUrl = jsonUrl.replace(pattern,"startdate=-1 month" + sep);
+//		console.log("URL:" + jsonUrl);
+	    }
+
 
             if (this.hasGeoMacro(jsonUrl)) {
                 var lon = props.lon;
