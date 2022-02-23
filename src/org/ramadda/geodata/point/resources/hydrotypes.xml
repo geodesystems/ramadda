@@ -51,13 +51,13 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
      <property name="icon" value="/point/co.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
  <property name="record.properties">
-csvcommands1=-skiplines,7,-cleaninput,-notpattern,0
-csvcommands2=includes:QUERY\,DOWNLOAD\,SITE\,Location,-notpattern,1,includes:AZ,-lengthgreater
-csvcommands3=0,0,-set,datetime_utc,0
-csvcommands4=datetime,-notcolumns,location\,units\,aggregation\,timestep\,resulttype\,timestep,-makefields,parameter
-csvcommands5=result,datetime,,-decimate,1
-csvcommands6=7,-change,datetime,.*(....-..-..).*,$1
-csvcommands7=-addheader,datetime.type date datetime.format yyyy-MM-dd,-print
+csvcommands1=-skiplines,7,-notpattern,0,includes:SERIES\,QUERY\,DOWNLOAD\,SITE\,Location
+csvcommands2=-notpattern,1,includes:AZ,-lengthgreater,0
+csvcommands3=0,-set,datetime_utc,0,datetime
+csvcommands4=-notcolumns,location\,units\,aggregation\,timestep\,resulttype\,timestep,-makefields,parameter,result
+csvcommands5=datetime,,-decimate,1,7
+csvcommands6=-change,datetime,.*(....-..-..).*,$1,-addheader
+csvcommands7=datetime.type date datetime.format yyyy-MM-dd,-print
   </property>
 <wiki>
 <![CDATA[
