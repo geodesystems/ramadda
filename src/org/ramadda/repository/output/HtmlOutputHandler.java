@@ -684,7 +684,7 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
             List<String> onlyTheseTypes, List<String> notTheseTypes,
-            boolean showTitle, String separator)
+						boolean showTitle, String separator, boolean decorate)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -756,7 +756,9 @@ public class HtmlOutputHandler extends OutputHandler {
                     : "odd");
 
             boolean first    = sb.length() == 0;
-
+	    String label = html[0];
+	    String contents = html[1];
+	    if(decorate) contents = HU.div(contents,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",contents));
             if (tags) {
                 sb.append(HU.tag("div", HU.cssClass("metadata-tag"),
                                  metadata.getAttr1()));
@@ -768,10 +770,10 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(separator);
                 }
                 sb.append(HU.tag("div", HU.cssClass("metadata-small-label"),
-                                 html[0]));
+                                 label));
                 sb.append(HU.tag("div",
                                  HU.cssClass("metadata-small-content"),
-                                 html[1]));
+                                 contents));
                 sb.append(HU.close("td"));
                 sb.append(HU.close("tr"));
             } else {
@@ -781,7 +783,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 if ( !first && (separator != null)) {
                     sb.append(separator);
                 }
-                HU.div(sb, html[1], HU.cssClass(rowClass));
+                HU.div(sb, contents, HU.cssClass(rowClass));
             }
             sb.append("\n");
         }
@@ -1225,7 +1227,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-                getMetadataHtml(request, entry, null, null, true, null)) {
+		 getMetadataHtml(request, entry, null, null, true, null,false)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

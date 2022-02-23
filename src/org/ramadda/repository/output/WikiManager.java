@@ -195,7 +195,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
-                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","html"),
+                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","","decorate","false"),
 			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false"),
                             new WikiTag(WIKI_TAG_BREADCRUMBS),
                             new WikiTag(WIKI_TAG_TOOLS),
@@ -4682,12 +4682,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         List tabContents = new ArrayList<String>();
         boolean includeTitle = getProperty(wikiUtil, props,
                                            ATTR_METADATA_INCLUDE_TITLE, true);
+        boolean decorate = getProperty(wikiUtil, props,
+				       "decorate", false);	
+
 
 
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
                     request, entry, onlyTheseTypes, notTheseTypes,
-                    includeTitle, separator)) {
+                    includeTitle, separator, decorate)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
