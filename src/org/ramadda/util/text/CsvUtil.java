@@ -1734,6 +1734,11 @@ public class CsvUtil {
         new Cmd("-rawlines", "",
                 new Arg("lines",
                         "How many lines to pass through unprocesed")),
+        new Cmd("-inputnotcontains", "Filter out input lines that contain any of the strings",
+                new Arg("filters",
+                        "Comma separated list of strings to filter one")),
+
+
         new Cmd(
 		"-min",
 		"Only pass thorough lines that have at least this number of columns",
@@ -1748,16 +1753,21 @@ public class CsvUtil {
 		new Arg("number", "", "type", "number")),
         new Cmd("-pattern", "Pass through rows that the columns each match the pattern",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("pattern", "", "type", "pattern")),
+		new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", "type", "pattern")),
         new Cmd("-notpattern",
                 "Pass through rows that don't match the pattern",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("pattern", "", "type", "pattern")),
+                new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", "type", "pattern")),
         new Cmd("-fuzzypattern", "Pass through rows that the columns each fuzzily match the pattern",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
-        new Cmd("-same", "Pass through where the 2 columns have the same value",
+        new Cmd("-lengthgreater", "Pass through rows that the length of the columns is greater than",
+                new Arg("columns", "", "type", "columns"),
+		new Arg("length", "")),
+
+       new Cmd("-same", "Pass through where the 2 columns have the same value",
+
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),
         new Cmd("-notsame", "Pass through where the 2 columns don't have the same value",
@@ -2267,6 +2277,9 @@ public class CsvUtil {
         new Cmd("-bounds", 
 		"Geocode within bounds", 
 		new Arg("north"),new Arg("west"),new Arg("south"),new Arg("east")),
+        new Cmd("-decodelatlon", 
+		"Decode latlon", 
+		new Arg("lat_lon","Lat or Lon column","type","column")),
         new Cmd("-getaddress", "Get address from lat/lon",
                 new Arg("latitude", "latitude column"),
                 new Arg("latitude", "latitude column")),		
@@ -3101,14 +3114,16 @@ public class CsvUtil {
 		return i;
 	    });
 
-
-
 	defineFunction("-rawlines",1,(ctx,args,i) -> {
 		rawLines = Integer.parseInt(args.get(++i));
 		return i;
 	    });
 
-
+	defineFunction("-inputnotcontains",1,(ctx,args,i) -> {
+		ctx.setLineFilters(Utils.split(args.get(++i)));
+		return i;
+	    });
+	
 	defineFunction("-tab",0,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = "tab");
 		return i;
@@ -3297,7 +3312,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Geo.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-getaddress",2,(ctx,args,i) -> {
+	defineFunction("-decodelatlon",1,(ctx,args,i) -> {	
+	ctx.addProcessor(new Geo.DecodeLatLon(args.get(++i)));
+		return i;
+	    });	
+	defineFunction("-getaddress",4,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });	
@@ -4024,7 +4043,6 @@ public class CsvUtil {
 		return i;
 	    });		
 
-
 	defineFunction("-pattern", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
@@ -4035,7 +4053,14 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-fuzzypattern", 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+		return i;
+	    });
+
+	defineFunction("-lengthgreater", 2,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(), 
+			      new Filter.Length(ctx,true,getCols(args.get(++i)),Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 

@@ -133,6 +133,9 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String outputDelimiter = ",";
 
+    private List<String> lineFilters;
+
+
     /** _more_ */
     private int skip = 0;
 
@@ -997,6 +1000,10 @@ public class TextReader implements Cloneable {
 
 
 
+    public void setLineFilters(List<String> f) {
+	lineFilters = f;
+    }
+
     /**
      * _more_
      *
@@ -1008,6 +1015,11 @@ public class TextReader implements Cloneable {
         if ((comment != null) && line.startsWith(comment)) {
             return false;
         }
+	if(lineFilters!=null) {
+	    for(String f: lineFilters) {
+		if(line.indexOf(f)>=0) return false;
+	    }
+	}
 
         return true;
     }

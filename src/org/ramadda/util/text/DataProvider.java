@@ -31,9 +31,6 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 import java.net.URL;
-
-
-
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -1067,7 +1064,7 @@ public abstract class DataProvider extends CsvOperator {
             int colCnt = 0;
             Hashtable<String, Integer> colMap = new Hashtable<String,
                                                     Integer>();
-            System.err.println("NODES:" + nodes.size());
+	    //            System.err.println("NODES:" + nodes.size());
             for (Element parent : nodes) {
                 NodeList children = XmlUtil.getElements(parent);
 
@@ -1133,7 +1130,6 @@ public abstract class DataProvider extends CsvOperator {
                         Integer idx   = colMap.get(name);
                         row.set(idx, value);
                     }
-
                     continue;
                 }
 
@@ -1938,7 +1934,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public Row readRow() throws Exception {
             Row row = new Row();
-            if ( !didFirst) {
+            if (!didFirst) {
                 didFirst = true;
                 row.add("line");
                 return row;
@@ -1947,9 +1943,10 @@ public abstract class DataProvider extends CsvOperator {
             if (line == null) {
                 return null;
             }
-
+	    if ( !ctx.lineOk(line)) {
+		return null;
+	    }
             row.add(line);
-
             return row;
         }
 

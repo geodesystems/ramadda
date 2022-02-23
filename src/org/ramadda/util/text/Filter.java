@@ -409,6 +409,70 @@ public class Filter extends Processor {
      * @version        $version$, Fri, Jan 9, '15
      * @author         Jeff McWhirter
      */
+    public static class Length extends Filter {
+
+        /**  */
+        private boolean greater;
+
+
+        /**  */
+        private int length;
+
+        /**
+         * _more_
+         *
+         * @param in _more_
+         * @param column1 _more_
+         * @param file _more_
+         * @param column2 _more_
+         */
+        public Length(TextReader ctx, boolean greater, List<String>cols, int length) {
+	    super(cols);
+	    this.greater = greater;
+	    this.length = length;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+
+            for (int idx : getIndices(ctx)) {
+		if(idx<0 || idx>=row.size()) continue;
+		String s = row.getString(idx);
+		boolean ok = true;
+		if(s.length()>length) {
+		    if(!greater) ok = false;
+		} else {
+		    if(greater) ok = false;
+		}
+		if(!ok) return false;
+	    }
+	    return true;
+        }
+
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
     public static class MatchesFile extends Filter {
 
         /**  */
@@ -544,6 +608,8 @@ public class Filter extends Processor {
      */
     public static class PatternFilter extends ColumnFilter {
 
+	List<String> strings;
+
         /** _more_ */
         String spattern;
 
@@ -623,6 +689,11 @@ public class Filter extends Processor {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
+	    if(pattern.startsWith("includes:")) {
+		strings  = Utils.split(pattern.substring("includes:".length()),",");
+		return;
+	    }
+
             blank    = pattern.equals("");
             pattern  = Utils.convertPattern(pattern);
             spattern = pattern;
@@ -666,7 +737,6 @@ public class Filter extends Processor {
                     if (debug) {
                         System.err.println("\tbreak1:" + ok);
                     }
-
                     break;
                 }
                 if (idx >= row.size()) {
@@ -692,7 +762,16 @@ public class Filter extends Processor {
                     ok = false;
                     for (int i = 0; i < row.size(); i++) {
                         String v = row.getString(i);
-                        if (blank) {
+			if(strings!=null) {
+			    boolean any = false;
+			    for(String s: strings) {
+				if(v.indexOf(s)>=0) {
+				    any = true;
+				    break;
+				}
+			    }
+			    ok = doNegate(any);
+			} else  if (blank) {
                             ok = doNegate(v.equals(""));
                         } else if (pattern.matcher(v).find()) {
                             ok = doNegate(true);
@@ -706,6 +785,17 @@ public class Filter extends Processor {
                 }
 		if(idx>=row.size()) continue;
                 String v = row.getString(idx);
+		if(strings!=null) {
+		    boolean any = false;
+		    for(String s: strings) {
+			if(v.indexOf(s)>=0) {
+			    any = true;
+			    break;
+			}
+		    }
+		    ok = doNegate(any);
+		    continue;
+		}
                 if (blank) {
                     ok = doNegate(v.equals(""));
                     if (debug) {

@@ -2506,6 +2506,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private int cnt = 0;
 
+	private int maxWidth = 0;
 
         /*
          * _more_
@@ -2534,7 +2535,6 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
-
                 headerValues = new ArrayList();
                 for (Object obj : row.getValues()) {
                     String name = obj.toString();
@@ -2544,12 +2544,11 @@ public abstract class Processor extends CsvOperator {
                     String args = StringUtil.findPattern(name, "\\[(.*)\\]");
                     name = name.replaceAll("\\[.*\\]", "");
                     headerValues.add(name);
+		    maxWidth = Math.min(40,Math.max(maxWidth, name.length()));
                 }
-
                 return row;
             }
             printRow(ctx, row);
-
             return row;
         }
 
@@ -2565,7 +2564,6 @@ public abstract class Processor extends CsvOperator {
         public void printRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
                 headerValues = row.getValues();
-
                 return;
             }
             List values = row.getValues();
@@ -2575,8 +2573,8 @@ public abstract class Processor extends CsvOperator {
                 String label = (i < headerValues.size())
                                ? headerValues.get(i).toString()
                                : "NA";
-                label = StringUtil.padLeft(label, 20);
-                ctx.getWriter().println(label + ":" + values.get(i));
+                label = StringUtil.padLeft(label, maxWidth);
+                ctx.getWriter().println(label + ": " + values.get(i));
             }
         }
 
