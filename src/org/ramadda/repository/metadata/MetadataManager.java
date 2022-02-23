@@ -930,6 +930,10 @@ public class MetadataManager extends RepositoryManager {
 	addMetadata(entry,ContentMetadataHandler.TYPE_ALIAS, value);
     }
 
+    public void addMetadataTag(Entry entry, String value) throws Exception {
+	addMetadata(entry,ContentMetadataHandler.TYPE_TAG, value);
+    }
+    
     public void addMetadata(Entry entry, String type,String value) throws Exception {
         addMetadata(entry,
 		    new Metadata(getRepository().getGUID(),
