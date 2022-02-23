@@ -3049,8 +3049,8 @@ public class EntryManager extends RepositoryManager {
         List<Entry> children       = null;
 
 
-        double      altitudeTop    = Entry.NONGEO;
-        double      altitudeBottom = Entry.NONGEO;
+        double      altitudeTop    = entry.getAltitudeTop();
+        double      altitudeBottom =  entry.getAltitudeBottom();
         if (request.defined(ARG_ALTITUDE)) {
             altitudeTop = altitudeBottom = request.get(ARG_ALTITUDE,
 						       Entry.NONGEO);
