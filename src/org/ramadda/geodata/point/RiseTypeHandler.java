@@ -63,19 +63,16 @@ public class RiseTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
-	System.err.println("init");
         super.initializeNewEntry(request, entry, fromImport);
         if (fromImport) {
             return;
         }
         String id = (String) entry.getValue(IDX_RISE_ID, "");
-	System.err.println("ID:" + id);
 	if(!Utils.stringDefined(id)) return;
         String url =      "https://data.usbr.gov/rise/api/location/" +id;
         try {
-	    System.err.println("URL: " + url);
             String json = IO.doGet(new URL(url),"accept","application/vnd.api+json");
-	    System.err.println("json:" + json);
+	    //	    System.err.println("json:" + json);
             JSONObject obj           = new JSONObject(json);
 	    JSONObject data   =    obj.getJSONObject("data");
 	    JSONObject attrs   =    data.getJSONObject("attributes");	    
