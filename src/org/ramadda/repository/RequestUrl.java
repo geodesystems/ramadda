@@ -110,11 +110,8 @@ public class RequestUrl {
      */
     public String getFullUrl(String suffix) {
         checkInit();
-        System.err.println("RequestUrl.getFullUrl needsSsl: " + needsSsl);
         if (needsSsl) {
             String url = getHttpsUrl(suffix);
-            System.err.println("\tssl  url=" + url);
-
             return url;
         }
 
