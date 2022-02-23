@@ -764,7 +764,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                  metadata.getAttr1()));
             } else if (smallDisplay) {
                 HU.open(sb, "tr",
-                        HU.attr("valign", "top") + HU.cssClass(rowClass));
+                        HU.attr("valign", "top") + (decorate?"":HU.cssClass(rowClass)));
                 HU.open(sb, "td");
                 if ( !first && (separator != null)) {
                     sb.append(separator);
@@ -783,7 +783,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 if ( !first && (separator != null)) {
                     sb.append(separator);
                 }
-                HU.div(sb, contents, HU.cssClass(rowClass));
+                HU.div(sb, contents, (decorate?"":HU.cssClass(rowClass)));
             }
             sb.append("\n");
         }
