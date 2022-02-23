@@ -9,14 +9,8 @@ package org.ramadda.repository;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -323,12 +317,10 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private boolean clientMode = false;
 
-
     /**
      * _more_
      */
     public RepositoryBase() {}
-
 
     /**
      * _more_
@@ -341,9 +333,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         this.httpPort = port;
     }
 
-
-
-
     /**
      *     _more_
      *
@@ -353,8 +342,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return UUID.randomUUID().toString();
     }
 
-
-
     /**
      * _more_
      *
@@ -362,9 +349,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     protected long currentTime() {
         return new Date().getTime();
-
     }
-
 
     /**
      * _more_
@@ -375,7 +360,6 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String absoluteUrl(String url) {
         int port = getPort();
-        System.err.println("RepositoryBase.absoluteUrl port = " + port);
         if ((port == 80) || (port == 0)) {
             return getHttpProtocol() + "://" + getHostname() + url;
         } else {
@@ -476,8 +460,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public boolean getProperty(String name, boolean dflt) {
         return dflt;
     }
-
-
 
     /**
      * _more_
