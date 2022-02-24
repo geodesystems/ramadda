@@ -5108,6 +5108,23 @@ public class Utils extends IO {
 	return seconds*1000;
     }    
 
+    public static void sleepUntil(int frequency, boolean debug)  {
+        Date              now = new Date();
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(now);
+        int minute        = cal.get(cal.MINUTE);
+        int seconds       = cal.get(cal.SECOND) + minute * 60;
+        int secondsToWait = (frequency * 60) - (seconds % (frequency * 60));
+        int minutesToWait = frequency - (minute % frequency);
+	if(debug)
+	    System.err.println("Sleeping for: "
+			       + (secondsToWait / 60) + ":"
+			       + (secondsToWait % 60));
+        Misc.sleepSeconds(minutesToWait * 60);
+    }
+
+
+
     /**
      * _more_
      *
