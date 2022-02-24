@@ -14,7 +14,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -154,18 +154,18 @@ public class YouTubeSearchProvider extends SearchProvider {
         for (int i = 0; i < searchResults.length(); i++) {
             JSONObject item    = searchResults.getJSONObject(i);
             JSONObject snippet = item.getJSONObject("snippet");
-            String     kind    = Json.readValue(item, "id.kind", "");
+            String     kind    = JsonUtil.readValue(item, "id.kind", "");
             if ( !kind.equals("youtube#video")) {
                 System.err.println("? Youtube kind:" + kind);
 
                 continue;
             }
-            String id   = Json.readValue(item, "id.videoId", "");
+            String id   = JsonUtil.readValue(item, "id.videoId", "");
             String name = snippet.getString("title");
             String desc = snippet.getString("description");
 
             Date   dttm = new Date();
-            Date fromDate = Utils.parseDate(Json.readValue(snippet,
+            Date fromDate = Utils.parseDate(JsonUtil.readValue(snippet,
                                 "publishedAt", null));
             Date   toDate  = fromDate;
 
@@ -176,7 +176,7 @@ public class YouTubeSearchProvider extends SearchProvider {
                                        + id, typeHandler);
             entries.add(newEntry);
 
-            String thumb = Json.readValue(snippet, "thumbnails.default.url",
+            String thumb = JsonUtil.readValue(snippet, "thumbnails.default.url",
                                           null);
 
             if (thumb != null) {

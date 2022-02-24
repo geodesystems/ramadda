@@ -14,7 +14,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -130,7 +130,7 @@ public class NationalArchivesSearchProvider extends SearchProvider {
         */
 
 
-        JSONArray searchResults = Json.readArray(obj,
+        JSONArray searchResults = JsonUtil.readArray(obj,
                                       "opaResponse.results.result");
         Entry       parent      = getSynthTopLevelEntry();
         TypeHandler typeHandler = getRepository().getTypeHandler("file");
@@ -138,14 +138,14 @@ public class NationalArchivesSearchProvider extends SearchProvider {
         for (int i = 0; i < searchResults.length(); i++) {
             //      if(i>1) continue;
             JSONObject item       = searchResults.getJSONObject(i);
-            String     type       = Json.readValue(item, "type", "");
-            String     name       = Json.readValue(item, "title", "");
-            String     itemUrl    = Json.readValue(item, "url", "");
-            String     desc       = Json.readValue(item, "teaser", "");
-            JSONObject descObject = Json.readObject(item, "description");
+            String     type       = JsonUtil.readValue(item, "type", "");
+            String     name       = JsonUtil.readValue(item, "title", "");
+            String     itemUrl    = JsonUtil.readValue(item, "url", "");
+            String     desc       = JsonUtil.readValue(item, "teaser", "");
+            JSONObject descObject = JsonUtil.readObject(item, "description");
             if (descObject != null) {
                 if (name.length() == 0) {
-                    name = Json.readValue(descObject, "series.title", "");
+                    name = JsonUtil.readValue(descObject, "series.title", "");
                 }
                 //              System.err.println("haveDesc:" + name);
                 JSONArray names = descObject.names();
@@ -156,10 +156,10 @@ public class NationalArchivesSearchProvider extends SearchProvider {
                 }
                 //              System.err.println("obj:" + descObject);
                 if (name.length() == 0) {
-                    name = Json.readValue(descObject, "fileUnit.title", "");
+                    name = JsonUtil.readValue(descObject, "fileUnit.title", "");
                 }
                 if (desc.length() == 0) {
-                    desc = Json.readValue(descObject,
+                    desc = JsonUtil.readValue(descObject,
                                           "series.scopeAndContentNote", "");
                 }
 
@@ -176,7 +176,7 @@ public class NationalArchivesSearchProvider extends SearchProvider {
             entries.add(newEntry);
             /*
 
-            String thumb = Json.readValue(snippet, "thumbnails.default.url",
+            String thumb = JsonUtil.readValue(snippet, "thumbnails.default.url",
                                           null);
 
             if (thumb != null) {

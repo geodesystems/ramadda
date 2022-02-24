@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.apis;
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 
 import ucar.unidata.util.Misc;
@@ -144,9 +144,9 @@ public class SwaggerUtil {
      */
     public static void initVersionItems(List<String> mapItems) {
         mapItems.add(ATTR_API_VERSION);
-        mapItems.add(Json.quote(VERSION_API));
+        mapItems.add(JsonUtil.quote(VERSION_API));
         mapItems.add(ATTR_SWAGGER_VERSION);
-        mapItems.add(Json.quote(VERSION_SWAGGER));
+        mapItems.add(JsonUtil.quote(VERSION_SWAGGER));
     }
 
 
@@ -164,13 +164,13 @@ public class SwaggerUtil {
             String resourcePath, String[] produces, List<String> apis) {
         List<String> doc = new ArrayList<String>();
         doc.add(ATTR_BASEPATH);
-        doc.add(Json.quote(basePath));
+        doc.add(JsonUtil.quote(basePath));
         doc.add(ATTR_RESOURCEPATH);
-        doc.add(Json.quote(resourcePath));
+        doc.add(JsonUtil.quote(resourcePath));
         doc.add(ATTR_PRODUCES);
-        doc.add(Json.list(Misc.toList(produces), true));
+        doc.add(JsonUtil.list(Misc.toList(produces), true));
         doc.add(ATTR_APIS);
-        doc.add(Json.list(apis));
+        doc.add(JsonUtil.list(apis));
 
         return doc;
     }
@@ -188,9 +188,9 @@ public class SwaggerUtil {
                                          List<String> operations) {
         List<String> api = new ArrayList<String>();
         api.add(ATTR_PATH);
-        api.add(Json.quote(path));
+        api.add(JsonUtil.quote(path));
         api.add(ATTR_OPERATIONS);
-        api.add(Json.list(operations));
+        api.add(JsonUtil.list(operations));
 
         return api;
     }
@@ -236,13 +236,13 @@ public class SwaggerUtil {
         List<String> operation = new ArrayList<String>();
         initOperation(operation, summary, notes, nickname);
         operation.add(ATTR_RESPONSEMESSAGES);
-        operation.add(Json.list(responseMessages));
+        operation.add(JsonUtil.list(responseMessages));
         operation.add(ATTR_PARAMETERS);
-        operation.add(Json.list(parameters));
+        operation.add(JsonUtil.list(parameters));
 
         if (produces != null) {
             operation.add(ATTR_PRODUCES);
-            operation.add(Json.list(Misc.toList(produces), true));
+            operation.add(JsonUtil.list(Misc.toList(produces), true));
         }
 
         return operation;
@@ -264,17 +264,17 @@ public class SwaggerUtil {
                                              String summary, String notes,
                                              String nickname) {
         operation.add(ATTR_METHOD);
-        operation.add(Json.quote("GET"));
+        operation.add(JsonUtil.quote("GET"));
         operation.add(ATTR_SUMMARY);
-        operation.add(Json.quote(summary));
+        operation.add(JsonUtil.quote(summary));
         operation.add(ATTR_NOTES);
-        operation.add(Json.quote(notes));
+        operation.add(JsonUtil.quote(notes));
         operation.add(ATTR_NICKNAME);
-        operation.add(Json.quote(nickname));
+        operation.add(JsonUtil.quote(nickname));
 
         //Add dummy auths
         operation.add(ATTR_AUTHORIZATIONS);
-        operation.add(Json.map());
+        operation.add(JsonUtil.map());
 
         return operation;
     }
@@ -360,27 +360,27 @@ public class SwaggerUtil {
                                       String type, List<String> values) {
         List<String> mapItems = new ArrayList<String>();
         mapItems.add(ATTR_NAME);
-        mapItems.add(Json.quote(name));
+        mapItems.add(JsonUtil.quote(name));
         mapItems.add(ATTR_DESCRIPTION);
-        mapItems.add(Json.quote(description));
+        mapItems.add(JsonUtil.quote(description));
         mapItems.add(ATTR_TYPE);
-        mapItems.add(Json.quote(type));
+        mapItems.add(JsonUtil.quote(type));
         if (dflt != null) {
             mapItems.add(ATTR_DEFAULTVALUE);
-            mapItems.add(Json.quote(dflt));
+            mapItems.add(JsonUtil.quote(dflt));
         }
 
         mapItems.add(ATTR_REQUIRED);
         mapItems.add("" + required);
         mapItems.add(ATTR_PARAMTYPE);
-        mapItems.add(Json.quote("query"));
+        mapItems.add(JsonUtil.quote("query"));
         if (values != null) {
             mapItems.add(ATTR_ALLOWABLEVALUES);
-            mapItems.add(Json.map("valueType", Json.quote("LIST"), "values",
-                                  Json.list(values, true)));
+            mapItems.add(JsonUtil.map("valueType", JsonUtil.quote("LIST"), "values",
+                                  JsonUtil.list(values, true)));
         }
 
-        return Json.map(mapItems);
+        return JsonUtil.map(mapItems);
 
     }
 

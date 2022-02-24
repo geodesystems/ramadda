@@ -34,7 +34,7 @@ import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
@@ -5056,20 +5056,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             all     = Utils.appendList(all, "group_by");
             all     = Utils.appendList(all, "group_agg");
             all     = Utils.appendList(all, "group_agg_type");
-            addProp(prefix + "group_by.values", Json.quote(groupBy), props,
+            addProp(prefix + "group_by.values", JsonUtil.quote(groupBy), props,
                     displayProps);
-            addProp(prefix + "group_agg.values", Json.quote(aggBy), props,
+            addProp(prefix + "group_agg.values", JsonUtil.quote(aggBy), props,
                     displayProps);
-            addProp(prefix + "group_agg.label", Json.quote("Aggregate"),
+            addProp(prefix + "group_agg.label", JsonUtil.quote("Aggregate"),
                     props, displayProps);
             addProp(prefix + "group_agg.multiple", "true", props,
                     displayProps);
             addProp(prefix + "group_agg_type.values",
-                    Json.quote( !includeNumericAggs
+                    JsonUtil.quote( !includeNumericAggs
                                 ? "count:Count"
                                 : "sum:Sum,max:Max,count:Count,min:Min,avg:Average"), props,
                                 displayProps);
-            addProp(prefix + "group_agg_type.label", Json.quote("Type"),
+            addProp(prefix + "group_agg_type.label", JsonUtil.quote("Type"),
                     props, displayProps);
         }
 
@@ -5121,10 +5121,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             all = Utils.appendList(all, column.getName());
             addProp(prefix + column.getName() + ".label",
-                    Json.quote(column.getLabel()), props, displayProps);
+                    JsonUtil.quote(column.getLabel()), props, displayProps);
             addProp(prefix + column.getName() + ".urlarg",
-                    Json.quote(column.getSearchArg()), props, displayProps);
-            addProp(prefix + column.getName() + ".type", Json.quote(type),
+                    JsonUtil.quote(column.getSearchArg()), props, displayProps);
+            addProp(prefix + column.getName() + ".type", JsonUtil.quote(type),
                     props, displayProps);
             if (column.isEnumeration()) {
                 String enums = "_all_:All";
@@ -5140,15 +5140,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 if (enums != null) {
                     addProp(prefix + column.getName() + ".values",
-                            Json.quote(enums), props, displayProps);
+                            JsonUtil.quote(enums), props, displayProps);
                     addProp(prefix + column.getName() + ".default",
-                            Json.quote("_all_"), props, displayProps);
+                            JsonUtil.quote("_all_"), props, displayProps);
                 }
 
             }
         }
 
-        addProp("requestFields", Json.quote(all), props, displayProps);
+        addProp("requestFields", JsonUtil.quote(all), props, displayProps);
 
         return super.getUrlForWiki(request, entry, tag, props, displayProps);
 

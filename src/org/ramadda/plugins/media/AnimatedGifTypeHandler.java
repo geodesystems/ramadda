@@ -10,7 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
@@ -161,7 +161,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
             sb.append(HU.tag("img", attrs));
             HU.script(sb, "var " + id + " = new " + (true
                     ? "RubbableGif"
-                    : "SuperGif") + "( " + Json.map(objAttrs) + " );\n");
+                    : "SuperGif") + "( " + JsonUtil.map(objAttrs) + " );\n");
             HU.script(sb,
                       "AnimatedGif.init(" + id + ",'" + id + "_div" + "',"
                       + addButtons + ");");

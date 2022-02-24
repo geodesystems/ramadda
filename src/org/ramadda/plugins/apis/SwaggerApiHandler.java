@@ -16,7 +16,7 @@ import org.ramadda.repository.util.DateArgument;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceArg;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
@@ -74,7 +74,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
     private Result returnJson(Request request, StringBuffer json)
             throws Exception {
         //        request.setResultFilename("ramaddaswagger.json");
-        Result result = new Result("", json, Json.MIMETYPE);
+        Result result = new Result("", json, JsonUtil.MIMETYPE);
         request.setCORSHeaderOnResponse();
 
         return result;
@@ -112,16 +112,16 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
 
         List<String> apis = new ArrayList<String>();
         int          cnt  = 0;
-        apis.add(Json.map(SU.ATTR_PATH, Json.quote("/point"),
-                          SU.ATTR_DESCRIPTION, Json.quote("Point data API")));
+        apis.add(JsonUtil.map(SU.ATTR_PATH, JsonUtil.quote("/point"),
+                          SU.ATTR_DESCRIPTION, JsonUtil.quote("Point data API")));
 
-        apis.add(Json.map(SU.ATTR_PATH, Json.quote("/gridaspoint"),
+        apis.add(JsonUtil.map(SU.ATTR_PATH, JsonUtil.quote("/gridaspoint"),
                           SU.ATTR_DESCRIPTION,
-                          Json.quote("Grid point data API")));
+                          JsonUtil.quote("Grid point data API")));
 
-        apis.add(Json.map(SU.ATTR_PATH, Json.quote("/gridsubset"),
+        apis.add(JsonUtil.map(SU.ATTR_PATH, JsonUtil.quote("/gridsubset"),
                           SU.ATTR_DESCRIPTION,
-                          Json.quote("Grid subset API")));
+                          JsonUtil.quote("Grid subset API")));
 
         for (OutputHandler outputHandler :
                 getRepository().getOutputHandlers()) {
@@ -135,9 +135,9 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
             }
 
             String url = "/service/" + service.getId();
-            apis.add(Json.map(SU.ATTR_PATH, Json.quote(url),
+            apis.add(JsonUtil.map(SU.ATTR_PATH, JsonUtil.quote(url),
                               SU.ATTR_DESCRIPTION,
-                              Json.quote(" API for " + service.getLabel())));
+                              JsonUtil.quote(" API for " + service.getLabel())));
 
 
 
@@ -154,16 +154,16 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                 continue;
             }
             String url = "/type/" + typeHandler.getType();
-            apis.add(Json.map(SU.ATTR_PATH, Json.quote(url),
+            apis.add(JsonUtil.map(SU.ATTR_PATH, JsonUtil.quote(url),
                               SU.ATTR_DESCRIPTION,
-                              Json.quote("Search API for '"
+                              JsonUtil.quote("Search API for '"
                                          + typeHandler.getLabel()
                                          + "' entry type")));
         }
         mapItems.add(SU.ATTR_APIS);
-        mapItems.add(Json.list(apis));
+        mapItems.add(JsonUtil.list(apis));
         StringBuffer sb = new StringBuffer();
-        sb.append(Json.map(mapItems));
+        sb.append(JsonUtil.map(mapItems));
 
         return returnJson(request, sb);
     }
@@ -196,7 +196,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                               + type, new String[] { "application/json",
                 "application/xml", "text/plain", "text/html" }, apis);
 
-        return returnJson(request, new StringBuffer(Json.map(doc)));
+        return returnJson(request, new StringBuffer(JsonUtil.map(doc)));
     }
 
 
@@ -224,7 +224,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                               getRepository().URL_ENTRY_SHOW.toString(),
                               new String[] {}, apis);
 
-        return returnJson(request, new StringBuffer(Json.map(doc)));
+        return returnJson(request, new StringBuffer(JsonUtil.map(doc)));
     }
 
     /**
@@ -310,12 +310,12 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
         */
 
         List<String> operations = new ArrayList<String>();
-        operations.add(Json.map(SU.createOperation("API for "
+        operations.add(JsonUtil.map(SU.createOperation("API for "
                 + service.getLabel(), "API to call: " + service.getLabel(),
                                       service.getId(), parameters,
                                       new ArrayList<String>())));
 
-        return Json.map(
+        return JsonUtil.map(
             SU.createApi(
                 getRepository().URL_ENTRY_SHOW.toString(), operations));
     }
@@ -360,7 +360,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
 
         List<String> operations = new ArrayList<String>();
         operations
-            .add(Json
+            .add(JsonUtil
                 .map(SU.createOperation("Search API for '"
                     + typeHandler.getLabel()
                         + "' entry type", "API to search for entries of type "
@@ -368,7 +368,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                                 + typeHandler
                                     .getType(), parameters, new ArrayList<String>())));
 
-        return Json.map(SU.createApi(getRepository().getUrlBase()
+        return JsonUtil.map(SU.createApi(getRepository().getUrlBase()
                                      + "/search/type/"
                                      + typeHandler.getType(), operations));
     }
@@ -491,11 +491,11 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
         */
 
         List<String> operations = new ArrayList<String>();
-        operations.add(Json.map(SU.createOperation("Point data API",
+        operations.add(JsonUtil.map(SU.createOperation("Point data API",
                 "API to access point data", "pointdata", parameters,
                 new ArrayList<String>())));
 
-        return Json.map(SU.createApi(getRepository().getUrlBase()
+        return JsonUtil.map(SU.createApi(getRepository().getUrlBase()
                                      + "/entry/show", operations));
     }
 
@@ -542,11 +542,11 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                                        SU.TYPE_DATETIME));
 
         List<String> operations = new ArrayList<String>();
-        operations.add(Json.map(SU.createOperation("Grid point data API",
+        operations.add(JsonUtil.map(SU.createOperation("Grid point data API",
                 "API to extract time series from gridded  data",
                 "gridaspointdata", parameters, new ArrayList<String>())));
 
-        return Json.map(SU.createApi(getRepository().getUrlBase()
+        return JsonUtil.map(SU.createApi(getRepository().getUrlBase()
                                      + "/entry/show", operations));
     }
 
@@ -570,7 +570,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                                                  "application/json",
                 "text/csv" }, apis);
 
-        return returnJson(request, new StringBuffer(Json.map(doc)));
+        return returnJson(request, new StringBuffer(JsonUtil.map(doc)));
     }
 
 
@@ -593,7 +593,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                                              + "/grid/json", new String[] {
                                                  "application/json" }, apis);
 
-        return returnJson(request, new StringBuffer(Json.map(doc)));
+        return returnJson(request, new StringBuffer(JsonUtil.map(doc)));
     }
 
 
@@ -647,12 +647,12 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                                        false, SU.TYPE_INTEGER));
 
         List<String> operations = new ArrayList<String>();
-        operations.add(Json.map(SU.createOperation("Grid subset  API",
+        operations.add(JsonUtil.map(SU.createOperation("Grid subset  API",
                 "API to subset a grid", "gridsubset", parameters,
                 new ArrayList<String>(),
                 new String[] { "application/x-netcdf" })));
 
-        return Json.map(SU.createApi(getRepository().getUrlBase()
+        return JsonUtil.map(SU.createApi(getRepository().getUrlBase()
                                      + "/entry/show", operations));
     }
 
@@ -677,7 +677,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                               getRepository().getUrlBase() + "/grid/json",
                               new String[] { "application/x-netcdf" }, apis);
 
-        return returnJson(request, new StringBuffer(Json.map(doc)));
+        return returnJson(request, new StringBuffer(JsonUtil.map(doc)));
     }
 
 

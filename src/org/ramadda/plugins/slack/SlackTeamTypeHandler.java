@@ -13,7 +13,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -131,11 +131,11 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
             return;
         }
 
-        entry.setName(Json.readValue(result, "team.name", entry.getName()));
+        entry.setName(JsonUtil.readValue(result, "team.name", entry.getName()));
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
-        values[IDX_TEAM_ID] = Json.readValue(result, "team.id", "");
+        values[IDX_TEAM_ID] = JsonUtil.readValue(result, "team.id", "");
 
-        String domain = Json.readValue(result, "team.domain", "");
+        String domain = JsonUtil.readValue(result, "team.domain", "");
         values[IDX_TEAM_DOMAIN] = domain;
         entry.setResource(new Resource(Slack.getTeamUrl(domain)));
     }
@@ -277,19 +277,19 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
             }
         */
 
-        String channelId = Json.readValue(channel, "id", "");
-        String name      = Json.readValue(channel, "name", "");
+        String channelId = JsonUtil.readValue(channel, "id", "");
+        String name      = JsonUtil.readValue(channel, "name", "");
         if (channelsToShow != null) {
             if ( !(channelsToShow.contains(channelId)
                     || channelsToShow.contains(name))) {
                 return null;
             }
         }
-        Date dttm = Slack.getDate(Json.readValue(channel, "created", ""));
+        Date dttm = Slack.getDate(JsonUtil.readValue(channel, "created", ""));
         String id = getEntryManager().createSynthId(teamEntry, channelId);
 
-        String topic = Json.readValue(channel, "topic.value", "");
-        String purpose = Json.readValue(channel, "purpose.value", "");
+        String topic = JsonUtil.readValue(channel, "topic.value", "");
+        String purpose = JsonUtil.readValue(channel, "purpose.value", "");
         TypeHandler channelTypeHandler =
             getRepository().getTypeHandler("slack_channel");
         Entry channelEntry = new Entry(id, channelTypeHandler);
@@ -332,8 +332,8 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
 
         String token    = getToken(request, teamEntry);
-        String userId   = Json.readValue(message, "user", "");
-        String userName = Json.readValue(message, "username", userId);
+        String userId   = JsonUtil.readValue(message, "user", "");
+        String userName = JsonUtil.readValue(message, "username", userId);
 
         if ( !Utils.stringDefined(userId)) {
             userId = userName;
@@ -343,9 +343,9 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         if (slackUser != null) {
             userName = slackUser.getName();
         }
-        String ts          = Json.readValue(message, "ts", "");
+        String ts          = JsonUtil.readValue(message, "ts", "");
         Date   dttm        = Slack.getDate(ts);
-        String desc        = Json.readValue(message, "text", "");
+        String desc        = JsonUtil.readValue(message, "text", "");
 
         String pattern     = ".*?<([^>|]+)|([^>]+)>";
         String embeddedUrl = StringUtil.findPattern(desc, pattern);
@@ -355,10 +355,10 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         //        System.err.println("desc:" + desc);
         //xxxx
 
-        String link  = Json.readValue(message, "permalink", (String) null);
+        String link  = JsonUtil.readValue(message, "permalink", (String) null);
         String dttms = displaySdf.format(dttm);
         String name  = userName + ": " + dttms;
-        channelId = Json.readValue(message, "channel.id", channelId);
+        channelId = JsonUtil.readValue(message, "channel.id", channelId);
 
         String ramaddaChannelId = getEntryManager().createSynthId(teamEntry,
                                       channelId);
@@ -528,10 +528,10 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
             return new SlackUser(token, userId, userName, null, null);
         }
 
-        JSONObject profile = Json.readObject(result, "user.profile");
-        String     name    = Json.readValue(profile, "real_name", userId);
-        String     image24 = Json.readValue(profile, "image_24", null);
-        String     image48 = Json.readValue(profile, "image_48", null);
+        JSONObject profile = JsonUtil.readObject(result, "user.profile");
+        String     name    = JsonUtil.readValue(profile, "real_name", userId);
+        String     image24 = JsonUtil.readValue(profile, "image_24", null);
+        String     image48 = JsonUtil.readValue(profile, "image_48", null);
 
         return new SlackUser(token, userId, name, image24, image48);
     }

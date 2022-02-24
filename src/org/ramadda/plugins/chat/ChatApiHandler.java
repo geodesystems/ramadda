@@ -19,7 +19,7 @@ import org.ramadda.repository.util.DateArgument;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceArg;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
@@ -116,12 +116,12 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
         List<String> messageList = new ArrayList<String>();
         for (ChatMessage chatMessage : room.messages) {
             messageList.add(
-                Json.mapAndQuote(
+                JsonUtil.mapAndQuote(
                     "message", chatMessage.message, "user", chatMessage.user,
                     "date", DateUtil.getTimeAsISO8601(chatMessage.date)));
         }
-        String   messages = Json.list(messageList);
-        String   json     = Json.map("messages", messages);
+        String   messages = JsonUtil.list(messageList);
+        String   json     = JsonUtil.map("messages", messages);
         Metadata metadata = null;
         if ((metadataList != null) && (metadataList.size() > 0)) {
             metadata = metadataList.get(0);
@@ -211,7 +211,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
      */
     private Result returnJson(Request request, StringBuilder json)
             throws Exception {
-        Result result = new Result("", json, Json.MIMETYPE);
+        Result result = new Result("", json, JsonUtil.MIMETYPE);
         request.setCORSHeaderOnResponse();
 
         return result;
@@ -248,7 +248,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             synchronized (room) {
                 room.notifyAll(output, getUserName(request.getUser()));
             }
-            sb.append(Json.mapAndQuote("code", "ok", "message",
+            sb.append(JsonUtil.mapAndQuote("code", "ok", "message",
                                        "output sent"));
 
             return returnJson(request, sb);
@@ -258,7 +258,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
         if (command.equals("clearall")) {
             boolean canEdit = getAccessManager().canEditEntry(request, entry);
             if ( !canEdit) {
-                sb.append(Json.mapAndQuote("code", "notok", "message",
+                sb.append(JsonUtil.mapAndQuote("code", "notok", "message",
                                            "no permissions to clear all"));
 
                 return returnJson(request, sb);
@@ -267,7 +267,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             ChatRoom room = getRoom(entry);
             room.clearAll();
             saveRoom(room);
-            sb.append(Json.mapAndQuote("code", "ok", "message", "cleared"));
+            sb.append(JsonUtil.mapAndQuote("code", "ok", "message", "cleared"));
 
             return returnJson(request, sb);
         }
@@ -283,11 +283,11 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             for (ChatMessage chatMessage : room.messages) {
                 String message = getWikiManager().wikifyEntry(request, entry,
                                      chatMessage.message);
-                messageList.add(Json.mapAndQuote("message", message, "user",
+                messageList.add(JsonUtil.mapAndQuote("message", message, "user",
                         chatMessage.user));
             }
-            String messages = Json.list(messageList);
-            sb.append(Json.map("code", "\"ok\"", "messages", messages));
+            String messages = JsonUtil.list(messageList);
+            sb.append(JsonUtil.map("code", "\"ok\"", "messages", messages));
 
             return returnJson(request, sb);
         }
@@ -330,9 +330,9 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
         }
         StringBuilder sb   = new StringBuilder();
         String        user = room.latestUser;
-        String messages = Json.list(Json.mapAndQuote("message",
+        String messages = JsonUtil.list(JsonUtil.mapAndQuote("message",
                               room.latestInput, "user", user));
-        sb.append(Json.map("code", "\"ok\"", "messages", messages));
+        sb.append(JsonUtil.map("code", "\"ok\"", "messages", messages));
 
         return returnJson(request, sb);
     }

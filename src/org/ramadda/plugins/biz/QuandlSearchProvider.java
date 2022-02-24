@@ -13,7 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
@@ -100,7 +100,7 @@ public class QuandlSearchProvider extends SearchProvider {
             InputStream is = connection.getInputStream();
             json = IOUtil.readContents(is);
             IOUtil.close(is);
-            docs = Json.readArray(new JSONObject(new JSONTokener(json)),
+            docs = JsonUtil.readArray(new JSONObject(new JSONTokener(json)),
                                   "docs");
             if (docs == null) {
                 System.err.println(
@@ -122,24 +122,24 @@ public class QuandlSearchProvider extends SearchProvider {
         TypeHandler linkTypeHandler = getRepository().getTypeHandler("link");
         for (int i = 0; i < docs.length(); i++) {
             JSONObject    item       = docs.getJSONObject(i);
-            String        id         = Json.readValue(item, "id", "");
-            String        sourceName = Json.readValue(item, "source_name",
+            String        id         = JsonUtil.readValue(item, "id", "");
+            String        sourceName = JsonUtil.readValue(item, "source_name",
                                            "");
-            String        sourceCode = Json.readValue(item, "source_code",
+            String        sourceCode = JsonUtil.readValue(item, "source_code",
                                            "");
-            String        code       = Json.readValue(item, "code", "");
-            String        name       = Json.readValue(item, "name", "");
-            String        urlizeName = Json.readValue(item, "urlize_name",
+            String        code       = JsonUtil.readValue(item, "code", "");
+            String        name       = JsonUtil.readValue(item, "name", "");
+            String        urlizeName = JsonUtil.readValue(item, "urlize_name",
                                            "");
             StringBuilder desc       = new StringBuilder();
-            String        displayUrl = Json.readValue(item, "display_url",
+            String        displayUrl = JsonUtil.readValue(item, "display_url",
                                            "");
             if (displayUrl != null) {
                 //                desc.append(HtmlUtils.href(displayUrl, displayUrl));
                 //                desc.append(HtmlUtils.br());
             }
 
-            boolean premium = Json.readValue(item, "premium",
+            boolean premium = JsonUtil.readValue(item, "premium",
                                              "").equals("true");
             //For now assume the auth code gives us access
             premium = false;
@@ -147,7 +147,7 @@ public class QuandlSearchProvider extends SearchProvider {
             TypeHandler typeHandler = premium
                                       ? linkTypeHandler
                                       : seriesTypeHandler;
-            desc.append(Json.readValue(item, "description", ""));
+            desc.append(JsonUtil.readValue(item, "description", ""));
             String pageUrl = "https://www.quandl.com/data/" + sourceCode
                              + "/" + code + "-" + urlizeName;
 
@@ -155,9 +155,9 @@ public class QuandlSearchProvider extends SearchProvider {
             Resource resource  = new Resource(pageUrl);
 
             Date     dttm      = new Date();
-            Date fromDate = Utils.parseDate(Json.readValue(item, "from_date",
+            Date fromDate = Utils.parseDate(JsonUtil.readValue(item, "from_date",
                                 "2015-01-01"));
-            Date toDate = Utils.parseDate(Json.readValue(item, "to_date",
+            Date toDate = Utils.parseDate(JsonUtil.readValue(item, "to_date",
                               "2015-01-01"));
             Entry newEntry = new Entry(makeSynthId(sourceCode, code),
                                        typeHandler);

@@ -19,7 +19,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.*;
@@ -99,7 +99,7 @@ public class EnigmaTable extends CsvFile {
 
                 List<RecordField> fields  = getFields();
                 JSONObject        obj = new JSONObject(new JSONTokener(json));
-                JSONArray         results = Json.readArray(obj, "result");
+                JSONArray         results = JsonUtil.readArray(obj, "result");
                 if (results != null) {
                     for (int i = 0; i < results.length(); i++) {
                         JSONObject col = results.getJSONObject(i);

@@ -16,7 +16,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.ui.HttpFormEntry;
@@ -265,9 +265,9 @@ public class Slack {
             if (debug) {
                 System.out.println("JSON:" + json);
             }
-            if ( !Json.readValue(obj, Slack.JSON_OK,
+            if ( !JsonUtil.readValue(obj, Slack.JSON_OK,
                                  "false").equals("true")) {
-                String error = Json.readValue(obj, Slack.JSON_ERROR, "");
+                String error = JsonUtil.readValue(obj, Slack.JSON_ERROR, "");
                 repository.getLogManager().logError(
                     "Error calling Slack API:" + endPoint + " error:"
                     + error, null);
@@ -339,14 +339,14 @@ public class Slack {
                 map.add(attachments);
             }
             map.add(SLACK_TEXT);
-            map.add(Json.quote(message + "\n"));
+            map.add(JsonUtil.quote(message + "\n"));
             map.add("username");
-            map.add(Json.quote(DFLT_USER_NAME));
+            map.add(JsonUtil.quote(DFLT_USER_NAME));
             if ((request != null) && request.defined(SLACK_CHANNEL_ID)) {
                 map.add("channel");
-                map.add(Json.quote(request.getString(SLACK_CHANNEL_ID, "")));
+                map.add(JsonUtil.quote(request.getString(SLACK_CHANNEL_ID, "")));
             }
-            json.append(Json.map(map));
+            json.append(JsonUtil.map(map));
             List<HttpFormEntry> formEntries = new ArrayList<HttpFormEntry>();
             formEntries.add(HttpFormEntry.hidden(SLACK_PAYLOAD,
                     json.toString()));
@@ -466,19 +466,19 @@ public class Slack {
             if (entries.size() > 1) {
                 name = "#" + cnt + " " + name;
             }
-            map.add(Json.quote(name));
+            map.add(JsonUtil.quote(name));
             if (repository.getEntryManager().isSynthEntry(entry.getId())
                     && entry.getResource().isUrl()) {
                 map.add("title_link");
-                map.add(Json.quote(entry.getResource().getPath()));
+                map.add(JsonUtil.quote(entry.getResource().getPath()));
             } else {
                 map.add("title_link");
-                map.add(Json.quote(getEntryUrl(repository, request, entry)));
+                map.add(JsonUtil.quote(getEntryUrl(repository, request, entry)));
             }
             map.add("fallback");
-            map.add(Json.quote(entry.getName()));
+            map.add(JsonUtil.quote(entry.getName()));
             map.add("color");
-            map.add(Json.quote("#00FCF4"));
+            map.add(JsonUtil.quote("#00FCF4"));
 
 
             StringBuffer desc = new StringBuffer();
@@ -511,16 +511,16 @@ public class Slack {
             }
 
             map.add("mrkdwn_in");
-            map.add(Json.list(Json.quote("text"), Json.quote("pretext")));
+            map.add(JsonUtil.list(JsonUtil.quote("text"), JsonUtil.quote("pretext")));
             map.add("text");
-            map.add(Json.quote(desc.toString()));
+            map.add(JsonUtil.quote(desc.toString()));
             List<String> fields = new ArrayList<String>();
             /*
-            fields.add(Json.map("title", Json.quote("From date"),
-                                "value",Json.quote(getWikiManager().formatDate(request,  new Date(entry.getCreateDate()), entry))));
+            fields.add(JsonUtil.map("title", JsonUtil.quote("From date"),
+                                "value",JsonUtil.quote(getWikiManager().formatDate(request,  new Date(entry.getCreateDate()), entry))));
             */
             map.add("fields");
-            map.add(Json.list(fields));
+            map.add(JsonUtil.list(fields));
 
 
             if (imageUrls.size() == 0) {
@@ -532,13 +532,13 @@ public class Slack {
                     //Only include images for the first 20 entries
                     if (imageCnt++ < 20) {
                         map.add("image_url");
-                        map.add(Json.quote(imageUrl));
+                        map.add(JsonUtil.quote(imageUrl));
                     }
                 }
-                maps.add(Json.map(map));
+                maps.add(JsonUtil.map(map));
             }
         }
-        String attachments = Json.list(maps);
+        String attachments = JsonUtil.list(maps);
 
         //        System.err.println("attachments:" + attachments);
         return attachments;

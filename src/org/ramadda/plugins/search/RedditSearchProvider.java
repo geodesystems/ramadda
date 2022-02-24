@@ -14,7 +14,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -116,7 +116,7 @@ public class RedditSearchProvider extends SearchProvider {
             return entries;
         }
 
-        JSONArray   children    = Json.readArray(obj, "data.children");
+        JSONArray   children    = JsonUtil.readArray(obj, "data.children");
         TypeHandler typeHandler = getRepository().getTypeHandler("link");
         Entry       parent      = getSynthTopLevelEntry();
         for (int i = 0; i < children.length(); i++) {

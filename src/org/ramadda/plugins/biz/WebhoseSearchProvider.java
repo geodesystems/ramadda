@@ -12,7 +12,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -138,13 +138,13 @@ public class WebhoseSearchProvider extends SearchProvider {
 
         for (int i = 0; i < searchResults.length(); i++) {
             JSONObject item    = searchResults.getJSONObject(i);
-            String     id      = Json.readValue(item, "uuid", "");
+            String     id      = JsonUtil.readValue(item, "uuid", "");
             String     name    = item.getString("title");
             String     desc    = item.getString("text");
             String     itemUrl = item.getString("url");
 
             Date       dttm    = new Date();
-            Date fromDate = Utils.parseDate(Json.readValue(item, "published",
+            Date fromDate = Utils.parseDate(JsonUtil.readValue(item, "published",
                                 null));
             Date  toDate   = fromDate;
 

@@ -15,7 +15,7 @@ import org.ramadda.repository.type.*;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -390,7 +390,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         super.addToJson(request, entry, items, attrs);
         String color = Gtfs.getColor(entry.getValue(IDX_COLOR, ""));
         items.add("lineColor");
-        items.add(Json.quote(color));
+        items.add(JsonUtil.quote(color));
         String s = entry.getValue(IDX_POINTS, "");
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
@@ -402,11 +402,11 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
                 pts.add(Double.toString(pt[1]));
             }
             items.add("polygon");
-            items.add(Json.list(pts));
+            items.add(JsonUtil.list(pts));
         }
 
         items.add("bubble");
-        items.add(Json.quote(getMapManager().makeInfoBubble(request, entry,
+        items.add(JsonUtil.quote(getMapManager().makeInfoBubble(request, entry,
                 true)));
     }
 

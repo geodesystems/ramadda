@@ -15,7 +15,7 @@ import org.ramadda.repository.Entry;
 
 
 import org.ramadda.repository.RepositoryUtil;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
@@ -79,7 +79,7 @@ public class SocrataFile extends CsvFile {
                     "Too big reading from Socrata");
             }
             JSONObject obj  = new JSONObject(new JSONTokener(json));
-            JSONObject view = Json.readObject(obj, "meta.view");
+            JSONObject view = JsonUtil.readObject(obj, "meta.view");
             //                System.out.println (json);
             JSONArray    cols   = view.getJSONArray("columns");
             JSONArray    data   = obj.getJSONArray("data");

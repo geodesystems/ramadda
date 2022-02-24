@@ -11,7 +11,7 @@ import org.ramadda.repository.type.*;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -81,7 +81,7 @@ public class StockTickerTypeHandler extends GenericTypeHandler {
 
         for (String line : StringUtil.split(symbols, "\n", true, true)) {
             js.append("new TradingView.widget(");
-            js.append(Json.mapAndQuote("symbol", line, "width", width,
+            js.append(JsonUtil.mapAndQuote("symbol", line, "width", width,
                                        "height", height, "interval",
                                        interval, "timezone", "exchange",
                                        "theme", "White", "style", "2",

@@ -19,7 +19,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.geo.KmlUtil;
 
 import org.ramadda.util.TTLCache;
@@ -522,7 +522,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".geojson";
         Result result = request.getOutputStreamResult(filename,
-                            Json.GEOJSON_MIMETYPE);
+                            JsonUtil.GEOJSON_MIMETYPE);
         OutputStreamWriter sb =
             new OutputStreamWriter(request.getOutputStream());
         FeatureCollection fc = makeFeatureCollection(request, entry, null);
@@ -1081,7 +1081,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
 
-        return Json.mapAndQuote(values);
+        return JsonUtil.mapAndQuote(values);
     }
 
 

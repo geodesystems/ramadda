@@ -26,7 +26,7 @@ import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.NamedBuffer;
@@ -444,7 +444,7 @@ public abstract class ValueIterator implements DbConstants {
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
-            makeResult(".json", Json.MIMETYPE);
+            makeResult(".json", JsonUtil.MIMETYPE);
             columnNames = new ArrayList<String>();
             columns     = db.getColumnsToUse(request, false);
             for (int i = 0; i < columns.size(); i++) {
@@ -452,16 +452,16 @@ public abstract class ValueIterator implements DbConstants {
                 columnNames.add(c.getJson(request));
             }
             Appendable sb = getBuffer();
-            sb.append(Json.MAP_OPEN);
+            sb.append(JsonUtil.MAP_OPEN);
             if (request.get("includeColumns", true)) {
-                sb.append(Json.quote("columns"));
+                sb.append(JsonUtil.quote("columns"));
                 sb.append(":");
-                sb.append(Json.list(columnNames));
+                sb.append(JsonUtil.list(columnNames));
                 sb.append(",\n");
             }
-            sb.append(Json.quote("values"));
+            sb.append(JsonUtil.quote("values"));
             sb.append(":");
-            sb.append(Json.LIST_OPEN);
+            sb.append(JsonUtil.LIST_OPEN);
         }
 
 
@@ -487,9 +487,9 @@ public abstract class ValueIterator implements DbConstants {
                             Column.OUTPUT_CSV, values, true);
                 String colValue = cb.toString();
                 attrs.add(columns.get(i).getName());
-                attrs.add(Json.quote(colValue));
+                attrs.add(JsonUtil.quote(colValue));
             }
-            sb.append(Json.map(attrs));
+            sb.append(JsonUtil.map(attrs));
         }
 
         /**
@@ -501,8 +501,8 @@ public abstract class ValueIterator implements DbConstants {
          */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
-            sb.append(Json.LIST_CLOSE);
-            sb.append(Json.MAP_CLOSE);
+            sb.append(JsonUtil.LIST_CLOSE);
+            sb.append(JsonUtil.MAP_CLOSE);
             super.finish(request);
         }
 

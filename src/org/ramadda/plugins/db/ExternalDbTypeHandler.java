@@ -19,7 +19,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.*;
 import org.ramadda.util.text.*;
@@ -256,13 +256,13 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 all += name;
                 if ( !displayProps.contains("request." + name + ".label")) {
                     displayProps.add("request." + name + ".label");
-                    displayProps.add(Json.quote(Utils.makeLabel(name)));
+                    displayProps.add(JsonUtil.quote(Utils.makeLabel(name)));
                 }
                 displayProps.add("request." + name + ".urlarg");
-                displayProps.add(Json.quote("search." + name));
+                displayProps.add(JsonUtil.quote("search." + name));
 
                 displayProps.add("request." + name + ".type");
-                displayProps.add(Json.quote(type));
+                displayProps.add(JsonUtil.quote(type));
                 if (type.equals("enumeration")) {
                     String enums = (String) recordProps.get("request." + name
                                        + ".values");
@@ -272,12 +272,12 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     }
                     if (enums != null) {
                         displayProps.add("request." + name + ".values");
-                        displayProps.add(Json.quote(enums));
+                        displayProps.add(JsonUtil.quote(enums));
                     }
                 }
             }
             displayProps.add("requestFields");
-            displayProps.add(Json.quote(all));
+            displayProps.add(JsonUtil.quote(all));
         }
 
         return super.getUrlForWiki(request, entry, tag, props, displayProps);

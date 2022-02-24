@@ -16,7 +16,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -255,8 +255,8 @@ public class DropboxTypeHandler extends ExtensibleGroupTypeHandler {
     private Entry createDropboxEntry(Entry dropboxEntry, JSONObject channel,
                                      HashSet<String> channelsToShow)
             throws Exception {
-        String channelId = Json.readValue(channel, "id", "");
-        String name      = Json.readValue(channel, "name", "");
+        String channelId = JsonUtil.readValue(channel, "id", "");
+        String name      = JsonUtil.readValue(channel, "name", "");
         if (channelsToShow != null) {
             if ( !(channelsToShow.contains(channelId)
                     || channelsToShow.contains(name))) {
@@ -266,8 +266,8 @@ public class DropboxTypeHandler extends ExtensibleGroupTypeHandler {
         Date   dttm = new Date();
         String id = getEntryManager().createSynthId(dropboxEntry, channelId);
 
-        String topic = Json.readValue(channel, "topic.value", "");
-        String purpose = Json.readValue(channel, "purpose.value", "");
+        String topic = JsonUtil.readValue(channel, "topic.value", "");
+        String purpose = JsonUtil.readValue(channel, "purpose.value", "");
         TypeHandler dropboxTypeHandler =
             getRepository().getTypeHandler("dropbox_file");
         Entry newEntry = new Entry(id, dropboxTypeHandler);

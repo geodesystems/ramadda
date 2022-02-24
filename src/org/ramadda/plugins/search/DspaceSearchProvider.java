@@ -13,7 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
@@ -141,7 +141,7 @@ public class DspaceSearchProvider extends SearchProvider {
             InputStream is = connection.getInputStream();
             json = IOUtil.readContents(is);
             IOUtil.close(is);
-            obj = Json.readObject(new JSONObject(new JSONTokener(json)),
+            obj = JsonUtil.readObject(new JSONObject(new JSONTokener(json)),
                                   "result");
             if (obj == null) {
                 System.err.println(
@@ -156,7 +156,7 @@ public class DspaceSearchProvider extends SearchProvider {
         }
         System.out.println("dspace:" + url);
 
-        JSONArray searchResults = Json.readArray(obj, "results");
+        JSONArray searchResults = JsonUtil.readArray(obj, "results");
         if (searchResults == null) {
             System.err.println(
                 "DSPACE SearchProvider: no results field in json");
@@ -170,13 +170,13 @@ public class DspaceSearchProvider extends SearchProvider {
 
         for (int i = 0; i < searchResults.length(); i++) {
             JSONObject item     = searchResults.getJSONObject(i);
-            String     id       = Json.readValue(item, "id", "");
-            String     desc     = Json.readValue(item, "notes", "");
-            String     title    = Json.readValue(item, "title", "");
-            String     name     = Json.readValue(item, "name", "");
+            String     id       = JsonUtil.readValue(item, "id", "");
+            String     desc     = JsonUtil.readValue(item, "notes", "");
+            String     title    = JsonUtil.readValue(item, "title", "");
+            String     name     = JsonUtil.readValue(item, "name", "");
             Date       dttm     = new Date();
             Date       fromDate = dttm;
-            //Utils.parseDate(Json.readValue(snippet, "publishedAt", null));
+            //Utils.parseDate(JsonUtil.readValue(snippet, "publishedAt", null));
             Date   toDate  = fromDate;
 
             String itemUrl = baseUrl + "/dataset/" + name;
@@ -208,29 +208,29 @@ public class DspaceSearchProvider extends SearchProvider {
 
 
 
-            JSONArray    tags     = Json.readArray(item, "tags");
+            JSONArray    tags     = JsonUtil.readArray(item, "tags");
             if (tags != null) {
                 for (int tagIdx = 0; tagIdx < tags.length(); tagIdx++) {
                     JSONObject tag = tags.getJSONObject(tagIdx);
                     getMetadataManager().addMetadata(newEntry,
                             new Metadata(getRepository().getGUID(),
                                          newEntry.getId(), "enum_tag", false,
-                                         Json.readValue(tag, "display_name",
+                                         JsonUtil.readValue(tag, "display_name",
                                              ""), null, null, null, null));
                 }
             }
 
 
-            JSONArray resources = Json.readArray(item, "resources");
+            JSONArray resources = JsonUtil.readArray(item, "resources");
             if (resources != null) {
                 for (int resourceIdx = 0; resourceIdx < resources.length();
                         resourceIdx++) {
                     JSONObject  rObj = resources.getJSONObject(resourceIdx);
-                    String      rname = Json.readValue(rObj, "name", "");
-                    String      rid = Json.readValue(rObj, "id", "");
-                    String rdesc = Json.readValue(rObj, "description", "");
-                    String      dataUrl = Json.readValue(rObj, "url", null);
-                    String      format = Json.readValue(rObj, "format", "");
+                    String      rname = JsonUtil.readValue(rObj, "name", "");
+                    String      rid = JsonUtil.readValue(rObj, "id", "");
+                    String rdesc = JsonUtil.readValue(rObj, "description", "");
+                    String      dataUrl = JsonUtil.readValue(rObj, "url", null);
+                    String      format = JsonUtil.readValue(rObj, "format", "");
                     String      rUrl = itemUrl + "/resource/" + rid;
 
                     TypeHandler typeHandlerToUse = rtypeHandler;

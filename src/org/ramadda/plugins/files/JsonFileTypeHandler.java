@@ -19,7 +19,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -144,11 +144,11 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
             String id = Utils.getGuid();
             String json =
                 getStorageManager().readFile(entry.getResource().getPath());
-            String formatted = Json.format(json, true);
+            String formatted = JsonUtil.format(json, true);
             HtmlUtils.open(sb, "div", "id", id);
             HtmlUtils.pre(sb, formatted);
             HtmlUtils.close(sb, "div");
-            sb.append(HtmlUtils.script("RamaddaJson.init('" + id + "');"));
+            sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
         } catch (Exception exc) {
             sb.append("Error formatting JSON: " + exc);
             exc.printStackTrace();
