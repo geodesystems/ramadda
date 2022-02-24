@@ -13,11 +13,8 @@ import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
-
-
 
 import org.ramadda.util.sql.Clause;
 
@@ -265,28 +262,28 @@ public class MetadataManager extends RepositoryManager {
         List<Metadata> metadataList = getMetadata(entry);
         List<String>   top          = new ArrayList<String>();
         top.add("@context");
-        top.add(Json.quote("https://schema.org/"));
+        top.add(JsonUtil.quote("https://schema.org/"));
         top.add("@type");
-        top.add(Json.quote("Dataset"));
+        top.add(JsonUtil.quote("Dataset"));
         top.add("name");
-        top.add(Json.quote(Json.cleanString(entry.getName())));
+        top.add(JsonUtil.quote(JsonUtil.cleanString(entry.getName())));
         top.add("url");
-        top.add(Json.quote(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        top.add(JsonUtil.quote(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                             entry)));
         String snippet = getWikiManager().getRawSnippet(request, entry,
                              false);
         if ((snippet != null) && (snippet.length() > 0)) {
             top.add("description");
-            top.add(Json.quote(Json.cleanString(snippet)));
+            top.add(JsonUtil.quote(JsonUtil.cleanString(snippet)));
         }
         if (entry.hasDate()) {
             top.add("temporalCoverage");
             if (entry.getStartDate() == entry.getEndDate()) {
                 top.add(
-                    Json.quote(sdf.format(new Date(entry.getStartDate()))));
+                    JsonUtil.quote(sdf.format(new Date(entry.getStartDate()))));
             } else {
                 top.add(
-                    Json.quote(
+                    JsonUtil.quote(
                         sdf.format(new Date(entry.getStartDate())) + "/"
                         + sdf.format(new Date(entry.getEndDate()))));
             }
@@ -295,28 +292,28 @@ public class MetadataManager extends RepositoryManager {
         if (entry.isGeoreferenced()) {
             List<String> geo = new ArrayList<String>();
             geo.add("@type");
-            geo.add(Json.quote("Place"));
+            geo.add(JsonUtil.quote("Place"));
             geo.add("geo");
             if (entry.hasAreaDefined()) {
                 String box = entry.getSouth() + " " + entry.getWest() + " "
                              + entry.getNorth() + " " + entry.getEast();
-                geo.add(Json.map("@type", Json.quote("GeoShape"), "box",
-                                 Json.quote(box)));
+                geo.add(JsonUtil.map("@type", JsonUtil.quote("GeoShape"), "box",
+                                 JsonUtil.quote(box)));
             } else {
-                geo.add(Json.map("@type", Json.quote("GeoCoordinates"),
+                geo.add(JsonUtil.map("@type", JsonUtil.quote("GeoCoordinates"),
                                  "latitude",
-                                 Json.quote("" + entry.getLatitude()),
+                                 JsonUtil.quote("" + entry.getLatitude()),
                                  "longitude",
-                                 Json.quote("" + entry.getLongitude())));
+                                 JsonUtil.quote("" + entry.getLongitude())));
             }
             top.add("spatialCoverage");
-            top.add(Json.map(geo));
+            top.add(JsonUtil.map(geo));
         }
 
         if (entry.isFile()) {
             top.add("distribution");
             top.add(
-                Json.mapAndQuote(
+                JsonUtil.mapAndQuote(
                     "@type", "DataDownload", "contentUrl",
                     getEntryManager().getEntryResourceUrl(
                         request, entry, true, false)));
@@ -329,7 +326,7 @@ public class MetadataManager extends RepositoryManager {
             String type = md.getType();
             if (type.equals("content.license")) {
                 top.add("license");
-                top.add(Json.quote(md.getAttr1()));
+                top.add(JsonUtil.quote(md.getAttr1()));
             } else if (type.equals("doi_identifier")) {
                 if (ids == null) {
                     ids = new ArrayList<String>();
@@ -338,16 +335,16 @@ public class MetadataManager extends RepositoryManager {
             } else if (type.equals("thredds.creator")) {
                 List<String> ctor = new ArrayList<String>();
                 ctor.add("@type");
-                ctor.add(Json.quote("Organization"));
+                ctor.add(JsonUtil.quote("Organization"));
                 ctor.add("name");
-                ctor.add(Json.quote(md.getAttr1()));
+                ctor.add(JsonUtil.quote(md.getAttr1()));
                 ctor.add("url");
-                ctor.add(Json.quote(md.getAttr4()));
+                ctor.add(JsonUtil.quote(md.getAttr4()));
                 ctor.add("contactPoint");
-                ctor.add(Json.mapAndQuote("@type", "ContactPoint", "email",
+                ctor.add(JsonUtil.mapAndQuote("@type", "ContactPoint", "email",
                                           md.getAttr3()));
                 top.add("creator");
-                top.add(Json.map(ctor));
+                top.add(JsonUtil.map(ctor));
             } else if (type.equals("enum_gcmdkeyword")
                        || type.equals("content.keyword")
                        || type.equals("enum_tag")
@@ -360,13 +357,13 @@ public class MetadataManager extends RepositoryManager {
         }
         if (ids != null) {
             top.add("identifier");
-            top.add(Json.list(ids, true));
+            top.add(JsonUtil.list(ids, true));
         }
         if (keywords != null) {
             top.add("keywords");
-            top.add(Json.list(keywords, true));
+            top.add(JsonUtil.list(keywords, true));
         }
-        Json.map(sb, top, false);
+        JsonUtil.map(sb, top, false);
         sb.append("\n</script>\n");
 
         return sb.toString();
@@ -1468,8 +1465,8 @@ public class MetadataManager extends RepositoryManager {
 	    for(int i=0;i<values.size() && i<limit; i++) tmp.add(values.get(i));
 	    values = tmp;
 	}
-	sb.append(Json.list(values, true));
-        return new Result("", sb, Json.MIMETYPE);
+	sb.append(JsonUtil.list(values, true));
+        return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
 
@@ -1517,7 +1514,7 @@ public class MetadataManager extends RepositoryManager {
         if (request.responseAsJson()) {
             request.setCORSHeaderOnResponse();
 
-            return new Result("", sb, Json.MIMETYPE);
+            return new Result("", sb, JsonUtil.MIMETYPE);
         }
 
         sb.append(HtmlUtils.sectionClose());
@@ -1549,7 +1546,7 @@ public class MetadataManager extends RepositoryManager {
         MetadataType    type    = handler.findType(metadataType);
         if ((type == null) || (type.getChildren() == null)) {
             if (doJson) {
-                sb.append(Json.list(new ArrayList<String>()));
+                sb.append(JsonUtil.list(new ArrayList<String>()));
             }
 
             return;
@@ -1609,11 +1606,11 @@ public class MetadataManager extends RepositoryManager {
                     if (label == null) {
                         label = value;
                     }
-                    maps.add(Json.map("count", tuple[0].toString(), "value",
-                                      Json.quote(value), "label",
-                                      Json.quote(label)));
+                    maps.add(JsonUtil.map("count", tuple[0].toString(), "value",
+                                      JsonUtil.quote(value), "label",
+                                      JsonUtil.quote(label)));
                 }
-                sb.append(Json.list(maps));
+                sb.append(JsonUtil.list(maps));
             } else {
 
                 List rows = new ArrayList();
