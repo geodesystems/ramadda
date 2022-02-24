@@ -7,7 +7,7 @@ package org.ramadda.data.record;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
@@ -343,15 +343,15 @@ public class RecordField {
                                      boolean addGeolocation,
                                      boolean addElevation, boolean addDate)
             throws Exception {
-        pw.append(Json.mapOpen());
-        pw.append(Json.attr(Json.FIELD_NAME, name, true));
+        pw.append(JsonUtil.mapOpen());
+        pw.append(JsonUtil.attr(JsonUtil.FIELD_NAME, name, true));
         pw.append(",\n");
-        pw.append(Json.attr(Json.FIELD_FIELDS,
+        pw.append(JsonUtil.attr(JsonUtil.FIELD_FIELDS,
                             RecordField.getJson(fields, addGeolocation,
                                 addElevation, addDate)));
         pw.append(",\n");
-        pw.append(Json.mapKey(Json.FIELD_DATA));
-        pw.append(Json.listOpen());
+        pw.append(JsonUtil.mapKey(JsonUtil.FIELD_DATA));
+        pw.append(JsonUtil.listOpen());
     }
 
     /**
@@ -362,8 +362,8 @@ public class RecordField {
      * @throws Exception _more_
      */
     public static void addJsonFooter(Appendable pw) throws Exception {
-        pw.append(Json.listClose());
-        pw.append(Json.mapClose());
+        pw.append(JsonUtil.listClose());
+        pw.append(JsonUtil.mapClose());
     }
 
     /**
@@ -425,7 +425,7 @@ public class RecordField {
         }
 
 
-        return Json.list(fieldStrings);
+        return JsonUtil.list(fieldStrings);
     }
 
 
@@ -444,14 +444,14 @@ public class RecordField {
         items.add("id");
         items.add(HtmlUtils.quote(name));
         items.add("label");
-        items.add(Json.quote(label));
+        items.add(JsonUtil.quote(label));
         if (group != null) {
             items.add("group");
-            items.add(Json.quote(group));
+            items.add(JsonUtil.quote(group));
         }
         if (description != null) {
             items.add("description");
-            items.add(Json.quote(description.replaceAll("\n", " ")));
+            items.add(JsonUtil.quote(description.replaceAll("\n", " ")));
         }
         if ((enumeratedValues != null) && (enumeratedValues.size() > 0)) {
             String       v   = "";
@@ -461,7 +461,7 @@ public class RecordField {
                 tmp.add(tuple[1]);
             }
             items.add("enumeratedValues");
-            items.add(Json.mapAndQuote(tmp));
+            items.add(JsonUtil.mapAndQuote(tmp));
         }
 
         if (isGroup) {
@@ -471,13 +471,13 @@ public class RecordField {
 
         if (group != null) {
             items.add("group");
-            items.add(Json.quote(group));
+            items.add(JsonUtil.quote(group));
         }
         items.add("type");
-        items.add(Json.quote(dataType));
+        items.add(JsonUtil.quote(dataType));
         items.add("unit");
         items.add(Utils.stringDefined(unit)
-                  ? Json.quote(unit)
+                  ? JsonUtil.quote(unit)
                   : "null");
 
 
@@ -485,13 +485,13 @@ public class RecordField {
         String canEdit = (String) getProperty("canedit", null);
         if (canEdit != null) {
             items.add("canedit");
-            items.add(Json.quote(canEdit));
+            items.add(JsonUtil.quote(canEdit));
         }
 	Object values = getProperty("values", null);
         if (values != null) {
             items.add("values");
 	    if(values instanceof List) values = Utils.join((List)values,",");
-            items.add(Json.quote(values.toString()));
+            items.add(JsonUtil.quote(values.toString()));
         }
 
         items.add("chartable");
@@ -520,7 +520,7 @@ public class RecordField {
         }
 
 
-        sb.append(Json.map(items));
+        sb.append(JsonUtil.map(items));
     }
 
 
