@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.gis.shapefile.*;

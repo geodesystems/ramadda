@@ -21,7 +21,7 @@ import org.json.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.NamedChannel;
 import org.ramadda.util.MapProvider;
@@ -2500,7 +2500,7 @@ public class CsvUtil {
                     pw.println(",");
                 }
                 if (c.category) {
-                    pw.println(Json.mapAndQuote("isCategory", "true",
+                    pw.println(JsonUtil.mapAndQuote("isCategory", "true",
 						"label",c.cmd));
 
                 } else {
@@ -2510,9 +2510,9 @@ public class CsvUtil {
                         for (Arg arg : c.args) {
                             List<String> attrs = new ArrayList<String>();
                             attrs.add("id");
-                            attrs.add(Json.quote(arg.id));
+                            attrs.add(JsonUtil.quote(arg.id));
                             attrs.add("description");
-                            attrs.add(Json.quote(arg.desc));
+                            attrs.add(JsonUtil.quote(arg.desc));
                             if (arg.props != null) {
                                 for (int i = 0; i < arg.props.length;
 				     i += 2) {
@@ -2522,19 +2522,19 @@ public class CsvUtil {
 					v = (String)getProperty(v.substring("property:".length()));
 				    }
 				    if(v==null) v="";
-				    attrs.add(Json.quote(v));
+				    attrs.add(JsonUtil.quote(v));
                                 }
                             }
-                            tmp.add(Json.map(attrs));
+                            tmp.add(JsonUtil.map(attrs));
 
                         }
-                        argList = Json.list(tmp);
+                        argList = JsonUtil.list(tmp);
                     }
-                    pw.println(Json.map("command", Json.quote(c.cmd),
+                    pw.println(JsonUtil.map("command", JsonUtil.quote(c.cmd),
                                         "label", (c.label != null)
-					? Json.quote(c.label)
+					? JsonUtil.quote(c.label)
 					: "null", "args", argList, "description",
-					Json.quote(c.desc)));
+					JsonUtil.quote(c.desc)));
                 }
             } else {
                 if (c.category) {

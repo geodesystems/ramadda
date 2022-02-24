@@ -16,7 +16,7 @@ import org.ramadda.util.PatternProps;
 
 
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.Feature;
@@ -729,7 +729,7 @@ public abstract class Converter extends Processor {
                     + s;
                 String     result = IO.readUrl(url);
                 JSONObject obj    = new JSONObject(result);
-                JSONArray  values = Json.readArray(obj, "query.search");
+                JSONArray  values = JsonUtil.readArray(obj, "query.search");
                 if (values.length() == 0) {
                     System.err.println("No results for query:" + s);
                     add(ctx, row, "");
@@ -744,7 +744,7 @@ public abstract class Converter extends Processor {
                       + "&format=json";
                 result = IO.readUrl(url);
                 obj    = new JSONObject(result);
-                obj    = Json.readObject(obj, "parse.text");
+                obj    = JsonUtil.readObject(obj, "parse.text");
                 String contents = obj.optString("*", "");
                 String p = StringUtil.findPattern(contents,
                                "(?s)/table>(.*?)<div id=\"toc\"");

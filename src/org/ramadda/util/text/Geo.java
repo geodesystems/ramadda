@@ -16,7 +16,7 @@ import org.ramadda.util.PatternProps;
 
 
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.Address;

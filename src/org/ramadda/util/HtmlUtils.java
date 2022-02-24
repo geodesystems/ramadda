@@ -6257,7 +6257,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             attrs.add("true");
         }
 
-        String callArgs = Json.map(attrs);
+        String callArgs = JsonUtil.map(attrs);
         String call     = "HtmlUtils.makeDialog(" + callArgs + ");";
         String onClick  = HtmlUtils.onMouseClick(call + extraCode);
         String href = HtmlUtils.div(link,

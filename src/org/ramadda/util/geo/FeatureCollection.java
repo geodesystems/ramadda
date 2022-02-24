@@ -7,7 +7,7 @@ package org.ramadda.util.geo;
 
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -633,11 +633,11 @@ public class FeatureCollection {
      */
     public void toGeoJson(Appendable sb) throws Exception {
         List<String> map = new ArrayList<String>();
-        sb.append(Json.mapOpen());
-        Json.attr(sb, "type", Json.quote(TYPE_FEATURE_COLLECTION));
+        sb.append(JsonUtil.mapOpen());
+        JsonUtil.attr(sb, "type", JsonUtil.quote(TYPE_FEATURE_COLLECTION));
         sb.append(",\n");
-        sb.append(Json.mapKey("features"));
-        sb.append(Json.listOpen());
+        sb.append(JsonUtil.mapKey("features"));
+        sb.append(JsonUtil.listOpen());
         List<String> flist = new ArrayList<String>();
         int          cnt   = 0;
         for (Feature feature : features) {
@@ -646,8 +646,8 @@ public class FeatureCollection {
             }
             feature.toGeoJson(sb);
         }
-        sb.append(Json.listClose());
-        sb.append(Json.mapClose());
+        sb.append(JsonUtil.listClose());
+        sb.append(JsonUtil.mapClose());
     }
 
 }

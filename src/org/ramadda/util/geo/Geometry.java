@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -184,12 +184,12 @@ public class Geometry {
      * @throws Exception _more_
      */
     public void toGeoJson(Appendable sb) throws Exception {
-        sb.append(Json.mapOpen());
-        Json.attr(sb, "type", Json.quote(geometryType));
+        sb.append(JsonUtil.mapOpen());
+        JsonUtil.attr(sb, "type", JsonUtil.quote(geometryType));
         sb.append(",\n");
-        sb.append(Json.mapKey("coordinates"));
+        sb.append(JsonUtil.mapKey("coordinates"));
         sb.append(getCoordsString());
-        sb.append(Json.mapClose());
+        sb.append(JsonUtil.mapClose());
     }
 
     /**
@@ -283,7 +283,7 @@ public class Geometry {
                     String coordStr = buf.toString();
                     if (geometryType.equals(TYPE_POLYGON)
                             || geometryType.equals(TYPE_MULTIPOLYGON)) {
-                        coordStr = Json.list(coordStr);
+                        coordStr = JsonUtil.list(coordStr);
                     }
                     allCoords.add(coordStr);
                 }
@@ -302,11 +302,11 @@ public class Geometry {
                 || geometryType.equals(TYPE_MULTIPOINT)
                 || geometryType.equals(TYPE_MULTIPOLYGON)) {
             StringBuilder buf = new StringBuilder();
-            buf.append(Json.listOpen());
+            buf.append(JsonUtil.listOpen());
             buf.append("\n");
             buf.append(sb.toString());
             buf.append("\n");
-            buf.append(Json.listClose());
+            buf.append(JsonUtil.listClose());
 
             return buf.toString();
         }
