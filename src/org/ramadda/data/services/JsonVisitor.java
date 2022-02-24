@@ -17,7 +17,7 @@ import org.ramadda.data.record.ValueGetter;
 import org.ramadda.data.record.VisitInfo;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Request;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
 
@@ -45,9 +45,9 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private static final String QUOTE = "\"";
 
-    private static final String VALUES_OPEN = Json.MAP_OPEN+ QUOTE+Json.FIELD_VALUES+"\":"+Json.LIST_OPEN;
+    private static final String VALUES_OPEN = JsonUtil.MAP_OPEN+ QUOTE+JsonUtil.FIELD_VALUES+"\":"+JsonUtil.LIST_OPEN;
 
-    private static final String VALUES_CLOSE = Json.LIST_CLOSE+Json.MAP_CLOSE;
+    private static final String VALUES_CLOSE = JsonUtil.LIST_CLOSE+JsonUtil.MAP_CLOSE;
 
 
     /** _more_ */
@@ -163,26 +163,26 @@ public class JsonVisitor extends BridgeRecordVisitor {
             fieldCnt++;
             if (getter == null) {
                 if (field.isTypeString()) {
-                    Json.quote(pw, record.getStringValue(field.getParamId()));
+                    JsonUtil.quote(pw, record.getStringValue(field.getParamId()));
                 } else if (field.isTypeDate()) {
                     write(QUOTE);
                     write(record.getStringValue(field.getParamId()));
                     write(QUOTE);
                 } else {
                     d = record.getValue(field.getParamId());
-                    if (Json.isNullNumber(d)) {
-                        write(Json.NULL);
+                    if (JsonUtil.isNullNumber(d)) {
+                        write(JsonUtil.NULL);
                     } else {
                         write(Double.toString(d));
                     }
                 }
             } else {
                 if (field.isTypeString() || field.isTypeDate()) {
-		    Json.quote(pw,  getter.getStringValue(record, field,visitInfo));
+		    JsonUtil.quote(pw,  getter.getStringValue(record, field,visitInfo));
                 } else {
                     d = getter.getValue(record, field, visitInfo);
-                    if (Json.isNullNumber(d)) {
-			write(Json.NULL);
+                    if (JsonUtil.isNullNumber(d)) {
+			write(JsonUtil.NULL);
                     } else {
 			write(Double.toString(d));
                     }
@@ -194,15 +194,15 @@ public class JsonVisitor extends BridgeRecordVisitor {
         if (addGeo) {
             write(COMMA);
             d = pointRecord.getLatitude();
-            if (Json.isNullNumber(d)) {
-                write(Json.NULL);
+            if (JsonUtil.isNullNumber(d)) {
+                write(JsonUtil.NULL);
             } else {
                 write(Double.toString(d));
             }
             write(COMMA);
             d = pointRecord.getLongitude();
-            if (Json.isNullNumber(d)) {
-                write(Json.NULL);
+            if (JsonUtil.isNullNumber(d)) {
+                write(JsonUtil.NULL);
             } else {
                 write(Double.toString(d));
             }
@@ -211,8 +211,8 @@ public class JsonVisitor extends BridgeRecordVisitor {
         if (addElevation) {
             write(COMMA);
             d = pointRecord.getAltitude();
-            if (Json.isNullNumber(d)) {
-                write(Json.NULL);
+            if (JsonUtil.isNullNumber(d)) {
+                write(JsonUtil.NULL);
             } else {
                 write(Double.toString(d));
             }
@@ -221,7 +221,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
         if (addTime) {
             write(COMMA);
             //Just use the milliseconds
-            write(Json.formatNumber(pointRecord.getRecordTime()));
+            write(JsonUtil.formatNumber(pointRecord.getRecordTime()));
         }
         write(VALUES_CLOSE);
         return true;
@@ -245,8 +245,8 @@ public class JsonVisitor extends BridgeRecordVisitor {
             pw = getThePrintWriter();
             String       code = "nodata";
             StringBuffer json = new StringBuffer();
-            pw.append(Json.map("warning", Json.quote("No data available"),
-                               "errorcode", Json.quote(code)));
+            pw.append(JsonUtil.map("warning", JsonUtil.quote("No data available"),
+                               "errorcode", JsonUtil.quote(code)));
 
         }
     }

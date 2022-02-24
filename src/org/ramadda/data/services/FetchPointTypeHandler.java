@@ -11,7 +11,6 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
