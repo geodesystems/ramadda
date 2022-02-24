@@ -4,35 +4,22 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
-
-
 import org.json.*;
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
-
 import org.ramadda.repository.*;
-
-
 import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 import java.io.*;
-
 import java.net.URL;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -43,6 +30,15 @@ import java.util.List;
 /**
  */
 public class PurpleAirTypeHandler extends PointTypeHandler {
+
+    /**  */
+    private static boolean testMode = false;
+
+
+    /**  */
+    private static boolean debug = false;
+
+
 
     /**  */
     private String apiKey;
@@ -83,7 +79,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**  */
     private static final String FILE_HEADER = "date," + DATA_FIELDS + "\n";
 
-    private  static  boolean testMode = false;
 
 
     /**
@@ -102,10 +97,11 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                 public void run() {
                     try {
                         //Wait a minute for RAMADDA to start up
-			if(testMode)
-			    Misc.sleepSeconds(5);			
-			else
-			    Misc.sleepSeconds(60);
+                        if (testMode) {
+                            Misc.sleepSeconds(5);
+                        } else {
+                            Misc.sleepSeconds(60);
+                        }
                         runInBackground();
                     } catch (Exception exc) {
                         getLogManager().logError(
@@ -120,23 +116,13 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**
      */
     private void sleepUntil() {
-	if(testMode) {
-	    System.err.println("PurpleAir test sleeping for:" + 10);
-	    Misc.sleepSeconds(10);
-	    return;
-	}
+        if (testMode) {
+            System.err.println("PurpleAir test sleeping for:" + 10);
+            Misc.sleepSeconds(10);
+            return;
+        }
         int freq = getRepository().getProperty("purpleair.frequency", 30);
-        Date              now = new Date();
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(now);
-        int minute        = cal.get(cal.MINUTE);
-        int seconds       = cal.get(cal.SECOND) + minute * 60;
-        int secondsToWait = (freq * 60) - (seconds % (freq * 60));
-        int minutesToWait = freq - (minute % freq);
-        System.err.println("PurpleAir thread waiting: " + (secondsToWait / 60) + ":"
-                           + (secondsToWait % 60));
-        Misc.sleepSeconds(minutesToWait * 60);
-        //        Misc.sleepSeconds(10);
+	Utils.sleepUntil(freq, testMode|| debug);
     }
 
 
@@ -149,13 +135,15 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         searchRequest.put(ARG_TYPE, "type_point_purpleair");
         sleepUntil();
         while (true) {
-            System.err.println("PurplAair fetching data");
+	    if(debug)
+		System.err.println("PurpleAair fetching data");
             StringBuilder tmp = new StringBuilder();
             List<Entry> entries = getEntryManager().getEntries(searchRequest,
                                       tmp);
             for (Entry entry : entries) {
                 if ( !entry.getValue(IDX_ACTIVE).toString().equals("true")) {
-                    System.err.println("\tskipping:" + entry);
+		    if(debug)
+			System.err.println("\tskipping:" + entry);
                     continue;
                 }
                 try {
@@ -174,13 +162,13 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
     /**
      *
+     * @param request _more_
      * @param entry _more_
      *
      * @throws Exception _more_
      */
-    private void fetchData(Request request,Entry entry) throws Exception {
-	boolean debug = entry.getName().indexOf("AZTEC")>=0;
-	debug = true;
+    private void fetchData(Request request, Entry entry) throws Exception {
+        boolean debug = this.debug || entry.getName().indexOf("AZTEC") >= 0;
         Sensor sensor = readSensor(entry, DATA_FIELDS);
         if (sensor == null) {
             System.err.println("\tfetching failed to read sensor data:"
@@ -188,25 +176,28 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
             return;
         }
-	int points = entry.getValue(IDX_RECORD_COUNT,0);
-	if(points==0) {
-	    //If its the first record
-	    entry.setStartDate(sensor.date.getTime());
-	} else {
-	    //Check if there has been no new records
-	    if(entry.getEndDate() == sensor.date.getTime()) {
-		if(debug)
-		    System.err.println("\tPurpleAir: no data change for entry:" + entry.getName());
-		return;
-	    }
-	}
+        int points = entry.getValue(IDX_RECORD_COUNT, 0);
+        if (points == 0) {
+            //If its the first record
+            entry.setStartDate(sensor.date.getTime());
+        } else {
+            //Check if there has been no new records
+            if (entry.getEndDate() == sensor.date.getTime()) {
+                if (debug) {
+                    System.err.println(
+                        "\tPurpleAir: no data change for entry:"
+                        + entry.getName());
+                }
 
-	entry.setEndDate(sensor.date.getTime());	    
+                return;
+            }
+        }
 
+        entry.setEndDate(sensor.date.getTime());
         StringBuilder row = new StringBuilder(Utils.formatIso(sensor.date));
-
-	if(debug)
-	    System.err.println("\tfetching:" + entry + " dttm:" + sensor.date);
+        if (debug) {
+            System.err.println("\tfetching:" + entry + " dttm:" + sensor.date);
+        }
         for (String field : FIELDS_LIST) {
             double d = sensor.data.optDouble(field);
             row.append(",");
@@ -218,11 +209,11 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         FileOutputStream fos  = new FileOutputStream(file, true);
         fos.write(row.toString().getBytes());
         fos.close();
-	entry.getResource().setFileSize(file.length());
+        entry.getResource().setFileSize(file.length());
 
 
-	entry.setValue(IDX_RECORD_COUNT,points+1);	
-	getEntryManager().updateEntry(request, entry);
+        entry.setValue(IDX_RECORD_COUNT, points + 1);
+        getEntryManager().updateEntry(request, entry);
 
     }
 
@@ -276,12 +267,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         if (sensor == null) {
             return;
         }
-	String name = sensor.data.getString("name");
+        String name = sensor.data.getString("name");
         if ( !Utils.stringDefined(entry.getName())) {
             entry.setName(name);
         }
-	String alias = "purpleair_" + Utils.makeID(name);
-	getMetadataManager().addMetadataAlias(entry, alias);
+        String alias = "purpleair_" + Utils.makeID(name);
+        getMetadataManager().addMetadataAlias(entry, alias);
         entry.setLatitude(sensor.data.getDouble("latitude"));
         entry.setLongitude(sensor.data.getDouble("longitude"));
         entry.setAltitude(sensor.data.getDouble("altitude"));
@@ -391,9 +382,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             FileOutputStream fos  = new FileOutputStream(file);
             fos.write(FILE_HEADER.getBytes());
             fos.close();
-	    entry.setValue(IDX_RECORD_COUNT,0);
-	    entry.getResource().setFileSize(file.length());
-	    getEntryManager().updateEntry(request, entry);
+            entry.setValue(IDX_RECORD_COUNT, 0);
+            entry.getResource().setFileSize(file.length());
+            getEntryManager().updateEntry(request, entry);
             sb.append(
                 getPageHandler().showDialogNote("OK, file has been cleared"));
         } else {
