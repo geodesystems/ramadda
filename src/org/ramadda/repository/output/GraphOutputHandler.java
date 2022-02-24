@@ -11,7 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.*;
@@ -166,7 +166,7 @@ public class GraphOutputHandler extends OutputHandler {
                      + entry.getId();
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry);
-        nodes.add(Json.map(new String[] {
+        nodes.add(JsonUtil.map(new String[] {
             ATTR_NAME, entry.getName(), ATTR_NODEID, entry.getId(), ATTR_URL,
             entryUrl, ATTR_GRAPHURL, url, ATTR_ICON, getIconUrl
         }, true));
@@ -190,7 +190,7 @@ public class GraphOutputHandler extends OutputHandler {
         if ((from == null) || (to == null)) {
             return;
         }
-        links.add(Json.map(new String[] {
+        links.add(JsonUtil.map(new String[] {
             ATTR_SOURCE_ID, from.getId(), ATTR_TARGET_ID, to.getId(),
             ATTR_TITLE, title
         }, true));

@@ -57,7 +57,7 @@ import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.SystemContext;
 import org.ramadda.util.Utils;
@@ -732,7 +732,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
     public Result processGetEntries(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	return new Result("", sb, Json.MIMETYPE);
+	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
 
@@ -1487,17 +1487,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
 		String label = Utils.makeLabel(tag.tag) + " properties";
-                tmp.add(Json.map("label",Json.quote(label)));
+                tmp.add(JsonUtil.map("label",JsonUtil.quote(label)));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
-                    tmp.add(Json.map("p",Json.quote(tag.attrsList.get(j)),"ex",
-				     Json.quote(tag.attrsList.get(j + 1))));
+                    tmp.add(JsonUtil.map("p",JsonUtil.quote(tag.attrsList.get(j)),"ex",
+				     JsonUtil.quote(tag.attrsList.get(j + 1))));
                 }
                 tags.add(tag.tag);
-                tags.add(Json.list(tmp));
+                tags.add(JsonUtil.list(tmp));
             }
         }
-        sb.append(Json.map(tags, false));
-        Result result = new Result("", sb, Json.MIMETYPE);
+        sb.append(JsonUtil.map(tags, false));
+        Result result = new Result("", sb, JsonUtil.MIMETYPE);
         result.setShouldDecorate(false);
         return result;
     }
@@ -1564,7 +1564,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (metadata == null) {
             Result result = new Result("", new StringBuilder("{}"),
-                                       Json.MIMETYPE);
+                                       JsonUtil.MIMETYPE);
             result.setShouldDecorate(false);
 
             return result;
@@ -1574,7 +1574,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new FileInputStream(
                                 getMetadataManager().getFile(
                                     request, entry, metadata,
-                                    2)), Json.MIMETYPE);
+                                    2)), JsonUtil.MIMETYPE);
         result.setShouldDecorate(false);
 
         return result;
@@ -1598,7 +1598,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Result result = new Result("",
                                        new StringBuilder("{'error':'"
                                            + exc.getMessage()
-                                           + "'}"), Json.MIMETYPE);
+                                           + "'}"), JsonUtil.MIMETYPE);
 
             return result;
         }
@@ -1619,12 +1619,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (entry == null) {
             return new Result(
                 "", new StringBuilder("{\"error\":\"cannot find entry\"}"),
-                Json.MIMETYPE);
+                JsonUtil.MIMETYPE);
         }
         if ( !getAccessManager().canEditEntry(request, entry)) {
             return new Result(
                 "", new StringBuilder("{\"error\":\"cannot edit entry\"}"),
-                Json.MIMETYPE);
+                JsonUtil.MIMETYPE);
         }
 
         List<Metadata> metadataList =
@@ -1661,14 +1661,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             getEntryManager().updateEntry(null, entry);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
-                              Json.MIMETYPE);
+                              JsonUtil.MIMETYPE);
         } else {
             File file = getMetadataManager().getFile(request, entry,
                             metadata, 2);
             getStorageManager().writeFile(file, notebook);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
-                              Json.MIMETYPE);
+                              JsonUtil.MIMETYPE);
         }
     }
 
@@ -3973,11 +3973,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
 	String id = Utils.getGuid();
 	//entry.getResource().getPath(), true);
-	String formatted = Json.format(json,true);
+	String formatted = JsonUtil.format(json,true);
 	HtmlUtils.open(sb, "div", "id", id);
 	HtmlUtils.pre(sb, formatted);
 	HtmlUtils.close(sb, "div");
-	sb.append(HtmlUtils.script("RamaddaJson.init('" + id + "');"));
+	sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
 	return sb.toString();
     }
 	
@@ -4140,7 +4140,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String v = getProperty(wikiUtil, props, key);
                 if (v != null) {
                     v = v.replace("${entryid}", entry.getId());
-                    mapProps.put(mapArg, Json.quote(v));
+                    mapProps.put(mapArg, JsonUtil.quote(v));
                 }
             }
 
@@ -4149,7 +4149,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (mapSet != null) {
                 List<String> msets = Utils.split(mapSet, ",");
                 for (int i = 0; i < msets.size() - 1; i += 2) {
-                    mapProps.put(msets.get(i), Json.quote(msets.get(i + 1)));
+                    mapProps.put(msets.get(i), JsonUtil.quote(msets.get(i + 1)));
                 }
             }
             MapInfo map = getMapManager().getMap(newRequest, entry, children,
@@ -4831,8 +4831,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         Entry         entry = getEntryManager().getEntry(request);
 	StringBuilder sb = new StringBuilder();
 	if(entry==null) {
-	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("error", "Could not find entry"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	Hashtable<String,String> props = new Hashtable<String,String>();
 	String max = request.getString("max",null);
@@ -4840,8 +4840,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
 							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
 	jsonUrl = request.getAbsoluteUrl(jsonUrl);
-	sb.append(Json.map("url", Json.quote(jsonUrl)));
-	return new Result("", sb, Json.MIMETYPE);
+	sb.append(JsonUtil.map("url", JsonUtil.quote(jsonUrl)));
+	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
 
@@ -7209,7 +7209,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String attrName = metadata.getAttr1();
                 if (props.get(attrName) == null) {
                     propList.add(attrName);
-                    propList.add(Json.quote(metadata.getAttr2()));
+                    propList.add(JsonUtil.quote(metadata.getAttr2()));
                 }
             }
         }
@@ -7252,9 +7252,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     jObj.add(toks2.get(i));
                     jObj.add(toks2.get(i + 1));
                 }
-                jsonObjects.add(Json.mapAndQuote(jObj).replaceAll("\n", " "));
+                jsonObjects.add(JsonUtil.mapAndQuote(jObj).replaceAll("\n", " "));
             }
-            String json = Json.list(jsonObjects);
+            String json = JsonUtil.list(jsonObjects);
             //            System.err.println("json:" + json);
             props.put("derived", json);
         }
@@ -7293,12 +7293,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 icon = "${root}/icons/magnifier.png";
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
-			    String v =Json.map("id",Json.quote(searchProvider.getId()),
-					       "type",Json.quote(searchProvider.getType()),
-					       "name",Json.quote(searchProvider.getName()),
-					       "capabilities",Json.quote(searchProvider.getCapabilities()),					       
-					       "icon",Json.quote(icon),
-					       "category",Json.quote(searchProvider.getCategory()));
+			    String v =JsonUtil.map("id",JsonUtil.quote(searchProvider.getId()),
+					       "type",JsonUtil.quote(searchProvider.getType()),
+					       "name",JsonUtil.quote(searchProvider.getName()),
+					       "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
+					       "icon",JsonUtil.quote(icon),
+					       "category",JsonUtil.quote(searchProvider.getCategory()));
                             processed.add(v);
                         }
                     }
@@ -7334,16 +7334,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    if (subToks.size() > 2) {
 			icon = subToks.get(2);
 		    }
-		    String v =Json.map("id",Json.quote(id),
-				       "type",Json.quote(searchProvider.getType()),
-				       "name",Json.quote(label),
-				       "capabilities",Json.quote(searchProvider.getCapabilities()),					       
-				       "icon",Json.quote(icon),
-				       "category",Json.quote(searchProvider.getCategory()));
+		    String v =JsonUtil.map("id",JsonUtil.quote(id),
+				       "type",JsonUtil.quote(searchProvider.getType()),
+				       "name",JsonUtil.quote(label),
+				       "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
+				       "icon",JsonUtil.quote(icon),
+				       "category",JsonUtil.quote(searchProvider.getCategory()));
 		    processed.add(v);
 		}
 	    }
-            props.put("providers", "json:"+ Json.list(processed));
+            props.put("providers", "json:"+ JsonUtil.list(processed));
         }
 
         String entryParent = getProperty(wikiUtil, props, "entryParent");
@@ -7363,7 +7363,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String colors = getProperty(wikiUtil, props, ATTR_COLORS);
         if (colors != null) {
             propList.add(ATTR_COLORS);
-            propList.add(Json.list(Utils.split(colors, ","), true));
+            propList.add(JsonUtil.list(Utils.split(colors, ","), true));
             props.remove(ATTR_COLORS);
         }
 
@@ -7387,7 +7387,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (entry != null) {
             propList.add("entryIcon");
             propList.add(
-                Json.quote(
+                JsonUtil.quote(
                     entry.getTypeHandler().getEntryIconUrl(
                         request, originalEntry)));
         }
@@ -7398,7 +7398,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (timezone != null) {
             propList.add("timezone");
             TimeZone tz = TimeZone.getTimeZone(timezone);
-            propList.add(Json.quote("" + (tz.getRawOffset() / 1000 / 60
+            propList.add(JsonUtil.quote("" + (tz.getRawOffset() / 1000 / 60
                                           / 60)));
         }
 
@@ -7413,10 +7413,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (title != null) {
             title = title.replace("{entry}", entry.getName());
             propList.add(ATTR_TITLE);
-            propList.add(Json.quote(title));
+            propList.add(JsonUtil.quote(title));
         } else {
             propList.add(ATTR_TITLE);
-            propList.add(Json.quote(entry.getName()));
+            propList.add(JsonUtil.quote(entry.getName()));
         }
 
 
@@ -7448,17 +7448,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                            + child.getName().replaceAll(",", " ").replaceAll("\"","&quot;"));
             }
             propList.add("entryCollection");
-            propList.add(Json.quote(tmp.toString()));
+            propList.add(JsonUtil.quote(tmp.toString()));
             String tmpname = getProperty(wikiUtil, props,
                                          "changeEntriesLabel");
             if (tmpname != null) {
                 propList.add("changeEntriesLabel");
-                propList.add(Json.quote(tmpname));
+                propList.add(JsonUtil.quote(tmpname));
             }
         }
 
         topProps.add("layoutType");
-        topProps.add(Json.quote(getProperty(wikiUtil, props, "layoutType",
+        topProps.add(JsonUtil.quote(getProperty(wikiUtil, props, "layoutType",
                                             "table")));
         props.remove("layoutType");
         topProps.add("layoutColumns");
@@ -7473,21 +7473,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String bounds = (String) props.get("bounds");
         if (bounds != null) {
             props.remove("bounds");
-            Utils.add(propList, "bounds", Json.quote(bounds));
+            Utils.add(propList, "bounds", JsonUtil.quote(bounds));
         } else if (entry.hasAreaDefined()) {
             Utils.add(propList, "bounds",
-                      Json.quote(entry.getNorth() + "," + entry.getWest()
+                      JsonUtil.quote(entry.getNorth() + "," + entry.getWest()
                                  + "," + entry.getSouth() + ","
                                  + entry.getEast()));
         }
 
         topProps.add("defaultMapLayer");
-        topProps.add(Json.quote(defaultLayer));
+        topProps.add(JsonUtil.quote(defaultLayer));
 
         String displayDiv = getProperty(wikiUtil, props, "displayDiv");
         if (displayDiv != null) {
             displayDiv = displayDiv.replace("${entryid}", entry.getId());
-            Utils.add(propList, "displayDiv", Json.quote(displayDiv));
+            Utils.add(propList, "displayDiv", JsonUtil.quote(displayDiv));
             props.remove("displayDiv");
         }
 
@@ -7516,13 +7516,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 Object key   = keys.nextElement();
                 Object value = props.get(key);
                 topProps.add(key.toString());
-                topProps.add(Json.quote(value.toString()));
+                topProps.add(JsonUtil.quote(value.toString()));
             }
             HU.div(sb, "", HU.id(mainDivId));
 	    String groupVar = getGroupVar(request);
             topProps.addAll(propList);
             js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
-                      + HU.quote(mainDivId) + "," + Json.map(topProps, false)
+                      + HU.quote(mainDivId) + "," + JsonUtil.map(topProps, false)
                       + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
             return;
@@ -7534,7 +7534,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<String> toks = Utils.split(fields, ",", true, true);
             if (toks.size() > 0) {
                 propList.add("fields");
-                propList.add(Json.list(toks, true));
+                propList.add(JsonUtil.list(toks, true));
             }
             props.remove("fields");
         }
@@ -7555,7 +7555,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         HU.div(sb, "",
                HU.clazz("display-container") + HU.id(anotherDivId)
                + HU.style("position:relative;"));
-        Utils.add(propList, "divid", Json.quote(anotherDivId));
+        Utils.add(propList, "divid", JsonUtil.quote(anotherDivId));
         props.remove("layoutHere");
 
 	String groupVar = (String) request.getExtraProperty(PROP_GROUP_VAR);
@@ -7573,7 +7573,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }) {
             String value = getProperty(wikiUtil, props, arg, (String) null);
             if (value != null) {
-                Utils.add(propList, arg, Json.quote(value));
+                Utils.add(propList, arg, JsonUtil.quote(value));
             }
             props.remove(arg);
         }
@@ -7630,9 +7630,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             attrs.add("");
                         }
                     }
-                    String json = Json.mapAndQuote(attrs);
+                    String json = JsonUtil.mapAndQuote(attrs);
                     Utils.add(propList, "marker" + cnt,
-                              Json.quote("base64:"
+                              JsonUtil.quote("base64:"
                                          + Utils.encodeBase64(json)));
                     cnt++;
                 }
@@ -7641,7 +7641,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         if (defaultLayer != null) {
-            Utils.add(propList, "defaultMapLayer", Json.quote(defaultLayer));
+            Utils.add(propList, "defaultMapLayer", JsonUtil.quote(defaultLayer));
             props.remove("defaultLayer");
             props.remove("defaultMapLayer");
         }
@@ -7659,7 +7659,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 ids.append(child.getId());
             }
             props.remove("entries");
-            Utils.add(propList, "entryIds", Json.quote(ids.toString()));
+            Utils.add(propList, "entryIds", JsonUtil.quote(ids.toString()));
         }
         props.remove("type");
 
@@ -7670,7 +7670,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    if(value.startsWith("json:")) {
 		value = value.substring(5);
 	    } else {
-		value = Json.quote(value);
+		value = JsonUtil.quote(value);
 	    }
 	    Utils.add(propList, key, value);
         }
@@ -7694,7 +7694,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    groupVar = getGroupVar(request);
             Utils.concatBuff(
                 js, "\nvar " + groupVar +" = getOrCreateDisplayManager(",
-                HU.quote(groupDivId), ",", Json.map(topProps, false), ");\n");
+                HU.quote(groupDivId), ",", JsonUtil.map(topProps, false), ");\n");
         }
         Utils.add(propList, "entryId", HU.quote(entry.getId()),"thisEntryType",HU.quote(entry.getTypeHandler().getType()));
 	if(entry.isFile()) {
@@ -7780,19 +7780,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
 
 		    if(annotatedIds!=null) {
-			Utils.add(propList, "annotationLayer", Json.quote(annotatedIds),
-				  "annotationLayerName", Json.quote(annotatedNames));
+			Utils.add(propList, "annotationLayer", JsonUtil.quote(annotatedIds),
+				  "annotationLayerName", JsonUtil.quote(annotatedNames));
 		    }
 			
 		    if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
 			if (kmlIds != null) {
-			    Utils.add(propList, "kmlLayer", Json.quote(kmlIds),
-				      "kmlLayerName", Json.quote(kmlNames));
+			    Utils.add(propList, "kmlLayer", JsonUtil.quote(kmlIds),
+				      "kmlLayerName", JsonUtil.quote(kmlNames));
 			}
 			if (geojsonIds != null) {
 			    Utils.add(propList, "geojsonLayer",
-				      Json.quote(geojsonIds), "geojsonLayerName",
-				      Json.quote(geojsonNames));
+				      JsonUtil.quote(geojsonIds), "geojsonLayerName",
+				      JsonUtil.quote(geojsonNames));
 			}
                     }
                 }
@@ -7802,7 +7802,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         wikiUtil.addWikiAttributes(propList);
 	js.append("\n");
 	js.append(groupVar+".createDisplay(" + HU.quote(displayType)
-                  + "," + Json.map(propList, false) + ");\n");
+                  + "," + JsonUtil.map(propList, false) + ");\n");
 	//xxxx
         wikiUtil.appendJavascript(js.toString());
     }

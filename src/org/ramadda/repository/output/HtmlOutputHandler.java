@@ -13,7 +13,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 
 
@@ -1381,8 +1381,8 @@ public class HtmlOutputHandler extends OutputHandler {
             if (json == null) {
                 json = new StringBuffer();
                 String lastValue = values.get(values.size() - 1);
-                json.append(Json.map(new String[] { "values",
-                        Json.list(new String[] { "--", lastValue + "-v1",
+                json.append(JsonUtil.map(new String[] { "values",
+                        JsonUtil.list(new String[] { "--", lastValue + "-v1",
                         lastValue + "-v2", lastValue + "-v3" }) }, false));
                 //                System.err.println(json);
                 testCache.put(valueKey, json);

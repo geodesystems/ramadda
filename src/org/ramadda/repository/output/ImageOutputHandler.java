@@ -12,7 +12,7 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -2264,7 +2264,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         playerTemplate = playerTemplate.replaceAll("\\$\\{imageArgs\\}",
-                Json.map(playerArgs));
+                JsonUtil.map(playerArgs));
 
         String widthAttr = "";
         String width     = request.getString(ARG_WIDTH, "600");
