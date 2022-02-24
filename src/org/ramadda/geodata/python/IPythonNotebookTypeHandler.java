@@ -15,7 +15,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.WikiUtil;

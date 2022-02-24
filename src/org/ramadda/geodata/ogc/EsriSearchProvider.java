@@ -13,7 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
@@ -188,7 +188,7 @@ public class EsriSearchProvider extends SearchProvider {
                 /*
             List<String> ids      = new ArrayList<String>();
             List<Entry>  children = new ArrayList<Entry>();
-            JSONArray    tags     = Json.readArray(item, "tags");
+            JSONArray    tags     = JsonUtil.readArray(item, "tags");
             if (tags != null) {
                 for (int tagIdx = 0; tagIdx < tags.length(); tagIdx++) {
                     JSONObject tag = tags.getJSONObject(tagIdx);
@@ -196,7 +196,7 @@ public class EsriSearchProvider extends SearchProvider {
                         new Metadata(
                             getRepository().getGUID(), newEntry.getId(),
                             "enum_tag", false,
-                            Json.readValue(tag, "display_name", ""), null,
+                            JsonUtil.readValue(tag, "display_name", ""), null,
                             null, null, null));
                 }
             }
