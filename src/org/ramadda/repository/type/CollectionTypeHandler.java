@@ -15,8 +15,8 @@ import org.ramadda.repository.output.BulkDownloadOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
-import org.ramadda.util.TTLCache;
+import org.ramadda.util.JsonUtil;
+ import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
@@ -249,13 +249,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                  + nextColumnName + " --";
             uniqueValues.add(0, selectLabel);
             json = new StringBuffer();
-            json.append(Json.map(new String[] { "values",
-                    Json.list(uniqueValues) }, false));
+            json.append(JsonUtil.map(new String[] { "values",
+                    JsonUtil.list(uniqueValues) }, false));
             //System.err.println(json);
             cache.put(key, json);
         }
 
-        return new Result(BLANK, json, Json.MIMETYPE);
+        return new Result(BLANK, json, JsonUtil.MIMETYPE);
     }
 
 

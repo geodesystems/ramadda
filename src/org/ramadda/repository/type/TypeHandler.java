@@ -33,7 +33,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
@@ -669,14 +669,14 @@ public class TypeHandler extends RepositoryManager {
     public String getJson(Request request) throws Exception {
         List<String> items = new ArrayList<String>();
         items.add("id");
-        items.add(Json.quote(getType()));
+        items.add(JsonUtil.quote(getType()));
         items.add("entryCount");
         int cnt = getEntryUtil().getEntryCount(this);
         items.add("" + cnt);
         items.add("label");
-        items.add(Json.quote(getLabel()));
+        items.add(JsonUtil.quote(getLabel()));
         items.add("includeInSearch");
-        items.add(Json.quote("" + getIncludeInSearch()));
+        items.add(JsonUtil.quote("" + getIncludeInSearch()));
         items.add("isgroup");
         items.add("" + isGroup());
 
@@ -688,16 +688,15 @@ public class TypeHandler extends RepositoryManager {
             }
         }
         items.add("columns");
-        items.add(Json.list(cols));
+        items.add(JsonUtil.list(cols));
 
         String icon = request.getAbsoluteUrl(
                           getIconUrl(getIconProperty(ICON_FOLDER_CLOSED)));
         items.add("icon");
-        items.add(Json.quote(icon));
+        items.add(JsonUtil.quote(icon));
         items.add("category");
-        items.add(Json.quote(getCategory()));
-
-        return Json.map(items);
+        items.add(JsonUtil.quote(getCategory()));
+        return JsonUtil.map(items);
     }
 
 
