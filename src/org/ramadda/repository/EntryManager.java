@@ -32,7 +32,7 @@ import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedList;
 
 import org.ramadda.util.TTLCache;
@@ -1025,10 +1025,10 @@ public class EntryManager extends RepositoryManager {
             types.add(typeHandler.getJson(request));
         }
 
-        StringBuilder sb = new StringBuilder(Json.list(types));
+        StringBuilder sb = new StringBuilder(JsonUtil.list(types));
         request.setReturnFilename("types.json");
         request.setCORSHeaderOnResponse();
-        return new Result("", sb, Json.MIMETYPE);
+        return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
     public Result processEntryAddFile(Request request) throws Exception {
@@ -1038,8 +1038,8 @@ public class EntryManager extends RepositoryManager {
 	    request.setReturnFilename("result.json");
 	    if ( !getAccessManager().canDoAction(request, group,
 						 Permission.ACTION_NEW)) {
-		sb.append(Json.mapAndQuote("status","error","message","You do not have permission to add a file"));
-		return new Result("", sb, Json.MIMETYPE);
+		sb.append(JsonUtil.mapAndQuote("status","error","message","You do not have permission to add a file"));
+		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    String fileContents = request.getString("file",(String) null);
 	    String fileName = request.getString("filename",(String) null);	
@@ -1054,12 +1054,12 @@ public class EntryManager extends RepositoryManager {
 	    } catch(Exception exc) {
 		exc.printStackTrace();
 		return new Result("",
-				  new StringBuilder(Json.mapAndQuote("status","error","message",exc.getMessage())), 
-				  Json.MIMETYPE);
+				  new StringBuilder(JsonUtil.mapAndQuote("status","error","message",exc.getMessage())), 
+				  JsonUtil.MIMETYPE);
 	    }
 	    if(!tmpFile.exists()) {
-		sb.append(Json.mapAndQuote("status","error","message","Unable to write file:" + fileName));
-		return new Result("", sb, Json.MIMETYPE);
+		sb.append(JsonUtil.mapAndQuote("status","error","message","Unable to write file:" + fileName));
+		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
 	    
@@ -1072,14 +1072,14 @@ public class EntryManager extends RepositoryManager {
 	    String url = getEntryResourceUrl(request, newEntry,
 					     false,true);
 
-	    sb.append(Json.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
+	    sb.append(JsonUtil.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
 				       url));
-	    return new Result("", sb, Json.MIMETYPE);
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc);
 	    exc.printStackTrace();
-	    sb.append(Json.mapAndQuote("status","error","message","Error:" + exc));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("status","error","message","Error:" + exc));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
     }
 
@@ -1801,13 +1801,13 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
-	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("error", "Could not find entry"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	if ( !getAccessManager().canDoAction(request, entry,
 					     Permission.ACTION_EDIT)) {
-	    sb.append(Json.mapAndQuote("error", "No permision to edit entry"));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("error", "No permision to edit entry"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	String contents = request.getString("file",(String)null);
 	if(contents==null)  {
@@ -1818,14 +1818,14 @@ public class EntryManager extends RepositoryManager {
 	}
 	
 	if(contents==null) {
-	    sb.append(Json.mapAndQuote("error", "No file contents given"));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("error", "No file contents given"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
         if (!entry.isFile()) {
 	    //Probably don't need/want this check
-	    //	    sb.append(Json.mapAndQuote("error", "Entry is not a file"));
-	    //	    return new Result("", sb, Json.MIMETYPE);
+	    //	    sb.append(JsonUtil.mapAndQuote("error", "Entry is not a file"));
+	    //	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
 	removeFromCache(entry);
@@ -1844,8 +1844,8 @@ public class EntryManager extends RepositoryManager {
 							 tmpFile);
 	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
 	updateEntry(request, entry);
-	sb.append(Json.mapAndQuote("message", "OK, file has been saved"));
-	return new Result("", sb, Json.MIMETYPE);
+	sb.append(JsonUtil.mapAndQuote("message", "OK, file has been saved"));
+	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
     
@@ -2677,11 +2677,11 @@ public class EntryManager extends RepositoryManager {
 	if(request.responseAsJson()) {
 	    List<String> ids = new ArrayList<String>();
 	    for(Entry e: entries) {
-		ids.add(Json.quote(e.getId()));
+		ids.add(JsonUtil.quote(e.getId()));
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(Json.map("entries",Json.list(ids)));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.map("entries",JsonUtil.list(ids)));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
         if (entries.size() == 1) {

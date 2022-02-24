@@ -16,7 +16,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
 
@@ -763,11 +763,11 @@ public class MapInfo {
         if (Utils.stringDefined(nwseView[0])) {
             if (nwseView.length == 4) {
                 addProperty(MapManager.PROP_INITIAL_BOUNDS,
-                            Json.list(nwseView[0], nwseView[1], nwseView[2],
+                            JsonUtil.list(nwseView[0], nwseView[1], nwseView[2],
                                       nwseView[3]));
             } else {
                 addProperty(MapManager.PROP_INITIAL_LOCATION,
-                            Json.list(nwseView[0], nwseView[1]));
+                            JsonUtil.list(nwseView[0], nwseView[1]));
             }
         }
 
@@ -973,9 +973,9 @@ public class MapInfo {
                        MapBoxProperties properties, double north,
                        double west, double south, double east) {
         String color = properties.getColor();
-        String attrs = Json.map("color", (color == null)
+        String attrs = JsonUtil.map("color", (color == null)
                                          ? "null"
-                                         : Json.quote(color), "selectable",
+                                         : JsonUtil.quote(color), "selectable",
                                              "" + properties.getSelectable(),
                                              "zoomToExtent",
                                              "" + properties
@@ -1335,10 +1335,10 @@ public class MapInfo {
     public void addCircle(String id, double lat, double lon, int radius,
                           int strokeWidth, String strokeColor,
                           String fillColor, String info) {
-        String attrs = Json.map("pointRadius", "" + radius, "strokeWidth",
+        String attrs = JsonUtil.map("pointRadius", "" + radius, "strokeWidth",
                                 "" + strokeWidth, "fillColor",
-                                Json.quote(fillColor), "strokeColor",
-                                Json.quote(strokeColor));
+                                JsonUtil.quote(fillColor), "strokeColor",
+                                JsonUtil.quote(strokeColor));
         getJS().append(mapVarName + ".addPoint("
                        + HU.comma(HU.squote(id), llp(lat, lon), attrs,
                                   HU.squote(info)) + ");\n");

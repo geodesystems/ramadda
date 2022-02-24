@@ -23,7 +23,7 @@ import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;

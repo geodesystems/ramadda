@@ -25,7 +25,7 @@ import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
@@ -189,12 +189,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (entry != null) {
             if (entry.hasLocationDefined()) {
                 props.put(PROP_INITIAL_LOCATION,
-                          Json.list(entry.getLatitude() + "",
+                          JsonUtil.list(entry.getLatitude() + "",
                                     entry.getLongitude() + ""));
                 didLoc = true;
             } else if (entry.hasAreaDefined()) {
                 props.put(PROP_INITIAL_BOUNDS,
-                          Json.list(entry.getNorth() + "",
+                          JsonUtil.list(entry.getNorth() + "",
                                     entry.getWest() + "",
                                     entry.getSouth() + "",
                                     entry.getEast() + ""));
@@ -209,7 +209,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     ARG_AREA);
             if (userLoc != null) {
                 List<String> toks = Utils.split(userLoc, ";");
-                props.put(PROP_INITIAL_BOUNDS, Json.list(toks));
+                props.put(PROP_INITIAL_BOUNDS, JsonUtil.list(toks));
                 didLoc = true;
             }
         }
@@ -221,7 +221,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     ARG_LOCATION_LATITUDE);
             if (userLoc != null) {
                 List<String> toks = Utils.split(userLoc, ";");
-                props.put(PROP_INITIAL_LOCATION, Json.list(toks));
+                props.put(PROP_INITIAL_LOCATION, JsonUtil.list(toks));
                 didLoc = true;
             }
         }
@@ -232,14 +232,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             if (entry != null) {
                 if (entry.hasLocationDefined()) {
                     props.put(PROP_INITIAL_LOCATION,
-                              Json.list(entry.getLatitude() + "",
+                              JsonUtil.list(entry.getLatitude() + "",
                                         entry.getLongitude() + ""));
 
 
                     didLoc = true;
                 } else if (entry.hasAreaDefined()) {
                     props.put(PROP_INITIAL_BOUNDS,
-                              Json.list(entry.getNorth() + "",
+                              JsonUtil.list(entry.getNorth() + "",
                                         entry.getWest() + "",
                                         entry.getSouth() + "",
                                         entry.getEast() + ""));
@@ -363,15 +363,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         List<String> regions = new ArrayList<String>();
         for (MapRegion region : getPageHandler().getMapRegions()) {
             List<String> values = new ArrayList<String>();
-            regions.add(Json.map(new String[] {
-                "name", Json.quote(region.getName()), "group",
-                Json.quote(region.getGroup()), "north",
+            regions.add(JsonUtil.map(new String[] {
+                "name", JsonUtil.quote(region.getName()), "group",
+                JsonUtil.quote(region.getGroup()), "north",
                 region.getNorth() + "", "west", region.getWest() + "",
                 "south", region.getSouth() + "", "east", region.getEast() + ""
             }));
         }
 
-        return new Result(Json.list(regions), Result.TYPE_JSON);
+        return new Result(JsonUtil.list(regions), Result.TYPE_JSON);
     }
 
 
@@ -434,7 +434,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             Place place1 = GeoUtils.getLocationFromAddress(q, bounds);
             if (place1 != null) {
                 seen.add(place1.getName());
-                objs.add(Json.map("name", Json.quote(place1.getName()),
+                objs.add(JsonUtil.map("name", JsonUtil.quote(place1.getName()),
                                   "latitude", "" + place1.getLatitude(),
                                   "longitude", "" + place1.getLongitude()));
             }
@@ -446,7 +446,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     continue;
                 }
                 seen.add(place.getName());
-                objs.add(Json.map("name", Json.quote(place.getName()),
+                objs.add(JsonUtil.map("name", JsonUtil.quote(place.getName()),
                                   "latitude", "" + place.getLatitude(),
                                   "longitude", "" + place.getLongitude()));
             }
@@ -479,8 +479,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
 
             try {
-                JSONObject json    = Json.readUrl(dbUrl);
-                JSONArray  results = Json.readArray(json, "results");
+                JSONObject json    = JsonUtil.readUrl(dbUrl);
+                JSONArray  results = JsonUtil.readArray(json, "results");
                 if (results != null) {
                     for (int i = 0; i < results.length(); i++) {
                         JSONObject result = results.getJSONObject(i);
@@ -498,12 +498,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                         if (icon != null) {
                             icon = getRepository().getUrlBase() + icon;
                         }
-                        objs.add(Json.map("name",
-                                          Json.quote(name + " (" + fclass
+                        objs.add(JsonUtil.map("name",
+                                          JsonUtil.quote(name + " (" + fclass
                                               + ") " + county + ", "
                                                   + state), "icon",
                                                       ((icon != null)
-                                ? Json.quote(icon)
+                                ? JsonUtil.quote(icon)
                                 : null), "latitude", toks.get(0),
                                          "longitude", toks.get(1)));
                     }
@@ -515,9 +515,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        sb.append(Json.map("result", Json.list(objs)));
+        sb.append(JsonUtil.map("result", JsonUtil.list(objs)));
 
-        return new Result("", sb, Json.MIMETYPE);
+        return new Result("", sb, JsonUtil.MIMETYPE);
 
     }
 
@@ -537,7 +537,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     request.get("longitude", 0.0));
             if (address != null) {
                 int idx = 0;
-                results.add(Json.mapAndQuote("address", address.getAddress(),
+                results.add(JsonUtil.mapAndQuote("address", address.getAddress(),
                                              "city", address.getCity(),
                                              "county", address.getCounty(),
                                              "state", address.getState(),
@@ -547,7 +547,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        return new Result(Json.list(results), Result.TYPE_JSON);
+        return new Result(JsonUtil.list(results), Result.TYPE_JSON);
     }
 
 
@@ -615,7 +615,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = props.get(key);
-            mapInfo.addProperty(key, Json.quote(value));
+            mapInfo.addProperty(key, JsonUtil.quote(value));
         }
 
 
@@ -636,7 +636,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (mapLayer == null) {
             mapLayer = getDefaultMapLayer();
         }
-        mapInfo.addProperty("defaultMapLayer", Json.quote(mapLayer));
+        mapInfo.addProperty("defaultMapLayer", JsonUtil.quote(mapLayer));
 
         String key = ADDED_IMPORTS;
         if (request.getExtraProperty(key) == null) {
@@ -1567,7 +1567,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 try {
                     Double.parseDouble(v);
                 } catch (Exception exc) {
-                    v = Json.quote(v);
+                    v = JsonUtil.quote(v);
                 }
             }
             //      System.err.println("key:" + skey+"=" + v);
@@ -1617,7 +1617,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                                     ""), ",", true, true);
             if (toks.size() == 4) {
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
-                                Json.list(toks.get(0), toks.get(1),
+                                JsonUtil.list(toks.get(0), toks.get(1),
                                           toks.get(2), toks.get(3)));
             }
         } else if (request.defined("map_location")) {
@@ -1626,7 +1626,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                                     ""), ",", true, true);
             if (toks.size() == 2) {
                 map.addProperty(MapManager.PROP_INITIAL_LOCATION,
-                                Json.list(toks.get(0), toks.get(1)));
+                                JsonUtil.list(toks.get(0), toks.get(1)));
             }
         }
 
@@ -1722,7 +1722,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if (request.defined("map_layer")) {
             map.addProperty("defaultMapLayer",
-                            Json.quote(request.getString("map_layer", "")));
+                            JsonUtil.quote(request.getString("map_layer", "")));
         }
         String mapHtml = map.getHtml();
         if ((mapHtml.length() == 0) && (catMap.size() == 0)) {

@@ -65,7 +65,7 @@ import org.ramadda.service.Service;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TTLCache;
 
@@ -3844,7 +3844,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuilder sb = new StringBuilder(makeErrorResponse(request, msg));
         Result        result = null;
         if (request.responseAsJson()) {
-            result = new Result("", sb, Json.MIMETYPE);
+            result = new Result("", sb, JsonUtil.MIMETYPE);
             result.setShouldDecorate(false);
         } else if (request.responseAsXml()) {
             result = new Result("", sb, MIME_XML);
@@ -3885,7 +3885,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result makeResponseResult(Request request, StringBuilder sb) {
         Result result = null;
         if (request.responseAsJson()) {
-            result = new Result("", sb, Json.MIMETYPE);
+            result = new Result("", sb, JsonUtil.MIMETYPE);
             result.setShouldDecorate(false);
         } else if (request.responseAsXml()) {
             result = new Result("", sb, MIME_XML);
@@ -3912,7 +3912,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String makeErrorResponse(Request request, String msg) {
         msg = translate(request, msg);
         if (request.responseAsJson()) {
-            return Json.mapAndQuote("error", msg);
+            return JsonUtil.mapAndQuote("error", msg);
         } else if (request.responseAsXml()) {
             return XmlUtil.tag(TAG_RESPONSE,
                                XmlUtil.attr(ATTR_CODE, CODE_ERROR), msg);
@@ -3943,7 +3943,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String makeOkResponse(Request request, String msg) {
         msg = translate(request, msg);
         if (request.responseAsJson()) {
-            return Json.mapAndQuote("ok", msg);
+            return JsonUtil.mapAndQuote("ok", msg);
         } else if (request.responseAsXml()) {
             return XmlUtil.tag(TAG_RESPONSE,
                                XmlUtil.attr(ATTR_CODE, CODE_OK), msg);
@@ -5977,7 +5977,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String contents = IOUtil.readInputStream(is);
             contents = contents.trim();
             IOUtil.close(is);
-            contents = Json.xmlToJson(XmlUtil.getRoot(contents));
+            contents = JsonUtil.xmlToJson(XmlUtil.getRoot(contents));
             //            System.out.println(contents);
 
             return new Result(new ByteArrayInputStream(contents.getBytes()),
