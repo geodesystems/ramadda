@@ -23,7 +23,7 @@ import org.ramadda.util.FileInfo;
 import org.ramadda.util.GoogleChart;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
@@ -164,9 +164,9 @@ public class TabularOutputHandler extends OutputHandler {
             } catch (org.apache.poi.hssf.OldExcelFormatException exc) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(
-                    Json.map(
+                    JsonUtil.map(
                         "error",
-                        Json.quote("Old Excel format not supported")));
+                        JsonUtil.quote("Old Excel format not supported")));
                 request.setReturnFilename(entry.getName() + ".json");
                 Result result = new Result("", sb);
                 result.setShouldDecorate(false);
@@ -198,7 +198,7 @@ public class TabularOutputHandler extends OutputHandler {
     private Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
-        s = Json.mapAndQuote("html", s);
+        s = JsonUtil.mapAndQuote("html", s);
 
         return new Result(s, "application/json");
     }
@@ -291,12 +291,12 @@ public class TabularOutputHandler extends OutputHandler {
                         }
                         String s = col.toString();
                         s = s.replaceAll("\"", "&quot;");
-                        quoted.add(Json.quote(s));
+                        quoted.add(JsonUtil.quote(s));
                     }
-                    jrows.add(Json.list(quoted));
+                    jrows.add(JsonUtil.list(quoted));
                 }
-                sheets.add(Json.map("name", Json.quote(sheet), "rows",
-                                    Json.list(jrows)));
+                sheets.add(JsonUtil.map("name", JsonUtil.quote(sheet), "rows",
+                                    JsonUtil.list(jrows)));
 
                 return true;
             }
@@ -317,8 +317,8 @@ public class TabularOutputHandler extends OutputHandler {
         visit(request, entry, textReader, tabularVisitor);
         props.addAll(textReader.getTableProperties());
         props.add("sheets");
-        props.add(Json.list(sheets));
-        sb.append(Json.map(props));
+        props.add(JsonUtil.list(sheets));
+        sb.append(JsonUtil.map(props));
 
         request.setReturnFilename(entry.getName() + ".json");
         Result result = new Result("", sb);
@@ -942,7 +942,7 @@ public class TabularOutputHandler extends OutputHandler {
                                             ""), ",", true, true);
         if (header.size() > 0) {
             propsList.add("colHeaders");
-            propsList.add(Json.list(header, true));
+            propsList.add(JsonUtil.list(header, true));
         } else {
             propsList.add("colHeaders");
             propsList.add("" + colHeader);
@@ -951,7 +951,7 @@ public class TabularOutputHandler extends OutputHandler {
 
         if (widths.size() > 0) {
             propsList.add("colWidths");
-            propsList.add(Json.list(widths));
+            propsList.add(JsonUtil.list(widths));
         }
 
         String jsonUrl =
@@ -972,23 +972,23 @@ public class TabularOutputHandler extends OutputHandler {
                 String       key     = subtoks.get(0);
                 if (subtoks.size() < 2) {
                     chart.add("type");
-                    chart.add(Json.quote(key));
+                    chart.add(JsonUtil.quote(key));
 
                     continue;
                 }
                 String value = subtoks.get(1);
                 chart.add(key);
-                chart.add(Json.quote(value));
+                chart.add(JsonUtil.quote(value));
             }
-            charts.add(Json.map(chart));
+            charts.add(JsonUtil.map(chart));
         }
         if (charts.size() > 0) {
             propsList.add("defaultCharts");
-            propsList.add(Json.list(charts));
+            propsList.add(JsonUtil.list(charts));
         }
 
         propsList.add("url");
-        propsList.add(Json.quote(jsonUrl));
+        propsList.add(JsonUtil.quote(jsonUrl));
         propsList.add("layoutHere");
         propsList.add("false");
 
@@ -1002,16 +1002,16 @@ public class TabularOutputHandler extends OutputHandler {
          *
          *       List<String> props = new ArrayList<String>();
          *       props.add("name");
-         *       props.add(Json.quote(searchField.getName()));
+         *       props.add(JsonUtil.quote(searchField.getName()));
          *       props.add("label");
-         *       props.add(Json.quote(searchField.getLabel()));
-         *       names.add(Json.map(props));
+         *       props.add(JsonUtil.quote(searchField.getLabel()));
+         *       names.add(JsonUtil.map(props));
          *   }
-         *   propsList.add(Json.list(names));
+         *   propsList.add(JsonUtil.list(names));
          * }
          */
 
-        String props = Json.map(propsList);
+        String props = JsonUtil.map(propsList);
         //        System.err.println(props);
 
         StringBuilder sb = new StringBuilder();
@@ -1032,9 +1032,9 @@ public class TabularOutputHandler extends OutputHandler {
         StringBuilder js = new StringBuilder();
         js.append("var displayManager = getOrCreateDisplayManager(\"" + divId
                   + "\",");
-        js.append(Json.map("showMap", "false", "showMenu", "false",
+        js.append(JsonUtil.map("showMap", "false", "showMenu", "false",
                            "showTitle", "false", "layoutType",
-                           Json.quote("table"), "layoutColumns", "1"));
+                           JsonUtil.quote("table"), "layoutColumns", "1"));
         js.append(",true);\n");
         js.append("displayManager.createDisplay('xls'," + props + ");\n");
         sb.append(HtmlUtils.script(js.toString()));

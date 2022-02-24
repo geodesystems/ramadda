@@ -11,7 +11,7 @@ import org.ramadda.repository.PluginManager;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvContext;
 import org.ramadda.util.text.CsvUtil;
@@ -223,7 +223,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
     protected Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
-        s = Json.mapAndQuote("html", s);
+        s = JsonUtil.mapAndQuote("html", s);
 
         return new Result(s, "application/json");
     }
@@ -327,7 +327,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             if (csvUtil != null) {
                 csvUtil.stopRunning();
             }
-            String s = Json.mapAndQuote("message", "ok");
+            String s = JsonUtil.mapAndQuote("message", "ok");
 
             return new Result(s, "application/json");
         }
@@ -514,7 +514,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 if ( !csvUtil.getOkToRun()) {
                     String r = "stopped";
                     String s = new String(Utils.encodeBase64(r));
-                    s = Json.mapAndQuote("result", s);
+                    s = JsonUtil.mapAndQuote("result", s);
                     return new Result(s, "application/json");
                 }
 
@@ -586,7 +586,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                                     destDir.getName()));
                     html.append(HtmlUtils.href(urlParent, "View All",
                             "target=_output"));
-                    String s = Json.mapAndQuote("url",
+                    String s = JsonUtil.mapAndQuote("url",
                                    html.toString().replaceAll("\"", "\\\""));
 
                     return new Result(s, "application/json");
@@ -595,7 +595,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             String s = new String(Utils.encodeBase64((lastResult == null)
                     ? ""
                     : lastResult));
-            s = Json.mapAndQuote("result", s);
+            s = JsonUtil.mapAndQuote("result", s);
 
             return new Result(s, "application/json");
 
@@ -616,12 +616,12 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 s = "Error: " + inner;
             }
             s = new String(Utils.encodeBase64(s));
-            s = Json.mapAndQuote("error", s);
+            s = JsonUtil.mapAndQuote("error", s);
             if (inner instanceof CsvUtil.MessageException) {
                 s          = ((CsvUtil.MessageException) inner).getMessage();
                 printStack = false;
                 s          = new String(Utils.encodeBase64(s));
-                s          = Json.mapAndQuote("message", s);
+                s          = JsonUtil.mapAndQuote("message", s);
             }
             if (printStack) {
                 inner.printStackTrace();
