@@ -1089,6 +1089,18 @@ public class OutputHandler extends RepositoryManager {
 	return event;
     }
 
+    public static String makeEntrySelect(Request request, String arg, boolean allEntries, String type, Entry entry) throws Exception {
+	String event = OutputHandler.getSelectEvent(request, arg, allEntries, type, entry);
+	return HU.hidden(arg + "_hidden",
+			 entry!=null?entry.getId():"",
+			 HU.id(arg + "_hidden")) +
+	    HU.span(HU.span(HU.faIcon("fas fa-hand-pointer"),"class=ramadda-clickable") + " " +
+		    HU.disabledInput(arg, entry!=null?entry.getName():"",
+				     HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_40 + HU.id(arg)),
+		    HU.attr("onClick",event));
+    }
+
+
 
 
     /**

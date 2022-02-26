@@ -1618,9 +1618,13 @@ public class UserManager extends RepositoryManager {
             if (homeGroupId.length() > 0) {
                 Entry parent = getEntryManager().findGroup(request,
                                    homeGroupId);
+		String name = newUser.getName();
+		if(!Utils.stringDefined(name)) {
+		    name = newUser.getId();
+		}
                 Entry home = getEntryManager().makeNewGroup(parent,
-                                 newUser.getName(), newUser, null,
-                                 TypeHandler.TYPE_HOMEPAGE);
+							    name, newUser, null,
+							    TypeHandler.TYPE_HOMEPAGE);
                 msg.append("A home folder has been created for you: ");
                 String homeUrl =
                     HtmlUtils.url(
@@ -1646,7 +1650,8 @@ public class UserManager extends RepositoryManager {
         sb.append("</ul>");
 
         if (users.size() > 0) {
-            return addHeader(request, sb, "");
+	    return getAdmin().makeResult(request, msg("New User"), sb);
+	    //            return addHeader(request, sb, "");
         }
 
         if (errorBuffer.toString().length() > 0) {
@@ -1802,32 +1807,13 @@ public class UserManager extends RepositoryManager {
                     ARG_USER_ROLES, request.getString(ARG_USER_ROLES, ""), 3,
                     25)));
 
-
-
-        String select =
-            getRepository().getHtmlOutputHandler().getSelect(request,
-                ARG_USER_HOME, HtmlUtils.space(1) + msg("Select"), false, "");
-        formSB.append(HtmlUtils.hidden(ARG_USER_HOME + "_hidden", "",
-                                       HtmlUtils.id(ARG_USER_HOME
-                                           + "_hidden")));
-
         String groupMsg =
             "Create a folder using the user's name under this folder";
         formSB.append(
             HtmlUtils.formEntry(
                 msgLabel("Home folder"),
                 groupMsg + "<br>"
-                + HtmlUtils.disabledInput(
-                    ARG_USER_HOME, "",
-                    HtmlUtils.SIZE_40
-                    + HtmlUtils.id(ARG_USER_HOME)) + HtmlUtils.space(1)
-                        + select));
-
-
-
-
-
-
+                + OutputHandler.makeEntrySelect(request, ARG_USER_HOME, false,"",null)));
 
         StringBuffer msgSB = new StringBuffer();
         String       msg   =
