@@ -11,6 +11,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
@@ -1883,10 +1884,23 @@ public class UserManager extends RepositoryManager {
 
     }
 
-
-
-
-
+    public Result processSearch(Request request) throws Exception {
+	List<String> ids = new ArrayList<String>();
+	String suggest = request.getString("text","").trim()+"%";
+        Statement statement =
+            getDatabaseManager().select(Tables.USERS.COL_ID,
+                                        Tables.USERS.NAME,
+					Clause.or(Clause.like(Tables.USERS.COL_ID, suggest),
+						  Clause.like(Tables.USERS.COL_NAME, suggest)),
+                                        " order by " + Tables.USERS.COL_ID);
+        SqlUtil.Iterator iter  = getDatabaseManager().getIterator(statement);
+        ResultSet        results;
+        while ((results = iter.getNext()) != null) {
+            ids.add(JsonUtil.quote(results.getString(1)));
+        }
+        StringBuilder sb = new StringBuilder(JsonUtil.list(ids));
+        return new Result("", sb, JsonUtil.MIMETYPE);
+    }
 
 
     /**
