@@ -1324,7 +1324,7 @@ public abstract class Processor extends CsvOperator {
 	    //	    System.err.println("new printer " + Utils.getStack(6));
             this.prefix    = prefix;
             this.template  = template;
-            this.delimiter = delimiter;
+	    initDelimiter(delimiter);
             this.suffix    = suffix;
         }
 
@@ -1359,11 +1359,17 @@ public abstract class Processor extends CsvOperator {
          */
         public Printer(boolean addHeader, boolean trim, String delimiter) {
             this(addHeader);
-	    this.delimiter = delimiter;
-	    if(this.delimiter.equals("tab")) this.delimiter = "\t";
+	    initDelimiter(delimiter);
             this.trim = trim;
         }
 
+	private void initDelimiter(String delimiter) {
+	    this.delimiter = delimiter;
+	    if(delimiter!=null) {
+		if(this.delimiter.equals("tab")) this.delimiter = "\t";
+		if(this.delimiter.equals("\\n")) this.delimiter = "\n";	    		
+	    }
+	}
 
         /**
          * _more_
@@ -1459,8 +1465,8 @@ public abstract class Processor extends CsvOperator {
 		}
 		if(theTemplate!=null) return;
             } else {
-		if (delimiter != null) {
-		    //		    writer.append(delimiter);
+		if (delimiter!=null) {
+		    writer.append(delimiter);
 		}
             }
             List    values        = row.getValues();
