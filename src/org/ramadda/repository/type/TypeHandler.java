@@ -4201,12 +4201,16 @@ public class TypeHandler extends RepositoryManager {
                                      : 999), HtmlUtils.SIZE_5) + " 1-N"));
             if ((entry != null) && request.getUser().getAdmin()
                     && okToShowInForm(entry, "owner", true)) {
+		String ownerInputId = Utils.getGuid();
                 sb.append(formEntry(request, msgLabel("Owner"),
                                     HtmlUtils.input(ARG_USER_ID,
-                                        ((entry != null)
-                                         ? entry.getUser().getId()
-                                         : ""), HtmlUtils.SIZE_20) + " "
-                                         + msg("Optionally specify an owner")));
+						    ((entry != null)
+						     ? entry.getUser().getId()
+						     : ""), HtmlUtils.SIZE_20+HU.attr("id",ownerInputId)) + " "
+				    + msg("Optionally specify an owner")));
+		HU.script(sb, HtmlUtils.call("HtmlUtils.initInteractiveInput",
+					     HU.squote(ownerInputId),
+					     HU.squote(getRepository().getUrlBase()+"/user/search")));
             }
         } catch (Exception exc) {
             StringBuilder tmp = new StringBuilder();
