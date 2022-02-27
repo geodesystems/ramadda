@@ -3235,6 +3235,7 @@ label {
 
 .ramadda-access-summary-header  {
     border-bottom: 2px #000 solid;
+    font-size:9pt;
 }
 
 .ramadda-access-summary-header td {
@@ -3249,6 +3250,7 @@ label {
 .ramadda-access-summary td {
     padding: 5px;
     border: 1px #efefef solid;
+    font-size:9pt;
 }
 
 .ramadda-user-activity  {
