@@ -11,10 +11,10 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
-import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
@@ -534,7 +534,8 @@ public class UserManager extends RepositoryManager {
                     new String[] { Tables.USERS.COL_ADMIN },
                     new Object[] { new Boolean(true) });
             }
-            logInfo("RAMADDA: password for:" + user.getId() + " has been updated");
+            logInfo("RAMADDA: password for:" + user.getId()
+                    + " has been updated");
         }
 
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
@@ -775,7 +776,8 @@ public class UserManager extends RepositoryManager {
             String redirect = request.getBase64String(ARG_REDIRECT, "");
             //Um, a bit of a hack
             if (redirect.indexOf("logout") < 0) {
-                sb.append(HtmlUtils.hidden(ARG_REDIRECT, Utils.encodeBase64(redirect)));
+                sb.append(HtmlUtils.hidden(ARG_REDIRECT,
+                                           Utils.encodeBase64(redirect)));
             }
         }
         sb.append(HtmlUtils.formTable());
@@ -1619,13 +1621,12 @@ public class UserManager extends RepositoryManager {
             if (homeGroupId.length() > 0) {
                 Entry parent = getEntryManager().findGroup(request,
                                    homeGroupId);
-		String name = newUser.getName();
-		if(!Utils.stringDefined(name)) {
-		    name = newUser.getId();
-		}
-                Entry home = getEntryManager().makeNewGroup(parent,
-							    name, newUser, null,
-							    TypeHandler.TYPE_HOMEPAGE);
+                String name = newUser.getName();
+                if ( !Utils.stringDefined(name)) {
+                    name = newUser.getId();
+                }
+                Entry home = getEntryManager().makeNewGroup(parent, name,
+                                 newUser, null, TypeHandler.TYPE_HOMEPAGE);
                 msg.append("A home folder has been created for you: ");
                 String homeUrl =
                     HtmlUtils.url(
@@ -1651,8 +1652,8 @@ public class UserManager extends RepositoryManager {
         sb.append("</ul>");
 
         if (users.size() > 0) {
-	    return getAdmin().makeResult(request, msg("New User"), sb);
-	    //            return addHeader(request, sb, "");
+            return getAdmin().makeResult(request, msg("New User"), sb);
+            //            return addHeader(request, sb, "");
         }
 
         if (errorBuffer.toString().length() > 0) {
@@ -1814,7 +1815,8 @@ public class UserManager extends RepositoryManager {
             HtmlUtils.formEntry(
                 msgLabel("Home folder"),
                 groupMsg + "<br>"
-                + OutputHandler.makeEntrySelect(request, ARG_USER_HOME, false,"",null)));
+                + OutputHandler.makeEntrySelect(
+                    request, ARG_USER_HOME, false, "", null)));
 
         StringBuffer msgSB = new StringBuffer();
         String       msg   =
@@ -1884,21 +1886,29 @@ public class UserManager extends RepositoryManager {
 
     }
 
+    /**
+     *
+     * @param request _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processSearch(Request request) throws Exception {
-	List<String> ids = new ArrayList<String>();
-	String suggest = request.getString("text","").trim()+"%";
+        List<String> ids     = new ArrayList<String>();
+        String       suggest = request.getString("text", "").trim() + "%";
         Statement statement =
-            getDatabaseManager().select(Tables.USERS.COL_ID,
-                                        Tables.USERS.NAME,
-					Clause.or(Clause.like(Tables.USERS.COL_ID, suggest),
-						  Clause.like(Tables.USERS.COL_NAME, suggest)),
-                                        " order by " + Tables.USERS.COL_ID);
-        SqlUtil.Iterator iter  = getDatabaseManager().getIterator(statement);
+            getDatabaseManager().select(
+                Tables.USERS.COL_ID, Tables.USERS.NAME, Clause.or(
+                    Clause.like(Tables.USERS.COL_ID, suggest), Clause.like(
+                        Tables.USERS.COL_NAME, suggest)), " order by "
+                            + Tables.USERS.COL_ID);
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
             ids.add(JsonUtil.quote(results.getString(1)));
         }
         StringBuilder sb = new StringBuilder(JsonUtil.list(ids));
+
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -3093,7 +3103,7 @@ public class UserManager extends RepositoryManager {
                         getPageHandler().showDialogNote(
                             msg("You are logged in")));
                     if (request.exists(ARG_REDIRECT)) {
-                        destUrl =  request.getBase64String(ARG_REDIRECT, "");
+                        destUrl = request.getBase64String(ARG_REDIRECT, "");
                         //Gack  - make sure we don't redirect to the logout page
                         if (destUrl.indexOf("logout") < 0) {
                             return new Result(destUrl);
@@ -3764,7 +3774,7 @@ public class UserManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    public List<String> getRoles() throws Exception {
+    public List<String> getUserRoles() throws Exception {
         String[] roleArray =
             SqlUtil.readString(
                 getDatabaseManager().getIterator(
@@ -3779,6 +3789,17 @@ public class UserManager extends RepositoryManager {
                 roles.addAll(authenticatorRoles);
             }
         }
+
+        return roles;
+    }
+
+    /**
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<String> getRoles() throws Exception {
+        List<String> roles = getUserRoles();
         roles.add(0, ROLE_GUEST);
         roles.add(0, ROLE_ANONYMOUS);
         roles.add(0, ROLE_NONE);
@@ -4260,5 +4281,3 @@ public class UserManager extends RepositoryManager {
 
 
 }
-
-
