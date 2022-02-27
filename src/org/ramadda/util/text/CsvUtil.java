@@ -2279,7 +2279,7 @@ public class CsvUtil {
 		new Arg("north"),new Arg("west"),new Arg("south"),new Arg("east")),
         new Cmd("-decodelatlon", 
 		"Decode latlon", 
-		new Arg("lat_lon","Lat or Lon column","type","column")),
+		new Arg("columns","Lat or Lon column","type","columns")),
         new Cmd("-getaddress", "Get address from lat/lon",
                 new Arg("latitude", "latitude column"),
                 new Arg("latitude", "latitude column")),		
@@ -2328,7 +2328,7 @@ public class CsvUtil {
         new Cmd("-filepattern", "Extract a macro value from a filename",
 		new Arg("name","Macro name"),
 		new Arg("pattern","Pattern")),		
-        new Cmd("-maxrows", "", "Max rows to print"),
+        new Cmd("-maxrows", "", "Max rows to process"),
         new Cmd("-changeline",  "Change the line",
                 "from", "to"),
         new Cmd("-changeraw",  "Change input text",
@@ -3313,7 +3313,7 @@ public class CsvUtil {
 		return i;
 	    });
 	defineFunction("-decodelatlon",1,(ctx,args,i) -> {	
-	ctx.addProcessor(new Geo.DecodeLatLon(args.get(++i)));
+		ctx.addProcessor(new Geo.DecodeLatLon(getCols(args.get(++i))));
 		return i;
 	    });	
 	defineFunction("-getaddress",4,(ctx,args,i) -> {
@@ -3692,7 +3692,6 @@ public class CsvUtil {
 
 	defineFunction("-maxrows",1,(ctx,args,i) -> {
 		ctx.setMaxRows(Integer.parseInt(args.get(++i)));
-
 		return i;
 	    });
 
