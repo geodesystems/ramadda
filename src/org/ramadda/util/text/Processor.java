@@ -1466,7 +1466,9 @@ public abstract class Processor extends CsvOperator {
 		if(theTemplate!=null) return;
             } else {
 		if (delimiter!=null) {
-		    writer.append(delimiter);
+		    if (theTemplate != null) {
+			writer.append(delimiter);
+		    }
 		}
             }
             List    values        = row.getValues();
