@@ -19,6 +19,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
@@ -970,24 +971,25 @@ public class AccessManager extends RepositoryManager {
         sb.append("<p>");
         //        sb.append("<table><tr valign=\"top\"><td>");
         //        sb.append(HtmlUtils.formTable());
-        sb.append("<table>");
+        sb.append("<table id='accessform' style=''><tr valign=top>");
+	sb.append("<td>");
+        sb.append("<table style='margin-right:10px;' >");
+	List opts = new ArrayList();
+	Utils.add(opts,new TwoFacedObject("Add role",""),
+		  new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
+		  new TwoFacedObject("Logged in user",UserManager.ROLE_USER),
+		  new TwoFacedObject("No one", UserManager.ROLE_NONE),
+		  new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
+		  new TwoFacedObject("Anonymous users", UserManager.ROLE_ANONYMOUS),
+		  UserManager.ROLE_ANY,
+		  new TwoFacedObject("Guest user", UserManager.ROLE_GUEST));
+	opts.addAll(getUserManager().getUserRoles());
+
         sb.append("<tr valign=top>");
-        sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action")),
-                                 HtmlUtils.bold(msg("Role")) + " ("
-                                 + msg("one per line") + ")"));
-        sb.append(HtmlUtils.cols(HtmlUtils.space(5)));
-        sb.append("<td rowspan=6><b>" + msg("All Roles")
-                  + "</b><i><br>user:&lt;userid&gt;<br>");
-        sb.append(StringUtil.join("<br>", getUserManager().getRoles()));
-        sb.append("</i></td>");
-
-        sb.append(HtmlUtils.cols(HtmlUtils.space(5)));
-
-        sb.append("<td rowspan=6><b>" + msgLabel("Current settings")
-                  + "</b><i><br>");
-        sb.append(currentAccess.toString());
-        sb.append("</i></td>");
-
+        sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action"))));
+	sb.append("<td colspan=2>");
+	sb.append(HtmlUtils.bold(msg("Role")) +". One per line. Prefix with \"!\" for negation");
+	sb.append("</td>");
         sb.append("</tr>");
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             String roles = (String) map.get(Permission.ACTIONS[i]);
@@ -1014,19 +1016,28 @@ public class AccessManager extends RepositoryManager {
                                 HtmlUtils.ATTR_TARGET,
                                 "_help")) + HtmlUtils.space(1)
                                           + msg(actionName);
-
-            String message = "";
-            //If there isn't a none defined here and there are roles then
-            //tell te user what's up
-            if ( !hasNoneRole && (roles.length() > 0)) {
-                //                message=msg("No block defined");
-            }
+	    String extra = "";
+	    if(i==0) {
+		extra = HU.select("",opts,(String)null,HU.id("roles"));
+	    } 
+	    extra = HU.div(extra,HU.id("holder_"+ i));
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
-                    HtmlUtils.textArea(ARG_ROLES + "."
-                                       + Permission.ACTIONS[i], roles, 5,
-                                           20), message)));
-        }
-        sb.append(HtmlUtils.formTableClose());
+						      HtmlUtils.textArea(ARG_ROLES + "."
+									 + Permission.ACTIONS[i], roles, 5,
+									 20,
+									 HU.attr("roleindex",""+i) +HU.id("textarea_" + i)),extra)));
+	}
+	sb.append("</tr></table></td>");
+        sb.append("<td rowspan=6><b>" + msgLabel("Current settings")
+                  + "</b><i><br>");
+        sb.append(currentAccess.toString());
+        sb.append("</i></td>");
+	sb.append(HtmlUtils.formTableClose());
+	HU.importJS(sb,getRepository().getUrlBase()+"/accessform.js");
+	HU.script(sb,"Ramadda.initAccessForm();");
+		  
+
+
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getRoles()));
