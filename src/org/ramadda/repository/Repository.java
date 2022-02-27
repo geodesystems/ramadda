@@ -27,7 +27,6 @@ import org.ramadda.repository.admin.MailManager;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AccessManager;
 import org.ramadda.repository.auth.AuthorizationMethod;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.SessionManager;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
@@ -3057,8 +3056,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
                 for (Entry entry : state.getAllEntries()) {
-                    if (getAccessManager().canDoAction(request, entry,
-                            Permission.ACTION_EDIT)) {
+                    if (getAccessManager().canDoEdit(request, entry)) {
                         if (getEntryManager().isAnonymousUpload(entry)) {
                             links.add(makeLink(request, state.getEntry(),
                                     OUTPUT_PUBLISH));
@@ -3070,8 +3068,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 /*
                 boolean metadataOk = true;
                 for (Entry entry : state.getAllEntries()) {
-                    if ( !getAccessManager().canDoAction(request, entry,
-                            Permission.ACTION_EDIT)) {
+                    if ( !getAccessManager().canDoEdit(request, entry)) {
                         metadataOk = false;
 
                         break;
@@ -3089,8 +3086,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
                 boolean deleteOk = true;
                 for (Entry entry : state.getAllEntries()) {
-                    if ( !getAccessManager().canDoAction(request, entry,
-                            Permission.ACTION_DELETE)) {
+                    if ( !getAccessManager().canDoDelete(request, entry)) {
                         deleteOk = false;
 
                         break;

@@ -24,7 +24,6 @@ import org.ramadda.repository.Result;
 import org.ramadda.repository.ServiceInfo;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AuthorizationMethod;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
@@ -485,8 +484,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         StringBuffer sb = new StringBuffer();
         if (request.get(ARG_METADATA_ADD, false)) {
-            if (getRepository().getAccessManager().canDoAction(request,
-                    entry, Permission.ACTION_EDIT)) {
+            if (getRepository().getAccessManager().canDoEdit(request,entry)) {
                 sb.append(HtmlUtils.p());
                 List<Entry> entries = (List<Entry>) Misc.newList(entry);
                 getEntryManager().addInitialMetadata(request, entries, false,
@@ -511,8 +509,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         getPageHandler().entrySectionOpen(request, entry, sb, "");
         sb.append("<center>");
-        if (getRepository().getAccessManager().canDoAction(request, entry,
-                Permission.ACTION_EDIT)) {
+        if (getRepository().getAccessManager().canDoEdit(request, entry)) {
             request.put(ARG_METADATA_ADD, HtmlUtils.VALUE_TRUE);
             sb.append(
                 HtmlUtils.href(
@@ -922,8 +919,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             throws Exception {
 
         boolean canAdd =
-            getRepository().getAccessManager().canDoAction(request,
-                entry.getParentEntry(), Permission.ACTION_NEW);
+            getRepository().getAccessManager().canDoNew(request,  entry.getParentEntry());
 
 
         String       path    = getPath(request, entry);
@@ -1044,8 +1040,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             throws Exception {
 
         boolean canAdd =
-            getRepository().getAccessManager().canDoAction(request,
-                entry.getParentEntry(), Permission.ACTION_NEW);
+            getRepository().getAccessManager().canDoNew(request, entry.getParentEntry());
 
         String       path = getPath(request, entry);
         StringBuffer sb   = new StringBuffer();
@@ -2358,8 +2353,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                               Entry entry)
             throws Exception {
 
-        if ( !getRepository().getAccessManager().canDoAction(request, entry,
-                Permission.ACTION_FILE)) {
+        if ( !getRepository().getAccessManager().canDoFile(request, entry)) {
             throw new AccessException("Cannot access data", request);
         }
 

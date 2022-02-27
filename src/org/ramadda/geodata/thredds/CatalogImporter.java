@@ -122,8 +122,7 @@ public class CatalogImporter extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-        if ( !getAccessManager().canDoAction(request, group,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, group)) {
             throw new IllegalArgumentException(
                 "No access to import a catalog");
         }

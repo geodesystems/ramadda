@@ -122,8 +122,7 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
                                  String tag, Hashtable props)
             throws Exception {
         if (tag.equals("newheader")) {
-            boolean canAdd = getAccessManager().canDoAction(request, entry,
-                                 Permission.ACTION_NEW);
+            boolean canAdd = getAccessManager().canDoNew(request, entry);
 
             StringBuilder sb = new StringBuilder();
             if (canAdd) {

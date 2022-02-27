@@ -24,7 +24,6 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.type.TypeHandler;
 
@@ -560,8 +559,7 @@ public class RepositoryFtplet extends DefaultFtplet {
     public FtpletResult handleMkd(Request request, Entry group,
                                   FtpSession session, FtpRequest ftpRequest)
             throws Exception {
-        if ( !getRepository().getAccessManager().canDoAction(request, group,
-                Permission.ACTION_NEW)) {
+        if ( !getRepository().getAccessManager().canDoNew(request, group)) {
             return handleError(
                 session, ftpRequest,
                 FtpReply.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN,
@@ -599,8 +597,7 @@ public class RepositoryFtplet extends DefaultFtplet {
     public FtpletResult handleStor(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
-        if ( !getRepository().getAccessManager().canDoAction(request, group,
-                Permission.ACTION_NEW)) {
+        if ( !getRepository().getAccessManager().canDoNew(request, group)) {
             return handleError(
                 session, ftpRequest,
                 FtpReply.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN,
@@ -671,8 +668,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             return handleError(session, ftpRequest, "Not a file");
         }
 
-        if ( !getRepository().getAccessManager().canDoAction(request, entry,
-                Permission.ACTION_DELETE)) {
+        if ( !getRepository().getAccessManager().canDoDelete(request, entry)) {
             return handleError(
                 session, ftpRequest,
                 FtpReply.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN,
@@ -723,8 +719,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             return handleError(session, ftpRequest, "Not a directory");
         }
 
-        if ( !getRepository().getAccessManager().canDoAction(request, entry,
-                Permission.ACTION_DELETE)) {
+        if ( !getRepository().getAccessManager().canDoDelete(request, entry)) {
             return handleError(
                 session, ftpRequest,
                 FtpReply.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN,

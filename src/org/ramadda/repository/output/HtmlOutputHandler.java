@@ -701,8 +701,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<MetadataHandler> metadataHandlers =
             getMetadataManager().getMetadataHandlers();
 
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
         boolean smallDisplay = request.getString(ARG_DISPLAY,
                                    "").equals(DISPLAY_SMALL);
@@ -2074,8 +2073,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     && (entries.size() == 0)) {
                 if (getAccessManager().hasPermissionSet(group,
                         Permission.ACTION_VIEWCHILDREN)) {
-                    if ( !getAccessManager().canDoAction(request, group,
-                            Permission.ACTION_VIEWCHILDREN)) {
+                    if ( !getAccessManager().canDoViewChildren(request, group)) {
                         sb.append(
                             getPageHandler().showDialogWarning(
                                 "You do not have permission to view the sub-folders of this entry"));

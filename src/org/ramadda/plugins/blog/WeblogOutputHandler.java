@@ -191,8 +191,7 @@ public class WeblogOutputHandler extends OutputHandler {
                                 headerValue);
 
             sb.append(header);
-            boolean canAdd = getAccessManager().canDoAction(request, group,
-                                 Permission.ACTION_NEW);
+            boolean canAdd = getAccessManager().canDoNew(request, group);
 
             if (canAdd && !embedded) {
                 links.add(

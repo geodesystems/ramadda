@@ -710,12 +710,27 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public boolean canEditEntry(Request request, Entry entry)
+    public boolean canDoEdit(Request request, Entry entry)
             throws Exception {
         //        if(entry.getIsLocalFile()) return false;
         return canDoAction(request, entry, Permission.ACTION_EDIT);
     }
 
+    public boolean canDoFile(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_FILE);
+    }    
+
+    public boolean canDoType1(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_TYPE1);
+    }    
+
+    public boolean canDoType2(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_TYPE2);
+    }    
+    
     /**
      * _more_
      *
@@ -726,11 +741,42 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public boolean canExportEntry(Request request, Entry entry)
+    public boolean canDoExport(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_EXPORT);
     }
 
+
+    public boolean canDoComment(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_COMMENT);
+    }
+
+    public boolean canDoView(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_VIEW);
+    }
+
+    public boolean canDoNew(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_NEW);
+    }    
+
+    public boolean canDoUpload(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_UPLOAD);
+    }
+
+    public boolean canDoDelete(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_DELETE);
+    }
+
+    public boolean canDoViewChildren(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_VIEWCHILDREN);
+    }            
+    
 
     /**
      * _more_

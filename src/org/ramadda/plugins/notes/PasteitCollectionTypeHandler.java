@@ -86,8 +86,7 @@ public class PasteitCollectionTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
 
-        boolean canAdd = getAccessManager().canDoAction(request, group,
-                             Permission.ACTION_NEW);
+        boolean canAdd = getAccessManager().canDoNew(request, group);
 
         if (canAdd) {
             /*

@@ -1352,8 +1352,7 @@ public class MetadataManager extends RepositoryManager {
             Entry parent = getEntryManager().getParent(request, entry);
             boolean canEditParent =
                 (parent != null)
-                && getAccessManager().canDoAction(request, parent,
-                    Permission.ACTION_EDIT);
+                && getAccessManager().canDoEdit(request, parent);
 
 
             if (request.exists(ARG_METADATA_DELETE)) {
@@ -1765,9 +1764,9 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataForm(Request request, Entry entry,
                                       Appendable sb)
             throws Exception {
-        boolean canEditParent = getAccessManager().canDoAction(request,
+        boolean canEditParent = getAccessManager().canDoEdit(request,
                                     getEntryManager().getParent(request,
-                                        entry), Permission.ACTION_EDIT);
+                                        entry));
 
 
         List<Metadata> metadataList = getMetadata(entry);

@@ -10,7 +10,6 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.type.ExtensibleGroupTypeHandler;
 import org.ramadda.util.HtmlUtils;
 
@@ -69,8 +68,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, null);
-        boolean canAdd = getAccessManager().canDoAction(request, group,
-                             Permission.ACTION_NEW);
+        boolean canAdd = getAccessManager().canDoNew(request, group);
 
         if (canAdd) {
             sb.append(

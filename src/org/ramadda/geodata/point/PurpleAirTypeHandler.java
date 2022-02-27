@@ -9,7 +9,6 @@ import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -369,8 +368,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         if ( !action.equals("clearfile")) {
             return super.processEntryAction(request, entry);
         }
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
         if ( !canEdit) {

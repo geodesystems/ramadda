@@ -367,7 +367,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public Result outputWikiHistory(Request request, Entry entry)
             throws Exception {
         StringBuffer sb      = new StringBuffer();
-        boolean      canEdit = getAccessManager().canEditEntry(request,
+        boolean      canEdit = getAccessManager().canDoEdit(request,
                                    entry);
 
         if (request.exists(ARG_WIKI_COMPARE1)

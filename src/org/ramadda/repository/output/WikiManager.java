@@ -1621,7 +1621,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "", new StringBuilder("{\"error\":\"cannot find entry\"}"),
                 JsonUtil.MIMETYPE);
         }
-        if ( !getAccessManager().canEditEntry(request, entry)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             return new Result(
                 "", new StringBuilder("{\"error\":\"cannot edit entry\"}"),
                 JsonUtil.MIMETYPE);

@@ -78,9 +78,8 @@ public class SlackOutputHandler extends OutputHandler {
             throws Exception {
         if ( !request.isAnonymous() && (state.getEntry() != null)
                 && state.getEntry().isFile()
-                && getAccessManager().canDoAction(
-                    request, state.getEntry(),
-                    Permission.ACTION_EDIT) && (getRepository().getProperty(
+                && getAccessManager().canDoEdit(
+                    request, state.getEntry()) && (getRepository().getProperty(
                         PROP_SLACK_API_TOKEN, (String) null) != null)) {
             links.add(makeLink(request, state.getEntry(),
                                OUTPUT_SLACK_PUBLISH));
@@ -103,8 +102,7 @@ public class SlackOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        if ( !getAccessManager().canDoAction(request, entry,
-                                             Permission.ACTION_EDIT)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             throw new IllegalArgumentException("No access");
         }
         if (getRepository().getProperty(PROP_SLACK_API_TOKEN, (String) null)

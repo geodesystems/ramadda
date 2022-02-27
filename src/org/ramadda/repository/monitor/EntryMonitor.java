@@ -904,8 +904,7 @@ public class EntryMonitor implements Constants {
             return false;
         }
 
-        return getRepository().getAccessManager().canDoAction(getRequest(),
-                group, Permission.ACTION_NEW);
+        return getRepository().getAccessManager().canDoNew(getRequest(), group);
     }
 
     /**
@@ -921,9 +920,7 @@ public class EntryMonitor implements Constants {
         if (entry == null) {
             return false;
         }
-
-        return getRepository().getAccessManager().canDoAction(getRequest(),
-                entry, Permission.ACTION_VIEW);
+        return getRepository().getAccessManager().canDoView(getRequest(),  entry);
     }
 
 

@@ -7,7 +7,6 @@ package org.ramadda.repository;
 
 
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 
@@ -841,8 +840,7 @@ public class ExtEditor extends RepositoryManager {
                 if(new File(resource).exists() && !Utils.stringDefined(md5)) {
                     setCnt[0]++;
                     Entry entry = getEntry(request, id);
-                    if(!getAccessManager().canDoAction(request, entry,
-                                                       Permission.ACTION_EDIT)) {
+                    if(!getAccessManager().canDoEdit(request, entry)) {
                         continue;
                     }
                     md5 = ucar.unidata.util.IOUtil.getMd5(resource);
@@ -925,8 +923,7 @@ public class ExtEditor extends RepositoryManager {
             sb.append(msgLabel("The following entries have been changed"));
             sb.append("<ul>");
             for (Entry entry : entries) {
-                if ( !getAccessManager().canDoAction(request, entry,
-                        Permission.ACTION_EDIT)) {
+                if ( !getAccessManager().canDoEdit(request, entry)) {
                     throw new IllegalArgumentException(
                         "Whoa dude, you can't edit this entry:"
                         + entry.getName());
@@ -1009,8 +1006,7 @@ public class ExtEditor extends RepositoryManager {
     private Entry changeType(Request request, Entry entry,
                              TypeHandler newTypeHandler)
             throws Exception {
-        if ( !getAccessManager().canDoAction(request, entry,
-                                             Permission.ACTION_EDIT)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             throw new AccessException("Cannot edit:" + entry.getLabel(),
                                       request);
         }

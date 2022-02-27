@@ -18,7 +18,6 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
@@ -193,8 +192,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                               Entry entry)
             throws Exception {
 
-        if ( !getRepository().getAccessManager().canDoAction(request, entry,
-                Permission.ACTION_FILE)) {
+        if ( !getRepository().getAccessManager().canDoFile(request, entry)) {
             throw new AccessException("Cannot access data", request);
         }
 
@@ -727,8 +725,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             throws Exception {
 
         boolean canAdd =
-            getRepository().getAccessManager().canDoAction(request,
-                entry.getParentEntry(), Permission.ACTION_NEW);
+            getRepository().getAccessManager().canDoNew(request, entry.getParentEntry());
 
         String formUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName()) + "_point";

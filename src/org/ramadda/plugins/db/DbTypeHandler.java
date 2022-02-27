@@ -519,8 +519,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                final FileWriter fileWriter, Element node)
             throws Exception {
         super.addToEntryNode(request, entry, fileWriter, node);
-        if ( !getAccessManager().canDoAction(request, entry,
-                                             Permission.ACTION_FILE)) {
+        if ( !getAccessManager().canDoFile(request, entry)) {
             return;
         }
         if ((fileWriter == null)
@@ -803,7 +802,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Hashtable props = getProperties(entry);
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
                                  false);
-        if (doAnonForm && !getAccessManager().canEditEntry(request, entry)) {
+        if (doAnonForm && !getAccessManager().canDoEdit(request, entry)) {
             if (request.exists(ARG_DB_CREATE)) {
                 return handleNewOrEdit(request, entry, null, doAnonForm);
             }
@@ -812,7 +811,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        boolean      canEdit = getAccessManager().canEditEntry(request,
+        boolean      canEdit = getAccessManager().canDoEdit(request,
                                    entry);
 
         List<String> colNames = tableHandler.getColumnNames();
@@ -981,7 +980,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
                                  false);
         if (doAnonForm) {
-            if ( !getAccessManager().canEditEntry(request, entry)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 addStyleSheet(request,sb);
 
                 return;
@@ -1259,9 +1258,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        boolean canEdit = getAccessManager().canEditEntry(request, entry);
-        boolean canDoNew = getAccessManager().canDoAction(request, entry,
-                               Permission.ACTION_NEW);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        boolean canDoNew = getAccessManager().canDoNew(request, entry);
 
         if (canDoNew && showInHeader(VIEW_NEW, true)) {
             headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW + "="
@@ -2350,7 +2348,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         "Match any of the above search criteria (OR logic)")));
 
 
-            String suffix = getAccessManager().canEditEntry(request, entry)
+            String suffix = getAccessManager().canDoEdit(request, entry)
                             ? HtmlUtils.space(2)
                               + HtmlUtils.labeledCheckbox(
                                   ARG_DB_DOSAVESEARCH, "true",
@@ -2480,7 +2478,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result handleSearch(Request request, Entry entry)
             throws Exception {
 
-        boolean canEdit = getAccessManager().canEditEntry(request, entry);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
         if (canEdit && request.exists(ARG_DB_DOSAVESEARCH)) {
             request.remove(ARG_DB_DOSAVESEARCH);
             String args = request.getUrlArgs(
@@ -2638,7 +2636,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     private void deleteEntireDatabase(Request request, Entry entry)
             throws Exception {
-        if ( !getAccessManager().canEditEntry(request, entry)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             throw new RuntimeException(
                 "Don't have permission to delete entire database");
         }
@@ -3584,7 +3582,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             hb.append(HtmlUtils.form(formUrl));
             hb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         }
-        boolean canEdit = getAccessManager().canEditEntry(request, entry);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
         boolean forPrint       = request.get(ARG_FOR_PRINT, false);
         int     entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 8);
         if (forPrint) {
@@ -4532,7 +4530,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean       forPrint   = request.get(ARG_FOR_PRINT, false);
         DbInfo        dbInfo     = getDbInfo();
         Hashtable     entryProps = getProperties(entry);
-        boolean canEdit = getAccessManager().canEditEntry(request, entry);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
         StringBuilder sb         = new StringBuilder();
         sb.append(
             "<meta id='request-method' name='request-method' content='POST'></meta>");
@@ -5384,7 +5382,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                      boolean fromSearch)
             throws Exception {
         DbInfo        dbInfo = getDbInfo();
-        boolean canEdit      = getAccessManager().canEditEntry(request,
+        boolean canEdit      = getAccessManager().canDoEdit(request,
                                    entry);
         StringBuilder sb     = new StringBuilder();
         String        links  = getHref(request, entry, VIEW_ICAL,

@@ -1204,7 +1204,6 @@ public class TypeHandler extends RepositoryManager {
         if (type.equals(Permission.ACTION_TYPE1)) {
             return "Type specific 1";
         }
-
         return "Type specific 2";
     }
 
@@ -2681,8 +2680,8 @@ public class TypeHandler extends RepositoryManager {
 
         boolean isGroup = entry.isGroup();
         boolean canDoNew = isGroup
-                           && getAccessManager().canDoAction(request, entry,
-                               Permission.ACTION_NEW);
+                           && getAccessManager().canDoNew(request, entry);
+
 
         if (canDoNew) {
             links.add(
@@ -2706,8 +2705,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        //We don't actually prevent an export - just don't show the link in the menu
-        if ( !request.getUser().getAnonymous()) {
+      if (getAccessManager().canDoExport(request, entry)) {
             links.add(
                 new Link(
                     HtmlUtils.url(
@@ -2774,8 +2772,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         if ( !canDoNew && isGroup
-                && getAccessManager().canDoAction(request, entry,
-                    Permission.ACTION_UPLOAD)) {
+                && getAccessManager().canDoUpload(request, entry)) {
             links.add(
                 new Link(
                     request.makeUrl(
@@ -2786,7 +2783,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        if (getAccessManager().canEditEntry(request, entry)) {
+        if (getAccessManager().canDoEdit(request, entry)) {
             links.add(
                 new Link(
                     request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
@@ -2875,8 +2872,7 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-        if (getAccessManager().canDoAction(request, entry,
-                                           Permission.ACTION_DELETE)) {
+        if (getAccessManager().canDoDelete(request, entry)) {
             links.add(
                 new Link(
                     request.entryUrl(
@@ -5338,8 +5334,7 @@ public class TypeHandler extends RepositoryManager {
         if (entry.isGroup()) {
             if (getAccessManager().hasPermissionSet(entry,
                     Permission.ACTION_VIEWCHILDREN)) {
-                if ( !getAccessManager().canDoAction(request, entry,
-                        Permission.ACTION_VIEWCHILDREN)) {
+                if ( !getAccessManager().canDoViewChildren(request, entry)) {
                     return getIconUrl(ICON_FOLDER_CLOSED_LOCKED);
                 }
             }

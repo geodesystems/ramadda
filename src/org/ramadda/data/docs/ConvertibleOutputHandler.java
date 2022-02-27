@@ -338,7 +338,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
         if (save && (lastInput != null)) {
             getSessionManager().putSessionProperty(request,
                     "csv.lastinput." + entry.getId(), lastInput);
-            if (getAccessManager().canEditEntry(request, entry)
+            if (getAccessManager().canDoEdit(request, entry)
                     && entry.getTypeHandler().isType("type_convertible")) {
                 entry.setValue(ConvertibleTypeHandler.IDX_COMMANDS,
                                lastInput);

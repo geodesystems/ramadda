@@ -16,7 +16,6 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.metadata.Metadata;
@@ -1363,8 +1362,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     HtmlUtils.submit(msg("Publish image"),
                                      ARG_SUBMIT_PUBLISH)));
 
-            if (getAccessManager().canDoAction(request, entry,
-                    Permission.ACTION_EDIT)) {
+            if (getAccessManager().canDoEdit(request, entry)) {
 
                 publishSB.append(
                     HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.p(), 2)));
@@ -1628,8 +1626,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
               + args;
 
         if (request.defined(ARG_SUBMIT_SAVE)) {
-            if ( !getAccessManager().canDoAction(request, entry,
-                    Permission.ACTION_EDIT)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 throw new AccessException("No access", request);
             }
 

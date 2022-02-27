@@ -158,8 +158,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         getPageHandler().entrySectionOpen(request, group, sb, "");
         sb.append(getWikiManager().wikifyEntry(request, group,
                 group.getDescription()));
-        boolean canAdd = getAccessManager().canDoAction(request, group,
-                             Permission.ACTION_NEW);
+        boolean canAdd = getAccessManager().canDoNew(request, group);
         if (canAdd) {
             String label =
                 HtmlUtils.img(getRepository().getIconUrl(ICON_NEW),

@@ -8,7 +8,6 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AuthorizationMethod;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
@@ -1036,8 +1035,7 @@ public class EntryManager extends RepositoryManager {
 	try {
 	    Entry group = findGroup(request);
 	    request.setReturnFilename("result.json");
-	    if ( !getAccessManager().canDoAction(request, group,
-						 Permission.ACTION_NEW)) {
+	    if ( !getAccessManager().canDoNew(request, group)) {
 		sb.append(JsonUtil.mapAndQuote("status","error","message","You do not have permission to add a file"));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
@@ -1804,8 +1802,7 @@ public class EntryManager extends RepositoryManager {
 	    sb.append(JsonUtil.mapAndQuote("error", "Could not find entry"));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
-	if ( !getAccessManager().canDoAction(request, entry,
-					     Permission.ACTION_EDIT)) {
+	if ( !getAccessManager().canDoEdit(request, entry)) {
 	    sb.append(JsonUtil.mapAndQuote("error", "No permision to edit entry"));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
@@ -1874,8 +1871,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canAddTo(Request request, Entry parent) throws Exception {
-        return getRepository().getAccessManager().canDoAction(request,
-							      parent, Permission.ACTION_NEW);
+        return getRepository().getAccessManager().canDoNew(request,    parent);
 
     }
 
@@ -1985,8 +1981,7 @@ public class EntryManager extends RepositoryManager {
             if (forUpload) {
                 fatalError(request, "Cannot edit when doing an upload");
             }
-            if ( !getAccessManager().canDoAction(request, entry,
-						 Permission.ACTION_EDIT)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 throw new AccessException("Cannot edit:" + entry.getLabel(),
                                           request);
             }
@@ -2113,10 +2108,8 @@ public class EntryManager extends RepositoryManager {
                 logInfo("Upload:checking access");
             }
             boolean okToCreateNewEntry =
-                getAccessManager().canDoAction(request, parentEntry,
-					       (forUpload
-						? Permission.ACTION_UPLOAD
-						: Permission.ACTION_NEW), forUpload);
+		forUpload?getAccessManager().canDoUpload(request, parentEntry):
+		getAccessManager().canDoNew(request, parentEntry);
 
             if (forUpload) {
                 logInfo("Upload:is ok to create:" + okToCreateNewEntry);
@@ -4423,8 +4416,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             for (Entry fromEntry : entries) {
-                if ( !getAccessManager().canDoAction(request, fromEntry,
-						     Permission.ACTION_EDIT)) {
+                if ( !getAccessManager().canDoEdit(request, fromEntry)) {
                     throw new AccessException("Cannot move:"
 					      + fromEntry.getLabel(), request);
                 }
@@ -4437,8 +4429,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        if ( !getAccessManager().canDoAction(request, toEntry,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, toEntry)) {
             throw new AccessException("Cannot copy/move to:"
                                       + toEntry.getLabel(), request);
         }
@@ -5079,7 +5070,7 @@ public class EntryManager extends RepositoryManager {
 					       + request);
         }
 
-        if ( !getAccessManager().canExportEntry(request, entry)) {
+        if ( !getAccessManager().canDoExport(request, entry)) {
             throw new IllegalArgumentException("Cannot export entry");
         }
 
@@ -5103,8 +5094,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryImport(Request request) throws Exception {
         Entry group = findGroup(request);
 
-        if ( !getAccessManager().canDoAction(request, group,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, group)) {
             throw new AccessException("You cannot import", request);
         }
 
@@ -5678,10 +5668,8 @@ public class EntryManager extends RepositoryManager {
 
 
         if (checkAccess && (parentEntry != null)) {
-            if ( !getAccessManager().canDoAction(request, parentEntry,
-						 Permission.ACTION_NEW)) {
-                if (getAccessManager().canDoAction(request, parentEntry,
-						   Permission.ACTION_UPLOAD)) {
+            if ( !getAccessManager().canDoNew(request, parentEntry)) {
+                if (getAccessManager().canDoUpload(request, parentEntry)) {
                     doAnonymousUpload = true;
                 } else {
                     throw new IllegalArgumentException(
@@ -7428,8 +7416,7 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
 
 
-        if ( !getRepository().getAccessManager().canDoAction(request, group,
-							     Permission.ACTION_NEW)) {
+        if ( !getRepository().getAccessManager().canDoNew(request, group)) {
             throw new AccessException("Cannot add to folder", request);
         }
 
@@ -8472,8 +8459,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry>   publishedEntries = new ArrayList<Entry>();
         boolean       didone           = false;
         for (Entry entry : entries) {
-            if ( !getAccessManager().canDoAction(request, entry,
-						 Permission.ACTION_EDIT)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 continue;
             }
 
@@ -8563,8 +8549,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry> changedEntries = new ArrayList<Entry>();
         for (Entry theEntry : entries) {
             if ( !newEntries
-		 && !getAccessManager().canDoAction(request, theEntry,
-						    Permission.ACTION_EDIT)) {
+		 && !getAccessManager().canDoEdit(request, theEntry)) {
                 continue;
             }
 

@@ -598,15 +598,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 : Resource.TYPE_LOCAL_FILE)), "", Entry.DEFAULT_ORDER,
                 targetFile.lastModified(), targetFile.lastModified(),
                 targetFile.lastModified(), targetFile.lastModified(), values);
-        //        System.err.println ("Done:" + entry);
-        /*
-        if ( !getRepository().getAccessManager().canDoAction(request, entry,
-                                                             org.ramadda.repository.auth.Permission.ACTION_VIEW)) {
-            //            System.err.println ("No access:" + entry);
-        } else {
-            //            System.err.println ("Cool:" + entry);
-        }
-        */
 
 
         if (templateEntry != null) {

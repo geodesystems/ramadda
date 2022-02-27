@@ -256,7 +256,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
 
 
         if (command.equals("clearall")) {
-            boolean canEdit = getAccessManager().canEditEntry(request, entry);
+            boolean canEdit = getAccessManager().canDoEdit(request, entry);
             if ( !canEdit) {
                 sb.append(JsonUtil.mapAndQuote("code", "notok", "message",
                                            "no permissions to clear all"));
