@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.model;
 
 
+import org.ramadda.repository.ActionManager;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
@@ -190,7 +191,47 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         return processes;
     }
+    
+    /**
+     * Do the compare asynchronously
+     *
+     * @param request  the Request
+     * @param dpi   the input
+     * @param type  the request type
+     *
+     * @return  a Result
+     *
+     * @throws Exception  problems processing the input
+     */
+    public Result doCompareAsync(Request request, ServiceInput dpi, String type)
+            throws Exception {
+    	/**
+    	 * I didn't really know what to do here.
+        ActionManager.Action action = new ActionManager.Action() {
+     	    public void run(Object actionId) throws Exception {
+	    	try {
+	    	    Result result = doCompare(request, dpi, type, actionId);
+		        String url = result.getRedirectUrl();
+		    if(url!=null) {
+			getActionManager().setContinueHtml(actionId,
+							   HU.href(url,  msg("Continue")));
+		    } else {
+			String content = result.getStringContent();
+			getActionManager().setContinueHtml(actionId,
+							   content);
+		    }
+		    
+		} catch(Exception exc) {
+		    logError("",exc);
+		}
+	    }
+	};
 
+        return getActionManager().doJsonAction(request, action,  "Generating Plot", "",null);
+        */
+	    return doCompare(request, dpi, type, null);
+
+    }
 
     /**
      * Do the compare
@@ -204,6 +245,23 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @throws Exception  problems processing the input
      */
     public Result doCompare(Request request, ServiceInput dpi, String type)
+            throws Exception {
+    	return doCompare(request, dpi, type, null);
+    }
+
+
+    /**
+     * Do the compare
+     *
+     * @param request  the Request
+     * @param dpi   the input
+     * @param type  the request type
+     *
+     * @return  a Result
+     *
+     * @throws Exception  problems processing the input
+     */
+    public Result doCompare(Request request, ServiceInput dpi, String type, Object actionId)
             throws Exception {
 
         //This finds the selected processes
@@ -732,7 +790,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             || type.equals(ARG_ACTION_ENS_COMPARE)
                             || type.equals(ARG_ACTION_MULTI_COMPARE)
                             || type.equals(ARG_ACTION_CORRELATION)) {
-                        return doCompare(request, dpi, type);
+                        //return doCompare(request, dpi, type);
+                        return doCompareAsync(request, dpi, type);
                     } else if (type.equals(ARG_ACTION_MULTI_TIMESERIES)
                                || type.equals(ARG_ACTION_TIMESERIES)) {
                         return makeTimeSeries(request, dpi, type);
@@ -948,10 +1007,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (hasOperands) {
             if (type.equals(ARG_ACTION_COMPARE)
                     || type.equals(ARG_ACTION_CORRELATION)) {
+            	/*
                 plotButton = HtmlUtils.submit(msg("Make Plot"), type,
                         HtmlUtils.id(formId + "_submit")
                         + makeButtonSubmitDialog(sb,
                                 msg("Making Plot, Please Wait") + "..."));
+                */
+                plotButton = HtmlUtils.submit(msg("Make Plot"), type,
+                        HtmlUtils.id(formId + "_submit"));
             } else if (type.equals(ARG_ACTION_MULTI_COMPARE)
                        || type.equals(ARG_ACTION_ENS_COMPARE)
                        || type.equals(ARG_ACTION_CORRELATION)) {
@@ -1301,6 +1364,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                  HtmlUtils.cssClass("col-md-7")));
         sb.append(plotButtonDiv);
+        sb.append("\n<div id=\"" + formId
+                  + "_status\" class=\"padded\"></div>\n");
         sb.append("<div id=\"" + formId
                   + "_output\" class=\"padded\"></div>\n");
         sb.append("<div id=\"" + formId + "_url\"></div>\n");
