@@ -78,8 +78,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**  */
     private static final String FILE_HEADER = "date," + DATA_FIELDS + "\n";
 
-
-
     /**
      * _more_
      *
@@ -157,8 +155,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         }
     }
 
-
-
     /**
      *
      * @param request _more_
@@ -167,7 +163,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     private void fetchData(Request request, Entry entry) throws Exception {
-        boolean debug = this.debug || entry.getName().indexOf("AZTEC") >= 0;
         Sensor sensor = readSensor(entry, DATA_FIELDS);
         if (sensor == null) {
             System.err.println("\tfetching failed to read sensor data:"
@@ -241,7 +236,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         newFile = getStorageManager().moveToStorage(request, newFile);
         entry.setResource(new Resource(newFile.toString(),
                                        Resource.TYPE_STOREDFILE));
-
         /*
           {
           "api_version" : "V1.0.10-0.0.12",
