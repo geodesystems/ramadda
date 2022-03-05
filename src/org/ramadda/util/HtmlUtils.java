@@ -5357,8 +5357,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @throws Exception  some problem
      */
-    public static void makeAccordion(Appendable sb, List<String> titles,
-                                     List<String> contents)
+    public static void makeAccordion(Appendable sb, List titles,
+                                     List contents)
             throws Exception {
         makeAccordion(sb, titles, contents, false, null, null);
     }
@@ -5373,8 +5373,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @throws Exception _more_
      */
-    public static void makeAccordion(Appendable sb, List<String> titles,
-                                     List<String> contents, boolean collapse)
+    public static void makeAccordion(Appendable sb, List titles,
+                                     List contents, boolean collapse)
             throws Exception {
         makeAccordion(sb, titles, contents, collapse, null, null);
     }
@@ -5393,8 +5393,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @throws Exception  some problem
      */
-    public static void makeAccordion(Appendable sb, List<String> titles,
-                                     List<String> contents, boolean collapse,
+    public static void makeAccordion(Appendable sb, List titles,
+                                     List contents, boolean collapse,
                                      String wrapperClass, String headerClass)
             throws Exception {
 
@@ -5405,8 +5405,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 : "") + " ui-accordion ui-widget ui-helper-reset") + HtmlUtils
                     .id(accordionId)));
         for (int i = 0; i < titles.size(); i++) {
-            String title   = titles.get(i);
-            String content = contents.get(i);
+            String title   = titles.get(i).toString();
+            String content = contents.get(i).toString();
             sb.append(HtmlUtils.open(HtmlUtils.TAG_H3,
                                      HtmlUtils.cssClass(((headerClass != null)
                     ? headerClass + " "
