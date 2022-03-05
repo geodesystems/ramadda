@@ -383,7 +383,6 @@ function RepositoryMap(mapId, params) {
         if ((typeof params.initialBounds) == "string") {
             params.initialBounds = params.initialBounds.split(",");
         }
-	//xxxxx
         this.defaultBounds = MapUtils.createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
 	this.defaultLocation = null;
 	if(debugBounds)
@@ -509,7 +508,11 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (zoomFld) {
             zoomFld.obj.value = this.theMap.getMap().getZoom();
         }
-        //                this.setSelectionMarker(lonlat.lon, lonlat.lat);
+	if(this.theMap.selectorMarker) {
+            this.theMap.removeMarker(this.theMap.selectorMarker);
+	}
+	this.theMap.selectorMarker = this.theMap.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
+
 
         if (this.clickListener != null) {
             this.clickListener.handleClick(this, e, lonlat.lon, lonlat.lat);
@@ -860,9 +863,6 @@ RepositoryMap.prototype = {
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
 
 
-
-
-
         //register the location listeners later since the map triggers a number of
         //events at the start
         var callback = function() {
@@ -894,7 +894,7 @@ RepositoryMap.prototype = {
 	    if(window["initExtraMap"]) {
 		initExtraMap(this);
 	    } else {
-		console.log("No initExtraMap");
+		//console.log("No initExtraMap");
 	    }
 	} catch(err) {
 	    console.log("Error calling initExtraMap:" + err);
@@ -3335,6 +3335,7 @@ RepositoryMap.prototype = {
             $("#" + this.lonFldId).val(MapUtils.formatLocationValue(lon));
             $("#" + this.latFldId).val(MapUtils.formatLocationValue(lat));
         }
+
 
 
         let lonlat = new MapUtils.createLonLat(lon, lat);
