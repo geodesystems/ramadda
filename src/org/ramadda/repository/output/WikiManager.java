@@ -4586,7 +4586,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return makeWikiUtil(request, false).wikify(wiki, this);
     }
 
+    public void  makeCallout(Appendable sb,Request request,String contents) throws Exception {
+	sb.append(wikify(request, "+callout-info\n" +
+			 contents +"\n-calloutinfo\n:p\n"));
+    }
 
+	
     /**
      * _more_
      *
