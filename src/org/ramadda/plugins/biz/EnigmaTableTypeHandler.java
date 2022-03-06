@@ -20,7 +20,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.*;
@@ -102,9 +102,9 @@ public class EnigmaTableTypeHandler extends PointTypeHandler {
         StringBuilder props = new StringBuilder();
         String url = "https://api.enigma.io/v2/meta/" + apiKey + "/"
                      + tableId + "?conjunction=and";
-        JSONObject   meta     = Json.readUrl(url);
-        JSONArray    columns  = Json.readArray(meta, "result.columns");
-        JSONArray    path     = Json.readArray(meta, "result.path");
+        JSONObject   meta     = JsonUtil.readUrl(url);
+        JSONArray    columns  = JsonUtil.readArray(meta, "result.columns");
+        JSONArray    path     = JsonUtil.readArray(meta, "result.path");
         List<String> ids      = new ArrayList<String>();
         List<String> fields   = new ArrayList<String>();
 

@@ -28,7 +28,6 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
@@ -36,7 +35,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;

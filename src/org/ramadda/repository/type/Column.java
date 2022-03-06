@@ -18,7 +18,7 @@ import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
@@ -953,15 +953,15 @@ public class Column implements DataTypes, Constants, Cloneable {
     public String getJson(Request request) throws Exception {
         List<String> col = new ArrayList<String>();
         col.add("name");
-        col.add(Json.quote(getName()));
+        col.add(JsonUtil.quote(getName()));
         col.add("label");
-        col.add(Json.quote(getLabel()));
+        col.add(JsonUtil.quote(getLabel()));
         col.add("type");
-        col.add(Json.quote(getType()));
+        col.add(JsonUtil.quote(getType()));
         col.add("namespace");
-        col.add(Json.quote(getTableName()));
+        col.add(JsonUtil.quote(getTableName()));
         col.add("suffix");
-        col.add(Json.quote(getSuffix()));
+        col.add(JsonUtil.quote(getSuffix()));
         col.add("canshow");
         col.add("" + getCanShow());
         col.add("cansearch");
@@ -988,16 +988,16 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 for (TwoFacedObject tfo : values) {
                     enums.add(
-                        Json.map(
-                            "value", Json.quote(tfo.getId().toString()),
-                            "label", Json.quote(tfo.getLabel().toString())));
+                        JsonUtil.map(
+                            "value", JsonUtil.quote(tfo.getId().toString()),
+                            "label", JsonUtil.quote(tfo.getLabel().toString())));
                 }
             }
             col.add("values");
-            col.add(Json.list(enums));
+            col.add(JsonUtil.list(enums));
         }
 
-        return Json.map(col);
+        return JsonUtil.map(col);
 
 
     }

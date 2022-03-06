@@ -285,8 +285,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             if (parent == null) {
                 throw new IllegalArgumentException("Could not find folder");
             }
-            if ( !getAccessManager().canDoAction(request, parent,
-                    Permission.ACTION_NEW)) {
+            if ( !getAccessManager().canDoNew(request, parent)) {
                 throw new AccessException("No access", request);
             }
             File[] files = productDir.listFiles();

@@ -2158,8 +2158,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     private String getHeader(Request request, Entry entry) throws Exception {
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
         List   headerLinks = new ArrayList();
         String view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
@@ -2234,8 +2233,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
         String view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
         if (view.equals(VIEW_DEFAULT)) {
@@ -2315,8 +2313,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
         String tableName = getTableName(entry);
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
         List<PointDataMetadata> metadata = getMetadata(getTableName(entry));
         if (canEdit && request.defined(ARG_POINT_CHANGETYPE)) {

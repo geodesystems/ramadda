@@ -229,14 +229,12 @@ public class PollTypeHandler extends BlobTypeHandler {
         String  secretFromUrl = request.getString(ATTR_SECRET, "none");
         boolean hasSecret     = secret.equals(secretFromUrl);
 
-        boolean canEditEntry = getAccessManager().canEditEntry(request,
+        boolean canDoEdit = getAccessManager().canDoEdit(request,
                                    entry);
-        boolean canAdd = canEditEntry || hasSecret
-                         || getAccessManager().canDoAction(request, entry,
-                             Permission.ACTION_TYPE1);
+        boolean canAdd = canDoEdit || hasSecret
+                         || getAccessManager().canDoType1(request, entry);
 
-        boolean canView = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_TYPE2);
+        boolean canView = getAccessManager().canDoType2(request, entry);
 
 
         List<String> choices = (List<String>) props.get(ATTR_CHOICES);
@@ -258,7 +256,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         }
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, entry, sb, null);
-        if (canEditEntry) {
+        if (canDoEdit) {
             sb.append(msgLabel("Use this link to allow others to edit"));
             sb.append(HtmlUtils.href(getEntryManager().getEntryURL(request,
                     entry, ATTR_SECRET, secret), msg("Edit Link")));
@@ -312,7 +310,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             changed = true;
         }
 
-        if (canEditEntry && request.defined(ACTION_DELETERESPONSE)) {
+        if (canDoEdit && request.defined(ACTION_DELETERESPONSE)) {
             List<PollResponse> tmp = new ArrayList<PollResponse>();
             String deleteId = request.getString(ACTION_DELETERESPONSE, "");
             for (PollResponse response : responses) {
@@ -362,7 +360,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             "<table class=\"poll-table\" border=1 cellpadding=0 cellspacing=0>");
         StringBuffer headerRow = new StringBuffer();
         headerRow.append("<tr>");
-        if (canEditEntry) {
+        if (canDoEdit) {
             headerRow.append(
                 HtmlUtils.col("&nbsp;", HtmlUtils.cssClass("poll-header")));
         }
@@ -381,7 +379,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         if (canView) {
             for (PollResponse response : responses) {
                 sb.append("<tr>");
-                if (canEditEntry) {
+                if (canDoEdit) {
                     String deleteHref =
                         HtmlUtils.href(
                             getEntryManager().getEntryURL(
@@ -415,7 +413,7 @@ public class PollTypeHandler extends BlobTypeHandler {
                                   + HtmlUtils.cssClass("poll-input"));
         if (canAdd) {
             sb.append("<tr>");
-            if (canEditEntry) {
+            if (canDoEdit) {
                 sb.append(HtmlUtils.col("&nbsp;"));
             }
             sb.append(HtmlUtils.col(input));

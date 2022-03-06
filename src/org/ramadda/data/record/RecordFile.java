@@ -1031,13 +1031,11 @@ public abstract class RecordFile {
                         }
 			if(haveStartDate) {
 			    if(record.getRecordTime()<startDate) {
-				System.err.println("\tskipping startDate:" + new Date(record.getRecordTime()));
 				continue;
 			    }
 			}
 			if(haveEndDate) {
 			    if(record.getRecordTime()>endDate) {
-				System.err.println("\tskipping endDate:" + new Date(record.getRecordTime()));
 				//This assumes that the dates in the data are ordered
 				break;
 

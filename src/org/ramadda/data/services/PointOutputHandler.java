@@ -37,7 +37,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
@@ -714,9 +714,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                 inner.printStackTrace();
                 String       code = "error";
                 StringBuffer json = new StringBuffer();
-                json.append(Json.map("error", Json.quote(message),
-                                     "errorcode", Json.quote(code)));
-                Result errorResult = new Result("", json, Json.MIMETYPE);
+                json.append(JsonUtil.map("error", JsonUtil.quote(message),
+                                     "errorcode", JsonUtil.quote(code)));
+                Result errorResult = new Result("", json, JsonUtil.MIMETYPE);
 
                 return errorResult;
             }
@@ -904,46 +904,46 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
                 all += macro.name;
                 displayProps.add("request." + macro.name + ".type");
-                displayProps.add(Json.quote(macro.type));
+                displayProps.add(JsonUtil.quote(macro.type));
                 if (macro.dflt != null) {
                     displayProps.add("request." + macro.name + ".default");
-                    displayProps.add(Json.quote(macro.dflt));
+                    displayProps.add(JsonUtil.quote(macro.dflt));
                 }
                 displayProps.add("request." + macro.name + ".label");
-                displayProps.add(Json.quote(macro.label));
+                displayProps.add(JsonUtil.quote(macro.label));
                 if (macro.multiple) {
                     displayProps.add("request." + macro.name + ".multiple");
                     displayProps.add("true");
                 }
                 if (macro.delimiter != null) {
                     displayProps.add("request." + macro.name + ".delimiter");
-                    displayProps.add(Json.quote(macro.delimiter));
+                    displayProps.add(JsonUtil.quote(macro.delimiter));
                 }
                 if (macro.template != null) {
                     displayProps.add("request." + macro.name + ".template");
-                    displayProps.add(Json.quote(macro.template));
+                    displayProps.add(JsonUtil.quote(macro.template));
                 }
                 if (macro.multitemplate != null) {
                     displayProps.add("request." + macro.name
                                      + ".multitemplate");
-                    displayProps.add(Json.quote(macro.multitemplate));
+                    displayProps.add(JsonUtil.quote(macro.multitemplate));
                 }
                 if (macro.nonetemplate != null) {
                     displayProps.add("request." + macro.name
                                      + ".nonetemplate");
-                    displayProps.add(Json.quote(macro.nonetemplate));
+                    displayProps.add(JsonUtil.quote(macro.nonetemplate));
                 }
                 if (macro.rows != null) {
                     displayProps.add("request." + macro.name + ".rows");
-                    displayProps.add(Json.quote(macro.rows));
+                    displayProps.add(JsonUtil.quote(macro.rows));
                 }
                 displayProps.add("request." + macro.name + ".values");
-                displayProps.add(Json.quote(macro.values));
+                displayProps.add(JsonUtil.quote(macro.values));
                 displayProps.add("request." + macro.name + ".urlarg");
-                displayProps.add(Json.quote("request." + macro.name));
+                displayProps.add(JsonUtil.quote("request." + macro.name));
             }
             displayProps.add("requestFields");
-            displayProps.add(Json.quote(all));
+            displayProps.add(JsonUtil.quote(all));
         }
 
         String extra     = "";
@@ -1312,7 +1312,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String tail = IOUtil.stripExtension(entry.getName());
                 request.setReturnFilename(tail + ".json");
                 request.getHttpServletResponse().setContentType(
-                    Json.MIMETYPE);
+                    JsonUtil.MIMETYPE);
                 request.setCORSHeaderOnResponse();
             }
             visitors.add(makeJsonVisitor(request, entry, pointEntries,

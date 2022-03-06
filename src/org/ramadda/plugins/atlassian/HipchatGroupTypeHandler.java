@@ -13,7 +13,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -243,7 +243,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
 
 
             //https://ramadda.hipchat.com/v2/room?auth_token=...
-            //this.from = Json.readValue(obj, "item.message.from.id", "");
+            //this.from = JsonUtil.readValue(obj, "item.message.from.id", "");
             for (int i = 0; i < rooms.length(); i++) {
                 JSONObject room = rooms.getJSONObject(i);
                 Entry roomEntry = createRoomEntry(groupEntry, room,
@@ -311,8 +311,8 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
     private Entry createRoomEntry(Entry groupEntry, JSONObject room,
                                   HashSet<String> roomsToShow)
             throws Exception {
-        String roomId = Json.readValue(room, "id", "");
-        String name   = Json.readValue(room, "name", "");
+        String roomId = JsonUtil.readValue(room, "id", "");
+        String name   = JsonUtil.readValue(room, "name", "");
         if (roomsToShow != null) {
             if ( !(roomsToShow.contains(roomId)
                     || roomsToShow.contains(name))) {
@@ -357,16 +357,16 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
                                      String roomId, JSONObject message)
             throws Exception {
 
-        String messageId = Json.readValue(message, "id", "");
-        String color     = Json.readValue(message, "color", "");
-        String date      = Json.readValue(message, "date", "");
+        String messageId = JsonUtil.readValue(message, "id", "");
+        String color     = JsonUtil.readValue(message, "color", "");
+        String date      = JsonUtil.readValue(message, "date", "");
 
-        String from      = Json.readValue(message, "from.name", null);
+        String from      = JsonUtil.readValue(message, "from.name", null);
         if (from == null) {
-            from = Json.readValue(message, "from", null);
+            from = JsonUtil.readValue(message, "from", null);
         }
 
-        String desc = Json.readValue(message, "message", "");
+        String desc = JsonUtil.readValue(message, "message", "");
         Date   now  = new Date();
         Date   dttm = parseSdf.parse(date);
         String name = from + " - " + displaySdf.format(dttm);
@@ -400,10 +400,10 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
             JSONArray links = message.getJSONArray("message_links");
             for (int i = 0; i < links.length(); i++) {
                 JSONObject link = links.getJSONObject(i);
-                String     url  = Json.readValue(link, "url", null);
-                String thumbnailUrl = Json.readValue(link,
+                String     url  = JsonUtil.readValue(link, "url", null);
+                String thumbnailUrl = JsonUtil.readValue(link,
                                           "video.thumbnailUrl", null);
-                String title = Json.readValue(link, "video.title", null);
+                String title = JsonUtil.readValue(link, "video.title", null);
                 //                System.err.println("url:" + url + " " + title + " thumb:"  + thumbnailUrl);
                 //TODO:add this as metadata
                 getMetadataManager().addMetadata(messageEntry,

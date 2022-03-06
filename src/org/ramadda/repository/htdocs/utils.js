@@ -3482,6 +3482,36 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 	return true;
     },
+    jqid:function(id) {
+	return $("#"+id);
+    },
+    initInteractiveInput:function(id,url) {
+	let input = HU.jqid(id);
+	input.keyup(function(event) {
+	    HtmlUtils.hidePopupObject();
+	    let val = $(this).val();
+	    if(!Utils.stringDefined(val)) return;
+	    let input = $(this);
+	    $.getJSON(url+"?text=" + val, data=>{
+		if(data.length==0) return;
+		let suggest = "";
+		data.forEach(d=>{
+		    suggest+=HU.div([CLASS,"ramadda-clickable ramadda-suggest","suggest",d],d);
+		});
+		let html = HU.div([CLASS,"ramadda-search-popup",STYLE,HU.css("max-width","200px",
+									     "padding","4px")],suggest);
+		let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
+		dialog.find(".ramadda-suggest").click(function() {
+		    HtmlUtils.hidePopupObject();
+		    input.val($(this).attr("suggest"));
+		});
+	    }).fail(
+		    err=>{
+			console.log("suggest call failed:" + url +"\n" + err)
+			console.dir(err);
+		    });
+	});
+    },
     getTooltip: function() {
 	return $("#ramadda-popupdiv");
     },

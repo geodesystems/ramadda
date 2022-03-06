@@ -31,7 +31,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FileInfo;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -294,9 +294,9 @@ public class SlackHarvester extends CommandHarvester {
             //            System.err.println("post response:" + json);
             try {
                 JSONObject obj = new JSONObject(json);
-                if ( !Json.readValue(obj, Slack.JSON_OK,
+                if ( !JsonUtil.readValue(obj, Slack.JSON_OK,
                                      "false").equals("true")) {
-                    String error = Json.readValue(obj, Slack.JSON_ERROR, "");
+                    String error = JsonUtil.readValue(obj, Slack.JSON_ERROR, "");
 
                     return message("Oops, got an error posting the file:"
                                    + error);

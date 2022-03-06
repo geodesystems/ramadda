@@ -14,7 +14,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -153,15 +153,15 @@ public class JiraSearchProvider extends SearchProvider {
         for (int i = 0; i < issues.length(); i++) {
             JSONObject issue    = issues.getJSONObject(i);
             JSONObject fields   = issue.getJSONObject("fields");
-            String     id       = Json.readValue(issue, "id", "");
-            String     key      = Json.readValue(issue, "key", "");
+            String     id       = JsonUtil.readValue(issue, "id", "");
+            String     key      = JsonUtil.readValue(issue, "key", "");
             String     issueUrl = baseUrl + "/browse/" + key;
-            String     name     = Json.readValue(fields, "summary", "");
-            String     desc     = Json.readValue(fields, "description", "");
+            String     name     = JsonUtil.readValue(fields, "summary", "");
+            String     desc     = JsonUtil.readValue(fields, "description", "");
 
 
             Date       dttm     = new Date();
-            Date fromDate = Utils.parseDate(Json.readValue(fields, "created",
+            Date fromDate = Utils.parseDate(JsonUtil.readValue(fields, "created",
                                 null));
             Date toDate = fromDate;
 
@@ -172,11 +172,11 @@ public class JiraSearchProvider extends SearchProvider {
             entries.add(newEntry);
 
             Object[] values = typeHandler.makeEntryValues(null);
-            values[0] = Json.readValue(fields, "issuetype.name", "");
-            values[1] = Json.readValue(fields, "priority.name", "");
+            values[0] = JsonUtil.readValue(fields, "issuetype.name", "");
+            values[1] = JsonUtil.readValue(fields, "priority.name", "");
 
             /*
-            String thumb = Json.readValue(snippet, "thumbnails.default.url",
+            String thumb = JsonUtil.readValue(snippet, "thumbnails.default.url",
                                           null);
 
             if (thumb != null) {

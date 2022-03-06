@@ -154,7 +154,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     public Result processEntryAccess(Request request, Entry entry)
             throws Exception {
 
-        if ( !getAccessManager().canEditEntry(request, entry)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             return new Result("Error",
                               new StringBuilder("Cannot edit entry"));
         }
@@ -398,7 +398,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                                  String tag, Hashtable props)
             throws Exception {
         if (tag.equals("simple_add")) {
-            if ( !getAccessManager().canEditEntry(request, entry)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 return "";
             }
 

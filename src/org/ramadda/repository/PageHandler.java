@@ -6,7 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.User;
 
 import org.ramadda.repository.map.MapInfo;
@@ -23,7 +22,7 @@ import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
@@ -2379,8 +2378,7 @@ public class PageHandler extends RepositoryManager {
             pageStyle.setShowLayoutToolbar(
                 Misc.equals(theMetadata.getAttr(5), "true"));
 
-            boolean canEdit = getAccessManager().canDoAction(request, entry,
-                                  Permission.ACTION_EDIT);
+            boolean canEdit = getAccessManager().canDoEdit(request, entry);
             if ( !canEdit) {
                 String menus = theMetadata.getAttr1();
                 if ((menus != null) && (menus.trim().length() > 0)) {
@@ -3042,10 +3040,8 @@ public class PageHandler extends RepositoryManager {
      */
     public String getCommentHtml(Request request, Entry entry)
             throws Exception {
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
-        boolean canComment = getAccessManager().canDoAction(request, entry,
-                                 Permission.ACTION_COMMENT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        boolean canComment = getAccessManager().canDoComment(request, entry);
 
         StringBuilder sb = new StringBuilder();
         List<Comment> comments =

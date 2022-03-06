@@ -27,7 +27,7 @@ import org.ramadda.util.BufferMapList;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
@@ -1089,6 +1089,18 @@ public class OutputHandler extends RepositoryManager {
 	return event;
     }
 
+    public static String makeEntrySelect(Request request, String arg, boolean allEntries, String type, Entry entry) throws Exception {
+	String event = OutputHandler.getSelectEvent(request, arg, allEntries, type, entry);
+	return HU.hidden(arg + "_hidden",
+			 entry!=null?entry.getId():"",
+			 HU.id(arg + "_hidden")) +
+	    HU.span(HU.span(HU.faIcon("fas fa-hand-pointer"),"class=ramadda-clickable") + " " +
+		    HU.disabledInput(arg, entry!=null?entry.getName():"",
+				     HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_40 + HU.id(arg)),
+		    HU.attr("onClick",event));
+    }
+
+
 
 
     /**
@@ -1167,7 +1179,7 @@ public class OutputHandler extends RepositoryManager {
                 HU.comma(HU.squote(target),
 			 HU.squote(entry.getId()),
 			 HU.squote(name),
-			 Json.map("entryType",HU.squote(entry.getTypeHandler().getType()),
+			 JsonUtil.map("entryType",HU.squote(entry.getTypeHandler().getType()),
 				  "isGroup",""+isGroup,
 				  "isImage",
 				  ""+isImage,
@@ -1453,7 +1465,7 @@ public class OutputHandler extends RepositoryManager {
         String cbxArgId     = ARG_SELENTRY;
         String cbxArgValue  = entry.getId();
         String cbxWrapperId = HU.getUniqueId("cbx_");
-	String args = Json.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
+	String args = JsonUtil.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
         jsSB.append("new EntryRow(");
         HU.squote(jsSB, entry.getId());
         jsSB.append(",");
@@ -1653,7 +1665,7 @@ public class OutputHandler extends RepositoryManager {
             String cbxId        = HU.getUniqueId("entry_");
             String cbxWrapperId = HU.getUniqueId("checkboxwrapper_");
 
-	    String entryRowArgs = Json.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
+	    String entryRowArgs = JsonUtil.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
             jsSB.append("new EntryRow(");
             HU.squote(jsSB, entry.getId());
             jsSB.append(",");

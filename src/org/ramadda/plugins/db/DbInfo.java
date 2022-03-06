@@ -34,7 +34,7 @@ import org.ramadda.util.GoogleChart;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.RssUtil;

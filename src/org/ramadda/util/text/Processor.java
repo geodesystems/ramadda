@@ -15,7 +15,7 @@ import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
 
@@ -1324,7 +1324,7 @@ public abstract class Processor extends CsvOperator {
 	    //	    System.err.println("new printer " + Utils.getStack(6));
             this.prefix    = prefix;
             this.template  = template;
-            this.delimiter = delimiter;
+	    initDelimiter(delimiter);
             this.suffix    = suffix;
         }
 
@@ -1359,11 +1359,17 @@ public abstract class Processor extends CsvOperator {
          */
         public Printer(boolean addHeader, boolean trim, String delimiter) {
             this(addHeader);
-	    this.delimiter = delimiter;
-	    if(this.delimiter.equals("tab")) this.delimiter = "\t";
+	    initDelimiter(delimiter);
             this.trim = trim;
         }
 
+	private void initDelimiter(String delimiter) {
+	    this.delimiter = delimiter;
+	    if(delimiter!=null) {
+		if(this.delimiter.equals("tab")) this.delimiter = "\t";
+		if(this.delimiter.equals("\\n")) this.delimiter = "\n";	    		
+	    }
+	}
 
         /**
          * _more_
@@ -1459,8 +1465,10 @@ public abstract class Processor extends CsvOperator {
 		}
 		if(theTemplate!=null) return;
             } else {
-		if (delimiter != null) {
-		    //		    writer.append(delimiter);
+		if (delimiter!=null) {
+		    if (theTemplate != null) {
+			writer.append(delimiter);
+		    }
 		}
             }
             List    values        = row.getValues();
@@ -2506,6 +2514,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private int cnt = 0;
 
+	private int maxWidth = 0;
 
         /*
          * _more_
@@ -2534,7 +2543,6 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
-
                 headerValues = new ArrayList();
                 for (Object obj : row.getValues()) {
                     String name = obj.toString();
@@ -2544,12 +2552,11 @@ public abstract class Processor extends CsvOperator {
                     String args = StringUtil.findPattern(name, "\\[(.*)\\]");
                     name = name.replaceAll("\\[.*\\]", "");
                     headerValues.add(name);
+		    maxWidth = Math.min(40,Math.max(maxWidth, name.length()));
                 }
-
                 return row;
             }
             printRow(ctx, row);
-
             return row;
         }
 
@@ -2565,7 +2572,6 @@ public abstract class Processor extends CsvOperator {
         public void printRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
                 headerValues = row.getValues();
-
                 return;
             }
             List values = row.getValues();
@@ -2575,8 +2581,8 @@ public abstract class Processor extends CsvOperator {
                 String label = (i < headerValues.size())
                                ? headerValues.get(i).toString()
                                : "NA";
-                label = StringUtil.padLeft(label, 20);
-                ctx.getWriter().println(label + ":" + values.get(i));
+                label = StringUtil.padLeft(label, maxWidth);
+                ctx.getWriter().println(label + ": " + values.get(i));
             }
         }
 

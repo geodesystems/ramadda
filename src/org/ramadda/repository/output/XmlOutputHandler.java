@@ -11,7 +11,6 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.Utils;
 
@@ -304,10 +303,8 @@ public class XmlOutputHandler extends OutputHandler {
             throws Exception {
         Element node = getEntryTag(request, group, null, doc, parent, false,
                                    true);
-        boolean canDoNew = getAccessManager().canDoAction(request, group,
-                               Permission.ACTION_NEW);
-        boolean canDoUpload = getAccessManager().canDoAction(request, group,
-                                  Permission.ACTION_UPLOAD);
+        boolean canDoNew = getAccessManager().canDoNew(request, group);
+        boolean canDoUpload = getAccessManager().canDoUpload(request, group);
         node.setAttribute(ATTR_CANDONEW, "" + canDoNew);
         node.setAttribute(ATTR_CANDOUPLOAD, "" + canDoUpload);
 

@@ -10,24 +10,12 @@
 
     --basic-border:1px #ccc solid;
     --highlight-border:1px #aaa solid;
-
     --nav-color:#000;
     --nav-link-color:#000;
-
-    --highlight-color:#398B54;
-    --highlight-color:#213E86;
-    --highlight-color:#4946DD;
-    --highlight-color:#1D9EAE;
-    --highlight-color:#0657F9;
-    --highlight-color:#9B1E25;
     --highlight-color:#0074D9;
-
     --hover-color:var(--highlight-color);
-
     --highlight-background: #f4f4f4;
     --header-background:  #eaeaea;
-
-
     --href-decoration:none;   
     --href-color: var(--highlight-color);
     --href-decoration:underline;
@@ -3235,6 +3223,7 @@ label {
 
 .ramadda-access-summary-header  {
     border-bottom: 2px #000 solid;
+    font-size:9pt;
 }
 
 .ramadda-access-summary-header td {
@@ -3249,6 +3238,7 @@ label {
 .ramadda-access-summary td {
     padding: 5px;
     border: 1px #efefef solid;
+    font-size:9pt;
 }
 
 .ramadda-user-activity  {
@@ -4935,6 +4925,7 @@ a.wiki-link-noexist {
 
 
 
+
 .wiki-editor-message {
     position:absolute;
     right:0px;
@@ -4948,6 +4939,22 @@ a.wiki-link-noexist {
     border-bottom:1px solid #ccc;
     border-left:1px solid #ccc;    
 }
+
+.ace_wiki-editor-entryid {
+    color:red;
+}
+
+
+.ace_wiki-editor-comment {
+    border: 1px solid #888;
+    background:#eee;
+    background: var(--color-mellow-yellow);
+    border-radius: 2px;
+    padding-right:4px;
+    font-weight:bold;
+}
+
+
 
 .wiki-editor-preview {
     height:800px;

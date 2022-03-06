@@ -494,7 +494,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                                        + request.getRequestURI());
                 }
                 ServletFileUpload upload =
-                    new ServletFileUpload(new DiskFileItemFactory());
+                    new ServletFileUpload(new DiskFileItemFactory(100000,
+								  repository.getStorageManager().getScratchDir().getDir()));
                 try {
                     upload.setHeaderEncoding("UTF-8");
                     List     items = upload.parseRequest(request);

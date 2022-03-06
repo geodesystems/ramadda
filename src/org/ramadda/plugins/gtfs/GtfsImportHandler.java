@@ -16,7 +16,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;

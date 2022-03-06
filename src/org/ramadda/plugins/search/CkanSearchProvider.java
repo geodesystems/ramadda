@@ -13,7 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
@@ -194,7 +194,7 @@ public class CkanSearchProvider extends SearchProvider {
                     }
                 }
             }
-            obj = Json.readObject(new JSONObject(new JSONTokener(json)),
+            obj = JsonUtil.readObject(new JSONObject(new JSONTokener(json)),
                                   "result");
             if (obj == null) {
                 System.err.println(
@@ -211,7 +211,7 @@ public class CkanSearchProvider extends SearchProvider {
         }
         System.out.println("ckan:" + url);
 
-        JSONArray searchResults = Json.readArray(obj, "results");
+        JSONArray searchResults = JsonUtil.readArray(obj, "results");
         if (searchResults == null) {
             System.err.println(
                 "CKAN SearchProvider: no results field in json");
@@ -225,13 +225,13 @@ public class CkanSearchProvider extends SearchProvider {
 
         for (int i = 0; i < searchResults.length(); i++) {
             JSONObject item     = searchResults.getJSONObject(i);
-            String     id       = Json.readValue(item, "id", "");
-            String     desc     = Json.readValue(item, "notes", "");
-            String     title    = Json.readValue(item, "title", "");
-            String     name     = Json.readValue(item, "name", "");
+            String     id       = JsonUtil.readValue(item, "id", "");
+            String     desc     = JsonUtil.readValue(item, "notes", "");
+            String     title    = JsonUtil.readValue(item, "title", "");
+            String     name     = JsonUtil.readValue(item, "name", "");
             Date       dttm     = new Date();
             Date       fromDate = dttm;
-            //Utils.parseDate(Json.readValue(snippet, "publishedAt", null));
+            //Utils.parseDate(JsonUtil.readValue(snippet, "publishedAt", null));
             Date   toDate  = fromDate;
 
             String itemUrl = baseUrl + "/dataset/" + name;
@@ -263,34 +263,34 @@ public class CkanSearchProvider extends SearchProvider {
 
 
 
-            JSONArray    tags     = Json.readArray(item, "tags");
+            JSONArray    tags     = JsonUtil.readArray(item, "tags");
             if (tags != null) {
                 for (int tagIdx = 0; tagIdx < tags.length(); tagIdx++) {
                     JSONObject tag = tags.getJSONObject(tagIdx);
                     getMetadataManager().addMetadata(newEntry,
                             new Metadata(getRepository().getGUID(),
                                          newEntry.getId(), "enum_tag", false,
-                                         Json.readValue(tag, "display_name",
+                                         JsonUtil.readValue(tag, "display_name",
                                              ""), null, null, null, null));
                 }
             }
 
 
-            JSONArray resources = Json.readArray(item, "resources");
+            JSONArray resources = JsonUtil.readArray(item, "resources");
             if (resources != null) {
                 for (int resourceIdx = 0; resourceIdx < resources.length();
                         resourceIdx++) {
                     JSONObject rObj = resources.getJSONObject(resourceIdx);
-                    String     resourceName = Json.readValue(rObj, "name",
+                    String     resourceName = JsonUtil.readValue(rObj, "name",
                                                   "");
-                    String     format = Json.readValue(rObj, "format", "");
+                    String     format = JsonUtil.readValue(rObj, "format", "");
                     if (resourceName.length() == 0) {
                         resourceName = "Format: " + format;
                     }
 
-                    String      rid = Json.readValue(rObj, "id", "");
-                    String rdesc = Json.readValue(rObj, "description", "");
-                    String      dataUrl = Json.readValue(rObj, "url", null);
+                    String      rid = JsonUtil.readValue(rObj, "id", "");
+                    String rdesc = JsonUtil.readValue(rObj, "description", "");
+                    String      dataUrl = JsonUtil.readValue(rObj, "url", null);
                     String      rUrl = itemUrl + "/resource/" + rid;
 
                     TypeHandler typeHandlerToUse = rtypeHandler;

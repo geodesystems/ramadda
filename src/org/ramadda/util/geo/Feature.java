@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
@@ -412,11 +412,11 @@ public class Feature {
      */
 
     public void toGeoJson(Appendable sb) throws Exception {
-        sb.append(Json.mapOpen());
-        Json.attr(sb, "type", Json.quote(FeatureCollection.TYPE_FEATURE));
+        sb.append(JsonUtil.mapOpen());
+        JsonUtil.attr(sb, "type", JsonUtil.quote(FeatureCollection.TYPE_FEATURE));
         if ((getId() != null) && !getId().isEmpty()) {
             sb.append(",\n");
-            Json.attr(sb, "id", Json.quote(getId()));
+            JsonUtil.attr(sb, "id", JsonUtil.quote(getId()));
         }
         if ((featureProperties != null) && !featureProperties.isEmpty()) {
             Hashtable<String, Object> data =
@@ -434,19 +434,19 @@ public class Feature {
                     if (value instanceof Number) {
                         schemadata.add(value.toString());
                     } else {
-                        schemadata.add(Json.quote(value.toString().trim()));
+                        schemadata.add(JsonUtil.quote(value.toString().trim()));
                     }
                 }
                 if (schemadata != null) {
                     sb.append(",\n");
-                    Json.attr(sb, "properties", Json.map(schemadata));
+                    JsonUtil.attr(sb, "properties", JsonUtil.map(schemadata));
                 }
             }
         }
         sb.append(",\n");
-        sb.append(Json.mapKey(Geometry.TYPE_GEOMETRY));
+        sb.append(JsonUtil.mapKey(Geometry.TYPE_GEOMETRY));
         geometry.toGeoJson(sb);
-        sb.append(Json.mapClose());
+        sb.append(JsonUtil.mapClose());
 
     }
 }

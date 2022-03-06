@@ -8,7 +8,7 @@ package org.ramadda.repository;
 
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.sql.SqlUtil;
 
 import ucar.unidata.util.DateUtil;
@@ -92,8 +92,8 @@ public class ActionManager extends RepositoryManager {
                              StringBuffer sb, boolean json)
             throws Exception {
         if (json) {
-            String result = Json.map("status", Json.quote(status), "message",
-                                     Json.quote(sb.toString()));
+            String result = JsonUtil.map("status", JsonUtil.quote(status), "message",
+                                     JsonUtil.quote(sb.toString()));
 
             return new Result(result, Result.TYPE_JSON);
         }
@@ -357,7 +357,7 @@ public class ActionManager extends RepositoryManager {
                                String name, String continueHtml,
                                Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
-        String json = Json.map("actionid", Json.quote(actionId.toString()));
+        String json = JsonUtil.map("actionid", JsonUtil.quote(actionId.toString()));
 
         return new Result(json, Result.TYPE_JSON);
     }

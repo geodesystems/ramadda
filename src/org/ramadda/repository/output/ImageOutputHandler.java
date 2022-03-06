@@ -12,7 +12,7 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -469,7 +469,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (request.exists(ARG_IMAGE_UNDO)) {
             try {
-                if ( !getAccessManager().canEditEntry(request, entry)) {
+                if ( !getAccessManager().canDoEdit(request, entry)) {
                     return new Result(
                         new StringBuilder(
                             "{\"code\":\"error\",\"message\":\"Cannot edit image\"}"), "text/plain", false);
@@ -510,7 +510,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (request.exists("imagecontents")) {
             try {
-                if ( !getAccessManager().canEditEntry(request, entry)) {
+                if ( !getAccessManager().canDoEdit(request, entry)) {
                     return new Result(
                         new StringBuilder(
                             "{\"code\":\"error\",\"message\":\"Cannot edit image\"}"), "text/plain", false);
@@ -574,7 +574,7 @@ public class ImageOutputHandler extends OutputHandler {
             }
             versions++;
         }
-        if (getAccessManager().canEditEntry(request, entry)) {
+        if (getAccessManager().canDoEdit(request, entry)) {
             String save =
                 "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditorSave();'>Save Image</div>"
                 + "&nbsp;&nbsp;<div style='display:inline-block;' id='imageeditor_message'></div>";
@@ -857,8 +857,7 @@ public class ImageOutputHandler extends OutputHandler {
      */
     private boolean processImage(Request request, Entry entry, Image image)
             throws Exception {
-        if ( !getAccessManager().canDoAction(request, entry,
-                                             Permission.ACTION_EDIT)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             throw new AccessException("Cannot edit image", null);
         }
 
@@ -2264,7 +2263,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         playerTemplate = playerTemplate.replaceAll("\\$\\{imageArgs\\}",
-                Json.map(playerArgs));
+                JsonUtil.map(playerArgs));
 
         String widthAttr = "";
         String width     = request.getString(ARG_WIDTH, "600");

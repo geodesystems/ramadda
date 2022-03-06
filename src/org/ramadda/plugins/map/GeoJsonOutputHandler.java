@@ -13,7 +13,7 @@ import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.Point;
 import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.text.CsvUtil;
 
 import org.ramadda.util.Utils;
@@ -252,8 +252,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
         for (int i = 0; i < array.length(); i++) {
             JSONObject feature = array.getJSONObject(i);
 	    String type = feature.optString("type","");
-	    JSONObject style  = Json.readObject(feature,"style");
-	    JSONArray jpoints  = Json.readArray(feature,"points");		
+	    JSONObject style  = JsonUtil.readObject(feature,"style");
+	    JSONArray jpoints  = JsonUtil.readArray(feature,"points");		
 	    List<Point> points= new ArrayList<Point>();
 	    Bounds b = new Bounds();
 	    for (int ptIdx = 0; ptIdx < jpoints.length(); ptIdx++) {

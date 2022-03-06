@@ -21,7 +21,7 @@ import org.json.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.NamedChannel;
 import org.ramadda.util.MapProvider;
@@ -1734,6 +1734,11 @@ public class CsvUtil {
         new Cmd("-rawlines", "",
                 new Arg("lines",
                         "How many lines to pass through unprocesed")),
+        new Cmd("-inputnotcontains", "Filter out input lines that contain any of the strings",
+                new Arg("filters",
+                        "Comma separated list of strings to filter one")),
+
+
         new Cmd(
 		"-min",
 		"Only pass thorough lines that have at least this number of columns",
@@ -1748,16 +1753,21 @@ public class CsvUtil {
 		new Arg("number", "", "type", "number")),
         new Cmd("-pattern", "Pass through rows that the columns each match the pattern",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("pattern", "", "type", "pattern")),
+		new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", "type", "pattern")),
         new Cmd("-notpattern",
                 "Pass through rows that don't match the pattern",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("pattern", "", "type", "pattern")),
+                new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", "type", "pattern")),
         new Cmd("-fuzzypattern", "Pass through rows that the columns each fuzzily match the pattern",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
-        new Cmd("-same", "Pass through where the 2 columns have the same value",
+        new Cmd("-lengthgreater", "Pass through rows that the length of the columns is greater than",
+                new Arg("columns", "", "type", "columns"),
+		new Arg("length", "")),
+
+       new Cmd("-same", "Pass through where the 2 columns have the same value",
+
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),
         new Cmd("-notsame", "Pass through where the 2 columns don't have the same value",
@@ -2267,6 +2277,9 @@ public class CsvUtil {
         new Cmd("-bounds", 
 		"Geocode within bounds", 
 		new Arg("north"),new Arg("west"),new Arg("south"),new Arg("east")),
+        new Cmd("-decodelatlon", 
+		"Decode latlon", 
+		new Arg("columns","Lat or Lon column","type","columns")),
         new Cmd("-getaddress", "Get address from lat/lon",
                 new Arg("latitude", "latitude column"),
                 new Arg("latitude", "latitude column")),		
@@ -2315,7 +2328,7 @@ public class CsvUtil {
         new Cmd("-filepattern", "Extract a macro value from a filename",
 		new Arg("name","Macro name"),
 		new Arg("pattern","Pattern")),		
-        new Cmd("-maxrows", "", "Max rows to print"),
+        new Cmd("-maxrows", "", "Max rows to process"),
         new Cmd("-changeline",  "Change the line",
                 "from", "to"),
         new Cmd("-changeraw",  "Change input text",
@@ -2487,7 +2500,7 @@ public class CsvUtil {
                     pw.println(",");
                 }
                 if (c.category) {
-                    pw.println(Json.mapAndQuote("isCategory", "true",
+                    pw.println(JsonUtil.mapAndQuote("isCategory", "true",
 						"label",c.cmd));
 
                 } else {
@@ -2497,9 +2510,9 @@ public class CsvUtil {
                         for (Arg arg : c.args) {
                             List<String> attrs = new ArrayList<String>();
                             attrs.add("id");
-                            attrs.add(Json.quote(arg.id));
+                            attrs.add(JsonUtil.quote(arg.id));
                             attrs.add("description");
-                            attrs.add(Json.quote(arg.desc));
+                            attrs.add(JsonUtil.quote(arg.desc));
                             if (arg.props != null) {
                                 for (int i = 0; i < arg.props.length;
 				     i += 2) {
@@ -2509,19 +2522,19 @@ public class CsvUtil {
 					v = (String)getProperty(v.substring("property:".length()));
 				    }
 				    if(v==null) v="";
-				    attrs.add(Json.quote(v));
+				    attrs.add(JsonUtil.quote(v));
                                 }
                             }
-                            tmp.add(Json.map(attrs));
+                            tmp.add(JsonUtil.map(attrs));
 
                         }
-                        argList = Json.list(tmp);
+                        argList = JsonUtil.list(tmp);
                     }
-                    pw.println(Json.map("command", Json.quote(c.cmd),
+                    pw.println(JsonUtil.map("command", JsonUtil.quote(c.cmd),
                                         "label", (c.label != null)
-					? Json.quote(c.label)
+					? JsonUtil.quote(c.label)
 					: "null", "args", argList, "description",
-					Json.quote(c.desc)));
+					JsonUtil.quote(c.desc)));
                 }
             } else {
                 if (c.category) {
@@ -3101,14 +3114,16 @@ public class CsvUtil {
 		return i;
 	    });
 
-
-
 	defineFunction("-rawlines",1,(ctx,args,i) -> {
 		rawLines = Integer.parseInt(args.get(++i));
 		return i;
 	    });
 
-
+	defineFunction("-inputnotcontains",1,(ctx,args,i) -> {
+		ctx.setLineFilters(Utils.split(args.get(++i)));
+		return i;
+	    });
+	
 	defineFunction("-tab",0,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = "tab");
 		return i;
@@ -3297,7 +3312,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Geo.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-getaddress",2,(ctx,args,i) -> {
+	defineFunction("-decodelatlon",1,(ctx,args,i) -> {	
+		ctx.addProcessor(new Geo.DecodeLatLon(getCols(args.get(++i))));
+		return i;
+	    });	
+	defineFunction("-getaddress",4,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });	
@@ -3673,7 +3692,6 @@ public class CsvUtil {
 
 	defineFunction("-maxrows",1,(ctx,args,i) -> {
 		ctx.setMaxRows(Integer.parseInt(args.get(++i)));
-
 		return i;
 	    });
 
@@ -4024,7 +4042,6 @@ public class CsvUtil {
 		return i;
 	    });		
 
-
 	defineFunction("-pattern", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
@@ -4035,7 +4052,14 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-fuzzypattern", 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+		return i;
+	    });
+
+	defineFunction("-lengthgreater", 2,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(), 
+			      new Filter.Length(ctx,true,getCols(args.get(++i)),Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 

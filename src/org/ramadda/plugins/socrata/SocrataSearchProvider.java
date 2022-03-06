@@ -14,7 +14,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.Utils;
 
@@ -174,16 +174,16 @@ public class SocrataSearchProvider extends SearchProvider {
         for (int i = 0; i < searchResults.length(); i++) {
             JSONObject wrapper = searchResults.getJSONObject(i);
             JSONObject item    = wrapper.getJSONObject("view");
-            if (Json.readValue(item, "url", "").equals("https:/-/-/")) {
+            if (JsonUtil.readValue(item, "url", "").equals("https:/-/-/")) {
                 continue;
             }
 
-            String id   = Json.readValue(item, "id", "");
-            String name = Json.readValue(item, "name", "");
-            StringBuilder desc = new StringBuilder(Json.readValue(item,
+            String id   = JsonUtil.readValue(item, "id", "");
+            String name = JsonUtil.readValue(item, "name", "");
+            StringBuilder desc = new StringBuilder(JsonUtil.readValue(item,
                                      "description", ""));
-            String      displayType = Json.readValue(item, "displayType", "");
-            String      viewType    = Json.readValue(item, "viewType", "");
+            String      displayType = JsonUtil.readValue(item, "displayType", "");
+            String      viewType    = JsonUtil.readValue(item, "viewType", "");
 
             TypeHandler typeHandler = (viewType.equals("tabular")
                                        ? seriesTypeHandler
@@ -204,7 +204,7 @@ public class SocrataSearchProvider extends SearchProvider {
             if (viewType.equals("tabular")) {
                 values[SocrataSeriesTypeHandler.IDX_SERIES_ID] = id;
             } else if (viewType.equals("blobby")) {
-                String mimeType = StringUtil.splitUpTo(Json.readValue(item,
+                String mimeType = StringUtil.splitUpTo(JsonUtil.readValue(item,
                                       "blobMimeType", ";"), ";",
                                           2).get(0).trim();
                 String getFileUrl = "https://" + hostname + "/download/" + id
@@ -300,10 +300,10 @@ public class SocrataSearchProvider extends SearchProvider {
 
         for (int i = 0; i < searchResults.length(); i++) {
             JSONObject wrapper = searchResults.getJSONObject(i);
-            JSONObject item    = Json.readObject(wrapper, "resource");
-            String     id      = Json.readValue(item, "id", "");
-            String     name    = Json.readValue(item, "name", "");
-            String domain = Json.readValue(wrapper, "metadata.domain",
+            JSONObject item    = JsonUtil.readObject(wrapper, "resource");
+            String     id      = JsonUtil.readValue(item, "id", "");
+            String     name    = JsonUtil.readValue(item, "name", "");
+            String domain = JsonUtil.readValue(wrapper, "metadata.domain",
                                            (String) null);
             if (domain == null) {
                 domain = hostname;
@@ -318,9 +318,9 @@ public class SocrataSearchProvider extends SearchProvider {
                                       : domain;
             name += " - " + domain;
 
-            StringBuilder desc = new StringBuilder(Json.readValue(item,
+            StringBuilder desc = new StringBuilder(JsonUtil.readValue(item,
                                      "description", ""));
-            String type = Json.readValue(item, "type", "");
+            String type = JsonUtil.readValue(item, "type", "");
 
 
 
@@ -378,7 +378,7 @@ public class SocrataSearchProvider extends SearchProvider {
         } else if (true || type.equals("blobby")) {
             //            System.err.println("Socrata - new Type:" + type);
             /*
-            String mimeType = StringUtil.splitUpTo(Json.readValue(item,
+            String mimeType = StringUtil.splitUpTo(JsonUtil.readValue(item,
                                   "blobMimeType", ";"), ";",
                                       2).get(0).trim();
             String getFileUrl = "https://" + domain + "/download/" + id

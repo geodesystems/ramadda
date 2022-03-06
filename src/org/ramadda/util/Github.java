@@ -116,7 +116,7 @@ public class Github {
 			String message = commit.optString("message","").replaceAll("<","&lt;").replaceAll(">","&gt;");
 			String url = commit.getString("url");
 			url = url.replace("//api.","//").replace("/repos/","/").replace("/commits/","/commit/");
-			String name = Json.readValue(commit,"author.name","NA");
+			String name = JsonUtil.readValue(commit,"author.name","NA");
 			String authorUrl = login==null?null: "https://github.com/" + login;
 			results.add(new Item(new User(name,login, authorUrl, avatarUrl), date, message,url));
 		    }

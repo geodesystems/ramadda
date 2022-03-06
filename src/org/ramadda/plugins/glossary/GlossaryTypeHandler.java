@@ -153,8 +153,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
                 group.getDescription()));
         sb.append(HtmlUtils.p());
 
-        boolean canAdd = getAccessManager().canDoAction(request, group,
-                             Permission.ACTION_NEW);
+        boolean canAdd = getAccessManager().canDoNew(request, group);
 
         /*
         if (canAdd) {

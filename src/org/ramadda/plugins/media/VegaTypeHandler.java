@@ -21,7 +21,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.text.CsvUtil;
@@ -272,7 +272,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
                         if (debug) {
                             System.err.println("\turl:" + url);
                         }
-                        String type = Json.readValue(child, "format.type",
+                        String type = JsonUtil.readValue(child, "format.type",
                                           null);
                         //If its a map the skip it
                         if ((type != null) && type.equals("topojson")) {

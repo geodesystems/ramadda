@@ -18,7 +18,6 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
@@ -26,7 +25,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
@@ -193,8 +192,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                               Entry entry)
             throws Exception {
 
-        if ( !getRepository().getAccessManager().canDoAction(request, entry,
-                Permission.ACTION_FILE)) {
+        if ( !getRepository().getAccessManager().canDoFile(request, entry)) {
             throw new AccessException("Cannot access data", request);
         }
 
@@ -368,9 +366,9 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                     }
                     //                    exc.printStackTrace();
                     StringBuffer json = new StringBuffer();
-                    json.append(Json.map("error", Json.quote(message),
-                                         "errorcode", Json.quote(code)));
-                    Result result = new Result("", json, Json.MIMETYPE);
+                    json.append(JsonUtil.map("error", JsonUtil.quote(message),
+                                         "errorcode", JsonUtil.quote(code)));
+                    Result result = new Result("", json, JsonUtil.MIMETYPE);
 
                     //                    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
                     return result;
@@ -380,7 +378,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             }
         }
 
-        return new Result("", sb, Json.MIMETYPE);
+        return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
     /**
@@ -576,7 +574,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                         bw.append(",");
                     }
                     bw.append("\n");
-                    bw.append(Json.mapOpen());
+                    bw.append(JsonUtil.mapOpen());
                     //       date            lat   lon   alt     value(s)
                     // 2009-11-10T00:00:00Z,34.6,-101.1,100.0,207.89999389648438
                     CalendarDate date =
@@ -586,24 +584,24 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                     double alt = (hasVertical
                                   ? Double.parseDouble(toks.get(3))
                                   : Double.NaN);
-                    Json.addGeolocation(bw, lat, lon, alt);
+                    JsonUtil.addGeolocation(bw, lat, lon, alt);
                     bw.append(",");
-                    bw.append(Json.attr(Json.FIELD_DATE, date.getMillis()));
+                    bw.append(JsonUtil.attr(JsonUtil.FIELD_DATE, date.getMillis()));
                     bw.append(",");
-                    bw.append(Json.mapKey(Json.FIELD_VALUES));
+                    bw.append(JsonUtil.mapKey(JsonUtil.FIELD_VALUES));
                     int          startIdx = (hasVertical
                                              ? 4
                                              : 3);
                     List<String> values   = new ArrayList();
                     for (int i = startIdx; i < toks.size(); i++) {
                         double v = Double.parseDouble(toks.get(i));
-                        values.add(Json.formatNumber(v));
+                        values.add(JsonUtil.formatNumber(v));
                     }
                     if (hasVertical) {
-                        values.add(Json.formatNumber(alt));
+                        values.add(JsonUtil.formatNumber(alt));
                     }
-                    bw.append(Json.list(values));
-                    bw.append(Json.mapClose());
+                    bw.append(JsonUtil.list(values));
+                    bw.append(JsonUtil.mapClose());
                 }
                 RecordField.addJsonFooter(bw);
                 bw.close();
@@ -622,7 +620,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         Result result = null;
         result = new Result(getStorageManager().getFileInputStream(f),
                             doingJson
-                            ? Json.MIMETYPE
+                            ? JsonUtil.MIMETYPE
                             : pdrb.getAccept());
         //Set return filename sets the Content-Disposition http header so the browser saves the file
         //with the correct name and suffix
@@ -727,8 +725,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             throws Exception {
 
         boolean canAdd =
-            getRepository().getAccessManager().canDoAction(request,
-                entry.getParentEntry(), Permission.ACTION_NEW);
+            getRepository().getAccessManager().canDoNew(request, entry.getParentEntry());
 
         String formUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName()) + "_point";

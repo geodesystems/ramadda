@@ -317,7 +317,7 @@ public class GpsOutputHandler extends OutputHandler {
 
             for (Entry child : entries) {
                 if (isGps(child)) {
-                    if (getAccessManager().canEditEntry(request, child)) {
+                    if (getAccessManager().canDoEdit(request, child)) {
                         links.add(makeLink(request, state.group,
                                            OUTPUT_GPS_BULKEDIT));
 
@@ -790,8 +790,7 @@ public class GpsOutputHandler extends OutputHandler {
             if (parent == null) {
                 throw new IllegalArgumentException("Could not find folder");
             }
-            if ( !getAccessManager().canDoAction(request, parent,
-                    Permission.ACTION_NEW)) {
+            if ( !getAccessManager().canDoNew(request, parent)) {
                 throw new AccessException("No access", request);
             }
             File[] files = workDir.listFiles();
@@ -919,11 +918,11 @@ public class GpsOutputHandler extends OutputHandler {
                 if ( !request.get(ARG_GPS_SELECTED + suffix, false)) {
                     continue;
                 }
-                if ( !getAccessManager().canEditEntry(request, entry)) {
+                if ( !getAccessManager().canDoEdit(request, entry)) {
                     continue;
                 }
 
-                if ( !getAccessManager().canEditEntry(request, entry)) {
+                if ( !getAccessManager().canDoEdit(request, entry)) {
                     throw new AccessException("Cannot edit:"
                             + entry.getLabel(), request);
                 }
@@ -978,7 +977,7 @@ public class GpsOutputHandler extends OutputHandler {
             if ( !isGps(entry)) {
                 continue;
             }
-            if ( !getAccessManager().canEditEntry(request, entry)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 continue;
             }
 
@@ -1213,8 +1212,7 @@ public class GpsOutputHandler extends OutputHandler {
             if (parent == null) {
                 throw new IllegalArgumentException("Could not find folder");
             }
-            if ( !getAccessManager().canDoAction(request, parent,
-                    Permission.ACTION_NEW)) {
+            if ( !getAccessManager().canDoNew(request, parent)) {
                 throw new AccessException("No access", request);
             }
             String fileName = request.getString(ARG_PUBLISH_NAME, "").trim();
@@ -1972,8 +1970,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
         }
 
-        if ( !getAccessManager().canDoAction(request, parentEntry,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, parentEntry)) {
             sb.append("You do not have permission to add to:"
                       + parentEntry.getName());
 
@@ -2008,8 +2005,7 @@ public class GpsOutputHandler extends OutputHandler {
                              typeHandler, initializer);
 
 
-        boolean canEditRinex = getAccessManager().canDoAction(request,
-                                   rinexEntry, Permission.ACTION_EDIT);
+        boolean canEditRinex = getAccessManager().canDoEdit(request, rinexEntry);
 
         //If we figured out location from the opus file then set the rinex entry location
 
@@ -2030,8 +2026,7 @@ public class GpsOutputHandler extends OutputHandler {
                                 GpsOutputHandler
                                     .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
                                         .TYPE_RAW)) {
-                if (getAccessManager().canDoAction(request, rawEntry,
-                        Permission.ACTION_EDIT)) {
+                if (getAccessManager().canDoEdit(request, rawEntry)) {
                     rawEntry.setLocation(newEntry.getLatitude(),
                                          newEntry.getLongitude(),
                                          newEntry.getAltitude());

@@ -90,6 +90,9 @@ public class ContentMetadataHandler extends MetadataHandler {
     /**  */
     public static final String TYPE_LICENSE = "content.license";
 
+    /** _more_ */
+    public static final String TYPE_TAG = "enum_tag";
+
     /**
      * _more_
      *

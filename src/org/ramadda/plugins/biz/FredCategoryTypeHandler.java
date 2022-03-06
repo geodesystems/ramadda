@@ -13,7 +13,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -120,8 +120,8 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
 
         /*
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
-        values[IDX_TEAM_ID] = Json.readValue(result, "team.id", "");
-        String domain = Json.readValue(result, "team.domain", "");
+        values[IDX_TEAM_ID] = JsonUtil.readValue(result, "team.id", "");
+        String domain = JsonUtil.readValue(result, "team.domain", "");
         values[IDX_TEAM_DOMAIN] = domain;
         entry.setResource(new Resource(Slack.getTeamUrl(domain)));
         */

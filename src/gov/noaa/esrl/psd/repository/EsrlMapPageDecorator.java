@@ -15,7 +15,7 @@ import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.util.HtmlUtils;
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.WikiUtil;
 
 import ucar.unidata.util.Misc;
@@ -82,7 +82,7 @@ public class EsrlMapPageDecorator extends PageDecorator implements WikiConstants
             mapProps.put("scrollToZoom", "true");
             /*
               mapProps.put("entryClickHandler",
-              Json.quote(
+              JsonUtil.quote(
               "handlePsdStationClick"));
             */
             Hashtable argProps  = new Hashtable();

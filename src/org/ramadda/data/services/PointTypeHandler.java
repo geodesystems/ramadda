@@ -26,7 +26,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.grid.LatLonGrid;
 
@@ -941,7 +941,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             String id = HtmlUtils.getUniqueId("divid_");
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
 
-            return Json.mapAndQuote("entryId", entry.getId(), "chartType",
+            return JsonUtil.mapAndQuote("entryId", entry.getId(), "chartType",
                                     chartType, "chartArgs", chartArgs,
                                     "fields", chartField, "divId", id,
                                     "title", "", "text", sb.toString(),

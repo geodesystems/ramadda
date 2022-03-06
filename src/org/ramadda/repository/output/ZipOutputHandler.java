@@ -128,12 +128,12 @@ public class ZipOutputHandler extends OutputHandler {
 
         if (state.entry != null) {
             if (getAccessManager().canDownload(request, state.entry)
-                    && getAccessManager().canExportEntry(request,
+                    && getAccessManager().canDoExport(request,
                         state.entry)) {
                 links.add(makeLink(request, state.entry, OUTPUT_ZIP));
             }
 
-            //      if (getAccessManager().canExportEntry(request, state.entry)) {
+            //      if (getAccessManager().canDoExport(request, state.entry)) {
             //          links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
             //      }
             return;
@@ -419,7 +419,7 @@ public class ZipOutputHandler extends OutputHandler {
         for (Entry entry : entries) {
             //Check for access
             if (forExport) {
-                if ( !getAccessManager().canExportEntry(request, entry)) {
+                if ( !getAccessManager().canDoExport(request, entry)) {
                     continue;
                 }
             }

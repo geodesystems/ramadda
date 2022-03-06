@@ -277,7 +277,7 @@ public class DoiOutputHandler extends OutputHandler {
         if ( !enabled) {
             return false;
         }
-        if ( !getAccessManager().canEditEntry(request, entry)) {
+        if ( !getAccessManager().canDoEdit(request, entry)) {
             return false;
         }
         if (adminOnly) {

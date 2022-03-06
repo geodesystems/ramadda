@@ -4,16 +4,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
-
-
 import org.json.*;
-
 import org.w3c.dom.*;
-
-
 import ucar.unidata.util.IOUtil;
-
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -31,10 +24,9 @@ import java.util.List;
 
 
 /**
- * JSON Utility class
  */
 @SuppressWarnings("unchecked")
-public class Json {
+public class JsonUtil {
 
     /** JSON MIME type */
     public static final String MIMETYPE = "application/json";

@@ -161,14 +161,13 @@
       <api request="/user/resetpassword"      method="processResetPassword"     needs_ssl="true" />
       <api request="/user/finduserid"         method="processFindUserId"    needs_ssl="true"/>
       <api request="/user/favorite"           method="processFavorite" />
-
-
       <api request="/user/list"               method="adminUserList"       admin="true" needs_ssl="true" />
       <api request="/user/activity"           method="processActivityLog"  admin="true" needs_ssl="true" />
       <api request="/user/edit"               method="adminUserEdit"       admin="true" needs_ssl="true" />
       <api request="/user/new/form"           method="adminUserNewForm"        admin="true" needs_ssl="true" />
       <api request="/user/new/do"             method="adminUserNewDo"        admin="true" needs_ssl="true" />
       <api request="/user/select/do"          method="adminUserSelectDo"      admin="true" needs_ssl="true" />
+      <api request="/user/search"           method="processSearch" admin="true"/>
 
   </group>
 

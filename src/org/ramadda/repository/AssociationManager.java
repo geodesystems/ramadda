@@ -289,13 +289,11 @@ public class AssociationManager extends RepositoryManager {
     public String addAssociation(Request request, Entry fromEntry,
                                  Entry toEntry, String name, String type)
             throws Exception {
-        if ( !getAccessManager().canDoAction(request, fromEntry,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, fromEntry)) {
             throw new IllegalArgumentException("Cannot add link to "
                     + fromEntry);
         }
-        if ( !getAccessManager().canDoAction(request, toEntry,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, toEntry)) {
             throw new IllegalArgumentException("Cannot add link to "
                     + toEntry);
         }
@@ -716,8 +714,7 @@ public class AssociationManager extends RepositoryManager {
     public StringBuilder getAssociationBlock(Request request, Entry entry)
             throws Exception {
 
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
         List<Association> associations =
             getAssociationManager().getAssociations(request, entry);
         if (associations.size() == 0) {

@@ -1,0 +1,457 @@
+KABR:Aberdeen Regional Airport
+KABI:Abilene Regional Airport
+PADK:Adak Airport
+KAFF:Air Force Academy
+K01R:Airways Facilities Sector
+PAFR:Ak
+KCAK:Akron-Canton Regional Airport
+KNGZ:Alameda Naval Air Station
+KALB:Albany County Airport
+KABQ:Albuquerque International Airport
+KAEX:Alexandria International Airport
+PABI:Allen Army Airfield
+KAPN:Alpena County Regional Airport
+KLTS:Altus Air Force Base
+KAMA:Amarillo International Airport
+PAFM:Ambler Airport
+PAGN:Angoon
+PANI:Aniak Airport
+PANT:Annette Island Airport
+KAQQ:Apalachicola
+KAVL:Asheville Regional Airport
+KAST:Astoria Regional Airport
+KAHN:Athens Airport
+KACY:Atlantic City International Airport
+KATT:Austin Camp Mabry
+KGRB:Austin Straubel International Airport
+KAGR:Avon Park Gunnery Range
+KBWI:Baltimore-Washington International Airport
+KPAH:Barkley Regional Airport
+KN78:Barnegat Coast Guard Station
+PABA:Barter Island LRRS Airport
+KBJI:Bemidji
+KBML:Berlin Municipal Airport
+PABE:Bethel Airport
+PABT:Bettles Airport
+KBYS:Bicycle Lake Army Airfield
+KBPI:Big Piney-Marbleton Airport
+KBIL:Billings Logan International Airport
+KBGM:Binghamton Regional Airport
+KBHM:Birmingham International Airport
+KBIH:Bishop Airport
+KFNT:Bishop International Airport
+KBIS:Bismarck Municipal Airport
+KCNK:Blosser Municipal Airport
+KLEX:Blue Grass Airport
+KSFD:Bob Wiley Field Airport
+KBOI:Boise Air Terminal
+KBVE:Boothville
+KBDL:Bradley International Airport
+KBRO:Brownsville / South Padre Island International Airport
+PABL:Buckland Airport
+KBUR:Burbank-Glendale-Pasadena Airport
+KBTV:Burlington International Airport
+KBNO:Burns Municipal Airport
+KAGS:Bush Field
+PATA:Calhoun Memorial Airport
+KP38:Caliente
+KADW:Camp Springs / Andrews Air Force Base
+KHAT:Cape Hatteras
+KXMR:Cape Kennedy
+PALU:Cape Lisburne LRRS Airport
+PAEH:Cape Newenham LRRS Airport
+PACZ:Cape Romanzof LRRS Airport
+PACP:Cape Saint Elias
+KLAN:Capital City Airport
+KPUC:Carbon County Airport
+KCAR:Caribou Municipal Airport
+KAVX:Catalina Airport
+KGRI:Central Nebraska Regional Airport
+KCKL:Centreville
+K9V9:Chamberlain Municipal Airport
+KCHS:Charleston Air Force Base
+KCLT:Charlotte / Douglas International Airport
+KCHH:Chatham
+KCYS:Cheyenne Airport
+KMDW:Chicago Midway Airport
+KORD:Chicago-O'Hare International Airport
+KCEF:Chicopee Falls / Westover Air Force Base
+KCVG:Cincinnati / Northern Kentucky International Airport
+KCOS:City Of Colorado Springs Municipal Airport
+KSEP:Clark Field Municipal Airport
+KCAO:Clayton Municipal Airpark
+KCLE:Cleveland-Hopkins International Airport
+KDNR:Co.
+KCOF:Cocoa / Patrick Air Force Base
+KCOD:Cody
+PACD:Cold Bay Airport
+KCAE:Columbia Metropolitan Airport
+KCOU:Columbia Regional Airport
+KCON:Concord Municipal Airport
+KDGW:Converse County Airport
+KCRP:Corpus Christi International Airport
+KDAY:Cox Dayton International Airport
+KCAG:Craig-Moffat Airport
+KCTY:Cross City Airport
+K4CB:Cuddleback Gunnery Range
+KDFW:Dallas / Fort Worth International Airport
+KMSN:Dane County Regional-Truax Field
+KMGM:Dannelly Field
+K2DP:Dare County Gunnery Range
+KFFO:Dayton / Wright-Patterson Air Force Base
+KDRT:Del Rio International Airport
+KDEN:Denver International Airport
+KDSM:Des Moines International Airport
+KDRA:Desert Rock Airport
+KDTW:Detroit Metropolitan Wayne County Airport
+KP11:Devils Lake
+K44W:Diamond Shoals Coast Guard Station
+PADL:Dillingham Airport
+KDDC:Dodge City Regional Airport
+KDBQ:Dubuque Regional Airport
+KDPG:Dugway Proving Grounds
+KDLH:Duluth International Airport
+PASY:Eareckson As
+KPDT:Eastern Oregon Regional At Pendleton Airport
+KEPO:Eastport
+PAGA:Edward G. Pitka Sr. Airport
+KEDW:Edwards Air Force Base
+PAEI:Eielson Air Force Base
+KELP:El Paso International Airport
+K1K5:Elkhart / Elkhart-Morton County Airport
+KEKN:Elkins-Randolph County-Jennings Randolph Field
+PAED:Elmendorf Air Force Base
+KELY:Ely Airport
+KOMA:Eppley Airfield
+KERI:Erie International Airport
+KESC:Escanaba
+KEKA:Eureka
+KEVV:Evansville Regional Airport
+PAFA:Fairbanks International Airport
+KSUU:Fairfield / Travis Air Force Base
+KINL:Falls International Airport
+K50Q:Farallon Island
+KMCF:Fl.
+KLSF:Fort Benning
+KO64:Fort Bragg
+KFBG:Fort Bragg / Simmons Army Airfield
+KHOP:Fort Campbell U. S. Army Airfield
+KFCS:Fort Carson
+KFOD:Fort Dodge
+KGTB:Fort Drum / Wheeler-Sack U. S. Army Airfield
+KHLR:Fort Hood
+KFHU:Fort Huachuca
+KFTK:Fort Knox
+KGRF:Fort Lewis / Gray U. S. Army Airfield
+KPOE:Fort Polk
+KFRI:Fort Riley
+KFSI:Fort Sill
+KFSM:Fort Smith Regional Airport
+KFWA:Fort Wayne International Airport
+KFWD:Fort Worth
+PFYU:Fort Yukon Airport
+KFSD:Foss Field
+KMLS:Frank Wiley Field Airport
+KFAT:Fresno Air Terminal
+KLHW:Ft. Stewart
+KAYS:Ga
+PAGM:Gambell Airport
+KMKE:General Mitchell International Airport
+KGRR:Gerald R. Ford International Airport
+KGBN:Gila Bend U. S. Army Airfield
+KGCC:Gillette-Campbell County Airport
+KFCA:Glacier Park International Airport
+KGGW:Glasgow International Airport
+K3RN:Graying Air Force Range
+KGTF:Great Falls International Airport
+KBUF:Greater Buffalo International Airport
+KPIA:Greater Peoria Regional Airport
+KROC:Greater Rochester International Airport
+KRFD:Greater Rockford Airport
+KGSP:Greenville-Spartanburg Airport
+KGGG:Gregg County Airport
+KGDP:Guadalupe Mountains National Park
+PGUM:Guam International Airport
+PAGK:Gulkana Airport
+PAGS:Gustavus Airport
+KHMS:Hanford
+KBED:Hanscom Field
+KATL:Hartsfield Atlanta International Airport
+KHVR:Havre City-County Airport
+KFAR:Hector International Airport
+KBFF:Heilig Field
+KHLN:Helena Regional Airport
+PMDY:Henderson Field Airport
+KF10:Henryetta Municipal
+PHTO:Hilo International Airport
+KHMN:Holloman Air Force Base
+PAHD:Homer / Municipal
+KH92:Hominy Municipal
+PHNL:Honolulu International Airport
+KCMX:Houghton County Memorial Airport
+KIAH:Houston Intercontinental Airport
+KHSV:Huntsville International / Jones Field
+KHRT:Hurlburt Field
+KHON:Huron Regional Airport
+PAIL:Iliamna Airport
+PAIM:Indian Mountain LRRS Airport
+KINS:Indian Springs Gunnery Range
+KIND:Indianapolis International Airport
+KJAN:Jackson International Airport
+KJAX:Jacksonville International Airport
+PAJN:Juneau International Airport
+PHOG:Kahului Airport
+PHJR:Kalaeloa Airport
+KMCI:Kansas City International Airport
+PAEN:Kenai Municipal Airport
+KJFK:Kennedy International Airport
+PAKT:Ketchikan International Airport
+KMEI:Key Field
+KEYW:Key West International Airport
+KJCT:Kimble County Airport
+PAKN:King Salmon Airport
+KIGM:Kingman Airport
+PAKW:Klawock Airport
+PADQ:Kodiak Airport
+KLSE:La Crosse Municipal Airport
+KLGA:La Guardia Airport
+KLCH:Lake Charles Regional Airport
+KNEL:Lakehurst Naval Air Station
+KSTL:Lambert-St. Louis International Airport
+KLND:Lander
+KLFI:Langley Air Force Base
+KLRD:Laredo International Airport
+KABE:Lehigh Valley International Airport
+KLWS:Lewiston-Nez Perce County Airport
+PHLI:Lihue Airport
+KLNK:Lincoln Municipal Airport
+KBOS:Logan International Airport
+KLGB:Long Beach Airport
+KLAX:Los Angeles International Airport
+KCHA:Lovell Field
+KLBB:Lubbock International Airport
+KLYH:Lynchburg Regional Airport
+KEUG:Mahlon Sweet Field
+KMRF:Marfa
+PGUA:Mariana Is, Andersen Air Force Base
+PGAC:Mariana Island
+KMGE:Marietta / Dobbins Air Force Base
+KNKT:Marine Corps Air Station
+PHNG:Marine Corps Air Station
+KMQT:Marquette
+KMMO:Marseilles Island
+KSJT:Mathis Field
+KLAS:McCarran International Airport
+KTYS:McGhee Tyson Airport
+PAMC:McGrath Airport
+KSLE:McNary Field
+KBFL:Meadows Field Airport
+KP28:Medicine Lodge
+KMLB:Melbourne International Airport
+K4MR:Melrose Gunnery Range
+KMEM:Memphis International Airport
+KMER:Merced / Castle Air Force Base
+PACV:Merle K (Mudhole) Smith Airport
+KOAK:Metro Oakland International Airport
+KMIA:Miami International Airport
+KMCN:Middle Georgia Regional Airport
+PAMD:Middleton Island Airport
+KMAF:Midland International Airport
+KVTN:Miller Field
+PAMH:Minchumina Airport
+KMSP:Minneapolis-St. Paul International Airport
+KNKX:Miramar MCAS/Mitscher Field Airport
+KMSO:Missoula International Airport
+KMOB:Mobile Regional Airport
+KNUQ:Moffett Field
+PHMK:Molokai Airport
+KVAD:Moody Air Force Base
+KMWN:Mount Washington
+KMWS:Mount Wilson
+KMKG:Muskegon County Airport
+KMYR:Myrtle Beach Air Force Base
+PGRO:N. Mariana Is, Rota International Airport
+PGWT:N. Mariana Is, West Tinian Airport
+KBNA:Nashville International Airport
+KCPR:Natrona County International Airport
+KNJK:Naval Air Facility
+KNID:Naval Air Facility
+KNHK:Naval Air Station
+KNHZ:Naval Air Station
+KNLC:Naval Air Station
+KNTD:Naval Air Warfare Center
+PANN:Nenana Municipal Airport
+KMSY:New Orleans International Airport
+KEWR:Newark International Airport
+KMHX:Newport
+K9B2:Newport
+PAKO:Nikolski
+PAOM:Nome Airport
+KORF:Norfolk International Airport
+KOUN:Norman / Max Westheimer
+KLZK:North Little Rock Airport
+KLBF:North Platte Regional Airport
+KE28:Northrup Landing Strip
+PAOR:Northway Airport
+PAQT:Nuiqsut Airport
+KW30:Ocean City
+KOGD:Ogden-Hinckley Airport
+POLI:Oliktok Distant Early Warning
+KOLM:Olympia Airport
+KOFF:Omaha / Offutt Air Force Base
+KMCO:Orlando International Airport
+KFMH:Otis Air National Guard Base
+PHBK:Pacific Missile Test Facility Barking Sands
+KPGA:Page Municipal Airport
+KPBI:Palm Beach International Airport
+KPMD:Palmdale Production Flight Plant
+PAAQ:Palmer Municipal Airport
+KPKF:Park Falls
+KP39:Pequot Lake
+PAPG:Petersburg
+KPHL:Philadelphia International Airport
+KTOP:Philip Billard Municipal Airport
+KPHX:Phoenix Sky Harbor International Airport
+KGSO:Piedmont Triad International Airport
+KPIT:Pittsburgh International Airport
+KPIH:Pocatello Regional Airport
+PPIZ:Point Lay LRRS Airport
+K87Q:Point Piedras Blanca
+KPOB:Pope Air Force Base
+KNOW:Port Angeles Coast Guard Air Station
+PAPC:Port Clarence Coast Guard Station
+KCMH:Port Columbus International Airport
+PAPH:Port Heiden Airport
+KPDX:Portland International Airport
+KPWM:Portland International Jetport
+KPTT:Pratt Municipal
+KPQI:Presque Isle
+KPUB:Pueblo Memorial Airport
+PAPT:Puntilla
+KMLI:Quad-City Airport
+KUIL:Quillayute State Airport
+KRMG:R. B. Russell Airport
+TJBQ:Rafael Hernandez Airport
+KBKW:Raleigh County Memorial Airport
+KRDU:Raleigh-Durham International Airport
+PAOT:Ralph Wien Memorial Airport
+KRAP:Rapid City Regional Airport
+KDCA:Reagan National Airport
+KRBL:Red Bluff Municipal Airport
+KRDD:Redding Municipal Airport
+KGLD:Renner Field
+KRNO:Reno Tahoe International Airport
+KRIC:Richmond International Airport
+KRIV:Riverside / March Air Force Base
+KRIW:Riverton Regional Airport
+KROA:Roanoke Regional Airport
+KRST:Rochester International Airport
+KRKS:Rock Springs-Sweetwater County Airport
+KMFR:Rogue Valley International Airport
+KU67:Roosevelt
+TJNR:Roosevelt Roads Naval Station, Ofstie Field
+KHTL:Roscommon County Airport
+KSTJ:Rosecrans Memorial Airport
+KP24:Roseglen
+KROW:Roswell Industrial Air Center Airport
+KRUM:Rumford
+KRUE:Russellville Regional Airport
+KSAC:Sacramento Executive Airport
+K1V4:Saint Johnsbury
+PGSN:Saipan International Airport
+KSLO:Salem-Leckrone Airport
+KSLC:Salt Lake City International Airport
+KSAT:San Antonio International Airport
+KSAN:San Diego International-Lindbergh Field
+KSFO:San Francisco International Airport
+KALS:San Luis Valley Regional Airport
+KNSI:San Nicholas Island
+KSDB:Sandberg
+KP07:Sanderson
+KSMX:Santa Maria Public Airport
+KEPZ:Santa Teresa
+KANJ:Sault Ste. Marie
+KSAV:Savannah International Airport
+KGLS:Scholes Field
+KSEA:Seattle-Tacoma International Airport
+PAWD:Seward
+KSSC:Shaw Air Force Base
+KSPS:Sheppard Air Force Base
+KSHR:Sheridan County Airport
+KSHV:Shreveport Regional Airport
+KSNY:Sidney Municipal Airport
+KBDR:Sikorsky Memorial Airport
+KSVC:Silver City / Grant
+KSUX:Sioux Gateway Airport
+PASI:Sitka Airport
+PAGY:Skagway
+PASW:Skwentna
+KLIX:Slidell
+KISN:Sloulin Field International Airport
+KONM:Socorro Municipal
+KSBN:South Bend Regional Airport
+PHWH:South Kona / Hawaii
+KBPT:Southeast Texas Regional Airport
+KABY:Southwest Georgia Regional Airport
+PASV:Sparrevohn Airways Facilities Sector
+KP35:Spickard
+KGEG:Spokane International Airport
+KSGF:Springfield Regional Airport
+PASN:St. Paul Island Airport
+KSDF:Standiford Field
+KOFK:Stefan Memorial Airport
+KSCK:Stockton Metropolitan Airport
+KF30:Sulphur Municipal
+K2PJ:Sumpter
+K4SU:Superior Valley Gunnery Range
+KSYR:Syracuse Hancock International Airport
+KTCM:Tacoma / McChord Air Force Base
+PATK:Talkeetna Airport
+KTLH:Tallahassee Regional Airport
+KTBW:Tampa Bay Area
+KTPA:Tampa International Airport
+PANC:Ted Stevens Anchorage International Airport
+KPVD:Theodore Francis Green State Airport
+PATC:Tin City Airways Facilities Sector
+KTIK:Tinker Air Force Base
+KTOL:Toledo Express Airport
+KHTS:Tri-State Airport
+KTCS:Truth Or Consequences Municipal Airport
+KTUS:Tucson International Airport
+KTUL:Tulsa International Airport
+KTUP:Tupelo Regional Airport
+KPAM:Tyndall Air Force Base
+PAUM:Umiat
+PAUN:Unalakleet
+PADU:Unalaska Airport
+KOAX:Valley
+KVPS:Valparaiso / Eglin Air Force Base
+KVBG:Vandenberg Air Force Base
+KVCT:Victoria Regional Airport
+KACT:Waco Regional Airport
+PAWI:Wainwright Airport
+PWAK:Wake Island Army Airfield Airport
+KGJT:Walker Field
+KWAL:Wallops Flight Facility Airport
+KD45:Warroad
+KIAD:Washington-Dulles International Airport
+KALO:Waterloo Municipal Airport
+KENV:Wendover / Air Force Auxillary Field
+KWWR:West Woodward Airport
+PHHI:Wheeler Air Force Base / Oahu
+K2C2:White Sands
+KICT:Wichita Mid-Continent Airport
+PABR:Wiley Post-Will Rogers Memorial Airport
+KAVP:Wilkes-Barre / Scranton International Airport
+KOKC:Will Rogers World Airport
+KIPT:Williamsport Regional Airport
+KRQE:Window Rock Airport
+KWMC:Winnemucca Municipal Airport
+KINW:Winslow Municipal Airport
+PAWG:Wrangell
+PACY:Yakataga
+KYKM:Yakima Air Terminal
+PAYA:Yakutat
+KCRW:Yeager Airport
+KYNG:Youngstown-Warren Regional Airport
+KYUM:Yuma / Yuma International

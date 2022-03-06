@@ -14,7 +14,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
@@ -66,7 +66,7 @@ public class TwitterTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
-        JSONObject obj  = Json.readUrl(URL + entry.getResource().getPath());
+        JSONObject obj  = JsonUtil.readUrl(URL + entry.getResource().getPath());
         String     html = obj.optString("html", "");
         String name = StringUtil.findPattern(html,
                                              "(Tweets\\s+by\\s+[^<]+)<");
@@ -104,7 +104,7 @@ public class TwitterTypeHandler extends GenericTypeHandler {
         sb.append(
             HtmlUtils.importCss(
                 ".timeline-Tweet-text {font-size:16pt !important;}"));
-        JSONObject obj = Json.readUrl(URL + entry.getResource().getPath());
+        JSONObject obj = JsonUtil.readUrl(URL + entry.getResource().getPath());
         System.err.println(obj);
         sb.append(obj.optString("html", ""));
 

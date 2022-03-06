@@ -3,10 +3,6 @@
   <type name="type_point_hydro"  description="" super="type_point" category="Point Data" foruser="false">
   </type>
 
-
-
-
-
   <type name="type_point_hydro_waterml"  super="type_point_hydro" description="WaterML"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/waterml.png"/>
      <property name="record.file.class" value="org.ramadda.geodata.point.WaterMLFile"/>
@@ -47,17 +43,23 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
 </wiki>
   </type>
 
-  <type name="type_hydro_usbr_rise"  super="type_point_hydro" description="USBR RISE Hyrdo"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="icon" value="/point/co.png"/>
+  <type name="type_hydro_usbr_rise"  super="type_point_hydro" description="USBR RISE Hyrdo"
+	handler="org.ramadda.geodata.point.RiseTypeHandler">
+
+     <property name="icon" value="/point/rise.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <column  name="rise_id"  label="RISE ID" type="string"/>
+     <column  name="location_type"  label="Location Type" type="enumerationplus"/>     
  <property name="record.properties">
-csvcommands1=-skiplines,7,-cleaninput,-notpattern,0
-csvcommands2=includes:QUERY\,DOWNLOAD\,SITE\,Location,-notpattern,1,includes:AZ,-lengthgreater
-csvcommands3=0,0,-set,datetime_utc,0
-csvcommands4=datetime,-notcolumns,location\,units\,aggregation\,timestep\,resulttype\,timestep,-makefields,parameter
-csvcommands5=result,datetime,,-decimate,1
-csvcommands6=7,-change,datetime,.*(....-..-..).*,$1
-csvcommands7=-addheader,datetime.type date datetime.format yyyy-MM-dd,-print
+csvcommands1=-skiplines,7,-notpattern,0,includes:SERIES\,QUERY\,DOWNLOAD\,SITE\,Location
+csvcommands2=-notpattern,2,includes:[,-lengthgreater,0
+csvcommands3=0,-set,datetime_utc,0,datetime
+csvcommands4=-notcolumns,location\,units\,aggregation\,timestep\,resulttype\,timestep,-makefields,parameter,result
+csvcommands5=datetime,,-decimate,1,7
+csvcommands6=-change,datetime,.*(....-..-..).*,$1,-addheader
+csvcommands7=datetime.type date datetime.format yyyy-MM-dd,-print
   </property>
 <wiki>
 <![CDATA[
@@ -66,11 +68,19 @@ csvcommands7=-addheader,datetime.type date datetime.format yyyy-MM-dd,-print
 ----
 +row
 +col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0"}}
+{{group layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display_download showMenu="false"}}
+{{display type="linechart"  showMenu="true" showTitle="false"  vAxisMinValue="0" fields="#2"}}
+{{display type="linechart"  showMenu="true" showTitle="false"  vAxisMinValue="0" fields="#3"}}
+{{display type="linechart"  showMenu="true" showTitle="false"  vAxisMinValue="0" fields="#4"}}
 -col
 +col-md-4
 {{map}}
+{{properties decorate=true metadata.types="enum_tag"  includeTitle="false"}}
+<table class="formtable">
+     {{field name="altitude"  row.label="Altitude:"}}
+     {{field name="location_type"  row.label="Type:"}}
+</table>
 -col
 -row
 ]]>

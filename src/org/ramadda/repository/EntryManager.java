@@ -8,7 +8,6 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AuthorizationMethod;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
@@ -32,7 +31,7 @@ import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedList;
 
 import org.ramadda.util.TTLCache;
@@ -1025,10 +1024,10 @@ public class EntryManager extends RepositoryManager {
             types.add(typeHandler.getJson(request));
         }
 
-        StringBuilder sb = new StringBuilder(Json.list(types));
+        StringBuilder sb = new StringBuilder(JsonUtil.list(types));
         request.setReturnFilename("types.json");
         request.setCORSHeaderOnResponse();
-        return new Result("", sb, Json.MIMETYPE);
+        return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
     public Result processEntryAddFile(Request request) throws Exception {
@@ -1036,10 +1035,9 @@ public class EntryManager extends RepositoryManager {
 	try {
 	    Entry group = findGroup(request);
 	    request.setReturnFilename("result.json");
-	    if ( !getAccessManager().canDoAction(request, group,
-						 Permission.ACTION_NEW)) {
-		sb.append(Json.mapAndQuote("status","error","message","You do not have permission to add a file"));
-		return new Result("", sb, Json.MIMETYPE);
+	    if ( !getAccessManager().canDoNew(request, group)) {
+		sb.append(JsonUtil.mapAndQuote("status","error","message","You do not have permission to add a file"));
+		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    String fileContents = request.getString("file",(String) null);
 	    String fileName = request.getString("filename",(String) null);	
@@ -1054,12 +1052,12 @@ public class EntryManager extends RepositoryManager {
 	    } catch(Exception exc) {
 		exc.printStackTrace();
 		return new Result("",
-				  new StringBuilder(Json.mapAndQuote("status","error","message",exc.getMessage())), 
-				  Json.MIMETYPE);
+				  new StringBuilder(JsonUtil.mapAndQuote("status","error","message",exc.getMessage())), 
+				  JsonUtil.MIMETYPE);
 	    }
 	    if(!tmpFile.exists()) {
-		sb.append(Json.mapAndQuote("status","error","message","Unable to write file:" + fileName));
-		return new Result("", sb, Json.MIMETYPE);
+		sb.append(JsonUtil.mapAndQuote("status","error","message","Unable to write file:" + fileName));
+		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
 	    
@@ -1072,14 +1070,14 @@ public class EntryManager extends RepositoryManager {
 	    String url = getEntryResourceUrl(request, newEntry,
 					     false,true);
 
-	    sb.append(Json.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
+	    sb.append(JsonUtil.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
 				       url));
-	    return new Result("", sb, Json.MIMETYPE);
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc);
 	    exc.printStackTrace();
-	    sb.append(Json.mapAndQuote("status","error","message","Error:" + exc));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("status","error","message","Error:" + exc));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
     }
 
@@ -1801,13 +1799,12 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
-	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("error", "Could not find entry"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
-	if ( !getAccessManager().canDoAction(request, entry,
-					     Permission.ACTION_EDIT)) {
-	    sb.append(Json.mapAndQuote("error", "No permision to edit entry"));
-	    return new Result("", sb, Json.MIMETYPE);
+	if ( !getAccessManager().canDoEdit(request, entry)) {
+	    sb.append(JsonUtil.mapAndQuote("error", "No permision to edit entry"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	String contents = request.getString("file",(String)null);
 	if(contents==null)  {
@@ -1818,14 +1815,14 @@ public class EntryManager extends RepositoryManager {
 	}
 	
 	if(contents==null) {
-	    sb.append(Json.mapAndQuote("error", "No file contents given"));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.mapAndQuote("error", "No file contents given"));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
         if (!entry.isFile()) {
 	    //Probably don't need/want this check
-	    //	    sb.append(Json.mapAndQuote("error", "Entry is not a file"));
-	    //	    return new Result("", sb, Json.MIMETYPE);
+	    //	    sb.append(JsonUtil.mapAndQuote("error", "Entry is not a file"));
+	    //	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
 	removeFromCache(entry);
@@ -1844,8 +1841,8 @@ public class EntryManager extends RepositoryManager {
 							 tmpFile);
 	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
 	updateEntry(request, entry);
-	sb.append(Json.mapAndQuote("message", "OK, file has been saved"));
-	return new Result("", sb, Json.MIMETYPE);
+	sb.append(JsonUtil.mapAndQuote("message", "OK, file has been saved"));
+	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
     
@@ -1874,8 +1871,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canAddTo(Request request, Entry parent) throws Exception {
-        return getRepository().getAccessManager().canDoAction(request,
-							      parent, Permission.ACTION_NEW);
+        return getRepository().getAccessManager().canDoNew(request,    parent);
 
     }
 
@@ -1985,8 +1981,7 @@ public class EntryManager extends RepositoryManager {
             if (forUpload) {
                 fatalError(request, "Cannot edit when doing an upload");
             }
-            if ( !getAccessManager().canDoAction(request, entry,
-						 Permission.ACTION_EDIT)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 throw new AccessException("Cannot edit:" + entry.getLabel(),
                                           request);
             }
@@ -2113,10 +2108,8 @@ public class EntryManager extends RepositoryManager {
                 logInfo("Upload:checking access");
             }
             boolean okToCreateNewEntry =
-                getAccessManager().canDoAction(request, parentEntry,
-					       (forUpload
-						? Permission.ACTION_UPLOAD
-						: Permission.ACTION_NEW), forUpload);
+		forUpload?getAccessManager().canDoUpload(request, parentEntry):
+		getAccessManager().canDoNew(request, parentEntry);
 
             if (forUpload) {
                 logInfo("Upload:is ok to create:" + okToCreateNewEntry);
@@ -2677,11 +2670,11 @@ public class EntryManager extends RepositoryManager {
 	if(request.responseAsJson()) {
 	    List<String> ids = new ArrayList<String>();
 	    for(Entry e: entries) {
-		ids.add(Json.quote(e.getId()));
+		ids.add(JsonUtil.quote(e.getId()));
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(Json.map("entries",Json.list(ids)));
-	    return new Result("", sb, Json.MIMETYPE);
+	    sb.append(JsonUtil.map("entries",JsonUtil.list(ids)));
+	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
         if (entries.size() == 1) {
@@ -3049,8 +3042,8 @@ public class EntryManager extends RepositoryManager {
         List<Entry> children       = null;
 
 
-        double      altitudeTop    = Entry.NONGEO;
-        double      altitudeBottom = Entry.NONGEO;
+        double      altitudeTop    = entry.getAltitudeTop();
+        double      altitudeBottom =  entry.getAltitudeBottom();
         if (request.defined(ARG_ALTITUDE)) {
             altitudeTop = altitudeBottom = request.get(ARG_ALTITUDE,
 						       Entry.NONGEO);
@@ -4364,24 +4357,7 @@ public class EntryManager extends RepositoryManager {
                 right.append(HU.hidden(ARG_TO, toEntry.getId()));
             } else {
                 Entry theParent = entries.get(0).getParentEntry();
-                String select = OutputHandler.getSelect(request, ARG_TO,
-							HU.highlightable(
-									 HU.image("fas fa-bars")
-									 + HU.SPACE
-									 + msg("Select")
-									 + HU.SPACE), true, "", theParent, false);
-		String event = OutputHandler.getSelectEvent(request, ARG_TO, true, "", theParent);
-                right.append(HU.hidden(ARG_TO + "_hidden",
-				       theParent.getId(),
-				       HU.id(ARG_TO + "_hidden")));
-
-		//                right.append(select);
-		//                right.append(HU.space(1));
-
-                right.append(HU.span(HU.span(getIconImage("fas fa-hand-pointer"),"class=ramadda-clickable") + " " +
-				     HU.disabledInput(ARG_TO, theParent.getName(), HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_60 + HU.id(ARG_TO)),
-				     HU.attr("onClick",event)));
-
+		right.append(OutputHandler.makeEntrySelect(request, ARG_TO, true,"",theParent));
             }
             right.append(HU.close(HU.TAG_DIV));
 
@@ -4440,8 +4416,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             for (Entry fromEntry : entries) {
-                if ( !getAccessManager().canDoAction(request, fromEntry,
-						     Permission.ACTION_EDIT)) {
+                if ( !getAccessManager().canDoEdit(request, fromEntry)) {
                     throw new AccessException("Cannot move:"
 					      + fromEntry.getLabel(), request);
                 }
@@ -4454,8 +4429,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        if ( !getAccessManager().canDoAction(request, toEntry,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, toEntry)) {
             throw new AccessException("Cannot copy/move to:"
                                       + toEntry.getLabel(), request);
         }
@@ -5096,7 +5070,7 @@ public class EntryManager extends RepositoryManager {
 					       + request);
         }
 
-        if ( !getAccessManager().canExportEntry(request, entry)) {
+        if ( !getAccessManager().canDoExport(request, entry)) {
             throw new IllegalArgumentException("Cannot export entry");
         }
 
@@ -5120,8 +5094,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryImport(Request request) throws Exception {
         Entry group = findGroup(request);
 
-        if ( !getAccessManager().canDoAction(request, group,
-                                             Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoNew(request, group)) {
             throw new AccessException("You cannot import", request);
         }
 
@@ -5695,10 +5668,8 @@ public class EntryManager extends RepositoryManager {
 
 
         if (checkAccess && (parentEntry != null)) {
-            if ( !getAccessManager().canDoAction(request, parentEntry,
-						 Permission.ACTION_NEW)) {
-                if (getAccessManager().canDoAction(request, parentEntry,
-						   Permission.ACTION_UPLOAD)) {
+            if ( !getAccessManager().canDoNew(request, parentEntry)) {
+                if (getAccessManager().canDoUpload(request, parentEntry)) {
                     doAnonymousUpload = true;
                 } else {
                     throw new IllegalArgumentException(
@@ -7445,8 +7416,7 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
 
 
-        if ( !getRepository().getAccessManager().canDoAction(request, group,
-							     Permission.ACTION_NEW)) {
+        if ( !getRepository().getAccessManager().canDoNew(request, group)) {
             throw new AccessException("Cannot add to folder", request);
         }
 
@@ -8489,8 +8459,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry>   publishedEntries = new ArrayList<Entry>();
         boolean       didone           = false;
         for (Entry entry : entries) {
-            if ( !getAccessManager().canDoAction(request, entry,
-						 Permission.ACTION_EDIT)) {
+            if ( !getAccessManager().canDoEdit(request, entry)) {
                 continue;
             }
 
@@ -8580,8 +8549,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry> changedEntries = new ArrayList<Entry>();
         for (Entry theEntry : entries) {
             if ( !newEntries
-		 && !getAccessManager().canDoAction(request, theEntry,
-						    Permission.ACTION_EDIT)) {
+		 && !getAccessManager().canDoEdit(request, theEntry)) {
                 continue;
             }
 

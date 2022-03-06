@@ -12,7 +12,7 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoResource;
@@ -88,16 +88,16 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
         if (asJson) {
             List<String> objs = new ArrayList<String>();
             for (CensusVariable var : matches) {
-                objs.add(Json.mapAndQuote("id", var.getId(), "label",
+                objs.add(JsonUtil.mapAndQuote("id", var.getId(), "label",
                                           var.getLabel(), "concept",
                                           var.getConcept()));
                 if (cnt++ > 500) {
                     break;
                 }
             }
-            String json = Json.list(objs);
+            String json = JsonUtil.list(objs);
 
-            return new Result("", new StringBuilder(json), Json.MIMETYPE);
+            return new Result("", new StringBuilder(json), JsonUtil.MIMETYPE);
         }
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.sectionOpen("RAMADDA Census Variables"));

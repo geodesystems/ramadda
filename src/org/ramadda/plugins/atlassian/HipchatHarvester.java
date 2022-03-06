@@ -33,7 +33,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FileInfo;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -402,12 +402,12 @@ public class HipchatHarvester extends CommandHarvester {
             this.json = json.toString();
             JSONObject obj = new JSONObject(new JSONTokener(json.toString()));
             if (obj.has("item")) {
-                this.fromId = Json.readValue(obj, "item.message.from.id", "");
-                this.fromName = Json.readValue(obj, "item.message.from.name",
+                this.fromId = JsonUtil.readValue(obj, "item.message.from.id", "");
+                this.fromName = JsonUtil.readValue(obj, "item.message.from.name",
                         "");
-                this.room = Json.readValue(obj, "item.room.id", "");
+                this.room = JsonUtil.readValue(obj, "item.room.id", "");
 
-                String message = Json.readValue(obj, "item.message.message",
+                String message = JsonUtil.readValue(obj, "item.message.message",
                                      null);
                 //                System.err.println("message:" + message);
                 List<String> toks = StringUtil.splitUpTo(message, " ", 2);

@@ -18,7 +18,7 @@ import org.ramadda.util.ChunkedAppendable;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.ui.HttpFormEntry;
@@ -185,7 +185,7 @@ public class Hipchat {
             "message_format", "html"
         };
 
-        message = Json.map(attrs, true);
+        message = JsonUtil.map(attrs, true);
         message = clean(message);
 
         return message;
@@ -309,10 +309,10 @@ public class Hipchat {
         if (repository.getEntryManager().isSynthEntry(entry.getId())
                 && entry.getResource().isUrl()) {
             map.add("title_link");
-            map.add(Json.quote(entry.getResource().getPath()));
+            map.add(JsonUtil.quote(entry.getResource().getPath()));
         } else {
             map.add("title_link");
-            map.add(Json.quote(getEntryUrl(repository, request, entry)));
+            map.add(JsonUtil.quote(getEntryUrl(repository, request, entry)));
             }*/
 
         StringBuilder desc = new StringBuilder();
@@ -356,7 +356,7 @@ public class Hipchat {
         }
         sb.append(desc);
         //            map.add("fields");
-        //            map.add(Json.list(fields));
+        //            map.add(JsonUtil.list(fields));
 
         for (String imageUrl : imageUrls) {
             //Only include images for the first 20 entries

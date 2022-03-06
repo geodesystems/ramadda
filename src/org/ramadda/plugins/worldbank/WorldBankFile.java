@@ -18,7 +18,7 @@ import org.ramadda.repository.RepositoryUtil;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
 
@@ -91,8 +91,8 @@ public class WorldBankFile extends CsvFile {
             JSONArray     obj        = new JSONArray(new JSONTokener(json));
             JSONArray     headerJson = obj.getJSONArray(0);
             StringBuilder header     = new StringBuilder("#fields=");
-            for (int i = 0; i < headerJson.length(); i++) {
-                String value = headerJson.getString(i);
+            for (int i = 0; i < headerJsonUtil.length(); i++) {
+                String value = headerJsonUtil.getString(i);
             }
             for (int i = 1; i < obj.length(); i++) {
                 JSONArray row = obj.getJSONArray(i);

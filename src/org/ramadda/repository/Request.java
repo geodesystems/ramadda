@@ -1576,6 +1576,12 @@ public class Request implements Constants, Cloneable {
      * _more_
      */
     public void ensureAuthToken() {
+	/*
+	  System.err.println("ensureAuthToken:");
+	  for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+	  System.err.println("\tkey:" + keys.nextElement());
+	  }
+	*/
         String authToken    = getString(ARG_AUTHTOKEN, (String) null);
         String mySessionId  = getSessionId();
         String argSessionId = getString(ARG_SESSIONID, (String) null);

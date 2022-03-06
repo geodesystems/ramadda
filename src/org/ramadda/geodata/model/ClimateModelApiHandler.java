@@ -23,7 +23,7 @@ import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.sql.Clause;
 
 import org.w3c.dom.Element;
@@ -689,10 +689,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     if (operands.isEmpty()) {
                         if (returnjson) {
                             StringBuilder data = new StringBuilder();
-                            data.append(Json.mapAndQuote("Error",
+                            data.append(JsonUtil.mapAndQuote("Error",
                                     "You need to select all fields"));
 
-                            return new Result("", data, Json.MIMETYPE);
+                            return new Result("", data, JsonUtil.MIMETYPE);
                         } else {
                             tmp.append(
                                 getPageHandler().showDialogError(
@@ -749,10 +749,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } else {
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
-                        data.append(Json.mapAndQuote("Error",
+                        data.append(JsonUtil.mapAndQuote("Error",
                                 "You need to select a time series"));
 
-                        return new Result("", data, Json.MIMETYPE);
+                        return new Result("", data, JsonUtil.MIMETYPE);
                     }  /*else {
                          tmp.append(
                              getPageHandler().showDialogError(
@@ -799,10 +799,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } catch (Exception exc) {
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
-                        data.append(Json.mapAndQuote("error",
+                        data.append(JsonUtil.mapAndQuote("error",
                                 exc.getMessage()));
 
-                        return new Result("", data, Json.MIMETYPE);
+                        return new Result("", data, JsonUtil.MIMETYPE);
                     } else {
                         sb.append(
                             getPageHandler().showDialogError(
@@ -812,9 +812,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             } else {
                 if (returnjson) {
                     StringBuilder data = new StringBuilder();
-                    data.append(Json.map("error", "No fields selected."));
+                    data.append(JsonUtil.map("error", "No fields selected."));
 
-                    return new Result("", data, Json.MIMETYPE);
+                    return new Result("", data, JsonUtil.MIMETYPE);
                 } else {
                     sb.append(
                         getPageHandler().showDialogWarning(
@@ -1707,7 +1707,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                             ""));
         //TODO: this happens for the correlation collection - what should we do?
         if (entry == null) {
-            return new Result("", new StringBuilder(), Json.MIMETYPE);
+            return new Result("", new StringBuilder(), JsonUtil.MIMETYPE);
         }
         //        System.err.println("Entry:" + entry);
         CollectionTypeHandler typeHandler =
@@ -1744,7 +1744,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
-            return new Result("", new StringBuilder(), Json.MIMETYPE);
+            return new Result("", new StringBuilder(), JsonUtil.MIMETYPE);
         }
         Column       myColumn  = columns.get(columnIdx);
         List<String> uniqueOrs = new ArrayList<String>();
@@ -1802,18 +1802,18 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             if (showBlank) {
                 tfos.add(0, new TwoFacedObject(""));
             }
-            String json = Json.tfoList(tfos);
+            String json = JsonUtil.tfoList(tfos);
             sb.append(json);
         } else {
             if (showBlank) {
                 values.add(0, "");
             }
-            String json = Json.list(values, true);
+            String json = JsonUtil.list(values, true);
             sb.append(json);
         }
         //System.out.println("json:" + sb);
 
-        return new Result("", sb, Json.MIMETYPE);
+        return new Result("", sb, JsonUtil.MIMETYPE);
 
     }
 

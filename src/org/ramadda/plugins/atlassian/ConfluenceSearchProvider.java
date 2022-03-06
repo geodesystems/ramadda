@@ -14,7 +14,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -163,12 +163,12 @@ public class ConfluenceSearchProvider extends SearchProvider {
 
         for (int i = 0; i < results.length(); i++) {
             JSONObject result   = results.getJSONObject(i);
-            String     name     = Json.readValue(result, "title", "");
-            String     id       = Json.readValue(result, "id", "");
-            String     type     = Json.readValue(result, "type", "");
+            String     name     = JsonUtil.readValue(result, "title", "");
+            String     id       = JsonUtil.readValue(result, "id", "");
+            String     type     = JsonUtil.readValue(result, "type", "");
             JSONObject links    = result.getJSONObject("_links");
             String resultUrl    = baseUrl
-                                  + Json.readValue(links, "webui", "");
+                                  + JsonUtil.readValue(links, "webui", "");
             String     desc     = "";
             Date       dttm     = new Date();
             Date       fromDate = dttm;
@@ -181,7 +181,7 @@ public class ConfluenceSearchProvider extends SearchProvider {
                 } else {
                     fromDate = dttm;
                 }
-                fromDate = Utils.parseDate(Json.readValue(history,
+                fromDate = Utils.parseDate(JsonUtil.readValue(history,
                         "createdDate", null));
                 toDate = fromDate;
             }
@@ -193,11 +193,11 @@ public class ConfluenceSearchProvider extends SearchProvider {
             entries.add(newEntry);
 
             Object[] values = typeHandler.makeEntryValues(null);
-            //            values[0] = Json.readValue(fields, "resulttype.name", "");
-            //            values[1] = Json.readValue(fields, "priority.name", "");
+            //            values[0] = JsonUtil.readValue(fields, "resulttype.name", "");
+            //            values[1] = JsonUtil.readValue(fields, "priority.name", "");
 
             /*
-            String thumb = Json.readValue(snippet, "thumbnails.default.url",
+            String thumb = JsonUtil.readValue(snippet, "thumbnails.default.url",
                                           null);
 
             if (thumb != null) {

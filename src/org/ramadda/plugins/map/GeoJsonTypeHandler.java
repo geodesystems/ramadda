@@ -20,7 +20,7 @@ import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 

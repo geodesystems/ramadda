@@ -16,7 +16,7 @@ import org.ramadda.util.PatternProps;
 
 
 import org.ramadda.util.IO;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.Address;
@@ -782,12 +782,9 @@ public abstract class Geo extends Processor {
 
 
         /**
-         * @param file _more_
-         * @param lat _more_
-         * @param lon _more_
          */
-        public DecodeLatLon(String col) {
-            super(col);
+        public DecodeLatLon(List<String> cols) {
+            super(cols);
         }
 
         /**
@@ -800,9 +797,10 @@ public abstract class Geo extends Processor {
             if (rowCnt++ == 0) {
 		return row;
             }
-	    int idx = getIndex(ctx);
-	    String slat =row.getString(idx).trim();
-	    row.set(idx,""+Misc.decodeLatLon(slat));
+	    for(int idx: getIndices(ctx)) {
+		String slat =row.getString(idx).trim();
+		row.set(idx,""+Misc.decodeLatLon(slat));
+	    }
 	    return row;
 	}
     }

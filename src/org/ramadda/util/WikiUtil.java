@@ -342,7 +342,7 @@ public class WikiUtil {
             String key   = (String) keys.nextElement();
             String value = (String) wikiAttributes.get(key);
             l.add(key);
-            l.add(Json.quote(value));
+            l.add(JsonUtil.quote(value));
         }
     }
 
@@ -1588,7 +1588,7 @@ public class WikiUtil {
 		    }
 		    slidesProps.remove("style");
 		    List<String> args = Utils.makeStringList(Utils.makeList(slidesProps));
-		    String slidesArgs = Json.mapAndGuessType(args);
+		    String slidesArgs = JsonUtil.mapAndGuessType(args);
 		    boolean anyTitles = false;
 		    for(String title: slideTitles)
 			if(title!=null) anyTitles = true;
@@ -3240,7 +3240,7 @@ public class WikiUtil {
 		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,"class","ramadda-nav-popup-link","title","Click to view table of contents"));
 		String container = HU.div(icon +p, HU.attrs("class","ramadda-nav-popup-container"));
                 String align = Utils.getProperty(headingsProps, "align", "left");
-		String args = Json.map("align",Json.quote(align));
+		String args = JsonUtil.map("align",JsonUtil.quote(align));
 		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
                 s = s.replace("${" + headingsNav + "}",container);
 
@@ -3638,14 +3638,14 @@ public class WikiUtil {
             JSONObject obj = new JSONObject(
                                   IO.readContents(
 						  wikiUrl));
-	    String thumb = Json.readValue(obj,"thumbnail.source",null);
+	    String thumb = JsonUtil.readValue(obj,"thumbnail.source",null);
 	    if(thumb!=null) {
 		String iwidth = Utils.getProperty(props, "imageWidth","200px");
 		thumb = HU.image(thumb,"width",HU.makeDim(iwidth,null));
 	    }
 
 	    String title = obj.getString("title");
-	    String wurl = Json.readValue(obj, "content_urls.desktop.page","");
+	    String wurl = JsonUtil.readValue(obj, "content_urls.desktop.page","");
             width = Utils.getProperty(props, "width",null);
             height = Utils.getProperty(props, "height","200px");	    
 	    String extract = obj.optString("extract_html");

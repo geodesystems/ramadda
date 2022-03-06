@@ -4,30 +4,20 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.docs;
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.Json;
 import org.ramadda.util.XlsUtil;
-
 import org.ramadda.util.text.TextReader;
-
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
-
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;

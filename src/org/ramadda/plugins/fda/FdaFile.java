@@ -15,7 +15,7 @@ import org.ramadda.repository.Entry;
 
 
 import org.ramadda.repository.RepositoryUtil;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;

@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.text;
 
 
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 
 
 import org.ramadda.util.Utils;
@@ -192,7 +192,7 @@ public abstract class DataSink extends Processor implements Cloneable,
                 attrs.add(field);
                 attrs.add(value);
             }
-            writer.print(Json.mapAndGuessType(attrs));
+            writer.print(JsonUtil.mapAndGuessType(attrs));
         }
 
     }

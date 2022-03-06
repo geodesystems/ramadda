@@ -7,7 +7,7 @@ package org.ramadda.util.geo;
 
 
 import org.ramadda.util.geo.Bounds;
-import org.ramadda.util.Json;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.json.*;
@@ -39,7 +39,7 @@ import java.util.List;
  * JSON Utility class
  */
 @SuppressWarnings("unchecked")
-public class GeoJson extends Json {
+public class GeoJson extends JsonUtil {
 
     /**  */
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
@@ -57,7 +57,7 @@ public class GeoJson extends Json {
     public static void geojsonFileToCsv(String file, PrintStream pw,
                                         String colString)
             throws Exception {
-        InputStream    is   = IOUtil.getInputStream(file, Json.class);
+        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
 
         StringBuilder  json = new StringBuilder();
@@ -217,7 +217,7 @@ public class GeoJson extends Json {
      */
     public static void geojsonPolygon(String file, PrintStream pw)
             throws Exception {
-        InputStream    is   = IOUtil.getInputStream(file, Json.class);
+        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
         StringBuilder  json = new StringBuilder();
         String         input;
@@ -268,7 +268,7 @@ public class GeoJson extends Json {
             throws Exception {
 	//	System.err.println("prop:" + prop);
 	//	System.err.println("value:" + value);	
-        InputStream    is   = IOUtil.getInputStream(file, Json.class);
+        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
 
         StringBuilder  json = new StringBuilder();
@@ -398,7 +398,7 @@ public class GeoJson extends Json {
         Bounds bounds = null;
         BufferedReader br = new BufferedReader(
                                 new InputStreamReader(
-                                    IOUtil.getInputStream(file, Json.class)));
+                                    IOUtil.getInputStream(file, JsonUtil.class)));
         StringBuilder json = new StringBuilder();
         String        input;
         while ((input = br.readLine()) != null) {
