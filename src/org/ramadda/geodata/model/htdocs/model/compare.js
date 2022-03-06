@@ -144,50 +144,86 @@ function CollectionForm(formId, plottype, args) {
                         }
                     };
                     // Make the status widget
-                    var statusDiv = $('#' + this.formId +"_status");
-                          //Add the cancel button and the output message area
-                    statusDiv.html("<div id=message></div><div id=cancel>Cancel</div>");
+                    let statusDiv = $('#' + this.formId +"_status");
+                    //Add the cancel button and the output message area
+                    statusDiv.html("<div id=compare_message></div><div id=compare_cancel>Cancel</div>");
                     //Make a cancel button 
-                    $("#cancel").button();
+                    let cancelButton  = $("#compare_cancel").button();
+                    let message  = $("#compare_message");
+
+		    //A function to display the error
+		    let handleError = err=>{
+			err = HtmlUtils.makeErrorMessage(err);
+			statusDiv.html(err);
+		    };
+		    //Called to show status
+		    let handleStatus = msg=>{
+			//Comment this out if you don't want the fancy info message
+			msg = HtmlUtils.makeInfoMessage(msg);
+			//show the message
+			message.html(msg);
+		    };		    		    
+		    //Called when cancelled
+		    let handleCanceled = msg=>{
+			//Comment this out if you don't want the fancy info message
+			msg = HtmlUtils.makeInfoMessage(msg);
+			//show the message
+			statusDiv.html(msg);
+		    };
+		    //Called when done
+		    let handleFinished = msg=>{
+			statusDiv.html(msg);
+		    };
+
+		    handleStatus("Running...");
+
+		    //Don: Uncomment this if you want the server to just run through a test loop
+		    //jsonUrl+="&testit=true";
+
+
                     //Post the request
-                    /****     This was just basically copied from testaction.html
-                    $.post(ramaddaBaseUrl+"/testaction", data=>{
+                    $.post(jsonUrl, data=>{
                         //	  console.dir(data);
                         let actionId = data.actionid;
                         let statusUrl = ramaddaBaseUrl+"/status?output=json&actionid=" + actionId;
                         let running = true;
-    	                $("#cancel").click(() =>{
-	                        let cancelUrl = ramaddaBaseUrl+"/status?output=json&cancel=true&actionid=" + actionId;
-	                        $.getJSON(cancelUrl, data=>{
-		                        running = false;
-		                        $("#results").html(data.message);
-	                        });
+    	                cancelButton.click(() =>{
+	                    let cancelUrl = ramaddaBaseUrl+"/status?output=json&cancel=true&actionid=" + actionId;
+		            handleStatus("Cancelling comparison");
+	                    $.getJSON(cancelUrl, data=>{
+		                running = false;
+		                handleCanceled("Comparison canceled");
 	                    });
-	                    let monitorFunction  = ()=>{
-	                        //check the status
-	                        $.getJSON(statusUrl, data=>{
-		                        if(!running) return;
-		                        //console.dir(data);
-		                        $("#message").html(data.message);
-		                        if(data.status=="running") {
-		                            //If we are still running then callback this function in 500 ms
-		                            setTimeout(monitorFunction,500)
-		                        }
-	                            }).fail(err=>{
-		                                $("#message").html("test call failed:" + err);
-	                            });
-	                    };
-	                    //kick off the monitoring
-	                    monitorFunction();
+	                });
+	                let monitorFunction  = ()=>{
+	                    //check the status
+	                    $.getJSON(statusUrl, data=>{
+		                if(!running) return;
+				console.dir("status:" + JSON.stringify(data));
+				if(data.status=="error") {
+				    handleError(data.message);
+				} else  if(data.status=="complete") {
+				    handleFinished(data.message);				    
+				} else {
+		                    handleStatus(data.message);
+				}
+		                if(data.status=="running") {
+		                    //If we are still running then callback this function in 500 ms
+		                    setTimeout(monitorFunction,500)
+		                }
+	                    }).fail(err=>{
+		                handleError("Comparison failed:" + err);
+	                    });
+	                };
+	                //kick off the monitoring
+	                monitorFunction();
                     }).fail(err=>{
-	                    $("#message").html("test call failed:" + err);
+			console.dir(err);
+	                handleError("Comparison failed:" + err);
                     });
-                    */
                     //Just create the entry list, passing in the callback object
-                    var entryList = new EntryList(ramadda, jsonUrl, callbackObject, true);
-                    statusDiv.hide()
+                    let entryList = new EntryList(ramadda, jsonUrl, callbackObject, true);
                 }  else if (doImage) {
-
                     //add the arg that gives us the image directly back then set the img src
                     url += "&returnimage=true";
                     var outputDiv = $('#' + this.formId +"_output");

@@ -203,34 +203,39 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      *
      * @throws Exception  problems processing the input
      */
-    public Result doCompareAsync(Request request, ServiceInput dpi, String type)
+    public Result doCompareAsync(final Request request, final ServiceInput dpi, final String type)
             throws Exception {
-    	/**
-    	 * I didn't really know what to do here.
         ActionManager.Action action = new ActionManager.Action() {
      	    public void run(Object actionId) throws Exception {
 	    	try {
+		    //The testit is set in compare.js
+		    boolean test=request.get("testit",false);
+		    if(test) {
+			//For testing the compare.js
+			for(int i=0;i<5;i++) {
+			    getActionManager().setActionMessage(actionId,"Waiting: " + i);
+			    Misc.sleepSeconds(1);
+			}
+			getActionManager().setContinueHtml(actionId, "Some continue html here");
+			return;
+		    }
+
 	    	    Result result = doCompare(request, dpi, type, actionId);
-		        String url = result.getRedirectUrl();
+		    String url = result.getRedirectUrl();
 		    if(url!=null) {
 			getActionManager().setContinueHtml(actionId,
 							   HU.href(url,  msg("Continue")));
 		    } else {
 			String content = result.getStringContent();
-			getActionManager().setContinueHtml(actionId,
-							   content);
+			getActionManager().setContinueHtml(actionId,  content);
 		    }
-		    
 		} catch(Exception exc) {
+		    getActionManager().handleError(actionId, exc);
 		    logError("",exc);
 		}
 	    }
 	};
-
         return getActionManager().doJsonAction(request, action,  "Generating Plot", "",null);
-        */
-	    return doCompare(request, dpi, type, null);
-
     }
 
     /**
