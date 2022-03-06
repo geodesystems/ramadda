@@ -572,10 +572,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                              String height, boolean forSelection,
                              boolean hidden, Hashtable<String, String> props)
             throws Exception {
-
         //        System.err.println("MapManager.createMap: " + width + " " + height);
-
-
         if (props == null) {
             props = new Hashtable<String, String>();
         }
@@ -588,8 +585,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             mapInfo.setStyle(style);
         }
         mapInfo.setMapHidden(hidden);
-
-
 
         String imageOpacity = (String) props.get("imageOpacity");
         if (imageOpacity != null) {
@@ -615,6 +610,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = props.get(key);
+	    System.err.println("addProperty:" + key +"=" + value);
             mapInfo.addProperty(key, JsonUtil.quote(value));
         }
 
@@ -1576,11 +1572,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if ((entriesToUse.size() == 1)
                 && !entriesToUse.get(0).hasAreaDefined()) {
-            map.getMapProps().put("zoomLevel", "12");
+            map.getMapProps().put("zoomLevel", Utils.getProperty(mapProps, "zoomLevel","12"));
         }
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
+
 
         if (mapProps != null) {
             theProps.putAll(mapProps);
@@ -1588,6 +1585,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (props != null) {
             theProps.putAll(props);
         }
+
+	//xx
         addToMap(request, map, entriesToUse, theProps);
 
 
