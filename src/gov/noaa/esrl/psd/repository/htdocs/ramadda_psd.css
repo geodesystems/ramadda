@@ -38,5 +38,11 @@ i.fa-search {
 }
 
 .ui-accordion-header-icon {
+    float:right !important;
+}
+
+/*
+.ui-accordion-header-icon {
   display:none;
 }
+*/
