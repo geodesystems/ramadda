@@ -3692,6 +3692,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 	HtmlUtils.waitForIt(what,callback, error);
     },
+    makeMessage: function(what,msg) {
+	return "<div class='ramadda-message ramadda-message-plain ' id='messageblock'><table width='100%'><tbody><tr valign='top'><td width='5%'><div class='ramadda-message-icon'><span><i class='" + what +"' style='font-size:32pt;'></i></span></div></td><td><div class='ramadda-message-inner'><p>" + msg +"</p></div></td></tr></tbody></table></div>"
+    },
+    makeErrorMessage: function(msg) {
+	return HtmlUtils.makeMessage("fas fa-exclamation-triangle text-danger",msg);
+    },
+    makeInfoMessage: function(msg) {
+	return HtmlUtils.makeMessage("fas fa-info",msg);
+    },    
+
     makeSlides: function(id,args) {
 	let opts = {
 	    dots:true
