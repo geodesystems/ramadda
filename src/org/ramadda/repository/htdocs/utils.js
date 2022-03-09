@@ -61,381 +61,381 @@ var Utils =  {
     entryDragInfo:null,
     globalEntryRows:{},
     addLoadFunction: function(f) {
-	Utils.loadFunctions.push(f);
+        Utils.loadFunctions.push(f);
     },
     getLocalStorage: function(key, toJson) {
-	try {
-	    let v = localStorage.getItem(ramaddaBaseEntry+"." + key);
-	    if(v!==null && toJson) {
-		return JSON.parse(v);
-	    }
-	    return v;
-	} catch(err) {
-	    console.log("Error getting local storage. key=" + key);
-	    return null;
-	}
+        try {
+            let v = localStorage.getItem(ramaddaBaseEntry+"." + key);
+            if(v!==null && toJson) {
+                return JSON.parse(v);
+            }
+            return v;
+        } catch(err) {
+            console.log("Error getting local storage. key=" + key);
+            return null;
+        }
     },
     setLocalStorage: function(key, value, fromJson) {
-	if(value && fromJson) value = JSON.stringify(value);
-	localStorage.setItem(ramaddaBaseEntry+"." + key, value);
-	console.log("writing" +value);
+        if(value && fromJson) value = JSON.stringify(value);
+        localStorage.setItem(ramaddaBaseEntry+"." + key, value);
+        console.log("writing" +value);
     },
 
     initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText) {
-	let origCss=null;
-	target.on('dragover', (event) => {
-	    event.stopPropagation();
-	    event.preventDefault();
-	    target.addClass("ramadda-drop-active");
-	    if(dragOver) dragOver(event);
-	});
+        let origCss=null;
+        target.on('dragover', (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            target.addClass("ramadda-drop-active");
+            if(dragOver) dragOver(event);
+        });
 
-	target.on('dragleave', (event) => {
-	    if(dragLeave) dragLeave(event);
-	});
+        target.on('dragleave', (event) => {
+            if(dragLeave) dragLeave(event);
+        });
 
-	target.on('drop', (event) => {
-	    target.removeClass("ramadda-drop-active");
-	    event.stopPropagation();
-	    event.preventDefault();
-	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
-	    for (let i=0; i<files.length;i++) {
-		let file  = files[i];
-		if(!file) continue;
-		if(type &&!file.type.match(type)) continue;
-		let reader = new FileReader();
-		reader.onload = (onloadEvent) => {
-		    if(drop) drop(onloadEvent,file,onloadEvent.target.result,true);
-		};
-		reader.readAsDataURL(file); 
-	    }
-	});
+        target.on('drop', (event) => {
+            target.removeClass("ramadda-drop-active");
+            event.stopPropagation();
+            event.preventDefault();
+            let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
+            for (let i=0; i<files.length;i++) {
+                let file  = files[i];
+                if(!file) continue;
+                if(type &&!file.type.match(type)) continue;
+                let reader = new FileReader();
+                reader.onload = (onloadEvent) => {
+                    if(drop) drop(onloadEvent,file,onloadEvent.target.result,true);
+                };
+                reader.readAsDataURL(file); 
+            }
+        });
 
-	target.on('paste', (event) => {
-	    let items = (event.clipboardData || event.originalEvent.clipboardData).items;
-	    for(let i=0;i<items.length;i++) {
-		let item = items[i];
+        target.on('paste', (event) => {
+            let items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for(let i=0;i<items.length;i++) {
+                let item = items[i];
 
-		if(item.kind=="string") {
-		    if(!acceptText) continue;
-		    if(item.type!="text/plain") continue;
-		    item.getAsString(s=>{
-			if(drop)drop(event,item,s,false);
-		    });
-		    continue;
-		    event.stopPropagation();
-		    event.preventDefault();
-		} else 	if(item.kind!="file") {
-		    continue;
-		}
-		event.stopPropagation();
-		event.preventDefault();
+                if(item.kind=="string") {
+                    if(!acceptText) continue;
+                    if(item.type!="text/plain") continue;
+                    item.getAsString(s=>{
+                        if(drop)drop(event,item,s,false);
+                    });
+                    continue;
+                    event.stopPropagation();
+                    event.preventDefault();
+                } else  if(item.kind!="file") {
+                    continue;
+                }
+                event.stopPropagation();
+                event.preventDefault();
 
-		let reader = new FileReader();
-		reader.onload = (event) => {
-		    if(drop)drop(event,item,event.target.result,false);
-		}; 
-		let blob = item.getAsFile();
-		reader.readAsDataURL(blob);
-		break
-	    }
-	});
-	
+                let reader = new FileReader();
+                reader.onload = (event) => {
+                    if(drop)drop(event,item,event.target.result,false);
+                }; 
+                let blob = item.getAsFile();
+                reader.readAsDataURL(blob);
+                break
+            }
+        });
+        
 
     },
 
 
     isPost:function() {
-	let meta = $("#request-method");
-	if(meta.length==0) return false;
-	return meta.attr('content')=="POST";
+        let meta = $("#request-method");
+        if(meta.length==0) return false;
+        return meta.attr('content')=="POST";
     },
     max: function(v1,v2) {
-	if(isNaN(v1)) return v2;
-	if(isNaN(v2)) return v1;	
-	return Math.max(v1,v2);
+        if(isNaN(v1)) return v2;
+        if(isNaN(v2)) return v1;        
+        return Math.max(v1,v2);
     },
     min: function(v1,v2) {
-	if(isNaN(v1)) return v2;
-	if(isNaN(v2)) return v1;	
-	return Math.min(v1,v2);
+        if(isNaN(v1)) return v2;
+        if(isNaN(v2)) return v1;        
+        return Math.min(v1,v2);
     },    
     toRadians:function(degrees) {
-	return degrees * Math.PI / 180;
+        return degrees * Math.PI / 180;
     },
     toDegrees:function(radians) {
-	return radians * 180 / Math.PI;
+        return radians * 180 / Math.PI;
     },
     //Get degrees bearing from p1 to p2. north =0,east=90, south=180,west=270
     getBearing:function(p1,p2) {
-	let lat1 = Utils.toRadians(p1.lat);
-	let lon1 = Utils.toRadians(p1.lon);
-	let lat2 = Utils.toRadians(p2.lat);
-	let lon2 = Utils.toRadians(p2.lon);		
-	let X =  Math.cos(lat2) * Math.sin(lon2-lon1);
-	let Y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2-lon1);
-	let B = Math.atan2(X,Y);
-	B = Utils.toDegrees(B);
-	B = (B + 360) % 360;
-	return B;
+        let lat1 = Utils.toRadians(p1.lat);
+        let lon1 = Utils.toRadians(p1.lon);
+        let lat2 = Utils.toRadians(p2.lat);
+        let lon2 = Utils.toRadians(p2.lon);             
+        let X =  Math.cos(lat2) * Math.sin(lon2-lon1);
+        let Y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2-lon1);
+        let B = Math.atan2(X,Y);
+        B = Utils.toDegrees(B);
+        B = (B + 360) % 360;
+        return B;
     },
     isReturnKey: function(e) {
-	var keyCode = e.keyCode || e.which;
-	return keyCode == 13;
+        var keyCode = e.keyCode || e.which;
+        return keyCode == 13;
     },
     //list of 2-tuples
     getBounds: function(polygon) {
-	if(!polygon) return null;
-	let minx = null,  maxx=null, miny=null, maxy=null;
-	polygon.forEach(pair=>{
-	    minx = minx===null?pair[0]:Math.min(minx,pair[0]);
-	    maxx = maxx===null?pair[0]:Math.max(maxx, pair[0]);
-	    miny = miny===null?pair[1]:Math.min(miny,pair[1]);
-	    maxy = maxy===null?pair[1]:Math.max(maxy, pair[1]);	    
-	});
-	return {
-	    getWidth: function() {return this.maxx-this.minx;},
-	    getHeight: function() {return this.maxy-this.miny;},	    
-	    getCenter: function() {
-		let x = this.minx+(this.maxx-this.minx)/2;
-		let y = this.miny+(this.maxy-this.miny)/2;		
-		return {x:x,y:y};
-	    },
-	    minx:minx,maxx:maxx,miny:miny,maxy:maxy
-	};
+        if(!polygon) return null;
+        let minx = null,  maxx=null, miny=null, maxy=null;
+        polygon.forEach(pair=>{
+            minx = minx===null?pair[0]:Math.min(minx,pair[0]);
+            maxx = maxx===null?pair[0]:Math.max(maxx, pair[0]);
+            miny = miny===null?pair[1]:Math.min(miny,pair[1]);
+            maxy = maxy===null?pair[1]:Math.max(maxy, pair[1]);     
+        });
+        return {
+            getWidth: function() {return this.maxx-this.minx;},
+            getHeight: function() {return this.maxy-this.miny;},            
+            getCenter: function() {
+                let x = this.minx+(this.maxx-this.minx)/2;
+                let y = this.miny+(this.maxy-this.miny)/2;              
+                return {x:x,y:y};
+            },
+            minx:minx,maxx:maxx,miny:miny,maxy:maxy
+        };
     },
     mergeBounds(b1,b2) {
-	if(b1==null) return b2;
-	if(b2==null) return b1;
-	let b3 = {}
-	b3 = $.extend(b3,b1);
-	$.extend(b3,{
-	    minx:Math.min(b1.minx,b2.minx),
-	    maxx:Math.max(b1.maxx,b2.maxx),
-	    miny:Math.min(b1.miny,b2.miny),
-	    maxy:Math.max(b1.maxy,b2.maxy),
-	});
-	return b3;
+        if(b1==null) return b2;
+        if(b2==null) return b1;
+        let b3 = {}
+        b3 = $.extend(b3,b1);
+        $.extend(b3,{
+            minx:Math.min(b1.minx,b2.minx),
+            maxx:Math.max(b1.maxx,b2.maxx),
+            miny:Math.min(b1.miny,b2.miny),
+            maxy:Math.max(b1.maxy,b2.maxy),
+        });
+        return b3;
     },
     copyToClipboard:function(text) {
-	var $temp = $("<textarea></textarea>");
-	$("body").append($temp);
-	$temp.val(text).select();
-	document.execCommand("copy");
-	$temp.remove();
+        var $temp = $("<textarea></textarea>");
+        $("body").append($temp);
+        $temp.val(text).select();
+        document.execCommand("copy");
+        $temp.remove();
     },
     isAnonymous: function() {
-	return ramaddaUser =="anonymous";
+        return ramaddaUser =="anonymous";
     },
     getIcon: function(icon) {
         return ramaddaCdn + "/icons/" + icon;
     },
     imports: {},
     get: function(list,idx,dflt) {
-	if(!list) return dflt;
-	if(idx<list.length) return list[idx];
-	return dflt;
+        if(!list) return dflt;
+        if(idx<list.length) return list[idx];
+        return dflt;
     },
     rotate:function(cx, cy, x, y, angle,anticlock_wise) {
-	if(angle == 0){
+        if(angle == 0){
             return {x:parseFloat(x), y:parseFloat(y)};
-	}
-	if(anticlock_wise){
+        }
+        if(anticlock_wise){
             var radians = (Math.PI / 180) * angle;
-	}else{
+        }else{
             var radians = (Math.PI / -180) * angle;
-	}
-	var cos = Math.cos(radians);
-	var sin = Math.sin(radians);
-	var nx = (cos * (x - cx)) + (sin * (y - cy)) + cx;
-	var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-	return {x:nx, y:ny};
+        }
+        var cos = Math.cos(radians);
+        var sin = Math.sin(radians);
+        var nx = (cos * (x - cx)) + (sin * (y - cy)) + cx;
+        var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+        return {x:nx, y:ny};
     },
     split: function(s,delim,trim,excludeEmpty) {
-	if(!s) return null;
-	let l = [];
-	s.split(delim||",").forEach((tok)=>{
-	    tok = tok.replace(/_comma_/g,",");
-	    if(trim) tok = tok.trim();
-	    if(excludeEmpty && tok == "") return;
-	    l.push(tok);
-	});
-	return l;
+        if(!s) return null;
+        let l = [];
+        s.split(delim||",").forEach((tok)=>{
+            tok = tok.replace(/_comma_/g,",");
+            if(trim) tok = tok.trim();
+            if(excludeEmpty && tok == "") return;
+            l.push(tok);
+        });
+        return l;
     },
     sortNumbers:function(l) {
-	l.sort((a,b)=>{return +a - +b});
-	return l;
+        l.sort((a,b)=>{return +a - +b});
+        return l;
     },
     sortDates:function(l) {
-	l.sort((a,b)=>{return a.getTime()-b.getTime()});
-	return l;
+        l.sort((a,b)=>{return a.getTime()-b.getTime()});
+        return l;
     },    
 
     decodeText: function(t) {
-	if(!t) return null;
-	t = String(t);
-	return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
+        if(!t) return null;
+        t = String(t);
+        return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
     },
     handleActionResults: function(id,url) {
-	setTimeout(() =>{
-	    let success=json=>{
-		let msg = "";
-		if(json.message) msg= json.message.replace(/\n/g,"<br>");
-		$("#" + id).html(msg);
-		if(json.status=="running") {
-		    Utils.handleActionResults(id,url);
-		}
-	    };
-	    let fail=json=>{
-		$("#" + id).html("Error:" + json);
-	    };		   
+        setTimeout(() =>{
+            let success=json=>{
+                let msg = "";
+                if(json.message) msg= json.message.replace(/\n/g,"<br>");
+                $("#" + id).html(msg);
+                if(json.status=="running") {
+                    Utils.handleActionResults(id,url);
+                }
+            };
+            let fail=json=>{
+                $("#" + id).html("Error:" + json);
+            };             
             $.getJSON(url, success).fail(fail);
-	},1000);
+        },1000);
     },
     sumList: function(l) {
-	let accum = 0;
-	l.forEach(v=>{
-	    if(!isNaN(v)) accum += v;
-	});
-	return accum;
+        let accum = 0;
+        l.forEach(v=>{
+            if(!isNaN(v)) accum += v;
+        });
+        return accum;
     },
     toFront: function(list,element) {
-	const index = list.indexOf(element);
-	if (index > -1) {
-	    list.splice(index, 1);
-	    list.push(element);
-	}
-	return list;
+        const index = list.indexOf(element);
+        if (index > -1) {
+            list.splice(index, 1);
+            list.push(element);
+        }
+        return list;
     },
     toBack: function(list,element) {
-	const index = list.indexOf(element);
-	if (index > -1) {
-	    list.splice(index, 1);
-	    list.unshift(element);			
-	}
-	return list;
+        const index = list.indexOf(element);
+        if (index > -1) {
+            list.splice(index, 1);
+            list.unshift(element);                      
+        }
+        return list;
     },
 
     mergeLists: function(l1,l2,l3,l4,l5) {
-	let l = [];
-	if(l1) l1.map(e=>l.push(e));
-	if(l2) l2.map(e=>l.push(e));
-	if(l3) l3.map(e=>l.push(e));
-	if(l4) l4.map(e=>l.push(e));
-	if(l5) l5.map(e=>l.push(e));
-	return l;
+        let l = [];
+        if(l1) l1.map(e=>l.push(e));
+        if(l2) l2.map(e=>l.push(e));
+        if(l3) l3.map(e=>l.push(e));
+        if(l4) l4.map(e=>l.push(e));
+        if(l5) l5.map(e=>l.push(e));
+        return l;
     },
     getNameValue: function(s, skipBlank) {
-	//splits name:value,name:value
-	if(!s) return null;
-	var map = {};
+        //splits name:value,name:value
+        if(!s) return null;
+        var map = {};
         var toks = s.split(",");
         for (var i = 0; i < toks.length; i++) {
-	    var toks2 = toks[i].split(":");
-	    var v = toks2[1].trim();
-	    if(skipBlank && v == "") continue;
-	    v = v.replace(/_colon_/g,":");
+            var toks2 = toks[i].split(":");
+            var v = toks2[1].trim();
+            if(skipBlank && v == "") continue;
+            v = v.replace(/_colon_/g,":");
             map[toks2[0].trim()] = v;
         }
-	return map;
+        return map;
     },
     translatePoint: function(x, y, w,  h, pt, delta) {
-	x = +x;
-	y = +y;
-	let r = {x:x,y:y};
-	if(pt=="nw") {
-	    r.x = x; r.y = y;
-	} else if(pt == "w") {
-	    r.x = x; r.y = y-h/2;
-	} else if(pt == "sw") {
-	    r.x = x; r.y = y-h;
-	} else if(pt == "s") {
-	    r.x = x-w/2; r.y = y-h;
-	} else if(pt == "se") {
-	    r.x = x-w; r.y = y-h;
-	} else if(pt == "e") {
-	    r.x = x-w; r.y = y-h/2;
-	} else if(pt == "ne") {
-	    r.x = x-w; r.y = y;
-	} else if(pt == "n") {
-	    r.x = x-w/2; r.y = y;	    	    
-	} else if(pt == "c") {
-	    r.x = x-w/2; r.y = y-h/2;	    	    
-	} else {
-	    throw new Error("Unknown point" + pt);
-	}
-	if(delta!=null) {
-	    r.x+= +delta.dx;
-	    r.y+= +delta.dy;
-	}
-	return r;
+        x = +x;
+        y = +y;
+        let r = {x:x,y:y};
+        if(pt=="nw") {
+            r.x = x; r.y = y;
+        } else if(pt == "w") {
+            r.x = x; r.y = y-h/2;
+        } else if(pt == "sw") {
+            r.x = x; r.y = y-h;
+        } else if(pt == "s") {
+            r.x = x-w/2; r.y = y-h;
+        } else if(pt == "se") {
+            r.x = x-w; r.y = y-h;
+        } else if(pt == "e") {
+            r.x = x-w; r.y = y-h/2;
+        } else if(pt == "ne") {
+            r.x = x-w; r.y = y;
+        } else if(pt == "n") {
+            r.x = x-w/2; r.y = y;                   
+        } else if(pt == "c") {
+            r.x = x-w/2; r.y = y-h/2;               
+        } else {
+            throw new Error("Unknown point" + pt);
+        }
+        if(delta!=null) {
+            r.x+= +delta.dx;
+            r.y+= +delta.dy;
+        }
+        return r;
     },
 
 
     displayTimes: function(label,times,oneLine,labels) {
-	let t = "";
-	let delim = oneLine?" "  :"\n";
-	let pre = oneLine?" ":"\t";
-	t+=label +delim;
-	for(var i=0;i<times.length-1;i++) {
-	    let label=null;
-	    if(labels && i<labels.length) label = labels[i];
-	    if(!label)label = "time" +(i+1)
-	    t+=pre + label +": " + ((times[i+1].getTime()-times[i].getTime())/1000) + delim;
-	}
-	console.log(t);
+        let t = "";
+        let delim = oneLine?" "  :"\n";
+        let pre = oneLine?" ":"\t";
+        t+=label +delim;
+        for(var i=0;i<times.length-1;i++) {
+            let label=null;
+            if(labels && i<labels.length) label = labels[i];
+            if(!label)label = "time" +(i+1)
+            t+=pre + label +": " + ((times[i+1].getTime()-times[i].getTime())/1000) + delim;
+        }
+        console.log(t);
     },
 
     cloneList: function(l) {
         return l.slice(0);
     },
     removeElement: function(list,value) {
-	if(!list) list = [];
-	let idx = list.indexOf(value);
-	if(idx>=0) list.splice(idx,1);
-	return list;
+        if(!list) list = [];
+        let idx = list.indexOf(value);
+        if(idx>=0) list.splice(idx,1);
+        return list;
     },
     addUnique: function(list,value) {
-	if(list==null) list=[];
-	if(!list.includes(value)) 
-	    list.push(value);
-	return list;
+        if(list==null) list=[];
+        if(!list.includes(value)) 
+            list.push(value);
+        return list;
     },
 
     replaceAll: function(s,pattern,v) {
-	let idx = s.indexOf(pattern);
-	if(idx<0) return s;
-	return s.substring(0,idx)+v + s.substring(idx+pattern.length);
+        let idx = s.indexOf(pattern);
+        if(idx<0) return s;
+        return s.substring(0,idx)+v + s.substring(idx+pattern.length);
     },
     parseAttributes: function(v) {
         let attrs = {};
         let newv;
-	let toks;
-	while((toks = v.match(/([^ ]+) *= *"([^"]*)"/))!=null) {
-	    attrs[toks[1].trim()] = toks[2];
-	    v = Utils.replaceAll(v, toks[0],"");
-	}
-	while((toks = v.match(/([^ ]+) *= *'([^']*)'/))!=null) {
-	    attrs[toks[1].trim()] = toks[2];
-	    v = Utils.replaceAll(v, toks[0],"");
-	}
-	while((toks = v.match(/([^ ]+) *= *([^ ]*)( |$)/))!=null) {
-	    attrs[toks[1].trim()] = toks[2];
-	    v = Utils.replaceAll(v, toks[0],"");
-	}
-	while((toks = v.match(/([^ ]+)( |$)/))!=null) {
-	    attrs[toks[1].trim()] = "true";
-	    v = Utils.replaceAll(v, toks[0],"");
-	}	    
-	return attrs;
+        let toks;
+        while((toks = v.match(/([^ ]+) *= *"([^"]*)"/))!=null) {
+            attrs[toks[1].trim()] = toks[2];
+            v = Utils.replaceAll(v, toks[0],"");
+        }
+        while((toks = v.match(/([^ ]+) *= *'([^']*)'/))!=null) {
+            attrs[toks[1].trim()] = toks[2];
+            v = Utils.replaceAll(v, toks[0],"");
+        }
+        while((toks = v.match(/([^ ]+) *= *([^ ]*)( |$)/))!=null) {
+            attrs[toks[1].trim()] = toks[2];
+            v = Utils.replaceAll(v, toks[0],"");
+        }
+        while((toks = v.match(/([^ ]+)( |$)/))!=null) {
+            attrs[toks[1].trim()] = "true";
+            v = Utils.replaceAll(v, toks[0],"");
+        }           
+        return attrs;
     },
 
     parseAttributesAsList: function(s) {
         let args = [];
-	let i=0;
+        let i=0;
         let       inQuote    = false;
         let       prevEscape = false;
-	let sb = "";
+        let sb = "";
         for (let i = 0; i < s.length; i++) {
             let    c            = s[i];
             let isQuote      = (c == '\"');
@@ -477,75 +477,75 @@ var Utils =  {
             }
             if (c == ' ' || c=='\n') {
                 if (sb.length > 0) {
-		    args.push(sb);
+                    args.push(sb);
                     sb = "";
                 }
                 continue;
             }
             sb +=c;
         }
-	if(sb!="")
-	    args.push(sb);
-	let attrs = [];
-	args.forEach(a=>{
-	    let idx = a.indexOf("=");
-	    let name = a;
-	    let v = "";
-	    if(idx>=0) {
-		name = a.substring(0,idx);
-		v = a.substring(idx+1);		
-	    }
-	    attrs.push(name);
-	    attrs.push(v);	    
-	});
-	return attrs;
+        if(sb!="")
+            args.push(sb);
+        let attrs = [];
+        args.forEach(a=>{
+            let idx = a.indexOf("=");
+            let name = a;
+            let v = "";
+            if(idx>=0) {
+                name = a.substring(0,idx);
+                v = a.substring(idx+1);         
+            }
+            attrs.push(name);
+            attrs.push(v);          
+        });
+        return attrs;
     },
     
     hideMore:function(base) {
-	var link = GuiUtils.getDomObject("morelink_" + base);
-	var div = GuiUtils.getDomObject("morediv_" + base);
-	hideObject(div);
-	showObject(link);
+        var link = GuiUtils.getDomObject("morelink_" + base);
+        var div = GuiUtils.getDomObject("morediv_" + base);
+        hideObject(div);
+        showObject(link);
     },
 
 
     showMore:function(base) {
-	var link = GuiUtils.getDomObject("morelink_" + base);
-	var div = GuiUtils.getDomObject("morediv_" + base);
-	hideObject(link);
-	showObject(div);
+        var link = GuiUtils.getDomObject("morelink_" + base);
+        var div = GuiUtils.getDomObject("morediv_" + base);
+        hideObject(link);
+        showObject(div);
     },
 
     ramaddaUpdateMaps:function() {
-	//This gets called from toggleBlockVisibility
-	//It updates any map on the page to fix some sort of offset problem
-	if (!(typeof ramaddaMaps === 'undefined')) {
+        //This gets called from toggleBlockVisibility
+        //It updates any map on the page to fix some sort of offset problem
+        if (!(typeof ramaddaMaps === 'undefined')) {
             for (i = 0; i < ramaddaMaps.length; i++) {
-		var ramaddaMap = ramaddaMaps[i];
-		if (!ramaddaMap.map) continue;
-		ramaddaMap.map.updateSize();
+                var ramaddaMap = ramaddaMaps[i];
+                if (!ramaddaMap.map) continue;
+                ramaddaMap.map.updateSize();
             }
-	}
+        }
     },
 
 
     formDialogId:"",
     submitEntryForm:function(dialogId) {
-	Utils.popupFormLoadingDialog(dialogId);
-	return true;
+        Utils.popupFormLoadingDialog(dialogId);
+        return true;
     },
     closeFormLoadingDialog:function() {
-	var dialog = $(Utils.formDialogId);
-	dialog.dialog('close');
+        var dialog = $(Utils.formDialogId);
+        dialog.dialog('close');
     },
     popupFormLoadingDialog:function(dialogId) {
-	Utils.formDialogId = dialogId;
-	var dialog = $(dialogId);
-	dialog.dialog({
+        Utils.formDialogId = dialogId;
+        var dialog = $(dialogId);
+        dialog.dialog({
             resizable: false,
             height: 100,
             modal: true
-	});
+        });
     },
     replaceRoot: function(s) {
         var  p = "\\${" +"root}";
@@ -555,36 +555,36 @@ var Utils =  {
     },
     loadScriptInfo:{},
     loadScript:function( url, callback, noCache ) {
-	let script = document.createElement( "script" )
+        let script = document.createElement( "script" )
         let key = "js:" + url;
-	let info = Utils.loadScriptInfo[key];
-	if(!info) {
-	    info = Utils.loadScriptInfo[key] = {loaded:false,loading:false,callbacks:[]};
-	}
+        let info = Utils.loadScriptInfo[key];
+        if(!info) {
+            info = Utils.loadScriptInfo[key] = {loaded:false,loading:false,callbacks:[]};
+        }
         if (!noCache && info.loaded) {
-	    if(callback) callback();
-	    return true;
-	}
-	if(callback)
-	    info.callbacks.push(callback);
-	if(info.loading) return false;
-	info.loading = true;
-	script.type = "text/javascript";
-	if(script.readyState) {  // only required for IE <9
-	    script.onreadystatechange = function() {
-		if ( script.readyState === "loaded" || script.readyState === "complete" ) {
-		    script.onreadystatechange = null;
-		    info.callbacks.forEach(callback=>callback());
-		}
-	    };
-	} else {  //Others
-	    script.onload = function() {
-		info.callbacks.forEach(callback=>callback());
-	    };
-	}
-	info.callback=[];
-	script.src = url;
-	document.getElementsByTagName( "head" )[0].appendChild( script );
+            if(callback) callback();
+            return true;
+        }
+        if(callback)
+            info.callbacks.push(callback);
+        if(info.loading) return false;
+        info.loading = true;
+        script.type = "text/javascript";
+        if(script.readyState) {  // only required for IE <9
+            script.onreadystatechange = function() {
+                if ( script.readyState === "loaded" || script.readyState === "complete" ) {
+                    script.onreadystatechange = null;
+                    info.callbacks.forEach(callback=>callback());
+                }
+            };
+        } else {  //Others
+            script.onload = function() {
+                info.callbacks.forEach(callback=>callback());
+            };
+        }
+        info.callback=[];
+        script.src = url;
+        document.getElementsByTagName( "head" )[0].appendChild( script );
     },
     importJS: async function(path, callback, err, noCache) {
         path =this.replaceRoot(path);
@@ -604,7 +604,7 @@ var Utils =  {
                 }
             }).fail((jqxhr, settings, exc) => {
                 console.log("initial importJS failed: " + path);
-                console.log("error:" + exc);		
+                console.log("error:" + exc);            
             });
         } catch (e) {
             try {
@@ -646,7 +646,7 @@ var Utils =  {
                 success: (data) => {
                     if (!noCache)
                         this.imports[key] = true;
-		    //		    console.log("loaded:" + data);
+                    //              console.log("loaded:" + data);
                     $('<style type="text/css">\n' + data + '</style>').appendTo("head");
                     Utils.call(callback);
                 }
@@ -655,79 +655,79 @@ var Utils =  {
     },
     doFetch: async function(path, callback, err,what) {
         path =this.replaceRoot(path);
-	let calledErr = false;
+        let calledErr = false;
         try {
-	    let args = {
+            let args = {
                 url: path,
                 success: function(data) {
                     Utils.call(callback, data);
                 }
-	    };
-	    if(!what) {
-		what = "text/plain";
-		args.beforeSend =  function( xhr ) {
-		    xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
-		};
-	    }
-	    args.xhrFields = {
+            };
+            if(!what) {
+                what = "text/plain";
+                args.beforeSend =  function( xhr ) {
+                    xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                };
+            }
+            args.xhrFields = {
                 responseType: what
             };
             await $.ajax(args).fail((p1,p2,p3)=>{
-		calledErr=true;
-		if(err)
-		    err(p1,p2,p3)
-	    });
+                calledErr=true;
+                if(err)
+                    err(p1,p2,p3)
+            });
         } catch (e) {
-	    if(!calledErr)
-		Utils.call(err, e);
+            if(!calledErr)
+                Utils.call(err, e);
         }
     },
     formatXml: function(xml,args) {
-	let opts = {};
-	if(args) $.extend(opts,args);
-	let parser = new DOMParser();
-	let xmlDoc = parser.parseFromString(xml,"text/xml");
-	let html ="";
-	let func;
-	func = function(node, path, padding) {
-	    let pad = "";
-	    for(let i=0;i<padding;i++)
-		pad +="  ";
-	    if(padding>5) {
-		html+=pad +"...\n";
-		return;
-	    }
-	    if(node.nodeName=="#text") {
-		let text = node.nodeValue||"";
-		text = text.trim();
-		if(Utils.stringDefined(text)) {
-		    html +=pad + "text:" + text+"\n";
-		}
-		return;
-	    } 
-	    if(node.nodeName=="#cdata-section") {
-		html+=pad + node.wholeText;
-		html+="\n";
-		return;
-	    }
-	    if(path!="") path+=".";
-	    path+=node.nodeName;
-	    html +=pad + "&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"ramadda-xmlnode"],node.nodeName)+"&gt;" + "\n";
-	    node.childNodes.forEach(child=>{
-		func(child,path,padding+1);
-	    });
-	    html +=pad + "&lt;/" + node.nodeName+"&gt;" + "\n";
-	}
-	xmlDoc.childNodes.forEach(n=>{
-	    if(n.nodeName == "parsererror") {
-		throw new Error("Parse error:" + n);
-	    }
-	});
+        let opts = {};
+        if(args) $.extend(opts,args);
+        let parser = new DOMParser();
+        let xmlDoc = parser.parseFromString(xml,"text/xml");
+        let html ="";
+        let func;
+        func = function(node, path, padding) {
+            let pad = "";
+            for(let i=0;i<padding;i++)
+                pad +="  ";
+            if(padding>5) {
+                html+=pad +"...\n";
+                return;
+            }
+            if(node.nodeName=="#text") {
+                let text = node.nodeValue||"";
+                text = text.trim();
+                if(Utils.stringDefined(text)) {
+                    html +=pad + "text:" + text+"\n";
+                }
+                return;
+            } 
+            if(node.nodeName=="#cdata-section") {
+                html+=pad + node.wholeText;
+                html+="\n";
+                return;
+            }
+            if(path!="") path+=".";
+            path+=node.nodeName;
+            html +=pad + "&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"ramadda-xmlnode"],node.nodeName)+"&gt;" + "\n";
+            node.childNodes.forEach(child=>{
+                func(child,path,padding+1);
+            });
+            html +=pad + "&lt;/" + node.nodeName+"&gt;" + "\n";
+        }
+        xmlDoc.childNodes.forEach(n=>{
+            if(n.nodeName == "parsererror") {
+                throw new Error("Parse error:" + n);
+            }
+        });
 
-	xmlDoc.childNodes.forEach(n=>{
-	    func(n,"",0);
-	});
-	return html;
+        xmlDoc.childNodes.forEach(n=>{
+            func(n,"",0);
+        });
+        return html;
     },
 
     formatJson: function(json,levelsShown) {
@@ -832,33 +832,33 @@ var Utils =  {
     },
     //If not an array then make it one
     makeArray: function(v) {
-	if(!Array.isArray(v)) return [v];
-	return v;
+        if(!Array.isArray(v)) return [v];
+        return v;
     },
     getUniqueId: function(prefix) {
-	return HtmlUtils.getUniqueId(prefix);
-	
+        return HtmlUtils.getUniqueId(prefix);
+        
     },
 
     //split the given list into
     splitList: function(list,max) {
-	let lists = [];
-	if(list.length<max) {
-	    lists.push(list);
-	} else {
-	    let num = Math.ceil(list.length/max);
-	    let maxPer = Math.ceil(list.length/num);
-	    let current = [];
-	    lists.push(current);
-	    list.forEach(o=>{
-		if(current.length>=maxPer) {
-		    current = [];
-		    lists.push(current);
-		}
-		current.push(o);
-	    });
-	}
-	return lists;
+        let lists = [];
+        if(list.length<max) {
+            lists.push(list);
+        } else {
+            let num = Math.ceil(list.length/max);
+            let maxPer = Math.ceil(list.length/num);
+            let current = [];
+            lists.push(current);
+            list.forEach(o=>{
+                if(current.length>=maxPer) {
+                    current = [];
+                    lists.push(current);
+                }
+                current.push(o);
+            });
+        }
+        return lists;
     },
 
     join: function(l, delimiter, offset) {
@@ -871,24 +871,24 @@ var Utils =  {
         return s;
     },
     wrap: function(l, prefix, suffix) {
-	let s= ""; 
-	l.forEach(item=>{
-	    s+=prefix + item +suffix;
-	});
+        let s= ""; 
+        l.forEach(item=>{
+            s+=prefix + item +suffix;
+        });
         return s;
     },
 
     parseMap: function(str) {
-	if(str==null) return null;
+        if(str==null) return null;
         var toks = str.split(",");
-	var map = {};
+        var map = {};
         for (var i = 0; i < toks.length; i++) {
-	    var toks2 = toks[i].split(":");
-	    if (toks2.length > 1) {
+            var toks2 = toks[i].split(":");
+            if (toks2.length > 1) {
                 map[toks2[0].trim()] = toks2[1].trim();
-	    }
+            }
         }
-	return map;
+        return map;
     },
     getUniqueValues: function(l) {
         var u = [];
@@ -913,148 +913,148 @@ var Utils =  {
     monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],
     monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
     createDate: function(d,timeZoneOffset) {
-	let date = Utils.createDateInner(d);
-	if(date && timeZoneOffset) {
-	    date = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),date.getUTCDate(),date.getUTCHours()-timeZoneOffset,date.getUTCMinutes(),date.getUTCSeconds()));
-	}
-	return date;
+        let date = Utils.createDateInner(d);
+        if(date && timeZoneOffset) {
+            date = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),date.getUTCDate(),date.getUTCHours()-timeZoneOffset,date.getUTCMinutes(),date.getUTCSeconds()));
+        }
+        return date;
     },
     createDateInner: function(d) {
-	if(!d) return d;
-	if(d.getTime) return d;
-	d = d.trim();
-	let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)$");
-	let toks = d.match(regexp);
-	if(toks) {
-	    let mult = parseFloat(toks[1]+toks[2]);
-	    let what = toks[3];
-	    let now = new Date();
-	    let date = now.getTime();
-	    if(what == "minute")
-		return new Date(date+mult*1000*60);
-	    if(what == "hour")
-		return new Date(date+mult*1000*60*60);
-	    if(what == "day")
-		return new Date(date+mult*1000*60*60*24);
-	    if(what == "week") {
-		return new Date(date+mult*1000*60*60*24*7);
-	    }
-	    if(what == "month")
-		return new Date(date+mult*1000*60*60*24*7*31);
-	    return new Date(date+mult*1000*60*60*24*365);
-	}
-	if(d.match(/^[0-9,-]+$/)) {
-	    let commaToks = d.split(",");
-	    let dashToks = d.split("-");	    
-	    toks = dashToks.length>commaToks.length?dashToks:commaToks;
-	    let idx = 0;
-	    let f = (i)=>{
-		if(i>=toks.length) return null;
-		if(i==1) return +toks[i]-1;
-		return +toks[i];
-	    };
-	    return new Date(Date.UTC(f(idx++),f(idx++),f(idx++),f(idx++),f(idx++),f(idx++)));
-	}
-	return  new Date(d);
+        if(!d) return d;
+        if(d.getTime) return d;
+        d = d.trim();
+        let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)$");
+        let toks = d.match(regexp);
+        if(toks) {
+            let mult = parseFloat(toks[1]+toks[2]);
+            let what = toks[3];
+            let now = new Date();
+            let date = now.getTime();
+            if(what == "minute")
+                return new Date(date+mult*1000*60);
+            if(what == "hour")
+                return new Date(date+mult*1000*60*60);
+            if(what == "day")
+                return new Date(date+mult*1000*60*60*24);
+            if(what == "week") {
+                return new Date(date+mult*1000*60*60*24*7);
+            }
+            if(what == "month")
+                return new Date(date+mult*1000*60*60*24*7*31);
+            return new Date(date+mult*1000*60*60*24*365);
+        }
+        if(d.match(/^[0-9,-]+$/)) {
+            let commaToks = d.split(",");
+            let dashToks = d.split("-");            
+            toks = dashToks.length>commaToks.length?dashToks:commaToks;
+            let idx = 0;
+            let f = (i)=>{
+                if(i>=toks.length) return null;
+                if(i==1) return +toks[i]-1;
+                return +toks[i];
+            };
+            return new Date(Date.UTC(f(idx++),f(idx++),f(idx++),f(idx++),f(idx++),f(idx++)));
+        }
+        return  new Date(d);
     },
     minutesSince: function(date) {
-	return Math.round(this.toMinutes(new Date().getTime()-date));
+        return Math.round(this.toMinutes(new Date().getTime()-date));
     },
     toMinutes: function(ms) {
-	return ms/1000/60;
+        return ms/1000/60;
     },
     formatHour: function(h,nospace) {
-	let space = nospace?"":"&nbsp;";
-	if(h==0) return "12" + space +"AM";
-	if(h==12) return "12" + space+"PM";
-	if(h>12) return (h-12)+space+"PM";
-	return h +space+"AM";
+        let space = nospace?"":"&nbsp;";
+        if(h==0) return "12" + space +"AM";
+        if(h==12) return "12" + space+"PM";
+        if(h>12) return (h-12)+space+"PM";
+        return h +space+"AM";
     },
     formatDateMonthDayYear: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date";
-	var m = this.monthNames[date.getUTCMonth()];
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
+        if(isNaN(date.getUTCMonth())) return "Unknown date";
+        var m = this.monthNames[date.getUTCMonth()];
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
         return m +" " + d +", " + date.getUTCFullYear();
     },
     formatDateYearMonth: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date";
-	var m = this.monthNames[date.getUTCMonth()];
+        if(isNaN(date.getUTCMonth())) return "Unknown date";
+        var m = this.monthNames[date.getUTCMonth()];
         return m +", " + date.getUTCFullYear();
     },    
     formatDateMonthDay: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date";
-	var m = this.monthNames[date.getUTCMonth()];
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
+        if(isNaN(date.getUTCMonth())) return "Unknown date";
+        var m = this.monthNames[date.getUTCMonth()];
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
         return m +" " + d;
     },
     formatDateMonDay: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "NA";
-	var m = this.monthNamesShort[date.getUTCMonth()];
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
+        if(isNaN(date.getUTCMonth())) return "NA";
+        var m = this.monthNamesShort[date.getUTCMonth()];
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
         return m +"-" + d;
     },
 
     formatDateMDY: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-	var m = this.monthNamesShort[date.getUTCMonth()];
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var m = this.monthNamesShort[date.getUTCMonth()];
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
         return m +" " + d +", " + date.getUTCFullYear();
     },
     formatDateYYYYMMDD: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-	var m = (date.getUTCMonth() + 1);
-	if(m<10) m = "0" + m;
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var m = (date.getUTCMonth() + 1);
+        if(m<10) m = "0" + m;
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
         return date.getUTCFullYear() + "-" + m + "-" + d;
     },
     formatDateYYYYMMDDHHMM: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-	var month = (date.getUTCMonth() + 1);
-	if(month<10) month = "0" + month;
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
-	var h = date.getHours()+1;
-	if(h<10) h = "0" + h;
-	var minute = date.getMinutes();
-	if(minute<10) minute = "0" + minute;
-	let hhmm=  h+":" +minute;
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var month = (date.getUTCMonth() + 1);
+        if(month<10) month = "0" + month;
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
+        var h = date.getHours()+1;
+        if(h<10) h = "0" + h;
+        var minute = date.getMinutes();
+        if(minute<10) minute = "0" + minute;
+        let hhmm=  h+":" +minute;
 
         return date.getUTCFullYear() + "-" + month + "-" + d+" " + hhmm;
     },
     formatDateYYYYMMDDHH: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-	var m = (date.getUTCMonth() + 1);
-	if(m<10) m = "0" + m;
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
-	var h = Utils.formatHour(date.getUTCHours(),true);
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var m = (date.getUTCMonth() + 1);
+        if(m<10) m = "0" + m;
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
+        var h = Utils.formatHour(date.getUTCHours(),true);
         return date.getUTCFullYear() + "-" + m + "-" + d+" " + h;
     },
 
     formatDateYYYYMM: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-	var m = (date.getUTCMonth() + 1);
-	if(m<10) m = "0" + m;
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var m = (date.getUTCMonth() + 1);
+        if(m<10) m = "0" + m;
         return date.getUTCFullYear() + "-" + m;
     },
     formatDateMMDD: function(date, delimiter) {
-	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-	var m = (date.getUTCMonth() + 1);
-	if(m<10) m = "0" + m;
-	var d = date.getUTCDate();
-	if(d<10) d = "0" +d;
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var m = (date.getUTCMonth() + 1);
+        if(m<10) m = "0" + m;
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
         return  m + (delimiter?delimiter:"-") + d;
     },
     formatDateHHMM: function(date, delimiter) {
-	var h = date.getHours()+1;
-	if(h<10) h = "0" + h;
-	var m = date.getMinutes();
-	if(m<10) m = "0" + m;
+        var h = date.getHours()+1;
+        if(h<10) h = "0" + h;
+        var m = date.getMinutes();
+        if(m<10) m = "0" + m;
         return  h+":" +m;
     },
     formatDateYYYY: function(date, options, args) {
@@ -1064,39 +1064,39 @@ var Utils =  {
         return date.getUTCFullYear() + " week:" + this.formatDateWeek(date);
     },
     formatDateWeek: function(date) { 
-	var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
-	return   Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);
+        var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+        return   Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);
     },
     formatDateWithFormat(date, fmt,returnNullIfNotFound) {
-	if(fmt==null) {
-	    if(returnNullIfNotFound) return null;
-	    fmt = "yyyymmdd";
-	}
-	let _fmt = fmt.toLowerCase();
-	//Keep these formats for backwards compat
-	if (_fmt == "yyyymmdd") {
+        if(fmt==null) {
+            if(returnNullIfNotFound) return null;
+            fmt = "yyyymmdd";
+        }
+        let _fmt = fmt.toLowerCase();
+        //Keep these formats for backwards compat
+        if (_fmt == "yyyymmdd") {
             return Utils.formatDateYYYYMMDD(date);
-	} else if (_fmt == "yyyymmddhh") { 
-	    return Utils.formatDateYYYYMMDDHH(date);
-	} else if (_fmt == "yyyymmddhhmm") { 
-	    return Utils.formatDateYYYYMMDDHHMM(date);
-	} else if (_fmt == "yyyymm") {
+        } else if (_fmt == "yyyymmddhh") { 
+            return Utils.formatDateYYYYMMDDHH(date);
+        } else if (_fmt == "yyyymmddhhmm") { 
+            return Utils.formatDateYYYYMMDDHHMM(date);
+        } else if (_fmt == "yyyymm") {
             return Utils.formatDateYYYYMM(date);
-	} else if (_fmt == "yearmonth") {
+        } else if (_fmt == "yearmonth") {
             return Utils.formatDateYearMonth(date);
-	} else if (_fmt == "monthdayyear") {
+        } else if (_fmt == "monthdayyear") {
             return Utils.formatDateMonthDayYear(date);
-	} else if (_fmt == "monthday") {
+        } else if (_fmt == "monthday") {
             return Utils.formatDateMonthDay(date);
-	} else if (_fmt == "mon_day") {
+        } else if (_fmt == "mon_day") {
             return Utils.formatDateMonDay(date);
-	} else if (_fmt == "mdy") {
+        } else if (_fmt == "mdy") {
             return Utils.formatDateMDY(date);
-	} else if (_fmt == "hhmm") {
+        } else if (_fmt == "hhmm") {
             return Utils.formatDateHHMM(date);
-	} else {
-	    return String(date.format(fmt,"UTC:",true));
-	}
+        } else {
+            return String(date.format(fmt,"UTC:",true));
+        }
     },
     dateOptions:{
                 weekday: 'long',
@@ -1107,8 +1107,8 @@ var Utils =  {
                 minute: 'numeric'
     },
     formatDate: function(date, options, args) {
-	if(true) return this.formatDateWithFormat(date,"yyyy-mm-dd HH:MM");
-	if (!args) args = {};
+        if(true) return this.formatDateWithFormat(date,"yyyy-mm-dd HH:MM");
+        if (!args) args = {};
         if (!options) {
             options = this.dateOptions;
         }
@@ -1154,16 +1154,16 @@ var Utils =  {
         return this.monthShortNames;
     },
     xparseDate: function(date) {
-	date = date.replaceAll(/\+0000$/,"");
-	return new Date(date);
+        date = date.replaceAll(/\+0000$/,"");
+        return new Date(date);
     },
 
     dateRegex:new RegExp("(rel|now|today)(\\+|-)(.*)", 'i'),
     parseDate: function(s, roundUp, rel) {
         if (s == null) return null;
-	if((typeof s)=="number") {
-	    return new Date(s);
-	}
+        if((typeof s)=="number") {
+            return new Date(s);
+        }
 
         s = s.trim();
         if (s == "") return null;
@@ -1186,11 +1186,11 @@ var Utils =  {
             if (roundUp)
                 date.setHours(24);
         } else {
-	    let d = Date.parse(s);
-	    if(isNaN(d)) {
-		let a = s.split(/[^0-9]/).map(s=>{ return parseInt(s, 10)});
-		return new Date(a[0], a[1]-1 || 0, a[2] || 1, a[3] || 0, a[4] || 0, a[5] || 0, a[6] || 0);
-	    }
+            let d = Date.parse(s);
+            if(isNaN(d)) {
+                let a = s.split(/[^0-9]/).map(s=>{ return parseInt(s, 10)});
+                return new Date(a[0], a[1]-1 || 0, a[2] || 1, a[3] || 0, a[4] || 0, a[5] || 0, a[6] || 0);
+            }
             return new Date(d);
         }
         if (offset != 0) {
@@ -1224,14 +1224,14 @@ var Utils =  {
         return arg1;
     },
     isDefined: function(v) {
-	let ok = true;
-	let a = Array.from(arguments).every(v=>{
-	    if(v===null || typeof v === 'undefined') {
-		ok =false;
-	    }
-	    return ok;
-	});
-	return ok;
+        let ok = true;
+        let a = Array.from(arguments).every(v=>{
+            if(v===null || typeof v === 'undefined') {
+                ok =false;
+            }
+            return ok;
+        });
+        return ok;
     },
     makeLabel: function(s) {
         s  = String(s);
@@ -1239,10 +1239,10 @@ var Utils =  {
         return this.camelCase(s.replace(/_/g," "));
     },
     makeId: function(s) {
-	s  = String(s);
-	s = s.replace(/[^\x00-\x7F]/g, "_");
-	s = s.replace(/&/g,"_");
-	s = s.replace(/\./g, "_");	
+        s  = String(s);
+        s = s.replace(/[^\x00-\x7F]/g, "_");
+        s = s.replace(/&/g,"_");
+        s = s.replace(/\./g, "_");      
         s = s.trim().toLowerCase().replace(/ /g,"_");
         return s;
     },    
@@ -1252,9 +1252,9 @@ var Utils =  {
         let toks = s.split(" ");
         for (let i = 0; i < toks.length; i++) {
             let tok = toks[i];
-	    let converted = tok.substring(0, 1);
-	    if(i>>0 || !firstLower)
-		converted = converted.toUpperCase();
+            let converted = tok.substring(0, 1);
+            if(i>>0 || !firstLower)
+                converted = converted.toUpperCase();
             if (tok.length > 1)
                 converted += tok.substring(1).toLowerCase();
             if (r != "") r += " ";
@@ -1273,7 +1273,7 @@ var Utils =  {
             stopWords = this.stopWords;
         }
         var words = [];
-	s=s.replace(/https?:\/\/[^ ]+/g," ");
+        s=s.replace(/https?:\/\/[^ ]+/g," ");
         var toks = s.split(/[ ,\(\)\.:\;\n\?\-!\*]/);
         for (var i = 0; i < toks.length; i++) {
             var word = toks[i].trim();
@@ -1293,476 +1293,476 @@ var Utils =  {
         return true;
     },
     tokenizeMacros:function(s,args,debug) {
-	let opts = {
-	};
-	if(args) $.extend(opts,args);
-	let hook   = opts.hook;
-	let tokens = [];
-	let tokenMap = {};
-	let cnt = 0;
-	while(s.length>0) {
-	    let idx = s.indexOf("${");
-	    if(idx<0) break;
-	    let prefix = s.substring(0,idx);
-	    if(prefix!="") {
-		tokens.push({type:"string",s:prefix});
-	    }
-	    s = s.substring(idx);
-	    let inner = "";
-	    let cidx=0;
-	    let inquote=false;
-	    while(cidx<s.length) {
-		let ch = s.charAt(cidx++);
-		if(ch == '"' || ch == "'") {
-		    if(inquote) inquote=false;
-		    else inquote=true;
-		    inner+=ch;
-		    continue;
-		}   
-		if(ch == '}') {
-		    if(!inquote) break;
-		}
-		inner+=ch;
-	    }
-	    if(cidx>s.length) break;
-	    s = s.substring(cidx);
-	    let macro = inner.substring(2);
-	    let attrs ={};
-	    idx = macro.indexOf(" ");
-	    let tag = "";
-	    if(idx<0) {
-		tag = macro;
-	    } else {
-		tag = macro.substring(0,idx).trim();
-		let attrString = macro.substring(idx).trim();
-		attrs = Utils.parseAttributes(attrString);
-		if(debug)
-		    console.dir(attrs);
-	    }
+        let opts = {
+        };
+        if(args) $.extend(opts,args);
+        let hook   = opts.hook;
+        let tokens = [];
+        let tokenMap = {};
+        let cnt = 0;
+        while(s.length>0) {
+            let idx = s.indexOf("${");
+            if(idx<0) break;
+            let prefix = s.substring(0,idx);
+            if(prefix!="") {
+                tokens.push({type:"string",s:prefix});
+            }
+            s = s.substring(idx);
+            let inner = "";
+            let cidx=0;
+            let inquote=false;
+            while(cidx<s.length) {
+                let ch = s.charAt(cidx++);
+                if(ch == '"' || ch == "'") {
+                    if(inquote) inquote=false;
+                    else inquote=true;
+                    inner+=ch;
+                    continue;
+                }   
+                if(ch == '}') {
+                    if(!inquote) break;
+                }
+                inner+=ch;
+            }
+            if(cidx>s.length) break;
+            s = s.substring(cidx);
+            let macro = inner.substring(2);
+            let attrs ={};
+            idx = macro.indexOf(" ");
+            let tag = "";
+            if(idx<0) {
+                tag = macro;
+            } else {
+                tag = macro.substring(0,idx).trim();
+                let attrString = macro.substring(idx).trim();
+                attrs = Utils.parseAttributes(attrString);
+                if(debug)
+                    console.dir(attrs);
+            }
 
-	    let token = {id:String(cnt++), attrs:attrs,tag:tag,macro:macro};
-	    tokens.push(token);
-	    tokenMap[tag] = token;
-	}
-	if(s!="") {
-	    tokens.push({type:"string",s:s});
-	}
-
-
-	return {tokens:tokens,
-		tokenMap: tokenMap,
-		//This gets a modified version of the source string with:
-		//s...${m0}...${m1} ...
-		getAttributes: function(t) {
-		    let token = this.tokenMap[t];
-		    if(token) return token.attrs;
-		    return null;
-		},
-		apply: function(source, debug, handler) {
-		    //		    if(debug) console.log("macro:" + JSON.stringify(source,null,2));
-		    let cnt = 0;
-		    let tokenFunc = t=>{
-			let value = source[t.tag];
-			let s = "";
-			if(t.tag=="func") {
-			    let f = t.attrs.f;
-			    if(!f) {
-				return "&lt;no function defined&gt;";
-			    }
-			    let code = "function macroFunc() {\n"
-			    for(a in source) {
-				if(a=="default") continue;
-				let v = source[a];
-				if((typeof v)!="number") v = '"' + v +'"';
-				code += a +"=" + v+";\n";
-			    }
-			    code+= "return " + f+";\n}\n"
-			    code+="macroFunc()";
-			    try {
-				value=  eval(code);
-			    } catch(err) {
-				console.log("Error applying macro function:" + code +"\n" + err);
-				return "&lt;Error:" + err+"&gt;";
-			    }
-			}
-			if(t.attrs["nonblank"]) {
-			    if(String(value).length==0) return "";
-			}
-			if(!Utils.isDefined(value)) {
-			    return "${" + t.macro+"}";
-			} 
-			if(value.getTime) {
-			    return  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
-			} 
-			if(t.attrs["display"]) {
-			    if(handler) {
-				let result = handler(t,value);
-				if(result!==false) return result;
-			    }
-			}
-
-			if(t.attrs["missing"] && (value=="" || isNaN(value))) {
-			    return  t.attrs["missing"]
-			} 
-			if(t.attrs["bar"]) {
-			    let min  = t.attrs["min"]||0;
-			    let max  = t.attrs["max"];			    
-			    if(value=="" || isNaN(value)) {
-				return t.attrs["missing"] ||value;
-			    }
-			    if(Utils.isDefined(min,max)) {
-				let color  = t.attrs["color"]||"#4E79A7";
-				let width = t.attrs["width"]||"100%";
-				let height = parseFloat(t.attrs["height"]||12);
-				let percent = (100-100*(value-min)/(max-min))+"%";
-				let border = t.attrs["border"]||"1px solid #ccc";
-				let includeValue = t.attrs["includeValue"]||true;
-				let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("display","inline-block","position","relative", "height",(height+2)+"px","width",width,"border",border,"border-left","none")],
-						  HU.div([STYLE,HU.css("position","absolute","left","0px","right",percent,"height",height+"px","background",color)]));
-				if(includeValue) return HU.row([["width","1%"],value],bar);
-				return bar;
-
-					      
-			    }
-			}
-
-			if(t.attrs["stars"]) {
-			    if(value=="" || isNaN(value)) {
-				return t.attrs["missing"] ||value;
-			    }
-			    let count  = t.attrs["count"] ||5;
-			    let min  = t.attrs["min"]||0;
-			    let max  = t.attrs["max"];			    
-			    if(Utils.isDefined(min,max)) {
-				let color  = t.attrs["color"]||"#F9CF03";
-				let starsbase = "";
-				let stars = "";
-				for(let i=0;i<count;i++) {
-				    starsbase+=HU.getIconImage("far fa-star",null,[STYLE,HU.css("font-size","10pt","color","#000")]);
-				    stars+=HU.getIconImage("fas fa-star",null,[STYLE,HU.css("font-size","10pt","color",color)]);				    
-				}
-				let percent = (100-100*(value-min)/(max-min))+"%";
-				let includeValue = t.attrs["includeValue"]||true;
-				let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("display","inline-block","position","relative")],
-						  starsbase+
-						  HU.div([STYLE,HU.css("white-space","nowrap","overflow-x","hidden","position","absolute","left","0px","right",percent,"top","0px","bottom","0px")], stars));
-				if(includeValue) return HU.row([["width","1%"],value],bar);
-				return bar;
-			    }
-			}
-
-			if(t.attrs["positiveTemplate"] || t.attrs["negativeTemplate"]) {
-			    value = +value;
-			    if(value>=0) {
-				if(t.attrs["negativeTemplate"]) {
-				    value = t.attrs["positiveTemplate"].replace("${value}",value);
-				}
-			    } else if(t.attrs["negativeTemplate"]) {
-				if(t.attrs["doAbsolute"]) {
-				    value = -value;
-				}
-				value = t.attrs["negativeTemplate"].replace("${value}",value);
-			    }
-			} 
-
-			if(t.attrs["youtube"]) {
-			    if(value.trim().length==0) return null;
-			    let toks = value.match(/.*watch\?v=(.*)$/);
-			    if(!toks || toks.length!=2) {
-				s +=  HU.href(value,value);
-			    } else {
-				let id = toks[1];
-				let autoplay  = t.attrs["autoplay"]||"false";
-				let playerId = "video_1";
-				let embedUrl = "//www.youtube.com/embed/" + id +
-				    "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
-				s +=  HU.href(value,"Link") +"<br>";
-				s+=  HU.tag('iframe',[ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
-						      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs['height']||400, 
-						      SRC,embedUrl
-						     ]);
-			    }
-			    return s;
-			}
+            let token = {id:String(cnt++), attrs:attrs,tag:tag,macro:macro};
+            tokens.push(token);
+            tokenMap[tag] = token;
+        }
+        if(s!="") {
+            tokens.push({type:"string",s:s});
+        }
 
 
-			if(t.attrs["list"]) {
-			    value = String(value);
-			    s+="<ul>"
-			    value.split("\n").forEach(line=>{
-				line = line.trim();
-				if(line!="") {
-				    s+="<li> " + line
-				}
-			    });
-			    s+="</ul>"
-			    return s;
-			}
-			if(t.attrs["pre"]) {
-			    value = String(value);
-			    if(value.trim()!="") 
-				value = "<pre class=thin_pre>" + value.trim()+"</pre>"
-			    return value;
-			}
-			if(t.attrs["showUrl"]) {
-			    let label = t.attrs['label'] || value;
-			    value = HU.href(value,label,['target','_other','style',t.attrs['style']||'']);
-			}
-			if(t.attrs['delimiter'] && t.attrs['fields']) {
-			    let l = [];
-			    if(Utils.stringDefined(value)) l.push(value);
-			    t.attrs['fields'].split(",").forEach(f=>{
-				let v=  source[f];
-				if(Utils.stringDefined(v)) l.push(v);
-			    });
-			    value = Utils.join(l,t.attrs['delimiter']);
-			}
+        return {tokens:tokens,
+                tokenMap: tokenMap,
+                //This gets a modified version of the source string with:
+                //s...${m0}...${m1} ...
+                getAttributes: function(t) {
+                    let token = this.tokenMap[t];
+                    if(token) return token.attrs;
+                    return null;
+                },
+                apply: function(source, debug, handler) {
+                    //              if(debug) console.log("macro:" + JSON.stringify(source,null,2));
+                    let cnt = 0;
+                    let tokenFunc = t=>{
+                        let value = source[t.tag];
+                        let s = "";
+                        if(t.tag=="func") {
+                            let f = t.attrs.f;
+                            if(!f) {
+                                return "&lt;no function defined&gt;";
+                            }
+                            let code = "function macroFunc() {\n"
+                            for(a in source) {
+                                if(a=="default") continue;
+                                let v = source[a];
+                                if((typeof v)!="number") v = '"' + v +'"';
+                                code += a +"=" + v+";\n";
+                            }
+                            code+= "return " + f+";\n}\n"
+                            code+="macroFunc()";
+                            try {
+                                value=  eval(code);
+                            } catch(err) {
+                                console.log("Error applying macro function:" + code +"\n" + err);
+                                return "&lt;Error:" + err+"&gt;";
+                            }
+                        }
+                        if(t.attrs["nonblank"]) {
+                            if(String(value).length==0) return "";
+                        }
+                        if(!Utils.isDefined(value)) {
+                            return "${" + t.macro+"}";
+                        } 
+                        if(value.getTime) {
+                            return  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
+                        } 
+                        if(t.attrs["display"]) {
+                            if(handler) {
+                                let result = handler(t,value);
+                                if(result!==false) return result;
+                            }
+                        }
+
+                        if(t.attrs["missing"] && (value=="" || isNaN(value))) {
+                            return  t.attrs["missing"]
+                        } 
+                        if(t.attrs["bar"]) {
+                            let min  = t.attrs["min"]||0;
+                            let max  = t.attrs["max"];                      
+                            if(value=="" || isNaN(value)) {
+                                return t.attrs["missing"] ||value;
+                            }
+                            if(Utils.isDefined(min,max)) {
+                                let color  = t.attrs["color"]||"#4E79A7";
+                                let width = t.attrs["width"]||"100%";
+                                let height = parseFloat(t.attrs["height"]||12);
+                                let percent = (100-100*(value-min)/(max-min))+"%";
+                                let border = t.attrs["border"]||"1px solid #ccc";
+                                let includeValue = t.attrs["includeValue"]||true;
+                                let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("display","inline-block","position","relative", "height",(height+2)+"px","width",width,"border",border,"border-left","none")],
+                                                  HU.div([STYLE,HU.css("position","absolute","left","0px","right",percent,"height",height+"px","background",color)]));
+                                if(includeValue) return HU.row([["width","1%"],value],bar);
+                                return bar;
+
+                                              
+                            }
+                        }
+
+                        if(t.attrs["stars"]) {
+                            if(value=="" || isNaN(value)) {
+                                return t.attrs["missing"] ||value;
+                            }
+                            let count  = t.attrs["count"] ||5;
+                            let min  = t.attrs["min"]||0;
+                            let max  = t.attrs["max"];                      
+                            if(Utils.isDefined(min,max)) {
+                                let color  = t.attrs["color"]||"#F9CF03";
+                                let starsbase = "";
+                                let stars = "";
+                                for(let i=0;i<count;i++) {
+                                    starsbase+=HU.getIconImage("far fa-star",null,[STYLE,HU.css("font-size","10pt","color","#000")]);
+                                    stars+=HU.getIconImage("fas fa-star",null,[STYLE,HU.css("font-size","10pt","color",color)]);                                    
+                                }
+                                let percent = (100-100*(value-min)/(max-min))+"%";
+                                let includeValue = t.attrs["includeValue"]||true;
+                                let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("display","inline-block","position","relative")],
+                                                  starsbase+
+                                                  HU.div([STYLE,HU.css("white-space","nowrap","overflow-x","hidden","position","absolute","left","0px","right",percent,"top","0px","bottom","0px")], stars));
+                                if(includeValue) return HU.row([["width","1%"],value],bar);
+                                return bar;
+                            }
+                        }
+
+                        if(t.attrs["positiveTemplate"] || t.attrs["negativeTemplate"]) {
+                            value = +value;
+                            if(value>=0) {
+                                if(t.attrs["negativeTemplate"]) {
+                                    value = t.attrs["positiveTemplate"].replace("${value}",value);
+                                }
+                            } else if(t.attrs["negativeTemplate"]) {
+                                if(t.attrs["doAbsolute"]) {
+                                    value = -value;
+                                }
+                                value = t.attrs["negativeTemplate"].replace("${value}",value);
+                            }
+                        } 
+
+                        if(t.attrs["youtube"]) {
+                            if(value.trim().length==0) return null;
+                            let toks = value.match(/.*watch\?v=(.*)$/);
+                            if(!toks || toks.length!=2) {
+                                s +=  HU.href(value,value);
+                            } else {
+                                let id = toks[1];
+                                let autoplay  = t.attrs["autoplay"]||"false";
+                                let playerId = "video_1";
+                                let embedUrl = "//www.youtube.com/embed/" + id +
+                                    "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
+                                s +=  HU.href(value,"Link") +"<br>";
+                                s+=  HU.tag('iframe',[ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
+                                                      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs['height']||400, 
+                                                      SRC,embedUrl
+                                                     ]);
+                            }
+                            return s;
+                        }
 
 
-			if(t.attrs["urlField"]) {
-			    let url =  source[t.attrs["urlField"]];
-			    if(Utils.stringDefined(url)) {
-				value = HU.href(url,value);
-			    }
-			}
-			if(t.attrs["offset1"]) {
-			    value = value+ parseFloat(t.attrs["offset1"]);
-			}
-			if(t.attrs["scale"]) {
-			    value = value* parseFloat(t.attrs["scale"]);
-			}
-			if(t.attrs["offset2"]) {
-			    value = value+ parseFloat(t.attrs["offset2"]);
-			}
-			if(t.attrs["decimals"]) {
-			    value = parseFloat(value);
-			    let scale = Math.pow(10,t.attrs["decimals"]);
-			    value = (Math.floor(value * scale) /scale);
-			}
-			if(t.attrs["format"]) {
-			    let fmt = t.attrs["format"]
-			    if(fmt == "comma") {
-				if(isNaN(value)) value=0;
-				else if(value!=0)
-				    value = Utils.formatNumberComma(value);
-			    }
-			}
-			if(t.attrs["lowercase"]) {
-			    value = String(value).toLowerCase();
-			}
-			if(t.attrs["uppercase"]) {
-			    value = String(value).toUpperCase();
-			}			
-			if(t.attrs["camelcase"]) {
-			    value = Utils.camelCase(String(value), true);
-			}
-			if(t.attrs["suffix"]) {
-			    value = value+t.attrs["suffix"];
-			}
-			if(t.attrs["prefix"]) {
-			    value = t.attrs["prefix"]+value;
-			}
-			if(t.attrs["toggle"]) {
-			    //value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
-			}
-			if(t.attrs["image"]) {
-			    if(Utils.stringDefined(value) && t.attrs['urlPrefix']) {
-				value  = t.attrs['urlPrefix']+value;
-			    }
-
-			    if(!Utils.stringDefined(value) && t.attrs['defaultUrl']) {
-				value = t.attrs['defaultUrl'];
-			    }
-
-			    if(value!="") {
-				let title = "";
-				if(t.attrs["title"]) {
-				    title = t.attrs["title"];
-				    for(a in source)
-					title = title.replace("{" + a+"}",source[a]);
-				}
-				let attrs = ["title", title,'data-caption',title];
-				if(t.attrs["height"]) {
-				    attrs.push("height");
-				    attrs.push(t.attrs["height"]);
-				} else {
-				    attrs.push("width");
-				    attrs.push(t.attrs["width"]||"100%");
-				}
-				attrs.push("loading");
-				attrs.push("lazy");
-				let url = value;
-				value = HtmlUtils.image(url,attrs);
-				if(t.attrs['doPopup']) {
-				    if(!t.attrs['popupBase']) {
-					t.attrs['popupBase'] = "gallery"+Utils.getUniqueId();
-				    }
-				    let base = t.attrs['popupBase'];
-				    value = HU.href(url,value,[CLASS,"popup_image","data-fancybox","fancybox","data-caption",title,'title',title]);
-				}
-			    }
-			}
-
-			if(t.attrs["images"]) {
-			    if(value!="") {
-				value=value.trim();
-				let images;
-				if(value.startsWith("[")) {
-				    images = JSON.parse(value);
-				} else {
-				    if(t.attrs["delimiter"]) {
-					images = value.split(t.attrs["delimiter"]);
-				    } else {
-					images = value.split(";");
-				    }
-				}
-				let title = "";
-				if(t.attrs["title"]) {
-				    title = t.attrs["title"];
-				    for(a in source)
-					title = title.replace("{" + a+"}",source[a]);
-				}
-				let attrs = ["title", title];
-				if(t.attrs["height"]) {
-				    attrs.push("height");
-				    attrs.push(t.attrs["height"]);
-				} else {
-				    attrs.push("width");
-				    attrs.push(t.attrs["width"]||"100%");
-				}
-				console.log("VALUE:" + value);
-				value ="";
-				images.forEach(image=>{
-				    value += HtmlUtils.image(image,attrs);
-				});
-				console.log(value);
-			    }
-			}
+                        if(t.attrs["list"]) {
+                            value = String(value);
+                            s+="<ul>"
+                            value.split("\n").forEach(line=>{
+                                line = line.trim();
+                                if(line!="") {
+                                    s+="<li> " + line
+                                }
+                            });
+                            s+="</ul>"
+                            return s;
+                        }
+                        if(t.attrs["pre"]) {
+                            value = String(value);
+                            if(value.trim()!="") 
+                                value = "<pre class=thin_pre>" + value.trim()+"</pre>"
+                            return value;
+                        }
+                        if(t.attrs["showUrl"]) {
+                            let label = t.attrs['label'] || value;
+                            value = HU.href(value,label,['target','_other','style',t.attrs['style']||'']);
+                        }
+                        if(t.attrs['delimiter'] && t.attrs['fields']) {
+                            let l = [];
+                            if(Utils.stringDefined(value)) l.push(value);
+                            t.attrs['fields'].split(",").forEach(f=>{
+                                let v=  source[f];
+                                if(Utils.stringDefined(v)) l.push(v);
+                            });
+                            value = Utils.join(l,t.attrs['delimiter']);
+                        }
 
 
+                        if(t.attrs["urlField"]) {
+                            let url =  source[t.attrs["urlField"]];
+                            if(Utils.stringDefined(url)) {
+                                value = HU.href(url,value);
+                            }
+                        }
+                        if(t.attrs["offset1"]) {
+                            value = value+ parseFloat(t.attrs["offset1"]);
+                        }
+                        if(t.attrs["scale"]) {
+                            value = value* parseFloat(t.attrs["scale"]);
+                        }
+                        if(t.attrs["offset2"]) {
+                            value = value+ parseFloat(t.attrs["offset2"]);
+                        }
+                        if(t.attrs["decimals"]) {
+                            value = parseFloat(value);
+                            let scale = Math.pow(10,t.attrs["decimals"]);
+                            value = (Math.floor(value * scale) /scale);
+                        }
+                        if(t.attrs["format"]) {
+                            let fmt = t.attrs["format"]
+                            if(fmt == "comma") {
+                                if(isNaN(value)) value=0;
+                                else if(value!=0)
+                                    value = Utils.formatNumberComma(value);
+                            }
+                        }
+                        if(t.attrs["lowercase"]) {
+                            value = String(value).toLowerCase();
+                        }
+                        if(t.attrs["uppercase"]) {
+                            value = String(value).toUpperCase();
+                        }                       
+                        if(t.attrs["camelcase"]) {
+                            value = Utils.camelCase(String(value), true);
+                        }
+                        if(t.attrs["suffix"]) {
+                            value = value+t.attrs["suffix"];
+                        }
+                        if(t.attrs["prefix"]) {
+                            value = t.attrs["prefix"]+value;
+                        }
+                        if(t.attrs["toggle"]) {
+                            //value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
+                        }
+                        if(t.attrs["image"]) {
+                            if(Utils.stringDefined(value) && t.attrs['urlPrefix']) {
+                                value  = t.attrs['urlPrefix']+value;
+                            }
 
-			if(t.attrs["template"]) {
-			    value = t.attrs["template"].replace("{value}",value);
-			}
-			if(t.attrs["templateif"]) {
-			    let toks = t.attrs["templateif"].split(":");
-			    let pattern = toks[0];
-			    let template = toks.slice(1).join(":");
-			    value = String(value);
-			    if(value.match(pattern)) {
-				value = template.replace("{value}",value);
-			    }
-			}
+                            if(!Utils.stringDefined(value) && t.attrs['defaultUrl']) {
+                                value = t.attrs['defaultUrl'];
+                            }
+
+                            if(value!="") {
+                                let title = "";
+                                if(t.attrs["title"]) {
+                                    title = t.attrs["title"];
+                                    for(a in source)
+                                        title = title.replace("{" + a+"}",source[a]);
+                                }
+                                let attrs = ["title", title,'data-caption',title];
+                                if(t.attrs["height"]) {
+                                    attrs.push("height");
+                                    attrs.push(t.attrs["height"]);
+                                } else {
+                                    attrs.push("width");
+                                    attrs.push(t.attrs["width"]||"100%");
+                                }
+                                attrs.push("loading");
+                                attrs.push("lazy");
+                                let url = value;
+                                value = HtmlUtils.image(url,attrs);
+                                if(t.attrs['doPopup']) {
+                                    if(!t.attrs['popupBase']) {
+                                        t.attrs['popupBase'] = "gallery"+Utils.getUniqueId();
+                                    }
+                                    let base = t.attrs['popupBase'];
+                                    value = HU.href(url,value,[CLASS,"popup_image","data-fancybox","fancybox","data-caption",title,'title',title]);
+                                }
+                            }
+                        }
+
+                        if(t.attrs["images"]) {
+                            if(value!="") {
+                                value=value.trim();
+                                let images;
+                                if(value.startsWith("[")) {
+                                    images = JSON.parse(value);
+                                } else {
+                                    if(t.attrs["delimiter"]) {
+                                        images = value.split(t.attrs["delimiter"]);
+                                    } else {
+                                        images = value.split(";");
+                                    }
+                                }
+                                let title = "";
+                                if(t.attrs["title"]) {
+                                    title = t.attrs["title"];
+                                    for(a in source)
+                                        title = title.replace("{" + a+"}",source[a]);
+                                }
+                                let attrs = ["title", title];
+                                if(t.attrs["height"]) {
+                                    attrs.push("height");
+                                    attrs.push(t.attrs["height"]);
+                                } else {
+                                    attrs.push("width");
+                                    attrs.push(t.attrs["width"]||"100%");
+                                }
+                                console.log("VALUE:" + value);
+                                value ="";
+                                images.forEach(image=>{
+                                    value += HtmlUtils.image(image,attrs);
+                                });
+                                console.log(value);
+                            }
+                        }
 
 
 
-			if(t.attrs['cropLength'] && value.length>+t.attrs['cropLength']) {
-			    let idx = +t.attrs['cropLength'];
-			    while(idx>=0) {
-				if(value[idx]==' ' ||value[idx]=='\n' ||value[idx]=='\t') {
-				    break;
-				}
-				idx--;
-			    }
-			    if(idx==0) {
-				while(idx<value.length) {
-				    if(value[idx]==' ' ||value[idx]=='\n' ||value[idx]=='\t') {
-					break;
-				    }
-				    idx++;
-				}
-			    }
-			    let id = Utils.getUniqueId();
-
-			    let pre = value.substring(0,idx) +HU.span([ID,id+"_ellipsis"], "...");
-			    let post = HU.span([ID,id+"_post",STYLE,HU.css('display','none')], value.substring(idx));			    
-			    let toggle = HU.div(['onclick',"Utils.toggleShowMore('" + id+"')",ID,id,CLASS,'ramadda-showmore ramadda-clickable'], "Show More " + HU.getIconImage("fas fa-sort-down"));			
-			    value = pre + post + toggle;
-			}
+                        if(t.attrs["template"]) {
+                            value = t.attrs["template"].replace("{value}",value);
+                        }
+                        if(t.attrs["templateif"]) {
+                            let toks = t.attrs["templateif"].split(":");
+                            let pattern = toks[0];
+                            let template = toks.slice(1).join(":");
+                            value = String(value);
+                            if(value.match(pattern)) {
+                                value = template.replace("{value}",value);
+                            }
+                        }
 
 
 
-			if(t.attrs["maxwidth"]) {
-			    let width = t.attrs["maxwidth"];
-			    value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
-			}
-			s+=value;
-			return s;
-		    };
-		    let s = "";
-		    this.tokens.forEach(t=>{
-			if(t.type=="string") {
-			    s+=t.s;
-			} else {
-			    let v=null;
-			    if(hook) v = hook(t,  source[t.tag]);
-			    if(!v) v = tokenFunc(t);
-			    if(!v) return;
-			    if(v.trim().length>0 && t.attrs["toggle"]) {	
-				v = HU.toggleBlock(t.attrs["label"]||"More",v);
-			    }
+                        if(t.attrs['cropLength'] && value.length>+t.attrs['cropLength']) {
+                            let idx = +t.attrs['cropLength'];
+                            while(idx>=0) {
+                                if(value[idx]==' ' ||value[idx]=='\n' ||value[idx]=='\t') {
+                                    break;
+                                }
+                                idx--;
+                            }
+                            if(idx==0) {
+                                while(idx<value.length) {
+                                    if(value[idx]==' ' ||value[idx]=='\n' ||value[idx]=='\t') {
+                                        break;
+                                    }
+                                    idx++;
+                                }
+                            }
+                            let id = Utils.getUniqueId();
 
-			    s+=v;
-			}
-		    });
-		    return s;
-		},
-		getText: function() {
-		    let cnt = 0;
-		    let s ="";
-		    this.tokens.map(t=>{
-			if(t.type=="string") {
-			    s+=t.s;
-			} else {
-			    s+="${macro" + cnt+"}";
-			    cnt++;
-			}
-		    });
-		    return s;
-		}
-	       };
+                            let pre = value.substring(0,idx) +HU.span([ID,id+"_ellipsis"], "...");
+                            let post = HU.span([ID,id+"_post",STYLE,HU.css('display','none')], value.substring(idx));                       
+                            let toggle = HU.div(['onclick',"Utils.toggleShowMore('" + id+"')",ID,id,CLASS,'ramadda-showmore ramadda-clickable'], "Show More " + HU.getIconImage("fas fa-sort-down"));                   
+                            value = pre + post + toggle;
+                        }
+
+
+
+                        if(t.attrs["maxwidth"]) {
+                            let width = t.attrs["maxwidth"];
+                            value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
+                        }
+                        s+=value;
+                        return s;
+                    };
+                    let s = "";
+                    this.tokens.forEach(t=>{
+                        if(t.type=="string") {
+                            s+=t.s;
+                        } else {
+                            let v=null;
+                            if(hook) v = hook(t,  source[t.tag]);
+                            if(!v) v = tokenFunc(t);
+                            if(!v) return;
+                            if(v.trim().length>0 && t.attrs["toggle"]) {        
+                                v = HU.toggleBlock(t.attrs["label"]||"More",v);
+                            }
+
+                            s+=v;
+                        }
+                    });
+                    return s;
+                },
+                getText: function() {
+                    let cnt = 0;
+                    let s ="";
+                    this.tokens.map(t=>{
+                        if(t.type=="string") {
+                            s+=t.s;
+                        } else {
+                            s+="${macro" + cnt+"}";
+                            cnt++;
+                        }
+                    });
+                    return s;
+                }
+               };
     },
     toggleShowMore: function(id) {
-	let toggle = $("#" + id);
-	let open = toggle.attr('open');
-	open = !open;
-	toggle.attr('open',open);
-	if(open) {
-	    $('#'+id+'_ellipsis').hide();
-	    $('#'+id+'_post').show();	    
-	    toggle.html("Show Less " + HU.getIconImage("fas fa-sort-up"));			
-	} else {
-	    $('#'+id+'_ellipsis').show();
-	    $('#'+id+'_post').hide();	    
-	    toggle.html("Show More " + HU.getIconImage("fas fa-sort-down"));			
-	}
+        let toggle = $("#" + id);
+        let open = toggle.attr('open');
+        open = !open;
+        toggle.attr('open',open);
+        if(open) {
+            $('#'+id+'_ellipsis').hide();
+            $('#'+id+'_post').show();       
+            toggle.html("Show Less " + HU.getIconImage("fas fa-sort-up"));                      
+        } else {
+            $('#'+id+'_ellipsis').show();
+            $('#'+id+'_post').hide();       
+            toggle.html("Show More " + HU.getIconImage("fas fa-sort-down"));                    
+        }
     },
     formatNumberComma: function(number) {
-	if(!Utils.isDefined(number)) {
-	    return "NA";
-	}	    
-	let whole = Math.floor(number);
-	let rem = number-whole;
-	let wholeFormatted = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	if(rem==0) {
-	    return wholeFormatted;
-	} else {
-	    let a = Math.abs(number);
-	    let decimals = 0;
-	    if(a>=9999)
-		decimals = 0;
-	    else if(a>=999)
-		decimals = 1;
-	    else if(a>=99)
-		decimals = 2;
-	    else if(a>=9)
-		decimals = 3;
-	    else
-		decimals = 4
-	    let x =  number_format(number,decimals);
-	    return x;
-	    //	    return wholeFormatted +"." + String(Utils.formatNumber(rem)).replace("0\.","");
-	}
+        if(!Utils.isDefined(number)) {
+            return "NA";
+        }           
+        let whole = Math.floor(number);
+        let rem = number-whole;
+        let wholeFormatted = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if(rem==0) {
+            return wholeFormatted;
+        } else {
+            let a = Math.abs(number);
+            let decimals = 0;
+            if(a>=9999)
+                decimals = 0;
+            else if(a>=999)
+                decimals = 1;
+            else if(a>=99)
+                decimals = 2;
+            else if(a>=9)
+                decimals = 3;
+            else
+                decimals = 4
+            let x =  number_format(number,decimals);
+            return x;
+            //      return wholeFormatted +"." + String(Utils.formatNumber(rem)).replace("0\.","");
+        }
     },
     formatFileLength:function(bytes) {
         if (bytes < 0) {
@@ -1784,21 +1784,21 @@ var Utils =  {
 
     numberToString:null,
     roundDecimals: function(value, decimals,debug) {
-	//create the NumberFormat for better performance
-	if(this.numberToString==null) {
-	    this.numberToString = new Intl.NumberFormat('fullwide',{ useGrouping: false });
-	}
-//	let s = value.toLocaleString('fullwide', { useGrouping: false });
-	let s = this.numberToString.format(value);
-	let v =  Number(Math.round(s+'e'+decimals)+'e-'+decimals);
-	if(debug)
-	    console.log("decimals:" +s +" " + Math.round(s+'e'+decimals));
-	return v;
+        //create the NumberFormat for better performance
+        if(this.numberToString==null) {
+            this.numberToString = new Intl.NumberFormat('fullwide',{ useGrouping: false });
+        }
+//      let s = value.toLocaleString('fullwide', { useGrouping: false });
+        let s = this.numberToString.format(value);
+        let v =  Number(Math.round(s+'e'+decimals)+'e-'+decimals);
+        if(debug)
+            console.log("decimals:" +s +" " + Math.round(s+'e'+decimals));
+        return v;
     },
     formatNumber: function(number, toFloat,debug) {
         let s = this.formatNumberInner(number,debug);
         if (toFloat) return parseFloat(s);
-	return s;
+        return s;
     },
     formatNumberInner: function(number,debug) {
         var anumber = Math.abs(number);
@@ -1841,7 +1841,7 @@ var Utils =  {
     },
     cleanId: function(id) {
         id = id.replace(/:/g, "_").replace(/\./g, "_").replace(/=/g, "_").replace(/\//g, "_").replace(/[\(\)]/g,"_");
-	id = id.replace(/[^a-zA-Z0-9_]/g,"_");
+        id = id.replace(/[^a-zA-Z0-9_]/g,"_");
         return id;
     },
     isMobile: function() {
@@ -1875,164 +1875,164 @@ var Utils =  {
         return params;
     },
     checkTabs:function(html) {
-	while (1) {
+        while (1) {
             var re = new RegExp("id=\"(tabId[^\"]+)\"");
             var m = re.exec(html);
             if (!m) {
-		break;
+                break;
             }
             var s = m[1];
             if (s.indexOf("-") < 0) {
-		jQuery(function() {
+                jQuery(function() {
                     jQuery('#' + s).tabs();
-		});
+                });
             }
             var idx = html.indexOf("id=\"tabId");
             if (idx < 0) {
-		break;
+                break;
             }
             html = html.substring(idx + 20);
-	}
+        }
     },
 
 
 
     initRangeSelect:function() {
-	let select = $(".ramadda-range-select");
-	let func = function() {
-	    let toId = $(this).attr("to-id");
-	    let val = $(this).val();
-	    if(val=="between")
-		$("#"+toId).show();
-	    else
-		$("#"+toId).hide();
+        let select = $(".ramadda-range-select");
+        let func = function() {
+            let toId = $(this).attr("to-id");
+            let val = $(this).val();
+            if(val=="between")
+                $("#"+toId).show();
+            else
+                $("#"+toId).hide();
 
-	};
-	select.each(func);
-	select.change(func);
+        };
+        select.each(func);
+        select.change(func);
     },
 
 
     initPageReload:function(time, id, showLabel) {
-	let cbx = $("#" + id);
-	let label = $("#" + id+"_label");
-	if(cbx.length>0) {
-	    cbx.change(()=>{
-		let text = "Reload" +HtmlUtils.span([STYLE,"color:transparent"]," in 00  seconds")
-		label.html(text);
-		if(cbx.is(':checked')) {
-		    Utils.checkPageReload(time,id,showLabel);
-		}
-	    });
-	}
-	if(cbx.length==0  || cbx.is(':checked')) {
-	    Utils.checkPageReload(time,id,showLabel);
-	}
+        let cbx = $("#" + id);
+        let label = $("#" + id+"_label");
+        if(cbx.length>0) {
+            cbx.change(()=>{
+                let text = "Reload" +HtmlUtils.span([STYLE,"color:transparent"]," in 00  seconds")
+                label.html(text);
+                if(cbx.is(':checked')) {
+                    Utils.checkPageReload(time,id,showLabel);
+                }
+            });
+        }
+        if(cbx.length==0  || cbx.is(':checked')) {
+            Utils.checkPageReload(time,id,showLabel);
+        }
     },
     checkPageReloadPending: false,
     checkPageReload:function(time, id, showLabel) {
-	let cbx = $("#" + id);
-	let label = $("#" + id+"_label");
-	if(cbx.length>0  &&!cbx.is(':checked')) {
-	    return;
-	}
-	if(time<=0) {
-	    location.reload();
-	    return;
-	}
-	if(showLabel) {
-	    let text = "Reload in " +time+" seconds";
-	    label.html(text);
-	} 
-	if(time<=5) {
-	    label.css("background","#eee");
-	} else {
-	    label.css("background","transparent");
-	}
-	if(!Utils.checkPageReloadPending) {
-	    Utils.checkPageReloadPending=true;
-	    setTimeout(()=>{
-		Utils.checkPageReloadPending=false;
-		Utils.checkPageReload(time-1,id,showLabel);
-	    },1000);
-	}
+        let cbx = $("#" + id);
+        let label = $("#" + id+"_label");
+        if(cbx.length>0  &&!cbx.is(':checked')) {
+            return;
+        }
+        if(time<=0) {
+            location.reload();
+            return;
+        }
+        if(showLabel) {
+            let text = "Reload in " +time+" seconds";
+            label.html(text);
+        } 
+        if(time<=5) {
+            label.css("background","#eee");
+        } else {
+            label.css("background","transparent");
+        }
+        if(!Utils.checkPageReloadPending) {
+            Utils.checkPageReloadPending=true;
+            setTimeout(()=>{
+                Utils.checkPageReloadPending=false;
+                Utils.checkPageReload(time-1,id,showLabel);
+            },1000);
+        }
     },
     areDisplaysReady: function() {
-	if(!Utils.getPageLoaded()) {
-	    return 0;
-	}
-	if(Utils.displaysList.length==0) {
-	    return 1;
-	}
-	let allReady = true;
-	Utils.displaysList.forEach(display=>{
-	    if(!display.isDisplayFinished) return;
-	    if(!display.isDisplayFinished()) {
-		allReady = false;
-	    }
-	});
-	if(allReady) {
-	    return 1
-	}
-	return 0;
+        if(!Utils.getPageLoaded()) {
+            return 0;
+        }
+        if(Utils.displaysList.length==0) {
+            return 1;
+        }
+        let allReady = true;
+        Utils.displaysList.forEach(display=>{
+            if(!display.isDisplayFinished) return;
+            if(!display.isDisplayFinished()) {
+                allReady = false;
+            }
+        });
+        if(allReady) {
+            return 1
+        }
+        return 0;
     },
     checkForResize: function() {
-	/*
-	  When the window resizes then clear any past timeouts
-	  and setTimeout for 1 second to notify the displays
-	*/
+        /*
+          When the window resizes then clear any past timeouts
+          and setTimeout for 1 second to notify the displays
+        */
 
-	$(window).resize(()=>{
-	    if(this.pendingResizeTimeout) {
-		clearTimeout(this.pendingResizeTimeout);
-		this.pendingResizeTimeout = null;
-	    }
+        $(window).resize(()=>{
+            if(this.pendingResizeTimeout) {
+                clearTimeout(this.pendingResizeTimeout);
+                this.pendingResizeTimeout = null;
+            }
             let timeoutFunc = ()=>  {
                 for (let i = 0; i < Utils.displaysList.length; i++) {
-		    let display = Utils.displaysList[i];
-		    if (display.displayData) {
+                    let display = Utils.displaysList[i];
+                    if (display.displayData) {
                         display.displayData();
-		    }
+                    }
                 }
-		this.pendingResizeTimeout=null;
+                this.pendingResizeTimeout=null;
             };
             this.pendingResizeTimeout = setTimeout(timeoutFunc, 1000);
-	});
+        });
     },
     displaysList:[],
     displaysMap:[],
     addDisplay: function(display) {
-	this.displaysList.push(display);
-	if(display.getId) {
-	    this.displaysMap[display.getId()] = display;
-	}
-	if (display.displayId) {
+        this.displaysList.push(display);
+        if(display.getId) {
+            this.displaysMap[display.getId()] = display;
+        }
+        if (display.displayId) {
             this.displaysMap[display.displayId] = display;
-	}
+        }
     },
     removeDisplay: function(display) {
-	let index = this.displaysList.indexOf(display);
-	if(index>=0)
-	    this.displaysList.splice(index,1);
-	if(display.getId) {
-	    delete this.displaysMap[display.getId()];
-	}
-	if (display.displayId) {
+        let index = this.displaysList.indexOf(display);
+        if(index>=0)
+            this.displaysList.splice(index,1);
+        if(display.getId) {
+            delete this.displaysMap[display.getId()];
+        }
+        if (display.displayId) {
             delete this.displaysMap[display.displayId];
-	}
+        }
     },
     initDisplays: function() {
-	//	console.log("initDisplays");
-	this.displaysList.forEach(d=>{
-	    if(d.pageHasLoaded) {
-		let t1 = new Date();
-		//		console.log("\t calling pageHasLoaded:" + d.type); 
-		d.pageHasLoaded();
-		let t2= new Date();
-		//		Utils.displayTimes("after pageHasLoaded:" + d.type,[t1,t2],true);
-	    }
-	});
-	//	console.timeEnd("initDisplays");
+        //      console.log("initDisplays");
+        this.displaysList.forEach(d=>{
+            if(d.pageHasLoaded) {
+                let t1 = new Date();
+                //              console.log("\t calling pageHasLoaded:" + d.type); 
+                d.pageHasLoaded();
+                let t2= new Date();
+                //              Utils.displayTimes("after pageHasLoaded:" + d.type,[t1,t2],true);
+            }
+        });
+        //      console.timeEnd("initDisplays");
     },
     getPageLoaded: function() {
         return this.pageLoaded;
@@ -2042,15 +2042,15 @@ var Utils =  {
         if (!parent) parent = "";
         else parent = parent + " ";
         //tableize
-	try {
-	    let tables = $(parent + ".ramadda-table");
-	    if(tables.length) {
-		HtmlUtils.formatTable(tables);
-	    }
-	} catch (e) {
-	    console.log("Error formatting table:" + e);
-	    console.log(e.stack);
-	}
+        try {
+            let tables = $(parent + ".ramadda-table");
+            if(tables.length) {
+                HtmlUtils.formatTable(tables);
+            }
+        } catch (e) {
+            console.log("Error formatting table:" + e);
+            console.log(e.stack);
+        }
         var snippets = $(parent + ".ramadda-snippet-hover");
         snippets.each(function() {
             let snippet = $(this);
@@ -2071,60 +2071,60 @@ var Utils =  {
                     collision: "fit fit"
                 });
             },
-				   function() {
-				       HtmlUtils.getTooltip().hide();
-				   }
-				  );
+                                   function() {
+                                       HtmlUtils.getTooltip().hide();
+                                   }
+                                  );
         });
 
-	let pageTitle = $(parent+".ramadda-page-title");
-	let headerCenter = $(parent +".ramadda-header-center");
-	if(pageTitle.length && headerCenter.length) {
-	    //There might be more than one so take the first
-	    pageTitle= pageTitle.first();
-	    headerCenter = headerCenter.first();
-	    $(window).scroll(()=>{
-		let titleTop = pageTitle.offset().top;
-		let bottom = headerCenter.offset().top + headerCenter.height();
-		if(titleTop<bottom-10) {
-		    if(!this.showingHeaderCenter) {
-			this.showingHeaderCenter = true; 
-			headerCenter.html(pageTitle.html());
-			pageTitle.html("&nbsp;");
-		    }
-		} else {
-		    if(this.showingHeaderCenter) {
-			this.showingHeaderCenter = false
-			pageTitle.html(headerCenter.html());
-			headerCenter.html("&nbsp;");
-		    }
-		}
-	    });
-	}
+        let pageTitle = $(parent+".ramadda-page-title");
+        let headerCenter = $(parent +".ramadda-header-center");
+        if(pageTitle.length && headerCenter.length) {
+            //There might be more than one so take the first
+            pageTitle= pageTitle.first();
+            headerCenter = headerCenter.first();
+            $(window).scroll(()=>{
+                let titleTop = pageTitle.offset().top;
+                let bottom = headerCenter.offset().top + headerCenter.height();
+                if(titleTop<bottom-10) {
+                    if(!this.showingHeaderCenter) {
+                        this.showingHeaderCenter = true; 
+                        headerCenter.html(pageTitle.html());
+                        pageTitle.html("&nbsp;");
+                    }
+                } else {
+                    if(this.showingHeaderCenter) {
+                        this.showingHeaderCenter = false
+                        pageTitle.html(headerCenter.html());
+                        headerCenter.html("&nbsp;");
+                    }
+                }
+            });
+        }
         //Buttonize
         $(parent + ':submit').button().click(function(event) {});
         $(parent + '.ramadda-button').button().click(function(event) {});
 
-	//Headers
-	let headings = $(parent + '.ramadda-linkable');
+        //Headers
+        let headings = $(parent + '.ramadda-linkable');
 
-	headings.mouseenter(function(){
-	    let id = $(this).attr("id");
-	    if(!id) return;
-	    $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[STYLE,"font-size:10pt;"]));
-	    $("#" + id +"-hover").show();
-	});
-	headings.click(function(){
-	    let id = $(this).attr("id");
-	    if(id) {
-		HU.scrollToAnchor(id,-50);
-	    }
-	});
-	headings.mouseleave(function(){
-	    let id = $(this).attr("id");
-	    if(!id) return;
-	    $("#" + id +"-hover").hide();
-	});	
+        headings.mouseenter(function(){
+            let id = $(this).attr("id");
+            if(!id) return;
+            $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[STYLE,"font-size:10pt;"]));
+            $("#" + id +"-hover").show();
+        });
+        headings.click(function(){
+            let id = $(this).attr("id");
+            if(id) {
+                HU.scrollToAnchor(id,-50);
+            }
+        });
+        headings.mouseleave(function(){
+            let id = $(this).attr("id");
+            if(!id) return;
+            $("#" + id +"-hover").hide();
+        });     
         //menuize
         /*
           $(".ramadda-pulldown").selectBoxIt({});
@@ -2136,284 +2136,284 @@ var Utils =  {
     searchAscending:false,
     searchCnt:0,
     searchSuggestInit:function(id, hereId, type, icon, resultsId) {
-	let input = $("#"+ id);
-	let here = $("#"+ hereId);	
-	if(!Utils.isDefined(icon)) icon = true;
-	let submitForm = false;
-	if(!resultsId) {
-	    submitForm = true;
-	    resultsId = HU.getUniqueId();
-	    let width = input.width();
-	    let results = HU.div([ID,resultsId,STYLE,HU.css("border","0px","width",width+"px","position","absolute"), CLASS,'ramadda-popup ramadda-search-popup'],"");
-	    input.parent().append(results);
-	}
+        let input = $("#"+ id);
+        let here = $("#"+ hereId);      
+        if(!Utils.isDefined(icon)) icon = true;
+        let submitForm = false;
+        if(!resultsId) {
+            submitForm = true;
+            resultsId = HU.getUniqueId();
+            let width = input.width();
+            let results = HU.div([ID,resultsId,STYLE,HU.css("border","0px","width",width+"px","position","absolute"), CLASS,'ramadda-popup ramadda-search-popup'],"");
+            input.parent().append(results);
+        }
 
-	let results = $("#" + resultsId);
-	let closer = () =>{
-	    results.slideUp(250);
-	};
+        let results = $("#" + resultsId);
+        let closer = () =>{
+            results.slideUp(250);
+        };
 
-	let doSearch = () =>{
-	    let newVal = input.val()||"";
-	    this.searchCnt++;
-	    if(this.pendingSearch) {
-		clearTimeout(this.pendingSearch);
-		this.pendingSearch = null;
-	    }	    
+        let doSearch = () =>{
+            let newVal = input.val()||"";
+            this.searchCnt++;
+            if(this.pendingSearch) {
+                clearTimeout(this.pendingSearch);
+                this.pendingSearch = null;
+            }       
 
-	    if(newVal.length==0) {
-		closer();
-		return;
-	    }
+            if(newVal.length==0) {
+                closer();
+                return;
+            }
 
-	    //wait a bit
-	    this.pendingSearch = setTimeout(()=> {
-		this.pendingSearch = null;
-		Utils.doSearchSuggest(this.searchCnt, input, here, results, type,submitForm);
-	    },200);
-	};
-	if(here.length) {
-	    here.change(doSearch);
-	}
+            //wait a bit
+            this.pendingSearch = setTimeout(()=> {
+                this.pendingSearch = null;
+                Utils.doSearchSuggest(this.searchCnt, input, here, results, type,submitForm);
+            },200);
+        };
+        if(here.length) {
+            here.change(doSearch);
+        }
 
-	Utils.searchLastInput = input.val();
-	input.keyup(e=> {
+        Utils.searchLastInput = input.val();
+        input.keyup(e=> {
             let keyCode = e.keyCode || e.which;
-//	    console.log("k:" + keyCode);
+//          console.log("k:" + keyCode);
             if (keyCode == 27) {
-		closer();
-		return;
+                closer();
+                return;
             }
 
             if (keyCode == 13) {
-		closer();
-		return;
+                closer();
+                return;
             }
             e.stopPropagation();
-	    doSearch();
-	});
+            doSearch();
+        });
     },
 
     doSearchSuggest:function(searchCnt,input, here, results, type, submitForm) {
-	let _this = this;
-	let newVal = input.val()||"";
-	Utils.searchLastInput = newVal;
-	let url = ramaddaBaseUrl + "/search/suggest?text=" + encodeURIComponent(newVal);
-	if (type) url += "&type=" + type;
-	if(here.length>0 && here.is(':checked') && ramaddaThisEntry)
-	    url +="&ancestor=" + ramaddaThisEntry;
-	url+="&ascending=" + Utils.searchAscending;
-	let jqxhr = $.getJSON(url, function(data) {
-	    if(searchCnt!=_this.searchCnt) {
-		return;
-	    }
-	    let opener = () =>{
-		results.slideDown(400);
-	    };	    
+        let _this = this;
+        let newVal = input.val()||"";
+        Utils.searchLastInput = newVal;
+        let url = ramaddaBaseUrl + "/search/suggest?text=" + encodeURIComponent(newVal);
+        if (type) url += "&type=" + type;
+        if(here.length>0 && here.is(':checked') && ramaddaThisEntry)
+            url +="&ancestor=" + ramaddaThisEntry;
+        url+="&ascending=" + Utils.searchAscending;
+        let jqxhr = $.getJSON(url, function(data) {
+            if(searchCnt!=_this.searchCnt) {
+                return;
+            }
+            let opener = () =>{
+                results.slideDown(400);
+            };      
 
             if (data.values.length == 0) {
-		results.html(HtmlUtils.div([CLASS, "ramadda-search-suggestion "],"No results"))
-		opener();
-		return;
+                results.html(HtmlUtils.div([CLASS, "ramadda-search-suggestion "],"No results"))
+                opener();
+                return;
             }
             let html = "";
             let even = true;
             data.values.forEach((value,i) =>{
-		let name = value.name;
-		let id = value.id;
-		let v = name.replace(/\"/g, "_quote_");
-		let entryLink =  HU.href(ramaddaBaseUrl + "/entry/show?entryid=" + id,HU.getIconImage(value.icon||icon_blank16) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
-		let searchLink;
-		if(submitForm) {
-		    searchLink =  HU.span([CLASS,"ramadda-highlightable ramadda-search-input","index",i,TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
-		} else {
-		    searchLink =  HU.href(ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(v),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
-		}
-		let row =  searchLink +  SPACE + entryLink;
-		//			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
-		html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion '], row);			
-		html +="\n";
-		even = !even;
+                let name = value.name;
+                let id = value.id;
+                let v = name.replace(/\"/g, "_quote_");
+                let entryLink =  HU.href(ramaddaBaseUrl + "/entry/show?entryid=" + id,HU.getIconImage(value.icon||icon_blank16) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
+                let searchLink;
+                if(submitForm) {
+                    searchLink =  HU.span([CLASS,"ramadda-highlightable ramadda-search-input","index",i,TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
+                } else {
+                    searchLink =  HU.href(ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(v),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
+                }
+                let row =  searchLink +  SPACE + entryLink;
+                //                      html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
+                html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion '], row);                      
+                html +="\n";
+                even = !even;
             });
             results.html(html);
-	    if(submitForm) {
-		let links = results.find(".ramadda-search-input");
-		links.css("cursor","pointer");
-		links.click(function(e) {
-		    e.stopPropagation();
-		    let v = data.values[$(this).attr("index")].name;
-		    input.val(v);
-		    input.closest("form").submit();
+            if(submitForm) {
+                let links = results.find(".ramadda-search-input");
+                links.css("cursor","pointer");
+                links.click(function(e) {
+                    e.stopPropagation();
+                    let v = data.values[$(this).attr("index")].name;
+                    input.val(v);
+                    input.closest("form").submit();
 
-		});
-	    }
-	    opener();
-	}).fail(function(jqxhr, textStatus, error) {
+                });
+            }
+            opener();
+        }).fail(function(jqxhr, textStatus, error) {
             console.log("fail:" + textStatus);
-	});
+        });
     },
 
     searchLink:function() {
-	let input = $("#popup_search_input");
-	let val = input.val().trim();
-	let url = $(this).attr('url');
-	if (val != "") {
+        let input = $("#popup_search_input");
+        let val = input.val().trim();
+        let url = $(this).attr('url');
+        if (val != "") {
             url += "?text=" + encodeURIComponent(val);
-	}
-	window.location = url;
+        }
+        window.location = url;
     },
 
     searchPopup:function(id,anchor) {
-	anchor = id;
-//	anchor = anchor || id;
-	let value = Utils.searchLastInput||"";
-	let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
-	form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
-				 STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
-	if(ramaddaThisEntry) {
-	    form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,"ramadda-clickable", "for","popup_search_here"]," here" + SPACE);
-	}
-	form +="</form>";
+        anchor = id;
+//      anchor = anchor || id;
+        let value = Utils.searchLastInput||"";
+        let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
+        form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
+                                 STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
+        if(ramaddaThisEntry) {
+            form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,"ramadda-clickable", "for","popup_search_here"]," here" + SPACE);
+        }
+        form +="</form>";
 
-	let linksId = HU.getUniqueId();
-	let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
-			    HU.link(ramaddaBaseUrl + '/search/form', 'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')])  +
-			    " | " +
-			    HU.link(ramaddaBaseUrl + '/search/type', 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
-			    " | " +
-			    HU.link(ramaddaBaseUrl + '/search/browse', 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
+        let linksId = HU.getUniqueId();
+        let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
+                            HU.link(ramaddaBaseUrl + '/search/form', 'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')])  +
+                            " | " +
+                            HU.link(ramaddaBaseUrl + '/search/type', 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
+                            " | " +
+                            HU.link(ramaddaBaseUrl + '/search/browse', 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
 
-	let resultsId = HU.getUniqueId('searchresults');
-	let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
-	let html = HU.div([CLASS,"ramadda-search-popup"],form+results);
-	let icon = $("#" + id);
-	this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
-	$("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
-	var input = $("#popup_search_input");
-	input.mousedown(function(evt) {
+        let resultsId = HU.getUniqueId('searchresults');
+        let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
+        let html = HU.div([CLASS,"ramadda-search-popup"],form+results);
+        let icon = $("#" + id);
+        this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
+        $("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
+        var input = $("#popup_search_input");
+        input.mousedown(function(evt) {
             evt.stopPropagation();
-	});
-	Utils.searchSuggestInit('popup_search_input', 'popup_search_here',null, true, resultsId);
-	input.focus();
+        });
+        Utils.searchSuggestInit('popup_search_input', 'popup_search_here',null, true, resultsId);
+        input.focus();
     },
     handleKeyPress:function(event) {
-	HtmlUtils.getTooltip().hide();
+        HtmlUtils.getTooltip().hide();
     },
     handleMouseDown:function(event) {
-	if (HtmlUtils.hasPopupObject() || Utils.tooltipObject) {
-	    setTimeout(() => {
-		if(Utils.tooltipObject) {
-		    Utils.tooltipObject.hide();
-		    Utils.tooltipObject = null;
-		}
-		if(HtmlUtils.hasPopupObject()) {
-		    let thisId = HtmlUtils.getPopupObject().attr("id");
-		    if (HtmlUtils.checkToHidePopup() && thisId == HtmlUtils.getPopupObject().attr("id")) {
-			HtmlUtils.hidePopupObject();
-		    }
-		}
-	    }, 250);
-	}
-	Utils.mouseIsDown = true;
-	Utils.mouseMoveCnt = 0;
-	return true;
+        if (HtmlUtils.hasPopupObject() || Utils.tooltipObject) {
+            setTimeout(() => {
+                if(Utils.tooltipObject) {
+                    Utils.tooltipObject.hide();
+                    Utils.tooltipObject = null;
+                }
+                if(HtmlUtils.hasPopupObject()) {
+                    let thisId = HtmlUtils.getPopupObject().attr("id");
+                    if (HtmlUtils.checkToHidePopup() && thisId == HtmlUtils.getPopupObject().attr("id")) {
+                        HtmlUtils.hidePopupObject();
+                    }
+                }
+            }, 250);
+        }
+        Utils.mouseIsDown = true;
+        Utils.mouseMoveCnt = 0;
+        return true;
     },
     handleMouseUp: function(event) {
-	event = GuiUtils.getEvent(event);
-	Utils.mouseIsDown = false;
-	GuiUtils.setCursor('default');
-	let obj = $("#ramadda-floatdiv");
-	if (obj.length) {
+        event = GuiUtils.getEvent(event);
+        Utils.mouseIsDown = false;
+        GuiUtils.setCursor('default');
+        let obj = $("#ramadda-floatdiv");
+        if (obj.length) {
             let dragSourceObj = Utils.entryDragInfo?GuiUtils.getDomObject(Utils.entryDragInfo.dragSource):null;
             if (dragSourceObj) {
-		let tox = GuiUtils.getLeft(dragSourceObj.obj);
-		let toy = GuiUtils.getTop(dragSourceObj.obj);
-		let fromx = parseInt(obj.css("left"));
-		let fromy = parseInt(obj.css("top"));
-		let steps = 10;
-		let dx = (tox - fromx) / steps;
-		let dy = (toy - fromy) / steps;
-		Utils.flyBackAndHide('ramadda-floatdiv', 0, steps, fromx, fromy, dx, dy);
+                let tox = GuiUtils.getLeft(dragSourceObj.obj);
+                let toy = GuiUtils.getTop(dragSourceObj.obj);
+                let fromx = parseInt(obj.css("left"));
+                let fromy = parseInt(obj.css("top"));
+                let steps = 10;
+                let dx = (tox - fromx) / steps;
+                let dy = (toy - fromy) / steps;
+                Utils.flyBackAndHide('ramadda-floatdiv', 0, steps, fromx, fromy, dx, dy);
             } else {
-		obj.hide();
+                obj.hide();
             }
-	    Utils.entryDragInfo = null;
-	    
-	}
-	return true;
+            Utils.entryDragInfo = null;
+            
+        }
+        return true;
     },
     flyBackAndHide: function(id, step, steps, fromx, fromy, dx, dy) {
-	var obj = GuiUtils.getDomObject(id);
-	if (!obj) {
+        var obj = GuiUtils.getDomObject(id);
+        if (!obj) {
             return;
-	}
-	step = step + 1;
-	obj.style.left = fromx + dx * step + "px";
-	obj.style.top = fromy + dy * step + "px";
-	var opacity = 80 * (steps - step) / steps;
-	if (step < steps) {
-	    let f = ()=>{
-		Utils.flyBackAndHide(id,step,steps,fromx,fromy, dx,dy);
-	    };
+        }
+        step = step + 1;
+        obj.style.left = fromx + dx * step + "px";
+        obj.style.top = fromy + dy * step + "px";
+        var opacity = 80 * (steps - step) / steps;
+        if (step < steps) {
+            let f = ()=>{
+                Utils.flyBackAndHide(id,step,steps,fromx,fromy, dx,dy);
+            };
             setTimeout(f, 30);
-	} else {
+        } else {
             setTimeout(()=>{Utils.finalHide(id)}, 150);
-	}
+        }
     },
     handleMouseMove:function(event) {
-	event = GuiUtils.getEvent(event);
-	if (Utils.entryDragInfo && Utils.mouseIsDown) {
+        event = GuiUtils.getEvent(event);
+        if (Utils.entryDragInfo && Utils.mouseIsDown) {
             Utils.mouseMoveCnt++;
             var obj = $("#ramadda-floatdiv");
             if (Utils.mouseMoveCnt == 6) {
-		GuiUtils.setCursor('move');
+                GuiUtils.setCursor('move');
             }
             if (Utils.mouseMoveCnt >= 6 && obj.length) {
-		Utils.moveFloatDiv(GuiUtils.getEventX(event), GuiUtils.getEventY(event));
+                Utils.moveFloatDiv(GuiUtils.getEventX(event), GuiUtils.getEventY(event));
             }
-	}
-	return true
+        }
+        return true
     },
 
     finalHide:function(id) {
-	var obj = GuiUtils.getDomObject(id);
-	if (!obj) {
+        var obj = GuiUtils.getDomObject(id);
+        if (!obj) {
             return;
-	}
-	hideObject(obj);
-	obj.style.filter = "alpha(opacity=80)";
-	obj.style.opacity = "0.8";
+        }
+        hideObject(obj);
+        obj.style.filter = "alpha(opacity=80)";
+        obj.style.opacity = "0.8";
     },
     moveFloatDiv:function(x, y) {
-	var obj = $("#ramadda-floatdiv");
-	if (obj.length) {
-	    let visible = obj.css("display")!="none";
+        var obj = $("#ramadda-floatdiv");
+        if (obj.length) {
+            let visible = obj.css("display")!="none";
             if (!visible) {
-		obj.show();
-		let html = "";
-		if (Utils.entryDragInfo) {
-		    html = Utils.entryDragInfo.getHtml();
-		}		
-		obj.html(html + "<br>Drag to a group to copy/move/associate");
+                obj.show();
+                let html = "";
+                if (Utils.entryDragInfo) {
+                    html = Utils.entryDragInfo.getHtml();
+                }               
+                obj.html(html + "<br>Drag to a group to copy/move/associate");
             }
-	    obj.css("top",y).css("left",x+10);
-	}
+            obj.css("top",y).css("left",x+10);
+        }
     },
     treeViewClick:function(entryId, url, label, template) {
-	var href = "<a href='" + url + "'> <img src=\"" + ramaddaCdn + "/icons/link.png" + "\" border=0> " + label + "</a>";
-	$("#treeview_header").html(href);
-	if (template)
+        var href = "<a href='" + url + "'> <img src=\"" + ramaddaCdn + "/icons/link.png" + "\" border=0> " + label + "</a>";
+        $("#treeview_header").html(href);
+        if (template)
             url = url + "&template=" + template;
-	$('#treeview_view').attr("src", url);
+        $('#treeview_view').attr("src", url);
     },
     initPage: function() {
         this.initContent();
         this.pageLoaded = true;
-	this.initDisplays();
-	document.onmousemove = Utils.handleMouseMove;
-	document.onmousedown = Utils.handleMouseDown;
-	document.onmouseup = Utils.handleMouseUp;
-	document.onkeypress = Utils.handleKeyPress;
+        this.initDisplays();
+        document.onmousemove = Utils.handleMouseMove;
+        document.onmousedown = Utils.handleMouseDown;
+        document.onmouseup = Utils.handleMouseUp;
+        document.onkeypress = Utils.handleKeyPress;
         //allow for tabs to be added to text areas
         $(document).delegate('textarea', 'keydown', function(e) {
             var keyCode = e.keyCode || e.which;
@@ -2422,174 +2422,174 @@ var Utils =  {
                 var start = this.selectionStart;
                 var end = this.selectionEnd;
                 $(this).val($(this).val().substring(0, start) +
-			    "\t" +
-			    $(this).val().substring(end));
+                            "\t" +
+                            $(this).val().substring(end));
                 this.selectionStart = this.selectionEnd = start + 1;
             }
         });
-	Utils.loadFunctions.forEach(f=>{
-	    f();
-	});
+        Utils.loadFunctions.forEach(f=>{
+            f();
+        });
     },
     copyText: function(str) {
-	const el = document.createElement('textarea');
-	el.value = str;
-	document.body.appendChild(el);
-	el.select();
-	document.execCommand('copy');
-	document.body.removeChild(el);
+        const el = document.createElement('textarea');
+        el.value = str;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
     },
     foregroundColors: {
-	purple: "white",
+        purple: "white",
     },
     getContrastYIQ: function(hexcolor){
-	//From: https://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
-	hexcolor = hexcolor.replace("#", "");
-	var r = parseInt(hexcolor.substr(0,2),16);
-	var g = parseInt(hexcolor.substr(2,2),16);
-	var b = parseInt(hexcolor.substr(4,2),16);
-	var yiq = ((r*299)+(g*587)+(b*114))/1000;
-	return (yiq >= 128) ? 'black' : 'white';
+        //From: https://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
+        hexcolor = hexcolor.replace("#", "");
+        var r = parseInt(hexcolor.substr(0,2),16);
+        var g = parseInt(hexcolor.substr(2,2),16);
+        var b = parseInt(hexcolor.substr(4,2),16);
+        var yiq = ((r*299)+(g*587)+(b*114))/1000;
+        return (yiq >= 128) ? 'black' : 'white';
     },
     getForegroundColor: function(c) {
-	if(!c) return null;
-	if(c.match("rgb")) c = Utils.rgbToHex(c);
-	if(!c) return "#000";
-	if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
-	return this.foregroundColors[c] ||"#000";
+        if(!c) return null;
+        if(c.match("rgb")) c = Utils.rgbToHex(c);
+        if(!c) return "#000";
+        if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
+        return this.foregroundColors[c] ||"#000";
     },
     darkerColor: function(c,amt) {
-	if(!c) return c;
-	return this.pSBC(amt||-0.5,c);
+        if(!c) return c;
+        return this.pSBC(amt||-0.5,c);
     },
     brighterColor: function(c,amt) {
-	if(!c) return c;
-	return this.pSBC(amt||0.5,c);
+        if(!c) return c;
+        return this.pSBC(amt||0.5,c);
     },    
     //From  https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
     //p:percent -1 - 1, co: color to darken/lighten, c1: if given then blend c0 and c1, l: linear blending if true  use linear
     pSBC: function(p,c0,c1,l) {
-	c0 = this.colorToRgb[c0] || c0;
-	c1 = this.colorToRgb[c1] || c1;
-	let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
-	if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a)) {
-	    return null;
-	}
-	if(!this.pSBCr)this.pSBCr=(d)=>{
+        c0 = this.colorToRgb[c0] || c0;
+        c1 = this.colorToRgb[c1] || c1;
+        let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
+        if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a)) {
+            return null;
+        }
+        if(!this.pSBCr)this.pSBCr=(d)=>{
             let n=d.length,x={};
             if(n>9){
-		[r,g,b,a]=d=d.split(","),n=d.length;
-		if(n<3||n>4)return null;
-		x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1
+                [r,g,b,a]=d=d.split(","),n=d.length;
+                if(n<3||n>4)return null;
+                x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1
             } else{ 
-		if(n==8||n==6||n<4)return null;
-		if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
-		d=i(d.slice(1),16);
-		if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;
-		else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1
+                if(n==8||n==6||n<4)return null;
+                if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
+                d=i(d.slice(1),16);
+                if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;
+                else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1
             }
-	    return x};
-	h=c0.length>9,h=a?c1.length>9?true:c1=="c"?!h:false:h,f=this.pSBCr(c0),P=p<0,t=c1&&c1!="c"?this.pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
-	if(!f||!t)return null;
-	if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
-	else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
-	a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
-	if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
-	else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
+            return x};
+        h=c0.length>9,h=a?c1.length>9?true:c1=="c"?!h:false:h,f=this.pSBCr(c0),P=p<0,t=c1&&c1!="c"?this.pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
+        if(!f||!t)return null;
+        if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
+        else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
+        a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
+        if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
+        else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
     },
     colorToRgb:   {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
-		   "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
-		   "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
-		   "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b","darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b","darkmagenta":"#8b008b","darkolivegreen":"#556b2f",
-		   "darkorange":"#ff8c00","darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a","darkseagreen":"#8fbc8f","darkslateblue":"#483d8b","darkslategray":"#2f4f4f","darkturquoise":"#00ced1",
-		   "darkviolet":"#9400d3","deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969","dodgerblue":"#1e90ff",
-		   "firebrick":"#b22222","floralwhite":"#fffaf0","forestgreen":"#228b22","fuchsia":"#ff00ff",
-		   "gainsboro":"#dcdcdc","ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520","gray":"#808080","green":"#008000","greenyellow":"#adff2f",
-		   "honeydew":"#f0fff0","hotpink":"#ff69b4",
-		   "indianred ":"#cd5c5c","indigo":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
-		   "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
-		   "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
-		   "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
-		   "magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
-		   "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
-		   "navajowhite":"#ffdead","navy":"#000080",
-		   "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
-		   "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
-		   "rebeccapurple":"#663399","red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
-		   "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
-		   "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
-		   "violet":"#ee82ee",
-		   "wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
-		   "yellow":"#ffff00","yellowgreen":"#9acd32"},
+                   "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
+                   "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
+                   "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b","darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b","darkmagenta":"#8b008b","darkolivegreen":"#556b2f",
+                   "darkorange":"#ff8c00","darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a","darkseagreen":"#8fbc8f","darkslateblue":"#483d8b","darkslategray":"#2f4f4f","darkturquoise":"#00ced1",
+                   "darkviolet":"#9400d3","deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969","dodgerblue":"#1e90ff",
+                   "firebrick":"#b22222","floralwhite":"#fffaf0","forestgreen":"#228b22","fuchsia":"#ff00ff",
+                   "gainsboro":"#dcdcdc","ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520","gray":"#808080","green":"#008000","greenyellow":"#adff2f",
+                   "honeydew":"#f0fff0","hotpink":"#ff69b4",
+                   "indianred ":"#cd5c5c","indigo":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
+                   "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
+                   "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
+                   "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
+                   "magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
+                   "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
+                   "navajowhite":"#ffdead","navy":"#000080",
+                   "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
+                   "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
+                   "rebeccapurple":"#663399","red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
+                   "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
+                   "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
+                   "violet":"#ee82ee",
+                   "wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
+                   "yellow":"#ffff00","yellowgreen":"#9acd32"},
 
     addAlphaToColor: function(c, alpha) {
-	c = this.colorToRgb[c] || c;
-	if(!alpha) alpha = "0.5";
-	if(c.indexOf("#")==0) {
-	    var rgb = Utils.hexToRgb(c);
-	    if(rgb) {
-		c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
-	    }
-	    return c;
-	}
-	c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
-	c = c.replace("_alpha_",alpha);
-	return c;
+        c = this.colorToRgb[c] || c;
+        if(!alpha) alpha = "0.5";
+        if(c.indexOf("#")==0) {
+            var rgb = Utils.hexToRgb(c);
+            if(rgb) {
+                c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
+            }
+            return c;
+        }
+        c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
+        c = c.replace("_alpha_",alpha);
+        return c;
     },
 
     enumTypeCount: -1,
-    enumColorPalette:[	    "rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"],
+    enumColorPalette:[      "rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"],
     enumColors: {},
     getEnumColor:function(type) {
-	if(type.color) return type.color;
-	if(!this.enumColors[type]) {
-	    this.enumTypeCount++;
-	    if(this.enumTypeCount>=this.enumColorPalette.length)
-		this.enumTypeCount = 0;
-	    this.enumColors[type] = this.enumColorPalette[this.enumTypeCount];
-	}
-	return this.enumColors[type];
+        if(type.color) return type.color;
+        if(!this.enumColors[type]) {
+            this.enumTypeCount++;
+            if(this.enumTypeCount>=this.enumColorPalette.length)
+                this.enumTypeCount = 0;
+            this.enumColors[type] = this.enumColorPalette[this.enumTypeCount];
+        }
+        return this.enumColors[type];
     },
     smoothColorTable: function(a,steps) {
-	if(!steps) steps= 100;
-	let incr = 1/steps;
-	let c =[];
-	for(let i=0;i<=1;i+=incr) {
-	    let color = getColor(a,i);
-	    c.push(c);
-	}
-	return c;
+        if(!steps) steps= 100;
+        let incr = 1/steps;
+        let c =[];
+        for(let i=0;i<=1;i+=incr) {
+            let color = getColor(a,i);
+            c.push(c);
+        }
+        return c;
     },
     interpColors: function(scale,perc) {
-	for(let i=0;i<scale.length-1;i++) {
-	    let p1 = scale[i];
-	    let p2 = scale[i+1];
-	    if(perc>=p1[0] && perc<=p2[0]) {
-		let c1=scale[i][1];
-		let c2=scale[i+1][1];
-		let perc2 = (perc-p1[0])/(p2[0]-p1[0]);
-		let m1 = c1.match(/rgb\((.*) *, *(.*) *, *(.*)\)/);
-		let m2 = c2.match(/rgb\((.*) *, *(.*) *, *(.*)\)/);
-		if(m1&&m2) {
-		    let cc1=Math.round(+m1[1]+perc2*(+m2[1]- +m1[1]));
-		    let cc2=Math.round(+m1[2]+perc2*(+m2[2]- +m1[2]));
-		    let cc3=Math.round(+m1[3]+perc2*(+m2[3]- +m1[3]));
-		    return "rgb(" + cc1+"," + cc2 +"," + cc3+")";
-		}
-		m1 = c1.match(/#(..)(..)(..)/);
-		m2 = c2.match(/#(..)(..)(..)/);
-		let pad = v=>{return v.length==1?"0"+v:v}
-		if(m1&&m2) {
-		    m1 = m1.map(v=>parseInt(v,16));
-		    m2 = m2.map(v=>parseInt(v,16));
-		    let cc1=Math.round(+m1[1]+perc2*(+m2[1]- +m1[1]));
-		    let cc2=Math.round(+m1[2]+perc2*(+m2[2]- +m1[2]));
-		    let cc3=Math.round(+m1[3]+perc2*(+m2[3]- +m1[3]));
-		    return "#" + pad(cc1.toString(16))+ pad(cc2.toString(16)) + pad(cc3.toString(16));
-		}
-		return null;
-	    }
-	}
+        for(let i=0;i<scale.length-1;i++) {
+            let p1 = scale[i];
+            let p2 = scale[i+1];
+            if(perc>=p1[0] && perc<=p2[0]) {
+                let c1=scale[i][1];
+                let c2=scale[i+1][1];
+                let perc2 = (perc-p1[0])/(p2[0]-p1[0]);
+                let m1 = c1.match(/rgb\((.*) *, *(.*) *, *(.*)\)/);
+                let m2 = c2.match(/rgb\((.*) *, *(.*) *, *(.*)\)/);
+                if(m1&&m2) {
+                    let cc1=Math.round(+m1[1]+perc2*(+m2[1]- +m1[1]));
+                    let cc2=Math.round(+m1[2]+perc2*(+m2[2]- +m1[2]));
+                    let cc3=Math.round(+m1[3]+perc2*(+m2[3]- +m1[3]));
+                    return "rgb(" + cc1+"," + cc2 +"," + cc3+")";
+                }
+                m1 = c1.match(/#(..)(..)(..)/);
+                m2 = c2.match(/#(..)(..)(..)/);
+                let pad = v=>{return v.length==1?"0"+v:v}
+                if(m1&&m2) {
+                    m1 = m1.map(v=>parseInt(v,16));
+                    m2 = m2.map(v=>parseInt(v,16));
+                    let cc1=Math.round(+m1[1]+perc2*(+m2[1]- +m1[1]));
+                    let cc2=Math.round(+m1[2]+perc2*(+m2[2]- +m1[2]));
+                    let cc3=Math.round(+m1[3]+perc2*(+m2[3]- +m1[3]));
+                    return "#" + pad(cc1.toString(16))+ pad(cc2.toString(16)) + pad(cc3.toString(16));
+                }
+                return null;
+            }
+        }
     },
     getColorTable: function(name, justColors) {
         var ct = this.ColorTables[name];
@@ -2601,10 +2601,10 @@ var Utils =  {
         var html = "<table width=50% >";
         var code = "";
         for (a in this.ColorTables) {
-	    if(this.ColorTables[a].label) {
-		html += HU.tr([],HU.td(["width","10%"],"<br>" + HU.h3(this.ColorTables[a].label)));
-		continue;
-	    }
+            if(this.ColorTables[a].label) {
+                html += HU.tr([],HU.td(["width","10%"],"<br>" + HU.h3(this.ColorTables[a].label)));
+                continue;
+            }
             code +="new ColorTable(\"" + a +"\",\"" + a +"\", new String[]{\n";
             for(var i=0;i<this.ColorTables[a].colors.length;i++) {
                 code +="\"" + this.ColorTables[a].colors[i]+"\",";
@@ -2614,14 +2614,14 @@ var Utils =  {
             html += HU.tr([],HU.td(["width","10%"],HtmlUtils.b(a)) +HU.td([], HtmlUtils.div(["id", domId + "_" + cnt, "style", "width:100%;"], "")));
             cnt++;
         }  
-	html+="</table>";
+        html+="</table>";
         //        Utils.makeDownloadFile("colortables.java",code);
         $("#" + domId).html(html);
         cnt = 0;
         for (a in this.ColorTables) {
-	    if(this.ColorTables[a].label) {
-		continue;
-	    }
+            if(this.ColorTables[a].label) {
+                continue;
+            }
             this.displayColorTable(this.ColorTables[a], domId + "_" + cnt, 0, 1, {
                 showRange: false,
                 height: "20px"
@@ -2630,156 +2630,156 @@ var Utils =  {
         }
     },
     getColorTablePopup: function(wikiEditor, itemize) {
-	let popup = "<div class=wiki-editor-popup-items>"
-	let items = [];
-	let item;
-	for (a in Utils.ColorTables) {
-	    if(Utils.ColorTables[a].label) {
-		item = HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
-		popup+=item;
-		items.push(item);
-		continue;
-	    }
-	    var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
-		showRange: false,
-		height: "20px"
-	    });
-	    ct = HtmlUtils.div([STYLE,HU.css('width','150px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
-	    if(wikiEditor) {
-		var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
-		item = HtmlUtils.onClick(call,ct);
-		popup+=item;
-		items.push(item);
-	    } else {
-		popup+=ct;
-	    }
-	}
-	popup+="</div>";
-	popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),popup);
-	if(itemize) return items;
-	return popup;
+        let popup = "<div class=wiki-editor-popup-items>"
+        let items = [];
+        let item;
+        for (a in Utils.ColorTables) {
+            if(Utils.ColorTables[a].label) {
+                item = HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
+                popup+=item;
+                items.push(item);
+                continue;
+            }
+            var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
+                showRange: false,
+                height: "20px"
+            });
+            ct = HtmlUtils.div([STYLE,HU.css('width','150px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
+            if(wikiEditor) {
+                var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
+                item = HtmlUtils.onClick(call,ct);
+                popup+=item;
+                items.push(item);
+            } else {
+                popup+=ct;
+            }
+        }
+        popup+="</div>";
+        popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),popup);
+        if(itemize) return items;
+        return popup;
     },
 
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
-	var html = this.getColorTableDisplay(ct,min,max,args);
+        var html = this.getColorTableDisplay(ct,min,max,args);
         $("#" + domId).html(html);
     },
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
         if (ct.colors) ct = ct.colors;
-	//Handle d3
-	if(ct.length && Array.isArray(ct[0]))
-	    ct = ct[ct.length-1];
+        //Handle d3
+        if(ct.length && Array.isArray(ct[0]))
+            ct = ct[ct.length-1];
         var options = {
             height: "15px",
             showRange: true,
-	    showColorTableDots:false,
-	    decimals:-1,
-	    horizontal:true,
-	    colorWidth:"20px",
-	    stride:1
+            showColorTableDots:false,
+            decimals:-1,
+            horizontal:true,
+            colorWidth:"20px",
+            stride:1
         }
-	if (args) $.extend(options, args);
+        if (args) $.extend(options, args);
         let colorToString = null;
         if (options.stringValues && options.stringValues.length) {
             options.showRange = false;
-	    colorToString ={};
-	    ct = [];
-	    let seenColor = {};
-	    options.stringValues.forEach(v=>{
-		let style = "";
-		if(!seenColor[v.color]) {
-		    seenColor[v.color] = true;
-		    ct.push(v.color);
-		    colorToString[v.color] = "";
-		}  else {
-		    style = HU.css("border-top","1px solid #ccc");
-		}
-		let value = v.value;
-		if(value=="") value = "&lt;blank&gt;";
-		colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
-	    });
+            colorToString ={};
+            ct = [];
+            let seenColor = {};
+            options.stringValues.forEach(v=>{
+                let style = "";
+                if(!seenColor[v.color]) {
+                    seenColor[v.color] = true;
+                    ct.push(v.color);
+                    colorToString[v.color] = "";
+                }  else {
+                    style = HU.css("border-top","1px solid #ccc");
+                }
+                let value = v.value;
+                if(value=="") value = "&lt;blank&gt;";
+                colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
+            });
 
-	    
-	}
+            
+        }
         min = parseFloat(min);
         max = parseFloat(max);
-	let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
-	if(!isNaN(options.width)) {
-	    divargs.push(STYLE);
-	    divargs.push(HU.css(WIDTH, HU.getDimension(options.width)));
-	}
-	
+        let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
+        if(!isNaN(options.width)) {
+            divargs.push(STYLE);
+            divargs.push(HU.css(WIDTH, HU.getDimension(options.width)));
+        }
+        
         let html = HtmlUtils.open(DIV, divargs);
-	if(!options.showColorTableDots) {
-	    html+= HU.open('table',['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
-	    html +='<tr>';
-	}
-	let formatter = n=>{
-	    if(options.decimals>=0)
-		return number_format(n,options.decimals);
-	    return  this.formatNumberComma(n);
-	};
+        if(!options.showColorTableDots) {
+            html+= HU.open('table',['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
+            html +='<tr>';
+        }
+        let formatter = n=>{
+            if(options.decimals>=0)
+                return number_format(n,options.decimals);
+            return  this.formatNumberComma(n);
+        };
 
         if (options.showRange) {
-	    if(!options.showColorTableDots) {
-		if(options.horizontal) 
-		    html += "<td width=1%>" + formatter(min) + "&nbsp;</td>";
-		else
-		    html += formatter(min) + "<br>"
-	    }   else {
-	    }
-	}
+            if(!options.showColorTableDots) {
+                if(options.horizontal) 
+                    html += "<td width=1%>" + formatter(min) + "&nbsp;</td>";
+                else
+                    html += formatter(min) + "<br>"
+            }   else {
+            }
+        }
         var step = (max - min) / ct.length;
-	let nums = [];
-	
-	if(!options.showColorTableDots || options.horizontal) {
+        let nums = [];
+        
+        if(!options.showColorTableDots || options.horizontal) {
             for (var i = 0; i < ct.length; i+=options.stride) nums.push(i);
-	} else {
+        } else {
             for (var i = ct.length-1; i>=0;i=i-options.stride) nums.push(i);
-	}
+        }
         nums.forEach((i,idx)=>{
             var extra = "";
-	    let val = min + step * i;
-	    var attrs = [];
-	    if(options.showColorTableDots) {
-		let val2 = min + step * (i+1);
-		let label = formatter(val)+ "-" + formatter(val2);
-		let delim = SPACE;
-		if(!options.horizontal)
-		    delim="<br>";
-		html += HtmlUtils.span([CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
-		if(!options.horizontal)
-		    html +="<br>";
-	    } else {
-		if (options.showRange) {
+            let val = min + step * i;
+            var attrs = [];
+            if(options.showColorTableDots) {
+                let val2 = min + step * (i+1);
+                let label = formatter(val)+ "-" + formatter(val2);
+                let delim = SPACE;
+                if(!options.horizontal)
+                    delim="<br>";
+                html += HtmlUtils.span([CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+                if(!options.horizontal)
+                    html +="<br>";
+            } else {
+                if (options.showRange) {
                     attrs.push(TITLE);
                     attrs.push(formatter(val));
-		}
-		attrs.push(STYLE);
-		attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
-		let label = options.labels?options.labels[idx]:"";
-		if(options.labelStyle) {
-		    label = HU.div([STYLE,options.labelStyle],label);
-		}
-		let fg = Utils.getForegroundColor(ct[i]);
-		if(options.horizontal) 
-		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
-		else
- 		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
-	    }
-        });
-	if(!options.showColorTableDots) {
-            if (options.showRange) {
-		if(options.horizontal) 
-		    html += HU.td([WIDTH,'1%'], formatter(max) + SPACE);
-		else
-		    html += formatter(max) + "<br>"
+                }
+                attrs.push(STYLE);
+                attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
+                let label = options.labels?options.labels[idx]:"";
+                if(options.labelStyle) {
+                    label = HU.div([STYLE,options.labelStyle],label);
+                }
+                let fg = Utils.getForegroundColor(ct[i]);
+                if(options.horizontal) 
+                    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
+                else
+                    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
             }
-	    if(options.horizontal) 
-		html += "</tr></table>";
-	}
+        });
+        if(!options.showColorTableDots) {
+            if (options.showRange) {
+                if(options.horizontal) 
+                    html += HU.td([WIDTH,'1%'], formatter(max) + SPACE);
+                else
+                    html += formatter(max) + "<br>"
+            }
+            if(options.horizontal) 
+                html += "</tr></table>";
+        }
         html += HtmlUtils.close(DIV);
         html += HtmlUtils.open(DIV, [CLASS, "display-colortable-extra"]);
 
@@ -2787,43 +2787,43 @@ var Utils =  {
         if (colorToString!=null) {
             let tdw = 100 / ct.length + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
-	    let colCnt =0;
-	    let bin ={};
-	    ct.forEach(color=>{
-		let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],colorToString[color]);
-		html+=cell;
-//		bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
+            let colCnt =0;
+            let bin ={};
+            ct.forEach(color=>{
+                let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],colorToString[color]);
+                html+=cell;
+//              bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
             });
-	    html+="</div>"
+            html+="</div>"
         }
-	html += HtmlUtils.close(DIV);
-	return html;
+        html += HtmlUtils.close(DIV);
+        return html;
     },
 
 
     hexToRgb:function(hex) {
-	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result ? {
-	    r: parseInt(result[1], 16),
-	    g: parseInt(result[2], 16),
-	    b: parseInt(result[3], 16)
-	} : null;
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
     },
     componentToHex:function(c) {
-	if(typeof c=="string") c = +c;
-	var hex = c.toString(16);
-	return hex.length == 1 ? "0" + hex : hex;
+        if(typeof c=="string") c = +c;
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
     },
     rgbToHex:function(r, g, b) {
-	//its rgb,r,g,b);
-	if(g==null) {
-	    var result = /^rgb *([0-9]+) *, *([0-9]+) *, *([0-9]+)(,|\)).*/i.exec(r);
-	    result = /^rgb *\( *([0-9]+) *,([0-9]+) *, *([0-9]+).*/i.exec(r);
-	    if(!result) return null;
-	    r = result[1]; g = result[2]; b = result[3];
-	}
-	if(!r || !g || !b) return null;
-	return "#" + Utils.componentToHex(r) + Utils.componentToHex(g) + Utils.componentToHex(b);
+        //its rgb,r,g,b);
+        if(g==null) {
+            var result = /^rgb *([0-9]+) *, *([0-9]+) *, *([0-9]+)(,|\)).*/i.exec(r);
+            result = /^rgb *\( *([0-9]+) *,([0-9]+) *, *([0-9]+).*/i.exec(r);
+            if(!result) return null;
+            r = result[1]; g = result[2]; b = result[3];
+        }
+        if(!r || !g || !b) return null;
+        return "#" + Utils.componentToHex(r) + Utils.componentToHex(g) + Utils.componentToHex(b);
     },
 };
 
@@ -2901,20 +2901,20 @@ Utils.ColorTables =  {
         colors: ['#ffffe5', '#fff7bc', '#fee391', '#fec44f', '#fe9929', '#ec7014', '#cc4c02', '#993404', '#662506']
     },
     yellow_orange_red: {
-	//            colors: ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']
-	colors: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026']
+        //            colors: ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']
+        colors: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026']
     },
     oranges: {
         colors: ['#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#a63603', '#7f2704']
     },
     purples: {
-	//            colors: ['#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3', '#54278f', '#3f007d']
-	colors: ['#fcfbfd','#efedf5','#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d']
+        //            colors: ['#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3', '#54278f', '#3f007d']
+        colors: ['#fcfbfd','#efedf5','#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d']
     },
     reds: {
         //colors: ['#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'],
-	//colors:['#fff5eb','#fee6ce','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#a63603','#7f2704'],
-	colors:['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']
+        //colors:['#fff5eb','#fee6ce','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#a63603','#7f2704'],
+        colors:['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']
     },
     greens: {
         colors: ['#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b']
@@ -3011,30 +3011,30 @@ Utils.ColorTables =  {
     },
 
     schemecategory: {
-	colors: ["rgb(31, 119, 180)", "rgb(255, 127, 14)", "rgb(44, 160, 44)", "rgb(214, 39, 40)", "rgb(148, 103, 189)", "rgb(140, 86, 75)", "rgb(227, 119, 194)", "rgb(127, 127, 127)",  "rgb(188, 189, 34)"]
+        colors: ["rgb(31, 119, 180)", "rgb(255, 127, 14)", "rgb(44, 160, 44)", "rgb(214, 39, 40)", "rgb(148, 103, 189)", "rgb(140, 86, 75)", "rgb(227, 119, 194)", "rgb(127, 127, 127)",  "rgb(188, 189, 34)"]
     },
 
     //from: https://devexpress.github.io/devextreme-reactive/react/chart/docs/guides/palette/
     schemeaccent: {
-	colors: [
-	    "rgb(127, 201, 127)", "rgb(190, 174, 212)", "rgb(253, 192, 134)", "rgb(255, 255, 153)", "rgb(56, 108, 176)", "rgb(240, 2, 127)", "rgb(191, 91, 23)", "rgb(102, 102, 102)"
-	]
+        colors: [
+            "rgb(127, 201, 127)", "rgb(190, 174, 212)", "rgb(253, 192, 134)", "rgb(255, 255, 153)", "rgb(56, 108, 176)", "rgb(240, 2, 127)", "rgb(191, 91, 23)", "rgb(102, 102, 102)"
+        ]
     },
     schemedark: {
-	colors: [
-	    "rgb(27, 158, 119)", "rgb(217, 95, 2)", "rgb(117, 112, 179)", "rgb(231, 41, 138)", "rgb(102, 166, 30)", "rgb(230, 171, 2)", "rgb(166, 118, 29)", "rgb(102, 102, 102)"
-	]
+        colors: [
+            "rgb(27, 158, 119)", "rgb(217, 95, 2)", "rgb(117, 112, 179)", "rgb(231, 41, 138)", "rgb(102, 166, 30)", "rgb(230, 171, 2)", "rgb(166, 118, 29)", "rgb(102, 102, 102)"
+        ]
     },
 
     schemeset1: {
-	colors: [
-	    "rgb(228, 26, 28)", "rgb(55, 126, 184)", "rgb(77, 175, 74)", "rgb(152, 78, 163)", "rgb(255, 127, 0)",  "rgb(166, 86, 40)", "rgb(247, 129, 191)", "rgb(153, 153, 153)"
-	]
+        colors: [
+            "rgb(228, 26, 28)", "rgb(55, 126, 184)", "rgb(77, 175, 74)", "rgb(152, 78, 163)", "rgb(255, 127, 0)",  "rgb(166, 86, 40)", "rgb(247, 129, 191)", "rgb(153, 153, 153)"
+        ]
     },
     schemeset2: {
-	colors: [
-	    "rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"
-	]
+        colors: [
+            "rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"
+        ]
     },
 
 
@@ -3045,28 +3045,28 @@ Utils.ColorTables =  {
     d3_schemePastel2: {colors: ['#b3e2cd','#fdcdac','#cbd5e8','#f4cae4','#e6f5c9','#fff2ae','#f1e2cc','#cccccc',]},
 
     googlecharts: {
-	colors: [
-	    "#3366CC",
-	    "#DC3912",
-	    "#FF9900",
-	    "#109618",
-	    "#990099",
-	    "#3B3EAC",
-	    "#0099C6",
-	    "#DD4477",
-	    "#66AA00",
-	    "#B82E2E",
-	    "#316395",
-	    "#994499",
-	    "#22AA99",
-	    "#AAAA11",
-	    "#6633CC",
-	    "#E67300",
-	    "#8B0707",
-	    "#329262",
-	    "#5574A6",
-	    "#3B3EAC",
-	]
+        colors: [
+            "#3366CC",
+            "#DC3912",
+            "#FF9900",
+            "#109618",
+            "#990099",
+            "#3B3EAC",
+            "#0099C6",
+            "#DD4477",
+            "#66AA00",
+            "#B82E2E",
+            "#316395",
+            "#994499",
+            "#22AA99",
+            "#AAAA11",
+            "#6633CC",
+            "#E67300",
+            "#8B0707",
+            "#329262",
+            "#5574A6",
+            "#3B3EAC",
+        ]
     },
 
 
@@ -3150,7 +3150,7 @@ var GuiUtils = {
             return;
         }
         console.log(error);
-	console.trace();
+        console.trace();
 
         if (extra) {
             console.log(extra);
@@ -3441,181 +3441,181 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     loaded:{},
     loadJqueryLib: function(name,css,js,selector,callback) {
-	if(!HtmlUtils.loaded[name]) {
-//	    console.log('loading ' + name);
-	    css.forEach(url=>{
-		let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
-		$(css).appendTo("head");
-	    });
-	    js.forEach(url=>{
-		let html = 
-		    "<script src='" + url +"'  type=text/JavaScript></script>";
-		$(html).appendTo("head");
-	    });
-	    HtmlUtils.loaded[name] = true;
-	}
-	//check and wait for it
-	if(!$(selector)[name]) {
-	    setTimeout(()=>{
-		HtmlUtils.loadJqueryLib(name,css,js,selector,callback);
-	    },50);
-	    return
-	}
-	callback();
+        if(!HtmlUtils.loaded[name]) {
+//          console.log('loading ' + name);
+            css.forEach(url=>{
+                let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
+                $(css).appendTo("head");
+            });
+            js.forEach(url=>{
+                let html = 
+                    "<script src='" + url +"'  type=text/JavaScript></script>";
+                $(html).appendTo("head");
+            });
+            HtmlUtils.loaded[name] = true;
+        }
+        //check and wait for it
+        if(!$(selector)[name]) {
+            setTimeout(()=>{
+                HtmlUtils.loadJqueryLib(name,css,js,selector,callback);
+            },50);
+            return
+        }
+        callback();
     },
     createFancyBox: function(selector, args) {
-	args = args||{};
-	HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
-				[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
-				selector,()=>{
-				    $(selector).fancybox(args);
-				});
+        args = args||{};
+        HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
+                                [ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
+                                selector,()=>{
+                                    $(selector).fancybox(args);
+                                });
     },
     checkToHidePopup:function() {
-	if (this.popupTime) {
+        if (this.popupTime) {
             var now = new Date();
             timeDiff = now - this.popupTime;
             if (timeDiff > 1000) {
-		return true;
+                return true;
             }
             return false;
-	}
-	return true;
+        }
+        return true;
     },
     jqid:function(id) {
-	return $("#"+id);
+        return $("#"+id);
     },
     initInteractiveInput:function(id,url) {
-	let input = HU.jqid(id);
-	input.keyup(function(event) {
-	    HtmlUtils.hidePopupObject();
-	    let val = $(this).val();
-	    if(!Utils.stringDefined(val)) return;
-	    let input = $(this);
-	    $.getJSON(url+"?text=" + val, data=>{
-		if(data.length==0) return;
-		let suggest = "";
-		data.forEach(d=>{
-		    suggest+=HU.div([CLASS,"ramadda-clickable ramadda-suggest","suggest",d],d);
-		});
-		let html = HU.div([CLASS,"ramadda-search-popup",STYLE,HU.css("max-width","200px",
-									     "padding","4px")],suggest);
-		let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
-		dialog.find(".ramadda-suggest").click(function() {
-		    HtmlUtils.hidePopupObject();
-		    input.val($(this).attr("suggest"));
-		});
-	    }).fail(
-		    err=>{
-			console.log("suggest call failed:" + url +"\n" + err)
-			console.dir(err);
-		    });
-	});
+        let input = HU.jqid(id);
+        input.keyup(function(event) {
+            HtmlUtils.hidePopupObject();
+            let val = $(this).val();
+            if(!Utils.stringDefined(val)) return;
+            let input = $(this);
+            $.getJSON(url+"?text=" + val, data=>{
+                if(data.length==0) return;
+                let suggest = "";
+                data.forEach(d=>{
+                    suggest+=HU.div([CLASS,"ramadda-clickable ramadda-suggest","suggest",d],d);
+                });
+                let html = HU.div([CLASS,"ramadda-search-popup",STYLE,HU.css("max-width","200px",
+                                                                             "padding","4px")],suggest);
+                let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
+                dialog.find(".ramadda-suggest").click(function() {
+                    HtmlUtils.hidePopupObject();
+                    input.val($(this).attr("suggest"));
+                });
+            }).fail(
+                    err=>{
+                        console.log("suggest call failed:" + url +"\n" + err)
+                        console.dir(err);
+                    });
+        });
     },
     getTooltip: function() {
-	return $("#ramadda-popupdiv");
+        return $("#ramadda-popupdiv");
     },
     getPopupObject: function() {
-	return this.popupObject;
+        return this.popupObject;
     },
     hasPopupObject: function() {
-	return this.popupObject !=null;
+        return this.popupObject !=null;
     },
     clearPopupObject: function() {
-	this.popupObject = null;
+        this.popupObject = null;
     },
     isPopupObject: function(obj) {
-	if(this.popupObject && obj) {
-	    return this.popupObject.attr("id") == obj.attr("id");
-	}
-	return false;
+        if(this.popupObject && obj) {
+            return this.popupObject.attr("id") == obj.attr("id");
+        }
+        return false;
     },
     setPopupObject: function(obj) {
-	if(this.isPopupObject(obj)) {
-	    return obj;
-	}
+        if(this.isPopupObject(obj)) {
+            return obj;
+        }
 
-	if(this.popupObject) {
-	    this.hidePopupObject();
-	}
-	this.popupObject = obj;
-	if(!this.popupObject.attr("addedMouseListener")) {
-	    this.popupObject.attr("addedMouseListener","true");
-	    this.popupObject.mousedown(function(event) {
-		event.stopPropagation();
-	    });
-	}
-	return obj;
+        if(this.popupObject) {
+            this.hidePopupObject();
+        }
+        this.popupObject = obj;
+        if(!this.popupObject.attr("addedMouseListener")) {
+            this.popupObject.attr("addedMouseListener","true");
+            this.popupObject.mousedown(function(event) {
+                event.stopPropagation();
+            });
+        }
+        return obj;
     },
     hidePopupObject: function(event) {
-	if (this.popupObject) {
+        if (this.popupObject) {
             this.popupObject.hide();
-	    if(this.popupObject.attr("removeonclose")== "true") {
-		this.popupObject.remove();
-	    }
+            if(this.popupObject.attr("removeonclose")== "true") {
+                this.popupObject.remove();
+            }
             this.popupObject = null;
-	}
-	this.popupTime = new Date();
-	if(event) {
+        }
+        this.popupTime = new Date();
+        if(event) {
             event.stopPropagation();
-	}
+        }
     },
 
     lastCbxClicked:null,
     lastCbxIdClicked:null,
     checkboxClicked: function(event, cbxPrefix, id) {
-	if (!event) return;
-	let cbx = GuiUtils.getDomObject(id);
-	if (!cbx) return;
-	cbx = cbx.obj;
-	let checkBoxes = new Array();
-	if (!cbx.form) return;
-	let elements = cbx.form.elements;
-	for (i = 0; i < elements.length; i++) {
+        if (!event) return;
+        let cbx = GuiUtils.getDomObject(id);
+        if (!cbx) return;
+        cbx = cbx.obj;
+        let checkBoxes = new Array();
+        if (!cbx.form) return;
+        let elements = cbx.form.elements;
+        for (i = 0; i < elements.length; i++) {
             if (elements[i].name.indexOf(cbxPrefix) >= 0 || elements[i].id.indexOf(cbxPrefix) >= 0) {
-		checkBoxes.push(elements[i]);
+                checkBoxes.push(elements[i]);
             }
-	}
+        }
 
 
-	let value = cbx.checked;
-	if (event.ctrlKey) {
+        let value = cbx.checked;
+        if (event.ctrlKey) {
             for (i = 0; i < checkBoxes.length; i++) {
-		checkBoxes[i].checked = value;
+                checkBoxes[i].checked = value;
             }
-	}
+        }
 
-	if (event.shiftKey) {
+        if (event.shiftKey) {
             if (HtmlUtils.lastCbxClicked) {
-		let pos1 = GuiUtils.getTop(cbx);
-		let pos2 = GuiUtils.getTop(HtmlUtils.lastCbxClicked);
+                let pos1 = GuiUtils.getTop(cbx);
+                let pos2 = GuiUtils.getTop(HtmlUtils.lastCbxClicked);
 
-		let lastCbx = $("#" + HtmlUtils.lastCbxIdClicked);
-		let thisCbx = $("#" + id);
+                let lastCbx = $("#" + HtmlUtils.lastCbxIdClicked);
+                let thisCbx = $("#" + id);
 
-		if (lastCbx.position()) {
+                if (lastCbx.position()) {
                     pos2 = lastCbx.position().top;
-		}
-		if (thisCbx.position()) {
+                }
+                if (thisCbx.position()) {
                     pos1 = thisCbx.position().top;
-		}
+                }
 
-		if (pos1 > pos2) {
+                if (pos1 > pos2) {
                     let tmp = pos1;
                     pos1 = pos2;
                     pos2 = tmp;
-		}
-		for (i = 0; i < checkBoxes.length; i++) {
+                }
+                for (i = 0; i < checkBoxes.length; i++) {
                     let top = $("#" + checkBoxes[i].id).position().top;
                     if (top >= pos1 && top <= pos2) {
-			checkBoxes[i].checked = value;
+                        checkBoxes[i].checked = value;
                     }
-		}
+                }
             }
             return;
-	}
-	HtmlUtils.lastCbxClicked = cbx;
-	HtmlUtils.lastCbxIdClicked = id;
+        }
+        HtmlUtils.lastCbxClicked = cbx;
+        HtmlUtils.lastCbxIdClicked = id;
     },
 
 
@@ -3628,171 +3628,175 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     elementScrolled: function(elem) {
-	var docTop = $(window).scrollTop();
-	var docBottom = docTop + $(window).height();
-	var elemTop = $(elem).offset().top;	
-	var elemBottom = elemTop + $(elem).outerHeight(true); 
-	if((elemTop <= docBottom) && (elemTop >= docTop)) return true;	
-	if((elemBottom <= docBottom) && (elemBottom >= docTop)) return true;
-	if((elemBottom >= docBottom) && (elemTop <= docTop)) return true;
+        var docTop = $(window).scrollTop();
+        var docBottom = docTop + $(window).height();
+        var elemTop = $(elem).offset().top;     
+        var elemBottom = elemTop + $(elem).outerHeight(true); 
+        if((elemTop <= docBottom) && (elemTop >= docTop)) return true;  
+        if((elemBottom <= docBottom) && (elemBottom >= docTop)) return true;
+        if((elemBottom >= docBottom) && (elemTop <= docTop)) return true;
 
-	return false;
+        return false;
     },
     initOdometer: function(id,value, pause, immediate) {
-	if(!Utils.isDefined(pause)) pause = 0;
-	$(document).ready(function(){	
-	    if(immediate) {
-		$('#' + id).html(value);
-		return;
-	    }
-	    setTimeout(function(){
-		if(HtmlUtils.elementScrolled('#' + id)) {
-		    setTimeout(function() {$('#' + id).html(value);},pause);
-		} else {
-		    $(window).scroll(function(){
-			if(HtmlUtils.elementScrolled('#' + id)) {
-			    setTimeout(function() {$('#' + id).html(value);},pause);
-			}});
-		}},1000);
-	});
+        if(!Utils.isDefined(pause)) pause = 0;
+        $(document).ready(function(){   
+            if(immediate) {
+                $('#' + id).html(value);
+                return;
+            }
+            setTimeout(function(){
+                if(HtmlUtils.elementScrolled('#' + id)) {
+                    setTimeout(function() {$('#' + id).html(value);},pause);
+                } else {
+                    $(window).scroll(function(){
+                        if(HtmlUtils.elementScrolled('#' + id)) {
+                            setTimeout(function() {$('#' + id).html(value);},pause);
+                        }});
+                }},1000);
+        });
     },
     callWhenScrolled: function(id,func,pause) {
-	if(!Utils.isDefined(pause)) pause = 0;
-	$(document).ready(function(){
-	    setTimeout(function(){
-		if(HtmlUtils.elementScrolled('#' + id)) {
-		    setTimeout(func, pause);
-		} else {
-		    $(window).scroll(function(){
-			if(HtmlUtils.elementScrolled('#' + id)) {
-			    setTimeout(func, pause);
-			}});
-		}},1000);
-	});
+        if(!Utils.isDefined(pause)) pause = 0;
+        $(document).ready(function(){
+            setTimeout(function(){
+                if(HtmlUtils.elementScrolled('#' + id)) {
+                    setTimeout(func, pause);
+                } else {
+                    $(window).scroll(function(){
+                        if(HtmlUtils.elementScrolled('#' + id)) {
+                            setTimeout(func, pause);
+                        }});
+                }},1000);
+        });
     },
 
     waitForIt: function(what,callback, error, cnt) {
-	if (window[what]) {
-	    callback();
-	    return;
-	}
-	if(!Utils.isDefined(cnt)) cnt = 500;
-	if(cnt===0) {
-	    if(error) error();
-	    return;	    
-	}
-	setTimeout(()=>{
-	    HtmlUtils.waitForIt(what,callback, error, cnt-1);
-	},50);
+        if (window[what]) {
+            callback();
+            return;
+        }
+        if(!Utils.isDefined(cnt)) cnt = 500;
+        if(cnt===0) {
+            if(error) error();
+            return;         
+        }
+        setTimeout(()=>{
+            HtmlUtils.waitForIt(what,callback, error, cnt-1);
+        },50);
     },
     loadAndWait: function(what,load, callback,error) {
-	if (!window[what]) {
-	    let imports = load;
+        if (!window[what]) {
+            let imports = load;
             $(imports).appendTo("head");
-	}
-	HtmlUtils.waitForIt(what,callback, error);
+        }
+        HtmlUtils.waitForIt(what,callback, error);
     },
     makeMessage: function(what,msg) {
-	return "<div class='ramadda-message ramadda-message-plain ' id='messageblock'><table width='100%'><tbody><tr valign='top'><td width='5%'><div class='ramadda-message-icon'><span><i class='" + what +"' style='font-size:32pt;'></i></span></div></td><td><div class='ramadda-message-inner'><p>" + msg +"</p></div></td></tr></tbody></table></div>"
+        return "<div class='ramadda-message ramadda-message-plain ' id='messageblock'><table width='100%'><tbody><tr valign='top'><td width='5%'><div class='ramadda-message-icon'><span><i class='" + what +"' style='font-size:32pt;'></i></span></div></td><td><div class='ramadda-message-inner'><p>" + msg +"</p></div></td></tr></tbody></table></div>"
     },
     makeErrorMessage: function(msg) {
-	return HtmlUtils.makeMessage("fas fa-exclamation-triangle text-danger",msg);
+        return HtmlUtils.makeMessage("fas fa-exclamation-triangle text-danger",msg);
     },
     makeInfoMessage: function(msg) {
-	return HtmlUtils.makeMessage("fas fa-info",msg);
+        return HtmlUtils.makeMessage("fas fa-info",msg);
+    },    
+
+    makeRunningMessage: function(msg) {
+        return HtmlUtils.makeMessage("fas fa-spinner fa-spin",msg);
     },    
 
     makeSlides: function(id,args) {
-	let opts = {
-	    dots:true
-	};
-	if(args) $.extend(opts,args);
-	HtmlUtils.loadSlides();
-	$("#" + id).slick(opts);
-	HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
-	//Do this later because of the swapHtml
-	setTimeout(()=>{
-	    let header = $("#" + id +"_header");
-	    let items = header.find(".ramadda-slides-header-item");
-	    items.click(function() {
-		let index = +$(this).attr("slideindex");
-		$("#" + id).slick('slickGoTo', index);
-	    });
-	    $("#" + id).on('afterChange', function(event, slick, currentSlide){
-		items.removeClass("ramadda-slides-header-item-selected");
-		header.find(HtmlUtils.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
-	    });
-	});
+        let opts = {
+            dots:true
+        };
+        if(args) $.extend(opts,args);
+        HtmlUtils.loadSlides();
+        $("#" + id).slick(opts);
+        HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
+        //Do this later because of the swapHtml
+        setTimeout(()=>{
+            let header = $("#" + id +"_header");
+            let items = header.find(".ramadda-slides-header-item");
+            items.click(function() {
+                let index = +$(this).attr("slideindex");
+                $("#" + id).slick('slickGoTo', index);
+            });
+            $("#" + id).on('afterChange', function(event, slick, currentSlide){
+                items.removeClass("ramadda-slides-header-item-selected");
+                header.find(HtmlUtils.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
+            });
+        });
 
     },
     loadSlides: function() {
-	if(!HtmlUtils.slidesLoaded) {
-	    let base =  ramaddaCdn +"/lib/slick/";
-	    let imports = HU.cssLink(base+"slick.css") + "\n" + HU.cssLink(base+"slick-theme.css") + "\n";
-	    $(imports).appendTo("head");
-	    imports = HU.javascriptLink(base+"slick.min.js");
-	    $(imports).appendTo("body");
-	    HtmlUtils.slidesLoaded = true;
-	}
+        if(!HtmlUtils.slidesLoaded) {
+            let base =  ramaddaCdn +"/lib/slick/";
+            let imports = HU.cssLink(base+"slick.css") + "\n" + HU.cssLink(base+"slick-theme.css") + "\n";
+            $(imports).appendTo("head");
+            imports = HU.javascriptLink(base+"slick.min.js");
+            $(imports).appendTo("body");
+            HtmlUtils.slidesLoaded = true;
+        }
     },
     loadKatex: function(callback, error) {
-	if (!window["katex"]) {
+        if (!window["katex"]) {
             let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
             $(imports).appendTo("head");
-	}
-	HtmlUtils.waitForIt("katex",callback, error);
+        }
+        HtmlUtils.waitForIt("katex",callback, error);
     },
     applyMarkdown:function(srcId,targetId) {
-	let f = ()=>{
-	    let src = $("#"+ srcId).html();
-	    try {
-		var converter = new showdown.Converter();
-		var html = converter.makeHtml(src);
-		$("#" + targetId).html(html);
-	    } catch(e) {
-		$("#" + targetId).html("Error processing markdown:" + e);
-	    }
-	}
-	let e = ()=> {
-	    $("#" + targetId).html("Error loading showdown");
-	};
-	let imports = "<script src='" +ramaddaCdn + "/lib/showdown.min.js'/>";
-	HtmlUtils.loadAndWait("showdown",imports,f,e);
+        let f = ()=>{
+            let src = $("#"+ srcId).html();
+            try {
+                var converter = new showdown.Converter();
+                var html = converter.makeHtml(src);
+                $("#" + targetId).html(html);
+            } catch(e) {
+                $("#" + targetId).html("Error processing markdown:" + e);
+            }
+        }
+        let e = ()=> {
+            $("#" + targetId).html("Error loading showdown");
+        };
+        let imports = "<script src='" +ramaddaCdn + "/lib/showdown.min.js'/>";
+        HtmlUtils.loadAndWait("showdown",imports,f,e);
     },
     applyLatex:function(srcId,targetId) {
-	let f = ()=>{
-	    let src = $("#"+ srcId).html();
-	    try {
-		var html = katex.renderToString(src, {
-		    throwOnError: true
-		});
-		$("#" + targetId).html(html);
-	    } catch(e) {
-		$("#" + targetId).html("Error processing markdown:" + e);
-	    }
-	}
-	let e = ()=> {
-	    $("#" + targetId).html("Error loading katex");
-	};
-	HtmlUtils.loadKatex(f,e);
+        let f = ()=>{
+            let src = $("#"+ srcId).html();
+            try {
+                var html = katex.renderToString(src, {
+                    throwOnError: true
+                });
+                $("#" + targetId).html(html);
+            } catch(e) {
+                $("#" + targetId).html("Error processing markdown:" + e);
+            }
+        }
+        let e = ()=> {
+            $("#" + targetId).html("Error loading katex");
+        };
+        HtmlUtils.loadKatex(f,e);
     },
 
     isFontAwesome:function(icon) {
-	return icon.startsWith("fa-") || icon.startsWith("fas ") || icon.startsWith("far ")
-	    || icon.startsWith("fab ");	    
+        return icon.startsWith("fa-") || icon.startsWith("fas ") || icon.startsWith("far ")
+            || icon.startsWith("fab ");     
     },
     getIconImage: function(url,attrs,attrs2) {
         if(HtmlUtils.isFontAwesome(url)) {
-	    let clazz = "";
-	    let a;
-	    if(url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
-		a = ["class",url];
+            let clazz = "";
+            let a;
+            if(url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
+                a = ["class",url];
 
-	    } else {
-		a = ["class","fas " + url];
-	    }
-	    if(attrs2)
-		a = Utils.mergeLists(a, attrs2);
+            } else {
+                a = ["class","fas " + url];
+            }
+            if(attrs2)
+                a = Utils.mergeLists(a, attrs2);
             return HtmlUtils.span(attrs,HtmlUtils.tag("i",a));
         } else {
             return HtmlUtils.image(url, attrs);
@@ -3813,39 +3817,39 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (!this.wikiEditors) return;
         for (a in this.wikiEditors) {
             let editor= this.wikiEditors[a];
-	    editor.handleSubmit();
+            editor.handleSubmit();
         }
     },
     addWikiEditor:function(editor,id) {
-	if(!this.wikiEditors)  this.wikiEditors={};
-	id = id || editor.getId();
-	this.wikiEditors[id] = editor;
+        if(!this.wikiEditors)  this.wikiEditors={};
+        id = id || editor.getId();
+        this.wikiEditors[id] = editor;
     },
     makeBreadcrumbsInit: function(id) {
-	//If page isn't loaded then register a callback
-	if(!Utils.getPageLoaded()) {
-	    let theId = id;
-	    Utils.addLoadFunction(() =>{
-		HtmlUtils.makeBreadcrumbs(theId);
-	    });
-	    return;
-	}
-	HtmlUtils.makeBreadcrumbs(id);
+        //If page isn't loaded then register a callback
+        if(!Utils.getPageLoaded()) {
+            let theId = id;
+            Utils.addLoadFunction(() =>{
+                HtmlUtils.makeBreadcrumbs(theId);
+            });
+            return;
+        }
+        HtmlUtils.makeBreadcrumbs(id);
     },
     makeBreadcrumbs: function(id) {
-	let bc = jQuery("#" + id);
-	let num = bc.find("li").length
-	let begin = 0;
-	let end = 4;
-	let w = 0;
-	if(num>5) {
-	    end=0;
-	}
+        let bc = jQuery("#" + id);
+        let num = bc.find("li").length
+        let begin = 0;
+        let end = 4;
+        let w = 0;
+        if(num>5) {
+            end=0;
+        }
         bc.jBreadCrumb({
             previewWidth: w,
-//	    maxFinalElementLength:400,
-//	    minFinalElementLength:10,
-	    easing:'easeOutQuad',
+//          maxFinalElementLength:400,
+//          minFinalElementLength:10,
+            easing:'easeOutQuad',
 //            easing: 'swing',
             //(sic)
             beginingElementsToLeaveOpen: begin,
@@ -3875,10 +3879,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     join: function(items, separator) {
         if(!items.forEach) {
-	    items=[items];
-	}
+            items=[items];
+        }
         let html = "";
-	items.forEach((item,idx)=>{
+        items.forEach((item,idx)=>{
             if (idx > 0 & separator != null) html += separator;
             html += item;
         });
@@ -3891,9 +3895,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "\'" + value + "\'";
     },
     getUniqueId: function() {
-	if (!window["uniqueCnt"]) {
-	    window["uniqueCnt"] = new Date().getTime();
-	}
+        if (!window["uniqueCnt"]) {
+            window["uniqueCnt"] = new Date().getTime();
+        }
         var cnt = window["uniqueCnt"]++;
         return "id_" + cnt;
     },
@@ -3927,19 +3931,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 collapsible: true,
                 heightStyle: "content",
                 active: 0,
-		decorate:true,
-		activate: function() {
-		    if (window["ramaddaDisplayCheckLayout"]) {
-			ramaddaDisplayCheckLayout();
-		    }
-		}
+                decorate:true,
+                activate: function() {
+                    if (window["ramaddaDisplayCheckLayout"]) {
+                        ramaddaDisplayCheckLayout();
+                    }
+                }
             }
             $.extend(ctorArgs, args);
-	    if(!ctorArgs.decorate) {
-		var accordion = $(id +" .ui-accordion-header");
-		accordion.css("padding","0em 0em 0em 0em");
-	    }
-	    if(ctorArgs.active<0) ctorArgs.active='none';
+            if(!ctorArgs.decorate) {
+                var accordion = $(id +" .ui-accordion-header");
+                accordion.css("padding","0em 0em 0em 0em");
+            }
+            if(ctorArgs.active<0) ctorArgs.active='none';
             $(id).accordion(ctorArgs);
         });
     },
@@ -3949,7 +3953,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         row += HtmlUtils.join(args, "</td><td>");
         row += "</td></tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
-			row);
+                        row);
     },
     vbox: function(args) {
         let col = HtmlUtils.join(args, "<br>");
@@ -3959,41 +3963,41 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (leftWeight == null) leftWeight = "6";
         if (rightWeight == null) rightWeight = "6";
         return this.div(["class", "row"],
-			this.div(["class", "col-md-" + leftWeight], left) +
-			this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
+                        this.div(["class", "col-md-" + leftWeight], left) +
+                        this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
     },
     leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs,cellStyle) {
         if (!attrs) attrs = {};
         if (!attrs.valign) attrs.valign = "top";
-	//        if (leftWidth == null) leftWidth = "33%";
-	//        if (centerWidth == null) centerWidth = "33%";
-	//        if (rightWidth == null) rightWidth = "33%";
-	if(!cellStyle) cellStyle = "";
+        //        if (leftWidth == null) leftWidth = "33%";
+        //        if (centerWidth == null) centerWidth = "33%";
+        //        if (rightWidth == null) rightWidth = "33%";
+        if(!cellStyle) cellStyle = "";
         return this.tag("table", ["border", 0, "width", "100%", "cellspacing", "0", "cellpadding", "0"],
-			this.tr(["valign", attrs.valign],
-				this.td(["align", "left", "width", leftWidth, STYLE,cellStyle], left) +
-				this.td(["align", "center", "width", centerWidth, STYLE,cellStyle], center) +
-				this.td(["align", "right", "width", rightWidth, STYLE,cellStyle], right)));
+                        this.tr(["valign", attrs.valign],
+                                this.td(["align", "left", "width", leftWidth, STYLE,cellStyle], left) +
+                                this.td(["align", "center", "width", centerWidth, STYLE,cellStyle], center) +
+                                this.td(["align", "right", "width", rightWidth, STYLE,cellStyle], right)));
     },
 
     row: function() {
-	let row = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr valign=center>";
-	Array.from(arguments).forEach(h=>{
-	    if(Array.isArray(h)) {
-		row+=HtmlUtils.tag("td",h[0],h[1]);
-	    } else {
-		row+=HtmlUtils.tag("td",[],h);
-	    }
-	})
-	row+="</tr></table>";
-	return row;
+        let row = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr valign=center>";
+        Array.from(arguments).forEach(h=>{
+            if(Array.isArray(h)) {
+                row+=HtmlUtils.tag("td",h[0],h[1]);
+            } else {
+                row+=HtmlUtils.tag("td",[],h);
+            }
+        })
+        row+="</tr></table>";
+        return row;
     },
     hrow: function() {
-	let row = "";
-	Array.from(arguments).forEach(h=>{
-	    row+=HtmlUtils.div(["style", "display:inline-block"],h);
-	})
-	return row;
+        let row = "";
+        Array.from(arguments).forEach(h=>{
+            row+=HtmlUtils.div(["style", "display:inline-block"],h);
+        })
+        return row;
     },
 
     leftRightTable: function(left, right, leftWidth, rightWidth, attrs) {
@@ -4010,9 +4014,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             rightAttrs.push(rightWidth);
         }
         return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
-			this.tr(["valign", attrs.valign],
-				this.td(leftAttrs, left) +
-				this.td(rightAttrs, right)));
+                        this.tr(["valign", attrs.valign],
+                                this.td(leftAttrs, left) +
+                                this.td(rightAttrs, right)));
     },
 
     heading: function(html) {
@@ -4028,237 +4032,237 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "col-md-1";
     },
     initWikiEditor(entry, wikiId, textId,cbxId) {
-	var textBlock = textId +"_block";
-	var wikiBlock = wikiId +"_block";
-	$("#" + cbxId).click(() => {
-	    var editor = HtmlUtils.getWikiEditor(wikiId);
-	    var on  = $("#" + cbxId).is(':checked');
-	    if(on) {
-		$("#" + textBlock).css("display","none");
-		$("#" + wikiBlock).css("display","block");
-		var val = $("#" + textId).val();
-		editor.getEditor().setValue(val,8);
-		$("#" + wikiId).focus();
-	    } else {
-		var val = editor.getEditor().getValue();
-		$("#" + textId).val(val);
-		$("#" + textBlock).css("display","block");
-		$("#" + wikiBlock).css("display","none");
-		$("#" + textId).focus();
-	    }
-	})
+        var textBlock = textId +"_block";
+        var wikiBlock = wikiId +"_block";
+        $("#" + cbxId).click(() => {
+            var editor = HtmlUtils.getWikiEditor(wikiId);
+            var on  = $("#" + cbxId).is(':checked');
+            if(on) {
+                $("#" + textBlock).css("display","none");
+                $("#" + wikiBlock).css("display","block");
+                var val = $("#" + textId).val();
+                editor.getEditor().setValue(val,8);
+                $("#" + wikiId).focus();
+            } else {
+                var val = editor.getEditor().getValue();
+                $("#" + textId).val(val);
+                $("#" + textBlock).css("display","block");
+                $("#" + wikiBlock).css("display","none");
+                $("#" + textId).focus();
+            }
+        })
     },
     makeDialog: function(args) {
-	HtmlUtils.hidePopupObject();
-	let opts  = {
-	    modal:false,
-	    modalContentsCss:"",
-	    sticky:false,
-	    content:null,
-	    contentId:null,
-	    anchor:null,
-	    draggable:false,
-	    decorate:true,
-	    header:false,
-	    remove:true,
-	    my: "left top",
-	    at: "left bottom",	    
-	    title:"",
-	    inPlace:true,
-	    fit:true
-	};
+        HtmlUtils.hidePopupObject();
+        let opts  = {
+            modal:false,
+            modalContentsCss:"",
+            sticky:false,
+            content:null,
+            contentId:null,
+            anchor:null,
+            draggable:false,
+            decorate:true,
+            header:false,
+            remove:true,
+            my: "left top",
+            at: "left bottom",      
+            title:"",
+            inPlace:true,
+            fit:true
+        };
 
-	if(args) {
-	    if(args.at=="") delete args.at;
-	    if(args.my=="") delete args.my;
-//	    console.log(JSON.stringify(args,null,2));
-	    $.extend(opts, args);
-	}
-	if(opts.anchor && (typeof opts.anchor=="string")) {
-	    opts.anchor = $("#"  + opts.anchor);
-	}
+        if(args) {
+            if(args.at=="") delete args.at;
+            if(args.my=="") delete args.my;
+//          console.log(JSON.stringify(args,null,2));
+            $.extend(opts, args);
+        }
+        if(opts.anchor && (typeof opts.anchor=="string")) {
+            opts.anchor = $("#"  + opts.anchor);
+        }
 
-	let parentId;
-	let html;
-	if(opts.content)  {
-	    //Can't be in place if its a string
-	    opts.inPlace = false;
-	}
-	if(opts.inPlace) {
-	    opts.remove = false;
-	    parentId= HtmlUtils.getUniqueId();
-	    html = HU.div([ID,parentId,STYLE,HU.css()],HU.SPACE);
-	} else {
-	    html = opts.content;
-	    if(html == null) {
-		if(opts.contentId) {
-		    html = $("#" + opts.contentId).html();
-		} else {
-		    html = "No html provided";
-		}
-	    } 
+        let parentId;
+        let html;
+        if(opts.content)  {
+            //Can't be in place if its a string
+            opts.inPlace = false;
+        }
+        if(opts.inPlace) {
+            opts.remove = false;
+            parentId= HtmlUtils.getUniqueId();
+            html = HU.div([ID,parentId,STYLE,HU.css()],HU.SPACE);
+        } else {
+            html = opts.content;
+            if(html == null) {
+                if(opts.contentId) {
+                    html = $("#" + opts.contentId).html();
+                } else {
+                    html = "No html provided";
+                }
+            } 
     
-	}
-	let id = HtmlUtils.getUniqueId();
-	if(opts.header) {
-	    html = HU.div([CLASS,"ramadda-popup-inner"], html);
-	}
+        }
+        let id = HtmlUtils.getUniqueId();
+        if(opts.header) {
+            html = HU.div([CLASS,"ramadda-popup-inner"], html);
+        }
 
-	if(opts.header) {
-	    let closeImage = HU.div([TITLE,"Close",CLASS,"ramadda-popup-close"], HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]));
-	    let title = HU.div([CLASS,"ramadda-popup-title"],opts.title);
-	    let hdr = closeImage+title
-	    let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],hdr);
-	    html = header + html;
-	}
+        if(opts.header) {
+            let closeImage = HU.div([TITLE,"Close",CLASS,"ramadda-popup-close"], HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]));
+            let title = HU.div([CLASS,"ramadda-popup-title"],opts.title);
+            let hdr = closeImage+title
+            let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],hdr);
+            html = header + html;
+        }
 
-	if(opts.decorate || opts.header) {
-	    html = HU.div([CLASS,"ramadda-popup"], html);
-	}
+        if(opts.decorate || opts.header) {
+            html = HU.div([CLASS,"ramadda-popup"], html);
+        }
 
 
-	let innerId = HU.getUniqueId("model_inner");
-	if(opts.modal) {
-	    html  = HU.div([ID, innerId, STYLE,opts.modalContentsCss,CLASS,"ramadda-modal-contents"],html);
-	    html = HU.div([CLASS,"ramadda-modal"],html);
-	}
+        let innerId = HU.getUniqueId("model_inner");
+        if(opts.modal) {
+            html  = HU.div([ID, innerId, STYLE,opts.modalContentsCss,CLASS,"ramadda-modal-contents"],html);
+            html = HU.div([CLASS,"ramadda-modal"],html);
+        }
 
-	let popup=   $(html).appendTo("body");
+        let popup=   $(html).appendTo("body");
 
-	if(opts.remove) {
-	    popup.attr("removeonclose","true");
-	}
-	if(opts.inPlace) {
-	    let src =  $("#" + opts.contentId);
-	    let dest = $("#"+ parentId);
-	    dest.css("display","block").css("width","fit-content").css("height","fit-content");
-	    src.appendTo(dest);
-	    src.show();
-	}
+        if(opts.remove) {
+            popup.attr("removeonclose","true");
+        }
+        if(opts.inPlace) {
+            let src =  $("#" + opts.contentId);
+            let dest = $("#"+ parentId);
+            dest.css("display","block").css("width","fit-content").css("height","fit-content");
+            src.appendTo(dest);
+            src.show();
+        }
 
-	if(opts.animate && opts.animate!="false") {
-	    popup.show(400);
-	} else {
-	    popup.show();
-	}
+        if(opts.animate && opts.animate!="false") {
+            popup.show(400);
+        } else {
+            popup.show();
+        }
 
-	if(opts.anchor) {
-	    if(opts.width) {
-		popup.css("width",opts.width);
-	    }
-	    popup.position({
-		of: opts.anchor,
-		my: opts.my,
-		at: opts.at,
-		collision:opts.fit?"fit fit":null
-	    });
-//	    console.log(opts.my +" " + opts.at);
-	}
+        if(opts.anchor) {
+            if(opts.width) {
+                popup.css("width",opts.width);
+            }
+            popup.position({
+                of: opts.anchor,
+                my: opts.my,
+                at: opts.at,
+                collision:opts.fit?"fit fit":null
+            });
+//          console.log(opts.my +" " + opts.at);
+        }
 
-	if(opts.draggable) {
-	    if(opts.modal) {
-		$("#" + innerId).draggable();
-	    } else {
-		popup.draggable();
-		//	    popup.resizable({containment: "parent",handles: 'se',});
-	    }
-	} else if(!opts.sticky) {
-	    HtmlUtils.setPopupObject(popup);
-	}
-	if(opts.header) {
-	    $("#" + id +"_close").click(function() {
-		popup.hide();
-		if(opts.callback) opts.callback(popup);
-		if(opts.remove) {
-		    popup.remove();
-		}
-	    });
-	}
-	if(opts.initCall) {
-	    if(typeof opts.initCall == "string") {
-		eval(opts.initCall);
-	    } else {
-		opts.initCall();
-	    }
-	}
-	return popup;
+        if(opts.draggable) {
+            if(opts.modal) {
+                $("#" + innerId).draggable();
+            } else {
+                popup.draggable();
+                //          popup.resizable({containment: "parent",handles: 'se',});
+            }
+        } else if(!opts.sticky) {
+            HtmlUtils.setPopupObject(popup);
+        }
+        if(opts.header) {
+            $("#" + id +"_close").click(function() {
+                popup.hide();
+                if(opts.callback) opts.callback(popup);
+                if(opts.remove) {
+                    popup.remove();
+                }
+            });
+        }
+        if(opts.initCall) {
+            if(typeof opts.initCall == "string") {
+                eval(opts.initCall);
+            } else {
+                opts.initCall();
+            }
+        }
+        return popup;
     },
     addToDocumentUrl:function(name,value,append) {
-	if(Utils.isPost()) { return}
+        if(Utils.isPost()) { return}
         var url = String(window.location);
-	if(!append) {
-	    url = new URL(url);
-	    if(value===null) {
-		url.searchParams.delete(name);
-	    } else {
-		url.searchParams.set(name,value);
-	    }
-	    //	    let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
-	    //	    url = url.replace(regex,"");
-	} else  {
+        if(!append) {
+            url = new URL(url);
+            if(value===null) {
+                url.searchParams.delete(name);
+            } else {
+                url.searchParams.set(name,value);
+            }
+            //      let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
+            //      url = url.replace(regex,"");
+        } else  {
             if (!url.includes("?")) url += "?";
             url += "&" + HtmlUtils.urlArg(name,value);
-	}
+        }
 
         try {
             if (window.history.replaceState)
                 window.history.replaceState("", "", url);
         } catch (e) {
             console.log("err:" + e);
-	    console.trace();
+            console.trace();
         }
     },
     initSearchPopup:function(id,target) {
-	let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
-				    HU.css("width","200px")]);
-	input = HU.center(input);
-	let html = input +HU.div([CLASS,"ramadda-select-search-results","id",id+"_results"]);
-	$("#" +id).html(html);
-	let results = $("#" + id +"_results");
-	$("#" + id +"_input").keyup(function(event){
-	    let value =  $(this).val();
-	    if(value=="") {
-		results.hide();
-		results.html("");
-		return;
-	    }
-	    let keycode = (event.keyCode ? event.keyCode : event.which);
-	    if(keycode == 13) {
-		let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
-		results.html(HU.getIconImage(icon_wait) + " Searching...");
-		results.show();
-		var myCallback = {
+        let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
+                                    HU.css("width","200px")]);
+        input = HU.center(input);
+        let html = input +HU.div([CLASS,"ramadda-select-search-results","id",id+"_results"]);
+        $("#" +id).html(html);
+        let results = $("#" + id +"_results");
+        $("#" + id +"_input").keyup(function(event){
+            let value =  $(this).val();
+            if(value=="") {
+                results.hide();
+                results.html("");
+                return;
+            }
+            let keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == 13) {
+                let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
+                results.html(HU.getIconImage(icon_wait) + " Searching...");
+                results.show();
+                var myCallback = {
                     entryListChanged: function(list) {
-			let entries = list.getEntries();
-			if(entries.length==0) {
-			    results.show();
-			    results.html("Nothing found");
-			    return;
-			}
-			let html = "";
-			entries.forEach(entry=>{
-			    let call = "selectClick('" +  target +"','" + entry.getId() +
-				"','" + entry.getName()+"');";
-			    html += HU.href("javascript:void(0);",entry.getIconImage() +" " + entry.getName(),
-					    ["onclick",call]) +"<br>";
-			});
-			results.html(html);
-			results.show(400);
+                        let entries = list.getEntries();
+                        if(entries.length==0) {
+                            results.show();
+                            results.html("Nothing found");
+                            return;
+                        }
+                        let html = "";
+                        entries.forEach(entry=>{
+                            let call = "selectClick('" +  target +"','" + entry.getId() +
+                                "','" + entry.getName()+"');";
+                            html += HU.href("javascript:void(0);",entry.getIconImage() +" " + entry.getName(),
+                                            ["onclick",call]) +"<br>";
+                        });
+                        results.html(html);
+                        results.show(400);
                     },
                     handleSearchError:function(url, error) {
-			results.html("An error occurred:" + error);
-		    }
-		};
-		var entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
-		entryList.doSearch();
-	    }
-	});
+                        results.html("An error occurred:" + error);
+                    }
+                };
+                var entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
+                entryList.doSearch();
+            }
+        });
     },
 
     removeFromDocumentUrl:function(arg) {
         try {
             var url = String(window.location);
-	    url = url.replace("\&?" + arg+"=[^\&]+\&?","");
+            url = url.replace("\&?" + arg+"=[^\&]+\&?","");
             if (window.history.replaceState)
                 window.history.replaceState("", "", url);
         } catch (e) {
@@ -4266,8 +4270,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     getUrlArgument: function(arg) {
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get(arg);
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(arg);
     },
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
@@ -4282,63 +4286,63 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.tag("span", attrs, inner);
     },
     movie:function(path, attrs) {
-	let a = "";
-	if(attrs) a=HU.attrs(attrs);
-	return "<video src='" + path +"' " + a +" controls='controls'></video>";
+        let a = "";
+        if(attrs) a=HU.attrs(attrs);
+        return "<video src='" + path +"' " + a +" controls='controls'></video>";
     },
     image: function(path, attrs) {
         return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
     },
     swapHtml:function(srcSelector, targetSelector) {
-	$(document).ready(function(){
-	    let src = $(srcSelector); 
-	    let target=$(targetSelector);
-	    src.appendTo(target);
-	});
+        $(document).ready(function(){
+            let src = $(srcSelector); 
+            let target=$(targetSelector);
+            src.appendTo(target);
+        });
 
     },
     table: function(attrs, inner) {
-	return HU.tag("table",attrs,inner);
+        return HU.tag("table",attrs,inner);
     },
     tr: function(attrs, inner) {
         return this.tag("tr", attrs, inner);
     },
     css: function(...attrs) {
-	if(attrs.length==1 && Array.isArray(attrs[0])) attrs = attrs[0]
+        if(attrs.length==1 && Array.isArray(attrs[0])) attrs = attrs[0]
 
-	let css = "";
-	for(let i=0;i<attrs.length;i+=2) {
-	    css +=attrs[i]+":" + attrs[i+1]+";";
-	}
-	return css;
+        let css = "";
+        for(let i=0;i<attrs.length;i+=2) {
+            css +=attrs[i]+":" + attrs[i+1]+";";
+        }
+        return css;
     },
     h2: function(h) {
-	return HU.tag("h2",[],h);
+        return HU.tag("h2",[],h);
     },
     h3: function(h) {
-	return HU.tag("h3",[],h);
+        return HU.tag("h3",[],h);
     },
     cssTag: function(css) {
         return '<style type="text/css">\n' + css + '</style>';
     },
     cssLink: function(url) {
         return "<link href='" + url +"'  rel='stylesheet'  type='text/css' />";
-    },	
+    },  
     javascriptLink: function(url) {
         return "<script type='text/javascript' src='" + url+"'></script>";
-    },	
+    },  
     getDimension(d) {
-	if(!d) return null;
-	d = String(d).trim();
-	if(d.match("calc")) {
-	    //correct for calc(x-y)
-	    d = d.replace(/calc *\(/,"calc(").replace(/-/," - ").replace(/\+/," + ");
-	    d = d.replace(/([0-9]) *\)/,"$1px)");
-	}
-	if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px") || d.endsWith("vh")) {
-	    return d;
-	}
-	return d+"px";
+        if(!d) return null;
+        d = String(d).trim();
+        if(d.match("calc")) {
+            //correct for calc(x-y)
+            d = d.replace(/calc *\(/,"calc(").replace(/-/," - ").replace(/\+/," + ");
+            d = d.replace(/([0-9]) *\)/,"$1px)");
+        }
+        if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px") || d.endsWith("vh")) {
+            return d;
+        }
+        return d+"px";
     },
     td: function(attrs, inner) {
         return this.tag("td", attrs, inner);
@@ -4358,26 +4362,26 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },    
     onReturnEvent: function(selector,func) {
-	if((typeof selector) == "string") selector = $(selector);
-	selector.keyup(function(event) {
-	    var keycode = (event.keyCode ? event.keyCode : event.which);
-	    if(keycode == 13) {
-		func($(this),event);
-	    }
-	});
+        if((typeof selector) == "string") selector = $(selector);
+        selector.keyup(function(event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == 13) {
+                func($(this),event);
+            }
+        });
     },
     formatTable: function(id, args, callback) {
-	HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +"/lib/datatables/src/jquery.dataTables.min.css"],
-				[ramaddaCdn + "/lib/datatables/src/jquery.dataTables.min.js"],
-				id,()=>{
-				    $(id).each(function() {
-					if($.fn.dataTable.isDataTable(this)) {
-					    return;
-					}
-					HtmlUtils.formatTableInner($(this),args);
-					if(callback) callback($(this));
-				    });
-				});
+        HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +"/lib/datatables/src/jquery.dataTables.min.css"],
+                                [ramaddaCdn + "/lib/datatables/src/jquery.dataTables.min.js"],
+                                id,()=>{
+                                    $(id).each(function() {
+                                        if($.fn.dataTable.isDataTable(this)) {
+                                            return;
+                                        }
+                                        HtmlUtils.formatTableInner($(this),args);
+                                        if(callback) callback($(this));
+                                    });
+                                });
     },
     formatTableInner: function(table, args) {
         let options = {
@@ -4386,12 +4390,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             info: false,
             searching: false,
             scrollCollapse: true,
-	    retrieve: true,
-	    fixedHeader:false,
+            retrieve: true,
+            fixedHeader:false,
         };
         if (args)
             $.extend(options, args);
-	
+        
         let height = options.height || table.attr("table-height");
         if (height)
             options.scrollY = height;
@@ -4408,146 +4412,146 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let sh = "" + options.scrollY;
             if (!sh.endsWith("px")) options.scrollY += "px";
         }
-	table.DataTable(options);
+        table.DataTable(options);
     },
 
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
     },
     attrSelect:function(name,value) {
-	return  "[" + name+"=\"" + value +"\"]";
+        return  "[" + name+"=\"" + value +"\"]";
     },
     scrollToAnchor:function(aid,offset) {
-	if(!Utils.isDefined(offset)) offset=-50;
-	var aTag = $("a[name='"+ aid +"']");
-	if(!offset) offset=0;
-	offset = +offset;
-	//Offset a bit
-	Utils.scrollToAnchorTime = new Date();
-	$('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
-	location.hash = aid;
+        if(!Utils.isDefined(offset)) offset=-50;
+        var aTag = $("a[name='"+ aid +"']");
+        if(!offset) offset=0;
+        offset = +offset;
+        //Offset a bit
+        Utils.scrollToAnchorTime = new Date();
+        $('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
+        location.hash = aid;
     },
     scrollVisible: function(contents, child, animate) {
-	if(child.length==0 || contents.length==0)  return;
-	let diff = child.offset().top-contents.offset().top;
-	if(!Utils.isDefined(animate)) animate= 1000;
-	contents.animate({
-	    scrollTop: diff+contents.scrollTop()
-	}, animate);
+        if(child.length==0 || contents.length==0)  return;
+        let diff = child.offset().top-contents.offset().top;
+        if(!Utils.isDefined(animate)) animate= 1000;
+        contents.animate({
+            scrollTop: diff+contents.scrollTop()
+        }, animate);
     },
     initNavPopup: function(id,args) {
-	let opts = {
-	    align:"left"
-	};
-	if(args) $.extend(opts, args);
-	$("#"+id).click(function() {
-	    let popup = HtmlUtils.setPopupObject($("#"+ id+"-popup"));
-	    let my,at;
-	    if(opts.align=="right") {
-		my = "right top";
-		at = "right top";
-	    } else {
-		my = "left top";
-		at = "right+5 top";
-	    }
-	    popup.show();
+        let opts = {
+            align:"left"
+        };
+        if(args) $.extend(opts, args);
+        $("#"+id).click(function() {
+            let popup = HtmlUtils.setPopupObject($("#"+ id+"-popup"));
+            let my,at;
+            if(opts.align=="right") {
+                my = "right top";
+                at = "right top";
+            } else {
+                my = "left top";
+                at = "right+5 top";
+            }
+            popup.show();
             popup.position({
                 of: popup.parent(),
                 my: my,
                 at: at,
                 collision: "fit fit"
-	    });
+            });
 
-	});
+        });
     },
 
 
     navLinkClicked: function(id,offset) {
-	let links =  	$(".ramadda-nav-left-link");	
-	links.removeClass("ramadda-nav-link-active");
-	$("#" + id+"_href").parent().addClass("ramadda-nav-link-active");
-	HtmlUtils.scrollToAnchor(id,offset);
+        let links =     $(".ramadda-nav-left-link");    
+        links.removeClass("ramadda-nav-link-active");
+        $("#" + id+"_href").parent().addClass("ramadda-nav-link-active");
+        HtmlUtils.scrollToAnchor(id,offset);
     },
     initNavLinks: function(args) {
-	let opts = {
-	    leftOpen:true,
-	    showToggle:true,
-	    leftWidth:"250px"
-	}
-	if(args) $.extend(opts,args);
-	let left = $(".ramadda-nav-left");
-	let right = $(".ramadda-nav-right");	
-	
-	if(opts.showToggle) {
-	    let menu = HU.div(["toggle-state",opts.leftOpen?"open":"closed", TITLE,"Toggle left", ID,"ramadda-nav-left-toggle",CLASS,"ramadda-nav-left-toggle"], HtmlUtils.getIconImage("fa-bars"));
-	    $(menu).appendTo(right);
-	    $("#ramadda-nav-left-toggle").click(function() {
-		let closed = $(this).attr("toggle-state")==="closed";
-		if(closed) {
-		    left.show();
-		    right.animate({"margin-left":opts.leftWidth});
-		} else {
-		    left.hide();
-		    right.animate({"margin-left":"0px"});
-		}
-		$(this).attr("toggle-state",closed?"open":"closed");
-	    });
-	}
+        let opts = {
+            leftOpen:true,
+            showToggle:true,
+            leftWidth:"250px"
+        }
+        if(args) $.extend(opts,args);
+        let left = $(".ramadda-nav-left");
+        let right = $(".ramadda-nav-right");    
+        
+        if(opts.showToggle) {
+            let menu = HU.div(["toggle-state",opts.leftOpen?"open":"closed", TITLE,"Toggle left", ID,"ramadda-nav-left-toggle",CLASS,"ramadda-nav-left-toggle"], HtmlUtils.getIconImage("fa-bars"));
+            $(menu).appendTo(right);
+            $("#ramadda-nav-left-toggle").click(function() {
+                let closed = $(this).attr("toggle-state")==="closed";
+                if(closed) {
+                    left.show();
+                    right.animate({"margin-left":opts.leftWidth});
+                } else {
+                    left.hide();
+                    right.animate({"margin-left":"0px"});
+                }
+                $(this).attr("toggle-state",closed?"open":"closed");
+            });
+        }
 
-	let linksContainer = $(".ramadda-nav-left-links");
-	linksContainer.mouseenter(function() {
-	    Utils.linksMouseIn = true;
-	});
-	linksContainer.mouseleave(function() {
-	    Utils.linksMouseIn = false;
-	});	
+        let linksContainer = $(".ramadda-nav-left-links");
+        linksContainer.mouseenter(function() {
+            Utils.linksMouseIn = true;
+        });
+        linksContainer.mouseleave(function() {
+            Utils.linksMouseIn = false;
+        });     
 
-	let anchors = 	$(".ramadda-nav-anchor");
-	let links =  	$(".ramadda-nav-left-link");	
-	let lastTop = null;
-	$(window).scroll(function(){
-	    if(Utils.linksMouseIn) return;
-	    let amScrolling = false;
-	    if(Utils.scrollToAnchorTime) {
-		let now  = new Date();
-		amScrolling = (now.getTime()-Utils.scrollToAnchorTime.getTime())<2000;
-	    }
-	    let docTop = $(window).scrollTop();
-	    let docBottom = docTop + $(window).height();
-	    let topMost= null;
-	    let top = null;
-	    anchors.each(function() {
-		let elemTop = $(this).offset().top;	
-		let elemBottom = elemTop + $(this).outerHeight(true); 
-		//	console.log("doc:" + docTop + " " + docBottom +"  "+ elemTop +" " + elemBottom);
-		let inView = ((elemTop <= docBottom) && (elemTop >= docTop)) ||
-		    ((elemBottom <= docBottom) && (elemBottom >= docTop)) ||
-		    ((elemBottom >= docBottom) && (elemTop <= docTop));
-		if(!inView) return;
-		if(top==null) {
-		    top = elemTop;
-		    topMost= $(this);
-		} else if(elemTop<top) {
-		    top = elemTop;
-		    topMost= $(this);
-		}
-	    });
-	    if(!topMost) return;
-	    if(lastTop && lastTop.attr("name") == topMost.attr("name")) return;
-	    lastTop = topMost;
-	    links.removeClass("ramadda-nav-link-active");
-	    let activeLink = null;
-	    links.each(function() {
-		if($(this).attr("navlink") == topMost.attr("name")) {
-		    $(this).addClass("ramadda-nav-link-active");
-		    activeLink = $(this);
-		}
-	    });
-	    if(!amScrolling && activeLink) {
-		HtmlUtils.scrollVisible(activeLink.parent(), activeLink,100);
-	    }
+        let anchors =   $(".ramadda-nav-anchor");
+        let links =     $(".ramadda-nav-left-link");    
+        let lastTop = null;
+        $(window).scroll(function(){
+            if(Utils.linksMouseIn) return;
+            let amScrolling = false;
+            if(Utils.scrollToAnchorTime) {
+                let now  = new Date();
+                amScrolling = (now.getTime()-Utils.scrollToAnchorTime.getTime())<2000;
+            }
+            let docTop = $(window).scrollTop();
+            let docBottom = docTop + $(window).height();
+            let topMost= null;
+            let top = null;
+            anchors.each(function() {
+                let elemTop = $(this).offset().top;     
+                let elemBottom = elemTop + $(this).outerHeight(true); 
+                //      console.log("doc:" + docTop + " " + docBottom +"  "+ elemTop +" " + elemBottom);
+                let inView = ((elemTop <= docBottom) && (elemTop >= docTop)) ||
+                    ((elemBottom <= docBottom) && (elemBottom >= docTop)) ||
+                    ((elemBottom >= docBottom) && (elemTop <= docTop));
+                if(!inView) return;
+                if(top==null) {
+                    top = elemTop;
+                    topMost= $(this);
+                } else if(elemTop<top) {
+                    top = elemTop;
+                    topMost= $(this);
+                }
+            });
+            if(!topMost) return;
+            if(lastTop && lastTop.attr("name") == topMost.attr("name")) return;
+            lastTop = topMost;
+            links.removeClass("ramadda-nav-link-active");
+            let activeLink = null;
+            links.each(function() {
+                if($(this).attr("navlink") == topMost.attr("name")) {
+                    $(this).addClass("ramadda-nav-link-active");
+                    activeLink = $(this);
+                }
+            });
+            if(!amScrolling && activeLink) {
+                HtmlUtils.scrollVisible(activeLink.parent(), activeLink,100);
+            }
 
-	});
+        });
     },
     setFormValue: function(id, val) {
         $("#" + id).val(val);
@@ -4562,25 +4566,25 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.closeTag("table");
     },
     formEntryTop: function(label, value, value2) {
-	if(value2) 
+        if(value2) 
             return HU.tag("tr", ["valign", "top"],
-			  HU.tag("td", ["class", "formlabel", "align", "right"],
-				 label) +
-			  HU.tag("td", [],   value) +
-			  HU.tag("td", [],   value2));
+                          HU.tag("td", ["class", "formlabel", "align", "right"],
+                                 label) +
+                          HU.tag("td", [],   value) +
+                          HU.tag("td", [],   value2));
         return this.tag("tr", ["valign", "top"],
-			this.tag("td", ["class", "formlabel", "align", "right"],
-				 label) +
-			this.tag("td", [],
-				 value));
+                        this.tag("td", ["class", "formlabel", "align", "right"],
+                                 label) +
+                        this.tag("td", [],
+                                 value));
 
     },
     formEntry: function(label, value) {
         return this.tag("tr", [],
-			this.tag("td", ["class", "formlabel", "align", "right"],
-				 label) +
-			this.tag("td", [],
-				 value));
+                        this.tag("td", ["class", "formlabel", "align", "right"],
+                                 label) +
+                        this.tag("td", [],
+                                 value));
 
     },
     appendArg: function(url, arg, value) {
@@ -4633,7 +4637,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     open: function(tagName, attrs, extra) {
         var html = "<" + tagName + " " + this.attrs(attrs) + ">";
-	if(extra) html+= extra;
+        if(extra) html+= extra;
         return html;
     },
     openRow: function() {
@@ -4655,19 +4659,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "</" + tagName + ">\n";
     },
     close: function(...args) {
-	let html = "";
-	args.forEach(a=>{html+= "</" + a + ">\n";});
-	return html;
+        let html = "";
+        args.forEach(a=>{html+= "</" + a + ">\n";});
+        return html;
     },
     urlArg: function(name, value) {
         return name + "=" + encodeURIComponent(value);
     },
     attrSelect: function(name, value) {
-	if(!Utils.isDefined(value)) return "[" + name +"]";
-	return "[" + name +"='" + value+ "']";
+        if(!Utils.isDefined(value)) return "[" + name +"]";
+        return "[" + name +"='" + value+ "']";
     },
     attr: function(name, value) {
-	if(value==null)
+        if(value==null)
             return " " + name + " ";
         return " " + name + "=" + this.qt(value) + " ";
     },
@@ -4698,105 +4702,105 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.attr("class", s);
     },
     makeFullScreen:function(elem) {
-	if(elem==null) {
-	    console.log("HtmlUtils.makeFullScreen: null elem argument");
-	    console.trace();
-	    return;
-	}
-	if (elem.requestFullscreen) {
-	    elem.requestFullscreen();
-	} else if (elem.webkitRequestFullscreen) { /* Safari */
-	    elem.webkitRequestFullscreen();
-	} else if (elem.msRequestFullscreen) { /* IE11 */
-	    elem.msRequestFullscreen();
-	} else {
-	    console.err("No full screen");
-	}
+        if(elem==null) {
+            console.log("HtmlUtils.makeFullScreen: null elem argument");
+            console.trace();
+            return;
+        }
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+        } else {
+            console.err("No full screen");
+        }
     },
     makeExpandable:function(selector,fullScreen) {
-	let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
+        let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
         let id = HtmlUtils.getUniqueId();
-	let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
-	$(selector).append(html);
-	let btn = $("#"+id);
-	let expandNow = $(selector).hasClass("ramadda-expand-now");
-	btn.attr("data-expanded",expandNow);
-	let origBackground = $(selector).css("background");
-	$(selector).mouseenter(function() {
-	    btn.css("display","block");
-	});
-	$(selector).mouseleave(function() {
-	    btn.css("display","none");
-	});
-	let expandIt = function() {
-	    let icon;
-	    let expanded = $(this).attr("data-expanded")=="true";
-	    if(expanded) {
-		icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
-		$(this).attr("title","Expand");
-		$(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height",
-															 "").css("z-index","").css("background",origBackground?origBackground:"");
-		btn.css("display","none");
-		$(selector).find(".ramadda-expandable-target").each(function() {
-		    $(this).attr("isexpanded","false");
-		    $(this).css("height",$(this).attr("original-height"));
-		});
-	    } else {
-		let h = $(window).height();
-		icon  = HtmlUtils.getIconImage("fa-compress-arrows-alt");
-		let top = $(selector).offset().top;
-		$(this).attr("title","Contract");
+        let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
+        $(selector).append(html);
+        let btn = $("#"+id);
+        let expandNow = $(selector).hasClass("ramadda-expand-now");
+        btn.attr("data-expanded",expandNow);
+        let origBackground = $(selector).css("background");
+        $(selector).mouseenter(function() {
+            btn.css("display","block");
+        });
+        $(selector).mouseleave(function() {
+            btn.css("display","none");
+        });
+        let expandIt = function() {
+            let icon;
+            let expanded = $(this).attr("data-expanded")=="true";
+            if(expanded) {
+                icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
+                $(this).attr("title","Expand");
+                $(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height",
+                                                                                                                         "").css("z-index","").css("background",origBackground?origBackground:"");
+                btn.css("display","none");
+                $(selector).find(".ramadda-expandable-target").each(function() {
+                    $(this).attr("isexpanded","false");
+                    $(this).css("height",$(this).attr("original-height"));
+                });
+            } else {
+                let h = $(window).height();
+                icon  = HtmlUtils.getIconImage("fa-compress-arrows-alt");
+                let top = $(selector).offset().top;
+                $(this).attr("title","Contract");
 
-		if(fullScreen) {
-		    let target  = $(selector).find(".ramadda-expandable");
-		    target.css("background","#fff");
-		    HtmlUtils.makeFullScreen(target.get(0));
-		    return
-		}		
+                if(fullScreen) {
+                    let target  = $(selector).find(".ramadda-expandable");
+                    target.css("background","#fff");
+                    HtmlUtils.makeFullScreen(target.get(0));
+                    return
+                }               
 
 
-		$(selector).css("left","5px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
-		$(selector).find(".ramadda-expandable-target").each(function() {
-		    $(this).attr("original-height",$(this).css("height"));
-		    $(this).attr("isexpanded","true");
-		    let height = $(this).attr("expandable-height");
-		    if(!height) if(height==-1) return;
-		    $(this).css("height",height || "95vh");
-		});
-		btn.css("display","block");
-	    }
-	    $(this).attr("data-expanded",(!expanded)+"");
-	    $(this).html(icon);
+                $(selector).css("left","5px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
+                $(selector).find(".ramadda-expandable-target").each(function() {
+                    $(this).attr("original-height",$(this).css("height"));
+                    $(this).attr("isexpanded","true");
+                    let height = $(this).attr("expandable-height");
+                    if(!height) if(height==-1) return;
+                    $(this).css("height",height || "95vh");
+                });
+                btn.css("display","block");
+            }
+            $(this).attr("data-expanded",(!expanded)+"");
+            $(this).html(icon);
             if (window["ramaddaDisplayCheckLayout"]) {
-		ramaddaDisplayCheckLayout();
+                ramaddaDisplayCheckLayout();
             }
             if (window["ramaddaMapCheckLayout"]) {
-		ramaddaMapCheckLayout();
+                ramaddaMapCheckLayout();
             }
-	};
-	$("#" +id).click(expandIt);
-	
-	if(expandNow) {
-	    expandIt();
-	}
+        };
+        $("#" +id).click(expandIt);
+        
+        if(expandNow) {
+            expandIt();
+        }
     },
     makeDraggable:function(selector) {
-	$(selector).draggable({
-	    zIndex:1000,
-	    drag: function( event, ui ) {
-	    },
-	    start: function( event, ui ) {
-		//Make the draggable be absolute
-		if(!$(this).attr("started")) {
-		    $(this).attr("started",true);
-		    let o = $(this).offset();		    
-		    $(this).attr("oleft",o.left);
-		    $(this).attr("otop",o.top);		    
-		    $(this).css("position","absolute").css("left",o.left+"px").css("top",o.top+"px");
-		    console.log("start:" + o.left + " " + o.top);
-		}
-	    },
-	});
+        $(selector).draggable({
+            zIndex:1000,
+            drag: function( event, ui ) {
+            },
+            start: function( event, ui ) {
+                //Make the draggable be absolute
+                if(!$(this).attr("started")) {
+                    $(this).attr("started",true);
+                    let o = $(this).offset();               
+                    $(this).attr("oleft",o.left);
+                    $(this).attr("otop",o.top);             
+                    $(this).css("position","absolute").css("left",o.left+"px").css("top",o.top+"px");
+                    console.log("start:" + o.left + " " + o.top);
+                }
+            },
+        });
     },
     idAttr: function(s) {
         return this.attr("id", s);
@@ -4828,7 +4832,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return tag;
     },
     jsLink: function(inner,content,extra) {
-	extra = extra||[];
+        extra = extra||[];
         return HU.href("javascript:noop();",  
                        content,extra);
 
@@ -4867,10 +4871,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             attrs.push(null);
         }
         let cbx =  this.tag("input", attrs);
-	if(label) {
-	    cbx += "&nbsp;" + HU.tag("label",["for", id],label);
-	}
-	return cbx;
+        if(label) {
+            cbx += "&nbsp;" + HU.tag("label",["for", id],label);
+        }
+        return cbx;
     },
 
     radio: function(id, name, radioclass, value, checked, extra) {
@@ -4933,7 +4937,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     }
                 }
             }
-	    if(item.id=="formurl") return;
+            if(item.id=="formurl") return;
 //            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
             var values = [];
             if (item.type == "select-multiple" && item.selectedOptions) {
@@ -4982,7 +4986,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     select: function(name, attrs,list, selected,maxWidth) {
         var select = this.openTag("select", attrs);
-	select+=HU.makeOptions(list,selected,maxWidth);
+        select+=HU.makeOptions(list,selected,maxWidth);
         select+=this.closeTag("select");
         return select;
     },
@@ -4991,54 +4995,54 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         list.forEach(item=>{
             var label = item;
             if(Array.isArray(item)) {
-		label=item[1];
+                label=item[1];
                 item = item[0];
             }
-	    if(maxWidth && label.length>maxWidth)
-		label = label.substring(0,maxWidth)+"...";
+            if(maxWidth && label.length>maxWidth)
+                label = label.substring(0,maxWidth)+"...";
             var extra = "";
-	    if(selected && Array.isArray(selected)) {
-		if(selected.indexOf(item)>=0) {
-		    extra=" selected ";
-		}
-	    } else {
-		if(selected === item) extra=" selected ";
-	    }
+            if(selected && Array.isArray(selected)) {
+                if(selected.indexOf(item)>=0) {
+                    extra=" selected ";
+                }
+            } else {
+                if(selected === item) extra=" selected ";
+            }
             options+="<option " + extra +" value='" + item +"'>" + label +"</option>";
         });
-	return options;
+        return options;
     },
 
     datePicker: function(name,value,attrs) {
-	attrs.push("size");
-	attrs.push("8");
-	return  HtmlUtils.input(name, value,attrs);
+        attrs.push("size");
+        attrs.push("8");
+        return  HtmlUtils.input(name, value,attrs);
     },
 
     datePickerInit: function(id) {
-	$("#" + id).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });
+        $("#" + id).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });
     },
     rangeInput: function(name,id) {
-	var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div(["id",id]) +"</form>";
-	console.log(html);
-	return html;
+        var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div(["id",id]) +"</form>";
+        console.log(html);
+        return html;
     },
     rangeInputInit: function(id) {
-	$("#" + id ).slider({
-	    min: 0,
-	    max: 100,
-	    step: 1,
-	    values: [10, 90],
-	    slide: function(event, ui) {
-		for (var i = 0; i < ui.values.length; ++i) {
-		    $("input.sliderValue[data-index=" + i + "]").val(ui.values[i]);
-		}
-	    }
-	});
-	$("input.sliderValue").change(function() {
-	    var $this = $(this);
-	    $("#slider").slider("values", $this.data("index"), $this.val());
-	});
+        $("#" + id ).slider({
+            min: 0,
+            max: 100,
+            step: 1,
+            values: [10, 90],
+            slide: function(event, ui) {
+                for (var i = 0; i < ui.values.length; ++i) {
+                    $("input.sliderValue[data-index=" + i + "]").val(ui.values[i]);
+                }
+            }
+        });
+        $("input.sliderValue").change(function() {
+            var $this = $(this);
+            $("#slider").slider("values", $this.data("index"), $this.val());
+        });
     },
     input: function(name, value, attrs) {
         return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
@@ -5050,17 +5054,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },
     initSelect: function(s, args) {
-	if(s.length==0) return;
-	let opts = {
-	    showEffect: "fadeIn",
-	    showEffectSpeed: 400,
-	    hideEffect: "fadeOut",
-	    hideEffectSpeed: 400,
-	};
-	if(args) $.extend(opts,args);
-	HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
-				[ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
-				s, ()=>{$(s).selectBoxIt(opts);});
+        if(s.length==0) return;
+        let opts = {
+            showEffect: "fadeIn",
+            showEffectSpeed: 400,
+            hideEffect: "fadeOut",
+            hideEffectSpeed: 400,
+        };
+        if(args) $.extend(opts,args);
+        HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
+                                [ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
+                                s, ()=>{$(s).selectBoxIt(opts);});
     },
     valueDefined: function(value) {
         if (value != "" && value.indexOf("--") != 0) {
@@ -5074,102 +5078,102 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "'" + s + "'";
     },
     makeToggle: function(imageId,blockId,visible) {
-	if(visible===null) visible = true;
+        if(visible===null) visible = true;
         let img1 = ramaddaCdn + "/icons/togglearrowdown.gif";
         let img2 = ramaddaCdn + "/icons/togglearrowright.gif";
-	$("#" + imageId).attr("state","open");
-	$("#" + imageId).attr("src",img1);
-	$("#" + imageId).css("cursor","pointer");	
-	let open = (img) =>{
-	    img.attr("state","open");
-	    img.attr("src",img1);
-	    $("#" + blockId).show();
-	};
-	let close = (img) =>{
-	    img.attr("state","close");
-	    img.attr("src",img2);
-	    $("#" + blockId).hide();
-	};
-	$("#" + imageId).click(function(e){
-	    let state = $(this).attr("state");
-	    if(state=="open") {
-		close($(this));
-	    } else {
-		open($(this));
-	    }
+        $("#" + imageId).attr("state","open");
+        $("#" + imageId).attr("src",img1);
+        $("#" + imageId).css("cursor","pointer");       
+        let open = (img) =>{
+            img.attr("state","open");
+            img.attr("src",img1);
+            $("#" + blockId).show();
+        };
+        let close = (img) =>{
+            img.attr("state","close");
+            img.attr("src",img2);
+            $("#" + blockId).hide();
+        };
+        $("#" + imageId).click(function(e){
+            let state = $(this).attr("state");
+            if(state=="open") {
+                close($(this));
+            } else {
+                open($(this));
+            }
             e.preventDefault();
-	});
-	if(!visible) {
-	    close($("#" + imageId));
-	}
+        });
+        if(!visible) {
+            close($("#" + imageId));
+        }
     },
     makeSplash: function(message,args) {
-	let opts = {
-	    width:"50%",
-	    style:"",
-	    showOk:true
-	};
-	if(args) $.extend(opts,args);
-	if(opts.src) {
-	    message = $("#" + opts.src).html();
+        let opts = {
+            width:"50%",
+            style:"",
+            showOk:true
+        };
+        if(args) $.extend(opts,args);
+        if(opts.src) {
+            message = $("#" + opts.src).html();
     
-	}
-	if(message == null || message.trim()=="") return;
-	message=  HU.div([STYLE,"margin:10px;"], message);
+        }
+        if(message == null || message.trim()=="") return;
+        message=  HU.div([STYLE,"margin:10px;"], message);
 
         let closeId = Utils.getUniqueId("close_");
-	let close = HU.div([ID,closeId,CLASS,"ramadda-clickable",			    
-			    STYLE,HU.css("position","absolute","right","10px","top","10px")],
-			   HU.getIconImage("far fa-window-close"));
-	let inner = close + message;
-	if(opts.showOk) {
-	    inner += HU.center(HU.div([ID,closeId+"_button"],"OK"));
-	}
-	inner = HU.div([CLASS,"ramadda-shadow-box ramadda-splash",
-			STYLE,HU.css("width",opts.width)+ opts.style],
-		       inner);
+        let close = HU.div([ID,closeId,CLASS,"ramadda-clickable",                           
+                            STYLE,HU.css("position","absolute","right","10px","top","10px")],
+                           HU.getIconImage("far fa-window-close"));
+        let inner = close + message;
+        if(opts.showOk) {
+            inner += HU.center(HU.div([ID,closeId+"_button"],"OK"));
+        }
+        inner = HU.div([CLASS,"ramadda-shadow-box ramadda-splash",
+                        STYLE,HU.css("width",opts.width)+ opts.style],
+                       inner);
 
-	let container = $(HU.div([CLASS,"ramadda-splash-container"],inner)).appendTo($("body"));
-	$('body').addClass("ramadda-splash-body");
-	let closer = () =>{
-	    $('body').removeClass("ramadda-splash-body");	    
-	    container.remove();
-	};
+        let container = $(HU.div([CLASS,"ramadda-splash-container"],inner)).appendTo($("body"));
+        $('body').addClass("ramadda-splash-body");
+        let closer = () =>{
+            $('body').removeClass("ramadda-splash-body");           
+            container.remove();
+        };
 
-	container.click( (event) => {
-//	    closer();
-	}); 
-	$("#"+ closeId).click(() =>{
-	    closer();
-	});
-	$("#"+ closeId+"_button").button().click(() =>{
-	    closer();
-	});	
+        container.click( (event) => {
+//          closer();
+        }); 
+        $("#"+ closeId).click(() =>{
+            closer();
+        });
+        $("#"+ closeId+"_button").button().click(() =>{
+            closer();
+        });     
 
 
     },
 
     makeToggleImage: function(img,style) {
-	style = (style||"");// + HU.css('color','#000');
-	return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
+        style = (style||"");// + HU.css('color','#000');
+        return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
     },
     toggleBlock: function(label, contents, visible, args) {
-	let opts = {
-	    headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable",
-	    headerStyle:""
-	};
-	if(args) $.extend(opts, args);
+        let opts = {
+            headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable",
+            headerStyle:""
+        };
+        if(args) $.extend(opts, args);
         let id = Utils.getUniqueId("block_");
         let imgid = id + "_img";
         let img1 = "fas fa-caret-down";
-        let img2 = "fas fa-caret-right";	
+        let img2 = "fas fa-caret-right";        
         let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
         let click = "toggleBlockVisibility(" + clickArgs + ");";
-	let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
+        let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
         let header = HtmlUtils.div([STYLE,opts.headerStyle,"class", opts.headerClass, "onClick", click],  img +  " " + label);
         let style = (visible ? "display:block;visibility:visible" : "display:none;");
         let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
-				 contents);
+                                 contents);
         return header + body;
     }
 }
@@ -5243,23 +5247,23 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
         }
 
 
-	let label = item.label;
-	let img = item.element.attr("img-src");
-	if(img) {
-	    if(img.startsWith("fa")) {
-		img = HU.getIconImage(img);
-	    } else {
-		img = HU.image(img, [STYLE,item.element.attr("data-style")||"", "width",64,
-				     "class", "ui-icon " + item.element.attr("data-class")]);
-	    }
-	    $(img).appendTo(wrapper);
-	} else if(!item.element.attr("isheader")) {
-	    label = HU.span([STYLE,HU.css('margin-left','36px')], label);
-	}
-	let labelClass = item.element.attr("label-class");
-	if(labelClass) {
-	    label = HU.div([STYLE,HU.css('width','100%'), 'class', labelClass],label);
-	}
+        let label = item.label;
+        let img = item.element.attr("img-src");
+        if(img) {
+            if(img.startsWith("fa")) {
+                img = HU.getIconImage(img);
+            } else {
+                img = HU.image(img, [STYLE,item.element.attr("data-style")||"", "width",64,
+                                     "class", "ui-icon " + item.element.attr("data-class")]);
+            }
+            $(img).appendTo(wrapper);
+        } else if(!item.element.attr("isheader")) {
+            label = HU.span([STYLE,HU.css('margin-left','36px')], label);
+        }
+        let labelClass = item.element.attr("label-class");
+        if(labelClass) {
+            label = HU.div([STYLE,HU.css('width','100%'), 'class', labelClass],label);
+        }
 
 
         wrapper.append(label);
@@ -5326,40 +5330,40 @@ function Div(contents, clazz) {
 function TextMatcher (pattern) {
     this.regexps=[];
     if(pattern) {
-	pattern = pattern.trim();
+        pattern = pattern.trim();
     }
     if(pattern&& pattern.length>0) {
-	pattern = pattern.replace(/\./g,"\\.");
-	if(pattern.startsWith('"') && pattern.endsWith('"')) {
-	    pattern  = pattern.replace(/^"/,"");
-	    pattern  = pattern.replace(/"$/,"");
-	    this.regexps.push(new RegExp("(" + pattern + ")","ig"));
-	} else {
-	    pattern.split(" ").map(p=>{
-		p = p.trim();
-		this.regexps.push(new RegExp("(" + p + ")","ig"));
-	    });
-	}
-    }	
+        pattern = pattern.replace(/\./g,"\\.");
+        if(pattern.startsWith('"') && pattern.endsWith('"')) {
+            pattern  = pattern.replace(/^"/,"");
+            pattern  = pattern.replace(/"$/,"");
+            this.regexps.push(new RegExp("(" + pattern + ")","ig"));
+        } else {
+            pattern.split(" ").map(p=>{
+                p = p.trim();
+                this.regexps.push(new RegExp("(" + p + ")","ig"));
+            });
+        }
+    }   
     $.extend(this, {
-	pattern: pattern,
-	hasPattern: function() {
-	    return this.regexps.length>0;
-	},
-	highlight: function(text) {
-	    for(var i=0;i<this.regexps.length;i++) {
-		text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");
-	    }
-	    return text;
-	},
-	matches: function(text) {
-	    if(this.regexps.length==0) return true;
-	    text  = text.toLowerCase();
-	    for(var i=0;i<this.regexps.length;i++) {
-		if(!text.match(this.regexps[i])) return false;
-	    }
-	    return true;
-	}
+        pattern: pattern,
+        hasPattern: function() {
+            return this.regexps.length>0;
+        },
+        highlight: function(text) {
+            for(var i=0;i<this.regexps.length;i++) {
+                text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");
+            }
+            return text;
+        },
+        matches: function(text) {
+            if(this.regexps.length==0) return true;
+            text  = text.toLowerCase();
+            for(var i=0;i<this.regexps.length;i++) {
+                if(!text.match(this.regexps[i])) return false;
+            }
+            return true;
+        }
     });
 
 }
@@ -5371,16 +5375,16 @@ function number_format(number, decimals,debug) {
 
     let i;
     if(negative) {
-	i = Math.ceil(n);
-	i = Math.abs(i);
+        i = Math.ceil(n);
+        i = Math.abs(i);
     }   else {
-	i = Math.floor(n);
+        i = Math.floor(n);
     }
     let toks = String(n).match(/\.(.*)/);
     let dec =toks?toks[1]:"";
     let s = String(i).replace(/(.)(?=(\d{3})+$)/g,'$1,')
     if(dec!="") {
-	s+= "." + dec;
+        s+= "." + dec;
     }
     if(debug) console.log("number:" + number +" n:" + n +" i:" + i +" s:" +s);
     if(negative && i==0) return "-" +s;
@@ -5394,28 +5398,28 @@ function number_format(number, decimals,debug) {
 var SU;
 var SvgUtils  = SU = {
     translate: function(x,y) {
-	return ' translate(' + x + ',' + y+') ';
+        return ' translate(' + x + ',' + y+') ';
     },
     scale: function(s) {
-	return ' scale(' + s + ') ';
+        return ' scale(' + s + ') ';
     },
     rotate: function(s) {
-	return ' rotate(' + s + ') ';
+        return ' rotate(' + s + ') ';
     },
     skewX: function(s) {
-	return ' skewX(' + s + ') ';
+        return ' skewX(' + s + ') ';
     },   
     transform: function(svg,...args) {
-	svg.attr('transform',args.join(" "));
-	return svg;
+        svg.attr('transform',args.join(" "));
+        return svg;
     },
     makeBlur:function(svg,id,blur) {
-	var filter = svg.append("defs")
-	    .append("filter")
-	    .attr("id", id)
-	    .append("feGaussianBlur")
-	    .attr("stdDeviation", blur);
-	return filter;
+        var filter = svg.append("defs")
+            .append("filter")
+            .attr("id", id)
+            .append("feGaussianBlur")
+            .attr("stdDeviation", blur);
+        return filter;
     }
     
 }
@@ -5437,82 +5441,82 @@ var SvgUtils  = SU = {
 
 var dateFormat = function() {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
-	timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
-	timezoneClip = /[^-+\dA-Z]/g,
-	pad = function(val, len) {
-	    val = String(val);
-	    len = len || 2;
-	    while (val.length < len) val = "0" + val;
-	    return val;
-	};
+        timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+        timezoneClip = /[^-+\dA-Z]/g,
+        pad = function(val, len) {
+            val = String(val);
+            len = len || 2;
+            while (val.length < len) val = "0" + val;
+            return val;
+        };
 
     // Regexes and supporting functions are cached through closure
     return function(date, mask, utc) {
 
-	var dF = dateFormat;
+        var dF = dateFormat;
 
-	// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
-	if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
-	    mask = date;
-	    date = undefined;
-	}
+        // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
+        if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
+            mask = date;
+            date = undefined;
+        }
 
-	// Passing date through Date applies Date.parse, if necessary
-	date = date ? new Date(date) : new Date;
-	if (isNaN(date)) throw SyntaxError("invalid date");
+        // Passing date through Date applies Date.parse, if necessary
+        date = date ? new Date(date) : new Date;
+        if (isNaN(date)) throw SyntaxError("invalid date");
 
-	mask = String(dF.masks[mask] || mask || dF.masks["default"]);
+        mask = String(dF.masks[mask] || mask || dF.masks["default"]);
 
-	// Allow setting the utc argument via the mask
-	if (mask.slice(0, 4) == "UTC:") {
-	    mask = mask.slice(4);
-	    utc = true;
-	}
+        // Allow setting the utc argument via the mask
+        if (mask.slice(0, 4) == "UTC:") {
+            mask = mask.slice(4);
+            utc = true;
+        }
 
 
-	var _ = utc ? "getUTC" : "get",
-	    d = date[_ + "Date"](),
-	    D = date[_ + "Day"](),
-	    m = date[_ + "Month"](),
-	    y = date[_ + "FullYear"](),
-	    H = date[_ + "Hours"](),
-	    M = date[_ + "Minutes"](),
-	    s = date[_ + "Seconds"](),
-	    L = date[_ + "Milliseconds"](),
-	    o = utc ? 0 : date.getTimezoneOffset(),
-	    flags = {
-		d: d,
-		dd: pad(d),
-		ddd: dF.i18n.dayNames[D],
-		dddd: dF.i18n.dayNames[D + 7],
-		m: m + 1,
-		mm: pad(m + 1),
-		mmm: dF.i18n.monthNames[m],
-		mmmm: dF.i18n.monthNames[m + 12],
-		yy: String(y).slice(2),
-		yyyy: y,
-		h: H % 12 || 12,
-		hh: pad(H % 12 || 12),
-		H: H,
-		HH: pad(H),
-		M: M,
-		MM: pad(M),
-		s: s,
-		ss: pad(s),
-		l: pad(L, 3),
-		L: pad(L > 99 ? Math.round(L / 10) : L),
-		t: H < 12 ? "a" : "p",
-		tt: H < 12 ? "am" : "pm",
-		T: H < 12 ? "A" : "P",
-		TT: H < 12 ? "AM" : "PM",
-		Z: utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
-		o: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-		S: ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
-	    };
+        var _ = utc ? "getUTC" : "get",
+            d = date[_ + "Date"](),
+            D = date[_ + "Day"](),
+            m = date[_ + "Month"](),
+            y = date[_ + "FullYear"](),
+            H = date[_ + "Hours"](),
+            M = date[_ + "Minutes"](),
+            s = date[_ + "Seconds"](),
+            L = date[_ + "Milliseconds"](),
+            o = utc ? 0 : date.getTimezoneOffset(),
+            flags = {
+                d: d,
+                dd: pad(d),
+                ddd: dF.i18n.dayNames[D],
+                dddd: dF.i18n.dayNames[D + 7],
+                m: m + 1,
+                mm: pad(m + 1),
+                mmm: dF.i18n.monthNames[m],
+                mmmm: dF.i18n.monthNames[m + 12],
+                yy: String(y).slice(2),
+                yyyy: y,
+                h: H % 12 || 12,
+                hh: pad(H % 12 || 12),
+                H: H,
+                HH: pad(H),
+                M: M,
+                MM: pad(M),
+                s: s,
+                ss: pad(s),
+                l: pad(L, 3),
+                L: pad(L > 99 ? Math.round(L / 10) : L),
+                t: H < 12 ? "a" : "p",
+                tt: H < 12 ? "am" : "pm",
+                T: H < 12 ? "A" : "P",
+                TT: H < 12 ? "AM" : "PM",
+                Z: utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+                o: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+                S: ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+            };
 
-	return mask.replace(token, function($0) {
-	    return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
-	});
+        return mask.replace(token, function($0) {
+            return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+        });
     };
 }();
 
@@ -5535,12 +5539,12 @@ dateFormat.masks = {
 // Internationalization strings
 dateFormat.i18n = {
     dayNames: [
-	"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
-	"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
     ],
     monthNames: [
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-	"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ]
 };
 
