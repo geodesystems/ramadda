@@ -145,7 +145,6 @@ public class RowCollector extends Processor {
         //Here we don't call nextProcessor.handleRow
         setHeaderIfNeeded(row);
         row = processRow(ctx, row);
-
         return row;
     }
 
@@ -2572,8 +2571,10 @@ public class RowCollector extends Processor {
 		    }
 		}
 		key = keySB.toString();
-	    } else {
+	    } else if(uniqueIndices.size()==1) {
 		key  = values.get(uniqueIndices.get(0)).toString();
+	    } else {
+		key  ="";
 	    }
 
 	    Count count = counts.get(key);
