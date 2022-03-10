@@ -260,6 +260,13 @@ public class CDOTimeSeriesService extends CDODataService {
         Object[]     values   = sample.getValues(true);
         Object[]     avalues  = new Object[values.length + 1];
         System.arraycopy(values, 0, avalues, 0, values.length);
+        
+        // tell the world what we are doing
+        Object actionId = dpi.getProperty("actionId", null);
+        if (actionId != null) {
+        	String name = ModelUtil.buildOutputName(request, values, opNum);
+            getActionManager().setActionMessage(actionId, "Processing: " + name);
+        }
 
         String  stat = request.getString(CDOOutputHandler.ARG_CDO_STAT);
         Entry   climEntry     = null;

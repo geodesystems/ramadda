@@ -379,6 +379,12 @@ public class CDOArealStatisticsService extends CDODataService {
         newName = cleanName(newName);
         File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
 
+        Object actionId = dpi.getProperty("actionId", null);
+        if (actionId != null) {
+        	String name = ModelUtil.buildOutputName(timeRequest, values, opNum);
+            getActionManager().setActionMessage(actionId, "Processing: " + name);
+        }
+        
         String  stat = timeRequest.getString(CDOOutputHandler.ARG_CDO_STAT);
         Entry   climEntry = null;
         Entry   sprdEntry = null;
@@ -722,6 +728,11 @@ public class CDOArealStatisticsService extends CDODataService {
         String varname = ((GridDatatype) dataset.getGrids().get(0)).getName();
 
         Object[] values  = sample.getValues(true);
+        Object actionId = dpi.getProperty("actionId", null);
+        if (actionId != null) {
+        	String name = ModelUtil.buildOutputName(timeRequest, values, opNum);
+            getActionManager().setActionMessage(actionId, "Processing: " + name);
+        }
         Object[] avalues = new Object[values.length + 1];
         System.arraycopy(values, 0, avalues, 0, values.length);
         String tail =
