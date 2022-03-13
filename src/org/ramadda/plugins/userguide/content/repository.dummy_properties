@@ -1,6 +1,6 @@
 
 ##
-## You need to set 3 things here - what database to use, your SSL configuration and the password salt
+## You need to set 2 things here - what database to use and your SSL configuration
 ##
 
 ################################################################################################
@@ -33,21 +33,9 @@ ramadda.db.postgres.password=some_password
 #ramadda.ssl.keypassword=
 
 ##You can override where the keystore is. The default is:  <ramadda home>/keystore
-#ramadda.ssl.keystore=/Users/jeffmc/keystore
+#ramadda.ssl.keystore=
 
 ##You can override the default SSL port
 #ramadda.ssl.port=8043
-
-
-
-################################################################################################
-## Password salt properties
-################################################################################################
-
-#Uncomment and set this to a unique random string
-#this is used to salt the hashed passwords in the database
-#ramadda.password.hash.salt=
-
-
 
 

@@ -28,19 +28,7 @@ can be easily [ug::link database.html configured] to use other databases.
 
 <p>
 
-<li> Once installed and running the last steps of the configuration process are done through your browser. Go to:<pre>
-<i>http://&lt;hostname&gt;:&lt;port&gt;/repository </i>
-</pre>
-
-If you are running on your local machine you go to:<pre>
-<a href="http://localhost:8080/repository">http://localhost:8080/repository</a>
-</pre>
-
-To ensure only authenticated users can do this final configuration step RAMADDA will prompt for an install password.
-You can find the install password on your server in:<pre>
-    &lt;RAMADDA home directory&gt;/install.properties
-</pre>
-
+<li> Do the <a href="#final">final configuration steps through the browser</a>
 
 <p>
 
@@ -122,7 +110,7 @@ memory allocation. in your Tomcat start up script.
 Add or modify the following arguments of the JAVA_OPTS environment 
 variable in the catalina start script (catalina.sh or catalina.bat):
 <pre>
-     -Xmx1024m -XX:MaxPermSize=256m 
+     -Xmx1024m 
 </pre>
 to set the memory and permgen size. Consult the Tomcat documentation for
 more information.
@@ -168,7 +156,7 @@ Wherever you define the arguments that are passed to <i>java</i> when starting T
    -Dramadda_home=/home/dir
 </pre>
 e.g.:<pre>
-    java -Xmx1024m  -XX:MaxPermSize=256m -Dramadda_home=/home/dir
+    java -Xmx1024m   -Dramadda_home=/home/dir
 </pre>
 
 
@@ -185,11 +173,27 @@ if found then RAMADDA looks for the property: <pre>
 </ol>
 
 
+<subhead intoc="false" id="final">Browser installation step<subhead>
+    Once installed and running the last steps of the configuration process are done through your browser. Go to:<pre>
+<i>http://&lt;hostname&gt;:&lt;port&gt;/repository </i>
+</pre>
+
+If you are running on your local machine you go to:<pre>
+<a href="http://localhost:8080/repository">http://localhost:8080/repository</a>
+</pre>
+
+To ensure only authenticated users can do this final configuration step RAMADDA will prompt for an install password.
+You can find the install password on your server in:<pre>
+    &lt;RAMADDA home directory&gt;/install.properties
+</pre>
+
+
+
 <subhead intoc="false" id="properties">RAMADDA Property Files</subhead>
 
 For other  configuration options RAMADDA looks in its home directory for any .properties files.
 While most of the RAMADDA configuration is accomplished through the web ADMIN interface there
-are a number of configuration options that need to be placed in a properties file, e.g. 
+are a number of configuration options that can be placed in a properties file, e.g. 
 [ug::link database.html {database configuration}], 
 <a href="#ssl">ssl options</a>, etc.
 <p>
