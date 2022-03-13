@@ -3221,6 +3221,16 @@ label {
     padding: 5px;
 }
 
+.ramadda-access-comment {
+    background:#ccc;
+}
+.ramadda-access-none {
+    background:#D72128;
+}
+.ramadda-access-negated {
+    font-weight:bold;
+}
+
 .ramadda-access-summary-header  {
     border-bottom: 2px #000 solid;
     font-size:9pt;
