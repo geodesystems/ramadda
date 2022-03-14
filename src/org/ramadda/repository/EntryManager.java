@@ -4313,7 +4313,11 @@ public class EntryManager extends RepositoryManager {
 	    if(parent!=null)
 		sb.append(HU.hidden(ARG_ENTRYID,parent.getId()));
 
-            HU.sectionOpen(sb,msg(label),false);
+	    if(toEntry!=null) {
+		getPageHandler().entrySectionOpen(request, toEntry,sb,msg(label),false);
+	    } else {
+		HU.sectionOpen(sb,msg(label),false);
+	    }
 	    HU.div(sb, msg("The entries"), HU.cssClass("entry-confirm-header"));
             sb.append(fromDiv);
 
