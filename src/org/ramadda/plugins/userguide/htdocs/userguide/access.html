@@ -49,48 +49,55 @@ pre {
 
 
 You can define access control settings under the &quot;Edit -&gt; Access&quot; menu for an entry.
+<p>
+The access control mechanism in RAMADDA is centered around a set of actions -
+<i>view</i>, <i>new</i>, <i>edit</i>, etc., 
+and a set of user roles that grant or remove  permissions to do those actions.
+On the left of the form is a list of the actions. For each action there
+is a field where you can enter any number of user roles (one per line).
 
 
 <center><a name="image1"></a><div><a href="images/access.png"><img  src="images/access.png" border=0 width=600 alt="Entry Access Control" ></a><br><span class="caption">Image 1: Entry Access Control</span></div></center>
+
+<div class="important">
+Note: Access control settings have no effect on RAMADDA site administrators. They can do anything.
+</div>
 
 <div class="important">
 Note: after setting access (e.g., creating a private space) it is best to log out (or user another browser)
 and check if the access is set to what you think it is.
 </div>
 
+The roles are for a user are defined by the RAMADDA administrator through the Admin-Users page.
+Other "special" roles include:
+<ul>
+  <li> "none" - this denies access to any user
+  <li> "user"  - any logged in user
+  <li> "any"  - any user, either logged in or anonymous
+  <li> "anonymous"  - non logged in user
+  <li> "ip:prefix"  - The user is coming from an IP address that begins with prefix
+</ul>
+
+Furthermore, any role can be negated with "!"
 
 
+<p>
+In the example shown above any user in the role "group1" can view anything under the
+sub test entry.
+No other user can view the "sub test" because of the "none" specified.
+Along with the view access, the user "joe" can also edit the entry and any entry under
+the entry.
+<p>
 
-The access control mechanism in RAMADDA is centered around a set of actions (e.g., viewing, new, edit)
-and a set of user roles that have permissions to do those actions.
-On the left of this form lists each of the actions. For each action there
-is a field where you can enter any number of user roles (one per line).
-
-<div class="important">
-Note: Access control settings have no effect on RAMADDA site administrators. They can do anything.
-</div>
-
-On the right shows a summary table for the particular entry we are viewing. This shows the access control
-settings for all of the ancestor folders of the entry and allows the user to see just what access settings
-are applicable to the entry.
+On the right shows a summary table for the particular entry being viewed.
+This shows the access control
+settings for all of the ancestor entries of the current entry and allows the 
+user to see just what access settings are applicable to the entry.
 <p>
 To see if a given user has the ability to do a particular action for a particular entry RAMADDA looks
-at the permissions for the entry. 
-<ul>
-<li> If there are no permissions defined then the parent entry is recursively checked.
-<li> If the user matches one of the roles then permission is granted.
-<li> If there is a specific denial of permission (e.g, "none") then permission is not granted.
-<li> If nothing matches then, by default, permission is not granted. However, the permissions 
-of the parent are checked if there is a special role "inherit" defined. Also, if the RAMADDA
-repository has the property <i>ramadda.auth.stopatfirstrole=false</i> set to false then the parent 
-is always checked.
-<li> This process continues to the top most entry which has a set of default permissions.
-</ul> 
-<p>
-In the example shown above any user in the role "group1" can view anything under the Parent Folder.
-No other user can view the Parent Folder because of the "none" specified.
-Along with the view access, the user "joe" can also edit the Parent Folder and any entry under
-the Parent Folder.
+at the permissions for the entry and its ancestors and either looks for the
+first permission  grant or the first permission denial.
+If nothing matches then permission is not granted. 
 <p>
 
 Here are other examples:
@@ -99,8 +106,24 @@ Here are other examples:
 <div class="access-example">
 none
 </div>
+
+<li> To allow anyone to view the entries in a tree but don't allow anyone to
+  access the files then under the <i>file</i> action do:
+<div class="access-example">
+none
+</div>
+
+<li> To allow anyone to view the entries in a tree but only allow file access to
+ users who are coming from the IP address 123.456 then 
+under the <i>file</i> action do:
+<div class="access-example">
+ip:123.456
+none
+</div>
+
+
 <li> If you wanted to give a certain user permission (e.g., joe) to view the entry but not allow
-any one else to view then enter under the <i>view</i> action:
+any one else to view the entry then enter under the <i>view</i> action:
 <div class="access-example">
 user:joe<br>
 none
@@ -109,10 +132,6 @@ none
 RAMADDA would first check if the given user was "joe". If it is "joe" then permission is granted. If
 its not "joe" then RAMADDA looks at the next role - "none". This blocks any other access.
 
-<div class="important">
-Note: If you did not specify "none" here then permission  would still be denied unless
-the <i>ramadda.auth.stopatfirstrole=false</i> property has been set for the entire repository.
-</div>
 
 <li> To allow for a group of users in the role "group1" to be able to edit and create new entries under a whole 
 tree then enter:
@@ -129,15 +148,11 @@ grant the access to the parent entry like above, e.g.:
   <ul>
     <li> ...
        <ul>
-          <li> descendent entry - access = <div class="access-example">otheruser<br>inherit</div>
+          <li> descendent entry - access = <div class="access-example">otheruser</div>
        </ul>
    </ul>
 </ul>
-
-Because the descendent entry has "inherit" defined then the parent entry is checked.
-
 </ul>
-
 
 
 
@@ -218,9 +233,6 @@ that contains the other recipient's email.
 
 <a name="delete"></a>
 <li> Delete - Can  a user delete an entry.
-
-<a name="comment"></a>
-<li> Comment - Can a user comment on an entry.
 
 </ul>
 
