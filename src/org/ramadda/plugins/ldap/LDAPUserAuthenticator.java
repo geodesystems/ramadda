@@ -13,6 +13,7 @@ package org.ramadda.plugins.ldap;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.auth.User;
+import org.ramadda.repository.auth.Role;
 import org.ramadda.repository.auth.UserAuthenticator;
 import org.ramadda.repository.auth.UserAuthenticatorImpl;
 
@@ -248,7 +249,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
                 user.setEmail(values.get(0));
             }
 
-            user.setRoles(roles);
+            user.setRoles(Role.makeRoles(roles));
             userCache.put(userId, user);
 
             return user;
