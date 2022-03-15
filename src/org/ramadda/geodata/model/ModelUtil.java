@@ -1,6 +1,17 @@
-/**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+/*
+* Copyright (c) 2008-2021 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package org.ramadda.geodata.model;
@@ -13,11 +24,12 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.type.GranuleTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +46,12 @@ import java.util.Map;
  * Some utility methods for model processing
  */
 public class ModelUtil {
+
+    /** months */
+    private static final String[] MONTHS = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+    };
 
     /**
      * Ctor
@@ -337,6 +355,7 @@ public class ModelUtil {
     public static String getFrequency(Request request, Entry sample) {
         Entry collection = GranuleTypeHandler.getCollectionEntry(request,
                                sample);
+
         return getCollectionFrequency(request, collection);
     }
 
@@ -344,11 +363,12 @@ public class ModelUtil {
      * Get the time frequency for this collection
      *
      * @param request  the request
-     * @param sample   the sample Entry
+     * @param collection the collection
      *
      * @return  the time frequency (e.g. monthly, daily, etc)
      */
-    public static String getCollectionFrequency(Request request, Entry collection) {
+    public static String getCollectionFrequency(Request request,
+            Entry collection) {
         String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
         if (collection != null) {
             String sval = collection.getValue(0).toString();
@@ -358,6 +378,125 @@ public class ModelUtil {
         }
 
         return frequency;
+    }
+
+    /**
+     * Copy the specified properties from one SI to another
+     *
+     * @param in  the input SI
+     * @param out  the output SI
+     * @param strings  the list of string keys
+     */
+    public static void copyServiceInputProperties(ServiceInput in,
+            ServiceInput out, String... strings) {
+        for (String str : strings) {
+            Object foo = in.getProperty(str);
+            if (foo != null) {
+                out.putProperty(str, foo);
+            }
+        }
+    }
+
+    /**
+     * Build an output name for an operand entry and request
+     *
+     * @param request the request
+     * @param values the entry values
+     * @param opNum the operator number
+     *
+     * @return the string name of this request
+     */
+    public static String buildOutputName(Request request, Object[] values,
+                                         int opNum) {
+
+        StringBuilder outputName = new StringBuilder();
+        // values = collection,model,experiment,ens,var
+        // model
+        outputName.append(values[1].toString().toUpperCase());
+        outputName.append(" ");
+        // experiment
+        outputName.append(values[2]);
+        outputName.append(" ");
+        // ens
+        String ens = values[3].toString();
+        if (ens.equals("mean") || ens.equals("sprd") || ens.equals("clim")) {
+            outputName.append("ens");
+        }
+        outputName.append(ens);
+        outputName.append(" ");
+        // var
+        /*
+        outputName.append(values[4]);
+        outputName.append(" ");
+        outputName.append(stat);
+        outputName.append(" ");
+        */
+
+        StringBuilder dateSB  = new StringBuilder();
+        String        yearNum = (opNum == 0)
+                                ? ""
+                                : String.valueOf(opNum + 1);
+        int           startMonth, endMonth;
+        if (request.getString(
+                CDOOutputHandler.ARG_CDO_MONTHS).equalsIgnoreCase("all")) {
+            startMonth = 1;
+            endMonth   = 12;
+        } else {
+            startMonth = request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
+                         ? request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1)
+                         : 1;
+            endMonth = request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)
+                       ? request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
+                                     startMonth)
+                       : startMonth;
+        }
+        if (startMonth == endMonth) {
+            dateSB.append(MONTHS[startMonth - 1]);
+        } else {
+            dateSB.append(MONTHS[startMonth - 1]);
+            dateSB.append("-");
+            dateSB.append(MONTHS[endMonth - 1]);
+        }
+        dateSB.append(" ");
+        if (request.defined(CDOOutputHandler.ARG_CDO_YEARS + yearNum)) {
+            dateSB.append(request.getString(CDOOutputHandler.ARG_CDO_YEARS
+                                            + yearNum));
+        } else if (request.defined(CDOOutputHandler.ARG_CDO_YEARS)
+                   && !(request.defined(
+                       CDOOutputHandler.ARG_CDO_STARTYEAR
+                       + yearNum) || request.defined(
+                           CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum))) {
+            dateSB.append(request.getString(CDOOutputHandler.ARG_CDO_YEARS));
+        } else {
+            String startYear =
+                request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum)
+                ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                    + yearNum)
+                : request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR)
+                  ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR, "")
+                  : "";
+            String endYear = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                             + yearNum)
+                             ? request.getString(
+                                 CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum)
+                             : request.defined(
+                                 CDOOutputHandler.ARG_CDO_ENDYEAR)
+                               ? request.getString(
+                                   CDOOutputHandler.ARG_CDO_ENDYEAR,
+                                   startYear)
+                               : startYear;
+            if (startYear.equals(endYear)) {
+                dateSB.append(startYear);
+            } else {
+                dateSB.append(startYear);
+                dateSB.append("-");
+                dateSB.append(endYear);
+            }
+        }
+        outputName.append(dateSB);
+
+        return outputName.toString();
+
     }
 
 }

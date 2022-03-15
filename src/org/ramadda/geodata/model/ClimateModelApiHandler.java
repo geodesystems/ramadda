@@ -1,6 +1,17 @@
-/**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+/*
+* Copyright (c) 2008-2021 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package org.ramadda.geodata.model;
@@ -191,7 +202,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         return processes;
     }
-    
+
     /**
      * Do the compare asynchronously
      *
@@ -203,39 +214,53 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      *
      * @throws Exception  problems processing the input
      */
-    public Result doCompareAsync(final Request request, final ServiceInput dpi, final String type)
+    public Result doCompareAsync(final Request request,
+                                 final ServiceInput dpi, final String type)
             throws Exception {
-        ActionManager.Action action = new ActionManager.Action() {
-     	    public void run(Object actionId) throws Exception {
-	    	try {
-		    //The testit is set in compare.js
-		    boolean test=request.get("testit",false);
-		    if(test) {
-			//For testing the compare.js
-			for(int i=0;i<5;i++) {
-			    getActionManager().setActionMessage(actionId,"Waiting: " + i);
-			    Misc.sleepSeconds(1);
-			}
-			getActionManager().setContinueHtml(actionId, "Some continue html here");
-			return;
-		    }
+        if (request.get("returnimage", false)) {
+            return doCompare(request, dpi, type);
+        } else {
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    //System.err.println(actionId);
+                    try {
+                        //The testit is set in compare.js
+                        boolean test = request.get("testit", false);
+                        if (test) {
+                            //For testing the compare.js
+                            for (int i = 0; i < 5; i++) {
+                                getActionManager().setActionMessage(actionId,
+                                        "Waiting: " + i);
+                                Misc.sleepSeconds(1);
+                            }
+                            getActionManager().setContinueHtml(actionId,
+                                    "Some continue html here");
 
-	    	    Result result = doCompare(request, dpi, type, actionId);
-		    String url = result.getRedirectUrl();
-		    if(url!=null) {
-			getActionManager().setContinueHtml(actionId,
-							   HU.href(url,  msg("Continue")));
-		    } else {
-			String content = result.getStringContent();
-			getActionManager().setContinueHtml(actionId,  content);
-		    }
-		} catch(Exception exc) {
-		    getActionManager().handleError(actionId, exc);
-		    logError("",exc);
-		}
-	    }
-	};
-        return getActionManager().doJsonAction(request, action,  "Generating Plot", "",null);
+                            return;
+                        }
+
+                        Result result = doCompare(request, dpi, type,
+                                            actionId);
+                        String url = result.getRedirectUrl();
+                        if (url != null) {
+                            getActionManager().setContinueHtml(actionId,
+                                    HU.href(url,
+                                            msg("Continue")));
+                        } else {
+                            String content = result.getStringContent();
+                            getActionManager().setContinueHtml(actionId,
+                                    content);
+                        }
+                    } catch (Exception exc) {
+                        getActionManager().handleError(actionId, exc);
+                        logError("", exc);
+                    }
+                }
+            };
+
+            return getActionManager().doJsonAction(request, action,
+                    "Generating Plot", "", null);
+        }
     }
 
     /**
@@ -251,7 +276,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      */
     public Result doCompare(Request request, ServiceInput dpi, String type)
             throws Exception {
-    	return doCompare(request, dpi, type, null);
+        return doCompare(request, dpi, type, null);
     }
 
 
@@ -261,12 +286,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @param request  the Request
      * @param dpi   the input
      * @param type  the request type
+     * @param actionId _more_
      *
      * @return  a Result
      *
      * @throws Exception  problems processing the input
      */
-    public Result doCompare(Request request, ServiceInput dpi, String type, Object actionId)
+    public Result doCompare(Request request, ServiceInput dpi, String type,
+                            Object actionId)
             throws Exception {
 
         //This finds the selected processes
@@ -285,6 +312,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             long milli = System.currentTimeMillis();
             //System.err.println("MODEL: applying process: "
             //                   + process.getLabel());
+            if (actionId != null) {
+                getActionManager().setActionMessage(actionId,
+                        "Processing: " + process.getLabel());
+                nextInput.putProperty("actionId", actionId);
+            }
             ServiceOutput output = process.evaluate(request, nextInput, null);
             //System.err.println("MODEL: " + process.getLabel() + " took "+(System.currentTimeMillis()-milli)+" ms");
             outputs.add(output);
@@ -388,6 +420,55 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
     /**
+     * Make the time series asynchronously
+     *
+     * @param request  the Request
+     * @param dpi   the input
+     * @param type  the request type
+     *
+     * @return  a Result
+     *
+     * @throws Exception  problems processing the input
+     */
+    public Result makeTimeSeriesAsync(final Request request,
+                                      final ServiceInput dpi,
+                                      final String type)
+            throws Exception {
+        if (request.get("returnimage", false)) {
+            return makeTimeSeries(request, dpi, type, null);
+        } else {
+
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    //System.err.println(actionId);
+                    try {
+
+                        Result result = makeTimeSeries(request, dpi, type,
+                                            actionId);
+                        String url = result.getRedirectUrl();
+                        if (url != null) {
+                            getActionManager().setContinueHtml(actionId,
+                                    HU.href(url,
+                                            msg("Continue")));
+                        } else {
+                            String content = result.getStringContent();
+                            getActionManager().setContinueHtml(actionId,
+                                    content);
+                        }
+                    } catch (Exception exc) {
+                        getActionManager().handleError(actionId, exc);
+                        logError("", exc);
+                    }
+                }
+            };
+
+            return getActionManager().doJsonAction(request, action,
+                    "Generating Plot", "", null);
+        }
+    }
+
+
+    /**
      * Make the time series
      *
      * @param request  the Request
@@ -399,7 +480,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      */
     public Result makeTimeSeries(Request request, ServiceInput dpi)
             throws Exception {
-        return makeTimeSeries(request, dpi, ARG_ACTION_MULTI_TIMESERIES);
+        return makeTimeSeries(request, dpi, ARG_ACTION_MULTI_TIMESERIES,
+                              null);
     }
 
     /**
@@ -408,13 +490,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @param request  the Request
      * @param dpi   the input
      * @param type  the request type
+     * @param actionId _more_
      *
      * @return  a Result
      *
      * @throws Exception  problems processing the input
      */
     public Result makeTimeSeries(Request request, ServiceInput dpi,
-                                 String type)
+                                 String type, Object actionId)
             throws Exception {
 
         //This finds the selected processes
@@ -432,6 +515,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         for (Service process : processesToRun) {
             //System.err.println("MODEL: applying process: "
             //                   + process.getLabel());
+            if (actionId != null) {
+                getActionManager().setActionMessage(actionId,
+                        "Processing: " + process.getLabel());
+                nextInput.putProperty("actionId", actionId);
+            }
             ServiceOutput output = process.evaluate(request, nextInput, null);
             outputs.add(output);
 
@@ -799,7 +887,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         return doCompareAsync(request, dpi, type);
                     } else if (type.equals(ARG_ACTION_MULTI_TIMESERIES)
                                || type.equals(ARG_ACTION_TIMESERIES)) {
-                        return makeTimeSeries(request, dpi, type);
+                        return makeTimeSeriesAsync(request, dpi, type);
                     }
                 } catch (Exception exc) {
                     if (returnjson) {
@@ -928,8 +1016,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 frequency = fstring.toLowerCase();
             }
         } else if (fixedCollection != null) {
-        	String fstring = ModelUtil.getCollectionFrequency(request, fixedCollection).toLowerCase();
-        	frequency = fstring.indexOf("daily") > 0 ? "daily" : "monthly";
+            String fstring = ModelUtil.getCollectionFrequency(request,
+                                 fixedCollection).toLowerCase();
+            frequency = (fstring.indexOf("daily") > 0)
+                        ? "daily"
+                        : "monthly";
         }
 
         String title = "Model Comparison";
@@ -1012,32 +1103,37 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (hasOperands) {
             if (type.equals(ARG_ACTION_COMPARE)
                     || type.equals(ARG_ACTION_CORRELATION)) {
-            	/*
                 plotButton = HtmlUtils.submit(msg("Make Plot"), type,
+                        HtmlUtils.id(formId + "_submit"));
+                /*
                         HtmlUtils.id(formId + "_submit")
                         + makeButtonSubmitDialog(sb,
                                 msg("Making Plot, Please Wait") + "..."));
                 */
-                plotButton = HtmlUtils.submit(msg("Make Plot"), type,
-                        HtmlUtils.id(formId + "_submit"));
             } else if (type.equals(ARG_ACTION_MULTI_COMPARE)
                        || type.equals(ARG_ACTION_ENS_COMPARE)
                        || type.equals(ARG_ACTION_CORRELATION)) {
                 plotButton = HtmlUtils.submit(msg("Make Plot"), type,
+                        HtmlUtils.id(formId + "_submit"));
+                /*
                         HtmlUtils.id(formId + "_submit")
                         + makeButtonSubmitDialog(sb,
                                 msg("Making Plot, Please Wait") + "..."));
+                */
             } else {
                 plotButton = HtmlUtils.submit(msg("Make Time Series"), type,
-                        HtmlUtils.id(formId + "_submit")
-                        + makeButtonSubmitDialog(sb,
-                                msg("Making Time Series, Please Wait")
-                                + "..."));
+                        HtmlUtils.id(formId + "_submit"));
+                /*
+        HtmlUtils.id(formId + "_submit")
+        + makeButtonSubmitDialog(sb,
+                msg("Making Time Series, Please Wait")
+                + "..."));
+                */
             }
         }
 
-        String plotButtonDiv = HtmlUtils.div(plotButton,
-                                   HtmlUtils.cssClass("model-header"));
+        String plotButtonDiv =
+            HtmlUtils.div(plotButton, HtmlUtils.cssClass("model-header"));
 
         sb.append("<div class=\"row\">\n");
         sb.append(HtmlUtils.open("div", "class=\"col-md-5\"") + "\n");
@@ -1186,9 +1282,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             && column.getName().equals("model")) {
                         extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
                                 "true") + HtmlUtils.attr("size", "4");
-                    } else if (((type.equals(ARG_ACTION_ENS_COMPARE) && frequency.equals("monthly"))
-                                || type.equals(ARG_ACTION_CORRELATION)
-                                || type.equals(ARG_ACTION_MULTI_TIMESERIES))
+                    } else if (((type.equals(
+                            ARG_ACTION_ENS_COMPARE) && frequency.equals(
+                            "monthly")) || type.equals(
+                                ARG_ACTION_CORRELATION) || type.equals(
+                                ARG_ACTION_MULTI_TIMESERIES))
                                && column.getName().equals("ensemble")) {
                         //String multiple = (frequency.equals("monthly")) ? "true" : "false";
                         String multiple = "true";

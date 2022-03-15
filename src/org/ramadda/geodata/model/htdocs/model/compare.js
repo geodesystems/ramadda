@@ -109,6 +109,7 @@ function CollectionForm(formId, plottype, args) {
                     //The EntryList below takes an object and calls the entryListChanged method 
                     //when it gets the entries from the jsonUrl
                     //Create the object that gets called back
+                    /*
                     var callbackObject = {
                         entryListChanged: function(entryList) {
 
@@ -143,6 +144,12 @@ function CollectionForm(formId, plottype, args) {
                             processEntry.getChildrenEntries(finalCallback, "ascending=false&orderby=name&max=9999");
                         }
                     };
+                    */
+                    var startTime = performance.now();
+                    // clear out any old stuff
+                    var outputDiv = $('#' + this.formId +"_output");
+                    outputDiv.html("");
+
                     // Make the status widget
                     let statusDiv = $('#' + this.formId +"_status");
                     //Add the cancel button and the output message area
@@ -151,78 +158,109 @@ function CollectionForm(formId, plottype, args) {
                     let cancelButton  = $("#compare_cancel").button();
                     let message  = $("#compare_message");
 
-		    //A function to display the error
-		    let handleError = err=>{
-			err = HtmlUtils.makeErrorMessage(err);
-			statusDiv.html(err);
-		    };
-		    //Called to show status
-		    let handleStatus = msg=>{
-			//Comment this out if you don't want the fancy info message
-			msg = HtmlUtils.makeInfoMessage(msg);
-			//show the message
-			message.html(msg);
-		    };		    		    
-		    //Called when cancelled
-		    let handleCanceled = msg=>{
-			//Comment this out if you don't want the fancy info message
-			msg = HtmlUtils.makeInfoMessage(msg);
-			//show the message
-			statusDiv.html(msg);
-		    };
-		    //Called when done
-		    let handleFinished = msg=>{
-			statusDiv.html(msg);
-		    };
+                    //A function to display the error
+                    let handleError = err=>{
+                        err = HtmlUtils.makeErrorMessage(err);
+                        statusDiv.html(err);
+                    };
+                    //Called to show status
+                    let handleStatus = msg=>{
+                        //Comment this out if you don't want the fancy info message
+                        msg = HtmlUtils.makeRunningMessage(msg);
+                        //show the message
+                        message.html(msg);
+                    };                              
+                    //Called when cancelled
+                    let handleCanceled = msg=>{
+                        //Comment this out if you don't want the fancy info message
+                        msg = HtmlUtils.makeInfoMessage(msg);
+                        //show the message
+                        statusDiv.html(msg);
+                    };
+                    //Called when done
+                    let handleFinished = msg=>{
+                        statusDiv.html(msg);
+                    };
 
-		    handleStatus("Running...");
+                    handleStatus("Running...");
 
-		    //Don: Uncomment this if you want the server to just run through a test loop
-		    //jsonUrl+="&testit=true";
+                    //Don: Uncomment this if you want the server to just run through a test loop
+                    //jsonUrl+="&testit=true";
 
 
                     //Post the request
                     $.post(jsonUrl, data=>{
-                        //	  console.dir(data);
+                        //        console.dir(data);
                         let actionId = data.actionid;
                         let statusUrl = ramaddaBaseUrl+"/status?output=json&actionid=" + actionId;
                         let running = true;
-    	                cancelButton.click(() =>{
-	                    let cancelUrl = ramaddaBaseUrl+"/status?output=json&cancel=true&actionid=" + actionId;
-		            handleStatus("Cancelling comparison");
-	                    $.getJSON(cancelUrl, data=>{
-		                running = false;
-		                handleCanceled("Comparison canceled");
-	                    });
-	                });
-	                let monitorFunction  = ()=>{
-	                    //check the status
-	                    $.getJSON(statusUrl, data=>{
-		                if(!running) return;
-				console.dir("status:" + JSON.stringify(data));
-				if(data.status=="error") {
-				    handleError(data.message);
-				} else  if(data.status=="complete") {
-				    handleFinished(data.message);				    
-				} else {
-		                    handleStatus(data.message);
-				}
-		                if(data.status=="running") {
-		                    //If we are still running then callback this function in 500 ms
-		                    setTimeout(monitorFunction,500)
-		                }
-	                    }).fail(err=>{
-		                handleError("Comparison failed:" + err);
-	                    });
-	                };
-	                //kick off the monitoring
-	                monitorFunction();
+                        cancelButton.click(() =>{
+                            let cancelUrl = ramaddaBaseUrl+"/status?output=json&cancel=true&actionid=" + actionId;
+                            handleStatus("Cancelling comparison");
+                            $.getJSON(cancelUrl, data=>{
+                                running = false;
+                                handleCanceled("Comparison canceled");
+                            });
+                        });
+                        let monitorFunction  = ()=>{
+                            //check the status
+                            $.getJSON(statusUrl, data=>{
+                                if(!running) return;
+                                //console.dir("status:" + JSON.stringify(data));
+                                if(data.status=="error") {
+                                    handleError(data.message);
+                                } else  if(data.status=="complete") {
+                                    //Get the list of entries from the EntryList
+                                    //There should just be one entry  -  the process folder
+                                    var entries = createEntriesFromJson(JSON.parse(data.message));
+                                    if(entries.length != 1) {
+                                        //console.log("Error: didn't get just one entry:" + entries.length);
+                                        return;
+                                    }
+        
+                                    //This should be the process directory entry that you encoded into JSON
+                                    var processEntry = entries[0];
+        
+                                    //Now, one more callback function (just a function, not an object) that will
+                                    //get called when the children entries are retrieved
+                                    let count = 10;
+                                    let finalCallback  = function(entries) {
+                                        if (entries.length == 0) {
+                                            console.log("CollectionForm: no entries found");
+                                            if (count--<0) { return; }
+                                            console.log("CollectionForm: calling search again");
+                                             //Wait 500 ms and try again
+                                            setTimeout(function(){
+                                                processEntry.getChildrenEntries(finalCallback, "ascending=false&orderby=name&max=9999");
+                                            },500);
+                                            return;
+                                        }
+                                        theCollectionForm.handleProcessEntries(processEntry, entries);
+                                    };
+                                    //This will go back to the server and get the children 
+                                    processEntry.getChildrenEntries(finalCallback, "ascending=false&orderby=name&max=9999");
+                                    doneTime = performance.now();
+                                    handleFinished("");
+                                    console.log("Processing time took: "+Utils.formatNumber((doneTime-startTime)/60000)+" minutes");
+                                } else {
+                                    handleStatus(data.message);
+                                }
+                                if(data.status=="running") {
+                                    //If we are still running then callback this function in 500 ms
+                                    setTimeout(monitorFunction,500)
+                                }
+                            }).fail(err=>{
+                                handleError("Comparison failed:" + err);
+                            });
+                        };
+                        //kick off the monitoring
+                        monitorFunction();
                     }).fail(err=>{
-			console.dir(err);
-	                handleError("Comparison failed:" + err);
+                        //console.dir(err);
+                        handleError("Comparison failed:" + err);
                     });
                     //Just create the entry list, passing in the callback object
-                    let entryList = new EntryList(ramadda, jsonUrl, callbackObject, true);
+                    //let entryList = new EntryList(ramadda, jsonUrl, callbackObject, true);
                 }  else if (doImage) {
                     //add the arg that gives us the image directly back then set the img src
                     url += "&returnimage=true";
@@ -300,10 +338,10 @@ function CollectionForm(formId, plottype, args) {
                 // Enable the image popup
                 if (images.length > 0) {
                     $(document).ready(function() {
-			HtmlUtils.createFancyBox(
-			    $("a.popup_image"), {
-				'titleShow' : false
-			    });
+                        HtmlUtils.createFancyBox(
+                            $("a.popup_image"), {
+                                'titleShow' : false
+                            });
                     });
                 }
                 // Show GE plugin if we have KMZ
