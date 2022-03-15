@@ -3221,6 +3221,16 @@ label {
     padding: 5px;
 }
 
+.ramadda-access-comment {
+    background:#ccc;
+}
+.ramadda-access-none {
+    background:#D72128;
+}
+.ramadda-access-negated {
+    font-weight:bold;
+}
+
 .ramadda-access-summary-header  {
     border-bottom: 2px #000 solid;
     font-size:9pt;
@@ -4946,7 +4956,8 @@ a.wiki-link-noexist {
 
 
 .ace_wiki-editor-comment {
-    border: 1px solid #888;
+//    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #999;
     background:#eee;
     background: var(--color-mellow-yellow);
     border-radius: 2px;
