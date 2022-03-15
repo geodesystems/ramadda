@@ -16,8 +16,8 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
 
@@ -83,7 +83,8 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
 
-    public static final String ACTION_LISTMISSING = "action.listmissing";    
+    /**  */
+    public static final String ACTION_LISTMISSING = "action.listmissing";
 
     /** _more_ */
     public static final String ACTION_CLEARCACHE = "action.clearcache";
@@ -282,9 +283,11 @@ public class Admin extends RepositoryManager {
 
     /**
      * _more_
+     *
+     * @throws Exception _more_
      */
     public void doFinalInitialization() throws Exception {
-	//create the install password
+        //create the install password
         String installPassword = getInstallPassword();
 
 
@@ -498,8 +501,10 @@ public class Admin extends RepositoryManager {
 
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                  HtmlUtils.cssClass("registration-agree")));
-        sb.append(HtmlUtils.labeledCheckbox(ARG_AGREE, "true", false,
-					    "I agree to the above license and conditions of use for the RAMADDA software"));
+        sb.append(
+            HtmlUtils.labeledCheckbox(
+                ARG_AGREE, "true", false,
+                "I agree to the above license and conditions of use for the RAMADDA software"));
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
         return sb.toString();
@@ -514,33 +519,48 @@ public class Admin extends RepositoryManager {
      * @return _more_
      */
     private String note(String s) {
-	return "<div class='ramadda-box-outer'><div class='ramadda-block ramadda-box ramadda-box-yellow  '>" + s +"</div></div>";
-	//        return "<div class=\"ramadda-box-yellow\">" + s + "</div>\n";
+        return "<div class='ramadda-box-outer'><div class='ramadda-block ramadda-box ramadda-box-yellow  '>"
+               + s + "</div></div>";
+        //        return "<div class=\"ramadda-box-yellow\">" + s + "</div>\n";
     }
 
-    private String  installPassword;
+    /**  */
+    private String installPassword;
 
+    /**
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private String getInstallPassword() throws Exception {
-	if(!Utils.stringDefined(installPassword)) {
-	    installPassword = getRepository().getProperty(PROP_INSTALL_PASSWORD, (String)null);
-	}
-	if(!Utils.stringDefined(installPassword)) {
-	    //Generate an install password
-	    File install = new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),"install.properties"));
-	    //	    sb.append(ramadda.admin=admin:xxx
-	    if(!install.exists()) {
-		installPassword = Utils.generatePassword(8);
-		StringBuilder sb = new StringBuilder();
-		sb.append("#This is a generated password used in the install process\n");
-		sb.append(PROP_INSTALL_PASSWORD+"=" + installPassword+"\n\n");
-		try(FileOutputStream fos = new FileOutputStream(install)) {
-		    IOUtil.write(fos,sb.toString());
-		} 
-	    }
-	}
-	return installPassword;
+        if ( !Utils.stringDefined(installPassword)) {
+            installPassword =
+                getRepository().getProperty(PROP_INSTALL_PASSWORD,
+                                            (String) null);
+        }
+        if ( !Utils.stringDefined(installPassword)) {
+            //Generate an install password
+            File install = new File(
+                               IOUtil.joinDir(
+                                   getStorageManager().getRepositoryDir(),
+                                   "install.properties"));
+            //      sb.append(ramadda.admin=admin:xxx
+            if ( !install.exists()) {
+                installPassword = Utils.generatePassword(8);
+                StringBuilder sb = new StringBuilder();
+                sb.append(
+                    "#This is a generated password used in the install process\n");
+                sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword
+                          + "\n\n");
+                try (FileOutputStream fos = new FileOutputStream(install)) {
+                    IOUtil.write(fos, sb.toString());
+                }
+            }
+        }
+
+        return installPassword;
     }
-	
+
 
 
     /**
@@ -553,8 +573,9 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result doInitialization(Request request) throws Exception {
+
         String installPassword = getInstallPassword();
-        if (!Utils.stringDefined(installPassword)) {
+        if ( !Utils.stringDefined(installPassword)) {
             return new Result(
                 "Install Error",
                 new StringBuffer(
@@ -597,24 +618,33 @@ public class Admin extends RepositoryManager {
 
         if ( !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN)) {
             title = "Installation";
-	    String msg = "Thank you for trying RAMADDA. Listed below is the home directory and database information.";
-	    msg += " Consult the documentation to:<ul style='margin-bottom:0px;'>";
-	    msg += "<li> Set the <a target=\"_help\" href=\"https://geodesystems.com/repository/userguide/installing.html#home\">home directory</a> ";
-	    msg += "<li> Specify the <a target=_help href='https://geodesystems.com/repository/userguide/database.html'>database</a> ";
-	    msg += "<li> Configure <a target=_help href='https://geodesystems.com/repository/userguide/installing.html#ssl'>SSL</a> ";	    
-	    msg += "</ul>";
-	    msg+="If you change any of these settings be sure to restart your RAMADDA";
-	    sb.append(note(msg));
+            String msg =
+                "Thank you for trying RAMADDA. Listed below is the home directory and database information.";
+            msg += " Consult the documentation to:<ul style='margin-bottom:0px;'>";
+            msg += "<li> Set the <a target=\"_help\" href=\"https://geodesystems.com/repository/userguide/installing.html#home\">home directory</a> ";
+            msg += "<li> Specify the <a target=_help href='https://geodesystems.com/repository/userguide/database.html'>database</a> ";
+            msg += "<li> Configure <a target=_help href='https://geodesystems.com/repository/userguide/installing.html#ssl'>SSL</a> ";
+            msg += "</ul>";
+            msg += "If you change any of these settings be sure to restart your RAMADDA";
+            sb.append(note(msg));
             sb.append(HtmlUtils.formTable());
 
-	    sb.append(HtmlUtils.formEntry("Home Directory:",
-					  getStorageManager().getRepositoryDir().toString()));
+            sb.append(
+                HtmlUtils.formEntry(
+                    "Home Directory:",
+                    getStorageManager().getRepositoryDir().toString()));
             getDatabaseManager().addInfo(sb);
-	    sb.append(HtmlUtils.formEntry(""," Since this configuration is web-based we use the install password to verify your identity."));
+            sb.append(
+                HtmlUtils.formEntry(
+                    "",
+                    " Since this configuration is web-based we use the install password to verify your identity."));
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("Install Password"),
-                    HtmlUtils.input(PROP_INSTALL_PASSWORD, "")+" " + "Specified in " + getStorageManager().getRepositoryDir().toString()+"/install.propertes"));
+                    HtmlUtils.input(PROP_INSTALL_PASSWORD, "") + " "
+                    + "Specified in "
+                    + getStorageManager().getRepositoryDir().toString()
+                    + "/install.propertes"));
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.submit(msg("Next"),
                                        ARG_ADMIN_INSTALLNOTICESHOWN));
@@ -835,12 +865,12 @@ public class Admin extends RepositoryManager {
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
             for (String plugin : PluginManager.PLUGINS) {
-		String pluginName =IOUtil.stripExtension(IOUtil.getFileTail(plugin));
-		boolean dflt = !pluginName.equals("bioplugins");
+                String pluginName =
+                    IOUtil.stripExtension(IOUtil.getFileTail(plugin));
+                boolean dflt = !pluginName.equals("bioplugins");
                 sb.append(HtmlUtils.formEntry("",
                         HtmlUtils.checkbox("plugin." + plugin, "true", dflt)
-                        + " " + "Install plugin: "
-                        + pluginName));
+                        + " " + "Install plugin: " + pluginName));
             }
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.br());
@@ -857,6 +887,7 @@ public class Admin extends RepositoryManager {
         finalSB.append(HtmlUtils.formClose());
 
         return new Result(msg(title), finalSB);
+
 
     }
 
@@ -1312,7 +1343,7 @@ public class Admin extends RepositoryManager {
 
         //Force the creation of some of the managers
         getRepository().getMailManager();
-	//        getRepository().getFtpManager();
+        //        getRepository().getFtpManager();
         getRepository().getMapManager();
 
 
@@ -1866,7 +1897,7 @@ public class Admin extends RepositoryManager {
                 idToPermissions.put(id, permissions = new ArrayList());
                 ids.add(id);
             }
-            permissions.add(new Permission(action, role));
+            permissions.add(new Permission(action, new Role(role)));
         }
 
         sb.append("<table cellspacing=\"0\" cellpadding=\"0\">");
@@ -1875,6 +1906,9 @@ public class Admin extends RepositoryManager {
                 HtmlUtils.b(msg("Role")))));
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
+            if (entry == null) {
+                continue;
+            }
             sb.append(
                 HtmlUtils.row(
                     HtmlUtils.colspan(
@@ -1884,11 +1918,13 @@ public class Admin extends RepositoryManager {
             List<Permission> permissions =
                 (List<Permission>) idToPermissions.get(id);
             for (Permission permission : permissions) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols("",
-                        permission.getAction(),
-                        permission.getRoles().get(0))));
-
+                Role role = permission.getRoles().get(0);
+                String row = HtmlUtils.cols("", permission.getAction(),
+                                            role.getRole());
+                String extra = role.getDecoration();
+                sb.append(HtmlUtils.row(row, extra));
             }
+            //      System.err.println(sb+"\n");
             sb.append(HtmlUtils.row(HtmlUtils.colspan("<hr>", 3)));
         }
         sb.append("</table>");
@@ -1952,10 +1988,10 @@ public class Admin extends RepositoryManager {
                                             + ""));
 
 
-	StringBuilder tmp = new StringBuilder();
-	TTLCache.getInfo(tmp);
-        HU.formEntry(statusSB,msgLabel("Caches"), tmp.toString());
-	//        getEntryManager().addStatusInfo(statusSB);
+        StringBuilder tmp = new StringBuilder();
+        TTLCache.getInfo(tmp);
+        HU.formEntry(statusSB, msgLabel("Caches"), tmp.toString());
+        //        getEntryManager().addStatusInfo(statusSB);
 
         statusSB.append(HtmlUtils.formTableClose());
 
@@ -2434,60 +2470,87 @@ public class Admin extends RepositoryManager {
     }
 
 
-    public void listMissingFiles(Request request, Appendable sb) throws Exception {
-	String pattern = request.getString("pattern","");
-	Statement statement =
-	    getDatabaseManager().select(
-					SqlUtil.comma(
-						      Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
-						      Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
-					Clause.or(
-						  new Clause[]{
-						      Clause.eq(Tables.ENTRIES.COL_RESOURCE_TYPE,Resource.TYPE_LOCAL_FILE),
-						      Clause.eq(Tables.ENTRIES.COL_RESOURCE_TYPE,Resource.TYPE_FILE),
-						      Clause.eq(Tables.ENTRIES.COL_RESOURCE_TYPE,Resource.TYPE_STOREDFILE)}),
-					getDatabaseManager().makeOrderBy(Tables.ENTRIES.COL_CREATEDATE,true));
-						      
-	SqlUtil.Iterator iter =
-	    getDatabaseManager().getIterator(statement);
-	ResultSet   results;
-	int cnt = 0;
-	int missingCnt = 0;
-	StringBuilder buff= new StringBuilder();
-	buff.append("<table><tr><td><b>Entry</b></td><td><b>Missing File</b></td></tr>");
-	
-	boolean even = true;
-	while ((results = iter.getNext()) != null) {
-	    cnt++;
-	    if((cnt %1000)==0) System.err.println("cnt:" +cnt);
-	    int    col = 1;
-	    String id  = results.getString(col++);
-	    String resource = getStorageManager().resourceFromDB(
-								 results.getString(col++));
-	    File f = new File(resource);
-	    if (f.exists()) {
-		continue;
-	    }
-	    if ((pattern != null) && (pattern.length() > 0)) {
-		if(resource.matches(pattern)) continue;
-	    }
+    /**
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void listMissingFiles(Request request, Appendable sb)
+            throws Exception {
+        String pattern = request.getString("pattern", "");
+        Statement statement =
+            getDatabaseManager().select(
+                SqlUtil.comma(
+                    Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_RESOURCE,
+                    Tables.ENTRIES.COL_TYPE), Tables.ENTRIES.NAME,
+                        Clause.or(
+                            new Clause[] {
+                                Clause.eq(
+                                    Tables.ENTRIES.COL_RESOURCE_TYPE,
+                                    Resource.TYPE_LOCAL_FILE),
+                                Clause.eq(Tables.ENTRIES
+                                    .COL_RESOURCE_TYPE, Resource
+                                    .TYPE_FILE), Clause
+                                        .eq(Tables.ENTRIES
+                                            .COL_RESOURCE_TYPE, Resource
+                                            .TYPE_STOREDFILE) }), getDatabaseManager()
+                                                .makeOrderBy(Tables.ENTRIES
+                                                    .COL_CREATEDATE, true));
 
-	    even=!even;
-	    missingCnt++;
-	    Entry entry = getEntryManager().getEntry(request, id);
-	    String clazz = even?"ramadda-row-even":"ramadda-row-odd";
-	    if(entry==null)
-		buff.append("<tr class=" + clazz+"  valign=top><td>NULL Entry " + id +"</td><td>" + f +"</td></tr>");
-	    else
-		buff.append("<tr class=" + clazz +" valign=top><td>" +getEntryManager().getEntryLink(request,entry,true,"") +"</td><td>" + f+"</td></tr>");
-	}
-	buff.append("</table>");
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+        ResultSet        results;
+        int              cnt        = 0;
+        int              missingCnt = 0;
+        StringBuilder    buff       = new StringBuilder();
+        buff.append(
+            "<table><tr><td><b>Entry</b></td><td><b>Missing File</b></td></tr>");
 
-	sb.append("Total entries: #" + cnt+"<br>");
-	if(missingCnt>0)
-	    sb.append("Missing: #" + missingCnt+"<br>");
+        boolean even = true;
+        while ((results = iter.getNext()) != null) {
+            cnt++;
+            if ((cnt % 1000) == 0) {
+                System.err.println("cnt:" + cnt);
+            }
+            int    col = 1;
+            String id  = results.getString(col++);
+            String resource =
+                getStorageManager().resourceFromDB(results.getString(col++));
+            File f = new File(resource);
+            if (f.exists()) {
+                continue;
+            }
+            if ((pattern != null) && (pattern.length() > 0)) {
+                if (resource.matches(pattern)) {
+                    continue;
+                }
+            }
 
-	sb.append(buff);
+            even = !even;
+            missingCnt++;
+            Entry  entry = getEntryManager().getEntry(request, id);
+            String clazz = even
+                           ? "ramadda-row-even"
+                           : "ramadda-row-odd";
+            if (entry == null) {
+                buff.append("<tr class=" + clazz
+                            + "  valign=top><td>NULL Entry " + id
+                            + "</td><td>" + f + "</td></tr>");
+            } else {
+                buff.append("<tr class=" + clazz + " valign=top><td>"
+                            + getEntryManager().getEntryLink(request, entry,
+                                true, "") + "</td><td>" + f + "</td></tr>");
+            }
+        }
+        buff.append("</table>");
+
+        sb.append("Total entries: #" + cnt + "<br>");
+        if (missingCnt > 0) {
+            sb.append("Missing: #" + missingCnt + "<br>");
+        }
+
+        sb.append(buff);
 
     }
 
@@ -2540,12 +2603,14 @@ public class Admin extends RepositoryManager {
         missingSB.append(HtmlUtils.sectionOpen(null, false));
         missingSB.append(HtmlUtils.h3("List missing files"));
         request.formPostWithAuthToken(missingSB, URL_ADMIN_CLEANUP, "");
-        missingSB.append("Skip pattern: " +  HtmlUtils.input("pattern",request.getString("pattern",""),
-							     HtmlUtils.SIZE_50));
-	missingSB.append("<br>");
+        missingSB.append("Skip pattern: "
+                         + HtmlUtils.input("pattern",
+                                           request.getString("pattern", ""),
+                                           HtmlUtils.SIZE_50));
+        missingSB.append("<br>");
 
         missingSB.append(HtmlUtils.submit(msg("List missing files"),
-                                           ACTION_LISTMISSING));
+                                          ACTION_LISTMISSING));
         missingSB.append(HtmlUtils.sectionClose());
         missingSB.append(HtmlUtils.formClose());
 
@@ -2575,8 +2640,9 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
         } else if (request.defined(ACTION_LISTMISSING)) {
-	    sb.append(missingSB);
-	    listMissingFiles(request, sb);
+            sb.append(missingSB);
+            listMissingFiles(request, sb);
+
             return makeResult(request, "Missing Files", sb);
         } else if (request.defined(ACTION_CHANGEPATHS)) {
             if (request.defined(ARG_CHANGEPATHS_PATTERN)) {
@@ -2689,7 +2755,7 @@ public class Admin extends RepositoryManager {
 
 
             sb.append(filePathSB);
-            sb.append(missingSB);	    
+            sb.append(missingSB);
 
             if (getRepository().getShutdownEnabled()) {
                 request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
@@ -2703,7 +2769,7 @@ public class Admin extends RepositoryManager {
             }
 
 
-	}
+        }
         sb.append("</form>");
         if (status.length() > 0) {
             sb.append(msgHeader("Cleanup Status"));
@@ -2906,5 +2972,3 @@ public class Admin extends RepositoryManager {
 
 
 }
-
-
