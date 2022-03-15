@@ -98,7 +98,8 @@ public class Permission {
     /** _more_ */
     public static final String[] ACTIONS = {
         ACTION_VIEW,  ACTION_FILE, ACTION_EXPORT,
-        ACTION_EDIT, ACTION_NEW, ACTION_DELETE, ACTION_UPLOAD,  ACTION_COMMENT,
+        ACTION_EDIT, ACTION_NEW, ACTION_DELETE, ACTION_UPLOAD,  
+	//ACTION_COMMENT,
 	ACTION_VIEWCHILDREN,  ACTION_TYPE1, ACTION_TYPE2
     };
 
@@ -106,32 +107,19 @@ public class Permission {
     public static final String[] ACTION_NAMES = {
         "View",  "File", "Export", "Edit", "New",
 	"Delete",
-        "Anon. Upload",  "Comment",
+        "Anon. Upload",
+	//	"Comment",
 	"View Children", "Type specific 1",
         "Type specific 2"
     };
-
-    /*
-for phrase extraction
-        msg("View")
-        msg("View Children")
-        msg("File")
-        msg("Edit")
-        msg("New")
-        msg("Anon. Upload")
-        msg("Delete")
-        msg("Comment")
-        msg("Type specific 1")
-        msg("Type specific 2")
-     */
-
 
 
     /** _more_ */
     String action;
 
     /** _more_ */
-    List<String> roles;
+    List<Role> roles;
+
 
     /**
      * _more_
@@ -139,9 +127,9 @@ for phrase extraction
      * @param action _more_
      * @param role _more_
      */
-    public Permission(String action, String role) {
+    public Permission(String action, Role role) {
         this.action = action;
-        roles       = new ArrayList<String>();
+        roles       = new ArrayList<Role>();
         roles.add(role);
     }
 
@@ -152,7 +140,7 @@ for phrase extraction
      * @param action _more_
      * @param roles _more_
      */
-    public Permission(String action, List<String> roles) {
+    public Permission(String action, List<Role> roles) {
         this.action = action;
         this.roles  = roles;
     }
@@ -190,7 +178,8 @@ for phrase extraction
                 return true;
             }
         }
-
+	//Since we comment out the "comment" action in the list of actions handle it here
+	if(action.equals("comment")) return true;
         return false;
     }
 
@@ -202,8 +191,6 @@ for phrase extraction
     public String toString() {
         return "action:" + action + " roles:" + roles;
     }
-
-
 
 
     /**
@@ -225,20 +212,11 @@ for phrase extraction
     }
 
     /**
-     * Set the Roles property.
-     *
-     * @param value The new value for Roles
-     */
-    public void setRoles(List<String> value) {
-        roles = value;
-    }
-
-    /**
      * Get the Roles property.
      *
      * @return The Roles
      */
-    public List<String> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 

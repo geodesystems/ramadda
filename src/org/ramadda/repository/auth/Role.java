@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.auth;
+import org.ramadda.util.HtmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +65,14 @@ public class Role {
 
     public boolean isRole(String role) {
 	boolean r = this.baseRole.equals(role) || this.role.equals(role);
-	System.err.println("\t\tISROLE(String):" + this.role +" " + role +" R:" + r);
+	//	System.err.println("\t\tISROLE(String):" + this.role +" " + role +" R:" + r);
 	return r;
     }
 
 
     public boolean isRole(Role role) {
 	boolean r = this.role.equals(role.role) || this.baseRole.equals(role.baseRole);
-	System.err.println("\t\tISROLE:" + this.role +" " + role.role +" R:" + r);
+	//	System.err.println("\t\tISROLE:" + this.role +" " + role.role +" R:" + r);
 	return r;
     }
 
@@ -89,6 +90,19 @@ public class Role {
 
     public boolean isComment() {
 	return baseRole.startsWith("#");
+    }
+
+    public String getDecoration() {
+	if(isComment()) {
+	    return HtmlUtils.cssClass("ramadda-access-comment");
+	}
+	if (Role.ROLE_NONE.isRole(this)) {
+	    return HtmlUtils.cssClass("ramadda-access-none");
+	}
+	if(getNegated()) {
+	    return HtmlUtils.cssClass("ramadda-access-negated");
+	}
+	return "";
     }
 
     public String getRole() {

@@ -122,23 +122,23 @@ public class AccessManager extends RepositoryManager {
      */
     public void initTopEntry(Entry mainEntry) throws Exception {
         mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
-                UserManager.ROLE_ANY));
+					       Role.ROLE_ANY));
         mainEntry.addPermission(
             new Permission(
-                Permission.ACTION_VIEWCHILDREN, UserManager.ROLE_ANY));
+                Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_FILE,
-                UserManager.ROLE_ANY));
+                Role.ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_EXPORT,
-                UserManager.ROLE_NONE));
+                Role.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_EDIT,
-                UserManager.ROLE_NONE));
+                Role.ROLE_NONE));
 
         mainEntry.addPermission(new Permission(Permission.ACTION_NEW,
-                UserManager.ROLE_NONE));
+                Role.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_DELETE,
-                UserManager.ROLE_NONE));
+                Role.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_COMMENT,
-                UserManager.ROLE_ANY));
+                Role.ROLE_ANY));
         insertPermissions(null, mainEntry, mainEntry.getPermissions());
     }
 
@@ -155,7 +155,6 @@ public class AccessManager extends RepositoryManager {
      */
     public boolean canDoAction(Request request, String action)
             throws Exception {
-
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
@@ -163,10 +162,7 @@ public class AccessManager extends RepositoryManager {
                 return false;
             }
         }
-
         User user = request.getUser();
-
-
         //The admin can do anything
         if (user.getAdmin()) {
             return true;
@@ -283,12 +279,29 @@ public class AccessManager extends RepositoryManager {
 
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
+                    || action.equals(Permission.ACTION_EXPORT)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
                     || action.equals(Permission.ACTION_FILE))) {
                 return false;
             }
         }
 
+
+        String requestIp = null;
+        User   user      = null;
+        if (request == null) {
+            user = getUserManager().getAnonymousUser();
+        } else {
+            user      = request.getUser();
+            requestIp = request.getIp();
+        }
+
+	return  canDoAction(request, requestIp, user, log, entry,  action);
+    }
+
+    private boolean canDoAction(Request request, String requestIp, User user, boolean log,
+				Entry entry, String action)
+            throws Exception {
 
         if (entry == null) {
             return false;
@@ -324,19 +337,9 @@ public class AccessManager extends RepositoryManager {
         }
 
 
-        String requestIp = null;
-        User   user      = null;
-        if (request == null) {
-            user = getUserManager().getAnonymousUser();
-        } else {
-            user      = request.getUser();
-            requestIp = request.getIp();
-        }
-
 
         if (user == null) {
             logInfo("Upload:canDoAction: user is null");
-
             return false;
         }
 
@@ -351,18 +354,19 @@ public class AccessManager extends RepositoryManager {
             return true;
         }
 
+
+
         //If user is owner then they can do anything
         if ( !user.getAnonymous() && Misc.equals(user, entry.getUser())) {
             if (log) {
                 logInfo("Upload:user is owner");
             }
-
             //            System.err.println("user is owner of entry");
             return true;
         }
 
-        String key = "a:" + action + "_u:" + user.getId() + "_ip:"
-                     + requestIp + "_e:" + entry.getId();
+        String key = "a:" + action + "_u:" + user.getId() + "_roles:" + user.getRoles()
+	    +"_ip:"  + requestIp + "_e:" + entry.getId();
         Object[] pastResult = recentPermissions.get(key);
         Date     now        = new Date();
         if (pastResult != null) {
@@ -382,8 +386,13 @@ public class AccessManager extends RepositoryManager {
             }
         }
 
-        boolean result = canDoActionInner(request, entry, action, user,
-                                          requestIp);
+	boolean debug = false;
+	//	debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
+        boolean result = canDoActionInner(request, requestIp, user, log, entry, action);
+	if(debug) {
+	    //	    System.err.println("CANDO:" + entry +" " + result);
+	    //	    System.err.println(Utils.getStack(10));
+	}
         //        logInfo("Upload:canDoAction:  result= " + result);
         if (recentPermissions.size() > 10000) {
             clearCache();
@@ -430,81 +439,80 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private boolean canDoActionInner(Request request, Entry entry,
-                                     String action, User user,
-                                     String requestIp)
-            throws Exception {
-        boolean stop = stopAtFirstRole;
-        //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
-        while (entry != null) {
-            boolean      hadInherit     = false;
-            boolean      hadAccessGrant = false;
-            List<String> roles = (List<String>) getRoles(entry, action);
-            if (roles != null) {
-                if (requestIp != null) {
-                    boolean hadIp = false;
-                    for (String role : roles) {
-                        boolean negated = false;
-                        if (role.startsWith("!")) {
-                            negated = true;
-                            role    = role.substring(1);
-                        }
-                        if ( !role.startsWith("ip:")) {
-                            continue;
-                        }
-                        if ( !negated) {
-                            hadIp = true;
-                        }
-                        String ip = role.substring(3);
-                        if (requestIp.startsWith(ip)) {
-                            return !negated;
-                        }
-                    }
-                    if (hadIp) {
-                        return false;
-                    }
-                }
+    private boolean canDoActionInner(Request request, String requestIp, User user, boolean log,
+				     Entry entry,
+                                     String action)
+	throws Exception {
+	if(entry==null) return false;
+	//        boolean stop = stopAtFirstRole;
+	boolean debug = false;
+	//	debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
 
-                for (String role : roles) {
-                    boolean negated = false;
-                    if (UserManager.ROLE_INHERIT.equals(role)) {
-                        hadInherit = true;
+	boolean      hadInherit     = false;
+	boolean      hadAny= false;
+	List<Role> roles = getRoles(entry, action);
+	if(debug && roles!=null && roles.size()>0)
+	    System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry +" roles=" + roles);
+	if (roles != null && roles.size()>0) {
+	    /*
+	      ip:222
+	      user
+	      none
+	    */
+	    for (Role role : roles) {
+		if(role.isComment()) continue;
+		hadAny = true;
+		boolean negated = role.getNegated();
+		if(debug)
+		    System.err.println("\tROLE:" + role.getBaseRole() +" negated:" + negated);
+		if(role.getIsIp()) {
+		    if(requestIp!=null) {
+			if (requestIp.startsWith(role.getBaseRole())) {
+			    if(debug)
+				System.err.println("\tIP negated:" + negated  +" " + requestIp);
+			    return !negated;
+			}
+		    }
+		    continue;
+		} 
 
-                        continue;
-                    }
-                    if (role.startsWith("!")) {
-                        negated = true;
-                        role    = role.substring(1);
-                    }
-                    if (role.startsWith("ip:")) {
-                        continue;
-                    }
-                    if ( !negated) {
-                        hadAccessGrant = true;
-                    }
-                    if (UserManager.ROLE_ANY.equals(role)) {
-                        return true;
-                    }
-                    if (UserManager.ROLE_NONE.equals(role)) {
-                        return false;
-                    }
-                    if (user.isRole(role)) {
-                        return !negated;
-                    }
-                }
-                //If we had an access grant here (i.e., a non negated role)
-                //and the user did not fall under that role then block access
-                if ( !hadInherit && stop && hadAccessGrant) {
-                    return false;
-                }
-            }
-            //LOOK: make sure we pass in false here which says do not check for access control
+		if (Role.ROLE_INHERIT.isRole(role)) {
+		    hadInherit = true;
+		    continue;
+		}
+		if (Role.ROLE_ANY.isRole(role)) {
+		    if(debug) System.err.println("\tIs ANY negated: " + negated);
+		    return !negated;
+		}
+		if (Role.ROLE_NONE.isRole(role)) {
+		    if(debug) System.err.println("\tIs NONE negated:" + negated);
+		    return negated;
+		}
+		if (user.isRole(role)) {
+		    if(debug) System.err.println("\tuser.isRole: " + role);
+		    return !negated;
+		}
+	    }
+	    //If we had an access grant here then block access
+	    /*
+	    if(hadAny) {
+		if (!hadInherit) {
+		    if(stop) {
+			if(debug)
+			    System.err.println("\thadAny=true stop=true returning FALSE");
+			return false;
+		    }
+		}
+		}*/
+	}
 
-            //            System.err.println ("auth:" + entry.getId() +" parent:" + entry.getParentEntryId());
-            entry = getEntryManager().getParent(request, entry, false);
-        }
-
-        return false;
+	//LOOK: make sure we pass in false here which says do not check for access control
+	entry = getEntryManager().getParent(request, entry, false);
+	if(entry!=null) return canDoAction(request, requestIp, user, log, entry, action);
+	if(debug)
+	    System.err.println("\tparent is NULL");
+	
+	return false;
     }
 
 
@@ -522,11 +530,10 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List getRoles(Entry entry, String action) throws Exception {
+    public List<Role> getRoles(Entry entry, String action) throws Exception {
         //Make sure we call getPermissions first which forces the instantation of the roles
         getPermissions(entry);
-
-        return entry.getRoles(action);
+        return (List<Role>) entry.getRoles(action);
     }
 
 
@@ -831,26 +838,32 @@ public class AccessManager extends RepositoryManager {
 
         Hashtable map = new Hashtable();
         for (Permission permission : permissions) {
-            List roles = (List) map.get(permission.getAction());
+            List<Role> roles = (List<Role>) map.get(permission.getAction());
             if (roles == null) {
-                map.put(permission.getAction(), roles = new ArrayList());
+                map.put(permission.getAction(), roles = new ArrayList<Role>());
             }
             roles.addAll(permission.getRoles());
         }
 
         StringBuffer cols = new StringBuffer(HtmlUtils.cols(entryUrl));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            List roles = (List) map.get(Permission.ACTIONS[i]);
+            List<Role> roles = (List<Role>) map.get(Permission.ACTIONS[i]);
             if (roles == null) {
                 cols.append(HtmlUtils.cols("&nbsp;"));
             } else {
-                cols.append(HtmlUtils.cols(StringUtil.join("<br>", roles)));
+		StringBuilder tmp = null;
+		for(Role role:roles) {
+		    if(tmp==null) tmp = new StringBuilder();
+		    else tmp.append("<br>");
+		    tmp.append(HU.span(role.toString(),role.getDecoration()));
+		}
+                cols.append(HtmlUtils.cols(tmp.toString()));
             }
         }
         sb.append(
             HtmlUtils.row(
                 cols.toString(),
-                HtmlUtils.cssClass("ramadda-access-summary")));
+                HU.attr("valign","top") + HtmlUtils.cssClass("ramadda-access-summary")));
         listAccess(request,
                    getEntryManager().getEntry(request,
                        entry.getParentEntryId()), sb);
@@ -875,12 +888,12 @@ public class AccessManager extends RepositoryManager {
             Clause.eq(Tables.PERMISSIONS.COL_ENTRY_ID, entry.getId()));
 
         for (Permission permission : permissions) {
-            List roles = permission.getRoles();
-            for (int i = 0; i < roles.size(); i++) {
+            List<Role> roles = permission.getRoles();
+	    for(Role role: roles) {
                 getDatabaseManager().executeInsert(Tables.PERMISSIONS.INSERT,
                         new Object[] { entry.getId(),
                                        permission.getAction(),
-                                       roles.get(i) });
+                                       role.getRole()});
             }
         }
         entry.setPermissions(permissions);
@@ -939,20 +952,19 @@ public class AccessManager extends RepositoryManager {
         permissions = new ArrayList<Permission>();
 
         ResultSet results;
-        Hashtable actions = new Hashtable();
+        Hashtable<String,List<Role>> actions = new Hashtable<String,List<Role>>();
         while ((results = iter.getNext()) != null) {
             String id     = results.getString(1);
             String action = results.getString(2);
             String role   = results.getString(3);
-            List   roles  = (List) actions.get(action);
+            List<Role>   roles  = actions.get(action);
             if (roles == null) {
-                actions.put(action, roles = new ArrayList());
+                actions.put(action, roles = new ArrayList<Role>());
                 permissions.add(new Permission(action, roles));
             }
-            roles.add(role);
+            roles.add(new Role(role));
         }
         entry.setPermissions(permissions);
-
         return permissions;
     }
 
@@ -993,7 +1005,7 @@ public class AccessManager extends RepositoryManager {
         currentAccess.append(
             HtmlUtils.row(
                 header.toString(),
-                HtmlUtils.cssClass("ramadda-access-summary-header")));
+                HU.attr("valign","top") + HtmlUtils.cssClass("ramadda-access-summary-header")));
 
         listAccess(request, entry, currentAccess);
         currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
@@ -1004,7 +1016,7 @@ public class AccessManager extends RepositoryManager {
         List<Permission> permissions = getPermissions(entry);
         for (Permission permission : permissions) {
             List roles = permission.getRoles();
-            if (roles.contains(UserManager.ROLE_NONE)) {
+            if (roles.contains(Role.ROLE_NONE)) {
                 map.put(permission.getAction() + ".hasnone", "true");
             }
             map.put(permission.getAction(), StringUtil.join("\n", roles));
@@ -1023,12 +1035,12 @@ public class AccessManager extends RepositoryManager {
 	List opts = new ArrayList();
 	Utils.add(opts,new TwoFacedObject("Add role",""),
 		  new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
-		  new TwoFacedObject("Logged in user",UserManager.ROLE_USER),
-		  new TwoFacedObject("No one", UserManager.ROLE_NONE),
+		  new TwoFacedObject("Logged in user",Role.ROLE_USER.getRole()),
+		  new TwoFacedObject("No one", Role.ROLE_NONE.getRole()),
 		  new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
-		  new TwoFacedObject("Anonymous users", UserManager.ROLE_ANONYMOUS),
-		  UserManager.ROLE_ANY,
-		  new TwoFacedObject("Guest user", UserManager.ROLE_GUEST));
+		  new TwoFacedObject("Anonymous users", Role.ROLE_ANONYMOUS.getRole()),
+		  Role.ROLE_ANY.getRole(),
+		  new TwoFacedObject("Guest user", Role.ROLE_GUEST.getRole()));
 	opts.addAll(getUserManager().getUserRoles());
 
         sb.append("<tr valign=top>");
@@ -1086,7 +1098,7 @@ public class AccessManager extends RepositoryManager {
 
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
         //        sb.append("All Roles:<br>");
-        //        sb.append(StringUtil.join("<br>",getUserManager().getRoles()));
+        //        sb.append(StringUtil.join("<br>",getUserManager().getStandardRoles()));
         //        sb.append("</td></tr></table>");
         sb.append(HtmlUtils.submit(msg("Change Access")));
         sb.append(HtmlUtils.formClose());
@@ -1120,10 +1132,10 @@ public class AccessManager extends RepositoryManager {
         }
         List<Permission> permissions = new ArrayList<Permission>();
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            List roles = Utils.split(request.getString(ARG_ROLES + "."
+            List<String> roles = Utils.split(request.getString(ARG_ROLES + "."
                              + Permission.ACTIONS[i], ""), "\n", true, true);
             if (roles.size() > 0) {
-                permissions.add(new Permission(Permission.ACTIONS[i], roles));
+                permissions.add(new Permission(Permission.ACTIONS[i], Role.makeRoles(roles)));
             }
         }
 

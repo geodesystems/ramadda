@@ -154,24 +154,6 @@ public class UserManager extends RepositoryManager {
         new OutputType("Add as Favorite", "user.addfavorite",
                        OutputType.TYPE_TOOLBAR, "", ICON_FAVORITE);
 
-    /** role */
-    public static final String ROLE_ANY = "any";
-
-    /** role */
-    public static final String ROLE_NONE = "none";
-
-    /** _more_ */
-    public static final String ROLE_USER = "user";
-
-    /** _more_ */
-    public static final String ROLE_ANONYMOUS = "anonymous";
-
-    /** _more_ */
-    public static final String ROLE_GUEST = "guest";
-
-    /** _more_ */
-    public static final String ROLE_INHERIT = "inherit";
-
 
     /** _more_ */
     public static final String PROP_REGISTER_OK = "ramadda.register.ok";
@@ -464,6 +446,7 @@ public class UserManager extends RepositoryManager {
         } else if ( !user.getIsLocal()) {
             links = remoteUserUrls;
         }
+	
         getPageHandler().sectionOpen(request, sb, "User: " + user.getId(),
                                      false);
         getPageHandler().makeLinksHeader(request, sb, links, "");
@@ -780,6 +763,9 @@ public class UserManager extends RepositoryManager {
                                            Utils.encodeBase64(redirect)));
             }
         }
+
+
+
         sb.append(HtmlUtils.formTable());
         sb.append(
             formEntry(
@@ -1202,7 +1188,7 @@ public class UserManager extends RepositoryManager {
         List<String> roles = Utils.split(request.getString(ARG_USER_ROLES,
                                  ""), "\n", true, true);
 
-        user.setRoles(roles);
+        user.setRoles(Role.makeRoles(roles));
         setRoles(request, user);
     }
 
@@ -1220,10 +1206,10 @@ public class UserManager extends RepositoryManager {
         if (user.getRoles() == null) {
             return;
         }
-        for (String role : user.getRoles()) {
+        for (Role role : user.getRoles()) {
             getDatabaseManager().executeInsert(Tables.USERROLES.INSERT,
                     new Object[] { user.getId(),
-                                   role });
+						   role.getRole()});
         }
     }
 
@@ -1255,8 +1241,9 @@ public class UserManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         HtmlUtils.titleSectionOpen(sb, "Edit User Settings");
-        sb.append(RepositoryUtil.header(msgLabel("User") + HtmlUtils.space(1)
-                                        + user.getId()));
+
+	getWikiManager().makeCallout(sb, request, "<b>" +
+				     "User: " + user.getLabel() +"</b>");
 
         if (request.defined(ARG_USER_CHANGE)) {
             request.ensureAuthToken();
@@ -1349,7 +1336,7 @@ public class UserManager extends RepositoryManager {
                                     user.getIsGuest())));
             String       userRoles = user.getRolesAsString("\n");
             StringBuffer allRoles  = new StringBuffer();
-            List         roles     = getRoles();
+            List<Role>    roles     = getStandardRoles();
             allRoles.append(
                 "<table border=0 cellspacing=0 cellpadding=0><tr valign=\"top\"><td><b>e.g.:</b></td><td>&nbsp;&nbsp;</td><td>");
             int cnt = 0;
@@ -1360,7 +1347,7 @@ public class UserManager extends RepositoryManager {
                     cnt = 0;
                 }
                 allRoles.append("<i>");
-                allRoles.append(roles.get(i));
+                allRoles.append(roles.get(i).getRole());
                 allRoles.append("</i><br>");
             }
             allRoles.append("</table>\n");
@@ -1577,9 +1564,9 @@ public class UserManager extends RepositoryManager {
             }
 
         }
-        List<String> newUserRoles =
-            Utils.split(request.getString(ARG_USER_ROLES, ""), "\n", true,
-                        true);
+        List<Role> newUserRoles =Role.makeRoles(
+						  Utils.split(request.getString(ARG_USER_ROLES, ""), "\n", true,
+							      true));
 
         String homeGroupId = request.getString(ARG_USER_HOME + "_hidden", "");
 
@@ -1940,7 +1927,7 @@ public class UserManager extends RepositoryManager {
 
         Hashtable<String, StringBuffer> rolesMap = new Hashtable<String,
                                                        StringBuffer>();
-        List<String> rolesList = new ArrayList<String>();
+        List<Role> rolesList = new ArrayList<Role>();
         StringBuffer usersHtml = new StringBuffer();
         StringBuffer rolesHtml = new StringBuffer();
 
@@ -2022,14 +2009,14 @@ public class UserManager extends RepositoryManager {
                     : "")));
             usersHtml.append(row);
 
-            List<String> roles = user.getRoles();
+            List<Role> roles = user.getRoles();
             if (roles != null) {
-                for (String role : roles) {
-                    StringBuffer rolesSB = rolesMap.get(role);
+                for (Role role : roles) {
+                    StringBuffer rolesSB = rolesMap.get(role.getRole());
                     if (rolesSB == null) {
                         rolesSB = new StringBuffer("");
                         rolesList.add(role);
-                        rolesMap.put(role, rolesSB);
+                        rolesMap.put(role.getRole(), rolesSB);
                     }
                     rolesSB.append(HtmlUtils.row(HtmlUtils.cols("<li>",
                             userEditLink, user.getId(), user.getName(),
@@ -2049,8 +2036,8 @@ public class UserManager extends RepositoryManager {
         usersHtml.append(HtmlUtils.formClose());
 
         List<String> rolesContent = new ArrayList<String>();
-        for (String role : rolesList) {
-            StringBuffer rolesSB = rolesMap.get(role);
+        for (Role role : rolesList) {
+            StringBuffer rolesSB = rolesMap.get(role.getRole());
             rolesContent.add("<table class=formtable>\n" + rolesSB.toString()
                              + "\n</table>");
         }
@@ -2129,8 +2116,7 @@ public class UserManager extends RepositoryManager {
             SqlUtil.readString(getDatabaseManager().getIterator(statement),
                                1);
         List<String> roles = new ArrayList<String>(Misc.toList(array));
-        user.setRoles(roles);
-
+        user.setRoles(Role.makeRoles(roles));
         return user;
     }
 
@@ -3774,7 +3760,7 @@ public class UserManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    public List<String> getUserRoles() throws Exception {
+    public List<Role> getUserRoles() throws Exception {
         String[] roleArray =
             SqlUtil.readString(
                 getDatabaseManager().getIterator(
@@ -3782,15 +3768,13 @@ public class UserManager extends RepositoryManager {
                         SqlUtil.distinct(Tables.USERROLES.COL_ROLE),
                         Tables.USERROLES.NAME, new Clause())), 1);
         List<String> roles = new ArrayList<String>(Misc.toList(roleArray));
-
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
             List<String> authenticatorRoles = userAuthenticator.getAllRoles();
             if (authenticatorRoles != null) {
                 roles.addAll(authenticatorRoles);
             }
         }
-
-        return roles;
+        return Role.makeRoles(roles);
     }
 
     /**
@@ -3798,14 +3782,13 @@ public class UserManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<String> getRoles() throws Exception {
-        List<String> roles = getUserRoles();
-        roles.add(0, ROLE_GUEST);
-        roles.add(0, ROLE_ANONYMOUS);
-        roles.add(0, ROLE_NONE);
-        roles.add(0, ROLE_ANY);
-        roles.add(0, ROLE_USER);
-
+    public List<Role> getStandardRoles() throws Exception {
+        List<Role> roles = getUserRoles();
+        roles.add(0, Role.ROLE_GUEST);
+        roles.add(0, Role.ROLE_ANONYMOUS);
+        roles.add(0, Role.ROLE_NONE);
+        roles.add(0, Role.ROLE_ANY);
+        roles.add(0, Role.ROLE_USER);
         return roles;
     }
 
@@ -3897,10 +3880,8 @@ public class UserManager extends RepositoryManager {
         ResultSet        results;
         HtmlUtils.titleSectionOpen(sb, "User Log");
         if (theUser != null) {
-            sb.append(RepositoryUtil.header(msgLabel("Activity for User")
-                                            + HtmlUtils.space(1)
-                                            + theUser.getLabel()));
-
+	    getWikiManager().makeCallout(sb, request, "<b>" +
+					 "User: " + theUser.getLabel() +"</b>");
 
         }
         sb.append(HtmlUtils.p());
