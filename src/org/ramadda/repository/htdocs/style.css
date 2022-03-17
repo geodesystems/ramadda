@@ -5265,10 +5265,8 @@ a.wiki-link-noexist {
 }
 
 
-
-
 /** Put the clickable and highlightable here so they take precedence */
-.ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
+.ramadda-clickable input:hover, label:hover, .ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
     cursor:pointer;
     color: var(--hover-color) !important;    
 }
