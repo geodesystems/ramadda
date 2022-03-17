@@ -4657,13 +4657,19 @@ public class TypeHandler extends RepositoryManager {
                                          getRepository().getIconUrl(
                                              ICON_WIKI), "title",
                                                  "Wikify text");
+			/*
+			//For some reason the FA icon inside the label gets shifted over
+			//So wrap it in a span with margin spacing
+			//			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:16px;"));
+			*/
                         String cbxLabel = HU.tag("label",
                                               HU.attrs("for", cbxId),
-                                              "&nbsp;" + img);
+						 img);
                         String cbx = HtmlUtils.checkbox(ARG_ISWIKI, "true",
                                          isTextWiki,
                                          HtmlUtils.id(cbxId)) + cbxLabel;
-                        cbx = HU.span(cbx, HtmlUtils.title("Wikify text"));
+                        cbx = HU.span(cbx, HU.cssClass("ramadda-clickable") + HU.title("Wikify text"));
+
 
                         /*
                         HtmlUtils.open(tmpSB, "div",
@@ -4693,7 +4699,7 @@ public class TypeHandler extends RepositoryManager {
                                 + HtmlUtils.squote(cbxId) + ");");
 
                         HtmlUtils.close(tmpSB, "div");
-			String edit = cbx+" " + HU.b("Description:") + "<br>"+tmpSB.toString();
+			String edit = cbx+HU.space(2)+   HU.b("Description:") + "<br>"+tmpSB.toString();
 			sb.append(HU.row(HU.td(edit,"colspan=2")));
 			/*
                         sb.append(formEntryTop(request,
