@@ -412,13 +412,21 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 	    }
             let fail = function(jqxhr, textStatus, error) {
-		console.log("Point data load error:" + textStatus +" " + error);
-                var err = textStatus;
+                let err = textStatus;
 		if(err) {
 		    if(error)
 			err += ": " + error;
 		} else {
 		    err = error;
+		}
+
+		//Check if the response is json
+		if(jqxhr.responseText && jqxhr.responseText.startsWith("{")) {
+		    try {
+			let tmp = JSON.parse(jqxhr.responseText);
+			if(tmp.error) err = tmp.error;
+		    } catch(ignore) {
+		    }
 		}
 		console.log("Point data load error:" + url+" " + (err?err:""));
 		cacheObject.pending.map(display=>{

@@ -6739,7 +6739,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 msg = "<b>An error has occurred:</b>";
                 if (!data) data = this.getNoDataMessage();
-                var error = data.error ? data.error : data;
+                let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
                 var tmp = "";
                 var lines = error.split("\n");
