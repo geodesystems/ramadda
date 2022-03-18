@@ -27,12 +27,16 @@ depth_m.unit=M
      <wiki>
 <![CDATA[
 +section  title="{{name}}"
+:rem Limit the height of the description
 <div style="max-height:200px; overflow-y:auto;">
-{{description}}
+{{description wikify=true}}
 </div>
+:rem Show the entry information, metadata, etc
 {{information details=true}}
 ----
+:rem Show a line chart. The default fields are any that match the patterns
 {{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh,.*press"}}
+-section
 ]]>
 </wiki>
 </type>
