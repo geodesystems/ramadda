@@ -3477,7 +3477,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result getNoRobotsResult(Request request) {
         Result result = new Result("", new StringBuilder("no bots"));
         result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
-
         return result;
     }
 
@@ -3654,8 +3653,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         result = new Result(url);
                     } else {
                         result = new Result("Error", sb);
-                        result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE,
-                                             "Basic realm=\"ramadda\"");
+			result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE, "Basic realm=\"ramadda\"");
                         result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
                     }
 
@@ -3672,6 +3670,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             result = new Result(msg("Error"), sb);
+
             if (badAccess) {
                 result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
                 //                result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE,"Basic realm=\"repository\"");
