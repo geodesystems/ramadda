@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Mar 15 12:39:27 MDT 2022";
+var build_date="RAMADDA build date: Fri Mar 18 11:22:33 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -9776,7 +9776,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 msg = "<b>An error has occurred:</b>";
                 if (!data) data = this.getNoDataMessage();
-                var error = data.error ? data.error : data;
+                let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
                 var tmp = "";
                 var lines = error.split("\n");
@@ -12311,13 +12311,21 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 	    }
             let fail = function(jqxhr, textStatus, error) {
-		console.log("Point data load error:" + textStatus +" " + error);
-                var err = textStatus;
+                let err = textStatus;
 		if(err) {
 		    if(error)
 			err += ": " + error;
 		} else {
 		    err = error;
+		}
+
+		//Check if the response is json
+		if(jqxhr.responseText && jqxhr.responseText.startsWith("{")) {
+		    try {
+			let tmp = JSON.parse(jqxhr.responseText);
+			if(tmp.error) err = tmp.error;
+		    } catch(ignore) {
+		    }
 		}
 		console.log("Point data load error:" + url+" " + (err?err:""));
 		cacheObject.pending.map(display=>{
