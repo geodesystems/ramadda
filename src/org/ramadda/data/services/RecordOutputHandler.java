@@ -22,6 +22,7 @@ import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.job.JobInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TempDir;
 
 import org.w3c.dom.Element;
@@ -31,12 +32,12 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -433,11 +434,16 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         //Check for access to the file
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
-            throw new AccessException("Cannot access data", request);
+            StringBuilder json = new StringBuilder();
+            json.append(
+                JsonUtil.map(
+                    "error", JsonUtil.quote("Unauthorized access to file")));
+            Result result = new Result("", json, JsonUtil.MIMETYPE);
+            result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
+
+            return result;
+            //            throw new AccessException("Cannot access data", request);
         }
-
-
-
 
         return null;
 
@@ -652,7 +658,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         }
         String fileName = getOutputFilename(entry, ext);
         if (jobId == null) {
-	    //	    System.err.println ("POINT: writing directly " + request.getOutputStream().getClass().getName());
+            //      System.err.println ("POINT: writing directly " + request.getOutputStream().getClass().getName());
             return request.getOutputStream();
             //            return new BufferedOutputStream(request.getOutputStream(),
             //                                            10000);
@@ -679,18 +685,30 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @throws Exception On badness
      */
     static boolean buffered = true;
+
+    /**
+     *
+     * @param request _more_
+     * @param jobId _more_
+     * @param entry _more_
+     * @param ext _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public PrintWriter getPrintWriter(Request request, Object jobId,
                                       Entry entry, String ext)
             throws Exception {
-	buffered=!buffered;
-	/*
-	if(buffered) {
-	    System.err.println("Using buffered");
-	    return new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream(request, jobId, entry, ext))));
-	}
-	System.err.println("Using unbuffered");
-	*/
-	return new PrintWriter(getOutputStream(request, jobId, entry, ext));
+        buffered = !buffered;
+
+        /*
+        if(buffered) {
+            System.err.println("Using buffered");
+            return new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream(request, jobId, entry, ext))));
+        }
+        System.err.println("Using unbuffered");
+        */
+        return new PrintWriter(getOutputStream(request, jobId, entry, ext));
     }
 
     /**
@@ -719,8 +737,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      */
     public Result getDummyResult() {
         Result result = new Result();
-	result.setMimeType("dummy");
+        result.setMimeType("dummy");
         result.setNeedToWrite(false);
+
         return result;
     }
 
