@@ -53,12 +53,15 @@ You can run RAMADDA stand-alone from the command line. This requires  Java 1.7 o
 <ol>
 <li> Download the ramaddaserver.zip from the <a href="http://geodesystems.com/repository/alias/release">Geode Systems</a> site.
 <li> Unzip the file and consult the README.
-<li> Or, skip reading the documentation and jump right in and start RAMADDA.  Figure out where you want RAMADDA to store files in its <a href="#home">home directory</a>. The default is <i>&lt;your home dir&gt;/.ramadda</i>. To run RAMADDA there must
-be a home directory already created and it must contain a .properties file with:
-
+<li> The minimal thing you have to do is to determine where you want the RAMADDA
+<a href="#home">home directory</a> to be. 
+The default is <i>&lt;your home dir&gt;/.ramadda</i>. To run RAMADDA there must
+be a home directory already created. When RAMADDA first runs it writes an install.properties file
+in the home directory that contains an install password as below. This needs to be entered in your browser for the final configuration.
 <pre>
 ramadda.install.password=&lt;some password&gt; 
 </pre>
+
 
 Just run the script:
 <pre>
