@@ -4,9 +4,10 @@
 @set mypath=%~dp0
 
 :: This script assumes you have the JAVA_HOME environment variable set to
-:: where you have Java installed. If you don't have this set then either
-:: set it or set the absolute path as below
-:: For now we are hard coding the path to Java here. Change this to point to your Java install
+:: where you have Java installed. If you don't have this set then
+:: then we this defaults to
+:: C:\Program Files\Java\jre1.8.0_321
+
 
 @if "%JAVA_HOME%"=="" (
 @echo No JAVA_HOME environment variable set
@@ -21,9 +22,8 @@
 :: The -port 80 says to start on port 80
 :: Go to http://localhost (or http://127.0.0.1) to finish the installation
 @set ramaddajar=%mypath%lib\ramadda.jar
-@echo Java version:
-"%java%"  -version
 "%java%"  -Xmx2056m  -Dfile.encoding=utf-8  -jar "%ramaddajar%"  -port 80 %*
+
 
 :: To change the home directory add the command line argument:
 :: -Dramadda_home=/some/other/directory 
