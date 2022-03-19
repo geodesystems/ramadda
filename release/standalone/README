@@ -1,11 +1,28 @@
 
 ###################################################################
-Initial setup
+RAMADDA Home Directory
 ###################################################################
+RAMADDA, on both Un*x and Windows, requires a home directory where it creates the DB, saves files, etc
+There is documentation here: https://ramadda.org/repository/userguide/installing.html
+
+You will need to create this directory. By default RAMADDA looks for:
+<user home directory>/.ramadda
+
+You can override the home directory (see below or in ramadda.bat) with the Java command line argument:
+-Dramadda_home=/some/other/directory/ramadda 
+
+When RAMADDA first starts up it writes an install.properties file that contains an install password.
+ramadda.install.password=<some password>
+You will need this password when doing the final RAMADDA configuration
+
+
+###################################################################
+Initial setup on Un*x systems
+###################################################################
+
 Here is the recommended setup to run RAMADDA stand-alone.
 Create a ramadda directory to hold the @RELEASE@ release 
 and copy the ramaddaenv.sh file to the ramadda directory.
-
 
 
 ramadda
@@ -29,6 +46,7 @@ See the Configuration section below for more details but an easy way to
 change these settings is with command line arguments:
 
     sh @RELEASE@/ramadda.sh -port 8081 -Dramadda_home=/some/other/directory/ramadda
+
 
 See the Database section below on how to change the database
 
@@ -62,12 +80,6 @@ The ramadda.sh script runs the stand-alone version of RAMADDA.
 
 The script uses the environment variables:
 RAMADDA_HOME - The directory RAMADDA stores everything in.  Defaults to <user home>/.ramadda
-
-!!!Important!!!
-
-There needs to be a .properties file in the home directory that contains
-ramadda.install.password=<some password>
-
 
 RAMADDA_PORT - The port that RAMADDA runs on. Defaults to 8080
 
