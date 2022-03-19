@@ -297,8 +297,7 @@ public class PluginManager extends RepositoryManager {
                     IOUtil.joinDir(
                         getStorageManager().getPluginsDir(),
                         IOUtil.getFileTail(plugin))).exists()) {
-                getRepository().println("RAMADDA: updating plugin file: "
-                                        + IOUtil.getFileTail(plugin));
+                //getRepository().println("RAMADDA: updating plugin file: " + IOUtil.getFileTail(plugin));
                 copyPlugin(plugin);
             }
         }
