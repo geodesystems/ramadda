@@ -80,6 +80,8 @@ import javax.mail.internet.MimeMessage;
 @SuppressWarnings("unchecked")
 public class Admin extends RepositoryManager {
 
+    private static boolean debugInitialization = false;
+    
     /** _more_ */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
 
@@ -91,7 +93,6 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public static final String ACTION_NEWDB = "action.newdb";
-
     /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
 
@@ -269,6 +270,9 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     private String regId = "";
 
+    /**  */
+    private String installPassword;
+
 
     /**
      * _more_
@@ -277,7 +281,6 @@ public class Admin extends RepositoryManager {
      */
     public Admin(Repository repository) {
         super(repository);
-
     }
 
 
@@ -288,8 +291,7 @@ public class Admin extends RepositoryManager {
      */
     public void doFinalInitialization() throws Exception {
         //create the install password
-        String installPassword = getInstallPassword();
-
+        getInstallPassword();
 
         if (getRepository().getProperty(PROP_ADMIN_INCLUDESQL, false)) {
             adminUrls.add(URL_ADMIN_SQL);
@@ -450,7 +452,10 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private boolean haveDoneInstallStep(String what) throws Exception {
-        return getRepository().getDbProperty(what, false);
+        boolean haveDone =  getRepository().getDbProperty(what, false);
+	if(debugInitialization)
+	    System.err.println("\thaveDone:" + what +" " + haveDone);
+	return haveDone;
     }
 
     /**
@@ -461,6 +466,8 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private void installStep(String what) throws Exception {
+	if(debugInitialization)
+	    System.err.println("\tinstallStep:" + what);
         getRepository().writeGlobal(what, "true");
     }
 
@@ -473,6 +480,8 @@ public class Admin extends RepositoryManager {
      */
     private void undoInstallStep(String... what) throws Exception {
         for (String w : what) {
+	    if(debugInitialization)
+		System.err.println("\tundo:" + w);
             getRepository().writeGlobal(w, "false");
         }
     }
@@ -524,16 +533,14 @@ public class Admin extends RepositoryManager {
         //        return "<div class=\"ramadda-box-yellow\">" + s + "</div>\n";
     }
 
-    /**  */
-    private String installPassword;
 
     /**
       * @return _more_
      *
      * @throws Exception _more_
      */
-    private String getInstallPassword() throws Exception {
-        if ( !Utils.stringDefined(installPassword)) {
+    private synchronized String getInstallPassword() throws Exception {
+        if (!Utils.stringDefined(installPassword)) {
             installPassword =
                 getRepository().getProperty(PROP_INSTALL_PASSWORD,
                                             (String) null);
@@ -541,12 +548,12 @@ public class Admin extends RepositoryManager {
         if ( !Utils.stringDefined(installPassword)) {
             //Generate an install password
             File install = new File(
-                               IOUtil.joinDir(
-                                   getStorageManager().getRepositoryDir(),
-                                   "install.properties"));
-            //      sb.append(ramadda.admin=admin:xxx
+				    IOUtil.joinDir(
+						   getStorageManager().getRepositoryDir(),
+						   "install.properties"));
             if ( !install.exists()) {
-                installPassword = Utils.generatePassword(8);
+                installPassword = Utils.generatePassword(6);
+		System.err.println("RAMADDA: install password:" + installPassword);
                 StringBuilder sb = new StringBuilder();
                 sb.append(
                     "#This is a generated password used in the install process\n");
@@ -572,10 +579,11 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result doInitialization(Request request) throws Exception {
-
+    public synchronized Result doInitialization(Request request) throws Exception {
+	if(debugInitialization)
+	    System.err.println("doInitialization");
         String installPassword = getInstallPassword();
-        if ( !Utils.stringDefined(installPassword)) {
+        if (!Utils.stringDefined(installPassword)) {
             return new Result(
                 "Install Error",
                 new StringBuffer(
@@ -588,7 +596,7 @@ public class Admin extends RepositoryManager {
         }
 
         String givenPassword = request.getString(PROP_INSTALL_PASSWORD,
-                                   "").trim();
+						 "").trim();
         StringBuffer sb    = new StringBuffer();
         String       title = "";
 
@@ -615,11 +623,10 @@ public class Admin extends RepositoryManager {
             }
         }
 
-
         if ( !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN)) {
             title = "Installation";
             String msg =
-                "Thank you for trying RAMADDA. Listed below is the home directory and database information.";
+                "Listed below is the home directory and database information.";
             msg += " Consult the documentation to:<ul style='margin-bottom:0px;'>";
             msg += "<li> Set the <a target=\"_help\" href=\"https://geodesystems.com/repository/userguide/installing.html#home\">home directory</a> ";
             msg += "<li> Specify the <a target=_help href='https://geodesystems.com/repository/userguide/database.html'>database</a> ";
@@ -635,9 +642,8 @@ public class Admin extends RepositoryManager {
                     getStorageManager().getRepositoryDir().toString()));
             getDatabaseManager().addInfo(sb);
             sb.append(
-                HtmlUtils.formEntry(
-                    "",
-                    " Since this configuration is web-based we use the install password to verify your identity."));
+		      HU.colspan(
+				 note("Since this configuration is web-based we use the install password to verify your identity."),2));
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("Install Password"),
