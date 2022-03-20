@@ -3,19 +3,19 @@
 
   <handler class="org.ramadda.geodata.thredds.ThreddsMetadataHandler" category="THREDDS">
 
-    <type name="Project" id="thredds.project"  searchable="true" browsable="true">
+    <type name="THREDDS Project" id="thredds.project"  searchable="true" browsable="true">
       <element name="Value" />
       <template type="thredds"><![CDATA[<project>${Value.cdata}</project>]]></template>
       <template type="dif"><![CDATA[ <Project><Short_Name></Short_Name><Long_Name>${Value.cdata}</Long_Name></Project>]]></template>
     </type>
 
-    <type name="Keyword" id="thredds.keyword"  searchable="true" browsable="true">
+    <type name="THREDDS Keyword" id="thredds.keyword"  searchable="true" browsable="true">
       <element name="Value" />
       <template type="thredds"><![CDATA[<keyword>${Value}</keyword>]]></template>
     </type>
 
 
-    <type name="Link" id="thredds.link">
+    <type name="THREDDS Link" id="thredds.link">
       <element name="Label" />
       <element name="URL" datatype="url"/>
       <template type="html"><![CDATA[<a href="${URL}">${Label}</a>]]></template>
@@ -25,7 +25,7 @@
     </type>
 
 
-    <type name="Creator" id="thredds.creator" searchable="true" browsable="true">
+    <type name="THREDDS Creator" id="thredds.creator" searchable="true" browsable="true">
       <element name="Organization" />
       <element name="" datatype="skip"/>
       <element name="Email" datatype="email"/>
@@ -33,7 +33,7 @@
       <template type="oai_dc"><![CDATA[<dc:creator>${Organization.cdata}</dc:creator>]]></template>
     </type>
 
-    <type name="Publisher" id="thredds.publisher"  searchable="true" browsable="true">
+    <type name="THREDDS Publisher" id="thredds.publisher"  searchable="true" browsable="true">
       <element name="Organization" />
       <element name="" datatype="skip"/>
       <element name="Email" datatype="email"/>
@@ -44,20 +44,20 @@
     </type>
 
 
-    <type name="Contributor" id="thredds.contributor"  searchable="true" browsable="true">
+    <type name="THREDDS Contributor" id="thredds.contributor"  searchable="true" browsable="true">
       <element name="Name" />
       <element name="Role" />
       <template type="thredds"><![CDATA[<contributor role="${Role.encoded}">${Name.cdata}</contributor>]]></template>
       <template type="oai_dc"><![CDATA[<dc:contributor>${Name.cdata}</dc:contributor>]]></template>
     </type>
 
-    <type name="Property" id="thredds.property"  searchable="true" browsable="true">
+    <type name="THREDDS Property" id="thredds.property"  searchable="true" browsable="true">
       <element name="Name"  searchable="true"/>
       <element name="Value"  searchable="true"/>
       <template type="thredds"><![CDATA[<property name="${Name.encoded}" value="${Value.encoded}"/>]]></template>
     </type>
 
-    <type name="Documentation" id="thredds.documentation"  searchable="true">
+    <type name="THREDDS Documentation" id="thredds.documentation"  searchable="true">
       <element
          name="Type"
          datatype="enumeration"
@@ -71,7 +71,7 @@
     </type>
 
 
-    <type name="Data Format" id="thredds.dataFormat">
+    <type name="THREDDS Data Format" id="thredds.dataFormat">
       <element name="Value" />
       <template type="oai_dc"><![CDATA[<dc:format>${Value.cdata}</dc:format>]]></template>
 
@@ -85,13 +85,13 @@
 
     </type>
 
-    <type name="Datatype" id="thredds.dataType">
+    <type name="THREDDS Datatype" id="thredds.dataType">
       <element name="Value" />
       <template type="thredds"><![CDATA[<dataType>${Value.cdata}</dataType>]]></template>
       <template type="oai_dc"><![CDATA[<dc:type>${Value.cdata}</dc:type>]]></template>
     </type>
 
-    <type name="Authority" id="thredds.authority">
+    <type name="THREDDS Authority" id="thredds.authority">
       <element name="Value" />
       <template type="thredds"><![CDATA[<authority>${Value.cdata}</authority>]]></template>
     </type>
@@ -99,7 +99,7 @@
 
     <type
        displaycategory="Variables"
-       name="Variable"
+       name="THREDDS Variable"
        id="thredds.variable" searchable="true"   browsable="true">
       <template type="html"><![CDATA[${Variable} (${Units}) ${Long_Name}]]></template>
       <element name="Variable" />
@@ -125,7 +125,7 @@
 
     <type
        displaycategory="Standard Names"
-       name="Standard name"
+       name="THREDDS Standard name"
        id="thredds.standardname" searchable="true"   browsable="true">
       <element name="Variable" />
       <element name="Long Name" id="longname"/>
@@ -145,7 +145,7 @@
 ]]></template>
     </type>
 
-    <type name="Icon" id="thredds.icon">
+    <type name="THREDDS Icon" id="thredds.icon">
       <element name="URL" datatype="url"/>
       <template type="thredds"><![CDATA[<documentation xlink:href="${URL}" xlink:title="icon"/>]]></template>
 
