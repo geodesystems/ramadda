@@ -5552,9 +5552,9 @@ public class TypeHandler extends RepositoryManager {
         //        minDate = "";
         //        maxDate = "";
 
-
         StringBuilder basicSB    = new StringBuilder(HtmlUtils.formTable());
         StringBuilder advancedSB = new StringBuilder(HtmlUtils.formTable());
+
 
 
         if (showText) {
@@ -5680,13 +5680,11 @@ public class TypeHandler extends RepositoryManager {
                                      bbox.getStringArray(), "", radio);
             basicSB.append(formEntry(request, msgLabel("Area"), mapSelector));
             basicSB.append("\n");
-
             addSearchField(request, ARG_FILESUFFIX, basicSB);
-
         }
 
 
-        basicSB.append(getSearchManager().makeOutputSettings(request));
+
 
         /*
         if (collection != null) {

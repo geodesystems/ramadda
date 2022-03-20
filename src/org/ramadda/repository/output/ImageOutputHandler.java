@@ -166,7 +166,7 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_GALLERY =
         new OutputType("Gallery", "image.gallery",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_IMAGES);
 
     /** _more_ */
@@ -178,7 +178,7 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
         new OutputType("Make Collage", "image.collage",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_IMAGES);
 
     /** _more_ */

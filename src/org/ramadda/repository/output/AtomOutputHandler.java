@@ -64,7 +64,7 @@ public class AtomOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ATOM =
         new OutputType("ATOM Feed", "atom",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_FEEDS, "",
                        ICON_ATOM);
 
 

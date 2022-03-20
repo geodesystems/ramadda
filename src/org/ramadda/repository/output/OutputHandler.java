@@ -104,7 +104,7 @@ public class OutputHandler extends RepositoryManager {
     /** HTML OutputType */
     public static final OutputType OUTPUT_HTML =
         new OutputType("Entry Page", "default.html",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW| OutputType.TYPE_FORSEARCH, "",
                        ICON_HOME);
 
 

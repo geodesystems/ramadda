@@ -107,7 +107,7 @@ public class CalendarOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_DATE_GRID =
         new OutputType("Date Grid", "calendar.grid",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_DATEGRID);
 
     /** _more_ */
@@ -121,7 +121,7 @@ public class CalendarOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_TIMELINE);
 
 
@@ -244,9 +244,16 @@ public class CalendarOutputHandler extends OutputHandler {
 
             return result;
         } else {
-            getPageHandler().entrySectionOpen(request, group, sb, "Calendar");
+	    String prefix = request.getPrefixHtml();
+	    if (prefix != null) {
+		sb.append(prefix);
+	    } else {
+		getPageHandler().entrySectionOpen(request, group, sb, "Calendar");
+	    }
             result = outputCalendar(request, group, entries, sb);
-            getPageHandler().entrySectionClose(request, group, sb);
+	    if (prefix == null) {
+		getPageHandler().entrySectionClose(request, group, sb);
+	    }
         }
 
         addLinks(request, result, new State(group, subGroups, entries));

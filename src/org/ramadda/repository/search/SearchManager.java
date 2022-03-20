@@ -1830,20 +1830,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             request.put(ARG_RELATIVEDATE, oldValue);
         }
 
+        sb.append(getSearchManager().makeOutputSettings(request));
+
+
         typeHandler.addToSearchForm(request, titles, contents, where, true,
                                     false);
 
-        addSearchProviders(request, contents, titles);
         long t1 = System.currentTimeMillis();
         if (includeMetadata()) {
             StringBuilder metadataSB = new StringBuilder();
             metadataSB.append(HtmlUtils.formTable());
             getMetadataManager().addToSearchForm(request, metadataSB);
             metadataSB.append(HtmlUtils.formTableClose());
-            titles.add(msg("Advanced search options"));
+            titles.add(msg("Properties"));
             contents.add(metadataSB.toString());
         }
         long t2 = System.currentTimeMillis();
+        addSearchProviders(request, contents, titles);
         //            System.err.println("metadata form:" + (t2-t1));
 
         /*            StringBuffer outputForm = new StringBuffer(HtmlUtils.formTable());
@@ -1895,7 +1898,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public String makeOutputSettings(Request request) throws Exception {
-        Appendable outputForm  = new StringBuilder();
         List       orderByList = new ArrayList();
         orderByList.add(new TwoFacedObject(msg("None"), "none"));
         orderByList.add(new TwoFacedObject(msg("Relevant"), ORDERBY_RELEVANT));
@@ -1908,19 +1910,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         orderByList.add(new TwoFacedObject(msg("Size"), ORDERBY_SIZE));
 
         String orderBy =
-            HtmlUtils.select(ARG_ORDERBY, orderByList,
-                             request.getString(ARG_ORDERBY,
-					       "none")) + HtmlUtils.checkbox(ARG_ASCENDING,
-									     "true",
-									     request.get(ARG_ASCENDING,
-											 false)) + HtmlUtils.space(1)
+            HU.select(ARG_ORDERBY, orderByList,
+		      request.getString(ARG_ORDERBY,
+					"none")) + HtmlUtils.checkbox(ARG_ASCENDING,
+								      "true",
+								      request.get(ARG_ASCENDING,
+										  false)) + HtmlUtils.space(1)
 	    + msg("ascending");
-        outputForm.append(HtmlUtils.formEntry(msgLabel("Order By"), orderBy));
-        outputForm.append(HtmlUtils.formEntry(msgLabel("Output"),
-					      HtmlUtils.select(ARG_OUTPUT, getOutputHandlerSelectList(),
-							       request.getString(ARG_OUTPUT, ""))));
-
-        return outputForm.toString();
+        return HU.b("Output:") +" " +
+	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
+			     request.getString(ARG_OUTPUT, "")) +
+	    " " + HU.b("Order By:")+ " " +orderBy;
     }
 
 
@@ -2036,7 +2036,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @return _more_
      */
-    public List getOutputHandlerSelectList() {
+    private List getOutputHandlerSelectList() {
         List tfos = new ArrayList<TwoFacedObject>();
         for (OutputHandler outputHandler :
 		 getRepository().getOutputHandlers()) {
@@ -2049,8 +2049,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     if ( !HU.isFontAwesome("fa") && !icon.equals("")) {
                         icon = getRepository().getIconUrl(icon);
                     }
-                    tfos.add(new HtmlUtils.Selector(HtmlUtils.space(2)
-						    + type.getLabel(), type.getId(), icon));
+                    tfos.add(new TwoFacedObject(type.getLabel(), type.getId()));
+                    //tfos.add(new HtmlUtils.Selector(HtmlUtils.space(2)
+		    //+ type.getLabel(), type.getId(), icon));
                 }
             }
         }
@@ -2724,12 +2725,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             theGroup = getEntryManager().getDummyGroup();
         }
 
+
         Result result =
             getRepository().getOutputHandler(request).outputGroup(request,
 								  request.getOutput(), theGroup,
 								  groups, entries);
-
-
         Result r;
         if (theGroup.isDummy()) {
             r = addHeaderToAncillaryPage(request, result);

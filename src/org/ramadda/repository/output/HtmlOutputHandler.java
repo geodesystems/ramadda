@@ -59,14 +59,14 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_TEST =
         new OutputType("test", "html.test",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_DATA);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_DATA);
 
     /** _more_ */
@@ -92,7 +92,7 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =
         new OutputType("Graph", "default.graph",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW, "",
                        ICON_GRAPH);
 
     /** _more_ */
@@ -1453,12 +1453,21 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, group, sb, "Table");
+        String prefix = request.getPrefixHtml();
+        if (prefix != null) {
+            sb.append(prefix);
+        } else {
+	    getPageHandler().entrySectionOpen(request, group, sb, "Table");
+	}
+
+
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         makeTable(request, allEntries, sb, null);
-        getPageHandler().entrySectionClose(request, group, sb);
+        if (prefix == null) {
+	    getPageHandler().entrySectionClose(request, group, sb);
+	}
 
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, subGroups, entries));
