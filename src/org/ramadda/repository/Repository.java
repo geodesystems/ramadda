@@ -368,9 +368,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private TTLObject<Properties> dbProperties;
 
-    /** _more_ */
-    private Properties dbPropertiesDummy = new Properties();
-
+    private Properties dbPropertiesDummy = new Properties();    
 
     /** _more_ */
     private long baseTime = System.currentTimeMillis();
@@ -1402,8 +1400,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             System.out.println("error loading files:" + exc);
             exc.printStackTrace();
         }
-
-
 
         debug    = getProperty(PROP_DEBUG, false);
         readOnly = getProperty(PROP_READ_ONLY, false);
@@ -2800,6 +2796,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public Properties readDatabaseProperties() {
+	//	System.err.println("readDatabaseProperties");
+	//	System.err.println(Utils.getStack(10));
         try {
             Statement statement =
                 getDatabaseManager().select(Tables.GLOBALS.COLUMNS,
@@ -2819,10 +2817,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             getDatabaseManager().closeAndReleaseConnection(statement);
 
             if (dbProperties == null) {
-                dbProperties = new TTLObject<Properties>(5 * 60 * 1000,"Repository DB Properties");
-            }
-            dbProperties.put(tmp);
-
+                dbProperties = new TTLObject<Properties>(tmp, 5 * 60 * 1000,"Repository DB Properties");
+            } else {
+		dbProperties.put(tmp);
+	    }
             return tmp;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -4023,7 +4021,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         apiMethod.incrNumberOfCalls();
 
         if ( !getAdmin().getInstallationComplete()) {
-            return getAdmin().doInitialization(request);
+            return getAdmin().doInstall(request);
         }
 
         if ( !getUserManager().isRequestOk(request)) {
@@ -4963,7 +4961,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuilder sb = new StringBuilder();
         sb.append(getPropertiesListing(getDbProperties(), "Database"));
         sb.append(getPropertiesListing(localProperties, "Local"));
-
         //      sb.append(getPropertiesListing(pluginProperties,"Plugin"));
         //      sb.append(getPropertiesListing(coreProperties,"Core"));
         return sb.toString();
@@ -5118,15 +5115,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Properties getDbProperties() {
-        if (dbProperties == null) {
-            return dbPropertiesDummy;
+        try {
+	    if (dbProperties == null) {
+		//We do this here to keep from an infinite loop at start up
+		//		System.err.println("dbProperties-dummy");
+		return dbPropertiesDummy;
+	    }
+	    Properties props = dbProperties.get();
+	    //If its null that means the dbProperties TTLCache got cleared so we want to read them again
+	    if (props == null) {
+		props = readDatabaseProperties();
+	    }
+	    return props;
+        } catch (Exception exc) {
+            getLogManager().logError("Error reading globals", exc);
+	    return null;
         }
-        Properties props = dbProperties.get();
-        if (props == null) {
-            props = readDatabaseProperties();
-        }
-
-        return props;
     }
 
 
@@ -6422,6 +6426,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processDummy(Request request) throws Exception {
         return new Result(BLANK, new StringBuilder(BLANK));
     }
+
+    public Result processDummyInstall(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+        getPageHandler().sectionOpen(request, sb, "Install", false);
+	sb.append(getPageHandler().showDialogNote("Install is finished"));
+        getPageHandler().sectionClose(request, sb);
+        return new Result("Install", sb);
+    }    
+
 
 
     /**

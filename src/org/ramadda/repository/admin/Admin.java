@@ -257,7 +257,6 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     private Boolean installationComplete;
 
-
     /** _more_ */
     private boolean isRegistered = true;
 
@@ -440,7 +439,6 @@ public class Admin extends RepositoryManager {
     }
 
 
-
     private StringBuilder debugSB = new StringBuilder();
     private void debugInit(String msg) {
 	if(debugInitialization) {
@@ -583,7 +581,7 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public synchronized Result doInitialization(Request request) throws Exception {
+    public synchronized Result doInstall(Request request) throws Exception {
 	debugInit("doInitialization");
         String installPassword = getInstallPassword();
         if (!Utils.stringDefined(installPassword)) {
@@ -611,22 +609,26 @@ public class Admin extends RepositoryManager {
             installStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         }
 
+	boolean firstTime = !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         //Always check the password
-        if (haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN)) {
+        if (!firstTime) {
             if ( !Utils.passwordOK(installPassword, givenPassword)) {
+		debugInit("\nBad password:" + givenPassword);
+		System.err.println("RAMADDA: bad install password");
                 undoInstallStep(ARG_ADMIN_LICENSEREAD,
                                 ARG_ADMIN_INSTALLNOTICESHOWN,
                                 ARG_ADMIN_ADMINCREATED);
                 sb.append(
                     getPageHandler().showDialogError(
                         "Error: Incorrect installation password"));
+		firstTime = true;
             } else {
                 sb.append(HtmlUtils.hidden(PROP_INSTALL_PASSWORD,
                                            givenPassword));
             }
         }
 
-        if ( !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN)) {
+        if ( firstTime) {
             title = "Installation";
             String msg =
                 "Listed below is the home directory and database information.";
@@ -781,10 +783,7 @@ public class Admin extends RepositoryManager {
                     if (didPlugin) {
                         getRepository().loadPluginResources();
                     }
-
-                    //                    System.err.println("Adding init entries");
                     addInitEntries(user);
-                    //                    System.err.println("done Adding init entries");
                     sb.append(getUserManager().makeLoginForm(request));
                     if (errorBuffer.length() > 0) {
                         sb.append(
@@ -800,7 +799,7 @@ public class Admin extends RepositoryManager {
 
                     return new Result("Repository Initialization", html);
                 }
-            }
+	    }
 
             if (errorBuffer.length() > 0) {
                 sb.append(getPageHandler().showDialogError(msg("Error")
@@ -884,7 +883,11 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.br());
             sb.append(HtmlUtils.submit(msg("Initialize Server")));
-        }
+        } else {
+	    //Should never get here
+            title = "Error";
+	    sb.append(getPageHandler().showDialogError("Install is finished"));
+	}
 
 
         StringBuffer finalSB = new StringBuffer();
@@ -892,7 +895,6 @@ public class Admin extends RepositoryManager {
         getPageHandler().sectionOpen(request, finalSB, title, false);
         finalSB.append(sb);
         getPageHandler().sectionClose(request, finalSB);
-        finalSB.append(HtmlUtils.sectionClose());
         finalSB.append(HtmlUtils.formClose());
 
         return new Result(msg(title), finalSB);
