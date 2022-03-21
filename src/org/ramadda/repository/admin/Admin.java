@@ -441,6 +441,13 @@ public class Admin extends RepositoryManager {
 
 
 
+    private StringBuilder debugSB = new StringBuilder();
+    private void debugInit(String msg) {
+	if(debugInitialization) {
+            debugSB.append(msg);
+            debugSB.append("\n");
+	}
+    }
 
     /**
      * _more_
@@ -453,8 +460,7 @@ public class Admin extends RepositoryManager {
      */
     private boolean haveDoneInstallStep(String what) throws Exception {
         boolean haveDone =  getRepository().getDbProperty(what, false);
-	if(debugInitialization)
-	    System.err.println("\thaveDone:" + what +" " + haveDone);
+	debugInit("\thaveDone:" + what +" " + haveDone);
 	return haveDone;
     }
 
@@ -466,8 +472,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private void installStep(String what) throws Exception {
-	if(debugInitialization)
-	    System.err.println("\tinstallStep:" + what);
+	debugInit("\tinstallStep:" + what);
         getRepository().writeGlobal(what, "true");
     }
 
@@ -480,8 +485,7 @@ public class Admin extends RepositoryManager {
      */
     private void undoInstallStep(String... what) throws Exception {
         for (String w : what) {
-	    if(debugInitialization)
-		System.err.println("\tundo:" + w);
+	    debugInit("\tundo:" + w);
             getRepository().writeGlobal(w, "false");
         }
     }
@@ -580,8 +584,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public synchronized Result doInitialization(Request request) throws Exception {
-	if(debugInitialization)
-	    System.err.println("doInitialization");
+	debugInit("doInitialization");
         String installPassword = getInstallPassword();
         if (!Utils.stringDefined(installPassword)) {
             return new Result(
