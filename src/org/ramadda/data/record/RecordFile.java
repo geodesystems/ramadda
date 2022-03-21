@@ -1000,7 +1000,6 @@ public abstract class RecordFile {
 	    boolean haveStartDate = visitInfo.getStartDate()!=null;
 	    long startDate =0L;
 	    if(haveStartDate) {
-		System.err.println("startDate:" + visitInfo.getStartDate());
 		startDate = visitInfo.getStartDate().getTime();
 	    }
 

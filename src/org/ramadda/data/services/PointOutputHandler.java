@@ -649,7 +649,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
                 if (request.defined("startdate")) {
 		    Date dttm = Utils.parseRelativeDate(new Date(), request.getString("startdate",""),0);
-		    System.err.println("setting visitinfo.startDate:" +dttm);
 		    visitInfo.setStartDate(dttm);
                 }
                 if (request.defined("enddate")) {
