@@ -610,7 +610,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = props.get(key);
-	    System.err.println("addProperty:" + key +"=" + value);
             mapInfo.addProperty(key, JsonUtil.quote(value));
         }
 
