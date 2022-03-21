@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Mar 20 11:30:19 MDT 2022";
+var build_date="RAMADDA build date: Mon Mar 21 17:17:13 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4383,6 +4383,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'numberTemplate',ex:'${number}%'},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
 	{label:'Data Requests'},
+	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
+	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
