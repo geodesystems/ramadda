@@ -477,6 +477,16 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
         List<Metadata> metadataList =
             getMetadataManager().getMetadata(parentEntry);
+	//Prune out the aliases
+	if(metadataList!=null) {
+	    List<Metadata> tmp = new ArrayList<Metadata>();
+	    for(Metadata metadata:metadataList) {
+		if(metadata.getId().equals(ContentMetadataHandler.TYPE_ALIAS)) continue;
+		tmp.add(metadata);
+	    }
+	    metadataList = tmp;
+	}
+
 
         File targetFile = getFileFromId(id, localFileInfo.getRootDir());
         //        System.err.println ("\tntarget file:" + targetFile);
