@@ -34,13 +34,13 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
-import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
-import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Bounds;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.grid.IdwGrid;
 import org.ramadda.util.grid.LatLonGrid;
 
@@ -49,8 +49,8 @@ import org.w3c.dom.Element;
 
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -648,12 +648,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
                 }
                 if (request.defined("startdate")) {
-		    Date dttm = Utils.parseRelativeDate(new Date(), request.getString("startdate",""),0);
-		    visitInfo.setStartDate(dttm);
+                    Date dttm = Utils.parseRelativeDate(new Date(),
+                                    request.getString("startdate", ""), 0);
+                    visitInfo.setStartDate(dttm);
                 }
                 if (request.defined("enddate")) {
-                    visitInfo.setEndDate(Utils.parseRelativeDate(new Date(), request.getString("enddate",""),0));
-                }				
+                    visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
+                            request.getString("enddate", ""), 0));
+                }
 
                 getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, visitInfo);
@@ -714,7 +716,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String       code = "error";
                 StringBuffer json = new StringBuffer();
                 json.append(JsonUtil.map("error", JsonUtil.quote(message),
-                                     "errorcode", JsonUtil.quote(code)));
+                                         "errorcode", JsonUtil.quote(code)));
                 Result errorResult = new Result("", json, JsonUtil.MIMETYPE);
 
                 return errorResult;
@@ -975,34 +977,38 @@ public class PointOutputHandler extends RecordOutputHandler {
             max = "5000";
         }
 
-	extra +="&"+ HU.arg(RecordFormHandler.ARG_MAX, max);
-	
-
-	if(props!=null) {
-	    String skip =  (String) props.get("skip");
-	    if (skip != null) {
-		extra += "&" + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
-	    }
-	    String last = (String) props.get("last");
-	    if (last != null) {
-		extra += "&" + HU.arg(RecordFormHandler.ARG_RECORD_LAST,last);
-	    }
-
-	    String startDate =  (String) props.get("request.startdate");
-	    if (startDate != null) {
-		extra += "&" + HU.arg("startdate" ,startDate);
-	    }
-
-	    String endDate =  (String) props.get("request.enddate");
-	    if (endDate != null) {
-		extra += "&" + HU.arg("enddate" ,endDate);
-	    }
-	}
+        extra += "&" + HU.arg(RecordFormHandler.ARG_MAX, max);
 
 
+        if (props != null) {
+            String skip = (String) props.get("skip");
+            if (skip != null) {
+                extra += "&"
+                         + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
+            }
+            String last = (String) props.get("last");
+            if (last != null) {
+                extra += "&"
+                         + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last);
+            }
 
-        String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry)  + extra;
-	return url;
+            String startDate = (String) props.get("request.startdate");
+            if (startDate != null) {
+                extra += "&" + HU.arg("startdate", startDate);
+            }
+
+            String endDate = (String) props.get("request.enddate");
+            if (endDate != null) {
+                extra += "&" + HU.arg("enddate", endDate);
+            }
+        }
+
+
+
+        String url = request.entryUrl(getRepository().URL_ENTRY_DATA, entry)
+                     + extra;
+
+        return url;
     }
 
 
@@ -1197,6 +1203,21 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     }
 
+    /**
+     *
+     * @param id _more_
+      * @return _more_
+     */
+    private String getIdvField(String id) {
+        id = id.trim();
+        id = id.replaceAll("\\.", "_");
+        if (id.matches("^[0-9]+.*")) {
+            id = "var_" + id;
+        }
+
+        return id;
+    }
+
 
     /**
      * _more_
@@ -1249,12 +1270,13 @@ public class PointOutputHandler extends RecordOutputHandler {
                         if (cnt++ > 0) {
                             sb.append(",");
                         }
+                        String id = getIdvField(field.getName());
                         if (field.isTypeDate()) {
                             sb.append("Time");
                         } else if (field.isTypeString()) {
-                            sb.append(field.getName() + "(Text)");
+                            sb.append(id + "(Text)");
                         } else {
-                            sb.append(field.getName());
+                            sb.append(id);
                         }
                     }
                     if ( !haveLat[0]) {
@@ -1266,13 +1288,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                         if (cnt++ > 0) {
                             sb.append(",");
                         }
+                        String id = getIdvField(field.getName());
                         if (field.isTypeDate()) {
                             sb.append(
                                 "Time[fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ]");
                         } else if (field.isTypeString()) {
-                            sb.append(field.getName() + "(Text)");
+                            sb.append(id + "(Text)");
                         } else {
-                            sb.append(field.getName() + "[");
+                            sb.append(id + "[");
                             if (Utils.stringDefined(field.getUnit())) {
                                 sb.append(" unit=\"" + field.getUnit()
                                           + "\" ");
