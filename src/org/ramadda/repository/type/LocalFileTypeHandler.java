@@ -481,7 +481,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	if(metadataList!=null) {
 	    List<Metadata> tmp = new ArrayList<Metadata>();
 	    for(Metadata metadata:metadataList) {
-		if(metadata.getId().equals(ContentMetadataHandler.TYPE_ALIAS)) continue;
+		if(metadata.getType().equals(ContentMetadataHandler.TYPE_ALIAS)) continue;
 		tmp.add(metadata);
 	    }
 	    metadataList = tmp;
