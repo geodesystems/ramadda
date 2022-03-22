@@ -316,7 +316,7 @@ public class MetadataManager extends RepositoryManager {
                 JsonUtil.mapAndQuote(
                     "@type", "DataDownload", "contentUrl",
                     getEntryManager().getEntryResourceUrl(
-                        request, entry, true, false)));
+                        request, entry, EntryManager.ARG_INLINE_DFLT,true, false)));
         }
 
 

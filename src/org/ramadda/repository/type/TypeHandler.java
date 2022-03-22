@@ -3149,8 +3149,7 @@ public class TypeHandler extends RepositoryManager {
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
 
-        return new Link(getEntryManager().getEntryResourceUrl(request,
-                entry), ICON_FETCH, msg(label) + size,
+        return new Link(getEntryManager().getEntryResourceUrl(request, entry), ICON_FETCH, msg(label) + size,
                         OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
     }
 
@@ -3332,7 +3331,7 @@ public class TypeHandler extends RepositoryManager {
                         resourceLink = resourceLink + HtmlUtils.space(2)
                                        + HtmlUtils.href(
                                            getEntryResourceUrl(
-                                               request, entry), HtmlUtils.img(
+							       request, entry,false), HtmlUtils.img(
                                                    getIconUrl(ICON_DOWNLOAD),
                                                        msg("Download"), ""));
 
@@ -3628,8 +3627,13 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getEntryResourceUrl(Request request, Entry entry)
             throws Exception {
-        return getEntryManager().getEntryResourceUrl(request, entry);
+        return getEntryResourceUrl(request,entry, EntryManager.ARG_INLINE_FALSE);
     }
+
+    public String getEntryResourceUrl(Request request, Entry entry, boolean inline)
+            throws Exception {
+        return getEntryManager().getEntryResourceUrl(request, entry, inline,EntryManager.ARG_FULL_DFLT,EntryManager.ARG_ADDPATH_DFLT);
+    }    
 
 
     /**

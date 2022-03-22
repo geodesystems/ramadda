@@ -1916,14 +1916,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    return Utils.makeLabel(remainder);
         } else if (theTag.equals(WIKI_TAG_RESOURCE)) {
             String url = null;
+            boolean inline = getProperty(wikiUtil, props,
+					 "inline", false);
             String label;
             if ( !entry.getResource().isDefined()) {
                 url   = entry.getTypeHandler().getPathForEntry(request,
-                        entry);
+							       entry);
                 label = getProperty(wikiUtil, props, ATTR_TITLE, url);
             } else if (entry.getResource().isFile()) {
-                url = entry.getTypeHandler().getEntryResourceUrl(request,
-                        entry);
+                url = entry.getTypeHandler().getEntryResourceUrl(request, entry,inline);
                 label = getProperty(wikiUtil, props, ATTR_TITLE, "Download");
             } else {
                 url   = entry.getResource().getPath();

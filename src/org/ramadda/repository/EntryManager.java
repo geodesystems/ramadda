@@ -107,6 +107,17 @@ import java.util.zip.ZipInputStream;
 @SuppressWarnings("unchecked")
 public class EntryManager extends RepositoryManager {
 
+    public static  final boolean ARG_INLINE_DFLT = false;
+    public static  final boolean ARG_INLINE_TRUE = true;
+    public static  final boolean ARG_INLINE_FALSE = true;    
+
+    public static  final boolean ARG_FULL_DFLT = false;
+    public static  final boolean ARG_FULL_TRUE = true;
+    public static  final boolean ARG_FULL_FALSEE = false;    
+    public static  final boolean ARG_ADDPATH_DFLT = false;
+    public static  final boolean ARG_ADDPATH_TRUE = true;
+    public static  final boolean ARG_ADDPATH_FALSE = false;    
+
     /** _more_ */
     public static final String[] PRELOAD_CATEGORIES = { "Documents",
 							"General", "Information", "Collaboration", "Database" };
@@ -1075,8 +1086,7 @@ public class EntryManager extends RepositoryManager {
 	    Entry newEntry = addFileEntry(request, tmpFile,
 					  group, name, request.getString("description",""), request.getUser(),
 					  typeHandler, null);
-	    String url = getEntryResourceUrl(request, newEntry,
-					     false,true);
+	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE);
 
 	    sb.append(JsonUtil.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
 				       url));
@@ -3995,6 +4005,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+
         if ( !entry.getResource().isUrl()) {
             if ( !getAccessManager().canDownload(request, entry)) {
                 fatalError(request, "Cannot download file");
@@ -4035,9 +4046,11 @@ public class EntryManager extends RepositoryManager {
                 return result;
             }
 
+	    boolean inline = request.get("fileinline", ARG_INLINE_DFLT);
+	    //	    System.err.println("setReturnFilename:" + inline +" " + request);
             //Get the original filename and set that on the result so the browser sees the file - not just "get"
             String fileName = getStorageManager().getFileTail(entry);
-            request.setReturnFilename(fileName);
+            request.setReturnFilename(fileName, inline);
 
             int response = Result.RESPONSE_OK;
             InputStream inputStream =
@@ -6275,8 +6288,7 @@ public class EntryManager extends RepositoryManager {
 
         } else if (entry.getResource().isFile()) {
             if (getAccessManager().canDownload(request, entry)) {
-                imgUrl = entry.getTypeHandler().getEntryResourceUrl(request,
-								    entry);
+                imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
                 imgText.append(msg("Click to download file"));
             }
         }
@@ -8104,25 +8116,8 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry) {
-        return getEntryResourceUrl(request, entry, false);
+        return getEntryResourceUrl(request, entry, ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_DFLT);
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param full _more_
-     *
-     * @return _more_
-     */
-    public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full) {
-        //false - don't show the entry path
-        return getEntryResourceUrl(request, entry, full, false);
-    }
-
 
 
     /**
@@ -8135,9 +8130,9 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
+    public String getEntryResourceUrl(Request request, Entry entry,boolean inline,
+				      boolean full, boolean addPath) { 
 
-    public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full, boolean addPath) {
         if (entry.getResource().isUrl()) {
             try {
                 return entry.getTypeHandler().getPathForEntry(request, entry);
@@ -8152,14 +8147,17 @@ public class EntryManager extends RepositoryManager {
         if (addPath && fileTail.equals(entry.getName())) {
             fileTail = entry.getFullName(true);
         }
+	String base;
         if (request.getMakeAbsoluteUrls() || full) {
-            return HU.url(getFullEntryGetUrl(request) + "/"
-			  + fileTail, ARG_ENTRYID, entry.getId());
+            base = getFullEntryGetUrl(request) + "/" + fileTail;
         } else {
-            return HU.url(
-			  request.makeUrl(getRepository().URL_ENTRY_GET) + "/"
-			  + fileTail, ARG_ENTRYID, entry.getId());
+	    base = request.makeUrl(getRepository().URL_ENTRY_GET) + "/" + fileTail;
         }
+	if(inline !=ARG_INLINE_DFLT)
+	    base =  HU.url(base, ARG_ENTRYID, entry.getId(),"fileinline",""+inline);
+	else
+	    base =  HU.url(base, ARG_ENTRYID, entry.getId());
+	return base;
     }
 
 

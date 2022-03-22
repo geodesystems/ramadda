@@ -345,8 +345,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 seenFiles.add(destFile);
                 String path =
                     "${ROOT}"
-                    + getEntryManager().getEntryResourceUrl(request, entry,
-                        false);
+                    + getEntryManager().getEntryResourceUrl(request, entry);
 
                 path = HtmlUtils.urlEncodeSpace(path);
                 if ( !overwrite) {

@@ -7,6 +7,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.EntryManager;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
@@ -260,7 +261,8 @@ public class XmlOutputHandler extends OutputHandler {
                                       "" + entry.getResource().getFileSize());
                     String url =
                         getRepository().getEntryManager().getEntryResourceUrl(
-                            request, entry, true);
+									      request, entry, EntryManager.ARG_INLINE_DFLT,true,
+									      EntryManager.ARG_ADDPATH_DFLT);
                     Element serviceNode = XmlUtil.create(TAG_SERVICE, node);
                     XmlUtil.setAttributes(serviceNode,
                                           new String[] { ATTR_TYPE,

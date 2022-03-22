@@ -451,10 +451,17 @@ public class Request implements Constants, Cloneable {
      * @param filename _more_
      */
     public void setReturnFilename(String filename) {
+	setReturnFilename(filename, true);
+    }
+
+    public void setReturnFilename(String filename, boolean inline) {
         filename = filename.replaceAll(" ", "_");
-        //httpServletResponse.setHeader("Content-disposition",  "attachment; filename=" + filename);
-        httpServletResponse.setHeader("Content-disposition",
-                                      "filename=" + filename);
+	//	System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+	if(inline)
+	    httpServletResponse.setHeader("Content-disposition", "filename=" + filename);
+	else
+	    httpServletResponse.setHeader("Content-disposition",  "attachment; filename=" + filename);
+
     }
 
 
@@ -3099,7 +3106,7 @@ public class Request implements Constants, Cloneable {
     public Result getOutputStreamResult(String filename, String mimeType)
 	throws Exception {
         getHttpServletResponse().setContentType(mimeType);
-        setReturnFilename(filename);
+        setReturnFilename(filename,true);
         Result result = new Result(filename, (byte[]) null, mimeType);
         result.setNeedToWrite(false);
 

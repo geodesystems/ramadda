@@ -569,9 +569,17 @@ public class Result {
      * @param filename  the filename
      */
     public void setReturnFilename(String filename) {
+	setReturnFilename(filename, false);
+    }
+
+    public void setReturnFilename(String filename, boolean inline) {	
         filename = filename.replaceAll(" ", "_");
-        //        addHttpHeader("Content-disposition", "attachment; filename=" + filename);
-        addHttpHeader("Content-disposition", "filename=" + filename);
+	//	System.err.println("Result.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+	if(inline)
+	    addHttpHeader("Content-disposition", "filename=" + filename);
+	else
+	    addHttpHeader("Content-disposition", "attachment; filename=" + filename);
+
     }
 
 
