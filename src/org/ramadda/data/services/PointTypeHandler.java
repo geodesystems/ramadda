@@ -230,6 +230,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @param topProps _more_
      *  @return _more_
      */
+    @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
