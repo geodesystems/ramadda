@@ -28,7 +28,7 @@
 -section
 +section
 +center
-<iframe src="{{resource url=true}}" 
+<iframe src="{{resource url=true inline=true}}" 
     type="application/pdf"
     frameBorder="0"
     scrolling="auto"
