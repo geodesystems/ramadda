@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Mar 21 23:02:28 MDT 2022";
+var build_date="RAMADDA build date: Tue Mar 22 11:45:19 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -40668,7 +40668,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		}
 		let span = HU.span([ID,aggId+"_toggle","toggleopen","false", CLASS,"ramadda-clickable"],
 				   HU.span([ID,aggId+"_toggleimage"],HU.getIconImage("fas fa-chevron-right"))+"&nbsp;" + v);
-		return HU.td(Utils.mergeLists(tdAttrs,["nowrap","true"]),span);
+		tdAttrs = Utils.mergeLists(tdAttrs,["nowrap",null]);
+		return HU.td(tdAttrs,span);
 	    });
 
 	    let colAttrs = {
@@ -40724,7 +40725,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    let value = d[f.getIndex()]
 		    let sv =  this.formatFieldValue(f,record,String(value));
 		    if(sv.length>maxLength) {
-			sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
+			if(!record.isAggregate) {
+			    sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
+			}
 		    }
 		    if(f.canEdit()) {
 			let value = v;
