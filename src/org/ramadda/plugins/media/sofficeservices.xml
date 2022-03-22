@@ -1,0 +1,24 @@
+<services command="${service.soffice}" >
+   <service id="media_soffice_thumbnail" label="Make an image from PPT" outputToStderr="true">
+<process_description><![CDATA[<wiki>
+{{description}}
+{{gallery}}
+----
+{{tree}}
+]]></process_description>
+<description><![CDATA[
+Runs soffice (libreoffice) to make an image from a PPT
+]]></description>
+<arg value="--headless"/>
+<arg value="--invisible"/>
+<arg value="--convert-to"/>
+<arg value="png"/>
+<arg value="--outdir"/>
+<arg value="${outputdir}"/>
+<arg value="${entry.file}" type="entry" entryType="type_document_ppt" primary="true" copy="true" label="Input PPT File"></arg>
+<output type="file" pattern=".*\.png"/>
+</service>
+
+
+
+</services>

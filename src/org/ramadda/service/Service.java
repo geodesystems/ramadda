@@ -64,6 +64,8 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class Service extends RepositoryManager {
 
+    private static final String MACRO_OUTPUTDIR = "${outputdir}";
+
     /** _more_ */
     public static boolean debug = false;
 
@@ -1117,7 +1119,7 @@ public class Service extends RepositoryManager {
                         File newFile =
                             new File(
                                 IOUtil.joinDir(
-                                    input.getProcessDir(),
+					       input.getProcessDir(),
                                     getStorageManager().getFileTail(
                                         currentEntry)));
                         if ( !newFile.exists()) {
@@ -1238,13 +1240,12 @@ public class Service extends RepositoryManager {
 
                         //                            System.err.println("dest file after:" + destFile);
                         value = arg.getValue().replace("${value}", value);
-
                         value = value.replace("${file}", destFile.getName());
                         value = value.replace("${file.base}",
                                 IOUtil.stripExtension(destFile.getName()));
                         value = value.replace("${value}", originalValue);
                         //                            System.err.println("new value:" + value);
-                    }
+		    }
                     value = applyMacros(currentEntry, entryMap, valueMap,
                                         workDir, value,
                                         input.getForDisplay(), arg.getMap());
@@ -1253,8 +1254,9 @@ public class Service extends RepositoryManager {
                     if ( !arg.getInclude()) {
                         continue;
                     }
+		    value = value.replace(MACRO_OUTPUTDIR,input.getProcessDir().toString());
                     commands.add(value);
-                }
+		}
             }
 
             if (argCnt != 0) {
@@ -2372,7 +2374,6 @@ public class Service extends RepositoryManager {
 
         Entry currentEntry = (Entry) Utils.safeGet(entries, 0);
 
-//        System.err.println("Command:" + commands);
 
         if (input.getForDisplay()) {
             commands.set(0, IOUtil.getFileTail(commands.get(0)));
@@ -2395,6 +2396,7 @@ public class Service extends RepositoryManager {
             commandMethod.invoke(commandObject, new Object[] { request, this,
                     input, commands });
         } else {
+	    //	    System.err.println("commands:" + commands);
             JobManager.CommandResults results =
                 getRepository().getJobManager().executeCommand(commands,
                     null, input.getProcessDir(), -1,
@@ -2476,7 +2478,6 @@ public class Service extends RepositoryManager {
                                       input.getProcessDir(),
                                       output.getFilename(),
                                       input.getForDisplay(), output.getMap());
-                System.err.println("destfile:" + filename);
                 File destFile =
                     new File(IOUtil.joinDir(input.getProcessDir(), filename));
                 IOUtil.moveFile(stdoutFile, destFile);

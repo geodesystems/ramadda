@@ -47,6 +47,7 @@
 </type>
 
   <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"    priority="10" >
+     <service link="media_soffice_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/ppt.png"/>
      <property name="file.accept" value=".ppt,.pptx"/>
 </type>

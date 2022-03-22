@@ -88,7 +88,7 @@ public class ServiceArg extends ServiceElement {
     private static final String TYPE_FLAG = "flag";
 
     /** _more_ */
-    private static final String TYPE_FILE = "file";
+    private static final String TYPE_FILE = "file";    
 
     /** _more_ */
     private static final String TYPE_CATEGORY = "category";
