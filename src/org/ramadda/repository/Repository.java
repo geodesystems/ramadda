@@ -4463,9 +4463,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String       childPath = null;
                 List<String> toks      = Utils.splitUpTo(alias, "/", 2);
                 if (toks.size() > 0) {
-                    Entry entry =
-                        getEntryManager().getEntryFromAlias(request,
-                            toks.get(0));
+		    List<Entry> entries =  getEntryManager().getEntriesFromAlias(request,
+										 toks.get(0));
+		    if(entries.size()>1) {
+			StringBuilder sb = new StringBuilder();
+			getPageHandler().sectionOpen(request, sb, "Entries", false);
+			sb.append(getPageHandler().showDialogNote("Multiple entries have the alias: " + toks.get(0)));
+			sb.append("<ul>");
+			for (Entry entry : entries) {
+			    sb.append("<li> ");
+			    sb.append(getPageHandler().getBreadCrumbs(request,entry));
+			    sb.append(HU.br());
+			}
+			sb.append("</ul>");
+			getPageHandler().sectionClose(request, sb);
+			return new Result("", sb);
+		    }
+                    Entry entry =(entries.size()>0?entries.get(0):null);
+
                     if ((toks.size() == 2) && (entry != null)) {
                         entry = getEntryManager().findEntryFromName(request,
                                 entry.getFullName() + Entry.PATHDELIMITER
