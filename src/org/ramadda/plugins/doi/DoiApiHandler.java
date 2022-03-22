@@ -73,16 +73,17 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
             return new Result("", sb);
         }
 
-        Entry entry = getEntryManager().getEntryFromMetadata(request,
+        List<Entry> entries = getEntryManager().getEntriesFromMetadata(request,
                           DoiMetadataHandler.TYPE_DOI,
                           request.getString(ARG_DOI, ""), 2);
-        if (entry == null) {
+        if (entries.size() == 0) {
             sb.append("Could not find DOI:" + request.getString(ARG_DOI, ""));
             sb.append(HtmlUtils.p());
             makeForm(request, sb);
 
             return new Result("", sb);
         }
+	Entry entry = entries.get(0);
         request.put(ARG_ENTRYID, entry.getId());
 
         return getEntryManager().processEntryShow(request);
