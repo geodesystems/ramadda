@@ -2430,6 +2430,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    if(Utils.stringDefined(error)) throw new RuntimeException("Error getting remote URL:" + error);
 		    jsonUrl = obj.optString("url");		    
 		} else {
+		    //Do this here since the startdate might be in a property tag
+		    String startDate = getProperty(wikiUtil, props, "request.startdate", (String) null);
+		    if(startDate!=null) props.put("request.startdate", startDate);
+		    String endDate = getProperty(wikiUtil, props, "request.enddate", (String) null);
+		    if(endDate!=null) props.put("request.enddate", endDate);		    
+                    jsonUrl += "&addSnippets=true";
 		    jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
 								   entry, theTag, props, displayProps);
 		}
