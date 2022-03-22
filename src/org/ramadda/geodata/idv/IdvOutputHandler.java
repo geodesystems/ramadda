@@ -10,6 +10,7 @@ import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.geodata.cdmdata.CdmManager;
 import org.ramadda.geodata.cdmdata.GridAggregationTypeHandler;
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.EntryManager;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryUtil;
@@ -541,7 +542,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         isl.append("<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
         isl.append("<bundle file=\""
                    + getEntryManager().getEntryResourceUrl(request, entry,
-                       true) + "\"");
+							   EntryManager.ARG_INLINE_DFLT,true,
+							   EntryManager.ARG_ADDPATH_DFLT) + "\"");
         isl.append(" clear=\"true\"");
         if ( !isMovie) {
             String timeIdx = request.getString(ARG_TIME_STEP, "1");

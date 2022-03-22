@@ -7,6 +7,7 @@ package org.ramadda.geodata.idv;
 
 
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.EntryManager;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -175,7 +176,7 @@ public class IdvBundlesOutputHandler extends OutputHandler {
             String name = entry.getName();
             String url = request.getAbsoluteUrl(
                              getEntryManager().getEntryResourceUrl(
-                                 request, entry, false, false));
+								   request, entry, EntryManager.ARG_INLINE_DFLT, false, false));
             XmlUtil.create(TAG_BUNDLE, root, new String[] {
                 ATTR_CATEGORY, category, ATTR_NAME, name, ATTR_URL, url
             });
