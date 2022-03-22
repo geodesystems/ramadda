@@ -381,8 +381,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         map.addKmlUrl(entry.getName(),
-                      getEntryManager().getEntryResourceUrl(request, entry,
-                          false), true, null);
+                      getEntryManager().getEntryResourceUrl(request, entry), true, null);
 
         return false;
     }
