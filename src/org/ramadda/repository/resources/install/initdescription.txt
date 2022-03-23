@@ -8,9 +8,13 @@ Documentation here: http://geodesystems.com/repository/userguide/wikitext.html
 +row
 +col-md-4
 +box
-Thanks for trying RAMADDA. If you have any problems or suggestions please send a note to <a href="mailto:support@geodesystems.com">support@geodesystems.com</a>
+Thanks for trying RAMADDA.
+:br
+Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>Google Groups mailing list</a>. If you have any problems or suggestions please send a note to <a href="mailto:support@geodesystems.com">support@geodesystems.com</a>
 <br>
 Jeff McWhirter
+:br
+Geode Systems
 -box
 -col
 +col-md-8
