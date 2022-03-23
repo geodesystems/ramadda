@@ -1208,13 +1208,21 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param id _more_
       * @return _more_
      */
-    private String getIdvField(String id) {
+    private String getIdvField(String id,HashSet seen) {
         id = id.trim();
         id = id.replaceAll("\\.", "_");
         if (id.matches("^[0-9]+.*")) {
             id = "var_" + id;
         }
 
+	int cnt = 1;
+	String tmp = id;
+	while(seen.contains(tmp)) {
+	    tmp = id+(cnt++);
+	}
+	id = tmp;
+	seen.add(id);
+//	System.err.println("ID:" + id);
         return id;
     }
 
@@ -1255,13 +1263,13 @@ public class PointOutputHandler extends RecordOutputHandler {
                 new CsvVisitor.HeaderPrinter() {
                 public void call(CsvVisitor visitor, PrintWriter pw,
                                  List<RecordField> fields) {
+		    HashSet seen = new HashSet();
                     StringBuilder sb  = new StringBuilder("(index) -> (");
                     int           cnt = 0;
                     for (RecordField field : fields) {
                         if (field.getName().toLowerCase().equals(
                                 "latitude")) {
                             haveLat[0] = true;
-
                             break;
                         }
                     }
@@ -1270,7 +1278,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                         if (cnt++ > 0) {
                             sb.append(",");
                         }
-                        String id = getIdvField(field.getName());
+                        String id = getIdvField(field.getName(),seen);
                         if (field.isTypeDate()) {
                             sb.append("Time");
                         } else if (field.isTypeString()) {
@@ -1284,11 +1292,12 @@ public class PointOutputHandler extends RecordOutputHandler {
                     }
                     sb.append(")\n");
                     cnt = 0;
+		    seen = new HashSet();
                     for (RecordField field : fields) {
                         if (cnt++ > 0) {
                             sb.append(",");
                         }
-                        String id = getIdvField(field.getName());
+                        String id = getIdvField(field.getName(),seen);
                         if (field.isTypeDate()) {
                             sb.append(
                                 "Time[fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ]");
