@@ -448,6 +448,11 @@ public class Admin extends RepositoryManager {
     }
 
     /**
+       we have this here in memory as the using the db to store this is randomly giving bad results
+     */
+    private Hashtable installState = new Hashtable();
+
+    /**
      * _more_
      *
      * @param what _more_
@@ -457,6 +462,8 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private boolean haveDoneInstallStep(String what) throws Exception {
+	Object tmp = installState.get(what);
+	if(Misc.equals(tmp,"true")) return true;
         boolean haveDone =  getRepository().getDbProperty(what, false);
 	debugInit("\thaveDone:" + what +" " + haveDone);
 	return haveDone;
@@ -472,6 +479,7 @@ public class Admin extends RepositoryManager {
     private void installStep(String what) throws Exception {
 	debugInit("\tinstallStep:" + what);
         getRepository().writeGlobal(what, "true");
+	installState.put(what,"true");
     }
 
     /**
@@ -484,6 +492,7 @@ public class Admin extends RepositoryManager {
     private void undoInstallStep(String... what) throws Exception {
         for (String w : what) {
 	    debugInit("\tundo:" + w);
+	    installState.put(what,"false");
             getRepository().writeGlobal(w, "false");
         }
     }
@@ -572,6 +581,13 @@ public class Admin extends RepositoryManager {
 
 
 
+    private String makePluginID(String plugin) {
+	plugin =  "plugin." +Utils.makeID(plugin);
+	plugin = plugin.replace("org_ramadda_repository_resources_plugins_","").replace("_jar","");
+	return plugin;
+    }
+
+
     /**
      * _more_
      *
@@ -609,22 +625,21 @@ public class Admin extends RepositoryManager {
             installStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         }
 
+
 	boolean firstTime = !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         //Always check the password
         if (!firstTime) {
-            if ( !Utils.passwordOK(installPassword, givenPassword)) {
+            if (!Utils.passwordOK(installPassword, givenPassword)) {
 		debugInit("\nBad password:" + givenPassword);
-		System.err.println("RAMADDA: bad install password");
+		System.err.println("RAMADDA: bad install password:" + givenPassword +" installPassword:" + installPassword);
+		System.err.println("RAMADDA: request:" + request);
                 undoInstallStep(ARG_ADMIN_LICENSEREAD,
                                 ARG_ADMIN_INSTALLNOTICESHOWN,
                                 ARG_ADMIN_ADMINCREATED);
-                sb.append(
-                    getPageHandler().showDialogError(
-                        "Error: Incorrect installation password"));
+                sb.append(getPageHandler().showDialogError("Error: Incorrect installation password"));
 		firstTime = true;
             } else {
-                sb.append(HtmlUtils.hidden(PROP_INSTALL_PASSWORD,
-                                           givenPassword));
+                sb.append(HtmlUtils.hidden(PROP_INSTALL_PASSWORD, givenPassword));
             }
         }
 
@@ -774,7 +789,7 @@ public class Admin extends RepositoryManager {
 
                     boolean didPlugin = false;
                     for (String plugin : PluginManager.PLUGINS) {
-                        if (request.get("plugin." + plugin, false)) {
+			if (request.get(makePluginID(plugin), false)) {
                             didPlugin = true;
                             getRepository().getPluginManager().installPlugin(
                                 plugin);
@@ -872,13 +887,16 @@ public class Admin extends RepositoryManager {
                     "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
+            sb.append(HtmlUtils.hidden("hascbx","true"));
+	    boolean hascbx = request.get("hascbx",false);
             for (String plugin : PluginManager.PLUGINS) {
                 String pluginName =
                     IOUtil.stripExtension(IOUtil.getFileTail(plugin));
+		String cbxName  = makePluginID(plugin);
                 boolean dflt = !pluginName.equals("bioplugins");
+                boolean value = request.get(cbxName, hascbx?false:dflt);
                 sb.append(HtmlUtils.formEntry("",
-                        HtmlUtils.checkbox("plugin." + plugin, "true", dflt)
-                        + " " + "Install plugin: " + pluginName));
+					      HtmlUtils.labeledCheckbox(cbxName, "true", value,"Install plugin: " + pluginName)));
             }
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.br());
