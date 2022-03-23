@@ -58,7 +58,7 @@ public class Eia {
 
 
     /** _more_ */
-    public static final String URL_BASE = "http://api.eia.gov";
+    public static final String URL_BASE = "https://api.eia.gov";
 
 
     /** _more_ */

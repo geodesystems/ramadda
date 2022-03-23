@@ -42,7 +42,7 @@ public class EiaSearchProvider extends SearchProvider {
     private static final String ID = "eia";
 
     /** _more_ */
-    private static final String BASE_URL = "http://api.eia.gov/search/";
+    private static final String BASE_URL = "https://api.eia.gov/search/";
 
 
     /** _more_ */
@@ -75,7 +75,7 @@ public class EiaSearchProvider extends SearchProvider {
      */
     @Override
     public String getSiteUrl() {
-        return "http://www.eia.gov/beta/api/";
+        return "https://www.eia.gov/beta/api/";
     }
 
     /**
@@ -148,7 +148,7 @@ public class EiaSearchProvider extends SearchProvider {
             Date   dttm      = new Date();
             Date   fromDate  = dttm,
                    toDate    = dttm;
-            String entryUrl  = "http://www.eia.gov/beta/api/qb.cfm?sdid="
+            String entryUrl  = "https://www.eia.gov/beta/api/qb.cfm?sdid="
                                + id;
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
                                        + ":" + id, typeHandler);
