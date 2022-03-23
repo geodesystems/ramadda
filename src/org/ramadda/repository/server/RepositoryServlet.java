@@ -301,7 +301,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
 		//Some headers to tighten up security
 		response.setHeader("Referrer-Policy","no-referrer");
-		response.setHeader("X-Frame-Options", "SAMEORIGIN");
+		//don't do this as it blocks some valid embeds
+		//response.setHeader("X-Frame-Options", "SAMEORIGIN");
+		//
 		response.setHeader("X-Content-Type-Options", "nosniff");		
 
 
