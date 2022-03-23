@@ -1208,7 +1208,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param id _more_
       * @return _more_
      */
-    private String getIdvField(String id,HashSet seen) {
+    private String getIdvField(String id,HashSet<String> seen) {
         id = id.trim();
         id = id.replaceAll("\\.", "_");
         if (id.matches("^[0-9]+.*")) {
@@ -1263,7 +1263,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 new CsvVisitor.HeaderPrinter() {
                 public void call(CsvVisitor visitor, PrintWriter pw,
                                  List<RecordField> fields) {
-		    HashSet seen = new HashSet();
+		    HashSet<String> seen = new HashSet<String>();
                     StringBuilder sb  = new StringBuilder("(index) -> (");
                     int           cnt = 0;
                     for (RecordField field : fields) {
@@ -1292,7 +1292,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                     }
                     sb.append(")\n");
                     cnt = 0;
-		    seen = new HashSet();
+		    seen = new HashSet<String>();
                     for (RecordField field : fields) {
                         if (cnt++ > 0) {
                             sb.append(",");
