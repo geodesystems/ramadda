@@ -929,7 +929,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(HtmlUtils.comment("collection form"));
-        sb.append(HtmlUtils.importJS(getFileUrl("/model/compare.js")));
+        sb.append(HtmlUtils.importJS(getHtdocsUrl("/model/compare.js")));
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/model/model.css"));
 
