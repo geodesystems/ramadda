@@ -123,6 +123,19 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public void applyAdminSettings(Request request) throws Exception {}
 
+
+    public static boolean getArg(Hashtable args, String arg, boolean dflt) {
+	return Utils.getProperty(args,arg,dflt);
+    }
+
+    public static String getArg(Hashtable args, String arg, String dflt) {
+	return Utils.getProperty(args,arg,dflt);
+    }        
+
+    public static Hashtable makeArgs(Object...args) {
+	return Utils.makeMap(args);
+    }
+
     /**
      * _more_
      *
