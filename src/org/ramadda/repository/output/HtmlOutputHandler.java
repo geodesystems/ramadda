@@ -879,6 +879,7 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.href(sb, url, msg("More..."));
             sb.append(HU.br());
         }
+
         boolean showDetails = request.get(ARG_DETAILS, true);
         boolean showIcon    = request.get("showIcon", true);
 
@@ -1069,7 +1070,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 for (FavoriteEntry favorite : favoritesList) {
                     Entry favEntry = favorite.getEntry();
                     String link = getSelectLink(request, favEntry, seen,
-                                      target);
+						target);
                     if (link.length() == 0) {
                         continue;
                     }
@@ -2074,8 +2075,8 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             if (allEntries.size() > 0) {
-                getEntriesList(request, sb, allEntries, true,
-                               group.isDummy(), true);
+                getEntriesList(request, sb, allEntries,
+			       makeArgs(ARG_DOFORM,true, ARG_SHOWCRUMBS, group.isDummy(),ARG_SHOWDETAILS,true));
             }
 
             if ( !group.isDummy() && (subGroups.size() == 0)

@@ -94,7 +94,7 @@ import java.util.function.*;
  * Provides wiki text processing services
  */
 @SuppressWarnings("unchecked")
-public class WikiManager extends RepositoryManager implements WikiConstants,
+public class WikiManager extends RepositoryManager implements  OutputConstants,WikiConstants,
 							      WikiPageHandler, SystemContext {
 
 
@@ -123,7 +123,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
-                            new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true",ATTR_SHOWICON,"true"),
+                            new WikiTag(WIKI_TAG_TABLETREE, null, ATTR_DETAILS, "true",ATTR_SHOWICON,"true"),
                             new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
                             new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null),
@@ -3621,7 +3621,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_CHILDREN_GROUPS)
                    || theTag.equals(WIKI_TAG_CHILDREN_ENTRIES)
                    || theTag.equals(WIKI_TAG_CHILDREN)
-                   || theTag.equals(WIKI_TAG_TREE)) {
+                   || theTag.equals(WIKI_TAG_TREE)
+		   || theTag.equals(WIKI_TAG_TABLETREE)) {
 
             if (theTag.equals(WIKI_TAG_CHILDREN_GROUPS)) {
                 props.put(ATTR_FOLDERS, "true");
@@ -3632,7 +3633,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
             if (children.size() == 0) {
-                //              return makeCard(request, wikiUtil, props, entry);
                 return getMessage(wikiUtil, props, "No entries available");
             }
             String treePrefix = getProperty(wikiUtil, props, "treePrefix",
@@ -3642,16 +3642,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //      }
 
             boolean showCategories = getProperty(wikiUtil, props,
-                                         ARG_SHOWCATEGORIES, false);
+						 ARG_SHOWCATEGORIES, false);
             if (showCategories) {
                 request.put(ARG_SHOWCATEGORIES, "true");
             }
-            boolean decorate = getProperty(wikiUtil, props, ATTR_DECORATE,
-                                           true);
-            boolean showDetails = getProperty(wikiUtil, props, ATTR_DETAILS,
-                                      true);
+            boolean decorate = getProperty(wikiUtil, props, ATTR_DECORATE, true);
+            boolean showDetails = getProperty(wikiUtil, props, ATTR_DETAILS,true);
             boolean showIcon = getShowIcon(wikiUtil, props, true);
-
             Request newRequest = request.cloneMe();
 
             if ( !showDetails) {
@@ -3672,14 +3669,146 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 newRequest.put(ARG_MAX, max + "");
             }
 	    
+	    Hashtable args = makeArgs(ARG_DOFORM,true,
+				      ARG_SHOWCRUMBS, false,
+				      ARG_SHOWDETAILS,showDetails,
+				      ARG_SHOWICON, showIcon,
+				      ARG_NAMETEMPLATE, getProperty(wikiUtil, props,"nameTemplate",(String)null),
+				      ARG_SHOWDATE, props.get(ARG_SHOWDATE),
+				      ARG_SHOWCREATEDATE, props.get(ARG_SHOWCREATEDATE));
+
+
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
-                              sb, children, true, false, showDetails,
-								showIcon,getProperty(wikiUtil, props,"nameTemplate",(String)null),props);
+								sb, children,
+								args);
             if (getProperty(wikiUtil, props, "form", false)) {
                 return treePrefix + link + HU.br() + sb.toString();
             } else {
                 return treePrefix + sb.toString();
             }
+        } else if (theTag.equals("testit")) {
+            if (theTag.equals(WIKI_TAG_CHILDREN_GROUPS)) {
+                props.put(ATTR_FOLDERS, "true");
+            } else if (theTag.equals(WIKI_TAG_CHILDREN_ENTRIES)) {
+                props.put(ATTR_FILES, "true");
+            }
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
+            if (children.size() == 0) {
+                return getMessage(wikiUtil, props, "No entries available");
+            }
+	    String guid = Utils.getGuid().replaceAll("-","_");
+	    StringBuilder js = new StringBuilder();
+	    String var = "entries_" + guid;
+	    js.append("let " + var +"=");
+	    request.put("includedescription","false");
+	    getRepository().getJsonOutputHandler().makeJson(request, children, js);
+	    js.append(";\n");
+            HU.div(sb,"",HU.id(var));
+
+
+	    ArrayList<HtmlUtils.Selector> tfos =
+		new ArrayList<HtmlUtils.Selector>();
+	    List<Link> links = getRepository().getOutputLinks(
+							      request,
+							      new OutputHandler.State(
+									getEntryManager().getDummyGroup(
+													"action"), children));
+	    for (Link link : links) {
+		OutputType outputType = link.getOutputType();
+		if (outputType == null) {
+		    continue;
+		}
+		if(!outputType.getIsAction()) {
+		    if (!(outputType.getIsFile() || outputType.getIsEdit())) {
+			continue;
+		    }
+		}
+		String icon = link.getIcon();
+		if (icon == null) {
+		    icon = getRepository().getIconUrl(ICON_BLANK);
+		}
+		HtmlUtils.Selector selector = new HtmlUtils.Selector(outputType.getLabel(), outputType.getId(), icon, 20);
+		//A bit of a hack
+		if(selector.getId().equals("repository.copymovelink")) {
+		    tfos.add(0,selector);
+		} else {
+		    tfos.add(selector);
+		}
+	    }
+
+
+	    List<String> argProps = new ArrayList<String>();
+	    List<String> actions = new ArrayList<String>();
+	    for(HtmlUtils.Selector selector: tfos) {
+		actions.add(JsonUtil.mapAndQuote("id",selector.getId(),"label",selector.getLabel()));
+	    }
+
+	    for(String prop: new String[]{"simple","showHeader","showDate","showCreateDate","showSize",
+					  "showType","showIcon","showThumbnail","showArrow","showForm"}) {
+		String v =getProperty(wikiUtil, props, prop, (String)null);
+		if(v!=null) {
+		    argProps.add(prop);
+		    argProps.add(JsonUtil.quote(v));
+		}
+	    }
+	    
+
+
+	    argProps.add("actions");
+	    argProps.add(JsonUtil.list(actions));
+	    String propArg = JsonUtil.map(argProps);
+	    js.append("\nRamadda.initEntryTable('" + var+"'," + propArg+"," + var+");\n");
+            sb.append(HU.script(js.toString()));
+            String treePrefix = "";
+            //      if(treePrefix.length()>0) {
+            //              treePrefix = makeWikiUtil(request, false).wikify(sb, treePrefix, null);
+            //      }
+	    if(true) return sb.toString();
+
+
+            boolean decorate = getProperty(wikiUtil, props, ATTR_DECORATE, true);
+            boolean showDetails = getProperty(wikiUtil, props, ATTR_DETAILS,true);
+            boolean showIcon = getShowIcon(wikiUtil, props, true);
+            Request newRequest = request.cloneMe();
+
+            if ( !showDetails) {
+                newRequest.put(ARG_DETAILS, "false");
+            }
+            if ( !decorate) {
+                newRequest.put(ARG_DECORATE, "false");
+            }
+
+            if (children.size() > 0) {
+                checkHeading(request, wikiUtil, props, sb);
+            }
+            int max = request.get(ARG_MAX,
+                                  getProperty(wikiUtil, props, ATTR_MAX, -1));
+            if ( !getProperty(wikiUtil, props, ARG_SHOWNEXT, true)) {
+                newRequest.put(ARG_SHOWNEXT, "false");
+            } else if (max > 0) {
+                newRequest.put(ARG_MAX, max + "");
+            }
+	    
+	    Hashtable args = makeArgs(ARG_DOFORM,true,
+				      ARG_SHOWCRUMBS, false,
+				      ARG_SHOWDETAILS,showDetails,
+				      ARG_SHOWICON, showIcon,
+				      ARG_NAMETEMPLATE, getProperty(wikiUtil, props,"nameTemplate",(String)null),
+				      ARG_SHOWDATE, props.get(ARG_SHOWDATE),
+				      ARG_SHOWCREATEDATE, props.get(ARG_SHOWCREATEDATE));
+
+
+            String link = getHtmlOutputHandler().getEntriesList(newRequest,
+								sb, children,
+								args);
+            if (getProperty(wikiUtil, props, "form", false)) {
+                return treePrefix + link + HU.br() + sb.toString();
+            } else {
+                return treePrefix + sb.toString();
+            }
+
+
 
         } else if (theTag.equals(WIKI_TAG_TREEVIEW)
                    || theTag.equals(WIKI_TAG_FRAMES)) {
@@ -7067,8 +7196,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        entry);
             if (children.size() > 0) {
                 String link = getHtmlOutputHandler().getEntriesList(request,
-                //                                  sb, children, true, false, true);
-                sb, children, false, false, false);
+								    sb, children,
+								    makeArgs(ARG_DOFORM,false, ARG_SHOWCRUMBS, false,ARG_SHOWDETAILS,false));
                 content = content + sb;
             }
         }

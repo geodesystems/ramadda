@@ -194,7 +194,8 @@ public class JsonOutputHandler extends OutputHandler {
         request.setReturnFilename(IOUtil.stripExtension(entry.getName())
                                   + ".json");
         List<Entry> allEntries = new ArrayList<Entry>();
-        allEntries.add(entry);
+	if(!request.get("children",false)) 
+	    allEntries.add(entry);
         if (request.get("ancestors", false)) {
             Entry parent = entry.getParentEntry();
             while (parent != null) {
@@ -290,15 +291,7 @@ public class JsonOutputHandler extends OutputHandler {
                 }
             }
         }
-
-
-
-
-
         entries = EntryUtil.sortEntriesOnDate(entries, false);
-
-
-
         List<String> fields = new ArrayList<String>();
         boolean      remote = request.get("remoteRequest", false);
 
@@ -522,7 +515,8 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
-        JsonUtil.quoteAttr(items, "description", entry.getDescription());
+	if(request.get("includedescription",true))
+	    JsonUtil.quoteAttr(items, "description", entry.getDescription());
         TypeHandler type = entry.getTypeHandler();
 
         /**
@@ -549,6 +543,9 @@ public class JsonOutputHandler extends OutputHandler {
             items, "icon",
             request.getAbsoluteUrl(
                 getPageHandler().getIconUrl(request, entry)));
+        JsonUtil.quoteAttr(
+            items, "iconRelative",
+	    getPageHandler().getIconUrl(request, entry));	
 
         JsonUtil.quoteAttr(items, "parent", entry.getParentEntryId());
         if (entry.getIsRemoteEntry()) {
@@ -570,6 +567,14 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
         JsonUtil.quoteAttr(items, "createDate",
                        formatDate(entry.getCreateDate()));
+        JsonUtil.quoteAttr(items, "startDateLabel",
+			   getDateHandler().formatDateShort(request, entry, entry.getStartDate()));
+        JsonUtil.quoteAttr(items, "endDateLabel",
+			   getDateHandler().formatDateShort(request, entry, entry.getEndDate()));	
+        JsonUtil.quoteAttr(items, "createDateLabel",
+			   getDateHandler().formatDateShort(request, entry, entry.getCreateDate()));
+
+
 
         if (entry.getUser() != null) {
             JsonUtil.quoteAttr(items, "creator", entry.getUser().getId());
@@ -639,6 +644,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (resource != null) {
             if (resource.isUrl()) {
                 String temp = resource.getPath();
+                JsonUtil.quoteAttr(items, "isurl","true");
                 if (temp == null) {
                     JsonUtil.quoteAttr(items, "filename", "");
                 } else {
@@ -647,9 +653,11 @@ public class JsonOutputHandler extends OutputHandler {
                 }
 
                 JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
+                JsonUtil.attr(items, "fileSizeLabel", "" + formatFileLength(resource.getFileSize()));		
                 JsonUtil.quoteAttr(items, "md5", "");
                 //TODO MATIAS            } else if(resource.isFileNoCheck()) {
             } else if (resource.isFile()) {
+                JsonUtil.quoteAttr(items, "isfile","true");
                 JsonUtil.quoteAttr(items, "filename",
                                getStorageManager().getFileTail(entry));
                 JsonUtil.attr(items, "filesize", "" + resource.getFileSize());

@@ -388,6 +388,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_TREE = "tree";
 
+    public static final String WIKI_TAG_TABLETREE = "tabletree";
+
     /** _more_ */
     public static final String WIKI_TAG_FULLTREE = "fulltree";
 

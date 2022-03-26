@@ -77,7 +77,7 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 @SuppressWarnings("unchecked")
-public class OutputHandler extends RepositoryManager {
+public class OutputHandler extends RepositoryManager  implements OutputConstants {
 
     /** _more_ */
     public static final String PROP_PROCESSDIR = "processdir";
@@ -1384,7 +1384,6 @@ public class OutputHandler extends RepositoryManager {
 		tfos.add(1,selector);
 	    } else {
 		tfos.add(selector);
-
 	    }
         }
 
@@ -1515,43 +1514,25 @@ public class OutputHandler extends RepositoryManager {
         return HU.formClose();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entries _more_
-     * @param doForm _more_
-     * @param showCrumbs _more_
-     * @param showDetails _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntriesList(Request request, Appendable sb,
-                                 List entries, boolean doForm,
-                                 boolean showCrumbs, boolean showDetails) 
-            throws Exception {
-	return getEntriesList(request, sb, entries, doForm, showCrumbs, showDetails, false, null);
-    }
+                                 List entries, 
+				 Hashtable args)
+            throws Exception {			
+	boolean doForm = getArg(args,ARG_DOFORM,true);
+	boolean showCrumbs = getArg(args,ARG_SHOWCRUMBS,true);
+	boolean showDetails = getArg(args,ARG_SHOWDETAILS,true);
+	boolean showIcon = getArg(args,ARG_SHOWICON,true);
+	String nameTemplate = getArg(args,ARG_NAMETEMPLATE,null);
 
+        boolean isMobile       = request.isMobile();
+        boolean showDate       = getArg(args,ARG_SHOWDATE,true);
+        boolean showCreateDate = getArg(args, ARG_SHOWCREATEDATE, getPageHandler().showEntryTableCreateDate());
 
+        if (isMobile) {
+            showCreateDate = false;
+            showDate       = false;
+        }
 
-    public String getEntriesList(Request request, Appendable sb,
-                                 List entries, boolean doForm,
-                                 boolean showCrumbs, boolean showDetails, boolean showIcon, String nameTemplate) 
-            throws Exception {
-	return getEntriesList(request, sb, entries, doForm, showCrumbs, showDetails, false, null,null);
-    }
-
-
-    public String getEntriesList(Request request, Appendable sb,
-                                 List entries, boolean doForm,
-                                 boolean showCrumbs, boolean showDetails, boolean showIcon, String nameTemplate, Hashtable props) 
-            throws Exception {		
 
 	if(nameTemplate!=null)
 	    request.put("nameTemplate",nameTemplate);
@@ -1571,18 +1552,6 @@ public class OutputHandler extends RepositoryManager {
                          ? "entry-list"
                          : "entry-tree");
         HU.open(sb, HU.TAG_DIV, "class", prefix + "-block");
-        boolean isMobile       = request.isMobile();
-        boolean showDate       = true;
-        boolean showCreateDate = getPageHandler().showEntryTableCreateDate();
-	if(props!=null) {
-	    showDate = Utils.getProperty(props,"showDate",showDate);
-	    showCreateDate = Utils.getProperty(props,"showCreateDate",showCreateDate);
-	}
-
-        if (isMobile) {
-            showCreateDate = false;
-            showDate       = false;
-        }
 
 	if(request.get(ARG_SHOWNEXT,true)) {
 	    showNext(request, entries.size(), sb, entries.size()==0?"No entries available":null);
@@ -1637,7 +1606,9 @@ public class OutputHandler extends RepositoryManager {
 	    };
 
 	    makeHeader.accept(ORDERBY_NAME,"Name",null);
-	    makeHeader.accept(ORDERBY_FROMDATE,"Date",WIDTH_DATE);
+            if (showDate) {
+		makeHeader.accept(ORDERBY_FROMDATE,"Date",WIDTH_DATE);
+	    }
             if (showCreateDate) {
 		makeHeader.accept(ORDERBY_CREATEDATE,"Created",WIDTH_DATE);
 	    }
@@ -1725,7 +1696,7 @@ public class OutputHandler extends RepositoryManager {
 
             decorateEntryRow(request, entry, buffer, entryLink, rowId,
                              cbxSB.toString(), showDetails);
-        }
+	}
 
         long t3 = System.currentTimeMillis();
 
@@ -1829,7 +1800,7 @@ public class OutputHandler extends RepositoryManager {
 
         if (showCreateDate) {
             String dttm = getDateHandler().formatDateShort(request, entry,
-                              entry.getCreateDate());
+							   entry.getCreateDate());
             HU.open(sb, HU.TAG_TD, HU.ATTR_WIDTH,
                            WIDTH_DATE, HU.ATTR_ALIGN, "right");
             HU.div(sb, dttm,
@@ -1843,7 +1814,7 @@ public class OutputHandler extends RepositoryManager {
                            CSS_CLASS_ENTRY_ROW_LABEL);
             if (entry.getResource().isFile()) {
                 sb.append(
-                    formatFileLength(entry.getResource().getFileSize()));
+			  formatFileLength(entry.getResource().getFileSize()));
             } else {
                 sb.append("---");
             }
