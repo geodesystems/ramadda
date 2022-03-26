@@ -1510,7 +1510,9 @@ public class Utils extends IO {
     public static Hashtable makeMap(Object... args) {
         Hashtable map = new Hashtable();
         for (int i = 0; i < args.length; i += 2) {
-            map.put(args[i], args[i + 1]);
+	    if(args[i+1]!=null)
+		map.put(args[i], args[i + 1]);
+
         }
 
         return map;
@@ -2115,15 +2117,15 @@ public class Utils extends IO {
      */
     public static String getProperty(Hashtable props, String key,
                                      String dflt) {
-        String s = (String) props.get(key);
-        if (s == null) {
-            s = (String) props.get(key.toLowerCase());
+        Object o = props.get(key);
+        if (o == null) {
+            o = (String) props.get(key.toLowerCase());
         }
-        if (s == null) {
+        if (o == null) {
             return dflt;
         }
 
-        return s;
+        return o.toString();
     }
 
 
