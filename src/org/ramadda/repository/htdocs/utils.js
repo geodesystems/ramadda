@@ -3589,15 +3589,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if (HtmlUtils.lastCbxClicked) {
                 let pos1 = GuiUtils.getTop(cbx);
                 let pos2 = GuiUtils.getTop(HtmlUtils.lastCbxClicked);
-
                 let lastCbx = $("#" + HtmlUtils.lastCbxIdClicked);
                 let thisCbx = $("#" + id);
 
                 if (lastCbx.position()) {
-                    pos2 = lastCbx.position().top;
+                    pos2 = lastCbx.offset().top;
                 }
                 if (thisCbx.position()) {
-                    pos1 = thisCbx.position().top;
+                    pos1 = thisCbx.offset().top;
                 }
 
                 if (pos1 > pos2) {
@@ -3606,7 +3605,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     pos2 = tmp;
                 }
                 for (i = 0; i < checkBoxes.length; i++) {
-                    let top = $("#" + checkBoxes[i].id).position().top;
+                    let top = $("#" + checkBoxes[i].id).offset().top;
                     if (top >= pos1 && top <= pos2) {
                         checkBoxes[i].checked = value;
                     }
@@ -3894,12 +3893,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     sqt: function(value) {
         return "\'" + value + "\'";
     },
-    getUniqueId: function() {
+    getUniqueId: function(prefix) {
         if (!window["uniqueCnt"]) {
             window["uniqueCnt"] = new Date().getTime();
         }
         var cnt = window["uniqueCnt"]++;
-        return "id_" + cnt;
+        return (prefix||"id_") + cnt;
     },
     inset: function(html, top, left, bottom, right) {
         var attrs = [];
@@ -4669,6 +4668,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     attrSelect: function(name, value) {
         if(!Utils.isDefined(value)) return "[" + name +"]";
         return "[" + name +"='" + value+ "']";
+    },
+    space:function(cnt) {
+	let s = "";
+	for(let i=0;i<cnt;i++) s+="&nbsp;";
+	return s;
     },
     attr: function(name, value) {
         if(value==null)

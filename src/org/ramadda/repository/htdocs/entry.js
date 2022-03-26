@@ -696,6 +696,7 @@ function Entry(props) {
 
     this.domId = Utils.cleanId(this.id);
 
+    this.createDate = Utils.parseDate(props.createDate);
     this.startDate = Utils.parseDate(props.startDate);
     this.endDate = Utils.parseDate(props.endDate);
     if (this.endDate && this.startDate) {
@@ -736,7 +737,7 @@ function Entry(props) {
             return this.getName();
         },
         getCreateDate: function() {
-            return this.startCreate;
+            return this.createCreate;
         },
         getStartDate: function() {
             return this.startDate;
@@ -747,6 +748,15 @@ function Entry(props) {
         getIsGroup: function() {
             return this.isGroup;
         },
+        getProperty: function(what) {
+	    if(what=="name") return this.getName();
+	    if(what=="fromdate") return HU.span(['class','ramadda-datetime','title',this.startDate],this.startDateLabel);
+	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateLabel);
+	    if(what=="size") return this.getFilesize()?this.getFormattedFilesize():"---";
+	    if(what=="type") return this.typeName;
+	    return "Unknown:" + what;
+	},
+
         getRoot: async function(callback, extraArgs) {
             let parent = this;
             while (true) {
@@ -955,6 +965,7 @@ function Entry(props) {
             }
             return labels;
         },
+
         getName: function() {
             if (this.name == null || this.name == "") {
                 return "no name";
@@ -1007,6 +1018,12 @@ function Entry(props) {
 	    }
 	    return null;
 	},
+        getIsUrl: function() {
+	    return this.isurl;
+	},
+        getIsFile: function() {
+	    return this.isfile;
+	},	
         hasResource: function() {
             return this.getFilename() != null;
         },
