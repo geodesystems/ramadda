@@ -176,7 +176,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(props.showIcon)
 			v = entry.getIconImage()+SPACE +v;
 		    v = entry.getLink(v);
-
 		    let tds = [];
 		    //[cbx,space,arrow,icon,thumbnail,v]
 		    let cbxId = Utils.getUniqueId('entry_');

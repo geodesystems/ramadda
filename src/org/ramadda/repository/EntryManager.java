@@ -6221,7 +6221,7 @@ public class EntryManager extends RepositoryManager {
 
 
             prefix = HU.jsLink("",HU.span(getIconImage("fas fa-caret-right"),
-					  HU.attrs("class", "entry-arrow","title",message,"id","img_"+uid) +
+					  HU.attrs("style","margin-right:4px;","class", "entry-arrow","title",message,"id","img_"+uid) +
 					  imgClick));
         }
 

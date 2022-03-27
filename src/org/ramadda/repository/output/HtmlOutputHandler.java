@@ -464,7 +464,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMapInfo(request, entry);
         }
         if (outputType.equals(OUTPUT_INLINE)) {
-	    if(true) throw new IllegalArgumentException("output inline called");
+	    //	    if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
             String inline = typeHandler.getInlineHtml(request, entry);
             if (inline != null) {
@@ -1957,7 +1957,7 @@ public class HtmlOutputHandler extends OutputHandler {
             getRepository().getTypeHandler(group.getType());
 
         if (outputType.equals(OUTPUT_INLINE)) {
-	    if(true) throw new IllegalArgumentException("output inline called");
+	    //	    if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
             return getChildrenXml(request, group, subGroups, entries);
         }

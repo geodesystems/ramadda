@@ -1459,45 +1459,13 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                                  Appendable htmlSB, Appendable jsSB,
                                  boolean showDetails, boolean showIcon)
             throws Exception {
-        String rowId        = HU.getUniqueId("entryrow_");
-        String cbxId        = HU.getUniqueId("entry_");
-        String cbxArgId     = ARG_SELENTRY;
-        String cbxArgValue  = entry.getId();
-        String cbxWrapperId = HU.getUniqueId("cbx_");
-	String args = JsonUtil.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
-        jsSB.append("new EntryRow(");
-        HU.squote(jsSB, entry.getId());
-        jsSB.append(",");
-        HU.squote(jsSB, rowId);
-        jsSB.append(",");
-        HU.squote(jsSB, cbxId);
-        jsSB.append(",");
-        HU.squote(jsSB, cbxWrapperId);
-        jsSB.append(",");
-        jsSB.append(Boolean.toString(showDetails));
-        jsSB.append(",");
-	jsSB.append(args);
-        jsSB.append(");\n");
-
-
-        StringBuilder attrSB = new StringBuilder();
-        HU.id(attrSB, cbxId);
-        HU.clazz(attrSB, "ramadda-entry-select");
-        HU.attr(
-            attrSB, HU.ATTR_TITLE,
-            "Shift-click: select range; Control-click: toggle all");
-        //Spool this out to save concats
-        attrSB.append(HU.ATTR_ONCLICK);
-        attrSB.append("=\"");
-        attrSB.append("EntryTree.entryRowCheckboxClicked(");
-        attrSB.append("event, ");
-        HU.squote(attrSB, cbxId);
-        attrSB.append(");\"  ");
-        String cbx = HU.checkbox(cbxArgId, cbxArgValue, false,
-                                        attrSB.toString());
-        decorateEntryRow(request, entry, htmlSB,
-                         getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry, request.getString("nameTemplate",null)),null, true, null, true, showIcon), rowId, cbx,
-			 showDetails);
+	String label = (showIcon
+                            ? HU.img(
+				     getPageHandler().getIconUrl(
+								 request, entry)) + " "
+			: "") + getEntryManager().getEntryDisplayName(entry);
+	String link =  HU.href(getEntryManager().getEntryURL(request, entry), label);
+	htmlSB.append(link+"<br>");
 
     }
 
@@ -1513,139 +1481,6 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
     public String getEntryFormEnd(Request request, String formId) {
         return HU.formClose();
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param link _more_
-     * @param rowId _more_
-     * @param extra _more_
-     * @param showDetails _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void decorateEntryRow(Request request, Entry entry,
-                                    Appendable sb, EntryLink link,
-                                    String rowId, String extra,
-                                    boolean showDetails)
-            throws Exception {
-
-        if (rowId == null) {
-            rowId = HU.getUniqueId("entryrow_");
-        }
-
-
-        sb.append("<div id=\"");
-        sb.append(rowId);
-        sb.append("\"  class=\"");
-        sb.append(showDetails
-                  ? CSS_CLASS_ENTRY_LIST_ROW
-                  : CSS_CLASS_ENTRY_TREE_ROW);
-        sb.append("\" ");
-        sb.append(HU.ATTR_ONCLICK);
-        sb.append("=\"Ramadda.entryRowClick(event, '");
-        sb.append(rowId);
-        sb.append("');\" ");
-        sb.append(HU.ATTR_ONMOUSEOVER);
-        sb.append("=\"Ramadda.entryRowOver('");
-        sb.append(rowId);
-        sb.append("'); \" ");
-        sb.append(HU.ATTR_ONMOUSEOUT);
-        sb.append("=\"Ramadda.entryRowOut('");
-        sb.append(rowId);
-        sb.append("'); \"  >");
-        sb.append(
-            "<table class=\"entry-row-table\" border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td>");
-        sb.append(extra);
-        sb.append(link.getLink());
-        sb.append("</td>");
-
-        boolean showDate       = !request.get(ARG_TREEVIEW, false);
-        boolean showCreateDate = getPageHandler().showEntryTableCreateDate();
-        if (request.isMobile()) {
-            showDate       = false;
-            showCreateDate = false;
-        }
-
-        if ( !showDetails) {
-            showDate       = false;
-            showCreateDate = false;
-        }
-
-        boolean isMobile = request.isMobile();
-
-        if (showDate) {
-            String dttm = getDateHandler().formatDateShort(request, entry,
-                              entry.getStartDate());
-            HU.open(sb, HU.TAG_TD, HU.ATTR_WIDTH,
-                           WIDTH_DATE, HU.ATTR_ALIGN, "right");
-            HU.div(sb, dttm,
-                          HU.cssClass(CSS_CLASS_ENTRY_ROW_LABEL));
-            HU.close(sb, HU.TAG_TD);
-        }
-
-        if (showCreateDate) {
-            String dttm = getDateHandler().formatDateShort(request, entry,
-							   entry.getCreateDate());
-            HU.open(sb, HU.TAG_TD, HU.ATTR_WIDTH,
-                           WIDTH_DATE, HU.ATTR_ALIGN, "right");
-            HU.div(sb, dttm,
-                          HU.cssClass(CSS_CLASS_ENTRY_ROW_LABEL));
-            HU.close(sb, HU.TAG_TD);
-        }
-
-        if ( !isMobile && showDetails) {
-            HU.open(sb, HU.TAG_TD, "width", WIDTH_SIZE,
-                           "align", "right", "class",
-                           CSS_CLASS_ENTRY_ROW_LABEL);
-            if (entry.getResource().isFile()) {
-                sb.append(
-			  formatFileLength(entry.getResource().getFileSize()));
-            } else {
-                sb.append("---");
-            }
-            HU.close(sb, HU.TAG_TD);
-        }
-
-        if ( !isMobile && showDetails) {
-            HU.open(sb, HU.TAG_TD, "width", WIDTH_KIND,
-                           "align", "right", "class",
-                           CSS_CLASS_ENTRY_ROW_LABEL);
-            HU.div(
-                sb, entry.getTypeHandler().getFileTypeDescription(
-                    request, entry), HU.attrs(
-                    "style", "padding-right:4px; max-width:190px; overflow-x: hidden;"));
-            HU.close(sb, HU.TAG_TD);
-        }
-
-
-	/*
-        if (showDetails) {
-            HU.open(sb, HU.TAG_TD, "width", "1%", "align",
-                           "right", "class", CSS_CLASS_ENTRY_ROW_LABEL);
-            sb.append(HU.space(1));
-            HU.div(sb,
-                          getRepository().getIconImage(ICON_BLANK, "width",
-                              "10", "id",
-                              "entrymenuarrow_"
-                              + rowId), HU.clazz("entrymenuarrow"));
-            HU.close(sb, HU.TAG_TD);
-        }
-
-	*/
-        HU.close(sb, HU.TAG_TR);
-        HU.close(sb, HU.TAG_TABLE);
-        HU.close(sb, HU.TAG_DIV);
-        sb.append(link.getFolderBlock());
-    }
-
-
-
-
 
     /**
      * _more_
