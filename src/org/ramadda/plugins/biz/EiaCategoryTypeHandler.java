@@ -317,7 +317,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
 
         String desc = "";
         entry = new Entry(id, this);
-        String eiaUrl = "http://www.eia.gov/beta/api/qb.cfm?category="
+        String eiaUrl = "https://www.eia.gov/beta/api/qb.cfm?category="
                         + categoryId;
         Resource resource = new Resource(new URL(eiaUrl));
         Object[] values   = this.makeEntryValues(null);

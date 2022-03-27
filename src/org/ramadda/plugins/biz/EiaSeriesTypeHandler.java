@@ -110,7 +110,7 @@ public class EiaSeriesTypeHandler extends PointTypeHandler {
         entry.setResource(
             new Resource(
                 new URL(
-                    "http://www.eia.gov/beta/api/qb.cfm?sdid=" + seriesId)));
+                    "https://www.eia.gov/beta/api/qb.cfm?sdid=" + seriesId)));
 
         //Don't do this for now since it takes too long with lots of series
 

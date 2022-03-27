@@ -80,7 +80,7 @@ public class FredSearchProvider extends SearchProvider {
      */
     @Override
     public String getSiteUrl() {
-        return "http://api.stlouisfed.org/docs/fred/";
+        return "https://api.stlouisfed.org/docs/fred/";
     }
 
     /**
