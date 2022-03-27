@@ -2244,7 +2244,8 @@ table.dataTable tbody td {
 
 .entry-list-row {
     margin-top:0px;
-    padding: 2px;
+    padding: 4px;
+    padding-left: 0px;
     padding-right: 0px;
     border-bottom:1px #f0f0f0 solid;
     border-top:1px transparent solid;    
@@ -2414,7 +2415,6 @@ td.entry-table-block {
 }
 
 .entry-arrow {
-    padding-right: 4px;
     padding-left: 0px;    
     margin-bottom:0px;
 }

@@ -464,6 +464,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMapInfo(request, entry);
         }
         if (outputType.equals(OUTPUT_INLINE)) {
+	    if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
             String inline = typeHandler.getInlineHtml(request, entry);
             if (inline != null) {
@@ -897,7 +898,6 @@ public class HtmlOutputHandler extends OutputHandler {
                                  showIcon);
             }
         }
-
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
@@ -1957,8 +1957,8 @@ public class HtmlOutputHandler extends OutputHandler {
             getRepository().getTypeHandler(group.getType());
 
         if (outputType.equals(OUTPUT_INLINE)) {
+	    if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
-
             return getChildrenXml(request, group, subGroups, entries);
         }
 
@@ -2003,14 +2003,6 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_TABLE)) {
             return outputTable(request, group, subGroups, entries);
         }
-
-
-
-        //        Result typeResult = typeHandler.getHtmlDisplay(request, group, subGroups, entries);
-        //        if (typeResult != null) {
-        //            return typeResult;
-        //        }
-
 
         boolean doSimpleListing = !request.exists(ARG_OUTPUT);
 
@@ -2075,8 +2067,9 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             if (allEntries.size() > 0) {
-                getEntriesList(request, sb, allEntries,
-			       makeArgs(ARG_DOFORM,true, ARG_SHOWCRUMBS, group.isDummy(),ARG_SHOWDETAILS,true));
+		Hashtable props = new Hashtable();
+		props.put(ARG_SHOWCRUMBS, ""+group.isDummy());
+		sb.append(getWikiManager().makeTableTree(request, null,props,allEntries));
             }
 
             if ( !group.isDummy() && (subGroups.size() == 0)

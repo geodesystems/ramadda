@@ -351,7 +351,7 @@ class  WikiEditor {
 	    } else  if(what=="Editable map") {
 		text = " {{editable_map entry=" + entryId+" }}";
 	    } else  if(what=="Tree") {
-		text = " {{tree entry=" + entryId+" }}";
+		text = " {{tabletree entry=" + entryId+" }}";
 	    } else  if(what=="ID") {
 		text = entryId;
 	    } else  if(what=="entry=ID") {
@@ -1086,17 +1086,25 @@ class  WikiEditor {
 	];
 
 	this.wikiAttributesFromServer = null;
-	this.wikiAttributes = {
-	    tree: 
-	    Utils.mergeLists([
-		{label:'Tree'},
-		{p:'details',ex:'true'},
-		{p:'showcategories',ex:'true'},
-		{p:'decorate',ex:'true'},	
-		{p:'form',ex:'true'},
+	let treeAttrs = Utils.mergeLists([
+		{label:'Table Tree'},
+		{p:"simple",ex:true},
+		{p:"showHeader",ex:false},
+		{p:"showDate",ex:false},
+		{p:"showCreateDate",ex:false},
+		{p:"showSize",ex:false},
+		{p:"showType",ex:false},
+		{p:"showIcon",ex:false},
+		{p:"showThumbnail",ex:false},
+		{p:"showArrow",ex:false},
+		{p:"showForm",ex:false},
+	        {p:"showCrumbs",ex:true},
 		{p:'message',ex:''},
 		{p:'treePrefix',ex:''},	
-	    ],this.groupAttributes),		   
+	],this.groupAttributes);
+	this.wikiAttributes = {
+	    tree: treeAttrs,
+	    tabletree: treeAttrs,
 	    links: Utils.mergeLists([
 		{label:'Links Properties'},
 		{p:'info',ex:'List children entries'},

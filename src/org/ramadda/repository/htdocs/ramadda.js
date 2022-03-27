@@ -13,18 +13,23 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
     initEntryTable:function(id,opts,json) {
 	let entryMap = {};
+	if(Utils.isDefined(opts.details) && opts.details==false) {
+	    opts.simple = true;
+	}
 	let simple =opts.simple;
+	let dflt = !simple;
 	let props =  {
 	    actions:[],
-	    showHeader:!simple,
-	    showDate:!simple,
-	    showCreateDate:!simple,	    
-	    showSize:!simple,
-	    showType:!simple,
-	    showIcon:!simple,
-	    showThumbnail:!simple,	    
-	    showArrow:!simple,	    
-	    showForm:!simple,	    
+	    showCrumbs:false,
+	    showHeader:dflt,
+	    showDate:dflt,
+	    showCreateDate:dflt,	    
+	    showSize:dflt,
+	    showType:dflt,
+	    showIcon:dflt,
+	    showThumbnail:dflt,	    
+	    showArrow:dflt,	    
+	    showForm:dflt,	    
 	}
 	$.extend(props,opts);
 	let entries = json.map((j,idx)=>{
@@ -57,7 +62,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(Utils.isDefined(col.width)) {
 		    attrs = Utils.mergeLists(attrs,["width",col.width]);
 		}
+		attrs = Utils.mergeLists(attrs,["orderby",col.id]);
 		let v = col.label;
+		if(col.id==props.orderby) {
+		    if(Utils.isDefined(props.ascending)) {
+			if(props.ascending)
+			    v = HU.getIconImage('fas fa-arrow-up') + SPACE+v;
+			else
+			    v = HU.getIconImage('fas fa-arrow-down') +SPACE+v;
+		    }
+		}
 		html+=HU.td(attrs,v);
 	    });
 	    html+="</table>";
@@ -80,6 +94,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    form+=SPACE1;
 	    form+='<input name="getselected" type="submit" value="Selected" class="submit ui-button ui-corner-all ui-widget" id="getselected1338" role="button">';
 	    form+='<input name="getall" type="submit" value="All" class="submit ui-button ui-corner-all ui-widget" id="getall1337" role="button">';
+	    form+=SPACE1+HU.span(['target-type','repository.delete','title','Shift-drag-and-drop entries to delete','class','ramadda-entry-target ramadda-clickable ramadda-hoverable',], HU.getIconImage('fas fa-trash'));
 	    html+=HU.div(['class',classPrefix +'-row','id',id+'_form','style','display:none;width:100%'],form);
 	}
 
@@ -87,8 +102,36 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+="</div>";
 	html+="</form>";
 	html+="</div>";
-	$("#"+id).html(html);
+	let main = $("#"+id);
+	main.html(html);
+
+	main.find('.entry-list-header-column').click(function() {
+	    let orderby = $(this).attr('orderby');
+	    let url;
+	    if(props.orderby == orderby) {
+		//my orderby
+		if(Utils.isDefined(props.ascending)) {
+		    //if we have an ascending
+		    if(props.ascending) 
+			url = HU.addToDocumentUrl('ascending',false);
+		    else {
+			url = HU.addToDocumentUrl('ascending',null);
+			url = HU.addToDocumentUrl('orderby',null);
+		    }
+		} else {
+		    //add ascending
+		    url = HU.addToDocumentUrl('orderby',orderby);
+		    url = HU.addToDocumentUrl('ascending',true);
+		}
+	    } else {
+		url = HU.addToDocumentUrl('ascending',true);	    		    
+		url = HU.addToDocumentUrl('orderby',orderby);
+	    }
+            window.location = url;
+	});
+
 	HU.initSelect($("#"+id+"_form_action"));
+	Ramadda.initDragAndDropEntries(main.find('.ramadda-entry-target'),entryMap);
 
 	let formOpen = false;
 	$('#'+ id+'_form_cbx').click(function() {
@@ -122,22 +165,26 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let rowId = Utils.getUniqueId("row_");
 	    let row =  HU.open('div',['entryid',entry.getId(),'id',rowId,'class',classPrefix +'-row']);
 	    let innerId = Utils.getUniqueId();
-	    row+= "<table cellspacing=0 cellpadding=0 border=0 width=100% class='entry-row-table'><tr valign=top>";
-//	    row+=HU.td(["width","20","valign","center","align","center"],"");	    
+	    row+= HU.open('table',['cellspacing','0','cellpadding','border','width','100%','class',
+				   'entry-row-table','entryid',entry.getId()]);
+	    row+='<tr valign=top>';
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
 		let attrs = [];
 		let v = entry.getProperty(col.id);
 		if(col.id=="name") {
+		    if(props.showIcon)
+			v = entry.getIconImage()+SPACE +v;
 		    v = entry.getLink(v);
+
 		    let tds = [];
 		    //[cbx,space,arrow,icon,thumbnail,v]
 		    let cbxId = Utils.getUniqueId('entry_');
 		    if(props.showForm)
 			tds.push(HU.hidden("allentry",entry.getId()) +
-				 HU.checkbox(cbxId,['rowid',rowId,'name','selentry','value', entry.getId(),'class','entry-form-select','style',HU.css('margin-right','5px','display','none')],false));
+				 HU.checkbox(cbxId,['rowid',rowId,'name','selentry','value', entry.getId(),'class','entry-form-select','style',HU.css('margin-right','2px','display','none')],false));
 
-		    tds.push(HU.div(['style',HU.css('min-width','16px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents','class','entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
+		    tds.push(HU.div(['style',HU.css('min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents','class','entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
 
 
 		    if(props.showThumbnail) {
@@ -146,10 +193,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			    tds.push(HU.div(['style',HU.css('max-height','100px','overflow-y','auto')], HU.image(thumbnail,['class','ramadda-clickable ramadda-thumbnail-image','title','Click to enlarge',
 															'style',HU.css('width','100px')])));
 		    }
-		    if(props.showIcon)
-			tds.push(entry.getLink(entry.getIconImage()));
-		    tds.push(v);
+		    if(props.showCrumbs && entry.breadcrumbs) {
+			let crumbId = Utils.getUniqueId();
+			v = HU.span(['id','breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId, 'title','Show breadcrumbs','class','ramadda-clickable ramadda-breadcrumb-toggle' ], HU.getIconImage("fas fa-plus-square")) +SPACE
+			    + HU.span(['style',HU.css('display','none'),'id',crumbId], entry.breadcrumbs+"&nbsp;&raquo;&nbsp;") +v;
+		    }
 
+		    tds.push(v);
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
 		    if(col.id=="type") {
@@ -178,6 +228,18 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	$('#'+id).html(html);
 
 
+	$('#'+id).find('.ramadda-breadcrumb-toggle').click(function() {
+	    let id = $(this).attr('breadcrumbid');
+	    let crumbs = $('#'+ id);
+	    if(crumbs.css('display')=='none') {
+		$('#breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-minus-square"));
+		crumbs.css('display','inline');
+	    } else {
+		$('#breadcrumbtoggle_' +id).html(HU.getIconImage("fas fa-plus-square"));
+		crumbs.css('display','none');
+	    }
+	});
+
 	$('#'+ id).find('.entry-arrow').click(function() {
 	    let entryId = $(this).attr('entryid');
 	    let innerId = $(this).attr('innerid');	    
@@ -203,7 +265,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entry = entryMap[entryId];
 	    $(this).attr('filled',true);
 	    $(this).attr('open',true);	    
-	    let url = ramaddaBaseUrl +'/entry/show?output=json&includedescription=false&children=true&entryid='+entryId;
+	    let url = ramaddaBaseUrl +'/entry/show?output=json&includeproperties=false&includedescription=false&includeservices=false&children=true&entryid='+entryId;
             $.getJSON(url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
@@ -230,13 +292,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    let created = HU.href(searchUrl,entry.creator,
 					  ['title','Search for entries of this type created by ' + entry.creator]);
 		    table+=HU.formEntry("Created by:",created);
-		    table+=HU.formEntry("Created:",entry.createDateLabel);
+		    table+=HU.formEntry("Created:",entry.createDateFormat);
 		    if(entry.startDate && entry.startDate.getTime()!=entry.createDate.getTime())
-			table+=HU.formEntry("Date:",entry.startDateLabel);
+			table+=HU.formEntry("Date:",entry.startDateFormat);
 		    if(entry.startDate && entry.endDate && entry.startDate.getTime()!=entry.endDate.getTime()) {
 			console.log(entry.startDate);
 			console.log(entry.endDate);
-			table+=HU.formEntry("To Date:",entry.endDateLabel);
+			table+=HU.formEntry("To Date:",entry.endDateFormat);
 		    }
 		    table+="</table>";
 		    $("#"+innerId).html(table);
@@ -262,7 +324,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    HU.makeDialog({content:HU.image(src),my:'left top',at:'left bottom',anchor:this,header:true,draggable:true});
 	});
 
-	let rows = $('#'+id).find('.' + classPrefix+'-row');
+	let rows = $('#'+id).find('.entry-row-table');
 	rows.bind ('contextmenu', function(event) {
 	    let entryRow = $(this);
 	    let entry = entryMap[$(this).attr('entryid')];
@@ -283,7 +345,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
 
+
+	Ramadda.initDragAndDropEntries(rows,entryMap,mainId);
+    },
+    
+
+    initDragAndDropEntries:function(rows, entryMap,mainId) {
 	rows.mousedown(function(event) {
+            if (!event.shiftKey || !entryMap) return;
 	    let entry = entryMap[$(this).attr('entryid')];
 	    if(!entry) return;
 	    
@@ -323,41 +392,62 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }});
 
 
+	function isTarget(comp) {
+	    return comp.hasClass('ramadda-entry-target');
+	}
+
 	rows.mouseover(function(event) {
+	    if(isTarget($(this))) {
+		if (Utils.mouseIsDown && Utils.entryDragInfo) {
+		    $(this).css("background", "#C6E2FF");
+		}
+		return
+	    } 
 	    let entry = entryMap[$(this).attr('entryid')];
 	    if(!entry) return;
 	    if (Utils.mouseIsDown && Utils.entryDragInfo) {
 		if(Utils.entryDragInfo.hasEntry(entry)) return;
-		$(this).css("borderBottom", "2px black solid");
+		$(this).css("background", "#C6E2FF");
+//		$(this).css("borderBottom", "2px black solid");
 	    }
 	});
 
 	rows.mouseout(function(event) {
 	    if(Utils.entryDragInfo) {
+		if(isTarget($(this))) {
+		    $(this).css("background", "");
+		    return
+		}
+
 		let entry = entryMap[$(this).attr('entryid')];
 		if(Utils.entryDragInfo.entry == entry) return;
-		$(this).css("borderBottom","");
+		$(this).css("background", "");
+//		$(this).css("borderBottom","");
 	    }
 
 	});
 
 	rows.mouseup(function(event) {
 	    if(!Utils.entryDragInfo) return;
+	    $(this).css("background", "");
+	    if(isTarget($(this))) {
+		let url =  ramaddaBaseUrl+'/entry/getentries?output=' + $(this).attr('target-type');
+		Utils.entryDragInfo.getIds().split(',').forEach(id=>{
+		    url+='&selentry=' + id;
+		});
+		document.location = url;
+		return;
+	    }
+
 	    let entry = entryMap[$(this).attr('entryid')];
 	    if(!entry) return;
 	    if(Utils.entryDragInfo.hasEntry(entry)) return;
-	    $(this).css("borderBottom","");
 	    if(!Utils.entryDragInfo.hasEntry(entry)) {
 		url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entry.getId();
 		document.location = url;
 	    }
 	});
-	
-
-
-
     },
-    
 
     initFormTags: function(formId) {
 	let form = $('#'+formId);

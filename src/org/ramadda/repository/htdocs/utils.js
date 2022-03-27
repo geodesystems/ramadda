@@ -3788,7 +3788,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(HtmlUtils.isFontAwesome(url)) {
             let clazz = "";
             let a;
-            if(url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
+            if(url.startsWith("fa-solid") ||url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
                 a = ["class",url];
 
             } else {
@@ -4186,9 +4186,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         return popup;
     },
+    //If value==null then remove the param
     addToDocumentUrl:function(name,value,append) {
         if(Utils.isPost()) { return}
-        var url = String(window.location);
+        let url = String(window.location);
         if(!append) {
             url = new URL(url);
             if(value===null) {
@@ -4210,6 +4211,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             console.log("err:" + e);
             console.trace();
         }
+	return url;
     },
     initSearchPopup:function(id,target) {
         let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",

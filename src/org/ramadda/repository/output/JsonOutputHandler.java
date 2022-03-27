@@ -515,6 +515,12 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
+	if(request.get("includecrumbs",false)) {
+	    if(entry.getParentEntry()!=null)
+		JsonUtil.quoteAttr(items, "breadcrumbs", getPageHandler().getBreadCrumbs(request,
+											 entry.getParentEntry(), null, null, 60));
+	}
+
 	if(request.get("includedescription",true))
 	    JsonUtil.quoteAttr(items, "description", entry.getDescription());
         TypeHandler type = entry.getTypeHandler();
@@ -567,11 +573,11 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
         JsonUtil.quoteAttr(items, "createDate",
                        formatDate(entry.getCreateDate()));
-        JsonUtil.quoteAttr(items, "startDateLabel",
+        JsonUtil.quoteAttr(items, "startDateFormat",
 			   getDateHandler().formatDateShort(request, entry, entry.getStartDate()));
-        JsonUtil.quoteAttr(items, "endDateLabel",
+        JsonUtil.quoteAttr(items, "endDateFormat",
 			   getDateHandler().formatDateShort(request, entry, entry.getEndDate()));	
-        JsonUtil.quoteAttr(items, "createDateLabel",
+        JsonUtil.quoteAttr(items, "createDateFormat",
 			   getDateHandler().formatDateShort(request, entry, entry.getCreateDate()));
 
 
@@ -608,36 +614,35 @@ public class JsonOutputHandler extends OutputHandler {
 
         if (entry.hasAltitudeTop()) {
             JsonUtil.attr(items, "altitudeTop", "" + entry.getAltitudeTop());
-        } else {
-            JsonUtil.attr(items, "altitudeTop", "-9999");
-        }
+        } 
 
         if (entry.hasAltitudeBottom()) {
             JsonUtil.attr(items, "altitudeBottom",
                       "" + entry.getAltitudeBottom());
-        } else {
-            JsonUtil.attr(items, "altitudeBottom", "-9999");
         }
 
 
 
-        TypeHandler       typeHandler = entry.getTypeHandler();
-        List<ServiceInfo> services    = new ArrayList<ServiceInfo>();
-        typeHandler.getServiceInfos(request, entry, services);
-        List<String> jsonServiceInfos = new ArrayList<String>();
-        for (ServiceInfo service : services) {
-            jsonServiceInfos.add(JsonUtil.map("url",
-                                          JsonUtil.quote(service.getUrl()),
-                                          "relType",
-                                          JsonUtil.quote(service.getType()),
-                                          "name",
-                                          JsonUtil.quote(service.getName()),
-                                          "mimeType",
-                                          JsonUtil.quote(service.getMimeType())));
-        }
 
-        items.add("services");
-        items.add(JsonUtil.list(jsonServiceInfos));
+	if(request.get("includeservices",true)) {
+	    TypeHandler       typeHandler = entry.getTypeHandler();
+	    List<ServiceInfo> services    = new ArrayList<ServiceInfo>();
+	    typeHandler.getServiceInfos(request, entry, services);
+	    List<String> jsonServiceInfos = new ArrayList<String>();
+	    for (ServiceInfo service : services) {
+		jsonServiceInfos.add(JsonUtil.map("url",
+						  JsonUtil.quote(service.getUrl()),
+						  "relType",
+						  JsonUtil.quote(service.getType()),
+						  "name",
+						  JsonUtil.quote(service.getName()),
+						  "mimeType",
+						  JsonUtil.quote(service.getMimeType())));
+	    }
+
+	    items.add("services");
+	    items.add(JsonUtil.list(jsonServiceInfos));
+	}
         //        System.err.println("services:" + JsonUtil.list(jsonServiceInfos));
 
         Resource resource = entry.getResource();
@@ -653,19 +658,15 @@ public class JsonOutputHandler extends OutputHandler {
                 }
 
                 JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
-                JsonUtil.attr(items, "fileSizeLabel", "" + formatFileLength(resource.getFileSize()));		
-                JsonUtil.quoteAttr(items, "md5", "");
-                //TODO MATIAS            } else if(resource.isFileNoCheck()) {
+                JsonUtil.quoteAttr(items, "fileSizeLabel", "" + formatFileLength(resource.getFileSize()));		
             } else if (resource.isFile()) {
                 JsonUtil.quoteAttr(items, "isfile","true");
                 JsonUtil.quoteAttr(items, "filename",
                                getStorageManager().getFileTail(entry));
                 JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
-                if (resource.getMd5() != null) {
+                if (Utils.stringDefined(resource.getMd5())) {
                     JsonUtil.quoteAttr(items, "md5", resource.getMd5());
-                } else {
-                    JsonUtil.quoteAttr(items, "md5", "");
-                }
+                } 
             }
         } else {
             JsonUtil.quoteAttr(items, "filename", "no resource");
@@ -782,8 +783,10 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
-        entry.getTypeHandler().addToJson(request, entry, items, attrs);
-        JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
+	if(request.get("includeproperties",true)) {
+	    entry.getTypeHandler().addToJson(request, entry, items, attrs);
+	    JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
+	}
 
 
         return JsonUtil.map(items);

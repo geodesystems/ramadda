@@ -951,9 +951,7 @@ public class CalendarOutputHandler extends OutputHandler {
             String       link = "";
             if (dayItems.size() > 0) {
                 if (dayItems.get(0) instanceof Entry) {
-		    link = 
-                    link = getEntriesList(request, tmp, dayItems,
-					  makeArgs(ARG_DOFORM,true, ARG_SHOWCRUMBS, false,ARG_SHOWDETAILS,true));
+		    link = getWikiManager().makeTableTree(request, null,null,dayItems);
                 } else {
                     link = StringUtil.join(" ", dayItems);
                 }
