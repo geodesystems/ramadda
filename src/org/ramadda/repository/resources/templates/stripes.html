@@ -6,16 +6,10 @@
 <properties>
 name=Stripes
 id=stripes
-
 ramadda.template.link.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.link.separator=
-
 ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.userlink.separator=
-
-ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
-ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
-
 </properties>
 
 
@@ -52,13 +46,6 @@ ${imports}
 }
 .linkslabel {
    font-weight: bold;
-}
-.favorites {
-   max-width: 125px; 
-   overflow-x: auto;
-   margin-top: 0px;
-   margin-left:4px;
-   background-color:#ffffff;
 }
 .topbox {
    padding:0px;
@@ -133,9 +120,6 @@ ${headfinal}
 </div>
 <div class="leftcolumn">
 ${links}
-<br>
-
-${favorites}
 </div>
 </td>
 
