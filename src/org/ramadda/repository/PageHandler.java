@@ -136,9 +136,6 @@ public class PageHandler extends RepositoryManager {
     public static final String MACRO_USERLINK = "userlinks";
 
 
-    /** html template macro */
-    public static final String MACRO_FAVORITES = "favorites";
-
 
     /** html template macro */
     public static final String MACRO_REPOSITORY_NAME = "repository_name";
@@ -673,9 +670,6 @@ public class PageHandler extends RepositoryManager {
                        getRepository().getProperty(property, ""));
         }
 
-        if (htmlTemplate.hasMacro(MACRO_FAVORITES)) {
-            values.put(MACRO_FAVORITES, getFavorites(request, htmlTemplate));
-        }
 
         //Toks are [html,macro,html,macro,...,html]
         List<String> templateToks;
@@ -705,82 +699,6 @@ public class PageHandler extends RepositoryManager {
 	//        html = translate(request, html);
 	//        return html;
 	return true;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param htmlTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private String getFavorites(Request request, HtmlTemplate htmlTemplate)
-            throws Exception {
-
-        String favoritesWrapper = htmlTemplate.getTemplateProperty(
-                                      "ramadda.template.favorites.wrapper",
-                                      "${link}");
-        String favoritesTemplate =
-            htmlTemplate.getTemplateProperty(
-                "ramadda.template.favorites",
-                "<span class=\"linkslabel\">Favorites:</span>${entries}");
-        String favoritesSeparator =
-            htmlTemplate.getTemplateProperty(
-                "ramadda.template.favorites.separator", "");
-
-        List<FavoriteEntry> favoritesList =
-            getUserManager().getFavorites(request, request.getUser());
-        StringBuilder favorites = new StringBuilder();
-        if (favoritesList.size() > 0) {
-            List favoriteLinks = new ArrayList();
-            int  favoriteCnt   = 0;
-            for (FavoriteEntry favorite : favoritesList) {
-                if (favoriteCnt++ > 100) {
-                    break;
-                }
-
-                Entry entry = favorite.getEntry();
-                EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel(), null,
-                                          false, null, false, true);
-                if (entryLink != null) {
-                    String link = favoritesWrapper.replace("${link}",
-                                      entryLink.toString());
-                    favoriteLinks.add("<nobr>" + link + "</nobr>");
-                }
-            }
-            favoritesTemplate = applyBaseMacros(favoritesTemplate);
-            favorites.append(favoritesTemplate.replace("${entries}",
-                    StringUtil.join(favoritesSeparator, favoriteLinks)));
-        }
-
-        List<Entry> cartEntries = getUserManager().getCart(request);
-        if (cartEntries.size() > 0) {
-            String cartTemplate =
-                htmlTemplate.getTemplateProperty("ramadda.template.cart",
-                    "<b>Cart:<b><br>${entries}");
-            List cartLinks = new ArrayList();
-            for (Entry entry : cartEntries) {
-                EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel(), null,
-                                          false, null, true, true);
-                String link = favoritesWrapper.replace("${link}",
-                                  entryLink.toString());
-                cartLinks.add("<nobr>" + link + "<nobr>");
-            }
-            favorites.append(HU.br());
-            favorites.append(cartTemplate.replace("${entries}",
-                    StringUtil.join(favoritesSeparator, cartLinks)));
-        }
-
-
-
-        return favorites.toString();
     }
 
 
