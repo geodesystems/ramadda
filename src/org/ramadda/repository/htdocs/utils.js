@@ -3327,13 +3327,13 @@ var GuiUtils = {
     //from http://snipplr.com/view.php?codeview&id=5949
     size_format: function(filesize) {
         if (filesize >= 1073741824) {
-            filesize = number_format(filesize / 1073741824, 2) + ' Gb';
+            filesize = number_format(filesize / 1073741824, 2) + ' GB';
         } else {
             if (filesize >= 1048576) {
-                filesize = number_format(filesize / 1048576, 2) + ' Mb';
+                filesize = number_format(filesize / 1048576, 2) + ' MB';
             } else {
                 if (filesize >= 1024) {
-                    filesize = number_format(filesize / 1024, 0) + ' Kb';
+                    filesize = number_format(filesize / 1024, 0) + ' KB';
                 } else {
                     filesize = number_format(filesize, 0) + ' bytes';
                 };

@@ -9,6 +9,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 
@@ -245,19 +246,18 @@ public class CalendarOutputHandler extends OutputHandler {
             return result;
         } else {
 	    String prefix = request.getPrefixHtml();
-	    if (prefix != null) {
+	    if (Utils.stringDefined(prefix)) {
 		sb.append(prefix);
 	    } else {
-		getPageHandler().entrySectionOpen(request, group, sb, "Calendar");
+		getPageHandler().entrySectionOpen(request, group, sb, "");
 	    }
             result = outputCalendar(request, group, entries, sb);
-	    if (prefix == null) {
+	    if (Utils.stringDefined(prefix)) {
 		getPageHandler().entrySectionClose(request, group, sb);
 	    }
         }
 
         addLinks(request, result, new State(group, subGroups, entries));
-
 
         return result;
     }

@@ -143,7 +143,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	$('#' + id+'_formarrow').click(function() {
 	    formOpen = !formOpen;
 	    if(formOpen) {
-		$("#"+id+'_form').show();
+	$("#"+id+'_form').show();
 		$("#"+id).find('.entry-form-select').show();
 		$(this).html(HU.getIconImage("fas fa-caret-down"));
 	    } else {
@@ -202,11 +202,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
 		    if(col.id=="type") {
-			v = HU.href(ramaddaBaseUrl+"/search/type/" + entry.getType().id,v,["title","Search for entries with this type"]);
+			v = HU.href(ramaddaBaseUrl+"/search/type/" + entry.getType().id,v,["title","Search for entries of type " + v]);
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
-		    v = HU.div(['style',HU.css('width',HU.getDimension(col.width),'text-align','right','max-width',HU.getDimension(maxWidth),'overflow-x','hidden')+(last?HU.css('padding-right','4px'):'')],v);
+		    v = HU.div(['style',HU.css('padding-left','5px','white-space','nowrap','width',HU.getDimension(col.width),'text-align','right','max-width',HU.getDimension(maxWidth),'overflow-x','hidden')+(last?HU.css('padding-right','4px'):'')],v);
 		    attrs.push("align","right");
 		}
 		if(Utils.isDefined(col.width)) {
@@ -570,8 +570,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				      });
 				  },null, true);
 	}			      
-
     },
+
     handleDropEvent:function(event,file, result,entryId,callback) {
 	let isImage= file.type.match('^image.*');
 	let url = ramaddaBaseUrl +"/entry/addfile";
@@ -620,8 +620,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
     },
-
-
 
 
     //applies extend to the given object
