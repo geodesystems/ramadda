@@ -6081,7 +6081,7 @@ public class EntryManager extends RepositoryManager {
      */
     public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url)
 	throws Exception {
-        return getAjaxLink(request, entry, linkText, url, true, request.get(ARG_DECORATE, true), request.get("showIcon", true));
+        return getAjaxLink(request, entry, linkText, url, request.get(ARG_DECORATE, true), request.get("showIcon", true));
     }
 
     /**
@@ -6091,7 +6091,6 @@ public class EntryManager extends RepositoryManager {
      * @param entry _more_
      * @param linkText _more_
      * @param url _more_
-     * @param forTree _more_
      * @param textBeforeEntryLink _more_
      * @param decorateMetadata _more_
      *
@@ -6099,13 +6098,11 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url,
-                                 boolean forTree, boolean decorateMetadata, boolean showIcon)
+    public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url,  boolean decorateMetadata, boolean showIcon)
 	throws Exception {
 
-        String  entryShowUrl =
-            request.makeUrl(getRepository().URL_ENTRY_SHOW);
-
+        String  entryShowUrl =  request.makeUrl(getRepository().URL_ENTRY_SHOW);
+	boolean forTree = true;
         boolean forTreeView  = request.get(ARG_TREEVIEW, false);
         if (url == null) {
             //For now don't use the full entry path
@@ -6116,6 +6113,7 @@ public class EntryManager extends RepositoryManager {
             url = url.replace("'", "");
         }
 
+
         if (forTreeView) {
             String label = getEntryListName(request, entry);
             label = label.replace("'", "\\'");
@@ -6125,10 +6123,6 @@ public class EntryManager extends RepositoryManager {
 							   entry.getId(), url, label)));
             forTree = false;
         }
-
-
-        //        if(true)
-        //            return new EntryLink("","","");
 
 
         boolean showUrl     = request.get(ARG_DISPLAYLINK, true);
@@ -6171,50 +6165,11 @@ public class EntryManager extends RepositoryManager {
 					  imgClick));
         }
 
-        //        if(true)
-        //            return new EntryLink("","","");
-
-
         StringBuilder sourceEvent = new StringBuilder();
         StringBuilder targetEvent = new StringBuilder();
         String        entryIcon = getPageHandler().getIconUrl(request, entry);
         String        iconId      = "img_" + uid;
-        if (okToMove) {
-            if (forTree) {
-                HU.onMouseOver(
-			       targetEvent,
-			       HU.call(
-				       "Ramadda.mouseOverOnEntry",
-				       HU.comma(
-						"event", HU.squote(entry.getId()),
-						qtargetId)));
 
-
-                HU.onMouseUp(targetEvent,
-			     HU.call("Ramadda.mouseUpOnEntry",
-				     HU.comma("event",
-					      HU.squote(entry.getId()),
-					      qtargetId)));
-            }
-            HU.onMouseOut(targetEvent,
-			  HU.call("Ramadda.mouseOutOnEntry",
-				  HU.comma("event",
-					   HU.squote(entry.getId()),
-					   qtargetId)));
-
-            HU.onMouseDown(
-			   sourceEvent,
-			   HU.call(
-				   "Ramadda.mouseDownOnEntry",
-				   HU.comma(
-					    "event", HU.squote(entry.getId()),
-					    HU.squote(entry.getLabel().replace("'", "")),
-					    HU.squote(iconId),
-					    HU.squote(entryIcon))));
-        }
-
-        //        if(true)
-        //            return new EntryLink("","","");
 
         StringBuilder imgText = new StringBuilder();
         if (okToMove) {
