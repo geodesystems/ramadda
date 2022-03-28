@@ -3505,8 +3505,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     }
                     Appendable buff = map.get(date1);
                     buff.append("<tr><td width=75%>&nbsp;&nbsp;&nbsp;");
-                    buff.append(getEntryManager().getAjaxLink(request, e,
-                            e.getLabel()).toString());
+                    buff.append(getEntryManager().getAjaxLink(request, e, e.getLabel()).toString());
                     buff.append("</td><td width=25% align=right><i>");
                     buff.append(formatDate(request, changeDate));
                     buff.append("</i></td></tr>");

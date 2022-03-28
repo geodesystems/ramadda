@@ -1359,9 +1359,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (theEntry != null) {
                     try {
                         String link =
-                            getRepository().getEntryManager().getAjaxLink(
-                                request, theEntry,
-                                theEntry.getName()).toString();
+                            getRepository().getEntryManager().getAjaxLink(request, theEntry, theEntry.getName()).toString();
                         sb.append(link);
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);

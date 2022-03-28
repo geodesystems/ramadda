@@ -1085,21 +1085,6 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(sectionDivider);
                 }
             }
-
-
-            List<Entry> cartEntries = getUserManager().getCart(request);
-            if (cartEntries.size() > 0) {
-                HU.open(sb, "div", HU.cssClass("ramadda-select-inner"));
-                HU.b(sb, msg("Cart"));
-                HU.br(sb);
-                sb.append(HU.br());
-                for (Entry cartEntry : cartEntries) {
-                    sb.append(getSelectLink(request, cartEntry, seen,
-                                            target));
-                }
-                HU.close(sb, "div");
-                sb.append(sectionDivider);
-            }
         }
 
 
@@ -1541,18 +1526,9 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HU.br());
             sb.append(getDateHandler().formatDateShort(request, entry,
                     entry.getStartDate()));
-
-
-            //            sb.append (getEntryManager().getAjaxLink( request,  entry,
-            //                                                      "<br>"+getEntryDisplayName(entry),null, false));
-
             sb.append("</td>");
         }
-
-
-
         sb.append("</table>");
-
     }
 
 
@@ -1812,9 +1788,7 @@ public class HtmlOutputHandler extends OutputHandler {
                         ? "odd"
                         : "even", "valign", "top" })));
 
-                EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, getEntryDisplayName(entry));
-
+                EntryLink entryLink = getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry));
                 tableSB.append(HU.col(entryLink.getLink(),
                                       " nowrap "
                                       + HU.cssClass("entry-table-name")));

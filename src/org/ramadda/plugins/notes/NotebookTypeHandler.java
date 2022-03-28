@@ -231,8 +231,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
                 letters.add(letter);
                 letterBuffer.append("<ul class=\"notes\">");
             }
-            String href = getEntryManager().getAjaxLink(request, entry,
-                              name).toString();
+            String href = getEntryManager().getAjaxLink(request, entry, name).toString();
             String h = getPageHandler().getEntryHref(request, entry) + "<br>"
                        + entry.getDescription();
             letterBuffer.append(HtmlUtils.li(h, ""));

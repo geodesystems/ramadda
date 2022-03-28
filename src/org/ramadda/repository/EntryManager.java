@@ -6062,8 +6062,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public EntryLink getAjaxLink(Request request, Entry entry,
-                                 String linkText)
+    public EntryLink getAjaxLink(Request request, Entry entry, String linkText)
 	throws Exception {
         return getAjaxLink(request, entry, linkText, null);
     }
@@ -6080,32 +6079,9 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public EntryLink getAjaxLink(Request request, Entry entry,
-                                 String linkText, String url)
+    public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url)
 	throws Exception {
-        return getAjaxLink(request, entry, linkText, url, true);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param linkText _more_
-     * @param url _more_
-     * @param forTreeNavigation _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public EntryLink getAjaxLink(Request request, Entry entry,
-                                 String linkText, String url,
-                                 boolean forTreeNavigation)
-	throws Exception {
-        return getAjaxLink(request, entry, linkText, url, forTreeNavigation,
-                           null);
+        return getAjaxLink(request, entry, linkText, url, true, request.get(ARG_DECORATE, true), request.get("showIcon", true));
     }
 
     /**
@@ -6115,33 +6091,7 @@ public class EntryManager extends RepositoryManager {
      * @param entry _more_
      * @param linkText _more_
      * @param url _more_
-     * @param forTreeNavigation _more_
-     * @param textBeforeEntryLink _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public EntryLink getAjaxLink(Request request, Entry entry,
-                                 String linkText, String url,
-                                 boolean forTreeNavigation,
-                                 String textBeforeEntryLink)
-	throws Exception {
-        return getAjaxLink(request, entry, linkText, url, forTreeNavigation,
-                           textBeforeEntryLink,
-                           request.get(ARG_DECORATE, true),
-			   request.get("showIcon", true)
-			   );
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param linkText _more_
-     * @param url _more_
-     * @param forTreeNavigation _more_
+     * @param forTree _more_
      * @param textBeforeEntryLink _more_
      * @param decorateMetadata _more_
      *
@@ -6149,12 +6099,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public EntryLink getAjaxLink(Request request, Entry entry,
-                                 String linkText, String url,
-                                 boolean forTreeNavigation,
-                                 String textBeforeEntryLink,
-                                 boolean decorateMetadata,
-				 boolean showIcon)
+    public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url,
+                                 boolean forTree, boolean decorateMetadata, boolean showIcon)
 	throws Exception {
 
         String  entryShowUrl =
@@ -6177,7 +6123,7 @@ public class EntryManager extends RepositoryManager {
                                      HU.call("treeViewClick",
 					     HU.jsMakeArgs(true,
 							   entry.getId(), url, label)));
-            forTreeNavigation = false;
+            forTree = false;
         }
 
 
@@ -6197,7 +6143,7 @@ public class EntryManager extends RepositoryManager {
         boolean okToMove    = !request.getUser().getAnonymous();
         String  prefix      = "";
 
-        if (forTreeNavigation) {
+        if (forTree) {
             String folderClickUrl = HU.url(entryShowUrl, ARG_ENTRYID,
 					   entry.getId(), ARG_OUTPUT, output,
 					   ARG_DETAILS,
@@ -6234,7 +6180,7 @@ public class EntryManager extends RepositoryManager {
         String        entryIcon = getPageHandler().getIconUrl(request, entry);
         String        iconId      = "img_" + uid;
         if (okToMove) {
-            if (forTreeNavigation) {
+            if (forTree) {
                 HU.onMouseOver(
 			       targetEvent,
 			       HU.call(
@@ -6293,7 +6239,6 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-
         String img = HU.img(entryIcon, imgText.toString(),
 			    Utils.concatString(HU.id(iconId),
 					       sourceEvent.toString()));
@@ -6311,9 +6256,6 @@ public class EntryManager extends RepositoryManager {
 	if(showIcon)
 	    sb.append(img);
         sb.append(HU.space(1));
-        if (textBeforeEntryLink != null) {
-            sb.append(textBeforeEntryLink);
-        }
         if (decorateMetadata) {
             getMetadataManager().decorateEntry(request, entry, sb, true);
         }
@@ -6327,7 +6269,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         HU.close(sb, HU.TAG_SPAN);
-        String folderBlock = ( !forTreeNavigation
+        String folderBlock = ( !forTree
                                ? ""
                                : HU.div("",
 					HU.attrs(HU.ATTR_STYLE,

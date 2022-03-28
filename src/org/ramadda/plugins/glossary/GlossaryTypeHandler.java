@@ -219,8 +219,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
                 letters.add(letter);
                 letterBuffer.append("<ul class=\"glossary_entries\">");
             }
-            String href = getEntryManager().getAjaxLink(request, entry,
-                              name).toString();
+            String href = getEntryManager().getAjaxLink(request, entry, name).toString();
             letterBuffer.append(
                 HtmlUtils.li(href, HtmlUtils.cssClass("glossary_entry")));
         }

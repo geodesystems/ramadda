@@ -174,9 +174,7 @@ public class TripOutputHandler extends OutputHandler {
                 sb.append("<div class=itinerary-day>");
 
             }
-            String url = getEntryManager().getAjaxLink(request, entry,
-                             entry.getLabel(), null, true, null, false,
-                             true).toString();
+            String url = getEntryManager().getAjaxLink(request, entry, entry.getLabel(), null, true, false,  true).toString();
 
             sb.append(url);
             StringBuffer desc = new StringBuffer(entry.getDescription());
