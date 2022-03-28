@@ -137,18 +137,6 @@ public class UserManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_USER_EXPORT = "userexport";
 
-
-
-    /** output type */
-    public static final OutputType OUTPUT_CART_ADD =
-        new OutputType("Add to Cart", "user.cart.add",
-                       OutputType.TYPE_TOOLBAR, "", ICON_CART_ADD);
-
-    /** output type */
-    public static final OutputType OUTPUT_CART_REMOVE =
-        new OutputType("Remove from Cart", "user.cart.remove",
-                       OutputType.TYPE_ACTION, "", ICON_CART_DELETE);
-
     /** output type */
     public static final OutputType OUTPUT_FAVORITE =
         new OutputType("Add as Favorite", "user.addfavorite",
@@ -240,21 +228,18 @@ public class UserManager extends RepositoryManager {
         RequestUrl.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_FORM,
             getRepositoryBase().URL_USER_HOME,
-            getRepositoryBase().URL_USER_CART,
             getRepositoryBase().URL_USER_MONITORS });
 
     /** _more_ */
     protected List<RequestUrl> remoteUserUrls =
         RequestUrl.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_HOME,
-            getRepositoryBase().URL_USER_CART,
             getRepositoryBase().URL_USER_MONITORS });
 
 
     /** urls to use with no user */
     protected List<RequestUrl> anonUserUrls =
-        RequestUrl.toList(new RequestUrl[] {
-            getRepositoryBase().URL_USER_CART });
+        RequestUrl.toList(new RequestUrl[] {});
 
 
     /** List of ip addresses (or prefixes) that control where users can login from */
@@ -263,11 +248,6 @@ public class UserManager extends RepositoryManager {
 
     /** _more_ */
     private Hashtable<String, User> userMap = new Hashtable<String, User>();
-
-    /** Holds the users data cart. This of course is ephemeral */
-    private Hashtable<String, List<Entry>> userCart = new Hashtable<String,
-                                                          List<Entry>>();
-
 
 
     /** any external user authenticators from plugins */
@@ -2122,317 +2102,6 @@ public class UserManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     */
-    public List<Entry> getCart(Request request) {
-        String sessionId = request.getSessionId();
-
-        if (sessionId == null) {
-            return new ArrayList<Entry>();
-        }
-        List<Entry> cart = userCart.get(sessionId);
-        if (cart == null) {
-            cart = new ArrayList<Entry>();
-            userCart.put(sessionId, cart);
-        }
-
-        return cart;
-    }
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entries _more_
-     *
-     * @throws Exception On badness
-     */
-    private void addToCart(Request request, List<Entry> entries)
-            throws Exception {
-        List<Entry> cart = getCart(request);
-        for (Entry entry : entries) {
-            if ( !cart.contains(entry)) {
-                cart.add(entry);
-            }
-        }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entries _more_
-     *
-     * @throws Exception on badness
-     */
-    private void removeFromCart(Request request, List<Entry> entries)
-            throws Exception {
-        List<Entry> cart = getCart(request);
-        for (Entry entry : entries) {
-            cart.remove(entry);
-        }
-    }
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return The result
-     *
-     * @throws Exception On badness
-     */
-    public Result processCart(Request request) throws Exception {
-        String action = request.getString(ARG_ACTION, "");
-        if (action.equals(ACTION_CLEAR)) {
-            getCart(request).clear();
-        } else if (action.equals(ACTION_ADD)) {
-            Entry entry = getEntryManager().getEntry(request,
-                              request.getId(""));
-            if (entry == null) {
-                throw new IllegalArgumentException(
-                    msgLabel("Could not find entry with id")
-                    + request.getId(""));
-            }
-            if ( !getCart(request).contains(entry)) {
-                getCart(request).add(entry);
-            }
-        }
-
-        return showCart(request);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return The result
-     *
-     * @throws Exception On badness
-     */
-    public Result showCart(Request request) throws Exception {
-
-        StringBuilder sb = new StringBuilder();
-        //        HtmlUtils.titleSectionOpen(sb, "User Cart");
-        request.appendMessage(sb);
-        List<Entry> entries = getCart(request);
-        if (entries.size() == 0) {
-            entries = new ArrayList<Entry>();
-            sb.append(
-                getPageHandler().showDialogNote(msg("No entries in cart")));
-        }
-
-        if (entries.size() == 0) {
-            //            sb.append(HtmlUtils.sectionClose());
-
-            return makeResult(request, msg("User Cart"), sb);
-        }
-
-        boolean splitScreen = request.getString(ARG_ACTION,
-                                  "").equals(ACTION_SPLIT);
-        boolean      haveFrom = request.defined(ARG_FROM);
-        StringBuffer header   = new StringBuffer();
-
-        if ( !haveFrom) {
-            if (splitScreen) {
-                header.append(
-                    HtmlUtils.href(
-                        request.makeUrl(getRepositoryBase().URL_USER_CART),
-                        msg("Unsplit Screen")));
-            } else {
-                header.append(
-                    HtmlUtils.href(
-                        request.makeUrl(
-                            getRepositoryBase().URL_USER_CART, ARG_ACTION,
-                            ACTION_SPLIT), msg("Split Screen")));
-            }
-            header.append(
-                HtmlUtils.span(
-                    "&nbsp;|&nbsp;",
-                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
-        }
-
-        header.append(
-            HtmlUtils.href(
-                request.makeUrl(
-                    getRepositoryBase().URL_USER_CART, ARG_ACTION,
-                    ACTION_CLEAR), msg("Clear Cart")));
-
-        sb.append(HtmlUtils.center(header.toString()));
-
-        sb.append(HtmlUtils.p());
-        if (haveFrom) {
-            Entry fromEntry = getEntryManager().getEntry(request,
-                                  request.getString(ARG_FROM, ""));
-            sb.append(HtmlUtils.br());
-            sb.append(msgLabel("Pick an entry to associate with")
-                      + HtmlUtils.space(1) + fromEntry.getName());
-        }
-
-
-
-        if ( !haveFrom && !splitScreen) {
-            String[] formTuple =
-                getRepository().getHtmlOutputHandler().getEntryFormStart(
-                    request, entries, false, "Cart");
-
-            sb.append(formTuple[2]);
-        }
-        OutputHandler outputHandler =
-            getRepository().getOutputHandler(request);
-
-        int cnt = 1;
-        if (splitScreen) {
-            cnt = 2;
-        }
-        entries = getEntryUtil().doGroupAndNameSort(entries, false);
-        List<StringBuffer> columns = new ArrayList<StringBuffer>();
-        StringBuffer       jsSB    = null;
-        for (int column = 0; column < cnt; column++) {
-            StringBuffer colSB = new StringBuffer();
-            columns.add(colSB);
-            for (Entry entry : entries) {
-                if (haveFrom) {
-                    colSB.append(
-                        HtmlUtils.img(
-                            getPageHandler().getIconUrl(request, entry)));
-                    colSB.append(
-                        HtmlUtils.href(
-                            request.makeUrl(
-                                getRepository().URL_ASSOCIATION_ADD,
-                                ARG_FROM, request.getString(ARG_FROM, ""),
-                                ARG_TO, entry.getId()), HtmlUtils.img(
-                                    getRepository().getIconUrl(
-                                        ICON_ASSOCIATION), msg(
-                                        "Create an association")) + HtmlUtils.space(
-                                            1) + entry.getLabel()));
-                } else if (splitScreen) {
-                    request.put(ARG_SHOWLINK, "false");
-                    colSB.append(getEntryManager().getAjaxLink(request,
-                            entry, entry.getLabel(), null));
-
-                    request.remove(ARG_SHOWLINK);
-                } else {
-                    String cbxId = "checkbox_" + HtmlUtils.blockCnt++;
-                    String links =
-                        HtmlUtils.checkbox(
-                            ARG_SELENTRY, entry.getId(), false,
-                            HtmlUtils.attrs(
-                                HtmlUtils.ATTR_ID, cbxId,
-                                HtmlUtils.ATTR_ONCLICK,
-                                HtmlUtils.call(
-                                    "HtmlUtils.checkboxClicked",
-                                    HtmlUtils.comma(
-                                        "event", HtmlUtils.squote("entry_"),
-                                        HtmlUtils.squote(cbxId)))));
-
-
-                    colSB.append(HtmlUtils.hidden("all_" + entry.getId(),
-                            "1"));
-                    colSB.append(links);
-                    colSB.append(
-                        HtmlUtils.img(
-                            getPageHandler().getIconUrl(request, entry)));
-                    colSB.append(
-                        HtmlUtils.href(
-                            request.makeUrl(
-                                getRepositoryBase().URL_USER_CART, ARG_FROM,
-                                entry.getId()), HtmlUtils.img(
-                                    getRepository().getIconUrl(
-                                        ICON_ASSOCIATION), msg(
-                                        "Create an association"))));
-
-                }
-                if ( !splitScreen) {
-                    colSB.append(HtmlUtils.space(1));
-                    if (haveFrom) {}
-                    else {
-                        colSB.append(getPageHandler().getBreadCrumbs(request,
-                                entry));
-                    }
-                    colSB.append(HtmlUtils.br());
-                }
-            }
-        }
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                     "100%")));
-
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
-                                 HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
-                                     "top")));
-        int colCnt = 0;
-        for (StringBuffer colSB : columns) {
-            colCnt++;
-            String extra = "";
-            if (colCnt == 1) {
-                extra = HtmlUtils.style("border-right : 1px black solid;");
-            }
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
-                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                         "50%") + extra));
-            if (splitScreen) {
-                sb.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.style(
-                            "max-height: 600px; overflow-y: auto;")));
-            }
-            sb.append(colSB);
-            if (splitScreen) {
-                sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            }
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_TD));
-        }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
-
-        if ( !haveFrom && !splitScreen) {
-            sb.append("</form>");
-        }
-
-        //        sb.append(HtmlUtils.sectionClose());
-
-        return makeResult(request, "User Cart", sb);
-
-
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isCartEnabled() {
-        return showCart;
-    }
-
-    /** _more_ */
-    private boolean showCart;
-
-    /**
-     * _more_
-     */
-    @Override
-    public void initAttributes() {
-        super.initAttributes();
-        showCart = getRepository().getProperty(PROP_SHOW_CART, true);
-    }
-
 
     /**
      * _more_
@@ -3654,32 +3323,12 @@ public class UserManager extends RepositoryManager {
      */
     public void initOutputHandlers() throws Exception {
         OutputHandler outputHandler = new OutputHandler(getRepository(),
-                                          "Cart") {
+                                          "Favorites") {
             public void getEntryLinks(Request request, State state,
                                       List<Link> links)
                     throws Exception {
                 if (state.getEntry() != null) {
                     Link link;
-                    if (isCartEnabled()) {
-                        List<Entry> cart = getCart(request);
-                        boolean entryIsInCart =
-                            cart.contains(state.getEntry());
-
-                        /**
-                         * //Don't show this for now. less is more.
-                         * if ( !entryIsInCart) {
-                         * link = makeLink(request, state.getEntry(),  OUTPUT_CART_ADD);
-                         * link.setLinkType(OutputType.TYPE_FILE| OutputType.TYPE_TOOLBAR);
-                         * links.add(link);
-                         * } else {
-                         *   link = makeLink(request, state.getEntry(),   OUTPUT_CART_REMOVE);
-                         *   link.setLinkType(OutputType.TYPE_FILE | OutputType.TYPE_ACTION);
-                         *   links.add(link);
-                         * }
-                         */
-                    }
-
-
                     if ( !request.getUser().getAnonymous()) {
                         link = makeLink(request, state.getEntry(),
                                         OUTPUT_FAVORITE);
@@ -3690,11 +3339,6 @@ public class UserManager extends RepositoryManager {
             }
 
             public boolean canHandleOutput(OutputType output) {
-                if (output.equals(OUTPUT_CART_ADD)
-                        || output.equals(OUTPUT_CART_REMOVE)) {
-                    return isCartEnabled();
-                }
-
                 return output.equals(OUTPUT_FAVORITE);
             }
 
@@ -3703,52 +3347,25 @@ public class UserManager extends RepositoryManager {
                                       List<Entry> entries)
                     throws Exception {
                 OutputType output = request.getOutput();
-                if (output.equals(OUTPUT_CART_ADD)) {
-                    if (group.isDummy()) {
-                        addToCart(request, entries);
-                        addToCart(request,
-                                  (List<Entry>) new ArrayList(subGroups));
-                    } else {
-                        addToCart(request, (List<Entry>) Misc.newList(group));
-                    }
-
-                    return showCart(request);
-                } else if (output.equals(OUTPUT_CART_REMOVE)) {
-                    if (group.isDummy()) {
-                        removeFromCart(request, entries);
-                        removeFromCart(
-                            request, (List<Entry>) new ArrayList(subGroups));
-                    } else {
-                        removeFromCart(request,
-                                       (List<Entry>) Misc.newList(group));
-                    }
-
-                    return showCart(request);
-                } else {
-                    User user = request.getUser();
-                    if (group.isDummy()) {
-                        addFavorites(request, user, entries);
-                        addFavorites(request, user,
-                                     (List<Entry>) new ArrayList(subGroups));
-                    } else {
-                        addFavorites(request, user,
-                                     (List<Entry>) Misc.newList(group));
-                    }
-                    String redirect =
-                        getRepositoryBase().URL_USER_HOME.toString();
-
-                    return new Result(HtmlUtils.url(redirect, ARG_MESSAGE,
-                            getRepository().translate(request,
-                                "Favorites Added")));
-
-                }
-
+		User user = request.getUser();
+		if (group.isDummy()) {
+		    addFavorites(request, user, entries);
+		    addFavorites(request, user,
+				 (List<Entry>) new ArrayList(subGroups));
+		} else {
+		    addFavorites(request, user,
+				 (List<Entry>) Misc.newList(group));
+		}
+		String redirect =
+		    getRepositoryBase().URL_USER_HOME.toString();
+		
+		return new Result(HtmlUtils.url(redirect, ARG_MESSAGE,
+						getRepository().translate(request,
+									  "Favorites Added")));
             }
         };
 
         outputHandler.addType(OUTPUT_FAVORITE);
-        outputHandler.addType(OUTPUT_CART_ADD);
-
         getRepository().addOutputHandler(outputHandler);
     }
 

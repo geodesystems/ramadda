@@ -1861,17 +1861,6 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-	/*
-	  Don't add this for now
-	  if (getUserManager().isCartEnabled()) {
-	  extras.add("");
-	  urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
-	  labels.add(getIconImage("/icons/cart.png") + " "
-	  + msg("Data Cart"));
-	  tips.add(msg("View data cart"));
-	  }
-	*/
-
         if (showHelp && (getRepository()
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
