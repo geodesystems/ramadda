@@ -5375,6 +5375,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                   Hashtable props)
             throws Exception {
 
+
         if (props == null) {
             props = new Hashtable();
         }
@@ -5718,9 +5719,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
         entries = tmp;
 
-
-
-
         if (nots.size() > 0) {
             List<Entry> etmp = new ArrayList<Entry>();
             for (int i = 0; i < entries.size(); i++) {
@@ -5749,8 +5747,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             return rtmp;
         }
 
+
         if (orderBy == null) {
-            orderBy = (String) props.get("sort");
+            orderBy = getProperty(wikiUtil, props, "sort");
+	    if (orderBy == null) {
+		orderBy = getProperty(wikiUtil, props, "sortby");
+	    }
         }
 
         if (props.get(ATTR_SORT_DIR) != null) {
@@ -5764,11 +5766,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
         if (orderBy != null) {
-            if (orderBy.equals("date")) {
+            if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, orderDir);
-            } else if (orderBy.equals("createdate")) {
+            } else if (orderBy.equals(ORDERBY_CREATEDATE)) {
                 entries = getEntryUtil().sortEntriesOnCreateDate(entries,
                         orderDir);
+            } else if (orderBy.equals(ORDERBY_NUMBER)) {
+                entries = getEntryUtil().sortEntriesOnNumber(entries, orderDir);		
             } else {
                 entries = getEntryUtil().sortEntriesOnName(entries, orderDir);
             }

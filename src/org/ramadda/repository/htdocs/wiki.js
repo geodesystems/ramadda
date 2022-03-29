@@ -1075,7 +1075,7 @@ class  WikiEditor {
     initAttributes() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
-	    {p:'sortby',ex:'name|date|changedate|createdate|entryorder',tt:'sort type -name,date, change date, create date'},
+	    {p:'sortby',ex:'name|date|changedate|createdate|entryorder|number',tt:'sort type -name,date, change date, create date'},
 	    {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
 	    {p:'entries',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use' },
 	    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
