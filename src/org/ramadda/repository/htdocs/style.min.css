@@ -7,7 +7,6 @@
 :root {
     --font-size:12pt;
     --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;    
-
     --basic-border:1px #ccc solid;
     --highlight-border:1px #aaa solid;
     --nav-color:#000;
@@ -20,16 +19,11 @@
     --href-color: var(--highlight-color);
     --href-decoration:underline;
     --href-color: #000;
-
     --color-mellow-yellow:#fffeec;
-
     --default-radius:4px;
-    
-
    --nav-hover-color:var(--highlight-color);
    --cal-font-size:10pt;
    --cal-background:#C5E5F5;
-
    --nav-left-z-index: 50;
    --nav-page-fixed-z-index:200; 
    --block-z-index:1;
@@ -43,15 +37,12 @@
    --animation-tick-z-index:0;    
    --animation-tick-hover-z-index:50;
    --ui-dialog-z-index: 10000;
-
    --selectdiv-z-index: 900;
    --floatdiv-z-index:1;
    --hideshow-z-index:2;
-    
    --wikieditor-message-z-index:1000;
    --wikieditor-preview-z-index:1000;
    --wikieditor-preview-handle-z-index:1001;
-
    --popup-z-index:  3000;
    --modal-z-index:4000;
    --header-z-index:100;
@@ -80,9 +71,6 @@ textarea, input {
 
 select, input, password, .fileinput, textarea {
     border  :var(--basic-border)
-}
-
-.fileinput {
 }
 
 .fileinput_wrapper {
@@ -176,7 +164,6 @@ a
     position:relative;
 }
 
-
 .ramadda-error {
     font-weight: bold; 
     background: #BA3B28;
@@ -249,12 +236,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:var(--highlight-background);
 }
 
-
 .ramadda-button a, .ramadda-button a:hover {
     color:rgb(85, 85, 85);
     text-decoration:none;
 }
-
 
 .ramadda-button:hover {
     border:var(--highlight-border) !important;    
@@ -269,12 +254,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:#aaa;
 }
 
-
 .ramadda-button-blue {
     background:#286090;
     border:1px #286090 solid;
 }
-
 
 a:visited.ramadda-button-blue, a:visited.ramadda-button-green, a:link.ramadda-button-blue, a:link.ramadda-button-green {
     color: #fff;
@@ -299,9 +282,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     display:inline-block;
 }
 
-
-/*** navigation **/
-
 .ramadda-nav-top {
     text-align: center;
     font-size:120%;
@@ -310,10 +290,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-tree-link, .ramadda-nav-link {
     text-decoration:none;
     color:#000;
-}
-
-
-.ramadda-nav-left-extra {
 }
 
 .ramadda-nav-left-extra li {
@@ -342,7 +318,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     padding-left:30px;
 }    
 
-
 .ramadda-nav-list-link::before{
    content: '';
    display: inline-block;
@@ -368,7 +343,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     margin-left:60px;
     list-style-type: circle;
 }    
-
 
 .ramadda-links-horizontal {
     display:inline-block;
@@ -403,13 +377,10 @@ i.fa, i.fas,i.fab {
     font-size:var(--font-size);
 }
 
-
 .ramadda-nav-horizontal .ramadda-links a {
     display:inline-block;
     width:100%;
 }
-
-
 
 .ramadda-nav-left {
     padding:20px;
@@ -427,7 +398,6 @@ i.fa, i.fas,i.fab {
 
 .ramadda-nav-left-links {
    width:100%;
-/* min-height:40vh;*/
    max-height:40vh;
    overflow-y:auto;
    white-space:nowrap;
@@ -438,17 +408,14 @@ i.fa, i.fas,i.fab {
     margin-bottom:3px;
 }
 
-
 .ramadda-nav-left-link .ramadda-nav-link {
     display:inline-block;
     width:100%;
 }
 
-
 .ramadda-nav-link:hover {
     background:var(--highlight-background);
 }
-
 
 .ramadda-nav-left-extra .ramadda-links {
     color:var(--nav-link-color);
@@ -474,7 +441,6 @@ i.fa, i.fas,i.fab {
     color: var(--hover-color) !important;    
 }
 
-
 .ramadda-links h3 {
     text-align:center;
     font-size:100%;
@@ -485,11 +451,6 @@ i.fa, i.fas,i.fab {
     border-bottom: 1px #e8e8e8 solid;
     border-bottom: var(--basic-border);    
     color: var(--nav-color);
-}
-
-
-
-.ramadda-links h3:hover {
 }
 
 .ramadda-nav-left-extra .ramadda-links-highlight {
@@ -521,15 +482,12 @@ i.fa, i.fas,i.fab {
     color:#4774CC;
 }
 
-
 .ramadda-nav-left-toggle  {
     position:absolute;
     left:5px;
     top:10px;
     cursor:pointer;
 }
-
-
 
 .ramadda-nav-left-toggle i:hover  {
     color: var(--hover-color) !important;    
@@ -546,7 +504,7 @@ i.fa, i.fas,i.fab {
 }
 
 .ramadda-nav-arrow:hover {
-    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 
@@ -565,7 +523,6 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
 .ramadda-entry-nav-page-outer a {
     text-decoration:none;
 }    
-
 
 a.ramadda-entry-nav-page {
     text-decoration:none;
@@ -586,18 +543,14 @@ a.ramadda-entry-nav-page {
     text-decoration:none;
 }
 
-
 .ramadda-entry-nav-page-label {
     text-decoration:none !important;
     font-weight:bold;
-
 }
 
 .ramadda-entry-nav-page-outer:hover {
     color: var(--hover-color) !important;    
 }
-
-
 
 .ramadda-entry-nav-page-decorated:hover {
     border:1px solid var(--nav-hover-color);
@@ -647,12 +600,6 @@ a.ramadda-entry-nav-page {
     z-index:var(--nav-page-fixed-z-index);
 }
 
-.ramadda-nav-right .ramadda-block {
-/*    margin-left:20px !important;
-    margin-right:20px !important;    
-*/
-}    
-
 .ramadda-menubar {
     max-width:100%;
     white-space:nowrap;
@@ -668,8 +615,6 @@ a.ramadda-entry-nav-page {
     padding-top:2px;
     padding-bottom:0px;
 }
-
-
 
 .csv_header_field {
     color:blue;
@@ -2105,20 +2050,9 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 }
 
 .entry-list {
-    overflow-y: auto;
     border: 1px #d8d8d8  solid;
     border-top: 0px;
     background: #fff;
-}
-
-.entry-list-block {
-    padding-left:0px;
-    padding-right:0px;
-}
-
-.entry-list-settings {
-    border-left : 1px #d8d8d8 solid;
-    border-right : 1px #d8d8d8 solid;
 }
 
 .entry-list-form {
@@ -2126,7 +2060,6 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     border: 1px #ccc solid;
     border-top: 0px;
 }
-
 
 .selectform-table-header {
     font-weight:bold;
@@ -2202,6 +2135,7 @@ table.dataTable tbody td {
     margin-top: 2px;
     padding-top: 0px;
 }
+
 
 .entry-list-noheader {
     border-bottom : 1px #d8d8d8 solid;
@@ -4957,9 +4891,7 @@ a.wiki-link-noexist {
     color:red;
 }
 
-
 .ace_wiki-editor-comment {
-//    border-top: 1px solid #ccc;
     border-bottom: 1px solid #999;
     background:#eee;
     background: var(--color-mellow-yellow);
@@ -4967,8 +4899,6 @@ a.wiki-link-noexist {
     padding-right:4px;
     font-weight:bold;
 }
-
-
 
 .wiki-editor-preview {
     height:800px;
@@ -4990,8 +4920,6 @@ a.wiki-link-noexist {
     width:14px;
     background-color:#aaa;
 }
-
-
 
 .wiki-editor-preview-inner {
     width:100%;

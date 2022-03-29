@@ -4633,11 +4633,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     openTag: function(tagName, attrs) {
-        var html = "<" + tagName + " " + this.attrs(attrs) + ">";
+        let html = '<' + tagName + ' ' + this.attrs(attrs) + '>';
         return html;
     },
     open: function(tagName, attrs, extra) {
-        var html = "<" + tagName + " " + this.attrs(attrs) + ">";
+        let html = '<' + tagName + ' ' + this.attrs(attrs) + '>';
         if(extra) html+= extra;
         return html;
     },
@@ -5553,6 +5553,11 @@ dateFormat.i18n = {
         "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ]
 };
+
+function jqid(id) {
+    return HtmlUtils.jqid(id);
+}
+
 
 // For convenience...
 Date.prototype.format = function(mask, utc) {
