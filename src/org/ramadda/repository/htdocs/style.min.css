@@ -4218,11 +4218,10 @@ wiki {
     position: absolute; 
     display:none;
     z-index:var(--floatdiv-z-index);
-    background-color:     #67a7e3;
+    background-color:     #C6E2FF;    
     border: 1px #666666 solid;   
-    color: #fff;
+    color: #000;    
     padding:4px;
-    font-weight: bold;
 }
 
 .error-list {
