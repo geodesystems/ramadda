@@ -3946,6 +3946,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	}
 
 
+	
+
+
 	List<String> argProps = new ArrayList<String>();
 	List<String> actions = new ArrayList<String>();
 	for(HtmlUtils.Selector selector: tfos) {
@@ -3960,6 +3963,20 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		argProps.add(JsonUtil.quote(v));
 	    }
 	}
+
+	if(children.size()>0) {
+	    //Sample for access
+	    Entry entry = children.get(0);
+	    if(getAccessManager().canDoDelete(request, entry)) {
+		argProps.add("canDelete");
+		argProps.add("true");
+	    }
+	    if(getAccessManager().canDoExport(request, entry)) {
+		argProps.add("canExport");
+		argProps.add("true");
+	    }	    
+	}
+
 
 	if (request.exists(ARG_ASCENDING)) {
 	    argProps.add("ascending");

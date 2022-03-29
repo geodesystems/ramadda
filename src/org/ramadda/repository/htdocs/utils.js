@@ -2385,7 +2385,7 @@ var Utils =  {
         obj.style.opacity = "0.8";
     },
     moveFloatDiv:function(x, y) {
-        var obj = $("#ramadda-floatdiv");
+        let obj = $("#ramadda-floatdiv");
         if (obj.length) {
             let visible = obj.css("display")!="none";
             if (!visible) {
