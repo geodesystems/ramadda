@@ -162,6 +162,14 @@ CREATE TABLE associations (id varchar(200),
 		           to_entry_id varchar(200));
 
 
+CREATE TABLE entry_activity (
+             entryid varchar(200),
+             date ramadda.datetime, 
+       	     activity varchar(200),
+	     ipaddress varchar(200)); 
+
+CREATE INDEX ENTRY_ACTIVITY_ENTRYID ON entry_activity (ENTRYID);
+
 -----------------------------------------------------------------------
 --- users 
 -----------------------------------------------------------------------
