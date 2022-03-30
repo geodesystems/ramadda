@@ -512,6 +512,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String repositoryDescription = "";
 
+    private boolean logActivity = false;
+
     /** _more_ */
     private boolean downloadOk = true;
 
@@ -634,6 +636,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         entryEditUrls = RequestUrl.toList(new RequestUrl[] {
             URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,
+	    URL_ENTRY_ACTIVITY,
             getMetadataManager().URL_METADATA_FORM,
             getMetadataManager().URL_METADATA_ADDFORM,
             URL_ACCESS_FORM  //,
@@ -643,6 +646,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         groupEditUrls = RequestUrl.toList(new RequestUrl[] {
             URL_ENTRY_NEW, URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,
+	    URL_ENTRY_ACTIVITY,
             getMetadataManager().URL_METADATA_FORM,
             getMetadataManager().URL_METADATA_ADDFORM,
             URL_ACCESS_FORM  //,
@@ -4546,6 +4550,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
 	cacheHtdocs           = getProperty(PROP_CACHE_HTDOCS, true);
+	logActivity           = getProperty("ramadda.logactivity", false);
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
         repositoryDescription = getProperty(PROP_REPOSITORY_DESCRIPTION, "");
         language              = getProperty(PROP_LANGUAGE, "");
@@ -4588,6 +4593,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public boolean getAdminOnly() {
         return adminOnly;
     }
+
+    public boolean getLogActivity() {
+	return logActivity;
+    }
+
 
     /**
      * _more_

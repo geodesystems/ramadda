@@ -2870,6 +2870,15 @@ public class TypeHandler extends RepositoryManager {
                         entry), "fas fa-sitemap", "Extended Edit",
                                 OutputType.TYPE_EDIT));
 
+	    if(getRepository().getLogActivity()) {
+		links.add(
+			  new Link(
+				   request.entryUrl(
+						    getRepository().URL_ENTRY_ACTIVITY,
+						    entry), "fas fa-chart-line", "Entry Activity",
+				   OutputType.TYPE_EDIT));
+	    }
+
         }
 
         if (getAccessManager().canDoDelete(request, entry)) {

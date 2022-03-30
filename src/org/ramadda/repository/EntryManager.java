@@ -910,10 +910,15 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+	
+
+
     public Result processEntryData(Request request) throws Exception {
 	request.put("output","points.product");
 	request.put("product","points.json");
-	return processEntryShow(request);
+	Result result =  processEntryShow(request);
+	return result;
     }
 
 
@@ -950,6 +955,14 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             fatalError(request, "No entry specified");
         }
+
+	if(getRepository().getLogActivity()) {
+	    if(request.getString("product","").equals("points.json")) {
+		addEntryActivity(request, entry,"data");
+	    } else {
+		addEntryActivity(request, entry,"view");
+	    }
+	}
 
 	getSessionManager().setLastEntry(request, entry);
         addSessionEntry(request, entry);
@@ -1048,6 +1061,76 @@ public class EntryManager extends RepositoryManager {
         request.setCORSHeaderOnResponse();
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
+
+    private void addEntryActivity(Request request, Entry entry, String activity) throws Exception {
+	getDatabaseManager().executeInsert(Tables.ENTRY_ACTIVITY.INSERT,
+					   new Object[] {entry.getId(),new Date(),
+					       activity, request.getIp()});
+    }
+
+
+    public Result processEntryActivity(Request request) throws Exception {
+	Entry entry = getEntry(request);
+	StringBuilder sb = new StringBuilder();
+	sb.append(request.formPost(getRepository().URL_ENTRY_ACTIVITY));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	getPageHandler().entrySectionOpen(request, entry, sb,
+					  "Entry Activity");
+
+	if(request.exists(ARG_DELETE) && !request.exists(ARG_CANCEL)) {
+	    if(request.exists(ARG_CONFIRM)) {
+		getDatabaseManager().delete(Tables.ENTRY_ACTIVITY.NAME,
+					    Clause.and(Clause.eq(Tables.ENTRY_ACTIVITY.COL_ENTRYID,entry.getId()),Clause.eq(Tables.ENTRY_ACTIVITY.COL_ACTIVITY, request.getString(ARG_DELETE,""))));
+
+		sb.append("Events deleted<br>");
+	    } else {
+		sb.append(HU.hidden(ARG_DELETE,request.getString(ARG_DELETE,"")));
+		sb.append(getPageHandler().showDialogQuestion("Are you sure you want to clear the " + request.getString(ARG_DELETE,"")+" activity?",
+							      HU.submit("Yes",  ARG_CONFIRM) +" " +
+							      HU.submit("Cancel", ARG_CANCEL)));
+	    }
+
+	}
+	Clause clause = Clause.eq(Tables.ENTRY_ACTIVITY.COL_ENTRYID, entry.getId());
+	String extra = SqlUtil.groupBy(SqlUtil.comma(Tables.ENTRY_ACTIVITY.COL_ENTRYID,Tables.ENTRY_ACTIVITY.COL_ACTIVITY));
+        Statement stmt =
+            getDatabaseManager().select(SqlUtil.comma(new String[] {
+			SqlUtil.comma(Tables.ENTRY_ACTIVITY.COL_ACTIVITY,
+				      Tables.ENTRY_ACTIVITY.COL_ACTIVITY,
+				      "count(" + Tables.ENTRY_ACTIVITY.COL_ENTRYID+")")
+		    }), Tables.ENTRY_ACTIVITY.NAME, clause, extra);
+
+
+	ResultSet        results;
+	SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+	boolean didOne  = false;
+	String url = getRepository().URL_ENTRY_ACTIVITY+"?" + HU.arg(ARG_ENTRYID,entry.getId());
+	while ((results = iter.getNext()) != null) {
+	    if(!didOne) {
+		didOne = true;
+		sb.append("<table class=formtable><tr class=entry-list-header><td></td><td style='padding-left:10px;padding-right:10px;' class=entry-list-header-column>&nbsp;Activity </td><td style='padding-left:10px;padding-right:10px;'  class=entry-list-header-column> Count </td>");
+	    }
+	    int col=1;
+	    sb.append("<tr>");
+	    String entryId = results.getString(col++);
+	    String type = results.getString(col++);
+	    sb.append(HU.col(HU.href(url+"&"+HU.arg(ARG_DELETE,type),HU.getIconImage("fas fa-trash-alt",HU.attr("title","Clear these events")))));
+	    sb.append(HU.col(type));
+	    sb.append(HU.col(results.getString(col++),"align=right"));		      
+	    sb.append("</tr>");
+	}
+	if(didOne) {
+	    sb.append("</table>");
+	} else {
+	    sb.append("No activity");
+	}
+        sb.append(HU.formClose());
+	getPageHandler().entrySectionClose(request, entry, sb);
+        Result result = new Result("Entry Activity", sb);
+	return addEntryHeader(request, entry, result);
+    }
+
+
 
     public Result processEntryAddFile(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -3999,11 +4082,9 @@ public class EntryManager extends RepositoryManager {
 							   "Could not find entry");
         }
 
-
         if ( !getAccessManager().canAccessFile(request, entry)) {
             throw new AccessException("No access to file", request);
         }
-
 
 
         if ( !entry.getResource().isUrl()) {
@@ -4012,10 +4093,12 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-
         String path = entry.getResource().getPath();
         String mimeType = getRepository().getMimeTypeFromSuffix(
 								IOUtil.getFileExtension(path));
+	if(getRepository().getLogActivity()) {
+	    addEntryActivity(request, entry,"download");
+	}
 
         boolean isImage = Utils.isImage(path);
         if (request.defined(ARG_IMAGEWIDTH) && isImage) {

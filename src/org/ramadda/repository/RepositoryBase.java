@@ -189,6 +189,11 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                     "Extra Edit");
 
     /** _more_ */
+    public final RequestUrl URL_ENTRY_ACTIVITY = new RequestUrl(this,
+                                                    "/entry/activity",
+                                                    "Entry Activity");    
+
+    /** _more_ */
     public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
                                                    "/entry/access",
                                                    "Edit " + LABEL_ENTRY);
