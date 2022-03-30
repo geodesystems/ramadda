@@ -215,6 +215,17 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
         closeAndReleaseConnection(statement);
         //        Misc.run(this, "checkConnections", null);
+
+	try {
+	    //To generate the Tables.java uncomment this and
+	    //run RAMADDA with a new install (e.g. with -Dramadda_home=tmp
+	    //	    writeTables("org.ramadda.repository.database",null);
+	} catch(Exception exc) {
+	    System.err.println("Error:" + exc);
+	    exc.printStackTrace();
+	}
+	
+
     }
 
 
