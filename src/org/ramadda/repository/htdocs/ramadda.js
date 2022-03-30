@@ -208,7 +208,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    }
 
 		    tds.push(v);
-		    title = 'Right-click to see entry menu. Shift-drag to copy/move';
+		    if(!props.simple)
+			title = 'Right-click to see entry menu. Shift-drag to copy/move';
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
 		    if(col.id=="type") {

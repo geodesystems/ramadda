@@ -4185,30 +4185,9 @@ wiki {
     margin: 0px;
 }
 
-/*
 .ramadda-innercontent {
-   padding-top: 0px;
-   margin: 0px;
-   min-height:800px;
-   margin:0px;
-   background-color:#F0F2F5;
+    min-height:80vh;
 }
-
-.display-contents:not(:empty) {
-    border:1px solid #cfcfcf;
-    margin:5px;
-    background:#fff;
-    border-radius:var(--default-radius);
-}
-
-.display-simplesearch-contents:not(:empty) {
-    display:inline-block;
-    background:transparent;
-    border:1px solid transparent;    
-}
-
-*/
-
 
 .ramadda-content {
     min-height:800px;

@@ -2086,7 +2086,7 @@ var Utils =  {
             $(window).scroll(()=>{
                 let titleTop = pageTitle.offset().top;
                 let bottom = headerCenter.offset().top + headerCenter.height();
-                if(titleTop<bottom-10) {
+                if(titleTop<bottom+10) {
                     if(!this.showingHeaderCenter) {
                         this.showingHeaderCenter = true; 
                         headerCenter.html(pageTitle.html());
