@@ -512,7 +512,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String repositoryDescription = "";
 
-    private boolean logActivity = false;
+    private boolean logActivityToFile = false;
+    private boolean logActivityToDatabase = false;    
 
     /** _more_ */
     private boolean downloadOk = true;
@@ -4550,7 +4551,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
 	cacheHtdocs           = getProperty(PROP_CACHE_HTDOCS, true);
-	logActivity           = getProperty("ramadda.logactivity", false);
+	logActivityToFile     = getProperty("ramadda.logging.logactivityfile", false);
+	logActivityToDatabase = getProperty("ramadda.logging.logactivitydatabase", false);	
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
         repositoryDescription = getProperty(PROP_REPOSITORY_DESCRIPTION, "");
         language              = getProperty(PROP_LANGUAGE, "");
@@ -4595,9 +4597,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public boolean getLogActivity() {
-	return logActivity;
+	return getLogActivityToFile() || getLogActivityToDatabase();
     }
 
+    public boolean getLogActivityToFile() {
+	return logActivityToFile;
+    }
+
+    public boolean getLogActivityToDatabase() {
+	return logActivityToDatabase;
+    }    
 
     /**
      * _more_

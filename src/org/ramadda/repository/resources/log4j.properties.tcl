@@ -48,6 +48,7 @@ proc logger {id key {pattern {[%5p]  %d{ISO8601} %m%n}}} {
 #jetty - doesn't seem to be used
 #logger jetty org.mortbay
 logger ramadda org.ramadda.repository.ramadda {%m%n}
+logger entryactivity org.ramadda.repository.entry.activity {%m%n}
 logger access org.ramadda.repository.access {%m%n}
 logger zip org.ramadda.repository.output.ZipOutputHandler
 logger chat org.ramadda.repository.collab.ChatOutputHandler

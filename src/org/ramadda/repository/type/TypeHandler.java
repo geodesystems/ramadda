@@ -2870,7 +2870,7 @@ public class TypeHandler extends RepositoryManager {
                         entry), "fas fa-sitemap", "Extended Edit",
                                 OutputType.TYPE_EDIT));
 
-	    if(getRepository().getLogActivity()) {
+	    if(getRepository().getLogActivityToDatabase()) {
 		links.add(
 			  new Link(
 				   request.entryUrl(

@@ -155,13 +155,15 @@ public abstract class Tables {
         public static final String COL_NODOT_ENTRYID =   "entryid";
         public static final String COL_DATE =  NAME + ".date";
         public static final String COL_NODOT_DATE =   "date";
+        public static final String COL_WEEK =  NAME + ".week";
+        public static final String COL_NODOT_WEEK =   "week";	
         public static final String COL_ACTIVITY =  NAME + ".activity";
         public static final String COL_NODOT_ACTIVITY =   "activity";
         public static final String COL_IPADDRESS =  NAME + ".ipaddress";
         public static final String COL_NODOT_IPADDRESS =   "ipaddress";
 
         public static final String[] ARRAY = new String[] {
-            COL_ENTRYID,COL_DATE,COL_ACTIVITY,COL_IPADDRESS
+            COL_ENTRYID,COL_DATE,COL_WEEK,COL_ACTIVITY,COL_IPADDRESS
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);

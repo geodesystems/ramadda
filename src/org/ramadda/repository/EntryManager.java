@@ -90,6 +90,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.time.ZonedDateTime;
+import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -958,9 +960,9 @@ public class EntryManager extends RepositoryManager {
 
 	if(getRepository().getLogActivity()) {
 	    if(request.getString("product","").equals("points.json")) {
-		addEntryActivity(request, entry,"data");
+		logEntryActivity(request, entry,"data");
 	    } else {
-		addEntryActivity(request, entry,"view");
+		logEntryActivity(request, entry,"view");
 	    }
 	}
 
@@ -1062,12 +1064,62 @@ public class EntryManager extends RepositoryManager {
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
-    private void addEntryActivity(Request request, Entry entry, String activity) throws Exception {
-	getDatabaseManager().executeInsert(Tables.ENTRY_ACTIVITY.INSERT,
-					   new Object[] {entry.getId(),new Date(),
-					       activity, request.getIp()});
+    private static class EntryActivity {
+	String entryId;
+	Hashtable<String,Integer> counts = new Hashtable<String,Integer>();
+	public EntryActivity(String entryId) {
+	    this.entryId = entryId;
+	}
+	public synchronized void addActivity(String activity) {
+	    Integer count = counts.get(activity);
+	    if(count==null) {
+		count = new Integer(0);
+		counts.put(activity,count);
+	    }
+	    counts.put(activity,new Integer(count.intValue()+1));
+	}
+
     }
 
+
+    private Hashtable<String,EntryActivity> entryActivities = new Hashtable<String,EntryActivity>();
+
+
+
+    private void logEntryActivityToDatabase(Request request, Entry entry, String activity) throws Exception {
+	synchronized(entryActivities) {
+	    EntryActivity entryActivity = entryActivities.get(entry.getId());
+	    if(entryActivity==null) {
+		entryActivity = new EntryActivity(entry.getId());
+		entryActivities.put(entry.getId(), entryActivity);
+	    }
+	    entryActivity.addActivity(activity);
+	}
+	if(true) return;
+
+	Date dttm = new Date();
+        GregorianCalendar cal =
+            new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+        cal.setTime(dttm);
+	ZonedDateTime input = ZonedDateTime.now();
+	input = input.of(input.getYear(),input.getMonthValue(),input.getDayOfMonth(),0,0,0,0,input.getZone());
+	System.out.println(input);
+	ZonedDateTime startOfLastWeek = input.minusWeeks(1).with(DayOfWeek.SUNDAY);
+	ZonedDateTime endOfLastWeek = startOfLastWeek.plusDays(6);
+	System.out.println(endOfLastWeek);
+
+	long week =  endOfLastWeek.toInstant().toEpochMilli();
+
+	getDatabaseManager().executeInsert(Tables.ENTRY_ACTIVITY.INSERT,
+					   new Object[] {entry.getId(),dttm,new Date(week),
+					       activity, request.getIp()});
+
+    }    
+
+    public void logEntryActivity(Request request, Entry entry, String activity) throws Exception {
+	if(getRepository().getLogActivityToFile()) getLogManager().logActivity(request, entry, activity);
+	if(getRepository().getLogActivityToDatabase()) logEntryActivityToDatabase(request, entry, activity);	
+    }
 
     public Result processEntryActivity(Request request) throws Exception {
 	Entry entry = getEntry(request);
@@ -1089,33 +1141,54 @@ public class EntryManager extends RepositoryManager {
 							      HU.submit("Yes",  ARG_CONFIRM) +" " +
 							      HU.submit("Cancel", ARG_CANCEL)));
 	    }
-
 	}
+
+	String ARG_BYDATE = "bydate";
 	Clause clause = Clause.eq(Tables.ENTRY_ACTIVITY.COL_ENTRYID, entry.getId());
+
+
+	SimpleDateFormat sdf =
+	    RepositoryUtil.makeDateFormat("yyyy-MM-dd");
 	String extra = SqlUtil.groupBy(SqlUtil.comma(Tables.ENTRY_ACTIVITY.COL_ENTRYID,Tables.ENTRY_ACTIVITY.COL_ACTIVITY));
+	if(true || request.exists(ARG_BYDATE)) {
+	    //	    extra += ", CAST(" + Tables.ENTRY_ACTIVITY.COL_DATE +" AS DATE)";	    
+	    extra += ", date(" + Tables.ENTRY_ACTIVITY.COL_DATE +")";
+	    extra += " order by date(" + Tables.ENTRY_ACTIVITY.COL_DATE +")";	    
+	}
+
+	System.err.println(extra);
         Statement stmt =
             getDatabaseManager().select(SqlUtil.comma(new String[] {
 			SqlUtil.comma(Tables.ENTRY_ACTIVITY.COL_ACTIVITY,
-				      Tables.ENTRY_ACTIVITY.COL_ACTIVITY,
-				      "count(" + Tables.ENTRY_ACTIVITY.COL_ENTRYID+")")
+				      "date(" +Tables.ENTRY_ACTIVITY.COL_DATE+")",
+				      SqlUtil.count(Tables.ENTRY_ACTIVITY.COL_ENTRYID))
 		    }), Tables.ENTRY_ACTIVITY.NAME, clause, extra);
-
 
 	ResultSet        results;
 	SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
 	boolean didOne  = false;
 	String url = getRepository().URL_ENTRY_ACTIVITY+"?" + HU.arg(ARG_ENTRYID,entry.getId());
+	Hashtable<Date,Object[]> events = new Hashtable<Date,Object[]>();
+	HashSet<String> seen  = new HashSet<String>();
 	while ((results = iter.getNext()) != null) {
 	    if(!didOne) {
 		didOne = true;
-		sb.append("<table class=formtable><tr class=entry-list-header><td></td><td style='padding-left:10px;padding-right:10px;' class=entry-list-header-column>&nbsp;Activity </td><td style='padding-left:10px;padding-right:10px;'  class=entry-list-header-column> Count </td>");
+		sb.append("<table class=formtable><tr class=entry-list-header><td></td><td style='padding-left:10px;padding-right:10px;' class=entry-list-header-column>Date</td><td style='padding-left:10px;padding-right:10px;' class=entry-list-header-column>Activity</td><td style='padding-left:10px;padding-right:10px;'  class=entry-list-header-column> Count </td>");
 	    }
 	    int col=1;
 	    sb.append("<tr>");
-	    String entryId = results.getString(col++);
-	    String type = results.getString(col++);
-	    sb.append(HU.col(HU.href(url+"&"+HU.arg(ARG_DELETE,type),HU.getIconImage("fas fa-trash-alt",HU.attr("title","Clear these events")))));
-	    sb.append(HU.col(type));
+	    String activity = results.getString(col++);
+	    Date date = getDatabaseManager().getTimestamp( results,  col++);
+	    Object[] tuple = events.get(date);
+	    if(tuple==null) {
+		tuple = new Object[]{0,0,0};
+		events.put(date,tuple);
+	    }
+	    System.err.println(date);
+	    
+	    sb.append(HU.col(HU.href(url+"&"+HU.arg(ARG_DELETE,activity),HU.getIconImage("fas fa-trash-alt",HU.attr("title","Clear these events")))));
+	    sb.append(HU.col(sdf.format(date)));
+	    sb.append(HU.col(activity));
 	    sb.append(HU.col(results.getString(col++),"align=right"));		      
 	    sb.append("</tr>");
 	}
@@ -4096,10 +4169,8 @@ public class EntryManager extends RepositoryManager {
         String path = entry.getResource().getPath();
         String mimeType = getRepository().getMimeTypeFromSuffix(
 								IOUtil.getFileExtension(path));
-	if(getRepository().getLogActivity()) {
-	    addEntryActivity(request, entry,"download");
-	}
-
+	logEntryActivity(request, entry,"download");
+	
         boolean isImage = Utils.isImage(path);
         if (request.defined(ARG_IMAGEWIDTH) && isImage) {
             int width = request.get(ARG_IMAGEWIDTH, 75);
