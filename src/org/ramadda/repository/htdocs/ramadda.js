@@ -442,7 +442,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 
 	rows.mouseup(function(event) {
-	    return
 	    if(!Utils.entryDragInfo) return;
 	    $(this).css("background", "");
 	    if(isTarget($(this))) {
