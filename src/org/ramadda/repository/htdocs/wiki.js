@@ -1095,7 +1095,7 @@ class  WikiEditor {
 		{p:"showSize",ex:false},
 		{p:"showType",ex:false},
 		{p:"showIcon",ex:false},
-		{p:"showThumbnail",ex:false},
+		{p:"showThumbnails",ex:false},
 		{p:"showArrow",ex:false},
 		{p:"showForm",ex:false},
 	        {p:"showCrumbs",ex:true},

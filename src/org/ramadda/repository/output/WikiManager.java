@@ -3956,7 +3956,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	}
 
 	for(String prop: new String[]{"details","simple","showHeader","showDate","showCreateDate","showSize",
-				      "showType","showIcon","showThumbnail","showArrow","showForm","showCrumbs"}) {
+				      "showType","showIcon","showThumbnails","showArrow","showForm","showCrumbs"}) {
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {
 		argProps.add(prop);

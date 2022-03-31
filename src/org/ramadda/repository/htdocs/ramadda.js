@@ -27,7 +27,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showSize:dflt,
 	    showType:dflt,
 	    showIcon:dflt,
-	    showThumbnail:dflt,	    
+	    showThumbnails:dflt,
 	    showArrow:dflt,	    
 	    showForm:dflt,	    
 	}
@@ -195,7 +195,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    tds.push(HU.div(['style',HU.css('min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents','class','entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
 
 
-		    if(props.showThumbnail) {
+		    if(props.showThumbnails) {
 			let thumbnail = entry.getThumbnail();
 			if(thumbnail)
 			    tds.push(HU.div(['style',HU.css('max-height','100px','overflow-y','auto')], HU.image(thumbnail,['class','ramadda-clickable ramadda-thumbnail-image','title','Click to enlarge',

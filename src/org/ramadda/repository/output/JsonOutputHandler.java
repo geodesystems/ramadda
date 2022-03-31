@@ -5,9 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
-//import com.google.gson.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.Metadata;
@@ -739,8 +736,7 @@ public class JsonOutputHandler extends OutputHandler {
 
 
         if (request.get(ARG_METADATA, true)) {
-            List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
+            List<Metadata> metadataList =  getMetadataManager().getMetadata(entry);
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
                     MetadataType metadataType =
@@ -782,11 +778,10 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
 
-
 	if(request.get("includeproperties",true)) {
 	    entry.getTypeHandler().addToJson(request, entry, items, attrs);
-	    JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
 	}
+	JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
 
 
         return JsonUtil.map(items);
