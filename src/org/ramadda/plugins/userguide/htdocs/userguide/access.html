@@ -50,11 +50,14 @@ pre {
 
 You can define access control settings under the &quot;Edit -&gt; Access&quot; menu for an entry.
 <p>
-The access control mechanism in RAMADDA is centered around a set of actions -
-<i>view</i>, <i>new</i>, <i>edit</i>, etc., 
-and a set of user roles that grant or remove  permissions to do those actions.
-On the left of the form is a list of the actions. For each action there
-is a field where you can enter any number of user roles (one per line).
+  The access control mechanism in RAMADDA is centered around a set of actions that can be
+  applied to entries - <br>
+  <i>view</i>, <i>new</i>, <i>edit</i>, etc.
+<br>
+For each action a set of user roles can be specified 
+that grant or remove  permissions to do those actions.
+The form is composed of this list of actions and, for each action,
+there is a field where you can enter any number of user roles (one per line).
 
 
 <center><a name="image1"></a><div><a href="images/access.png"><img  src="images/access.png" border=0 width=600 alt="Entry Access Control" ></a><br><span class="caption">Image 1: Entry Access Control</span></div></center>
@@ -68,7 +71,7 @@ Note: after setting access (e.g., creating a private space) it is best to log ou
 and check if the access is set to what you think it is.
 </div>
 
-The roles are for a user are defined by the RAMADDA administrator through the Admin-Users page.
+The roles for a user are defined by the RAMADDA administrator through the Admin-Users page.
 Other "special" roles include:
 <ul>
   <li> "none" - this denies access to any user
@@ -93,7 +96,6 @@ On the right shows a summary table for the particular entry being viewed.
 This shows the access control
 settings for all of the ancestor entries of the current entry and allows the 
 user to see just what access settings are applicable to the entry.
-<p>
 To see if a given user has the ability to do a particular action for a particular entry RAMADDA looks
 at the permissions for the entry and its ancestors and either looks for the
 first permission  grant or the first permission denial.
@@ -108,7 +110,7 @@ none
 </div>
 
 <li> To allow anyone to view the entries in a tree but don't allow anyone to
-  access the files then under the <i>file</i> action do:
+  access the files then under the <i>file</i> action enter:
 <div class="access-example">
 none
 </div>
@@ -117,7 +119,7 @@ none
  users who are coming from the IP address 123.456 then 
 under the <i>file</i> action do:
 <div class="access-example">
-ip:123.456
+ip:123.456<br>
 none
 </div>
 

@@ -50,6 +50,7 @@ pre {
 <div class="faq-question"> <b>1.16.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
 <div class="faq-question"> <b>1.17.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
 <div class="faq-question"> <b>1.18.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
+<div class="faq-question"> <b>1.19.</b> <a class="faq-question-link" href="#logging">How do I track views or downloads of entries?</a></div>
 </div></div>
 <div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-question">
 <h3> 1.1.  I forgot my user id. How do I retrieve it?</h3>
@@ -334,6 +335,18 @@ Be careful with this. I (jeffmc) have seen remote file systems go down momentari
 </b>
 
 
+</div>
+<p><hr align="center" width="10%"><p><a name="logging"></a><div class="faq-question">
+<h3> 1.19.  How do I track views or downloads of entries?</h3>
+</div>
+</a><div class="faq-answer"><b>A.</b> 
+You can enable logging of entry activities by setting the property:
+<pre>
+ramadda.logging.logactivityfile=true
+</pre>
+When set various entry activities - view, file, data (providing data to a display) - are logged
+to a file:<br>
+&lt;ramadda home&gt;/logs/entryactivity.log
 </div>
 <p><hr align="center" width="10%"><p></div></div></div>
 
