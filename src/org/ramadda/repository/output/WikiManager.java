@@ -496,10 +496,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		if(primaryEntry==null || !entry.equals(primaryEntry)) return "";
 	    }
 
-
-            theEntry.getTypeHandler().addWikiProperties(theEntry, wikiUtil,
-                    tag, props);
-            addWikiLink(wikiUtil, theEntry);
+	    if(theEntry!=null) {
+		theEntry.getTypeHandler().addWikiProperties(theEntry, wikiUtil,
+							    tag, props);
+		addWikiLink(wikiUtil, theEntry);
+	    }
 	    //If we are doing an {{import}} of an entry that does have displays but has no group defined then
 	    //there can be any number of errors. This fixes it:
 	    Object tmpAddedGroup =    tag.equals("import")?request.getExtraProperty(PROP_GROUP_VAR):null;
