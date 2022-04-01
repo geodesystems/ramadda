@@ -294,8 +294,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(entry.getIsUrl()) {
 			table+=HU.formEntry('URL:',HU.href(entry.getResourceUrl(),entry.getResourceUrl()));
 		    } else if(entry.getIsFile()) {
-			table+=HU.formEntry('File:',HU.href(entry.getResourceUrl(),entry.getFilename() +' ' +
-							    HU.getIconImage('fas fa-download') +' (' + entry.getFormattedFilesize()+')'));
+			let url = entry.getResourceUrl();
+			table+=HU.formEntry('File:',HU.href(url,entry.getFilename()) +' ' +
+					    ' (' + entry.getFormattedFilesize()+')' +
+					    ' ' + HU.href(url,HU.getIconImage('fas fa-download')));
 		    }
 		    
 		    table+=HU.formEntry('Kind:',HU.href(ramaddaBaseUrl+'/search/type/' + entry.getType().id,entry.typeName,['title','Search for entries of type ' + entry.typeName]));
