@@ -155,7 +155,6 @@ public class LogManager extends RepositoryManager {
     public void initAttributes() {
         super.initAttributes();
         LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
-        System.err.println("OK:" + LOGGER_OK);
     }
 
     /**
