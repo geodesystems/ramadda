@@ -590,17 +590,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     handleDropEvent:function(event,file, result,entryId,callback) {
 	let isImage= file.type.match('^image.*');
 	let url = ramaddaBaseUrl +"/entry/addfile";
-	let wikiCallback = (html,status,xhr) =>{
-	    console.log("ok");
-	}
-	let wikiError = (html,status,xhr) =>{
-	    console.log("error");
-	};
-
 	let desc = "";
 	let name = file.name;
 	if(!name) {
-	    name = prompt("Name:");
+	    name = prompt("Entry Name:");
 	    if(!name) return;
 	}
 
@@ -615,6 +608,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	data.append("group",entryId);
 	data.append("description",desc);
 	data.append("file", result);
+	let dialog;
 	$.ajax({
 	    url: url,
 	    cache: false,
@@ -624,16 +618,20 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    type: 'POST', 
 	    data: data,
 	    success:  (data) =>{
+		dialog.remove();
 		if(data.status!='ok') {
-		    alert("An error occurred creating file:"  + data.message);
+		    alert("An error occurred creating entry: "  + data.message);
 		    return;
 		}
 		if(callback) callback(data,data.entryid, data.name,isImage);
 	    },
 	    error: function (err) {
-		alert("An error occurred creating file:"  + err);
+		dialog.remove();
+		alert("An error occurred creating entry: "  + err);
 	    }
 	});
+	let html = HU.div(['style',HU.css('text-align','center','padding','5px')], "Creating entry<br>"+HU.image(ramaddaCdn + '/icons/mapprogress.gif',['width','50px']));
+	dialog = HU.makeDialog({content:html,anchor:$(document),my:"center top",at:"center top+100"});    
     },
 
 
