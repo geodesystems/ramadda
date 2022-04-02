@@ -1,4 +1,3 @@
-enum
 CC-BY-4.0:Creative Commons Attribution 4.0 International
 CC-BY-NC-4.0:Creative Commons Attribution Non Commercial 4.0 International
 CC-BY-NC-ND-4.0:Creative Commons Attribution Non Commercial No Derivatives 4.0 International
