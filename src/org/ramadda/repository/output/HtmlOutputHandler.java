@@ -1565,6 +1565,7 @@ public class HtmlOutputHandler extends OutputHandler {
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
         String firstLink = null;
+	String viewId = HU.getUniqueId("treeview_");
         for (Entry child : children) {
             String entryIcon = getPageHandler().getIconUrl(request, child);
             String label = getEntryManager().getEntryListName(request, child);
@@ -1581,6 +1582,7 @@ public class HtmlOutputHandler extends OutputHandler {
             url = Utils.concatString("javascript:",
                                      HU.call("Utils.treeViewClick",
                                              HU.jsMakeArgs(false,
+                                                 HU.squote(viewId),
                                                  HU.squote(child.getId()),
                                                      HU.squote(url),
                                                          HU.squote(label),
@@ -1637,11 +1639,11 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         sb.append("<div class=\"col-md-" + wtr
                   + " ramadda-treeview-right \"  \"  >");
-        String attrs = HU.attrs("id", "treeview_view", "src", initUrl,
+        String attrs = HU.attrs("id", viewId, "src", initUrl,
                                 "width", "" + ((width < 0)
                 ? (-width + "%")
                 : width), "height", "" + height);
-        HU.tag(sb, "iframe", attrs, "");
+	HU.tag(sb, "iframe", attrs, "");
         sb.append("</div>");
         sb.append("</div>");
         sb.append("</div>");
