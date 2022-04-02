@@ -124,36 +124,13 @@ public class ContentMetadataHandler extends MetadataHandler {
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
         if (metadata.getType().equals(TYPE_LICENSE)) {
-            if (licenseUrls == null) {
-                licenseUrls = new Properties();
-                getRepository().loadProperties(
-                    licenseUrls,
-                    "/org/ramadda/repository/resources/metadata/spdxurls.properties");
-            }
             String          license = metadata.getAttr1();
             MetadataType    type    = getType(metadata.getType());
             MetadataElement element = type.getChildren().get(0);
             String          label   = element.getLabel(license);
-            if (label == null) {
-                label = license;
-            }
-            String desc       = metadata.getAttr1();
-            String spdxLink   = (String) licenseUrls.get(license);
             String searchLink = getSearchLink(request, metadata);
-            String _license   = license.toLowerCase();
-            String contents   = " " + label + " ";
-            if (license.startsWith("CC-")) {
-                String img = _license;
-                img      = img.replace("cc-", "").replace("-4.0", "");
-                img      = getIconUrl("/cc/" + img + ".png");
-                img      = HU.image(img, "width", "100px");
-                contents += "<br>" + img;
-            }
-            if (spdxLink != null) {
-                contents = HU.href(spdxLink, contents, "target=_other");
-            }
 
-            //"<b>License:</b>&nbsp;"+
+	    String contents = getMetadataManager().getLicenseHtml(license, label);
             return new String[] { "License:&nbsp;",
                                   searchLink + " " + contents };
         }

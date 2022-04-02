@@ -206,6 +206,38 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    /**  */
+    private Properties licenseUrls;
+
+    public String getLicenseHtml(String license, String label) throws Exception {
+	if (licenseUrls == null) {
+	    licenseUrls = new Properties();
+	    getRepository().loadProperties(
+					   licenseUrls,
+					   "/org/ramadda/repository/resources/metadata/spdxurls.properties");
+	}
+
+	if (label == null) {
+	    label = license;
+	}
+	String desc       = license;
+	String spdxLink   = (String) licenseUrls.get(license);
+	String _license   = license.toLowerCase();
+	String contents   = " " + label + " ";
+	if (license.startsWith("CC-")) {
+	    String img = _license;
+	    img      = img.replace("cc-", "").replace("-4.0", "");
+	    img      = getIconUrl("/cc/" + img + ".png");
+	    img      = HU.image(img, "width", "100px");
+	    contents += "<br>" + img;
+	}
+	if (spdxLink != null) {
+	    contents = HU.href(spdxLink, contents, "target=_other");
+	}
+	return contents;
+    }
+
+
     /**
      * _more_
      *
