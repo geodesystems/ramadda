@@ -6,55 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.auth;
 
 
-import org.ramadda.util.HtmlUtils;
-
-
-import org.ramadda.util.sql.SqlUtil;
-
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
-
-import java.io.File;
-import java.io.InputStream;
-
-import java.lang.reflect.*;
-
-
-
-import java.net.*;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-
-
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-
-
-
-import java.util.regex.*;
 
 
 /**
- *
- *
  *
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
@@ -97,22 +53,22 @@ public class Permission {
 
     /** _more_ */
     public static final String[] ACTIONS = {
-        ACTION_VIEW,  ACTION_FILE, ACTION_EXPORT,
-        ACTION_EDIT, ACTION_NEW, ACTION_DELETE, ACTION_UPLOAD,  
-	//ACTION_COMMENT,
-	ACTION_VIEWCHILDREN,  ACTION_TYPE1, ACTION_TYPE2
+        ACTION_VIEW, ACTION_FILE, ACTION_EXPORT, ACTION_EDIT, ACTION_NEW,
+        ACTION_DELETE, ACTION_UPLOAD,
+        //ACTION_COMMENT,
+        ACTION_VIEWCHILDREN, ACTION_TYPE1, ACTION_TYPE2
     };
 
     /** _more_ */
     public static final String[] ACTION_NAMES = {
-        "View",  "File", "Export", "Edit", "New",
-	"Delete",
-        "Anon. Upload",
-	//	"Comment",
-	"View Children", "Type specific 1",
-        "Type specific 2"
+        "View", "File", "Export", "Edit", "New", "Delete", "Anon. Upload",
+        //      "Comment",
+        "View Children", "Type specific 1", "Type specific 2"
     };
 
+
+    /**  */
+    DataPolicy dataPolicy;
 
     /** _more_ */
     String action;
@@ -146,6 +102,45 @@ public class Permission {
     }
 
 
+    /**
+     *
+     *
+     * @param dataPolicy _more_
+     * @param action _more_
+     * @param roles _more_
+     */
+    public Permission(DataPolicy dataPolicy, String action,
+                      List<Role> roles) {
+        this(action, roles);
+        this.dataPolicy = dataPolicy;
+    }
+
+
+    /**
+     * Set the DataPolicy property.
+     *
+     * @param value The new value for DataPolicy
+     */
+    public void setDataPolicy(DataPolicy value) {
+        dataPolicy = value;
+    }
+
+    /**
+     * Get the DataPolicy property.
+     *
+     * @return The DataPolicy
+     */
+    public DataPolicy getDataPolicy() {
+        return dataPolicy;
+    }
+
+
+    /**
+      * @return _more_
+     */
+    public boolean hasDataPolicy() {
+        return dataPolicy != null;
+    }
 
     /**
      * _more_
@@ -178,8 +173,11 @@ public class Permission {
                 return true;
             }
         }
-	//Since we comment out the "comment" action in the list of actions handle it here
-	if(action.equals("comment")) return true;
+        //Since we comment out the "comment" action in the list of actions handle it here
+        if (action.equals("comment")) {
+            return true;
+        }
+
         return false;
     }
 
@@ -221,5 +219,3 @@ public class Permission {
     }
 
 }
-
-

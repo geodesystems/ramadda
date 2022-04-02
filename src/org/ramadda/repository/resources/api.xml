@@ -123,6 +123,8 @@
   <group handler="accessmanager">
       <api request="/access/form"       method="processAccessForm"      actions="edit"/>
       <api request="/access/change"     method="processAccessChange"    actions="edit"/>
+      <api request="/access/datapolicies"           method="processDataPolicyInfo"  admin="false"/>
+
   </group>
 
 

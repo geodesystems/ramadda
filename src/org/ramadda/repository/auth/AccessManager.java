@@ -6,23 +6,29 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.auth;
 
 
+import org.json.*;
+
+
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
-
 
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
+
+import ucar.unidata.util.TwoFacedObject;
 
 import java.io.*;
 
@@ -39,7 +45,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Hashtable;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -60,6 +69,9 @@ import java.util.zip.*;
 public class AccessManager extends RepositoryManager {
 
 
+    /**  */
+    public static final String ARG_DATAPOLICY = "datapolicy";
+
     /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
                                             "/access/form", "Access");
@@ -76,7 +88,8 @@ public class AccessManager extends RepositoryManager {
 
     /** _more_ */
     private TTLCache<String, Object[]> recentPermissions =
-        new TTLCache<String, Object[]>(5 * 60 * 1000,"Access Manager Permissions");
+        new TTLCache<String, Object[]>(5 * 60 * 1000,
+                     "Access Manager Permissions");
 
 
     /** _more_ */
@@ -84,6 +97,7 @@ public class AccessManager extends RepositoryManager {
         "ramadda.auth.stopatfirstrole";
 
 
+    /**  */
     private boolean stopAtFirstRole = true;
 
 
@@ -95,6 +109,83 @@ public class AccessManager extends RepositoryManager {
      */
     public AccessManager(Repository repository) {
         super(repository);
+        Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    runDataPolicyFetch();
+                } catch (Exception exc) {
+                    getLogManager().logError(
+                        "Error running runDataPolicyFetch");
+                }
+            }
+        });
+
+    }
+
+
+
+    /**
+     *
+     * @throws Exception _more_
+     */
+    private void runDataPolicyFetch() throws Exception {
+        //Pause for a minute
+        //      Misc.sleepSeconds(60);
+        Misc.sleepSeconds(5);
+        while (true) {
+            doDataPolicyFetch();
+            //Sleep 5 minutes
+            Misc.sleepSeconds(60 * 5);
+        }
+
+    }
+
+    /**  */
+    private List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
+
+    /**  */
+    private Hashtable<String, DataPolicy> dataPoliciesMap =
+        new Hashtable<String, DataPolicy>();
+
+    /**
+     *
+     * @throws Exception _more_
+     */
+    private void doDataPolicyFetch() throws Exception {
+        boolean debug = false;
+        List<String> urls =
+            Utils.split(getRepository().getProperty("ramadda.datapolicy.urls",
+                "https://ramadda.org/repository/v1/datapolicy/list"), ",",
+                    true, true);
+        List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
+        Hashtable<String, DataPolicy> dataPoliciesMap = new Hashtable<String,
+                                                            DataPolicy>();
+        for (String url : urls) {
+            if (debug) {
+                System.err.println("Fetching data policy:" + url);
+            }
+            try {
+                String     json = IO.readContents(url);
+                JSONObject dp   = new JSONObject(json);
+                String     name = dp.optString("name", "");
+                if (debug) {
+                    System.err.println("Processing data policy:"
+                                       + dp.getString("name"));
+                }
+                JSONArray jpolicies = dp.getJSONArray("policies");
+                for (int i = 0; i < jpolicies.length(); i++) {
+                    JSONObject policy     = jpolicies.getJSONObject(i);
+                    DataPolicy dataPolicy = new DataPolicy(url, name, policy);
+                    dataPolicies.add(dataPolicy);
+                    dataPoliciesMap.put(dataPolicy.getId(), dataPolicy);
+                }
+                this.dataPolicies    = dataPolicies;
+                this.dataPoliciesMap = dataPoliciesMap;
+            } catch (Exception exc) {
+                getLogManager().logError("Error reading data policy:" + url,
+                                         exc);
+            }
+        }
     }
 
 
@@ -106,10 +197,13 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    /**
+     */
     @Override
     public void initAttributes() {
         super.initAttributes();
-	stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE, true);
+        stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE,
+                true);
     }
 
 
@@ -122,10 +216,9 @@ public class AccessManager extends RepositoryManager {
      */
     public void initTopEntry(Entry mainEntry) throws Exception {
         mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
-					       Role.ROLE_ANY));
+                Role.ROLE_ANY));
         mainEntry.addPermission(
-            new Permission(
-                Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY));
+            new Permission(Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_FILE,
                 Role.ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_EXPORT,
@@ -296,11 +389,23 @@ public class AccessManager extends RepositoryManager {
             requestIp = request.getIp();
         }
 
-	return  canDoAction(request, requestIp, user, log, entry,  action);
+        return canDoAction(request, requestIp, user, log, entry, action);
     }
 
-    private boolean canDoAction(Request request, String requestIp, User user, boolean log,
-				Entry entry, String action)
+    /**
+     *
+     * @param request _more_
+     * @param requestIp _more_
+     * @param user _more_
+     * @param log _more_
+     * @param entry _more_
+     * @param action _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private boolean canDoAction(Request request, String requestIp, User user,
+                                boolean log, Entry entry, String action)
             throws Exception {
 
         if (entry == null) {
@@ -340,6 +445,7 @@ public class AccessManager extends RepositoryManager {
 
         if (user == null) {
             logInfo("Upload:canDoAction: user is null");
+
             return false;
         }
 
@@ -361,12 +467,14 @@ public class AccessManager extends RepositoryManager {
             if (log) {
                 logInfo("Upload:user is owner");
             }
+
             //            System.err.println("user is owner of entry");
             return true;
         }
 
-        String key = "a:" + action + "_u:" + user.getId() + "_roles:" + user.getRoles()
-	    +"_ip:"  + requestIp + "_e:" + entry.getId();
+        String key = "a:" + action + "_u:" + user.getId() + "_roles:"
+                     + user.getRoles() + "_ip:" + requestIp + "_e:"
+                     + entry.getId();
         Object[] pastResult = recentPermissions.get(key);
         Date     now        = new Date();
         if (pastResult != null) {
@@ -386,13 +494,14 @@ public class AccessManager extends RepositoryManager {
             }
         }
 
-	boolean debug = false;
-	//	debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
-        boolean result = canDoActionInner(request, requestIp, user, log, entry, action);
-	if(debug) {
-	    //	    System.err.println("CANDO:" + entry +" " + result);
-	    //	    System.err.println(Utils.getStack(10));
-	}
+        boolean debug = false;
+        //      debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
+        boolean result = canDoActionInner(request, requestIp, user, log,
+                                          entry, action);
+        if (debug) {
+            //      System.err.println("CANDO:" + entry +" " + result);
+            //      System.err.println(Utils.getStack(10));
+        }
         //        logInfo("Upload:canDoAction:  result= " + result);
         if (recentPermissions.size() > 10000) {
             clearCache();
@@ -430,6 +539,7 @@ public class AccessManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param log _more_
      * @param entry _more_
      * @param action _more_
      * @param user _more_
@@ -439,80 +549,104 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private boolean canDoActionInner(Request request, String requestIp, User user, boolean log,
-				     Entry entry,
+    private boolean canDoActionInner(Request request, String requestIp,
+                                     User user, boolean log, Entry entry,
                                      String action)
-	throws Exception {
-	if(entry==null) return false;
-	//        boolean stop = stopAtFirstRole;
-	boolean debug = false;
-	//	debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
+            throws Exception {
+        if (entry == null) {
+            return false;
+        }
+        //        boolean stop = stopAtFirstRole;
+        boolean debug = false;
+        //      debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
 
-	boolean      hadInherit     = false;
-	boolean      hadAny= false;
-	List<Role> roles = getRoles(entry, action);
-	if(debug && roles!=null && roles.size()>0)
-	    System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry +" roles=" + roles);
-	if (roles != null && roles.size()>0) {
-	    /*
-	      ip:222
-	      user
-	      none
-	    */
-	    for (Role role : roles) {
-		if(role.isComment()) continue;
-		hadAny = true;
-		boolean negated = role.getNegated();
-		if(debug)
-		    System.err.println("\tROLE:" + role.getBaseRole() +" negated:" + negated);
-		if(role.getIsIp()) {
-		    if(requestIp!=null) {
-			if (requestIp.startsWith(role.getBaseRole())) {
-			    if(debug)
-				System.err.println("\tIP negated:" + negated  +" " + requestIp);
-			    return !negated;
-			}
-		    }
-		    continue;
-		} 
+        boolean    hadInherit = false;
+        boolean    hadAny     = false;
+        List<Role> roles      = getRoles(entry, action);
+        if (debug && (roles != null) && (roles.size() > 0)) {
+            System.err.println("canDoAction:  user=" + user + " action="
+                               + action + " entry=" + entry + " roles="
+                               + roles);
+        }
+        if ((roles != null) && (roles.size() > 0)) {
+            /*
+              ip:222
+              user
+              none
+            */
+            for (Role role : roles) {
+                if (role.isComment()) {
+                    continue;
+                }
+                hadAny = true;
+                boolean negated = role.getNegated();
+                if (debug) {
+                    System.err.println("\tROLE:" + role.getBaseRole()
+                                       + " negated:" + negated);
+                }
+                if (role.getIsIp()) {
+                    if (requestIp != null) {
+                        if (requestIp.startsWith(role.getBaseRole())) {
+                            if (debug) {
+                                System.err.println("\tIP negated:" + negated
+                                        + " " + requestIp);
+                            }
 
-		if (Role.ROLE_INHERIT.isRole(role)) {
-		    hadInherit = true;
-		    continue;
-		}
-		if (Role.ROLE_ANY.isRole(role)) {
-		    if(debug) System.err.println("\tIs ANY negated: " + negated);
-		    return !negated;
-		}
-		if (Role.ROLE_NONE.isRole(role)) {
-		    if(debug) System.err.println("\tIs NONE negated:" + negated);
-		    return negated;
-		}
-		if (user.isRole(role)) {
-		    if(debug) System.err.println("\tuser.isRole: " + role);
-		    return !negated;
-		}
-	    }
-	    //If we had an access grant here then block access
-	    /*
-	    if(hadAny) {
-		if (!hadInherit) {
-		    if(stop) {
-			if(debug)
-			    System.err.println("\thadAny=true stop=true returning FALSE");
-			return false;
-		    }
-		}
-		}*/
-	}
+                            return !negated;
+                        }
+                    }
+                    continue;
+                }
 
-	//LOOK: make sure we pass in false here which says do not check for access control
-	entry = getEntryManager().getParent(request, entry, false);
-	if(entry!=null) return canDoAction(request, requestIp, user, log, entry, action);
-	if(debug)
-	    System.err.println("\tparent is NULL");
-	
-	return false;
+                if (Role.ROLE_INHERIT.isRole(role)) {
+                    hadInherit = true;
+                    continue;
+                }
+                if (Role.ROLE_ANY.isRole(role)) {
+                    if (debug) {
+                        System.err.println("\tIs ANY negated: " + negated);
+                    }
+
+                    return !negated;
+                }
+                if (Role.ROLE_NONE.isRole(role)) {
+                    if (debug) {
+                        System.err.println("\tIs NONE negated:" + negated);
+                    }
+
+                    return negated;
+                }
+                if (user.isRole(role)) {
+                    if (debug) {
+                        System.err.println("\tuser.isRole: " + role);
+                    }
+
+                    return !negated;
+                }
+            }
+            //If we had an access grant here then block access
+            /*
+            if(hadAny) {
+                if (!hadInherit) {
+                    if(stop) {
+                        if(debug)
+                            System.err.println("\thadAny=true stop=true returning FALSE");
+                        return false;
+                    }
+                }
+                }*/
+        }
+
+        //LOOK: make sure we pass in false here which says do not check for access control
+        entry = getEntryManager().getParent(request, entry, false);
+        if (entry != null) {
+            return canDoAction(request, requestIp, user, log, entry, action);
+        }
+        if (debug) {
+            System.err.println("\tparent is NULL");
+        }
+
+        return false;
     }
 
 
@@ -533,6 +667,7 @@ public class AccessManager extends RepositoryManager {
     public List<Role> getRoles(Entry entry, String action) throws Exception {
         //Make sure we call getPermissions first which forces the instantation of the roles
         getPermissions(entry);
+
         return (List<Role>) entry.getRoles(action);
     }
 
@@ -717,27 +852,47 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public boolean canDoEdit(Request request, Entry entry)
-            throws Exception {
+    public boolean canDoEdit(Request request, Entry entry) throws Exception {
         //        if(entry.getIsLocalFile()) return false;
         return canDoAction(request, entry, Permission.ACTION_EDIT);
     }
 
-    public boolean canDoFile(Request request, Entry entry)
-            throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean canDoFile(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_FILE);
-    }    
+    }
 
-    public boolean canDoType1(Request request, Entry entry)
-            throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean canDoType1(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE1);
-    }    
+    }
 
-    public boolean canDoType2(Request request, Entry entry)
-            throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean canDoType2(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE2);
-    }    
-    
+    }
+
     /**
      * _more_
      *
@@ -754,36 +909,82 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canDoComment(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_COMMENT);
     }
 
-    public boolean canDoView(Request request, Entry entry)
-            throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean canDoView(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_VIEW);
     }
 
-    public boolean canDoNew(Request request, Entry entry)
-            throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean canDoNew(Request request, Entry entry) throws Exception {
         return canDoAction(request, entry, Permission.ACTION_NEW);
-    }    
+    }
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canDoUpload(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_UPLOAD);
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canDoDelete(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_DELETE);
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canDoViewChildren(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_VIEWCHILDREN);
-    }            
-    
+    }
+
 
     /**
      * _more_
@@ -840,7 +1041,8 @@ public class AccessManager extends RepositoryManager {
         for (Permission permission : permissions) {
             List<Role> roles = (List<Role>) map.get(permission.getAction());
             if (roles == null) {
-                map.put(permission.getAction(), roles = new ArrayList<Role>());
+                map.put(permission.getAction(),
+                        roles = new ArrayList<Role>());
             }
             roles.addAll(permission.getRoles());
         }
@@ -851,19 +1053,24 @@ public class AccessManager extends RepositoryManager {
             if (roles == null) {
                 cols.append(HtmlUtils.cols("&nbsp;"));
             } else {
-		StringBuilder tmp = null;
-		for(Role role:roles) {
-		    if(tmp==null) tmp = new StringBuilder();
-		    else tmp.append("<br>");
-		    tmp.append(HU.span(role.toString(),role.getDecoration()));
-		}
+                StringBuilder tmp = null;
+                for (Role role : roles) {
+                    if (tmp == null) {
+                        tmp = new StringBuilder();
+                    } else {
+                        tmp.append("<br>");
+                    }
+                    tmp.append(HU.span(role.toString(),
+                                       role.getDecoration()));
+                }
                 cols.append(HtmlUtils.cols(tmp.toString()));
             }
         }
         sb.append(
             HtmlUtils.row(
                 cols.toString(),
-                HU.attr("valign","top") + HtmlUtils.cssClass("ramadda-access-summary")));
+                HU.attr("valign", "top")
+                + HtmlUtils.cssClass("ramadda-access-summary")));
         listAccess(request,
                    getEntryManager().getEntry(request,
                        entry.getParentEntryId()), sb);
@@ -889,11 +1096,11 @@ public class AccessManager extends RepositoryManager {
 
         for (Permission permission : permissions) {
             List<Role> roles = permission.getRoles();
-	    for(Role role: roles) {
+            for (Role role : roles) {
                 getDatabaseManager().executeInsert(Tables.PERMISSIONS.INSERT,
                         new Object[] { entry.getId(),
                                        permission.getAction(),
-                                       role.getRole()});
+                                       role.getRole() });
             }
         }
         entry.setPermissions(permissions);
@@ -952,12 +1159,14 @@ public class AccessManager extends RepositoryManager {
         permissions = new ArrayList<Permission>();
 
         ResultSet results;
-        Hashtable<String,List<Role>> actions = new Hashtable<String,List<Role>>();
+        Hashtable<String, List<Role>> actions = new Hashtable<String,
+                                                    List<Role>>();
         while ((results = iter.getNext()) != null) {
-            String id     = results.getString(1);
-            String action = results.getString(2);
-            String role   = results.getString(3);
-            List<Role>   roles  = actions.get(action);
+            int        col    = 1;
+            String     id     = results.getString(col++);
+            String     action = results.getString(col++);
+            String     role   = results.getString(col++);
+            List<Role> roles  = actions.get(action);
             if (roles == null) {
                 actions.put(action, roles = new ArrayList<Role>());
                 permissions.add(new Permission(action, roles));
@@ -965,10 +1174,76 @@ public class AccessManager extends RepositoryManager {
             roles.add(new Role(role));
         }
         entry.setPermissions(permissions);
+
         return permissions;
     }
 
 
+
+
+    /**
+     *
+     * @param request _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processDataPolicyInfo(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().sectionOpen(request, sb, "Data Policies", false);
+        if (dataPolicies.size() == 0) {
+            sb.append("No loaded data policies");
+            getPageHandler().sectionClose(request, sb);
+
+            return new Result("Data Policies", sb);
+        }
+        sb.append("Loaded data policies:");
+        LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
+                                                       StringBuilder>();
+        for (DataPolicy dataPolicy : dataPolicies) {
+            String href = dataPolicy.getFromName() + " - "
+                          + HU.href(dataPolicy.getUrl(), dataPolicy.getUrl());
+            StringBuilder buff = map.get(href);
+            if (buff == null) {
+                map.put(href, buff = new StringBuilder());
+            }
+            String label = dataPolicy.getLabel();
+            buff.append("<li>");
+            buff.append(HU.italics(label));
+            if (Utils.stringDefined(dataPolicy.getDescription())) {
+                buff.append("<br>");
+                buff.append(dataPolicy.getDescription());
+            }
+            //If they are logged then show the access
+            if ( !request.isAnonymous()) {
+                buff.append("<br>");
+                buff.append(HU.b("Permissions:"));
+                buff.append("<ul>");
+                for (Permission permission : dataPolicy.getPermissions()) {
+                    buff.append("<li>");
+                    buff.append(permission);
+                }
+                buff.append("</ul>");
+            }
+
+        }
+
+        sb.append("<ul>");
+        for (String key : map.keySet()) {
+            StringBuilder buff = map.get(key);
+            sb.append("<li> ");
+            sb.append(key);
+            sb.append("<ul>");
+            sb.append(buff);
+            sb.append("</ul>");
+        }
+        sb.append("</ul>");
+
+        sb.append("</ul>");
+        getPageHandler().sectionClose(request, sb);
+
+        return new Result("Data Policies", sb);
+    }
 
 
     /**
@@ -1005,7 +1280,8 @@ public class AccessManager extends RepositoryManager {
         currentAccess.append(
             HtmlUtils.row(
                 header.toString(),
-                HU.attr("valign","top") + HtmlUtils.cssClass("ramadda-access-summary-header")));
+                HU.attr("valign", "top")
+                + HtmlUtils.cssClass("ramadda-access-summary-header")));
 
         listAccess(request, entry, currentAccess);
         currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
@@ -1014,6 +1290,13 @@ public class AccessManager extends RepositoryManager {
 
         Hashtable        map         = new Hashtable();
         List<Permission> permissions = getPermissions(entry);
+        HashSet<String>  dpMap       = new HashSet<String>();
+        for (Permission permission : permissions) {
+            if (permission.hasDataPolicy()) {
+                dpMap.add(permission.getDataPolicy().getId());
+            }
+        }
+
         for (Permission permission : permissions) {
             List roles = permission.getRoles();
             if (roles.contains(Role.ROLE_NONE)) {
@@ -1027,27 +1310,51 @@ public class AccessManager extends RepositoryManager {
         sb.append("<p>");
         sb.append(HtmlUtils.submit("Change Access"));
         sb.append("<p>");
-        //        sb.append("<table><tr valign=\"top\"><td>");
-        //        sb.append(HtmlUtils.formTable());
+        if (dataPolicies.size() > 0) {
+            List         items    = new ArrayList();
+            List<String> selected = new ArrayList<String>();
+            System.err.println(dpMap);
+            for (DataPolicy dataPolicy : dataPolicies) {
+                if (dpMap.contains(dataPolicy.getId())) {
+                    selected.add(dataPolicy.getId());
+                }
+                items.add(new TwoFacedObject(dataPolicy.getLabel(),
+                                             dataPolicy.getId()));
+            }
+            String extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
+                                     "true") + HtmlUtils.attr("size",
+                                         "" + (Math.min(items.size(), 4)));
+            String select = HU.select(ARG_DATAPOLICY, items, selected,
+                                      extraSelect);
+            sb.append(HU.b("Data Policy:") + " " + select);
+            sb.append(HU.href(getRepository().getUrlBase()
+                              + "/access/datapolicies", "View Data Policies",
+                                  HU.attr("target", "_datapolicies")));
+        }
+
         sb.append("<table id='accessform' style=''><tr valign=top>");
-	sb.append("<td>");
+        sb.append("<td>");
         sb.append("<table style='margin-right:10px;' >");
-	List opts = new ArrayList();
-	Utils.add(opts,new TwoFacedObject("Add role",""),
-		  new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
-		  new TwoFacedObject("Logged in user",Role.ROLE_USER.getRole()),
-		  new TwoFacedObject("No one", Role.ROLE_NONE.getRole()),
-		  new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
-		  new TwoFacedObject("Anonymous users", Role.ROLE_ANONYMOUS.getRole()),
-		  Role.ROLE_ANY.getRole(),
-		  new TwoFacedObject("Guest user", Role.ROLE_GUEST.getRole()));
-	opts.addAll(getUserManager().getUserRoles());
+        List opts = new ArrayList();
+        Utils.add(
+            opts, new TwoFacedObject("Add role", ""),
+            new TwoFacedObject("User ID", "user:&lt;user id&gt;"),
+            new TwoFacedObject("Logged in user", Role.ROLE_USER.getRole()),
+            new TwoFacedObject("No one", Role.ROLE_NONE.getRole()),
+            new TwoFacedObject("IP Address", "ip:&lt;ip address&gt;"),
+            new TwoFacedObject(
+                "Anonymous users",
+                Role.ROLE_ANONYMOUS.getRole()), Role.ROLE_ANY.getRole(),
+                    new TwoFacedObject(
+                        "Guest user", Role.ROLE_GUEST.getRole()));
+        opts.addAll(getUserManager().getUserRoles());
 
         sb.append("<tr valign=top>");
         sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action"))));
-	sb.append("<td colspan=2>");
-	sb.append(HtmlUtils.bold(msg("Role")) +". One per line. Prefix with \"!\" for negation");
-	sb.append("</td>");
+        sb.append("<td colspan=2>");
+        sb.append(HtmlUtils.bold("Role")
+                  + ". One per line. Prefix with \"!\" for negation");
+        sb.append("</td>");
         sb.append("</tr>");
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             String roles = (String) map.get(Permission.ACTIONS[i]);
@@ -1074,26 +1381,27 @@ public class AccessManager extends RepositoryManager {
                                 HtmlUtils.ATTR_TARGET,
                                 "_help")) + HtmlUtils.space(1)
                                           + msg(actionName);
-	    String extra = "";
-	    if(i==0) {
-		extra = HU.select("",opts,(String)null,HU.id("roles"));
-	    } 
-	    extra = HU.div(extra,HU.id("holder_"+ i));
+            String extra = "";
+            if (i == 0) {
+                extra = HU.select("", opts, (String) null, HU.id("roles"));
+            }
+            extra = HU.div(extra, HU.id("holder_" + i));
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
-						      HtmlUtils.textArea(ARG_ROLES + "."
-									 + Permission.ACTIONS[i], roles, 5,
-									 20,
-									 HU.attr("roleindex",""+i) +HU.id("textarea_" + i)),extra)));
-	}
-	sb.append("</tr></table></td>");
+                    HtmlUtils.textArea(ARG_ROLES + "."
+                                       + Permission.ACTIONS[i], roles, 5, 20,
+                                           HU.attr("roleindex", "" + i)
+                                           + HU.id("textarea_"
+                                               + i)), extra)));
+        }
+        sb.append("</tr></table></td>");
         sb.append("<td rowspan=6><b>" + msgLabel("Current settings")
                   + "</b><i><br>");
         sb.append(currentAccess.toString());
         sb.append("</i></td>");
-	sb.append(HtmlUtils.formTableClose());
-	HU.importJS(sb,getRepository().getUrlBase()+"/accessform.js");
-	HU.script(sb,"Ramadda.initAccessForm();");
-		  
+        sb.append(HtmlUtils.formTableClose());
+        HU.importJS(sb, getRepository().getUrlBase() + "/accessform.js");
+        HU.script(sb, "Ramadda.initAccessForm();");
+
 
 
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
@@ -1132,10 +1440,12 @@ public class AccessManager extends RepositoryManager {
         }
         List<Permission> permissions = new ArrayList<Permission>();
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            List<String> roles = Utils.split(request.getString(ARG_ROLES + "."
-                             + Permission.ACTIONS[i], ""), "\n", true, true);
+            List<String> roles =
+                Utils.split(request.getString(ARG_ROLES + "."
+                    + Permission.ACTIONS[i], ""), "\n", true, true);
             if (roles.size() > 0) {
-                permissions.add(new Permission(Permission.ACTIONS[i], Role.makeRoles(roles)));
+                permissions.add(new Permission(Permission.ACTIONS[i],
+                        Role.makeRoles(roles)));
             }
         }
 
@@ -1224,5 +1534,3 @@ public class AccessManager extends RepositoryManager {
 
 
 }
-
-
