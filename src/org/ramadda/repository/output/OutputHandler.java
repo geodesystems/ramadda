@@ -1279,33 +1279,6 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
     public static int entryCnt = 0;
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
-    public String getSortLinks(Request request) {
-        StringBuilder sb           = new StringBuilder();
-        String cbxAll = HU.checkbox("", "true", false,HU.attrs("id","selectall", "title","Select all"));
-	sb.append(cbxAll);
-        sb.append(HU.script("EntryTree.initSelectAll()"));
-        String entryIds = request.getString(ARG_ENTRYIDS, (String) null);
-        //Swap out the long value
-        if (entryIds != null) {
-            String extraId = getRepository().getGUID();
-            request.put(
-                ARG_ENTRYIDS,
-                getRepository().getSessionManager().putSessionExtra(
-                    entryIds));
-        }
-        if (entryIds != null) {
-            request.put(ARG_ENTRYIDS, entryIds);
-        }
-        return sb.toString();
-    }
-
 
     /**
      * _more_
