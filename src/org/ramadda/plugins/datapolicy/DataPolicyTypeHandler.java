@@ -1,0 +1,72 @@
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
+
+package org.ramadda.plugins.datapolicy;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
+import org.ramadda.repository.util.SelectInfo;
+import org.ramadda.util.HtmlUtils;
+
+import org.w3c.dom.*;
+
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+
+/**
+ *
+ *
+ */
+@SuppressWarnings("unchecked")
+public class DataPolicyTypeHandler extends GenericTypeHandler {
+
+
+    private static int IDX=0;
+    public static final int IDX_ID = IDX++;
+    public static final int IDX_CITATION = IDX++;    
+    public static final int IDX_LICENSE = IDX++;    
+    public static final int IDX_LICENSE_DESCRIPTION = IDX++;    
+    public static final int IDX_VIEW_ROLES = IDX++;
+    public static final int IDX_FILE_ROLES = IDX++;        
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    public DataPolicyTypeHandler(Repository repository, Element entryNode)
+            throws Exception {
+        super(repository, entryNode);
+    }
+
+    @Override
+    public void formatColumnHtmlValue(Request request, Entry entry,
+                                      Column column, Appendable tmpSb,
+                                      Object[] values)
+            throws Exception {
+	if(!column.getName().equals("license")) {
+	     super.formatColumnHtmlValue(request, entry, column, tmpSb, values);
+	     return;
+	}
+	String license = (String) entry.getValue(IDX_LICENSE);
+	tmpSb.append(getMetadataManager().getLicenseHtml(license, null));
+    }
+    
+
+
+}
