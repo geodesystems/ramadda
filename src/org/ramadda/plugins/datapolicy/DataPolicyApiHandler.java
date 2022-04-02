@@ -55,7 +55,6 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
 
 
 
-
     /**
      * _more_
      *
@@ -90,6 +89,7 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
     private void addPolicy(Entry entry, List<String> policies) {
 	List<String> policy = new ArrayList<String>();
 	Utils.add(policy,"id", qt(entry.getValue(DataPolicyTypeHandler.IDX_ID)));
+	Utils.add(policy,"description", qt(entry.getDescription()));
 	Utils.add(policy,"citation",qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
 	Utils.add(policy,"license",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE)));
 	Utils.add(policy,"license_description",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE_DESCRIPTION)));			
