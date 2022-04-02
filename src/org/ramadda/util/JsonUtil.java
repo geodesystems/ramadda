@@ -326,9 +326,15 @@ public class JsonUtil {
     public static String list(List values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         list(row, values, quoteValue);
-
         return row.toString();
     }
+
+    public static List<String> quote(List values) {
+	List result = new ArrayList<String>();
+	for(Object o: values) result.add(quote(o.toString()));
+	return result;
+    }
+
 
     /**
      * _more_
