@@ -62,7 +62,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(Utils.isDefined(col.width)) {
 		    attrs = Utils.mergeLists(attrs,["width",col.width]);
 		}
-		attrs = Utils.mergeLists(attrs,["orderby",col.id]);
+		attrs = Utils.mergeLists(attrs,['orderby',col.id,'title','Sort by '+ col.label]);
 		let v = col.label;
 		if(col.id==props.orderby) {
 		    if(Utils.isDefined(props.ascending)) {
@@ -1046,7 +1046,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
 
 
-let selectors = new Array();
+var selectors = new Array();
 
 function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl) {
     this.id = selectorId;
@@ -1115,32 +1115,6 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         return false;
     }
     this.handleClick(event);
-}
-
-
-let EntryTree = {
-    initSelectAll:function() {
-	$("#selectall").click(function(event) {
-	    let value = $(this).is(":checked");
-	    $(".ramadda-entry-select").each(function(){
-		let entryRow = Utils.globalEntryRows[$(this).attr("id")];
-		if(entryRow) {
-		    entryRow.setCheckbox(value);
-		}
-	    });
-	});
-    },
-    entryRowCheckboxClicked:function(event, cbxId) {
-	let cbx = GuiUtils.getDomObject(cbxId);
-	if (!cbx) return;
-	cbx = cbx.obj;
-	if (!cbx.form) return;
-	let visibilityGroup = Utils.entryGroups[cbx.form.id];
-	if (visibilityGroup) {
-            visibilityGroup.checkboxClicked(event, cbxId);
-	}
-    }
-
 }
 
 

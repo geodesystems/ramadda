@@ -60,6 +60,11 @@ var Utils =  {
     tooltipObject:null,
     entryDragInfo:null,
     globalEntryRows:{},
+    defineGlobal: function(id,what) {
+	if(!Utils.isDefined(window[id])) {
+	    window[id] = what;
+	}
+    },
     addLoadFunction: function(f) {
         Utils.loadFunctions.push(f);
     },
@@ -2399,12 +2404,19 @@ var Utils =  {
             obj.css("top",y).css("left",x+10);
         }
     },
-    treeViewClick:function(entryId, url, label, template) {
-        var href = "<a href='" + url + "'> <img src=\"" + ramaddaCdn + "/icons/link.png" + "\" border=0> " + label + "</a>";
+    treeViewClick:function(viewId,entryId, url, label, template) {
+        let href = "<a href='" + url + "'> <img src=\"" + ramaddaCdn + "/icons/link.png" + "\" border=0> " + label + "</a>";
         $("#treeview_header").html(href);
         if (template)
             url = url + "&template=" + template;
-        $('#treeview_view').attr("src", url);
+        $.ajax({
+            url: url,
+                dataType: 'text',
+            success: (data) => {
+		jqid(viewId).html(data);
+	    },
+	});
+//        jqid(viewId).attr("src", url);
     },
     initPage: function() {
         this.initContent();
