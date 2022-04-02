@@ -25,7 +25,9 @@ import java.util.List;
 public class DataPolicy {
 
     /**  */
-    private String url;
+    private String mainUrl;
+
+    private String myUrl;    
 
     /**  */
     private String fromName;
@@ -58,8 +60,9 @@ public class DataPolicy {
      * @param fromName _more_
      * @param policy _more_
      */
-    public DataPolicy(String url, String fromName, JSONObject policy) {
-        this.url      = url;
+    public DataPolicy(String mainUrl, String myUrl,String fromName, JSONObject policy) {
+        this.mainUrl      = mainUrl;
+        this.myUrl      = myUrl;	
         this.fromName = fromName;
         boolean debug = false;
         id          = policy.getString("id");
@@ -215,23 +218,7 @@ public class DataPolicy {
         return permissions;
     }
 
-    /**
-     *  Set the Url property.
-     *
-     *  @param value The new value for Url
-     */
-    public void setUrl(String value) {
-        url = value;
-    }
 
-    /**
-     *  Get the Url property.
-     *
-     *  @return The Url
-     */
-    public String getUrl() {
-        return url;
-    }
 
 
     /**
@@ -270,6 +257,42 @@ public class DataPolicy {
         return description;
     }
 
+
+/**
+Set the MainUrl property.
+
+@param value The new value for MainUrl
+**/
+public void setMainUrl (String value) {
+	mainUrl = value;
+}
+
+/**
+Get the MainUrl property.
+
+@return The MainUrl
+**/
+public String getMainUrl () {
+	return mainUrl;
+}
+
+/**
+Set the MyUrl property.
+
+@param value The new value for MyUrl
+**/
+public void setMyUrl (String value) {
+	myUrl = value;
+}
+
+/**
+Get the MyUrl property.
+
+@return The MyUrl
+**/
+public String getMyUrl () {
+	return myUrl;
+}
 
 
 }

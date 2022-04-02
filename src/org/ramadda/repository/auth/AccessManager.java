@@ -175,7 +175,8 @@ public class AccessManager extends RepositoryManager {
                 JSONArray jpolicies = dp.getJSONArray("policies");
                 for (int i = 0; i < jpolicies.length(); i++) {
                     JSONObject policy     = jpolicies.getJSONObject(i);
-                    DataPolicy dataPolicy = new DataPolicy(url, name, policy);
+                    DataPolicy dataPolicy = new DataPolicy(url,policy.optString("url",null),
+							   name, policy);
                     dataPolicies.add(dataPolicy);
                     dataPoliciesMap.put(dataPolicy.getId(), dataPolicy);
                 }
@@ -1202,12 +1203,15 @@ public class AccessManager extends RepositoryManager {
                                                        StringBuilder>();
         for (DataPolicy dataPolicy : dataPolicies) {
             String href = dataPolicy.getFromName() + " - "
-                          + HU.href(dataPolicy.getUrl(), dataPolicy.getUrl());
+                          + HU.href(dataPolicy.getMainUrl(), dataPolicy.getMainUrl());
             StringBuilder buff = map.get(href);
             if (buff == null) {
                 map.put(href, buff = new StringBuilder());
             }
             String label = dataPolicy.getLabel();
+	    if(Utils.stringDefined(dataPolicy.getMyUrl())) {
+		label = HU.href(dataPolicy.getMyUrl(), label);
+	    }
             buff.append("<li>");
             buff.append(HU.italics(label));
             if (Utils.stringDefined(dataPolicy.getDescription())) {
