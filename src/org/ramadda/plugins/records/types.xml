@@ -6,7 +6,7 @@
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="false"/>
      <property name="form.resource.show" value="false"/>
-     <column  name="fields"  label="Fields" type="string" rows="10" size="2000"  columns="80">
+     <column  name="fields"  label="Fields" type="string" rows="10" size="5000" changetype="true"  columns="120">
 <help>
 <![CDATA[
 Specify the fields, one per row. More information <a href="${root}/records/index.html" target=_help>here</a>
