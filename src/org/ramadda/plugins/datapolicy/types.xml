@@ -4,6 +4,9 @@ handler="org.ramadda.plugins.datapolicy.DataPolicyTypeHandler"
 description="Data Policy"  
 category="Software and Services" >
      <property name="icon" value="/datapolicy/fair.png"/>
+     <property name="form.tags.show" value="false"/>
+     <property name="form.description.label" value="Data Policy Description:"/>
+     <property name="form.description.showwiki" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>     
      <property name="form.date.show" value="false"/>
@@ -14,9 +17,9 @@ category="Software and Services" >
 	      cansearch="false" />     
      <column  name="license_description"  label="License Description" cansearch="false" />
      <column  name="view_roles"  type="list" label="View Roles" size="2000" rows="5" cansearch="false"
-	      suffix="One role per line. Use ip:&amp;lt;ip prefix&amp;gt"/>
+	      help="One role per line. Use &quot;none&quot; or ip:&amp;lt;ip prefix&amp;gt"/>
      <column  name="file_roles"  type="list" label="File Roles" size="2000" rows="5" cansearch="false"
-	      suffix="One role per line. Use ip:&amp;lt;ip prefix&amp;gt"/>               
+	      help="One role per line. Use &quot;none&quot; or ip:&amp;lt;ip prefix&amp;gt"/>
 
 <xwiki>
 <![CDATA[
