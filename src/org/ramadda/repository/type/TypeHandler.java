@@ -4589,6 +4589,7 @@ public class TypeHandler extends RepositoryManager {
         String   domId;
         for (String what : whatList) {
             if (what.equals(ARG_TAGS)) {
+		if(!getTypeProperty("form.tags.show",true)) return;
 		StringBuilder tags = new StringBuilder();
 		for(int i=0;i<3;i++) {
 		    tags.append(HU.input(ARG_TAGS,"",HU.SIZE_15+HU.cssClass("metadata-tag-input")));
@@ -4675,44 +4676,53 @@ public class TypeHandler extends RepositoryManager {
 			//So wrap it in a span with margin spacing
 			//			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:16px;"));
 			*/
-                        String cbxLabel = HU.tag("label",
-                                              HU.attrs("for", cbxId),
-						 img);
-                        String cbx = HtmlUtils.checkbox(ARG_ISWIKI, "true",
-                                         isTextWiki,
-                                         HtmlUtils.id(cbxId)) + cbxLabel;
-                        cbx = HU.span(cbx, HU.cssClass("ramadda-clickable") + HU.title("Wikify text"));
+			String prefix = "";
+			if(getTypeProperty("form.description.showwiki",true)) {
+			    String cbxLabel = HU.tag("label",
+						     HU.attrs("for", cbxId),
+						     img);
+			    String cbx = HtmlUtils.checkbox(ARG_ISWIKI, "true",
+							    isTextWiki,
+							    HtmlUtils.id(cbxId)) + cbxLabel;
+			    cbx = HU.span(cbx, HU.cssClass("ramadda-clickable") + HU.title("Wikify text"));
 
 
-                        /*
-                        HtmlUtils.open(tmpSB, "div",
-                                       HtmlUtils.attrs("style", isTextWiki
-                                ? ""
-                                : "display:none;", "id", wikiId + "_block"));
-                        */
-                        String wikiId = addWikiEditor(request, entry, tmpSB,
-                                            formInfo, ARG_WIKITEXT, desc,
-                                            null, false,
-                                            Entry.MAX_DESCRIPTION_LENGTH,
-                                            isTextWiki);
-                        //                        HtmlUtils.close(tmpSB, "div");
-                        HtmlUtils.open(tmpSB, "div",
-                                       HtmlUtils.attrs("style", !isTextWiki
-                                ? ""
-                                : "display:none;", "id", textId + "_block"));
-                        tmpSB.append(HtmlUtils.textArea(ARG_DESCRIPTION,
-                                desc, rows, HtmlUtils.id(textId)));
-                        HtmlUtils.script(tmpSB,
-                                         "HtmlUtils.initWikiEditor("
-                                         + HtmlUtils.squote((entry == null)
-                                ? ""
-                                : entry.getId()) + ","
-                                + HtmlUtils.squote(wikiId) + ","
-                                + HtmlUtils.squote(textId) + ","
-                                + HtmlUtils.squote(cbxId) + ");");
+			    /*
+			      HtmlUtils.open(tmpSB, "div",
+			      HtmlUtils.attrs("style", isTextWiki
+			      ? ""
+			      : "display:none;", "id", wikiId + "_block"));
+			    */
+			    String wikiId = addWikiEditor(request, entry, tmpSB,
+							  formInfo, ARG_WIKITEXT, desc,
+							  null, false,
+							  Entry.MAX_DESCRIPTION_LENGTH,
+							  isTextWiki);
+			    //                        HtmlUtils.close(tmpSB, "div");
+			    HtmlUtils.open(tmpSB, "div",
+					   HtmlUtils.attrs("style", !isTextWiki
+							   ? ""
+							   : "display:none;", "id", textId + "_block"));
+			    tmpSB.append(HtmlUtils.textArea(ARG_DESCRIPTION,
+							    desc, rows, HtmlUtils.id(textId)));
+			    HtmlUtils.script(tmpSB,
+					     "HtmlUtils.initWikiEditor("
+					     + HtmlUtils.squote((entry == null)
+								? ""
+								: entry.getId()) + ","
+					     + HtmlUtils.squote(wikiId) + ","
+					     + HtmlUtils.squote(textId) + ","
+					     + HtmlUtils.squote(cbxId) + ");");
 
-                        HtmlUtils.close(tmpSB, "div");
-			String edit = cbx+HU.space(2)+   HU.b("Description:") + "<br>"+tmpSB.toString();
+			    HtmlUtils.close(tmpSB, "div");
+			    prefix = cbx+HU.space(2);
+			} else {
+			    tmpSB.append(HtmlUtils.textArea(ARG_DESCRIPTION,
+							    desc, rows, HtmlUtils.id(textId)));
+			}
+
+			String label = getTypeProperty("form.description.label","Description:");
+			String edit = prefix+   HU.b(label) + "<br>"+tmpSB.toString();
 			sb.append(HU.row(HU.td(edit,"colspan=2")));
 			/*
                         sb.append(formEntryTop(request,
