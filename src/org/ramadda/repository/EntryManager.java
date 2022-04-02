@@ -6168,7 +6168,12 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryURL(Request request, Entry entry, String... args) {
-        return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, args);
+	try {
+	    if(request==null) request = getRepository().getTmpRequest();
+	    return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, args);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 
