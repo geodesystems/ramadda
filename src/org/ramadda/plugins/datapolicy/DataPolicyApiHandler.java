@@ -86,14 +86,15 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
 	return JsonUtil.quote(v.toString());
     }
 
-    private void addPolicy(Entry entry, List<String> policies) {
+    private void addPolicy(Entry entry, List<String> policies) throws Exception {
 	List<String> policy = new ArrayList<String>();
 	Utils.add(policy,"id", qt(entry.getValue(DataPolicyTypeHandler.IDX_ID)));
 	Utils.add(policy,"description", qt(entry.getDescription()));
 	Utils.add(policy,"citation",qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
 	Utils.add(policy,"license",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE)));
 	Utils.add(policy,"license_description",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE_DESCRIPTION)));			
-	Utils.add(policy,"url",qt(getEntryManager().getEntryURL(null, entry)));
+	String url =getRepository().getTmpRequest().getAbsoluteUrl(getEntryManager().getEntryURL(null, entry));
+	Utils.add(policy,"url",qt(url));
 
 	List<String> access = new ArrayList<String>();
 
