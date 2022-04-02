@@ -72,7 +72,6 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         searchRequest.put(ARG_TYPE, "type_datapolicy");
 	StringBuilder tmp = new StringBuilder();
 	List<Entry> entries = getEntryManager().getEntries(searchRequest, tmp);
-	System.err.println(entries);
 	for (Entry entry : entries) {
 	    addPolicy(entry, policies);
 	}
