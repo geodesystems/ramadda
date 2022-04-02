@@ -155,7 +155,7 @@ public class AccessManager extends RepositoryManager {
         boolean debug = false;
         List<String> urls =
             Utils.split(getRepository().getProperty("ramadda.datapolicy.urls",
-                "https://ramadda.org/repository/v1/datapolicy/list"), ",",
+                "https://ramadda.org/repository/datapolicy/v1/list"), ",",
                     true, true);
         List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
         Hashtable<String, DataPolicy> dataPoliciesMap = new Hashtable<String,
