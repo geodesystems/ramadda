@@ -93,6 +93,8 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
 	Utils.add(policy,"citation",qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
 	Utils.add(policy,"license",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE)));
 	Utils.add(policy,"license_description",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE_DESCRIPTION)));			
+	Utils.add(policy,"url",getEntryManager().getEntryURL(null, entry));
+
 	List<String> access = new ArrayList<String>();
 
 	String viewRoles = (String)entry.getValue(DataPolicyTypeHandler.IDX_VIEW_ROLES);
