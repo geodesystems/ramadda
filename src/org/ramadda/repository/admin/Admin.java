@@ -1950,8 +1950,8 @@ public class Admin extends RepositoryManager {
                 Role role = permission.getRoles().get(0);
                 String row = HtmlUtils.cols("", permission.getAction(),
                                             role.getRole());
-                String extra = role.getDecoration();
-                sb.append(HtmlUtils.row(row, extra));
+                String clazz = role.getCssClass();
+                sb.append(HtmlUtils.row(row, HU.cssClass(clazz)));
             }
             //      System.err.println(sb+"\n");
             sb.append(HtmlUtils.row(HtmlUtils.colspan("<hr>", 3)));
