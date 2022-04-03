@@ -88,7 +88,8 @@ public class SessionManager extends RepositoryManager {
 
     /** _more_ */
     private TTLCache<String, UserSession> anonymousSessionMap =
-        new TTLCache<String, UserSession>(1000 * 3600 * 24, 1000,"Anonymous Session Map");
+        new TTLCache<String, UserSession>(1000 * 3600 * 24, 1000,
+                     "Anonymous Session Map");
 
 
 
@@ -924,5 +925,3 @@ public class SessionManager extends RepositoryManager {
 
 
 }
-
-

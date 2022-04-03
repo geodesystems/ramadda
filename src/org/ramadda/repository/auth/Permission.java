@@ -136,7 +136,7 @@ public class Permission {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean hasDataPolicy() {
         return dataPolicy != null;
@@ -187,7 +187,8 @@ public class Permission {
      * @return _more_
      */
     public String toString() {
-        return "action:" + action + " roles:" + roles +" data policy:" + dataPolicy;
+        return "action:" + action + " roles:" + roles + " data policy:"
+               + dataPolicy;
     }
 
 

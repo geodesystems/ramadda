@@ -530,48 +530,66 @@ public class User {
      * @return _more_
      */
     public boolean isRole(Role role) {
-	boolean debug = false;
-	if(debug)
-	    System.err.println("User.isRole:" + this.getId() +"  role:" + role);
+        boolean debug = false;
+        if (debug) {
+            System.err.println("User.isRole:" + this.getId() + "  role:"
+                               + role);
+        }
         if (role.isRole(Role.ROLE_ANY)) {
-	    if(debug)
-		System.err.println("\tis any");
+            if (debug) {
+                System.err.println("\tis any");
+            }
+
             return true;
         }
         if (role.isRole(Role.ROLE_USER)) {
-	    if(debug)
-		System.err.println("\tis logged in");
+            if (debug) {
+                System.err.println("\tis logged in");
+            }
+
             return !getAnonymous();
         }
         if (role.isRole(Role.ROLE_ANONYMOUS)) {
-	    if(debug)
-		System.err.println("\tis anonymous");
+            if (debug) {
+                System.err.println("\tis anonymous");
+            }
+
             return getAnonymous();
         }
         if (role.isRole(Role.ROLE_GUEST)) {
-	    if(debug)
-		System.err.println("\tis guest");
+            if (debug) {
+                System.err.println("\tis guest");
+            }
+
             return getIsGuest();
         }
         if (role.isRole("user:" + getId())) {
-	    if(debug)
-		System.err.println("\tisUserRole");
+            if (debug) {
+                System.err.println("\tisUserRole");
+            }
+
             return true;
         }
         if (roles == null) {
-	    if(debug)
-		System.err.println("\tno roles");
+            if (debug) {
+                System.err.println("\tno roles");
+            }
+
             return false;
         }
 
-	if(roles.contains(role)) {
-	    if(debug)
-		System.err.println("\tis role");
-	    return true;
-	}
-	if(debug)
-	    System.err.println("\tnothing roles=" + roles);
-	return false;
+        if (roles.contains(role)) {
+            if (debug) {
+                System.err.println("\tis role");
+            }
+
+            return true;
+        }
+        if (debug) {
+            System.err.println("\tnothing roles=" + roles);
+        }
+
+        return false;
     }
 
     /**
@@ -747,5 +765,3 @@ public class User {
     }
 
 }
-
-

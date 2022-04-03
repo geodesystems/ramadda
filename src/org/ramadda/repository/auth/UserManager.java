@@ -426,7 +426,7 @@ public class UserManager extends RepositoryManager {
         } else if ( !user.getIsLocal()) {
             links = remoteUserUrls;
         }
-	
+
         getPageHandler().sectionOpen(request, sb, "User: " + user.getId(),
                                      false);
         getPageHandler().makeLinksHeader(request, sb, links, "");
@@ -1189,7 +1189,7 @@ public class UserManager extends RepositoryManager {
         for (Role role : user.getRoles()) {
             getDatabaseManager().executeInsert(Tables.USERROLES.INSERT,
                     new Object[] { user.getId(),
-						   role.getRole()});
+                                   role.getRole() });
         }
     }
 
@@ -1222,8 +1222,9 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         HtmlUtils.titleSectionOpen(sb, "Edit User Settings");
 
-	getWikiManager().makeCallout(sb, request, "<b>" +
-				     "User: " + user.getLabel() +"</b>");
+        getWikiManager().makeCallout(sb, request,
+                                     "<b>" + "User: " + user.getLabel()
+                                     + "</b>");
 
         if (request.defined(ARG_USER_CHANGE)) {
             request.ensureAuthToken();
@@ -1316,7 +1317,7 @@ public class UserManager extends RepositoryManager {
                                     user.getIsGuest())));
             String       userRoles = user.getRolesAsString("\n");
             StringBuffer allRoles  = new StringBuffer();
-            List<Role>    roles     = getStandardRoles();
+            List<Role>   roles     = getStandardRoles();
             allRoles.append(
                 "<table border=0 cellspacing=0 cellpadding=0><tr valign=\"top\"><td><b>e.g.:</b></td><td>&nbsp;&nbsp;</td><td>");
             int cnt = 0;
@@ -1544,9 +1545,9 @@ public class UserManager extends RepositoryManager {
             }
 
         }
-        List<Role> newUserRoles =Role.makeRoles(
-						  Utils.split(request.getString(ARG_USER_ROLES, ""), "\n", true,
-							      true));
+        List<Role> newUserRoles =
+            Role.makeRoles(Utils.split(request.getString(ARG_USER_ROLES, ""),
+                                       "\n", true, true));
 
         String homeGroupId = request.getString(ARG_USER_HOME + "_hidden", "");
 
@@ -1856,7 +1857,7 @@ public class UserManager extends RepositoryManager {
     /**
      *
      * @param request _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -1907,7 +1908,7 @@ public class UserManager extends RepositoryManager {
 
         Hashtable<String, StringBuffer> rolesMap = new Hashtable<String,
                                                        StringBuffer>();
-        List<Role> rolesList = new ArrayList<Role>();
+        List<Role>   rolesList = new ArrayList<Role>();
         StringBuffer usersHtml = new StringBuffer();
         StringBuffer rolesHtml = new StringBuffer();
 
@@ -2097,6 +2098,7 @@ public class UserManager extends RepositoryManager {
                                1);
         List<String> roles = new ArrayList<String>(Misc.toList(array));
         user.setRoles(Role.makeRoles(roles));
+
         return user;
     }
 
@@ -3347,21 +3349,21 @@ public class UserManager extends RepositoryManager {
                                       List<Entry> entries)
                     throws Exception {
                 OutputType output = request.getOutput();
-		User user = request.getUser();
-		if (group.isDummy()) {
-		    addFavorites(request, user, entries);
-		    addFavorites(request, user,
-				 (List<Entry>) new ArrayList(subGroups));
-		} else {
-		    addFavorites(request, user,
-				 (List<Entry>) Misc.newList(group));
-		}
-		String redirect =
-		    getRepositoryBase().URL_USER_HOME.toString();
-		
-		return new Result(HtmlUtils.url(redirect, ARG_MESSAGE,
-						getRepository().translate(request,
-									  "Favorites Added")));
+                User       user   = request.getUser();
+                if (group.isDummy()) {
+                    addFavorites(request, user, entries);
+                    addFavorites(request, user,
+                                 (List<Entry>) new ArrayList(subGroups));
+                } else {
+                    addFavorites(request, user,
+                                 (List<Entry>) Misc.newList(group));
+                }
+                String redirect =
+                    getRepositoryBase().URL_USER_HOME.toString();
+
+                return new Result(HtmlUtils.url(redirect, ARG_MESSAGE,
+                        getRepository().translate(request,
+                            "Favorites Added")));
             }
         };
 
@@ -3391,11 +3393,12 @@ public class UserManager extends RepositoryManager {
                 roles.addAll(authenticatorRoles);
             }
         }
+
         return Role.makeRoles(roles);
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -3406,6 +3409,7 @@ public class UserManager extends RepositoryManager {
         roles.add(0, Role.ROLE_NONE);
         roles.add(0, Role.ROLE_ANY);
         roles.add(0, Role.ROLE_USER);
+
         return roles;
     }
 
@@ -3497,8 +3501,9 @@ public class UserManager extends RepositoryManager {
         ResultSet        results;
         HtmlUtils.titleSectionOpen(sb, "User Log");
         if (theUser != null) {
-	    getWikiManager().makeCallout(sb, request, "<b>" +
-					 "User: " + theUser.getLabel() +"</b>");
+            getWikiManager().makeCallout(sb, request,
+                                         "<b>" + "User: "
+                                         + theUser.getLabel() + "</b>");
 
         }
         sb.append(HtmlUtils.p());

@@ -98,5 +98,3 @@ public interface UserAuthenticator {
                                        Request request);
 
 }
-
-

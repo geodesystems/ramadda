@@ -83,11 +83,12 @@ public class DataPolicy {
         for (int j = 0; j < accesses.length(); j++) {
             JSONObject access = accesses.getJSONObject(j);
             String     action = access.getString("action");
-	    if(!action.equals(Permission.ACTION_VIEW) &&
-	       !action.equals(Permission.ACTION_FILE)) {
-		System.err.println("data policy with bad action:" + mainUrl +" action:" +action);
-		continue;
-	    }
+            if ( !action.equals(Permission.ACTION_VIEW)
+                    && !action.equals(Permission.ACTION_FILE)) {
+                System.err.println("data policy with bad action:" + mainUrl
+                                   + " action:" + action);
+                continue;
+            }
 
 
             if (debug) {
@@ -107,7 +108,7 @@ public class DataPolicy {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String toString() {
         return id + ":" + name;
