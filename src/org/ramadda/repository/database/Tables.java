@@ -466,9 +466,11 @@ public abstract class Tables {
         public static final String COL_NODOT_ACTION =   "action";
         public static final String COL_ROLE =  NAME + ".role";
         public static final String COL_NODOT_ROLE =   "role";
+        public static final String COL_DATA_POLICY =  NAME + ".data_policy";
+        public static final String COL_NODOT_DATA_POLICY =   "data_policy";	
 
         public static final String[] ARRAY = new String[] {
-            COL_ENTRY_ID,COL_ACTION,COL_ROLE
+            COL_ENTRY_ID,COL_ACTION,COL_ROLE,COL_DATA_POLICY
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);

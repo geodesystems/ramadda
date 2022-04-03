@@ -3159,6 +3159,11 @@ label {
     padding: 5px;
 }
 
+.ramadda-access-datapolicy {
+    font-weight:bold;
+}
+    
+
 .ramadda-access-comment {
     background:#ccc;
 }

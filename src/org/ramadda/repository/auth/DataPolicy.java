@@ -27,7 +27,8 @@ public class DataPolicy {
     /**  */
     private String mainUrl;
 
-    private String myUrl;    
+    /**  */
+    private String myUrl;
 
     /**  */
     private String fromName;
@@ -57,12 +58,16 @@ public class DataPolicy {
      *
      *
      * @param url _more_
+     *
+     * @param mainUrl _more_
+     * @param myUrl _more_
      * @param fromName _more_
      * @param policy _more_
      */
-    public DataPolicy(String mainUrl, String myUrl,String fromName, JSONObject policy) {
-        this.mainUrl      = mainUrl;
-        this.myUrl      = myUrl;	
+    public DataPolicy(String mainUrl, String myUrl, String fromName,
+                      JSONObject policy) {
+        this.mainUrl  = mainUrl;
+        this.myUrl    = myUrl;
         this.fromName = fromName;
         boolean debug = false;
         id          = policy.getString("id");
@@ -78,6 +83,13 @@ public class DataPolicy {
         for (int j = 0; j < accesses.length(); j++) {
             JSONObject access = accesses.getJSONObject(j);
             String     action = access.getString("action");
+	    if(!action.equals(Permission.ACTION_VIEW) &&
+	       !action.equals(Permission.ACTION_FILE)) {
+		System.err.println("data policy with bad action:" + mainUrl +" action:" +action);
+		continue;
+	    }
+
+
             if (debug) {
                 System.err.println("\t\taction:" + action);
             }
@@ -93,6 +105,14 @@ public class DataPolicy {
             permissions.add(new Permission(this, action, roles));
         }
     }
+
+    /**
+      * @return _more_
+     */
+    public String toString() {
+        return id + ":" + name;
+    }
+
 
     /**
      *  Set the Id property.
@@ -168,7 +188,7 @@ public class DataPolicy {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String getLabel() {
         String label = getName();
@@ -258,41 +278,41 @@ public class DataPolicy {
     }
 
 
-/**
-Set the MainUrl property.
+    /**
+     * Set the MainUrl property.
+     *
+     * @param value The new value for MainUrl
+     */
+    public void setMainUrl(String value) {
+        mainUrl = value;
+    }
 
-@param value The new value for MainUrl
-**/
-public void setMainUrl (String value) {
-	mainUrl = value;
-}
+    /**
+     * Get the MainUrl property.
+     *
+     * @return The MainUrl
+     */
+    public String getMainUrl() {
+        return mainUrl;
+    }
 
-/**
-Get the MainUrl property.
+    /**
+     * Set the MyUrl property.
+     *
+     * @param value The new value for MyUrl
+     */
+    public void setMyUrl(String value) {
+        myUrl = value;
+    }
 
-@return The MainUrl
-**/
-public String getMainUrl () {
-	return mainUrl;
-}
-
-/**
-Set the MyUrl property.
-
-@param value The new value for MyUrl
-**/
-public void setMyUrl (String value) {
-	myUrl = value;
-}
-
-/**
-Get the MyUrl property.
-
-@return The MyUrl
-**/
-public String getMyUrl () {
-	return myUrl;
-}
+    /**
+     * Get the MyUrl property.
+     *
+     * @return The MyUrl
+     */
+    public String getMyUrl() {
+        return myUrl;
+    }
 
 
 }

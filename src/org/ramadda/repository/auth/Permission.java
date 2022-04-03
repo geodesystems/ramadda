@@ -187,7 +187,7 @@ public class Permission {
      * @return _more_
      */
     public String toString() {
-        return "action:" + action + " roles:" + roles;
+        return "action:" + action + " roles:" + roles +" data policy:" + dataPolicy;
     }
 
 

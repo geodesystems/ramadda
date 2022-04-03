@@ -254,12 +254,12 @@ CREATE TABLE  monitors (
 ---  permissions on entries
 -----------------------------------------------------------------------
 CREATE TABLE  permissions (
-	entry_id varchar(200),
+       	entry_id varchar(200),
 	action varchar(200),
-        role varchar(200));
+        role varchar(200),
+	data_policy varchar(400));
 
-
-
+alter table permissions add column data_policy varchar(400);
 
 -----------------------------------------------------------------------
 --- the harvesters. content is the xml they encode/decode to store state

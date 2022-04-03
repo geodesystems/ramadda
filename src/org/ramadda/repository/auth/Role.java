@@ -92,15 +92,15 @@ public class Role {
 	return baseRole.startsWith("#");
     }
 
-    public String getDecoration() {
+    public String getCssClass() {
 	if(isComment()) {
-	    return HtmlUtils.cssClass("ramadda-access-comment");
+	    return "ramadda-access-comment";
 	}
 	if (Role.ROLE_NONE.isRole(this)) {
-	    return HtmlUtils.cssClass("ramadda-access-none");
+	    return "ramadda-access-none";
 	}
 	if(getNegated()) {
-	    return HtmlUtils.cssClass("ramadda-access-negated");
+	    return "ramadda-access-negated";
 	}
 	return "";
     }
