@@ -188,5 +188,3 @@ public abstract class UserAuthenticatorImpl implements UserAuthenticator {
                                        Request request) {}
 
 }
-
-
