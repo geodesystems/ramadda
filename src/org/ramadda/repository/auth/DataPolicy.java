@@ -103,7 +103,7 @@ public class DataPolicy {
                     System.err.println("\t\t\trole:" + role);
                 }
             }
-            permissions.add(new Permission(this, action, roles));
+            permissions.add(new Permission(getId(), action, roles));
         }
     }
 

@@ -9,7 +9,6 @@ package org.ramadda.repository.auth;
 import org.json.*;
 
 import org.ramadda.repository.*;
-
 import org.ramadda.repository.database.*;
 
 import org.ramadda.util.HtmlUtils;
@@ -108,9 +107,6 @@ public class AccessManager extends RepositoryManager {
     private Hashtable<String, DataPolicy> dataPoliciesMap =
         new Hashtable<String, DataPolicy>();
 
-
-
-
     /**
      * _more_
      *
@@ -130,6 +126,17 @@ public class AccessManager extends RepositoryManager {
             }
         });
 
+    }
+
+
+    /**
+     */
+    public void updateLocalDataPolicies() {
+        Misc.run(new Runnable() {
+            public void run() {
+                doDataPolicyFetch();
+            }
+        });
     }
 
 
@@ -154,38 +161,57 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void doDataPolicyFetch() throws Exception {
-        boolean debug = false;
+    private void doDataPolicyFetch() {
+        boolean debug = true;
+
         List<String> urls =
-            Utils.split(getRepository().getProperty("ramadda.datapolicy.urls",
-                "https://ramadda.org/repository/datapolicy/v1/list"), ",",
-                    true, true);
-        List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
-        Hashtable<String, DataPolicy> dataPoliciesMap = new Hashtable<String,
-                                                            DataPolicy>();
+            Utils.split(
+                getRepository().getProperty(
+                    "ramadda.datapolicy.urls",
+                    "this,https://ramadda.org/datapolicy/v1/list"), ",",
+                        true, true);
+        List<DataPolicy> tmpDataPolicies = new ArrayList<DataPolicy>();
+        Hashtable<String, DataPolicy> tmpDataPoliciesMap =
+            new Hashtable<String, DataPolicy>();
+        if (debug) {
+            System.err.println("*** AccessManager.doDataPolicyFetch");
+        }
+
         for (String url : urls) {
             if (debug) {
-                System.err.println("Fetching data policy:" + url);
+                System.err.println("fetching data policy:" + url);
+            }
+            if (url.equals("this")) {
+                try {
+                    url = getRepository().getTmpRequest().getAbsoluteUrl(
+                        getRepository().getRepository().getUrlBase()
+                        + "/datapolicy/v1/list");
+                } catch (Exception exc) {
+                    getLogManager().logError("Error getting self url", exc);
+                }
             }
             try {
-                String     json = IO.readContents(url);
-                JSONObject dp   = new JSONObject(json);
-                String     name = dp.optString("name", "");
+                String     json      = IO.readContents(url);
+                JSONObject dp        = new JSONObject(json);
+                String     name      = dp.optString("name", "");
+                JSONArray  jpolicies = dp.getJSONArray("policies");
                 if (debug) {
-                    System.err.println("Processing data policy:"
-                                       + dp.getString("name"));
+                    System.err.println("\tprocessing data policy:" + name
+                                       + " # policies:" + jpolicies.length());
                 }
-                JSONArray jpolicies = dp.getJSONArray("policies");
                 for (int i = 0; i < jpolicies.length(); i++) {
                     JSONObject policy = jpolicies.getJSONObject(i);
                     DataPolicy dataPolicy = new DataPolicy(url,
                                                 policy.optString("url",
                                                     null), name, policy);
-                    dataPolicies.add(dataPolicy);
-                    dataPoliciesMap.put(dataPolicy.getId(), dataPolicy);
+                    if (debug) {
+                        System.err.println("\tpolicy:" + dataPolicy);
+                    }
+                    tmpDataPolicies.add(dataPolicy);
+                    tmpDataPoliciesMap.put(dataPolicy.getId(), dataPolicy);
                 }
-                this.dataPolicies    = dataPolicies;
-                this.dataPoliciesMap = dataPoliciesMap;
+                this.dataPolicies    = tmpDataPolicies;
+                this.dataPoliciesMap = tmpDataPoliciesMap;
             } catch (Exception exc) {
                 getLogManager().logError("Error reading data policy:" + url,
                                          exc);
@@ -220,24 +246,19 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void initTopEntry(Entry mainEntry) throws Exception {
-        mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
-                Role.ROLE_ANY));
-        mainEntry.addPermission(
-            new Permission(Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY));
-        mainEntry.addPermission(new Permission(Permission.ACTION_FILE,
-                Role.ROLE_ANY));
-        mainEntry.addPermission(new Permission(Permission.ACTION_EXPORT,
-                Role.ROLE_NONE));
-        mainEntry.addPermission(new Permission(Permission.ACTION_EDIT,
-                Role.ROLE_NONE));
-
-        mainEntry.addPermission(new Permission(Permission.ACTION_NEW,
-                Role.ROLE_NONE));
-        mainEntry.addPermission(new Permission(Permission.ACTION_DELETE,
-                Role.ROLE_NONE));
-        mainEntry.addPermission(new Permission(Permission.ACTION_COMMENT,
-                Role.ROLE_ANY));
-        insertPermissions(null, mainEntry, mainEntry.getPermissions());
+        List<Permission> permissions = new ArrayList<Permission>();
+        Utils.add(
+            permissions,
+            new Permission(Permission.ACTION_VIEW, Role.ROLE_ANY),
+            new Permission(Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY),
+            new Permission(Permission.ACTION_FILE, Role.ROLE_ANY),
+            new Permission(Permission.ACTION_EXPORT, Role.ROLE_NONE),
+            new Permission(Permission.ACTION_EDIT, Role.ROLE_NONE),
+            new Permission(Permission.ACTION_NEW, Role.ROLE_NONE),
+            new Permission(Permission.ACTION_DELETE, Role.ROLE_NONE),
+            new Permission(Permission.ACTION_COMMENT, Role.ROLE_ANY));
+        mainEntry.setPermissions(permissions);
+        insertPermissions(null, mainEntry, permissions);
     }
 
 
@@ -672,8 +693,18 @@ public class AccessManager extends RepositoryManager {
     public List<Role> getRoles(Entry entry, String action) throws Exception {
         //Make sure we call getPermissions first which forces the instantation of the roles
         getPermissions(entry);
+        List<Role>       roles       = new ArrayList<Role>();
+        List<Permission> permissions = entry.getPermissions();
+        if (permissions == null) {
+            return roles;
+        }
+        for (Permission permission : permissions) {
+            if (permission.isAction(action)) {
+                roles.addAll(permission.getRoles());
+            }
+        }
 
-        return (List<Role>) entry.getRoles(action);
+        return roles;
     }
 
 
@@ -1070,9 +1101,9 @@ public class AccessManager extends RepositoryManager {
                         }
                         String label = role.toString();
                         String clazz = role.getCssClass();
-                        if (permission.hasDataPolicy()) {
+                        if (getDataPolicy(permission) != null) {
                             clazz = "ramadda-access-datapolicy " + clazz;
-                            DataPolicy dp    = permission.getDataPolicy();
+                            DataPolicy dp    = getDataPolicy(permission);
                             String     title = "data policy:" + dp.getName();
                             String     url   = dp.getMyUrl();
                             if ( !Utils.stringDefined(url)) {
@@ -1120,16 +1151,15 @@ public class AccessManager extends RepositoryManager {
 
         for (Permission permission : permissions) {
             List<Role> roles        = permission.getRoles();
-            String     dataPolicyId = "";
-            if (permission.hasDataPolicy()) {
-                dataPolicyId = permission.getDataPolicy().getId();
-            }
+            String     dataPolicyId = permission.getDataPolicyId();
             System.err.println("inserting permission:" + permission);
             for (Role role : roles) {
                 getDatabaseManager().executeInsert(Tables.PERMISSIONS.INSERT,
                         new Object[] { entry.getId(),
                                        permission.getAction(),
-                                       role.getRole(), dataPolicyId });
+                                       role.getRole(), (dataPolicyId == null)
+                        ? ""
+                        : dataPolicyId });
             }
         }
         entry.setPermissions(permissions);
@@ -1173,10 +1203,8 @@ public class AccessManager extends RepositoryManager {
         }
         List<Permission> permissions = entry.getPermissions();
         if (permissions != null) {
-            return permissions;
+            return getUpdatedPermissions(entry, permissions);
         }
-        //            if(!entry.isGroup()) 
-        //                System.err.println ("getPermissions for entry:" + entry.getId());
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(
                                     getDatabaseManager().select(
                                         Tables.PERMISSIONS.COLUMNS,
@@ -1186,44 +1214,112 @@ public class AccessManager extends RepositoryManager {
                                             entry.getId())));
 
         permissions = new ArrayList<Permission>();
-
         ResultSet results;
         Hashtable<String, List<Role>> actions = new Hashtable<String,
                                                     List<Role>>();
-        List<Permission> dataPolicyPermissions = new ArrayList<Permission>();
         while ((results = iter.getNext()) != null) {
             int    col          = 1;
             String id           = results.getString(col++);
             String action       = results.getString(col++);
             String role         = results.getString(col++);
             String dataPolicyId = results.getString(col++);
-            String key          = action;
+            //      System.err.println("action:" + action +" dp:" + dataPolicyId);
+            String key = action;
             if (Utils.stringDefined(dataPolicyId)) {
                 key = key + "-" + dataPolicyId;
             }
 
             List<Role> roles = actions.get(key);
-
             if (roles == null) {
                 roles = new ArrayList<Role>();
-                Permission permission = new Permission(action, roles);
-                if (Utils.stringDefined(dataPolicyId)) {
-                    DataPolicy dataPolicy = dataPoliciesMap.get(dataPolicyId);
-                    permission.setDataPolicy(dataPolicy);
-                    dataPolicyPermissions.add(permission);
-                } else {
-                    permissions.add(permission);
-                }
+                Permission permission = new Permission(dataPolicyId, action,
+                                            roles);
+                permissions.add(permission);
                 actions.put(key, roles);
             }
-
             roles.add(new Role(role));
         }
-        //Add the permissions that have a data policy at the end so they are lesser priority
-        permissions.addAll(dataPolicyPermissions);
-        entry.setPermissions(permissions);
 
-        return permissions;
+        //Update the permissions with any changed datapolicies
+        return getUpdatedPermissions(entry, permissions);
+    }
+
+
+
+    /**
+     *
+     * @param entry _more_
+     * @param permissions _more_
+      * @return _more_
+     */
+    private List<Permission> getUpdatedPermissions(Entry entry,
+            List<Permission> permissions) {
+        boolean hasDataPolicy = false;
+        boolean debug         = true;
+        if (debug) {
+            System.err.println("getUpdatePermissions:" + entry);
+        }
+        for (Permission permission : permissions) {
+            if (Utils.stringDefined(permission.getDataPolicyId())) {
+                if (debug) {
+                    System.err.println("\thas data policy:" + permission);
+                }
+                hasDataPolicy = true;
+
+                break;
+            }
+            if (debug) {
+                System.err.println("\tno dataPolicy:" + permission);
+            }
+        }
+
+        if ( !hasDataPolicy) {
+            entry.setPermissions(permissions);
+
+            return permissions;
+        }
+        List<Permission> result                = new ArrayList<Permission>();
+        HashSet          seenDataPolicies      = new HashSet();
+        List<DataPolicy> dataPolicyPermissions = new ArrayList<DataPolicy>();
+        for (Permission permission : permissions) {
+            String dataPolicyId = permission.getDataPolicyId();
+            if ( !Utils.stringDefined(dataPolicyId)) {
+                result.add(permission);
+                continue;
+            }
+            DataPolicy dataPolicy = dataPoliciesMap.get(dataPolicyId);
+            if (dataPolicy == null) {
+                result.add(permission);
+                continue;
+            }
+
+            //Keep track of the unique permissions per policy
+            if ( !seenDataPolicies.contains(dataPolicyId)) {
+                seenDataPolicies.add(dataPolicyId);
+                dataPolicyPermissions.add(dataPolicy);
+            }
+        }
+        //Add the permissions associated with the data policy. Put them at the end so they are lesser priority
+        for (DataPolicy dataPolicy : dataPolicyPermissions) {
+            result.addAll(dataPolicy.getPermissions());
+        }
+        entry.setPermissions(result);
+
+        return result;
+    }
+
+    /**
+     *
+     * @param permission _more_
+      * @return _more_
+     */
+    private DataPolicy getDataPolicy(Permission permission) {
+        String id = permission.getDataPolicyId();
+        if ( !Utils.stringDefined(id)) {
+            return null;
+        }
+
+        return dataPoliciesMap.get(id);
     }
 
 
@@ -1307,7 +1403,7 @@ public class AccessManager extends RepositoryManager {
      */
     public Result processAccessForm(Request request) throws Exception {
 
-
+        boolean      debug = true;
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
 
@@ -1335,21 +1431,26 @@ public class AccessManager extends RepositoryManager {
 
         listAccess(request, entry, currentAccess);
         currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
-
-
-
         Hashtable        map         = new Hashtable();
         List<Permission> permissions = getPermissions(entry);
         HashSet<String>  dpMap       = new HashSet<String>();
         for (Permission permission : permissions) {
-            if (permission.hasDataPolicy()) {
-                System.err.println("data policy permission:" + permission);
-                dpMap.add(permission.getDataPolicy().getId());
+            if (getDataPolicy(permission) != null) {
+                if (debug) {
+                    System.err.println("data policy permission:"
+                                       + permission);
+                }
+                dpMap.add(permission.getDataPolicyId());
                 continue;
             }
-            System.err.println("regular permission:" + permission);
+            if (debug) {
+                System.err.println("regular permission:" + permission);
+            }
             List roles = permission.getRoles();
             map.put(permission.getAction(), StringUtil.join("\n", roles));
+        }
+        if (debug) {
+            System.err.println("dp map:" + dpMap);
         }
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
 
@@ -1362,10 +1463,14 @@ public class AccessManager extends RepositoryManager {
             List<String> selected = new ArrayList<String>();
             for (DataPolicy dataPolicy : dataPolicies) {
                 if (dpMap.contains(dataPolicy.getId())) {
-                    //              System.err.println("is selected:" + dataPolicy);
+                    if (debug) {
+                        System.err.println("is selected:" + dataPolicy);
+                    }
                     selected.add(dataPolicy.getId());
                 } else {
-                    //System.err.println("is not selected:" + dataPolicy);
+                    if (debug) {
+                        System.err.println("is not selected:" + dataPolicy);
+                    }
                 }
                 items.add(new TwoFacedObject(dataPolicy.getLabel(),
                                              dataPolicy.getId()));
@@ -1373,6 +1478,10 @@ public class AccessManager extends RepositoryManager {
             String extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
                                      "true") + HtmlUtils.attr("size",
                                          "" + (Math.min(items.size(), 4)));
+            if (debug) {
+                System.err.println("items:" + items);
+                System.err.println("selected:" + selected);
+            }
             String select = HU.select(ARG_DATAPOLICY, items, selected,
                                       extraSelect);
             sb.append(HU.b("Data Policy:") + " " + select);
@@ -1462,6 +1571,7 @@ public class AccessManager extends RepositoryManager {
 
         return getEntryManager().makeEntryEditResult(request, entry,
                 msg("Edit Access"), sb);
+
 
 
     }

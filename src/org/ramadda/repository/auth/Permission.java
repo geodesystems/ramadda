@@ -68,13 +68,13 @@ public class Permission {
 
 
     /**  */
-    DataPolicy dataPolicy;
+    private String dataPolicyId;
 
     /** _more_ */
-    String action;
+    private String action;
 
     /** _more_ */
-    List<Role> roles;
+    private List<Role> roles;
 
 
     /**
@@ -106,41 +106,17 @@ public class Permission {
      *
      *
      * @param dataPolicy _more_
+     *
+     * @param dataPolicyId _more_
      * @param action _more_
      * @param roles _more_
      */
-    public Permission(DataPolicy dataPolicy, String action,
-                      List<Role> roles) {
+    public Permission(String dataPolicyId, String action, List<Role> roles) {
         this(action, roles);
-        this.dataPolicy = dataPolicy;
+        this.dataPolicyId = dataPolicyId;
     }
 
 
-    /**
-     * Set the DataPolicy property.
-     *
-     * @param value The new value for DataPolicy
-     */
-    public void setDataPolicy(DataPolicy value) {
-        dataPolicy = value;
-    }
-
-    /**
-     * Get the DataPolicy property.
-     *
-     * @return The DataPolicy
-     */
-    public DataPolicy getDataPolicy() {
-        return dataPolicy;
-    }
-
-
-    /**
-     *  @return _more_
-     */
-    public boolean hasDataPolicy() {
-        return dataPolicy != null;
-    }
 
     /**
      * _more_
@@ -188,8 +164,28 @@ public class Permission {
      */
     public String toString() {
         return "action:" + action + " roles:" + roles + " data policy:"
-               + dataPolicy;
+               + dataPolicyId;
     }
+
+
+    /**
+     * Set the DataPolicyId property.
+     *
+     * @param value The new value for DataPolicyId
+     */
+    public void setDataPolicyId(String value) {
+        dataPolicyId = value;
+    }
+
+    /**
+     * Get the DataPolicyId property.
+     *
+     * @return The DataPolicyId
+     */
+    public String getDataPolicyId() {
+        return dataPolicyId;
+    }
+
 
 
     /**
@@ -208,6 +204,15 @@ public class Permission {
      */
     public String getAction() {
         return action;
+    }
+
+    /**
+     *
+     * @param action _more_
+      * @return _more_
+     */
+    public boolean isAction(String action) {
+        return this.action.equals(action);
     }
 
     /**
