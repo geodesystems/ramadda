@@ -2853,6 +2853,10 @@ public class EntryManager extends RepositoryManager {
 
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
+	    if(!newEntry) {
+		entry.getTypeHandler().entryChanged(entry);
+	    }
+
 
             if (entry.getTypeHandler().returnToEditForm()) {
                 return new Result(
@@ -4308,7 +4312,6 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-
     public Result processGetEntries(Request request) throws Exception {
         List<Entry> entries    = new ArrayList();
         boolean     doAll      = request.defined("getall");
@@ -7140,7 +7143,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Entry> getEntries(Request request, Appendable searchCriteriaSB,
-                             List<Clause> extraClauses)
+				  List<Clause> extraClauses)
 	throws Exception {
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
@@ -7153,6 +7156,15 @@ public class EntryManager extends RepositoryManager {
         return getEntries(request, where, typeHandler);
     }
 
+
+    public List<Entry> getEntriesWithType(Request request, String type) 
+	throws Exception {
+        TypeHandler typeHandler = getRepository().getTypeHandler(request);
+	List<Clause> clauses = new ArrayList<Clause>();
+        clauses.add(Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+	//false->don't do lucense search
+	return  getEntries(request,  clauses, typeHandler,false);
+    }
 
     public List<Entry> getEntryRootTree(Request request) throws Exception {
 	if(request.defined(ARG_ANCESTOR)) {
@@ -7798,7 +7810,6 @@ public class EntryManager extends RepositoryManager {
     private void insertEntries(Request request, final List<Entry> entries,
                                boolean isNew, boolean fromImport, boolean callCheckModified)
 	throws Exception {
-
 
         if (entries.size() == 0) {
             return;
