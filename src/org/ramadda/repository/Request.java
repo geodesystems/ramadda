@@ -847,7 +847,8 @@ public class Request implements Constants, Cloneable {
 	if(url.startsWith("http:") || url.startsWith("https:")) return url;
         int     port        = getServerPort();
         boolean alwaysHttps = repository.getAlwaysHttps();
-        String protocol = (alwaysHttps)
+	boolean sslEnabled  = repository.isSSLEnabled(this);
+        String protocol = (alwaysHttps || sslEnabled)
                           ? "https"
                           : "http";
         if ((httpServletRequest != null) && !alwaysHttps) {
