@@ -2262,24 +2262,6 @@ public class Entry implements Cloneable {
      */
     public void setPermissions(List<Permission> value) {
         permissions   = value;
-        permissionMap = new Hashtable();
-        if (permissions != null) {
-            for (Permission permission : permissions) {
-                permissionMap.put(permission.getAction(),
-                                  permission.getRoles());
-            }
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @param action _more_
-     *
-     * @return _more_
-     */
-    public List getRoles(String action) {
-        return (List) permissionMap.get(action);
     }
 
 
