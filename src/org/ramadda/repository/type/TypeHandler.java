@@ -2294,6 +2294,11 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
+    public void entryChanged(Entry entry) throws Exception {
+	if(parent!=null) parent.entryChanged(entry);
+    }
+
+
     /**
      * _more_
      *
