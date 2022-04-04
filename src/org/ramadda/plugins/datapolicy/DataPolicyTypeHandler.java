@@ -55,6 +55,24 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     }
 
     @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+            throws Exception {
+	super.initializeNewEntry(request, entry, fromImport);
+	System.err.println("new");
+	getRepository().getAccessManager().updateLocalDataPolicies();
+    }
+
+    @Override
+    public void entryChanged(Entry entry) throws Exception {
+	super.entryChanged(entry);
+	System.err.println("changed");
+	getRepository().getAccessManager().updateLocalDataPolicies();
+    }
+
+
+
+    @Override
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, Appendable tmpSb,
                                       Object[] values)

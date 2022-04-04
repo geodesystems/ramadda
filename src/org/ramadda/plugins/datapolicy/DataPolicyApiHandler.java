@@ -70,9 +70,11 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
 	List<String> policies = new ArrayList<String>();
 	Utils.add(top,"version","0.1","name",JsonUtil.quote(getRepository().getProperty("ramadda.datapolicy.name","Data Policy Collection")));
         Request searchRequest = getRepository().getAdminRequest();
-        searchRequest.put(ARG_TYPE, "type_datapolicy");
 	StringBuilder tmp = new StringBuilder();
-	List<Entry> entries = getEntryManager().getEntries(searchRequest, tmp);
+	System.err.println("processDataPolicyRequest:");
+	List<Entry> entries = getEntryManager().getEntriesWithType(searchRequest, "type_datapolicy");
+	System.err.println("Entries:" + entries);
+
 	for (Entry entry : entries) {
 	    addPolicy(entry, policies);
 	}
@@ -88,7 +90,12 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
 
     private void addPolicy(Entry entry, List<String> policies) throws Exception {
 	List<String> policy = new ArrayList<String>();
-	Utils.add(policy,"id", qt(entry.getValue(DataPolicyTypeHandler.IDX_ID)));
+	String id = (String) entry.getValue(DataPolicyTypeHandler.IDX_ID);
+	if(!Utils.stringDefined(id)) {
+	    id = Utils.makeID(entry.getName());
+	}
+	Utils.add(policy,"id", qt(id));
+	Utils.add(policy,"name", qt(entry.getName()));
 	Utils.add(policy,"description", qt(entry.getDescription()));
 	Utils.add(policy,"citation",qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
 	Utils.add(policy,"license",qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE)));
