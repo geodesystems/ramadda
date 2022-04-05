@@ -50,7 +50,7 @@ import org.ramadda.repository.type.DataTypes;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
-
+import org.ramadda.repository.auth.DataPolicy;
 
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.BufferMapList;
@@ -196,6 +196,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
                             new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","","decorate","false"),
+                            new WikiTag(WIKI_TAG_DATAPOLICIES, null, "message","","inherited","true","includePermissions","false"),
 			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false"),
                             new WikiTag(WIKI_TAG_BREADCRUMBS),
                             new WikiTag(WIKI_TAG_TOOLS),
@@ -2277,6 +2278,19 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
             return "";
+        } else if (theTag.equals(WIKI_TAG_DATAPOLICIES)) {
+	    boolean inherited =  getProperty(wikiUtil, props, "inherited", true);
+	    boolean includeCollection =  getProperty(wikiUtil, props, "includeCollection", false);
+	    boolean includePermissions =  getProperty(wikiUtil, props, "includePermissions", false);	    
+	    List<DataPolicy> dataPolicies = getAccessManager().getDataPolicies(entry, inherited);
+	    if(dataPolicies.size()==0) {
+                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                             "");
+                return message;
+
+	    }
+	    getAccessManager().formatDataPolicies(request, sb, dataPolicies,includeCollection, includePermissions);
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
         } else if (theTag.equals(WIKI_TAG_STREETVIEW)) {

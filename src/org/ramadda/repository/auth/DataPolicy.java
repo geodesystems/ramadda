@@ -191,10 +191,10 @@ public class DataPolicy {
     /**
      *  @return _more_
      */
-    public String getLabel() {
+    public String getLabel() throws Exception {
         String label = getName();
         if (Utils.stringDefined(getLicense())) {
-            label += " - " + getLicense();
+	    label += " - " + getLicense();
         } else if (Utils.stringDefined(getLicenseDescription())) {
             label += " - " + getLicenseDescription();
         }

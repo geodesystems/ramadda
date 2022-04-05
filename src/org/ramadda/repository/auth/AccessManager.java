@@ -202,7 +202,6 @@ public class AccessManager extends RepositoryManager {
         if (urls.size() == 0) {
             if (debug) {
                 System.err.println("\tNo data policy urls specified");
-
                 return false;
             }
         }
@@ -1227,6 +1226,30 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    public List<DataPolicy> getDataPolicies(Entry entry, boolean inherited) throws Exception {
+	List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
+	if(this.dataPolicies.size()==0) {
+	    return dataPolicies;
+	}
+
+	HashSet seen = new HashSet();
+	while(entry!=null) {
+	    List<Permission> permissions = getPermissions(entry);
+	    for(Permission permission: permissions) {
+		if (Utils.stringDefined(permission.getDataPolicyId())) {
+		    if(seen.contains(permission.getDataPolicyId())) continue;
+		    seen.add(permission.getDataPolicyId());
+		    DataPolicy dataPolicy = dataPoliciesMap.get(permission.getDataPolicyId());
+		    if(dataPolicy!=null) dataPolicies.add(dataPolicy);
+		}
+	    }
+	    if(!inherited) break;
+	    entry=entry.getParentEntry();
+	}
+
+	return dataPolicies;
+    }
+
     /**
      * _more_
      *
@@ -1379,20 +1402,29 @@ public class AccessManager extends RepositoryManager {
             return new Result("Data Policies", sb);
         }
         sb.append("Loaded data policies:");
+	formatDataPolicies(request, sb, dataPolicies,true,true);
+        getPageHandler().sectionClose(request, sb);
+        return new Result("Data Policies", sb);
+    }
+
+
+    
+    public void formatDataPolicies(Request request, Appendable sb, List<DataPolicy> dataPolicies, boolean includeCollection, boolean includePermissions) throws Exception {
         LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
                                                        StringBuilder>();
         for (DataPolicy dataPolicy : dataPolicies) {
-            String href = dataPolicy.getFromName() + " - "
-                          + HU.href(dataPolicy.getMainUrl(),
-                                    dataPolicy.getMainUrl());
+            String href = HU.href(dataPolicy.getMainUrl(),dataPolicy.getFromName());
             StringBuilder buff = map.get(href);
             if (buff == null) {
                 map.put(href, buff = new StringBuilder());
             }
-            String label = dataPolicy.getLabel();
+	    String label = dataPolicy.getName();
             if (Utils.stringDefined(dataPolicy.getMyUrl())) {
-                label = HU.href(dataPolicy.getMyUrl(), label);
+                label = HU.href(dataPolicy.getMyUrl(), label,HU.attrs("target","_datapolicy"));
             }
+	    if (Utils.stringDefined(dataPolicy.getLicense())) {
+		label += " - " + getMetadataManager().getLicenseHtml(dataPolicy.getLicense(), null);
+	    }
             buff.append("<li>");
             buff.append(HU.italics(label));
             if (Utils.stringDefined(dataPolicy.getDescription())) {
@@ -1400,7 +1432,7 @@ public class AccessManager extends RepositoryManager {
                 buff.append(dataPolicy.getDescription());
             }
             //If they are logged then show the access
-            if ( !request.isAnonymous()) {
+            if (includePermissions&& !request.isAnonymous()) {
                 buff.append("<br>");
                 buff.append(HU.b("Permissions:"));
                 buff.append("<ul>");
@@ -1424,18 +1456,17 @@ public class AccessManager extends RepositoryManager {
         sb.append("<ul>");
         for (String key : map.keySet()) {
             StringBuilder buff = map.get(key);
-            sb.append("<li> ");
-            sb.append(key);
-            sb.append("<ul>");
+	    if(includeCollection) {
+		sb.append("<li> ");
+		sb.append(key);
+		sb.append("<ul>");
+	    }
             sb.append(buff);
-            sb.append("</ul>");
+	    if(includeCollection) {
+		sb.append("</ul>");
+	    }
         }
         sb.append("</ul>");
-
-        sb.append("</ul>");
-        getPageHandler().sectionClose(request, sb);
-
-        return new Result("Data Policies", sb);
     }
 
 
