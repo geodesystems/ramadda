@@ -19,6 +19,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.DbObject;
 import org.ramadda.util.sql.SqlUtil;
+import java.sql.Types;
 
 
 import org.w3c.dom.*;
@@ -2266,6 +2267,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+
+    public void setNaN(PreparedStatement stmt, int idx) throws Exception {
+	if(isDatabaseDerby()) {
+	    stmt.setNull(idx,Types.DOUBLE);
+	} else {
+	    stmt.setDouble(idx,Double.NaN);
+	}
+    }
 
     /**
      * _more_
