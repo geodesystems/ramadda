@@ -24,6 +24,19 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class DataPolicy {
 
+    public static final String FIELD_ID = "id";
+    public static final String FIELD_DESCRIPTION = "description";
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_CITATION = "citation";
+    public static final String FIELD_LICENSE = "license";
+    public static final String FIELD_LICENSE_DESCRIPTION = "license_description";
+    public static final String FIELD_PERMISSIONS = "permissions";
+    public static final String FIELD_URL="url";
+    public static final String FIELD_ACTION = "action";
+    public static final String FIELD_ROLES = "roles";    
+
+
+
     /**  */
     private String mainUrl;
 
@@ -70,19 +83,19 @@ public class DataPolicy {
         this.myUrl    = myUrl;
         this.fromName = fromName;
         boolean debug = false;
-        id          = policy.getString("id");
-        description = policy.optString("description", null);
-        name        = policy.optString("name", Utils.makeLabel(id));
-        citation    = policy.optString("id", null);
-        license     = policy.optString("license", null);
+        id          = policy.getString(FIELD_ID);
+        description = policy.optString(FIELD_DESCRIPTION, null);
+        name        = policy.optString(FIELD_NAME, Utils.makeLabel(id));
+        citation    = policy.optString(FIELD_CITATION, null);
+        license     = policy.optString(FIELD_LICENSE, null);
         if (debug) {
             System.err.println("\tid:" + id + " license:" + license);
         }
-        licenseDescription = policy.optString("license_description", null);
-        JSONArray jpermissions = policy.getJSONArray("permissions");
+        licenseDescription = policy.optString(FIELD_LICENSE_DESCRIPTION, null);
+        JSONArray jpermissions = policy.getJSONArray(FIELD_PERMISSIONS);
         for (int j = 0; j < jpermissions.length(); j++) {
             JSONObject jpermission = jpermissions.getJSONObject(j);
-            String     action = jpermission.getString("action");
+            String     action = jpermission.getString(FIELD_ACTION);
             if ( !action.equals(Permission.ACTION_VIEW)
                     && !action.equals(Permission.ACTION_FILE)) {
                 System.err.println("data policy with bad action:" + mainUrl
@@ -94,7 +107,7 @@ public class DataPolicy {
             if (debug) {
                 System.err.println("\t\taction:" + action);
             }
-            JSONArray  jroles = jpermission.getJSONArray("roles");
+            JSONArray  jroles = jpermission.getJSONArray(FIELD_ROLES);
             List<Role> roles  = new ArrayList<Role>();
             for (int k = 0; k < jroles.length(); k++) {
                 String role = jroles.getString(k);

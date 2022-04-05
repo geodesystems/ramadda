@@ -1431,6 +1431,11 @@ public class AccessManager extends RepositoryManager {
                 buff.append("<br>");
                 buff.append(dataPolicy.getDescription());
             }
+	    if(Utils.stringDefined(dataPolicy.getCitation())) {
+                buff.append("<br>");
+                buff.append(HU.italics(dataPolicy.getCitation().replaceAll("\n","<br>")));
+	    }
+
             //If they are logged then show the access
             if (includePermissions&& !request.isAnonymous()) {
                 buff.append("<br>");
