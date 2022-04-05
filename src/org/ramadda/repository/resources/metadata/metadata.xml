@@ -59,7 +59,7 @@
 ]]>
 	</help>
 	<element name="License" datatype="enumerationplus"
-		 values="file:/org/ramadda/repository/resources/metadata/spdxvalues.txt"/>
+		 values="file:/org/ramadda/repository/resources/metadata/licensevalues.txt"/>
 	<element name="Description" rows="3" />
       </type>
     </handler>
