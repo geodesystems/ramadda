@@ -214,7 +214,7 @@ public class MetadataManager extends RepositoryManager {
 	    licenseUrls = new Properties();
 	    getRepository().loadProperties(
 					   licenseUrls,
-					   "/org/ramadda/repository/resources/metadata/spdxurls.properties");
+					   "/org/ramadda/repository/resources/metadata/licenseurls.properties");
 	}
 
 	if (label == null) {
