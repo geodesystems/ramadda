@@ -13,7 +13,7 @@ category="Software and Services" >
      <column  name="datapolicy_id"  label="ID" cansearch="false"/>
      <column  name="citation"  label="Citation" cansearch="false" rows="5"/>
      <column  name="license" type="enumerationplus"  label="License"
-	      values="file:/org/ramadda/repository/resources/metadata/spdxvalues.txt"
+	      values="file:/org/ramadda/repository/resources/metadata/licensevalues.txt"
 	      cansearch="false" />     
      <column  name="license_description"  label="License Description" cansearch="false" />
      <column  name="view_roles"  type="list" label="View Roles" size="2000" rows="5" cansearch="false"

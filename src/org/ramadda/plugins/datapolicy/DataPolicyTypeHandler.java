@@ -13,8 +13,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
-import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
@@ -34,13 +34,26 @@ import java.util.List;
 public class DataPolicyTypeHandler extends GenericTypeHandler {
 
 
-    private static int IDX=0;
+    /**  */
+    private static int IDX = 0;
+
+    /**  */
     public static final int IDX_ID = IDX++;
-    public static final int IDX_CITATION = IDX++;    
-    public static final int IDX_LICENSE = IDX++;    
-    public static final int IDX_LICENSE_DESCRIPTION = IDX++;    
+
+    /**  */
+    public static final int IDX_CITATION = IDX++;
+
+    /**  */
+    public static final int IDX_LICENSE = IDX++;
+
+    /**  */
+    public static final int IDX_LICENSE_DESCRIPTION = IDX++;
+
+    /**  */
     public static final int IDX_VIEW_ROLES = IDX++;
-    public static final int IDX_FILE_ROLES = IDX++;        
+
+    /**  */
+    public static final int IDX_FILE_ROLES = IDX++;
 
     /**
      * _more_
@@ -55,50 +68,91 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
+    /**
+      * @return _more_
+     */
+    @Override
+    public boolean adminOnly() {
+        return true;
+    }
+
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param fromImport _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
-	super.initializeNewEntry(request, entry, fromImport);
-	System.err.println("new");
-	getRepository().getAccessManager().updateLocalDataPolicies();
+        super.initializeNewEntry(request, entry, fromImport);
+        System.err.println("new");
+        getRepository().getAccessManager().updateLocalDataPolicies();
     }
 
+
+
+
+    /**
+     *
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public void entryChanged(Entry entry) throws Exception {
-	super.entryChanged(entry);
-	System.err.println("changed");
-	getRepository().getAccessManager().updateLocalDataPolicies();
+        super.entryChanged(entry);
+        System.err.println("changed");
+        getRepository().getAccessManager().updateLocalDataPolicies();
     }
 
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param column _more_
+     * @param tmpSb _more_
+     * @param values _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, Appendable tmpSb,
                                       Object[] values)
             throws Exception {
-	if(column.getName().equals("view_roles") ||
-	   column.getName().equals("file_roles")) {
-	    String roles = (String) entry.getValue(column.getName().equals("view_roles")?
-						     IDX_VIEW_ROLES:IDX_FILE_ROLES);
-	    for(String r: Utils.split(roles,",",true,true)) {
-		Role role = new Role(r);
-		HtmlUtils.div(tmpSb,r,HtmlUtils.cssClass(role.getCssClass()));
-	    }
-	    return;
-	}
+        if (column.getName().equals("view_roles")
+                || column.getName().equals("file_roles")) {
+            String roles =
+                (String) entry.getValue(column.getName().equals("view_roles")
+                                        ? IDX_VIEW_ROLES
+                                        : IDX_FILE_ROLES);
+            for (String r : Utils.split(roles, ",", true, true)) {
+                Role role = new Role(r);
+                HtmlUtils.div(tmpSb, r,
+                              HtmlUtils.cssClass(role.getCssClass()));
+            }
+
+            return;
+        }
 
 
-	if(column.getName().equals("license")) {
-	    String license = (String) entry.getValue(IDX_LICENSE);
-	    tmpSb.append(getMetadataManager().getLicenseHtml(license, null));
-	     return;
-	}
-	super.formatColumnHtmlValue(request, entry, column, tmpSb, values);
+        if (column.getName().equals("license")) {
+            String license = (String) entry.getValue(IDX_LICENSE);
+            tmpSb.append(getMetadataManager().getLicenseHtml(license, null));
+
+            return;
+        }
+        super.formatColumnHtmlValue(request, entry, column, tmpSb, values);
 
     }
-    
+
 
 
 }
