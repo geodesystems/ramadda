@@ -3159,13 +3159,22 @@ label {
     padding: 5px;
 }
 
-.ramadda-access-comment {
+.ramadda-role-datapolicy {
+    font-weight:bold;
+}
+
+td .ramadda-role {
+    padding:2px;
+    margin:0px;
+}
+
+.ramadda-role-comment {
     background:#ccc;
 }
-.ramadda-access-none {
+.ramadda-role-none {
     background:#D72128;
 }
-.ramadda-access-negated {
+.ramadda-role-negated {
     font-weight:bold;
 }
 
@@ -3184,7 +3193,7 @@ label {
 
 
 .ramadda-access-summary td {
-    padding: 5px;
+    //padding: 5px;
     border: 1px #efefef solid;
     font-size:9pt;
 }
