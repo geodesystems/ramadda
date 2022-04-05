@@ -212,5 +212,39 @@ that contains the other recipient's email.
 </ul>
 
 
+<subhead intoc="true" id="datapolicy">Data Policies</subhead>
+RAMADDA has support for a data policy mechanism that allows for
+the specification of a data license and access settings in a centralized
+location. This allows for the use of a single data policy across multiple
+entries within a single RAMADDA repository as well as sharing data policies
+across a group of confederated RAMADDA repositories.
+See the documentation at <a href=https://ramadda.org/repository/a/datapolicy>
+https://ramadda.org/repository/a/datapolicy
+</a>
+for more details.
+
+
+
+A RAMADDA repository is configured to read in data policies
+from a set of URLs specified in a repository.properties file
+in your local RAMADDA home directory.
+<pre>
+#Comma separated list of URLS to fetch the data policies from
+#Use "this" to refer to the current RAMADDA
+ramadda.datapolicy.urls=this,https://ramadda.org/datapolicy/v1/list
+
+#Number of minutes between fetches of data policies from the URLs
+ramadda.datapolicy.sleepminutes=30
+
+#Set this property to turn on debugging
+ramadda.datapolicy.debug=true
+</pre>
+
+The URLs specified are read at a given frequency (with the property above).
+Each URL returns a document that has one or more data policies. 
+A data policy consists of name, ID, data license and a number of permissions.
+
+
+
 
 [ht::foot]
