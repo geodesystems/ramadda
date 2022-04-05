@@ -845,12 +845,17 @@ public class Request implements Constants, Cloneable {
      */
     public String getAbsoluteUrl(String url) {
 	if(url.startsWith("http:") || url.startsWith("https:")) return url;
-        int     port        = getServerPort();
+        int     port;
+        String protocol;
         boolean alwaysHttps = repository.getAlwaysHttps();
 	boolean sslEnabled  = repository.isSSLEnabled(this);
-        String protocol = (alwaysHttps || sslEnabled)
-                          ? "https"
-                          : "http";
+	if(alwaysHttps || sslEnabled) {
+	    port = getRepository().getHttpsPort();
+	    protocol =  "https";
+	} else {
+	    port = getServerPort();
+	    protocol =  "http";
+	}
         if ((httpServletRequest != null) && !alwaysHttps) {
             String scheme = httpServletRequest.getScheme();
             if (scheme != null) {

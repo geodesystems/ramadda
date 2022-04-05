@@ -145,13 +145,13 @@ public class Role {
      */
     public String getCssClass() {
         if (isComment()) {
-            return "ramadda-access-comment";
+            return "ramadda-role-comment";
         }
         if (Role.ROLE_NONE.isRole(this)) {
-            return "ramadda-access-none";
+            return "ramadda-role-none";
         }
         if (getNegated()) {
-            return "ramadda-access-negated";
+            return "ramadda-role-negated";
         }
 
         return "";

@@ -66,12 +66,6 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class AccessManager extends RepositoryManager {
 
-    /**  */
-    public static final String DATAPOLICY_PREFIX = "datapolicy:";
-
-    /**  */
-    public static final String ARG_DATAPOLICY = "datapolicy";
-
     /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
                                             "/access/form", "Access");
@@ -98,6 +92,29 @@ public class AccessManager extends RepositoryManager {
 
 
     /**  */
+    public static final String DATAPOLICY_PREFIX = "datapolicy:";
+
+    /**  */
+    public static final String PROP_DATAPOLICY_URLS =
+        "ramadda.datapolicy.urls";
+
+    /**  */
+    public static final String PROP_DATAPOLICY_DEBUG =
+        "ramadda.datapolicy.debug";
+
+    /**  */
+    public static final String PROP_DATAPOLICY_SLEEP =
+        "ramadda.datapolicy.sleepminutes";
+
+    /**  */
+    public static final String ARG_DATAPOLICY = "datapolicy";
+
+    /**  */
+    private boolean haveDoneDataPolicyFetch = false;
+
+
+
+    /**  */
     private boolean stopAtFirstRole = true;
 
     /**  */
@@ -106,6 +123,10 @@ public class AccessManager extends RepositoryManager {
     /**  */
     private Hashtable<String, DataPolicy> dataPoliciesMap =
         new Hashtable<String, DataPolicy>();
+
+    /**  */
+    private boolean debugDataPolicy = false;
+
 
     /**
      * _more_
@@ -141,6 +162,8 @@ public class AccessManager extends RepositoryManager {
 
 
 
+
+
     /**
      *
      * @throws Exception _more_
@@ -148,33 +171,40 @@ public class AccessManager extends RepositoryManager {
     private void runDataPolicyFetch() throws Exception {
         //Pause for a minute
         //      Misc.sleepSeconds(60);
-        Misc.sleepSeconds(5);
+        Misc.sleepSeconds(10);
+        debugDataPolicy = getRepository().getProperty(PROP_DATAPOLICY_DEBUG,
+                false);
+        int minutes = getRepository().getProperty(PROP_DATAPOLICY_SLEEP, 1);
         while (true) {
-            doDataPolicyFetch();
-            //Sleep 5 minutes
-            Misc.sleepSeconds(60 * 5);
+            haveDoneDataPolicyFetch = true;
+            if ( !doDataPolicyFetch()) {
+                return;
+            }
+            Misc.sleepSeconds(60 * minutes);
         }
-
     }
 
-    /**
-     *
-     * @throws Exception _more_
-     */
-    private void doDataPolicyFetch() {
-        boolean debug = true;
 
+    /**
+     * @return _more_
+     */
+    private boolean doDataPolicyFetch() {
+        boolean debug = debugDataPolicy;
         List<String> urls =
-            Utils.split(
-                getRepository().getProperty(
-                    "ramadda.datapolicy.urls",
-                    "this,https://ramadda.org/datapolicy/v1/list"), ",",
-                        true, true);
+            Utils.split(getRepository().getProperty(PROP_DATAPOLICY_URLS,
+                ""), ",", true, true);
         List<DataPolicy> tmpDataPolicies = new ArrayList<DataPolicy>();
         Hashtable<String, DataPolicy> tmpDataPoliciesMap =
             new Hashtable<String, DataPolicy>();
         if (debug) {
-            System.err.println("*** AccessManager.doDataPolicyFetch");
+            System.err.println("AccessManager.doDataPolicyFetch");
+        }
+        if (urls.size() == 0) {
+            if (debug) {
+                System.err.println("\tNo data policy urls specified");
+
+                return false;
+            }
         }
 
         for (String url : urls) {
@@ -217,6 +247,9 @@ public class AccessManager extends RepositoryManager {
                                          exc);
             }
         }
+
+        return true;
+
     }
 
 
@@ -225,6 +258,13 @@ public class AccessManager extends RepositoryManager {
      */
     public synchronized void clearCache() {
         recentPermissions.clearCache();
+        //Since clearCache gets called at startup  we only want to
+        //fetch the data policies  when we have already started to fetch
+        //them since we might also be fetching them from ourselves
+        if (haveDoneDataPolicyFetch) {
+            updateLocalDataPolicies();
+        }
+
     }
 
 
@@ -1096,13 +1136,11 @@ public class AccessManager extends RepositoryManager {
                     for (Role role : permission.getRoles()) {
                         if (tmp == null) {
                             tmp = new StringBuilder();
-                        } else {
-                            tmp.append("<br>");
                         }
                         String label = role.toString();
                         String clazz = role.getCssClass();
                         if (getDataPolicy(permission) != null) {
-                            clazz = "ramadda-access-datapolicy " + clazz;
+                            clazz = "ramadda-role-datapolicy " + clazz;
                             DataPolicy dp    = getDataPolicy(permission);
                             String     title = "data policy:" + dp.getName();
                             String     url   = dp.getMyUrl();
@@ -1114,8 +1152,9 @@ public class AccessManager extends RepositoryManager {
                                                 "title", title)) + "&nbsp;*";
 
                         }
-                        tmp.append(HU.span(label, HU.cssClass(clazz)));
-
+                        tmp.append(HU.div(label,
+                                          HU.cssClass("ramadda-role "
+                                              + clazz)));
                     }
                 }
                 cols.append(HtmlUtils.cols(tmp.toString()));
@@ -1250,12 +1289,12 @@ public class AccessManager extends RepositoryManager {
      *
      * @param entry _more_
      * @param permissions _more_
-      * @return _more_
+     *  @return _more_
      */
     private List<Permission> getUpdatedPermissions(Entry entry,
             List<Permission> permissions) {
         boolean hasDataPolicy = false;
-        boolean debug         = true;
+        boolean debug         = false;
         if (debug) {
             System.err.println("getUpdatePermissions:" + entry);
         }
@@ -1311,7 +1350,7 @@ public class AccessManager extends RepositoryManager {
     /**
      *
      * @param permission _more_
-      * @return _more_
+     *  @return _more_
      */
     private DataPolicy getDataPolicy(Permission permission) {
         String id = permission.getDataPolicyId();
@@ -1367,7 +1406,15 @@ public class AccessManager extends RepositoryManager {
                 buff.append("<ul>");
                 for (Permission permission : dataPolicy.getPermissions()) {
                     buff.append("<li>");
-                    buff.append(permission);
+                    buff.append("Action: ");
+                    buff.append(permission.getAction());
+                    buff.append("<br>Roles:<ul> ");
+                    for (Role role : permission.getRoles()) {
+                        buff.append("<li>");
+                        buff.append(HU.span(role.toString(),
+                                            HU.cssClass(role.getCssClass())));
+                    }
+                    buff.append("</ul>");
                 }
                 buff.append("</ul>");
             }
@@ -1417,7 +1464,9 @@ public class AccessManager extends RepositoryManager {
         request.appendMessage(sb);
 
         StringBuffer currentAccess = new StringBuffer();
-        currentAccess.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
+        currentAccess.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                            HU.attrs("celladding", "0",
+                                                "cellspacing", "0")));
         StringBuffer header =
             new StringBuffer(HtmlUtils.cols(HtmlUtils.bold(msg("Entry"))));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {

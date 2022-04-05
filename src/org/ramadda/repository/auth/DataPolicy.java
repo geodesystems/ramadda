@@ -79,10 +79,10 @@ public class DataPolicy {
             System.err.println("\tid:" + id + " license:" + license);
         }
         licenseDescription = policy.optString("license_description", null);
-        JSONArray accesses = policy.getJSONArray("access");
-        for (int j = 0; j < accesses.length(); j++) {
-            JSONObject access = accesses.getJSONObject(j);
-            String     action = access.getString("action");
+        JSONArray jpermissions = policy.getJSONArray("permissions");
+        for (int j = 0; j < jpermissions.length(); j++) {
+            JSONObject jpermission = jpermissions.getJSONObject(j);
+            String     action = jpermission.getString("action");
             if ( !action.equals(Permission.ACTION_VIEW)
                     && !action.equals(Permission.ACTION_FILE)) {
                 System.err.println("data policy with bad action:" + mainUrl
@@ -94,7 +94,7 @@ public class DataPolicy {
             if (debug) {
                 System.err.println("\t\taction:" + action);
             }
-            JSONArray  jroles = access.getJSONArray("roles");
+            JSONArray  jroles = jpermission.getJSONArray("roles");
             List<Role> roles  = new ArrayList<Role>();
             for (int k = 0; k < jroles.length(); k++) {
                 String role = jroles.getString(k);
