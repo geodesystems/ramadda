@@ -146,6 +146,7 @@ function CollectionForm(formId, plottype, args) {
                     };
                     */
                     var startTime = performance.now();
+                    //var startTime = Date.now();
                     // clear out any old stuff
                     var outputDiv = $('#' + this.formId +"_output");
                     outputDiv.html("");
@@ -241,6 +242,7 @@ function CollectionForm(formId, plottype, args) {
                                     processEntry.getChildrenEntries(finalCallback, "ascending=false&orderby=name&max=9999");
                                     doneTime = performance.now();
                                     handleFinished("");
+                                    //handleFinished("Processing took: "+theCollectionForm.msToTime(doneTime-startTime));
                                     console.log("Processing time took: "+Utils.formatNumber((doneTime-startTime)/60000)+" minutes");
                                 } else {
                                     handleStatus(data.message);
@@ -273,6 +275,24 @@ function CollectionForm(formId, plottype, args) {
                     var html = HtmlUtil.image(url,[ATTR_ALT, "Generating Image..."])
                     outputDiv.html(html);
                 }
+            },
+            msToTime: function(milliseconds) {
+              //Get hours from milliseconds
+              var hours = milliseconds / (1000*60*60);
+              var absoluteHours = Math.floor(hours);
+              var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
+          
+              //Get remainder from hours and convert to minutes
+              var minutes = (hours - absoluteHours) * 60;
+              var absoluteMinutes = Math.floor(minutes);
+              var m = absoluteMinutes > 9 ? absoluteMinutes : '0' +  absoluteMinutes;
+          
+              //Get remainder from minutes and convert to seconds
+              var seconds = (minutes - absoluteMinutes) * 60;
+              var absoluteSeconds = Math.floor(seconds);
+              var s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
+          
+              return h == "00" ? m + ' min ' + s + ' sec' : h + ' h ' + m + ' min ' + s + ' sec';
             },
             handleProcessEntries: function(parentProcessEntry, entries) {
                 //console.log("got list of process entries:" + entries.length);

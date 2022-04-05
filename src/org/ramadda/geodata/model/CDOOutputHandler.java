@@ -1030,6 +1030,17 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                     years.get(
                                         endYearSelect)), HtmlUtils.title(
                                             "Select the ending year"))));
+        sb.append(
+                HtmlUtils.script(
+                    "$('select[name=\"" + CDOOutputHandler.ARG_CDO_STARTYEAR
+                    + "\"]').on('change',\n function() {\n"
+                    + "  var endYearWidget = $('select[name=\""
+                    +     CDOOutputHandler.ARG_CDO_ENDYEAR + "\"]');\n"
+                    + "  if ($(this).val() > endYearWidget.val()) {\n"
+                    + "      endYearWidget.val($(this).val());\n" 
+                    + "  };\n"
+                    + "});\n"));
+
     }
 
     /**

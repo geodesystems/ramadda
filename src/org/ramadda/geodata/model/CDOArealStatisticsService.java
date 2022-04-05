@@ -1,6 +1,17 @@
-/**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+/*
+* Copyright (c) 2008-2021 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package org.ramadda.geodata.model;
@@ -30,6 +41,7 @@ import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -41,6 +53,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -161,8 +174,8 @@ public class CDOArealStatisticsService extends CDODataService {
                     group = request.getString(
                         ClimateModelApiHandler.ARG_EVENT_GROUP, null);
                     periods =
-                        ((ClimateModelApiHandler) handler)
-                            .getNamedTimePeriods(group);
+                        ((ClimateModelApiHandler) handler).getNamedTimePeriods(
+                            group);
                 }
             }
         }
@@ -188,7 +201,8 @@ public class CDOArealStatisticsService extends CDODataService {
         String       units = grid.getUnitsString();
         boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
         //|| SimpleUnit.isCompatible(units, "mm/day")
-        || units.equals("mm/day") || units.equals("mm"));  // for cpc global precip
+        || units.equals("mm/day")
+                                  || units.equals("mm"));  // for cpc global precip
 
         boolean     isAnom = first.getValue(3).toString().equals("anom");
         List<Entry> climos = findClimatology(request, first);
@@ -311,8 +325,10 @@ public class CDOArealStatisticsService extends CDODataService {
         outputEntry.setValues(newValues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product", "product generated from",
-                oneOfThem.getId(), outputEntry.getId()));
+                "generated product",
+                "product generated from",
+                oneOfThem.getId(),
+                outputEntry.getId()));
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
         ServiceOperand newOp = new ServiceOperand(outputName.toString(),
@@ -362,7 +378,8 @@ public class CDOArealStatisticsService extends CDODataService {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(timeRequest, sample));
+                getPath(timeRequest,
+                        sample));
         //System.out.println("getDataset in evaluateDaily Request took: "+(System.currentTimeMillis()-millis));
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
@@ -381,10 +398,12 @@ public class CDOArealStatisticsService extends CDODataService {
 
         Object actionId = dpi.getProperty("actionId", null);
         if (actionId != null) {
-        	String name = ModelUtil.buildOutputName(timeRequest, values, opNum);
-            getActionManager().setActionMessage(actionId, "Processing: " + name);
+            String name = ModelUtil.buildOutputName(timeRequest, values,
+                              opNum);
+            getActionManager().setActionMessage(actionId,
+                    "Processing: " + name);
         }
-        
+
         String  stat = timeRequest.getString(CDOOutputHandler.ARG_CDO_STAT);
         Entry   climEntry = null;
         Entry   sprdEntry = null;
@@ -413,8 +432,8 @@ public class CDOArealStatisticsService extends CDODataService {
 
 
 
-        makeDailyDataFile(timeRequest, dpi, sample, outFile, dataset,
-                          varname, opNum);
+        makeDailyDataFile(timeRequest, dpi, sample, opEntries, outFile,
+                          dataset, varname, opNum);
         if (dataset != null) {
             dataset.close();
         }
@@ -434,7 +453,7 @@ public class CDOArealStatisticsService extends CDODataService {
             }
             climName = cleanName(climName);
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                climName));
+                                                    climName));
             if ( !climFile.exists()) {
                 commands = initCDOService();
 
@@ -473,7 +492,7 @@ public class CDOArealStatisticsService extends CDODataService {
                               + anomSuffix + ".nc";
             anomName = cleanName(anomName);
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                anomName));
+                                                    anomName));
             commands = initCDOService();
             // We use sub instead of ymonsub because there is only one value in each file and
             // CDO sets the time of the merged files to be the last time. 
@@ -502,7 +521,7 @@ public class CDOArealStatisticsService extends CDODataService {
                                   + "_stdanom.nc";
                 sprdName = cleanName(sprdName);
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                    sprdName));
+                                                        sprdName));
                 commands = initCDOService();
                 commands.add("-setunit, ");
                 commands.add("-ydaydiv");
@@ -657,14 +676,17 @@ public class CDOArealStatisticsService extends CDODataService {
         outputEntry.setValues(avalues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product", "product generated from",
-                sample.getId(), outputEntry.getId()));
+                "generated product",
+                "product generated from",
+                sample.getId(),
+                outputEntry.getId()));
         if (climEntry != null) {
             outputEntry.addAssociation(
-                new Association(
-                    getRepository().getGUID(), "generated product",
-                    "product generated from", climEntry.getId(),
-                    outputEntry.getId()));
+                new Association(getRepository().getGUID(),
+                                "generated product",
+                                "product generated from",
+                                climEntry.getId(),
+                                outputEntry.getId()));
         }
         getOutputHandler().getEntryManager().writeEntryXmlFile(timeRequest,
                 outputEntry);
@@ -720,18 +742,21 @@ public class CDOArealStatisticsService extends CDODataService {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(timeRequest, sample));
+                getPath(timeRequest,
+                        sample));
         //System.out.println("getDataset in evaluateMonthly Request took: "+(System.currentTimeMillis()-millis));
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
         }
         String varname = ((GridDatatype) dataset.getGrids().get(0)).getName();
 
-        Object[] values  = sample.getValues(true);
-        Object actionId = dpi.getProperty("actionId", null);
+        Object[] values   = sample.getValues(true);
+        Object   actionId = dpi.getProperty("actionId", null);
         if (actionId != null) {
-        	String name = ModelUtil.buildOutputName(timeRequest, values, opNum);
-            getActionManager().setActionMessage(actionId, "Processing: " + name);
+            String name = ModelUtil.buildOutputName(timeRequest, values,
+                              opNum);
+            getActionManager().setActionMessage(actionId,
+                    "Processing: " + name);
         }
         Object[] avalues = new Object[values.length + 1];
         System.arraycopy(values, 0, avalues, 0, values.length);
@@ -798,7 +823,7 @@ public class CDOArealStatisticsService extends CDODataService {
                               + "_timstd.nc";
             sprdName = cleanName(sprdName);
             File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                sprdName));
+                                                    sprdName));
             commands = initCDOService();
             commands.add("-timstd");
             getOutputHandler().addAreaSelectServices(sprdRequest, sprdEntry,
@@ -833,7 +858,7 @@ public class CDOArealStatisticsService extends CDODataService {
             }
             climName = cleanName(climName);
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                climName));
+                                                    climName));
             if ( !climFile.exists()) {
                 commands = initCDOService();
 
@@ -870,7 +895,7 @@ public class CDOArealStatisticsService extends CDODataService {
                               + anomSuffix + ".nc";
             anomName = cleanName(anomName);
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                anomName));
+                                                    anomName));
             commands = initCDOService();
             // We use sub instead of ymonsub because there is only one value in each file and
             // CDO sets the time of the merged files to be the last time. 
@@ -899,7 +924,7 @@ public class CDOArealStatisticsService extends CDODataService {
                                   + "_stdanom.nc";
                 sprdName = cleanName(sprdName);
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                    sprdName));
+                                                        sprdName));
                 commands = initCDOService();
                 commands.add("-setunit, ");
                 commands.add("-div");
@@ -1032,14 +1057,17 @@ public class CDOArealStatisticsService extends CDODataService {
         outputEntry.setValues(avalues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product", "product generated from",
-                sample.getId(), outputEntry.getId()));
+                "generated product",
+                "product generated from",
+                sample.getId(),
+                outputEntry.getId()));
         if (climEntry != null) {
             outputEntry.addAssociation(
-                new Association(
-                    getRepository().getGUID(), "generated product",
-                    "product generated from", climEntry.getId(),
-                    outputEntry.getId()));
+                new Association(getRepository().getGUID(),
+                                "generated product",
+                                "product generated from",
+                                climEntry.getId(),
+                                outputEntry.getId()));
         }
         getOutputHandler().getEntryManager().writeEntryXmlFile(timeRequest,
                 outputEntry);
@@ -1051,7 +1079,6 @@ public class CDOArealStatisticsService extends CDODataService {
         return newOp;
 
     }
-
 
     /**
      * Make the data file
@@ -1071,12 +1098,38 @@ public class CDOArealStatisticsService extends CDODataService {
                                    GridDataset dataset, String varname,
                                    int opNum)
             throws Exception {
+        List<Entry> samples = new ArrayList<Entry>();
+        samples.add(sample);
+        makeDailyDataFile(request, dpi, sample, samples, outFile, dataset,
+                          varname, opNum);
+    }
 
-        long    millis      = System.currentTimeMillis();
-        long    submillis   = System.currentTimeMillis();
-        String  opStr       = getOpArgString(opNum);
+    /**
+     * Make the data file
+     *
+     * @param request request
+     * @param dpi     data input
+     * @param sample  sample file
+     * @param opEntries _more_
+     * @param outFile output file
+     * @param dataset gridded dataset
+     * @param varname variable name
+     * @param opNum   operand number
+     *
+     * @throws Exception problems
+     */
+    private void makeDailyDataFile(Request request, ServiceInput dpi,
+                                   Entry sample, List<Entry> opEntries,
+                                   File outFile, GridDataset dataset,
+                                   String varname, int opNum)
+            throws Exception {
 
-        Request timeRequest = handleNamedTimePeriod(request, opStr);
+        long    millis       = System.currentTimeMillis();
+        long    submillis    = System.currentTimeMillis();
+        String  opStr        = getOpArgString(opNum);
+        int     numOpEntries = opEntries.size();
+
+        Request timeRequest  = handleNamedTimePeriod(request, opStr);
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
         }
@@ -1126,7 +1179,8 @@ public class CDOArealStatisticsService extends CDODataService {
         int startYear = timeRequest.get(
                             CDOOutputHandler.ARG_CDO_STARTYEAR + opStr,
                             timeRequest.get(
-                                CDOOutputHandler.ARG_CDO_STARTYEAR, 1979));
+                                CDOOutputHandler.ARG_CDO_STARTYEAR,
+                                1979));
         int endYear =
             timeRequest.get(CDOOutputHandler.ARG_CDO_ENDYEAR + opStr,
                             timeRequest.get(CDOOutputHandler.ARG_CDO_ENDYEAR,
@@ -1164,7 +1218,8 @@ public class CDOArealStatisticsService extends CDODataService {
                                             true, true);
                 for (String year : yearList) {
                     int iyear = Integer.parseInt(year);
-                    if ((iyear <= firstDataYear) || (iyear > lastDataYear)
+                    if ((iyear <= firstDataYear)
+                            || (iyear > lastDataYear)
                             || ((iyear == lastDataYear)
                                 && (requestEndMonth > lastDataMonth))) {
                         continue;
@@ -1177,127 +1232,156 @@ public class CDOArealStatisticsService extends CDODataService {
                 }
             }
             for (int i = 0; i < 2; i++) {
-                List<String> timeCommands = initCDOService();
-                Request      newRequest   = timeRequest.cloneMe();
-                newRequest.remove(CDOOutputHandler.ARG_CDO_STARTYEAR);
-                newRequest.remove(CDOOutputHandler.ARG_CDO_ENDYEAR);
-                newRequest.remove(CDOOutputHandler.ARG_CDO_STARTYEAR + opStr);
-                newRequest.remove(CDOOutputHandler.ARG_CDO_ENDYEAR + opStr);
-                int loopStart = requestStartMonth;
-                int loopEnd   = requestEndMonth;
-                if (i == 0) {  // last half of previous year
-                    loopEnd = 12;
-                    String yearsToUse = makeCDOYearsString(years, -1);
-                    newRequest.put(CDOOutputHandler.ARG_CDO_ENDMONTH,
-                                   loopEnd);
-                    newRequest.put(CDOOutputHandler.ARG_CDO_YEARS + opStr,
-                                   yearsToUse);
-                    if (requestStartDay > 1) {
-                        if (loopStart < loopEnd) {
-                            timeCommands.add("-mergetime");
+                int entryCount = 0;
+                for (Entry e : opEntries) {
+                    List<String> timeCommands = initCDOService();
+                    Request      newRequest   = timeRequest.cloneMe();
+                    newRequest.remove(CDOOutputHandler.ARG_CDO_STARTYEAR);
+                    newRequest.remove(CDOOutputHandler.ARG_CDO_ENDYEAR);
+                    newRequest.remove(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                      + opStr);
+                    newRequest.remove(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                      + opStr);
+                    int loopStart = requestStartMonth;
+                    int loopEnd   = requestEndMonth;
+                    if (i == 0) {
+                        //if ((numOpEntries > 1)
+                        //        && (entryCount == opEntries.size() - 1)) {
+                        //    break;
+                        //}
+                        loopEnd = 12;
+                        String yearsToUse = makeCDOYearsString(years, -1);
+                        if (!entryIncludesYears(e, yearsToUse)) {
+                        	continue;
                         }
-                        loopStart++;
+                        newRequest.put(CDOOutputHandler.ARG_CDO_ENDMONTH,
+                                       loopEnd);
+                        newRequest.put(CDOOutputHandler.ARG_CDO_YEARS
+                                       + opStr, yearsToUse);
+                        if (requestStartDay > 1) {
+                            if (loopStart < loopEnd) {
+                                timeCommands.add("-mergetime");
+                            }
+                            loopStart++;
+                        }
+                        if (requestStartDay > 1) {
+                            int startday = requestStartDay;
+                            int endday =
+                                CDOOutputHandler
+                                    .DAYS_PER_MONTH[requestStartMonth - 1];
+                            timeCommands.add("-selday," + startday + "/"
+                                             + endday);
+                            timeCommands.add(selmonComma + requestStartMonth);
+                            getOutputHandler().addDateSelectServices(
+                                newRequest, sample, timeCommands, opNum,
+                                false);
+                            if (request.defined(
+                                    CdmDataOutputHandler.ARG_LEVEL)) {
+                                getOutputHandler().addLevelSelectServices(
+                                    newRequest, sample, timeCommands,
+                                    CdmDataOutputHandler.ARG_LEVEL);
+                            }
+                            timeCommands.add(getPath(request, e));
+                        }
+                        if (loopStart <= loopEnd) {
+                            StringBuilder selmonStr =
+                                new StringBuilder(selmonComma);
+                            selmonStr.append(loopStart);
+                            if (loopStart != loopEnd) {
+                                selmonStr.append("/");
+                                selmonStr.append(loopEnd);
+                            }
+                            timeCommands.add(selmonStr.toString());
+                            getOutputHandler().addDateSelectServices(
+                                newRequest, sample, timeCommands, opNum,
+                                false);
+                            if (request.defined(
+                                    CdmDataOutputHandler.ARG_LEVEL)) {
+                                getOutputHandler().addLevelSelectServices(
+                                    newRequest, sample, timeCommands,
+                                    CdmDataOutputHandler.ARG_LEVEL);
+                            }
+                            timeCommands.add(getPath(request, e));
+                        }
+                    } else {  // first half of end year
+                        loopStart = 1;
+                        String yearsToUse = makeCDOYearsString(years, 0);
+                        if (!entryIncludesYears(e, yearsToUse)) {
+                        	entryCount++;
+                        	continue;
+                        }
+                        newRequest.put(CDOOutputHandler.ARG_CDO_STARTMONTH,
+                                       loopStart);
+                        newRequest.put(CDOOutputHandler.ARG_CDO_YEARS
+                                       + opStr, yearsToUse);
+                        if (requestEndDay
+                                < CDOOutputHandler
+                                    .DAYS_PER_MONTH[requestEndMonth - 1]) {
+                            if (loopStart < loopEnd) {
+                                timeCommands.add("-mergetime");
+                            }
+                            loopEnd--;
+                        }
+                        if (loopStart <= loopEnd) {
+                            StringBuilder selmonStr =
+                                new StringBuilder(selmonComma);
+                            selmonStr.append(loopStart);
+                            if (loopStart != loopEnd) {
+                                selmonStr.append("/");
+                                selmonStr.append(loopEnd);
+                            }
+                            timeCommands.add(selmonStr.toString());
+                            getOutputHandler().addDateSelectServices(
+                                newRequest, sample, timeCommands, opNum,
+                                false);
+                            if (request.defined(
+                                    CdmDataOutputHandler.ARG_LEVEL)) {
+                                getOutputHandler().addLevelSelectServices(
+                                    newRequest, sample, timeCommands,
+                                    CdmDataOutputHandler.ARG_LEVEL);
+                            }
+                            timeCommands.add(getPath(request, e));
+                        }
+                        if ((requestEndDay
+                                < CDOOutputHandler
+                                    .DAYS_PER_MONTH[requestEndMonth - 1])) {
+                            timeCommands.add("-selday,1/" + requestEndDay);
+                            timeCommands.add(selmonComma + requestEndMonth);
+                            getOutputHandler().addDateSelectServices(
+                                newRequest, sample, timeCommands, opNum,
+                                false);
+                            if (request.defined(
+                                    CdmDataOutputHandler.ARG_LEVEL)) {
+                                getOutputHandler().addLevelSelectServices(
+                                    newRequest, sample, timeCommands,
+                                    CdmDataOutputHandler.ARG_LEVEL);
+                            }
+                            timeCommands.add(getPath(request, e));
+                        }
                     }
-                    if (requestStartDay > 1) {
-                        int startday = requestStartDay;
-                        int endday =
-                            CDOOutputHandler
-                                .DAYS_PER_MONTH[requestStartMonth - 1];
-                        timeCommands.add("-selday," + startday + "/"
-                                         + endday);
-                        timeCommands.add(selmonComma + requestStartMonth);
-                        getOutputHandler().addDateSelectServices(newRequest,
-                                sample, timeCommands, opNum, false);
-                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                            getOutputHandler().addLevelSelectServices(
-                                newRequest, sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                        }
-                        timeCommands.add(getPath(request, sample));
-                    }
-                    if (loopStart <= loopEnd) {
-                        StringBuilder selmonStr =
-                            new StringBuilder(selmonComma);
-                        selmonStr.append(loopStart);
-                        if (loopStart != loopEnd) {
-                            selmonStr.append("/");
-                            selmonStr.append(loopEnd);
-                        }
-                        timeCommands.add(selmonStr.toString());
-                        getOutputHandler().addDateSelectServices(newRequest,
-                                sample, timeCommands, opNum, false);
-                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                            getOutputHandler().addLevelSelectServices(
-                                newRequest, sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                        }
-                        timeCommands.add(getPath(request, sample));
-                    }
-                } else {  // first half of end year
-                    loopStart = 1;
-                    String yearsToUse = makeCDOYearsString(years, 0);
-                    newRequest.put(CDOOutputHandler.ARG_CDO_STARTMONTH,
-                                   loopStart);
-                    newRequest.put(CDOOutputHandler.ARG_CDO_YEARS + opStr,
-                                   yearsToUse);
-                    if (requestEndDay
-                            < CDOOutputHandler
-                                .DAYS_PER_MONTH[requestEndMonth - 1]) {
-                        if (loopStart < loopEnd) {
-                            timeCommands.add("-mergetime");
-                        }
-                        loopEnd--;
-                    }
-                    if (loopStart <= loopEnd) {
-                        StringBuilder selmonStr =
-                            new StringBuilder(selmonComma);
-                        selmonStr.append(loopStart);
-                        if (loopStart != loopEnd) {
-                            selmonStr.append("/");
-                            selmonStr.append(loopEnd);
-                        }
-                        timeCommands.add(selmonStr.toString());
-                        getOutputHandler().addDateSelectServices(newRequest,
-                                sample, timeCommands, opNum, false);
-                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                            getOutputHandler().addLevelSelectServices(
-                                newRequest, sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                        }
-                        timeCommands.add(getPath(request, sample));
-                    }
-                    if ((requestEndDay
-                            < CDOOutputHandler
-                                .DAYS_PER_MONTH[requestEndMonth - 1])) {
-                        timeCommands.add("-selday,1/" + requestEndDay);
-                        timeCommands.add(selmonComma + requestEndMonth);
-                        getOutputHandler().addDateSelectServices(newRequest,
-                                sample, timeCommands, opNum, false);
-                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                            getOutputHandler().addLevelSelectServices(
-                                newRequest, sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                        }
-                        timeCommands.add(getPath(request, sample));
-                    }
+                    File tmpFile = new File(outFile.toString() + "." + i
+                                            + "." + entryCount);
+                    //getOutputHandler().addDateSelectServices(newRequest, sample,
+                    //        timeCommands, opNum);
+                    //getOutputHandler().addLevelSelectServices(newRequest, sample,
+                    //        timeCommands, CdmDataOutputHandler.ARG_LEVEL);
+                    //System.err.println("years cmds:" + savedServices);
+                    //savedServices.add(oneOfThem.getResource().getPath());
+                    //timeCommands.add(getPath(request, sample));
+                    timeCommands.add(tmpFile.toString());
+                    runCommands(timeCommands, dpi.getProcessDir(), tmpFile);
+                    tmpFiles.add(tmpFile.toString());
+                    entryCount++;
                 }
-                File tmpFile = new File(outFile.toString() + "." + i);
-                //getOutputHandler().addDateSelectServices(newRequest, sample,
-                //        timeCommands, opNum);
-                //getOutputHandler().addLevelSelectServices(newRequest, sample,
-                //        timeCommands, CdmDataOutputHandler.ARG_LEVEL);
-                //System.err.println("years cmds:" + savedServices);
-                //savedServices.add(oneOfThem.getResource().getPath());
-                //timeCommands.add(getPath(request, sample));
-                timeCommands.add(tmpFile.toString());
-                runCommands(timeCommands, dpi.getProcessDir(), tmpFile);
-                tmpFiles.add(tmpFile.toString());
             }
             // merge the files together
             List<String> timecommands = initCDOService();
             timecommands.add("-mergetime");
-            timecommands.add(tmpFiles.get(0).toString());
-            timecommands.add(tmpFiles.get(1).toString());
+            for (String tmpFile : tmpFiles) {
+                timecommands.add(tmpFile);
+            }
+            //timecommands.add(tmpFiles.get(0).toString());
+            //timecommands.add(tmpFiles.get(1).toString());
             File timeFile = new File(outFile.toString() + ".time");
             timecommands.add(timeFile.toString());
             //System.err.println("add cmds:" + commands);
@@ -1316,98 +1400,121 @@ public class CDOArealStatisticsService extends CDODataService {
 
         } else {
 
-            Request      newRequest   = timeRequest.cloneMe();
+            List<String> tmpFiles   = new ArrayList<String>();
+            int          entryCount = 0;
+            for (Entry e : opEntries) {
+                Request      newRequest   = timeRequest.cloneMe();
 
-            List<String> timeCommands = initCDOService();
-            if ((requestStartDay != 1)
-                    || (requestEndDay
-                        < CDOOutputHandler
-                            .DAYS_PER_MONTH[requestEndMonth - 1])) {
-                timeCommands.add("-mergetime");
+                List<String> timeCommands = initCDOService();
+                if ((requestStartDay != 1)
+                        || (requestEndDay
+                            < CDOOutputHandler
+                                .DAYS_PER_MONTH[requestEndMonth - 1])) {
+                    timeCommands.add("-mergetime");
+                }
+                if ((requestStartDay == 1)
+                        && (requestEndDay
+                            == CDOOutputHandler
+                                .DAYS_PER_MONTH[requestEndMonth - 1])
+                        || (requestStartMonth == requestEndMonth)) {
+
+                    if (requestStartMonth == requestEndMonth) {
+                        timeCommands.add("-selday," + requestStartDay + "/"
+                                     + requestEndDay);
+                    }
+
+                    getOutputHandler().addDateSelectServices(timeRequest,
+                            sample, timeCommands, opNum);
+                    getOutputHandler().addLevelSelectServices(timeRequest,
+                            sample, timeCommands, CdmDataOutputHandler.ARG_LEVEL);
+
+                    timeCommands.add(getPath(request, e));
+
+                } else {
+
+                    int loopStart = requestStartMonth;
+                    int loopEnd   = requestEndMonth;
+                    if (requestStartDay > 1) {
+                        loopStart++;
+                    }
+                    if (requestEndDay
+                            < CDOOutputHandler
+                                .DAYS_PER_MONTH[requestEndMonth - 1]) {
+                        loopEnd--;
+                    }
+                    if (requestStartDay > 1) {
+                        int startday = requestStartDay;
+                        int endday =
+                            CDOOutputHandler
+                                .DAYS_PER_MONTH[requestStartMonth - 1];
+                        timeCommands.add("-selday," + startday + "/"
+                                         + endday);
+                        timeCommands.add(selmonComma + requestStartMonth);
+                        getOutputHandler().addDateSelectServices(newRequest,
+                                sample, timeCommands, opNum, false);
+                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
+                            getOutputHandler().addLevelSelectServices(
+                                newRequest, sample, timeCommands,
+                                CdmDataOutputHandler.ARG_LEVEL);
+                        }
+                        timeCommands.add(getPath(request, e));
+                    }
+                    if (loopStart <= loopEnd) {
+                        StringBuilder selmonStr =
+                            new StringBuilder(selmonComma);
+                        selmonStr.append(loopStart);
+                        if (loopStart != loopEnd) {
+                            selmonStr.append("/");
+                            selmonStr.append(loopEnd);
+                        }
+                        timeCommands.add(selmonStr.toString());
+                        getOutputHandler().addDateSelectServices(newRequest,
+                                sample, timeCommands, opNum, false);
+                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
+                            getOutputHandler().addLevelSelectServices(
+                                newRequest, sample, timeCommands,
+                                CdmDataOutputHandler.ARG_LEVEL);
+                        }
+                        timeCommands.add(getPath(request, e));
+                    }
+                    if ((requestEndDay
+                            < CDOOutputHandler
+                                .DAYS_PER_MONTH[requestEndMonth - 1])
+                            && (requestStartMonth != requestEndMonth)) {
+                        timeCommands.add("-selday,1/" + requestEndDay);
+                        timeCommands.add(selmonComma + requestEndMonth);
+                        getOutputHandler().addDateSelectServices(newRequest,
+                                sample, timeCommands, opNum, false);
+                        if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
+                            getOutputHandler().addLevelSelectServices(
+                                newRequest, sample, timeCommands,
+                                CdmDataOutputHandler.ARG_LEVEL);
+                        }
+                        timeCommands.add(getPath(request, e));
+                    }
+                }
+                File tempFile = new File(outFile.toString() + ".time" + "."
+                                         + entryCount);
+                timeCommands.add(tempFile.toString());
+                runCommands(timeCommands, dpi.getProcessDir(), tempFile);
+                tmpFiles.add(tempFile.toString().toString());
+                entryCount++;
             }
-            if ((requestStartDay == 1)
-                    && (requestEndDay
-                        == CDOOutputHandler
-                            .DAYS_PER_MONTH[requestEndMonth - 1]) || (requestStartMonth
-                                == requestEndMonth)) {
-
-                if (requestStartMonth == requestEndMonth) {
-                    commands.add("-selday," + requestStartDay + "/"
-                                 + requestEndDay);
-                }
-
-                getOutputHandler().addDateSelectServices(timeRequest, sample,
-                        commands, opNum);
-                getOutputHandler().addLevelSelectServices(timeRequest,
-                        sample, commands, CdmDataOutputHandler.ARG_LEVEL);
-
-                commands.add(getPath(request, sample));
-
-            } else {
-
-                int loopStart = requestStartMonth;
-                int loopEnd   = requestEndMonth;
-                if (requestStartDay > 1) {
-                    loopStart++;
-                }
-                if (requestEndDay
-                        < CDOOutputHandler
-                            .DAYS_PER_MONTH[requestEndMonth - 1]) {
-                    loopEnd--;
-                }
-                if (requestStartDay > 1) {
-                    int startday = requestStartDay;
-                    int endday =
-                        CDOOutputHandler
-                            .DAYS_PER_MONTH[requestStartMonth - 1];
-                    timeCommands.add("-selday," + startday + "/" + endday);
-                    timeCommands.add(selmonComma + requestStartMonth);
-                    getOutputHandler().addDateSelectServices(newRequest,
-                            sample, timeCommands, opNum, false);
-                    if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                        getOutputHandler().addLevelSelectServices(newRequest,
-                                sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                    }
-                    timeCommands.add(getPath(request, sample));
-                }
-                if (loopStart <= loopEnd) {
-                    StringBuilder selmonStr = new StringBuilder(selmonComma);
-                    selmonStr.append(loopStart);
-                    if (loopStart != loopEnd) {
-                        selmonStr.append("/");
-                        selmonStr.append(loopEnd);
-                    }
-                    timeCommands.add(selmonStr.toString());
-                    getOutputHandler().addDateSelectServices(newRequest,
-                            sample, timeCommands, opNum, false);
-                    if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                        getOutputHandler().addLevelSelectServices(newRequest,
-                                sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                    }
-                    timeCommands.add(getPath(request, sample));
-                }
-                if ((requestEndDay
-                        < CDOOutputHandler
-                            .DAYS_PER_MONTH[requestEndMonth - 1]) && (requestStartMonth
-                                != requestEndMonth)) {
-                    timeCommands.add("-selday,1/" + requestEndDay);
-                    timeCommands.add(selmonComma + requestEndMonth);
-                    getOutputHandler().addDateSelectServices(newRequest,
-                            sample, timeCommands, opNum, false);
-                    if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
-                        getOutputHandler().addLevelSelectServices(newRequest,
-                                sample, timeCommands,
-                                CdmDataOutputHandler.ARG_LEVEL);
-                    }
-                    timeCommands.add(getPath(request, sample));
+            if (numOpEntries > 1) {
+                // merge the files together
+                List<String> timecommands = initCDOService();
+                timecommands.add("-mergetime");
+                for (String tmpFile : tmpFiles) {
+                    timecommands.add(tmpFile);
                 }
                 File timeFile = new File(outFile.toString() + ".time");
-                timeCommands.add(timeFile.toString());
-                runCommands(timeCommands, dpi.getProcessDir(), timeFile);
+                timecommands.add(timeFile.toString());
+                //System.err.println("add cmds:" + commands);
+                runCommands(timecommands, dpi.getProcessDir(), timeFile);
                 // now run the region subset stuff
                 commands.add(timeFile.toString());
+            } else {
+                commands.add(tmpFiles.get(0).toString());
             }
             commands.add(outFile.toString());
             runCommands(commands, dpi.getProcessDir(), outFile);
@@ -1415,7 +1522,21 @@ public class CDOArealStatisticsService extends CDODataService {
 
     }
 
-    /**
+    private boolean entryIncludesYears(Entry e, String yearsToUse) {
+    	List<String> years = StringUtil.split(yearsToUse);
+    	try {
+    	for (String year : years) {
+    		long testDate = DateUtil.parse(year+"-06-01T00:00:00Z").getTime();
+    		if ((e.getStartDate() <= testDate) && (
+    				e.getEndDate() >= testDate)) {
+    			return true;
+    		}
+    	}
+    	} catch (Exception exp) {};
+		return false;
+	}
+
+	/**
      * Make the data file
      *
      * @param request request
@@ -1504,7 +1625,8 @@ public class CDOArealStatisticsService extends CDODataService {
                                             true, true);
                 for (String year : yearList) {
                     int iyear = Integer.parseInt(year);
-                    if ((iyear <= firstDataYear) || (iyear > lastDataYear)
+                    if ((iyear <= firstDataYear)
+                            || (iyear > lastDataYear)
                             || ((iyear == lastDataYear)
                                 && (requestEndMonth > lastDataMonth))) {
                         continue;
@@ -1548,8 +1670,11 @@ public class CDOArealStatisticsService extends CDODataService {
                 // merge the files together
                 commands = initCDOService();
                 commands.add("-mergetime");
-                commands.add(tmpFiles.get(0).toString());
-                commands.add(tmpFiles.get(1).toString());
+                for (String tmpFile : tmpFiles) {
+                    commands.add(tmpFile);
+                }
+                //commands.add(tmpFiles.get(0).toString());
+                //commands.add(tmpFiles.get(1).toString());
                 File timeFile = new File(outFile.toString() + ".merged");
                 commands.add(timeFile.toString());
                 //System.err.println("add cmds:" + commands);
@@ -1614,9 +1739,8 @@ public class CDOArealStatisticsService extends CDODataService {
                 endyearString.append("-");
                 endyearString.append(StringUtil.padZero(requestEndMonth, 2));  // endmonth
                 endyearString.append("-");
-                endyearString
-                    .append("" + CDOOutputHandler
-                        .DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
+                endyearString.append("" + CDOOutputHandler
+                    .DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
                 endyearString.append("T23:59:59");  // endtime
 
                 // update the request to use the date
@@ -1712,25 +1836,21 @@ public class CDOArealStatisticsService extends CDODataService {
                                boolean isAnom, boolean haveClimo, String type)
             throws Exception {
 
-        if (ModelUtil.getFrequency(request, si.getEntries().get(0)).equals(
-                CDOOutputHandler.FREQUENCY_DAILY)) {
-            sb.append(
-                HtmlUtils.hidden(
-                    CDOOutputHandler.ARG_CDO_PERIOD,
-                    request.getSanitizedString(
-                        CDOOutputHandler.ARG_CDO_PERIOD,
-                        CDOOutputHandler.PERIOD_YDAY)));
-        } else if ( !(type
-                .equals(ClimateModelApiHandler
-                    .ARG_ACTION_MULTI_TIMESERIES) || type
-                        .equals(ClimateModelApiHandler
-                            .ARG_ACTION_TIMESERIES))) {
-            sb.append(
-                HtmlUtils.hidden(
-                    CDOOutputHandler.ARG_CDO_PERIOD,
-                    request.getSanitizedString(
-                        CDOOutputHandler.ARG_CDO_PERIOD,
-                        CDOOutputHandler.PERIOD_TIM)));
+        if (ModelUtil.getFrequency(request,
+                                   si.getEntries().get(0)).equals(
+                                       CDOOutputHandler.FREQUENCY_DAILY)) {
+            sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
+                                       request.getSanitizedString(
+                                           CDOOutputHandler.ARG_CDO_PERIOD,
+                                           CDOOutputHandler.PERIOD_YDAY)));
+        } else if ( !(type.equals(
+                ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)
+                      || type.equals(
+                          ClimateModelApiHandler.ARG_ACTION_TIMESERIES))) {
+            sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
+                                       request.getSanitizedString(
+                                           CDOOutputHandler.ARG_CDO_PERIOD,
+                                           CDOOutputHandler.PERIOD_TIM)));
         }
         super.addStatsWidget(request, sb, usePct, isAnom, haveClimo, si,
                              type);
@@ -1812,11 +1932,11 @@ public class CDOArealStatisticsService extends CDODataService {
         if ((group == null) || group.equals("all")) {
             group = "Events";
         }
-        sb.append(
-            HtmlUtils.formEntry(
-                Repository.msgLabel(group),
-                HtmlUtils.select(
-                    ClimateModelApiHandler.ARG_EVENT, values, event)));
+        sb.append(HtmlUtils.formEntry(Repository.msgLabel(group),
+                                      HtmlUtils.select(
+                                          ClimateModelApiHandler.ARG_EVENT,
+                                          values,
+                                          event)));
 
     }
 
@@ -1968,40 +2088,51 @@ public class CDOArealStatisticsService extends CDODataService {
             StringBuilder yearsWidget = new StringBuilder();
             yearsWidget.append(yrLabel);
             yearsWidget.append(
-                HtmlUtils.select(
-                    CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
-                    commonYears,
-                    request.getSanitizedString(
-                        CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
-                        request.getSanitizedString(
-                            CDOOutputHandler.ARG_CDO_STARTYEAR,
-                            commonYears.get(0))), HtmlUtils.title(
-                                "Select the starting year")));
+                HtmlUtils.select(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
+                                 commonYears,
+                                 request.getSanitizedString(
+                                     CDOOutputHandler.ARG_CDO_STARTYEAR
+                                     + yearNum,
+                                     request.getSanitizedString(
+                                         CDOOutputHandler.ARG_CDO_STARTYEAR,
+                                         commonYears.get(0))),
+                                 HtmlUtils.title("Select the starting year")));
             yearsWidget.append(HtmlUtils.space(3));
             yearsWidget.append(Repository.msgLabel("End"));
             yearsWidget.append(
-                HtmlUtils.select(
-                    CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum, commonYears,
-                    request.getSanitizedString(
-                        CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum,
-                        request.getSanitizedString(
-                            CDOOutputHandler.ARG_CDO_ENDYEAR,
-                            commonYears.get(endIndex))), HtmlUtils.title(
-                                "Select the ending year")));
+                HtmlUtils.select(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum,
+                                 commonYears,
+                                 request.getSanitizedString(
+                                     CDOOutputHandler.ARG_CDO_ENDYEAR
+                                     + yearNum,
+                                     request.getSanitizedString(
+                                         CDOOutputHandler.ARG_CDO_ENDYEAR,
+                                         commonYears.get(endIndex))),
+                                 HtmlUtils.title("Select the ending year")));
             yearsWidget.append(HtmlUtils.p());
             yearsWidget.append(Repository.msgLabel("or List"));
-            yearsWidget.append(
-                HtmlUtils.input(
-                    CDOOutputHandler.ARG_CDO_YEARS
-                    + yearNum, request.getSanitizedString(
-                        CDOOutputHandler.ARG_CDO_YEARS
-                        + yearNum, ""), 20, HtmlUtils.title(
-                            "Input a set of years separated by commas (e.g. 1980,1983,2012)")));
+            yearsWidget.append(HtmlUtils.input(CDOOutputHandler.ARG_CDO_YEARS
+                    + yearNum,
+                    request.getSanitizedString(CDOOutputHandler.ARG_CDO_YEARS
+                    + yearNum,
+                            ""),
+                    20,
+                    HtmlUtils.title(
+                    "Input a set of years separated by commas (e.g. 1980,1983,2012)")));
             yearsWidget.append(HtmlUtils.space(2));
             yearsWidget.append(Repository.msg("(comma separated)"));
 
             sb.append(HtmlUtils.formEntry(Repository.msgLabel("Years"),
                                           yearsWidget.toString()));
+            sb.append(
+                HtmlUtils.script(
+                    "$('select[name=\"" + CDOOutputHandler.ARG_CDO_STARTYEAR
+                    + yearNum + "\"]').on('change',\n function() {\n"
+                    + "  var endYearWidget = $('select[name=\""
+                    + CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum + "\"]');\n"
+                    + "  if ($(this).val() > endYearWidget.val()) {\n"
+                    + "      endYearWidget.val($(this).val());\n" + "  };\n"
+                    + "});\n"));
         }
 
     }
