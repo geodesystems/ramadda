@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
@@ -1641,7 +1642,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isDouble()) {
             if (values[offset] != null) {
                 double value = ((Double) values[offset]).doubleValue();
-                if ( !Double.isNaN(value)) {
+		boolean isNaN = Double.isNaN(value);
+                if ( !isNaN) {
                     if ( !Double.isNaN(min)) {
                         if (value < min) {
                             throw new IllegalArgumentException(
@@ -1657,7 +1659,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                         }
                     }
                 }
-                statement.setDouble(statementIdx, value);
+		if(isNaN)
+		    getDatabaseManager().setNaN(statement,statementIdx);
+		else
+		    statement.setDouble(statementIdx, value);		
             } else {
                 //                double value = Double.NaN;
                 double value = 0;
@@ -1826,7 +1831,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                         databaseDfltNum = Double.parseDouble(databaseDflt);
                     }
                     value = databaseDfltNum;
-                }
+                } else {
+		    //Added this so we can handle storing nans in the db
+		    value=Double.NaN;
+		}
             }
             //            System.err.println("col: " + this +" " + results.wasNull() +" value:" + value);
             //            System.err.println(this  +" value=" + value);
