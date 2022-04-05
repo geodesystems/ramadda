@@ -103,19 +103,19 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
 	String url =getRepository().getTmpRequest().getAbsoluteUrl(getEntryManager().getEntryURL(null, entry));
 	Utils.add(policy,"url",qt(url));
 
-	List<String> access = new ArrayList<String>();
+	List<String> permissions = new ArrayList<String>();
 
 	String viewRoles = (String)entry.getValue(DataPolicyTypeHandler.IDX_VIEW_ROLES);
 	String fileRoles = (String)entry.getValue(DataPolicyTypeHandler.IDX_FILE_ROLES);	
 	if(Utils.stringDefined(viewRoles)) {
-	    access.add(JsonUtil.map("action",JsonUtil.quote("view"),"roles",
+	    permissions.add(JsonUtil.map("action",JsonUtil.quote("view"),"roles",
 				makeRoles(viewRoles)));
 	}
 	if(Utils.stringDefined(fileRoles)) {
-	    access.add(JsonUtil.map("action",JsonUtil.quote("file"),"roles",
+	    permissions.add(JsonUtil.map("action",JsonUtil.quote("file"),"roles",
 				    makeRoles(fileRoles)));
 	}	
-	Utils.add(policy,"access",JsonUtil.list(access));
+	Utils.add(policy,"permissions",JsonUtil.list(permissions));
 	policies.add(JsonUtil.map(policy));
     }
 

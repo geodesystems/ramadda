@@ -13,6 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
@@ -77,12 +78,25 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
                                       Column column, Appendable tmpSb,
                                       Object[] values)
             throws Exception {
-	if(!column.getName().equals("license")) {
-	     super.formatColumnHtmlValue(request, entry, column, tmpSb, values);
+	if(column.getName().equals("view_roles") ||
+	   column.getName().equals("file_roles")) {
+	    String roles = (String) entry.getValue(column.getName().equals("view_roles")?
+						     IDX_VIEW_ROLES:IDX_FILE_ROLES);
+	    for(String r: Utils.split(roles,",",true,true)) {
+		Role role = new Role(r);
+		HtmlUtils.div(tmpSb,r,HtmlUtils.cssClass(role.getCssClass()));
+	    }
+	    return;
+	}
+
+
+	if(column.getName().equals("license")) {
+	    String license = (String) entry.getValue(IDX_LICENSE);
+	    tmpSb.append(getMetadataManager().getLicenseHtml(license, null));
 	     return;
 	}
-	String license = (String) entry.getValue(IDX_LICENSE);
-	tmpSb.append(getMetadataManager().getLicenseHtml(license, null));
+	super.formatColumnHtmlValue(request, entry, column, tmpSb, values);
+
     }
     
 
