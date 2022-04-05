@@ -13,7 +13,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.w3c.dom.*;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import java.io.*;
@@ -129,14 +128,14 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      */
     private void runInBackground() throws Exception {
         Request searchRequest = getRepository().getAdminRequest();
-        searchRequest.put(ARG_TYPE, "type_point_purpleair");
         sleepUntil();
         while (true) {
 	    if(debug)
 		System.err.println("PurpleAair fetching data");
             StringBuilder tmp = new StringBuilder();
-            List<Entry> entries = getEntryManager().getEntries(searchRequest,
-                                      tmp);
+            List<Entry> entries = getEntryManager().getEntriesWithType(searchRequest,
+								       "type_point_purpleair");
+	    System.err.println("purple air entries:" + entries);
             for (Entry entry : entries) {
                 if ( !entry.getValue(IDX_ACTIVE).toString().equals("true")) {
 		    if(debug)
