@@ -154,6 +154,17 @@ public class ModelUtil {
      */
     public static String makeValuesKey(Object[] values,
                                        boolean excludeDoops) {
+    	return makeValuesKey(values, excludeDoops, "-");
+    }
+    
+    /**
+     * Make a hash key from the values
+     * @param values the entry values
+     * @param excludeDoops exclude duplicates
+     * @return a string representing the values
+     */
+    public static String makeValuesKey(Object[] values,
+                                       boolean excludeDoops, String delimiter) {
         if (values == null) {
             return "nullKey";
         }
@@ -171,7 +182,7 @@ public class ModelUtil {
             dupList.add(ohFace);
             buf.append(ohFace);
             if (i < values.length) {
-                buf.append("-");
+                buf.append(delimiter);
             }
         }
 

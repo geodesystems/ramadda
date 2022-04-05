@@ -1076,8 +1076,8 @@ public abstract class CDODataService extends Service {
                 } else {
                     // Aggregate by time via ncml
                     String id =
-                        ModelUtil.makeValuesKey(oneOfThem.getValues(), true);
-                    id += "-" + collectionNum;
+                        ModelUtil.makeValuesKey(oneOfThem.getValues(), true, "_");
+                    id += "_" + collectionNum;
                     List<Entry> aggEntries = opEntries;
                     // reduce the daily files to just the years requested
                     if (ModelUtil.getFrequency(request,
@@ -1088,15 +1088,24 @@ public abstract class CDODataService extends Service {
                                     opEntries, collectionNum);
                             id += "_reduced_" + opNum;
                         }
-                    }
-                    Entry agg = ModelUtil.aggregateEntriesByTime(request,
+                        List<Entry> newEntries = new ArrayList<Entry>();
+                        for (Entry e: aggEntries) {
+                            newEntries.add(e);
+                        }
+                        ServiceOperand newOp =
+                            new ServiceOperand(so.getDescription(), newEntries);
+                        copyServiceOperandProperties(so, newOp);
+                        newOps.add(newOp);
+                    } else {
+                        Entry agg = ModelUtil.aggregateEntriesByTime(request,
                                     aggEntries, id, input.getProcessDir());
-                    List<Entry> newEntries = new ArrayList<Entry>();
-                    newEntries.add(agg);
-                    ServiceOperand newOp =
-                        new ServiceOperand(so.getDescription(), newEntries);
-                    copyServiceOperandProperties(so, newOp);
-                    newOps.add(newOp);
+                        List<Entry> newEntries = new ArrayList<Entry>();
+                        newEntries.add(agg);
+                        ServiceOperand newOp =
+                            new ServiceOperand(so.getDescription(), newEntries);
+                        copyServiceOperandProperties(so, newOp);
+                        newOps.add(newOp);
+                    }
                 }
             } else {
                 newOps.add(so);
