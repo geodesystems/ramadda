@@ -32,6 +32,7 @@
 -col
 +col-6
 <p>
+{{datapolicies prefix="<b>Data Policies:</b>" xmessage="No data policies available"}}
 {{properties metadata.types="content.license" message=""}}
 {{map  message="" width="300" }}
 {{tree message="" details="false" prefix=":lheading Folders"}}
@@ -159,16 +160,9 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.top.show" value="false"/>
-
      <property name="search.label" value="Sites"/>
      <property name="search.tabs" value="map,list"/>
-<!--
-     <property name="search.metadatatypes" value="project_person"/>
--->
-
      <property name="search.form.date.show" value="false"/>
-
-
      <column name="short_name"   label="Short Name"    cansearch="true"  showempty="false"/>
      <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/sitetypes.txt" showempty="false"/>
      <column name="status" type="enumerationplus"  label="Status"    cansearch="true"  showempty="false"/>
@@ -417,6 +411,7 @@
 {{properties metadata.types="!project_pi,!project_person,!project_funding,!content.sort" message="" }}
 -col
 +col-md-4
+{{datapolicies prefix="<b>Data Policies:</b>" xmessage="No data policies available"}}
 {{image src="::*" message="" width="300"}}
 <p>
 {{mapentry width="350" message=""}}
@@ -497,40 +492,21 @@
      <column name="instrument_id" type="string"  label="Instrument ID"   />
      <column name="type" type="enumeration"  label="Instrument Type"   />
      <wiki><![CDATA[
-{{noheading}}
-+inset
-<table width="100%">
-<tr valign=top>
-<td width="50%">
-:title Instrument: {{name}}
-
++section title="Instrument: {{name}}"
 {{description wikify="true"}}
-
-==Information==
++row
++col-6
 <table class="formtable">
 <tr><td align="right"><b>ID:</b></td><td>{{field name="instrument_id"}}</td></tr>
 <tr><td align="right"><b>Type:</b></td><td>{{field name="type"}}</td></tr>
 </table>
-
-{{tree prefix="==Data==" message="" showtoggle="false"}}
-
-</td>
-<td width="50%">
+{{tree prefix="==Data==" message="No data files" showtoggle="false"}}
+-col
++col-6
 {{image src="::*" message="" width="300"}}
 {{mapentry width="350" message=""}}
-<p>
-</td></tr>
-
-
-</table>
-
-==Properties==
-<block open="false" title="View all properties">
-{{properties}}
-</block>
--inset
-
-
+{{datapolicies prefix="<b>Data Policies:</b>" xmessage="No data policies available"}}
+{{properties message="" prefix="==Properties=="}}
 ]]>
 </wiki>
 
