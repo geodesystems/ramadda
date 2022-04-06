@@ -97,7 +97,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.awt.Toolkit;
 
 import java.io.*;
-
+import java.nio.charset.Charset;
 import java.lang.reflect.Constructor;
 
 import java.net.Authenticator;
@@ -1185,11 +1185,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
         if (inputStream == null) {
             System.err.println("RAMADDA:  null properties: " + path);
-
             return;
         }
         Properties tmp = new Properties();
-        tmp.load(inputStream);
+	tmp.load(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
         //        System.out.println ("RAMADDA:  loading " + path+" " +  tmp.get("ramadda.wiki.macros"));
         //        props.load(inputStream);
         props.putAll(tmp);
