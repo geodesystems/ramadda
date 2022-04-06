@@ -77,7 +77,6 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
                     "ramadda.datapolicy.name", "Data Policy Collection")));
         Request       searchRequest = getRepository().getAdminRequest();
         StringBuilder tmp           = new StringBuilder();
-        System.err.println("processDataPolicyRequest:");
         List<Entry> entries =
             getEntryManager().getEntriesWithType(searchRequest,
                 "type_datapolicy");
