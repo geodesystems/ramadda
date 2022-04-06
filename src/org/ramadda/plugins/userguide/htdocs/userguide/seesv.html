@@ -1622,18 +1622,20 @@ Column indices. Can include ranges, e.g. 0-5<br>
 </div><a name='-makeids'></a><div class=command> <i><a href='#-makeids'>-makeids</a></i> </div><div class=command-block>Turn the header row into IDs (lowercase, no space, a-z0-9_<br>
 <br>
 </ul>
-</div><a name='-faker'></a><div class=command> <i><a href='#-faker'>-faker</a></i>  &lt;what&gt;  &lt;columns&gt; </div><div class=command-block>Fake up data<br>
+</div><a name='-faker'></a><div class=command> <i><a href='#-faker'>-faker</a></i>  &lt;what&gt;  &lt;columns&gt; </div><div class=command-block>Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker<br>
 <b>Arguments:</b><br>
 <ul>
 <i>what</i>
-firstname|lastname|fullname|address<br>
+firstname|lastname|fullname|etc<br>
 <i>columns</i>
 Columns to change. Of none given then add the fake value<br>
 <br>
 </ul>
 
 The -faker command generates fake input.
-Here are the values:
+This uses the <a href="https://github.com/DiUS/java-faker">Java Faker</a> package.
+<p>
+The faker command takes any of the below commands:
 <pre style='max-height:400px;overflow-y:auto;'>
 boolean
 firstname
