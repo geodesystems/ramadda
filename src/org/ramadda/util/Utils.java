@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
 import org.w3c.dom.*;
@@ -30,19 +29,17 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 
 import java.net.*;
+import java.security.*;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collection;
-
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -50,8 +47,8 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
@@ -63,8 +60,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
-
-import java.security.*;	    
 
 
 /**
@@ -146,7 +141,7 @@ public class Utils extends IO {
     /** timezone */
     public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
-    /** _more_          */
+    /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
 
@@ -203,16 +198,24 @@ public class Utils extends IO {
 
 
 
+    /**
+     *
+     * @param length _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static String generatePassword(int length) throws Exception {
-	String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	chars = chars.toLowerCase()+chars +"0123456789";
-	Random r = new Random();
-	String password = "";
-	for(int i=0;i<length;i++) {
-	    char c = chars.charAt(r.nextInt(chars.length()));
-	    password+=c;
-	}
-	return password;
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        chars = chars.toLowerCase() + chars + "0123456789";
+        Random r        = new Random();
+        String password = "";
+        for (int i = 0; i < length; i++) {
+            char c = chars.charAt(r.nextInt(chars.length()));
+            password += c;
+        }
+
+        return password;
     }
 
 
@@ -621,7 +624,8 @@ public class Utils extends IO {
         return tokenizeColumns(line, tokenizer, null);
     }
 
-    public static boolean flag =true;
+    /**  */
+    public static boolean flag = true;
 
     /**
      * _more_
@@ -633,17 +637,20 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-					       StrTokenizer tokenizer, List<String> toks) { 
-       tokenizer.reset(line);
-       String tokens[] = tokenizer.getTokenArray();
-       if(toks==null) {
-	   toks = new ArrayList(tokens.length);
-       }
-       for(String s:tokens) {
-	   if(s==null) s="";
-	   toks.add(s);
-       }
-       return toks;
+            StrTokenizer tokenizer, List<String> toks) {
+        tokenizer.reset(line);
+        String tokens[] = tokenizer.getTokenArray();
+        if (toks == null) {
+            toks = new ArrayList(tokens.length);
+        }
+        for (String s : tokens) {
+            if (s == null) {
+                s = "";
+            }
+            toks.add(s);
+        }
+
+        return toks;
     }
 
     /**
@@ -660,7 +667,7 @@ public class Utils extends IO {
                 int from = new Double(Utils.split(tok, "-", true,
                                true).get(0)).intValue();
 
-                double   step  = 1;
+                double step  = 1;
                 String right = Utils.split(tok, "-", true, true).get(1);
                 if (right.indexOf(":") >= 0) {
                     List<String> tmp = Utils.split(right, ":", true, true);
@@ -682,14 +689,20 @@ public class Utils extends IO {
         return cols;
     }
 
+    /**
+     *
+     * @param s _more_
+      * @return _more_
+     */
     public static List<Integer> getNumbers(String s) {
         List<Integer> cols = new ArrayList<Integer>();
-	for(double d: getDoubles(s)) {
-	    cols.add((int)d);
+        for (double d : getDoubles(s)) {
+            cols.add((int) d);
         }
+
         return cols;
     }
-    
+
 
 
 
@@ -724,12 +737,21 @@ public class Utils extends IO {
     }
 
 
-    public static String getDefined(String dflt, String ...args) {
-	for(String s: args) {
-	    if(Utils.stringDefined(s)) return s;
-	}
-	return null;
-    }    
+    /**
+     *
+     * @param dflt _more_
+     * @param args _more_
+      * @return _more_
+     */
+    public static String getDefined(String dflt, String... args) {
+        for (String s : args) {
+            if (Utils.stringDefined(s)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
 
 
     /**
@@ -1088,8 +1110,8 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static String[] findPatterns(String s, String regexp)
-            throws Exception 
-{        Pattern pattern = Pattern.compile(regexp);
+            throws Exception {
+        Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(s);
         if ( !matcher.find()) {
             return null;
@@ -1138,30 +1160,33 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	if(true) {
-	    for(String s: args) {
-		System.err.println(s+" = " + parseRelativeDate(new Date(),s,0));
-	    }
-	    System.exit(0);
-	}
-	if(true) {
-	    for (Provider provider: Security.getProviders()) {
-		System.out.println(provider.getName());
-		for (String key: provider.stringPropertyNames())
-		    System.out.println("\t" + key + "\t" + provider.getProperty(key));
-	    }
-	}
+        if (true) {
+            for (String s : args) {
+                System.err.println(s + " = "
+                                   + parseRelativeDate(new Date(), s, 0));
+            }
+            System.exit(0);
+        }
+        if (true) {
+            for (Provider provider : Security.getProviders()) {
+                System.out.println(provider.getName());
+                for (String key : provider.stringPropertyNames()) {
+                    System.out.println("\t" + key + "\t"
+                                       + provider.getProperty(key));
+                }
+            }
+        }
 
 
 
-	InputStream fis = new FileInputStream(args[0]);
-	byte[] b = decodeBase64(IOUtil.readBytes(fis));
-	IOUtil.writeBytes(new File("out.pdf"),b);
-	System.exit(0);
+        InputStream fis = new FileInputStream(args[0]);
+        byte[]      b   = decodeBase64(IOUtil.readBytes(fis));
+        IOUtil.writeBytes(new File("out.pdf"), b);
+        System.exit(0);
 
-        System.err.println(getStack(10,null,true));
-	System.err.println(getStack(10,null,false));
-	System.exit(0);
+        System.err.println(getStack(10, null, true));
+        System.err.println(getStack(10, null, false));
+        System.exit(0);
 
 
         Date d = new Date();
@@ -1225,24 +1250,40 @@ public class Utils extends IO {
      * @return _more_
      */
     public static SimpleDateFormat makeDateFormat(String format) {
-	return makeDateFormat(format,"UTC");
+        return makeDateFormat(format, "UTC");
     }
 
-    public static SimpleDateFormat makeDateFormat(String format,String timezone) {
+    /**
+     *
+     * @param format _more_
+     * @param timezone _more_
+      * @return _more_
+     */
+    public static SimpleDateFormat makeDateFormat(String format,
+            String timezone) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
-	if(timezone!=null)
-	    sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+        if (timezone != null) {
+            sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+        }
+
         return sdf;
     }
 
 
     /**
-       return the first non-null value in the args
+     *  return the first non-null value in the args
+     *
+     * @param args _more_
+      * @return _more_
      */
-    public static Object getNonNull(Object ...args) {
-	for(Object a: args)
-	    if(a!=null)return a;
-	return null;
+    public static Object getNonNull(Object... args) {
+        for (Object a : args) {
+            if (a != null) {
+                return a;
+            }
+        }
+
+        return null;
     }
 
 
@@ -1432,6 +1473,11 @@ public class Utils extends IO {
         return sb.toString();
     }
 
+    /**
+     * Convert the properties into a name=value... string
+     * @param properties _more_
+     * @return _more_
+     */
     public static String makeProperties(LinkedHashMap properties) {
         StringBuffer sb      = new StringBuffer();
         List<String> keyList = new ArrayList<String>();
@@ -1440,7 +1486,7 @@ public class Utils extends IO {
         }
         keyList = (List<String>) Utils.sort(keyList);
         for (String key : keyList) {
-            String value =  properties.get(key).toString();
+            String value = properties.get(key).toString();
             sb.append(key);
             sb.append("=");
             sb.append(value);
@@ -1528,8 +1574,9 @@ public class Utils extends IO {
     public static Hashtable makeMap(Object... args) {
         Hashtable map = new Hashtable();
         for (int i = 0; i < args.length; i += 2) {
-	    if(args[i+1]!=null)
-		map.put(args[i], args[i + 1]);
+            if (args[i + 1] != null) {
+                map.put(args[i], args[i + 1]);
+            }
 
         }
 
@@ -1613,8 +1660,8 @@ public class Utils extends IO {
         }
         path = path.replaceAll("\\?.*?$", "").toLowerCase();
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")
-                || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".webp")
-                || path.endsWith(".bmp")) {
+                || path.endsWith(".gif") || path.endsWith(".png")
+                || path.endsWith(".webp") || path.endsWith(".bmp")) {
             return true;
         }
         //wms layer
@@ -1989,12 +2036,10 @@ public class Utils extends IO {
 
 
     /** _more_ */
-    private static final Base64.Encoder base64Encoder =
-        Base64.getEncoder();
+    private static final Base64.Encoder base64Encoder = Base64.getEncoder();
 
     /** _more_ */
-    private static final Base64.Decoder base64Decoder =
-        Base64.getDecoder();
+    private static final Base64.Decoder base64Decoder = Base64.getDecoder();
 
     /** _more_ */
     private static final Base64.Decoder base64MimeDecoder =
@@ -2037,15 +2082,20 @@ public class Utils extends IO {
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
-	try {
-	    return decodeBase64(s.getBytes("UTF-8"));
-	} catch(Exception exc) {
-	    throw new RuntimeException("Failed to decode base64 string:"
-				       + s + "  Error:"+exc);
-	}
+        try {
+            return decodeBase64(s.getBytes("UTF-8"));
+        } catch (Exception exc) {
+            throw new RuntimeException("Failed to decode base64 string:" + s
+                                       + "  Error:" + exc);
+        }
     }
 
-    public static byte[] decodeBase64(byte[]b) {	
+    /**
+     *
+     * @param b _more_
+      * @return _more_
+     */
+    public static byte[] decodeBase64(byte[] b) {
         try {
             return base64Decoder.decode(b);
         } catch (Exception exc) {
@@ -2294,10 +2344,12 @@ public class Utils extends IO {
         for (int i = 1; i < args.length; i++) {
             System.err.print(" " + (args[i] - args[i - 1]));
         }
-	if(args.length>2)
-	    System.err.println("  total: " + (args[args.length - 1] - args[0]));
-	else
-	    System.err.println("");
+        if (args.length > 2) {
+            System.err.println("  total: "
+                               + (args[args.length - 1] - args[0]));
+        } else {
+            System.err.println("");
+        }
 
     }
 
@@ -2482,16 +2534,25 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label, boolean forCode) {
-	return makeID(label,forCode,"_");
+        return makeID(label, forCode, "_");
     }
 
-    public static String makeID(String label, boolean forCode,String delimiter) {	
+    /**
+     *
+     * @param label _more_
+     * @param forCode _more_
+     * @param delimiter _more_
+      * @return _more_
+     */
+    public static String makeID(String label, boolean forCode,
+                                String delimiter) {
         label = stripTags(label);
-        label = label.trim().toLowerCase().replaceAll(":",delimiter).replaceAll("&",delimiter).replaceAll(" ",
-                delimiter).replaceAll("\\.", delimiter).replaceAll("\n",
-                                delimiter).replaceAll("\\(", delimiter).replaceAll("\\)",
-                                    delimiter).replaceAll("\\?",
-                                        delimiter).replaceAll("[\"'`]+", "").trim();
+        label = label.trim().toLowerCase().replaceAll(
+            ":", delimiter).replaceAll("&", delimiter).replaceAll(
+            " ", delimiter).replaceAll("\\.", delimiter).replaceAll(
+            "\n", delimiter).replaceAll("\\(", delimiter).replaceAll(
+            "\\)", delimiter).replaceAll("\\?", delimiter).replaceAll(
+            "[\"'`]+", "").trim();
         label = label.replaceAll("-", delimiter);
         label = label.replaceAll(",", delimiter);
         label = label.replaceAll("/", delimiter);
@@ -2548,8 +2609,13 @@ public class Utils extends IO {
     }
 
 
+    /**
+     *
+     * @param d _more_
+      * @return _more_
+     */
     public static boolean isInt(double d) {
-	return d == (int)d;
+        return d == (int) d;
 
     }
 
@@ -3091,11 +3157,18 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> parseCommandLine(String s) {
-	return parseCommandLine(s, true);
+        return parseCommandLine(s, true);
     }
 
 
-    public static List<String> parseCommandLine(String s, boolean throwError) {	
+    /**
+     *
+     * @param s _more_
+     * @param throwError _more_
+      * @return _more_
+     */
+    public static List<String> parseCommandLine(String s,
+            boolean throwError) {
 
         //        System.err.println("command line:" + s);
         List<String> args = new ArrayList<String>();
@@ -3190,11 +3263,17 @@ public class Utils extends IO {
             sb.append(c);
         }
         if (inQuote) {
-	    if(!throwError) return null;
+            if ( !throwError) {
+                return null;
+            }
+
             throw new IllegalArgumentException("Unclosed quote:" + s);
         }
         if (inBracket) {
-	    if(!throwError) return null;
+            if ( !throwError) {
+                return null;
+            }
+
             throw new IllegalArgumentException("Unclosed bracket:" + s);
         }
         if (sb.length() > 0) {
@@ -3381,8 +3460,14 @@ public class Utils extends IO {
 
     /**
      * this combines a couple of methods from ucar.unidata.util.DateUtil
+     *
+     * @param baseDate _more_
+     * @param s _more_
+     * @param roundDays _more_
+      * @return _more_
      */
-    public static Date parseRelativeDate(Date baseDate, String s, int roundDays) {
+    public static Date parseRelativeDate(Date baseDate, String s,
+                                         int roundDays) {
         Calendar cal = Calendar.getInstance(TIMEZONE_GMT);
         cal.setTimeInMillis(baseDate.getTime());
         Date dttm = null;
@@ -3391,9 +3476,11 @@ public class Utils extends IO {
         } else if (s.equals("today")) {
             dttm = cal.getTime();
         } else if (s.equals("yesterday")) {
-            dttm = new Date(cal.getTime().getTime() - DateUtil.daysToMillis(1));
+            dttm = new Date(cal.getTime().getTime()
+                            - DateUtil.daysToMillis(1));
         } else if (s.equals("tomorrow")) {
-            dttm = new Date(cal.getTime().getTime() + DateUtil.daysToMillis(1));
+            dttm = new Date(cal.getTime().getTime()
+                            + DateUtil.daysToMillis(1));
         } else if (s.startsWith("last ") || s.startsWith("next ")) {
             List toks = StringUtil.split(s, " ", true, true);
             if (toks.size() != 2) {
@@ -3420,53 +3507,55 @@ public class Utils extends IO {
             dttm = cal.getTime();
         }
 
-	if(dttm==null) {
-	    Pattern pattern = Pattern.compile("([\\+\\-0-9]+) +(second|minute|hour|day|week|month|year|decade|century|millenium)s?");
-	    Matcher matcher = pattern.matcher(s);
-	    if(matcher.find()) {	    
-		String quantity=matcher.group(1).trim();
-		String what=matcher.group(2).trim();	    
-		long   factor = 1;
-		if (quantity.startsWith("+")) {
-		    quantity = quantity.substring(1);
-		} else if (quantity.startsWith("-")) {
-		    quantity      = quantity.substring(1);
-		    factor = -1;
-		}
-		long delta = factor * new Integer(quantity).intValue();
-		long   milliseconds = 0;
-		if (what.startsWith("second")) {
-		    milliseconds = delta * 1000;
-		} else if (what.startsWith("minute")) {
-		    milliseconds = 60 * delta * 1000;
-		} else if (what.startsWith("hour")) {
-		    milliseconds = 60 * 60 * delta * 1000;
-		} else if (what.startsWith("day")) {
-		    milliseconds = 24 * 60 * 60 * delta * 1000;
-		} else if (what.startsWith("week")) {
-		    milliseconds = 7 * 24 * 60 * 60 * delta * 1000;
-		} else if (what.startsWith("month")) {
-		    milliseconds = 30 * 24 * 60 * 60 * delta * 1000;
-		} else if (what.startsWith("year")) {
-		    milliseconds = 365 * 24 * 60 * 60 * delta * 1000;
-		} else if (what.startsWith("century")) {
-		    milliseconds = 100 * 365 * 24 * 60 * 60 * delta * 1000;
-		} else if (what.startsWith("millenium")) {
-		    milliseconds = 1000 * 365 * 24 * 60 * 60 * delta * 1000;
-		}
-		dttm =  new Date(baseDate.getTime()+milliseconds);
-	    }
-	}
-	if(dttm==null) {
-	    dttm  =parseDate(s);
-	}
+        if (dttm == null) {
+            Pattern pattern =
+                Pattern.compile(
+                    "([\\+\\-0-9]+) +(second|minute|hour|day|week|month|year|decade|century|millenium)s?");
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                String quantity = matcher.group(1).trim();
+                String what     = matcher.group(2).trim();
+                long   factor   = 1;
+                if (quantity.startsWith("+")) {
+                    quantity = quantity.substring(1);
+                } else if (quantity.startsWith("-")) {
+                    quantity = quantity.substring(1);
+                    factor   = -1;
+                }
+                long delta        = factor * new Integer(quantity).intValue();
+                long milliseconds = 0;
+                if (what.startsWith("second")) {
+                    milliseconds = delta * 1000;
+                } else if (what.startsWith("minute")) {
+                    milliseconds = 60 * delta * 1000;
+                } else if (what.startsWith("hour")) {
+                    milliseconds = 60 * 60 * delta * 1000;
+                } else if (what.startsWith("day")) {
+                    milliseconds = 24 * 60 * 60 * delta * 1000;
+                } else if (what.startsWith("week")) {
+                    milliseconds = 7 * 24 * 60 * 60 * delta * 1000;
+                } else if (what.startsWith("month")) {
+                    milliseconds = 30 * 24 * 60 * 60 * delta * 1000;
+                } else if (what.startsWith("year")) {
+                    milliseconds = 365 * 24 * 60 * 60 * delta * 1000;
+                } else if (what.startsWith("century")) {
+                    milliseconds = 100 * 365 * 24 * 60 * 60 * delta * 1000;
+                } else if (what.startsWith("millenium")) {
+                    milliseconds = 1000 * 365 * 24 * 60 * 60 * delta * 1000;
+                }
+                dttm = new Date(baseDate.getTime() + milliseconds);
+            }
+        }
+        if (dttm == null) {
+            dttm = parseDate(s);
+        }
 
-	if(dttm==null) {
-	    throw new RuntimeException("Unable to parse date:" + s);
-	}
+        if (dttm == null) {
+            throw new RuntimeException("Unable to parse date:" + s);
+        }
 
-	return dttm;
-	//	return DateUtil.roundByDay(dttm, roundDays);
+        return dttm;
+        //      return DateUtil.roundByDay(dttm, roundDays);
     }
 
 
@@ -3514,18 +3603,28 @@ public class Utils extends IO {
 
 
 
-    
 
+
+    /**  */
     private static HashSet<String> stopWords;
+
+    /**
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static HashSet<String> getStopWords() throws Exception {
-	if(stopWords==null) {
-	    HashSet<String> tmp = new HashSet<String>();
-	    for(String line: split(IO.readContents("/org/ramadda/util/stopwords.txt",Utils.class),"\n",true,true)) {
-		tmp.add(line);
-	    }
-	    stopWords = tmp;
-	}
-	return stopWords;
+        if (stopWords == null) {
+            HashSet<String> tmp = new HashSet<String>();
+            for (String line :
+                    split(IO.readContents("/org/ramadda/util/stopwords.txt",
+                                          Utils.class), "\n", true, true)) {
+                tmp.add(line);
+            }
+            stopWords = tmp;
+        }
+
+        return stopWords;
     }
 
 
@@ -3621,7 +3720,8 @@ public class Utils extends IO {
      * @return _more_
      */
     public static boolean isUrl(String s) {
-	s  = s.toLowerCase();
+        s = s.toLowerCase();
+
         return s.startsWith("https:") || s.startsWith("http:");
     }
 
@@ -3641,6 +3741,11 @@ public class Utils extends IO {
         return h;
     }
 
+    /**
+     *
+     * @param a _more_
+      * @return _more_
+     */
     public static List makeListFromArray(Object[] a) {
         List h = new ArrayList();
         for (Object arg : a) {
@@ -4918,8 +5023,8 @@ public class Utils extends IO {
     public static String wrap(List l, String prefix, String suffix) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < l.size(); i++) {
-	    String s = prefix + l.get(i) + suffix;
-	    s = s.replace("${index}",i+"");
+            String s = prefix + l.get(i) + suffix;
+            s = s.replace("${index}", i + "");
             sb.append(s);
         }
 
@@ -5124,15 +5229,30 @@ public class Utils extends IO {
     }
 
 
+    /**
+     *
+     * @param minutes _more_
+      * @return _more_
+     */
     public static long minutesToMillis(int minutes) {
-	return 60*minutes*1000;
+        return 60 * minutes * 1000;
     }
 
+    /**
+     *
+     * @param seconds _more_
+      * @return _more_
+     */
     public static long secondsToMillis(int seconds) {
-	return seconds*1000;
-    }    
+        return seconds * 1000;
+    }
 
-    public static void sleepUntil(int frequency, boolean debug)  {
+    /**
+     *
+     * @param frequency _more_
+     * @param debug _more_
+     */
+    public static void sleepUntil(int frequency, boolean debug) {
         Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
@@ -5140,10 +5260,10 @@ public class Utils extends IO {
         int seconds       = cal.get(cal.SECOND) + minute * 60;
         int secondsToWait = (frequency * 60) - (seconds % (frequency * 60));
         int minutesToWait = frequency - (minute % frequency);
-	if(debug)
-	    System.err.println("Sleeping for: "
-			       + (secondsToWait / 60) + ":"
-			       + (secondsToWait % 60));
+        if (debug) {
+            System.err.println("Sleeping for: " + (secondsToWait / 60) + ":"
+                               + (secondsToWait % 60));
+        }
         Misc.sleepSeconds(minutesToWait * 60);
     }
 
@@ -5371,10 +5491,18 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String getStack(int howMany, String not) {
-	return getStack(howMany, not, false);
+        return getStack(howMany, not, false);
     }
 
-    public static String getStack(int howMany, String not, boolean stripPackage) {	
+    /**
+     *
+     * @param howMany _more_
+     * @param not _more_
+     * @param stripPackage _more_
+      * @return _more_
+     */
+    public static String getStack(int howMany, String not,
+                                  boolean stripPackage) {
         List<String> lines = new ArrayList<String>();
         StringBuffer sb    = new StringBuffer();
         int          cnt   = 0;
@@ -5387,9 +5515,10 @@ public class Utils extends IO {
             if (cnt <= 3) {
                 continue;
             }
-	    if(stripPackage) {
-		line = line.replaceAll(".*?\\.([^\\.]+\\.[^\\.]+\\()","\t$1");
-	    }
+            if (stripPackage) {
+                line = line.replaceAll(".*?\\.([^\\.]+\\.[^\\.]+\\()",
+                                       "\t$1");
+            }
             lines.add(line);
             if (lines.size() >= howMany) {
                 break;
