@@ -135,7 +135,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             StringBuilder tmp = new StringBuilder();
             List<Entry> entries = getEntryManager().getEntriesWithType(searchRequest,
 								       "type_point_purpleair");
-	    System.err.println("purple air entries:" + entries);
             for (Entry entry : entries) {
                 if ( !entry.getValue(IDX_ACTIVE).toString().equals("true")) {
 		    if(debug)
