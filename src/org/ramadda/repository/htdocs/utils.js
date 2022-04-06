@@ -2405,18 +2405,19 @@ var Utils =  {
         }
     },
     treeViewClick:function(viewId,entryId, url, label, template) {
-        let href = "<a href='" + url + "'> <img src=\"" + ramaddaCdn + "/icons/link.png" + "\" border=0> " + label + "</a>";
-        $("#treeview_header").html(href);
+	let href = HU.href(url,
+			   HU.getIconImage('fa-solid fa-link') +  " " +  label,
+			   ['class','ramadda-clickable']);
+        jqid(viewId+'_header').html(href);
         if (template)
             url = url + "&template=" + template;
         $.ajax({
             url: url,
-                dataType: 'text',
+            dataType: 'text',
             success: (data) => {
-		jqid(viewId).html(data);
+		jqid(viewId).attr("src", url);
 	    },
 	});
-//        jqid(viewId).attr("src", url);
     },
     initPage: function() {
         this.initContent();

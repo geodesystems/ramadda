@@ -1549,17 +1549,9 @@ public class HtmlOutputHandler extends OutputHandler {
                              Appendable sb, int width, int height,
                              boolean noTemplate)
             throws Exception {
-
-
-        //TODO:  make the DOM ids be unique
-
         request.put(ARG_TREEVIEW, "true");
-
-
         String wtr = "9";
         String wtl = "3";
-        //        sb.append("<table width=\"100%\"><tr valign=\"top\">");
-
         StringBuilder listSB = new StringBuilder();
         String entryShowUrl  =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
@@ -1575,8 +1567,8 @@ public class HtmlOutputHandler extends OutputHandler {
             if (firstLink == null) {
                 firstLink = HU.href(
                     url,
-                    HU.img(getRepository().getIconUrl("/icons/link.png"))
-                    + " " + label);
+                    HU.img(getRepository().getIconUrl("fa-solid fa-link"))
+                    + " " + label,HU.cssClass("ramadda-clickable"));
             }
 
             url = Utils.concatString("javascript:",
@@ -1607,7 +1599,7 @@ public class HtmlOutputHandler extends OutputHandler {
         sb.append("</div>");
         sb.append("<div class=\"col-md-" + wtr
                   + " ramadda-treeview-header \"  >");
-        sb.append(HU.div(firstLink, HU.id("treeview_header")));
+        HU.div(sb,firstLink, HU.id(viewId+"_header"));
         sb.append("</div>");
         sb.append("</div>");
         sb.append("<div class=\"ramadda-treeview\">");
