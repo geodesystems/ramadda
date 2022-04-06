@@ -62,10 +62,10 @@ public class Eia {
 
 
     /** _more_ */
-    public static final String URL_CATEGORY = URL_BASE + "/category";
+    public static final String URL_CATEGORY = URL_BASE + "/category/";
 
     /** _more_ */
-    public static final String URL_SERIES = URL_BASE + "/series";
+    public static final String URL_SERIES = URL_BASE + "/series/";
 
 
     /** _more_ */
