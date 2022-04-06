@@ -2857,7 +2857,6 @@ public class EntryManager extends RepositoryManager {
 		entry.getTypeHandler().entryChanged(entry);
 	    }
 
-
             if (entry.getTypeHandler().returnToEditForm()) {
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
@@ -3594,8 +3593,6 @@ public class EntryManager extends RepositoryManager {
             okEntries.add(entry);
         }
         entries = okEntries;
-
-
         List<Object[]> found = getDescendents(request, entries, connection,
 					      true, true, actionId);
         String query;
@@ -3697,6 +3694,15 @@ public class EntryManager extends RepositoryManager {
                 getStorageManager().deleteEntryDir(id);
             }
 	    getRepository().checkDeletedEntries(request,  allIds);
+
+	    for(Object[]tuple: found) {
+                String   id     = (String) tuple[0];
+                TypeHandler typeHandler =
+                    getRepository().getTypeHandler((String) tuple[1], true);
+		if(typeHandler!=null)
+		    typeHandler.entryDeleted(id);
+	    }
+
         } finally {
             getDatabaseManager().closeStatement(extraStmt);
             for (PreparedStatement stmt : statements) {
