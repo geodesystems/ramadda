@@ -491,8 +491,8 @@ public abstract class Converter extends Processor {
             }
 
             throw new IllegalArgumentException("Unknown anonymization:"
-                    + what);
-
+                    + what+" needs to be one of:" +
+					       "firstname|fullname|lastname|name|namewithmiddle|prefix|suffix|title|username|address|city|country|state|stateabbr|streetname|timezone|zipcode|latitude|longitude|countrycode|boolean|asin|ean13|ean8|gtin13|gtin8|imei|isbn10|isbn13|isbngroup|isbngs1|isbnregistrant|color|department|material|price|productname|promotioncode|demonym|educationalattainment|maritalstatus|race|sex|bic|creditcard|iban|ssn|digit|digits:number_of_digits|numberbetween:first:last|randomdigit|randomdigitnotzero|randomDouble:maxNumberOfDecimals:min:max|randomnumber|cellphone|phonenumber|diseasename|hospitalname|medicinename|symptoms");
         }
     }
 
