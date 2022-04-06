@@ -368,7 +368,37 @@ comma separated values<br>
 Row indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
-</div><a name='-extractpattern'></a><div class=command> <i><a href='#-extractpattern'>-extractpattern</a></i>  &lt;comma separated header&gt;  &lt;token pattern&gt; </div><div class=command-block>Extract rows from the text<br>
+For example using this:
+<pre>
+-synthetic "name,value" "example name,example value" 5
+</pre>
+Gives:
+<pre>
+name,value
+example name,example value
+example name,example value
+example name,example value
+example name,example value
+example name,example value
+</pre>
+
+Note: you don't have to specify all of the example values.
+For example, using this:
+<pre>
+  -synthetic "name,value" "example name,example value" 5
+</pre>
+
+Gives:
+<pre>
+name,value
+,
+,
+,
+,
+,
+</pre>  
+
+<p></div><a name='-extractpattern'></a><div class=command> <i><a href='#-extractpattern'>-extractpattern</a></i>  &lt;comma separated header&gt;  &lt;token pattern&gt; </div><div class=command-block>Extract rows from the text<br>
 <b>Arguments:</b><br>
 <ul>
 <i>comma separated header</i>
