@@ -87,6 +87,15 @@ abom.jar:
 This holds the Barnes analysis code from the IDV release
 
 
+These jars are from the java faker package - https://github.com/DiUS/java-faker
+which supports data anonymization
+automaton-1.11-8.jar
+generex-1.0.2.jar
+javafaker-1.0.2.jar
+snakeyaml-1.23-android.jar
+
+
+
 log4j-core-2.15.0.jar:
 This is updated with the log4j rce exploit but for good measure we deleted
 org/apache/logging/log4j/core/lookup/JndiLookup.class

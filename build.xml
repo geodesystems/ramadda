@@ -293,7 +293,7 @@
 	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${seesv_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/rhino-1.7.13.jar"  todir="${seesv_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${seesv_destdir}/lib"/>		
-	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.1.jar"  todir="${seesv_destdir}/lib"/>		
+	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.5.jar"  todir="${seesv_destdir}/lib"/>		
 	
 	<zip destfile="${dist_dir}/seesv.zip">
           <zipfileset dir="${dist_dir}/seesv" includes="*" prefix="seesv"/>
@@ -519,13 +519,21 @@
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ij.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/abom.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-lang3-3.1.jar" dest="${tmpjar_dir}"/>
+
+
+        <unjar src="${lib_dir}/automaton-1.11-8.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/generex-1.0.2.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/javafaker-1.0.2.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/snakeyaml-1.23-android.jar" dest="${tmpjar_dir}"/>
+
+
+        <unjar src="${lib_dir}/commons-lang3-3.5.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-net-3.3.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-io-2.8.0.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-dbcp2-2.0.1.jar" dest="${tmpjar_dir}"/>
@@ -549,15 +557,9 @@
         <unjar src="${lib_dir}/log4j-core-2.17.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/log4j-api-2.17.1.jar" dest="${tmpjar_dir}"/>	
 
-
-<!--
-        <unjar src="${lib_dir}/log4j-1.2.15.jar" dest="${tmpjar_dir}"/>	
--->
-
-<!--
-    <unjar src="${lib1}" dest="${tmpjar_dir}"/>
--->
+        <unjar src="${lib_dir}/abom.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/visad.jar" dest="${tmpjar_dir}"/>
+
 
         <echo message="jarring ${lib_dir}/ramaddalib.jar"/>
 
