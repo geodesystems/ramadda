@@ -221,7 +221,7 @@ public class MetadataManager extends RepositoryManager {
 	    label = license;
 	}
 	String desc       = license;
-	String spdxLink   = (String) licenseUrls.get(license);
+	String link   = (String) licenseUrls.get(license);
 	String _license   = license.toLowerCase();
 	String contents   = " " + label + " ";
 	if (license.startsWith("CC-")) {
@@ -231,8 +231,8 @@ public class MetadataManager extends RepositoryManager {
 	    img      = HU.image(img, "width", "100px");
 	    contents += "<br>" + img;
 	}
-	if (spdxLink != null) {
-	    contents = HU.href(spdxLink, contents, "target=_other");
+	if (link != null) {
+	    contents = HU.href(link, contents, "target=_other");
 	}
 	return contents;
     }
