@@ -280,7 +280,7 @@
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadda.util.text.Seesv"/>
-              <attribute name="Class-Path" value="unidatautil.jar json.jar rhino-1.7.13.jar commons-lang3-3.1.jar commons-io-2.8.0.jar"/>
+              <attribute name="Class-Path" value="unidatautil.jar json.jar rhino-1.7.13.jar commons-lang3-3.1.jar commons-io-2.8.0.jar automaton-1.11-8.jar generex-1.0.2.jar javafaker-1.0.2.jar snakeyaml-1.23-android.jar"/>
             </manifest> 
 
 	</jar>
@@ -295,6 +295,12 @@
 	<copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${seesv_destdir}/lib"/>		
 	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.5.jar"  todir="${seesv_destdir}/lib"/>		
 	
+	<copy overwrite="true" file="${lib_dir}/automaton-1.11-8.jar" todir="${seesv_destdir}/lib"/>		
+        <copy overwrite="true" file="${lib_dir}/generex-1.0.2.jar"  todir="${seesv_destdir}/lib"/>		
+	<copy overwrite="true" file="${lib_dir}/javafaker-1.0.2.jar"  todir="${seesv_destdir}/lib"/>		
+        <copy overwrite="true" file="${lib_dir}/snakeyaml-1.23-android.jar"  todir="${seesv_destdir}/lib"/>		
+
+
 	<zip destfile="${dist_dir}/seesv.zip">
           <zipfileset dir="${dist_dir}/seesv" includes="*" prefix="seesv"/>
           <zipfileset dir="${dist_dir}/seesv" includes="lib/*" prefix="seesv"/>	  
