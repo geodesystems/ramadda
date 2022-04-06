@@ -50,6 +50,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -1415,7 +1416,6 @@ public class Utils extends IO {
      */
     public static String makeProperties(Hashtable properties) {
         StringBuffer sb      = new StringBuffer();
-
         List<String> keyList = new ArrayList<String>();
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
             keyList.add((String) keys.nextElement());
@@ -1423,6 +1423,24 @@ public class Utils extends IO {
         keyList = (List<String>) Utils.sort(keyList);
         for (String key : keyList) {
             String value = (String) properties.get(key);
+            sb.append(key);
+            sb.append("=");
+            sb.append(value);
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    public static String makeProperties(LinkedHashMap properties) {
+        StringBuffer sb      = new StringBuffer();
+        List<String> keyList = new ArrayList<String>();
+        for (Object key : properties.keySet()) {
+            keyList.add(key.toString());
+        }
+        keyList = (List<String>) Utils.sort(keyList);
+        for (String key : keyList) {
+            String value =  properties.get(key).toString();
             sb.append(key);
             sb.append("=");
             sb.append(value);
@@ -2464,20 +2482,24 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label, boolean forCode) {
+	return makeID(label,forCode,"_");
+    }
+
+    public static String makeID(String label, boolean forCode,String delimiter) {	
         label = stripTags(label);
-        label = label.trim().toLowerCase().replaceAll(":","_").replaceAll("&","_").replaceAll(" ",
-                "_").replaceAll("\\.", "_").replaceAll("\n",
-                                "_").replaceAll("\\(", "_").replaceAll("\\)",
-                                    "_").replaceAll("\\?",
-                                        "_").replaceAll("[\"'`]+", "").trim();
-        label = label.replaceAll("-", "_");
-        label = label.replaceAll(",", "_");
-        label = label.replaceAll("/", "_");
-        label = label.replaceAll("__+", "_");
-        label = label.replaceAll("[\\{\\}=]+", "_");
+        label = label.trim().toLowerCase().replaceAll(":",delimiter).replaceAll("&",delimiter).replaceAll(" ",
+                delimiter).replaceAll("\\.", delimiter).replaceAll("\n",
+                                delimiter).replaceAll("\\(", delimiter).replaceAll("\\)",
+                                    delimiter).replaceAll("\\?",
+                                        delimiter).replaceAll("[\"'`]+", "").trim();
+        label = label.replaceAll("-", delimiter);
+        label = label.replaceAll(",", delimiter);
+        label = label.replaceAll("/", delimiter);
+        label = label.replaceAll("__+", delimiter);
+        label = label.replaceAll("[\\{\\}=]+", delimiter);
         label = label.replaceAll("_$", "");
         if (forCode && Pattern.matches("^[0-9]+.*", label)) {
-            label = "_" + label;
+            label = delimiter + label;
         }
 
         return label;
