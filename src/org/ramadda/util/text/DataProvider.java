@@ -1952,6 +1952,65 @@ public abstract class DataProvider extends CsvOperator {
 
     }
 
+    public static class Synthetic extends DataProvider {
+
+        /**  */
+        TextReader ctx;
+
+	List<String> header;
+	List<String> values;	
+
+	int rows = 10;
+
+	int count = 0;
+
+        /**
+         * _more_
+         */
+        public Synthetic(String header,String values,int rows) {
+	    this.header =Utils.split(header,",",true,true);
+	    this.values =Utils.split(values,",",true,true);	    
+	    this.rows= rows;
+	}
+
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(CsvUtil csvUtil, TextReader ctx)
+                throws Exception {
+            this.ctx = ctx;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row readRow() throws Exception {
+	    if(count>rows) return null;
+	    Row row = new Row();
+	    if(count==0) {
+		for(String name:header) row.add(name);
+	    } else {
+		for(int i=0;i<header.size();i++) {
+		    if(i<values.size()) row.add(values.get(i));
+		    else row.add("");
+		}
+	    }
+	    count++;
+	    return row;
+        }
+
+    }
+    
 
     /**
      * Class description

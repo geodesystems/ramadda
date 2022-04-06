@@ -1696,6 +1696,10 @@ public class CsvUtil {
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
 	*/
+        new Cmd("-synthetic", "Generate an empty file with the given number of rows",
+                new Arg("header","comma separated header"),
+                new Arg("values","comma separated values"),		
+                new Arg("rows")),
         new Cmd("-extractpattern", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("token pattern", "", "type", "pattern")),
@@ -3666,6 +3670,10 @@ public class CsvUtil {
 	    });
 	defineFunction("-lines",0,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.Lines());
+		return i;
+	    });
+	defineFunction("-synthetic",3,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.Synthetic(args.get(++i),args.get(++i),Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 

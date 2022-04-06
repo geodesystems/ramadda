@@ -61,7 +61,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 239 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 240 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -186,7 +186,7 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 </pre>
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
-Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-headerids'>-headerids</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> <a href='#-chop'>-chop</a> </div>
+Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-synthetic'>-synthetic</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-headerids'>-headerids</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> <a href='#-chop'>-chop</a> </div>
 <b style='font-size:120%;'>Examples</b>  
 
 <pre class=examples>
@@ -357,7 +357,18 @@ seesv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
 </pre>
 
 
-<p></div><a name='-extractpattern'></a><div class=command> <i><a href='#-extractpattern'>-extractpattern</a></i>  &lt;comma separated header&gt;  &lt;token pattern&gt; </div><div class=command-block>Extract rows from the text<br>
+<p></div><a name='-synthetic'></a><div class=command> <i><a href='#-synthetic'>-synthetic</a></i>  &lt;header&gt;  &lt;values&gt;  &lt;rows&gt; </div><div class=command-block>Generate an empty file with the given number of rows<br>
+<b>Arguments:</b><br>
+<ul>
+<i>header</i>
+comma separated header<br>
+<i>values</i>
+comma separated values<br>
+<i>rows</i>
+Row indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-extractpattern'></a><div class=command> <i><a href='#-extractpattern'>-extractpattern</a></i>  &lt;comma separated header&gt;  &lt;token pattern&gt; </div><div class=command-block>Extract rows from the text<br>
 <b>Arguments:</b><br>
 <ul>
 <i>comma separated header</i>
