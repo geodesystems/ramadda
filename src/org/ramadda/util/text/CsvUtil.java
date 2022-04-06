@@ -789,7 +789,7 @@ public class CsvUtil {
      */
     public void process(TextReader ctx) throws Exception {
         DataProvider.CsvDataProvider provider =
-            new DataProvider.CsvDataProvider(0);
+            new DataProvider.CsvDataProvider(ctx,0);
         process(ctx, provider);
     }
 

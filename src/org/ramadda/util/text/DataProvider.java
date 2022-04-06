@@ -1772,28 +1772,6 @@ public abstract class DataProvider extends CsvOperator {
             this.rawLines = rawLines;
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @param rawLines _more_
-         */
-        public CsvDataProvider(int rawLines) {
-            this(null, rawLines);
-        }
-
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
-        public CsvDataProvider(TextReader ctx) {
-            this(ctx, 0);
-        }
-
-
 	private StrTokenizer getTokenizer(TextReader ctx) {
 	    if (tokenizer == null) {
 		tokenizer = StrTokenizer.getCSVInstance();
@@ -1875,7 +1853,8 @@ public abstract class DataProvider extends CsvOperator {
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
-                    continue;
+		    //For not don't do this as a zero length line might be valid
+		    //                    continue;
                 }
                 if (widths != null) {
                     return  new Row(Utils.tokenizeColumns(line, widths));
