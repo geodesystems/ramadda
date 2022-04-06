@@ -2121,7 +2121,11 @@ public class CsvUtil {
 
         new Cmd("-makeids", "Turn the header row into IDs (lowercase, no space, a-z0-9_"),
 
-        /** *  Add values * */
+        new Cmd("-faker", "Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker",
+		new Arg("what","firstname|lastname|fullname|etc"),
+		new Arg("columns","Columns to change. Of none given then add the fake value","type","columns")),		
+
+       /** *  Add values * */
         new Cmd(true, "Add Values"),
         new Cmd("-md", "Make a message digest of the column values",
                 new Arg("columns", "", "type", "columns"),
@@ -2132,10 +2136,6 @@ public class CsvUtil {
 		new Arg("columns", "", "type", "columns")),
         new Cmd("-rot13", "Rot 13",
 		new Arg("columns", "", "type", "columns")),
-
-	
-
-
 	/*        new Cmd("-encrypt", "Encrypt",
 		new Arg("columns", "", "type", "columns"),
 		new Arg("cipher", "Cipher-blank|AES/CBC/PKCS5Padding|AES/CBC/NoPadding|AES/ECB/NoPadding|AES/ECB/PKCS5Padding|DES/CBC/NoPadding|DES/CBC/PKCS5Padding|DES/ECB/NoPadding|DES/ECB/PKCS5Padding|DESede/CBC/NoPadding|DESede/CBC/PKCS5Padding|DESede/ECB/NoPadding|DESede/ECB/PKCS5Padding|RSA/ECB/PKCS1Padding"),
@@ -3961,6 +3961,12 @@ public class CsvUtil {
 
 	defineFunction("-set", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSetter(getCols(args.get(++i)),getCols(args.get(++i)), args.get(++i)));
+		return i;
+	    });
+
+
+	defineFunction("-faker", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Faker(ctx,args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });
 
