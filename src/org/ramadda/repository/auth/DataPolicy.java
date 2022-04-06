@@ -29,7 +29,6 @@ public class DataPolicy {
     public static final String FIELD_NAME = "name";
     public static final String FIELD_CITATION = "citation";
     public static final String FIELD_LICENSE = "license";
-    public static final String FIELD_LICENSE_DESCRIPTION = "license_description";
     public static final String FIELD_PERMISSIONS = "permissions";
     public static final String FIELD_URL="url";
     public static final String FIELD_ACTION = "action";
@@ -62,11 +61,12 @@ public class DataPolicy {
     private String license;
 
     /**  */
-    private String licenseDescription;
+    private String licenseName;
 
     /**  */
     private List<Permission> permissions = new ArrayList<Permission>();
 
+	
     /**
      *
      *
@@ -77,8 +77,9 @@ public class DataPolicy {
      * @param fromName _more_
      * @param policy _more_
      */
-    public DataPolicy(String mainUrl, String myUrl, String fromName,
+    public DataPolicy(AccessManager accessManager, String mainUrl, String myUrl, String fromName,
                       JSONObject policy) {
+
         this.mainUrl  = mainUrl;
         this.myUrl    = myUrl;
         this.fromName = fromName;
@@ -88,10 +89,12 @@ public class DataPolicy {
         name        = policy.optString(FIELD_NAME, Utils.makeLabel(id));
         citation    = policy.optString(FIELD_CITATION, null);
         license     = policy.optString(FIELD_LICENSE, null);
+	licenseName = accessManager.getLicenseName(license);
+	if(!Utils.stringDefined(licenseName)) licenseName = license;
         if (debug) {
             System.err.println("\tid:" + id + " license:" + license);
         }
-        licenseDescription = policy.optString(FIELD_LICENSE_DESCRIPTION, null);
+
         JSONArray jpermissions = policy.getJSONArray(FIELD_PERMISSIONS);
         for (int j = 0; j < jpermissions.length(); j++) {
             JSONObject jpermission = jpermissions.getJSONObject(j);
@@ -202,35 +205,26 @@ public class DataPolicy {
     }
 
     /**
+     *  Get the License property.
+     *
+     *  @return The License
+     */
+    public String getLicenseName() {
+        return licenseName;
+    }
+
+
+
+    /**
      *  @return _more_
      */
     public String getLabel() throws Exception {
         String label = getName();
-        if (Utils.stringDefined(getLicense())) {
-	    label += " - " + getLicense();
-        } else if (Utils.stringDefined(getLicenseDescription())) {
-            label += " - " + getLicenseDescription();
+        if (Utils.stringDefined(licenseName)) {
+	    label += " - " + licenseName;
         }
 
         return label;
-    }
-
-    /**
-     *  Set the LicenseDescription property.
-     *
-     *  @param value The new value for LicenseDescription
-     */
-    public void setLicenseDescription(String value) {
-        licenseDescription = value;
-    }
-
-    /**
-     *  Get the LicenseDescription property.
-     *
-     *  @return The LicenseDescription
-     */
-    public String getLicenseDescription() {
-        return licenseDescription;
     }
 
 

@@ -112,8 +112,6 @@ public class AccessManager extends RepositoryManager {
     /**  */
     private boolean haveDoneDataPolicyFetch = false;
 
-
-
     /**  */
     private boolean stopAtFirstRole = true;
 
@@ -147,6 +145,37 @@ public class AccessManager extends RepositoryManager {
             }
         });
 
+    }
+
+
+    private LinkedHashMap<String, String> licenseNames;
+
+    public String getLicenseName(String id) {
+	if(licenseNames==null) {
+	    LinkedHashMap<String, String> tmpMap= new LinkedHashMap<String,String>();
+            try {
+		for(String tok: Utils.split(getStorageManager().readSystemResource(
+										    "/org/ramadda/repository/resources/metadata/licensevalues.txt"),"\n",true,true)) {
+		    if(tok.startsWith("#")) continue;
+		    String label = tok;
+		    String value = tok;
+		    if (tok.indexOf(":") >= 0) {
+			List<String> toks = Utils.splitUpTo(tok, ":", 2);
+			value = toks.get(0);
+			label = toks.get(1);
+		    } else if (tok.indexOf("=") >= 0) {
+			List<String> toks = Utils.splitUpTo(tok, "=", 2);
+			value = toks.get(0);
+			label = toks.get(1);
+		    }
+		    tmpMap.put(value,label);
+		}
+	    } catch(Exception exc) {
+		getLogManager().logException("Reading license names",exc);
+	    }
+	    licenseNames=tmpMap;
+	}
+	return licenseNames.get(id);
     }
 
 
@@ -230,9 +259,9 @@ public class AccessManager extends RepositoryManager {
                 }
                 for (int i = 0; i < jpolicies.length(); i++) {
                     JSONObject policy = jpolicies.getJSONObject(i);
-                    DataPolicy dataPolicy = new DataPolicy(url,
-                                                policy.optString("url",
-                                                    null), name, policy);
+                    DataPolicy dataPolicy = new DataPolicy(this, url,
+							   policy.optString("url",
+									    null), name, policy);
                     if (debug) {
                         System.err.println("\tpolicy:" + dataPolicy);
                     }
@@ -1422,11 +1451,14 @@ public class AccessManager extends RepositoryManager {
             if (Utils.stringDefined(dataPolicy.getMyUrl())) {
                 label = HU.href(dataPolicy.getMyUrl(), label,HU.attrs("target","_datapolicy"));
             }
-	    if (Utils.stringDefined(dataPolicy.getLicense())) {
-		label += " - " + getMetadataManager().getLicenseHtml(dataPolicy.getLicense(), null);
-	    }
+	    
             buff.append("<li>");
             buff.append(HU.italics(label));
+	    if (Utils.stringDefined(dataPolicy.getLicense())) {
+		buff.append("<br>");
+		buff.append(HU.b("License: "));
+		buff.append(getMetadataManager().getLicenseHtml(dataPolicy.getLicense(), dataPolicy.getLicenseName()));
+	    }
             if (Utils.stringDefined(dataPolicy.getDescription())) {
                 buff.append("<br>");
                 buff.append(dataPolicy.getDescription());
@@ -1438,22 +1470,22 @@ public class AccessManager extends RepositoryManager {
 
             //If they are logged then show the access
             if (includePermissions&& !request.isAnonymous()) {
-                buff.append("<br>");
-                buff.append(HU.b("Permissions:"));
-                buff.append("<ul>");
+		StringBuilder permissionsSB = new StringBuilder();
+                permissionsSB.append("<ul>");
                 for (Permission permission : dataPolicy.getPermissions()) {
-                    buff.append("<li>");
-                    buff.append("Action: ");
-                    buff.append(permission.getAction());
-                    buff.append("<br>Roles:<ul> ");
+                    permissionsSB.append("<li>");
+                    permissionsSB.append("Action: ");
+                    permissionsSB.append(permission.getAction());
+                    permissionsSB.append("<br>Roles:<ul> ");
                     for (Role role : permission.getRoles()) {
-                        buff.append("<li>");
-                        buff.append(HU.span(role.toString(),
+                        permissionsSB.append("<li>");
+                        permissionsSB.append(HU.span(role.toString(),
                                             HU.cssClass(role.getCssClass())));
                     }
-                    buff.append("</ul>");
+                    permissionsSB.append("</ul>");
                 }
-                buff.append("</ul>");
+                permissionsSB.append("</ul>");
+		buff.append(HU.makeShowHideBlock("Permissions", permissionsSB.toString(), false));
             }
 
         }
