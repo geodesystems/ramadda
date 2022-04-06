@@ -61,7 +61,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 225 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 239 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -186,7 +186,7 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 </pre>
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
-Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-headerids'>-headerids</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> </div>
+Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-headerids'>-headerids</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> <a href='#-chop'>-chop</a> </div>
 <b style='font-size:120%;'>Examples</b>  
 
 <pre class=examples>
@@ -469,8 +469,17 @@ Number of rows to skip<br>
 *.csv<br>
 <br>
 </ul>
+</div><a name='-chop'></a><div class=command> <i><a href='#-chop'>-chop</a></i>  &lt;numlines&gt;  &lt;file&gt; </div><div class=command-block>Write out last N lines. include the header<br>
+<b>Arguments:</b><br>
+<ul>
+<i>numlines</i>
+Number of lines to leave<br>
+<i>file</i>
+*.csv<br>
+<br>
+</ul>
 </div></ul><br><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
-<div class=header>Commands: <a href='#-skiplines'>-skiplines</a> <a href='#-if'>-if</a> <a href='#-start'>-start</a> <a href='#-stop'>-stop</a> <a href='#-rawlines'>-rawlines</a> <a href='#-min'>-min</a> <a href='#-max'>-max</a> <a href='#-numcolumns'>-numcolumns</a> <a href='#-pattern'>-pattern</a> <a href='#-notpattern'>-notpattern</a> <a href='#-fuzzypattern'>-fuzzypattern</a> <a href='#-same'>-same</a> <a href='#-notsame'>-notsame</a> <a href='#-unique'>-unique</a> <a href='#-dups'>-dups</a> <a href='#-sample'>-sample</a> <a href='#-maxvalue'>-maxvalue</a> <a href='#-eq'>-eq</a> <a href='#-ne'>-ne</a> <a href='#-gt'>-gt</a> <a href='#-ge'>-ge</a> <a href='#-lt'>-lt</a> <a href='#-le'>-le</a> <a href='#-between'>-between</a> <a href='#-notbetween'>-notbetween</a> <a href='#-groupfilter'>-groupfilter</a> <a href='#-before'>-before</a> <a href='#-after'>-after</a> <a href='#-latest'>-latest</a> <a href='#-countvalue'>-countvalue</a> <a href='#-decimate'>-decimate</a> <a href='#-ifin'>-ifin</a> <a href='#-ifnotin'>-ifnotin</a> <a href='#-ifmatchesfile'>-ifmatchesfile</a> <a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a> <a href='#-skippattern'>-skippattern</a> <a href='#-skip'>-skip</a> </div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
+<div class=header>Commands: <a href='#-skiplines'>-skiplines</a> <a href='#-if'>-if</a> <a href='#-start'>-start</a> <a href='#-stop'>-stop</a> <a href='#-rawlines'>-rawlines</a> <a href='#-inputnotcontains'>-inputnotcontains</a> <a href='#-min'>-min</a> <a href='#-max'>-max</a> <a href='#-numcolumns'>-numcolumns</a> <a href='#-pattern'>-pattern</a> <a href='#-notpattern'>-notpattern</a> <a href='#-fuzzypattern'>-fuzzypattern</a> <a href='#-lengthgreater'>-lengthgreater</a> <a href='#-same'>-same</a> <a href='#-notsame'>-notsame</a> <a href='#-unique'>-unique</a> <a href='#-dups'>-dups</a> <a href='#-sample'>-sample</a> <a href='#-maxvalue'>-maxvalue</a> <a href='#-eq'>-eq</a> <a href='#-ne'>-ne</a> <a href='#-gt'>-gt</a> <a href='#-ge'>-ge</a> <a href='#-lt'>-lt</a> <a href='#-le'>-le</a> <a href='#-between'>-between</a> <a href='#-notbetween'>-notbetween</a> <a href='#-groupfilter'>-groupfilter</a> <a href='#-before'>-before</a> <a href='#-after'>-after</a> <a href='#-latest'>-latest</a> <a href='#-countvalue'>-countvalue</a> <a href='#-decimate'>-decimate</a> <a href='#-ifin'>-ifin</a> <a href='#-ifnotin'>-ifnotin</a> <a href='#-ifmatchesfile'>-ifmatchesfile</a> <a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a> <a href='#-skippattern'>-skippattern</a> <a href='#-skip'>-skip</a> </div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
 <b>Arguments:</b><br>
 <ul>
 <i>lines</i>
@@ -508,6 +517,13 @@ seesv -if -pattern column1 string -change column2 .* XXX  -endif
 How many lines to pass through unprocesed<br>
 <br>
 </ul>
+</div><a name='-inputnotcontains'></a><div class=command> <i><a href='#-inputnotcontains'>-inputnotcontains</a></i>  &lt;filters&gt; </div><div class=command-block>Filter out input lines that contain any of the strings<br>
+<b>Arguments:</b><br>
+<ul>
+<i>filters</i>
+Comma separated list of strings to filter one<br>
+<br>
+</ul>
 </div><a name='-min'></a><div class=command> <i><a href='#-min'>-min</a></i>  &lt;min # columns&gt; </div><div class=command-block>Only pass thorough lines that have at least this number of columns<br>
 <b>Arguments:</b><br>
 <ul>
@@ -535,7 +551,7 @@ How many lines to pass through unprocesed<br>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>pattern</i>
-<br>
+regexp or prefix with includes:s1,s2 to do substrings match<br>
 <br>
 </ul>
 </div><a name='-notpattern'></a><div class=command> <i><a href='#-notpattern'>-notpattern</a></i>  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Pass through rows that don't match the pattern<br>
@@ -544,7 +560,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>pattern</i>
-<br>
+regexp or prefix with includes:s1,s2 to do substrings match<br>
 <br>
 </ul>
 </div><a name='-fuzzypattern'></a><div class=command> <i><a href='#-fuzzypattern'>-fuzzypattern</a></i>  &lt;threshold&gt;  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Pass through rows that the columns each fuzzily match the pattern<br>
@@ -555,6 +571,15 @@ Score threshold 0-100. Default:85. Higher number better match<br>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>pattern</i>
+<br>
+<br>
+</ul>
+</div><a name='-lengthgreater'></a><div class=command> <i><a href='#-lengthgreater'>-lengthgreater</a></i>  &lt;columns&gt;  &lt;length&gt; </div><div class=command-block>Pass through rows that the length of the columns is greater than<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<i>length</i>
 <br>
 <br>
 </ul>
@@ -885,7 +910,7 @@ How many rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
+Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1249,8 +1274,19 @@ Start index<br>
 End index<br>
 <br>
 </ul>
+</div><a name='-fromheading'></a><div class=command> <i><a href='#-fromheading'>-fromheading</a></i>  &lt;columns&gt;  &lt;names&gt;  &lt;pattern&gt; </div><div class=command-block>Extract column values from headings<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Columns of headings<br>
+<i>names</i>
+Comma separated list of new column names<br>
+<i>pattern</i>
+Regexp to apply to header with () defining column values<br>
+<br>
+</ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> <a href='#-faker'>-faker</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1586,14 +1622,111 @@ Column indices. Can include ranges, e.g. 0-5<br>
 </div><a name='-makeids'></a><div class=command> <i><a href='#-makeids'>-makeids</a></i> </div><div class=command-block>Turn the header row into IDs (lowercase, no space, a-z0-9_<br>
 <br>
 </ul>
-</div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
-<div class=header>Commands: <a href='#-md'>-md</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
+</div><a name='-faker'></a><div class=command> <i><a href='#-faker'>-faker</a></i>  &lt;what&gt;  &lt;columns&gt; </div><div class=command-block>Fake up data<br>
+<b>Arguments:</b><br>
+<ul>
+<i>what</i>
+firstname|lastname|fullname|address<br>
+<i>columns</i>
+Columns to change. Of none given then add the fake value<br>
+<br>
+</ul>
+
+The -faker command generates fake input.
+Here are the values:
+<pre style='max-height:400px;overflow-y:auto;'>
+boolean
+firstname
+fullname
+lastname
+name
+namewithmiddle
+prefix
+suffix
+title
+username
+address
+city
+country
+state
+stateabbr
+streetname
+timezone
+zipcode
+latitude
+longitude
+countrycode
+asin
+ean13
+ean8
+gtin13
+gtin8
+imei
+isbn10
+isbn13
+isbngroup
+isbngs1
+isbnregistrant
+color
+department
+material
+price
+productname
+promotioncode
+demonym
+educationalattainment
+maritalstatus
+race
+sex
+bic
+creditcard
+iban
+ssn
+digit
+digits:number_of_digits
+numberbetween:first:last
+randomdigit
+randomdigitnotzero
+randomDouble:maxNumberOfDecimals:min:max
+randomnumber
+cellphone
+phonenumber
+diseasename
+hospitalname
+medicinename
+symptoms
+
+
+</pre>  
+<p></div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
+<div class=header>Commands: <a href='#-md'>-md</a> <a href='#-tob64'>-tob64</a> <a href='#-fromb64'>-fromb64</a> <a href='#-rot13'>-rot13</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>type</i>
  values:MD5,SHA-1,SHA-256 <br>
+<br>
+</ul>
+</div><a name='-tob64'></a><div class=command> <i><a href='#-tob64'>-tob64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-fromb64'></a><div class=command> <i><a href='#-fromb64'>-fromb64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-rot13'></a><div class=command> <i><a href='#-rot13'>-rot13</a></i>  &lt;columns&gt; </div><div class=command-block>Rot 13<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div><a name='-uuid'></a><div class=command> <i><a href='#-uuid'>-uuid</a></i> </div><div class=command-block>Add a UUID field<br>
@@ -1952,11 +2085,11 @@ New column name<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Geospatial'></a><b style='font-size:120%;'>Geospatial</b><br>
-<div class=header>Commands: <a href='#-geocode'>-geocode</a> <a href='#-geocodeaddressdb'>-geocodeaddressdb</a> <a href='#-geocodejoin'>-geocodejoin</a> <a href='#-statename'>-statename</a> <a href='#-geoname'>-geoname</a> <a href='#-geocontains'>-geocontains</a> <a href='#-elevation'>-elevation</a> <a href='#-mercator'>-mercator</a> <a href='#-region'>-region</a> <a href='#-population'>-population</a> <a href='#-neighborhood'>-neighborhood</a> </div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
+<div class=header>Commands: <a href='#-geocode'>-geocode</a> <a href='#-geocodeifneeded'>-geocodeifneeded</a> <a href='#-geocodeaddressdb'>-geocodeaddressdb</a> <a href='#-geocodejoin'>-geocodejoin</a> <a href='#-bounds'>-bounds</a> <a href='#-decodelatlon'>-decodelatlon</a> <a href='#-getaddress'>-getaddress</a> <a href='#-statename'>-statename</a> <a href='#-geoname'>-geoname</a> <a href='#-geocontains'>-geocontains</a> <a href='#-elevation'>-elevation</a> <a href='#-mercator'>-mercator</a> <a href='#-region'>-region</a> <a href='#-population'>-population</a> <a href='#-neighborhood'>-neighborhood</a> </div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
-Column indices. Can include ranges, e.g. 0-5<br>
+Address columns<br>
 <i>prefix</i>
 optional prefix e.g., state: or county: or country:<br>
 <i>suffix</i>
@@ -1966,7 +2099,7 @@ optional prefix e.g., state: or county: or country:<br>
 
 
 
-You can use Google or geocode.io for geo coding by setting the following environment variables.
+You can use Google or geocode.io for geocoding by setting the following environment variables.
 Else, this defaults to using US Census geocode API.
 <p>
 To use Google geocoding set the environment variable:
@@ -1979,8 +2112,13 @@ To use geocod.io set the environment variable:
 GEOCIDEIO_API_KEY=...
 </pre>
 
+For here.com set:
+<pre>
+HERE_API_KEY=
+</pre>
 
-With the following file:
+
+To geocode, e.g.,  with the following file:
 <pre class=examples>
 city,state
 Boulder,CO
@@ -1988,7 +2126,7 @@ Laramie,WY
 Buffalo,NY
 </pre>
 
-To geocode
+Run:
 <pre class=examples>
 seesv -geocode city,state "" "" ...
 </pre>
@@ -2005,7 +2143,7 @@ seesv -geocode columns "country:" "" ...
 </pre>
 
 
-The prefix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
+The suffix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
 <pre class=examples>
 city
 Boulder
@@ -2022,12 +2160,26 @@ seesv -geocode city "" "CO"
 
 
 
-
-<p></div><a name='-geocodeaddressdb'></a><div class=command> <i><a href='#-geocodeaddressdb'>-geocodeaddressdb</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column<br>
+<p></div><a name='-geocodeifneeded'></a><div class=command> <i><a href='#-geocodeifneeded'>-geocodeifneeded</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt;  &lt;latitude&gt;  &lt;longitude&gt; </div><div class=command-block>Geocode if needed<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
-Column indices. Can include ranges, e.g. 0-5<br>
+Address columns<br>
+<i>prefix</i>
+optional prefix e.g., state: or county: or country:<br>
+<i>suffix</i>
+<br>
+<i>latitude</i>
+latitude column<br>
+<i>longitude</i>
+longitude column<br>
+<br>
+</ul>
+</div><a name='-geocodeaddressdb'></a><div class=command> <i><a href='#-geocodeaddressdb'>-geocodeaddressdb</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+columns<br>
 <i>prefix</i>
 <br>
 <i>suffix</i>
@@ -2073,6 +2225,40 @@ seesv -geocodejoin precinct precincts.csv precinct latitude longitude
 </pre>
 
 
+<p></div><a name='-bounds'></a><div class=command> <i><a href='#-bounds'>-bounds</a></i>  &lt;north&gt;  &lt;west&gt;  &lt;south&gt;  &lt;east&gt; </div><div class=command-block>Geocode within bounds<br>
+<b>Arguments:</b><br>
+<ul>
+<i>north</i>
+<br>
+<i>west</i>
+<br>
+<i>south</i>
+<br>
+<i>east</i>
+<br>
+<br>
+</ul>
+</div><a name='-decodelatlon'></a><div class=command> <i><a href='#-decodelatlon'>-decodelatlon</a></i>  &lt;columns&gt; </div><div class=command-block>Decode latlon<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Lat or Lon column<br>
+<br>
+</ul>
+</div><a name='-getaddress'></a><div class=command> <i><a href='#-getaddress'>-getaddress</a></i>  &lt;latitude&gt;  &lt;latitude&gt; </div><div class=command-block>Get address from lat/lon<br>
+<b>Arguments:</b><br>
+<ul>
+<i>latitude</i>
+latitude column<br>
+<i>latitude</i>
+latitude column<br>
+<br>
+</ul>
+
+
+
+This function takes a latitude and longitude column and does an address lookup using either
+geocod.io or here.com apis. See above for the API keys that need to be set. 
 <p></div><a name='-statename'></a><div class=command> <i><a href='#-statename'>-statename</a></i>  &lt;column&gt; </div><div class=command-block>Add state name from state ID<br>
 <b>Arguments:</b><br>
 <ul>
@@ -2200,7 +2386,7 @@ seesv -region name
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>prefix</i>
-e.g., state: or county:<br>
+e.g., state: or county: or city:<br>
 <i>suffix</i>
 <br>
 <br>
@@ -2223,7 +2409,7 @@ and set the environment variable:
 PRECISELY_API_KEY=
 </pre>
 
-Call
+Call:
 <pre>
 seesv -neighborhood latitude_column longitude_column
 </pre>  
@@ -2274,9 +2460,9 @@ Macro name<br>
 Pattern<br>
 <br>
 </ul>
-</div><a name='-maxrows'></a><div class=command> <i><a href='#-maxrows'>-maxrows</a></i>  &lt;Max rows to print&gt; </div><div class=command-block><b>Arguments:</b><br>
+</div><a name='-maxrows'></a><div class=command> <i><a href='#-maxrows'>-maxrows</a></i>  &lt;Max rows to process&gt; </div><div class=command-block><b>Arguments:</b><br>
 <ul>
-<i>Max rows to print</i>
+<i>Max rows to process</i>
 <br>
 <br>
 </ul>
@@ -2342,13 +2528,13 @@ start, end, etc<br>
 <b>Arguments:</b><br>
 <ul>
 <i>program_id</i>
-matches with seesv.ext.<program_id>=/path<br>
+matches with seesv.ext.&lt;program_id&gt;=/path<br>
 <br>
 </ul>
 The -ext command allows one to integrate external programs into the processing flow.
 
 <pre>
-  -ext &lt;id&gt; &lt;args&gt;
+  -ext &lt;id&gt; &lt;arguments&gt;
 </pre>
 
 The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
@@ -2356,18 +2542,26 @@ The <i>id</i> is used to look up an environment variable (or RAMADDA runtime pro
 seesv_ext_&lt;id&gt;=/path/to/executable
 </pre>
 
-The executable is called with the given arguments. As the ext command
-processes a row it writes a comma separated line to the stdin of the process.
-A csv line should then be written by the process to stdout.
+Any command line arguments given up to but not including an argument that begins with "-" are
+passed in to the executable. The executable is called with the given arguments.
+Each row that is processed is converted into a CSV string which is passed to the external command.
+A CSV text string is then read from the external command.
 This line is then passed on in the processing flow.
-If you want to skip a line the return "_null_".
+If you want to skip a line the return the string "_null_".
 
 
 
 
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands: <a href='#-print'>-print</a> <a href='#-printheader'>-printheader</a> <a href='#-raw'>-raw</a> <a href='#-table'>-table</a> <a href='#-stats'>-stats</a> <a href='#-record'>-record</a> <a href='#-toxml'>-toxml</a> <a href='#-tojson'>-tojson</a> <a href='#-todb'>-todb</a> <a href='#-template'>-template</a> <a href='#-addheader'>-addheader</a> <a href='#-db'>-db</a> <a href='#-dbprops'>-dbprops</a> <a href='#-fields'>-fields</a> <a href='#-run'>-run</a> <a href='#-progress'>-progress</a> <a href='#-debugrows'>-debugrows</a> <a href='#-script'>-script</a> <a href='#-args'>-args</a> <a href='#-pointheader'>-pointheader</a> </div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Text output<br>
+<div class=header>Commands: <a href='#-print'>-print</a> <a href='#-printdelim'>-printdelim</a> <a href='#-printheader'>-printheader</a> <a href='#-raw'>-raw</a> <a href='#-table'>-table</a> <a href='#-cols'>-cols</a> <a href='#-stats'>-stats</a> <a href='#-record'>-record</a> <a href='#-toxml'>-toxml</a> <a href='#-tojson'>-tojson</a> <a href='#-todb'>-todb</a> <a href='#-template'>-template</a> <a href='#-addheader'>-addheader</a> <a href='#-db'>-db</a> <a href='#-dbprops'>-dbprops</a> <a href='#-fields'>-fields</a> <a href='#-run'>-run</a> <a href='#-progress'>-progress</a> <a href='#-debugrows'>-debugrows</a> <a href='#-script'>-script</a> <a href='#-args'>-args</a> <a href='#-pointheader'>-pointheader</a> </div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+<br>
+</ul>
+</div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
+<b>Arguments:</b><br>
+<ul>
+<i>delimiter</i>
+Delimiter - ,|^ etc. Use tab for tab<br>
 <br>
 </ul>
 </div><a name='-printheader'></a><div class=command> <i><a href='#-printheader'>-printheader</a></i> </div><div class=command-block>Print header<br>
@@ -2377,6 +2571,13 @@ If you want to skip a line the return "_null_".
 <br>
 </ul>
 </div><a name='-table'></a><div class=command> <i><a href='#-table'>-table</a></i> </div><div class=command-block>Print table and stats<br>
+<br>
+</ul>
+</div><a name='-cols'></a><div class=command> <i><a href='#-cols'>-cols</a></i>  &lt;width&gt; </div><div class=command-block>Print text columns<br>
+<b>Arguments:</b><br>
+<ul>
+<i>width</i>
+Column width<br>
 <br>
 </ul>
 </div><a name='-stats'></a><div class=command> <i><a href='#-stats'>-stats</a></i> </div><div class=command-block>Print summary stats<br>
