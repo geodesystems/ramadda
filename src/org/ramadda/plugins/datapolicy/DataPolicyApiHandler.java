@@ -80,8 +80,6 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         List<Entry> entries =
             getEntryManager().getEntriesWithType(searchRequest,
                 "type_datapolicy");
-        System.err.println("Entries:" + entries);
-
         for (Entry entry : entries) {
             addPolicy(entry, policies);
         }
