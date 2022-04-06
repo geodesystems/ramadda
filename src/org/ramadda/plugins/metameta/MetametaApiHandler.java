@@ -21,6 +21,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -165,7 +166,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 inner = new StringBuilder();
                 StringBuilder             attrs = new StringBuilder();
 
-                Hashtable<String, String> enums = column.getEnumTable();
+                LinkedHashMap<String, String> enums = column.getEnumTable();
                 if ((enums != null) && (enums.size() > 0)) {
                     inner.append(XmlUtil
                         .tag(MetametaFieldTypeHandler
