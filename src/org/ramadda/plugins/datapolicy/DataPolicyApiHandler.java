@@ -123,10 +123,6 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
                   qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
         Utils.add(policy, DataPolicy.FIELD_LICENSE,
                   qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE)));
-        Utils.add(
-            policy, DataPolicy.FIELD_LICENSE_DESCRIPTION,
-            qt(entry.getValue(
-                DataPolicyTypeHandler.IDX_LICENSE_DESCRIPTION)));
         String url = getRepository().getTmpRequest().getAbsoluteUrl(
                          getEntryManager().getEntryURL(null, entry));
         Utils.add(policy, DataPolicy.FIELD_URL, qt(url));

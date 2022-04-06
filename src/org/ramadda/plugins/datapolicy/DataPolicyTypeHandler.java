@@ -46,8 +46,6 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     /**  */
     public static final int IDX_LICENSE = IDX++;
 
-    /**  */
-    public static final int IDX_LICENSE_DESCRIPTION = IDX++;
 
     /**  */
     public static final int IDX_VIEW_ROLES = IDX++;
@@ -89,9 +87,14 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
+	System.err.println("new:" + entry);
+	String id = (String) entry.getValue(IDX_ID);
+	if(!Utils.stringDefined(id)) {
+	    entry.setValue(IDX_ID,Utils.makeID(entry.getName(),false,"-"));
+	}
         super.initializeNewEntry(request, entry, fromImport);
-        System.err.println("new");
         getRepository().getAccessManager().updateLocalDataPolicies();
+
     }
 
 
@@ -106,10 +109,16 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     @Override
     public void entryChanged(Entry entry) throws Exception {
         super.entryChanged(entry);
-        System.err.println("changed");
+	System.err.println("entryChanged:" + entry);
         getRepository().getAccessManager().updateLocalDataPolicies();
     }
 
+
+    @Override
+    public void entryDeleted(String id) throws Exception {
+	super.entryDeleted(id);
+        getRepository().getAccessManager().updateLocalDataPolicies();
+    }    
 
 
     /**
@@ -138,15 +147,13 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
                 HtmlUtils.div(tmpSb, r,
                               HtmlUtils.cssClass(role.getCssClass()));
             }
-
             return;
         }
 
-
         if (column.getName().equals("license")) {
             String license = (String) entry.getValue(IDX_LICENSE);
-            tmpSb.append(getMetadataManager().getLicenseHtml(license, null));
-
+	    String label = column.getEnumLabel(license);
+            tmpSb.append(getMetadataManager().getLicenseHtml(license, label));
             return;
         }
         super.formatColumnHtmlValue(request, entry, column, tmpSb, values);
