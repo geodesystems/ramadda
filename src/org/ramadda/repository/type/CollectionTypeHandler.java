@@ -34,6 +34,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -383,8 +384,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception problems
      */
-    protected Hashtable getColumnEnumTable(Column column) throws Exception {
-        Hashtable map       = column.getEnumTable();
+    protected LinkedHashMap  getColumnEnumTable(Column column) throws Exception {
+        LinkedHashMap map       = column.getEnumTable();
         String    key       = column.getName() + ".values";
         String    vocabFile = getTypeProperty(key, (String) null);
         if (vocabFile != null) {
@@ -394,7 +395,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 getRepository().loadProperties(properties, vocabFile);
                 labelCache.put(vocabFile, properties);
             }
-            map = new Hashtable<String, String>();
+            map = new LinkedHashMap<String, String>();
             map.putAll(properties);
         }
 
@@ -416,10 +417,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public List<TwoFacedObject> getValueList(Entry collectionEntry,
                                              List values, Column column)
             throws Exception {
-        Hashtable            map  = getColumnEnumTable(column);
+        LinkedHashMap<String,String>            map  = getColumnEnumTable(column);
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         for (String value : (List<String>) values) {
-            String label = (String) map.get(value);
+            String label =  map.get(value);
             if (label == null) {
                 label = column.getEnumLabel(value);
                 if (label == null) {

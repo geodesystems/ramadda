@@ -47,6 +47,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -390,8 +391,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private List<TwoFacedObject> jsonValues;
 
     /** _more_ */
-    private Hashtable<String, String> enumMap = new Hashtable<String,
-                                                    String>();
+    private LinkedHashMap<String, String> enumMap = new LinkedHashMap<String,String>();
 
     /** _more_ */
     private List<Display> displays = new ArrayList<Display>();
@@ -1471,7 +1471,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @return _more_
      */
-    public Hashtable<String, String> getEnumTable() {
+    public LinkedHashMap<String, String> getEnumTable() {
         return enumMap;
     }
 
@@ -1554,11 +1554,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (label == null) {
             return null;
         }
-        for (Enumeration keys = enumMap.keys(); keys.hasMoreElements(); ) {
-            String value = (String) keys.nextElement();
-            String l     = (String) enumMap.get(value);
+        for (String key : enumMap.keySet()) {
+            String l     =  enumMap.get(key);
             if (l.equals(label)) {
-                return value;
+                return key;
             }
         }
 

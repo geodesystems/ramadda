@@ -17,6 +17,7 @@ import ucar.unidata.util.IOUtil;
 
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -153,7 +154,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
         if (collection != null) {
             CollectionTypeHandler th =
                 (CollectionTypeHandler) collection.getTypeHandler();
-            Hashtable enumMap = th.getColumnEnumTable(column);
+            LinkedHashMap enumMap = th.getColumnEnumTable(column);
             String    s       = column.toString(values, column.getOffset());
             String    label   = (String) enumMap.get(s);
             if (label != null) {

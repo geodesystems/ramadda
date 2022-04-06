@@ -2298,6 +2298,10 @@ public class TypeHandler extends RepositoryManager {
 	if(parent!=null) parent.entryChanged(entry);
     }
 
+    public void entryDeleted(String id) throws Exception {
+	if(parent!=null) parent.entryDeleted(id);
+    }    
+
 
     /**
      * _more_
