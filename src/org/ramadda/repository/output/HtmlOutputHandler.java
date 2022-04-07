@@ -685,7 +685,7 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
             List<String> onlyTheseTypes, List<String> notTheseTypes,
-						boolean showTitle, String separator, boolean decorate)
+						boolean showTitle, String separator, boolean decorate, boolean stripe)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -751,9 +751,11 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             boolean even = rowFlag.booleanValue();
             typeRow.put(group, new Boolean( !even));
-            String  rowClass = "metadata-row-" + (even
-                    ? "even"
-                    : "odd");
+            String  rowClass = !stripe?"metadata-row":
+		"metadata-row-" + (even
+				   ? "even"
+				   : "odd");
+
 
             boolean first    = sb.length() == 0;
 	    String label = html[0];
@@ -1212,7 +1214,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-		 getMetadataHtml(request, entry, null, null, true, null,false)) {
+		 getMetadataHtml(request, entry, null, null, true, null,false,true)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

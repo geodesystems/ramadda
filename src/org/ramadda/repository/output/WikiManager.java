@@ -4750,7 +4750,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         request = request.cloneMe();
         request.putExtraProperty("wiki.props", props);
 
-
         List<String> onlyTheseTypes = null;
         List<String> notTheseTypes  = null;
 
@@ -4780,14 +4779,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         boolean includeTitle = getProperty(wikiUtil, props,
                                            ATTR_METADATA_INCLUDE_TITLE, true);
         boolean decorate = getProperty(wikiUtil, props,
-				       "decorate", false);	
-
+				       "decorate", false);
+        boolean stripe = getProperty(wikiUtil, props,
+				     "stripe", true);		
 
 
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
                     request, entry, onlyTheseTypes, notTheseTypes,
-                    includeTitle, separator, decorate)) {
+                    includeTitle, separator, decorate,stripe)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

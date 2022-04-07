@@ -2499,6 +2499,7 @@ pre {
 .metadata-row-odd {
     margin-left: 20px;
     margin-bottom:2px;
+    background-color:#f4f4f4;
 }
 
 .metadata-small-label {
