@@ -3917,7 +3917,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 if (i >= 1) {
                     sb.append(close(TAG_TR));
                 }
-                sb.append(open(TAG_TR));
+                sb.append(open(TAG_TR,"valign=top"));
             }
             sb.append(col(columns.get(i).toString()));
             cols++;
@@ -3926,9 +3926,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             }
         }
         sb.append(close(TAG_TR));
-
         sb.append(close(TAG_TABLE));
-
         return sb;
     }
 
