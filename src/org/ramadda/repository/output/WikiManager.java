@@ -171,7 +171,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_GALLERY,null,
                                         ATTR_WIDTH, "-100", ATTR_COLUMNS, "3",
 					ATTR_POPUP, "true", ATTR_THUMBNAIL, "false",
-					"decorate","true","#imageStyle","",
+					"decorate","true","imageStyle","","padding","10px",
 					ATTR_CAPTION, "Figure ${count}: ${name}",
 					"#popupCaption",""), 
                             new WikiTag(WIKI_TAG_SLIDESHOW,"Slide Show",
@@ -5882,10 +5882,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                         false);
         String caption = getProperty(wikiUtil, props, ATTR_CAPTION,
                                      "${name}");
-        String popupCaption = getProperty(wikiUtil, props, "popupCaption",caption);
+	if(!Utils.stringDefined(caption)) caption=null;
+        String popupCaption = getProperty(wikiUtil, props, "popupCaption",caption!=null?caption:"");
         String imageStyle = getProperty(wikiUtil, props, "imageStyle",null);
         String captionPos = getProperty(wikiUtil, props, ATTR_POPUPCAPTION,
                                         "none");
+        String padding = getProperty(wikiUtil, props, "padding","10px");
         boolean showDesc = getProperty(wikiUtil, props, ATTR_SHOWDESCRIPTION,
                                        false);
         if (popup) {
@@ -5952,15 +5954,17 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             String name       = getEntryDisplayName(child);
             String theCaption = caption;
-            theCaption = theCaption.replace("${count}", "" + num);
-            theCaption =
-                theCaption.replace("${date}",
-                                   formatDate(request,
-                                       new Date(child.getStartDate())));
-            theCaption = theCaption.replace("${name}", child.getLabel());
-            theCaption = theCaption.replace("${description}",
-                                            child.getDescription());
+	    if(theCaption!=null) {
+		theCaption = theCaption.replace("${count}", "" + num);
+		theCaption =
+		    theCaption.replace("${date}",
+				       formatDate(request,
+						  new Date(child.getStartDate())));
+		theCaption = theCaption.replace("${name}", child.getLabel());
+		theCaption = theCaption.replace("${description}",
+						child.getDescription());
 
+	    }
 
             if ((name != null) && !name.isEmpty()) {
                 extra = extra + HU.attr(HU.ATTR_ALT, name);
@@ -5977,7 +5981,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		buff.append("<div class=\"image-outer search-component\">");
 		buff.append("<div class=\"image-inner\">");
 	    } else {
-		buff.append("<div style='padding:10px;'>");
+		buff.append("<div style='padding:" + HU.makeDim(padding,null)+";'>");
 	    }
             if (popup) {
 		String thePopupCaption = popupCaption;
@@ -5992,7 +5996,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 String popupExtras = HU.cssClass("popup_image")
                                      + HU.attr("width", "100%");
 		//                if ( !captionPos.equals("none")) {
-                    popupExtras += HU.attr("title", theCaption);
+		if(theCaption!=null)
+		    popupExtras += HU.attr("title", theCaption);
 		    //                }
 		String dataCaption = HU.href(entryUrl,thePopupCaption).replace("\"","'");
                 popupExtras += HU.attr("data-fancybox", idPrefix)
@@ -6012,10 +6017,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 
 
-            theCaption = HU.href(entryUrl, theCaption,
-                                 HU.style("color:#666;font-size:10pt;"));
-
-            buff.append(HU.div(theCaption, HU.cssClass("image-caption")));
+	    if(theCaption!=null) {
+		theCaption = HU.href(entryUrl, theCaption,
+				     HU.style("color:#666;font-size:10pt;"));
+		buff.append(HU.div(theCaption, HU.cssClass("image-caption")));
+	    }
             if (showDesc) {
                 if (Utils.stringDefined(child.getDescription())) {
                     buff.append("<div class=\"image-description\">");
