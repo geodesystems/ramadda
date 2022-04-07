@@ -6800,6 +6800,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             theEntry = getEntryManager().findEntryWithName(request,
                     (Entry) entry, name);
 
+            if (theEntry == null) {
+		List<Entry> entries =  getEntryManager().getEntriesFromAlias(request,name);
+		if(entries.size()>0) {
+		    theEntry = entries.get(0);
+		}
+	    }
+
+
             //If the entry is a group first check its children.
             if (theEntry == null) {
                 if (entry.isGroup()) {
