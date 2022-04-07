@@ -1,0 +1,31 @@
+The -fuzz command works to anonymize numeric values.
+<p>
+The num_random_digits is used to generate a number with those random digits.
+<p>
+If the num_places argument is &lt;= zero then
+that is the number of decimal places the number is rounded to.
+If there are fewer than num_places decimals than those decimals are converted to "0".
+The randomized digits are then appended to the number.
+For example with R = random digit:
+<pre>
+-fuzz -2 3
+gives:
+12345.6789 -&gt; 12345.67RR
+145.678 -&gt; 145.67RR
+9.0 -&gt; 9.RR
+</pre>
+
+<p>
+If num_places &gt; 0 then the number is converted to an integer and
+the num_places least significant digits are converted to 0.
+If the number of digits is &lt; num_places then the number is converted to 0.
+The randomized digits are then addedto the number.
+For example with R = random digit:
+<pre>
+-fuzz 2 3
+gives:
+12345.678 -&gt; 123RR
+145.678 -&gt; 1RR
+1.678 -&gt; RR
+</pre>
+

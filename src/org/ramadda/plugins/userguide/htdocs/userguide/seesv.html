@@ -61,7 +61,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 240 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 241 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -1900,7 +1900,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Numeric/Boolean'></a><b style='font-size:120%;'>Numeric/Boolean</b><br>
-<div class=header>Commands: <a href='#-scale'>-scale</a> <a href='#-generate'>-generate</a> <a href='#-decimals'>-decimals</a> <a href='#-ceil'>-ceil</a> <a href='#-floor'>-floor</a> <a href='#-delta'>-delta</a> <a href='#-operator'>-operator</a> <a href='#-round'>-round</a> <a href='#-abs'>-abs</a> <a href='#-clip'>-clip</a> <a href='#-rand'>-rand</a> <a href='#-even'>-even</a> <a href='#-sum'>-sum</a> <a href='#-summary'>-summary</a> <a href='#-histogram'>-histogram</a> <a href='#-percent'>-percent</a> <a href='#-increase'>-increase</a> <a href='#-average'>-average</a> <a href='#-ranges'>-ranges</a> <a href='#-bytes'>-bytes</a> <a href='#-column_and'>-column_and</a> <a href='#-colum_nor'>-colum_nor</a> <a href='#-column_not'>-column_not</a> </div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
+<div class=header>Commands: <a href='#-scale'>-scale</a> <a href='#-generate'>-generate</a> <a href='#-decimals'>-decimals</a> <a href='#-fuzz'>-fuzz</a> <a href='#-ceil'>-ceil</a> <a href='#-floor'>-floor</a> <a href='#-delta'>-delta</a> <a href='#-operator'>-operator</a> <a href='#-round'>-round</a> <a href='#-abs'>-abs</a> <a href='#-clip'>-clip</a> <a href='#-rand'>-rand</a> <a href='#-even'>-even</a> <a href='#-sum'>-sum</a> <a href='#-summary'>-summary</a> <a href='#-histogram'>-histogram</a> <a href='#-percent'>-percent</a> <a href='#-increase'>-increase</a> <a href='#-average'>-average</a> <a href='#-ranges'>-ranges</a> <a href='#-bytes'>-bytes</a> <a href='#-column_and'>-column_and</a> <a href='#-colum_nor'>-colum_nor</a> <a href='#-column_not'>-column_not</a> </div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -1924,15 +1924,58 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
-</div><a name='-decimals'></a><div class=command> <i><a href='#-decimals'>-decimals</a></i>  &lt;column&gt;  &lt;how many decimals to round to&gt; </div><div class=command-block><b>Arguments:</b><br>
+</div><a name='-decimals'></a><div class=command> <i><a href='#-decimals'>-decimals</a></i>  &lt;column&gt;  &lt;num_decimals&gt; </div><div class=command-block>Round decimals<br>
+<b>Arguments:</b><br>
 <ul>
 <i>column</i>
 <br>
-<i>how many decimals to round to</i>
-<br>
+<i>num_decimals</i>
+how many decimals to round to<br>
 <br>
 </ul>
-</div><a name='-ceil'></a><div class=command> <i><a href='#-ceil'>-ceil</a></i>  &lt;columns&gt;  &lt;value&gt; </div><div class=command-block>Set the max value<br>
+</div><a name='-fuzz'></a><div class=command> <i><a href='#-fuzz'>-fuzz</a></i>  &lt;column&gt;  &lt;num_places&gt;  &lt;num_random_digits&gt; </div><div class=command-block>fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column</i>
+<br>
+<i>num_places</i>
+how many places to round to. use <=0 for decimals<br>
+<i>num_random_digits</i>
+how many random digits<br>
+<br>
+</ul>
+The -fuzz command works to anonymize numeric values.
+<p>
+The num_random_digits is used to generate a number with those random digits.
+<p>
+If the num_places argument is &lt;= zero then
+that is the number of decimal places the number is rounded to.
+If there are fewer than num_places decimals than those decimals are converted to "0".
+The randomized digits are then appended to the number.
+For example with R = random digit:
+<pre>
+-fuzz -2 3
+gives:
+12345.6789 -&gt; 12345.67RR
+145.678 -&gt; 145.67RR
+9.0 -&gt; 9.RR
+</pre>
+
+<p>
+If num_places &gt; 0 then the number is converted to an integer and
+the num_places least significant digits are converted to 0.
+If the number of digits is &lt; num_places then the number is converted to 0.
+The randomized digits are then addedto the number.
+For example with R = random digit:
+<pre>
+-fuzz 2 3
+gives:
+12345.678 -&gt; 123RR
+145.678 -&gt; 1RR
+1.678 -&gt; RR
+</pre>
+
+<p></div><a name='-ceil'></a><div class=command> <i><a href='#-ceil'>-ceil</a></i>  &lt;columns&gt;  &lt;value&gt; </div><div class=command-block>Set the max value<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
