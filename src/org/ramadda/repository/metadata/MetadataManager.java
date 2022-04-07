@@ -227,10 +227,21 @@ public class MetadataManager extends RepositoryManager {
 	if (license.startsWith("CC-")) {
 	    String img = _license;
 	    img      = img.replace("cc-", "").replace("-4.0", "");
-	    img      = getIconUrl("/cc/" + img + ".png");
+	    img      = getIconUrl("/licenses/cc/" + img + ".png");
 	    img      = HU.image(img, "width", "100px");
 	    contents += "<br>" + img;
 	}
+	//A hack - we should put these in a resource file
+	if (license.startsWith("localcontexts-")) {
+	    //localcontexts-tk-a
+	    String img = _license.replace("localcontexts-","/licenses/localcontexts/").replaceAll("-","_")+".png";
+	    img = img.replaceAll("tk_","tk_label_");
+	    img = img.replaceAll("bc_","bc_label_");	    
+	    img      = getIconUrl(img);
+	    img      = HU.image(img, "width", "80px");
+	    contents += "<br>" + img;
+	}
+
 	if (link != null) {
 	    contents = HU.href(link, contents, "target=_other");
 	}

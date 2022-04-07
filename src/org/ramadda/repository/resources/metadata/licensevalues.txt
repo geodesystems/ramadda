@@ -1,10 +1,24 @@
+none
+#https://localcontexts.org
+localcontexts-tk-a:Local Contexts TK Attribution
+localcontexts-tk-clan:Local Contexts TK Clan
+localcontexts-tk-f:Local Contexts TK Family
+localcontexts-tk-mc:Local Contexts TK Multiple Communities
+localcontexts-tk-cv:Local Contexts TK Community Voice
+localcontexts-tk-cr:Local Contexts TK Creative
+localcontexts-bc-p:Local Contexts Biocultural Provenance
+localcontexts-bc-mc:Local Contexts Biocultural Multiple Communities
+localcontexts-bc-cl:Local Contexts Biocultural Clan
+
+
 #from: https://www.taiuru.maori.nz/maori-data-sovereignty-licences
 maori-maori-1.1:Kaitiakitanga; Māori Data Sovereignty Licence 1.1
 maori-iwi-1.1:Kaitiakitanga; Iwi Data Sovereignty License 1.1
 maori-hapū-1.1:Kaitiakitanga; Hapū Data Sovereignty Licence 1.1
-maori-marae-rūnanga-1.1:Kaitiakitanga; Marae/Rūnanga Data Sovereignty Licence 1.1
-maori-rōpū- māori-1.1:Kaitiakitanga; Rōpū Māori Data Sovereignty Licence 1.1
-maori-whānau-māori-1.1:Kaitiakitanga of Whānau Māori Data Sovereignty License 1.1
+maori-marae-runanga-1.1:Kaitiakitanga; Marae/Rūnanga Data Sovereignty Licence 1.1
+maori-ropu- maori-1.1:Kaitiakitanga; Rōpū Māori Data Sovereignty Licence 1.1
+maori-whanau-maori-1.1:Kaitiakitanga of Whānau Māori Data Sovereignty License 1.1
+
 CC-BY-4.0:Creative Commons Attribution 4.0 International
 CC-BY-NC-4.0:Creative Commons Attribution Non Commercial 4.0 International
 CC-BY-NC-ND-4.0:Creative Commons Attribution Non Commercial No Derivatives 4.0 International

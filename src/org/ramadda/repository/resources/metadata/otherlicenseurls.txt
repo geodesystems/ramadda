@@ -1,3 +1,14 @@
+#https://localcontexts.org
+localcontexts-tk-a:https://localcontexts.org/label/tk-attribution/
+localcontexts-tk-clan:https://localcontexts.org/label/tk-clan/
+localcontexts-tk-f:https://localcontexts.org/label/tk-family/
+localcontexts-tk-mc:https://localcontexts.org/label/tk-multiple-communities/
+localcontexts-tk-cv:https://localcontexts.org/label/tk-community-voice/
+localcontexts-tk-cr:https://localcontexts.org/label/tk-creative/
+localcontexts-bc-p:https://localcontexts.org/label/bc-provenance/
+localcontexts-bc-mc:https://localcontexts.org/label/bc-multiple-communities/
+localcontexts-bc-cl:https://localcontexts.org/label/bc-clan/
+
 #from: https://www.taiuru.maori.nz/maori-data-sovereignty-licences
 maori-maori-1.1=https://www.taiuru.maori.nz/maori-data-sovereignty-licences/#Kaitiakitanga_Maori_Data_Sovereignty_Licence_11
 maori-iwi-1.1=https://www.taiuru.maori.nz/maori-data-sovereignty-licences/#Kaitiakitanga_Iwi_Data_Sovereignty_License_11
