@@ -3912,6 +3912,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         StringBuilder sb = new StringBuilder();
         sb.append(open(TAG_TABLE, attributes));
         int cols = 0;
+	int width = (int)(100.0/(double)numCols);
         for (int i = 0; i < columns.size(); i++) {
             if (cols == 0) {
                 if (i >= 1) {
@@ -3919,7 +3920,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 }
                 sb.append(open(TAG_TR,"valign=top"));
             }
-            sb.append(col(columns.get(i).toString()));
+            sb.append(col(columns.get(i).toString(), "width=" + width+"%"));
             cols++;
             if (cols >= numCols) {
                 cols = 0;
