@@ -4580,6 +4580,91 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Mon, Jul 29, '19
+     * @author         Enter your name here...
+     */
+    public static class Fuzzer extends Converter {
+
+        private int places;
+
+	private int numRandomDigits;
+
+	private int tens;
+        /**
+         * @param cols _more_
+         * @param decimals _more_
+         */
+        public Fuzzer(List<String> cols, int places, int numRandomDigits) {
+            super(cols);
+	    this.places = places;
+	    this.numRandomDigits = numRandomDigits;
+            this.tens     = (int) Math.pow(10, numRandomDigits);
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+            for (int i = 0; i < indices.size(); i++) {
+                try {
+                    int index = indices.get(i);
+                    if ((index < 0) || (index >= row.size())) {
+                        continue;
+                    }
+                    double value =
+                        Double.parseDouble(row.get(index).toString());
+		    if(Double.isNaN(value)) continue;
+		    int digits = (int)(Math.random()*tens);
+		    String sdigits = ""+digits;
+		    if(sdigits.length()<numRandomDigits) {
+			sdigits = StringUtil.padRight(sdigits,numRandomDigits,"0");
+			digits = Integer.parseInt(sdigits);
+		    }
+
+		    if(places<=0) {
+			String svalue = ""+value;
+			List<String>toks = Utils.splitUpTo(svalue,".",2);
+			String v = toks.get(0);
+			String d = (toks.size()>1?toks.get(1):"");
+			d = StringUtil.padRight(d,-places,"0");
+			if(d.length()>-places)
+			    d = d.substring(0,-places);
+			else
+			    d = StringUtil.padRight("",-places,"0");
+			String newValue = v +"." + d + digits;
+			row.set(index,newValue);
+			//			System.err.println("value:" + value+" left:" +v +" right:" + d+ " result:" +newValue);
+		    } else {
+			int ivalue =(int) value;
+			double d = Math.pow(10, places);
+			ivalue = (int)(d*((int)(ivalue/d)));
+
+			if(ivalue==0) {
+			    row.set(index,ivalue+"." + digits);
+			} else {
+			    row.set(index,""+(ivalue+digits));
+			}
+			//			System.err.println("v:" + value+" I:" +ivalue +" result:" + row.get(index));
+		    }
+                } catch (NumberFormatException nfe) {}
+            }
+
+            return row;
+        }
+
+    }
+    
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Thu, Nov 4, '21
      * @author         Enter your name here...
      */

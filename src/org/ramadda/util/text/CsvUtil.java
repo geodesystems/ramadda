@@ -2199,8 +2199,11 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"), "delta1", "scale",
                 "delta2"),
         new Cmd("-generate", "Add row values", "label", "start", "step"),
-        new Cmd("-decimals", "", new Arg("column", "", "type", "columns"),
-                "how many decimals to round to"),
+        new Cmd("-decimals", "Round decimals", new Arg("column", "", "type", "columns"),
+                new Arg("num_decimals","how many decimals to round to")),
+        new Cmd("-fuzz", "fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out", new Arg("column", "", "type", "columns"),
+                new Arg("num_places","how many places to round to. use <=0 for decimals"),
+		new Arg("num_random_digits","how many random digits")),	
         new Cmd("-ceil", "Set the max value", new Arg("columns", "", "type", "columns"),
                 new Arg("value","Value")),
         new Cmd("-floor", "Set the min value", new Arg("columns", "", "type", "columns"),
@@ -3803,6 +3806,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), new Integer(args.get(++i))));
 		return i;
 	    });
+	defineFunction("-fuzz", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Fuzzer(getCols(args.get(++i)), new Integer(args.get(++i)),
+						      new Integer(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction("-ceil", 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ceil(getCols(args.get(++i)), Double.parseDouble(args.get(++i))));
