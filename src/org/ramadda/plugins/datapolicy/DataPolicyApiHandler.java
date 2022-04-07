@@ -99,6 +99,14 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         return JsonUtil.quote(v.toString());
     }
 
+    private void addLicense(List<String> licenses, Entry entry,int index) {
+	String license = (String)entry.getValue(index);
+	if(Utils.stringDefined(license) &&!license.equals("none")) {
+	    licenses.add(license);
+	}
+    }
+
+
     /**
      *
      * @param entry _more_
@@ -118,8 +126,14 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         Utils.add(policy, DataPolicy.FIELD_DESCRIPTION, qt(entry.getDescription()));
         Utils.add(policy, DataPolicy.FIELD_CITATION,
                   qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
-        Utils.add(policy, DataPolicy.FIELD_LICENSE,
-                  qt(entry.getValue(DataPolicyTypeHandler.IDX_LICENSE)));
+	
+	List<String> licenses = new ArrayList<String>();
+	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE1);
+	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE2);
+	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE3);
+	if(licenses.size()>0) {
+	    Utils.add(policy,DataPolicy.FIELD_LICENSES,JsonUtil.list(licenses));
+	}
         String url = getRepository().getTmpRequest().getAbsoluteUrl(
                          getEntryManager().getEntryURL(null, entry));
         Utils.add(policy, DataPolicy.FIELD_URL, qt(url));

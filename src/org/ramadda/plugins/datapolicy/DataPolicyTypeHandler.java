@@ -44,8 +44,9 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     public static final int IDX_CITATION = IDX++;
 
     /**  */
-    public static final int IDX_LICENSE = IDX++;
-
+    public static final int IDX_LICENSE1 = IDX++;
+    public static final int IDX_LICENSE2 = IDX++;    
+    public static final int IDX_LICENSE3 = IDX++;
 
     /**  */
     public static final int IDX_VIEW_ROLES = IDX++;
@@ -150,10 +151,12 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
             return;
         }
 
-        if (column.getName().equals("license")) {
-            String license = (String) entry.getValue(IDX_LICENSE);
-	    String label = column.getEnumLabel(license);
-            tmpSb.append(getMetadataManager().getLicenseHtml(license, label));
+        if (column.getName().startsWith("license")) {
+            String license = (String) entry.getValue(column.getOffset());
+	    if(Utils.stringDefined(license) && !license.equals("none")) {
+		String label = column.getEnumLabel(license);
+		tmpSb.append(getMetadataManager().getLicenseHtml(license, label));
+	    }
             return;
         }
         super.formatColumnHtmlValue(request, entry, column, tmpSb, values);

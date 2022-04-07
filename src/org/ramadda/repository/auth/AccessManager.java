@@ -1454,10 +1454,17 @@ public class AccessManager extends RepositoryManager {
 	    
             buff.append("<li>");
             buff.append(HU.italics(label));
-	    if (Utils.stringDefined(dataPolicy.getLicense())) {
-		buff.append("<br>");
-		buff.append(HU.b("License: "));
-		buff.append(getMetadataManager().getLicenseHtml(dataPolicy.getLicense(), dataPolicy.getLicenseName()));
+	    boolean didLicenses = false;
+	    for(String license:dataPolicy.getLicenses()) {
+		if (Utils.stringDefined(license)) {
+		    if(!didLicenses) {
+			didLicenses=true;
+			buff.append("<br>");
+			buff.append(HU.b("Licenses: "));
+		    }
+		    buff.append("<br>");
+		    buff.append(getMetadataManager().getLicenseHtml(license, getLicenseName(license)));
+		}
 	    }
             if (Utils.stringDefined(dataPolicy.getDescription())) {
                 buff.append("<br>");
@@ -1470,22 +1477,24 @@ public class AccessManager extends RepositoryManager {
 
             //If they are logged then show the access
             if (includePermissions&& !request.isAnonymous()) {
-		StringBuilder permissionsSB = new StringBuilder();
-                permissionsSB.append("<ul>");
-                for (Permission permission : dataPolicy.getPermissions()) {
-                    permissionsSB.append("<li>");
-                    permissionsSB.append("Action: ");
-                    permissionsSB.append(permission.getAction());
-                    permissionsSB.append("<br>Roles:<ul> ");
-                    for (Role role : permission.getRoles()) {
-                        permissionsSB.append("<li>");
-                        permissionsSB.append(HU.span(role.toString(),
-                                            HU.cssClass(role.getCssClass())));
-                    }
-                    permissionsSB.append("</ul>");
-                }
-                permissionsSB.append("</ul>");
-		buff.append(HU.makeShowHideBlock("Permissions", permissionsSB.toString(), false));
+		if(dataPolicy.getPermissions().size()>0) {
+		    StringBuilder permissionsSB = new StringBuilder();
+		    permissionsSB.append("<ul>");
+		    for (Permission permission : dataPolicy.getPermissions()) {
+			permissionsSB.append("<li>");
+			permissionsSB.append("Action: ");
+			permissionsSB.append(permission.getAction());
+			permissionsSB.append("<br>Roles:<ul> ");
+			for (Role role : permission.getRoles()) {
+			    permissionsSB.append("<li>");
+			    permissionsSB.append(HU.span(role.toString(),
+							 HU.cssClass(role.getCssClass())));
+			}
+			permissionsSB.append("</ul>");
+		    }
+		    permissionsSB.append("</ul>");
+		    buff.append(HU.makeShowHideBlock("Permissions", permissionsSB.toString(), false));
+		}
             }
 
         }

@@ -1020,7 +1020,6 @@ public class GenericTypeHandler extends TypeHandler {
             }
             StringBuilder tmpSB = new StringBuilder();
             formatColumnHtmlValue(request, entry, column, tmpSB, values);
-
             sb.append(tmpSB);
             sb.append("\n");
         }

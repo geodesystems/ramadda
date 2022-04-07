@@ -28,7 +28,7 @@ public class DataPolicy {
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_CITATION = "citation";
-    public static final String FIELD_LICENSE = "license";
+    public static final String FIELD_LICENSES = "licenses";
     public static final String FIELD_PERMISSIONS = "permissions";
     public static final String FIELD_URL="url";
     public static final String FIELD_ACTION = "action";
@@ -58,7 +58,7 @@ public class DataPolicy {
     private String citation;
 
     /**  */
-    private String license;
+    private List<String> licenses;
 
     /**  */
     private String licenseName;
@@ -66,6 +66,7 @@ public class DataPolicy {
     /**  */
     private List<Permission> permissions = new ArrayList<Permission>();
 
+    private AccessManager accessManager;
 	
     /**
      *
@@ -80,6 +81,7 @@ public class DataPolicy {
     public DataPolicy(AccessManager accessManager, String mainUrl, String myUrl, String fromName,
                       JSONObject policy) {
 
+	this.accessManager = accessManager;
         this.mainUrl  = mainUrl;
         this.myUrl    = myUrl;
         this.fromName = fromName;
@@ -88,11 +90,19 @@ public class DataPolicy {
         description = policy.optString(FIELD_DESCRIPTION, null);
         name        = policy.optString(FIELD_NAME, Utils.makeLabel(id));
         citation    = policy.optString(FIELD_CITATION, null);
-        license     = policy.optString(FIELD_LICENSE, null);
-	licenseName = accessManager.getLicenseName(license);
-	if(!Utils.stringDefined(licenseName)) licenseName = license;
+	licenses= new ArrayList<String>();
+	if(policy.has(FIELD_LICENSES)) {
+	    JSONArray jlicenses = policy.getJSONArray(FIELD_LICENSES);
+	    for (int j = 0; j < jlicenses.length(); j++) {
+		String     license = jlicenses.getString(j);
+		licenses.add(license);
+	    }
+	}
+
+	//	licenseName = accessManager.getLicenseName(license);
+	//	if(!Utils.stringDefined(licenseName)) licenseName = license;
         if (debug) {
-            System.err.println("\tid:" + id + " license:" + license);
+            System.err.println("\tid:" + id + " licenses:" + licenses);
         }
 
         JSONArray jpermissions = policy.getJSONArray(FIELD_PERMISSIONS);
@@ -186,22 +196,14 @@ public class DataPolicy {
         return citation;
     }
 
-    /**
-     *  Set the License property.
-     *
-     *  @param value The new value for License
-     */
-    public void setLicense(String value) {
-        license = value;
-    }
 
     /**
      *  Get the License property.
      *
      *  @return The License
      */
-    public String getLicense() {
-        return license;
+    public List<String> getLicenses() {
+        return licenses;
     }
 
     /**
@@ -220,7 +222,9 @@ public class DataPolicy {
      */
     public String getLabel() throws Exception {
         String label = getName();
-        if (Utils.stringDefined(licenseName)) {
+	for(String license: licenses) {
+	    String licenseName = accessManager.getLicenseName(license);
+	    if(!Utils.stringDefined(licenseName)) licenseName = license;
 	    label += " - " + licenseName;
         }
 

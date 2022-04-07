@@ -12,9 +12,15 @@ category="Software and Services" >
      <property name="form.date.show" value="false"/>
      <column  name="datapolicy_id"  label="ID" cansearch="false"/>
      <column  name="citation"  label="Citation" cansearch="false" rows="5"/>
-     <column  name="license" type="enumerationplus"  label="License"
+     <column  name="license1" type="enumerationplus"  label="License 1"
 	      values="file:/org/ramadda/repository/resources/metadata/licensevalues.txt"
-	      cansearch="false" />     
+	      cansearch="false" showempty="false"/>
+     <column  name="license2" type="enumerationplus"  label="License 2"
+	      values="file:/org/ramadda/repository/resources/metadata/licensevalues.txt"
+	      cansearch="false" showempty="false"/>
+     <column  name="license3" type="enumerationplus"  label="License 3"
+	      values="file:/org/ramadda/repository/resources/metadata/licensevalues.txt"
+	      cansearch="false" showempty="false"/>               
      <column  name="view_roles"  type="list" label="View Roles" size="2000" rows="5" cansearch="false"
 	      help="One role per line. Use &quot;none&quot; or ip:&amp;lt;ip prefix&amp;gt"/>
      <column  name="file_roles"  type="list" label="File Roles" size="2000" rows="5" cansearch="false"
