@@ -1430,7 +1430,6 @@ public class AccessManager extends RepositoryManager {
 
             return new Result("Data Policies", sb);
         }
-        sb.append("Loaded data policies:");
 	formatDataPolicies(request, sb, dataPolicies,true,true);
         getPageHandler().sectionClose(request, sb);
         return new Result("Data Policies", sb);
@@ -1442,7 +1441,13 @@ public class AccessManager extends RepositoryManager {
         LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
                                                        StringBuilder>();
         for (DataPolicy dataPolicy : dataPolicies) {
-            String href = HU.href(dataPolicy.getMainUrl(),dataPolicy.getFromName());
+	    String fromLabel = dataPolicy.getFromName();
+	    String url = dataPolicy.getMainUrl();
+	    try {
+		URL u = new URL(url);
+		fromLabel = fromLabel+" - " + u.getHost();
+	    } catch(Exception exc) {}
+            String href = HU.href(url,fromLabel);
             StringBuilder buff = map.get(href);
             if (buff == null) {
                 map.put(href, buff = new StringBuilder());
