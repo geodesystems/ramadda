@@ -7028,6 +7028,11 @@ public class EntryManager extends RepositoryManager {
             return null;
         }
 
+	//Try it as an alias
+	if(entry==null) {
+	    entry =  getEntryFromAlias(request, entryId);
+	}
+
         if ( !abbreviated && (entry != null)) {
             cacheEntry(entry);
         }
