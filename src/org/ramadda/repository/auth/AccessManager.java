@@ -1454,26 +1454,25 @@ public class AccessManager extends RepositoryManager {
 	    
             buff.append("<li>");
             buff.append(HU.italics(label));
-	    boolean didLicenses = false;
-	    for(String license:dataPolicy.getLicenses()) {
-		if (Utils.stringDefined(license)) {
-		    if(!didLicenses) {
-			didLicenses=true;
-			buff.append("<br>");
-			buff.append(HU.b("Licenses: "));
-		    }
-		    buff.append("<br>");
-		    buff.append(getMetadataManager().getLicenseHtml(license, getLicenseName(license)));
-		}
-	    }
             if (Utils.stringDefined(dataPolicy.getDescription())) {
-                buff.append("<br>");
-                buff.append(dataPolicy.getDescription());
+                buff.append(HU.div(dataPolicy.getDescription(),HU.cssClass("ramadda-datapolicy-description")));
             }
 	    if(Utils.stringDefined(dataPolicy.getCitation())) {
-                buff.append("<br>");
-                buff.append(HU.italics(dataPolicy.getCitation().replaceAll("\n","<br>")));
+                buff.append(HU.div(dataPolicy.getCitation().replaceAll("\n","<br>"),HU.cssClass("ramadda-datapolicy-citation")));
 	    }
+	    boolean didLicenses = false;
+	    StringBuilder lbuff = new StringBuilder();
+	    for(String license:dataPolicy.getLicenses()) {
+		if (Utils.stringDefined(license)) {
+		    didLicenses=true;
+		    lbuff.append(HU.div(getMetadataManager().getLicenseHtml(license, getLicenseName(license))));
+		}
+	    }
+	    if(didLicenses) {
+		String tmp = HU.div(lbuff.toString(),HU.style("margin-left:20px;"));
+		buff.append(HU.makeShowHideBlock("Licenses", tmp, true));
+	    }
+
 
             //If they are logged then show the access
             if (includePermissions&& !request.isAnonymous()) {

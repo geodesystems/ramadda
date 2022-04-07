@@ -3160,6 +3160,14 @@ label {
     padding: 5px;
 }
 
+.ramadda-datapolicy-description {
+}
+.ramadda-datapolicy-citation {
+    font-style:italic;
+    border: var(--basic-border);
+    padding:4px;
+}
+
 .ramadda-role-datapolicy {
     font-weight:bold;
 }
