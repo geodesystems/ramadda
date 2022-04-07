@@ -3644,7 +3644,27 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
-	    return  makeTableTree(request, wikiUtil,props,children);
+	    
+
+            int chunkSize = getProperty(wikiUtil, props, "chunkSize",0);
+	    if(chunkSize==0) {
+		return  makeTableTree(request, wikiUtil,props,children);
+	    }
+            int columns = getProperty(wikiUtil, props, "columns",0);	    
+	    String chunkStyle =  getProperty(wikiUtil, props, "chunkStyle","");
+	    StringBuilder buff = new StringBuilder();
+	    List<List> chunks = Utils.splitList(children,chunkSize);
+	    List<String> tds = new ArrayList<String>();
+	    for(List entries: chunks) {
+		String chunk = makeTableTree(request, wikiUtil,props,(List<Entry>)entries);
+		tds.add(HU.div(chunk,HU.attrs("style",chunkStyle)));
+	    }
+	    if(columns>0) 
+		return HU.table(tds,columns,"").toString();
+	    for(Object o: tds) {
+		buff.append(o);
+	    }
+	    return buff.toString();
         } else if (theTag.equals(WIKI_TAG_TREEVIEW)
                    || theTag.equals(WIKI_TAG_FRAMES)) {
             int width = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
