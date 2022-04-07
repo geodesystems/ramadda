@@ -102,7 +102,7 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
     private void addLicense(List<String> licenses, Entry entry,int index) {
 	String license = (String)entry.getValue(index);
 	if(Utils.stringDefined(license) &&!license.equals("none")) {
-	    licenses.add(license);
+	    licenses.add(qt(license));
 	}
     }
 
