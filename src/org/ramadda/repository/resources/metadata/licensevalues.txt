@@ -1,14 +1,22 @@
 none
 #https://localcontexts.org
-localcontexts-tk-a:Local Contexts TK Attribution
-localcontexts-tk-clan:Local Contexts TK Clan
-localcontexts-tk-f:Local Contexts TK Family
-localcontexts-tk-mc:Local Contexts TK Multiple Communities
-localcontexts-tk-cv:Local Contexts TK Community Voice
-localcontexts-tk-cr:Local Contexts TK Creative
-localcontexts-bc-p:Local Contexts Biocultural Provenance
-localcontexts-bc-mc:Local Contexts Biocultural Multiple Communities
-localcontexts-bc-cl:Local Contexts Biocultural Clan
+localcontexts-label-tk-a:Local Contexts Label TK Attribution
+localcontexts-label-tk-clan:Local Contexts Label TK Clan
+localcontexts-label-tk-f:Local Contexts Label TK Family
+localcontexts-label-tk-mc:Local Contexts Label TK Multiple Communities
+localcontexts-label-tk-cv:Local Contexts Label TK Community Voice
+localcontexts-label-tk-cr:Local Contexts Label TK Creative
+localcontexts-label-bc-p:Local Contexts Label Biocultural Provenance
+localcontexts-label-bc-mc:Local Contexts Label Biocultural Multiple Communities
+localcontexts-label-bc-cl:Local Contexts Label Biocultural Clan
+localcontexts-notice-bc:Local Contexts Notice BC
+localcontexts-notice-tk:Local Contexts Notice TK
+localcontexts-notice-attribution-incomplete:Local Contexts Notice Attribution Incomplete
+localcontexts-notice-open-to-collaborate:Local Contexts Notice Open to Collaborate
+localcontexts-license-tk-a:Local Contexts License TK Attribution
+localcontexts-license-tk-o:Local Contexts License TK Outreach
+localcontexts-license-tk-c:Local Contexts License TK Commercial
+localcontexts-license-tk-nc:Local Contexts License TK Non Commercial
 
 
 #from: https://www.taiuru.maori.nz/maori-data-sovereignty-licences
