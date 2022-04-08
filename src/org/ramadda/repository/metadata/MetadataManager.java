@@ -235,8 +235,9 @@ public class MetadataManager extends RepositoryManager {
 	if (license.startsWith("localcontexts-")) {
 	    //localcontexts-tk-a
 	    String img = _license.replace("localcontexts-","/licenses/localcontexts/").replaceAll("-","_")+".png";
-	    img = img.replaceAll("tk_","tk_label_");
-	    img = img.replaceAll("bc_","bc_label_");	    
+	    //	    img = img.replaceAll("tk_","tk_label_");
+	    //img = img.replaceAll("bc_","bc_label_");
+	    //	    System.err.println(img);
 	    img      = getIconUrl(img);
 	    img      = HU.image(img, "width", "80px");
 	    contents += "<br>" + img;
