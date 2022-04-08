@@ -3688,157 +3688,19 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 return null;
             }
 
-            boolean highlightThis = getProperty(wikiUtil, props,
-                                        "highlightThis", false);
-            boolean horizontal = getProperty(wikiUtil, props, "horizontal",
-                                             false);
-            boolean decorate = getProperty(wikiUtil, props, "decorate",
-                                             false);
-            boolean includeSnippet = getProperty(wikiUtil, props,
-						 "includeSnippet", false);
-            boolean showicon = getShowIcon(wikiUtil, props, false);
+            int chunkSize = getProperty(wikiUtil, props, "chunkSize",0);
+	    System.err.println("C:" + chunkSize);
 
-            boolean linkResource = getProperty(wikiUtil, props,
-                                       ATTR_LINKRESOURCE, false);
-            String separator = (isList
-                                ? ""
-                                : getProperty(wikiUtil, props,
-                                    ATTR_SEPARATOR, horizontal
-                    ? "&nbsp|&nbsp;"
-                    : ""));
-
-            String output = getProperty(wikiUtil, props, "output",
-                                        (String) null);
-            String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
-            String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
-            String tagOpen  = (isList
-                               ? "<li>"
-                               : getProperty(wikiUtil, props, ATTR_TAGOPEN,
-                                             "<li>"));
-
-            String tagClose = (isList
-                               ? ""
-                               : getProperty(wikiUtil, props, ATTR_TAGCLOSE,
-                                             ""));
-
-
-
-	    if(decorate) {
-		tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
-		tagClose = "</div></div>";
-	    } else {
-		if (showicon) {
-		    tagOpen  = "";
-		    tagClose = "<br>";
-		}
+	    if(chunkSize==0) {
+		return makeLinks(request,originalEntry,entry, wikiUtil,props,isList, children);
 	    }
 
-	    if (horizontal) {
-		tagOpen  = "<div class='ramadda-links-horizontal'>";
-		tagClose = "</div>";
+	    List<List> chunks = Utils.splitList(children,chunkSize);
+	    List<String> tds = new ArrayList<String>();
+	    for(List entries: chunks) {
+		tds.add(makeLinks(request,originalEntry,entry, wikiUtil,props,isList, (List<Entry>)entries));
 	    }
-
-
-            List<String> links = new ArrayList<String>();
-            for (Entry child : children) {
-                String url;
-                if (linkResource
-                        && (child.getTypeHandler().isType("link")
-                            || child.isFile()
-                            || child.getResource().isUrl())) {
-                    url = child.getTypeHandler().getEntryResourceUrl(request,
-                            child);
-                } else {
-                    if (output == null) {
-                        url = getEntryManager().getEntryUrl(request, child);
-                        //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
-                    } else {
-                        url = request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW, child,
-                            ARG_OUTPUT, output);
-                    }
-                }
-
-                String linkLabel = getEntryDisplayName(child);
-                if (showicon) {
-                    linkLabel = HU.img(getPageHandler().getIconUrl(request,
-                            child)) + HU.space(1) + linkLabel;
-                }
-		String snippet =  includeSnippet?getSnippet(request,  child, true,""):null;
-		if(decorate) {
-		    linkLabel =  "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + linkLabel +"</div>" + (snippet!=null?snippet:"") + "</div>";
-		}
-                String href = HU.href(url, linkLabel,
-                                      HU.cssClass("ramadda-link " + cssClass)
-                                      + HU.style(style));
-                boolean highlight =
-                    highlightThis && (originalEntry != null)
-                    && child.getId().equals(originalEntry.getId());
-                if (highlight) {
-                    href = HU.span(href, HU.clazz("ramadda-links-highlight"));
-                }
-                StringBuilder link = new StringBuilder();
-		if(decorate) {
-		    link.append("<div class=ramadda-entry-nav-page-outer>");
-		    link.append(href);
-		    link.append("</div>");
-		} else {
-		    link.append(tagOpen);
-		    link.append(href);
-		    link.append(tagClose);
-		}
-                String s = link.toString();
-                links.add(s);
-            }
-
-	    if(decorate) {
-		return Utils.join(links,"",false);
-	    }
-
-
-            StringBuilder contentsSB = new StringBuilder();
-            String prefix = getProperty(wikiUtil, props, ATTR_LIST_PREFIX,
-                                        (String) null);
-            String suffix = getProperty(wikiUtil, props, ATTR_LIST_SUFFIX,
-                                        (String) null);
-            if (prefix != null) {
-                contentsSB.append(prefix);
-            } else if (tagOpen.equals("<li>")) {
-                contentsSB.append("<ul>");
-            }
-            contentsSB.append(StringUtil.join(separator, links));
-            if (suffix != null) {
-                contentsSB.append(suffix);
-            } else if (tagOpen.equals("<li>")) {
-                contentsSB.append("</ul>");
-            }
-            boolean showTitle = getProperty(wikiUtil, props, ATTR_SHOWTITLE,
-                                            false);
-
-
-            String innerClass = getProperty(wikiUtil, props, ATTR_INNERCLASS,
-                                            "ramadda-links-inner");
-
-
-            String contentsStyle = getProperty(wikiUtil, props,
-                                       "contentsStyle", "");
-
-
-            String contents = HU.div(contentsSB.toString(),
-                                     HU.cssClass(innerClass)
-                                     + HU.style(contentsStyle));
-            String title = getProperty(wikiUtil, props, ATTR_TITLE, showTitle
-                    ? entry.getName()
-                    : null);
-            if (title != null) {
-                String entryUrl =
-                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-                title    = HU.href(entryUrl, title);
-                contents = HU.h3(title) + contents;
-            }
-            contents = HU.div(contents, HU.cssClass("ramadda-links"));
-
-            return contents;
+	    return makeChunks(request, wikiUtil, props, tds);
         } else {
             String fromTypeHandler =
                 entry.getTypeHandler().getWikiInclude(wikiUtil, request,
@@ -3883,6 +3745,158 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         return null;
     }
 
+
+    private String  makeLinks(Request request,Entry originalEntry, Entry entry, WikiUtil wikiUtil,Hashtable props, boolean isList, List<Entry>children) throws Exception {
+
+	boolean highlightThis = getProperty(wikiUtil, props,
+					    "highlightThis", false);
+	boolean horizontal = getProperty(wikiUtil, props, "horizontal",
+					 false);
+	boolean decorate = getProperty(wikiUtil, props, "decorate",
+				       false);
+	boolean includeSnippet = getProperty(wikiUtil, props,
+					     "includeSnippet", false);
+	boolean showicon = getShowIcon(wikiUtil, props, false);
+
+	boolean linkResource = getProperty(wikiUtil, props,
+					   ATTR_LINKRESOURCE, false);
+	String separator = (isList
+			    ? ""
+			    : getProperty(wikiUtil, props,
+					  ATTR_SEPARATOR, horizontal
+					  ? "&nbsp|&nbsp;"
+					  : ""));
+
+	String output = getProperty(wikiUtil, props, "output",
+				    (String) null);
+	String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
+	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
+	String tagOpen  = (isList
+			   ? "<li>"
+			   : getProperty(wikiUtil, props, ATTR_TAGOPEN,
+					 "<li>"));
+
+	String tagClose = (isList
+			   ? ""
+			   : getProperty(wikiUtil, props, ATTR_TAGCLOSE,
+					 ""));
+
+
+	if(decorate) {
+	    tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
+	    tagClose = "</div></div>";
+	} else {
+	    if (showicon) {
+		tagOpen  = "";
+		tagClose = "<br>";
+	    }
+	}
+
+	if (horizontal) {
+	    tagOpen  = "<div class='ramadda-links-horizontal'>";
+	    tagClose = "</div>";
+	}
+
+	List<String> links = new ArrayList<String>();
+	for (Entry child : children) {
+	    String url;
+	    if (linkResource
+		&& (child.getTypeHandler().isType("link")
+		    || child.isFile()
+		    || child.getResource().isUrl())) {
+		url = child.getTypeHandler().getEntryResourceUrl(request,
+								 child);
+	    } else {
+		if (output == null) {
+		    url = getEntryManager().getEntryUrl(request, child);
+		    //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
+		} else {
+		    url = request.entryUrl(
+					   getRepository().URL_ENTRY_SHOW, child,
+					   ARG_OUTPUT, output);
+		}
+	    }
+
+	    String linkLabel = getEntryDisplayName(child);
+	    if (showicon) {
+		linkLabel = HU.img(getPageHandler().getIconUrl(request,
+							       child)) + HU.space(1) + linkLabel;
+	    }
+	    String snippet =  includeSnippet?getSnippet(request,  child, true,""):null;
+	    if(decorate) {
+		linkLabel =  "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + linkLabel +"</div>" + (snippet!=null?snippet:"") + "</div>";
+	    }
+	    String href = HU.href(url, linkLabel,
+				  HU.cssClass("ramadda-link " + cssClass)
+				  + HU.style(style));
+	    boolean highlight =
+		highlightThis && (originalEntry != null)
+		&& child.getId().equals(originalEntry.getId());
+	    if (highlight) {
+		href = HU.span(href, HU.clazz("ramadda-links-highlight"));
+	    }
+	    StringBuilder link = new StringBuilder();
+	    if(decorate) {
+		link.append("<div class=ramadda-entry-nav-page-outer>");
+		link.append(href);
+		link.append("</div>");
+	    } else {
+		link.append(tagOpen);
+		link.append(href);
+		link.append(tagClose);
+	    }
+	    String s = link.toString();
+	    links.add(s);
+	}
+
+	if(decorate) {
+	    return Utils.join(links,"",false);
+	}
+
+	StringBuilder contentsSB = new StringBuilder();
+	String prefix = getProperty(wikiUtil, props, ATTR_LIST_PREFIX,
+				    (String) null);
+	String suffix = getProperty(wikiUtil, props, ATTR_LIST_SUFFIX,
+				    (String) null);
+	if (prefix != null) {
+	    contentsSB.append(prefix);
+	} else if (tagOpen.equals("<li>")) {
+	    contentsSB.append("<ul>");
+	}
+	contentsSB.append(StringUtil.join(separator, links));
+	if (suffix != null) {
+	    contentsSB.append(suffix);
+	} else if (tagOpen.equals("<li>")) {
+	    contentsSB.append("</ul>");
+	}
+	boolean showTitle = getProperty(wikiUtil, props, ATTR_SHOWTITLE,
+					false);
+
+
+	String innerClass = getProperty(wikiUtil, props, ATTR_INNERCLASS,
+					"ramadda-links-inner");
+
+
+	String contentsStyle = getProperty(wikiUtil, props,
+					   "contentsStyle", "");
+
+
+	String contents = HU.div(contentsSB.toString(),
+				 HU.cssClass(innerClass)
+				 + HU.style(contentsStyle));
+	String title = getProperty(wikiUtil, props, ATTR_TITLE, showTitle
+				   ? entry.getName()
+				   : null);
+	if (title != null) {
+	    String entryUrl =
+		request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+	    title    = HU.href(entryUrl, title);
+	    contents = HU.h3(title) + contents;
+	}
+	contents = HU.div(contents, HU.cssClass("ramadda-links"));
+
+	return contents;
+    }
 
     private String makeChunks(Request request, WikiUtil wikiUtil, Hashtable props, List chunks) throws Exception {
 	int columns = getProperty(wikiUtil, props, "columns",0);	    
