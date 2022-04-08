@@ -2752,7 +2752,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     }
                     buff.append(header);
                 } else if(headerTemplate != null) {
-		    header = headerTemplate.replace("${name}",theEntry.getName()).replace("${entryid}", theEntry.getId());
+		    String url = getEntryManager().getEntryUrl(request, theEntry);
+		    header = headerTemplate.replace("${name}",theEntry.getName()).replace("${entryid}", theEntry.getId()).replace("${entryurl}",url);
 
 		    header =  wikifyEntry(request, theEntry, header, false);
                     buff.append(header);
