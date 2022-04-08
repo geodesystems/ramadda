@@ -3651,21 +3651,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(chunkSize==0) {
 		return  makeTableTree(request, wikiUtil,props,children);
 	    }
-            int columns = getProperty(wikiUtil, props, "columns",0);	    
-	    String chunkStyle =  getProperty(wikiUtil, props, "chunkStyle","");
-	    StringBuilder buff = new StringBuilder();
+
 	    List<List> chunks = Utils.splitList(children,chunkSize);
 	    List<String> tds = new ArrayList<String>();
 	    for(List entries: chunks) {
-		String chunk = makeTableTree(request, wikiUtil,props,(List<Entry>)entries);
-		tds.add(HU.div(chunk,HU.attrs("style",chunkStyle)));
+		tds.add(makeTableTree(request, wikiUtil,props,(List<Entry>)entries));
 	    }
-	    if(columns>0) 
-		return HU.table(tds,columns,"").toString();
-	    for(Object o: tds) {
-		buff.append(o);
-	    }
-	    return buff.toString();
+
+	    return makeChunks(request, wikiUtil, props, tds);
         } else if (theTag.equals(WIKI_TAG_TREEVIEW)
                    || theTag.equals(WIKI_TAG_FRAMES)) {
             int width = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
@@ -3888,6 +3881,23 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
         return null;
+    }
+
+
+    private String makeChunks(Request request, WikiUtil wikiUtil, Hashtable props, List chunks) throws Exception {
+	int columns = getProperty(wikiUtil, props, "columns",0);	    
+	String chunkStyle =  getProperty(wikiUtil, props, "chunkStyle","");
+	List<String> tds = new ArrayList<String>();
+	for(Object chunk: chunks) {
+	    tds.add(HU.div(chunk.toString(),HU.attrs("style",chunkStyle)));
+	}
+	StringBuilder buff = new StringBuilder();
+	if(columns>0) 
+	    return HU.table(tds,columns,"").toString();
+	for(String s: tds) {
+	    buff.append(s);
+	}
+	return buff.toString();
     }
 
 
