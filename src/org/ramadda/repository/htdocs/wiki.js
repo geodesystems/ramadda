@@ -1108,7 +1108,7 @@ class  WikiEditor {
 	    links: Utils.mergeLists([
 		{label:'Links Properties'},
 		{p:'info',ex:'List children entries'},
-		{p:'includeIcon',ex:'true'},
+		{p:'showIcon',ex:'false'},
 		{p:'linkresource',ex:'true',tt:'Link to the resource'},
 		{p:'separator',ex:'',tt:'Separator between links'},
 		{p:'horizontal',ex:'true',tt:'Display horizontallly'},
@@ -1135,7 +1135,7 @@ class  WikiEditor {
 	    list: Utils.mergeLists([
 		{label:'List Properties'},
 		{p:'info',ex:':List children entries'},
-		{p:'includeIcon',ex:'true'},
+		{p:'showIcon',ex:'false'},
 		{p:'linkresource',ex:'true',tt:'Link to the resource'},
 		{p:'separator',ex:'',tt:'Separator between links'},
 		{p:'output',ex:'',tt:'Link to output'},
