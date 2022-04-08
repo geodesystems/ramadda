@@ -1603,6 +1603,8 @@ public abstract class Converter extends Processor {
         /** _more_ */
         String defaultType = "string";
 
+	String defaultTypeFromProperties;
+	
         /* */
 
         /** _more_ */
@@ -1624,6 +1626,7 @@ public abstract class Converter extends Processor {
             this.props = new PatternProps(props);
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
+            defaultTypeFromProperties = CsvUtil.getDbProp(props, "default", "type",null);
             defaultChartable = CsvUtil.getDbProp(props, "default",
                     "chartable", true);
             makeLabel = CsvUtil.getDbProp(props, null, "makeLabel", true);
@@ -1755,7 +1758,8 @@ public abstract class Converter extends Processor {
 
                 }
                 String  format = dfltFormat;
-                String  type   = defaultType;
+                String  type   = defaultTypeFromProperties!=null?defaultTypeFromProperties:defaultType;
+		//		System.err.println("id:"  + id  + " default:" + type);
                 boolean isGeo  = false;
 
                 boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
@@ -1788,7 +1792,7 @@ public abstract class Converter extends Processor {
                     type      = "double";
                     isGeo     = true;
                     chartable = false;
-                } else {
+                } else if(defaultTypeFromProperties==null) {
                     try {
                         if (_sample.equals("true")
                                 || _sample.equals("false")) {
@@ -1804,8 +1808,10 @@ public abstract class Converter extends Processor {
                             }
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             type = "integer";
+			    //			    System.err.println("\tinteger:" + sample);
                         } else if (sample.matches(
                                 "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
+			    //			    System.err.println("\tdouble:" + sample);
                             type = "double";
                         } else if (sample.matches(
                                 "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
@@ -1815,6 +1821,7 @@ public abstract class Converter extends Processor {
                     } catch (Exception exc) {}
                 }
 
+		//		System.err.println("\tfinal type:" + type);
 
                 type = CsvUtil.getDbProp(props, id, i, "type", type);
                 if (Misc.equals(type, "enum")) {
