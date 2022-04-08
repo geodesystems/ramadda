@@ -1,12 +1,9 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2022 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
-// Copyright (c) 2008-2021 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
-
 
 import org.ramadda.data.point.text.*;
 
@@ -93,6 +90,8 @@ import java.util.zip.*;
 
 @SuppressWarnings("unchecked")
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
+
+    public static final String ARG_SAMPLE = "sample";
 
     /** _more_ */
     public static final boolean debugTimes = false;
@@ -2346,7 +2345,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     HtmlUtils.labeledCheckbox(ARG_DB_OR, "true",
                         request.get(ARG_DB_OR, false),
                         "Match any of the above search criteria (OR logic)")));
-
+            buffer.append(HtmlUtils.formEntry(msgLabel("Sample"),
+					      HtmlUtils.input(ARG_SAMPLE,request.getString(ARG_SAMPLE,""),HtmlUtils.SIZE_5) +"% 1-100 Only show the percentage of the results"));
 
             String suffix = getAccessManager().canDoEdit(request, entry)
                             ? HtmlUtils.space(2)
@@ -5790,6 +5790,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
             Object[]         values = null;
+	    double samplePercent = request.get(ARG_SAMPLE,0.0);
+	    if(samplePercent>0) {
+		samplePercent = Math.min(samplePercent,100)/100;
+	    }
             while ((results = iter.getNext()) != null) {
                 int valueIdx = 1;
                 //                int valueIdx = 2;
@@ -5853,6 +5857,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			seenValue.add(key);
 		    }
 
+		    if(samplePercent>0) {
+			if(Math.random()>samplePercent){
+			    continue;
+			}
+		    }
                     if (pw != null) {
                         pw.println(
                             Utils.encodeBase64(xmlEncoder.toXml(values)));
