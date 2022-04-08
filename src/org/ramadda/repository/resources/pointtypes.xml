@@ -37,7 +37,7 @@ showPopup=false decorate=true
 </td><td>
 {{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
 fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-height=75vh padRight=true chartLeft="80" chartRight="80"
+height=60vh padRight=true chartLeft="80" chartRight="80"
 addTooltip=false useMultipleAxes=true
 }}
 </tr></td></table>
