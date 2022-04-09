@@ -277,6 +277,8 @@ public class Row {
          */
         public int compare(Row r1, Row r2) {
             int    result;
+	    if(idx<0 || idx>=r1.size()) return 1;
+	    if(idx<0 || idx>=r2.size()) return 0;	    
             Object o1 = r1.get(idx);
             Object o2 = r2.get(idx);
             String s1 = o1.toString();
