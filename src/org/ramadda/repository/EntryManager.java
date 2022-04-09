@@ -2293,10 +2293,7 @@ public class EntryManager extends RepositoryManager {
                                           request);
             }
 
-
 	    List<NewEntryInfo> infos = new ArrayList<NewEntryInfo>();
-
-
             String       resource  = "";
             String urlArgument = request.getAnonymousEncodedString(ARG_URL,
 								   BLANK);
@@ -2406,7 +2403,7 @@ public class EntryManager extends RepositoryManager {
                 if (serverFile.isDirectory()) {
                     String pattern =
                         request.getString(ARG_SERVERFILE_PATTERN, null);
-                    if (pattern.length() == 0) {
+                    if (pattern!=null && pattern.length() == 0) {
                         pattern = null;
                     }
                     if (pattern != null) {
@@ -5497,8 +5494,9 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+	StringBuilder msg = new StringBuilder();
         List<Entry> newEntries = processEntryXml(request, root, parent,
-						 origFileToStorage);
+						 origFileToStorage,msg);
 
 
         for (Entry entry : newEntries) {
@@ -5530,8 +5528,10 @@ public class EntryManager extends RepositoryManager {
 					      "Imported Entries", true);
         }
 
-        sb.append(msgHeader("Imported entries"));
+
+
         sb.append("<ul>");
+	sb.append(msg);
 
         for (Entry entry : newEntries) {
             sb.append("<li> ");
@@ -5569,8 +5569,8 @@ public class EntryManager extends RepositoryManager {
      */
     public List<Entry> processEntryXml(Request request, Element root,
                                        Entry parent,
-                                       Hashtable<String,
-				       File> origFileToStorage)
+                                       Hashtable<String,File> origFileToStorage,
+				       StringBuilder msg)
 	throws Exception {
         Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
         if (parent != null) {
@@ -5608,7 +5608,7 @@ public class EntryManager extends RepositoryManager {
         for (Element node : entryNodes) {
             List<Entry> entryList = createEntryFromXml(request, node,
 						       entries, origFileToStorage, true,
-						       false);
+						       false,msg);
 
             newEntries.addAll(entryList);
             if (XmlUtil.hasAttribute(node, ATTR_ID)) {
@@ -5684,6 +5684,7 @@ public class EntryManager extends RepositoryManager {
 	parentEntry.setName(serverUrl);
 
 
+	StringBuilder msg = new StringBuilder();
 	List<Entry> entries = new ArrayList<Entry>();
 	//            System.err.println("Remote URL:" + remoteSearchUrl);
 	try {
@@ -5694,7 +5695,7 @@ public class EntryManager extends RepositoryManager {
 		//                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
 		List<Entry> entryList =
 		    getEntryManager().createEntryFromXml(request, node,
-							 parentEntry, new Hashtable(), false, false);
+							 parentEntry, new Hashtable(), false, false,msg);
 
 		Entry entry = entryList.get(0);
 		//                            entry.setName("remote:" + entry.getName());
@@ -5739,7 +5740,7 @@ public class EntryManager extends RepositoryManager {
                                           Hashtable<String, Entry> entries,
                                           Hashtable<String, File> files,
                                           boolean checkAccess,
-                                          boolean internal)
+                                          boolean internal,StringBuilder msg)
 	throws Exception {
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
         Entry  parentEntry = (Entry) entries.get(parentId);
@@ -5758,7 +5759,7 @@ public class EntryManager extends RepositoryManager {
 
         List<Entry> entryList = createEntryFromXml(request, node,
 						   parentEntry, files, checkAccess,
-						   internal);
+						   internal,msg);
         String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (tmpid != null) {
             for (Entry entry : entryList) {
@@ -5813,7 +5814,7 @@ public class EntryManager extends RepositoryManager {
                                           Entry parentEntry,
                                           Hashtable<String, File> files,
                                           boolean checkAccess,
-                                          boolean internal)
+                                          boolean internal,StringBuilder msg)
 	throws Exception {
 
 
@@ -5937,7 +5938,7 @@ public class EntryManager extends RepositoryManager {
 
         String directory = XmlUtil.getAttribute(node, ATTR_DIRECTORY,
 						(String) null);
-
+	boolean unique = XmlUtil.getAttributeFromTree(node, ATTR_UNIQUE,false);
         List<Resource> resources = new ArrayList<Resource>();
 
 
@@ -5958,6 +5959,7 @@ public class EntryManager extends RepositoryManager {
             File[] children = dir.listFiles();
             String pattern = XmlUtil.getAttribute(node, ATTR_FILE_PATTERN,
 						  (String) null);
+
             for (File childFile : children) {
                 if ( !childFile.isFile()) {
                     continue;
@@ -6003,6 +6005,15 @@ public class EntryManager extends RepositoryManager {
         List<Entry> entries = new ArrayList<Entry>();
         Date        now     = new Date();
         for (Resource resource : resources) {
+	    if(unique) {
+		List<Entry> tmp = getEntriesWithResouce(getRepository().getAdminRequest(), resource);
+		if(tmp.size()>0) {
+		    msg.append("<li> Non-unique file: " + resource);
+		    continue;
+		}
+	    }
+
+
             TypeHandler typeHandler = null;
             if (type.equals(TypeHandler.TYPE_GUESS)) {
                 typeHandler = findDefaultTypeHandler(resource.getPath());
@@ -7176,6 +7187,17 @@ public class EntryManager extends RepositoryManager {
 	//false->don't do lucense search
 	return  getEntries(request,  clauses, typeHandler,false);
     }
+
+    public List<Entry> getEntriesWithResouce(Request request, Resource resource) 
+	throws Exception {
+        TypeHandler typeHandler = getRepository().getTypeHandler(request);
+	List<Clause> clauses = new ArrayList<Clause>();
+        clauses.add(Clause.eq(Tables.ENTRIES.COL_RESOURCE, resource.getPath()));
+	//false->don't do lucense search
+	return  getEntries(request,  clauses, typeHandler,false);
+    }
+
+
 
     public List<Entry> getEntryRootTree(Request request) throws Exception {
 	if(request.defined(ARG_ANCESTOR)) {
@@ -8689,6 +8711,7 @@ public class EntryManager extends RepositoryManager {
     public List<Entry> parseEntryXml(File xmlFile, boolean internal,Hashtable<String,Entry> entriesMap)
 	throws Exception {
 
+	StringBuilder msg = new StringBuilder();
 	if(entriesMap == null) entriesMap = new Hashtable<String,Entry> ();
         Element root =
             XmlUtil.getRoot(getStorageManager().readSystemResource(xmlFile));
@@ -8717,7 +8740,7 @@ public class EntryManager extends RepositoryManager {
 			       new Request(
 					   getRepository(),
 					   getUserManager().getDefaultUser()), root,
-			       entriesMap, files, false, internal);
+			       entriesMap, files, false, internal,msg);
 
         if (internal) {
             for (Element assNode : associationNodes) {
