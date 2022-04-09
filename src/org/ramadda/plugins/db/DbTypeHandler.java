@@ -4656,6 +4656,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             lists = new ArrayList<List>();
             lists.add(valueList);
         }
+
         for (List listValues : lists) {
             String mapDisplayId = "mapDisplay_" + Utils.getGuid();
             props.put("displayDiv", mapDisplayId);
@@ -4678,6 +4679,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 catMap = new Hashtable<String, StringBuilder>();
                 cats   = new ArrayList<String>();
             }
+	    boolean useDot = forPrint || listValues.size()>100;
+	    int radius = 6;
+	    if(listValues.size()>1000) {
+		radius = 2;
+	    } else  if(listValues.size()>500) {
+		radius = 4;
+	    }
             for (Object obj : listValues) {
                 Object[] values = (Object[]) obj;
                 String   dbid   = (String) values[IDX_DBID];
@@ -4788,12 +4796,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if (forPrint) {
                     mapLabel = "";
                 }
+
+
                 if ( !bbox) {
-                    map.addMarker(dbid, lat, lon, ((polygonColumn != null)
+		    if(lat==0 && lon==0) continue;
+		    if(useDot) {
+			map.addCircle(dbid,  lat,  lon, radius,
+				      0,"#fff",
+				      "blue",mapInfo);
+		    } else {
+			map.addMarker(dbid, lat, lon, ((polygonColumn != null)
                             ? polygonColumn.getString(values)
-                            : null), forPrint
+                            : null), useDot
                                      ? "dot"
                                      : iconToUse, mapLabel, mapInfo, null);
+		    }
                 } else {
                     if ( !makeRectangles) {
                         map.addMarker(dbid, new LatLonPointImpl(south, east),

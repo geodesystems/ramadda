@@ -12,30 +12,14 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 
-import org.ramadda.repository.output.CalendarOutputHandler;
-import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
-import org.ramadda.repository.output.OutputType;
-import org.ramadda.repository.output.RssOutputHandler;
-import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 
-import org.ramadda.repository.util.FileWriter;
-import org.ramadda.util.geo.Bounds;
-import org.ramadda.util.FormInfo;
-
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
-
 import org.ramadda.util.geo.KmlUtil;
-import org.ramadda.util.NamedBuffer;
-
-import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
-import org.ramadda.util.WikiUtil;
-import org.ramadda.util.XlsUtil;
 import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
 import org.ramadda.util.text.CsvUtil;
