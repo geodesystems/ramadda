@@ -3899,7 +3899,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
     private String makeChunks(Request request, WikiUtil wikiUtil, Hashtable props, List chunks) throws Exception {
-	int columns = getProperty(wikiUtil, props, "columns",0);	    
+	int columns = getProperty(wikiUtil, props, "chunkColumns",0);	    
 	String chunkStyle =  getProperty(wikiUtil, props, "chunkStyle","");
 	List<String> tds = new ArrayList<String>();
 	for(Object chunk: chunks) {
