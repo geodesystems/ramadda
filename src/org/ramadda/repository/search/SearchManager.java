@@ -2909,7 +2909,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    List<Entry> entryList =
 				getEntryManager().createEntryFromXml(request,
 								     node, parentEntry, new Hashtable(), false,
-								     false);
+								     false, new StringBuilder());
 
 			    Entry entry = entryList.get(0);
 

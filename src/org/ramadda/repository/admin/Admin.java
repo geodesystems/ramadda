@@ -950,7 +950,7 @@ public class Admin extends RepositoryManager {
         //        System.err.println("entry xml");
         List<Entry> newEntries =
             getEntryManager().processEntryXml(tmpRequest, root, null,
-                new Hashtable<String, File>());
+                new Hashtable<String, File>(), new StringBuilder());
         //        System.err.println("after entry xml");
     }
 

@@ -277,7 +277,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         //Create them from XML
         List<Entry> newEntries = getEntryManager().processEntryXml(request,
                                      XmlUtil.getRoot(xml.toString()), entry,
-                                     null);
+                                     null, new StringBuilder());
 
         //Now tell them to update again to update their sort order
         for (Entry newEntry : newEntries) {

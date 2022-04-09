@@ -413,6 +413,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ATTR_FILE_PATTERN = "filePattern";
+    public static final String ATTR_UNIQUE = "unique";    
 
     /** _more_ */
     public static final String ATTR_DB_DESCRIPTION = "description";

@@ -2261,7 +2261,7 @@ public class TypeHandler extends RepositoryManager {
                 Element root = XmlUtil.getRoot(defaultChildrenEntries);
                 List<Entry> newEntries =
                     getEntryManager().processEntryXml(request, root, entry,
-                        new Hashtable<String, File>());
+                        new Hashtable<String, File>(), new StringBuilder());
             }
 
 
