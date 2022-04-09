@@ -1,0 +1,13 @@
+<tables>
+<table  id="address"  name="Address Database" cansearch="true"  canlist="true">
+<addressTemplate><![CDATA[${name}<br>${address}<br>${city} ${state}<br>${postalcode}]]></addressTemplate>
+<column  name="name"  type="string"  label="Name"   />
+<column  name="address"  type="string"  label="Address"   />
+<column name="city" type="enumerationplus" label="City"/>
+<column name="state" type="enumerationplus" label="State or Province" />
+<column name="postalcode" type="enumerationplus" label="Postal Code"   columns="12"/>
+<column name="country" type="enumerationplus" label="Country"  />
+<column name="notes" type="string" label="Notes"   rows="5" columns="40" size="10000" />
+</table>
+
+</tables>
