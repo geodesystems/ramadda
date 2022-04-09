@@ -163,14 +163,15 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
             Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                             new String[] {
                 "name", DbTypeHandler.COL_DBID, Column.ATTR_ISINDEX, "true",
-                Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false"
+                Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
+                Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
             });
             Element userNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                    new String[] {
                 "name", DbTypeHandler.COL_DBUSER,
                 //Column.ATTR_ISINDEX, "true",
                 Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
-                Column.ATTR_CANLIST, "false"
+                Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
             });
 
             Element createDateNode = XmlUtil.create(TAG_COLUMN, tableNode,
@@ -178,14 +179,15 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
                 "name", DbTypeHandler.COL_DBCREATEDATE,
                 //Column.ATTR_ISINDEX,  "true", 
                 Column.ATTR_TYPE, "datetime", Column.ATTR_SHOWINFORM, "false",
-                Column.ATTR_CANLIST, "false"
+                Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
             });
 
             Element propsNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                     new String[] {
                 "name", DbTypeHandler.COL_DBPROPS, Column.ATTR_ISINDEX,
                 "false", Column.ATTR_SIZE, "5000", Column.ATTR_TYPE, "string",
-                Column.ATTR_SHOWINFORM, "false", Column.ATTR_CANLIST, "false"
+                Column.ATTR_SHOWINFORM, "false", 
+		Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
             });
 
 
