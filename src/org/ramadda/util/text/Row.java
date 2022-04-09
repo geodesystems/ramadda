@@ -35,7 +35,7 @@ public class Row {
     private static int cnt = 0;
 
     /** _more_ */
-    private int id =  (cnt++);
+    private int id = (cnt++);
 
 
     /** _more_ */
@@ -164,9 +164,17 @@ public class Row {
                : o.toString();
     }
 
+    /**
+     *
+     * @param index _more_
+     *  @return _more_
+     *
+     * @throws UnsupportedEncodingException _more_
+     */
     public byte[] getBytes(int index) throws UnsupportedEncodingException {
-	String s = getString(index);
-	return s.getBytes("UTF-8");
+        String s = getString(index);
+
+        return s.getBytes("UTF-8");
     }
 
     /**
@@ -189,6 +197,16 @@ public class Row {
      */
     public void insert(Object object) {
         values.add(object);
+    }
+
+    /**
+     *
+     * @param values _more_
+     */
+    public void addAll(List values) {
+        for (Object value : values) {
+            add(value);
+        }
     }
 
     /**
@@ -276,9 +294,13 @@ public class Row {
          * @return _more_
          */
         public int compare(Row r1, Row r2) {
-            int    result;
-	    if(idx<0 || idx>=r1.size()) return 1;
-	    if(idx<0 || idx>=r2.size()) return 0;	    
+            int result;
+            if ((idx < 0) || (idx >= r1.size())) {
+                return 1;
+            }
+            if ((idx < 0) || (idx >= r2.size())) {
+                return 0;
+            }
             Object o1 = r1.get(idx);
             Object o2 = r2.get(idx);
             String s1 = o1.toString();

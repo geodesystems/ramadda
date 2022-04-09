@@ -1883,6 +1883,12 @@ public class CsvUtil {
 
         new Cmd("-copy", "Copy column",
                 new Arg("column", "", "type", "column"), "name"),
+        new Cmd("-add","Add new columns",
+		new Arg("names", "Comma separated list of new column names","type","list"),		
+		new Arg(
+			"values",
+			"Comma separated list of new values", "type",
+			"list")),
         new Cmd("-insert","Insert new column values",
 		new Arg("column", "Column to insert before", "type", "column"),
 		new Arg("name", "Name of new column"),		
@@ -3750,11 +3756,15 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-add", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnAdder(args.get(++i), args.get(++i)));
+		return i;
+	    });
+
 	defineFunction("-insert", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnInserter(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction("-shift", 3,(ctx,args,i) -> {
 		List<Integer> rows  = Utils.getNumbers(args.get(++i));

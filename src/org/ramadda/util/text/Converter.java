@@ -170,7 +170,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Faker extends Converter {
 
@@ -211,21 +211,21 @@ public abstract class Converter extends Processor {
         }
 
         /**
-          * @return _more_
+         *  @return _more_
          */
         private boolean hasV1() {
             return !Double.isNaN(v1);
         }
 
         /**
-          * @return _more_
+         *  @return _more_
          */
         private boolean hasV2() {
             return !Double.isNaN(v2);
         }
 
         /**
-          * @return _more_
+         *  @return _more_
          */
         private boolean hasV3() {
             return !Double.isNaN(v3);
@@ -260,7 +260,7 @@ public abstract class Converter extends Processor {
         }
 
         /**
-          * @return _more_
+         *  @return _more_
          */
         private String getFakerValue() {
 
@@ -490,9 +490,9 @@ public abstract class Converter extends Processor {
                 return faker.medical().symptoms();
             }
 
-            throw new IllegalArgumentException("Unknown anonymization:"
-                    + what+" needs to be one of:" +
-					       "firstname|fullname|lastname|name|namewithmiddle|prefix|suffix|title|username|address|city|country|state|stateabbr|streetname|timezone|zipcode|latitude|longitude|countrycode|boolean|asin|ean13|ean8|gtin13|gtin8|imei|isbn10|isbn13|isbngroup|isbngs1|isbnregistrant|color|department|material|price|productname|promotioncode|demonym|educationalattainment|maritalstatus|race|sex|bic|creditcard|iban|ssn|digit|digits:number_of_digits|numberbetween:first:last|randomdigit|randomdigitnotzero|randomDouble:maxNumberOfDecimals:min:max|randomnumber|cellphone|phonenumber|diseasename|hospitalname|medicinename|symptoms");
+            throw new IllegalArgumentException(
+                "Unknown anonymization:" + what + " needs to be one of:"
+                + "firstname|fullname|lastname|name|namewithmiddle|prefix|suffix|title|username|address|city|country|state|stateabbr|streetname|timezone|zipcode|latitude|longitude|countrycode|boolean|asin|ean13|ean8|gtin13|gtin8|imei|isbn10|isbn13|isbngroup|isbngs1|isbnregistrant|color|department|material|price|productname|promotioncode|demonym|educationalattainment|maritalstatus|race|sex|bic|creditcard|iban|ssn|digit|digits:number_of_digits|numberbetween:first:last|randomdigit|randomdigitnotzero|randomDouble:maxNumberOfDecimals:min:max|randomnumber|cellphone|phonenumber|diseasename|hospitalname|medicinename|symptoms");
         }
     }
 
@@ -1603,8 +1603,9 @@ public abstract class Converter extends Processor {
         /** _more_ */
         String defaultType = "string";
 
-	String defaultTypeFromProperties;
-	
+        /**  */
+        String defaultTypeFromProperties;
+
         /* */
 
         /** _more_ */
@@ -1626,7 +1627,8 @@ public abstract class Converter extends Processor {
             this.props = new PatternProps(props);
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
-            defaultTypeFromProperties = CsvUtil.getDbProp(props, "default", "type",null);
+            defaultTypeFromProperties = CsvUtil.getDbProp(props, "default",
+                    "type", null);
             defaultChartable = CsvUtil.getDbProp(props, "default",
                     "chartable", true);
             makeLabel = CsvUtil.getDbProp(props, null, "makeLabel", true);
@@ -1757,10 +1759,12 @@ public abstract class Converter extends Processor {
                     attrs.append("unit=\"" + unit + "\" ");
 
                 }
-                String  format = dfltFormat;
-                String  type   = defaultTypeFromProperties!=null?defaultTypeFromProperties:defaultType;
-		//		System.err.println("id:"  + id  + " default:" + type);
-                boolean isGeo  = false;
+                String format = dfltFormat;
+                String type   = (defaultTypeFromProperties != null)
+                                ? defaultTypeFromProperties
+                                : defaultType;
+                //              System.err.println("id:"  + id  + " default:" + type);
+                boolean isGeo = false;
 
                 boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
                                         defaultChartable);
@@ -1792,7 +1796,7 @@ public abstract class Converter extends Processor {
                     type      = "double";
                     isGeo     = true;
                     chartable = false;
-                } else if(defaultTypeFromProperties==null) {
+                } else if (defaultTypeFromProperties == null) {
                     try {
                         if (_sample.equals("true")
                                 || _sample.equals("false")) {
@@ -1808,10 +1812,10 @@ public abstract class Converter extends Processor {
                             }
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             type = "integer";
-			    //			    System.err.println("\tinteger:" + sample);
+                            //                      System.err.println("\tinteger:" + sample);
                         } else if (sample.matches(
                                 "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
-			    //			    System.err.println("\tdouble:" + sample);
+                            //                      System.err.println("\tdouble:" + sample);
                             type = "double";
                         } else if (sample.matches(
                                 "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
@@ -1821,7 +1825,7 @@ public abstract class Converter extends Processor {
                     } catch (Exception exc) {}
                 }
 
-		//		System.err.println("\tfinal type:" + type);
+                //              System.err.println("\tfinal type:" + type);
 
                 type = CsvUtil.getDbProp(props, id, i, "type", type);
                 if (Misc.equals(type, "enum")) {
@@ -2588,7 +2592,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Changer extends Converter {
 
@@ -2668,7 +2672,7 @@ public abstract class Converter extends Processor {
          * @param ctx _more_
          * @param row _more_
          * @param s _more_
-          * @return _more_
+         *  @return _more_
          */
         String change(TextReader ctx, Row row, String s) {
             String os = s;
@@ -2676,12 +2680,12 @@ public abstract class Converter extends Processor {
             for (String[] tuple : patterns) {
                 String pattern = tuple[0];
                 String value   = tuple[1];
-		if(pattern.startsWith("one:")) {
-		    pattern = pattern.substring(4);
-		    s = s.replaceFirst(pattern, value);
-		} else {
-		    s = s.replaceAll(pattern, value);
-		}
+                if (pattern.startsWith("one:")) {
+                    pattern = pattern.substring(4);
+                    s       = s.replaceFirst(pattern, value);
+                } else {
+                    s = s.replaceAll(pattern, value);
+                }
                 //              System.out.println("\tchange:" + s);
                 //              if(!os.equals(s)) break;
             }
@@ -2766,8 +2770,6 @@ public abstract class Converter extends Processor {
          *
          * @param ctx _more_
          * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
          * @param with _more_
          */
         public ColumnReplacer(TextReader ctx, List<String> cols,
@@ -4153,9 +4155,7 @@ public abstract class Converter extends Processor {
 
         /**
          * @param indices _more_
-         * @param delimiter _more_
          * @param name _more_
-         * @param inPlace _more_
          * @param what _more_
          */
         public ColumnMerger(List<String> indices, String name, String what) {
@@ -4597,20 +4597,25 @@ public abstract class Converter extends Processor {
      */
     public static class Fuzzer extends Converter {
 
+        /**  */
         private int places;
 
-	private int numRandomDigits;
+        /**  */
+        private int numRandomDigits;
 
-	private int tens;
+        /**  */
+        private int tens;
+
         /**
          * @param cols _more_
-         * @param decimals _more_
+         * @param places _more_
+         * @param numRandomDigits _more_
          */
         public Fuzzer(List<String> cols, int places, int numRandomDigits) {
             super(cols);
-	    this.places = places;
-	    this.numRandomDigits = numRandomDigits;
-            this.tens     = (int) Math.pow(10, numRandomDigits);
+            this.places          = places;
+            this.numRandomDigits = numRandomDigits;
+            this.tens            = (int) Math.pow(10, numRandomDigits);
         }
 
 
@@ -4630,39 +4635,45 @@ public abstract class Converter extends Processor {
                     }
                     double value =
                         Double.parseDouble(row.get(index).toString());
-		    if(Double.isNaN(value)) continue;
-		    int digits = (int)(Math.random()*tens);
-		    String sdigits = ""+digits;
-		    if(sdigits.length()<numRandomDigits) {
-			sdigits = StringUtil.padRight(sdigits,numRandomDigits,"0");
-			digits = Integer.parseInt(sdigits);
-		    }
+                    if (Double.isNaN(value)) {
+                        continue;
+                    }
+                    int    digits  = (int) (Math.random() * tens);
+                    String sdigits = "" + digits;
+                    if (sdigits.length() < numRandomDigits) {
+                        sdigits = StringUtil.padRight(sdigits,
+                                numRandomDigits, "0");
+                        digits = Integer.parseInt(sdigits);
+                    }
 
-		    if(places<=0) {
-			String svalue = ""+value;
-			List<String>toks = Utils.splitUpTo(svalue,".",2);
-			String v = toks.get(0);
-			String d = (toks.size()>1?toks.get(1):"");
-			d = StringUtil.padRight(d,-places,"0");
-			if(d.length()>-places)
-			    d = d.substring(0,-places);
-			else
-			    d = StringUtil.padRight("",-places,"0");
-			String newValue = v +"." + d + digits;
-			row.set(index,newValue);
-			//			System.err.println("value:" + value+" left:" +v +" right:" + d+ " result:" +newValue);
-		    } else {
-			int ivalue =(int) value;
-			double d = Math.pow(10, places);
-			ivalue = (int)(d*((int)(ivalue/d)));
+                    if (places <= 0) {
+                        String       svalue = "" + value;
+                        List<String> toks   = Utils.splitUpTo(svalue, ".", 2);
+                        String       v      = toks.get(0);
+                        String       d      = ((toks.size() > 1)
+                                ? toks.get(1)
+                                : "");
+                        d = StringUtil.padRight(d, -places, "0");
+                        if (d.length() > -places) {
+                            d = d.substring(0, -places);
+                        } else {
+                            d = StringUtil.padRight("", -places, "0");
+                        }
+                        String newValue = v + "." + d + digits;
+                        row.set(index, newValue);
+                        //                      System.err.println("value:" + value+" left:" +v +" right:" + d+ " result:" +newValue);
+                    } else {
+                        int    ivalue = (int) value;
+                        double d      = Math.pow(10, places);
+                        ivalue = (int) (d * ((int) (ivalue / d)));
 
-			if(ivalue==0) {
-			    row.set(index,ivalue+"." + digits);
-			} else {
-			    row.set(index,""+(ivalue+digits));
-			}
-			//			System.err.println("v:" + value+" I:" +ivalue +" result:" + row.get(index));
-		    }
+                        if (ivalue == 0) {
+                            row.set(index, ivalue + "." + digits);
+                        } else {
+                            row.set(index, "" + (ivalue + digits));
+                        }
+                        //                      System.err.println("v:" + value+" I:" +ivalue +" result:" + row.get(index));
+                    }
                 } catch (NumberFormatException nfe) {}
             }
 
@@ -4670,7 +4681,7 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
+
 
 
     /**
@@ -5461,8 +5472,6 @@ public abstract class Converter extends Processor {
         int number;
 
         /**
-         * @param indices _more_
-         *
          * @param number _more_
          */
         public NumColumns(int number) {
@@ -5974,6 +5983,51 @@ public abstract class Converter extends Processor {
             return row;
         }
     }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Apr 9, '22
+     * @author         Enter your name here...
+     */
+    public static class ColumnAdder extends Converter {
+
+        /**  */
+        private List<String> names;
+
+        /** _more_ */
+        private List<String> values;
+
+        /**
+         * @param names _more_
+         * @param values _more_
+         */
+        public ColumnAdder(String names, String values) {
+            this.names  = Utils.split(names, ",", false, false);
+            this.values = Utils.split(values, ",", false, false);
+            while (this.values.size() < this.names.size()) {
+                this.values.add("");
+            }
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                row.addAll(names);
+            } else {
+                row.addAll(values);
+            }
+
+            return row;
+        }
+    }
+
 
 
 
@@ -6730,7 +6784,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class B64Encode extends Converter {
 
@@ -6748,7 +6802,7 @@ public abstract class Converter extends Processor {
          *
          * @param ctx _more_
          * @param row _more_
-          * @return _more_
+         *  @return _more_
          */
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6773,7 +6827,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class B64Decode extends Converter {
 
@@ -6815,7 +6869,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Rot13 extends Converter {
 
@@ -6856,7 +6910,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Crypt extends Converter {
 
@@ -6864,7 +6918,7 @@ public abstract class Converter extends Processor {
         protected Cipher cipher;
 
         /**
-         
+         *
          *
          * @param encrypt _more_
          * @param ctx _more_
@@ -6902,7 +6956,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Encrypt extends Crypt {
 
