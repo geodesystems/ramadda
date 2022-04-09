@@ -5,8 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
+
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
@@ -29,12 +31,14 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 
 import java.net.*;
+
 import java.security.*;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -201,7 +205,7 @@ public class Utils extends IO {
     /**
      *
      * @param length _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -692,7 +696,7 @@ public class Utils extends IO {
     /**
      *
      * @param s _more_
-      * @return _more_
+     *  @return _more_
      */
     public static List<Integer> getNumbers(String s) {
         List<Integer> cols = new ArrayList<Integer>();
@@ -741,7 +745,7 @@ public class Utils extends IO {
      *
      * @param dflt _more_
      * @param args _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String getDefined(String dflt, String... args) {
         for (String s : args) {
@@ -1257,7 +1261,7 @@ public class Utils extends IO {
      *
      * @param format _more_
      * @param timezone _more_
-      * @return _more_
+     *  @return _more_
      */
     public static SimpleDateFormat makeDateFormat(String format,
             String timezone) {
@@ -1274,7 +1278,7 @@ public class Utils extends IO {
      *  return the first non-null value in the args
      *
      * @param args _more_
-      * @return _more_
+     *  @return _more_
      */
     public static Object getNonNull(Object... args) {
         for (Object a : args) {
@@ -2093,7 +2097,7 @@ public class Utils extends IO {
     /**
      *
      * @param b _more_
-      * @return _more_
+     *  @return _more_
      */
     public static byte[] decodeBase64(byte[] b) {
         try {
@@ -2542,7 +2546,7 @@ public class Utils extends IO {
      * @param label _more_
      * @param forCode _more_
      * @param delimiter _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String makeID(String label, boolean forCode,
                                 String delimiter) {
@@ -2612,7 +2616,7 @@ public class Utils extends IO {
     /**
      *
      * @param d _more_
-      * @return _more_
+     *  @return _more_
      */
     public static boolean isInt(double d) {
         return d == (int) d;
@@ -3165,7 +3169,7 @@ public class Utils extends IO {
      *
      * @param s _more_
      * @param throwError _more_
-      * @return _more_
+     *  @return _more_
      */
     public static List<String> parseCommandLine(String s,
             boolean throwError) {
@@ -3464,7 +3468,7 @@ public class Utils extends IO {
      * @param baseDate _more_
      * @param s _more_
      * @param roundDays _more_
-      * @return _more_
+     *  @return _more_
      */
     public static Date parseRelativeDate(Date baseDate, String s,
                                          int roundDays) {
@@ -3609,7 +3613,7 @@ public class Utils extends IO {
     private static HashSet<String> stopWords;
 
     /**
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -3744,7 +3748,7 @@ public class Utils extends IO {
     /**
      *
      * @param a _more_
-      * @return _more_
+     *  @return _more_
      */
     public static List makeListFromArray(Object[] a) {
         List h = new ArrayList();
@@ -5037,25 +5041,53 @@ public class Utils extends IO {
      *
      * @param list _more_
      * @param max _more_
+     * @param remainder _more_
      *
      * @return _more_
      */
-    public static List<List> splitList(List list, int max) {
+    public static List<List> splitList(List list, int max, int... remainder) {
         List<List> lists = new ArrayList<List>();
         if (list.size() < max) {
             lists.add(list);
         } else {
-            int  num     = (int) Math.ceil(list.size() / (double) max);
-            int  maxPer  = (int) Math.ceil(list.size() / (double) num);
+            int     rem   = (remainder.length > 0)
+                            ? remainder[0]
+                            : 0;
+            boolean debug = false;
+            if (debug) {
+                System.err.println("*** max:" + max + " rem:" + rem);
+            }
             List current = new ArrayList();
             lists.add(current);
+            int     added      = 0;
+            boolean addedExtra = false;
             for (int i = 0; i < list.size(); i++) {
                 Object o = list.get(i);
-                if (current.size() >= maxPer) {
+                if (added >= max) {
+                    addedExtra = false;
+                    if (debug) {
+                        System.err.println("new one");
+                    }
                     current = new ArrayList();
                     lists.add(current);
+                    added = 0;
+                }
+                added++;
+                if (debug) {
+                    System.err.println("\tadding:" + o + "rem:" + rem);
                 }
                 current.add(o);
+                if ( !addedExtra && (rem > 0) && (i < list.size())) {
+                    addedExtra = true;
+                    rem--;
+                    o = list.get(++i);
+                    if (debug) {
+                        System.err.println("\textra:" + o + "rem:" + rem
+                                           + " i:" + (i - 1) + " size:"
+                                           + list.size());
+                    }
+                    current.add(o);
+                }
             }
         }
 
@@ -5232,7 +5264,7 @@ public class Utils extends IO {
     /**
      *
      * @param minutes _more_
-      * @return _more_
+     *  @return _more_
      */
     public static long minutesToMillis(int minutes) {
         return 60 * minutes * 1000;
@@ -5241,7 +5273,7 @@ public class Utils extends IO {
     /**
      *
      * @param seconds _more_
-      * @return _more_
+     *  @return _more_
      */
     public static long secondsToMillis(int seconds) {
         return seconds * 1000;
@@ -5499,7 +5531,7 @@ public class Utils extends IO {
      * @param howMany _more_
      * @param not _more_
      * @param stripPackage _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String getStack(int howMany, String not,
                                   boolean stripPackage) {
