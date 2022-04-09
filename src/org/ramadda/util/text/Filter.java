@@ -1638,6 +1638,7 @@ public class Filter extends Processor {
             boolean       inRange = false;
             StringBuilder sb      = new StringBuilder();
             for (int i : getIndices(ctx)) {
+		if(i<0 || i>=row.size()) continue;
                 Object value = row.getValues().get(i);
                 sb.append(value);
                 sb.append("--");

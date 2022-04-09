@@ -2676,7 +2676,12 @@ public abstract class Converter extends Processor {
             for (String[] tuple : patterns) {
                 String pattern = tuple[0];
                 String value   = tuple[1];
-                s = s.replaceAll(pattern, value);
+		if(pattern.startsWith("one:")) {
+		    pattern = pattern.substring(4);
+		    s = s.replaceFirst(pattern, value);
+		} else {
+		    s = s.replaceAll(pattern, value);
+		}
                 //              System.out.println("\tchange:" + s);
                 //              if(!os.equals(s)) break;
             }
