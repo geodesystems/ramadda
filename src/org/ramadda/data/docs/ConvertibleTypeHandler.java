@@ -155,7 +155,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
-        if ( !tag.equals("convertform")) {
+        if ( !tag.equals("convertform") && !tag.equals("seesv")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
