@@ -2374,7 +2374,7 @@ public class CsvUtil {
 	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use tab for tab")),	
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
-        new Cmd("-table", "Print table and stats"),
+        new Cmd("-table", "Print HTML table and stats"),
         new Cmd("-cols", "Print text columns",new Arg("width","Column width")),		
         new Cmd("-stats", "Print summary stats"),
         new Cmd("-record", "Print records"),
@@ -4294,7 +4294,7 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction(new String[]{"-print","-p","-printdelim"}, 0,(ctx,args,i) -> {
+	defineFunction(new String[]{"-tocsv","-print","-p","-printdelim"}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		if (ctx.getProperty("seenPrint")!=null) {
 		    return i;

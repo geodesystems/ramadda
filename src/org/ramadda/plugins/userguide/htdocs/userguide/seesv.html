@@ -61,7 +61,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 241 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 242 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -951,7 +951,7 @@ How many rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
+Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-add'>-add</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1036,6 +1036,15 @@ Pattern<br>
 <br>
 <i>name</i>
 <br>
+<br>
+</ul>
+</div><a name='-add'></a><div class=command> <i><a href='#-add'>-add</a></i>  &lt;names&gt;  &lt;values&gt; </div><div class=command-block>Add new columns<br>
+<b>Arguments:</b><br>
+<ul>
+<i>names</i>
+Comma separated list of new column names<br>
+<i>values</i>
+Comma separated list of new values<br>
 <br>
 </ul>
 </div><a name='-insert'></a><div class=command> <i><a href='#-insert'>-insert</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;values&gt; </div><div class=command-block>Insert new column values<br>
@@ -1672,11 +1681,8 @@ firstname|lastname|fullname|etc<br>
 Columns to change. Of none given then add the fake value<br>
 <br>
 </ul>
-
-The -faker command generates fake input.
-This uses the <a href="https://github.com/DiUS/java-faker">Java Faker</a> package.
-<p>
-The faker command takes any of the below commands:
+The -faker command uses the <a href="https://github.com/DiUS/java-faker">Java Faker</a> package
+and takes any of the below commands:
 <pre style='max-height:400px;overflow-y:auto;'>
 firstname
 fullname
@@ -2654,7 +2660,7 @@ Delimiter - ,|^ etc. Use tab for tab<br>
 </div><a name='-raw'></a><div class=command> <i><a href='#-raw'>-raw</a></i> </div><div class=command-block>Print the file raw<br>
 <br>
 </ul>
-</div><a name='-table'></a><div class=command> <i><a href='#-table'>-table</a></i> </div><div class=command-block>Print table and stats<br>
+</div><a name='-table'></a><div class=command> <i><a href='#-table'>-table</a></i> </div><div class=command-block>Print HTML table and stats<br>
 <br>
 </ul>
 </div><a name='-cols'></a><div class=command> <i><a href='#-cols'>-cols</a></i>  &lt;width&gt; </div><div class=command-block>Print text columns<br>
