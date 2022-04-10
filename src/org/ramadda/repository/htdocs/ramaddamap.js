@@ -3794,7 +3794,6 @@ RepositoryMap.prototype = {
             mymarker = this.imageLayers[id];
         }
 
-
         if (!mymarker) {
             return;
         }
@@ -4181,7 +4180,12 @@ RepositoryMap.prototype = {
 
 
     circleMarker:  function(id, attrs) {
+
         marker = this.findMarker(id);
+        if (!marker) {
+            marker = this.findFeature(id);
+        }
+
         if (!marker) {
             return null;
         }
@@ -4288,6 +4292,7 @@ RepositoryMap.prototype = {
             feature.text = this.getPopupText(text, feature);
         feature.textGetter = textGetter;
         feature.location = location;
+	feature.lonlat = location;
         this.features[id] = feature;
         return feature;
     },
