@@ -13,7 +13,7 @@ category="Software and Services" >
      <column  name="datapolicy_id"  label="ID" cansearch="false"/>
      <column  name="citation"  label="Citation" cansearch="false" rows="5"/>
      <column  name="license1" type="enumerationplus"  label="License 1"
-	      values="file:/org/ramadda/repository/resources/metadata/licensevalues.txt"
+	      values="resource:licenses"
 	      cansearch="false" showempty="false"/>
      <column  name="license2" type="enumerationplus"  label="License 2"
 	      values="resource:licenses"
