@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.metadata;
 
 
+import org.json.*;
+
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -13,6 +16,9 @@ import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
+import org.ramadda.util.JsonUtil;
+
+
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -207,46 +213,95 @@ public class MetadataManager extends RepositoryManager {
 
 
     /**  */
-    private Properties licenseUrls;
+    private List<License> licenses;
 
-    public String getLicenseHtml(String license, String label) throws Exception {
-	if (licenseUrls == null) {
-	    licenseUrls = new Properties();
-	    getRepository().loadProperties(
-					   licenseUrls,
-					   "/org/ramadda/repository/resources/metadata/licenseurls.properties");
-	}
+    /**  */
+    private Hashtable<String, License> licenseMap;
 
-	if (label == null) {
-	    label = license;
-	}
-	String desc       = license;
-	String link   = (String) licenseUrls.get(license);
-	String _license   = license.toLowerCase();
-	String contents   = " " + label + " ";
-	if (license.startsWith("CC-")) {
-	    String img = _license;
-	    img      = img.replace("cc-", "").replace("-4.0", "");
-	    img      = getIconUrl("/licenses/cc/" + img + ".png");
-	    img      = HU.image(img, "width", "100px");
-	    contents += "<br>" + img;
-	}
-	//A hack - we should put these in a resource file
-	if (license.startsWith("localcontexts-")) {
-	    //localcontexts-tk-a
-	    String img = _license.replace("localcontexts-","/licenses/localcontexts/").replaceAll("-","_")+".png";
-	    //	    img = img.replaceAll("tk_","tk_label_");
-	    //img = img.replaceAll("bc_","bc_label_");
-	    //	    System.err.println(img);
-	    img      = getIconUrl(img);
-	    img      = HU.image(img, "width", "80px");
-	    contents += "<br>" + img;
-	}
 
-	if (link != null) {
-	    contents = HU.href(link, contents, "target=_other");
-	}
-	return contents;
+
+    /**
+     *
+     * @throws Exception _more_
+     */
+    public void loadLicenses() throws Exception {
+        licenses   = new ArrayList<License>();
+        licenseMap = new Hashtable<String, License>();
+        List<String> files = new ArrayList<String>();
+        files.add(
+            "/org/ramadda/repository/resources/metadata/spdxlicenses.json");
+        files.addAll(getPluginManager().getLicenseFiles());
+        for (String file : files) {
+            JSONObject obj       = new JSONObject(IOUtil.readContents(file));
+            JSONArray  jlicenses = obj.getJSONArray("licenses");
+            int        priority  = obj.optInt("priority", 100);
+            for (int i = 0; i < jlicenses.length(); i++) {
+                JSONObject jlicense = jlicenses.getJSONObject(i);
+                License license = new License(getRepository(), jlicense,
+                                      priority);
+                licenses.add(license);
+                licenseMap.put(license.getId(), license);
+            }
+        }
+        Collections.sort(licenses);
+    }
+
+    /**
+     *
+     * @param license _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public synchronized License getLicense(String license) throws Exception {
+        return licenseMap.get(license);
+    }
+
+
+    /**
+     *
+     * @param id _more_
+      * @return _more_
+     */
+    public List<String> getTypeResource(String id) {
+        if (id.equals("licenses")) {
+            List<String> resources = new ArrayList<String>();
+            for (License license : licenses) {
+                resources.add(license.getId() + ":" + license.getName());
+            }
+
+            return resources;
+        }
+
+        throw new IllegalArgumentException("Unknown resource:" + id);
+    }
+
+    /**
+     *
+     * @param id _more_
+     * @param label _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getLicenseHtml(String id, String label) throws Exception {
+        License license = licenseMap.get(id);
+        if (license == null) {
+            return "NA:" + id;
+        }
+        if (label == null) {
+            label = license.getName();
+        }
+        String contents = " " + label + " ";
+        String icon     = license.getIcon();
+        if (icon != null) {
+            contents += "<br>" + HU.image(icon, HU.attrs("width", "120"));
+        }
+        if (license.getUrl() != null) {
+            contents = HU.href(license.getUrl(), contents, "target=_other");
+        }
+
+        return contents;
     }
 
 
@@ -312,8 +367,9 @@ public class MetadataManager extends RepositoryManager {
         top.add("name");
         top.add(JsonUtil.quote(JsonUtil.cleanString(entry.getName())));
         top.add("url");
-        top.add(JsonUtil.quote(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                            entry)));
+        top.add(
+            JsonUtil.quote(
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)));
         String snippet = getWikiManager().getRawSnippet(request, entry,
                              false);
         if ((snippet != null) && (snippet.length() > 0)) {
@@ -324,7 +380,8 @@ public class MetadataManager extends RepositoryManager {
             top.add("temporalCoverage");
             if (entry.getStartDate() == entry.getEndDate()) {
                 top.add(
-                    JsonUtil.quote(sdf.format(new Date(entry.getStartDate()))));
+                    JsonUtil.quote(
+                        sdf.format(new Date(entry.getStartDate()))));
             } else {
                 top.add(
                     JsonUtil.quote(
@@ -341,14 +398,16 @@ public class MetadataManager extends RepositoryManager {
             if (entry.hasAreaDefined()) {
                 String box = entry.getSouth() + " " + entry.getWest() + " "
                              + entry.getNorth() + " " + entry.getEast();
-                geo.add(JsonUtil.map("@type", JsonUtil.quote("GeoShape"), "box",
-                                 JsonUtil.quote(box)));
+                geo.add(JsonUtil.map("@type", JsonUtil.quote("GeoShape"),
+                                     "box", JsonUtil.quote(box)));
             } else {
-                geo.add(JsonUtil.map("@type", JsonUtil.quote("GeoCoordinates"),
-                                 "latitude",
-                                 JsonUtil.quote("" + entry.getLatitude()),
-                                 "longitude",
-                                 JsonUtil.quote("" + entry.getLongitude())));
+                geo.add(JsonUtil.map("@type",
+                                     JsonUtil.quote("GeoCoordinates"),
+                                     "latitude",
+                                     JsonUtil.quote(""
+                                         + entry.getLatitude()), "longitude",
+                                             JsonUtil.quote(""
+                                                 + entry.getLongitude())));
             }
             top.add("spatialCoverage");
             top.add(JsonUtil.map(geo));
@@ -360,7 +419,8 @@ public class MetadataManager extends RepositoryManager {
                 JsonUtil.mapAndQuote(
                     "@type", "DataDownload", "contentUrl",
                     getEntryManager().getEntryResourceUrl(
-                        request, entry, EntryManager.ARG_INLINE_DFLT,true, false)));
+                        request, entry, EntryManager.ARG_INLINE_DFLT, true,
+                        false)));
         }
 
 
@@ -385,8 +445,8 @@ public class MetadataManager extends RepositoryManager {
                 ctor.add("url");
                 ctor.add(JsonUtil.quote(md.getAttr4()));
                 ctor.add("contactPoint");
-                ctor.add(JsonUtil.mapAndQuote("@type", "ContactPoint", "email",
-                                          md.getAttr3()));
+                ctor.add(JsonUtil.mapAndQuote("@type", "ContactPoint",
+                        "email", md.getAttr3()));
                 top.add("creator");
                 top.add(JsonUtil.map(ctor));
             } else if (type.equals("enum_gcmdkeyword")
@@ -578,10 +638,21 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param type _more_
+     * @param checkInherited _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<Metadata> findMetadata(Request request, Entry entry,
                                        String type, boolean checkInherited)
             throws Exception {
-	return findMetadata(request, entry, new String[]{type}, checkInherited);
+        return findMetadata(request, entry, new String[] { type },
+                            checkInherited);
 
     }
 
@@ -721,7 +792,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    private void findMetadata(Request request, Entry entry, String []type,
+    private void findMetadata(Request request, Entry entry, String[] type,
                               List<Metadata> result, boolean checkInherited,
                               boolean firstTime)
             throws Exception {
@@ -745,11 +816,12 @@ public class MetadataManager extends RepositoryManager {
                 continue;
             }
             if (type != null) {
-		for(int i=0;i<type.length;i++) {
-		    if (metadata.getType().equals(type[i])) {
-			result.add(metadata);
-			break;
-		    }
+                for (int i = 0; i < type.length; i++) {
+                    if (metadata.getType().equals(type[i])) {
+                        result.add(metadata);
+
+                        break;
+                    }
                 }
             } else {
                 result.add(metadata);
@@ -967,19 +1039,43 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param value _more_
+     *
+     * @throws Exception _more_
+     */
     public void addMetadataAlias(Entry entry, String value) throws Exception {
-	addMetadata(entry,ContentMetadataHandler.TYPE_ALIAS, value);
+        addMetadata(entry, ContentMetadataHandler.TYPE_ALIAS, value);
     }
 
+    /**
+     *
+     * @param entry _more_
+     * @param value _more_
+     *
+     * @throws Exception _more_
+     */
     public void addMetadataTag(Entry entry, String value) throws Exception {
-	addMetadata(entry,ContentMetadataHandler.TYPE_TAG, value);
+        addMetadata(entry, ContentMetadataHandler.TYPE_TAG, value);
     }
-    
-    public void addMetadata(Entry entry, String type,String value) throws Exception {
+
+    /**
+     *
+     * @param entry _more_
+     * @param type _more_
+     * @param value _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addMetadata(Entry entry, String type, String value)
+            throws Exception {
         addMetadata(entry,
-		    new Metadata(getRepository().getGUID(),
-				 entry.getId(),
-				 type, false,value,Metadata.DFLT_ATTR,Metadata.DFLT_ATTR,Metadata.DFLT_ATTR,Metadata.DFLT_EXTRA));
+                    new Metadata(getRepository().getGUID(), entry.getId(),
+                                 type, false, value, Metadata.DFLT_ATTR,
+                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
+                                 Metadata.DFLT_EXTRA));
     }
 
 
@@ -1394,9 +1490,9 @@ public class MetadataManager extends RepositoryManager {
         synchronized (MUTEX_METADATA) {
             Entry entry = getEntryManager().getEntry(request);
             Entry parent = getEntryManager().getParent(request, entry);
-            boolean canEditParent =
-                (parent != null)
-                && getAccessManager().canDoEdit(request, parent);
+            boolean canEditParent = (parent != null)
+                                    && getAccessManager().canDoEdit(request,
+                                        parent);
 
 
             if (request.exists(ARG_METADATA_DELETE)) {
@@ -1477,7 +1573,9 @@ public class MetadataManager extends RepositoryManager {
             }
             entry.setMetadata(null);
             entry.getTypeHandler().metadataChanged(request, entry);
-            getRepository().checkModifiedEntries(request,   Misc.newList(entry));
+            getRepository().checkModifiedEntries(request,
+                    Misc.newList(entry));
+
             return new Result(request.makeUrl(URL_METADATA_FORM, ARG_ENTRYID,
                     entry.getId()));
         }
@@ -1485,30 +1583,45 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    /**
+     *
+     * @param request _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processMetadataSuggest(Request request) throws Exception {
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb     = new StringBuilder();
 
-	String  value = request.getString("value","").trim();
-	Clause clause =  Clause.eq(Tables.METADATA.COL_TYPE, "enum_tag");
-	if(value.length()>0) {
-	    clause = Clause.and(clause, Clause.like(Tables.METADATA.COL_ATTR1, value+"%"));
-	}
-	int limit = 30;
-	String l = getDatabaseManager().makeOrderBy(Tables.METADATA.COL_ATTR1) +
-	    getDatabaseManager().getLimitString(0,limit);
-	    
-	Statement stmt = getDatabaseManager().select(
-						     SqlUtil.distinct(Tables.METADATA.COL_ATTR1),
-						     Tables.METADATA.NAME,clause,
-						     l);
-	List<String> values = (List<String>)Utils.makeListFromArray(
-								    SqlUtil.readString(getDatabaseManager().getIterator(stmt), 1));
-	if(values.size()>limit) {
-	    List<String> tmp = new ArrayList<String>();
-	    for(int i=0;i<values.size() && i<limit; i++) tmp.add(values.get(i));
-	    values = tmp;
-	}
-	sb.append(JsonUtil.list(values, true));
+        String        value  = request.getString("value", "").trim();
+        Clause        clause = Clause.eq(Tables.METADATA.COL_TYPE,
+                                         "enum_tag");
+        if (value.length() > 0) {
+            clause = Clause.and(clause,
+                                Clause.like(Tables.METADATA.COL_ATTR1,
+                                            value + "%"));
+        }
+        int limit = 30;
+        String l =
+            getDatabaseManager().makeOrderBy(Tables.METADATA.COL_ATTR1)
+            + getDatabaseManager().getLimitString(0, limit);
+
+        Statement stmt = getDatabaseManager().select(
+                             SqlUtil.distinct(Tables.METADATA.COL_ATTR1),
+                             Tables.METADATA.NAME, clause, l);
+        List<String> values = (List<String>) Utils.makeListFromArray(
+                                  SqlUtil.readString(
+                                      getDatabaseManager().getIterator(stmt),
+                                      1));
+        if (values.size() > limit) {
+            List<String> tmp = new ArrayList<String>();
+            for (int i = 0; (i < values.size()) && (i < limit); i++) {
+                tmp.add(values.get(i));
+            }
+            values = tmp;
+        }
+        sb.append(JsonUtil.list(values, true));
+
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -1649,9 +1762,9 @@ public class MetadataManager extends RepositoryManager {
                     if (label == null) {
                         label = value;
                     }
-                    maps.add(JsonUtil.map("count", tuple[0].toString(), "value",
-                                      JsonUtil.quote(value), "label",
-                                      JsonUtil.quote(label)));
+                    maps.add(JsonUtil.map("count", tuple[0].toString(),
+                                          "value", JsonUtil.quote(value),
+                                          "label", JsonUtil.quote(label)));
                 }
                 sb.append(JsonUtil.list(maps));
             } else {
@@ -1735,6 +1848,7 @@ public class MetadataManager extends RepositoryManager {
             Result result = getRepository().makeErrorResult(request,
                                 "No entry");
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
             return result;
         }
         List<Metadata> metadataList = getMetadata(entry);
@@ -1768,7 +1882,7 @@ public class MetadataManager extends RepositoryManager {
                                      metadata);
 
         long            t3      = System.currentTimeMillis();
-	//        result = getEntryManager().addEntryHeader(request,     request.getRootEntry(), result);
+        //        result = getEntryManager().addEntryHeader(request,     request.getRootEntry(), result);
         long t4 = System.currentTimeMillis();
 
         //        Utils.printTimes("metadata", t1,t2,t3,t4);
@@ -2080,7 +2194,9 @@ public class MetadataManager extends RepositoryManager {
                 insertMetadata(metadata);
             }
             entry.setMetadata(null);
-            getRepository().checkModifiedEntries(request,    Misc.newList(entry));
+            getRepository().checkModifiedEntries(request,
+                    Misc.newList(entry));
+
             return new Result(request.makeUrl(URL_METADATA_FORM, ARG_ENTRYID,
                     entry.getId()));
 
@@ -2183,9 +2299,10 @@ public class MetadataManager extends RepositoryManager {
         if (entry == null) {
             return null;
         }
-        List<Metadata> metadataList = findMetadata(request, entry,
-						   new String[]{ContentMetadataHandler.TYPE_SORT},
-                                          true);
+        List<Metadata> metadataList =
+            findMetadata(request, entry,
+                         new String[] { ContentMetadataHandler.TYPE_SORT },
+                         true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             return metadataList.get(0);
         }
@@ -2196,5 +2313,3 @@ public class MetadataManager extends RepositoryManager {
 
 
 }
-
-
