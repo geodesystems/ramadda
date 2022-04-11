@@ -270,7 +270,7 @@ public class PhoneUtils {
         phone = cleanPhone(phone);
         String url = HtmlUtils.url("http://apilayer.net/api/validate",
                                    "access_key",
-                                   "b2cadcfb5d9874ae7ab6f1c16dcc3f4c",
+                                   numverifyKey,
                                    "number", phone, "country_code", "",
                                    "format", "1");
 
@@ -317,6 +317,11 @@ public class PhoneUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	System.err.println(isPhoneMobile("3038982413"));
+	System.err.println(isPhoneMobile("3035437510"));
+	if(true)return;
+
+
         String campaign = "testcampaign";
         String message  = null;
         String numbers  = null;
