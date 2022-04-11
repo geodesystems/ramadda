@@ -1071,6 +1071,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	getLogManager().initAttributes();
 
 
+
         //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
         getStorageManager().clearTmpDir();
 
@@ -1105,11 +1106,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-
-
-
         //This depends on the html templates which depends on the 
         getMetadataManager().loadMetadataHandlers(getPluginManager());
+
         clearAllCaches();
         StringBuilder statusMsg =
             new StringBuilder("RAMADDA: repository started at:" + new Date());
@@ -1646,6 +1645,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void loadPluginResources() throws Exception {
+	//Do the licenses before we do the types
+	getMetadataManager().loadLicenses();
 	long t1 = System.currentTimeMillis();
         loadTypeHandlers();
 	long t2 = System.currentTimeMillis();
