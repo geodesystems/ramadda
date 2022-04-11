@@ -1,0 +1,69 @@
+{
+  "unique_id": "6bc77d6b-dcd1-4367-8ed7-8c1b5c028ade",
+  "providers_id": null,
+  "title": "Sample Project with Three Labels",
+  "project_privacy": "Public",
+  "date_added": "2021-10-28T21:29:27.624891Z",
+  "date_modified": "2021-10-28T22:01:02.299659Z",
+  "bc_labels": [
+    {
+      "name": "BC Consent Verified (BC CV) SAMPLE",
+      "label_type": "consent_verified",
+      "language_tag": "en",
+      "language": "English",
+      "default_text": "THIS IS A SAMPLE LABEL. This Label is being used to verify that [community name or authorizing party] have consent conditions in place for the use of this information, collections, data, and digital sequence information. [These can be found at ….].",
+      "img_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/bclabels/bc-consent-verified.png",
+      "svg_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/bclabels/bc-consent-verified.svg",
+      "community": "Sample Community",
+      "translations": [],
+      "created": "2021-10-28T21:30:26.576652Z",
+      "updated": "2022-04-05T20:46:41.069827Z"
+    }
+  ],
+  "tk_labels": [
+    {
+      "name": "TK Creative (TK CR) SAMPLE",
+      "label_type": "creative",
+      "language_tag": "en",
+      "language": "English",
+      "default_text": "THIS IS A SAMPLE LABEL. This Label is being used to acknowledge the relationship between the creative practices of [name] and [community name] and the associated cultural responsibilities.",
+      "img_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/tklabels/tk-creative.png",
+      "svg_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/tklabels/tk-creative.svg",
+      "community": "Sample Community",
+      "translations": [],
+      "created": "2021-10-29T00:36:06.492607Z",
+      "updated": "2022-04-05T20:47:24.028248Z"
+    },
+    {
+      "name": "TK Seasonal (TK S) SAMPLE",
+      "label_type": "seasonal",
+      "language_tag": "en",
+      "language": "English",
+      "default_text": "THIS IS A SAMPLE LABEL. This Label is being used to indicate that this material traditionally and usually is heard and/or utilized at a particular time of year and in response to specific seasonal changes and conditions. For instance, many important ceremonies are held at very specific times of the year. This Label is being used to indicate sophisticated relationships between land and knowledge creation. It is also being used to highlight the relationships between recorded material and the specific contexts where it derives, especially the interconnected and embodied teachings that it conveys.",
+      "img_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/tklabels/tk-seasonal.png",
+      "svg_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/tklabels/tk-seasonal.svg",
+      "community": "Sample Community",
+      "translations": [],
+      "created": "2021-10-28T17:07:51.754806Z",
+      "updated": "2022-04-05T20:47:24.078923Z"
+    }
+  ],
+  "project_boundary_geojson": null,
+  "notice": [
+    {
+      "notice_type": "biocultural_and_traditional_knowledge",
+      "bc_img_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/bc-notice.png",
+      "bc_svg_url": null,
+      "bc_default_text": "The BC (Biocultural) Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material or data. The BC Notice recognizes the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information (DSI) generated from the biodiversity or genetic resources associated with traditional lands, waters, and territories. The BC Notice may indicate that BC Labels are in development and their implementation is being negotiated.",
+      "tk_img_url": "https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/tk-notice.png",
+      "tk_svg_url": null,
+      "tk_default_text": "The TK (Traditional Knowledge) Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated.",
+      "placed_by_researcher": null,
+      "placed_by_institution": {
+        "id": 1,
+        "institution_name": "Sample Institution"
+      },
+      "created": "2021-10-28T21:17:12.694701Z",
+      "updated": "2021-10-28T21:17:12.749278Z"
+    }]
+}
