@@ -354,14 +354,13 @@ public class JsonUtil {
             row.append(listOpen());
             for (int i = 0; i < values.size(); i++) {
                 if (i > 0) {
-                    row.append(",");
-                }
+                    row.append(",\n");
+		}
                 if (quoteValue) {
                     row.append(quote(values.get(i).toString()));
                 } else {
                     row.append(values.get(i).toString());
                 }
-                row.append("\n");
             }
             row.append(listClose());
             row.append("\n");
