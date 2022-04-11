@@ -99,8 +99,6 @@ public class DataPolicy {
 	    }
 	}
 
-	//	licenseName = accessManager.getLicenseName(license);
-	//	if(!Utils.stringDefined(licenseName)) licenseName = license;
         if (debug) {
             System.err.println("\tid:" + id + " licenses:" + licenses);
         }
@@ -223,7 +221,7 @@ public class DataPolicy {
     public String getLabel() throws Exception {
         String label = getName();
 	for(String license: licenses) {
-	    String licenseName = accessManager.getLicenseName(license);
+	    String licenseName = accessManager.getMetadataManager().getLicenseName(license);
 	    if(!Utils.stringDefined(licenseName)) licenseName = license;
 	    label += " - " + licenseName;
         }

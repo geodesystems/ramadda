@@ -148,37 +148,6 @@ public class AccessManager extends RepositoryManager {
     }
 
 
-    private LinkedHashMap<String, String> licenseNames;
-
-    public String getLicenseName(String id) {
-	if(licenseNames==null) {
-	    LinkedHashMap<String, String> tmpMap= new LinkedHashMap<String,String>();
-            try {
-		for(String tok: Utils.split(getStorageManager().readSystemResource(
-										    "/org/ramadda/repository/resources/metadata/licensevalues.txt"),"\n",true,true)) {
-		    if(tok.startsWith("#")) continue;
-		    String label = tok;
-		    String value = tok;
-		    if (tok.indexOf(":") >= 0) {
-			List<String> toks = Utils.splitUpTo(tok, ":", 2);
-			value = toks.get(0);
-			label = toks.get(1);
-		    } else if (tok.indexOf("=") >= 0) {
-			List<String> toks = Utils.splitUpTo(tok, "=", 2);
-			value = toks.get(0);
-			label = toks.get(1);
-		    }
-		    tmpMap.put(value,label);
-		}
-	    } catch(Exception exc) {
-		getLogManager().logException("Reading license names",exc);
-	    }
-	    licenseNames=tmpMap;
-	}
-	return licenseNames.get(id);
-    }
-
-
     /**
      */
     public void updateLocalDataPolicies() {
@@ -1470,7 +1439,7 @@ public class AccessManager extends RepositoryManager {
 	    for(String license:dataPolicy.getLicenses()) {
 		if (Utils.stringDefined(license)) {
 		    didLicenses=true;
-		    lbuff.append(HU.div(getMetadataManager().getLicenseHtml(license, getLicenseName(license))));
+		    lbuff.append(HU.div(getMetadataManager().getLicenseHtml(license, null)));
 		}
 	    }
 	    if(didLicenses) {

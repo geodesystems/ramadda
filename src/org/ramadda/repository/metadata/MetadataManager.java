@@ -257,6 +257,12 @@ public class MetadataManager extends RepositoryManager {
         return licenseMap.get(license);
     }
 
+    public synchronized String getLicenseName(String id) throws Exception {
+	License license = getLicense(id);
+	if(license!=null) return license.getName();
+	return null;
+    }
+    
 
     /**
      *

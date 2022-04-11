@@ -105,10 +105,6 @@ public class ContentMetadataHandler extends MetadataHandler {
     }
 
 
-    /**  */
-    private Properties licenseUrls;
-
-
     /**
      * _more_
      *
