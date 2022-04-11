@@ -1,3 +1,3 @@
 <api handler="org.ramadda.plugins.datapolicy.DataPolicyApiHandler" id="datapolicy">
-  <api request="/datapolicy/v1/list"           method="processDataPolicyRequest"  admin="false"/>
+  <api request="/datapolicy/v1/datapolicies.json"           method="processDataPolicyRequest"  admin="false"/>
 </api>
