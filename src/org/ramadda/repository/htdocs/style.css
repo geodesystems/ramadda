@@ -3160,6 +3160,14 @@ label {
     padding: 5px;
 }
 
+.ramadda-license-text {
+    display:inline-block;
+    max-width:200px;
+    overflow-x:auto;
+    max-height:100px;    
+    overflow-y:auto;    
+    margin-left:10px;
+}
 .ramadda-datapolicy-description {
 }
 .ramadda-datapolicy-citation {
