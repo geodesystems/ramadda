@@ -3285,6 +3285,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
         /** _more_ */
         private String attr;
 
+	private String tooltip;
+
         /**
          * _more_
          *
@@ -3335,8 +3337,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
          */
         public Selector(String label, String id, String icon, int margin,
                         int padding, boolean isHeader) {
+	    this(label,id,null,icon,margin,padding, isHeader);
+	}
+
+	public Selector(String label, String id, String tooltip,String icon, int margin,
+                        int padding, boolean isHeader) {	    
             this.label    = label;
             this.id       = id;
+	    this.tooltip = tooltip;
             this.icon     = icon;
             this.margin   = margin;
             this.padding  = padding;
@@ -3430,7 +3438,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
                               List selected, String extra, int maxLength)
             throws Exception {
 
-        String attrs;
+        String attrs="";
+	if(extra==null) extra = "";
         if (extra.indexOf(ATTR_CLASS) >= 0) {
             attrs = attrs(ATTR_NAME, name);
         } else {
@@ -3439,11 +3448,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 cssClass = "ramadda-multiselect";
             } else if ((values != null) && !values.isEmpty()
                        && (values.get(0) instanceof HtmlUtils.Selector)) {
-                cssClass = "ramadda-pulldown-with-icons";
+		cssClass = "ramadda-pulldown-with-icons";
             } else {
                 cssClass = "ramadda-pulldown";
             }
-            attrs = attrs(ATTR_NAME, name, ATTR_CLASS, cssClass);
+	    attrs = attrs(ATTR_NAME, name, ATTR_CLASS, cssClass);
         }
         sb.append(open(TAG_SELECT, attrs + extra));
         sb.append("\n");
@@ -3454,6 +3463,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             Object obj = values.get(i);
             String value;
             String label;
+	    String tooltip = null;
             String extraAttr = null;
             if (obj instanceof TwoFacedObject) {
                 TwoFacedObject tfo = (TwoFacedObject) obj;
@@ -3461,6 +3471,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 label = tfo.toString();
             } else if (obj instanceof Selector) {
                 Selector selector = (Selector) obj;
+		tooltip = selector.tooltip;
                 value = selector.id;
                 label = selector.label;
                 if (selector.attr != null) {
@@ -3485,20 +3496,22 @@ public class HtmlUtils implements HtmlUtilsConstants {
             } else {
                 value = label = obj.toString();
             }
-            if (label.length() > maxLength) {
-                label = "..." + label.substring(label.length() - maxLength);
-            }
-
             if (label.equals("hr")) {
                 sb.append(hr());
                 continue;
             }
+
 
             sb.append("<option ");
             if (extraAttr != null) {
                 sb.append(" ");
                 sb.append(extraAttr);
                 sb.append(" ");
+            }
+
+	    sb.append(HtmlUtils.attr("title",tooltip!=null?tooltip:label));
+            if (label.length() > maxLength) {
+                label = label.substring(0, maxLength)+"..." ;
             }
 
             if ((selected != null)
