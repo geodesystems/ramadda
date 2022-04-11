@@ -5269,6 +5269,10 @@ public class TypeHandler extends RepositoryManager {
     public List<String> getColumnEnumerationProperties(Column column,
             String propertyValue, String delimiter)
             throws Exception {
+        if (propertyValue.startsWith("resource:")) {
+	    return getMetadataManager().getTypeResource(propertyValue.substring("resource:".length()));
+	}
+
         if (propertyValue.startsWith("file:")) {
             //replace any macros {name} is the type id without the leading type_
             propertyValue = propertyValue.replace("${type}",
