@@ -25,16 +25,32 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class DataPolicy {
 
+    /**  */
     public static final String FIELD_ID = "id";
-    public static final String FIELD_DESCRIPTION = "description";
-    public static final String FIELD_NAME = "name";
-    public static final String FIELD_CITATIONS = "citations";
-    public static final String FIELD_LICENSES = "licenses";
-    public static final String FIELD_PERMISSIONS = "permissions";
-    public static final String FIELD_URL="url";
-    public static final String FIELD_ACTION = "action";
-    public static final String FIELD_ROLES = "roles";    
 
+    /**  */
+    public static final String FIELD_DESCRIPTION = "description";
+
+    /**  */
+    public static final String FIELD_NAME = "name";
+
+    /**  */
+    public static final String FIELD_CITATIONS = "citations";
+
+    /**  */
+    public static final String FIELD_LICENSES = "licenses";
+
+    /**  */
+    public static final String FIELD_PERMISSIONS = "permissions";
+
+    /**  */
+    public static final String FIELD_URL = "url";
+
+    /**  */
+    public static final String FIELD_ACTION = "action";
+
+    /**  */
+    public static final String FIELD_ROLES = "roles";
 
 
     /**  */
@@ -50,61 +66,87 @@ public class DataPolicy {
     private String id;
 
     /**  */
-    private String description;
-
-    /**  */
     private String name;
 
     /**  */
-    private List<String> citations;
+    private String description;
+
+    /**  */
+    private List<String> citations = new ArrayList<String>();
 
     /**  */
     private List<License> licenses;
 
-
     /**  */
     private List<Permission> permissions = new ArrayList<Permission>();
 
+    /**  */
     private AccessManager accessManager;
-	
+
+    /**
+     
+     *
+     * @param accessManager _more_
+     * @param mainUrl _more_
+     * @param myUrl _more_
+     * @param fromName _more_
+     * @param id _more_
+     * @param name _more_
+     * @param licenses _more_
+     */
+    public DataPolicy(AccessManager accessManager, String mainUrl,
+                      String myUrl, String fromName, String id, String name,
+                      List<License> licenses) {
+        this.mainUrl  = mainUrl;
+        this.fromName = fromName;
+        this.id       = id;
+        this.name     = name;
+        this.licenses = licenses;
+
+    }
+
     /**
      *
      *
      * @param url _more_
+     *
+     * @param accessManager _more_
      *
      * @param mainUrl _more_
      * @param myUrl _more_
      * @param fromName _more_
      * @param policy _more_
      */
-    public DataPolicy(AccessManager accessManager, String mainUrl, String myUrl, String fromName,
-                      JSONObject policy) {
+    public DataPolicy(AccessManager accessManager, String mainUrl,
+                      String myUrl, String fromName, JSONObject policy) {
 
-	this.accessManager = accessManager;
-        this.mainUrl  = mainUrl;
-        this.myUrl    = myUrl;
-        this.fromName = fromName;
+        this.accessManager = accessManager;
+        this.mainUrl       = mainUrl;
+        this.myUrl         = myUrl;
+        this.fromName      = fromName;
         boolean debug = false;
         id          = policy.getString(FIELD_ID);
         description = policy.optString(FIELD_DESCRIPTION, null);
         name        = policy.optString(FIELD_NAME, Utils.makeLabel(id));
-	citations=new ArrayList<String>();
-	if(policy.has(FIELD_CITATIONS)) {
-	    JSONArray jcitations = policy.getJSONArray(FIELD_CITATIONS);
-	    for (int j = 0; j < jcitations.length(); j++) {
-		citations.add(jcitations.getString(j));
-	    }
-	}
-	licenses= new ArrayList<License>();
-	if(policy.has(FIELD_LICENSES)) {
-	    JSONArray jlicenses = policy.getJSONArray(FIELD_LICENSES);
-	    for (int j = 0; j < jlicenses.length(); j++) {
-		String     licenseId= jlicenses.getString(j);
-		License license=accessManager.getMetadataManager().getLicense(licenseId);
-		if(license==null)license = new License(licenseId);
-		licenses.add(license);
-	    }
-	}
+        if (policy.has(FIELD_CITATIONS)) {
+            JSONArray jcitations = policy.getJSONArray(FIELD_CITATIONS);
+            for (int j = 0; j < jcitations.length(); j++) {
+                citations.add(jcitations.getString(j));
+            }
+        }
+        licenses = new ArrayList<License>();
+        if (policy.has(FIELD_LICENSES)) {
+            JSONArray jlicenses = policy.getJSONArray(FIELD_LICENSES);
+            for (int j = 0; j < jlicenses.length(); j++) {
+                String licenseId = jlicenses.getString(j);
+                License license =
+                    accessManager.getMetadataManager().getLicense(licenseId);
+                if (license == null) {
+                    license = new License(licenseId);
+                }
+                licenses.add(license);
+            }
+        }
 
         if (debug) {
             System.err.println("\tid:" + id + " licenses:" + licenses);
@@ -113,7 +155,7 @@ public class DataPolicy {
         JSONArray jpermissions = policy.getJSONArray(FIELD_PERMISSIONS);
         for (int j = 0; j < jpermissions.length(); j++) {
             JSONObject jpermission = jpermissions.getJSONObject(j);
-            String     action = jpermission.getString(FIELD_ACTION);
+            String     action      = jpermission.getString(FIELD_ACTION);
             if ( !action.equals(Permission.ACTION_VIEW)
                     && !action.equals(Permission.ACTION_FILE)) {
                 System.err.println("data policy with bad action:" + mainUrl
@@ -205,13 +247,17 @@ public class DataPolicy {
 
     /**
      *  @return _more_
+     *
+     * @throws Exception _more_
      */
     public String getLabel() throws Exception {
         String label = getName();
-	for(License license: licenses) {
-	    String licenseName = license.getName();
-	    if(!Utils.stringDefined(licenseName)) licenseName = license.getId();
-	    label += " - " + licenseName;
+        for (License license : licenses) {
+            String licenseName = license.getName();
+            if ( !Utils.stringDefined(licenseName)) {
+                licenseName = license.getId();
+            }
+            label += " - " + licenseName;
         }
 
         return label;

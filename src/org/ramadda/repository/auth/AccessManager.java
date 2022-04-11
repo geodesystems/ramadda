@@ -170,7 +170,8 @@ public class AccessManager extends RepositoryManager {
     private void runDataPolicyFetch() throws Exception {
         //Pause for a minute
         //      Misc.sleepSeconds(60);
-        Misc.sleepSeconds(10);
+        //        Misc.sleepSeconds(10);
+        Misc.sleepSeconds(2);
         debugDataPolicy = getRepository().getProperty(PROP_DATAPOLICY_DEBUG,
                 false);
         int minutes = getRepository().getProperty(PROP_DATAPOLICY_SLEEP, 1);
@@ -201,6 +202,7 @@ public class AccessManager extends RepositoryManager {
         if (urls.size() == 0) {
             if (debug) {
                 System.err.println("\tNo data policy urls specified");
+
                 return false;
             }
         }
@@ -209,20 +211,29 @@ public class AccessManager extends RepositoryManager {
             if (debug) {
                 System.err.println("fetching data policy:" + url);
             }
-            if (url.equals("this")) {
-                try {
-                    url = getRepository().getTmpRequest().getAbsoluteUrl(
-                        getRepository().getRepository().getUrlBase()
-                        + "/datapolicy/v1/list");
-                } catch (Exception exc) {
-                    getLogManager().logError("Error getting self url", exc);
-                }
-            }
             try {
-                String     json      = IO.readContents(url);
-                JSONObject dp        = new JSONObject(json);
-                String     name      = dp.optString("name", "");
-                JSONArray  jpolicies = dp.getJSONArray("policies");
+                url = url.replace(
+                    "${this}",
+                    getRepository().getTmpRequest().getAbsoluteUrl(""));
+            } catch (Exception exc) {
+                getLogManager().logError("Error getting self url", exc);
+                continue;
+            }
+
+            try {
+                String     json = IO.readContents(url);
+                JSONObject dp   = new JSONObject(json);
+                if (dp.has("unique_id") && dp.has("providers_id")) {
+                    List<DataPolicy> lcp = loadLocalContexts(dp, url);
+                    tmpDataPolicies.addAll(lcp);
+                    for (DataPolicy dataPolicy : lcp) {
+                        tmpDataPoliciesMap.put(dataPolicy.getId(),
+                                dataPolicy);
+                    }
+                    continue;
+                }
+                String    name      = dp.optString("name", "");
+                JSONArray jpolicies = dp.getJSONArray("policies");
                 if (debug) {
                     System.err.println("\tprocessing data policy:" + name
                                        + " # policies:" + jpolicies.length());
@@ -230,8 +241,8 @@ public class AccessManager extends RepositoryManager {
                 for (int i = 0; i < jpolicies.length(); i++) {
                     JSONObject policy = jpolicies.getJSONObject(i);
                     DataPolicy dataPolicy = new DataPolicy(this, url,
-							   policy.optString("url",
-									    null), name, policy);
+                                                policy.optString("url",
+                                                    null), name, policy);
                     if (debug) {
                         System.err.println("\tpolicy:" + dataPolicy);
                     }
@@ -250,6 +261,53 @@ public class AccessManager extends RepositoryManager {
 
     }
 
+    /**
+     *
+     * @param a _more_
+     * @param licenses _more_
+     */
+    private void loadLocalContextsLabels(JSONArray a,
+                                         List<License> licenses) {
+        for (int i = 0; i < a.length(); i++) {
+            JSONObject label = a.getJSONObject(i);
+            String     id    = label.getString("label_type");
+            id = id.replaceAll("_", "-");
+
+            licenses.add(
+                new License(
+                    "localcontexts-label-" + id, label.getString("name"),
+                    "https://localcontexts.org/labels/traditional-knowledge-labels/",
+                    label.getString("img_url"),
+                    label.getString("default_text")));
+        }
+
+    }
+
+    /**
+     *
+     * @param obj _more_
+     * @param fromUrl _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private List<DataPolicy> loadLocalContexts(JSONObject obj, String fromUrl)
+            throws Exception {
+        List<DataPolicy> dps      = new ArrayList<DataPolicy>();
+        List<License>    licenses = new ArrayList<License>();
+        for (String type : new String[] { "bc_labels", "tk_labels" }) {
+            if (obj.has(type)) {
+                loadLocalContextsLabels(obj.getJSONArray(type), licenses);
+            }
+        }
+        DataPolicy dp = new DataPolicy(this, fromUrl, fromUrl,
+                                       "Local Contexts Hub",
+                                       obj.getString("unique_id"),
+                                       obj.getString("title"), licenses);
+        dps.add(dp);
+
+        return dps;
+    }
 
     /**
      * _more_
@@ -1225,28 +1283,44 @@ public class AccessManager extends RepositoryManager {
     }
 
 
-    public List<DataPolicy> getDataPolicies(Entry entry, boolean inherited) throws Exception {
-	List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
-	if(this.dataPolicies.size()==0) {
-	    return dataPolicies;
-	}
+    /**
+     *
+     * @param entry _more_
+     * @param inherited _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<DataPolicy> getDataPolicies(Entry entry, boolean inherited)
+            throws Exception {
+        List<DataPolicy> dataPolicies = new ArrayList<DataPolicy>();
+        if (this.dataPolicies.size() == 0) {
+            return dataPolicies;
+        }
 
-	HashSet seen = new HashSet();
-	while(entry!=null) {
-	    List<Permission> permissions = getPermissions(entry);
-	    for(Permission permission: permissions) {
-		if (Utils.stringDefined(permission.getDataPolicyId())) {
-		    if(seen.contains(permission.getDataPolicyId())) continue;
-		    seen.add(permission.getDataPolicyId());
-		    DataPolicy dataPolicy = dataPoliciesMap.get(permission.getDataPolicyId());
-		    if(dataPolicy!=null) dataPolicies.add(dataPolicy);
-		}
-	    }
-	    if(!inherited) break;
-	    entry=entry.getParentEntry();
-	}
+        HashSet seen = new HashSet();
+        while (entry != null) {
+            List<Permission> permissions = getPermissions(entry);
+            for (Permission permission : permissions) {
+                if (Utils.stringDefined(permission.getDataPolicyId())) {
+                    if (seen.contains(permission.getDataPolicyId())) {
+                        continue;
+                    }
+                    seen.add(permission.getDataPolicyId());
+                    DataPolicy dataPolicy =
+                        dataPoliciesMap.get(permission.getDataPolicyId());
+                    if (dataPolicy != null) {
+                        dataPolicies.add(dataPolicy);
+                    }
+                }
+            }
+            if ( !inherited) {
+                break;
+            }
+            entry = entry.getParentEntry();
+        }
 
-	return dataPolicies;
+        return dataPolicies;
     }
 
     /**
@@ -1400,91 +1474,121 @@ public class AccessManager extends RepositoryManager {
 
             return new Result("Data Policies", sb);
         }
-	formatDataPolicies(request, sb, dataPolicies,true,true);
+        formatDataPolicies(request, sb, dataPolicies, true, true);
         getPageHandler().sectionClose(request, sb);
+
         return new Result("Data Policies", sb);
     }
 
 
-    
-    public void formatDataPolicies(Request request, Appendable sb, List<DataPolicy> dataPolicies, boolean includeCollection, boolean includePermissions) throws Exception {
+
+    /**
+     *
+     * @param request _more_
+     * @param sb _more_
+     * @param dataPolicies _more_
+     * @param includeCollection _more_
+     * @param includePermissions _more_
+     *
+     * @throws Exception _more_
+     */
+    public void formatDataPolicies(Request request, Appendable sb,
+                                   List<DataPolicy> dataPolicies,
+                                   boolean includeCollection,
+                                   boolean includePermissions)
+            throws Exception {
         LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
                                                        StringBuilder>();
         for (DataPolicy dataPolicy : dataPolicies) {
-	    String fromLabel = dataPolicy.getFromName();
-	    String url = dataPolicy.getMainUrl();
-	    try {
-		URL u = new URL(url);
-		fromLabel = fromLabel+" - " + u.getHost();
-	    } catch(Exception exc) {}
-            String href = HU.href(url,fromLabel);
+            String fromLabel = dataPolicy.getFromName();
+            String url       = dataPolicy.getMainUrl();
+            try {
+                URL u = new URL(url);
+                fromLabel = fromLabel + " - " + u.getHost();
+            } catch (Exception exc) {}
+            String        href = HU.href(url, fromLabel);
             StringBuilder buff = map.get(href);
             if (buff == null) {
                 map.put(href, buff = new StringBuilder());
             }
-	    String label = dataPolicy.getName();
+            String label = dataPolicy.getName();
             if (Utils.stringDefined(dataPolicy.getMyUrl())) {
-                label = HU.href(dataPolicy.getMyUrl(), label,HU.attrs("target","_datapolicy"));
+                label = HU.href(dataPolicy.getMyUrl(), label,
+                                HU.attrs("target", "_datapolicy"));
             }
-	    
-            buff.append("<li>");
-            buff.append(HU.italics(label));
+
+            buff.append(
+                HU.div(HtmlUtils.img(
+                    getRepository().getIconUrl(
+                        "fa-solid fa-building-shield")) + " "
+                            + HU.italics(label)));
             if (Utils.stringDefined(dataPolicy.getDescription())) {
-                buff.append(HU.div(dataPolicy.getDescription(),HU.cssClass("ramadda-datapolicy-description")));
+                buff.append(
+                    HU.div(dataPolicy.getDescription(),
+                           HU.cssClass("ramadda-datapolicy-description")));
             }
-	    for(String citation:dataPolicy.getCitations()) {
-		if(Utils.stringDefined(citation)) {
-		    buff.append(HU.div(citation.replaceAll("\n","<br>"),HU.cssClass("ramadda-datapolicy-citation")));
-		}
-	    }
-	    boolean didLicenses = false;
-	    StringBuilder lbuff = new StringBuilder();
-	    for(License license:dataPolicy.getLicenses()) {
-		didLicenses=true;
-		lbuff.append(HU.div(getMetadataManager().getLicenseHtml(license, null)));
-	    }
-	    if(didLicenses) {
-		String tmp = HU.div(lbuff.toString(),HU.style("margin-left:20px;"));
-		buff.append(HU.makeShowHideBlock("Licenses", tmp, true));
-	    }
+            buff.append("<ul>");
+            for (String citation : dataPolicy.getCitations()) {
+                if (Utils.stringDefined(citation)) {
+                    buff.append(
+                        HU.div(citation.replaceAll("\n", "<br>"),
+                               HU.cssClass("ramadda-datapolicy-citation")));
+                }
+            }
+            boolean       didLicenses = false;
+            StringBuilder lbuff       = new StringBuilder();
+            for (License license : dataPolicy.getLicenses()) {
+                didLicenses = true;
+                lbuff.append(
+                    HU.div(getMetadataManager().getLicenseHtml(
+                        license, null)));
+            }
+            if (didLicenses) {
+                String tmp = HU.div(lbuff.toString(),
+                                    HU.style("margin-left:20px;"));
+                buff.append(HU.makeShowHideBlock("Licenses", tmp, true));
+            }
 
 
             //If they are logged then show the access
-            if (includePermissions&& !request.isAnonymous()) {
-		if(dataPolicy.getPermissions().size()>0) {
-		    StringBuilder permissionsSB = new StringBuilder();
-		    permissionsSB.append("<ul>");
-		    for (Permission permission : dataPolicy.getPermissions()) {
-			permissionsSB.append("<li>");
-			permissionsSB.append("Action: ");
-			permissionsSB.append(permission.getAction());
-			permissionsSB.append("<br>Roles:<ul> ");
-			for (Role role : permission.getRoles()) {
-			    permissionsSB.append("<li>");
-			    permissionsSB.append(HU.span(role.toString(),
-							 HU.cssClass(role.getCssClass())));
-			}
-			permissionsSB.append("</ul>");
-		    }
-		    permissionsSB.append("</ul>");
-		    buff.append(HU.makeShowHideBlock("Permissions", permissionsSB.toString(), false));
-		}
+            if (includePermissions && !request.isAnonymous()) {
+                if (dataPolicy.getPermissions().size() > 0) {
+                    StringBuilder permissionsSB = new StringBuilder();
+                    permissionsSB.append("<ul>");
+                    for (Permission permission :
+                            dataPolicy.getPermissions()) {
+                        permissionsSB.append("<li>");
+                        permissionsSB.append("Action: ");
+                        permissionsSB.append(permission.getAction());
+                        permissionsSB.append("<br>Roles:<ul> ");
+                        for (Role role : permission.getRoles()) {
+                            permissionsSB.append("<li>");
+                            permissionsSB.append(HU.span(role.toString(),
+                                    HU.cssClass(role.getCssClass())));
+                        }
+                        permissionsSB.append("</ul>");
+                    }
+                    permissionsSB.append("</ul>");
+                    buff.append(HU.makeShowHideBlock("Permissions",
+                            permissionsSB.toString(), false));
+                }
             }
+            buff.append("</ul>");
 
         }
 
         sb.append("<ul>");
         for (String key : map.keySet()) {
             StringBuilder buff = map.get(key);
-	    if(includeCollection) {
-		sb.append("<li> ");
-		sb.append(key);
-		sb.append("<ul>");
-	    }
+            if (includeCollection) {
+                sb.append("<li>");
+                sb.append(key);
+                sb.append("<ul>");
+            }
             sb.append(buff);
-	    if(includeCollection) {
-		sb.append("</ul>");
-	    }
+            if (includeCollection) {
+                sb.append("</ul>");
+            }
         }
         sb.append("</ul>");
     }

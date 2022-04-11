@@ -45,13 +45,37 @@ public class License implements Comparable {
     /**  */
     private int priority;
 
+    /**
+     
+     *
+     * @param id _more_
+     */
     public License(String id) {
-	this.id = id;
-	this.name = Utils.makeLabel(id);
+        this.id   = id;
+        this.name = Utils.makeLabel(id);
     }
 
     /**
-    
+     
+     *
+     * @param id _more_
+     * @param name _more_
+     * @param url _more_
+     * @param icon _more_
+     * @param text _more_
+     */
+    public License(String id, String name, String url, String icon,
+                   String text) {
+        this.id   = id;
+        this.name = name;
+        this.url  = url;
+        this.icon = icon;
+        this.text = text;
+    }
+
+
+    /**
+     *
      *
      * @param repository _more_
      * @param obj _more_
@@ -74,26 +98,11 @@ public class License implements Comparable {
         }
     }
 
-    /**
-     * @param id _more_
-     * @param name _more_
-     * @param url _more_
-     * @param icon _more_
-     * @param text _more_
-     */
-    public License(String id, String name, String url, String icon,
-                   String text) {
-        this.id   = id;
-        this.name = name;
-        this.url  = url;
-        this.icon = icon;
-        this.text = text;
-    }
 
     /**
      *
      * @param o _more_
-      * @return _more_
+     *  @return _more_
      */
     public int compareTo(Object o) {
         boolean ok = o instanceof License;
@@ -170,7 +179,7 @@ public class License implements Comparable {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String toString() {
         return id + ":" + name;
