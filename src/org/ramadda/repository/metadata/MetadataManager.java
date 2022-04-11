@@ -282,6 +282,10 @@ public class MetadataManager extends RepositoryManager {
         throw new IllegalArgumentException("Unknown resource:" + id);
     }
 
+    private String wrapLicenseText(String text) {
+	return HU.div(text,HU.cssClass("ramadda-license-text"));
+    }
+
     /**
      *
      * @param id _more_
@@ -299,10 +303,22 @@ public class MetadataManager extends RepositoryManager {
             label = license.getName();
         }
         String contents = " " + label + " ";
-        String icon     = license.getIcon();
-        if (icon != null) {
-            contents += "<br>" + HU.image(icon, HU.attrs("width", "120"));
+        if (Utils.stringDefined(license.getUrl())) {
+            contents = HU.href(license.getUrl(), contents, "target=_other");
         }
+        String icon     = license.getIcon();
+	String text = license.getText();
+        if (icon != null) {
+	    String extra =  HU.image(icon, HU.attrs("width", "120","border","0"));
+	    if (Utils.stringDefined(license.getUrl())) {
+		extra = HU.href(license.getUrl(), extra, "target=_other");
+	    }
+	    if(Utils.stringDefined(text)) extra = HU.span(extra,"style='vertical-align:top;'") + wrapLicenseText(text);
+	    extra = HU.div(extra);
+	    contents+= extra;
+        } else if(Utils.stringDefined(text)) {
+	    contents+="<br>" + wrapLicenseText(text);
+	}
         if (license.getUrl() != null) {
             contents = HU.href(license.getUrl(), contents, "target=_other");
         }
