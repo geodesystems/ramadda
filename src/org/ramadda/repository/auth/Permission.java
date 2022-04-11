@@ -44,6 +44,8 @@ public class Permission {
     /** _more_ */
     public static final String ACTION_EXPORT = "export";
 
+    public static final String ACTION_BLANK = "blank";    
+
     /** _more_ */
     public static final String ACTION_TYPE1 = "type1";
 
@@ -204,6 +206,10 @@ public class Permission {
      */
     public String getAction() {
         return action;
+    }
+
+    public String getLabel() {
+	return action+" " + roles;
     }
 
     /**
