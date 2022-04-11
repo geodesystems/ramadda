@@ -193,8 +193,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
             lastInput = lastInput.replaceAll("\\\\", "_escslash_");
         }
         String id = HtmlUtils.getUniqueId("convert");
+
         if (lastInput != null) {
-            sb.append(HtmlUtils.div(lastInput,
+            sb.append(HtmlUtils.pre(lastInput,
                                     "style='display:none;' "
                                     + HU.id(id + "_lastinput")));
         }
