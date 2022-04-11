@@ -221,7 +221,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 values = getHandler().getEnumerationValues(this);
             }
             List<String> tmpValues = null;
-            if (values.startsWith("file:")) {
+	    if(values.startsWith("resource:")) {
+		tmpValues =  getMetadataManager().getTypeResource(values.substring("resource:".length()));
+	    } else  if (values.startsWith("file:")) {
                 //If it is a .properties file then the delimiter is =
                 if (values.endsWith(".properties")) {
                     delimiter = "=";
