@@ -1431,8 +1431,10 @@ public class AccessManager extends RepositoryManager {
             if (Utils.stringDefined(dataPolicy.getDescription())) {
                 buff.append(HU.div(dataPolicy.getDescription(),HU.cssClass("ramadda-datapolicy-description")));
             }
-	    if(Utils.stringDefined(dataPolicy.getCitation())) {
-                buff.append(HU.div(dataPolicy.getCitation().replaceAll("\n","<br>"),HU.cssClass("ramadda-datapolicy-citation")));
+	    for(String citation:dataPolicy.getCitations()) {
+		if(Utils.stringDefined(citation)) {
+		    buff.append(HU.div(citation.replaceAll("\n","<br>"),HU.cssClass("ramadda-datapolicy-citation")));
+		}
 	    }
 	    boolean didLicenses = false;
 	    StringBuilder lbuff = new StringBuilder();

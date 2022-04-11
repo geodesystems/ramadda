@@ -124,8 +124,12 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         Utils.add(policy, DataPolicy.FIELD_ID, qt(id));
         Utils.add(policy, DataPolicy.FIELD_NAME, qt(entry.getName()));
         Utils.add(policy, DataPolicy.FIELD_DESCRIPTION, qt(entry.getDescription()));
-        Utils.add(policy, DataPolicy.FIELD_CITATION,
-                  qt(entry.getValue(DataPolicyTypeHandler.IDX_CITATION)));
+	List<String> citations = new ArrayList<String>();
+	String citation = (String) entry.getValue(DataPolicyTypeHandler.IDX_CITATION); 
+	if(Utils.stringDefined(citation)) 
+	    citations.add(qt(citation));
+        Utils.add(policy, DataPolicy.FIELD_CITATIONS, JsonUtil.list(citations));
+
 	
 	List<String> licenses = new ArrayList<String>();
 	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE1);

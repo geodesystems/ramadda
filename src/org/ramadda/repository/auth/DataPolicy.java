@@ -27,7 +27,7 @@ public class DataPolicy {
     public static final String FIELD_ID = "id";
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_NAME = "name";
-    public static final String FIELD_CITATION = "citation";
+    public static final String FIELD_CITATIONS = "citations";
     public static final String FIELD_LICENSES = "licenses";
     public static final String FIELD_PERMISSIONS = "permissions";
     public static final String FIELD_URL="url";
@@ -55,7 +55,7 @@ public class DataPolicy {
     private String name;
 
     /**  */
-    private String citation;
+    private List<String> citations;
 
     /**  */
     private List<String> licenses;
@@ -89,7 +89,13 @@ public class DataPolicy {
         id          = policy.getString(FIELD_ID);
         description = policy.optString(FIELD_DESCRIPTION, null);
         name        = policy.optString(FIELD_NAME, Utils.makeLabel(id));
-        citation    = policy.optString(FIELD_CITATION, null);
+	citations=new ArrayList<String>();
+	if(policy.has(FIELD_CITATIONS)) {
+	    JSONArray jcitations = policy.getJSONArray(FIELD_CITATIONS);
+	    for (int j = 0; j < jcitations.length(); j++) {
+		citations.add(jcitations.getString(j));
+	    }
+	}
 	licenses= new ArrayList<String>();
 	if(policy.has(FIELD_LICENSES)) {
 	    JSONArray jlicenses = policy.getJSONArray(FIELD_LICENSES);
@@ -177,23 +183,13 @@ public class DataPolicy {
 
 
     /**
-     *  Set the Citation property.
-     *
-     *  @param value The new value for Citation
-     */
-    public void setCitation(String value) {
-        citation = value;
-    }
-
-    /**
      *  Get the Citation property.
      *
      *  @return The Citation
      */
-    public String getCitation() {
-        return citation;
+    public List<String> getCitations() {
+        return citations;
     }
-
 
     /**
      *  Get the License property.
