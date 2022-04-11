@@ -10,6 +10,7 @@ import org.json.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
+import org.ramadda.repository.metadata.License;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -1438,11 +1439,9 @@ public class AccessManager extends RepositoryManager {
 	    }
 	    boolean didLicenses = false;
 	    StringBuilder lbuff = new StringBuilder();
-	    for(String license:dataPolicy.getLicenses()) {
-		if (Utils.stringDefined(license)) {
-		    didLicenses=true;
-		    lbuff.append(HU.div(getMetadataManager().getLicenseHtml(license, null)));
-		}
+	    for(License license:dataPolicy.getLicenses()) {
+		didLicenses=true;
+		lbuff.append(HU.div(getMetadataManager().getLicenseHtml(license, null)));
 	    }
 	    if(didLicenses) {
 		String tmp = HU.div(lbuff.toString(),HU.style("margin-left:20px;"));

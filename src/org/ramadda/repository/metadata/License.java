@@ -45,8 +45,13 @@ public class License implements Comparable {
     /**  */
     private int priority;
 
+    public License(String id) {
+	this.id = id;
+	this.name = Utils.makeLabel(id);
+    }
+
     /**
-     
+    
      *
      * @param repository _more_
      * @param obj _more_

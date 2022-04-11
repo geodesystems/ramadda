@@ -9,6 +9,7 @@ package org.ramadda.repository.auth;
 import org.json.*;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.License;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
@@ -58,10 +59,8 @@ public class DataPolicy {
     private List<String> citations;
 
     /**  */
-    private List<String> licenses;
+    private List<License> licenses;
 
-    /**  */
-    private String licenseName;
 
     /**  */
     private List<Permission> permissions = new ArrayList<Permission>();
@@ -96,11 +95,13 @@ public class DataPolicy {
 		citations.add(jcitations.getString(j));
 	    }
 	}
-	licenses= new ArrayList<String>();
+	licenses= new ArrayList<License>();
 	if(policy.has(FIELD_LICENSES)) {
 	    JSONArray jlicenses = policy.getJSONArray(FIELD_LICENSES);
 	    for (int j = 0; j < jlicenses.length(); j++) {
-		String     license = jlicenses.getString(j);
+		String     licenseId= jlicenses.getString(j);
+		License license=accessManager.getMetadataManager().getLicense(licenseId);
+		if(license==null)license = new License(licenseId);
 		licenses.add(license);
 	    }
 	}
@@ -196,17 +197,8 @@ public class DataPolicy {
      *
      *  @return The License
      */
-    public List<String> getLicenses() {
+    public List<License> getLicenses() {
         return licenses;
-    }
-
-    /**
-     *  Get the License property.
-     *
-     *  @return The License
-     */
-    public String getLicenseName() {
-        return licenseName;
     }
 
 
@@ -216,9 +208,9 @@ public class DataPolicy {
      */
     public String getLabel() throws Exception {
         String label = getName();
-	for(String license: licenses) {
-	    String licenseName = accessManager.getMetadataManager().getLicenseName(license);
-	    if(!Utils.stringDefined(licenseName)) licenseName = license;
+	for(License license: licenses) {
+	    String licenseName = license.getName();
+	    if(!Utils.stringDefined(licenseName)) licenseName = license.getId();
 	    label += " - " + licenseName;
         }
 

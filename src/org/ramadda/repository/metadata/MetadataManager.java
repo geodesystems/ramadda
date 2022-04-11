@@ -253,16 +253,9 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public synchronized License getLicense(String license) throws Exception {
+    public synchronized License getLicense(String license)  {
         return licenseMap.get(license);
     }
-
-    public synchronized String getLicenseName(String id) throws Exception {
-	License license = getLicense(id);
-	if(license!=null) return license.getName();
-	return null;
-    }
-    
 
     /**
      *
@@ -299,6 +292,10 @@ public class MetadataManager extends RepositoryManager {
         if (license == null) {
             return "NA:" + id;
         }
+	return getLicenseHtml(license,label);
+    }
+
+    public String getLicenseHtml(License license, String label) throws Exception {
         if (label == null) {
             label = license.getName();
         }
