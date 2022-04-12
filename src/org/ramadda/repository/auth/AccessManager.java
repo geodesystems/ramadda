@@ -154,7 +154,11 @@ public class AccessManager extends RepositoryManager {
     public void updateLocalDataPolicies() {
         Misc.run(new Runnable() {
             public void run() {
-                doDataPolicyFetch();
+		try {
+		    doDataPolicyFetch();
+		} catch(Exception exc) {
+		    getLogManager().logError("calling doDataPolicyFetch", exc);
+		}		    
             }
         });
     }
@@ -168,8 +172,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void runDataPolicyFetch() throws Exception {
-        //Pause for a minute
-        //      Misc.sleepSeconds(60);
+        //Pause for a a bit before we get started
         //        Misc.sleepSeconds(10);
         Misc.sleepSeconds(2);
         debugDataPolicy = getRepository().getProperty(PROP_DATAPOLICY_DEBUG,
@@ -177,9 +180,13 @@ public class AccessManager extends RepositoryManager {
         int minutes = getRepository().getProperty(PROP_DATAPOLICY_SLEEP, 1);
         while (true) {
             haveDoneDataPolicyFetch = true;
-            if ( !doDataPolicyFetch()) {
-                return;
-            }
+	    try{
+		if ( !doDataPolicyFetch()) {
+		    return;
+		}
+	    } catch(Exception exc) {
+		getLogManager().logError("calling doDataPolicyFetch", exc);
+	    }
             Misc.sleepSeconds(60 * minutes);
         }
     }
@@ -188,25 +195,24 @@ public class AccessManager extends RepositoryManager {
     /**
      * @return _more_
      */
-    private synchronized boolean doDataPolicyFetch() {
+    private synchronized boolean doDataPolicyFetch() throws Exception {
         boolean debug = debugDataPolicy;
 	//	debug = true;
-        List<String> urls =
-            Utils.split(getRepository().getProperty(PROP_DATAPOLICY_URLS,
-                ""), ",", true, true);
+        List<String> urls = new ArrayList<String>();
+        List<Entry> entries =
+            getEntryManager().getEntriesWithType(getRepository().getAdminRequest(),
+                "type_datapolicy_source");
+	for(Entry entry:entries) {
+	    String url = entry.getResource().getPath();
+	    if(Utils.stringDefined(url)) urls.add(url);
+	}
+
         List<DataPolicy> tmpDataPolicies = new ArrayList<DataPolicy>();
         Hashtable<String, DataPolicy> tmpDataPoliciesMap =
             new Hashtable<String, DataPolicy>();
         if (debug) {
             System.err.println("AccessManager.doDataPolicyFetch");
         }
-        if (urls.size() == 0) {
-            if (debug) {
-                System.err.println("\tNo data policy urls specified");
-                return false;
-            }
-        }
-
         for (String url : urls) {
             if (debug) {
                 System.err.println("\tfetching data policy:" + url);
