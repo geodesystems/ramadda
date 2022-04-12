@@ -8,10 +8,10 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
-import org.apache.commons.text.StringEscapeUtils;
-
-
 import org.apache.commons.net.ftp.*;
+
+
+import org.apache.commons.text.StringEscapeUtils;
 
 
 import ucar.unidata.util.IOUtil;
@@ -386,8 +386,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    /**
+     *
+     * @param name _more_
+     * @param value _more_
+      * @return _more_
+     */
     public static String hiddenBase64(String name, Object value) {
-	String s = value.toString();
+        String s = value.toString();
+
         return hidden(name, Utils.encodeBase64(s), "");
     }
 
@@ -833,6 +840,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String quote(String s) {
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
+
         return sb.toString();
     }
 
@@ -849,8 +857,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable quote(Appendable sb, String s) {
         try {
             sb.append("\"");
-	    //            s = s.replaceAll("\"", "\\\"");
-            s = s.replaceAll("\"", "&quot;");	    
+            //            s = s.replaceAll("\"", "\\\"");
+            s = s.replaceAll("\"", "&quot;");
             sb.append(s);
             sb.append("\"");
         } catch (IOException ioe) {
@@ -1619,11 +1627,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
-    public static String hrow(String... cols)
-            throws Exception {
-	StringBuilder sb = new StringBuilder();
-	hrow(sb,cols);
-	return sb.toString();
+    /**
+     *
+     * @param cols _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String hrow(String... cols) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        hrow(sb, cols);
+
+        return sb.toString();
     }
 
 
@@ -2241,6 +2256,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @param sb _more_
      * @param row _more_
+     * @param extra _more_
      */
     public static void row(Appendable sb, String row, String extra) {
         tag(sb, TAG_TR, extra, row);
@@ -3285,7 +3301,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
         /** _more_ */
         private String attr;
 
-	private String tooltip;
+        /**  */
+        private String tooltip;
+
+        /**
+         
+         *
+         * @param label _more_
+         * @param id _more_
+         */
+        public Selector(String label, String id) {
+            this(label, id, null, 3, false);
+        }
+
 
         /**
          * _more_
@@ -3337,20 +3365,39 @@ public class HtmlUtils implements HtmlUtilsConstants {
          */
         public Selector(String label, String id, String icon, int margin,
                         int padding, boolean isHeader) {
-	    this(label,id,null,icon,margin,padding, isHeader);
-	}
+            this(label, id, null, icon, margin, padding, isHeader);
+        }
 
-	public Selector(String label, String id, String tooltip,String icon, int margin,
-                        int padding, boolean isHeader) {	    
+        /**
+         
+         *
+         * @param label _more_
+         * @param id _more_
+         * @param tooltip _more_
+         * @param icon _more_
+         * @param margin _more_
+         * @param padding _more_
+         * @param isHeader _more_
+         */
+        public Selector(String label, String id, String tooltip, String icon,
+                        int margin, int padding, boolean isHeader) {
             this.label    = label;
             this.id       = id;
-	    this.tooltip = tooltip;
+            this.tooltip  = tooltip;
             this.icon     = icon;
             this.margin   = margin;
             this.padding  = padding;
             this.isHeader = isHeader;
         }
 
+
+        /**
+         *
+         * @param tooltip _more_
+         */
+        public void setTooltip(String tooltip) {
+            this.tooltip = tooltip;
+        }
 
         /**
          * _more_
@@ -3438,8 +3485,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
                               List selected, String extra, int maxLength)
             throws Exception {
 
-        String attrs="";
-	if(extra==null) extra = "";
+        String attrs = "";
+        if (extra == null) {
+            extra = "";
+        }
         if (extra.indexOf(ATTR_CLASS) >= 0) {
             attrs = attrs(ATTR_NAME, name);
         } else {
@@ -3448,11 +3497,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 cssClass = "ramadda-multiselect";
             } else if ((values != null) && !values.isEmpty()
                        && (values.get(0) instanceof HtmlUtils.Selector)) {
-		cssClass = "ramadda-pulldown-with-icons";
+                cssClass = "ramadda-pulldown-with-icons";
             } else {
                 cssClass = "ramadda-pulldown";
             }
-	    attrs = attrs(ATTR_NAME, name, ATTR_CLASS, cssClass);
+            attrs = attrs(ATTR_NAME, name, ATTR_CLASS, cssClass);
         }
         sb.append(open(TAG_SELECT, attrs + extra));
         sb.append("\n");
@@ -3463,7 +3512,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             Object obj = values.get(i);
             String value;
             String label;
-	    String tooltip = null;
+            String tooltip   = null;
             String extraAttr = null;
             if (obj instanceof TwoFacedObject) {
                 TwoFacedObject tfo = (TwoFacedObject) obj;
@@ -3471,9 +3520,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 label = tfo.toString();
             } else if (obj instanceof Selector) {
                 Selector selector = (Selector) obj;
-		tooltip = selector.tooltip;
-                value = selector.id;
-                label = selector.label;
+                tooltip = selector.tooltip;
+                value   = selector.id;
+                label   = selector.label;
                 if (selector.attr != null) {
                     extraAttr = selector.attr;
                 }
@@ -3509,9 +3558,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 sb.append(" ");
             }
 
-	    sb.append(HtmlUtils.attr("title",tooltip!=null?tooltip:label));
+            sb.append(HtmlUtils.attr("title", (tooltip != null)
+                    ? tooltip
+                    : label));
             if (label.length() > maxLength) {
-                label = label.substring(0, maxLength)+"..." ;
+                label = label.substring(0, maxLength) + "...";
             }
 
             if ((selected != null)
@@ -3529,6 +3580,89 @@ public class HtmlUtils implements HtmlUtilsConstants {
             sb.append("</option>");
         }
         sb.append("</select>");
+        sb.append("\n");
+    }
+
+
+    /**
+     *
+     * @param sb _more_
+     * @param name _more_
+     * @param values _more_
+     * @param selected _more_
+     * @param extra _more_
+     * @param maxLength _more_
+     * @param boxStyle _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void checkboxSelect(Appendable sb, String name,
+                                      List values, List selected,
+                                      String boxStyle)
+            throws Exception {
+        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle)));
+        sb.append("\n");
+
+        HashSet seenSelected = new HashSet();
+        for (int i = 0; i < values.size(); i++) {
+            String attrs = "";
+            Object obj   = values.get(i);
+            String value;
+            String label;
+            String tooltip   = null;
+            String extraAttr = null;
+            if (obj instanceof TwoFacedObject) {
+                TwoFacedObject tfo = (TwoFacedObject) obj;
+                value = tfo.getId().toString();
+                label = tfo.toString();
+            } else if (obj instanceof Selector) {
+                Selector selector = (Selector) obj;
+                tooltip = selector.tooltip;
+                value   = selector.id;
+                label   = selector.label;
+                if (selector.attr != null) {
+                    extraAttr = selector.attr;
+                }
+                if (Utils.stringDefined(selector.icon)) {
+                    String style = "";
+                    if ( !selector.isHeader) {
+                        style += "margin-left:" + selector.margin + "px;";
+                    }
+                    extraAttr = attrs("data-class", "ramadda-select-icon",
+                                      "data-style", style, "img-src",
+                                      selector.icon);
+                    if (selector.isHeader) {
+                        extraAttr = attrs("isheader", "true", "label-class",
+                                          "ramadda-select-header");
+                    }
+                } else if (selector.isHeader) {
+                    extraAttr = style(
+                        "font-weight:bold;background: #ddd;padding:6px;");
+                }
+            } else {
+                value = label = obj.toString();
+            }
+            if (label.equals("hr")) {
+                sb.append(hr());
+                continue;
+            }
+
+
+            boolean isSelected = false;
+            if ((selected != null)
+                    && (selected.contains(value) || selected.contains(obj))) {
+                if ( !seenSelected.contains(value)) {
+                    isSelected = true;
+                }
+            }
+
+            if (tooltip != null) {
+                attrs += HtmlUtils.attr("title", tooltip);
+            }
+            sb.append(div(labeledCheckbox(name, value, isSelected, "",
+                                          label), attrs));
+        }
+        sb.append("</div>");
         sb.append("\n");
     }
 
@@ -3924,16 +4058,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(open(TAG_TABLE, attributes));
-        int cols = 0;
-	int width = (int)(100.0/(double)numCols);
+        int cols  = 0;
+        int width = (int) (100.0 / (double) numCols);
         for (int i = 0; i < columns.size(); i++) {
             if (cols == 0) {
                 if (i >= 1) {
                     sb.append(close(TAG_TR));
                 }
-                sb.append(open(TAG_TR,"valign=top"));
+                sb.append(open(TAG_TR, "valign=top"));
             }
-            sb.append(col(columns.get(i).toString(), "width=" + width+"%"));
+            sb.append(col(columns.get(i).toString(), "width=" + width + "%"));
             cols++;
             if (cols >= numCols) {
                 cols = 0;
@@ -3941,6 +4075,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
         sb.append(close(TAG_TR));
         sb.append(close(TAG_TABLE));
+
         return sb;
     }
 
@@ -4004,7 +4139,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String formTable(String clazz, boolean fullWidth) {
         return open(TAG_TABLE, (fullWidth
-		    ? (style("width","100%") +    attr("width", "100%"))
+                                ? (style("width", "100%")
+                                   + attr("width", "100%"))
                                 : "") + cssClass(" formtable "
                                 + ((clazz != null)
                                    ? clazz
@@ -4082,12 +4218,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
+    /**
+     *
+     * @param sb _more_
+     * @param left _more_
+     */
     public static void formEntry(Appendable sb, String left) {
         try {
             sb.append(tag(TAG_TR, "",
-			  tag(TAG_TD,
-			      attrs("colspan","2", ATTR_CLASS,
-				    CLASS_FORMCONTENTS), left)));
+                          tag(TAG_TD,
+                              attrs("colspan", "2", ATTR_CLASS,
+                                    CLASS_FORMCONTENTS), left)));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -4676,6 +4817,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
+
         return sb.toString();
     }
 
@@ -4686,24 +4828,29 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param jsUrl _more_
      */
     public static void importJS(Appendable sb, String jsUrl) {
-	tag(sb, TAG_SCRIPT,
-	    attrs(ATTR_SRC, jsUrl, ATTR_TYPE,
-		  "text/JavaScript"), "");
+        tag(sb, TAG_SCRIPT,
+            attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
     }
 
-    public static void importJS(Appendable sb, String jsUrl, String integrity) {
-	if(integrity==null) {
-	    importJS(sb,jsUrl);
-	    return;
-	}
-	tag(sb, TAG_SCRIPT,
-	    attrs(ATTR_SRC, jsUrl, ATTR_TYPE,
-		  "text/JavaScript",
-		  "referrerpolicy","no-referrer",
-		  "integrity",integrity,
-		  "crossorigin","anonymous"),"");
+    /**
+     *
+     * @param sb _more_
+     * @param jsUrl _more_
+     * @param integrity _more_
+     */
+    public static void importJS(Appendable sb, String jsUrl,
+                                String integrity) {
+        if (integrity == null) {
+            importJS(sb, jsUrl);
+
+            return;
+        }
+        tag(sb, TAG_SCRIPT,
+            attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript",
+                  "referrerpolicy", "no-referrer", "integrity", integrity,
+                  "crossorigin", "anonymous"), "");
     }
-    
+
 
     /**
      * _more_
@@ -4733,10 +4880,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    public static void cssPreloadLink(Appendable sb, String url) throws IOException {
-	String template = "<link rel='preload' href='file.css' as='style' onload=\"this.onload=null;this.rel='stylesheet'\">\n";
-	//\n<noscript><link rel='stylesheet' href='file.css'></noscript>\n";
-	sb.append(template.replace("file.css",url));
+    /**
+     *
+     * @param sb _more_
+     * @param url _more_
+     *
+     * @throws IOException _more_
+     */
+    public static void cssPreloadLink(Appendable sb, String url)
+            throws IOException {
+        String template =
+            "<link rel='preload' href='file.css' as='style' onload=\"this.onload=null;this.rel='stylesheet'\">\n";
+        //\n<noscript><link rel='stylesheet' href='file.css'></noscript>\n";
+        sb.append(template.replace("file.css", url));
     }
 
 
@@ -6362,14 +6518,23 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
 
-    public static String makeFlipCard(String front, String back, String flipCardAttrs,String frontAttrs,String backAttrs) {
-	return "<div class='ramadda-flip-card ' "+ flipCardAttrs+"> <div class='ramadda-flip-card-inner'>" +
-	    "<div class='ramadda-flip-card-front' " + frontAttrs+">" +
-	    front +
-
-	    "</div><div class='ramadda-flip-card-back' " + backAttrs+">" +
-	    back +
-	    "</div></div></div>";
+    /**
+     *
+     * @param front _more_
+     * @param back _more_
+     * @param flipCardAttrs _more_
+     * @param frontAttrs _more_
+     * @param backAttrs _more_
+      * @return _more_
+     */
+    public static String makeFlipCard(String front, String back,
+                                      String flipCardAttrs,
+                                      String frontAttrs, String backAttrs) {
+        return "<div class='ramadda-flip-card ' " + flipCardAttrs
+               + "> <div class='ramadda-flip-card-inner'>"
+               + "<div class='ramadda-flip-card-front' " + frontAttrs + ">"
+               + front + "</div><div class='ramadda-flip-card-back' "
+               + backAttrs + ">" + back + "</div></div></div>";
     }
 
 
