@@ -276,6 +276,10 @@ class  WikiEditor {
 	    HtmlUtils.hidePopupObject();
 	    this.doPreview(this.entryId);
 	});
+	this.jq("wordcount").click(()=>{
+	    HtmlUtils.hidePopupObject();
+	    this.doWordcount(this.entryId);
+	});	
     }
 
 	
@@ -621,6 +625,11 @@ class  WikiEditor {
 	    console.log("WikiEdit.handleSubmit: no hidden value");
 	}
 	$("#" + this.hidden).val(this.getEditor().getValue());
+    }
+
+    doWordcount(entry) {
+	let s = Utils.split(this.getEditor().getValue().replace(/[\n={}]/g," ")," ",true,true);
+	alert("Approximately " + s.length +" words");
     }
 
     async doPreview(entry,  inPlace) {
