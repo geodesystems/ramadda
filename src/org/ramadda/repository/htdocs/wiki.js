@@ -628,7 +628,7 @@ class  WikiEditor {
     }
 
     doWordcount(entry) {
-	let s = Utils.split(this.getEditor().getValue().replace(/[\n={}]/g," ")," ",true,true);
+	let s = Utils.split(this.getEditor().getValue().replace(/[<>\n={}]/g," ")," ",true,true);
 	alert("Approximately " + s.length +" words");
     }
 
