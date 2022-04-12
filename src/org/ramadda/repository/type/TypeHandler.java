@@ -328,6 +328,8 @@ public class TypeHandler extends RepositoryManager {
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
 
+    private boolean adminOnly = false;
+
     /**  */
     private boolean isGroup = false;
 
@@ -538,6 +540,9 @@ public class TypeHandler extends RepositoryManager {
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
                         forUser));
+            adminOnly = Utils.getAttributeOrTag(node, "adminonly",
+                    XmlUtil.getAttributeFromTree(node, "adminonly",	
+					 false));
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
                     XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
 
@@ -1456,10 +1461,10 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean adminOnly() {
+	if(adminOnly) return true;
         if (parent != null) {
             return parent.adminOnly();
         }
-
         return false;
     }
 
