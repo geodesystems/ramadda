@@ -1697,10 +1697,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	throws Exception {
 
 	if(!checkIf(wikiUtil,request,entry,props)) return "";
-
-
-
-
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
                                       (String) null);
@@ -1708,6 +1704,25 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (criteria != null) {}
 
         StringBuilder sb = new StringBuilder();
+	if(theTag.equals("testcheckboxes")) {
+	    List values =new ArrayList();
+	    List selected =request.get("widgetname",new ArrayList<String>());
+	    for(int i=0;i<10;i++) {
+		//The values array can be String, TwoFacedObject or a Selector
+		HtmlUtils.Selector selector = new HtmlUtils.Selector("Value " + i,"value-" + i);
+		selector.setTooltip("Tooltip for: Value " +i); 
+		values.add(selector);
+	    }
+	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    //The css is the style for the containing box
+	    HU.checkboxSelect( sb, "widgetname", values,
+			       selected, HU.css("padding","5px","max-height","100px","overflow-y","auto","border","1px solid #ccc;"));
+
+	    sb.append(HU.submit("Submit"));
+	    sb.append(HU.formClose());
+	    return sb.toString();
+	}
         if (theTag.equals(WIKI_TAG_INFORMATION)) {
             Request myRequest = request.cloneMe();
             myRequest.put(ATTR_SHOWTITLE,
