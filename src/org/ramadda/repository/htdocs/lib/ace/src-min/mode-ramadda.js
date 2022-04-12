@@ -1596,9 +1596,6 @@ var tagMap = lang.createMap({
                 {token : "comment_line",
                  regex : "^ *#.*"
                 },
-                {token : "comment_line",
-                 regex : "//.*"
-                },
                 {token : "keyword",
                  regex : "^(-row.*|-col.*)|-frame|-gridboxes|-gridbox|-centerdiv|-center|-div|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
                 },
