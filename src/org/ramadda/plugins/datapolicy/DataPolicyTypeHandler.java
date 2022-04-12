@@ -68,15 +68,6 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     }
 
     /**
-      * @return _more_
-     */
-    @Override
-    public boolean adminOnly() {
-        return true;
-    }
-
-
-    /**
      *
      * @param request _more_
      * @param entry _more_

@@ -1,4 +1,14 @@
-<types supercategory="Science and Education">
+<types supercategory="Science and Education" adminonly="true">
+<type  name="type_datapolicy_source"  
+description="Data Policy Source"  
+category="Software and Services" >
+  <property name="icon" value="/datapolicy/fair.png"/>
+  <property name="form.file.show" value="false"/>
+  <property name="form.area.show" value="false"/>     
+  <property name="form.date.show" value="false"/>
+  <property name="form.url.label" value="Data Policy Source URL"/>
+</type>  
+
 <type  name="type_datapolicy"  
 handler="org.ramadda.plugins.datapolicy.DataPolicyTypeHandler"
 description="Data Policy"  
