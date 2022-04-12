@@ -190,6 +190,7 @@ class  WikiEditor {
 	this.ID_WIKI_PREVIEW_CONTENTS = "preview_contents";	
 	this.ID_WIKI_PREVIEW_OPEN= "preview_open";
 	this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
+	this.ID_WIKI_WORDCOUNT = "preview_wordcount";	
 	this.ID_WIKI_MESSAGE = "message";
 	this.ID_WIKI_MENUBAR    = "menubar";
 	this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
@@ -278,7 +279,7 @@ class  WikiEditor {
 	});
 	this.jq("wordcount").click(()=>{
 	    HtmlUtils.hidePopupObject();
-	    this.doWordcount(this.entryId);
+	    this.doWordcount();
 	});	
     }
 
@@ -627,8 +628,11 @@ class  WikiEditor {
 	$("#" + this.hidden).val(this.getEditor().getValue());
     }
 
-    doWordcount(entry) {
-	let s = Utils.split(this.getEditor().getValue().replace(/[<>\n={}]/g," ")," ",true,true);
+    doWordcount(s) {
+	if(s==null)
+	    s = this.getEditor().getValue();
+	s = s.replace(/<[^>]+>/g," ").replace(/<\/[^>]>/g," ").replace(/&nbsp;/g," ");
+	s = Utils.split(s.replace(/[<>\n={}]/g," ")," ",true,true);
 	alert("Approximately " + s.length +" words");
     }
 
@@ -647,18 +651,19 @@ class  WikiEditor {
 	let wikiCallback = (html,status,xhr) =>{
 	    let _this = this;
 	    if(inPlace) {
-		$("#" + this.domId(this.ID_WIKI_PREVIEW_INNER)).html(html);
+		this.jq(this.ID_WIKI_PREVIEW_INNER).html(html);
 	    } else {
-		let bar = HtmlUtils.div(['class','ramadda-menubar',"style","text-align:center;width:100%;border:1px solid #ccc"],
-					HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage("fa-sync",["title","Preview Again"])) +
-					SPACE2 +
-					HU.checkbox("",[ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,"Live") +
-					SPACE2 +
-					HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
+		let left = Utils.join([
+		    HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
+		    HU.checkbox('',[ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live'),
+		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-solid fa-calculator'))],SPACE2);
 
+		let right  = HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',['title','Close Preview']));
 
+		let bar = HtmlUtils.div([CLASS,'ramadda-menubar','style','xtext-align:center;width:100%;border:1px solid #ccc'],
+					HU.leftRight(left,right));
 
-		html = HtmlUtils.div([ID,this.domId(this.ID_WIKI_PREVIEW_INNER), CLASS,"wiki-editor-preview-inner"], html);
+		html = HtmlUtils.div([ID,this.domId(this.ID_WIKI_PREVIEW_INNER), CLASS,'wiki-editor-preview-inner'], html);
 		html = bar + html;
 		let preview = $("#"+this.domId(this.ID_WIKI_PREVIEW));
 		try {
@@ -668,10 +673,14 @@ class  WikiEditor {
 		}
 		preview.draggable();
 		preview.resizable({handles: 'ne,nw'});	    
-		$("#" + this.domId(this.ID_WIKI_PREVIEW_LIVE)).click(function() {
+		console.log(this.jq(this.ID_WIKI_PREVIEW_WORDCOUNT).length);
+		this.jq(this.ID_WIKI_PREVIEW_WORDCOUNT).click(function() {
+		    _this.doWordcount(_this.jq(_this.ID_WIKI_PREVIEW_INNER).html());
+		});
+		this.jq(this.ID_WIKI_PREVIEW_LIVE).click(function() {
 		    _this.previewLive = $(this).is(':checked');
 		});
-		$("#" + this.domId(this.ID_WIKI_PREVIEW_OPEN)).click(() =>{
+		this.jq(this.ID_WIKI_PREVIEW_OPEN).click(() =>{
 		    this.doPreview(entry,true);
 		});
 		$("#" + this.domId(this.ID_WIKI_PREVIEW_CLOSE)).click(() =>{
