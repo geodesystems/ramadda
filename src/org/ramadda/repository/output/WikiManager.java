@@ -997,7 +997,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         String bordercolor = getProperty(wikiUtil, props, ATTR_BORDERCOLOR,
                                          "#000");
 
-        if (border > 0) {
+        if (border > 0 || bordercolor!=null) {
+	    if(border==0) border=1;
             style += " border: " + border + "px solid " + bordercolor + ";";
         }
         String left = getProperty(wikiUtil, props, "left", null);
