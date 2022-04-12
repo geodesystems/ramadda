@@ -68,6 +68,7 @@ function  ConvertForm(inputId, entry) {
 	    html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 	    html += ".ace_csv_comment {color:#B7410E;}\n";
 	    html += ".ace_csv_command {color:blue;}\n";
+	    html += ".ramadda-seesv .ace_gutter-cell:hover {background:#ccc;}\n";	    
 	    html += "</style>";
 	    let topLeft = HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
 	    let topRight =  HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS),TITLE,"Settings",STYLE,HU.css("cursor","pointer")],HU.getIconImage("fa-cog")) +SPACE2 +
@@ -91,7 +92,9 @@ function  ConvertForm(inputId, entry) {
 	    html +=  HtmlUtil.div([ID, this.domId(ID_OUTPUT),STYLE,HU.css("margin-top","5px", "max-height","500px","overflow-y","auto")],"");
 	    html += HtmlUtil.div([ID, this.domId(ID_SCRATCH)],"");
 
+	    jqid(this.inputId).addClass("ramadda-seesv");
 	    $("#" +  this.inputId).html(html);
+
 	    this.jq("resize").resizable({
 		handles: 's',
 		stop: (event, ui) =>{
