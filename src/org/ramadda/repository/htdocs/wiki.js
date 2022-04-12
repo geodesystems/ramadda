@@ -190,7 +190,9 @@ class  WikiEditor {
 	this.ID_WIKI_PREVIEW_CONTENTS = "preview_contents";	
 	this.ID_WIKI_PREVIEW_OPEN= "preview_open";
 	this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
-	this.ID_WIKI_WORDCOUNT = "preview_wordcount";	
+	this.ID_WIKI_PREVIEW_WORDCOUNT = "preview_wordcount";
+	this.ID_WIKI_PREVIEW_COPY = "preview_copy";
+	this.ID_WIKI_PREVIEW_DOWNLOAD = "preview_download";			
 	this.ID_WIKI_MESSAGE = "message";
 	this.ID_WIKI_MENUBAR    = "menubar";
 	this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
@@ -655,8 +657,12 @@ class  WikiEditor {
 	    } else {
 		let left = Utils.join([
 		    HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
-		    HU.checkbox('',[ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live'),
-		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-solid fa-calculator'))],SPACE2);
+		    HU.checkbox('',[TITLE,'Live Preciew',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'')+SPACE4,
+		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
+
+		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Copy',ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
+		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Download',ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
+		],SPACE2);
 
 		let right  = HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',['title','Close Preview']));
 
@@ -673,10 +679,19 @@ class  WikiEditor {
 		}
 		preview.draggable();
 		preview.resizable({handles: 'ne,nw'});	    
-		console.log(this.jq(this.ID_WIKI_PREVIEW_WORDCOUNT).length);
 		this.jq(this.ID_WIKI_PREVIEW_WORDCOUNT).click(function() {
 		    _this.doWordcount(_this.jq(_this.ID_WIKI_PREVIEW_INNER).html());
 		});
+
+		this.jq(this.ID_WIKI_PREVIEW_COPY).click(function() {
+		    let s = _this.jq(_this.ID_WIKI_PREVIEW_INNER).html();
+		    Utils.copyToClipboard(s);
+		    alert("Text is copied to clipboard");
+		});
+		this.jq(this.ID_WIKI_PREVIEW_DOWNLOAD).click(function() {
+		    let s = _this.jq(_this.ID_WIKI_PREVIEW_INNER).html();
+		    Utils.makeDownloadFile('preview.html',s);
+		});				
 		this.jq(this.ID_WIKI_PREVIEW_LIVE).click(function() {
 		    _this.previewLive = $(this).is(':checked');
 		});
