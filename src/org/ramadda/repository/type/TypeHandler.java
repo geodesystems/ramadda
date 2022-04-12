@@ -1468,6 +1468,18 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
+    public boolean canCreate(Request request) {
+	if(adminOnly()) {
+	    return request.isAdmin();
+	}
+        if (parent != null) {
+            return parent.canCreate(request);
+        }
+        return true;
+
+    }
+
+
     /**
      * _more_
      *
@@ -2765,8 +2777,6 @@ public class TypeHandler extends RepositoryManager {
                                           entry.getSubEntries(), seen);
 
 
-
-
             if (didone) {
                 links.add(makeHRLink(OutputType.TYPE_FILE));
             }
@@ -2975,7 +2985,8 @@ public class TypeHandler extends RepositoryManager {
         for (Entry e : entries) {
             String type = e.getTypeHandler().getType();
             if ( !seen.contains(type)) {
-                types.add(type);
+		if(e.getTypeHandler().canCreate(request))
+		    types.add(type);
             }
         }
 

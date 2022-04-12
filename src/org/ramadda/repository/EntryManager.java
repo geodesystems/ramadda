@@ -1677,7 +1677,10 @@ public class EntryManager extends RepositoryManager {
                                       : getRepository().getTypeHandler(type))
                                    : entry.getTypeHandler());
 
-
+	if(typeHandler!=null) {
+	    if(!typeHandler.canCreate(request))
+		throw new IllegalArgumentException("User cannot create entry of type:" + typeHandler);
+	}
 
         addSessionType(request, type);
 
@@ -2248,6 +2251,11 @@ public class EntryManager extends RepositoryManager {
                 getRepository().getTypeHandler(request.getString(ARG_TYPE,
 								 TypeHandler.TYPE_ANY), true);
         }
+
+	if(!typeHandler.canCreate(request)) {
+	    throw new IllegalArgumentException("User cannot create entry of type:" + typeHandler);
+	}
+
 
         boolean     figureOutType = request.get(ARG_TYPE_GUESS, false);
 
@@ -3977,6 +3985,8 @@ public class EntryManager extends RepositoryManager {
 	    for(EntryManager.Types types: superType.getList()) {
 		boolean didSub = false;
 		for(TypeHandler typeHandler: types.getList()) {
+		    if(!typeHandler.canCreate(request))
+			continue;
 		    if(!didSuper) {
 			didSuper = true;
 			sb.append("<div class=type-group-container><div class='type-group-header'>" + superType.getName()+"</div><div class=type-group>");
@@ -7848,9 +7858,17 @@ public class EntryManager extends RepositoryManager {
             return;
         }
 
+
+	for (Entry entry : entries) {
+	    if(!entry.getTypeHandler().canCreate(request)) {
+		throw new IllegalArgumentException("User cannot create entry of type:" + entry.getTypeHandler());
+	    }
+	}
+	    
+
         if (isNew) {
             for (Entry theNewEntry : entries) {
-                //not sure how to handle the initialize new entry
+		//not sure how to handle the initialize new entry
                 //for xml imports. 
                 //                if ( !fromImport) {
                 theNewEntry.getTypeHandler().initializeNewEntry(request,
@@ -7887,7 +7905,8 @@ public class EntryManager extends RepositoryManager {
                 }
 
             }
-        }
+    }
+
 
 
         //We have our own connection
