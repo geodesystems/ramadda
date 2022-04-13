@@ -1715,9 +1715,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	    sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    String extra = "";
 	    //The css is the style for the containing box
 	    HU.checkboxSelect( sb, "widgetname", values,
-			       selected, HU.css("padding","5px","max-height","100px","overflow-y","auto","border","1px solid #ccc;"));
+			       selected, HU.css("padding","5px","max-height","100px","overflow-y","auto","border","1px solid #ccc;"), extra);
 
 	    sb.append(HU.submit("Submit"));
 	    sb.append(HU.formClose());

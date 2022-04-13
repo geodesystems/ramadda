@@ -1278,13 +1278,22 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } else {
 
                     String extraSelect = "";
+                    String selectBox = "";
                     if (type.equals(ARG_ACTION_MULTI_COMPARE)
                             && column.getName().equals("model")) {
                         extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
                                 "true") + HtmlUtils.attr("size", "4");
-                    } else if (((type.equals(
-                            ARG_ACTION_ENS_COMPARE) && frequency.equals(
-                            "monthly")) || type.equals(
+                        selectBox = HtmlUtils.select(arg, values,
+                                           selectedValues,
+                                           HtmlUtils.cssClass(selectClass)
+                                           + HtmlUtils.attr("id",
+                                                   getFieldSelectId(formId,
+                                                           collection,
+                                                           fieldIdx)) + extraSelect);
+                    } else if ((type.equals(
+                            //ARG_ACTION_ENS_COMPARE) && frequency.equals(
+                            //"monthly")) || type.equals(
+                            ARG_ACTION_ENS_COMPARE) || type.equals(
                                 ARG_ACTION_CORRELATION) || type.equals(
                                 ARG_ACTION_MULTI_TIMESERIES))
                                && column.getName().equals("ensemble")) {
@@ -1296,14 +1305,24 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             + HtmlUtils.attr(
                                 "title",
                                 "Select one or more ensemble members");
-                    }
-                    String selectBox = HtmlUtils.select(arg, values,
+                        selectBox = HtmlUtils.checkboxSelect(arg, values,
+                                           selectedValues,
+                                           //HtmlUtils.cssClass(selectClass)
+                                           HU.css("padding","5px","max-height","100px","overflow-y","auto","border","1px solid #ccc"),
+                                           HtmlUtils.attr("id",
+                                                   getFieldSelectId(formId,
+                                                           collection,
+                                                           fieldIdx)) + extraSelect);
+
+                    } else {
+                    selectBox = HtmlUtils.select(arg, values,
                                            selectedValues,
                                            HtmlUtils.cssClass(selectClass)
                                            + HtmlUtils.attr("id",
                                                    getFieldSelectId(formId,
                                                            collection,
                                                            fieldIdx)) + extraSelect);
+                    }
                     String select = "<label class=\"selector\" for=\""
                                     + getFieldSelectId(formId, collection,
                                         fieldIdx) + "\">"

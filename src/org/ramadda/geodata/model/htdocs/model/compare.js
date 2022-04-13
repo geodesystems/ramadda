@@ -641,10 +641,10 @@ function CollectionForm(formId, plottype, args) {
                     if (value == "sprd" || value == "clim") continue;
                     var extra = "";
                     // if multiple is available for ensemble members, select them all
-                    if (fieldIdx == 2 && select.prop('multiple')) {
-                        extra = " selected ";
-                        currentValueIsInNewList = true;
-                    } else
+                    //if (fieldIdx == 2 && select.prop('multiple')) {
+                    //    extra = " selected ";
+                    //    currentValueIsInNewList = true;
+                    //} else
                     if (!(currentValue === undefined || currentValue == null)) {
                         for (var j = 0; j < currentValue.length; j++) {
                             var s = currentValue[j];

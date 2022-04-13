@@ -3583,6 +3583,31 @@ public class HtmlUtils implements HtmlUtilsConstants {
         sb.append("\n");
     }
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param values _more_
+     * @param selected _more_
+     * @param extra _more_
+     * @param maxLength _more_
+     *
+     * @return _more_
+     */
+    public static String checkboxSelect(String name,
+                                      List values, List selected,
+                                      String boxStyle, String extra) throws Exception {
+        try {
+            StringBuilder sb = new StringBuilder();
+            checkboxSelect(sb, name, values, selected, boxStyle, extra);
+
+            return sb.toString();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
 
     /**
      *
@@ -3598,9 +3623,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static void checkboxSelect(Appendable sb, String name,
                                       List values, List selected,
-                                      String boxStyle)
+                                      String boxStyle, String extra)
             throws Exception {
-        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle)));
+        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle), extra));
         sb.append("\n");
 
         HashSet seenSelected = new HashSet();
