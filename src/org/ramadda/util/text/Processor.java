@@ -363,6 +363,98 @@ public abstract class Processor extends CsvOperator {
      * Class description
      *
      *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class Expand extends Processor {
+
+	private CsvUtil csvUtil;
+	private List<String> args;
+	private TextReader applyCtx;
+
+
+        /**
+         */
+        public Expand(CsvUtil csvUtil, TextReader ctx, List<String> cols, List<String> args) {
+            super(cols);
+	    this.csvUtil = csvUtil;
+            this.args = args;
+        }
+
+	private void makeCommands(TextReader ctx, Row row) {
+	    boolean debug = false;
+	    //	    debug =true;
+	    if(debug)
+		System.err.println("Make commands");
+	    List<String> cols = new ArrayList<String>();
+	    List<Integer> indices = getIndices(ctx);
+	    for(Integer i: indices) {
+		String column =   row.getString(i);
+		cols.add(column);
+		if(debug)
+		    System.err.println("\tcolumn:" + column);
+
+	    }
+	    applyCtx = new TextReader();
+	    for(String col: cols) {
+		List<String> cvrtedArgs = new ArrayList<String>();
+		for(String arg: args) {
+		    String id  =Utils.makeID(col,false);
+		    arg = arg.replace("${column}",id);
+		    arg = arg.replace("${column_name}",col);		    
+		    cvrtedArgs.add(arg);
+		}
+		//		System.err.println("\tcvrted args:" + cvrtedArgs);
+		for(int j=0;j<cvrtedArgs.size();j++) {
+		    String arg = cvrtedArgs.get(j);
+		    CsvUtil.CsvFunctionHolder func = csvUtil.getFunction(arg);
+		    if(func==null) {
+			throw new RuntimeException("Unknown function in -apply:" + cvrtedArgs);
+		    }
+		    int idx=0;
+		    try {
+			idx = func.run(applyCtx, cvrtedArgs,j);
+		    } catch(Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		    if(idx==CsvUtil.SKIP_INDEX) {
+			continue;
+		    }
+		    if(idx<0)
+			throw new RuntimeException("Unknown function in -apply:" + args);
+		    j=idx;
+		}
+	    }
+
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		makeCommands(ctx,row);
+	    }
+	    try {
+		row =  applyCtx.processRow(csvUtil, row);
+		return row;
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+        }
+
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Sun, Apr 5, '20
      * @author         Enter your name here...
      */
@@ -899,7 +991,6 @@ public abstract class Processor extends CsvOperator {
 	    String corpus;
             List<Integer> indices = getIndices(ctx);
 	    if(indices.size()==1) {
-		System.out.println("row:" + row);
 		corpus = row.getString(indices.get(0));
 	    } else {
 		StringBuilder sb = new StringBuilder();

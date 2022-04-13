@@ -2325,6 +2325,9 @@ public class CsvUtil {
 
         /** * Other  * */
         new Cmd(true, "Misc."),
+        new Cmd("-expand", "The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. Up to -endexpand are",
+		new Arg("columns", "Columns to expand with", "type", "columns"),
+		new Arg("commands", "Commands", "rows", "6")),
         new Cmd("-sort", "",
                 new Arg("column", "Column to sort on", "type", "column")),
         new Cmd("-descsort", "",
@@ -2695,8 +2698,8 @@ public class CsvUtil {
     }
 
 
-    private static int SKIP_INDEX = -999;
-    private static class CsvFunctionHolder {
+    public static int SKIP_INDEX = -999;
+    public static class CsvFunctionHolder {
 	private CsvUtil csvUtil;
 	private String  name;
 	private int numargs;
@@ -2946,6 +2949,20 @@ public class CsvUtil {
 		ctx.addProcessor(new Processor.If(ctx, this,predicate,ifCtx));
 		return i;
 	    });
+
+	defineFunction("-expand",1, (ctx,args,i) -> {
+		List<String> cols =  Utils.split(args.get(++i), ",", true, true);
+		List<String> applyArgs = new ArrayList<String>();
+		while(true) {
+		    if(i>=args.size()) throw new RuntimeException("Unclosed -exand");
+		    String a = args.get(++i);
+		    if(a.equals("-endexpand")) break;
+		    applyArgs.add(a);
+		}
+		ctx.addProcessor(new Processor.Expand(this,ctx,cols,applyArgs));
+		return i;
+	    });
+
 
 
 	CsvFunction unfurlFunc = (ctx,args,i) -> {
@@ -4374,7 +4391,7 @@ public class CsvUtil {
 
     }
 
-    private CsvFunctionHolder getFunction(String id) {
+    public CsvFunctionHolder getFunction(String id) {
 	if(functions==null) {
 	    makeFunctions();
 	}
