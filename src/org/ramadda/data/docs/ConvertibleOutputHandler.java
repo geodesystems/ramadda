@@ -150,7 +150,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-        makeConvertForm(request, entry, sb);
+        makeConvertForm(request, entry, sb, new Hashtable());
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return new Result("", sb);
@@ -166,7 +166,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makeConvertForm(Request request, Entry entry,
-                                StringBuilder sb)
+                                StringBuilder sb, Hashtable props)
             throws Exception {
         String lastInput =
             (String) getSessionManager().getSessionProperty(request,
@@ -205,8 +205,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
                            + "/media/convertcsv.js");
+	List<String> params = new ArrayList<String>();
+	String rows = Utils.getProperty(props, "rows",null);
+	if(Utils.stringDefined(rows)) Utils.add(params,"rows",JsonUtil.quote(rows));
+	String jsparams = JsonUtil.map(params);
         HU.script(sb,
-                  "new ConvertForm('" + id + "','" + entry.getId() + "');\n");
+		  "var convertParams = " + jsparams +";\n" +
+                  "new ConvertForm(" + HU.comma(HU.squote(id),HU.squote(entry.getId()),"convertParams")+");");
 
 
     }

@@ -163,7 +163,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             (ConvertibleOutputHandler) (ConvertibleOutputHandler) getRepository()
                 .getOutputHandler(ConvertibleOutputHandler.class);
         StringBuilder sb = new StringBuilder();
-        coh.makeConvertForm(request, entry, sb);
+        coh.makeConvertForm(request, entry, sb,props);
 
         return sb.toString();
     }

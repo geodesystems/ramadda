@@ -1,5 +1,6 @@
 
-function  ConvertForm(inputId, entry) {
+function  ConvertForm(inputId, entry,params) {
+    params = params||{};
     const ID_SETTINGS  = "settings";
     const ID_HELP  = "help";    
     const ID_MENU = "menu";
@@ -30,7 +31,7 @@ function  ConvertForm(inputId, entry) {
 	commands:null,
 	commandsMap:null,
 	header:null,
-	maxRows:30,
+	maxRows:params.rows||30,
 	dbPopupTime:null});
 	     
 
