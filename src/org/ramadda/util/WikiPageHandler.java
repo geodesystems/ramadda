@@ -1,3 +1,7 @@
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 // Copyright (c) 2008-2021 Geode Systems LLC
 // SPDX-License-Identifier: Apache-2.0
 
@@ -5,13 +9,15 @@
 package org.ramadda.util;
 
 
-import java.util.Hashtable;
 import java.util.HashSet;
+
+
+import java.util.Hashtable;
 
 
 /**
  */
-public  interface WikiPageHandler extends SystemContext {
+public interface WikiPageHandler extends SystemContext {
 
     /**
      * _more_
@@ -31,8 +37,7 @@ public  interface WikiPageHandler extends SystemContext {
      *
      * @return _more_
      */
-    public String getWikiLink(WikiUtil wikiUtil, String name,
-			      String label);
+    public String getWikiLink(WikiUtil wikiUtil, String name, String label);
 
 
     /**
@@ -45,7 +50,7 @@ public  interface WikiPageHandler extends SystemContext {
      * @return _more_
      */
     public String getWikiImageUrl(WikiUtil wikiUtil, String image,
-				  Hashtable props);
+                                  Hashtable props);
 
     /**
      * _more_
@@ -58,14 +63,16 @@ public  interface WikiPageHandler extends SystemContext {
      *
      * @return _more_
      */
-    public String getWikiPropertyValue(WikiUtil wikiUtil,
-				       String property, String tag,
-				       String remainder, HashSet notTags);
+    public String getWikiPropertyValue(WikiUtil wikiUtil, String property,
+                                       String tag, String remainder,
+                                       HashSet notTags);
 
+    /**
+     *
+     * @param wikiUtil _more_
+      * @return _more_
+     */
     public boolean titleOk(WikiUtil wikiUtil);
 
 
 }
-
-
-

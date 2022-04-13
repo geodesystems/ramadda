@@ -36,7 +36,7 @@ public class PatternProps {
 
 
     /**
-     
+     *
      *
      * @param props _more_
      */
@@ -55,7 +55,7 @@ public class PatternProps {
     /**
      *
      * @param key _more_
-      * @return _more_
+     *  @return _more_
      */
     public String get(String key) {
         for (int i = 0; i < patterns.size(); i++) {

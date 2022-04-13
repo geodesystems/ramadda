@@ -43,7 +43,7 @@ public class PhoneUtils {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public static boolean initTwilio() {
         if (TWILIO_ACCOUNT_SID == null) {
@@ -68,7 +68,9 @@ public class PhoneUtils {
         return true;
     }
 
-    private static Hashtable<String,HashSet> campaigns = new Hashtable<String,HashSet>();
+    /**  */
+    private static Hashtable<String, HashSet> campaigns =
+        new Hashtable<String, HashSet>();
 
     /**
      *
@@ -76,7 +78,7 @@ public class PhoneUtils {
      * @param msg _more_
      * @param ignoreInvalidNumbers _more_
      * @param campaign _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -98,31 +100,32 @@ public class PhoneUtils {
 
             return false;
         }
-        File f = null;
+        File    f    = null;
 
-	HashSet seen = null;
+        HashSet seen = null;
         if (campaign != null) {
-            f = new File(campaign + ".sent.txt");
-	    seen = campaigns.get(campaign);
-	    if(seen==null) {
-		seen = new HashSet();
-		campaigns.put(campaign,seen);
-		if (f.exists()) {
-		    FileInputStream   fis = new FileInputStream(f);
-		    InputStreamReader isr = new InputStreamReader(fis);
-		    BufferedReader    fr  = new BufferedReader(isr);
-		    String            line;
-		    while ((line = fr.readLine()) != null) {
-			seen.add(line);
-		    }
-		    fis.close();
+            f    = new File(campaign + ".sent.txt");
+            seen = campaigns.get(campaign);
+            if (seen == null) {
+                seen = new HashSet();
+                campaigns.put(campaign, seen);
+                if (f.exists()) {
+                    FileInputStream   fis = new FileInputStream(f);
+                    InputStreamReader isr = new InputStreamReader(fis);
+                    BufferedReader    fr  = new BufferedReader(isr);
+                    String            line;
+                    while ((line = fr.readLine()) != null) {
+                        seen.add(line);
+                    }
+                    fis.close();
                 }
-	    }
-	    if (seen.contains(phone)) {
-		System.err.println("Already sent:" + phone);
-		return true;
-	    }
-	}
+            }
+            if (seen.contains(phone)) {
+                System.err.println("Already sent:" + phone);
+
+                return true;
+            }
+        }
 
 
         String url = "https://api.twilio.com/2010-04-01/Accounts/"
@@ -153,11 +156,12 @@ public class PhoneUtils {
         }
         System.err.println("sent:" + phone);
         if (campaign != null) {
-	    seen.add(phone);
+            seen.add(phone);
             FileWriter fw = new FileWriter(f, true);
             fw.write(phone + "\n");
             fw.close();
         }
+
         return true;
     }
 
@@ -165,7 +169,7 @@ public class PhoneUtils {
      *
      * @param url _more_
      * @param args _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -220,7 +224,7 @@ public class PhoneUtils {
     /**
      *
      * @param phone _more_
-      * @return _more_
+     *  @return _more_
      */
     public static boolean isValidPhone(String phone) {
         phone = cleanPhone(phone);
@@ -238,7 +242,7 @@ public class PhoneUtils {
     /**
      *
      * @param phone _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String cleanPhone(String phone) {
         phone = phone.replaceAll("-", "").replaceAll("-", "");
@@ -269,10 +273,8 @@ public class PhoneUtils {
         }
         phone = cleanPhone(phone);
         String url = HtmlUtils.url("http://apilayer.net/api/validate",
-                                   "access_key",
-                                   numverifyKey,
-                                   "number", phone, "country_code", "",
-                                   "format", "1");
+                                   "access_key", numverifyKey, "number",
+                                   phone, "country_code", "", "format", "1");
 
         String result = IO.readContents(url, PhoneUtils.class);
         //      System.err.println(url);
@@ -317,9 +319,11 @@ public class PhoneUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	System.err.println(isPhoneMobile("3038982413"));
-	System.err.println(isPhoneMobile("3035437510"));
-	if(true)return;
+        System.err.println(isPhoneMobile("3038982413"));
+        System.err.println(isPhoneMobile("3035437510"));
+        if (true) {
+            return;
+        }
 
 
         String campaign = "testcampaign";
@@ -362,7 +366,7 @@ public class PhoneUtils {
                 break;
             }
         }
-	System.exit(0);
+        System.exit(0);
     }
 
 

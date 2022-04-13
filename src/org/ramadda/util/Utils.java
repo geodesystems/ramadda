@@ -1501,12 +1501,18 @@ public class Utils extends IO {
     }
 
 
-    public List arrayToList(Object...values) {
-	List v = new ArrayList();
-	for(Object o:values) {
-	    v.add(o);
-	}
-	return v;
+    /**
+     *
+     * @param values _more_
+      * @return _more_
+     */
+    public List arrayToList(Object... values) {
+        List v = new ArrayList();
+        for (Object o : values) {
+            v.add(o);
+        }
+
+        return v;
     }
 
     /**

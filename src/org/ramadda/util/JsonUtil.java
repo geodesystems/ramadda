@@ -4,8 +4,12 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
+
+
 import org.json.*;
+
 import org.w3c.dom.*;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -106,17 +110,21 @@ public class JsonUtil {
 
 
 
-    /** 
-	This quotes every other list value for showing in a map
-    */
+    /**
+     *   This quotes every other list value for showing in a map
+     *
+     * @param values _more_
+      * @return _more_
+     */
     public static List quoteList(List values) {
-	List quoted = new ArrayList();
-	for (int i = 0; i < values.size(); i += 2) {
-	    quoted.add(values.get(i));
-	    String value = values.get(i + 1).toString();
-	    quoted.add(quote(value));
-	}
-	return quoted;
+        List quoted = new ArrayList();
+        for (int i = 0; i < values.size(); i += 2) {
+            quoted.add(values.get(i));
+            String value = values.get(i + 1).toString();
+            quoted.add(quote(value));
+        }
+
+        return quoted;
     }
 
 
@@ -142,6 +150,7 @@ public class JsonUtil {
     public static String map(List values) {
         StringBuffer row = new StringBuffer();
         map(row, values);
+
         return row.toString();
     }
 
@@ -295,13 +304,22 @@ public class JsonUtil {
     public static String list(List values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         list(row, values, quoteValue);
+
         return row.toString();
     }
 
+    /**
+     *
+     * @param values _more_
+      * @return _more_
+     */
     public static List<String> quote(List values) {
-	List result = new ArrayList<String>();
-	for(Object o: values) result.add(quote(o.toString()));
-	return result;
+        List result = new ArrayList<String>();
+        for (Object o : values) {
+            result.add(quote(o.toString()));
+        }
+
+        return result;
     }
 
 
@@ -324,7 +342,7 @@ public class JsonUtil {
             for (int i = 0; i < values.size(); i++) {
                 if (i > 0) {
                     row.append(",\n");
-		}
+                }
                 if (quoteValue) {
                     row.append(quote(values.get(i).toString()));
                 } else {
@@ -562,6 +580,7 @@ public class JsonUtil {
         }
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
+
         return sb.toString();
     }
 
@@ -575,18 +594,20 @@ public class JsonUtil {
         try {
             if (s == null) {
                 sb.append(NULL);
+
                 return;
             }
-	    //	    s = cleanString(s);
-	    //            s = s.replaceAll("\n", "\\n");
-	    //            s = s.replaceAll("\r", "\\r");
-	    //            s = s.replaceAll("\"", "\\\\\"");
+            //      s = cleanString(s);
+            //            s = s.replaceAll("\n", "\\n");
+            //            s = s.replaceAll("\r", "\\r");
+            //            s = s.replaceAll("\"", "\\\\\"");
             if (s.equals("true") || s.equals("false")) {
-		sb.append(s);
+                sb.append(s);
+
                 return;
             }
-	    sb.append(JSONWriter.valueToString(s));
-	    //	    sb.append("\"");	    sb.append(s);	    sb.append("\"");
+            sb.append(JSONWriter.valueToString(s));
+            //      sb.append("\"");        sb.append(s);           sb.append("\"");
         } catch (Exception exc) {
             throw new IllegalArgumentException("Could not quote string:" + s);
         }
@@ -641,6 +662,7 @@ public class JsonUtil {
 
         //Make into all ascii ??
         s = s.replaceAll("[^\n\\x20-\\x7E]+", " ");
+
         return s;
     }
 
@@ -997,8 +1019,7 @@ public class JsonUtil {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {
-    }
+    public static void main(String[] args) throws Exception {}
 
 
     /**

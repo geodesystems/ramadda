@@ -710,8 +710,9 @@ public class IO {
                 return getInputStream(new URL(newUrl), tries + 1);
             }
             if ( !("" + response).substring(0, 1).equals("2")) {
-		System.err.println("Error reading URL:"+  url +" Error code:" + response + " "
-                                      + huc.getResponseMessage());
+                System.err.println("Error reading URL:" + url
+                                   + " Error code:" + response + " "
+                                   + huc.getResponseMessage());
 
                 throw new IOException("Error code:" + response + " "
                                       + huc.getResponseMessage());
@@ -1177,7 +1178,7 @@ public class IO {
      *
      * @param parent _more_
      * @param child _more_
-      * @return _more_
+     *  @return _more_
      */
     public static boolean isADescendent(File parent, File child) {
         if ((parent == null) || (child == null)) {
@@ -1185,9 +1186,10 @@ public class IO {
         }
 
         try {
-	    //Convert this to get of "..", etc
+            //Convert this to get of "..", etc
             parent = new File(parent.getCanonicalPath());
-            child = new File(child.getCanonicalPath());
+            child  = new File(child.getCanonicalPath());
+
             return isADescendentInner(parent, child);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -1199,15 +1201,15 @@ public class IO {
      *
      * @param parent _more_
      * @param child _more_
-      * @return _more_
+     *  @return _more_
      */
     private static boolean isADescendentInner(File parent, File child) {
         if ((parent == null) || (child == null)) {
             return false;
         }
-	//	System.err.println("\tparent: " + parent +" child:" + child);
+        //      System.err.println("\tparent: " + parent +" child:" + child);
         if (parent.equals(child)) {
-	    //	    System.err.println("\tparent equals child");
+            //      System.err.println("\tparent equals child");
             return true;
         }
         File newParent = child.getParentFile();
@@ -1226,12 +1228,13 @@ public class IO {
      */
     public static void main(String[] args) throws Exception {
 
-	if(true) {
-	    File f = new File("/Users/jeffmc/test2");
-	    System.err.println(f.getCanonicalPath());
-	    return;
+        if (true) {
+            File f = new File("/Users/jeffmc/test2");
+            System.err.println(f.getCanonicalPath());
 
-	}
+            return;
+
+        }
 
 
         final PipedOutputStream pos       = new PipedOutputStream();

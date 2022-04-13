@@ -390,7 +390,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @param name _more_
      * @param value _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String hiddenBase64(String name, Object value) {
         String s = value.toString();
@@ -1630,7 +1630,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /**
      *
      * @param cols _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -3305,7 +3305,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         private String tooltip;
 
         /**
-         
+         *
          *
          * @param label _more_
          * @param id _more_
@@ -3369,7 +3369,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
 
         /**
-         
+         *
          *
          * @param label _more_
          * @param id _more_
@@ -3589,14 +3589,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param name _more_
      * @param values _more_
      * @param selected _more_
+     * @param boxStyle _more_
      * @param extra _more_
      * @param maxLength _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public static String checkboxSelect(String name,
-                                      List values, List selected,
-                                      String boxStyle, String extra) throws Exception {
+    public static String checkboxSelect(String name, List values,
+                                        List selected, String boxStyle,
+                                        String extra)
+            throws Exception {
         try {
             StringBuilder sb = new StringBuilder();
             checkboxSelect(sb, name, values, selected, boxStyle, extra);
@@ -3625,7 +3629,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                       List values, List selected,
                                       String boxStyle, String extra)
             throws Exception {
-        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle) +  extra));
+        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle) + extra));
         sb.append("\n");
 
         HashSet seenSelected = new HashSet();
@@ -6550,7 +6554,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param flipCardAttrs _more_
      * @param frontAttrs _more_
      * @param backAttrs _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String makeFlipCard(String front, String back,
                                       String flipCardAttrs,

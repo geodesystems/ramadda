@@ -62,8 +62,11 @@ public class NamedInputStream {
         }
     }
 
+    /**
+      * @return _more_
+     */
     public String toString() {
-	return "NamedInputStream:" + name;
+        return "NamedInputStream:" + name;
     }
 
 }

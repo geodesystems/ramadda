@@ -84,8 +84,14 @@ public class TTLCache<KEY, VALUE> {
         this(timeThresholdInMilliseconds, -1, false);
     }
 
-    public TTLCache(long timeThresholdInMilliseconds,String name) {
-        this(timeThresholdInMilliseconds, -1, false,name);
+    /**
+     
+     *
+     * @param timeThresholdInMilliseconds _more_
+     * @param name _more_
+     */
+    public TTLCache(long timeThresholdInMilliseconds, String name) {
+        this(timeThresholdInMilliseconds, -1, false, name);
     }
 
     /**
@@ -99,9 +105,17 @@ public class TTLCache<KEY, VALUE> {
         this(timeThresholdInMilliseconds, sizeLimit, false);
     }
 
-    public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,String name) {
-        this(timeThresholdInMilliseconds, sizeLimit, false,name);
-    }    
+    /**
+     
+     *
+     * @param timeThresholdInMilliseconds _more_
+     * @param sizeLimit _more_
+     * @param name _more_
+     */
+    public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
+                    String name) {
+        this(timeThresholdInMilliseconds, sizeLimit, false, name);
+    }
 
 
 
@@ -115,15 +129,25 @@ public class TTLCache<KEY, VALUE> {
      */
     public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
                     boolean updateTimeOnGet) {
-        this(timeThresholdInMilliseconds, sizeLimit, updateTimeOnGet,null);
+        this(timeThresholdInMilliseconds, sizeLimit, updateTimeOnGet, null);
 
     }
 
+    /**
+     
+     *
+     * @param timeThresholdInMilliseconds _more_
+     * @param sizeLimit _more_
+     * @param updateTimeOnGet _more_
+     * @param name _more_
+     */
     public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
-                    boolean updateTimeOnGet, String name) {	
-	if(name==null)
-	    name = Utils.getStack(1, "TTL").replaceAll("\n", " ").replaceAll(".*\\((.*)\\.java.*","$1");
-	this.name = name;
+                    boolean updateTimeOnGet, String name) {
+        if (name == null) {
+            name = Utils.getStack(1, "TTL").replaceAll("\n",
+                                  " ").replaceAll(".*\\((.*)\\.java.*", "$1");
+        }
+        this.name            = name;
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
@@ -158,10 +182,16 @@ public class TTLCache<KEY, VALUE> {
         }
     }
 
+    /**
+     *
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public static void getInfo(Appendable sb) throws Exception {
         synchronized (MUTEX) {
             for (TTLCache cache : caches) {
-		sb.append(cache.name +" size:" + cache.size() +"<br>");
+                sb.append(cache.name + " size:" + cache.size() + "<br>");
             }
         }
     }
