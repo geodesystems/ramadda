@@ -111,7 +111,7 @@ public class JsonUtil {
      * @return  the map object { key1:value1, key2:value2 }
      */
     public static String mapAndQuote(Object... values) {
-        return map(true, values);
+        return makeMap(true, Misc.toList(values));
     }
 
 
@@ -123,7 +123,7 @@ public class JsonUtil {
      * @return  the map object { key1:value1, key2:value2 }
      */
     public static String map(Object... values) {
-        return map(DFLT_QUOTE, values);
+        return makeMap(DFLT_QUOTE, Misc.toList(values));
     }
 
     /**
@@ -134,7 +134,7 @@ public class JsonUtil {
      * @return  the map object { key1:value1, key2:value2 }
      */
     public static String map(List values) {
-        return map(DFLT_QUOTE, values);
+        return makeMap(DFLT_QUOTE, values);
     }
 
     /**
@@ -145,7 +145,7 @@ public class JsonUtil {
      * @return _more_
      */
     public static String mapAndQuote(List values) {
-        return map(true, values);
+        return makeMap(true, values);
     }
 
     /**
@@ -157,7 +157,7 @@ public class JsonUtil {
      * @return  the map object { key1:value1, key2:value2 }
      */
     public static String map(String[] values, boolean quoteValue) {
-        return map(quoteValue, Misc.toList(values));
+        return makeMap(quoteValue, Misc.toList(values));
     }
 
     /**
@@ -168,9 +168,9 @@ public class JsonUtil {
      *
      * @return  the map object { key1:value1, key2:value2 }
      */
-    public static String map(boolean quoteValue, List values) {
+    public static String makeMap(boolean quoteValue, List values) {
         StringBuffer row = new StringBuffer();
-        map(row, quoteValue, values);
+        makeMap(row, quoteValue, values);
         return row.toString();
     }
 
@@ -183,7 +183,7 @@ public class JsonUtil {
      *
      * @return _more_
      */
-    public static Appendable map(Appendable row, boolean quoteValue, List values) {
+    public static Appendable makeMap(Appendable row, boolean quoteValue, List values) {
         try {
             if (row == null) {
                 row = new StringBuilder();
