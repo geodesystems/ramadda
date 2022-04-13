@@ -1158,6 +1158,11 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
+    public String toString(Object[] values) {
+	return toString(values,offset);
+    }
+
+
     /**
      * _more_
      *
@@ -1284,6 +1289,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                            : ",";
         //I think we always want to use ',' as the delimiter
         delimiter = ",";
+	//	System.err.println("COL:" + this+" " + getType());
+
         if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
@@ -1305,7 +1312,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 double percent = (Double) values[offset];
                 sb.append((int) (percent * 100) + "");
             }
-
         } else if (isType(DATATYPE_DOUBLE)) {
             if (raw) {
                 sb.append(toString(values, offset));

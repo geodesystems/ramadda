@@ -1013,15 +1013,15 @@ public class GenericTypeHandler extends TypeHandler {
         if (values == null) {
             return;
         }
-        Request request = getRepository().getTmpRequest();
         for (Column column : getMyColumns()) {
-            if ( !column.getCanShow() || column.isPrivate()) {
+            if (column.isPrivate()) {
                 continue;
             }
-            StringBuilder tmpSB = new StringBuilder();
-            formatColumnHtmlValue(request, entry, column, tmpSB, values);
-            sb.append(tmpSB);
-            sb.append("\n");
+	    if(column.isString()) {
+		String s = column.toString(values);
+		sb.append(s);
+		sb.append("\n");
+	    }
         }
     }
 

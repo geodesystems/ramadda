@@ -625,8 +625,12 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
-        sb.append(entry.getDescription());
-        sb.append("\n");
+        if (getParent() != null) {
+            getParent().getTextCorpus(entry, sb);
+        } else {
+	    sb.append(entry.getDescription());
+	    sb.append("\n");
+	}
     }
 
 

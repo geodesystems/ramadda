@@ -670,7 +670,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	corpus.append(" ");
         doc.add(new TextField(FIELD_DESCRIPTION, _desc,Field.Store.NO));
 
-
 	List<Column> columns = entry.getTypeHandler().getColumns();
 	if (columns != null) {
 	    Object[] values = entry.getTypeHandler().getEntryValues(entry);
