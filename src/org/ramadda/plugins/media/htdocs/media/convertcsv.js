@@ -71,6 +71,11 @@ function  ConvertForm(inputId, entry,params) {
 	    html += ".ace_csv_command {color:blue;}\n";
 	    html += ".ramadda-seesv .ace_gutter-cell:hover {background:#ccc;}\n";	    
 	    html += "</style>";
+	    console.dir(this.params);
+	    if(this.params.extraTopLeft||this.params.extraTopRight) {
+		html+=HU.leftRight(this.params.extraTopLeft ||"",this.params.extraTopRight ||"");
+	    }
+	    
 	    let topLeft = HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
 	    let topRight =  HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS),TITLE,"Settings",STYLE,HU.css("cursor","pointer")],HU.getIconImage("fa-cog")) +SPACE2 +
 		HtmlUtil.span([ID,this.domId(ID_HELP),CLASS,"ramadda-clickable", TITLE,"Help"], HtmlUtils.getIconImage("fa-question-circle"))+SPACE2;
@@ -86,6 +91,7 @@ function  ConvertForm(inputId, entry,params) {
 	    right += HtmlUtil.span([ID,this.domId(ID_CLEAR),CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
 	    right += HtmlUtil.span([ID,this.domId(ID_LIST),CLASS,"ramadda-clickable", TITLE,"List temp files"],HU.getIconImage("fa-list")) +SPACE2;
 	    right += HtmlUtil.span([ID,this.domId(ID_TRASH),CLASS,"ramadda-clickable", TITLE,"Remove temp files"],HU.getIconImage("fa-trash")) +SPACE2;	    	    
+	    left +=SPACE + (this.params.extraButtons||"");
 
 
 	    html += HtmlUtil.leftRightTable(left,right);
