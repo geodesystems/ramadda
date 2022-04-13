@@ -33,6 +33,7 @@ import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.sql.Clause;
@@ -782,8 +783,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     if (operands.isEmpty()) {
                         if (returnjson) {
                             StringBuilder data = new StringBuilder();
-                            data.append(JsonUtil.mapAndQuote("Error",
-                                    "You need to select all fields"));
+                            data.append(JsonUtil.mapAndQuote(Utils.makeList("Error",
+									    "You need to select all fields")));
 
                             return new Result("", data, JsonUtil.MIMETYPE);
                         } else {
@@ -842,8 +843,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } else {
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
-                        data.append(JsonUtil.mapAndQuote("Error",
-                                "You need to select a time series"));
+                        data.append(JsonUtil.mapAndQuote(Utils.makeList("Error",
+									"You need to select a time series")));
 
                         return new Result("", data, JsonUtil.MIMETYPE);
                     }  /*else {
@@ -892,8 +893,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } catch (Exception exc) {
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
-                        data.append(JsonUtil.mapAndQuote("error",
-                                exc.getMessage()));
+                        data.append(JsonUtil.mapAndQuote(Utils.makeList("error",
+									exc.getMessage())));
 
                         return new Result("", data, JsonUtil.MIMETYPE);
                     } else {
@@ -905,7 +906,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             } else {
                 if (returnjson) {
                     StringBuilder data = new StringBuilder();
-                    data.append(JsonUtil.map("error", "No fields selected."));
+                    data.append(JsonUtil.map(Utils.makeList("error", "No fields selected.")));
 
                     return new Result("", data, JsonUtil.MIMETYPE);
                 } else {

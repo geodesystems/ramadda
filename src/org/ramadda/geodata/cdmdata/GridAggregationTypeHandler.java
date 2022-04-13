@@ -358,8 +358,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                              entry.getUser());
                     Entry newEntry =
                         getEntryManager().addFileEntry(addRequest, dataFile,
-						       entry, dataFile.getName(),"", entry.getUser(), null,
-                            initializer);
+                            entry, dataFile.getName(), "", entry.getUser(),
+                            null, initializer);
                     childrenEntries.add(newEntry);
                 }
                 if (addedNewOne && (harvestMetadata || harvestFullMetadata)) {

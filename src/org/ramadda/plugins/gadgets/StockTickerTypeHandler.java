@@ -81,7 +81,7 @@ public class StockTickerTypeHandler extends GenericTypeHandler {
 
         for (String line : StringUtil.split(symbols, "\n", true, true)) {
             js.append("new TradingView.widget(");
-            js.append(JsonUtil.mapAndQuote("symbol", line, "width", width,
+            js.append(JsonUtil.mapAndQuote(Utils.makeList("symbol", line, "width", width,
                                        "height", height, "interval",
                                        interval, "timezone", "exchange",
                                        "theme", "White", "style", "2",
@@ -91,7 +91,7 @@ public class StockTickerTypeHandler extends GenericTypeHandler {
                                        "hideideas", "true",
                                        "show_popup_button", "false",
                                        "popup_width", "1000", "popup_height",
-                                       "650"));
+							  "650")));
             js.append(");\n");
         }
         sb.append(HtmlUtils.script(js.toString()));

@@ -2516,8 +2516,8 @@ public class CsvUtil {
                     pw.println(",");
                 }
                 if (c.category) {
-                    pw.println(JsonUtil.mapAndQuote("isCategory", "true",
-						"label",c.cmd));
+                    pw.println(JsonUtil.mapAndQuote(Utils.makeList("isCategory", "true",
+								   "label",c.cmd)));
 
                 } else {
                     String argList = "[]";
@@ -2546,11 +2546,12 @@ public class CsvUtil {
                         }
                         argList = JsonUtil.list(tmp);
                     }
-                    pw.println(JsonUtil.map("command", JsonUtil.quote(c.cmd),
-                                        "label", (c.label != null)
-					? JsonUtil.quote(c.label)
-					: "null", "args", argList, "description",
-					JsonUtil.quote(c.desc)));
+                    pw.println(JsonUtil.map(Utils.makeList(
+							   "command", JsonUtil.quote(c.cmd),
+							   "label", (c.label != null)
+							   ? JsonUtil.quote(c.label)
+							   : "null", "args", argList, "description",
+							   JsonUtil.quote(c.desc))));
                 }
             } else {
                 if (c.category) {

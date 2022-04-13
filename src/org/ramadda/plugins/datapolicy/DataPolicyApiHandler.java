@@ -149,12 +149,12 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         String fileRoles =
             (String) entry.getValue(DataPolicyTypeHandler.IDX_FILE_ROLES);
         if (Utils.stringDefined(viewRoles)) {
-            permissions.add(JsonUtil.map(DataPolicy.FIELD_ACTION, JsonUtil.quote("view"),
-                                         DataPolicy.FIELD_ROLES, makeRoles(viewRoles)));
+            permissions.add(JsonUtil.map(Utils.makeList(DataPolicy.FIELD_ACTION, JsonUtil.quote("view"),
+							DataPolicy.FIELD_ROLES, makeRoles(viewRoles))));
         }
         if (Utils.stringDefined(fileRoles)) {
-            permissions.add(JsonUtil.map(DataPolicy.FIELD_ACTION, JsonUtil.quote("file"),
-                                         DataPolicy.FIELD_ROLES, makeRoles(fileRoles)));
+            permissions.add(JsonUtil.map(Utils.makeList(DataPolicy.FIELD_ACTION, JsonUtil.quote("file"),
+							DataPolicy.FIELD_ROLES, makeRoles(fileRoles))));
         }
         Utils.add(policy, DataPolicy.FIELD_PERMISSIONS, JsonUtil.list(permissions));
         policies.add(JsonUtil.map(policy));

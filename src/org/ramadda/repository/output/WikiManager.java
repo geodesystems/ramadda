@@ -1490,16 +1490,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
 		String label = Utils.makeLabel(tag.tag) + " properties";
-                tmp.add(JsonUtil.map("label",JsonUtil.quote(label)));
+                tmp.add(JsonUtil.map(Utils.makeList("label",JsonUtil.quote(label))));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
-                    tmp.add(JsonUtil.map("p",JsonUtil.quote(tag.attrsList.get(j)),"ex",
-					 JsonUtil.quote(tag.attrsList.get(j + 1))));
+                    tmp.add(JsonUtil.map(Utils.makeList("p",JsonUtil.quote(tag.attrsList.get(j)),"ex",
+							JsonUtil.quote(tag.attrsList.get(j + 1)))));
                 }
                 tags.add(tag.tag);
                 tags.add(JsonUtil.list(tmp));
             }
         }
-        sb.append(JsonUtil.map(tags, false));
+        sb.append(JsonUtil.map(tags));
         Result result = new Result("", sb, JsonUtil.MIMETYPE);
         result.setShouldDecorate(false);
         return result;
@@ -4052,7 +4052,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	List<String> argProps = new ArrayList<String>();
 	List<String> actions = new ArrayList<String>();
 	for(HtmlUtils.Selector selector: tfos) {
-	    actions.add(JsonUtil.mapAndQuote("id",selector.getId(),"label",selector.getLabel()));
+	    actions.add(JsonUtil.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
 	}
 
 	for(String prop: new String[]{"details","simple","showHeader","showDate","showCreateDate","showSize",
@@ -4993,7 +4993,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         Entry         entry = getEntryManager().getEntry(request);
 	StringBuilder sb = new StringBuilder();
 	if(entry==null) {
-	    sb.append(JsonUtil.mapAndQuote("error", "Could not find entry"));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	Hashtable<String,String> props = new Hashtable<String,String>();
@@ -5002,7 +5002,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
 							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
 	jsonUrl = request.getAbsoluteUrl(jsonUrl);
-	sb.append(JsonUtil.map("url", JsonUtil.quote(jsonUrl)));
+	sb.append(JsonUtil.map(Utils.makeList("url", JsonUtil.quote(jsonUrl))));
 	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -7464,12 +7464,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                 icon = "${root}/icons/magnifier.png";
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
-			    String v =JsonUtil.map("id",JsonUtil.quote(searchProvider.getId()),
-						   "type",JsonUtil.quote(searchProvider.getType()),
-						   "name",JsonUtil.quote(searchProvider.getName()),
-						   "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
-						   "icon",JsonUtil.quote(icon),
-						   "category",JsonUtil.quote(searchProvider.getCategory()));
+			    String v =JsonUtil.map(Utils.makeList("id",JsonUtil.quote(searchProvider.getId()),
+								  "type",JsonUtil.quote(searchProvider.getType()),
+								  "name",JsonUtil.quote(searchProvider.getName()),
+								  "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
+								  "icon",JsonUtil.quote(icon),
+								  "category",JsonUtil.quote(searchProvider.getCategory())));
                             processed.add(v);
                         }
                     }
@@ -7505,12 +7505,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    if (subToks.size() > 2) {
 			icon = subToks.get(2);
 		    }
-		    String v =JsonUtil.map("id",JsonUtil.quote(id),
+		    String v =JsonUtil.map(Utils.makeList("id",JsonUtil.quote(id),
 					   "type",JsonUtil.quote(searchProvider.getType()),
 					   "name",JsonUtil.quote(label),
 					   "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
 					   "icon",JsonUtil.quote(icon),
-					   "category",JsonUtil.quote(searchProvider.getCategory()));
+							  "category",JsonUtil.quote(searchProvider.getCategory())));
 		    processed.add(v);
 		}
 	    }
@@ -7693,7 +7693,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    String groupVar = getGroupVar(request);
             topProps.addAll(propList);
             js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
-                      + HU.quote(mainDivId) + "," + JsonUtil.map(topProps, false)
+                      + HU.quote(mainDivId) + "," + JsonUtil.map(topProps)
                       + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
             return;
@@ -7865,7 +7865,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    groupVar = getGroupVar(request);
             Utils.concatBuff(
 			     js, "\nvar " + groupVar +" = getOrCreateDisplayManager(",
-			     HU.quote(groupDivId), ",", JsonUtil.map(topProps, false), ");\n");
+			     HU.quote(groupDivId), ",", JsonUtil.map(topProps), ");\n");
         }
         Utils.add(propList, "entryId", HU.quote(entry.getId()),"thisEntryType",HU.quote(entry.getTypeHandler().getType()));
 	if(entry.isFile()) {
@@ -7973,7 +7973,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         wikiUtil.addWikiAttributes(propList);
 	js.append("\n");
 	js.append(groupVar+".createDisplay(" + HU.quote(displayType)
-                  + "," + JsonUtil.map(propList, false) + ");\n");
+                  + "," + JsonUtil.map(propList) + ");\n");
 	//xxxx
         wikiUtil.appendJavascript(js.toString());
     }

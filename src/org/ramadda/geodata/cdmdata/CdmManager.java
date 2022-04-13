@@ -52,7 +52,7 @@ import java.util.regex.Pattern;
 /**
  * A manager for netCDF-Java CDM data
  */
-@SuppressWarnings({"unchecked","deprecation"})
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class CdmManager extends RepositoryManager {
 
     /** NCML suffix */
@@ -543,7 +543,11 @@ public class CdmManager extends RepositoryManager {
 
     };
 
-    /** trajectory pool */
+    /**
+     * trajectory pool 
+     *
+     * @param sb _more_
+     */
     /*
     private DatedObjectPool<String, TrajectoryObsDataset> trajectoryPool =
         new DatedObjectPool<String, TrajectoryObsDataset>(10) {
@@ -1184,6 +1188,8 @@ public class CdmManager extends RepositoryManager {
     /**
      * Get the TrajectoryDataset
      *
+     *
+     * @param entry _more_
      * @param path  the path to the file
      *
      * @return  the Trajectory Dataset

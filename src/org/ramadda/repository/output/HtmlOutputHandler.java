@@ -1368,9 +1368,10 @@ public class HtmlOutputHandler extends OutputHandler {
             if (json == null) {
                 json = new StringBuffer();
                 String lastValue = values.get(values.size() - 1);
-                json.append(JsonUtil.map(new String[] { "values",
-                        JsonUtil.list(new String[] { "--", lastValue + "-v1",
-                        lastValue + "-v2", lastValue + "-v3" }) }, false));
+                json.append(JsonUtil.map(Utils.makeList("values",
+							JsonUtil.list(Utils.makeList(
+										     "--", lastValue + "-v1",
+										     lastValue + "-v2", lastValue + "-v3")))));
                 //                System.err.println(json);
                 testCache.put(valueKey, json);
             }

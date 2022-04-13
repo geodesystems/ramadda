@@ -116,12 +116,12 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
         List<String> messageList = new ArrayList<String>();
         for (ChatMessage chatMessage : room.messages) {
             messageList.add(
-                JsonUtil.mapAndQuote(
-                    "message", chatMessage.message, "user", chatMessage.user,
-                    "date", DateUtil.getTimeAsISO8601(chatMessage.date)));
+                JsonUtil.mapAndQuote(Utils.makeList(
+						    "message", chatMessage.message, "user", chatMessage.user,
+						    "date", DateUtil.getTimeAsISO8601(chatMessage.date))));
         }
         String   messages = JsonUtil.list(messageList);
-        String   json     = JsonUtil.map("messages", messages);
+        String   json     = JsonUtil.map(Utils.makeList("messages", messages));
         Metadata metadata = null;
         if ((metadataList != null) && (metadataList.size() > 0)) {
             metadata = metadataList.get(0);
@@ -248,8 +248,8 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             synchronized (room) {
                 room.notifyAll(output, getUserName(request.getUser()));
             }
-            sb.append(JsonUtil.mapAndQuote("code", "ok", "message",
-                                       "output sent"));
+            sb.append(JsonUtil.mapAndQuote(Utils.makeList("code", "ok", "message",
+							  "output sent")));
 
             return returnJson(request, sb);
         }
@@ -258,8 +258,8 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
         if (command.equals("clearall")) {
             boolean canEdit = getAccessManager().canDoEdit(request, entry);
             if ( !canEdit) {
-                sb.append(JsonUtil.mapAndQuote("code", "notok", "message",
-                                           "no permissions to clear all"));
+                sb.append(JsonUtil.mapAndQuote(Utils.makeList("code", "notok", "message",
+							      "no permissions to clear all")));
 
                 return returnJson(request, sb);
             }
@@ -267,7 +267,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             ChatRoom room = getRoom(entry);
             room.clearAll();
             saveRoom(room);
-            sb.append(JsonUtil.mapAndQuote("code", "ok", "message", "cleared"));
+            sb.append(JsonUtil.mapAndQuote(Utils.makeList("code", "ok", "message", "cleared")));
 
             return returnJson(request, sb);
         }
@@ -283,11 +283,11 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             for (ChatMessage chatMessage : room.messages) {
                 String message = getWikiManager().wikifyEntry(request, entry,
                                      chatMessage.message);
-                messageList.add(JsonUtil.mapAndQuote("message", message, "user",
-                        chatMessage.user));
+                messageList.add(JsonUtil.mapAndQuote(Utils.makeList("message", message, "user",
+								    chatMessage.user)));
             }
             String messages = JsonUtil.list(messageList);
-            sb.append(JsonUtil.map("code", "\"ok\"", "messages", messages));
+            sb.append(JsonUtil.map(Utils.makeList("code", "\"ok\"", "messages", messages)));
 
             return returnJson(request, sb);
         }
@@ -330,9 +330,9 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
         }
         StringBuilder sb   = new StringBuilder();
         String        user = room.latestUser;
-        String messages = JsonUtil.list(JsonUtil.mapAndQuote("message",
-                              room.latestInput, "user", user));
-        sb.append(JsonUtil.map("code", "\"ok\"", "messages", messages));
+        String messages = JsonUtil.list(JsonUtil.mapAndQuote(Utils.makeList("message",
+									    room.latestInput, "user", user)));
+        sb.append(JsonUtil.map(Utils.makeList("code", "\"ok\"", "messages", messages)));
 
         return returnJson(request, sb);
     }

@@ -250,8 +250,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                  + nextColumnName + " --";
             uniqueValues.add(0, selectLabel);
             json = new StringBuffer();
-            json.append(JsonUtil.map(new String[] { "values",
-                    JsonUtil.list(uniqueValues) }, false));
+            json.append(JsonUtil.map(Utils.makeList("values",
+						    JsonUtil.list(uniqueValues))));
             //System.err.println(json);
             cache.put(key, json);
         }

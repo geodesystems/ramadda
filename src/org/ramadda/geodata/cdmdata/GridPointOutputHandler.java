@@ -366,8 +366,9 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                     }
                     //                    exc.printStackTrace();
                     StringBuffer json = new StringBuffer();
-                    json.append(JsonUtil.map("error", JsonUtil.quote(message),
-                                         "errorcode", JsonUtil.quote(code)));
+                    json.append(JsonUtil.map(Utils.makeList("error",
+                            JsonUtil.quote(message), "errorcode",
+                            JsonUtil.quote(code))));
                     Result result = new Result("", json, JsonUtil.MIMETYPE);
 
                     //                    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
@@ -586,7 +587,8 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                   : Double.NaN);
                     JsonUtil.addGeolocation(bw, lat, lon, alt);
                     bw.append(",");
-                    bw.append(JsonUtil.attr(JsonUtil.FIELD_DATE, date.getMillis()));
+                    bw.append(JsonUtil.attr(JsonUtil.FIELD_DATE,
+                                            date.getMillis()));
                     bw.append(",");
                     bw.append(JsonUtil.mapKey(JsonUtil.FIELD_VALUES));
                     int          startIdx = (hasVertical
@@ -724,8 +726,8 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                         GridDataset dataset, StringBuffer sb)
             throws Exception {
 
-        boolean canAdd =
-            getRepository().getAccessManager().canDoNew(request, entry.getParentEntry());
+        boolean canAdd = getRepository().getAccessManager().canDoNew(request,
+                             entry.getParentEntry());
 
         String formUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName()) + "_point";

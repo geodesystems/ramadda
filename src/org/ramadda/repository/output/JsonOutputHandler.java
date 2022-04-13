@@ -233,7 +233,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (name.indexOf("date") >= 0) {
             JsonUtil.attr(items, "isDate", "true");
         }
-        header.add(JsonUtil.map(null, items, false).toString());
+        header.add(JsonUtil.map(items));
     }
 
     /**
@@ -393,7 +393,7 @@ public class JsonOutputHandler extends OutputHandler {
                                        columns, showFileUrl, remote);
             entryArray.add("values");
             entryArray.add(array);
-            values.add(JsonUtil.map(entryArray, false));
+            values.add(JsonUtil.map(entryArray));
         }
 
         List<String> topItems = new ArrayList<String>();
@@ -403,7 +403,7 @@ public class JsonOutputHandler extends OutputHandler {
         topItems.add(JsonUtil.list(null, fields, false).toString());
         topItems.add("data");
         topItems.add(JsonUtil.list(null, values, false).toString());
-        JsonUtil.map(sb, topItems, false);
+        JsonUtil.map(sb, topItems);
     }
 
 
@@ -525,7 +525,7 @@ public class JsonOutputHandler extends OutputHandler {
         /**
          *  Don't get the typeJson as it takes a *long* time for DbTypes
          * String      typeJson = type.getJson(request);
-         * typeJson = JsonUtil.mapAndQuote("id", type.getType(), "name", type.getLabel());
+         * typeJson = JsonUtil.mapAndQuote(Utils.makeList("id", type.getType(), "name", type.getLabel()));
          */
         JsonUtil.attr(items, "type", JsonUtil.quote(type.getType()));
         JsonUtil.attr(items, "typeName", JsonUtil.quote(type.getLabel()));
@@ -555,8 +555,8 @@ public class JsonOutputHandler extends OutputHandler {
             JsonUtil.attr(items, "isRemote", "true");
             ServerInfo server = entry.getRemoteServer();
             JsonUtil.attr(items, "remoteRepository",
-                      JsonUtil.map("url", JsonUtil.quote(server.getUrl()), "name",
-                               JsonUtil.quote(server.getLabel())));
+                      JsonUtil.map(Utils.makeList("url", JsonUtil.quote(server.getUrl()), "name",
+						  JsonUtil.quote(server.getLabel()))));
             JsonUtil.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
             String remoteParent = entry.getRemoteParentEntryId();
             if (remoteParent != null) {
@@ -592,16 +592,16 @@ public class JsonOutputHandler extends OutputHandler {
         if (entry.hasAreaDefined()) {
             double[] center = entry.getCenter();
             JsonUtil.attr(items, "geometry",
-                      JsonUtil.map("type", JsonUtil.quote("Point"), "coordinates",
-                               JsonUtil.list("" + center[1], "" + center[0])));
+                      JsonUtil.map(Utils.makeList("type", JsonUtil.quote("Point"), "coordinates",
+						  JsonUtil.list("" + center[1], "" + center[0]))));
             JsonUtil.attr(items, "bbox",
                       JsonUtil.list("" + entry.getWest(), "" + entry.getSouth(),
                                 "" + entry.getEast(), "" + entry.getNorth()));
         } else if (entry.hasLocationDefined()) {
             JsonUtil.attr(items, "geometry",
-                      JsonUtil.map("type", JsonUtil.quote("Point"), "coordinates",
-                               JsonUtil.list("" + entry.getLongitude(),
-                                         "" + entry.getLatitude())));
+                      JsonUtil.map(Utils.makeList("type", JsonUtil.quote("Point"), "coordinates",
+						  JsonUtil.list("" + entry.getLongitude(),
+								"" + entry.getLatitude()))));
             JsonUtil.attr(items, "bbox",
                       JsonUtil.list("" + entry.getLongitude(),
                                 "" + entry.getLatitude(),
@@ -627,14 +627,14 @@ public class JsonOutputHandler extends OutputHandler {
 	    typeHandler.getServiceInfos(request, entry, services);
 	    List<String> jsonServiceInfos = new ArrayList<String>();
 	    for (ServiceInfo service : services) {
-		jsonServiceInfos.add(JsonUtil.map("url",
+		jsonServiceInfos.add(JsonUtil.map(Utils.makeList("url",
 						  JsonUtil.quote(service.getUrl()),
 						  "relType",
 						  JsonUtil.quote(service.getType()),
 						  "name",
 						  JsonUtil.quote(service.getName()),
 						  "mimeType",
-						  JsonUtil.quote(service.getMimeType())));
+								 JsonUtil.quote(service.getMimeType()))));
 	    }
 
 	    items.add("services");
@@ -697,16 +697,16 @@ public class JsonOutputHandler extends OutputHandler {
                     columnNames.add(columnName);
                     columnLabels.add(column.getLabel());
                     //                    JsonUtil.attr(items, "column." + columnName, JsonUtil.quote(value));
-                    extraColumns.add(JsonUtil.map(new String[] { columnName,
-                            JsonUtil.quote(value) }));
+                    extraColumns.add(JsonUtil.map(Utils.makeList(columnName,
+								 JsonUtil.quote(value))));
                     ids.add(columnName);
                     attrs.add(
-                        JsonUtil.map(
+                        JsonUtil.map(Utils.makeList(
                             "id", JsonUtil.quote(columnName), "type",
                             JsonUtil.quote("attribute"), "label",
                             JsonUtil.quote(column.getLabel()), "value",
                             JsonUtil.quote(value), "canshow",
-                            Boolean.toString(column.getCanShow())));
+                            Boolean.toString(column.getCanShow()))));
                 }
             }
         }
@@ -720,16 +720,16 @@ public class JsonOutputHandler extends OutputHandler {
                     repository.getEntryManager().getEntryLinks(request,
                         entry)) {
                 OutputType outputType = link.getOutputType();
-                links.add(JsonUtil.map(new String[] {
-                    "label", JsonUtil.quote(link.getLabel()), "type",
-                    (outputType == null)
-                    ? "unknown"
-                    : JsonUtil.quote(outputType.toString()), "url",
-                    (link.getUrl() == null)
-                    ? JsonUtil.quote("")
-                    : JsonUtil.quote(java.net.URLEncoder.encode(link.getUrl(), "UTF-8")),
-                    "icon", JsonUtil.quote(link.getIcon())
-                }));
+                links.add(JsonUtil.map(Utils.makeList(
+						      "label", JsonUtil.quote(link.getLabel()), "type",
+						      (outputType == null)
+						      ? "unknown"
+						      : JsonUtil.quote(outputType.toString()), "url",
+						      (link.getUrl() == null)
+						      ? JsonUtil.quote("")
+						      : JsonUtil.quote(java.net.URLEncoder.encode(link.getUrl(), "UTF-8")),
+						      "icon", JsonUtil.quote(link.getIcon())
+						      )));
             }
             JsonUtil.attr(items, "links", JsonUtil.list(links));
         }

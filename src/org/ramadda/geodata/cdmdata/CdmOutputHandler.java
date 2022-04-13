@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2019 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.geodata.cdmdata;
 
@@ -133,7 +133,7 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
      * @throws Exception problem creating class
      */
     public CdmOutputHandler(Repository repository, String name)
-            throws Exception {
+	throws Exception {
         super(repository, name);
     }
 
@@ -145,7 +145,7 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
      *     @throws Exception On badness
      */
     public CdmOutputHandler(Repository repository, Element element)
-            throws Exception {
+	throws Exception {
         super(repository, element);
     }
 
@@ -158,7 +158,7 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
      */
     public CdmDataOutputHandler getCdmDataOutputHandler() {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
-            CdmDataOutputHandler.class);
+								       CdmDataOutputHandler.class);
     }
 
 
@@ -182,8 +182,8 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
             try {
                 InputStream inputStream =
                     IOUtil.getInputStream(
-                        "/org/ramadda/geodata/cdmdata/resources/netcdf.properties",
-                        GridPointOutputHandler.class);
+					  "/org/ramadda/geodata/cdmdata/resources/netcdf.properties",
+					  GridPointOutputHandler.class);
                 Properties tmp = new Properties();
                 tmp.load(inputStream);
                 IOUtil.close(inputStream);

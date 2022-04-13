@@ -171,10 +171,10 @@ public class License implements Comparable {
             }
             licenses.add(JsonUtil.map(attrs));
         }
-        System.out.println(JsonUtil.map("name",
-                                        JsonUtil.quote("Licenses from..."),
-                                        "priority", "100", "licenses",
-                                        JsonUtil.list(licenses)));
+        System.out.println(JsonUtil.map(Utils.makeList("name",
+						       JsonUtil.quote("Licenses from..."),
+						       "priority", "100", "licenses",
+						       JsonUtil.list(licenses))));
     }
 
 

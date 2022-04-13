@@ -22,6 +22,7 @@ import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.job.JobInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.TempDir;
 
@@ -435,9 +436,8 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
             StringBuilder json = new StringBuilder();
-            json.append(
-                JsonUtil.map(
-                    "error", JsonUtil.quote("Unauthorized access to file")));
+	    JsonUtil.map(json,Utils.makeList(
+					     "error", JsonUtil.quote("Unauthorized access to file")));
             Result result = new Result("", json, JsonUtil.MIMETYPE);
             result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
 

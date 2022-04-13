@@ -3910,7 +3910,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String makeErrorResponse(Request request, String msg) {
         msg = translate(request, msg);
         if (request.responseAsJson()) {
-            return JsonUtil.mapAndQuote("error", msg);
+            return JsonUtil.mapAndQuote(Utils.makeList("error", msg));
         } else if (request.responseAsXml()) {
             return XmlUtil.tag(TAG_RESPONSE,
                                XmlUtil.attr(ATTR_CODE, CODE_ERROR), msg);
@@ -3941,7 +3941,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String makeOkResponse(Request request, String msg) {
         msg = translate(request, msg);
         if (request.responseAsJson()) {
-            return JsonUtil.mapAndQuote("ok", msg);
+            return JsonUtil.mapAndQuote(Utils.makeList("ok", msg));
         } else if (request.responseAsXml()) {
             return XmlUtil.tag(TAG_RESPONSE,
                                XmlUtil.attr(ATTR_CODE, CODE_OK), msg);

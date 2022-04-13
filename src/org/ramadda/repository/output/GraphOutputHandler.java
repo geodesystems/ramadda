@@ -166,10 +166,10 @@ public class GraphOutputHandler extends OutputHandler {
                      + entry.getId();
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry);
-        nodes.add(JsonUtil.map(new String[] {
-            ATTR_NAME, entry.getName(), ATTR_NODEID, entry.getId(), ATTR_URL,
-            entryUrl, ATTR_GRAPHURL, url, ATTR_ICON, getIconUrl
-        }, true));
+        nodes.add(JsonUtil.mapAndQuote(Utils.makeList(
+					      ATTR_NAME, entry.getName(), ATTR_NODEID, entry.getId(), ATTR_URL,
+					      entryUrl, ATTR_GRAPHURL, url, ATTR_ICON, getIconUrl
+					      )));
     }
 
 
@@ -190,10 +190,9 @@ public class GraphOutputHandler extends OutputHandler {
         if ((from == null) || (to == null)) {
             return;
         }
-        links.add(JsonUtil.map(new String[] {
+        links.add(JsonUtil.mapAndQuote(Utils.makeList(
             ATTR_SOURCE_ID, from.getId(), ATTR_TARGET_ID, to.getId(),
-            ATTR_TITLE, title
-        }, true));
+            ATTR_TITLE, title)));
     }
 
     /**

@@ -31,10 +31,10 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
-
-import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.geo.KmlUtil;
 
 import org.w3c.dom.Element;
 
@@ -117,7 +117,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A class for handling CDM data output
  */
-@SuppressWarnings({"unchecked","deprecation"})
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstants {
 
     /** _more_ */
@@ -484,7 +484,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         StringBuffer sb = new StringBuffer();
         if (request.get(ARG_METADATA_ADD, false)) {
-            if (getRepository().getAccessManager().canDoEdit(request,entry)) {
+            if (getRepository().getAccessManager().canDoEdit(request,
+                    entry)) {
                 sb.append(HtmlUtils.p());
                 List<Entry> entries = (List<Entry>) Misc.newList(entry);
                 getEntryManager().addInitialMetadata(request, entries, false,
@@ -731,7 +732,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         //      displayProps.add(JsonUtil.quote(column.getSearchArg()));
 
         displayProps.add("requestFields");
-        displayProps.add(JsonUtil.quote(Utils.join(all,",")));
+        displayProps.add(JsonUtil.quote(Utils.join(all, ",")));
 
         getCdmManager().returnGridDataset(path, gds);
 
@@ -918,8 +919,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridSubsetForm(Request request, Entry entry)
             throws Exception {
 
-        boolean canAdd =
-            getRepository().getAccessManager().canDoNew(request,  entry.getParentEntry());
+        boolean canAdd = getRepository().getAccessManager().canDoNew(request,
+                             entry.getParentEntry());
 
 
         String       path    = getPath(request, entry);
@@ -1039,8 +1040,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridSubset(Request request, Entry entry)
             throws Exception {
 
-        boolean canAdd =
-            getRepository().getAccessManager().canDoNew(request, entry.getParentEntry());
+        boolean canAdd = getRepository().getAccessManager().canDoNew(request,
+                             entry.getParentEntry());
 
         String       path = getPath(request, entry);
         StringBuffer sb   = new StringBuffer();
@@ -1530,31 +1531,30 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 writer.println("\"fields\":");
                 List<String> fields = new ArrayList<String>();
                 int          index  = 0;
-                fields.add(JsonUtil.map("id", JsonUtil.quote(field), "label",
-                                    JsonUtil.quote(fieldLabel), "index",
-                                    "" + (index++), "type",
-                                    JsonUtil.quote("double"), "chartable",
-                                    "true", "unit",
-                                    JsonUtil.quote(getUnit(unit))));
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote(field), "label",
+                        JsonUtil.quote(fieldLabel), "index", "" + (index++),
+                        "type", JsonUtil.quote("double"), "chartable",
+                        "true", "unit", JsonUtil.quote(getUnit(unit)))));
                 //todo: check for times
-                fields.add(JsonUtil.map("id", JsonUtil.quote("date"), "label",
-                                    JsonUtil.quote("Date"), "index",
-                                    "" + (index++), "type",
-                                    JsonUtil.quote("date")));
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote("date"), "label",
+                        JsonUtil.quote("Date"), "index", "" + (index++),
+                        "type", JsonUtil.quote("date"))));
                 if (finalZRange.length() > 1) {
-                    fields.add(JsonUtil.map("id", JsonUtil.quote("level"), "label",
-                                        JsonUtil.quote("Level"), "index",
-                                        "" + (index++), "type",
-                                        JsonUtil.quote("double")));
+                    fields.add(JsonUtil.map(Utils.makeList("id",
+                            JsonUtil.quote("level"), "label",
+                            JsonUtil.quote("Level"), "index", "" + (index++),
+                            "type", JsonUtil.quote("double"))));
                 }
-                fields.add(JsonUtil.map("id", JsonUtil.quote("latitude"), "label",
-                                    JsonUtil.quote("Latitude"), "index",
-                                    "" + (index++), "type",
-                                    JsonUtil.quote("double")));
-                fields.add(JsonUtil.map("id", JsonUtil.quote("longitude"), "label",
-                                    JsonUtil.quote("Longitude"), "index",
-                                    "" + (index++), "type",
-                                    JsonUtil.quote("double")));
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote("latitude"), "label",
+                        JsonUtil.quote("Latitude"), "index", "" + (index++),
+                        "type", JsonUtil.quote("double"))));
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote("longitude"), "label",
+                        JsonUtil.quote("Longitude"), "index", "" + (index++),
+                        "type", JsonUtil.quote("double"))));
                 writer.println(JsonUtil.list(fields));
                 List<String> displayProps = new ArrayList<String>();
                 Hashtable    wikiProps    = new Hashtable();
@@ -1604,8 +1604,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     }
                     cnt += writeJson(
                         writer, cnt, max, a,
-                        JsonUtil.quote(theDates.get(tIdx).toString()), points,
-                        finalZRange, scaler);
+                        JsonUtil.quote(theDates.get(tIdx).toString()),
+                        points, finalZRange, scaler);
                 }
                 writer.println("]}");
                 writer.close();

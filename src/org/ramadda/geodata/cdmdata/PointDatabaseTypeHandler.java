@@ -3,8 +3,6 @@ Copyright (c) 2008-2021 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-
-
 package org.ramadda.geodata.cdmdata;
 
 
@@ -118,7 +116,7 @@ import javax.swing.*;
  *
  * @version $Revision: 1.3 $
  */
-@SuppressWarnings({"unchecked","deprecation"})
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
     /** _more_ */
@@ -359,7 +357,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(null, entry,
-						  new String[]{ContentMetadataHandler.TYPE_ATTACHMENT}, true);
+                    new String[] { ContentMetadataHandler.TYPE_ATTACHMENT },
+                    true);
             System.err.println("Initializing point database entry:"
                                + entry.getFullName());
             int     cnt     = 0;
@@ -589,9 +588,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     ? stringMetadata
                     : numericMetadata);
             listToAddTo.add(new PointDataMetadata(tableName, colName,
-                    metadata.size(), varName, var.getFullName(), unit, (isString
-                    ? PointDataMetadata.TYPE_STRING
-                    : PointDataMetadata.TYPE_DOUBLE)));
+                    metadata.size(), varName, var.getFullName(), unit,
+                    (isString
+                     ? PointDataMetadata.TYPE_STRING
+                     : PointDataMetadata.TYPE_DOUBLE)));
         }
         for (PointDataMetadata pdm : stringMetadata) {
             pdm.setColumnNumber(metadata.size());
@@ -2158,10 +2158,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     private String getHeader(Request request, Entry entry) throws Exception {
-        boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        boolean canEdit     = getAccessManager().canDoEdit(request, entry);
 
-        List   headerLinks = new ArrayList();
-        String view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
+        List    headerLinks = new ArrayList();
+        String  view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
 
 
         boolean doSearch = request.exists(ARG_POINT_SEARCH)
@@ -2235,7 +2235,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             throws Exception {
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
-        String view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
+        String  view    = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
         if (view.equals(VIEW_DEFAULT)) {
             return null;
         }
@@ -2312,10 +2312,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             throws Exception {
 
 
-        String tableName = getTableName(entry);
+        String                  tableName = getTableName(entry);
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
 
-        List<PointDataMetadata> metadata = getMetadata(getTableName(entry));
+        List<PointDataMetadata> metadata  = getMetadata(getTableName(entry));
         if (canEdit && request.defined(ARG_POINT_CHANGETYPE)) {
             String column = request.getString(ARG_POINT_CHANGETYPE, "");
             for (PointDataMetadata pdm : metadata) {
@@ -2919,12 +2919,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(null, entry,
-					      new String[]{ContentMetadataHandler.TYPE_ATTACHMENT}, true);
+                new String[] { ContentMetadataHandler.TYPE_ATTACHMENT },
+                true);
         if (metadataList == null) {
             if (parent != null) {
                 metadataList = getMetadataManager().findMetadata(null,
-								 parent, new String[]{ContentMetadataHandler.TYPE_ATTACHMENT}, true,
-                        false);
+                        parent,
+                        new String[] {
+                            ContentMetadataHandler.TYPE_ATTACHMENT }, true,
+                                false);
             }
         }
 

@@ -1179,11 +1179,11 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                 HU.comma(HU.squote(target),
 			 HU.squote(entry.getId()),
 			 HU.squote(name),
-			 JsonUtil.map("entryType",HU.squote(entry.getTypeHandler().getType()),
-				  "isGroup",""+isGroup,
-				  "isImage",
-				  ""+isImage,
-				  "isGeo",""+entry.isGeoreferenced()),
+			 JsonUtil.map(Utils.makeList("entryType",HU.squote(entry.getTypeHandler().getType()),
+						     "isGroup",""+isGroup,
+						     "isImage",
+						     ""+isImage,
+						     "isGeo",""+entry.isGeoreferenced())),
 			 HU.squote(type))), linkText));
 
 	HU.close(sb,"span");

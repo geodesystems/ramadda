@@ -164,9 +164,9 @@ public class TabularOutputHandler extends OutputHandler {
             } catch (org.apache.poi.hssf.OldExcelFormatException exc) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(
-                    JsonUtil.map(
-                        "error",
-                        JsonUtil.quote("Old Excel format not supported")));
+                    JsonUtil.map(Utils.makeList(
+						"error",
+						JsonUtil.quote("Old Excel format not supported"))));
                 request.setReturnFilename(entry.getName() + ".json");
                 Result result = new Result("", sb);
                 result.setShouldDecorate(false);
@@ -198,7 +198,7 @@ public class TabularOutputHandler extends OutputHandler {
     private Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
-        s = JsonUtil.mapAndQuote("html", s);
+        s = JsonUtil.mapAndQuote(Utils.makeList("html", s));
 
         return new Result(s, "application/json");
     }
@@ -295,8 +295,8 @@ public class TabularOutputHandler extends OutputHandler {
                     }
                     jrows.add(JsonUtil.list(quoted));
                 }
-                sheets.add(JsonUtil.map("name", JsonUtil.quote(sheet), "rows",
-                                    JsonUtil.list(jrows)));
+                sheets.add(JsonUtil.map(Utils.makeList("name", JsonUtil.quote(sheet), "rows",
+						       JsonUtil.list(jrows))));
 
                 return true;
             }
@@ -1032,9 +1032,9 @@ public class TabularOutputHandler extends OutputHandler {
         StringBuilder js = new StringBuilder();
         js.append("var displayManager = getOrCreateDisplayManager(\"" + divId
                   + "\",");
-        js.append(JsonUtil.map("showMap", "false", "showMenu", "false",
-                           "showTitle", "false", "layoutType",
-                           JsonUtil.quote("table"), "layoutColumns", "1"));
+        js.append(JsonUtil.map(Utils.makeList("showMap", "false", "showMenu", "false",
+					      "showTitle", "false", "layoutType",
+					      JsonUtil.quote("table"), "layoutColumns", "1")));
         js.append(",true);\n");
         js.append("displayManager.createDisplay('xls'," + props + ");\n");
         sb.append(HtmlUtils.script(js.toString()));

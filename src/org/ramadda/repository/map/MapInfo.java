@@ -973,13 +973,13 @@ public class MapInfo {
                        MapBoxProperties properties, double north,
                        double west, double south, double east) {
         String color = properties.getColor();
-        String attrs = JsonUtil.map("color", (color == null)
+        String attrs = JsonUtil.map(Utils.makeList("color", (color == null)
                                          ? "null"
                                          : JsonUtil.quote(color), "selectable",
                                              "" + properties.getSelectable(),
                                              "zoomToExtent",
                                              "" + properties
-                                                 .getZoomToExtent());
+						   .getZoomToExtent()));
         getJS().append("var mapBoxAttributes = " + attrs + ";\n");
         getJS().append(mapVarName + ".createBox("
                        + HU.comma(HU.squote(id),
@@ -1335,10 +1335,10 @@ public class MapInfo {
     public void addCircle(String id, double lat, double lon, int radius,
                           int strokeWidth, String strokeColor,
                           String fillColor, String info) {
-        String attrs = JsonUtil.map("pointRadius", "" + radius, "strokeWidth",
+        String attrs = JsonUtil.map(Utils.makeList("pointRadius", "" + radius, "strokeWidth",
                                 "" + strokeWidth, "fillColor",
                                 JsonUtil.quote(fillColor), "strokeColor",
-                                JsonUtil.quote(strokeColor));
+						   JsonUtil.quote(strokeColor)));
         getJS().append(mapVarName + ".addPoint("
                        + HU.comma(HU.squote(id), llp(lat, lon), attrs,
                                   HU.squote(info)) + ");\n");

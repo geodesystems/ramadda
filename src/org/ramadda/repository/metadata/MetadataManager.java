@@ -417,16 +417,16 @@ public class MetadataManager extends RepositoryManager {
             if (entry.hasAreaDefined()) {
                 String box = entry.getSouth() + " " + entry.getWest() + " "
                              + entry.getNorth() + " " + entry.getEast();
-                geo.add(JsonUtil.map("@type", JsonUtil.quote("GeoShape"),
-                                     "box", JsonUtil.quote(box)));
+                geo.add(JsonUtil.map(Utils.makeList("@type", JsonUtil.quote("GeoShape"),
+						    "box", JsonUtil.quote(box))));
             } else {
-                geo.add(JsonUtil.map("@type",
-                                     JsonUtil.quote("GeoCoordinates"),
-                                     "latitude",
-                                     JsonUtil.quote(""
-                                         + entry.getLatitude()), "longitude",
-                                             JsonUtil.quote(""
-                                                 + entry.getLongitude())));
+                geo.add(JsonUtil.map(Utils.makeList("@type",
+						    JsonUtil.quote("GeoCoordinates"),
+						    "latitude",
+						    JsonUtil.quote(""
+								   + entry.getLatitude()), "longitude",
+						    JsonUtil.quote(""
+								   + entry.getLongitude()))));
             }
             top.add("spatialCoverage");
             top.add(JsonUtil.map(geo));
@@ -436,10 +436,10 @@ public class MetadataManager extends RepositoryManager {
             top.add("distribution");
             top.add(
                 JsonUtil.mapAndQuote(
-                    "@type", "DataDownload", "contentUrl",
+				     Utils.makeList("@type", "DataDownload", "contentUrl",
                     getEntryManager().getEntryResourceUrl(
                         request, entry, EntryManager.ARG_INLINE_DFLT, true,
-                        false)));
+                        false))));
         }
 
 
@@ -464,8 +464,8 @@ public class MetadataManager extends RepositoryManager {
                 ctor.add("url");
                 ctor.add(JsonUtil.quote(md.getAttr4()));
                 ctor.add("contactPoint");
-                ctor.add(JsonUtil.mapAndQuote("@type", "ContactPoint",
-                        "email", md.getAttr3()));
+                ctor.add(JsonUtil.mapAndQuote(Utils.makeList("@type", "ContactPoint",
+							     "email", md.getAttr3())));
                 top.add("creator");
                 top.add(JsonUtil.map(ctor));
             } else if (type.equals("enum_gcmdkeyword")
@@ -486,7 +486,7 @@ public class MetadataManager extends RepositoryManager {
             top.add("keywords");
             top.add(JsonUtil.list(keywords, true));
         }
-        JsonUtil.map(sb, top, false);
+        JsonUtil.map(sb, top);
         sb.append("\n</script>\n");
 
         return sb.toString();
@@ -1781,9 +1781,9 @@ public class MetadataManager extends RepositoryManager {
                     if (label == null) {
                         label = value;
                     }
-                    maps.add(JsonUtil.map("count", tuple[0].toString(),
+                    maps.add(JsonUtil.map(Utils.makeList("count", tuple[0].toString(),
                                           "value", JsonUtil.quote(value),
-                                          "label", JsonUtil.quote(label)));
+							 "label", JsonUtil.quote(label))));
                 }
                 sb.append(JsonUtil.list(maps));
             } else {

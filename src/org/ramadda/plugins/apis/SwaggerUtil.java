@@ -7,6 +7,7 @@ package org.ramadda.plugins.apis;
 
 
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.Utils;
 
 
 import ucar.unidata.util.Misc;
@@ -274,7 +275,7 @@ public class SwaggerUtil {
 
         //Add dummy auths
         operation.add(ATTR_AUTHORIZATIONS);
-        operation.add(JsonUtil.map());
+        operation.add(JsonUtil.map(new ArrayList()));
 
         return operation;
     }
@@ -376,8 +377,9 @@ public class SwaggerUtil {
         mapItems.add(JsonUtil.quote("query"));
         if (values != null) {
             mapItems.add(ATTR_ALLOWABLEVALUES);
-            mapItems.add(JsonUtil.map("valueType", JsonUtil.quote("LIST"), "values",
-                                  JsonUtil.list(values, true)));
+            mapItems.add(JsonUtil.map(Utils.makeList("valueType",
+                    JsonUtil.quote("LIST"), "values",
+                    JsonUtil.list(values, true))));
         }
 
         return JsonUtil.map(mapItems);

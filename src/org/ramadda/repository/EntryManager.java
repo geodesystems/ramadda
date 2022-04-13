@@ -1211,7 +1211,7 @@ public class EntryManager extends RepositoryManager {
 	    Entry group = findGroup(request);
 	    request.setReturnFilename("result.json");
 	    if ( !getAccessManager().canDoNew(request, group)) {
-		sb.append(JsonUtil.mapAndQuote("status","error","message","You do not have permission to add a file"));
+		sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","You do not have permission to add a file")));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    String fileContents = request.getString("file",(String) null);
@@ -1227,11 +1227,11 @@ public class EntryManager extends RepositoryManager {
 	    } catch(Exception exc) {
 		exc.printStackTrace();
 		return new Result("",
-				  new StringBuilder(JsonUtil.mapAndQuote("status","error","message",exc.getMessage())), 
+				  new StringBuilder(JsonUtil.mapAndQuote(Utils.makeList("status","error","message",exc.getMessage()))), 
 				  JsonUtil.MIMETYPE);
 	    }
 	    if(!tmpFile.exists()) {
-		sb.append(JsonUtil.mapAndQuote("status","error","message","Unable to write file:" + fileName));
+		sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Unable to write file:" + fileName)));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
@@ -1244,13 +1244,13 @@ public class EntryManager extends RepositoryManager {
 					  typeHandler, null);
 	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE);
 
-	    sb.append(JsonUtil.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
-				       url));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
+							  url)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc);
 	    exc.printStackTrace();
-	    sb.append(JsonUtil.mapAndQuote("status","error","message","Error:" + exc));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Error:" + exc)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
     }
@@ -1976,11 +1976,11 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
-	    sb.append(JsonUtil.mapAndQuote("error", "Could not find entry"));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	if ( !getAccessManager().canDoEdit(request, entry)) {
-	    sb.append(JsonUtil.mapAndQuote("error", "No permision to edit entry"));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "No permision to edit entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	String contents = request.getString("file",(String)null);
@@ -1992,13 +1992,13 @@ public class EntryManager extends RepositoryManager {
 	}
 	
 	if(contents==null) {
-	    sb.append(JsonUtil.mapAndQuote("error", "No file contents given"));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "No file contents given")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
         if (!entry.isFile()) {
 	    //Probably don't need/want this check
-	    //	    sb.append(JsonUtil.mapAndQuote("error", "Entry is not a file"));
+	    //	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Entry is not a file")));
 	    //	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
@@ -2018,7 +2018,7 @@ public class EntryManager extends RepositoryManager {
 							 tmpFile);
 	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
 	updateEntry(request, entry);
-	sb.append(JsonUtil.mapAndQuote("message", "OK, file has been saved"));
+	sb.append(JsonUtil.mapAndQuote(Utils.makeList("message", "OK, file has been saved")));
 	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -2852,7 +2852,7 @@ public class EntryManager extends RepositoryManager {
 		ids.add(JsonUtil.quote(e.getId()));
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(JsonUtil.map("entries",JsonUtil.list(ids)));
+	    sb.append(JsonUtil.map(Utils.makeList("entries",JsonUtil.list(ids))));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 

@@ -18,6 +18,7 @@ import org.ramadda.data.record.VisitInfo;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Request;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.Utils;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
 
@@ -245,8 +246,8 @@ public class JsonVisitor extends BridgeRecordVisitor {
             pw = getThePrintWriter();
             String       code = "nodata";
             StringBuffer json = new StringBuffer();
-            pw.append(JsonUtil.map("warning", JsonUtil.quote("No data available"),
-                               "errorcode", JsonUtil.quote(code)));
+            pw.append(JsonUtil.map(Utils.makeList("warning", JsonUtil.quote("No data available"),
+						  "errorcode", JsonUtil.quote(code))));
 
         }
     }

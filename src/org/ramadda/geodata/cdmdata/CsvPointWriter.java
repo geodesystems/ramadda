@@ -26,6 +26,7 @@ public class CsvPointWriter extends DataSink {
     /**  */
     private Row header = null;
 
+    /**  */
     private Hashtable<String, String> props;
 
     /**
@@ -52,8 +53,12 @@ public class CsvPointWriter extends DataSink {
      *  @return _more_
      */
     public int processArgs(CsvUtil csvUtil, List<String> args, int index) {
-	if(index>=args.size()-2) throw new IllegalArgumentException("Usage: -tonc \"name value\" ");
-	props =  csvUtil.parseProps(args.get(++index));    
+        if (index >= args.size() - 2) {
+            throw new IllegalArgumentException(
+                "Usage: -tonc \"name value\" ");
+        }
+        props = csvUtil.parseProps(args.get(++index));
+
         return index;
     }
 
@@ -70,6 +75,7 @@ public class CsvPointWriter extends DataSink {
     public Row processRow(TextReader ctx, Row row) throws Exception {
         if (header == null) {}
         System.err.println("CsvPointWriter.processRow:" + row);
+
         return row;
     }
 

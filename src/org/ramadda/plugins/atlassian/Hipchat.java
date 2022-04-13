@@ -180,12 +180,10 @@ public class Hipchat {
         String   color = (args.length > 0)
                          ? args[0]
                          : "green";
-        String[] attrs = new String[] {
-            "color", color, "message", message, "notify", "false",
-            "message_format", "html"
-        };
+        List  attrs =  Utils.makeList( "color", color, "message", message, "notify", "false",
+				       "message_format", "html");
 
-        message = JsonUtil.map(attrs, true);
+        message = JsonUtil.mapAndQuote(attrs);
         message = clean(message);
 
         return message;

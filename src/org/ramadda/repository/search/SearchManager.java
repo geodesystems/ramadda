@@ -809,14 +809,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	    System.err.println("gpt corpus:" + gptCorpus.length());
 	    text =  gptCorpus.toString().trim()+"\nKeywords:";
-	    String body = JsonUtil.map("prompt",
-				   JsonUtil.quote(text),
-				   "temperature", "0.3",
-				   "max_tokens" ,"60",
-				   "top_p", "1.0",
-				   "frequency_penalty", "0.8",
-				   "presence_penalty", "0.0",
-				   "stop","[\"\\n\"]");
+	    String body = JsonUtil.map(Utils.makeList("prompt",
+						      JsonUtil.quote(text),
+						      "temperature", "0.3",
+						      "max_tokens" ,"60",
+						      "top_p", "1.0",
+						      "frequency_penalty", "0.8",
+						      "presence_penalty", "0.0",
+						      "stop","[\"\\n\"]"));
 	    //	    System.err.println(body);
 	    String result = IO.doHttpRequest("GET", new URL(url), body,
 					     "Content-Type","application/json",
@@ -977,14 +977,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<String> names  = new ArrayList<String>();
 	request.put(ARG_MAX,20);
 	for(Entry entry:  getEntryManager().getEntries(request, new StringBuilder())) {
-	    String obj = JsonUtil.map("name", JsonUtil.quote(entry.getName()), "id",
+	    String obj = JsonUtil.map(Utils.makeList("name", JsonUtil.quote(entry.getName()), "id",
 				  JsonUtil.quote(entry.getId()),
 				  "type",JsonUtil.quote(entry.getTypeHandler().getType()),
 				  "icon",
-				  JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl()));
+						     JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);
 	}
-	return new Result("", new StringBuilder(JsonUtil.map("values", JsonUtil.list(names))), "text/json");
+	String json = JsonUtil.map(Utils.makeList("values", JsonUtil.list(names)));
+	return new Result("", new StringBuilder(json), "text/json");
     }
 
     private Query makeAnd(Query...queries) {

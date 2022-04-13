@@ -3246,7 +3246,7 @@ public class WikiUtil {
 		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,"class","ramadda-nav-popup-link","title","Click to view table of contents"));
 		String container = HU.div(icon +p, HU.attrs("class","ramadda-nav-popup-container"));
                 String align = Utils.getProperty(headingsProps, "align", "left");
-		String args = JsonUtil.map("align",JsonUtil.quote(align));
+		String args = JsonUtil.map(Utils.makeList("align",JsonUtil.quote(align)));
 		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
                 s = s.replace("${" + headingsNav + "}",container);
 

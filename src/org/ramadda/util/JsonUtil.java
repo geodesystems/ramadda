@@ -103,39 +103,22 @@ public class JsonUtil {
         pw.append(attr(FIELD_ELEVATION, elevation));
     }
 
-    /**
-     * Create a JSON map
-     *
-     * @param values  key/value pairs { key1,value1,key2,value2 }
-     *
-     * @return  the map object { key1:value1, key2:value2 }
-     */
-    public static String mapAndQuote(Object... values) {
-        return makeMap(true, Misc.toList(values));
-    }
 
 
-    /**
-     * Create a JSON map
-     *
-     * @param values  key/value pairs { key1,value1,key2,value2 }
-     *
-     * @return  the map object { key1:value1, key2:value2 }
-     */
-    public static String map(Object... values) {
-        return makeMap(DFLT_QUOTE, Misc.toList(values));
+
+    /** 
+	This quotes every other list value for showing in a map
+    */
+    public static List quoteList(List values) {
+	List quoted = new ArrayList();
+	for (int i = 0; i < values.size(); i += 2) {
+	    quoted.add(values.get(i));
+	    String value = values.get(i + 1).toString();
+	    quoted.add(quote(value));
+	}
+	return quoted;
     }
 
-    /**
-     * Create a JSON map
-     *
-     * @param values  key/value pairs [ key1,value1,key2,value2 ]
-     *
-     * @return  the map object { key1:value1, key2:value2 }
-     */
-    public static String map(List values) {
-        return makeMap(DFLT_QUOTE, values);
-    }
 
     /**
      * _more_
@@ -145,19 +128,7 @@ public class JsonUtil {
      * @return _more_
      */
     public static String mapAndQuote(List values) {
-        return makeMap(true, values);
-    }
-
-    /**
-     * Create a JSON map
-     *
-     * @param values  key/value pairs { key1,value1,key2,value2 }
-     * @param quoteValue  true to quote the values
-     *
-     * @return  the map object { key1:value1, key2:value2 }
-     */
-    public static String map(String[] values, boolean quoteValue) {
-        return makeMap(quoteValue, Misc.toList(values));
+        return map(quoteList(values));
     }
 
     /**
@@ -168,22 +139,22 @@ public class JsonUtil {
      *
      * @return  the map object { key1:value1, key2:value2 }
      */
-    public static String makeMap(boolean quoteValue, List values) {
+    public static String map(List values) {
         StringBuffer row = new StringBuffer();
-        makeMap(row, quoteValue, values);
+        map(row, values);
         return row.toString();
     }
+
 
     /**
      * _more_
      *
      * @param row _more_
      * @param values _more_
-     * @param quoteValue _more_
      *
      * @return _more_
      */
-    public static Appendable makeMap(Appendable row, boolean quoteValue, List values) {
+    public static Appendable map(Appendable row, List values) {
         try {
             if (row == null) {
                 row = new StringBuilder();
@@ -200,7 +171,7 @@ public class JsonUtil {
                     row.append(",\n");
                 }
                 cnt++;
-                row.append(attr(name, value, quoteValue));
+                row.append(attr(name, value));
             }
             row.append(mapClose());
         } catch (IOException ioe) {
@@ -404,7 +375,7 @@ public class JsonUtil {
                           : id);
             mapValues.add(labelKey);
             mapValues.add(label);
-            arrayVals.add(map(mapValues, true));
+            arrayVals.add(mapAndQuote(mapValues));
         }
 
         return list(arrayVals);
