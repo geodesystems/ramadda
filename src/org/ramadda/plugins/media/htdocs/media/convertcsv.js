@@ -71,7 +71,6 @@ function  ConvertForm(inputId, entry,params) {
 	    html += ".ace_csv_command {color:blue;}\n";
 	    html += ".ramadda-seesv .ace_gutter-cell:hover {background:#ccc;}\n";	    
 	    html += "</style>";
-	    console.dir(this.params);
 	    if(this.params.extraTopLeft||this.params.extraTopRight) {
 		html+=HU.leftRight(this.params.extraTopLeft ||"",this.params.extraTopRight ||"");
 	    }
