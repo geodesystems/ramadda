@@ -1569,14 +1569,14 @@ var tagMap = lang.createMap({
  		    regex: "(type *= *\")([^ \"]+)(\")",
 		}, {
                     token : ["bracket","macro"],
-		    regex: "({{ *)(display_[^ }]+)"
+		    regex: "(x{{ *)(display_[^ }]+)"
 		}, {
                     token : ["bracket","macro"],
 		    regex: "({{ *)([^ }]+)"
 
 		}, {
                     token : ["bracket"],
-		    regex: ".*(\{\{).*"
+		    regex: ".*(xxxx\{\{).*"
 		}, {
                     token : ["wiki-editor-entryid"],
 		    regex: "([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)"
