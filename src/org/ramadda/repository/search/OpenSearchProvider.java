@@ -234,5 +234,3 @@ public class OpenSearchProvider extends SearchProvider {
 
 
 }
-
-

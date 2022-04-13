@@ -90,5 +90,3 @@ public class SynchronousEntryMonitor extends EntryMonitor {
     }
 
 }
-
-

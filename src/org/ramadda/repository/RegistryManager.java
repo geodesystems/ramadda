@@ -1164,5 +1164,3 @@ public class RegistryManager extends RepositoryManager {
 
 
 }
-
-

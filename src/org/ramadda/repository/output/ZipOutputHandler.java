@@ -128,8 +128,7 @@ public class ZipOutputHandler extends OutputHandler {
 
         if (state.entry != null) {
             if (getAccessManager().canDownload(request, state.entry)
-                    && getAccessManager().canDoExport(request,
-                        state.entry)) {
+                    && getAccessManager().canDoExport(request, state.entry)) {
                 links.add(makeLink(request, state.entry, OUTPUT_ZIP));
             }
 
@@ -507,5 +506,3 @@ public class ZipOutputHandler extends OutputHandler {
     }
 
 }
-
-

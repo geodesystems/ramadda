@@ -286,5 +286,3 @@ public class ExampleOutputHandler extends OutputHandler {
 
 
 }
-
-

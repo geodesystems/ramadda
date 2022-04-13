@@ -73,5 +73,3 @@ public class TestOutputHandler extends OutputHandler {
 
 
 }
-
-

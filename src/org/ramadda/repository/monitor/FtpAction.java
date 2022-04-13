@@ -342,5 +342,3 @@ public class FtpAction extends MonitorAction {
 
 
 }
-
-

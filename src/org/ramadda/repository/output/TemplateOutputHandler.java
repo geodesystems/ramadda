@@ -272,5 +272,3 @@ public class TemplateOutputHandler extends OutputHandler {
 
 
 }
-
-

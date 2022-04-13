@@ -54,7 +54,8 @@ public class EntryUtil extends RepositoryManager {
 
     /** _more_ */
     private TTLObject<Hashtable<String, Integer>> typeCache =
-        new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,"Entry Type Count Cache");
+        new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,
+                      "Entry Type Count Cache");
 
 
 
@@ -160,22 +161,34 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
+    /**
+     *
+     * @param entries _more_
+     * @param descending _more_
+      * @return _more_
+     */
     public static List<Entry> sortEntriesOnNumber(List<Entry> entries,
             final boolean descending) {
-	List tmp = new ArrayList();
-	for(Entry entry: entries) {
-	    String s1 = StringUtil.findPattern(entry.getName(),"([0-9]+)");
-	    if(s1==null) s1 = "9999";
-	    double v1 = Double.parseDouble(s1);
-	    tmp.add(new Object[]{entry,v1});
-	}	    
+        List tmp = new ArrayList();
+        for (Entry entry : entries) {
+            String s1 = StringUtil.findPattern(entry.getName(), "([0-9]+)");
+            if (s1 == null) {
+                s1 = "9999";
+            }
+            double v1 = Double.parseDouble(s1);
+            tmp.add(new Object[] { entry, v1 });
+        }
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
-		Object[] t1 = (Object[])o1;
-		Object[] t2 = (Object[])o2;		
-                double v1 = (double)t1[1];
-                double v2 = (double)t2[1];		
-                int   result = v1<v2?-1:v1==v2?0:1;
+                Object[] t1     = (Object[]) o1;
+                Object[] t2     = (Object[]) o2;
+                double   v1     = (double) t1[1];
+                double   v2     = (double) t2[1];
+                int      result = (v1 < v2)
+                                  ? -1
+                                  : (v1 == v2)
+                                    ? 0
+                                    : 1;
                 if (descending) {
                     if (result >= 1) {
                         return -1;
@@ -194,12 +207,13 @@ public class EntryUtil extends RepositoryManager {
         };
         Object[] array = tmp.toArray();
         Arrays.sort(array, comp);
-	List<Entry> result = new ArrayList<Entry>();
-	for(Object o: array) {
-	    Object[] tuple = (Object[]) o;
-	    result.add((Entry)tuple[0]);
-	}
-	return result;
+        List<Entry> result = new ArrayList<Entry>();
+        for (Object o : array) {
+            Object[] tuple = (Object[]) o;
+            result.add((Entry) tuple[0]);
+        }
+
+        return result;
     }
 
 
@@ -877,7 +891,8 @@ public class EntryUtil extends RepositoryManager {
         try {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(null, entry,
-						  new String[]{ContentMetadataHandler.TYPE_TIMEZONE}, true);
+                    new String[] { ContentMetadataHandler.TYPE_TIMEZONE },
+                    true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
 

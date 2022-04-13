@@ -270,7 +270,7 @@ public class LogManager extends RepositoryManager {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public MyLogger getEntryActivityLogger() {
         return getLogger(REPOSITORY_ACTIVITY_LOG_ID);
@@ -291,7 +291,7 @@ public class LogManager extends RepositoryManager {
     /**
      *
      * @param logId _more_
-      * @return _more_
+     *  @return _more_
      */
     public MyLogger getLogger(String logId) {
         if (getRepository().getParentRepository() != null) {
@@ -1178,7 +1178,7 @@ public class LogManager extends RepositoryManager {
      *
      *
      * @version        $version$, Wed, Mar 30, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class MyLogger {
 
@@ -1189,7 +1189,7 @@ public class LogManager extends RepositoryManager {
         PrintWriter pw;
 
         /**
-         
+         *
          *
          * @param logger _more_
          */
@@ -1198,7 +1198,7 @@ public class LogManager extends RepositoryManager {
         }
 
         /**
-         
+         *
          *
          * @param pw _more_
          */
@@ -1207,7 +1207,7 @@ public class LogManager extends RepositoryManager {
         }
 
         /**
-         
+         *
          */
         MyLogger() {}
 

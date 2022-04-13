@@ -269,5 +269,3 @@ public class HarvesterEntry {
 
 
 }
-
-

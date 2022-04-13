@@ -82,5 +82,3 @@ public class SelectInfo {
         return " max:" + max;
     }
 }
-
-

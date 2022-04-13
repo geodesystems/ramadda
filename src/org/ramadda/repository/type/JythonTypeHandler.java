@@ -755,5 +755,3 @@ public class JythonTypeHandler extends GenericTypeHandler {
 
 
 }
-
-

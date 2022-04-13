@@ -12,6 +12,8 @@ import org.ramadda.repository.metadata.*;
 
 
 import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
@@ -23,8 +25,6 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.IO;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -477,15 +477,18 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
         List<Metadata> metadataList =
             getMetadataManager().getMetadata(parentEntry);
-	//Prune out the aliases
-	if(metadataList!=null) {
-	    List<Metadata> tmp = new ArrayList<Metadata>();
-	    for(Metadata metadata:metadataList) {
-		if(metadata.getType().equals(ContentMetadataHandler.TYPE_ALIAS)) continue;
-		tmp.add(metadata);
-	    }
-	    metadataList = tmp;
-	}
+        //Prune out the aliases
+        if (metadataList != null) {
+            List<Metadata> tmp = new ArrayList<Metadata>();
+            for (Metadata metadata : metadataList) {
+                if (metadata.getType().equals(
+                        ContentMetadataHandler.TYPE_ALIAS)) {
+                    continue;
+                }
+                tmp.add(metadata);
+            }
+            metadataList = tmp;
+        }
 
 
         File targetFile = getFileFromId(id, localFileInfo.getRootDir());
@@ -709,5 +712,3 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 }
-
-

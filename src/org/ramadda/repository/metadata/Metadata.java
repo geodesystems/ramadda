@@ -138,7 +138,8 @@ public class Metadata implements Constants {
     private Object[] values;
 
 
-    private boolean markedForDelete= false;
+    /**  */
+    private boolean markedForDelete = false;
 
     /**
      * _more_
@@ -1150,26 +1151,24 @@ public class Metadata implements Constants {
 
 
     /**
-       Set the MarkedForDelete property.
-
-       @param value The new value for MarkedForDelete
-    **/
-    public void setMarkedForDelete (boolean value) {
-	markedForDelete = value;
+     *  Set the MarkedForDelete property.
+     *
+     *  @param value The new value for MarkedForDelete
+     */
+    public void setMarkedForDelete(boolean value) {
+        markedForDelete = value;
     }
 
     /**
-       Get the MarkedForDelete property.
-
-       @return The MarkedForDelete
-    **/
-    public boolean getMarkedForDelete () {
-	return markedForDelete;
+     *  Get the MarkedForDelete property.
+     *
+     *  @return The MarkedForDelete
+     */
+    public boolean getMarkedForDelete() {
+        return markedForDelete;
     }
 
 
 
 
 }
-
-

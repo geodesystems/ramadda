@@ -391,7 +391,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private List<TwoFacedObject> jsonValues;
 
     /** _more_ */
-    private LinkedHashMap<String, String> enumMap = new LinkedHashMap<String,String>();
+    private LinkedHashMap<String, String> enumMap = new LinkedHashMap<String,
+                                                        String>();
 
     /** _more_ */
     private List<Display> displays = new ArrayList<Display>();
@@ -988,10 +989,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             if (values != null) {
                 for (TwoFacedObject tfo : values) {
-                    enums.add(
-                        JsonUtil.map(Utils.makeList(
-						    "value", JsonUtil.quote(tfo.getId().toString()),
-						    "label", JsonUtil.quote(tfo.getLabel().toString()))));
+                    enums.add(JsonUtil.map(Utils.makeList("value",
+                            JsonUtil.quote(tfo.getId().toString()), "label",
+                            JsonUtil.quote(tfo.getLabel().toString()))));
                 }
             }
             col.add("values");
@@ -1158,8 +1158,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
+    /**
+     *
+     * @param values _more_
+      * @return _more_
+     */
     public String toString(Object[] values) {
-	return toString(values,offset);
+        return toString(values, offset);
     }
 
 
@@ -1289,7 +1294,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                            : ",";
         //I think we always want to use ',' as the delimiter
         delimiter = ",";
-	//	System.err.println("COL:" + this+" " + getType());
+        //      System.err.println("COL:" + this+" " + getType());
 
         if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset, raw));
@@ -1366,7 +1371,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (theEntry != null) {
                     try {
                         String link =
-                            getRepository().getEntryManager().getAjaxLink(request, theEntry, theEntry.getName()).toString();
+                            getRepository().getEntryManager().getAjaxLink(
+                                request, theEntry,
+                                theEntry.getName()).toString();
                         sb.append(link);
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);
@@ -1561,7 +1568,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             return null;
         }
         for (String key : enumMap.keySet()) {
-            String l     =  enumMap.get(key);
+            String l = enumMap.get(key);
             if (l.equals(label)) {
                 return key;
             }
@@ -1646,8 +1653,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             statementIdx++;
         } else if (isDouble()) {
             if (values[offset] != null) {
-                double value = ((Double) values[offset]).doubleValue();
-		boolean isNaN = Double.isNaN(value);
+                double  value = ((Double) values[offset]).doubleValue();
+                boolean isNaN = Double.isNaN(value);
                 if ( !isNaN) {
                     if ( !Double.isNaN(min)) {
                         if (value < min) {
@@ -1664,10 +1671,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                         }
                     }
                 }
-		if(isNaN)
-		    getDatabaseManager().setNaN(statement,statementIdx);
-		else
-		    statement.setDouble(statementIdx, value);		
+                if (isNaN) {
+                    getDatabaseManager().setNaN(statement, statementIdx);
+                } else {
+                    statement.setDouble(statementIdx, value);
+                }
             } else {
                 //                double value = Double.NaN;
                 double value = 0;
@@ -1837,9 +1845,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                     }
                     value = databaseDfltNum;
                 } else {
-		    //Added this so we can handle storing nans in the db
-		    value=Double.NaN;
-		}
+                    //Added this so we can handle storing nans in the db
+                    value = Double.NaN;
+                }
             }
             //            System.err.println("col: " + this +" " + results.wasNull() +" value:" + value);
             //            System.err.println(this  +" value=" + value);
@@ -3478,7 +3486,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                       getDatabaseManager().getIterator(
                                           statement), 1);
                 long t3 = System.currentTimeMillis();
-		//                System.err.println("TIME:" + (t2 - t1) + " " + (t3 - t2));
+                //                System.err.println("TIME:" + (t2 - t1) + " " + (t3 - t2));
 
                 List<TwoFacedObject> list = new ArrayList();
                 for (int i = 0; i < values.length; i++) {
@@ -4387,5 +4395,3 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 }
-
-

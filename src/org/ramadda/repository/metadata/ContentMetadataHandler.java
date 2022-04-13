@@ -120,13 +120,15 @@ public class ContentMetadataHandler extends MetadataHandler {
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
         if (metadata.getType().equals(TYPE_LICENSE)) {
-            String          license = metadata.getAttr1();
-            MetadataType    type    = getType(metadata.getType());
-            MetadataElement element = type.getChildren().get(0);
-            String          label   = element.getLabel(license);
-            String searchLink = getSearchLink(request, metadata);
+            String          license    = metadata.getAttr1();
+            MetadataType    type       = getType(metadata.getType());
+            MetadataElement element    = type.getChildren().get(0);
+            String          label      = element.getLabel(license);
+            String          searchLink = getSearchLink(request, metadata);
 
-	    String contents = getMetadataManager().getLicenseHtml(license, label);
+            String contents = getMetadataManager().getLicenseHtml(license,
+                                  label);
+
             return new String[] { "License:&nbsp;",
                                   searchLink + " " + contents };
         }
@@ -178,5 +180,3 @@ public class ContentMetadataHandler extends MetadataHandler {
     }
 
 }
-
-

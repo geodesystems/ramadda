@@ -95,5 +95,3 @@ public interface DataTypes {
 
 
 }
-
-

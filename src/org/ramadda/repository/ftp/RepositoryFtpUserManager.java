@@ -210,5 +210,3 @@ public class RepositoryFtpUserManager implements org.ramadda.repository
     public void save(org.apache.ftpserver.ftplet.User user) {}
 
 }
-
-

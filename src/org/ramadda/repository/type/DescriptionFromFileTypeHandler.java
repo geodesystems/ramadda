@@ -81,5 +81,3 @@ public class DescriptionFromFileTypeHandler extends GenericTypeHandler {
 
 
 }
-
-

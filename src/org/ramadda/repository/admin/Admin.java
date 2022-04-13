@@ -80,8 +80,9 @@ import javax.mail.internet.MimeMessage;
 @SuppressWarnings("unchecked")
 public class Admin extends RepositoryManager {
 
+    /**  */
     private static boolean debugInitialization = false;
-    
+
     /** _more_ */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
 
@@ -93,6 +94,7 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public static final String ACTION_NEWDB = "action.newdb";
+
     /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
 
@@ -439,16 +441,22 @@ public class Admin extends RepositoryManager {
     }
 
 
+    /**  */
     private StringBuilder debugSB = new StringBuilder();
+
+    /**
+     *
+     * @param msg _more_
+     */
     private void debugInit(String msg) {
-	if(debugInitialization) {
+        if (debugInitialization) {
             debugSB.append(msg);
             debugSB.append("\n");
-	}
+        }
     }
 
     /**
-       we have this here in memory as the using the db to store this is randomly giving bad results
+     *  we have this here in memory as the using the db to store this is randomly giving bad results
      */
     private Hashtable installState = new Hashtable();
 
@@ -462,11 +470,14 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private boolean haveDoneInstallStep(String what) throws Exception {
-	Object tmp = installState.get(what);
-	if(Misc.equals(tmp,"true")) return true;
-        boolean haveDone =  getRepository().getDbProperty(what, false);
-	debugInit("\thaveDone:" + what +" " + haveDone);
-	return haveDone;
+        Object tmp = installState.get(what);
+        if (Misc.equals(tmp, "true")) {
+            return true;
+        }
+        boolean haveDone = getRepository().getDbProperty(what, false);
+        debugInit("\thaveDone:" + what + " " + haveDone);
+
+        return haveDone;
     }
 
     /**
@@ -477,9 +488,9 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private void installStep(String what) throws Exception {
-	debugInit("\tinstallStep:" + what);
+        debugInit("\tinstallStep:" + what);
         getRepository().writeGlobal(what, "true");
-	installState.put(what,"true");
+        installState.put(what, "true");
     }
 
     /**
@@ -491,8 +502,8 @@ public class Admin extends RepositoryManager {
      */
     private void undoInstallStep(String... what) throws Exception {
         for (String w : what) {
-	    debugInit("\tundo:" + w);
-	    installState.put(what,"false");
+            debugInit("\tundo:" + w);
+            installState.put(what, "false");
             getRepository().writeGlobal(w, "false");
         }
     }
@@ -546,12 +557,12 @@ public class Admin extends RepositoryManager {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
     private synchronized String getInstallPassword() throws Exception {
-        if (!Utils.stringDefined(installPassword)) {
+        if ( !Utils.stringDefined(installPassword)) {
             installPassword =
                 getRepository().getProperty(PROP_INSTALL_PASSWORD,
                                             (String) null);
@@ -559,12 +570,13 @@ public class Admin extends RepositoryManager {
         if ( !Utils.stringDefined(installPassword)) {
             //Generate an install password
             File install = new File(
-				    IOUtil.joinDir(
-						   getStorageManager().getRepositoryDir(),
-						   "install.properties"));
+                               IOUtil.joinDir(
+                                   getStorageManager().getRepositoryDir(),
+                                   "install.properties"));
             if ( !install.exists()) {
                 installPassword = Utils.generatePassword(6);
-		System.err.println("RAMADDA: install password:" + installPassword);
+                System.err.println("RAMADDA: install password:"
+                                   + installPassword);
                 StringBuilder sb = new StringBuilder();
                 sb.append(
                     "#This is a generated password used in the install process\n");
@@ -581,10 +593,17 @@ public class Admin extends RepositoryManager {
 
 
 
+    /**
+     *
+     * @param plugin _more_
+      * @return _more_
+     */
     private String makePluginID(String plugin) {
-	plugin =  "plugin." +Utils.makeID(plugin);
-	plugin = plugin.replace("org_ramadda_repository_resources_plugins_","").replace("_jar","");
-	return plugin;
+        plugin = "plugin." + Utils.makeID(plugin);
+        plugin = plugin.replace("org_ramadda_repository_resources_plugins_",
+                                "").replace("_jar", "");
+
+        return plugin;
     }
 
 
@@ -598,9 +617,10 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public synchronized Result doInstall(Request request) throws Exception {
-	debugInit("doInitialization");
+
+        debugInit("doInitialization");
         String installPassword = getInstallPassword();
-        if (!Utils.stringDefined(installPassword)) {
+        if ( !Utils.stringDefined(installPassword)) {
             return new Result(
                 "Install Error",
                 new StringBuffer(
@@ -613,7 +633,7 @@ public class Admin extends RepositoryManager {
         }
 
         String givenPassword = request.getString(PROP_INSTALL_PASSWORD,
-						 "").trim();
+                                   "").trim();
         StringBuffer sb    = new StringBuffer();
         String       title = "";
 
@@ -626,24 +646,30 @@ public class Admin extends RepositoryManager {
         }
 
 
-	boolean firstTime = !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
+        boolean firstTime =
+            !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         //Always check the password
-        if (!firstTime) {
-            if (!Utils.passwordOK(installPassword, givenPassword)) {
-		debugInit("\nBad password:" + givenPassword);
-		System.err.println("RAMADDA: bad install password:" + givenPassword +" installPassword:" + installPassword);
-		System.err.println("RAMADDA: request:" + request);
+        if ( !firstTime) {
+            if ( !Utils.passwordOK(installPassword, givenPassword)) {
+                debugInit("\nBad password:" + givenPassword);
+                System.err.println("RAMADDA: bad install password:"
+                                   + givenPassword + " installPassword:"
+                                   + installPassword);
+                System.err.println("RAMADDA: request:" + request);
                 undoInstallStep(ARG_ADMIN_LICENSEREAD,
                                 ARG_ADMIN_INSTALLNOTICESHOWN,
                                 ARG_ADMIN_ADMINCREATED);
-                sb.append(getPageHandler().showDialogError("Error: Incorrect installation password"));
-		firstTime = true;
+                sb.append(
+                    getPageHandler().showDialogError(
+                        "Error: Incorrect installation password"));
+                firstTime = true;
             } else {
-                sb.append(HtmlUtils.hidden(PROP_INSTALL_PASSWORD, givenPassword));
+                sb.append(HtmlUtils.hidden(PROP_INSTALL_PASSWORD,
+                                           givenPassword));
             }
         }
 
-        if ( firstTime) {
+        if (firstTime) {
             title = "Installation";
             String msg =
                 "Listed below is the home directory and database information.";
@@ -662,8 +688,9 @@ public class Admin extends RepositoryManager {
                     getStorageManager().getRepositoryDir().toString()));
             getDatabaseManager().addInfo(sb);
             sb.append(
-		      HU.colspan(
-				 note("Since this configuration is web-based we use the install password to verify your identity."),2));
+                HU.colspan(
+                    note("Since this configuration is web-based we use the install password to verify your identity."),
+                    2));
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("Install Password"),
@@ -789,7 +816,7 @@ public class Admin extends RepositoryManager {
 
                     boolean didPlugin = false;
                     for (String plugin : PluginManager.PLUGINS) {
-			if (request.get(makePluginID(plugin), false)) {
+                        if (request.get(makePluginID(plugin), false)) {
                             didPlugin = true;
                             getRepository().getPluginManager().installPlugin(
                                 plugin);
@@ -814,7 +841,7 @@ public class Admin extends RepositoryManager {
 
                     return new Result("Repository Initialization", html);
                 }
-	    }
+            }
 
             if (errorBuffer.length() > 0) {
                 sb.append(getPageHandler().showDialogError(msg("Error")
@@ -887,25 +914,29 @@ public class Admin extends RepositoryManager {
                     "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
-            sb.append(HtmlUtils.hidden("hascbx","true"));
-	    boolean hascbx = request.get("hascbx",false);
+            sb.append(HtmlUtils.hidden("hascbx", "true"));
+            boolean hascbx = request.get("hascbx", false);
             for (String plugin : PluginManager.PLUGINS) {
                 String pluginName =
                     IOUtil.stripExtension(IOUtil.getFileTail(plugin));
-		String cbxName  = makePluginID(plugin);
-                boolean dflt = !pluginName.equals("bioplugins");
-                boolean value = request.get(cbxName, hascbx?false:dflt);
+                String  cbxName = makePluginID(plugin);
+                boolean dflt    = !pluginName.equals("bioplugins");
+                boolean value   = request.get(cbxName, hascbx
+                        ? false
+                        : dflt);
                 sb.append(HtmlUtils.formEntry("",
-					      HtmlUtils.labeledCheckbox(cbxName, "true", value,"Install plugin: " + pluginName)));
+                        HtmlUtils.labeledCheckbox(cbxName, "true", value,
+                            "Install plugin: " + pluginName)));
             }
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.br());
             sb.append(HtmlUtils.submit(msg("Initialize Server")));
         } else {
-	    //Should never get here
+            //Should never get here
             title = "Error";
-	    sb.append(getPageHandler().showDialogError("Install is finished"));
-	}
+            sb.append(
+                getPageHandler().showDialogError("Install is finished"));
+        }
 
 
         StringBuffer finalSB = new StringBuffer();
@@ -916,6 +947,7 @@ public class Admin extends RepositoryManager {
         finalSB.append(HtmlUtils.formClose());
 
         return new Result(msg(title), finalSB);
+
 
 
     }

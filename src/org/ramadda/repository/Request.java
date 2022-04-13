@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -148,13 +149,16 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private boolean sessionHasBeenHandled = false;
 
+    /**  */
     private boolean canStreamResult = true;
-    
+
+    /**  */
     private boolean cloned = false;
-    
+
+    /**  */
     private boolean embedded = false;
 
-    
+
     /**
      * ctor
      *
@@ -196,7 +200,7 @@ public class Request implements Constants, Cloneable {
         this.urlPath             = path;
         this.parameters          = new Hashtable();
         this.originalParameters  = new Hashtable();
-	this.printWriter         = that.printWriter;
+        this.printWriter         = that.printWriter;
         this.isMobile            = that.isMobile;
         this.isRobot             = that.isRobot;
         this.ip                  = that.ip;
@@ -265,10 +269,10 @@ public class Request implements Constants, Cloneable {
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
-	    that.cloned = true;
-	    that.pageStyle = null;
-	    that.canStreamResult    =  false;
-	    that.printWriter        = this.printWriter;
+            that.cloned             = true;
+            that.pageStyle          = null;
+            that.canStreamResult    = false;
+            that.printWriter        = this.printWriter;
             that.parameters         = (this.parameters != null)
                                       ? new Hashtable(this.parameters)
                                       : new Hashtable();
@@ -451,16 +455,24 @@ public class Request implements Constants, Cloneable {
      * @param filename _more_
      */
     public void setReturnFilename(String filename) {
-	setReturnFilename(filename, true);
+        setReturnFilename(filename, true);
     }
 
+    /**
+     *
+     * @param filename _more_
+     * @param inline _more_
+     */
     public void setReturnFilename(String filename, boolean inline) {
         filename = filename.replaceAll(" ", "_");
-	//	System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
-	if(inline)
-	    httpServletResponse.setHeader("Content-disposition", "filename=" + filename);
-	else
-	    httpServletResponse.setHeader("Content-disposition",  "attachment; filename=" + filename);
+        //      System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+        if (inline) {
+            httpServletResponse.setHeader("Content-disposition",
+                                          "filename=" + filename);
+        } else {
+            httpServletResponse.setHeader("Content-disposition",
+                                          "attachment; filename=" + filename);
+        }
 
     }
 
@@ -833,6 +845,7 @@ public class Request implements Constants, Cloneable {
      */
     public String getAbsoluteUrl(RequestUrl url) {
         String path = repository.getUrlBase() + url.getPath();
+
         return getAbsoluteUrl(path);
     }
 
@@ -844,18 +857,20 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String getAbsoluteUrl(String url) {
-	if(url.startsWith("http:") || url.startsWith("https:")) return url;
+        if (url.startsWith("http:") || url.startsWith("https:")) {
+            return url;
+        }
         int     port;
-        String protocol;
+        String  protocol;
         boolean alwaysHttps = repository.getAlwaysHttps();
-	boolean sslEnabled  = repository.isSSLEnabled(this);
-	if(alwaysHttps || sslEnabled) {
-	    port = getRepository().getHttpsPort();
-	    protocol =  "https";
-	} else {
-	    port = getServerPort();
-	    protocol =  "http";
-	}
+        boolean sslEnabled  = repository.isSSLEnabled(this);
+        if (alwaysHttps || sslEnabled) {
+            port     = getRepository().getHttpsPort();
+            protocol = "https";
+        } else {
+            port     = getServerPort();
+            protocol = "http";
+        }
         if ((httpServletRequest != null) && !alwaysHttps) {
             String scheme = httpServletRequest.getScheme();
             if (scheme != null) {
@@ -1510,17 +1525,20 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+      * @return _more_
+     */
     public boolean getCloned() {
-	return cloned;
+        return cloned;
     }
 
     /**
-       Set the Embedded property.
-
-       @param value The new value for Embedded
-    **/
-    public void setEmbedded (boolean value) {
-	embedded = value;
+     *  Set the Embedded property.
+     *
+     *  @param value The new value for Embedded
+     */
+    public void setEmbedded(boolean value) {
+        embedded = value;
     }
 
 
@@ -1534,21 +1552,21 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
-       Set the CanStreamResult property.
-
-       @param value The new value for CanStreamResult
-    **/
-    public void setCanStreamResult (boolean value) {
-	canStreamResult = value;
+     *  Set the CanStreamResult property.
+     *
+     *  @param value The new value for CanStreamResult
+     */
+    public void setCanStreamResult(boolean value) {
+        canStreamResult = value;
     }
 
     /**
-       Get the CanStreamResult property.
-
-       @return The CanStreamResult
-    **/
-    public boolean getCanStreamResult () {
-	return canStreamResult;
+     *  Get the CanStreamResult property.
+     *
+     *  @return The CanStreamResult
+     */
+    public boolean getCanStreamResult() {
+        return canStreamResult;
     }
 
 
@@ -1589,12 +1607,12 @@ public class Request implements Constants, Cloneable {
      * _more_
      */
     public void ensureAuthToken() {
-	/*
-	  System.err.println("ensureAuthToken:");
-	  for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
-	  System.err.println("\tkey:" + keys.nextElement());
-	  }
-	*/
+        /*
+          System.err.println("ensureAuthToken:");
+          for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+          System.err.println("\tkey:" + keys.nextElement());
+          }
+        */
         String authToken    = getString(ARG_AUTHTOKEN, (String) null);
         String mySessionId  = getSessionId();
         String argSessionId = getString(ARG_SESSIONID, (String) null);
@@ -1619,9 +1637,9 @@ public class Request implements Constants, Cloneable {
                 return;
             }
             getRepository().getLogManager().logError(
-						     "Request.ensureAuthToken: authToken != sessionAuth :"
-						     + "\n\tsession:" + mySessionId + "\n\tauth token:"
-						     + authToken + "\n\tsession hashed:" + sessionAuth, null);
+                "Request.ensureAuthToken: authToken != sessionAuth :"
+                + "\n\tsession:" + mySessionId + "\n\tauth token:"
+                + authToken + "\n\tsession hashed:" + sessionAuth, null);
         }
 
         //If we are publishing anonymously then don't look for a auth token
@@ -1631,8 +1649,8 @@ public class Request implements Constants, Cloneable {
 
 
         getRepository().getLogManager().logError(
-						 "Request.ensureAuthToken: something null:" + "\n\tsession:"
-						 + mySessionId + "\n\tauth token:" + authToken, null);
+            "Request.ensureAuthToken: something null:" + "\n\tsession:"
+            + mySessionId + "\n\tauth token:" + authToken, null);
 
         throw new IllegalArgumentException("Bad authentication token");
     }
@@ -1651,6 +1669,7 @@ public class Request implements Constants, Cloneable {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -1725,12 +1744,21 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     *
+     * @param key _more_
+     * @param dflt _more_
+      * @return _more_
+     */
     public String getBase64String(String key, String dflt) {
-	String raw = getUnsafeString(key, null);
-	if(raw==null) return dflt;
-	return new String(Utils.decodeBase64(raw));
+        String raw = getUnsafeString(key, null);
+        if (raw == null) {
+            return dflt;
+        }
+
+        return new String(Utils.decodeBase64(raw));
     }
-			   
+
 
     /**
      * _more_
@@ -1747,7 +1775,8 @@ public class Request implements Constants, Cloneable {
         }
         String s = getCheckedString(key, dflt, checker);
         s = HtmlUtils.sanitizeString(s);
-	return s;
+
+        return s;
     }
 
 
@@ -1777,7 +1806,7 @@ public class Request implements Constants, Cloneable {
      * @param pattern _more_
      *
      * @return _more_
-     */ 
+     */
     public String getCheckedString(String key, String dflt, Pattern pattern) {
         String v = (String) getValue(key, (String) null);
         if (v == null) {
@@ -2002,7 +2031,7 @@ public class Request implements Constants, Cloneable {
         }
         String llString = (String) getString(from, "").trim();
         if ((llString == null) || (llString.length() == 0)
-	    || (llString.startsWith("${"))) {
+                || (llString.startsWith("${"))) {
             return dflt;
         }
         double result = Utils.decodeLatLon(llString);
@@ -2030,7 +2059,7 @@ public class Request implements Constants, Cloneable {
         String llString = (String) getString(from, "").trim();
         //        System.err.println("\tllstring:" + llString);
         if ((llString == null) || (llString.length() == 0)
-	    || (llString.startsWith("${"))) {
+                || (llString.startsWith("${"))) {
             return dflt;
         }
 
@@ -2165,7 +2194,7 @@ public class Request implements Constants, Cloneable {
      * @throws java.text.ParseException On badness
      */
     public Date[] getDateRange(String from, String to, Date dflt)
-	throws java.text.ParseException {
+            throws java.text.ParseException {
         return getDateRange(from, to, ARG_RELATIVEDATE, dflt);
     }
 
@@ -2183,7 +2212,7 @@ public class Request implements Constants, Cloneable {
      */
     public Date[] getDateRange(String from, String to, String relativeArg,
                                Date dflt)
-	throws java.text.ParseException {
+            throws java.text.ParseException {
         String fromDate = "";
         String toDate   = "";
         if (defined(from) || defined(to)) {
@@ -2324,9 +2353,9 @@ public class Request implements Constants, Cloneable {
         //TODO: be smarter about this
         String ua = getUserAgent("").toLowerCase();
         isMobile = (ua.indexOf("iphone") >= 0)
-	    || (ua.indexOf("android") >= 0)
-	    || (ua.indexOf("mobile") >= 0)
-	    || (ua.indexOf("blackberry") >= 0);
+                   || (ua.indexOf("android") >= 0)
+                   || (ua.indexOf("mobile") >= 0)
+                   || (ua.indexOf("blackberry") >= 0);
         isRobot = checkForRobot();
     }
 
@@ -2792,10 +2821,11 @@ public class Request implements Constants, Cloneable {
      * @param s _more_
      */
     public synchronized void appendHead0(String s) {
-	if(printWriter!=null) {
-	    printWriter.append(s);
-	    return;
-	}
+        if (printWriter != null) {
+            printWriter.append(s);
+
+            return;
+        }
 
 
         StringBuilder head0 = (StringBuilder) getExtraProperty("head0");
@@ -2822,18 +2852,27 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     */
     public void clearHead0() {
-	removeExtraProperty("head0");
+        removeExtraProperty("head0");
     }
 
+    /**
+     */
     public void clearHead() {
-	removeExtraProperty("head");
-    }    
+        removeExtraProperty("head");
+    }
 
+    /**  */
     private PrintWriter printWriter;
 
+    /**
+     *
+     * @param pw _more_
+     */
     public void setPrintWriter(PrintWriter pw) {
-	printWriter = pw;
+        printWriter = pw;
     }
 
 
@@ -2843,10 +2882,11 @@ public class Request implements Constants, Cloneable {
      * @param s _more_
      */
     public synchronized void appendHead(String s) {
-	if(printWriter!=null) {
-	    printWriter.append(s);
-	    return;
-	}
+        if (printWriter != null) {
+            printWriter.append(s);
+
+            return;
+        }
         StringBuilder head = (StringBuilder) getExtraProperty("head");
         if (head == null) {
             head = new StringBuilder();
@@ -2963,7 +3003,7 @@ public class Request implements Constants, Cloneable {
      */
     public boolean responseAsJson() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_JSON)
-	    || getString(ARG_OUTPUT).equals("json");
+               || getString(ARG_OUTPUT).equals("json");
     }
 
     /**
@@ -3042,8 +3082,9 @@ public class Request implements Constants, Cloneable {
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
             pageStyle = repository.getPageHandler().doMakePageStyle(this,
-								    entry);
+                    entry);
         }
+
         return pageStyle;
     }
 
@@ -3064,7 +3105,7 @@ public class Request implements Constants, Cloneable {
         OutputStream os = getHttpServletResponse().getOutputStream();
         InputStream fis =
             getRepository().getStorageManager().getFileInputStream(
-								   file.toString());
+                file.toString());
         IOUtil.writeTo(fis, os);
         IOUtil.close(os);
         IOUtil.close(fis);
@@ -3110,9 +3151,9 @@ public class Request implements Constants, Cloneable {
      * @throws Exception _more_
      */
     public Result getOutputStreamResult(String filename, String mimeType)
-	throws Exception {
+            throws Exception {
         getHttpServletResponse().setContentType(mimeType);
-        setReturnFilename(filename,true);
+        setReturnFilename(filename, true);
         Result result = new Result(filename, (byte[]) null, mimeType);
         result.setNeedToWrite(false);
 
@@ -3201,6 +3242,7 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**  */
     private static final String[] argPrefixes = { ARG_AREA, ARG_BBOX };
 
     /**
@@ -3213,7 +3255,7 @@ public class Request implements Constants, Cloneable {
         for (String argPrefix : argPrefixes) {
             if (defined(argPrefix)) {
                 List<String> toks = Utils.split(getString(argPrefix, ""),
-						",", true, true);
+                                        ",", true, true);
                 //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {
@@ -3242,7 +3284,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public List<String> getArgs(RequestArgument arg) {
-	return arg.getArgs(getRepository());
+        return arg.getArgs(getRepository());
     }
 
     /**
@@ -3266,5 +3308,3 @@ public class Request implements Constants, Cloneable {
 
 
 }
-
-

@@ -139,9 +139,9 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                  "/entry/show",
                                                  "View " + LABEL_ENTRY);
 
+    /**  */
     public final RequestUrl URL_ENTRY_DATA = new RequestUrl(this,
-                                                 "/entry/data",
-							    "Entry Data");    
+                                                 "/entry/data", "Entry Data");
 
     /** _more_ */
     public final RequestUrl URL_ENTRY = new RequestUrl(this, "/entry",
@@ -190,8 +190,8 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_ACTIVITY = new RequestUrl(this,
-                                                    "/entry/activity",
-                                                    "Entry Activity");    
+                                                     "/entry/activity",
+                                                     "Entry Activity");
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
@@ -301,6 +301,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private String urlBase = "/repository";
 
+    /**  */
     protected boolean alwaysHttps = false;
 
 
@@ -387,8 +388,11 @@ public class RepositoryBase implements Constants, RepositorySource {
         return "http";
     }
 
+    /**
+      * @return _more_
+     */
     public boolean getAlwaysHttps() {
-	return alwaysHttps;
+        return alwaysHttps;
     }
 
     /**
@@ -674,5 +678,3 @@ public class RepositoryBase implements Constants, RepositorySource {
     public static void main(String[] args) throws Exception {}
 
 }
-
-

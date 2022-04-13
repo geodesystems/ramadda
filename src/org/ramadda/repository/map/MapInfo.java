@@ -763,8 +763,8 @@ public class MapInfo {
         if (Utils.stringDefined(nwseView[0])) {
             if (nwseView.length == 4) {
                 addProperty(MapManager.PROP_INITIAL_BOUNDS,
-                            JsonUtil.list(nwseView[0], nwseView[1], nwseView[2],
-                                      nwseView[3]));
+                            JsonUtil.list(nwseView[0], nwseView[1],
+                                          nwseView[2], nwseView[3]));
             } else {
                 addProperty(MapManager.PROP_INITIAL_LOCATION,
                             JsonUtil.list(nwseView[0], nwseView[1]));
@@ -807,21 +807,21 @@ public class MapInfo {
             retBuf.append(mapStuff);
             retBuf.append("</div>");
             // Hack to hide the maps if they haven't selected a custom region.
-            addJS(getVariableName()+".initRegionSelector(" +
-		  HU.comma(HU.squote(getVariableName() + "_regions"),
-			   HU.squote(getVariableName() + "_mapToggle"),
-			   ""+forSelection) +");");
-	    /*
+            addJS(getVariableName() + ".initRegionSelector("
+                  + HU.comma(HU.squote(getVariableName() + "_regions"),
+                             HU.squote(getVariableName() + "_mapToggle"),
+                             "" + forSelection) + ");");
+            /*
             addJS("if ($('#" + getVariableName()
                   + "_regions option:selected').val() != \"CUSTOM\") {"
                   + "$('#" + getVariableName()
-      
+
 
             + "_mapToggle').hide(); } else {" + getVariableName()
                   + ".initMap(" + forSelection + ");}\n");
             // Fire the map selection change to pick up the current map params
             addJS("$('#" + getVariableName() + "_regions').change();");
-	    */
+            */
         } else {
             retBuf.append(mapStuff);
             // this wasn't done in the initial making of the JS
@@ -872,7 +872,7 @@ public class MapInfo {
             values.add(new TwoFacedObject("Custom", "CUSTOM"));
             String regionSelectId = getVariableName() + "_regions";
             HU.hidden(widget, arg + "_regionid", "",
-		      HU.id(getVariableName() + "_regionid"));
+                      HU.id(getVariableName() + "_regionid"));
             widget.append(HU.select("mapregion", values,
                                     getDefaultMapRegion(),
                                     HU.id(regionSelectId)));
@@ -974,12 +974,11 @@ public class MapInfo {
                        double west, double south, double east) {
         String color = properties.getColor();
         String attrs = JsonUtil.map(Utils.makeList("color", (color == null)
-                                         ? "null"
-                                         : JsonUtil.quote(color), "selectable",
-                                             "" + properties.getSelectable(),
-                                             "zoomToExtent",
-                                             "" + properties
-						   .getZoomToExtent()));
+                ? "null"
+                : JsonUtil.quote(color), "selectable",
+                                         "" + properties.getSelectable(),
+                                         "zoomToExtent",
+                                         "" + properties.getZoomToExtent()));
         getJS().append("var mapBoxAttributes = " + attrs + ";\n");
         getJS().append(mapVarName + ".createBox("
                        + HU.comma(HU.squote(id),
@@ -1335,10 +1334,10 @@ public class MapInfo {
     public void addCircle(String id, double lat, double lon, int radius,
                           int strokeWidth, String strokeColor,
                           String fillColor, String info) {
-        String attrs = JsonUtil.map(Utils.makeList("pointRadius", "" + radius, "strokeWidth",
-                                "" + strokeWidth, "fillColor",
-                                JsonUtil.quote(fillColor), "strokeColor",
-						   JsonUtil.quote(strokeColor)));
+        String attrs = JsonUtil.map(Utils.makeList("pointRadius",
+                           "" + radius, "strokeWidth", "" + strokeWidth,
+                           "fillColor", JsonUtil.quote(fillColor),
+                           "strokeColor", JsonUtil.quote(strokeColor)));
         getJS().append(mapVarName + ".addPoint("
                        + HU.comma(HU.squote(id), llp(lat, lon), attrs,
                                   HU.squote(info)) + ");\n");
@@ -1603,5 +1602,3 @@ public class MapInfo {
         return headerMessage;
     }
 }
-
-

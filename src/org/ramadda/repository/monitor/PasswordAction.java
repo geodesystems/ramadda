@@ -210,5 +210,3 @@ public abstract class PasswordAction extends MonitorAction {
     }
 
 }
-
-

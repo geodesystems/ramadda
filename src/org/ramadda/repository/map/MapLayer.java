@@ -265,5 +265,3 @@ public class MapLayer {
         return isDefault;
     }
 }
-
-

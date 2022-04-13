@@ -7,9 +7,9 @@ package org.ramadda.repository;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.Utils;
-import org.ramadda.util.JsonUtil;
 import org.ramadda.util.sql.SqlUtil;
 
 import ucar.unidata.util.DateUtil;
@@ -93,8 +93,9 @@ public class ActionManager extends RepositoryManager {
                              StringBuffer sb, boolean json)
             throws Exception {
         if (json) {
-            String result = JsonUtil.map(Utils.makeList("status", JsonUtil.quote(status), "message",
-							JsonUtil.quote(sb.toString())));
+            String result = JsonUtil.map(Utils.makeList("status",
+                                JsonUtil.quote(status), "message",
+                                JsonUtil.quote(sb.toString())));
 
             return new Result(result, Result.TYPE_JSON);
         }
@@ -352,13 +353,14 @@ public class ActionManager extends RepositoryManager {
      * @param name _more_
      * @param continueHtml _more_
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      */
     public Result doJsonAction(Request request, final Action runnable,
                                String name, String continueHtml,
                                Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
-        String json = JsonUtil.map(Utils.makeList("actionid", JsonUtil.quote(actionId.toString())));
+        String json = JsonUtil.map(Utils.makeList("actionid",
+                          JsonUtil.quote(actionId.toString())));
 
         return new Result(json, Result.TYPE_JSON);
     }
@@ -424,12 +426,12 @@ public class ActionManager extends RepositoryManager {
 
 
         /**
-         
+         *
          */
         public Action() {}
 
         /**
-         
+         *
          *
          * @param returnJson _more_
          */

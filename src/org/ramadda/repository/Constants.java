@@ -34,7 +34,8 @@ public interface Constants {
 
 
     /** _more_ */
-    public static final String ICON_ROTATE =     "/icons/arrow_rotate_clockwise.png";
+    public static final String ICON_ROTATE =
+        "/icons/arrow_rotate_clockwise.png";
 
     /** _more_ */
     public static final String ICON_ANTIROTATE =
@@ -413,7 +414,9 @@ public interface Constants {
 
     /** _more_ */
     public static final String ATTR_FILE_PATTERN = "filePattern";
-    public static final String ATTR_UNIQUE = "unique";    
+
+    /**  */
+    public static final String ATTR_UNIQUE = "unique";
 
     /** _more_ */
     public static final String ATTR_DB_DESCRIPTION = "description";
@@ -751,6 +754,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_DATE = "date";
 
+    /**  */
     public static final String ARG_TAGS = "tags";
 
     /** _more_ */
@@ -987,7 +991,7 @@ public interface Constants {
     public static final String ARG_MAX = "max";
 
     /** _more_ */
-    public static final String ARG_LAST = "last";    
+    public static final String ARG_LAST = "last";
 
     /** _more_ */
     public static final String ARG_MAXLAT = "maxlat";
@@ -1017,6 +1021,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_METADATA_ADD = "metadata.add";
 
+    /**  */
     public static final String ARG_EXTRACT_TAGS = "extract_tags";
 
     /** _more_ */
@@ -1892,9 +1897,15 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_VERSION = "ramadda.version";
+
+    /**  */
     public static final String PROP_VERSION_MAJOR = "ramadda.version.major";
+
+    /**  */
     public static final String PROP_VERSION_MINOR = "ramadda.version.minor";
-    public static final String PROP_VERSION_PATCH = "ramadda.version.patch";            
+
+    /**  */
+    public static final String PROP_VERSION_PATCH = "ramadda.version.patch";
 
 
     /** _more_ */
@@ -2316,6 +2327,7 @@ public interface Constants {
     /** _more_ */
     public static final String ORDERBY_NAME = "name";
 
+    /**  */
     public static final String ORDERBY_NUMBER = "number";
 
 

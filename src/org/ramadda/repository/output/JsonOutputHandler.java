@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.Metadata;
@@ -72,10 +73,10 @@ public class JsonOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    public static final OutputType OUTPUT_JSON =
-        new OutputType("JSON", "json",
-                       OutputType.TYPE_FEEDS, "",
-                       ICON_JSON);
+    public static final OutputType OUTPUT_JSON = new OutputType("JSON",
+                                                     "json",
+                                                     OutputType.TYPE_FEEDS,
+                                                     "", ICON_JSON);
 
     /** _more_ */
     public static final OutputType OUTPUT_JSON_POINT =
@@ -191,8 +192,9 @@ public class JsonOutputHandler extends OutputHandler {
         request.setReturnFilename(IOUtil.stripExtension(entry.getName())
                                   + ".json");
         List<Entry> allEntries = new ArrayList<Entry>();
-	if(!request.get("children",false)) 
-	    allEntries.add(entry);
+        if ( !request.get("children", false)) {
+            allEntries.add(entry);
+        }
         if (request.get("ancestors", false)) {
             Entry parent = entry.getParentEntry();
             while (parent != null) {
@@ -512,14 +514,18 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
-	if(request.get("includecrumbs",false)) {
-	    if(entry.getParentEntry()!=null)
-		JsonUtil.quoteAttr(items, "breadcrumbs", getPageHandler().getBreadCrumbs(request,
-											 entry.getParentEntry(), null, null, 60));
-	}
+        if (request.get("includecrumbs", false)) {
+            if (entry.getParentEntry() != null) {
+                JsonUtil.quoteAttr(items, "breadcrumbs",
+                                   getPageHandler().getBreadCrumbs(request,
+                                       entry.getParentEntry(), null, null,
+                                       60));
+            }
+        }
 
-	if(request.get("includedescription",true))
-	    JsonUtil.quoteAttr(items, "description", entry.getDescription());
+        if (request.get("includedescription", true)) {
+            JsonUtil.quoteAttr(items, "description", entry.getDescription());
+        }
         TypeHandler type = entry.getTypeHandler();
 
         /**
@@ -546,17 +552,17 @@ public class JsonOutputHandler extends OutputHandler {
             items, "icon",
             request.getAbsoluteUrl(
                 getPageHandler().getIconUrl(request, entry)));
-        JsonUtil.quoteAttr(
-            items, "iconRelative",
-	    getPageHandler().getIconUrl(request, entry));	
+        JsonUtil.quoteAttr(items, "iconRelative",
+                           getPageHandler().getIconUrl(request, entry));
 
         JsonUtil.quoteAttr(items, "parent", entry.getParentEntryId());
         if (entry.getIsRemoteEntry()) {
             JsonUtil.attr(items, "isRemote", "true");
             ServerInfo server = entry.getRemoteServer();
             JsonUtil.attr(items, "remoteRepository",
-                      JsonUtil.map(Utils.makeList("url", JsonUtil.quote(server.getUrl()), "name",
-						  JsonUtil.quote(server.getLabel()))));
+                          JsonUtil.map(Utils.makeList("url",
+                              JsonUtil.quote(server.getUrl()), "name",
+                              JsonUtil.quote(server.getLabel()))));
             JsonUtil.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
             String remoteParent = entry.getRemoteParentEntryId();
             if (remoteParent != null) {
@@ -565,17 +571,21 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
-        JsonUtil.quoteAttr(items, "startDate", formatDate(entry.getStartDate()));
+        JsonUtil.quoteAttr(items, "startDate",
+                           formatDate(entry.getStartDate()));
         JsonUtil.quoteAttr(items, "ymd", formatYMD(entry.getStartDate()));
         JsonUtil.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
         JsonUtil.quoteAttr(items, "createDate",
-                       formatDate(entry.getCreateDate()));
+                           formatDate(entry.getCreateDate()));
         JsonUtil.quoteAttr(items, "startDateFormat",
-			   getDateHandler().formatDateShort(request, entry, entry.getStartDate()));
+                           getDateHandler().formatDateShort(request, entry,
+                               entry.getStartDate()));
         JsonUtil.quoteAttr(items, "endDateFormat",
-			   getDateHandler().formatDateShort(request, entry, entry.getEndDate()));	
+                           getDateHandler().formatDateShort(request, entry,
+                               entry.getEndDate()));
         JsonUtil.quoteAttr(items, "createDateFormat",
-			   getDateHandler().formatDateShort(request, entry, entry.getCreateDate()));
+                           getDateHandler().formatDateShort(request, entry,
+                               entry.getCreateDate()));
 
 
 
@@ -583,87 +593,92 @@ public class JsonOutputHandler extends OutputHandler {
             JsonUtil.quoteAttr(items, "creator", entry.getUser().getId());
         }
         if (entry.getResource().isUrl()) {
-            JsonUtil.quoteAttr(items, "url",
-                           entry.getTypeHandler().getPathForEntry(request,
-                               entry));
+            JsonUtil.quoteAttr(
+                items, "url",
+                entry.getTypeHandler().getPathForEntry(request, entry));
         }
 
 
         if (entry.hasAreaDefined()) {
             double[] center = entry.getCenter();
             JsonUtil.attr(items, "geometry",
-                      JsonUtil.map(Utils.makeList("type", JsonUtil.quote("Point"), "coordinates",
-						  JsonUtil.list("" + center[1], "" + center[0]))));
+                          JsonUtil.map(Utils.makeList("type",
+                              JsonUtil.quote("Point"), "coordinates",
+                              JsonUtil.list("" + center[1],
+                                            "" + center[0]))));
             JsonUtil.attr(items, "bbox",
-                      JsonUtil.list("" + entry.getWest(), "" + entry.getSouth(),
-                                "" + entry.getEast(), "" + entry.getNorth()));
+                          JsonUtil.list("" + entry.getWest(),
+                                        "" + entry.getSouth(),
+                                        "" + entry.getEast(),
+                                        "" + entry.getNorth()));
         } else if (entry.hasLocationDefined()) {
             JsonUtil.attr(items, "geometry",
-                      JsonUtil.map(Utils.makeList("type", JsonUtil.quote("Point"), "coordinates",
-						  JsonUtil.list("" + entry.getLongitude(),
-								"" + entry.getLatitude()))));
+                          JsonUtil.map(Utils.makeList("type",
+                              JsonUtil.quote("Point"), "coordinates",
+                              JsonUtil.list("" + entry.getLongitude(),
+                                            "" + entry.getLatitude()))));
             JsonUtil.attr(items, "bbox",
-                      JsonUtil.list("" + entry.getLongitude(),
-                                "" + entry.getLatitude(),
-                                "" + entry.getLongitude(),
-                                "" + entry.getLatitude()));
+                          JsonUtil.list("" + entry.getLongitude(),
+                                        "" + entry.getLatitude(),
+                                        "" + entry.getLongitude(),
+                                        "" + entry.getLatitude()));
         }
 
         if (entry.hasAltitudeTop()) {
             JsonUtil.attr(items, "altitudeTop", "" + entry.getAltitudeTop());
-        } 
+        }
 
         if (entry.hasAltitudeBottom()) {
             JsonUtil.attr(items, "altitudeBottom",
-                      "" + entry.getAltitudeBottom());
+                          "" + entry.getAltitudeBottom());
         }
 
 
 
 
-	if(request.get("includeservices",true)) {
-	    TypeHandler       typeHandler = entry.getTypeHandler();
-	    List<ServiceInfo> services    = new ArrayList<ServiceInfo>();
-	    typeHandler.getServiceInfos(request, entry, services);
-	    List<String> jsonServiceInfos = new ArrayList<String>();
-	    for (ServiceInfo service : services) {
-		jsonServiceInfos.add(JsonUtil.map(Utils.makeList("url",
-						  JsonUtil.quote(service.getUrl()),
-						  "relType",
-						  JsonUtil.quote(service.getType()),
-						  "name",
-						  JsonUtil.quote(service.getName()),
-						  "mimeType",
-								 JsonUtil.quote(service.getMimeType()))));
-	    }
+        if (request.get("includeservices", true)) {
+            TypeHandler       typeHandler = entry.getTypeHandler();
+            List<ServiceInfo> services    = new ArrayList<ServiceInfo>();
+            typeHandler.getServiceInfos(request, entry, services);
+            List<String> jsonServiceInfos = new ArrayList<String>();
+            for (ServiceInfo service : services) {
+                jsonServiceInfos.add(JsonUtil.map(Utils.makeList("url",
+                        JsonUtil.quote(service.getUrl()), "relType",
+                        JsonUtil.quote(service.getType()), "name",
+                        JsonUtil.quote(service.getName()), "mimeType",
+                        JsonUtil.quote(service.getMimeType()))));
+            }
 
-	    items.add("services");
-	    items.add(JsonUtil.list(jsonServiceInfos));
-	}
+            items.add("services");
+            items.add(JsonUtil.list(jsonServiceInfos));
+        }
         //        System.err.println("services:" + JsonUtil.list(jsonServiceInfos));
 
         Resource resource = entry.getResource();
         if (resource != null) {
             if (resource.isUrl()) {
                 String temp = resource.getPath();
-                JsonUtil.quoteAttr(items, "isurl","true");
+                JsonUtil.quoteAttr(items, "isurl", "true");
                 if (temp == null) {
                     JsonUtil.quoteAttr(items, "filename", "");
                 } else {
                     JsonUtil.quoteAttr(items, "filename",
-                                   java.net.URLEncoder.encode(temp, "UTF-8"));
+                                       java.net.URLEncoder.encode(temp,
+                                           "UTF-8"));
                 }
 
                 JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
-                JsonUtil.quoteAttr(items, "fileSizeLabel", "" + formatFileLength(resource.getFileSize()));		
+                JsonUtil.quoteAttr(
+                    items, "fileSizeLabel",
+                    "" + formatFileLength(resource.getFileSize()));
             } else if (resource.isFile()) {
-                JsonUtil.quoteAttr(items, "isfile","true");
+                JsonUtil.quoteAttr(items, "isfile", "true");
                 JsonUtil.quoteAttr(items, "filename",
-                               getStorageManager().getFileTail(entry));
+                                   getStorageManager().getFileTail(entry));
                 JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
                 if (Utils.stringDefined(resource.getMd5())) {
                     JsonUtil.quoteAttr(items, "md5", resource.getMd5());
-                } 
+                }
             }
         } else {
             JsonUtil.quoteAttr(items, "filename", "no resource");
@@ -698,11 +713,10 @@ public class JsonOutputHandler extends OutputHandler {
                     columnLabels.add(column.getLabel());
                     //                    JsonUtil.attr(items, "column." + columnName, JsonUtil.quote(value));
                     extraColumns.add(JsonUtil.map(Utils.makeList(columnName,
-								 JsonUtil.quote(value))));
+                            JsonUtil.quote(value))));
                     ids.add(columnName);
-                    attrs.add(
-                        JsonUtil.map(Utils.makeList(
-                            "id", JsonUtil.quote(columnName), "type",
+                    attrs.add(JsonUtil.map(Utils.makeList("id",
+                            JsonUtil.quote(columnName), "type",
                             JsonUtil.quote("attribute"), "label",
                             JsonUtil.quote(column.getLabel()), "value",
                             JsonUtil.quote(value), "canshow",
@@ -720,23 +734,25 @@ public class JsonOutputHandler extends OutputHandler {
                     repository.getEntryManager().getEntryLinks(request,
                         entry)) {
                 OutputType outputType = link.getOutputType();
-                links.add(JsonUtil.map(Utils.makeList(
-						      "label", JsonUtil.quote(link.getLabel()), "type",
-						      (outputType == null)
-						      ? "unknown"
-						      : JsonUtil.quote(outputType.toString()), "url",
-						      (link.getUrl() == null)
-						      ? JsonUtil.quote("")
-						      : JsonUtil.quote(java.net.URLEncoder.encode(link.getUrl(), "UTF-8")),
-						      "icon", JsonUtil.quote(link.getIcon())
-						      )));
+                links.add(JsonUtil.map(Utils.makeList("label",
+                        JsonUtil.quote(link.getLabel()), "type",
+                        (outputType == null)
+                        ? "unknown"
+                        : JsonUtil.quote(outputType.toString()), "url",
+                        (link.getUrl() == null)
+                        ? JsonUtil.quote("")
+                        : JsonUtil.quote(
+                            java.net.URLEncoder.encode(
+                                link.getUrl(), "UTF-8")), "icon",
+                                    JsonUtil.quote(link.getIcon()))));
             }
             JsonUtil.attr(items, "links", JsonUtil.list(links));
         }
 
 
         if (request.get(ARG_METADATA, true)) {
-            List<Metadata> metadataList =  getMetadataManager().getMetadata(entry);
+            List<Metadata> metadataList =
+                getMetadataManager().getMetadata(entry);
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
                     MetadataType metadataType =
@@ -750,7 +766,7 @@ public class JsonOutputHandler extends OutputHandler {
                     JsonUtil.quoteAttr(mapItems, "id", metadata.getId());
                     JsonUtil.quoteAttr(mapItems, "type", metadata.getType());
                     JsonUtil.quoteAttr(mapItems, "label",
-                                   metadataType.getLabel());
+                                       metadataType.getLabel());
 
                     int attrIdx = 1;
                     //We always add the four attributes to have always the same structure
@@ -758,14 +774,15 @@ public class JsonOutputHandler extends OutputHandler {
                         String attr = metadata.getAttr(attrIdx);
                         if (attr != null) {
                             if (attr.length() > 0) {
-                                JsonUtil.quoteAttr(valueItems, "attr" + attrIdx,
-                                        attr);
+                                JsonUtil.quoteAttr(valueItems,
+                                        "attr" + attrIdx, attr);
                             } else {
-                                JsonUtil.quoteAttr(valueItems, "attr" + attrIdx,
-                                        "");
+                                JsonUtil.quoteAttr(valueItems,
+                                        "attr" + attrIdx, "");
                             }
                         } else {
-                            JsonUtil.quoteAttr(valueItems, "attr" + attrIdx, "");
+                            JsonUtil.quoteAttr(valueItems, "attr" + attrIdx,
+                                    "");
                         }
                         attrIdx++;
                     }
@@ -778,10 +795,10 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
 
-	if(request.get("includeproperties",true)) {
-	    entry.getTypeHandler().addToJson(request, entry, items, attrs);
-	}
-	JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
+        if (request.get("includeproperties", true)) {
+            entry.getTypeHandler().addToJson(request, entry, items, attrs);
+        }
+        JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
 
 
         return JsonUtil.map(items);
@@ -823,8 +840,8 @@ public class JsonOutputHandler extends OutputHandler {
             String snippet = getWikiManager().getRawSnippet(request, entry,
                                  true);
             items.add(JsonUtil.quote((snippet != null)
-                                 ? snippet
-                                 : ""));
+                                     ? snippet
+                                     : ""));
         }
         items.add(JsonUtil.quote(entry.getId()));
         items.add(JsonUtil.quote(entry.getTypeHandler().getType()));
@@ -839,8 +856,8 @@ public class JsonOutputHandler extends OutputHandler {
         String url;
         url = getEntryManager().getEntryUrl(request, entry);
         items.add(JsonUtil.quote(remote
-                             ? request.getAbsoluteUrl(url)
-                             : url));
+                                 ? request.getAbsoluteUrl(url)
+                                 : url));
 
         if (addPointUrl) {
             url = entry.getTypeHandler().getUrlForWiki(request, entry,
@@ -848,10 +865,10 @@ public class JsonOutputHandler extends OutputHandler {
                     new ArrayList<String>());
 
             items.add(JsonUtil.quote((url == null)
-                                 ? ""
-                                 : remote
-                                   ? request.getAbsoluteUrl(url)
-                                   : url));
+                                     ? ""
+                                     : remote
+                                       ? request.getAbsoluteUrl(url)
+                                       : url));
         }
 
 
@@ -861,10 +878,10 @@ public class JsonOutputHandler extends OutputHandler {
             if (urls.size() > 0) {
                 url = urls.get(0);
                 items.add(JsonUtil.quote((url == null)
-                                     ? ""
-                                     : remote
-                                       ? request.getAbsoluteUrl(url)
-                                       : url));
+                                         ? ""
+                                         : remote
+                                           ? request.getAbsoluteUrl(url)
+                                           : url));
             } else {
                 items.add("null");
             }
@@ -876,10 +893,10 @@ public class JsonOutputHandler extends OutputHandler {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
                         entry);
                 items.add(JsonUtil.quote((url == null)
-                                     ? ""
-                                     : remote
-                                       ? request.getAbsoluteUrl(url)
-                                       : url));
+                                         ? ""
+                                         : remote
+                                           ? request.getAbsoluteUrl(url)
+                                           : url));
             } else {
                 items.add(JsonUtil.quote(""));
             }
@@ -915,10 +932,10 @@ public class JsonOutputHandler extends OutputHandler {
         if (showFileUrl) {
             url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
             items.add(JsonUtil.quote((url == null)
-                                 ? ""
-                                 : remote
-                                   ? request.getAbsoluteUrl(url)
-                                   : url));
+                                     ? ""
+                                     : remote
+                                       ? request.getAbsoluteUrl(url)
+                                       : url));
         }
         items.add("" + ((entry.getLatitude() == Entry.NONGEO)
                         ? "null"
@@ -944,5 +961,3 @@ public class JsonOutputHandler extends OutputHandler {
 
 
 }
-
-

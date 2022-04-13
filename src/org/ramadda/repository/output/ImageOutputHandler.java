@@ -164,10 +164,10 @@ public class ImageOutputHandler extends OutputHandler {
         "image.edit.rotate.right.y";
 
     /** _more_ */
-    public static final OutputType OUTPUT_GALLERY =
-        new OutputType("Gallery", "image.gallery",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_IMAGES);
+    public static final OutputType OUTPUT_GALLERY = new OutputType("Gallery",
+                                                        "image.gallery",
+                                                        OutputType.TYPE_VIEW,
+                                                        "", ICON_IMAGES);
 
     /** _more_ */
     public static final OutputType OUTPUT_ZOOM = new OutputType("Image Zoom",
@@ -177,9 +177,8 @@ public class ImageOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
-        new OutputType("Make Collage", "image.collage",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_IMAGES);
+        new OutputType("Make Collage", "image.collage", OutputType.TYPE_VIEW,
+                       "", ICON_IMAGES);
 
     /** _more_ */
     public static final OutputType OUTPUT_LABELER =
@@ -2298,12 +2297,18 @@ public class ImageOutputHandler extends OutputHandler {
             } else {
                 request.remove(ARG_WIDTH);
             }
-	}
+        }
 
         finalSB.append(sb);
 
     }
 
+    /**
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
     public static void main(String[] args) throws Exception {
         List<String> files = new ArrayList<String>();
         for (String f : args) {
@@ -2326,5 +2331,3 @@ public class ImageOutputHandler extends OutputHandler {
 
 
 }
-
-

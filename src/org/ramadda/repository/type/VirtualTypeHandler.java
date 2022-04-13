@@ -300,5 +300,3 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 }
-
-

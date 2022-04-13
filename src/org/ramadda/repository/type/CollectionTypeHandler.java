@@ -16,7 +16,7 @@ import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
- import org.ramadda.util.TTLCache;
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
@@ -251,7 +251,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             uniqueValues.add(0, selectLabel);
             json = new StringBuffer();
             json.append(JsonUtil.map(Utils.makeList("values",
-						    JsonUtil.list(uniqueValues))));
+                    JsonUtil.list(uniqueValues))));
             //System.err.println(json);
             cache.put(key, json);
         }
@@ -384,10 +384,11 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception problems
      */
-    protected LinkedHashMap  getColumnEnumTable(Column column) throws Exception {
+    protected LinkedHashMap getColumnEnumTable(Column column)
+            throws Exception {
         LinkedHashMap map       = column.getEnumTable();
-        String    key       = column.getName() + ".values";
-        String    vocabFile = getTypeProperty(key, (String) null);
+        String        key       = column.getName() + ".values";
+        String        vocabFile = getTypeProperty(key, (String) null);
         if (vocabFile != null) {
             Properties properties = labelCache.get(vocabFile);
             if (properties == null) {
@@ -417,10 +418,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public List<TwoFacedObject> getValueList(Entry collectionEntry,
                                              List values, Column column)
             throws Exception {
-        LinkedHashMap<String,String>            map  = getColumnEnumTable(column);
-        List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        LinkedHashMap<String, String> map  = getColumnEnumTable(column);
+        List<TwoFacedObject>          tfos = new ArrayList<TwoFacedObject>();
         for (String value : (List<String>) values) {
-            String label =  map.get(value);
+            String label = map.get(value);
             if (label == null) {
                 label = column.getEnumLabel(value);
                 if (label == null) {
@@ -933,5 +934,3 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 }
-
-

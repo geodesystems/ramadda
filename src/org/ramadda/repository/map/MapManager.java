@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.map;
 
 
+import org.json.*;
+
+
 import org.ramadda.plugins.map.ShapefileOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -42,8 +45,6 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
-import org.json.*;
 
 import java.awt.geom.Rectangle2D;
 
@@ -190,14 +191,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             if (entry.hasLocationDefined()) {
                 props.put(PROP_INITIAL_LOCATION,
                           JsonUtil.list(entry.getLatitude() + "",
-                                    entry.getLongitude() + ""));
+                                        entry.getLongitude() + ""));
                 didLoc = true;
             } else if (entry.hasAreaDefined()) {
                 props.put(PROP_INITIAL_BOUNDS,
                           JsonUtil.list(entry.getNorth() + "",
-                                    entry.getWest() + "",
-                                    entry.getSouth() + "",
-                                    entry.getEast() + ""));
+                                        entry.getWest() + "",
+                                        entry.getSouth() + "",
+                                        entry.getEast() + ""));
                 didLoc = true;
             }
         }
@@ -233,16 +234,16 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 if (entry.hasLocationDefined()) {
                     props.put(PROP_INITIAL_LOCATION,
                               JsonUtil.list(entry.getLatitude() + "",
-                                        entry.getLongitude() + ""));
+                                            entry.getLongitude() + ""));
 
 
                     didLoc = true;
                 } else if (entry.hasAreaDefined()) {
                     props.put(PROP_INITIAL_BOUNDS,
                               JsonUtil.list(entry.getNorth() + "",
-                                        entry.getWest() + "",
-                                        entry.getSouth() + "",
-                                        entry.getEast() + ""));
+                                            entry.getWest() + "",
+                                            entry.getSouth() + "",
+                                            entry.getEast() + ""));
                     didLoc = true;
                 }
             }
@@ -363,12 +364,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         List<String> regions = new ArrayList<String>();
         for (MapRegion region : getPageHandler().getMapRegions()) {
             List<String> values = new ArrayList<String>();
-            regions.add(JsonUtil.map(Utils.makeList(
-						    "name", JsonUtil.quote(region.getName()), "group",
-						    JsonUtil.quote(region.getGroup()), "north",
-						    region.getNorth() + "", "west", region.getWest() + "",
-						    "south", region.getSouth() + "", "east", region.getEast() + ""
-						    )));
+            regions.add(JsonUtil.map(Utils.makeList("name",
+                    JsonUtil.quote(region.getName()), "group",
+                    JsonUtil.quote(region.getGroup()), "north",
+                    region.getNorth() + "", "west", region.getWest() + "",
+                    "south", region.getSouth() + "", "east",
+                    region.getEast() + "")));
         }
 
         return new Result(JsonUtil.list(regions), Result.TYPE_JSON);
@@ -424,7 +425,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (request.defined("bounds")) {
             List<String> toks = Utils.split(request.getString("bounds", ""),
                                             ",");
-           bounds = new Bounds(Double.parseDouble(toks.get(0)),
+            bounds = new Bounds(Double.parseDouble(toks.get(0)),
                                 Double.parseDouble(toks.get(1)),
                                 Double.parseDouble(toks.get(2)),
                                 Double.parseDouble(toks.get(3)));
@@ -434,9 +435,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             Place place1 = GeoUtils.getLocationFromAddress(q, bounds);
             if (place1 != null) {
                 seen.add(place1.getName());
-                objs.add(JsonUtil.map(Utils.makeList("name", JsonUtil.quote(place1.getName()),
-                                  "latitude", "" + place1.getLatitude(),
-						     "longitude", "" + place1.getLongitude())));
+                objs.add(JsonUtil.map(Utils.makeList("name",
+                        JsonUtil.quote(place1.getName()), "latitude",
+                        "" + place1.getLatitude(), "longitude",
+                        "" + place1.getLongitude())));
             }
         }
         if (doLocal) {
@@ -446,9 +448,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     continue;
                 }
                 seen.add(place.getName());
-                objs.add(JsonUtil.map(Utils.makeList("name", JsonUtil.quote(place.getName()),
-						     "latitude", "" + place.getLatitude(),
-						     "longitude", "" + place.getLongitude())));
+                objs.add(JsonUtil.map(Utils.makeList("name",
+                        JsonUtil.quote(place.getName()), "latitude",
+                        "" + place.getLatitude(), "longitude",
+                        "" + place.getLongitude())));
             }
         }
 
@@ -488,8 +491,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                         String fclass =
                             result.get("feature_class").toString();
                         String icon =
-                            getRepository().getProperty("icon." + fclass.toLowerCase(),
-                                        (String) null);
+                            getRepository().getProperty("icon."
+                                + fclass.toLowerCase(), (String) null);
                         String state = result.get("state_alpha").toString();
                         String county = result.get("county_name").toString();
                         List<String> toks =
@@ -499,13 +502,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                             icon = getRepository().getUrlBase() + icon;
                         }
                         objs.add(JsonUtil.map(Utils.makeList("name",
-                                          JsonUtil.quote(name + " (" + fclass
-                                              + ") " + county + ", "
-                                                  + state), "icon",
-                                                      ((icon != null)
-                                ? JsonUtil.quote(icon)
-                                : null), "latitude", toks.get(0),
-							     "longitude", toks.get(1))));
+                                JsonUtil.quote(name + " (" + fclass + ") "
+                                    + county + ", " + state), "icon",
+                                        ((icon != null)
+                                         ? JsonUtil.quote(icon)
+                                         : null), "latitude", toks.get(0),
+                                         "longitude", toks.get(1))));
                     }
                 }
             } catch (Exception exc) {
@@ -515,7 +517,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        sb.append(JsonUtil.map(Utils.makeList("result", JsonUtil.list(objs))));
+        sb.append(JsonUtil.map(Utils.makeList("result",
+                JsonUtil.list(objs))));
 
         return new Result("", sb, JsonUtil.MIMETYPE);
 
@@ -524,7 +527,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     /**
      *
      * @param request _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -537,13 +540,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     request.get("longitude", 0.0));
             if (address != null) {
                 int idx = 0;
-                results.add(JsonUtil.mapAndQuote(Utils.makeList("address", address.getAddress(),
-                                             "city", address.getCity(),
-                                             "county", address.getCounty(),
-                                             "state", address.getState(),
-                                             "zip", address.getPostalCode(),
-                                             "country",
-								address.getCountry())));
+                results.add(JsonUtil.mapAndQuote(Utils.makeList("address",
+                        address.getAddress(), "city", address.getCity(),
+                        "county", address.getCounty(), "state",
+                        address.getState(), "zip", address.getPostalCode(),
+                        "country", address.getCountry())));
             }
         }
 
@@ -1571,7 +1572,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if ((entriesToUse.size() == 1)
                 && !entriesToUse.get(0).hasAreaDefined()) {
-            map.getMapProps().put("zoomLevel", Utils.getProperty(mapProps, "zoomLevel","12"));
+            map.getMapProps().put("zoomLevel",
+                                  Utils.getProperty(mapProps, "zoomLevel",
+                                      "12"));
         }
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
@@ -1585,7 +1588,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             theProps.putAll(props);
         }
 
-	//xx
+        //xx
         addToMap(request, map, entriesToUse, theProps);
 
 
@@ -1616,7 +1619,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             if (toks.size() == 4) {
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
                                 JsonUtil.list(toks.get(0), toks.get(1),
-                                          toks.get(2), toks.get(3)));
+                                    toks.get(2), toks.get(3)));
             }
         } else if (request.defined("map_location")) {
             haveLocation = true;
@@ -1720,7 +1723,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if (request.defined("map_layer")) {
             map.addProperty("defaultMapLayer",
-                            JsonUtil.quote(request.getString("map_layer", "")));
+                            JsonUtil.quote(request.getString("map_layer",
+                                "")));
         }
         String mapHtml = map.getHtml();
         if ((mapHtml.length() == 0) && (catMap.size() == 0)) {

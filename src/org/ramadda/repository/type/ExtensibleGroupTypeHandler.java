@@ -99,5 +99,3 @@ public class ExtensibleGroupTypeHandler extends GenericTypeHandler {
         return new Entry(id, this, true);
     }
 }
-
-

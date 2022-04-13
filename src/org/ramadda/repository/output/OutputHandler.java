@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.output;
@@ -47,10 +36,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-import java.util.function.Function;
-import java.util.function.BiFunction;
-import java.util.function.BiConsumer;
-
 import java.io.*;
 
 import java.net.*;
@@ -65,6 +50,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+
+import java.util.function.Function;
 import java.util.regex.*;
 import java.util.zip.*;
 
@@ -77,7 +66,7 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 @SuppressWarnings("unchecked")
-public class OutputHandler extends RepositoryManager  implements OutputConstants {
+public class OutputHandler extends RepositoryManager implements OutputConstants {
 
     /** _more_ */
     public static final String PROP_PROCESSDIR = "processdir";
@@ -104,7 +93,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
     /** HTML OutputType */
     public static final OutputType OUTPUT_HTML =
         new OutputType("Entry Page", "default.html",
-                       OutputType.TYPE_VIEW| OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_HOME);
 
 
@@ -146,9 +135,9 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
     public OutputHandler(Repository repository, String name)
             throws Exception {
         super(repository);
-	if(name==null) {
-	    name = getClass().getSimpleName();
-	}
+        if (name == null) {
+            name = getClass().getSimpleName();
+        }
         this.name = name;
 
     }
@@ -335,30 +324,45 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
      * @param request   the Request
      * @param cnt       the number to show
      * @param sb        the output
+     * @param message _more_
      *
      * @throws Exception  problem showing them
      */
-    public void showNext(Request request, int cnt, Appendable sb, String...message)
+    public void showNext(Request request, int cnt, Appendable sb,
+                         String... message)
             throws Exception {
         int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
-	showNext(request,cnt,max,sb,message);
+        showNext(request, cnt, max, sb, message);
     }
 
-    public void showNext(Request request, int cnt, int max, Appendable sb, String ...message)
-	throws Exception {		
-	//	Misc.printStack("Show next", 10);
-	boolean haveSkip= request.defined(ARG_SKIP);
-	boolean haveMax = request.defined(ARG_MAX);
-	boolean show = (cnt > 0 && cnt == max) || haveSkip || haveMax;
-	int skip = Math.max(0, request.get(ARG_SKIP, 0));
-	if (show) {  
+    /**
+     *
+     * @param request _more_
+     * @param cnt _more_
+     * @param max _more_
+     * @param sb _more_
+     * @param message _more_
+     *
+     * @throws Exception _more_
+     */
+    public void showNext(Request request, int cnt, int max, Appendable sb,
+                         String... message)
+            throws Exception {
+        //      Misc.printStack("Show next", 10);
+        boolean haveSkip = request.defined(ARG_SKIP);
+        boolean haveMax  = request.defined(ARG_MAX);
+        boolean show     = ((cnt > 0) && (cnt == max)) || haveSkip || haveMax;
+        int     skip     = Math.max(0, request.get(ARG_SKIP, 0));
+        if (show) {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
                                      "entry-table-page"));
-	    if(message!=null && message.length>0 && message[0]!=null) {
-		sb.append(message[0]);
-	    } else {
-		sb.append(msgLabel("Showing") + (skip + 1) + "-" + (skip + cnt));
-	    }
+            if ((message != null) && (message.length > 0)
+                    && (message[0] != null)) {
+                sb.append(message[0]);
+            } else {
+                sb.append(msgLabel("Showing") + (skip + 1) + "-"
+                          + (skip + cnt));
+            }
             sb.append(HtmlUtils.space(2));
             List<String> toks = new ArrayList<String>();
             if (skip > 0) {
@@ -368,13 +372,13 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                         + (skip - max), HtmlUtils.faIcon(
                             "fa-step-backward", "title", "View previous")));
             }
-	    //	    if (cnt >= max) {
-                toks.add(
-                    HtmlUtils.href(
-                        request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
-                        + (skip + max), HtmlUtils.faIcon(
-                            "fa-step-forward", "title", "View next")));
-		//            }
+            //      if (cnt >= max) {
+            toks.add(
+                HtmlUtils.href(
+                    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
+                    + (skip + max), HtmlUtils.faIcon(
+                        "fa-step-forward", "title", "View next")));
+            //            }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
                 moreMax = 10;
@@ -384,16 +388,16 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                 lessMax = 1;
             }
             request.put(ARG_MAX, "" + moreMax);
-	    //	    if (cnt >= max) {
-	    toks.add(HtmlUtils.href(request.getUrl(),
-				    HtmlUtils.faIcon("fa-plus", "title",
-						     "View more")));
+            //      if (cnt >= max) {
+            toks.add(HtmlUtils.href(request.getUrl(),
+                                    HtmlUtils.faIcon("fa-plus", "title",
+                                        "View more")));
 
-                request.put(ARG_MAX, "" + lessMax);
-                toks.add(HtmlUtils.href(request.getUrl(),
-                                        HtmlUtils.faIcon("fa-minus", "title",
-                                            "View less")));
-		//	    }
+            request.put(ARG_MAX, "" + lessMax);
+            toks.add(HtmlUtils.href(request.getUrl(),
+                                    HtmlUtils.faIcon("fa-minus", "title",
+                                        "View less")));
+            //          }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(" ", toks));
 
@@ -605,6 +609,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
             throws Exception {
         Result result = new Result(title, sb);
         addLinks(request, result, state);
+
         return result;
     }
 
@@ -672,7 +677,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
         }
 
         String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
-								     entry);
+                                  entry);
         if (wikiTemplate == null) {
             PageStyle pageStyle = request.getPageStyle(entry);
             wikiTemplate = pageStyle.getWikiTemplate(entry);
@@ -1052,22 +1057,41 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + type);
-        String event = getSelectEvent(request, elementId, allEntries,   type,  entry);
-        String link = label==null?"":HU.mouseClickHref(event, label,
-					       linkExtra
-					       + HU.id(selectorId + "_selectlink"));
+        String event = getSelectEvent(request, elementId, allEntries, type,
+                                      entry);
+        String link = (label == null)
+                      ? ""
+                      : HU.mouseClickHref(event, label,
+                                          linkExtra
+                                          + HU.id(selectorId
+                                              + "_selectlink"));
         if (addClear) {
-	    String clearEvent = HU.call("clearSelect", HU.squote(selectorId));
+            String clearEvent = HU.call("clearSelect", HU.squote(selectorId));
             link = link + " "
-		+ HU.mouseClickHref(clearEvent, HU.getIconImage("fas fa-eraser"),
-					   HU.attr("title","Clear selection") +HU.id(selectorId + "_selectlink"));
+                   + HU.mouseClickHref(clearEvent,
+                                       HU.getIconImage("fas fa-eraser"),
+                                       HU.attr("title", "Clear selection")
+                                       + HU.id(selectorId + "_selectlink"));
         }
+
         return link;
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param elementId _more_
+     * @param allEntries _more_
+     * @param type _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static String getSelectEvent(Request request, String elementId,
-					boolean allEntries, String type, Entry entry)
-	throws Exception {
+                                        boolean allEntries, String type,
+                                        Entry entry)
+            throws Exception {
         boolean hasType    = Utils.stringDefined(type);
         String  selectorId = elementId + ( !hasType
                                            ? ""
@@ -1086,18 +1110,35 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                                                 request.getString(
                                                     ARG_ENTRYTYPE, ""))));
 
-	return event;
+        return event;
     }
 
-    public static String makeEntrySelect(Request request, String arg, boolean allEntries, String type, Entry entry) throws Exception {
-	String event = OutputHandler.getSelectEvent(request, arg, allEntries, type, entry);
-	return HU.hidden(arg + "_hidden",
-			 entry!=null?entry.getId():"",
-			 HU.id(arg + "_hidden")) +
-	    HU.span(HU.span(HU.faIcon("fas fa-hand-pointer"),"class=ramadda-clickable") + " " +
-		    HU.disabledInput(arg, entry!=null?entry.getName():"",
-				     HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_40 + HU.id(arg)),
-		    HU.attr("onClick",event));
+    /**
+     *
+     * @param request _more_
+     * @param arg _more_
+     * @param allEntries _more_
+     * @param type _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String makeEntrySelect(Request request, String arg,
+                                         boolean allEntries, String type,
+                                         Entry entry)
+            throws Exception {
+        String event = OutputHandler.getSelectEvent(request, arg, allEntries,
+                           type, entry);
+
+        return HU.hidden(arg + "_hidden", (entry != null)
+                                          ? entry.getId()
+                                          : "", HU.id(arg
+                                          + "_hidden")) + HU.span(HU.span(HU.faIcon("fas fa-hand-pointer"),
+                                              "class=ramadda-clickable") + " " + HU.disabledInput(arg, (entry != null)
+                ? entry.getName()
+                : "", HU.clazz("disabledinput ramadda-entry-popup-select")
+                      + HU.SIZE_40 + HU.id(arg)), HU.attr("onClick", event));
     }
 
 
@@ -1131,12 +1172,11 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                                     ? namePrefix
                                     : "") + getEntryDisplayName(entry);
         StringBuilder sb         = new StringBuilder();
-	HU.open(sb,"span",HU.cssClass("ramadda-highlightable"));
-        String        entryId    = entry.getId();
-        String        icon       = getPageHandler().getIconUrl(request,
-                                       entry);
-        String        event;
-        String        uid = "link_" + HU.blockCnt++;
+        HU.open(sb, "span", HU.cssClass("ramadda-highlightable"));
+        String entryId = entry.getId();
+        String icon    = getPageHandler().getIconUrl(request, entry);
+        String event;
+        String uid = "link_" + HU.blockCnt++;
         String folderClickUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
             + HU.args(new String[] {
@@ -1152,48 +1192,61 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                             : "Click to view contents";
         boolean showArrow = true;
         String  prefix;
-	if(!showArrow) {
-	    prefix =  HU.img(getIconUrl(ICON_BLANK), "", HU.attr(HU.ATTR_WIDTH, "10"));
-	} else {
-	    String click =  HU.onMouseClick(HU.call("Ramadda.folderClick",
-						    HU.comma(HU.squote(uid), HU.squote(folderClickUrl), HU.squote(getIconUrl(ICON_TOGGLEARROWDOWN)))));
-	    prefix = HU.img(getIconUrl(ICON_TOGGLEARROWRIGHT), msg(message));
-	    prefix = HU.span(prefix, HU.id("img_" + uid)+click+HU.cssClass("ramadda-clickable"));
-	}
+        if ( !showArrow) {
+            prefix = HU.img(getIconUrl(ICON_BLANK), "",
+                            HU.attr(HU.ATTR_WIDTH, "10"));
+        } else {
+            String click = HU.onMouseClick(
+                               HU.call(
+                                   "Ramadda.folderClick",
+                                   HU.comma(
+                                       HU.squote(uid),
+                                       HU.squote(folderClickUrl),
+                                       HU.squote(
+                                           getIconUrl(
+                                               ICON_TOGGLEARROWDOWN)))));
+            prefix = HU.img(getIconUrl(ICON_TOGGLEARROWRIGHT), msg(message));
+            prefix = HU.span(prefix,
+                             HU.id("img_" + uid) + click
+                             + HU.cssClass("ramadda-clickable"));
+        }
 
         String img = prefix + HU.space(1) + HU.img(icon);
 
         sb.append(img);
         sb.append(HU.space(1));
 
-        String type      = request.getString(ARG_SELECTTYPE, "");
-        String elementId = entry.getId();
-        String name     = entry.isGroup()
-                           ? ((Entry) entry).getName()
-                           : getEntryDisplayName(entry);
-	boolean isGroup = entry.getTypeHandler().isGroup();
-	boolean isImage = entry.isImage();
+        String  type      = request.getString(ARG_SELECTTYPE, "");
+        String  elementId = entry.getId();
+        String  name      = entry.isGroup()
+                            ? ((Entry) entry).getName()
+                            : getEntryDisplayName(entry);
+        boolean isGroup   = entry.getTypeHandler().isGroup();
+        boolean isImage   = entry.isImage();
 
         name = name.replace("'", "\\'");
-        sb.append(HU.mouseClickHref(HU.call("selectClick",
-                HU.comma(HU.squote(target),
-			 HU.squote(entry.getId()),
-			 HU.squote(name),
-			 JsonUtil.map(Utils.makeList("entryType",HU.squote(entry.getTypeHandler().getType()),
-						     "isGroup",""+isGroup,
-						     "isImage",
-						     ""+isImage,
-						     "isGeo",""+entry.isGeoreferenced())),
-			 HU.squote(type))), linkText));
+        sb.append(
+            HU.mouseClickHref(
+                HU.call(
+                    "selectClick",
+                    HU.comma(
+                        HU.squote(target), HU.squote(entry.getId()),
+                        HU.squote(name),
+                        JsonUtil.map(
+                            Utils.makeList(
+                                "entryType",
+                                HU.squote(entry.getTypeHandler().getType()),
+                                "isGroup", "" + isGroup, "isImage",
+                                "" + isImage, "isGeo",
+                                "" + entry.isGeoreferenced())), HU.squote(
+                                    type))), linkText));
 
-	HU.close(sb,"span");
+        HU.close(sb, "span");
         sb.append(HU.br());
         sb.append(HU.div("",
-                                HU.attrs(HU.ATTR_STYLE,
-                                    HU.STYLE_HIDDEN,
-                                    HU.ATTR_CLASS,
-                                    CSS_CLASS_FOLDER_BLOCK,
-                                    HU.ATTR_ID, uid)));
+                         HU.attrs(HU.ATTR_STYLE, HU.STYLE_HIDDEN,
+                                  HU.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
+                                  HU.ATTR_ID, uid)));
 
         return sb.toString();
     }
@@ -1288,6 +1341,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
      * @param htmlSB _more_
      * @param jsSB _more_
      * @param showDetails _more_
+     * @param showIcon _more_
      *
      * @throws Exception _more_
      */
@@ -1295,13 +1349,13 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                                  Appendable htmlSB, Appendable jsSB,
                                  boolean showDetails, boolean showIcon)
             throws Exception {
-	String label = (showIcon
-                            ? HU.img(
-				     getPageHandler().getIconUrl(
-								 request, entry)) + " "
-			: "") + getEntryManager().getEntryDisplayName(entry);
-	String link =  HU.href(getEntryManager().getEntryURL(request, entry), label);
-	htmlSB.append(link+"<br>");
+        String label = (showIcon
+                        ? HU.img(getPageHandler().getIconUrl(request, entry))
+                          + " "
+                        : "") + getEntryManager().getEntryDisplayName(entry);
+        String link = HU.href(getEntryManager().getEntryURL(request, entry),
+                              label);
+        htmlSB.append(link + "<br>");
 
     }
 
@@ -1492,10 +1546,10 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
 
 
         return HU.url(request.makeUrl(repository.URL_ENTRY_GET) + "/"
-                             + (addVersion
-                                ? ("v" + (imageVersionCnt++))
-                                : "") + getStorageManager().getFileTail(
-                                    entry), ARG_ENTRYID, entry.getId());
+                      + (addVersion
+                         ? ("v" + (imageVersionCnt++))
+                         : "") + getStorageManager().getFileTail(
+                             entry), ARG_ENTRYID, entry.getId());
     }
 
 
@@ -1632,8 +1686,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
         StringBuilder tabHtml = new StringBuilder();
         String        tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
-        HU.open(tabHtml, HU.TAG_DIV, "id", tabId, "class",
-                       "ui-tabs");
+        HU.open(tabHtml, HU.TAG_DIV, "id", tabId, "class", "ui-tabs");
         HU.open(tabHtml, HU.TAG_UL);
         int cnt = 1;
         for (int i = 0; i < titles.size(); i++) {
@@ -1656,8 +1709,9 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
                         || (tabContents.length() == 0))) {
                 continue;
             }
-            tabHtml.append(HU.div(tabContents, HU.id(tabId
-                    + "-" + (cnt++)) + HU.cssClass("ui-tabs-hide")));
+            tabHtml.append(HU.div(tabContents,
+                                  HU.id(tabId + "-" + (cnt++))
+                                  + HU.cssClass("ui-tabs-hide")));
             tabHtml.append("\n");
         }
 
@@ -1667,9 +1721,8 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
         if (useCookies) {
             args += ",\ncookie: {expires:1}";
         }
-        tabHtml.append(HU.script("\njQuery(function(){\njQuery('#"
-                                        + tabId + "').tabs({" + args
-                                        + "})});\n\n"));
+        tabHtml.append(HU.script("\njQuery(function(){\njQuery('#" + tabId
+                                 + "').tabs({" + args + "})});\n\n"));
 
         return tabHtml.toString();
     }
@@ -1689,8 +1742,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
     public String htmlInput(Request request, String arg, String dflt,
                             int width) {
         return HU.input(arg, request.getString(arg, dflt),
-                               HU.attr(HU.ATTR_SIZE,
-                                   "" + width));
+                        HU.attr(HU.ATTR_SIZE, "" + width));
     }
 
 
@@ -1797,31 +1849,27 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
         }
         StringBuilder publishSB = new StringBuilder();
         sb.append(HU.hidden(ARG_PUBLISH_ENTRY + "_hidden", entryId,
-                                   HU.id(ARG_PUBLISH_ENTRY
-                                       + "_hidden")));
+                            HU.id(ARG_PUBLISH_ENTRY + "_hidden")));
         HU.row(sb, HU.colspan(header, 2));
 
         String select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
                             "Select folder", false, null, entry);
         String addMetadata = !addMetadataField
                              ? ""
-                             : HU.checkbox(ARG_METADATA_ADD,
-                                 HU.VALUE_TRUE,
-                                 request.get(ARG_METADATA_ADD,
-                                             false)) + msg("Add properties");
-        sb.append(
-            HU.formEntry(
-                msgLabel("Folder"),
-                HU.disabledInput(
-                    ARG_PUBLISH_ENTRY, entryName,
-                    HU.id(ARG_PUBLISH_ENTRY)
-                    + HU.SIZE_60) + select + HU.space(2)
-                                         + addMetadata));
+                             : HU.checkbox(
+                                 ARG_METADATA_ADD, HU.VALUE_TRUE,
+                                 request.get(ARG_METADATA_ADD, false)) + msg(
+                                     "Add properties");
+        sb.append(HU.formEntry(msgLabel("Folder"),
+                               HU.disabledInput(ARG_PUBLISH_ENTRY, entryName,
+                                   HU.id(ARG_PUBLISH_ENTRY)
+                                   + HU.SIZE_60) + select + HU.space(2)
+                                       + addMetadata));
 
         if (addNameField) {
             sb.append(HU.formEntry(msgLabel("Name"),
-                                          htmlInput(request,
-                                              ARG_PUBLISH_NAME, "", 30)));
+                                   htmlInput(request, ARG_PUBLISH_NAME, "",
+                                             30)));
         }
 
     }
@@ -1942,7 +1990,7 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
      * @return _more_
      */
     public String getEntryLink(Request request, Entry entry) {
-        return getEntryManager().getEntryLink(request, entry,"");
+        return getEntryManager().getEntryLink(request, entry, "");
     }
 
 
@@ -2014,63 +2062,114 @@ public class OutputHandler extends RepositoryManager  implements OutputConstants
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 13, '22
+     * @author         Enter your name here...    
+     */
     public static class ResultHandler {
-	private boolean newWay = false;
-	private Request request;
-	private Entry entry;
-	private	State state;
-	private Result result;
-	private	PrintWriter pw;
-	private Appendable sb;
-	private OutputHandler outputHandler;
+
+        /**  */
+        private boolean newWay = false;
+
+        /**  */
+        private Request request;
+
+        /**  */
+        private Entry entry;
+
+        /**  */
+        private State state;
+
+        /**  */
+        private Result result;
+
+        /**  */
+        private PrintWriter pw;
+
+        /**  */
+        private Appendable sb;
+
+        /**  */
+        private OutputHandler outputHandler;
 
 
-	public ResultHandler(Request request, OutputHandler outputHandler, Entry entry, State state) throws Exception {
-	    this.request = request;
-	    this.entry = entry;
-	    this.outputHandler = outputHandler;
-	    this.state = state;
-	    newWay = outputHandler.getRepository().getStreamOutput();
-	    OutputStream outputStream  = request.getOutputStream();
-	    if(outputStream==null || !request.getCanStreamResult()) newWay = false;
-	    //	    System.err.println("ResultHandler newWay:" + newWay);
-	    if(newWay) {
-		result = request.getOutputStreamResult(entry.getName(), "text/html");
-		sb = pw = new PrintWriter(outputStream);
-		request.setPrintWriter(pw);
-		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
-		outputHandler.addLinks(request, result, state);
-		outputHandler.getPageHandler().decorateResult(request,
-							      result, sb, true, false);
-		pw.flush();
-	    } else {
-		sb = new StringBuilder("");
-	    }
-	}
+        /**
+         
+         *
+         * @param request _more_
+         * @param outputHandler _more_
+         * @param entry _more_
+         * @param state _more_
+         *
+         * @throws Exception _more_
+         */
+        public ResultHandler(Request request, OutputHandler outputHandler,
+                             Entry entry, State state)
+                throws Exception {
+            this.request       = request;
+            this.entry         = entry;
+            this.outputHandler = outputHandler;
+            this.state         = state;
+            newWay = outputHandler.getRepository().getStreamOutput();
+            OutputStream outputStream = request.getOutputStream();
+            if ((outputStream == null) || !request.getCanStreamResult()) {
+                newWay = false;
+            }
+            //      System.err.println("ResultHandler newWay:" + newWay);
+            if (newWay) {
+                result = request.getOutputStreamResult(entry.getName(),
+                        "text/html");
+                sb = pw = new PrintWriter(outputStream);
+                request.setPrintWriter(pw);
+                outputHandler.getEntryManager().addEntryHeader(request,
+                        entry, result);
+                outputHandler.addLinks(request, result, state);
+                outputHandler.getPageHandler().decorateResult(request,
+                        result, sb, true, false);
+                pw.flush();
+            } else {
+                sb = new StringBuilder("");
+            }
+        }
 
-	public Appendable getAppendable() {
-	    return sb;
-	}
+        /**
+          * @return _more_
+         */
+        public Appendable getAppendable() {
+            return sb;
+        }
 
-	public Result getResult() {
-	    return result;
-	}
+        /**
+          * @return _more_
+         */
+        public Result getResult() {
+            return result;
+        }
 
-	public void finish() throws Exception {
-	    if(newWay) {
-		outputHandler.getPageHandler().decorateResult(request,  result, sb, false, true);
-		if(pw!=null) {
-		    pw.flush();
-		}
-	    }  else {
-		result = outputHandler.makeLinksResult(request, entry.getName(), sb,state);
-		//		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
-		//		outputHandler.getPageHandler().decorateResult(request,  result);
-	    }
-	}	    
+        /**
+         *
+         * @throws Exception _more_
+         */
+        public void finish() throws Exception {
+            if (newWay) {
+                outputHandler.getPageHandler().decorateResult(request,
+                        result, sb, false, true);
+                if (pw != null) {
+                    pw.flush();
+                }
+            } else {
+                result = outputHandler.makeLinksResult(request,
+                        entry.getName(), sb, state);
+                //              outputHandler.getEntryManager().addEntryHeader(request, entry, result);
+                //              outputHandler.getPageHandler().decorateResult(request,  result);
+            }
+        }
 
     }
-	
+
 
 
 

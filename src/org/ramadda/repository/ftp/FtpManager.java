@@ -162,12 +162,15 @@ public class FtpManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkServer() throws Exception {
-	//For now don't enable the ftp server
-	if(true) return;
+        //For now don't enable the ftp server
+        if (true) {
+            return;
+        }
         int newPort = getRepository().getProperty(PROP_FTP_PORT, -1);
-	System.err.println("FTP:" + newPort);
+        System.err.println("FTP:" + newPort);
         if (newPort < 0) {
             stop();
+
             return;
         }
         if (newPort != port) {
@@ -274,5 +277,3 @@ public class FtpManager extends RepositoryManager {
 
 
 }
-
-

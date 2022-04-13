@@ -199,5 +199,3 @@ public class TestUserAuthenticator extends UserAuthenticatorImpl {
                                        Request request) {}
 
 }
-
-

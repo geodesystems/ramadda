@@ -135,9 +135,19 @@ public class CsvOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     static int cnt = 0;
+
+    /**
+     *
+     * @param request _more_
+     * @param entries _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     protected Result listEntries(Request request, List<Entry> entries)
             throws Exception {
-	int mycnt = cnt++;
+
+        int     mycnt          = cnt++;
 
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
@@ -285,7 +295,7 @@ public class CsvOutputHandler extends OutputHandler {
                 }
                 sb.append(headerString);
                 sb.append("\n");
-	    }
+            }
 
             Object[] values = entry.getTypeHandler().getEntryValues(entry);
 
@@ -408,6 +418,7 @@ public class CsvOutputHandler extends OutputHandler {
 
 
         return new Result("", sb, getMimeType(OUTPUT_CSV));
+
     }
 
     /**
@@ -535,6 +546,7 @@ public class CsvOutputHandler extends OutputHandler {
         if (OUTPUT_ENTRYCSV.equals(outputType)) {
             List<Entry> tmp = new ArrayList<Entry>();
             tmp.add(group);
+
             return listEntries(request, tmp);
         }
         subGroups.addAll(entries);
@@ -545,5 +557,3 @@ public class CsvOutputHandler extends OutputHandler {
 
 
 }
-
-

@@ -9,9 +9,9 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -107,9 +107,8 @@ public class CalendarOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_DATE_GRID =
-        new OutputType("Date Grid", "calendar.grid",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_DATEGRID);
+        new OutputType("Date Grid", "calendar.grid", OutputType.TYPE_VIEW,
+                       "", ICON_DATEGRID);
 
     /** _more_ */
     public static final OutputType OUTPUT_CALENDAR =
@@ -121,9 +120,8 @@ public class CalendarOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
-        new OutputType("Timeline", "default.timeline",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_TIMELINE);
+        new OutputType("Timeline", "default.timeline", OutputType.TYPE_VIEW,
+                       "", ICON_TIMELINE);
 
 
     /**
@@ -245,16 +243,16 @@ public class CalendarOutputHandler extends OutputHandler {
 
             return result;
         } else {
-	    String prefix = request.getPrefixHtml();
-	    if (Utils.stringDefined(prefix)) {
-		sb.append(prefix);
-	    } else {
-		getPageHandler().entrySectionOpen(request, group, sb, "");
-	    }
+            String prefix = request.getPrefixHtml();
+            if (Utils.stringDefined(prefix)) {
+                sb.append(prefix);
+            } else {
+                getPageHandler().entrySectionOpen(request, group, sb, "");
+            }
             result = outputCalendar(request, group, entries, sb);
-	    if (Utils.stringDefined(prefix)) {
-		getPageHandler().entrySectionClose(request, group, sb);
-	    }
+            if (Utils.stringDefined(prefix)) {
+                getPageHandler().entrySectionClose(request, group, sb);
+            }
         }
 
         addLinks(request, result, new State(group, subGroups, entries));
@@ -691,7 +689,8 @@ public class CalendarOutputHandler extends OutputHandler {
                 label = label.substring(0, 19) + "...";
             }
             String url =
-                HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry, label, null,  false, true).toString());
+                HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry,
+                    label, null, false, true).toString());
             url = getEntryManager().getPopupLink(request, entry, label);
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
@@ -950,7 +949,8 @@ public class CalendarOutputHandler extends OutputHandler {
             String       link = "";
             if (dayItems.size() > 0) {
                 if (dayItems.get(0) instanceof Entry) {
-		    link = getWikiManager().makeTableTree(request, null,null,dayItems);
+                    link = getWikiManager().makeTableTree(request, null,
+                            null, dayItems);
                 } else {
                     link = StringUtil.join(" ", dayItems);
                 }
@@ -1073,5 +1073,3 @@ public class CalendarOutputHandler extends OutputHandler {
 
 
 }
-
-

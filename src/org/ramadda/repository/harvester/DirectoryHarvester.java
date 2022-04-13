@@ -219,5 +219,3 @@ public class DirectoryHarvester extends Harvester {
     }
 
 }
-
-

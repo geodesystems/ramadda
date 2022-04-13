@@ -221,9 +221,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 values = getHandler().getEnumerationValues(this);
             }
             List<String> tmpValues = null;
-	    if(values.startsWith("resource:")) {
-		tmpValues =  getMetadataManager().getTypeResource(values.substring("resource:".length()));
-	    } else  if (values.startsWith("file:")) {
+            if (values.startsWith("resource:")) {
+                tmpValues = getMetadataManager().getTypeResource(
+                    values.substring("resource:".length()));
+            } else if (values.startsWith("file:")) {
                 //If it is a .properties file then the delimiter is =
                 if (values.endsWith(".properties")) {
                     delimiter = "=";
@@ -751,8 +752,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             }
             theFile = tmpFile.toString();
         } else {
-	    //		String name = request.getString("upload_name_"+i);
-	    //		String contents = request.getString("upload_file_"+i);
+            //          String name = request.getString("upload_name_"+i);
+            //          String contents = request.getString("upload_file_"+i);
 
             String fileArg = request.getUploadedFile(arg);
             if (fileArg == null) {
@@ -965,16 +966,21 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                       HtmlUtils.SIZE_5);
             }
 
-	    StringBuilder sb = new StringBuilder();
-	    String inputId = formInfo.getId()+"_" + arg;
-            sb.append(HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70+HtmlUtils.id(inputId)) + image
-		      + "<br>" + msgLabel("Or download URL")
-		      + HtmlUtils.space(1)
-		      + HtmlUtils.input(arg + "_url", "", HtmlUtils.SIZE_70)
-		      + extra);
-	    HtmlUtils.script(sb, "Ramadda.initFormUpload("+HU.comma(HU.squote(inputId))+");");
-		      //+"','" + formInfo.getId()+"_dnd"+"');"));
-	    return sb.toString();
+            StringBuilder sb      = new StringBuilder();
+            String        inputId = formInfo.getId() + "_" + arg;
+            sb.append(
+                HtmlUtils.fileInput(
+                    arg, HtmlUtils.SIZE_70 + HtmlUtils.id(inputId)) + image
+                        + "<br>" + msgLabel("Or download URL")
+                        + HtmlUtils.space(1)
+                        + HtmlUtils.input(
+                            arg + "_url", "", HtmlUtils.SIZE_70) + extra);
+            HtmlUtils.script(sb,
+                             "Ramadda.initFormUpload("
+                             + HU.comma(HU.squote(inputId)) + ");");
+
+            //+"','" + formInfo.getId()+"_dnd"+"');"));
+            return sb.toString();
         } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
             String         lastGroup     = null;
@@ -1276,5 +1282,3 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
 }
-
-

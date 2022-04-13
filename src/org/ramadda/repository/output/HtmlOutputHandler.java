@@ -57,16 +57,15 @@ import java.util.zip.*;
 public class HtmlOutputHandler extends OutputHandler {
 
     /** _more_ */
-    public static final OutputType OUTPUT_TEST =
-        new OutputType("test", "html.test",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_DATA);
+    public static final OutputType OUTPUT_TEST = new OutputType("test",
+                                                     "html.test",
+                                                     OutputType.TYPE_VIEW,
+                                                     "", ICON_DATA);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_GRID =
-        new OutputType("Grid Layout", "html.grid",
-                       OutputType.TYPE_VIEW, "",
+        new OutputType("Grid Layout", "html.grid", OutputType.TYPE_VIEW, "",
                        ICON_DATA);
 
     /** _more_ */
@@ -90,10 +89,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    public static final OutputType OUTPUT_GRAPH =
-        new OutputType("Graph", "default.graph",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_GRAPH);
+    public static final OutputType OUTPUT_GRAPH = new OutputType("Graph",
+                                                      "default.graph",
+                                                      OutputType.TYPE_VIEW,
+                                                      "", ICON_GRAPH);
 
     /** _more_ */
     public static final OutputType OUTPUT_TABLE =
@@ -452,7 +451,7 @@ public class HtmlOutputHandler extends OutputHandler {
             String        target = request.getString(ATTR_TARGET, "");
             String        type   = request.getString(ARG_SELECTTYPE, "");
             entry.getTypeHandler().addToSelectMenu(request, entry, sb, type,
-						   target);
+                    target);
 
             return makeAjaxResult(request, sb.toString());
         }
@@ -464,7 +463,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMapInfo(request, entry);
         }
         if (outputType.equals(OUTPUT_INLINE)) {
-	    //	    if(true) throw new IllegalArgumentException("output inline called");
+            //      if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
             String inline = typeHandler.getInlineHtml(request, entry);
             if (inline != null) {
@@ -527,9 +526,10 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-	ResultHandler resultHandler = new ResultHandler(request, this,entry,  new State(entry));
-	Appendable sb = resultHandler.getAppendable();
-        boolean       doingInfo = outputType.equals(OUTPUT_INFO);
+        ResultHandler resultHandler = new ResultHandler(request, this, entry,
+                                          new State(entry));
+        Appendable sb        = resultHandler.getAppendable();
+        boolean    doingInfo = outputType.equals(OUTPUT_INFO);
         if (doingInfo) {
             getPageHandler().entrySectionOpen(request, entry, sb,
                     "Entry Information");
@@ -544,9 +544,10 @@ public class HtmlOutputHandler extends OutputHandler {
             handleDefaultWiki(request, entry, sb, null, null);
         }
 
-	resultHandler.finish();
+        resultHandler.finish();
+
         return resultHandler.getResult();
-	//        return makeLinksResult(request, entry.getName(), sb, new State(entry));
+        //        return makeLinksResult(request, entry.getName(), sb, new State(entry));
     }
 
 
@@ -678,6 +679,8 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param notTheseTypes _more_
      * @param showTitle _more_
      * @param separator _more_
+     * @param decorate _more_
+     * @param stripe _more_
      *
      * @return _more_
      *
@@ -685,7 +688,8 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
             List<String> onlyTheseTypes, List<String> notTheseTypes,
-						boolean showTitle, String separator, boolean decorate, boolean stripe)
+            boolean showTitle, String separator, boolean decorate,
+            boolean stripe)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -751,22 +755,28 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             boolean even = rowFlag.booleanValue();
             typeRow.put(group, new Boolean( !even));
-            String  rowClass = !stripe?"metadata-row":
-		"metadata-row-" + (even
-				   ? "even"
-				   : "odd");
+            String  rowClass = !stripe
+                               ? "metadata-row"
+                               : "metadata-row-" + (even
+                    ? "even"
+                    : "odd");
 
 
             boolean first    = sb.length() == 0;
-	    String label = html[0];
-	    String contents = html[1];
-	    if(decorate) contents = HU.div(contents,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",contents));
+            String  label    = html[0];
+            String  contents = html[1];
+            if (decorate) {
+                contents = HU.div(contents,
+                                  HU.cssClass("metadata-tag")
+                                  + HU.attr("metadata-tag", contents));
+            }
             if (tags) {
                 sb.append(HU.tag("div", HU.cssClass("metadata-tag"),
                                  metadata.getAttr1()));
             } else if (smallDisplay) {
-                HU.open(sb, "tr",
-                        HU.attr("valign", "top") + (decorate?"":HU.cssClass(rowClass)));
+                HU.open(sb, "tr", HU.attr("valign", "top") + (decorate
+                        ? ""
+                        : HU.cssClass(rowClass)));
                 HU.open(sb, "td");
                 if ( !first && (separator != null)) {
                     sb.append(separator);
@@ -785,7 +795,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 if ( !first && (separator != null)) {
                     sb.append(separator);
                 }
-                HU.div(sb, contents, (decorate?"":HU.cssClass(rowClass)));
+                HU.div(sb, contents, (decorate
+                                      ? ""
+                                      : HU.cssClass(rowClass)));
             }
             sb.append("\n");
         }
@@ -978,13 +990,13 @@ public class HtmlOutputHandler extends OutputHandler {
                                List<Entry> subGroups, List<Entry> entries)
             throws Exception {
 
-	String        selectType   = request.getString(ARG_SELECTTYPE, "");
-	boolean isImage = Misc.equals(selectType,"image");
-        String        localeId = request.getString(ARG_LOCALEID, null);
-        String        target   = request.getString(ATTR_TARGET, "");
-        StringBuilder sb       = new StringBuilder();
-        boolean       didExtra = false;
-        HashSet       seen     = new HashSet();
+        String        selectType = request.getString(ARG_SELECTTYPE, "");
+        boolean       isImage    = Misc.equals(selectType, "image");
+        String        localeId   = request.getString(ARG_LOCALEID, null);
+        String        target     = request.getString(ATTR_TARGET, "");
+        StringBuilder sb         = new StringBuilder();
+        boolean       didExtra   = false;
+        HashSet       seen       = new HashSet();
         String sectionDivider =
             HU.tag("hr",
                    HU.style("padding:0px;margin:0px;margin-bottom:0px;"));
@@ -1036,9 +1048,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 List    favoriteLinks = new ArrayList();
                 boolean didOne        = false;
                 for (Entry recent : recents) {
-		    if(isImage && !recent.isImage() && !recent.isGroup()) {
-			continue;
-		    }
+                    if (isImage && !recent.isImage() && !recent.isGroup()) {
+                        continue;
+                    }
                     String link = getSelectLink(request, recent, seen,
                                       target);
                     if (link.length() == 0) {
@@ -1072,7 +1084,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 for (FavoriteEntry favorite : favoritesList) {
                     Entry favEntry = favorite.getEntry();
                     String link = getSelectLink(request, favEntry, seen,
-						target);
+                                      target);
                     if (link.length() == 0) {
                         continue;
                     }
@@ -1100,9 +1112,9 @@ public class HtmlOutputHandler extends OutputHandler {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
             }
-	    if(isImage && !subGroup.isImage() && !subGroup.isGroup()) {
-		continue;
-	    }
+            if (isImage && !subGroup.isImage() && !subGroup.isGroup()) {
+                continue;
+            }
             sb.append(getSelectLink(request, subGroup, seen, target));
         }
 
@@ -1115,9 +1127,9 @@ public class HtmlOutputHandler extends OutputHandler {
                         && !entry.getTypeHandler().isType(entryType)) {
                     continue;
                 }
-		if(isImage && !entry.isImage() && !entry.isGroup()) {
-		    continue;
-		}
+                if (isImage && !entry.isImage() && !entry.isGroup()) {
+                    continue;
+                }
                 sb.append(getSelectLink(request, entry, seen, target));
             }
         }
@@ -1214,7 +1226,8 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-		 getMetadataHtml(request, entry, null, null, true, null,false,true)) {
+                getMetadataHtml(request, entry, null, null, true, null,
+                                false, true)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
@@ -1335,9 +1348,8 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
     /** _more_ */
-    private TTLCache<String, StringBuffer> testCache = new TTLCache<String,
-                                                           StringBuffer>(60
-									 * 60 * 1000,-1,"HTML Test");
+    private TTLCache<String, StringBuffer> testCache =
+        new TTLCache<String, StringBuffer>(60 * 60 * 1000, -1, "HTML Test");
 
 
     /**
@@ -1369,9 +1381,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 json = new StringBuffer();
                 String lastValue = values.get(values.size() - 1);
                 json.append(JsonUtil.map(Utils.makeList("values",
-							JsonUtil.list(Utils.makeList(
-										     "--", lastValue + "-v1",
-										     lastValue + "-v2", lastValue + "-v3")))));
+                        JsonUtil.list(Utils.makeList("--", lastValue + "-v1",
+                            lastValue + "-v2", lastValue + "-v3")))));
                 //                System.err.println(json);
                 testCache.put(valueKey, json);
             }
@@ -1441,13 +1452,13 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result outputTable(Request request, Entry group,
                               List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        String prefix = request.getPrefixHtml();
+        StringBuffer sb     = new StringBuffer();
+        String       prefix = request.getPrefixHtml();
         if (prefix != null) {
             sb.append(prefix);
         } else {
-	    getPageHandler().entrySectionOpen(request, group, sb, "Table");
-	}
+            getPageHandler().entrySectionOpen(request, group, sb, "Table");
+        }
 
 
         List<Entry> allEntries = new ArrayList<Entry>();
@@ -1455,8 +1466,8 @@ public class HtmlOutputHandler extends OutputHandler {
         allEntries.addAll(entries);
         makeTable(request, allEntries, sb, null);
         if (prefix == null) {
-	    getPageHandler().entrySectionClose(request, group, sb);
-	}
+            getPageHandler().entrySectionClose(request, group, sb);
+        }
 
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, subGroups, entries));
@@ -1553,14 +1564,14 @@ public class HtmlOutputHandler extends OutputHandler {
                              boolean noTemplate)
             throws Exception {
         request.put(ARG_TREEVIEW, "true");
-        String wtr = "9";
-        String wtl = "3";
+        String        wtr    = "9";
+        String        wtl    = "3";
         StringBuilder listSB = new StringBuilder();
         String entryShowUrl  =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
         String firstLink = null;
-	String viewId = HU.getUniqueId("treeview_");
+        String viewId    = HU.getUniqueId("treeview_");
         for (Entry child : children) {
             String entryIcon = getPageHandler().getIconUrl(request, child);
             String label = getEntryManager().getEntryListName(request, child);
@@ -1571,17 +1582,16 @@ public class HtmlOutputHandler extends OutputHandler {
                 firstLink = HU.href(
                     url,
                     HU.img(getRepository().getIconUrl("fa-solid fa-link"))
-                    + " " + label,HU.cssClass("ramadda-clickable"));
+                    + " " + label, HU.cssClass("ramadda-clickable"));
             }
 
-            url = Utils.concatString("javascript:",
-                                     HU.call("Utils.treeViewClick",
-                                             HU.jsMakeArgs(false,
-                                                 HU.squote(viewId),
-                                                 HU.squote(child.getId()),
-                                                     HU.squote(url),
-                                                         HU.squote(label),
-                                                             noTemplate
+            url = Utils.concatString(
+                "javascript:",
+                HU.call(
+                    "Utils.treeViewClick",
+                    HU.jsMakeArgs(
+                        false, HU.squote(viewId), HU.squote(child.getId()),
+                        HU.squote(url), HU.squote(label), noTemplate
                     ? "'empty'"
                     : "null")));
             HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] { "class",
@@ -1602,7 +1612,7 @@ public class HtmlOutputHandler extends OutputHandler {
         sb.append("</div>");
         sb.append("<div class=\"col-md-" + wtr
                   + " ramadda-treeview-header \"  >");
-        HU.div(sb,firstLink, HU.id(viewId+"_header"));
+        HU.div(sb, firstLink, HU.id(viewId + "_header"));
         sb.append("</div>");
         sb.append("</div>");
         sb.append("<div class=\"ramadda-treeview\">");
@@ -1634,11 +1644,11 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         sb.append("<div class=\"col-md-" + wtr
                   + " ramadda-treeview-right \"  \"  >");
-        String attrs = HU.attrs("id", viewId, "src", initUrl,
-                                "width", "" + ((width < 0)
-                ? (-width + "%")
-                : width), "height", "" + height);
-	HU.tag(sb, "iframe", attrs, "");
+        String attrs = HU.attrs("id", viewId, "src", initUrl, "width",
+                                "" + ((width < 0)
+                                      ? (-width + "%")
+                                      : width), "height", "" + height);
+        HU.tag(sb, "iframe", attrs, "");
         sb.append("</div>");
         sb.append("</div>");
         sb.append("</div>");
@@ -1785,7 +1795,8 @@ public class HtmlOutputHandler extends OutputHandler {
                         ? "odd"
                         : "even", "valign", "top" })));
 
-                EntryLink entryLink = getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry));
+                EntryLink entryLink = getEntryManager().getAjaxLink(request,
+                                          entry, getEntryDisplayName(entry));
                 tableSB.append(HU.col(entryLink.getLink(),
                                       " nowrap "
                                       + HU.cssClass("entry-table-name")));
@@ -1928,8 +1939,9 @@ public class HtmlOutputHandler extends OutputHandler {
             getRepository().getTypeHandler(group.getType());
 
         if (outputType.equals(OUTPUT_INLINE)) {
-	    //	    if(true) throw new IllegalArgumentException("output inline called");
+            //      if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
+
             return getChildrenXml(request, group, subGroups, entries);
         }
 
@@ -1994,8 +2006,10 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-	ResultHandler resultHandler = new ResultHandler(request, this,group,  new State(group, subGroups, entries));
-	Appendable sb = resultHandler.getAppendable();
+        ResultHandler resultHandler = new ResultHandler(request, this, group,
+                                          new State(group, subGroups,
+                                              entries));
+        Appendable sb = resultHandler.getAppendable();
         request.appendMessage(sb);
         String prefix = request.getPrefixHtml();
         if (prefix != null) {
@@ -2038,16 +2052,18 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             if (allEntries.size() > 0) {
-		Hashtable props = new Hashtable();
-		props.put(ARG_SHOWCRUMBS, ""+group.isDummy());
-		sb.append(getWikiManager().makeTableTree(request, null,props,allEntries));
+                Hashtable props = new Hashtable();
+                props.put(ARG_SHOWCRUMBS, "" + group.isDummy());
+                sb.append(getWikiManager().makeTableTree(request, null,
+                        props, allEntries));
             }
 
             if ( !group.isDummy() && (subGroups.size() == 0)
                     && (entries.size() == 0)) {
                 if (getAccessManager().hasPermissionSet(group,
                         Permission.ACTION_VIEWCHILDREN)) {
-                    if ( !getAccessManager().canDoViewChildren(request, group)) {
+                    if ( !getAccessManager().canDoViewChildren(request,
+                            group)) {
                         sb.append(
                             getPageHandler().showDialogWarning(
                                 "You do not have permission to view the sub-folders of this entry"));
@@ -2065,7 +2081,8 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(rsuffix);
         }
 
-	resultHandler.finish();
+        resultHandler.finish();
+
         return resultHandler.getResult();
     }
 
@@ -2153,5 +2170,3 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 }
-
-

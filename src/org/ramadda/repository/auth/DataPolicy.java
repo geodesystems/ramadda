@@ -84,7 +84,7 @@ public class DataPolicy {
     private AccessManager accessManager;
 
     /**
-     
+     *
      *
      * @param accessManager _more_
      * @param mainUrl _more_
@@ -252,24 +252,35 @@ public class DataPolicy {
      */
     public String getLabel() throws Exception {
         String label = getName();
-	String ll=null;
+        String ll    = null;
         for (License license : licenses) {
             String licenseName = license.getName();
             if ( !Utils.stringDefined(licenseName)) {
                 licenseName = license.getId();
             }
-	    if(ll==null) ll = "";
-	    else ll+=",";
-	    ll +=  licenseName;
+            if (ll == null) {
+                ll = "";
+            } else {
+                ll += ",";
+            }
+            ll += licenseName;
         }
-	if(ll!=null) label+="&#10;Licenses:" + ll;
-	String pl=null;
-	for(Permission permission: permissions) {
-	    if(pl==null) pl = "";
-	    else pl+=", ";
-	    pl +=  permission.getLabel();
-	}
-	if(pl!=null) label+="&#10;Permissions:" + pl;
+        if (ll != null) {
+            label += "&#10;Licenses:" + ll;
+        }
+        String pl = null;
+        for (Permission permission : permissions) {
+            if (pl == null) {
+                pl = "";
+            } else {
+                pl += ", ";
+            }
+            pl += permission.getLabel();
+        }
+        if (pl != null) {
+            label += "&#10;Permissions:" + pl;
+        }
+
         return label;
     }
 
@@ -289,12 +300,14 @@ public class DataPolicy {
      * @return The Permissions
      */
     public List<Permission> getPermissions() {
-	//We always need at least one permission so if there aren't any add a dummy one
-	if(permissions.size()==0) {
-	    List<Role> roles = new ArrayList<Role>();
-	    roles.add(Role.ROLE_ANY);
-	    permissions.add(new  Permission(getId(),Permission.ACTION_BLANK, roles));
-	}
+        //We always need at least one permission so if there aren't any add a dummy one
+        if (permissions.size() == 0) {
+            List<Role> roles = new ArrayList<Role>();
+            roles.add(Role.ROLE_ANY);
+            permissions.add(new Permission(getId(), Permission.ACTION_BLANK,
+                                           roles));
+        }
+
         return permissions;
     }
 

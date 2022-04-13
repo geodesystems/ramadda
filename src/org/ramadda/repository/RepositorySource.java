@@ -25,5 +25,3 @@ public interface RepositorySource {
     public RepositoryBase getRepositoryBase();
 
 }
-
-

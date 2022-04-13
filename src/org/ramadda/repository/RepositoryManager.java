@@ -124,16 +124,35 @@ public class RepositoryManager implements RepositorySource, Constants,
     public void applyAdminSettings(Request request) throws Exception {}
 
 
+    /**
+     *
+     * @param args _more_
+     * @param arg _more_
+     * @param dflt _more_
+      * @return _more_
+     */
     public static boolean getArg(Hashtable args, String arg, boolean dflt) {
-	return Utils.getProperty(args,arg,dflt);
+        return Utils.getProperty(args, arg, dflt);
     }
 
+    /**
+     *
+     * @param args _more_
+     * @param arg _more_
+     * @param dflt _more_
+      * @return _more_
+     */
     public static String getArg(Hashtable args, String arg, String dflt) {
-	return Utils.getProperty(args,arg,dflt);
-    }        
+        return Utils.getProperty(args, arg, dflt);
+    }
 
-    public static Hashtable makeArgs(Object...args) {
-	return Utils.makeMap(args);
+    /**
+     *
+     * @param args _more_
+      * @return _more_
+     */
+    public static Hashtable makeArgs(Object... args) {
+        return Utils.makeMap(args);
     }
 
     /**
@@ -264,11 +283,11 @@ public class RepositoryManager implements RepositorySource, Constants,
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
                    + contents + "</td></tr>";
         } else {
-	    return "<tr valign=top><td align=right  class=formlabel>" + label
-		+ "</td><td>" + contents + "</td></tr>";
-	    //	    return "<tr valign=top><td align=right><div class=\"formlabel\">" + label
-	    //		+ "</div></td><td>" + contents + "</td></tr>";
-	    //            return HtmlUtils.formEntryTop(label, contents);
+            return "<tr valign=top><td align=right  class=formlabel>" + label
+                   + "</td><td>" + contents + "</td></tr>";
+            //      return "<tr valign=top><td align=right><div class=\"formlabel\">" + label
+            //          + "</div></td><td>" + contents + "</td></tr>";
+            //            return HtmlUtils.formEntryTop(label, contents);
         }
     }
 
@@ -1078,5 +1097,3 @@ public class RepositoryManager implements RepositorySource, Constants,
 
 
 }
-
-

@@ -152,18 +152,18 @@ public class ZipFileOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void outputZipFile(Entry entry, Appendable sb) throws Exception {
-	ZipFile zipFile = new ZipFile(entry.getResource().getPath());
-//        ZipInputStream zin     = new ZipInputStream(fis);
-//        InputStream fis = getStorageManager().getFileInputStream(entry.getResource().getPath());
-        Node           root    = null;
-        Node           current = null;
-	root    = new Node("Zip File Contents",true,-1);
-	current = root;
+        ZipFile zipFile = new ZipFile(entry.getResource().getPath());
+        //        ZipInputStream zin     = new ZipInputStream(fis);
+        //        InputStream fis = getStorageManager().getFileInputStream(entry.getResource().getPath());
+        Node root    = null;
+        Node current = null;
+        root    = new Node("Zip File Contents", true, -1);
+        current = root;
         try {
-	    Enumeration zipEnum = zipFile.entries();
-	    while (zipEnum.hasMoreElements ())      { 
-		ZipEntry ze = (ZipEntry) zipEnum.nextElement(); 
-		//            while ((ze = zin.getNextEntry()) != null) {
+            Enumeration zipEnum = zipFile.entries();
+            while (zipEnum.hasMoreElements()) {
+                ZipEntry ze = (ZipEntry) zipEnum.nextElement();
+                //            while ((ze = zin.getNextEntry()) != null) {
                 String path = ze.getName();
                 if (root == null) {
                     if (ze.isDirectory()) {
@@ -171,9 +171,9 @@ public class ZipFileOutputHandler extends OutputHandler {
                     }
                 }
                 long size   = ze.getSize();
-                Node node   = new Node(path, ze.isDirectory(), ze.isDirectory()
-				       ? -1
-				       : size);
+                Node node = new Node(path, ze.isDirectory(), ze.isDirectory()
+                        ? -1
+                        : size);
                 Node parent = null;
                 while ( !path.startsWith(current.path) && (current != root)) {
                     current = current.parent;
@@ -185,9 +185,9 @@ public class ZipFileOutputHandler extends OutputHandler {
             }
             root.walk(getRepository(), entry, sb, 0);
         } finally {
-	    zipFile.close();
-	    //            IOUtil.close(zin);
-	    //            IOUtil.close(fis);
+            zipFile.close();
+            //            IOUtil.close(zin);
+            //            IOUtil.close(fis);
         }
     }
 
@@ -212,18 +212,20 @@ public class ZipFileOutputHandler extends OutputHandler {
         /**  */
         List<Node> children;
 
-	boolean isDir = false;
+        /**  */
+        boolean isDir = false;
 
         /**
          *
          *
          * @param path _more_
+         * @param isDir _more_
          * @param size _more_
          */
         public Node(String path, boolean isDir, long size) {
-            this.path = path;
-	    this.isDir = isDir;
-            this.size = size;
+            this.path  = path;
+            this.isDir = isDir;
+            this.size  = size;
         }
 
         /**
@@ -255,20 +257,23 @@ public class ZipFileOutputHandler extends OutputHandler {
                 name = name.substring(0, name.length() - 1);
             }
             name = IOUtil.getFileTail(name);
-            if (!isDir) {
+            if ( !isDir) {
                 String url = repository.URL_ENTRY_SHOW + "/" + name;
                 url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
                                     ARG_FILE, path, ARG_OUTPUT,
                                     OUTPUT_LIST.getId());
                 sb.append("<div>");
-		String suffix = IOUtil.getFileExtension(name).toLowerCase();
+                String suffix = IOUtil.getFileExtension(name).toLowerCase();
 
-		String icon = repository.getProperty("file.icon"+suffix);
-		sb.append(repository.getIconImage(icon!=null?icon:"fa-file"));
+                String icon   = repository.getProperty("file.icon" + suffix);
+                sb.append(repository.getIconImage((icon != null)
+                        ? icon
+                        : "fa-file"));
                 sb.append(" ");
                 sb.append(HtmlUtils.href(url, name));
                 sb.append(RepositoryManager.formatFileLength(size, true));
                 sb.append("</div>");
+
                 return;
             }
             StringBuilder sb2 = new StringBuilder();
@@ -329,5 +334,3 @@ public class ZipFileOutputHandler extends OutputHandler {
     }
 
 }
-
-

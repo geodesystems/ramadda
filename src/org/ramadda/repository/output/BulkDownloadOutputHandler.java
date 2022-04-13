@@ -630,5 +630,3 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 
 
 }
-
-

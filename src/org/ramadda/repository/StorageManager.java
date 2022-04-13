@@ -25,6 +25,11 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+import java.io.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,11 +40,12 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.nio.charset.*;
+import java.nio.file.Files;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.Files;
-import java.nio.charset.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,12 +53,6 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-
-import java.io.*;
-import javax.xml.bind.DatatypeConverter;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 import java.util.zip.*;
 
 import javax.crypto.Cipher;
@@ -61,6 +61,10 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+
+import javax.imageio.ImageIO;
+
+import javax.xml.bind.DatatypeConverter;
 
 
 /**
@@ -1051,27 +1055,47 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @throws Exception _more_
      */
     public Object getCacheObject(String group, String key) throws Exception {
-	return getCacheObject(group,key,-1);
+        return getCacheObject(group, key, -1);
     }
 
-    public Object getCacheObject(String group, String key, long ttl) throws Exception {	
-	boolean debug = false;
-        File f = getCacheFile(group, key);
+    /**
+     *
+     * @param group _more_
+     * @param key _more_
+     * @param ttl _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Object getCacheObject(String group, String key, long ttl)
+            throws Exception {
+        boolean debug = false;
+        File    f     = getCacheFile(group, key);
         if (f.exists()) {
-	    if(ttl>0) {
-		if(debug) System.err.println("checking cache:" + ttl);
-		Path file = Paths.get(f.toString());
-		BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
-		long last = attr.lastModifiedTime().toMillis();
-		long diff = new Date().getTime()-last;
-		if(debug) System.err.println("last modified:" + new Date(last));
-		if(debug) System.err.println("diff:" + diff);
-		if(diff>ttl) {
-		    if(debug) System.err.println("clearing cache");
-		    f.delete();
-		    return null;
-		}
-	    }
+            if (ttl > 0) {
+                if (debug) {
+                    System.err.println("checking cache:" + ttl);
+                }
+                Path file = Paths.get(f.toString());
+                BasicFileAttributes attr = Files.readAttributes(file,
+                                               BasicFileAttributes.class);
+                long last = attr.lastModifiedTime().toMillis();
+                long diff = new Date().getTime() - last;
+                if (debug) {
+                    System.err.println("last modified:" + new Date(last));
+                }
+                if (debug) {
+                    System.err.println("diff:" + diff);
+                }
+                if (diff > ttl) {
+                    if (debug) {
+                        System.err.println("clearing cache");
+                    }
+                    f.delete();
+
+                    return null;
+                }
+            }
 
 
             FileInputStream fis = new FileInputStream(f);
@@ -1485,45 +1509,64 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 
-    public File decodeFileContents(Request request, String fileName, String fileContents) throws Exception {
-	File tmpFile = getTmpFile(request,fileName);
-	//data:image/png;...
-	String fileType = "text/plain";
-	boolean isBase64 = false;
-	if(fileContents.startsWith("data:")) {
-	    isBase64 = true;
-	    int idx = fileContents.indexOf(",");
-	    if(idx<0) {
-		throw new IllegalArgumentException("Bad file contents");
-	    }
-	    fileType = fileContents.substring(0,idx-1);
-	    fileType = fileType.substring(0,fileType.indexOf(";"));
-	    fileType = fileType.substring(fileType.indexOf(":")+1);
-	    fileContents = fileContents.substring(idx + 1);
-	}
-	//	System.err.println("type:" + fileType);
+    /**
+     *
+     * @param request _more_
+     * @param fileName _more_
+     * @param fileContents _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File decodeFileContents(Request request, String fileName,
+                                   String fileContents)
+            throws Exception {
+        File tmpFile = getTmpFile(request, fileName);
+        //data:image/png;...
+        String  fileType = "text/plain";
+        boolean isBase64 = false;
+        if (fileContents.startsWith("data:")) {
+            isBase64 = true;
+            int idx = fileContents.indexOf(",");
+            if (idx < 0) {
+                throw new IllegalArgumentException("Bad file contents");
+            }
+            fileType     = fileContents.substring(0, idx - 1);
+            fileType     = fileType.substring(0, fileType.indexOf(";"));
+            fileType     = fileType.substring(fileType.indexOf(":") + 1);
+            fileContents = fileContents.substring(idx + 1);
+        }
+        //      System.err.println("type:" + fileType);
 
-	if(fileType.startsWith("image/")) {
-	    byte[] imagedata = DatatypeConverter.parseBase64Binary(fileContents);
-	    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagedata));
-	    String suffix = IOUtil.getFileExtension(fileName).toLowerCase();
-	    if(suffix.startsWith(".")) suffix = suffix.substring(1);
-	    if(bufferedImage==null) {
-		throw new IllegalArgumentException("Unable to create image -  file:" + fileName +" suffix:" + suffix);
-	    }
-	    ImageIO.write(bufferedImage, suffix, tmpFile);
-	} else {
-	    byte[]b;
-	    if(isBase64)
-		b=Utils.decodeBase64(fileContents);
-	    else
-		b = fileContents.getBytes("UTF-8");
-	    IOUtil.writeBytes(tmpFile,b);
-	    //	    FileOutputStream fos = new FileOutputStream(tmpFile);
-	    //	    IOUtil.writeFile(tmpFile, fileContents);
-	    //	    fos.close();
-	}
-	return tmpFile;
+        if (fileType.startsWith("image/")) {
+            byte[] imagedata =
+                DatatypeConverter.parseBase64Binary(fileContents);
+            BufferedImage bufferedImage =
+                ImageIO.read(new ByteArrayInputStream(imagedata));
+            String suffix = IOUtil.getFileExtension(fileName).toLowerCase();
+            if (suffix.startsWith(".")) {
+                suffix = suffix.substring(1);
+            }
+            if (bufferedImage == null) {
+                throw new IllegalArgumentException(
+                    "Unable to create image -  file:" + fileName + " suffix:"
+                    + suffix);
+            }
+            ImageIO.write(bufferedImage, suffix, tmpFile);
+        } else {
+            byte[] b;
+            if (isBase64) {
+                b = Utils.decodeBase64(fileContents);
+            } else {
+                b = fileContents.getBytes("UTF-8");
+            }
+            IOUtil.writeBytes(tmpFile, b);
+            //      FileOutputStream fos = new FileOutputStream(tmpFile);
+            //      IOUtil.writeFile(tmpFile, fileContents);
+            //      fos.close();
+        }
+
+        return tmpFile;
     }
 
 
@@ -2180,20 +2223,26 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return  true if ok
      */
     public boolean isLocalFileOk(File file) {
-	boolean debug = false;
-	if(debug)
-	    getLogManager().logError("isLocalFileOk:" +file);
+        boolean debug = false;
+        if (debug) {
+            getLogManager().logError("isLocalFileOk:" + file);
+        }
         for (File parent : getRepository().getLocalFilePaths()) {
-	    if(debug)
-		getLogManager().logError ("\tChecking:" +parent);
+            if (debug) {
+                getLogManager().logError("\tChecking:" + parent);
+            }
             if (IO.isADescendent(parent, file)) {
-		if(debug)
-		    getLogManager().logError ("\tfile is OK");
+                if (debug) {
+                    getLogManager().logError("\tfile is OK");
+                }
+
                 return true;
             }
         }
-	if(debug)
-	    getLogManager().logError ("\tfile is NOT OK");
+        if (debug) {
+            getLogManager().logError("\tfile is NOT OK");
+        }
+
         return false;
     }
 
@@ -2206,8 +2255,8 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     private void throwBadFile(File f) {
         throw new IllegalArgumentException(
-					   "The file:" + f.getName()
-					   + " does not exist or cannot be read", null);
+            "The file:" + f.getName() + " does not exist or cannot be read",
+            null);
     }
 
     /**
@@ -2298,6 +2347,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         File f = new File(path);
         if (f.exists()) {
             checkReadFile(f);
+
             return;
         }
 
@@ -2459,6 +2509,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public InputStream getInputStream(String path) throws Exception {
         checkPath(path);
+
         return Utils.getInputStream(path, getClass());
     }
 
@@ -2735,5 +2786,3 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 }
-
-

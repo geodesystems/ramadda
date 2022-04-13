@@ -102,8 +102,9 @@ public class Result {
     /** authorization method */
     private AuthorizationMethod authorizationMethod;
 
+    /**  */
     private boolean okToAddCookies = true;
-    
+
     /**
      * Default ctor
      */
@@ -264,21 +265,21 @@ public class Result {
 
 
     /**
-       Set the OkToAddCookies property.
-
-       @param value The new value for OkToAddCookies
-    **/
-    public void setOkToAddCookies (boolean value) {
-	okToAddCookies = value;
+     *  Set the OkToAddCookies property.
+     *
+     *  @param value The new value for OkToAddCookies
+     */
+    public void setOkToAddCookies(boolean value) {
+        okToAddCookies = value;
     }
 
     /**
-       Get the OkToAddCookies property.
-
-       @return The OkToAddCookies
-    **/
-    public boolean getOkToAddCookies () {
-	return okToAddCookies;
+     *  Get the OkToAddCookies property.
+     *
+     *  @return The OkToAddCookies
+     */
+    public boolean getOkToAddCookies() {
+        return okToAddCookies;
     }
 
 
@@ -569,16 +570,23 @@ public class Result {
      * @param filename  the filename
      */
     public void setReturnFilename(String filename) {
-	setReturnFilename(filename, false);
+        setReturnFilename(filename, false);
     }
 
-    public void setReturnFilename(String filename, boolean inline) {	
+    /**
+     *
+     * @param filename _more_
+     * @param inline _more_
+     */
+    public void setReturnFilename(String filename, boolean inline) {
         filename = filename.replaceAll(" ", "_");
-	//	System.err.println("Result.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
-	if(inline)
-	    addHttpHeader("Content-disposition", "filename=" + filename);
-	else
-	    addHttpHeader("Content-disposition", "attachment; filename=" + filename);
+        //      System.err.println("Result.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+        if (inline) {
+            addHttpHeader("Content-disposition", "filename=" + filename);
+        } else {
+            addHttpHeader("Content-disposition",
+                          "attachment; filename=" + filename);
+        }
 
     }
 
@@ -667,5 +675,3 @@ public class Result {
 
 
 }
-
-

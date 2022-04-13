@@ -62,10 +62,10 @@ public class AtomOutputHandler extends OutputHandler {
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
     /** _more_ */
-    public static final OutputType OUTPUT_ATOM =
-        new OutputType("ATOM Feed", "atom",
-                       OutputType.TYPE_FEEDS, "",
-                       ICON_ATOM);
+    public static final OutputType OUTPUT_ATOM = new OutputType("ATOM Feed",
+                                                     "atom",
+                                                     OutputType.TYPE_FEEDS,
+                                                     "", ICON_ATOM);
 
 
 
@@ -346,5 +346,3 @@ public class AtomOutputHandler extends OutputHandler {
 
 
 }
-
-

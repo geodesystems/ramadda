@@ -36,17 +36,16 @@ import java.util.zip.ZipOutputStream;
 public class XmlOutputHandler extends OutputHandler {
 
     /** XML Output type */
-    public static final OutputType OUTPUT_XML =
-        new OutputType("XML", "xml.xml",
-                       OutputType.TYPE_FEEDS, "",
-                       ICON_XML);
+    public static final OutputType OUTPUT_XML = new OutputType("XML",
+                                                    "xml.xml",
+                                                    OutputType.TYPE_FEEDS,
+                                                    "", ICON_XML);
 
 
     /** XML Entry output type */
     public static final OutputType OUTPUT_XMLENTRY =
-        new OutputType("XML Entry", "xml.xmlentry",
-                       OutputType.TYPE_FEEDS, "",
-                       ICON_XML);
+        new OutputType("XML Entry", "xml.xmlentry", OutputType.TYPE_FEEDS,
+                       "", ICON_XML);
 
 
 
@@ -261,8 +260,8 @@ public class XmlOutputHandler extends OutputHandler {
                                       "" + entry.getResource().getFileSize());
                     String url =
                         getRepository().getEntryManager().getEntryResourceUrl(
-									      request, entry, EntryManager.ARG_INLINE_DFLT,true,
-									      EntryManager.ARG_ADDPATH_DFLT);
+                            request, entry, EntryManager.ARG_INLINE_DFLT,
+                            true, EntryManager.ARG_ADDPATH_DFLT);
                     Element serviceNode = XmlUtil.create(TAG_SERVICE, node);
                     XmlUtil.setAttributes(serviceNode,
                                           new String[] { ATTR_TYPE,
@@ -305,7 +304,7 @@ public class XmlOutputHandler extends OutputHandler {
             throws Exception {
         Element node = getEntryTag(request, group, null, doc, parent, false,
                                    true);
-        boolean canDoNew = getAccessManager().canDoNew(request, group);
+        boolean canDoNew    = getAccessManager().canDoNew(request, group);
         boolean canDoUpload = getAccessManager().canDoUpload(request, group);
         node.setAttribute(ATTR_CANDONEW, "" + canDoNew);
         node.setAttribute(ATTR_CANDOUPLOAD, "" + canDoUpload);
@@ -316,5 +315,3 @@ public class XmlOutputHandler extends OutputHandler {
 
 
 }
-
-

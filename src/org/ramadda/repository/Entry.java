@@ -13,9 +13,9 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
-import org.ramadda.util.geo.Bounds;
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Bounds;
 
 import org.w3c.dom.Element;
 
@@ -2261,7 +2261,7 @@ public class Entry implements Cloneable {
      * @param value The new value for Permissions
      */
     public void setPermissions(List<Permission> value) {
-        permissions   = value;
+        permissions = value;
     }
 
 

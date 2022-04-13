@@ -331,5 +331,3 @@ public class MonitorHarvester extends Harvester {
 
 
 }
-
-

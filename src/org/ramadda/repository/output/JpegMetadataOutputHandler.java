@@ -195,5 +195,3 @@ public class JpegMetadataOutputHandler extends OutputHandler {
     }
 
 }
-
-

@@ -1765,5 +1765,3 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     }
 
 }
-
-

@@ -1385,5 +1385,3 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 }
-
-

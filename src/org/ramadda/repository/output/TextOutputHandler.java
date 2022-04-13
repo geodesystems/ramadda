@@ -320,5 +320,3 @@ public class TextOutputHandler extends OutputHandler {
 
 
 }
-
-

@@ -46,7 +46,7 @@ public class License implements Comparable {
     private int priority;
 
     /**
-     
+     *
      *
      * @param id _more_
      */
@@ -56,7 +56,7 @@ public class License implements Comparable {
     }
 
     /**
-     
+     *
      *
      * @param id _more_
      * @param name _more_
@@ -172,9 +172,8 @@ public class License implements Comparable {
             licenses.add(JsonUtil.map(attrs));
         }
         System.out.println(JsonUtil.map(Utils.makeList("name",
-						       JsonUtil.quote("Licenses from..."),
-						       "priority", "100", "licenses",
-						       JsonUtil.list(licenses))));
+                JsonUtil.quote("Licenses from..."), "priority", "100",
+                "licenses", JsonUtil.list(licenses))));
     }
 
 

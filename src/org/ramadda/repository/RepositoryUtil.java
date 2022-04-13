@@ -40,18 +40,21 @@ import java.util.TimeZone;
 public class RepositoryUtil {
 
     /**
-       The versions are set in the top level build.properties file
+     *  The versions are set in the top level build.properties file
      */
 
     private static String VERSION = "1.0";
 
-    private static String VERSION_FULL = VERSION+".0";
+    /**  */
+    private static String VERSION_FULL = VERSION + ".0";
 
     /**  */
     private static int requestCnt = 0;
 
     /** _more_ */
-    private static String HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");
+    private static String HTDOCS_VERSION = "htdocs_v"
+                                           + VERSION_FULL.replaceAll("\\.",
+                                               "_");
 
     /** _more_ */
     private static String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
@@ -72,18 +75,31 @@ public class RepositoryUtil {
     public static final String ENTRY_ID_REGEX =
         "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
 
-    protected static void setVersion(String major,String minor, String patch) {
-	VERSION = major+"." + minor;
-	VERSION_FULL = VERSION +"." + patch;
-	HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");	
-	HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+    /**
+     *
+     * @param major _more_
+     * @param minor _more_
+     * @param patch _more_
+     */
+    protected static void setVersion(String major, String minor,
+                                     String patch) {
+        VERSION              = major + "." + minor;
+        VERSION_FULL         = VERSION + "." + patch;
+        HTDOCS_VERSION = "htdocs_v" + VERSION_FULL.replaceAll("\\.", "_");
+        HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
     }
 
 
+    /**
+      * @return _more_
+     */
     public static String getMajorMinorVersion() {
-	return VERSION;
+        return VERSION;
     }
 
+    /**
+      * @return _more_
+     */
     public static String getVersion() {
         return VERSION_FULL;
     }
@@ -294,5 +310,3 @@ public class RepositoryUtil {
 
 
 }
-
-

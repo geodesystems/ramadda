@@ -58,8 +58,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 
     /** GoogleEarth output type */
     public static final OutputType OUTPUT_GEMAP =
-        new OutputType("Google Earth", "map.gemap",
-                       OutputType.TYPE_VIEW, "",
+        new OutputType("Google Earth", "map.gemap", OutputType.TYPE_VIEW, "",
                        ICON_GOOGLEEARTH);
 
 
@@ -187,22 +186,23 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
             throws Exception {
         List<Entry> entriesToUse = new ArrayList<Entry>(subGroups);
         entriesToUse.addAll(entries);
-        StringBuilder sb = new StringBuilder();
-        String prefix = request.getPrefixHtml();
+        StringBuilder sb     = new StringBuilder();
+        String        prefix = request.getPrefixHtml();
         if (prefix != null) {
             sb.append(prefix);
         } else {
-	    getPageHandler().entrySectionOpen(request, group, sb, "Map", true);
-	}
+            getPageHandler().entrySectionOpen(request, group, sb, "Map",
+                    true);
+        }
 
 
         if (entriesToUse.size() == 0) {
             sb.append(HtmlUtils.b(msg(LABEL_NO_ENTRIES_FOUND))
                       + HtmlUtils.p());
 
-	    if (prefix == null) {
-		getPageHandler().entrySectionClose(request, group, sb);
-	    }
+            if (prefix == null) {
+                getPageHandler().entrySectionClose(request, group, sb);
+            }
 
             return makeLinksResult(request,
                                    msg("Map") + " - " + group.getName(), sb,
@@ -214,9 +214,9 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
             getMapManager().getGoogleEarth(request, entriesToUse, sb, "", "",
                                            true, false);
 
-	    if (prefix == null) {
-		getPageHandler().entrySectionClose(request, group, sb);
-	    }
+            if (prefix == null) {
+                getPageHandler().entrySectionClose(request, group, sb);
+            }
 
             return makeLinksResult(request,
                                    msg("Google Earth") + " - "
@@ -230,9 +230,9 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         MapInfo map = getMapManager().getMap(request, group, entriesToUse,
                                              sb, "100%", "500", null, props);
 
-	if (prefix == null) {
-	    getPageHandler().entrySectionClose(request, group, sb);
-	}
+        if (prefix == null) {
+            getPageHandler().entrySectionClose(request, group, sb);
+        }
 
         return makeLinksResult(request, msg("Map") + " - " + group.getName(),
                                sb, new State(group, subGroups, entries));
@@ -242,5 +242,3 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 
 
 }
-
-

@@ -112,6 +112,7 @@ public class RequestUrl {
         checkInit();
         if (needsSsl) {
             String url = getHttpsUrl(suffix);
+
             return url;
         }
 
@@ -288,5 +289,3 @@ public class RequestUrl {
 
 
 }
-
-

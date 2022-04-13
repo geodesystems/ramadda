@@ -37,5 +37,3 @@ public class EnumeratedMetadataHandler extends MetadataHandler {
 
 
 }
-
-

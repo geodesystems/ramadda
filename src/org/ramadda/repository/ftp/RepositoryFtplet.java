@@ -628,7 +628,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         System.err.println("making entry");
         EntryManager entryManager = getEntryManager();
         Entry entry = entryManager.addFileEntry(request, newFile, group,
-						name, "", request.getUser());
+                          name, "", request.getUser());
 
 
         System.err.println("closing session");
@@ -668,7 +668,8 @@ public class RepositoryFtplet extends DefaultFtplet {
             return handleError(session, ftpRequest, "Not a file");
         }
 
-        if ( !getRepository().getAccessManager().canDoDelete(request, entry)) {
+        if ( !getRepository().getAccessManager().canDoDelete(request,
+                entry)) {
             return handleError(
                 session, ftpRequest,
                 FtpReply.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN,
@@ -719,7 +720,8 @@ public class RepositoryFtplet extends DefaultFtplet {
             return handleError(session, ftpRequest, "Not a directory");
         }
 
-        if ( !getRepository().getAccessManager().canDoDelete(request, entry)) {
+        if ( !getRepository().getAccessManager().canDoDelete(request,
+                entry)) {
             return handleError(
                 session, ftpRequest,
                 FtpReply.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN,
@@ -1028,5 +1030,3 @@ public class RepositoryFtplet extends DefaultFtplet {
     }
 
 }
-
-

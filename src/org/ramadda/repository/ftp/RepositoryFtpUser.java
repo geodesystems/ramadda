@@ -248,5 +248,3 @@ public class RepositoryFtpUser implements User {
         return selected;
     }
 }
-
-

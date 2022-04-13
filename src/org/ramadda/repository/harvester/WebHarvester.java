@@ -654,5 +654,3 @@ public class WebHarvester extends Harvester {
 
 
 }
-
-

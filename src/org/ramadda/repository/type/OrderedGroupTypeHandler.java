@@ -152,7 +152,8 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
             if (getAccessManager().canDoEdit(request, entry)) {
                 url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
             }
-            EntryLink link = getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry), url);
+            EntryLink link = getEntryManager().getAjaxLink(request, entry,
+                                 getEntryDisplayName(entry), url);
             addListLink(request, entry, link, sb);
             sb.append("</td></tr>");
         }
@@ -280,5 +281,3 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
 
 
 }
-
-

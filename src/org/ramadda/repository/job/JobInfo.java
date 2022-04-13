@@ -730,5 +730,3 @@ public class JobInfo implements Constants {
 
 
 }
-
-

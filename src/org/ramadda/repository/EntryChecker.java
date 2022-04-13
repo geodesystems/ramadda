@@ -20,6 +20,8 @@ public interface EntryChecker {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entries _more_
      */
     public void entriesCreated(Request request, List<Entry> entries);
@@ -27,6 +29,8 @@ public interface EntryChecker {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entries _more_
      */
     public void entriesModified(Request request, List<Entry> entries);

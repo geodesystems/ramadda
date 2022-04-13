@@ -343,5 +343,3 @@ public class JpegMetadataHandler extends MetadataHandler {
 
 
 }
-
-

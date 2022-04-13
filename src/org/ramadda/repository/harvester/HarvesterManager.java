@@ -763,5 +763,3 @@ public class HarvesterManager extends RepositoryManager {
 
 
 }
-
-

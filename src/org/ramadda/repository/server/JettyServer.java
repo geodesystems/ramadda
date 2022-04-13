@@ -102,7 +102,7 @@ public class JettyServer implements Constants {
         }
         baseRepository.setPort(port);
         sslPort = baseRepository.getHttpsPort();
-        server = new Server(port);
+        server  = new Server(port);
         server.setHandler(context);
 
         context.addServlet(new ServletHolder(baseServlet), "/");
@@ -210,7 +210,7 @@ public class JettyServer implements Constants {
 
             return;
         }
-	//        repository.getLogManager().logInfo("SSL: using keystore: " + keystore);
+        //        repository.getLogManager().logInfo("SSL: using keystore: " + keystore);
 
         String password = repository.getPropertyValue(PROP_SSL_PASSWORD,
                               (String) null, false);
@@ -363,5 +363,3 @@ public class JettyServer implements Constants {
 
 
 }
-
-

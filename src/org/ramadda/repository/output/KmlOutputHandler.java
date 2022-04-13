@@ -12,9 +12,9 @@ import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.KmlUtil;
-import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -65,8 +65,7 @@ public class KmlOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_KML =
-        new OutputType("Google Earth KML", "kml",
-                       OutputType.TYPE_FEEDS, "",
+        new OutputType("Google Earth KML", "kml", OutputType.TYPE_FEEDS, "",
                        ICON_KML);
 
 
@@ -538,5 +537,3 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 }
-
-

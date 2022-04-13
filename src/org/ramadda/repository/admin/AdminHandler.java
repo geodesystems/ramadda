@@ -64,5 +64,3 @@ public interface AdminHandler {
      */
     public List<RequestUrl> getAdminUrls();
 }
-
-

@@ -74,7 +74,8 @@ public class PageHandler extends RepositoryManager {
     public static final String IMPORTS_END = "<!--end imports-->";
 
 
-    public static final String PREFIX_NOPRELOAD= "nopreload:";
+    /**  */
+    public static final String PREFIX_NOPRELOAD = "nopreload:";
 
     /** _more_ */
     private static boolean debugTemplates = false;
@@ -255,13 +256,17 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean cacheTemplates;
 
+    /**  */
     private boolean showHelp = true;
 
+    /**  */
     private boolean noStyle = false;
 
-    private String logoUrl="";
+    /**  */
+    private String logoUrl = "";
 
-    private String bootstrapVersion  = "bootstrap-5.1.3";
+    /**  */
+    private String bootstrapVersion = "bootstrap-5.1.3";
 
 
     /** _more_ */
@@ -321,83 +326,113 @@ public class PageHandler extends RepositoryManager {
                                         "none").trim();
         footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
-	noStyle = getRepository().getProperty(PROP_NOSTYLE, false);
-	showHelp = getRepository().getProperty(PROP_SHOW_HELP, true);
+        noStyle     = getRepository().getProperty(PROP_NOSTYLE, false);
+        showHelp    = getRepository().getProperty(PROP_SHOW_HELP, true);
         cacheTemplates =
             getRepository().getProperty("ramadda.cachetemplates", true);
 
-	bootstrapVersion  = getRepository().getProperty("ramadda.bootstrap.version", bootstrapVersion);
-	logoUrl = getRepository().getProperty(PROP_LOGO_URL, "");
+        bootstrapVersion =
+            getRepository().getProperty("ramadda.bootstrap.version",
+                                        bootstrapVersion);
+        logoUrl = getRepository().getProperty(PROP_LOGO_URL, "");
         initWebResources();
     }
 
 
+    /**
+     *
+     * @param resource _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<String[]> readWebResources(String resource) throws Exception {
-	List<String[]> result = new ArrayList<String[]>();
-	List<String> files =
-                Utils.split(
-			    getStorageManager().readSystemResource(resource), "\n", true, true);
+        List<String[]> result = new ArrayList<String[]>();
+        List<String> files =
+            Utils.split(getStorageManager().readSystemResource(resource),
+                        "\n", true, true);
 
-	boolean minified = getRepository().getMinifiedOk();
-	String path;
-	boolean cdnOk = getRepository().getCdnOk();
+        boolean minified = getRepository().getMinifiedOk();
+        String  path;
+        boolean cdnOk = getRepository().getCdnOk();
         if (cdnOk) {
-	    path = getCdn();
+            path = getCdn();
         } else {
             path = getRepository().getUrlBase() + "/"
                    + RepositoryUtil.getHtdocsVersion();
-	}
-	//	System.err.println("cdn:" + cdnOk);
-	for (String file : files) {
-	    if (file.startsWith("#")) {
-		continue;
-	    }
-	    if(file.startsWith("full:")) {
-		if(minified) continue;
-		file = file.substring("full:".length());
-	    } else if(file.startsWith("min:")) {
-		if(!minified) continue;
-		file = file.substring("min:".length());
-	    } else if(file.startsWith("cdn:")) {
-		if(!cdnOk) continue;
-		file = file.substring("cdn:".length());
-	    } else if(file.startsWith("nocdn:")) {
-		if(cdnOk) continue;
-		file = file.substring("nocdn:".length());				
-	    }
-	    boolean nopreload = file.startsWith(PREFIX_NOPRELOAD);
-	    if(nopreload) {
-		file = file.substring(PREFIX_NOPRELOAD.length());
-	    }
-	    //	    System.err.println("\tfile:" + file);
-	    if(!file.startsWith("http"))
-		file = path + file;
+        }
+        //      System.err.println("cdn:" + cdnOk);
+        for (String file : files) {
+            if (file.startsWith("#")) {
+                continue;
+            }
+            if (file.startsWith("full:")) {
+                if (minified) {
+                    continue;
+                }
+                file = file.substring("full:".length());
+            } else if (file.startsWith("min:")) {
+                if ( !minified) {
+                    continue;
+                }
+                file = file.substring("min:".length());
+            } else if (file.startsWith("cdn:")) {
+                if ( !cdnOk) {
+                    continue;
+                }
+                file = file.substring("cdn:".length());
+            } else if (file.startsWith("nocdn:")) {
+                if (cdnOk) {
+                    continue;
+                }
+                file = file.substring("nocdn:".length());
+            }
+            boolean nopreload = file.startsWith(PREFIX_NOPRELOAD);
+            if (nopreload) {
+                file = file.substring(PREFIX_NOPRELOAD.length());
+            }
+            //      System.err.println("\tfile:" + file);
+            if ( !file.startsWith("http")) {
+                file = path + file;
+            }
 
-	    if(nopreload) {
-		file = PREFIX_NOPRELOAD + file;
-	    }
-	    int intIdx = file.indexOf(":integrity:");
-	    if(intIdx>=0) {
-		String integrity=file.substring(intIdx+":integrity:".length());
-		file=file.substring(0,intIdx);		
-		result.add(new String[]{file,integrity});
-	    } else {
-		result.add(new String[]{file});
-	    }
-	}
-	return result;
-    }	
+            if (nopreload) {
+                file = PREFIX_NOPRELOAD + file;
+            }
+            int intIdx = file.indexOf(":integrity:");
+            if (intIdx >= 0) {
+                String integrity = file.substring(intIdx
+                                       + ":integrity:".length());
+                file = file.substring(0, intIdx);
+                result.add(new String[] { file, integrity });
+            } else {
+                result.add(new String[] { file });
+            }
+        }
+
+        return result;
+    }
 
 
-	
 
 
 
-    public void addJSImports(Appendable sb, String resourcePath) throws Exception {
-	for (String[] file : readWebResources(resourcePath)) {
-	    HU.importJS(sb,file[0],file.length>1?file[1]:null);
-	    sb.append("\n");
-	}
+
+    /**
+     *
+     * @param sb _more_
+     * @param resourcePath _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addJSImports(Appendable sb, String resourcePath)
+            throws Exception {
+        for (String[] file : readWebResources(resourcePath)) {
+            HU.importJS(sb, file[0], (file.length > 1)
+                                     ? file[1]
+                                     : null);
+            sb.append("\n");
+        }
     }
 
 
@@ -409,14 +444,18 @@ public class PageHandler extends RepositoryManager {
         try {
 
             StringBuilder imports = new StringBuilder();
-	    addJSImports(imports, "/org/ramadda/repository/resources/web/jsimports.html");
-            for (String[] tuple : readWebResources("/org/ramadda/repository/resources/web/cssimports.html")) {
-		String file = tuple[0];
-		if(file.startsWith(PREFIX_NOPRELOAD)) {
-		    HU.cssLink(imports,file.substring(PREFIX_NOPRELOAD.length()));
-		} else {
-		    HU.cssPreloadLink(imports, file);
-		}
+            addJSImports(
+                imports,
+                "/org/ramadda/repository/resources/web/jsimports.html");
+            for (String[] tuple : readWebResources(
+                    "/org/ramadda/repository/resources/web/cssimports.html")) {
+                String file = tuple[0];
+                if (file.startsWith(PREFIX_NOPRELOAD)) {
+                    HU.cssLink(imports,
+                               file.substring(PREFIX_NOPRELOAD.length()));
+                } else {
+                    HU.cssPreloadLink(imports, file);
+                }
             }
             webImports = applyBaseMacros(imports.toString());
             webImports = IMPORTS_BEGIN + "\n" + webImports + "\n"
@@ -482,16 +521,32 @@ public class PageHandler extends RepositoryManager {
     public String decorateResult(Request request, Result result,
                                  boolean prefix, boolean suffix)
             throws Exception {
-	StringBuilder sb =new StringBuilder();
-	if(!decorateResult(request, result, sb, prefix, suffix)) return null;
-	return  sb.toString();
+        StringBuilder sb = new StringBuilder();
+        if ( !decorateResult(request, result, sb, prefix, suffix)) {
+            return null;
+        }
+
+        return sb.toString();
     }
 
 
-    public boolean decorateResult(Request request, Result result, Appendable sb,
-				  boolean prefix, boolean suffix)
-	throws Exception {	
-	//	System.err.println("decorateResult:" + Utils.getStack(10));
+    /**
+     *
+     * @param request _more_
+     * @param result _more_
+     * @param sb _more_
+     * @param prefix _more_
+     * @param suffix _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean decorateResult(Request request, Result result,
+                                  Appendable sb, boolean prefix,
+                                  boolean suffix)
+            throws Exception {
+
+        //      System.err.println("decorateResult:" + Utils.getStack(10));
 
         boolean fullTemplate = prefix && suffix;
         //      Runtime.getRuntime().gc();
@@ -517,11 +572,11 @@ public class PageHandler extends RepositoryManager {
             } else {
                 htmlTemplate = htmlTemplate.getSuffix();
             }
-        } 
+        }
 
 
         String template      = htmlTemplate.getTemplate();
-		
+
         String systemMessage = getRepository().getSystemMessage(request);
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  (String) null);
@@ -558,17 +613,17 @@ public class PageHandler extends RepositoryManager {
         StringBuilder head    = new StringBuilder();
         if (request.getHead0() != null) {
             head.append(request.getHead0());
-	    request.clearHead0();
+            request.clearHead0();
         }
 
         //make the request to base.js be unique every time so the browser does not cache it
-	
-	HU.script(head, getRepository().getBaseJs(request));
+
+        HU.script(head, getRepository().getBaseJs(request));
         head.append(webImports);
         String head2 = request.getHead();
         if (head2 != null) {
             head.append(head2);
-	    request.clearHead();
+            request.clearHead();
         }
         if (request.get("ramadda.showjsonld", true) && showJsonLd
                 && (currentEntry != null)) {
@@ -693,12 +748,14 @@ public class PageHandler extends RepositoryManager {
                 }
             }
         }
-	//
-	//Todo: don't support multiple languages for now
-	//        html = sb.toString();
-	//        html = translate(request, html);
-	//        return html;
-	return true;
+
+        //
+        //Todo: don't support multiple languages for now
+        //        html = sb.toString();
+        //        html = translate(request, html);
+        //        return html;
+        return true;
+
     }
 
 
@@ -1225,10 +1282,16 @@ public class PageHandler extends RepositoryManager {
 
                     template.setTemplate(
                         applyBaseMacros(template.getTemplate()));
-		    if(template.getPrefix()!=null)
-			template.getPrefix().setTemplate(applyBaseMacros(template.getPrefix().getTemplate()));
-		    if(template.getSuffix()!=null)
-			template.getSuffix().setTemplate(applyBaseMacros(template.getSuffix().getTemplate()));		    
+                    if (template.getPrefix() != null) {
+                        template.getPrefix().setTemplate(
+                            applyBaseMacros(
+                                template.getPrefix().getTemplate()));
+                    }
+                    if (template.getSuffix() != null) {
+                        template.getSuffix().setTemplate(
+                            applyBaseMacros(
+                                template.getSuffix().getTemplate()));
+                    }
 
 
                     //Check if we got some other ...template.html file from a plugin
@@ -1306,6 +1369,7 @@ public class PageHandler extends RepositoryManager {
             htmlTemplates   = theTemplates;
             //            }
         }
+
         return theTemplates;
     }
 
@@ -1629,7 +1693,8 @@ public class PageHandler extends RepositoryManager {
             try {
                 List<Metadata> metadataList =
                     getMetadataManager().findMetadata(request, entry,
-						      new String[]{ContentMetadataHandler.TYPE_TEMPLATE}, true);
+                        new String[] {
+                            ContentMetadataHandler.TYPE_TEMPLATE }, true);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         HtmlTemplate template =
@@ -1861,8 +1926,9 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-        if (showHelp && (getRepository()
-                        .getPluginManager().getDocUrls().size() > 0)) {
+        if (showHelp
+                && (getRepository().getPluginManager().getDocUrls().size()
+                    > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
             labels.add(HU.faIcon("fa-question-circle") + " " + msg("Help"));
@@ -2233,7 +2299,8 @@ public class PageHandler extends RepositoryManager {
             }
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-						  new String[]{ContentMetadataHandler.TYPE_PAGESTYLE}, true);
+                    new String[] { ContentMetadataHandler.TYPE_PAGESTYLE },
+                    true);
             if ((metadataList == null) || (metadataList.size() == 0)) {
                 return pageStyle;
             }
@@ -2502,15 +2569,20 @@ public class PageHandler extends RepositoryManager {
                     HU.img(getIconUrl(request, entry)) + " "
                     + getEntryDisplayName(entry));
 
-        StringBuilder popup = new StringBuilder();
-	String menuId  = HU.getUniqueId("menulink");
+        StringBuilder popup  = new StringBuilder();
+        String        menuId = HU.getUniqueId("menulink");
         String menuLinkImg =
             HU.div(HU.img("fas fa-caret-down"),
-		   HU.attr("id",menuId) +
-                   HU.attr("title", "Entry menu")
-                   + HU.cssClass("ramadda-breadcrumbs-menu-button ramadda-clickable"));
+                   HU.attr("id", menuId) + HU.attr("title", "Entry menu")
+                   + HU.cssClass(
+                       "ramadda-breadcrumbs-menu-button ramadda-clickable"));
 
-	String menuLink = HU.span(menuLinkImg, HU.onMouseClick(HU.call("RamaddaUtils.showEntryPopup",HU.squote(menuId),HU.squote(entry.getId()),HU.squote(headerLabel))));
+        String menuLink =
+            HU.span(menuLinkImg,
+                    HU.onMouseClick(HU.call("RamaddaUtils.showEntryPopup",
+                                            HU.squote(menuId),
+                                            HU.squote(entry.getId()),
+                                            HU.squote(headerLabel))));
 
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
@@ -2553,7 +2625,7 @@ public class PageHandler extends RepositoryManager {
             makeBreadcrumbs(request, breadcrumbs, sb);
             if (doTable) {
                 sb.append("</td>");
-		//                sb.append("<td align=right width=100>");
+                //                sb.append("<td align=right width=100>");
             }
             sb.append(toolbar);
             if (doTable) {
@@ -2947,10 +3019,10 @@ public class PageHandler extends RepositoryManager {
      */
     public String getCommentHtml(Request request, Entry entry)
             throws Exception {
-        boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        boolean       canEdit = getAccessManager().canDoEdit(request, entry);
         boolean canComment = getAccessManager().canDoComment(request, entry);
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb      = new StringBuilder();
         List<Comment> comments =
             getRepository().getCommentManager().getComments(request, entry);
 
@@ -3523,7 +3595,7 @@ public class PageHandler extends RepositoryManager {
     }
 
     /** _more_ */
-    private static  String CDN =null;
+    private static String CDN = null;
 
     /**
      * _more_
@@ -3542,31 +3614,31 @@ public class PageHandler extends RepositoryManager {
         String libpath;
         String path;
         if (getRepository().getCdnOk()) {
-	    path = getCdn();
-	    libpath=getCdn();
+            path    = getCdn();
+            libpath = getCdn();
         } else {
             path = getRepository().getUrlBase() + "/"
                    + RepositoryUtil.getHtdocsVersion();
             libpath = getRepository().getUrlBase() + "/"
-		+ RepositoryUtil.getHtdocsVersion();	    
+                      + RepositoryUtil.getHtdocsVersion();
         }
 
 
-        String root = getRepository().getUrlBase();
+        String root       = getRepository().getUrlBase();
         String htdocsBase = makeHtdocsUrl("");
 
-        s = s.replace("${ramadda.bootstrap.version}",bootstrapVersion);
+        s = s.replace("${ramadda.bootstrap.version}", bootstrapVersion);
         String now = htdocsBase + (new Date().getTime());
 
         s = s.replace("${now}", now);
-	s = s.replace("${htdocs}", htdocsBase);
-	s = s.replace("${cdnpath}", path);
-	s = s.replace("${cdnlibpath}", libpath).replace(
+        s = s.replace("${htdocs}", htdocsBase);
+        s = s.replace("${cdnpath}", path);
+        s = s.replace("${cdnlibpath}", libpath).replace(
             "${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
 
-	return s;
+        return s;
     }
 
     /**
@@ -3586,16 +3658,21 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    /**
+      * @return _more_
+     */
     private String getCdn() {
-	if(CDN==null) {
-	    String root = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"   + RepositoryUtil.getVersion();
-	    CDN =   root+"/src/org/ramadda/repository/htdocs";
-	    //	    CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@latest/src/org/ramadda/repository/htdocs";
-	    if (getRepository().getCdnOk()) {
-		System.err.println("RAMADDA: Using CDN:" + root);
-	    }
-	}
-	return CDN;
+        if (CDN == null) {
+            String root = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"
+                          + RepositoryUtil.getVersion();
+            CDN = root + "/src/org/ramadda/repository/htdocs";
+            //      CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@latest/src/org/ramadda/repository/htdocs";
+            if (getRepository().getCdnOk()) {
+                System.err.println("RAMADDA: Using CDN:" + root);
+            }
+        }
+
+        return CDN;
     }
 
 
@@ -3645,7 +3722,7 @@ public class PageHandler extends RepositoryManager {
         /*
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-	    new String[]{ContentMetadataHandler.TYPE_ALIAS},false);
+            new String[]{ContentMetadataHandler.TYPE_ALIAS},false);
         String url;
         if(metadataList.size()>0) {
             url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);

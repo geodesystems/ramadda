@@ -53,7 +53,7 @@ public class Role {
     String baseRole;
 
     /**
-     
+     *
      *
      * @param role _more_
      */
@@ -74,7 +74,7 @@ public class Role {
     /**
      *
      * @param sroles _more_
-      * @return _more_
+     *  @return _more_
      */
     public static List<Role> makeRoles(List<String> sroles) {
         List<Role> roles = new ArrayList<Role>();
@@ -89,7 +89,7 @@ public class Role {
     /**
      *
      * @param role _more_
-      * @return _more_
+     *  @return _more_
      */
     public boolean isRole(String role) {
         boolean r = this.baseRole.equals(role) || this.role.equals(role);
@@ -102,7 +102,7 @@ public class Role {
     /**
      *
      * @param role _more_
-      * @return _more_
+     *  @return _more_
      */
     public boolean isRole(Role role) {
         boolean r = this.role.equals(role.role)
@@ -113,35 +113,35 @@ public class Role {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean getNegated() {
         return negated;
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean getIsIp() {
         return isIp;
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String getBaseRole() {
         return baseRole;
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean isComment() {
         return baseRole.startsWith("#");
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String getCssClass() {
         if (isComment()) {
@@ -158,14 +158,14 @@ public class Role {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String getRole() {
         return role;
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     @Override
     public String toString() {
@@ -175,7 +175,7 @@ public class Role {
     /**
      *
      * @param o _more_
-      * @return _more_
+     *  @return _more_
      */
     @Override
     public boolean equals(Object o) {

@@ -44,7 +44,8 @@ public class Permission {
     /** _more_ */
     public static final String ACTION_EXPORT = "export";
 
-    public static final String ACTION_BLANK = "blank";    
+    /**  */
+    public static final String ACTION_BLANK = "blank";
 
     /** _more_ */
     public static final String ACTION_TYPE1 = "type1";
@@ -208,14 +209,17 @@ public class Permission {
         return action;
     }
 
+    /**
+      * @return _more_
+     */
     public String getLabel() {
-	return action+" " + roles;
+        return action + " " + roles;
     }
 
     /**
      *
      * @param action _more_
-      * @return _more_
+     *  @return _more_
      */
     public boolean isAction(String action) {
         return this.action.equals(action);

@@ -210,5 +210,3 @@ public class HarvesterFile extends FileInfo {
     }
 
 }
-
-

@@ -15,5 +15,3 @@ import java.util.Hashtable;
  */
 
 public interface RequestHandler {}
-
-

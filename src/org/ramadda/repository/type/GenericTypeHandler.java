@@ -1017,11 +1017,11 @@ public class GenericTypeHandler extends TypeHandler {
             if (column.isPrivate()) {
                 continue;
             }
-	    if(column.isString()) {
-		String s = column.toString(values);
-		sb.append(s);
-		sb.append("\n");
-	    }
+            if (column.isString()) {
+                String s = column.toString(values);
+                sb.append(s);
+                sb.append("\n");
+            }
         }
     }
 
@@ -1047,6 +1047,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param props _more_
      * @param name _more_
      * @param raw _more_
      *
@@ -1055,8 +1056,8 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public String getFieldHtml(Request request, Entry entry,  Hashtable props, String name,
-                               boolean raw)
+    public String getFieldHtml(Request request, Entry entry, Hashtable props,
+                               String name, boolean raw)
             throws Exception {
         Object[] values = getEntryValues(entry);
         if (values != null) {
@@ -1221,8 +1222,10 @@ public class GenericTypeHandler extends TypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
-        String   path   = super.getPathForEntry(request, entry);
-	if(path==null) return path;
+        String path = super.getPathForEntry(request, entry);
+        if (path == null) {
+            return path;
+        }
         Object[] values = getEntryValues(entry);
         if (values != null) {
             for (Column column : getMyColumns()) {
@@ -1544,5 +1547,3 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 }
-
-

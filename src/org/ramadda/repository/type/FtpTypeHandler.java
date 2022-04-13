@@ -871,5 +871,3 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 }
-
-

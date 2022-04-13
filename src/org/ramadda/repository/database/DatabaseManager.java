@@ -19,7 +19,6 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.DbObject;
 import org.ramadda.util.sql.SqlUtil;
-import java.sql.Types;
 
 
 import org.w3c.dom.*;
@@ -57,6 +56,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 
 import java.text.SimpleDateFormat;
 
@@ -217,15 +217,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         closeAndReleaseConnection(statement);
         //        Misc.run(this, "checkConnections", null);
 
-	try {
-	    //To generate the Tables.java uncomment this and
-	    //run RAMADDA with a new install (e.g. with -Dramadda_home=tmp
-	    //	    writeTables("org.ramadda.repository.database",null);
-	} catch(Exception exc) {
-	    System.err.println("Error:" + exc);
-	    exc.printStackTrace();
-	}
-	
+        try {
+            //To generate the Tables.java uncomment this and
+            //run RAMADDA with a new install (e.g. with -Dramadda_home=tmp
+            //      writeTables("org.ramadda.repository.database",null);
+        } catch (Exception exc) {
+            System.err.println("Error:" + exc);
+            exc.printStackTrace();
+        }
+
 
     }
 
@@ -422,7 +422,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                   + ".password", (String) null));
 
         if (connectionUrl == null) {
-	    //            System.err.println("No connection url property for:" + full);
+            //            System.err.println("No connection url property for:" + full);
             return null;
         }
 
@@ -2268,12 +2268,19 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+    /**
+     *
+     * @param stmt _more_
+     * @param idx _more_
+     *
+     * @throws Exception _more_
+     */
     public void setNaN(PreparedStatement stmt, int idx) throws Exception {
-	if(isDatabaseDerby()) {
-	    stmt.setNull(idx,Types.DOUBLE);
-	} else {
-	    stmt.setDouble(idx,Double.NaN);
-	}
+        if (isDatabaseDerby()) {
+            stmt.setNull(idx, Types.DOUBLE);
+        } else {
+            stmt.setDouble(idx, Double.NaN);
+        }
     }
 
     /**
@@ -3673,5 +3680,3 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 }
-
-

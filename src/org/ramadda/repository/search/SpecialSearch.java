@@ -848,5 +848,3 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 }
-
-

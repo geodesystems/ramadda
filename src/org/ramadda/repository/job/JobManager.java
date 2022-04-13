@@ -1140,5 +1140,3 @@ public class JobManager extends RepositoryManager {
     }
 
 }
-
-

@@ -124,5 +124,3 @@ public class GroupTypeHandler extends TypeHandler {
         return new Entry(id, this, true);
     }
 }
-
-

@@ -510,5 +510,3 @@ public class MailManager extends RepositoryManager {
 
 
 }
-
-

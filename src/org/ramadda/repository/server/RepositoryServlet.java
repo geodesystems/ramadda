@@ -282,10 +282,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         Result         repositoryResult = null;
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
         try {
-	    boolean debug = false;
-	    //	    boolean debug = "/repository/entry/show".equals(request.getRequestURI()) ||	request.getRequestURI().indexOf("/repository/a")>=0;
-	    long t1 = System.currentTimeMillis();
-	    long t2 = 0;
+            boolean debug = false;
+            //      boolean debug = "/repository/entry/show".equals(request.getRequestURI()) || request.getRequestURI().indexOf("/repository/a")>=0;
+            long t1 = System.currentTimeMillis();
+            long t2 = 0;
             try {
                 // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
                 Request repositoryRequest = new Request(repository,
@@ -299,12 +299,12 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
 
-		//Some headers to tighten up security
-		response.setHeader("Referrer-Policy","no-referrer");
-		//don't do this as it blocks some valid embeds
-		//response.setHeader("X-Frame-Options", "SAMEORIGIN");
-		//
-		response.setHeader("X-Content-Type-Options", "nosniff");		
+                //Some headers to tighten up security
+                response.setHeader("Referrer-Policy", "no-referrer");
+                //don't do this as it blocks some valid embeds
+                //response.setHeader("X-Frame-Options", "SAMEORIGIN");
+                //
+                response.setHeader("X-Content-Type-Options", "nosniff");
 
 
                 repositoryResult =
@@ -329,7 +329,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 return;
             }
 
-	    t2 = System.currentTimeMillis();
+            t2 = System.currentTimeMillis();
             if (repositoryResult.getNeedToWrite()) {
                 List<String> args = repositoryResult.getHttpHeaderArgs();
                 if (args != null) {
@@ -348,7 +348,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 if (repositoryResult.getCacheOk()) {
                     //                    response.setHeader("Cache-Control",  "public,max-age=259200");
-                    response.setHeader("Expires", "Tue, 08 Jan 2028 07:41:19 GMT");
+                    response.setHeader("Expires",
+                                       "Tue, 08 Jan 2028 07:41:19 GMT");
                     if (lastModified == null) {
                         //response.setHeader("Last-Modified", "Tue, 20 Jan 2010 01:45:54 GMT");
                     }
@@ -358,6 +359,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 if (isHeadRequest) {
                     response.setStatus(repositoryResult.getResponseCode());
+
                     return;
                 }
 
@@ -400,8 +402,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                             repositoryResult.getMimeType());
                         OutputStream output = response.getOutputStream();
                         try {
-			    byte[] content = repositoryResult.getContent();
-			    if(debug) System.err.println("size:" + content.length);
+                            byte[] content = repositoryResult.getContent();
+                            if (debug) {
+                                System.err.println("size:" + content.length);
+                            }
                             output.write(content);
                         } catch (java.net.SocketException se) {
                             //ignore
@@ -414,10 +418,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         logException(e, request);
                     }
                 }
-		long t3 = System.currentTimeMillis();		
-		if(debug) {
-		    Utils.printTimes("Times:",t1,t2,t3);
-		}
+                long t3 = System.currentTimeMillis();
+                if (debug) {
+                    Utils.printTimes("Times:", t1, t2, t3);
+                }
             }
         } finally {
             if ((repositoryResult != null)
@@ -497,7 +501,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 }
                 ServletFileUpload upload =
                     new ServletFileUpload(new DiskFileItemFactory(100000,
-								  repository.getStorageManager().getScratchDir().getDir()));
+                        repository.getStorageManager().getScratchDir()
+                            .getDir()));
                 try {
                     upload.setHeaderEncoding("UTF-8");
                     List     items = upload.parseRequest(request);
@@ -709,5 +714,3 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
 
 }
-
-
