@@ -1150,7 +1150,9 @@ public class Clause {
                 return subClauses[0].toString();
             }
 
-            return "(" + Utils.join(Misc.toList(subClauses), " " + expr + " ") + ")";
+            return "("
+                   + Utils.join(Misc.toList(subClauses), " " + expr + " ")
+                   + ")";
         }
 
         return "clause:null";

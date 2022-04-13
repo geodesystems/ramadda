@@ -12,11 +12,11 @@ import org.apache.commons.codec.language.Soundex;
 import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.PatternProps;
 
 
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.PatternProps;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.Address;
@@ -29,8 +29,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.Comparator;
 
 import java.net.URL;
 
@@ -43,6 +41,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -165,10 +165,14 @@ public abstract class Geo extends Processor {
         /** _more_ */
         private String lonLabel = "Longitude";
 
-	private boolean ifNeeded;
+        /**  */
+        private boolean ifNeeded;
 
-	private String sLatColumn;
-	private String sLonColumn;
+        /**  */
+        private String sLatColumn;
+
+        /**  */
+        private String sLonColumn;
 
         /**
          * @param col _more_
@@ -208,11 +212,21 @@ public abstract class Geo extends Processor {
             doAddress       = true;
         }
 
-        public Geocoder(List<String> cols, String prefix, String suffix, String lat,String lon) {
-	    this(cols,prefix,suffix);
-	    ifNeeded=true;
-	    sLatColumn = lat;
-	    sLonColumn = lon;	    
+        /**
+         
+         *
+         * @param cols _more_
+         * @param prefix _more_
+         * @param suffix _more_
+         * @param lat _more_
+         * @param lon _more_
+         */
+        public Geocoder(List<String> cols, String prefix, String suffix,
+                        String lat, String lon) {
+            this(cols, prefix, suffix);
+            ifNeeded   = true;
+            sLatColumn = lat;
+            sLonColumn = lon;
         }
 
 
@@ -280,34 +294,36 @@ public abstract class Geo extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+
             List values = row.getValues();
             if ( !doneHeader) {
-		if(ifNeeded) {
-		    latIndex = getIndex(ctx,sLatColumn);
-		    lonIndex = getIndex(ctx,sLonColumn);		    
-		} else if (writeForDb) {
+                if (ifNeeded) {
+                    latIndex = getIndex(ctx, sLatColumn);
+                    lonIndex = getIndex(ctx, sLonColumn);
+                } else if (writeForDb) {
                     add(ctx, row, "Location");
                 } else {
                     add(ctx, row, latLabel, lonLabel);
                 }
                 doneHeader = true;
+
                 return row;
             }
 
-	    if(ifNeeded) {
-		String slat = row.getString(latIndex);
-		String slon = row.getString(lonIndex);		
-		if(Utils.stringDefined(slat) && Utils.stringDefined(slon)) {
-		    try {
-			if(!Double.isNaN(Double.parseDouble(slat)) && !Double.isNaN(Double.parseDouble(slat))) {
-			    //			    System.err.println("not needed:"+ slat +" " + slon);
-			    return row;
-			}
-		    } catch(Exception ignore) {
-		    }
-		}
-		//		System.err.println("needed:"+ slat +" " + slon);
-	    }
+            if (ifNeeded) {
+                String slat = row.getString(latIndex);
+                String slon = row.getString(lonIndex);
+                if (Utils.stringDefined(slat) && Utils.stringDefined(slon)) {
+                    try {
+                        if ( !Double.isNaN(Double.parseDouble(slat))
+                                && !Double.isNaN(Double.parseDouble(slat))) {
+                            //                      System.err.println("not needed:"+ slat +" " + slon);
+                            return row;
+                        }
+                    } catch (Exception ignore) {}
+                }
+                //              System.err.println("needed:"+ slat +" " + slon);
+            }
 
             List<Integer> indices = getIndices(ctx);
             StringBuilder key     = new StringBuilder();
@@ -337,7 +353,8 @@ public abstract class Geo extends Processor {
 
 
                 if (doAddress) {
-                    place = GeoUtils.getLocationFromAddress(key.toString(),ctx.getBounds());
+                    place = GeoUtils.getLocationFromAddress(key.toString(),
+                            ctx.getBounds());
                 } else {
                     String   tok    = key.toString();
                     double[] bounds = map.get(tok);
@@ -375,16 +392,17 @@ public abstract class Geo extends Processor {
                     lon = place.getLongitude();
                 }
             }
-	    if(ifNeeded) {
+            if (ifNeeded) {
                 row.set(latIndex, lat);
-		row.set(lonIndex, lon);
-	    } else if (writeForDb) {
+                row.set(lonIndex, lon);
+            } else if (writeForDb) {
                 add(ctx, row, lat + ";" + lon);
             } else {
                 add(ctx, row, new Double(lat), new Double(lon));
             }
 
             return row;
+
         }
 
     }
@@ -625,19 +643,21 @@ public abstract class Geo extends Processor {
         private int lonColumn = -1;
 
 
-	private List<String> fields;
+        /**  */
+        private List<String> fields;
 
         /**
          * @param where _more_
+         * @param what _more_
          * @param lat _more_
          * @param lon _more_
          */
-        public GeoNamer(String where, String what,String lat, String lon) {
+        public GeoNamer(String where, String what, String lat, String lon) {
             super();
-	    this.fields = Utils.split(what,",",true,true);
-            this.where = where;
-            this.lat   = lat;
-            this.lon   = lon;
+            this.fields = Utils.split(what, ",", true, true);
+            this.where  = where;
+            this.lat    = lat;
+            this.lon    = lon;
         }
 
         /**
@@ -650,43 +670,52 @@ public abstract class Geo extends Processor {
             if (rowIdx++ == 0) {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
-		if(fields.size()>0) {
-		    for(String f: fields) row.add(f);
-		} else {
-		    String label = where.equals("counties")
-			? "County"
-			: where.equals("states")
-			? "State"
-			: where.equals("timezones")
-			? "Timezone"
-			: where;
-		    row.add(label);
-		}
+                if (fields.size() > 0) {
+                    for (String f : fields) {
+                        row.add(f);
+                    }
+                } else {
+                    String label = where.equals("counties")
+                                   ? "County"
+                                   : where.equals("states")
+                                     ? "State"
+                                     : where.equals("timezones")
+                                       ? "Timezone"
+                                       : where;
+                    row.add(label);
+                }
+
                 return row;
             }
             try {
-		String slat =row.getString(latColumn).trim();
-		String slon =row.getString(lonColumn).trim();		
-		if(slat.length()==0 || slon.length()==0) {
-		    for(String f: fields) row.add("");
-		    return row;
-		}
-                double latValue =
-                    Double.parseDouble(slat);
-                double lonValue =
-                    Double.parseDouble(slon);
-		
-		List<Object> vs =  GeoUtils.findFeatureFields(where, fields,latValue,
-                                  lonValue);
-		if(vs==null) {
-		    for(String f: fields) row.add("");
-		} else {
-		    for(Object o:vs) {
-			if(o==null) o="";
-			row.add(o.toString().trim());
-		    }
-		}
-		return row;
+                String slat = row.getString(latColumn).trim();
+                String slon = row.getString(lonColumn).trim();
+                if ((slat.length() == 0) || (slon.length() == 0)) {
+                    for (String f : fields) {
+                        row.add("");
+                    }
+
+                    return row;
+                }
+                double latValue = Double.parseDouble(slat);
+                double lonValue = Double.parseDouble(slon);
+
+                List<Object> vs = GeoUtils.findFeatureFields(where, fields,
+                                      latValue, lonValue);
+                if (vs == null) {
+                    for (String f : fields) {
+                        row.add("");
+                    }
+                } else {
+                    for (Object o : vs) {
+                        if (o == null) {
+                            o = "";
+                        }
+                        row.add(o.toString().trim());
+                    }
+                }
+
+                return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -706,8 +735,9 @@ public abstract class Geo extends Processor {
     public static class GeoContains extends Geo {
 
 
-	private String file;
-	
+        /**  */
+        private String file;
+
         /** _more_ */
         private String name;
 
@@ -728,15 +758,16 @@ public abstract class Geo extends Processor {
 
         /**
          * @param file _more_
+         * @param name _more_
          * @param lat _more_
          * @param lon _more_
          */
-        public GeoContains(String file, String name,String lat, String lon) {
+        public GeoContains(String file, String name, String lat, String lon) {
             super();
             this.file = file;
-            this.name = name;	    
-            this.lat   = lat;
-            this.lon   = lon;
+            this.name = name;
+            this.lat  = lat;
+            this.lon  = lon;
         }
 
         /**
@@ -749,27 +780,29 @@ public abstract class Geo extends Processor {
             if (rowCnt++ == 0) {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
-		row.add(name);
+                row.add(name);
+
                 return row;
             }
             try {
-		//		System.err.println(latColumn +" " + lonColumn);		System.err.println(row);
-		String slat =row.getString(latColumn).trim();
-		String slon =row.getString(lonColumn).trim();		
-		if(slat.length()==0 || slon.length()==0) {
-		    row.add("false");
-		    return row;
-		}
-                double latValue =
-                    Double.parseDouble(slat);
-                double lonValue =
-                    Double.parseDouble(slon);
-		
-		if(GeoUtils.findFeature(file, latValue, lonValue)!=null)
-		    row.add("true");
-		else
-		    row.add("false");
-		return row;
+                //              System.err.println(latColumn +" " + lonColumn);         System.err.println(row);
+                String slat = row.getString(latColumn).trim();
+                String slon = row.getString(lonColumn).trim();
+                if ((slat.length() == 0) || (slon.length() == 0)) {
+                    row.add("false");
+
+                    return row;
+                }
+                double latValue = Double.parseDouble(slat);
+                double lonValue = Double.parseDouble(slon);
+
+                if (GeoUtils.findFeature(file, latValue, lonValue) != null) {
+                    row.add("true");
+                } else {
+                    row.add("false");
+                }
+
+                return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -778,10 +811,19 @@ public abstract class Geo extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 13, '22
+     * @author         Enter your name here...    
+     */
     public static class DecodeLatLon extends Geo {
 
 
         /**
+         *
+         * @param cols _more_
          */
         public DecodeLatLon(List<String> cols) {
             super(cols);
@@ -795,25 +837,39 @@ public abstract class Geo extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		return row;
+                return row;
             }
-	    for(int idx: getIndices(ctx)) {
-		String slat =row.getString(idx).trim();
-		row.set(idx,""+Misc.decodeLatLon(slat));
-	    }
-	    return row;
-	}
+            for (int idx : getIndices(ctx)) {
+                String slat = row.getString(idx).trim();
+                row.set(idx, "" + Misc.decodeLatLon(slat));
+            }
+
+            return row;
+        }
     }
 
-    
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 13, '22
+     * @author         Enter your name here...    
+     */
     public static class GetAddress extends Geo {
 
 
-	private String lat;
-	private String lon;	
-	
-	private int latColumn;
-	private int lonColumn;
+        /**  */
+        private String lat;
+
+        /**  */
+        private String lon;
+
+        /**  */
+        private int latColumn;
+
+        /**  */
+        private int lonColumn;
 
 
 
@@ -823,8 +879,8 @@ public abstract class Geo extends Processor {
          * @param lon _more_
          */
         public GetAddress(String lat, String lon) {
-	    this.lat =lat;
-	    this.lon = lon;
+            this.lat = lat;
+            this.lon = lon;
         }
 
         /**
@@ -837,32 +893,33 @@ public abstract class Geo extends Processor {
             if (rowCnt++ == 0) {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
-		row.add("address", "city", "county","state", "zip", "country");
+                row.add("address", "city", "county", "state", "zip",
+                        "country");
+
                 return row;
             }
-	    try {
-		String slat =row.getString(latColumn).trim();
-		String slon =row.getString(lonColumn).trim();		
-		if(slat.length()==0 || slon.length()==0) {
-		    row.add("","","","","","");
-		    return row;
-		}
-                double latValue =
-                    Double.parseDouble(slat);
-                double lonValue =
-                    Double.parseDouble(slon);
-		Address address = GeoUtils.getAddressFromLatLon(latValue,lonValue);
-		if(address!=null) {
-		    int idx =0;
-		    row.add(address.getAddress(),address.getCity(),
-			    address.getCounty(),
-			    address.getState(), 
-			    address.getPostalCode(),
-			    address.getCountry());
-		} else {
-		    row.add("","","","","","");
-		}
-		return row;
+            try {
+                String slat = row.getString(latColumn).trim();
+                String slon = row.getString(lonColumn).trim();
+                if ((slat.length() == 0) || (slon.length() == 0)) {
+                    row.add("", "", "", "", "", "");
+
+                    return row;
+                }
+                double latValue = Double.parseDouble(slat);
+                double lonValue = Double.parseDouble(slon);
+                Address address = GeoUtils.getAddressFromLatLon(latValue,
+                                      lonValue);
+                if (address != null) {
+                    int idx = 0;
+                    row.add(address.getAddress(), address.getCity(),
+                            address.getCounty(), address.getState(),
+                            address.getPostalCode(), address.getCountry());
+                } else {
+                    row.add("", "", "", "", "", "");
+                }
+
+                return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -982,7 +1039,8 @@ public abstract class Geo extends Processor {
             }
 
 
-            Place place = GeoUtils.getLocationFromAddress(key.toString(),null);
+            Place place = GeoUtils.getLocationFromAddress(key.toString(),
+                              null);
             if (place != null) {
                 add(ctx, row, new Integer(place.getPopulation()));
             } else {

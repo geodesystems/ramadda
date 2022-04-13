@@ -86,7 +86,7 @@ public class Place {
 
 
     /**
-     
+     *
      *
      * @param name _more_
      * @param lat _more_
@@ -285,7 +285,7 @@ public class Place {
     /**
      *
      * @param bounds _more_
-      * @return _more_
+     *  @return _more_
      */
     public boolean within(Bounds bounds) {
         if (bounds == null) {

@@ -10,15 +10,14 @@ import org.apache.commons.lang3.text.StrTokenizer;
 
 import org.json.*;
 
-import org.ramadda.util.geo.GeoJson;
-import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
-import java.sql.*;
+import org.ramadda.util.geo.GeoJson;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -31,6 +30,9 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 import java.net.URL;
+
+import java.sql.*;
+
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -715,8 +717,8 @@ public abstract class DataProvider extends CsvOperator {
                             } catch (Exception exc) {
                                 Object o = JsonUtil.readArray(jrow, tok);
                                 if (o != null) {
-                                    primary.putAll(JsonUtil.getHashtable(o, true,
-                                            arrayKeys));
+                                    primary.putAll(JsonUtil.getHashtable(o,
+                                            true, arrayKeys));
                                 }
                             }
                         }
@@ -728,20 +730,22 @@ public abstract class DataProvider extends CsvOperator {
                                 array.getJSONArray(arrayIdx), true,
                                 arrayKeys));
                     } catch (Exception exc) {
-			try {
-			    primary.putAll(
-					   JsonUtil.getHashtable(
-							     array.getJSONObject(arrayIdx), true,
-							     arrayKeys));
-			} catch(Exception exc2) {
-			    //Maybe it is an array of strings
-			    for (int arrayIdx2 = 0; arrayIdx2 < array.length(); arrayIdx2++) {
-				Row row = new Row();
-				row.add(array.getString(arrayIdx2));
-				addRow(row);
-			    }
-			    return;
-			}
+                        try {
+                            primary.putAll(
+                                JsonUtil.getHashtable(
+                                    array.getJSONObject(arrayIdx), true,
+                                    arrayKeys));
+                        } catch (Exception exc2) {
+                            //Maybe it is an array of strings
+                            for (int arrayIdx2 = 0;
+                                    arrayIdx2 < array.length(); arrayIdx2++) {
+                                Row row = new Row();
+                                row.add(array.getString(arrayIdx2));
+                                addRow(row);
+                            }
+
+                            return;
+                        }
                     }
                 }
 
@@ -788,12 +792,12 @@ public abstract class DataProvider extends CsvOperator {
                         if (value == null) {
                             value = "NULL";
                         }
-			//			System.err.println("NAME:" + name +" value:" + value);
+                        //                      System.err.println("NAME:" + name +" value:" + value);
                         row.add(value);
                     }
                 }
-	    }
-	}
+            }
+        }
     }
 
     /**
@@ -915,7 +919,8 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
-	    this.connection = csvUtil.getDbConnection(ctx, this, props,db, table);
+            this.connection = csvUtil.getDbConnection(ctx, this, props, db,
+                    table);
             List<Clause> clauses = new ArrayList<Clause>();
             String       join    = (String) props.get("join");
             if (join != null) {
@@ -947,7 +952,7 @@ public abstract class DataProvider extends CsvOperator {
                     clauses.add(new Clause(col, expr, value));
                 }
             }
-	    System.err.println(clauses);
+            System.err.println(clauses);
             Clause clause = (clauses.size() > 0)
                             ? Clause.and(clauses)
                             : null;
@@ -1064,7 +1069,7 @@ public abstract class DataProvider extends CsvOperator {
             int colCnt = 0;
             Hashtable<String, Integer> colMap = new Hashtable<String,
                                                     Integer>();
-	    //            System.err.println("NODES:" + nodes.size());
+            //            System.err.println("NODES:" + nodes.size());
             for (Element parent : nodes) {
                 NodeList children = XmlUtil.getElements(parent);
 
@@ -1681,14 +1686,14 @@ public abstract class DataProvider extends CsvOperator {
             for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
             }
-            try { 
-		//		System.err.println("pattern:" + chunkPattern);
+            try {
+                //              System.err.println("pattern:" + chunkPattern);
                 Pattern p1 = Pattern.compile(chunkPattern);
                 Pattern p2 = Pattern.compile(tokenPattern);
                 while (true) {
                     Matcher m1 = p1.matcher(s);
-                    if (!m1.find()) {
-			//			System.err.println("no match");
+                    if ( !m1.find()) {
+                        //                      System.err.println("no match");
                         break;
                     }
                     String s2 = s.substring(m1.end());
@@ -1700,9 +1705,9 @@ public abstract class DataProvider extends CsvOperator {
                         throw new IllegalArgumentException(
                             "There should only be one sub-pattern in the chunk");
                     }
-                    String  chunk = m1.group(1).trim();
-		    //		    System.err.println("match:" + chunk +"**");
-                    Matcher m2    = p2.matcher(chunk);
+                    String chunk = m1.group(1).trim();
+                    //              System.err.println("match:" + chunk +"**");
+                    Matcher m2 = p2.matcher(chunk);
                     if ( !m2.find()) {
                         break;
                     }
@@ -1772,18 +1777,23 @@ public abstract class DataProvider extends CsvOperator {
             this.rawLines = rawLines;
         }
 
-	private StrTokenizer getTokenizer(TextReader ctx) {
-	    if (tokenizer == null) {
-		tokenizer = StrTokenizer.getCSVInstance();
-		tokenizer.setEmptyTokenAsNull(true);
-		if ( !ctx.getDelimiter().equals(",")) {
-		    tokenizer.setDelimiterChar(
-					       ctx.getDelimiter().charAt(0));
-		}
-	    }
-	    return tokenizer;
-	}
-	    
+        /**
+         *
+         * @param ctx _more_
+          * @return _more_
+         */
+        private StrTokenizer getTokenizer(TextReader ctx) {
+            if (tokenizer == null) {
+                tokenizer = StrTokenizer.getCSVInstance();
+                tokenizer.setEmptyTokenAsNull(true);
+                if ( !ctx.getDelimiter().equals(",")) {
+                    tokenizer.setDelimiterChar(ctx.getDelimiter().charAt(0));
+                }
+            }
+
+            return tokenizer;
+        }
+
         /**
          * _more_
          *
@@ -1812,7 +1822,7 @@ public abstract class DataProvider extends CsvOperator {
                     //              System.err.println("Done reading CSV file read");
                     return null;
                 }
-		//		if(true) return  new Row(Utils.tokenizeColumns(line, getTokenizer(ctx)));
+                //              if(true) return  new Row(Utils.tokenizeColumns(line, getTokenizer(ctx)));
 
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
@@ -1853,16 +1863,17 @@ public abstract class DataProvider extends CsvOperator {
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
-		    //For not don't do this as a zero length line might be valid
-		    //                    continue;
+                    //For not don't do this as a zero length line might be valid
+                    //                    continue;
                 }
                 if (widths != null) {
-                    return  new Row(Utils.tokenizeColumns(line, widths));
+                    return new Row(Utils.tokenizeColumns(line, widths));
                 } else if (ctx.getSplitOnSpaces()) {
-                    return  new Row(Utils.split(line, " ", true, true));
+                    return new Row(Utils.split(line, " ", true, true));
                 } else {
-                    return new Row(Utils.tokenizeColumns(line,  getTokenizer(ctx)));
-		}
+                    return new Row(Utils.tokenizeColumns(line,
+                            getTokenizer(ctx)));
+                }
             }
         }
 
@@ -1913,44 +1924,62 @@ public abstract class DataProvider extends CsvOperator {
          */
         public Row readRow() throws Exception {
             Row row = new Row();
-            if (!didFirst) {
+            if ( !didFirst) {
                 didFirst = true;
                 row.add("line");
+
                 return row;
             }
             String line = ctx.readLine();
             if (line == null) {
                 return null;
             }
-	    if ( !ctx.lineOk(line)) {
-		return null;
-	    }
+            if ( !ctx.lineOk(line)) {
+                return null;
+            }
             row.add(line);
+
             return row;
         }
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 13, '22
+     * @author         Enter your name here...    
+     */
     public static class Synthetic extends DataProvider {
 
         /**  */
         TextReader ctx;
 
-	List<String> header;
-	List<String> values;	
+        /**  */
+        List<String> header;
 
-	int rows = 10;
+        /**  */
+        List<String> values;
 
-	int count = 0;
+        /**  */
+        int rows = 10;
+
+        /**  */
+        int count = 0;
 
         /**
          * _more_
+         *
+         * @param header _more_
+         * @param values _more_
+         * @param rows _more_
          */
-        public Synthetic(String header,String values,int rows) {
-	    this.header =Utils.split(header,",",true,true);
-	    this.values =Utils.split(values,",",true,true);	    
-	    this.rows= rows;
-	}
+        public Synthetic(String header, String values, int rows) {
+            this.header = Utils.split(header, ",", true, true);
+            this.values = Utils.split(values, ",", true, true);
+            this.rows   = rows;
+        }
 
 
         /**
@@ -1974,22 +2003,30 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public Row readRow() throws Exception {
-	    if(count>rows) return null;
-	    Row row = new Row();
-	    if(count==0) {
-		for(String name:header) row.add(name);
-	    } else {
-		for(int i=0;i<header.size();i++) {
-		    if(i<values.size()) row.add(values.get(i));
-		    else row.add("");
-		}
-	    }
-	    count++;
-	    return row;
+            if (count > rows) {
+                return null;
+            }
+            Row row = new Row();
+            if (count == 0) {
+                for (String name : header) {
+                    row.add(name);
+                }
+            } else {
+                for (int i = 0; i < header.size(); i++) {
+                    if (i < values.size()) {
+                        row.add(values.get(i));
+                    } else {
+                        row.add("");
+                    }
+                }
+            }
+            count++;
+
+            return row;
         }
 
     }
-    
+
 
     /**
      * Class description
@@ -2015,7 +2052,8 @@ public abstract class DataProvider extends CsvOperator {
         /**  */
         String tabula;
 
-	private int rowCnt=0;
+        /**  */
+        private int rowCnt = 0;
 
         /**
          * _more_
@@ -2025,8 +2063,9 @@ public abstract class DataProvider extends CsvOperator {
             tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             tabula = csvUtil.getProperty("RAMADDA_TABULA");
-	    if(tabula==null)
-		tabula = csvUtil.getProperty("ramadda_tabula");		
+            if (tabula == null) {
+                tabula = csvUtil.getProperty("ramadda_tabula");
+            }
         }
 
 
@@ -2042,7 +2081,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
-	    this.ctx = ctx;
+            this.ctx = ctx;
             Runtime rt = Runtime.getRuntime();
             if (tabula == null) {
                 throw new IllegalArgumentException(
@@ -2076,18 +2115,19 @@ public abstract class DataProvider extends CsvOperator {
         public Row readRow() throws Exception {
             String line = null;
 
-	    while(true) {
-		line = stdInput.readLine();
-		if (line == null) {
-		    return null;
-		}
-		rowCnt++;
-		if (rowCnt <= ctx.getSkipLines()) {
-		    ctx.addHeaderLine(line);
-		    continue;
-		}
-		break;
-	    }
+            while (true) {
+                line = stdInput.readLine();
+                if (line == null) {
+                    return null;
+                }
+                rowCnt++;
+                if (rowCnt <= ctx.getSkipLines()) {
+                    ctx.addHeaderLine(line);
+                    continue;
+                }
+
+                break;
+            }
 
 
             List<String> toks = Utils.tokenizeColumns(line, tokenizer);

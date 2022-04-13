@@ -133,6 +133,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String outputDelimiter = ",";
 
+    /**  */
     private List<String> lineFilters;
 
 
@@ -256,8 +257,10 @@ public class TextReader implements Cloneable {
     /** _more_ */
     public boolean verbose = false;
 
+    /**  */
     public boolean cleanInput = false;
 
+    /**  */
     private Bounds bounds;
 
 
@@ -293,7 +296,7 @@ public class TextReader implements Cloneable {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String toString() {
         return "TextReader input:" + this.input;
@@ -334,14 +337,14 @@ public class TextReader implements Cloneable {
         if (firstProcessor != null) {
             row = firstProcessor.handleRow(this, row);
         } else {
-	    /* for now don't print out to csv - need to use -p
-	       if(cnt==1) System.err.println("using csvtil.columnsToString");
-	    Appendable pw = getWriter();
+            /* for now don't print out to csv - need to use -p
+               if(cnt==1) System.err.println("using csvtil.columnsToString");
+            Appendable pw = getWriter();
             pw.append(csvUtil.columnsToString(row.getValues(),
-					      getOutputDelimiter()));
-	    pw.append("\n");
-	    //            getWriter().flush();
-	    */
+                                              getOutputDelimiter()));
+            pw.append("\n");
+            //            getWriter().flush();
+            */
         }
 
         return row;
@@ -379,8 +382,11 @@ public class TextReader implements Cloneable {
     }
 
 
-    public  Processor getLastProcessor() {
-	return lastProcessor;
+    /**
+      * @return _more_
+     */
+    public Processor getLastProcessor() {
+        return lastProcessor;
     }
 
     /**
@@ -747,13 +753,13 @@ public class TextReader implements Cloneable {
                               OutputStream output)
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
-	that.cleanInput = this.cleanInput;
+        that.cleanInput = this.cleanInput;
         that.debug      = this.debug;
         that.input      = input;
         that.output     = output;
         that.outputFile = outputFile;
         that.writer     = null;
-        that.bounds = this.bounds;
+        that.bounds     = this.bounds;
 
         if (debug) {
             that.debugSB = this.debugSB;
@@ -854,8 +860,12 @@ public class TextReader implements Cloneable {
     }
 
 
+    /**
+     *
+     * @param clean _more_
+     */
     public void setCleanInput(boolean clean) {
-	this.cleanInput = clean;
+        this.cleanInput = clean;
     }
 
     /**
@@ -1000,8 +1010,12 @@ public class TextReader implements Cloneable {
 
 
 
+    /**
+     *
+     * @param f _more_
+     */
     public void setLineFilters(List<String> f) {
-	lineFilters = f;
+        lineFilters = f;
     }
 
     /**
@@ -1015,11 +1029,13 @@ public class TextReader implements Cloneable {
         if ((comment != null) && line.startsWith(comment)) {
             return false;
         }
-	if(lineFilters!=null) {
-	    for(String f: lineFilters) {
-		if(line.indexOf(f)>=0) return false;
-	    }
-	}
+        if (lineFilters != null) {
+            for (String f : lineFilters) {
+                if (line.indexOf(f) >= 0) {
+                    return false;
+                }
+            }
+        }
 
         return true;
     }
@@ -1027,12 +1043,18 @@ public class TextReader implements Cloneable {
 
 
 
+    /**
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public int countLines() throws Exception {
-	int numLines = 0;
-	while(readLine()!=null) {
-	    numLines++;
+        int numLines = 0;
+        while (readLine() != null) {
+            numLines++;
         }
-	return numLines;
+
+        return numLines;
     }
 
 
@@ -1045,21 +1067,23 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     public String readLine() throws Exception {
+
         if ( !hasInput) {
             return null;
         }
 
-	if(cleanInput) {
+        if (cleanInput) {
             if (prependReader != null) {
-                String line =  prependReader.readLine();
-		if(line==null) {
-		    prependReader = null;
-		} else {
-		    return line;
-		}
-	    }
-	    return  getReader().readLine();
-	}
+                String line = prependReader.readLine();
+                if (line == null) {
+                    prependReader = null;
+                } else {
+                    return line;
+                }
+            }
+
+            return getReader().readLine();
+        }
 
 
         lb.setLength(0);
@@ -1211,6 +1235,7 @@ public class TextReader implements Cloneable {
 
         return lb.toString();
 
+
     }
 
     /**
@@ -1324,9 +1349,9 @@ public class TextReader implements Cloneable {
     public PrintWriter getWriter() {
         try {
             if (writer == null) {
-		OutputStream os = this.getOutput();
-		//		System.err.println("bos");
-		writer = new PrintWriter(os);
+                OutputStream os = this.getOutput();
+                //              System.err.println("bos");
+                writer = new PrintWriter(os);
                 if (getDebug()) {
                     if (debugSB.length() > 0) {
                         writer.print(debugSB);
@@ -1982,21 +2007,21 @@ public class TextReader implements Cloneable {
     }
 
     /**
-       Set the Bounds property.
-
-       @param value The new value for Bounds
-    **/
-    public void setBounds (Bounds value) {
-	bounds = value;
+     *  Set the Bounds property.
+     *
+     *  @param value The new value for Bounds
+     */
+    public void setBounds(Bounds value) {
+        bounds = value;
     }
 
     /**
-       Get the Bounds property.
-
-       @return The Bounds
-    **/
-    public Bounds getBounds () {
-	return bounds;
+     *  Get the Bounds property.
+     *
+     *  @return The Bounds
+     */
+    public Bounds getBounds() {
+        return bounds;
     }
 
 

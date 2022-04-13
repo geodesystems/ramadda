@@ -228,12 +228,16 @@ public class Filter extends Processor {
 
         /**
          * _more_
+         *
+         * @param ctx _more_
          */
         public FilterGroup(TextReader ctx) {}
 
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param andLogic _more_
          */
         public FilterGroup(TextReader ctx, boolean andLogic) {
@@ -313,12 +317,15 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param in _more_
          * @param column1 _more_
          * @param file _more_
          * @param column2 _more_
          */
-        public IfIn(TextReader ctx, boolean in, String column1, String file, String column2) {
+        public IfIn(TextReader ctx, boolean in, String column1, String file,
+                    String column2) {
             this.in = in;
             if ( !IO.okToReadFrom(file)) {
                 fatal(ctx, "Cannot read file:" + file);
@@ -425,11 +432,17 @@ public class Filter extends Processor {
          * @param column1 _more_
          * @param file _more_
          * @param column2 _more_
+         *
+         * @param ctx _more_
+         * @param greater _more_
+         * @param cols _more_
+         * @param length _more_
          */
-        public Length(TextReader ctx, boolean greater, List<String>cols, int length) {
-	    super(cols);
-	    this.greater = greater;
-	    this.length = length;
+        public Length(TextReader ctx, boolean greater, List<String> cols,
+                      int length) {
+            super(cols);
+            this.greater = greater;
+            this.length  = length;
         }
 
 
@@ -449,17 +462,26 @@ public class Filter extends Processor {
             }
 
             for (int idx : getIndices(ctx)) {
-		if(idx<0 || idx>=row.size()) continue;
-		String s = row.getString(idx);
-		boolean ok = true;
-		if(s.length()>length) {
-		    if(!greater) ok = false;
-		} else {
-		    if(greater) ok = false;
-		}
-		if(!ok) return false;
-	    }
-	    return true;
+                if ((idx < 0) || (idx >= row.size())) {
+                    continue;
+                }
+                String  s  = row.getString(idx);
+                boolean ok = true;
+                if (s.length() > length) {
+                    if ( !greater) {
+                        ok = false;
+                    }
+                } else {
+                    if (greater) {
+                        ok = false;
+                    }
+                }
+                if ( !ok) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
     }
@@ -481,7 +503,8 @@ public class Filter extends Processor {
         /**  */
         private List<String> strings;
 
-        private List<Pattern> patterns;	
+        /**  */
+        private List<Pattern> patterns;
 
         /**  */
         private int idx1;
@@ -495,12 +518,16 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param in _more_
+         * @param pattern _more_
          * @param column1 _more_
          * @param file _more_
          * @param column2 _more_
          */
-        public MatchesFile(TextReader ctx, boolean in, String pattern, String column1, String file, String column2) {
+        public MatchesFile(TextReader ctx, boolean in, String pattern,
+                           String column1, String file, String column2) {
             this.in = in;
             if ( !IO.okToReadFrom(file)) {
                 fatal(ctx, "Cannot read file:" + file);
@@ -516,18 +543,20 @@ public class Filter extends Processor {
         /**
          *
          * @param file _more_
+         * @param pattern _more_
          * @param col1 _more_
          *
          * @throws Exception _more_
          */
-        private void init(String file, String pattern, String col1) throws Exception {
+        private void init(String file, String pattern, String col1)
+                throws Exception {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
             CsvOperator operator = null;
             TextReader  reader   = new TextReader(br);
-	    strings = new ArrayList<String>();
-	    patterns = new ArrayList<Pattern>();
+            strings  = new ArrayList<String>();
+            patterns = new ArrayList<Pattern>();
             String delimiter = null;
             while (true) {
                 String line = reader.readLine();
@@ -552,10 +581,11 @@ public class Filter extends Processor {
                     idx1 = operator.getColumnIndex(reader, col1);
                 }
                 String v = cols.get(idx1);
-		if(pattern.length()>0)
-		    v= pattern.replaceAll("\\$\\{value\\}",v);
-		//		System.err.println(v);
-		patterns.add(Pattern.compile(v));
+                if (pattern.length() > 0) {
+                    v = pattern.replaceAll("\\$\\{value\\}", v);
+                }
+                //              System.err.println(v);
+                patterns.add(Pattern.compile(v));
                 strings.add(v);
             }
         }
@@ -578,14 +608,15 @@ public class Filter extends Processor {
                 return true;
             }
 
-            String v = row.getString(idx2);
-	    boolean matches=false;
-	    for(Pattern p: patterns) {
-		if(p.matcher(v).matches()) {
-		    matches = true;
-		    break;
-		}
-	    }
+            String  v       = row.getString(idx2);
+            boolean matches = false;
+            for (Pattern p : patterns) {
+                if (p.matcher(v).matches()) {
+                    matches = true;
+
+                    break;
+                }
+            }
 
             if (matches) {
                 return in;
@@ -596,7 +627,7 @@ public class Filter extends Processor {
 
     }
 
-    
+
 
 
     /**
@@ -608,7 +639,8 @@ public class Filter extends Processor {
      */
     public static class PatternFilter extends ColumnFilter {
 
-	List<String> strings;
+        /**  */
+        List<String> strings;
 
         /** _more_ */
         String spattern;
@@ -631,12 +663,14 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param cols _more_
          * @param pattern _more_
          * @param negate _more_
          */
-        public PatternFilter(TextReader ctx, List<String> cols, String pattern,
-                             boolean negate) {
+        public PatternFilter(TextReader ctx, List<String> cols,
+                             String pattern, boolean negate) {
             super(cols, negate);
             setPattern(pattern);
             if ((cols.size() == 1) && cols.get(0).equals("-1")) {
@@ -648,10 +682,13 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param cols _more_
          * @param pattern _more_
          */
-        public PatternFilter(TextReader ctx, List<String> cols, String pattern) {
+        public PatternFilter(TextReader ctx, List<String> cols,
+                             String pattern) {
             super(cols);
             setPattern(pattern);
             if ((cols.size() == 1) && cols.get(0).equals("-1")) {
@@ -663,6 +700,8 @@ public class Filter extends Processor {
         /**
          *
          *
+         *
+         * @param ctx _more_
          * @param idx _more_
          * @param pattern _more_
          */
@@ -689,10 +728,12 @@ public class Filter extends Processor {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
-	    if(pattern.startsWith("includes:")) {
-		strings  = Utils.split(pattern.substring("includes:".length()),",");
-		return;
-	    }
+            if (pattern.startsWith("includes:")) {
+                strings =
+                    Utils.split(pattern.substring("includes:".length()), ",");
+
+                return;
+            }
 
             blank    = pattern.equals("");
             pattern  = Utils.convertPattern(pattern);
@@ -721,6 +762,7 @@ public class Filter extends Processor {
          */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
+
             if (cnt++ == 0) {
                 return true;
             }
@@ -737,6 +779,7 @@ public class Filter extends Processor {
                     if (debug) {
                         System.err.println("\tbreak1:" + ok);
                     }
+
                     break;
                 }
                 if (idx >= row.size()) {
@@ -762,16 +805,17 @@ public class Filter extends Processor {
                     ok = false;
                     for (int i = 0; i < row.size(); i++) {
                         String v = row.getString(i);
-			if(strings!=null) {
-			    boolean any = false;
-			    for(String s: strings) {
-				if(v.indexOf(s)>=0) {
-				    any = true;
-				    break;
-				}
-			    }
-			    ok = doNegate(any);
-			} else  if (blank) {
+                        if (strings != null) {
+                            boolean any = false;
+                            for (String s : strings) {
+                                if (v.indexOf(s) >= 0) {
+                                    any = true;
+
+                                    break;
+                                }
+                            }
+                            ok = doNegate(any);
+                        } else if (blank) {
                             ok = doNegate(v.equals(""));
                         } else if (pattern.matcher(v).find()) {
                             ok = doNegate(true);
@@ -783,19 +827,22 @@ public class Filter extends Processor {
 
                     return ok;
                 }
-		if(idx>=row.size()) continue;
+                if (idx >= row.size()) {
+                    continue;
+                }
                 String v = row.getString(idx);
-		if(strings!=null) {
-		    boolean any = false;
-		    for(String s: strings) {
-			if(v.indexOf(s)>=0) {
-			    any = true;
-			    break;
-			}
-		    }
-		    ok = doNegate(any);
-		    continue;
-		}
+                if (strings != null) {
+                    boolean any = false;
+                    for (String s : strings) {
+                        if (v.indexOf(s) >= 0) {
+                            any = true;
+
+                            break;
+                        }
+                    }
+                    ok = doNegate(any);
+                    continue;
+                }
                 if (blank) {
                     ok = doNegate(v.equals(""));
                     if (debug) {
@@ -818,6 +865,7 @@ public class Filter extends Processor {
             }
 
             return ok;
+
         }
 
     }
@@ -847,13 +895,15 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param threshold _more_
          * @param cols _more_
          * @param pattern _more_
          * @param negate _more_
          */
-        public FuzzyFilter(TextReader ctx, int threshold, List<String> cols, String pattern,
-                           boolean negate) {
+        public FuzzyFilter(TextReader ctx, int threshold, List<String> cols,
+                           String pattern, boolean negate) {
             super(cols, negate);
             this.threshold = threshold;
             spattern       = pattern;
@@ -988,11 +1038,14 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param col1 _more_
          * @param col2 _more_
          * @param negate _more_
          */
-        public Same(TextReader ctx, String col1, String col2, boolean negate) {
+        public Same(TextReader ctx, String col1, String col2,
+                    boolean negate) {
             super(negate);
             scol1 = col1;
             scol2 = col2;
@@ -1042,6 +1095,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param col _more_
          * @param count _more_
          */
@@ -1101,6 +1156,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param start _more_
          * @param skip _more_
          */
@@ -1154,6 +1211,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param pattern _more_
          */
         public Stop(TextReader ctx, String pattern) {
@@ -1209,6 +1268,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param pattern _more_
          */
         public Start(TextReader ctx, String pattern) {
@@ -1260,6 +1321,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param cnt _more_
          */
         public MinColumns(TextReader ctx, int cnt) {
@@ -1302,6 +1365,8 @@ public class Filter extends Processor {
 
         /**
          * _more_
+         *
+         * @param ctx _more_
          * @param cnt _more_
          */
         public MaxColumns(TextReader ctx, int cnt) {
@@ -1355,11 +1420,14 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param cols _more_
          * @param op _more_
          * @param value _more_
          */
-        public ValueFilter(TextReader ctx, List<String> cols, int op, double value) {
+        public ValueFilter(TextReader ctx, List<String> cols, int op,
+                           double value) {
             super(cols);
             this.op    = op;
             this.value = value;
@@ -1459,13 +1527,15 @@ public class Filter extends Processor {
          * _more_
          *
          *
+         *
+         * @param ctx _more_
          * @param between _more_
          * @param cols _more_
          * @param min _more_
          * @param max _more_
          */
-        public RangeFilter(TextReader ctx, boolean between, List<String> cols, double min,
-                           double max) {
+        public RangeFilter(TextReader ctx, boolean between,
+                           List<String> cols, double min, double max) {
             super(cols);
             this.between = between;
             this.min     = min;
@@ -1544,6 +1614,8 @@ public class Filter extends Processor {
 
         /**
          * _more_
+         *
+         * @param ctx _more_
          * @param rows _more_
          */
         public RowCutter(TextReader ctx, List<Integer> rows) {
@@ -1553,6 +1625,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param rows _more_
          * @param cut _more_
          */
@@ -1618,6 +1692,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param toks _more_
          */
         public Unique(TextReader ctx, List<String> toks) {
@@ -1638,7 +1714,9 @@ public class Filter extends Processor {
             boolean       inRange = false;
             StringBuilder sb      = new StringBuilder();
             for (int i : getIndices(ctx)) {
-		if(i<0 || i>=row.size()) continue;
+                if ((i < 0) || (i >= row.size())) {
+                    continue;
+                }
                 Object value = row.getValues().get(i);
                 sb.append(value);
                 sb.append("--");
@@ -1669,6 +1747,8 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param ctx _more_
          * @param prob _more_
          */
         public Sample(TextReader ctx, double prob) {

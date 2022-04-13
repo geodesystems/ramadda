@@ -12,16 +12,16 @@ package org.ramadda.util.geo;
 public class Bounds {
 
     /** _more_ */
-    private double north  =Double.NaN;
+    private double north = Double.NaN;
 
     /** _more_ */
-    private double west  =Double.NaN;
+    private double west = Double.NaN;
 
     /** _more_ */
-    private double south  =Double.NaN;
+    private double south = Double.NaN;
 
     /** _more_ */
-    private double east  =Double.NaN;
+    private double east = Double.NaN;
 
     /**
      * _more_
@@ -52,8 +52,8 @@ public class Bounds {
      * @return _more_
      */
     public Point getCenter() {
-        return new Point( south + (north - south) / 2,
-			  west + (east - west) / 2 );
+        return new Point(south + (north - south) / 2,
+                         west + (east - west) / 2);
     }
 
     /**
@@ -80,8 +80,12 @@ public class Bounds {
 
     }
 
+    /**
+     *
+     * @param point _more_
+     */
     public void expand(Point point) {
-	expand(point.getLatitude(), point.getLongitude());
+        expand(point.getLatitude(), point.getLongitude());
     }
 
     /**

@@ -19,8 +19,9 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.GeoUtils;
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.LogUtil;
+
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
@@ -75,12 +76,23 @@ public class CsvOperator {
     /** _more_ */
     public static int OP_MATCH = 7;
 
+    /**  */
     public static final String OPERAND_PERCENT = "percent";
+
+    /**  */
     public static final String OPERAND_COUNT = "count";
+
+    /**  */
     public static final String OPERAND_SUM = "sum";
+
+    /**  */
     public static final String OPERAND_MIN = "min";
+
+    /**  */
     public static final String OPERAND_MAX = "max";
-    public static final String OPERAND_AVERAGE  ="average";
+
+    /**  */
+    public static final String OPERAND_AVERAGE = "average";
 
 
     /** _more_ */
@@ -120,6 +132,7 @@ public class CsvOperator {
     /** _more_ */
     private String scol;
 
+    /**  */
     CsvUtil csvUtil;
 
 
@@ -129,8 +142,13 @@ public class CsvOperator {
      */
     public CsvOperator() {}
 
+    /**
+     
+     *
+     * @param csvUtil _more_
+     */
     public CsvOperator(CsvUtil csvUtil) {
-	this.csvUtil = csvUtil;
+        this.csvUtil = csvUtil;
     }
 
 
@@ -156,10 +174,17 @@ public class CsvOperator {
     }
 
 
+    /**
+     *
+     * @param name _more_
+      * @return _more_
+     */
     public String getProperty(String name) {
-	if(csvUtil!=null)
-	    return csvUtil.getProperty(name);
-	return null;
+        if (csvUtil != null) {
+            return csvUtil.getProperty(name);
+        }
+
+        return null;
     }
 
 
@@ -379,26 +404,32 @@ public class CsvOperator {
 
     /**
      *
+     *
+     * @param ctx _more_
      * @param msg _more_
      *
      * @throws RuntimeException _more_
      */
     public void fatal(TextReader ctx, String msg) throws RuntimeException {
         throw new CsvUtil.MessageException(msg + " function: "
-					   + getClass().getSimpleName());
+                                           + getClass().getSimpleName());
     }
 
     /**
      *
+     *
+     * @param ctx _more_
      * @param msg _more_
      * @param exc _more_
      *
      * @throws RuntimeException _more_
      */
-    public void fatal(TextReader ctx, String msg, Exception exc) throws RuntimeException {
-	Throwable inner = LogUtil.getInnerException(exc);
+    public void fatal(TextReader ctx, String msg, Exception exc)
+            throws RuntimeException {
+        Throwable inner = LogUtil.getInnerException(exc);
+
         throw new RuntimeException(msg + " function: "
-			       + getClass().getSimpleName(), inner);
+                                   + getClass().getSimpleName(), inner);
     }
 
 
@@ -585,10 +616,13 @@ public class CsvOperator {
             iv = columnMap.get(colId);
         }
         if (iv == null) {
-	    throw new IllegalArgumentException("Could not find column index:" + tok +" possible columns: " + Utils.getKeys(columnMap));
-	}
+            throw new IllegalArgumentException("Could not find column index:"
+                    + tok + " possible columns: " + Utils.getKeys(columnMap));
+        }
 
-        return iv!=null?iv:-1;
+        return (iv != null)
+               ? iv
+               : -1;
     }
 
 
@@ -600,6 +634,7 @@ public class CsvOperator {
             columnMap   = new Hashtable<String, Integer>();
             if (header == null) {
                 debug("no names or header");
+
                 return;
             }
 
@@ -663,34 +698,35 @@ public class CsvOperator {
         //      System.err.println("\ttoks:" + toks);
         int start = -1;
         int end   = -1;
-	int step = 1;
+        int step  = 1;
 
         s = s.toLowerCase().trim();
 
         try {
-	    if(toks.size()==0) {
-		//No columns
-		return;
+            if (toks.size() == 0) {
+                //No columns
+                return;
             } else if (toks.size() == 1) {
                 //not now               if(Utils.testAndSet(seen,s)) return;
                 start = end = Integer.parseInt(s);
 
             } else {
                 start = Integer.parseInt(toks.get(0));
-		String second = toks.get(1);
-		int index = second.indexOf(":");
-		if(index>=0) {
-		    step  = Integer.parseInt(second.substring(index+1));
-		    second  = second.substring(0,index);
-		}
-		//		System.err.println("step:" + step +" second:" + second);
-                end   = Integer.parseInt(second);
+                String second = toks.get(1);
+                int    index  = second.indexOf(":");
+                if (index >= 0) {
+                    step   = Integer.parseInt(second.substring(index + 1));
+                    second = second.substring(0, index);
+                }
+                //              System.err.println("step:" + step +" second:" + second);
+                end = Integer.parseInt(second);
             }
         } catch (NumberFormatException exc) {
             if (toks.size() == 1) {
                 String tok = toks.get(0);
                 if (isLastIndex(tok)) {
                     indices.add(getLastIndex(tok, header.size() - 1));
+
                     return;
                 }
 
@@ -713,24 +749,25 @@ public class CsvOperator {
                         //                      System.err.println(colName);
                     }
                     //              System.out.println("TOK:" + tok);
-		    StringBuilder msg = new StringBuilder("");
-                    for (Object key: Utils.getKeys(columnMap)) {
+                    StringBuilder msg = new StringBuilder("");
+                    for (Object key : Utils.getKeys(columnMap)) {
                         String skey = (String) key;
-			//			System.err.println("KEY:" + skey);
+                        //                      System.err.println("KEY:" + skey);
                         if (skey.length() == 0) {
                             continue;
                         }
                         if (skey.matches("^[0-9]+$")) {
                             continue;
                         }
-			if(msg.length()>0)
-			    msg.append(",");
-			else
-			    msg.append("\nColumns: ");
-			msg.append(skey);
+                        if (msg.length() > 0) {
+                            msg.append(",");
+                        } else {
+                            msg.append("\nColumns: ");
+                        }
+                        msg.append(skey);
                     }
                     //              System.err.println(columnMap);
-                    fatal(ctx, "Could not find index:" + tok+ msg+"\n");
+                    fatal(ctx, "Could not find index:" + tok + msg + "\n");
                 }
             } else {
                 String tok1 = toks.get(0);
@@ -768,9 +805,11 @@ public class CsvOperator {
                 */
             }
         }
-	if(step<=0) throw new IllegalArgumentException("Step can't be <=0:" + step);
+        if (step <= 0) {
+            throw new IllegalArgumentException("Step can't be <=0:" + step);
+        }
         if (start >= 0) {
-            for (int i = start; i <= end; i+=step) {
+            for (int i = start; i <= end; i += step) {
                 //not now               if(Utils.testAndSet(seen,i)) continue;
                 colsSeen.add(i);
                 indices.add(i);
@@ -842,8 +881,8 @@ public class CsvOperator {
         List<Integer> indices = new ArrayList<Integer>();
         getColumnIndex(ctx, indices, idx, new HashSet());
         if (indices.size() == 0) {
-	    return -1;
-	    //            throw new IllegalArgumentException("Could not find column index:" + idx);
+            return -1;
+            //            throw new IllegalArgumentException("Could not find column index:" + idx);
 
         }
 
@@ -969,12 +1008,25 @@ public class CsvOperator {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 13, '22
+     * @author         Enter your name here...    
+     */
     public static class CsvException extends RuntimeException {
-	public CsvException(String msg) {
-	    super(msg);
-	}
+
+        /**
+         
+         *
+         * @param msg _more_
+         */
+        public CsvException(String msg) {
+            super(msg);
+        }
     }
-       
+
 
 
 }

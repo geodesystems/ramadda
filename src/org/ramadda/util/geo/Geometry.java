@@ -59,9 +59,10 @@ public class Geometry {
     /** _more_ */
     private List<Path2D.Double> paths;
 
+    /**  */
     private Bounds bounds;
 
-    
+
     /**
      * Create a Geometry
      * @param geometryType the type
@@ -81,7 +82,9 @@ public class Geometry {
      * @return _more_
      */
     public boolean contains(float lat, float lon) {
-	if(!getBounds().contains(lat,lon)) return false;
+        if ( !getBounds().contains(lat, lon)) {
+            return false;
+        }
         for (Path2D.Double path : getPaths()) {
             if (path.contains(lon, lat)) {
                 return true;
@@ -92,9 +95,12 @@ public class Geometry {
     }
 
 
+    /**
+      * @return _more_
+     */
     public Bounds getBounds() {
-	if(bounds==null) {
-	    bounds   = new Bounds ();
+        if (bounds == null) {
+            bounds = new Bounds();
             for (float[][] coord : coords) {
                 if (coord == null) {
                     continue;
@@ -103,11 +109,12 @@ public class Geometry {
                 for (int i = 0; i < numPoints; i++) {
                     float lon = coord[0][i];
                     float lat = coord[1][i];
-		    bounds.expand(lat,lon);
-		}
-	    }
-	}
-	return bounds;
+                    bounds.expand(lat, lon);
+                }
+            }
+        }
+
+        return bounds;
     }
 
     /**

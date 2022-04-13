@@ -752,6 +752,12 @@ public class SqlUtil {
     }
 
 
+    /**
+     *
+     * @param table _more_
+     * @param names _more_
+      * @return _more_
+     */
     public static String makeInsert(String table, List<String> names) {
         StringBuffer sb = new StringBuffer();
         sb.append("INSERT INTO ");
@@ -766,9 +772,10 @@ public class SqlUtil {
             sb.append(" ? ");
         }
         sb.append(" )");
+
         return sb.toString();
     }
-    
+
 
 
 
@@ -1578,53 +1585,70 @@ public class SqlUtil {
     }
 
 
+    /**
+     *
+     * @param connection _more_
+     * @param tableName _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static List<String> getColumnTypes(Connection connection,
             String tableName)
             throws Exception {
         List<String>     types = new ArrayList<String>();
-        DatabaseMetaData dbmd     = connection.getMetaData();
-        ResultSet        cols = dbmd.getColumns(null, null, tableName, null);
+        DatabaseMetaData dbmd  = connection.getMetaData();
+        ResultSet        cols  = dbmd.getColumns(null, null, tableName, null);
         while (cols.next()) {
             String name = cols.getString("COLUMN_NAME");
             String type = cols.getString("TYPE_NAME");
-	    types.add(type);
+            types.add(type);
         }
         //Try upper
         if (types.size() == 0) {
             cols = dbmd.getColumns(null, null, tableName.toUpperCase(), null);
             while (cols.next()) {
                 String type = cols.getString("TYPE_NAME");
-		types.add(type);
+                types.add(type);
             }
         }
 
         return types;
     }
-    
-    public static Hashtable<String,String> getColumnInfo(Connection connection,
-            String tableName)
+
+    /**
+     *
+     * @param connection _more_
+     * @param tableName _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Hashtable<String,
+                            String> getColumnInfo(Connection connection,
+                                String tableName)
             throws Exception {
-        Hashtable<String,String>     info = new Hashtable<String,String>();
-        DatabaseMetaData dbmd     = connection.getMetaData();
-        ResultSet        cols = dbmd.getColumns(null, null, tableName, null);
+        Hashtable<String, String> info = new Hashtable<String, String>();
+        DatabaseMetaData          dbmd = connection.getMetaData();
+        ResultSet cols = dbmd.getColumns(null, null, tableName, null);
         while (cols.next()) {
             String name = cols.getString("COLUMN_NAME");
             String type = cols.getString("TYPE_NAME");
-	    info.put(name,type.toLowerCase());
+            info.put(name, type.toLowerCase());
         }
         //Try upper
         if (info.size() == 0) {
             cols = dbmd.getColumns(null, null, tableName.toUpperCase(), null);
             while (cols.next()) {
-		String name = cols.getString("COLUMN_NAME");
+                String name = cols.getString("COLUMN_NAME");
                 String type = cols.getString("TYPE_NAME");
-		info.put(name,type.toLowerCase());
+                info.put(name, type.toLowerCase());
             }
         }
 
         return info;
     }
-    
+
 
 
 
@@ -2176,7 +2200,9 @@ public class SqlUtil {
      * @throws SQLException _more_
      */
     public static void close(Statement stmt) throws SQLException {
-	if(stmt==null) return;
+        if (stmt == null) {
+            return;
+        }
         if (connectionManager != null) {
             connectionManager.closeStatement(stmt);
         } else {
@@ -2785,13 +2811,20 @@ public class SqlUtil {
         public boolean handleResults(ResultSet results) throws Exception;
     }
 
-    public static void main(String[]args) throws Exception {
-	if(args.length!=4) {
-	    System.err.println("Usage: SqlUtil <jdbc url> <user> <password> <sql file>");
-	    System.exit(1);
-	}
-	String user = args[1];
-	String password = args[2];	
+    /**
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        if (args.length != 4) {
+            System.err.println(
+                "Usage: SqlUtil <jdbc url> <user> <password> <sql file>");
+            System.exit(1);
+        }
+        String     user            = args[1];
+        String     password        = args[2];
 
         Properties connectionProps = new Properties();
         if (Utils.stringDefined(user)) {
@@ -2802,14 +2835,14 @@ public class SqlUtil {
         }
 
         Connection connection = DriverManager.getConnection(args[0],
-							    connectionProps);
+                                    connectionProps);
         Statement statement = connection.createStatement();
-	String sql = IO.readContents(args[3]);
-	loadSql(sql, statement,false,null);
-	statement.close();
-	connection.close();
+        String    sql       = IO.readContents(args[3]);
+        loadSql(sql, statement, false, null);
+        statement.close();
+        connection.close();
 
-	System.exit(0);
+        System.exit(0);
     }
 
 

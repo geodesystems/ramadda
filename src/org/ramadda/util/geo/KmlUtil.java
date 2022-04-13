@@ -1250,11 +1250,21 @@ public class KmlUtil {
     }
 
 
+    /**
+     *
+     * @param c _more_
+      * @return _more_
+     */
     public static String convertHtmlColor(String c) {
-	if(c==null) return null;
-	Color color  = Utils.decodeColor(c,null);
-	if(color==null) return null;
-	return toBGRHexString(color);
+        if (c == null) {
+            return null;
+        }
+        Color color = Utils.decodeColor(c, null);
+        if (color == null) {
+            return null;
+        }
+
+        return toBGRHexString(color);
     }
 
 

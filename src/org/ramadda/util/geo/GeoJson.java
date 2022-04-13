@@ -6,23 +6,25 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.geo.Bounds;
+import org.json.*;
+
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
-import org.json.*;
+
+import org.ramadda.util.geo.Bounds;
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.util.IOUtil;
 
-import java.awt.geom.*;
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
+
+import java.awt.geom.*;
 
 import java.io.*;
 
@@ -108,7 +110,7 @@ public class GeoJson extends JsonUtil {
                     pw.append(name.toLowerCase());
                     pw.append(",");
                 }
-                pw.append("longitude,latitude");
+                pw.append("latitude,longitude");
                 if (addPolygons) {
                     pw.append(",polygon");
                 }
@@ -123,7 +125,7 @@ public class GeoJson extends JsonUtil {
             Bounds    bounds   = getFeatureBounds(feature, null, pts);
             JSONArray geom     = readArray(feature, "geometry.coordinates");
             String    type     = readValue(feature, "geometry.type", "NULL");
-            Point  centroid = bounds.getCenter();
+            Point     centroid = bounds.getCenter();
             for (String name : names) {
                 String value = props.optString(name, "");
                 if (value.indexOf(",") >= 0) {
@@ -135,13 +137,13 @@ public class GeoJson extends JsonUtil {
             pw.append(centroid.getLatitude() + "," + centroid.getLongitude());
             if (addPolygons) {
                 pw.append(",");
-                for (List<Point>  p2 : pts) {
-		    for (Point tuple : p2) {
-			pw.append("" + tuple.getLatitude());
-			pw.append(";");
-			pw.append("" + tuple.getLongitude());
-			pw.append(";");
-		    }
+                for (List<Point> p2 : pts) {
+                    for (Point tuple : p2) {
+                        pw.append("" + tuple.getLatitude());
+                        pw.append(";");
+                        pw.append("" + tuple.getLongitude());
+                        pw.append(";");
+                    }
                 }
             }
             pw.append("\n");
@@ -156,52 +158,56 @@ public class GeoJson extends JsonUtil {
      * @param colString _more_
      * @param addPolygons _more_
      *
+     * @param file _more_
+     *
+      * @return _more_
      * @throws Exception _more_
      */
-    public static List<Feature> getFeatures(String file)
-            throws Exception {
-	String json = IOUtil.readContents(file, GeoJson.class);
-	List<Feature> features = new ArrayList<Feature>();
-        JSONObject obj      = new JSONObject(json);
-        JSONArray  jsonFeatures = readArray(obj, "features");
+    public static List<Feature> getFeatures(String file) throws Exception {
+        String        json         = IOUtil.readContents(file, GeoJson.class);
+        List<Feature> features     = new ArrayList<Feature>();
+        JSONObject    obj          = new JSONObject(json);
+        JSONArray     jsonFeatures = readArray(obj, "features");
         //        List<String> names    = null;
         String[] names = null;
         for (int i = 0; i < jsonFeatures.length(); i++) {
             //            if((i%100)==0) System.err.println("cnt:" + i);
-            JSONObject jsonFeature = jsonFeatures.getJSONObject(i);
-            JSONObject jsonProps   = jsonFeature.getJSONObject("properties");
-            List<List<Point>> points =  new ArrayList<List<Point>>();
-            Bounds    bounds   = getFeatureBounds(jsonFeature, null, points);
-            JSONArray jsonGeom     = readArray(jsonFeature, "geometry.coordinates");
-            String    type     = readValue(jsonFeature, "geometry.type", "NULL");
-	    Hashtable<String, Object> props= new Hashtable<String,Object>();
-	    if(names==null) {
+            JSONObject        jsonFeature = jsonFeatures.getJSONObject(i);
+            JSONObject jsonProps = jsonFeature.getJSONObject("properties");
+            List<List<Point>> points      = new ArrayList<List<Point>>();
+            Bounds bounds = getFeatureBounds(jsonFeature, null, points);
+            JSONArray jsonGeom = readArray(jsonFeature,
+                                           "geometry.coordinates");
+            String type = readValue(jsonFeature, "geometry.type", "NULL");
+            Hashtable<String, Object> props = new Hashtable<String, Object>();
+            if (names == null) {
                 names = JSONObject.getNames(jsonProps);
-	    }
+            }
 
             for (String name : names) {
                 String value = jsonProps.optString(name, "");
                 if (value.indexOf(",") >= 0) {
                     value = "\"" + value + "\"";
                 }
-		props.put(name,value);
+                props.put(name, value);
             }
 
-	    List<float[][]>parts = new ArrayList<float[][]>();
-	    for(List<Point> p2: points) {
-		float[][] pts = new float[2][p2.size()];
-		parts.add(pts);
-		for (int ptIdx = 0; ptIdx < p2.size(); ptIdx++) {
-		    Point tuple = p2.get(ptIdx);
-		    pts[1][ptIdx] = (float) tuple.getLatitude();
-		    pts[0][ptIdx] = (float) tuple.getLongitude();
-		}
+            List<float[][]> parts = new ArrayList<float[][]>();
+            for (List<Point> p2 : points) {
+                float[][] pts = new float[2][p2.size()];
+                parts.add(pts);
+                for (int ptIdx = 0; ptIdx < p2.size(); ptIdx++) {
+                    Point tuple = p2.get(ptIdx);
+                    pts[1][ptIdx] = (float) tuple.getLatitude();
+                    pts[0][ptIdx] = (float) tuple.getLongitude();
+                }
             }
-	    Geometry geom = new Geometry("Polygon",parts);
-	    Feature feature =new Feature("",geom,props,null);
-	    features.add(feature);
+            Geometry geom    = new Geometry("Polygon", parts);
+            Feature  feature = new Feature("", geom, props, null);
+            features.add(feature);
         }
-	return features;
+
+        return features;
 
     }
 
@@ -239,8 +245,8 @@ public class GeoJson extends JsonUtil {
             if ( !Utils.stringDefined(name)) {
                 name = props.optString("NAME");
             }
-            Bounds   bounds   = getFeatureBounds(feature, null, null);
-            Point centroid = bounds.getCenter();
+            Bounds bounds   = getFeatureBounds(feature, null, null);
+            Point  centroid = bounds.getCenter();
             pw.print(name + ",");
             //            pw.print(centroid[1] + "," + centroid[0]+",");
             String    polygon = getFeaturePolygon(feature);
@@ -266,8 +272,8 @@ public class GeoJson extends JsonUtil {
     public static void geojsonSubsetByProperty(String file, PrintStream pw,
             String prop, String value)
             throws Exception {
-	//	System.err.println("prop:" + prop);
-	//	System.err.println("value:" + value);	
+        //      System.err.println("prop:" + prop);
+        //      System.err.println("value:" + value);   
         InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
 
@@ -291,29 +297,30 @@ public class GeoJson extends JsonUtil {
         JSONArray features = readArray(obj, "features");
         int       cnt      = 0;
 
-	boolean isRegexp = StringUtil.containsRegExp(value);
+        boolean   isRegexp = StringUtil.containsRegExp(value);
         for (int i = 0; i < features.length(); i++) {
-            JSONObject feature = features.getJSONObject(i);
-            JSONObject jsonProps   = feature.getJSONObject("properties");
-            String[]   names   = JSONObject.getNames(jsonProps);
-            boolean    haveIt  = false;
-	    boolean gotName = false;
+            JSONObject feature   = features.getJSONObject(i);
+            JSONObject jsonProps = feature.getJSONObject("properties");
+            String[]   names     = JSONObject.getNames(jsonProps);
+            boolean    haveIt    = false;
+            boolean    gotName   = false;
             for (int j = 0; (j < names.length) && !haveIt; j++) {
-		String name = names[j];
-		if(name.equalsIgnoreCase(prop)) {
-		    gotName = true;
-		    String v = jsonProps.optString(names[j], "");
-		    if(isRegexp) {
-			haveIt =  v.matches(value);
-		    } else {
-			haveIt =  v.equals(value);
-		    }
-		}
+                String name = names[j];
+                if (name.equalsIgnoreCase(prop)) {
+                    gotName = true;
+                    String v = jsonProps.optString(names[j], "");
+                    if (isRegexp) {
+                        haveIt = v.matches(value);
+                    } else {
+                        haveIt = v.equals(value);
+                    }
+                }
             }
-	    
-	    if(!gotName) {
-		throw new IllegalArgumentException("Could not find property:" + prop +" properties:" + Arrays.asList(names));
-	    }
+
+            if ( !gotName) {
+                throw new IllegalArgumentException("Could not find property:"
+                        + prop + " properties:" + Arrays.asList(names));
+            }
             if ( !haveIt) {
                 continue;
             }
@@ -346,7 +353,7 @@ public class GeoJson extends JsonUtil {
             double    lon   = tuple.getDouble(0);
             double    lat   = tuple.getDouble(1);
             if (pts != null) {
-                pts.add(new Point(lat, lon ));
+                pts.add(new Point(lat, lon));
             }
 
             if (bounds == null) {
@@ -398,7 +405,8 @@ public class GeoJson extends JsonUtil {
         Bounds bounds = null;
         BufferedReader br = new BufferedReader(
                                 new InputStreamReader(
-                                    IOUtil.getInputStream(file, JsonUtil.class)));
+                                    IOUtil.getInputStream(
+                                        file, JsonUtil.class)));
         StringBuilder json = new StringBuilder();
         String        input;
         while ((input = br.readLine()) != null) {
@@ -435,35 +443,39 @@ public class GeoJson extends JsonUtil {
         String    type    = readValue(feature, "geometry.type", "NULL");
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
-                JSONArray coords2 = coords1.getJSONArray(idx1);
-		List<Point> p2 = new ArrayList<Point>();
+                JSONArray   coords2 = coords1.getJSONArray(idx1);
+                List<Point> p2      = new ArrayList<Point>();
                 bounds = getBounds(coords2, bounds, p2);
-		if(pts!=null)
-		    pts.add(p2);
+                if (pts != null) {
+                    pts.add(p2);
+                }
             }
         } else if (type.equals("MultiPolygon")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray coords2 = coords1.getJSONArray(idx1);
                 for (int idx2 = 0; idx2 < coords2.length(); idx2++) {
-                    JSONArray coords3 = coords2.getJSONArray(idx2);
-		    List<Point> p2 = new ArrayList<Point>();
+                    JSONArray   coords3 = coords2.getJSONArray(idx2);
+                    List<Point> p2      = new ArrayList<Point>();
                     bounds = getBounds(coords3, bounds, p2);
-		    if(pts!=null)
-			pts.add(p2);
+                    if (pts != null) {
+                        pts.add(p2);
+                    }
                 }
             }
         } else if (type.equals("LineString")) {
-	    List<Point> p2 = new ArrayList<Point>();
+            List<Point> p2 = new ArrayList<Point>();
             bounds = getBounds(coords1, bounds, p2);
-	    if(pts!=null)
-		pts.add(p2);
+            if (pts != null) {
+                pts.add(p2);
+            }
         } else {
-            double lon = coords1.getDouble(0);
-            double lat = coords1.getDouble(1);
-	    List<Point> p2 = new ArrayList<Point>();
-	    p2.add(new Point(lat,lon));
-	    if(pts!=null)
-		pts.add(p2);
+            double      lon = coords1.getDouble(0);
+            double      lat = coords1.getDouble(1);
+            List<Point> p2  = new ArrayList<Point>();
+            p2.add(new Point(lat, lon));
+            if (pts != null) {
+                pts.add(p2);
+            }
             if (bounds == null) {
                 bounds = new Bounds(lat, lon, lat, lon);
             } else {
@@ -536,15 +548,15 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	getFeatures(args[0]);
-	//	System.err.println(getFeatures(args[0]));
-	System.exit(0);
+        getFeatures(args[0]);
+        //      System.err.println(getFeatures(args[0]));
+        System.exit(0);
 
 
-	geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
-	if (true) {
-	    return;
-	}
+        geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
+        if (true) {
+            return;
+        }
 
 
         /*

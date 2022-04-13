@@ -413,7 +413,8 @@ public class Feature {
 
     public void toGeoJson(Appendable sb) throws Exception {
         sb.append(JsonUtil.mapOpen());
-        JsonUtil.attr(sb, "type", JsonUtil.quote(FeatureCollection.TYPE_FEATURE));
+        JsonUtil.attr(sb, "type",
+                      JsonUtil.quote(FeatureCollection.TYPE_FEATURE));
         if ((getId() != null) && !getId().isEmpty()) {
             sb.append(",\n");
             JsonUtil.attr(sb, "id", JsonUtil.quote(getId()));
@@ -434,7 +435,8 @@ public class Feature {
                     if (value instanceof Number) {
                         schemadata.add(value.toString());
                     } else {
-                        schemadata.add(JsonUtil.quote(value.toString().trim()));
+                        schemadata.add(
+                            JsonUtil.quote(value.toString().trim()));
                     }
                 }
                 if (schemadata != null) {
