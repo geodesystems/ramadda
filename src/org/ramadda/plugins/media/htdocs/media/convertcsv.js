@@ -1,6 +1,6 @@
 
 function  ConvertForm(inputId, entry,params) {
-    params = params||{};
+    this.params = params||{};
     const ID_SETTINGS  = "settings";
     const ID_HELP  = "help";    
     const ID_MENU = "menu";
@@ -31,7 +31,7 @@ function  ConvertForm(inputId, entry,params) {
 	commands:null,
 	commandsMap:null,
 	header:null,
-	maxRows:params.rows||30,
+	maxRows:this.params.rows||30,
 	dbPopupTime:null});
 	     
 
@@ -76,9 +76,8 @@ function  ConvertForm(inputId, entry,params) {
 		HtmlUtil.span([ID,this.domId(ID_HELP),CLASS,"ramadda-clickable", TITLE,"Help"], HtmlUtils.getIconImage("fa-question-circle"))+SPACE2;
 	    
 	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
-//	    let textarea = HtmlUtil.textarea("",text,[STYLE,"position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"]);
 	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
-	    html+=HU.div([ID,this.domId("resize"),STYLE,"margin-bottom:5px;height:200px;position:relative;"],input);
+	    html+=HU.div([ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(this.params.height||'200px'),'position','relative')],input);
 	    let left ="";
 	    left += HtmlUtil.span([ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
@@ -300,6 +299,7 @@ function  ConvertForm(inputId, entry,params) {
 	    this.editor.session.setMode("ace/mode/csvconvert");
 	    this.editor.on("guttermousedown", (e)=> {
 		if(e.domEvent.ctrlKey) {
+		    console.log("M");
 		    let row = +e.getDocumentPosition().row+1;
 		    let lines =this.editor.getValue().split("\n");
 		    let text = "";
