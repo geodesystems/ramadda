@@ -207,7 +207,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                            + "/media/convertcsv.js");
 	List<String> params = new ArrayList<String>();
 	String rows = Utils.getProperty(props, "rows",null);
+	String height = Utils.getProperty(props, "height",null);	
 	if(Utils.stringDefined(rows)) Utils.add(params,"rows",JsonUtil.quote(rows));
+	if(Utils.stringDefined(height)) Utils.add(params,"height",JsonUtil.quote(height));	
 	String jsparams = JsonUtil.map(params);
         HU.script(sb,
 		  "var convertParams = " + jsparams +";\n" +
