@@ -192,7 +192,7 @@ class  WikiEditor {
 	this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
 	this.ID_WIKI_PREVIEW_WORDCOUNT = "preview_wordcount";
 	this.ID_WIKI_PREVIEW_COPY = "preview_copy";
-	this.ID_WIKI_PREVIEW_DOWNLOAD = "preview_download";			
+	this.ID_WIKI_PREVIEW_DOWNLOAD = "preview_download";
 	this.ID_WIKI_MESSAGE = "message";
 	this.ID_WIKI_MENUBAR    = "menubar";
 	this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
@@ -319,14 +319,11 @@ class  WikiEditor {
 	    if(opts.entryType=="geo_editable_json") 
 		what.push("Editable map");
 
-
 	    if(opts.isGroup) {
 		what.push("Tree");
 		what.push("Grid");
 		what.push("Gallery");	    
 	    }
-
-
 
 	    what.push("Import");	    
 	    what.push("ID");
@@ -352,25 +349,25 @@ class  WikiEditor {
 	    let what=this.lastWhat=menu.val();
 	    let text="";
 	    if(what=="Image") {
-		text = " {{image entry=" + entryId+" caption='" + name+"' align=center width=50% }} ";
+		text = "{{image entry=" + entryId+" caption=\"" + name+"\" bordercolor=\"#ccc\" align=center width=75% }} ";
 	    } else  if(what=="Map") {
-		text = " {{map entry=" + entryId+" details=true}}";
+		text = "{{map entry=" + entryId+" details=true}}";
 	    } else  if(what=="Editable map") {
-		text = " {{editable_map entry=" + entryId+" }}";
+		text = "{{editable_map entry=" + entryId+" }}";
 	    } else  if(what=="Tree") {
-		text = " {{tabletree entry=" + entryId+" }}";
+		text = "{{tabletree entry=" + entryId+" }}";
 	    } else  if(what=="ID") {
 		text = entryId;
 	    } else  if(what=="entry=ID") {
 		text = " entry=" +entryId+" ";		
 	    } else  if(what=="Gallery") {
-		text = " {{gallery entry=" + entryId+" }}";
+		text = "{{gallery entry=" + entryId+" }}";
 	    } else  if(what=="Import") {
-		text = " {{import entry=" + entryId+" }}";		
+		text = "{{import entry=" + entryId+" }}";		
 	    } else  if(what=="Grid") {
-		text = " {{grid entry=" + entryId+" }}";			
+		text = "{{grid entry=" + entryId+" }}";			
 	    } else if(what=="Link") {
-		text = " [[" + entryId +"|" + name+"]] ";
+		text = "[[" + entryId +"|" + name+"]] ";
 	    } else if(what=="Nothing") {
 		return;
 	    } else {
