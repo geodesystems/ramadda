@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 13 04:23:53 MDT 2022";
+var build_date="RAMADDA build date: Wed Apr 13 04:35:26 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -40688,12 +40688,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		let d = record.getData();
-		d = d.map(d=>{
-		    if(!d) return d;
-		    if(d.getTime) return this.formatDate(d);
-		    return d;
+		d = d.map(v=>{
+		    if(!v) return v;
+		    if(v.getTime) return this.formatDate(v);
+		    return v;
 		});
-		
 
 		//		if(recordIdx>40) return true;
 		let prefix = "";
@@ -40724,7 +40723,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		fields.forEach((f,idx)=>{
 		    let value = d[f.getIndex()]
 		    let sv =  this.formatFieldValue(f,record,String(value));
-		    if(sv.length>maxLength) {
+		    if(maxLength>0 && sv.length>maxLength && f.isString()) {
 			if(!record.isAggregate) {
 			    sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
 			}
@@ -40753,6 +40752,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,record.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
 			}  else {
 			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
+
 			}
 		    }
 		    
@@ -40820,7 +40820,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			    html+=HU.td([],HU.row([["align","right"],sv],outer));
 			}
 		    } else if(f.isFieldNumeric()) {
-			html+=handleColumn(f,record,this.formatNumber(sv,f.getId()), tdAttrs);
+			let td = handleColumn(f,record,this.formatNumber(+sv,f.getId()), tdAttrs);
+			html+=td;
 		    } else {
 			html+=handleColumn(f,record,sv,tdAttrs);
 		    }
