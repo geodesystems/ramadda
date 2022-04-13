@@ -110,7 +110,7 @@ public class JsonUtil {
      *
      * @return  the map object { key1:value1, key2:value2 }
      */
-    public static String mapAndQuote(String... values) {
+    public static String mapAndQuote(Object... values) {
         return map(values, true);
     }
 
@@ -122,7 +122,7 @@ public class JsonUtil {
      *
      * @return  the map object { key1:value1, key2:value2 }
      */
-    public static String map(String... values) {
+    public static String map(Object... values) {
         return map(values, DFLT_QUOTE);
     }
 
@@ -144,7 +144,7 @@ public class JsonUtil {
      *
      * @return _more_
      */
-    public static String mapAndQuote(List<String> values) {
+    public static String mapAndQuote(List values) {
         return map(values, true);
     }
 
@@ -157,7 +157,7 @@ public class JsonUtil {
      * @return  the map object { key1:value1, key2:value2 }
      */
     public static String map(String[] values, boolean quoteValue) {
-        return map((List<String>) Misc.toList(values), quoteValue);
+        return map(Misc.toList(values), quoteValue);
     }
 
     /**
@@ -168,7 +168,7 @@ public class JsonUtil {
      *
      * @return  the map object { key1:value1, key2:value2 }
      */
-    public static String map(List<String> values, boolean quoteValue) {
+    public static String map(List values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         map(row, values, quoteValue);
 
@@ -184,7 +184,7 @@ public class JsonUtil {
      *
      * @return _more_
      */
-    public static Appendable map(Appendable row, List<String> values,
+    public static Appendable map(Appendable row, List values,
                                  boolean quoteValue) {
         try {
             if (row == null) {
@@ -193,8 +193,8 @@ public class JsonUtil {
             row.append(mapOpen());
             int cnt = 0;
             for (int i = 0; i < values.size(); i += 2) {
-                String name  = values.get(i);
-                String value = values.get(i + 1);
+                String name  = values.get(i).toString();
+                String value = values.get(i + 1).toString();
                 if (value == null) {
                     continue;
                 }
