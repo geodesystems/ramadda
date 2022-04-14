@@ -253,6 +253,8 @@ class  WikiEditor {
 	    e.preventDefault();
 	    this.handlePopupMenu(e);
 	});
+	this.editor.container.addEventListener("mousedown", (e) =>{
+	});
 	this.editor.container.addEventListener("mouseup", (e) =>{
 	    this.handleMouseUp(e);
 	});
@@ -800,6 +802,19 @@ class  WikiEditor {
     }
 
 
+    handleEntriesPopup(ids,id) {
+	this.getEntryNames(ids,(data)=>{
+	    if(data.length) {
+		let html = "";
+		data.forEach(d=>{
+		    html+=HU.href(ramaddaBaseUrl+"/entry/show?entryid=" + d.id,d.name,['title',d.id,'target','_entries'])+"<br>";
+		});
+		jqid(id).html(html);
+	    }
+	},true);
+    }
+
+
     handlePopupMenu(event, result) {
 	let tagInfo = this.getTagInfo();
 	if(!tagInfo) {
@@ -813,6 +828,8 @@ class  WikiEditor {
 	    return;
 	}
 
+
+
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
@@ -823,6 +840,16 @@ class  WikiEditor {
 	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
 	}
 	menu += HU.div([CLASS,"wiki-editor-popup-heading"], title);
+
+	let ids = this.extractEntryIds(tagInfo.chunk);
+	if(ids.length) {
+	    let id = Utils.getUniqueId("entrieslist");
+	    menu +=HU.toggleBlock("Entries", HU.div([ID,id,CLASS,'wiki-editor-popup-items'],"Loading..."));
+	    this.handleEntriesPopup(ids,id);
+	}	
+
+
+
 	Utils.splitList(blocks,5).forEach(blocks=>{
 	    menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
 	    blocks.forEach(block=>{
@@ -852,12 +879,15 @@ class  WikiEditor {
 	});
     }
 
+
     handleMouseUp(e,result) {
 	if(!e.metaKey)  return;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
 	let tagInfo = this.getTagInfo(position);
 	if(!tagInfo) return;
+
+
 
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,false, r=>{
@@ -966,6 +996,40 @@ class  WikiEditor {
     handleMouseLeave(e) {
 	this.setInContext(false);
     }
+    extractEntryIds(chunk) {
+	let regex =  /([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)(.*)/;
+	let ids = [];
+	let match = chunk.match(regex);
+	while(match) {
+	    if(match.length==3) {
+		ids.push(match[1]);
+		match = match[2].match(regex);
+	    } else {
+		break;
+	    }
+	}
+	return ids;
+    }
+
+    getEntryNames(ids, callback, immediate) {
+	let func = ()=>{
+	    let url = ramaddaBaseUrl+ "/entry/names?entryids=" + Utils.join(ids,",");
+	    this.getNamesPending = true;
+	    $.getJSON(url, (data) =>{
+		this.getNamesPending = false;
+		callback(data);
+	    });
+	};
+	if(immediate) {
+	    func();
+	    return;
+	}
+	this.getNamesTimeout =
+	    setTimeout(()=> {
+		func();
+	    },1000);
+    }
+	
     setInContext(c,type,chunk) {
 	this.inContext = c;
 	let scroller = this.getScroller();
@@ -983,30 +1047,14 @@ class  WikiEditor {
 	    if(chunk && !this.getNamesPending) {
 		let id = Utils.getUniqueId("tooltip");
 		message+=HU.div([ID,id,STYLE,HU.css("max-height","200px",'font-style','italic')]);
-		let regex =  /([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)(.*)/;
-		let ids = [];
-		let match = chunk.match(regex);
-		while(match) {
-		    if(match.length==3) {
-			ids.push(match[1]);
-			match = match[2].match(regex);
-		    } else {
-			break;
-		    }
-		}		
+		let ids = this.extractEntryIds(chunk);
 		if(ids.length) {
-		    this.getNamesTimeout =
-			setTimeout(()=> {
-			    let url = ramaddaBaseUrl+ "/entry/names?entryids=" + Utils.join(ids,",");
-			    this.getNamesPending = true;
-			$.getJSON(url, (data) =>{
-			    this.getNamesPending = false;
-			    if(data.length) {
-				let names = Utils.join(data,"<br>");
-				jqid(id).html(names);
-			    }
-			});
-		    },1000);
+		    this.getEntryNames(ids,(data)=>{
+			if(data.length) {
+			    let names = Utils.join(data.map(d=>{return d.name;}),"<br>");
+			    jqid(id).html(names);
+			}
+		    });
 		}
 	    }
 	    this.showMessage(message);
