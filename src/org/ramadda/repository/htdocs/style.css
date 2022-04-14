@@ -2566,10 +2566,12 @@ pre {
 }
 
 .ramadda-system-message {
+    z-index:var(--ui-dialog-z-index);
     margin:4px;
     padding:4px;
-    border: 1px solid #666;
+    border: 1px #aaa solid;
     font-weight: bold; 
+    background:var(--color-mellow-yellow);
 }
 
 .disabledinput, .disabledinput:focus {

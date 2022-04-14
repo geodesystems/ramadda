@@ -546,8 +546,6 @@ public class PageHandler extends RepositoryManager {
                                   boolean suffix)
             throws Exception {
 
-        //      System.err.println("decorateResult:" + Utils.getStack(10));
-
         boolean fullTemplate = prefix && suffix;
         //      Runtime.getRuntime().gc();
         double mem1 = Utils.getUsedMemory();
@@ -575,9 +573,11 @@ public class PageHandler extends RepositoryManager {
         }
 
 
-        String template      = htmlTemplate.getTemplate();
 
-        String systemMessage = getRepository().getSystemMessage(request);
+
+
+
+        String template      = htmlTemplate.getTemplate();
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  (String) null);
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
@@ -588,14 +588,21 @@ public class PageHandler extends RepositoryManager {
         String     header   = entryHeader;
 
         Appendable contents = new StringBuilder();
-
-        if (prefix) {
-            if (Utils.stringDefined(systemMessage)) {
-                HU.div(contents, systemMessage,
-                       HU.cssClass("ramadda-system-message"));
-            }
+     
+        String systemMessage = getRepository().getSystemMessage(request);
+	boolean hasContents = htmlTemplate.hasMacro(MACRO_CONTENT);
+	String extraMessage = null;
+	if (Utils.stringDefined(systemMessage)) {
+	    extraMessage = HU.div(systemMessage,
+				  HU.cssClass("ramadda-system-message"));
         }
 
+	if(extraMessage!=null && hasContents) {
+	    contents.append(extraMessage);
+	}
+
+
+	
         String jsContent = getTemplateJavascriptContent();
         String bottom    = null;
         if (fullTemplate || suffix) {
@@ -748,6 +755,11 @@ public class PageHandler extends RepositoryManager {
                 }
             }
         }
+
+	if(extraMessage!=null && !hasContents && prefix) {
+	    sb.append(extraMessage);
+	}
+
 
         //
         //Todo: don't support multiple languages for now
