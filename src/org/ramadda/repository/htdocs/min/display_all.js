@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Apr 13 11:16:42 MDT 2022";
+var build_date="RAMADDA build date: Wed Apr 13 22:08:38 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -35756,6 +35756,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
+	    console.log(polygonField);
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
