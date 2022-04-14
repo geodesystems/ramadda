@@ -1044,6 +1044,8 @@ class  WikiEditor {
 	    let message = "Right-click to show property menu";
 	    if(type!="plus")
 		message+="<br>Cmd-click to edit";
+	    /*
+	      For now don't do this in the tooltip since the tag popup menu has this
 	    if(chunk && !this.getNamesPending) {
 		let id = Utils.getUniqueId("tooltip");
 		message+=HU.div([ID,id,STYLE,HU.css("max-height","200px",'font-style','italic')]);
@@ -1056,7 +1058,7 @@ class  WikiEditor {
 			}
 		    });
 		}
-	    }
+	    }*/
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
