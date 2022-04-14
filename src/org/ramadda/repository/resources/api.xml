@@ -21,6 +21,7 @@
       <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
       <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>
       <api request="/entry/data"             method="processEntryData"/>
+      <api request="/entry/names"             method="processEntryNames"/>      
       <api request="/entry/form"             method="processEntryForm"       actions="edit"/>
       <api request="/entry/access/*"         method="processEntryAccess"     actions=""/>
       <api request="/entry/change"           method="processEntryChange"     actions="edit"/>

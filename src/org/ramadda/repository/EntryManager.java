@@ -1064,6 +1064,22 @@ public class EntryManager extends RepositoryManager {
         return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
+    public Result processEntryNames(Request request) throws Exception {
+	List<String> ids = Utils.split(request.getString("entryids",""),",",true,true);
+	List<String> names = new ArrayList<String>();
+	for(String id: ids) {
+	    Entry entry = getEntry(request, id);
+	    if(entry!=null) {
+		names.add(JsonUtil.quote(entry.getName()));
+	    }
+	}
+        StringBuilder sb = new StringBuilder(JsonUtil.list(names));
+        request.setReturnFilename("names.json");
+        request.setCORSHeaderOnResponse();
+        return new Result("", sb, JsonUtil.MIMETYPE);
+    }
+
+
     private static class EntryActivity {
 	String entryId;
 	Hashtable<String,Integer> counts = new Hashtable<String,Integer>();
