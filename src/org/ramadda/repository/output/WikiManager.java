@@ -999,7 +999,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (border > 0 || bordercolor!=null) {
 	    if(border==0) border=1;
-            style += " border: " + border + "px solid " + bordercolor + ";";
+            style += HU.css("border", border + "px solid "  + bordercolor);
         }
         String left = getProperty(wikiUtil, props, "left", null);
         if (left != null) {
