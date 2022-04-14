@@ -966,17 +966,49 @@ class  WikiEditor {
     handleMouseLeave(e) {
 	this.setInContext(false);
     }
-    setInContext(c,type) {
+    setInContext(c,type,chunk) {
 	this.inContext = c;
 	let scroller = this.getScroller();
 	if(this.tagMarker)
 	    this.editor.session.removeMarker(this.tagMarker);
 	this.tagMarker = null;
+	if(this.getNamesTimeout)
+	    clearTimeout(this.getNamesTimeout);
+	this.getNamesTimeout = null;
 	if(c) {
 	    scroller.css("cursor","context-menu");
 	    let message = "Right-click to show property menu";
 	    if(type!="plus")
 		message+="<br>Cmd-click to edit";
+	    if(chunk && !this.getNamesPending) {
+		let id = Utils.getUniqueId("tooltip");
+		message+=HU.div([ID,id,STYLE,HU.css("max-height","200px",'font-style','italic')]);
+		let regex =  /([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)(.*)/;
+		let ids = [];
+		let match = chunk.match(regex);
+		while(match) {
+		    if(match.length==3) {
+			ids.push(match[1]);
+			match = match[2].match(regex);
+		    } else {
+			break;
+		    }
+		}		
+		if(ids.length) {
+		    this.getNamesTimeout =
+			setTimeout(()=> {
+			    let url = ramaddaBaseUrl+ "/entry/names?entryids=" + Utils.join(ids,",");
+			    this.getNamesPending = true;
+			$.getJSON(url, (data) =>{
+			    this.getNamesPending = false;
+			    if(data.length) {
+				let names = Utils.join(data,"<br>");
+				jqid(id).html(names);
+			    }
+			});
+		    },1000);
+		}
+	    }
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
@@ -994,15 +1026,16 @@ class  WikiEditor {
 	    if(!position) return;
 	    let tagInfo = this.getTagInfo(position);
 	    if(tagInfo) {
-		this.setInContext(true, tagInfo.type);
+		this.setInContext(true, tagInfo.type,tagInfo.chunk);
 		//		this.tagMarker = this.editor.session.addMarker(tagInfo.range, "ace_active-line wiki-editor-tag-highlight", "text");
   	    } else {
 		this.setInContext(false);
 	    }
 	};
-	if(this.inContext) func();
-	else {
-	    this.lastTimeout=setTimeout(func,500);
+	if(this.inContext) {
+	    func();
+	} else {
+	    this.lastTimeout=setTimeout(func,1000);
 	}
     }
 

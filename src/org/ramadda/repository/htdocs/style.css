@@ -4893,8 +4893,10 @@ a.wiki-link-noexist {
 }
 
 .ace_wiki-editor-entryid {
-    color:red;
+    color:#B22222;
 }
+
+
 
 .ace_wiki-editor-comment {
     border-bottom: 1px solid #999;

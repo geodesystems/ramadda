@@ -3059,6 +3059,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
+	    console.log(polygonField);
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
