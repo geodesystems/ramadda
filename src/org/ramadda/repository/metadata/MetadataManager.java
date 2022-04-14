@@ -237,7 +237,9 @@ public class MetadataManager extends RepositoryManager {
             int        priority  = obj.optInt("priority", 100);
             for (int i = 0; i < jlicenses.length(); i++) {
                 JSONObject jlicense = jlicenses.getJSONObject(i);
-                License license = new License(getRepository(), jlicense,
+                License license = new License(getRepository(), obj.optString("name","Licenses"),
+					      jlicense.optString("url",obj.optString("url",null)),
+					      jlicense,
                                       priority);
                 licenses.add(license);
                 licenseMap.put(license.getId(), license);
@@ -256,6 +258,11 @@ public class MetadataManager extends RepositoryManager {
     public synchronized License getLicense(String license) {
         return licenseMap.get(license);
     }
+
+    public synchronized List<License> getLicenses() {
+	return licenses;
+    }
+
 
     /**
      *
@@ -300,6 +307,30 @@ public class MetadataManager extends RepositoryManager {
 
         return getLicenseHtml(license, label);
     }
+
+
+    public Result processLicenses(Request request) throws Exception {
+        StringBuffer sb    = new StringBuffer();
+        getPageHandler().sectionOpen(request, sb, "Available Licenses",false);
+	String from  ="";
+	int cnt = 0;
+	for(License license: getLicenses()) {
+	    if(!license.getFrom().equals(from)) {
+		if(cnt>0) sb.append("</div>");
+		from = license.getFrom();
+		sb.append(HU.h2(from));
+		sb.append(HU.open("div","class","ramadda-licenses-box"));
+	    }
+	    sb.append(getLicenseHtml(license,null));
+	    sb.append("<br>");
+	    cnt++;
+	}
+	sb.append("</div>");
+        getPageHandler().sectionClose(request, sb);
+	return new Result("Licenses",sb);
+    }
+
+
 
     /**
      *

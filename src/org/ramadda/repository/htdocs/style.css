@@ -3160,6 +3160,12 @@ label {
     padding: 5px;
 }
 
+.ramadda-licenses-box {
+    margin-left:20px;
+    max-height:300px;
+    overflow-y:auto;
+}
+
 .ramadda-license-text {
     display:inline-block;
     max-width:200px;

@@ -27,6 +27,8 @@ import java.util.List;
 public class License implements Comparable {
 
 
+    private String from;
+
     /**  */
     private String id;
 
@@ -83,12 +85,13 @@ public class License implements Comparable {
      *
      * @throws Exception _more_
      */
-    public License(Repository repository, JSONObject obj, int priority)
+    public License(Repository repository, String from, String url, JSONObject obj, int priority)
             throws Exception {
         this.priority = obj.optInt("priority", priority);
+	this.from = from;
         id            = obj.getString("id");
         name          = obj.optString("name", Utils.makeLabel(id));
-        url           = obj.optString("url", null);
+        this.url =url;
         text          = obj.optString("text", null);
         icon          = obj.optString("icon", null);
         if (icon != null) {
@@ -174,6 +177,16 @@ public class License implements Comparable {
         System.out.println(JsonUtil.map(Utils.makeList("name",
                 JsonUtil.quote("Licenses from..."), "priority", "100",
                 "licenses", JsonUtil.list(licenses))));
+    }
+
+
+    /**
+       Get the From property.
+
+       @return The From
+    **/
+    public String getFrom () {
+	return from;
     }
 
 

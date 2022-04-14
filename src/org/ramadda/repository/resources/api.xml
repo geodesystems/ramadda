@@ -139,6 +139,7 @@
 
 
   <group handler="metadatamanager">
+    <api request="/licenses"       method="processLicenses"      />
     <api request="/metadata/suggest"       method="processMetadataSuggest"/>
     <api request="/metadata/list"       method="processMetadataList"/>    
     <api request="/metadata/view/*"     method="processMetadataView"/>
