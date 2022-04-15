@@ -877,9 +877,13 @@ a.ramadda-menubar-button:hover {
     max-width:400px;
 }
 
+
 .ramadda-snippet {
-    margin-bottom: 5px;
     text-decoration:none !important;
+}
+
+.ramadda-entry-link .ramadda-snippet {
+    margin-left:20px;
 }
 
 .ramadda-snippet-hover {
