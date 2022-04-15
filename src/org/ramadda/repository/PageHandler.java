@@ -480,6 +480,11 @@ public class PageHandler extends RepositoryManager {
         return headerIcon;
     }
 
+    public String getEntryTooltip(Entry entry) {
+	return entry.getName()+HU.NL +
+	    " - " + entry.getTypeHandler().getLabel();
+    }
+
 
     /**
      * _more_

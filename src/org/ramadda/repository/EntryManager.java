@@ -6245,7 +6245,7 @@ public class EntryManager extends RepositoryManager {
 	    linkLabel =
 		HU.img(getPageHandler().getIconUrl(request,
 						   child)) + HU.space(1) + linkLabel;
-	    String href = HU.href(url, linkLabel,HU.attrs("title",child.getName()));
+	    String href = HU.href(url, linkLabel,HU.attrs("title",getPageHandler().getEntryTooltip(child)));
 	    inner.append(HU.div(href,HU.attrs("class","ramadda-menu-item")));
 	}
 	String html =HU.div(inner.toString(),HU.style("min-width","300px","max-height","200px","overflow-y","auto"));
@@ -6714,7 +6714,7 @@ public class EntryManager extends RepositoryManager {
                     linkLabel =
                         HU.img(getPageHandler().getIconUrl(request,
 							   child)) + HU.space(1) + linkLabel;
-                    String href = HU.href(url, linkLabel,HU.attrs("title",child.getName()));
+                    String href = HU.href(url, linkLabel,HU.attrs("title",getPageHandler().getEntryTooltip(child)));
 		    HU.div(childrenSB,href,HU.attrs("class","ramadda-menu-item"));
                 }
 		HU.tag(menu,
