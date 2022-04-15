@@ -3767,7 +3767,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	boolean decorate = getProperty(wikiUtil, props, "decorate",
 				       false);
 	boolean includeSnippet = getProperty(wikiUtil, props,
-					     "includeSnippet", false);
+					     "showSnippet", getProperty(wikiUtil,props,"includeSnippet",false));
+	boolean includeDescription = getProperty(wikiUtil, props,
+					     "showDescription", false);	
 	boolean showicon = getShowIcon(wikiUtil, props, false);
 
 	boolean linkResource = getProperty(wikiUtil, props,
@@ -3799,8 +3801,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    tagClose = "</div></div>";
 	} else {
 	    if (showicon) {
-		tagOpen  = "";
-		tagClose = "<br>";
+		tagOpen  = "<div class=ramadda-entry-link>";
+		tagClose = "</div>";
 	    }
 	}
 
@@ -3834,13 +3836,18 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		linkLabel = HU.img(getPageHandler().getIconUrl(request,
 							       child)) + HU.space(1) + linkLabel;
 	    }
-	    String snippet =  includeSnippet?getSnippet(request,  child, true,""):null;
-	    if(decorate) {
-		linkLabel =  "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + linkLabel +"</div>" + (snippet!=null?snippet:"") + "</div>";
-	    }
+	    String snippet =  includeSnippet?getSnippet(request,  child, true,""):includeDescription?child.getDescription():null;
+
 	    String href = HU.href(url, linkLabel,
 				  HU.cssClass("ramadda-link " + cssClass)
 				  + HU.style(style));
+	    
+	    if(decorate) {
+		href=   "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + href +"</div></div>";
+	    }
+	    if(snippet!=null) {
+		href+=snippet;
+	    }
 	    boolean highlight =
 		highlightThis && (originalEntry != null)
 		&& child.getId().equals(originalEntry.getId());
@@ -4388,12 +4395,17 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             return snippet;
         }
         String text = child.getTypeHandler().getEntryText(child);
-	if(text!=null)
+	if(text!=null) {
 	    snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
-        if (text!=null && snippet == null) {
-            snippet = StringUtil.findPattern(
-					     text, "(?s)<snippet-hide>(.*)</snippet-hide>");
-        }
+	    if (snippet == null) {
+		snippet = StringUtil.findPattern(
+						 text, "(?s)<snippet-hide>(.*)</snippet-hide>");
+		if (snippet == null) {
+		    snippet = StringUtil.findPattern(
+						     text, "(?s)\\+snippet(.*?)-snippet");
+		}
+	    }
+	}
         child.setSnippet(snippet);
         if ((snippet != null) && wikify) {
             snippet = wikifyEntry(request, child, snippet,false);
