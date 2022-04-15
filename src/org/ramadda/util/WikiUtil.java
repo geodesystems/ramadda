@@ -933,6 +933,12 @@ public class WikiUtil {
 		}
 
 
+                if (tline.startsWith("+snippet")) {
+		    continue;
+		}
+                if (tline.equals("-snippet")) {
+		    continue;
+		}		
 
 
                 if (tline.startsWith("{{")) {
