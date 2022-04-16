@@ -30,7 +30,7 @@ function ohmsDoSearch(divId,searchId,playFunction,points) {
 	}
 	if(!table) table="<table width=100%>";
 	let time = ohmsFormatTime(p.time);
-	table+=HtmlUtils.tr(['point-index',idx,'class','ramadda-clickable ramadda-ohms-point'], HU.td(['width','5%'], time) +
+	table+=HtmlUtils.tr([TITLE,p.title,STYLE,'white-space:nowrap;','point-index',idx,'class','ramadda-clickable ramadda-ohms-point'], HU.td(['width','5%'], time) +
 			    HU.td(['width','95%'], HU.div([STYLE,HU.css('margin-left','10px')],p.title)));
 
     });
@@ -76,7 +76,7 @@ function ohmsMakePoints(div,points,searchId, playFunction) {
     table = HU.div([CLASS,"ramadda-ohms-points"], table);
     let searchInputId = HU.getUniqueId("search_");
     let search = HU.input("","",['class','ramadda-ohms-search', "placeholder","Search",ID,searchInputId]) + " " + HU.span([ID,searchInputId+"_clear",CLASS,"ramadda-clickable"], HU.getIconImage('fas fa-eraser')) +
-	HU.div([ID,searchInputId+"_results"]) 
+	HU.div([ID,searchInputId+"_results",STYLE,HU.css('max-width','300px','overflow-x','auto')]) 
 
     search =HU.div([STYLE,HU.css('margin-left','10px')], search);
     jqid(searchId).html(search);
