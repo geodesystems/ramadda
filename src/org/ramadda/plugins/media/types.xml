@@ -263,7 +263,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 
 <type name="type_document_vegalite"  description="Vega-Lite chart file" 
       handler="org.ramadda.plugins.media.VegaTypeHandler" 
-      super="type_document_tabular" supercategory="" category="Data">
+      category="Data">
      <property name="icon" value="/media/vega.png"/>
      <wiki><![CDATA[
 +section # title="{{name}}"
@@ -278,9 +278,50 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -section
 ]]>
 </wiki>
-
-
 </type>
 
+<type name="type_document_ohms"  description="OHMS Oral History"
+      pattern="(?i).*ohms.*\.xml"
+      handler="org.ramadda.plugins.media.OhmsTypeHandler" 
+      super="type_document" supercategory="" category="Data">
+  <property name="icon" value="/media/ohms.png"/>
+  <column name="ohms_type" type="enumerationplus" label="Type"/>
+  <column name="interviewee" type="string" label="Interviewee"/>
+  <column name="interviewer" type="string" label="Interviewer"/>  
+  <column name="collection_name" type="string" label="Collection"/>
+  <column name="series_name" type="string" label="Series"/>  
+  <column name="repository" type="string" label="Repository"/>
+  <column name="repository_url" type="url" label="Repository URL"/>
+  <column name="rights" type="string" size="2000" label="Rights"/>    
+  <column name="usage" type="string" size="2000" label="Usage"/>    
+<wiki><![CDATA[
++section title={{name}}
++center
+{{field name="collection_name" }} -- {{field name="series_name" }}
+:br
+{{field name="interviewer" }} | Interviewer
+:br
+{{field name="interviewee" }} | Interviewee
+-center
++accordion decorate=false collapsible=true activeSegment=-1
++segment Description
++inset
+{{description wikify="false"}}
+-inset
+-segment
++segment OHMS Document Information
+{{information  details="true"  showTitle="false"  }} 
+{{map width="600" height="400"   message="" prefix="====Location===="}}
+-segment
+-accordion
+-section
++section
++inset left=50px
+{{ohms_viewer}}
+-inset
+-section
+]]>
+</wiki>
+</type>
 
 </types>

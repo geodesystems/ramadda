@@ -63,7 +63,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     public static final int IDX_AUTOPLAY = IDX++;
 
     /** _more_ */
-    private int idCnt = 0;
+    private static int idCnt = 0;
 
     /**
      * _more_
@@ -111,20 +111,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         String id  = entry.getValue(IDX_ID, (String) null);
         //For legacy entries
         if (id == null) {
-            id = StringUtil.findPattern(url, "v=([^&]+)&");
-        }
-        if (id == null) {
-            id = StringUtil.findPattern(url, "v=([^&]+)");
-        }
-        if (id == null) {
-            id = StringUtil.findPattern(url, "youtu.be/([^&]+)");
-        }
-
-        if (id == null) {
-            id = StringUtil.findPattern(url, ".*/watch/([^&/]+)");
-        }
-        if (id == null) {
-            id = StringUtil.findPattern(url, ".*/v/([^&/]+)");
+            id = getYouTubeId(url);
         }
         if (id == null) {
             return new Result(
@@ -135,37 +122,14 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         }
 
 
-
-
-
         String width  = entry.getValue(IDX_WIDTH, "640");
         String height = entry.getValue(IDX_HEIGHT, "390");
         double start  = entry.getValue(IDX_START, 0.0);
         double end    = entry.getValue(IDX_END, -1);
         sb.append("\n");
-        sb.append(
-            "<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
-        sb.append(XmlUtil.attr("width", width));
-        sb.append(XmlUtil.attr("height", height));
-        String playerId = "video_" + (idCnt++);
-        String embedUrl = "//www.youtube.com/embed/" + id;
-        embedUrl += "?enablejsapi=1";
-        embedUrl += "&autoplay=" + (autoPlay
-                                    ? 1
-                                    : 0);
-        embedUrl += "&playerapiid=" + playerId;
-        if (start > 0) {
-            embedUrl += "&start=" + ((int) (start * 60));
-        }
-        if (end > 0) {
-            embedUrl += "&end=" + ((int) (end * 60));
-        }
 
-        sb.append("\n");
-        sb.append("src=\"" + embedUrl + "\"");
-        sb.append(">\n");
-        sb.append("</iframe>\n");
-
+        String playerId = embedPlayer(sb, id, width, height, start, end,
+                                      autoPlay);
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.href(url, url));
 
@@ -214,6 +178,72 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         return new Result("", sb);
     }
 
+    /**
+     *
+     * @param sb _more_
+     * @param id _more_
+     * @param width _more_
+     * @param height _more_
+     * @param start _more_
+     * @param end _more_
+     * @param autoPlay _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String embedPlayer(Appendable sb, String id, String width,
+                                     String height, double start, double end,
+                                     boolean autoPlay)
+            throws Exception {
+        sb.append(
+            "<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
+        sb.append(XmlUtil.attr("width", width));
+        sb.append(XmlUtil.attr("height", height));
+        String playerId = "video_" + (idCnt++);
+        String embedUrl = "//www.youtube.com/embed/" + id;
+        embedUrl += "?enablejsapi=1";
+        embedUrl += "&autoplay=" + (autoPlay
+                                    ? 1
+                                    : 0);
+        embedUrl += "&playerapiid=" + playerId;
+        if (start > 0) {
+            embedUrl += "&start=" + ((int) (start * 60));
+        }
+        if (end > 0) {
+            embedUrl += "&end=" + ((int) (end * 60));
+        }
+        sb.append("\n");
+        sb.append("src=\"" + embedUrl + "\"");
+        sb.append(">\n");
+        sb.append("</iframe>\n");
+
+        return playerId;
+    }
+
+
+    /**
+     *
+     * @param url _more_
+      * @return _more_
+     */
+    public static String getYouTubeId(String url) {
+        String id = id = StringUtil.findPattern(url, "v=([^&]+)&");
+        if (id == null) {
+            id = StringUtil.findPattern(url, "v=([^&]+)");
+        }
+        if (id == null) {
+            id = StringUtil.findPattern(url, "youtu.be/([^&]+)");
+        }
+
+        if (id == null) {
+            id = StringUtil.findPattern(url, ".*/watch/([^&/]+)");
+        }
+        if (id == null) {
+            id = StringUtil.findPattern(url, ".*/v/([^&/]+)");
+        }
+
+        return id;
+    }
 
 
     /**
