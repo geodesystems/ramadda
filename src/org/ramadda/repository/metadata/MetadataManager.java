@@ -237,10 +237,11 @@ public class MetadataManager extends RepositoryManager {
             int        priority  = obj.optInt("priority", 100);
             for (int i = 0; i < jlicenses.length(); i++) {
                 JSONObject jlicense = jlicenses.getJSONObject(i);
-                License license = new License(getRepository(), obj.optString("name","Licenses"),
-					      jlicense.optString("url",obj.optString("url",null)),
-					      jlicense,
-                                      priority);
+                License license = new License(getRepository(),
+                                      obj.optString("name", "Licenses"),
+                                      jlicense.optString("url",
+                                          obj.optString("url",
+                                              null)), jlicense, priority);
                 licenses.add(license);
                 licenseMap.put(license.getId(), license);
             }
@@ -259,8 +260,11 @@ public class MetadataManager extends RepositoryManager {
         return licenseMap.get(license);
     }
 
+    /**
+      * @return _more_
+     */
     public synchronized List<License> getLicenses() {
-	return licenses;
+        return licenses;
     }
 
 
@@ -285,7 +289,7 @@ public class MetadataManager extends RepositoryManager {
     /**
      *
      * @param text _more_
-      * @return _more_
+     *  @return _more_
      */
     private String wrapLicenseText(String text) {
         return HU.div(text, HU.cssClass("ramadda-license-text"));
@@ -309,25 +313,36 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    /**
+     *
+     * @param request _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processLicenses(Request request) throws Exception {
-        StringBuffer sb    = new StringBuffer();
-        getPageHandler().sectionOpen(request, sb, "Available Licenses",false);
-	String from  ="";
-	int cnt = 0;
-	for(License license: getLicenses()) {
-	    if(!license.getFrom().equals(from)) {
-		if(cnt>0) sb.append("</div>");
-		from = license.getFrom();
-		sb.append(HU.h2(from));
-		sb.append(HU.open("div","class","ramadda-licenses-box"));
-	    }
-	    sb.append(getLicenseHtml(license,null));
-	    sb.append("<br>");
-	    cnt++;
-	}
-	sb.append("</div>");
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().sectionOpen(request, sb, "Available Licenses",
+                                     false);
+        String from = "";
+        int    cnt  = 0;
+        for (License license : getLicenses()) {
+            if ( !license.getFrom().equals(from)) {
+                if (cnt > 0) {
+                    sb.append("</div>");
+                }
+                from = license.getFrom();
+                sb.append(HU.h2(from));
+                sb.append(HU.open("div", "class", "ramadda-licenses-box"));
+            }
+            sb.append(getLicenseHtml(license, null));
+            sb.append("<br>");
+            cnt++;
+        }
+        sb.append("</div>");
         getPageHandler().sectionClose(request, sb);
-	return new Result("Licenses",sb);
+
+        return new Result("Licenses", sb);
     }
 
 
@@ -336,7 +351,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param license _more_
      * @param label _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -539,6 +554,42 @@ public class MetadataManager extends RepositoryManager {
         return sb.toString();
 
     }
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param url _more_
+     * @param name _more_
+     */
+    public void addThumbnailUrl(Request request, Entry entry, String url,
+                                String name) {
+        try {
+            File f = getRepository().getStorageManager().getTmpFile(request,
+                         name);
+            InputStream is =
+                getRepository().getStorageManager().getInputStream(url);
+            OutputStream fos =
+                getRepository().getStorageManager().getFileOutputStream(f);
+            try {
+                IOUtil.writeTo(is, fos);
+                f = getRepository().getStorageManager().moveToEntryDir(entry,
+                        f);
+                addMetadata(
+                    entry,
+                    new Metadata(
+                        getRepository().getGUID(), entry.getId(),
+                        ContentMetadataHandler.TYPE_THUMBNAIL, false,
+                        f.getName(), null, null, null, null));
+            } finally {
+                IOUtil.close(fos);
+                IOUtil.close(is);
+            }
+        } catch (Exception exc) {
+            System.err.println("Error fetching youtube thumbnail:" + url);
+        }
+    }
+
 
     /**
      * _more_
@@ -1116,9 +1167,16 @@ public class MetadataManager extends RepositoryManager {
         addMetadata(entry, ContentMetadataHandler.TYPE_ALIAS, value);
     }
 
+    /**
+     *
+     * @param entry _more_
+     * @param value _more_
+     *
+     * @throws Exception _more_
+     */
     public void addKeyword(Entry entry, String value) throws Exception {
         addMetadata(entry, ContentMetadataHandler.TYPE_KEYWORD, value);
-    }    
+    }
 
     /**
      *
