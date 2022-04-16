@@ -2083,6 +2083,10 @@ public class PageHandler extends RepositoryManager {
         return getDialog(h, extra, null, false);
     }
 
+    public String showAccessRestricted(Entry entry) {
+	return showDialogWarning("Access to " + entry.getName() +" is restricted");
+    }
+
     /**
      * _more_
      *

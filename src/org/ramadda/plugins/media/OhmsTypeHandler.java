@@ -185,6 +185,10 @@ public class OhmsTypeHandler extends GenericTypeHandler {
         if ( !tag.equals("ohms_viewer")) {
 	    return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
         }
+	if(!getAccessManager().canDownload(request,entry)) {
+	    return getPageHandler().showAccessRestricted(entry);
+	}
+
         StringBuilder sb = new StringBuilder();
 	Element root = getRoot(entry);
 	Element record = XmlUtil.findChild(root, "record");
