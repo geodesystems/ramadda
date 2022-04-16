@@ -215,6 +215,7 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 	String player = "";
 	String id = HtmlUtils.getUniqueId("player_");
 	String pointsDiv = "pointsdiv_" + id;
+	String searchId = "search_" + id;	
 	String var ="points_" + id;
         sb.append(HtmlUtils.cssLink(getHtdocsUrl("/media/ohms.css")));
         sb.append(HtmlUtils.importJS(getHtdocsUrl("/media/ohms.js")));
@@ -231,7 +232,7 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 	    }
 	    player = embed;
 	    sb.append("<script src='https://player.vimeo.com/api/player.js'></script>");
-	    js.append(HU.call("ohmsInitVimeo",HU.comma(HU.squote(id),HU.squote(pointsDiv), var)));
+	    js.append(HU.call("ohmsInitVimeo",HU.comma(HU.squote(id),HU.squote(pointsDiv), var,HU.quote(searchId))));
 	} else 	if(host.equals("YouTube")) {
 	    if(!Utils.stringDefined(mediaUrl)) {
 		sb.append("No YouTube media url");
@@ -239,7 +240,7 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 	    }
 	    sb.append("<script src='https://www.youtube.com/iframe_api'></script>\n");
 	    String youTubeId =YouTubeVideoTypeHandler.getYouTubeId(mediaUrl);
-	    js.append(HU.call("ohmsInitYouTube", HU.comma(HU.squote(youTubeId), HU.squote(id),HU.squote(pointsDiv),var)));
+	    js.append(HU.call("ohmsInitYouTube", HU.comma(HU.squote(youTubeId), HU.squote(id),HU.squote(pointsDiv),var,HU.quote(searchId))));
 	} else 	if(host.equals("SoundCloud")) {
 	    if(!Utils.stringDefined(mediaUrl)) {
 		sb.append("No SoundCloud media url");
@@ -249,7 +250,7 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 	    player = "<iframe scrolling='no' src='https://w.soundcloud.com/player/?visual=true&amp;url=" + url +
 		      "&maxwidth=450' width='450' height='390' frameborder='no'></iframe>";
 	    sb.append("<script src='https://w.soundcloud.com/player/api.js'></script>\n");
-	    js.append(HU.call("ohmsInitSoundcloud",HU.comma(HU.squote(id),HU.squote(pointsDiv), var)));
+	    js.append(HU.call("ohmsInitSoundcloud",HU.comma(HU.squote(id),HU.squote(pointsDiv), var,HU.quote(searchId))));
 	} else 	if(host.equals("Other")) {
 	    if(Utils.stringDefined(embed)) {
 		player= embed;
@@ -257,10 +258,10 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 		String mediaId = HtmlUtils.getUniqueId("media_");
 		if(mediaUrl.toLowerCase().endsWith(".mp3")) {
 		    player = "<audio controls " + HU.attr("id",mediaId) +"><source src='" + mediaUrl +"' type='audio/mpeg'>Your browser does not support the audio tag.</audio>";
-		    js.append(HU.call("ohmsInitMedia",HU.comma(HU.squote(mediaId),HU.squote(pointsDiv), var)));
+		    js.append(HU.call("ohmsInitMedia",HU.comma(HU.squote(mediaId),HU.squote(pointsDiv), var,HU.quote(searchId))));
 		} else if(mediaUrl.toLowerCase().endsWith(".m4v")) {
 		    player = "<video " + HU.attr("id",mediaId)+" controls='' height='360' width='480'><source src='" + mediaUrl +"' type='video/mp4'></source></source></video>";
-		    js.append(HU.call("ohmsInitMedia",HU.comma(HU.squote(mediaId),HU.squote(pointsDiv), var)));
+		    js.append(HU.call("ohmsInitMedia",HU.comma(HU.squote(mediaId),HU.squote(pointsDiv), var,HU.quote(searchId))));
 		} else {
 		    sb.append("Unknown media URL:" + mediaUrl);
 		    return sb.toString();
@@ -275,9 +276,10 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 	} else {
 	    sb.append("Unknown media type:" + host);
 	}
-	sb.append(HU.open("div","id",id));
-	sb.append(player);
-	sb.append(HU.close("div"));
+	String playerDiv = HU.div(player,HU.attrs("style","display:inline-block;","id",id));
+	String searchDiv = HU.div("",HU.attrs("style","vertical-align:top;display:inline-block;","id",searchId));
+	sb.append(playerDiv);
+	sb.append(searchDiv);
 	sb.append(HU.div("",HU.attrs("id",pointsDiv)));
 	sb.append(HtmlUtils.script(js.toString()));
         return sb.toString();
