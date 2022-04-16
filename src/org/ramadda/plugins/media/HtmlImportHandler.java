@@ -218,8 +218,8 @@ public class HtmlImportHandler extends ImportHandler {
                             IOUtil.getFileTail(link.getUrl().toString()));
                     FileOutputStream fos = new FileOutputStream(tmpFile);
                     if (IOUtil.writeTo(
-				       IO.getInputStream(link.getUrl().toString()),
-				       fos) == 0) {
+                            IO.getInputStream(link.getUrl().toString()),
+                            fos) == 0) {
                         errors.add("Failed to read url:" + link.getUrl());
                         IOUtil.close(fos);
 

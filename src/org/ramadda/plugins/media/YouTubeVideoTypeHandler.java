@@ -187,7 +187,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      * @param start _more_
      * @param end _more_
      * @param autoPlay _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -224,7 +224,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     /**
      *
      * @param url _more_
-      * @return _more_
+     *  @return _more_
      */
     public static String getYouTubeId(String url) {
         String id = id = StringUtil.findPattern(url, "v=([^&]+)&");
@@ -260,7 +260,6 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
                                    boolean fromImport)
             throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
-
         String url = entry.getResource().getPath();
         String id  = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
@@ -285,36 +284,24 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
 
 
         if (id != null) {
-            String thumbUrl = "https://i.ytimg.com/vi/" + id + "/default.jpg";
-            System.err.println(thumbUrl);
-            try {
-                File f = getStorageManager().getTmpFile(request,
-                             "youtubethumb.jpg");
-                InputStream  is =
-                    getStorageManager().getInputStream(thumbUrl);
-                OutputStream fos = getStorageManager().getFileOutputStream(f);
-                try {
-                    IOUtil.writeTo(is, fos);
-                    f = getStorageManager().moveToEntryDir(entry, f);
-
-                    getMetadataManager().addMetadata(
-                        entry,
-                        new Metadata(
-                            getRepository().getGUID(), entry.getId(),
-                            ContentMetadataHandler.TYPE_THUMBNAIL, false,
-                            f.getName(), null, null, null, null));
-
-                } finally {
-                    IOUtil.close(fos);
-                    IOUtil.close(is);
-                }
-            } catch (Exception exc) {
-                System.err.println("Error fetching youtube thumbnail:"
-                                   + thumbUrl);
-            }
+            addThumbnail(getRepository(), request, entry, id);
         }
     }
 
+    /**
+     *
+     * @param repository _more_
+     * @param request _more_
+     * @param entry _more_
+     * @param id _more_
+     */
+    public static void addThumbnail(Repository repository, Request request,
+                                    Entry entry, String id) {
+        //      String thumbUrl = "https://i.ytimg.com/vi/" + id + "/default.jpg";
+        String thumbUrl = "https://i.ytimg.com/vi/" + id + "/hq3.jpg";
+        repository.getMetadataManager().addThumbnailUrl(request, entry,
+                thumbUrl, "youtubethumb.jpg");
+    }
 
 
 

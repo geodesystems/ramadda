@@ -272,8 +272,8 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
                         if (debug) {
                             System.err.println("\turl:" + url);
                         }
-                        String type = JsonUtil.readValue(child, "format.type",
-                                          null);
+                        String type = JsonUtil.readValue(child,
+                                          "format.type", null);
                         //If its a map the skip it
                         if ((type != null) && type.equals("topojson")) {
                             if (debug) {

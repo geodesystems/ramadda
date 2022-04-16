@@ -293,7 +293,9 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
   <column name="repository" type="string" label="Repository"/>
   <column name="repository_url" type="url" label="Repository URL"/>
   <column name="rights" type="string" size="2000" label="Rights"/>    
-  <column name="usage" type="string" size="2000" label="Usage"/>    
+  <column name="usage" type="string" size="2000" label="Usage"/>
+  <column name="media_type" type="string"  label="Media Type"/>
+  <column name="media_url" type="url"  label="Media URL"/>        
 <wiki><![CDATA[
 +section title={{name}}
 +center
