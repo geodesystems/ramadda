@@ -41,7 +41,14 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
     </type>
 
+    <type name="Subject" id="content.subject" searchable="true" browsable="true" xdisplaygroup="Tags and Keywords"  >
+      <element name="Subject" />
+    </type>    
 
+    <type name="Location" id="content.location" searchable="true" browsable="true" xdisplaygroup="Tags and Keywords"  >
+      <element name="Location" />
+    </type>    
+    
 
     <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
       <element name="Acknowledgement" rows="5"/>
