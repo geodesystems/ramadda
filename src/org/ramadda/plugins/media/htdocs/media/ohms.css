@@ -1,0 +1,14 @@
+
+.ramadda-ohms-points {
+    max-height:400px;
+    overflow-y:auto;
+}
+
+.ramadda-ohms-point {
+}
+    
+.ramadda-ohms-point-details {
+    background: #efefef;
+    padding-left:10px;
+//    max-width: 700px;
+}
