@@ -297,7 +297,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <wiki><![CDATA[
 +section title={{name}}
 +center
-{{field name="collection_name" }} -- {{field name="series_name" }}
+{{field name="collection_name" }} -- {{field name="repository" }}
 :br
 {{field name="interviewer" }} | Interviewer
 :br
