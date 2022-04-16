@@ -1116,6 +1116,10 @@ public class MetadataManager extends RepositoryManager {
         addMetadata(entry, ContentMetadataHandler.TYPE_ALIAS, value);
     }
 
+    public void addKeyword(Entry entry, String value) throws Exception {
+        addMetadata(entry, ContentMetadataHandler.TYPE_KEYWORD, value);
+    }    
+
     /**
      *
      * @param entry _more_
