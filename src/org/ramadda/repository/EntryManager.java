@@ -3005,6 +3005,8 @@ public class EntryManager extends RepositoryManager {
         return newFile;
     }
 
+    List<TypeHandler> sortedTypeHandlers;
+
 
     /**
      * _more_
@@ -3019,18 +3021,36 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
         File   newFile   = new File(theResource);
         String shortName = newFile.getName();
+	//Sort them so we get the longest pattern first
+	if(sortedTypeHandlers==null) {
+	    List<TypeHandler> tmp = new ArrayList<TypeHandler>();
+	    tmp.addAll(getRepository().getTypeHandlers());
+	    sortedTypeHandlers = tmp;
+	    Comparator comp = new Comparator() {
+		    public int compare(Object o1, Object o2) {
+			TypeHandler t1 = (TypeHandler)o1;
+			TypeHandler t2 = (TypeHandler)o2;			
+			String p1 = t1.getFilePattern();
+			String p2 = t2.getFilePattern();			
+			if(p1==null) return -1;
+			if(p2==null) return 1;			
+			return p2.length()-p1.length();
+		    }
+		};
+	    Object[] array = tmp.toArray();
+	    Arrays.sort(array, comp);
+	    sortedTypeHandlers = (List<TypeHandler>) Misc.toList(array);
+	}
 
         //Handle case sensitive first
-        for (TypeHandler otherTypeHandler :
-		 getRepository().getTypeHandlers()) {
+        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
             if (otherTypeHandler.canHandleResource(theResource, shortName)) {
                 return otherTypeHandler;
             }
         }
 
         //now try any case
-        for (TypeHandler otherTypeHandler :
-		 getRepository().getTypeHandlers()) {
+        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
             if (otherTypeHandler.canHandleResource(theResource.toLowerCase(),
 						   shortName.toLowerCase())) {
                 return otherTypeHandler;
