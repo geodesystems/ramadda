@@ -2383,6 +2383,10 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String getFilePattern() {
+	return filePattern;
+    }
+
     /**
      * Does this type match the file being harvester
      *
