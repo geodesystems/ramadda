@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
-
+@SuppressWarnings("unchecked")
 public class CategoryBuffer {
 
     /** _more_ */
