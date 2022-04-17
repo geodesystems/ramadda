@@ -14,6 +14,7 @@ import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.PrioritizedObject;
 import org.ramadda.util.TTLCache;
 
 
@@ -702,7 +703,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
         CategoryBuffer catBuff = new CategoryBuffer();
         Hashtable      catMap  = new Hashtable();
-        List<String>   cats    = new ArrayList<String>();
+        List<PrioritizedObject<String>> cats =
+            new ArrayList<PrioritizedObject<String>>();
         List<MetadataHandler> metadataHandlers =
             getMetadataManager().getMetadataHandlers();
 
@@ -731,23 +733,26 @@ public class HtmlOutputHandler extends OutputHandler {
             if (type == null) {
                 continue;
             }
+
+
             MetadataHandler metadataHandler = type.getHandler();
             String[] html = metadataHandler.getHtml(request, entry, metadata);
             if (html == null) {
                 continue;
             }
             String         cat = type.getDisplayCategory();
-
             CategoryBuffer cb  = (CategoryBuffer) catMap.get(cat);
             if (cb == null) {
                 cb = new CategoryBuffer();
                 catMap.put(cat, cb);
-                cats.add(cat);
+                cats.add(new PrioritizedObject<String>(type.getPriority(),
+                        cat));
             }
 
             String group = type.getDisplayGroup();
             StringBuilder sb =
-                cb.get(HU.div(group, HU.cssClass("ramadda-lheading")));
+                cb.get(type.getPriority(),
+                       HU.div(group, HU.cssClass("ramadda-lheading")));
             Boolean rowFlag = typeRow.get(group);
             if (rowFlag == null) {
                 rowFlag = new Boolean(true);
@@ -755,6 +760,8 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             boolean even = rowFlag.booleanValue();
             typeRow.put(group, new Boolean( !even));
+            //      even=true;
+
             String  rowClass = !stripe
                                ? "metadata-row"
                                : "metadata-row-" + (even
@@ -802,11 +809,12 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append("\n");
         }
 
+        java.util.Collections.sort(cats);
 
-
-        for (String cat : cats) {
-            CategoryBuffer cb = (CategoryBuffer) catMap.get(cat);
-            StringBuilder  sb = new StringBuilder();
+        for (PrioritizedObject<String> po : cats) {
+            String         cat = po.getValue();
+            CategoryBuffer cb  = (CategoryBuffer) catMap.get(cat);
+            StringBuilder  sb  = new StringBuilder();
             for (String category : cb.getCategories()) {
                 if (tags) {
                     if (showTitle) {
@@ -821,7 +829,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 if (showTitle) {
                     sb.append(header);
                 }
+                HU.open(sb, "div", HU.cssClass("metadata-block"));
                 sb.append(cb.get(category));
+                HU.close(sb, "div");
             }
             result.add(new TwoFacedObject(cat, sb));
         }
@@ -1197,7 +1207,6 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
-     * @param includeDescription _more_
      * @param includeSnippet _more_
      *
      * @return _more_
