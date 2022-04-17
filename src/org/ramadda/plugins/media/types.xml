@@ -312,15 +312,20 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -inset
 -segment
 +segment OHMS Document Information
-{{information  details="true"  showTitle="false"  }} 
+{{information  details="true"  showTitle="false"  }}
 {{map width="600" height="400"   message="" prefix="====Location===="}}
 -segment
 -accordion
--section
-+section
-+inset left=50px
++row
++col-8
 {{ohms_viewer}}
--inset
+-col
++col-4
+{{field name="rights"  prefix=":lheading Rights" box.maxheight="100"}}
+{{field name="usage"  prefix=":lheading Usage" box.maxheight="100"}}
+{{properties}}
+-col
+-row
 -section
 ]]>
 </wiki>
