@@ -731,11 +731,10 @@ public class MetadataHandler extends RepositoryManager {
      * @return _more_
      */
     public String getSearchLink(Request request, Metadata metadata, String text) {
+	//HtmlUtils.img(getRepository().getIconUrl(ICON_SEARCH_SMALL), "", " border=0 ") +" " +
         return HtmlUtils.href(
             getSearchUrl(request, metadata),
-            HtmlUtils.img(
-			  getRepository().getIconUrl(ICON_SEARCH_SMALL),
-			  "", " border=0 ") +" " + text,
+             text,
 	    HU.attr("title","Search for entries with this metadata") +
 	    HU.cssClass("metadata-search-link ramadda-clickable"));
     }
