@@ -12,9 +12,9 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.SortableObject;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
-import org.ramadda.util.PrioritizedObject;
 import org.ramadda.util.TTLCache;
 
 
@@ -703,8 +703,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
         CategoryBuffer catBuff = new CategoryBuffer();
         Hashtable      catMap  = new Hashtable();
-        List<PrioritizedObject<String>> cats =
-            new ArrayList<PrioritizedObject<String>>();
+        List<SortableObject<String>> cats =
+            new ArrayList<SortableObject<String>>();
         List<MetadataHandler> metadataHandlers =
             getMetadataManager().getMetadataHandlers();
 
@@ -745,7 +745,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (cb == null) {
                 cb = new CategoryBuffer();
                 catMap.put(cat, cb);
-                cats.add(new PrioritizedObject<String>(type.getPriority(),
+                cats.add(new SortableObject<String>(type.getPriority(),
                         cat));
             }
 
@@ -811,7 +811,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         java.util.Collections.sort(cats);
 
-        for (PrioritizedObject<String> po : cats) {
+        for (SortableObject<String> po : cats) {
             String         cat = po.getValue();
             CategoryBuffer cb  = (CategoryBuffer) catMap.get(cat);
             StringBuilder  sb  = new StringBuilder();
