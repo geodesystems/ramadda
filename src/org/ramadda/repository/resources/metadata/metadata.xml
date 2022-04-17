@@ -50,7 +50,7 @@
     </type>    
     
 
-    <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
+    <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  priority="10">
       <element name="Acknowledgement" rows="5"/>
 <!-- todo -->
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
@@ -59,7 +59,7 @@
     </type>
 
     <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Basic Properties">
-      <type name="License" id="content.license" searchable="true" browsable="true" >
+      <type name="License" id="content.license" searchable="true" browsable="true" priority="0">
 	<help>
 	  <![CDATA[
 		   More information at <a href="https://spdx.org/licenses/preview/" target=_other>https://spdx.org/licenses/preview/</a>

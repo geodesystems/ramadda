@@ -2503,7 +2503,17 @@ pre {
 .metadata-row-odd {
     margin-left: 20px;
     margin-bottom:2px;
-    background-color:#f4f4f4;
+//    background-color:#f4f4f4;
+    background-color:#f8f8f8;    
+}
+
+.metadata-search-link {
+    text-decoration:none;
+}
+
+.metadata-block {
+    max-height:300px;
+    overflow-y:auto;
 }
 
 .metadata-small-label {
