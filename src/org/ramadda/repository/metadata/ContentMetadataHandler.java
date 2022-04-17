@@ -124,7 +124,7 @@ public class ContentMetadataHandler extends MetadataHandler {
             MetadataType    type       = getType(metadata.getType());
             MetadataElement element    = type.getChildren().get(0);
             String          label      = element.getLabel(license);
-            String          searchLink = getSearchLink(request, metadata);
+            String          searchLink = getSearchLink(request, metadata,"");
 
             String contents = getMetadataManager().getLicenseHtml(license,
                                   label);

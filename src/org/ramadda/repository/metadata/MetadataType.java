@@ -123,7 +123,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private String id;
 
     /** _more_ */
-    private int priority = 0;
+    private int priority = 1000;
 
     /** _more_ */
     private boolean makeDatabaseTable = false;
@@ -1123,17 +1123,15 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         StringBuffer content = new StringBuffer();
         boolean smallDisplay = request.getString(ARG_DISPLAY,
                                    "").equals(DISPLAY_SMALL);
-        String searchLink = "";
-        if ( !smallDisplay && getSearchable()) {
-            searchLink = handler.getSearchLink(request, metadata)
-                         + HtmlUtils.space(1);
-        }
-
-
         String nameString   = getTypeLabel(metadata);
+        String searchLink = "";
         String lbl          = smallDisplay
                               ? msg(nameString)
                               : msgLabel(nameString);
+
+	boolean makeSearchLink =  !smallDisplay && getSearchable();
+
+
 
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
         if (htmlTemplate != null) {
@@ -1144,19 +1142,22 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 if (value == null) {
                     value = "";
                 }
-                value = value.replaceAll("&", "&amp;");
-                value = value.replaceAll("<", "&lt;");
-                value = value.replaceAll(">", "&gt;");
-                value = value.replaceAll("\"", "&quot;");
+                value = value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
                 html  = applyMacros(html, element, value);
             }
-            content.append(searchLink);
+	    if(makeSearchLink) {
+		searchLink = handler.getSearchLink(request, metadata,"")
+		    + HtmlUtils.space(1);
+		content.append(searchLink);
+	    }
             content.append(html);
         } else {
             int                   cnt      = 1;
             boolean               didOne   = false;
             List<MetadataElement> children = getChildren();
             content.append(HtmlUtils.formTable());
+
+
             for (MetadataElement element : children) {
                 MetadataElement.MetadataHtml formInfo =
                     element.getHtml(request, entry, this, metadata,
@@ -1165,14 +1166,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     String metadataHtml = formInfo.content;
                     if ((cnt > 1) && !Utils.stringDefined(metadataHtml)) {
                         cnt++;
-
                         continue;
                     }
+		    if(cnt==1 && makeSearchLink) {
+			metadataHtml = handler.getSearchLink(request, metadata,metadataHtml);
+		    }
 
-                    if (searchLink != null) {
-                        metadataHtml = searchLink + " " + metadataHtml;
-                        searchLink   = null;
-                    }
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
                             HtmlUtils.row(
