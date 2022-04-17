@@ -299,21 +299,28 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <wiki><![CDATA[
 +section title={{name}}
 +center
-{{field name="collection_name" }} -- {{field name="repository" }}
+{{field name="collection_name" }} &nbsp;|&nbsp; {{field name="repository" }}
 :br
-{{field name="interviewer" }} | Interviewer
-:br
-{{field name="interviewee" }} | Interviewee
+{{field name="interviewer" }} - Interviewer &nbsp;|&nbsp; {{field name="interviewee" }} - Interviewee
 -center
 +accordion decorate=false collapsible=true activeSegment=-1
-+segment Description
++segment Information
++row
++col-6
+:heading Description
 +inset
 {{description wikify="false"}}
+:p
+{{map width="100%" height="300"   message=""}}
 -inset
--segment
-+segment OHMS Document Information
+-col
++col-6
+:heading OHMS Information
++inset
 {{information  details="true"  showTitle="false"  }}
-{{map width="600" height="400"   message="" prefix="====Location===="}}
+-inset
+-col
+-row
 -segment
 -accordion
 +row
