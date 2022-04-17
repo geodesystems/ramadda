@@ -4007,6 +4007,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
+	    if(result==null) {
+		return make404(request);
+	    }
 	    //Don't do this for now
 	    //if(result!=null) result.setOkToAddCookies(false);
 	    long t2 = System.currentTimeMillis();
@@ -4447,7 +4450,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (path.startsWith("/a/")) {
             alias = path.substring("/a/".length());
         } else {
-            if (path.endsWith("/")) {
+	    /**
+	       For now don't do this
+	       if (path.endsWith("/")) {
                 path = path.substring(0, path.length() - 1);
             }
             if (path.length() > 0) {
@@ -4457,6 +4462,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     tryingOnePathAsAlias = true;
                 }
             }
+	    */
         }
 
 
