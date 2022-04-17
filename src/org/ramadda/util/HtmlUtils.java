@@ -1303,6 +1303,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static boolean debug = false;
+
     /** _more_ */
     public static boolean debug1 = false;
 
@@ -3464,7 +3466,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         try {
             StringBuilder sb = new StringBuilder();
             select(sb, name, values, selected, extra, maxLength);
-
             return sb.toString();
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -3507,7 +3508,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
         sb.append(open(TAG_SELECT, attrs + extra));
         sb.append("\n");
-
 
         HashSet seenSelected = new HashSet();
         for (int i = 0; i < values.size(); i++) {
@@ -3552,7 +3552,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 continue;
             }
 
-
             sb.append("<option ");
             if (extraAttr != null) {
                 sb.append(" ");
@@ -3574,9 +3573,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                     seenSelected.add(value);
                 }
             }
-            if ( !value.equals(label)) {
-                attr(sb, ATTR_VALUE, value);
-            }
+	    attr(sb, ATTR_VALUE, value);
             sb.append(">");
             sb.append(label);
             sb.append("</option>");
