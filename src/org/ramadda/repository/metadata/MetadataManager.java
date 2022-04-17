@@ -2102,7 +2102,7 @@ public class MetadataManager extends RepositoryManager {
 
                 String cbxId = "cbx_" + metadata.getId();
                 String cbx =
-                    HtmlUtils.checkbox(
+                    HtmlUtils.labeledCheckbox(
                         ARG_METADATA_ID + SUFFIX_SELECT + metadata.getId(),
                         metadata.getId(), false,
                         HtmlUtils.id(cbxId) + " "
@@ -2115,13 +2115,12 @@ public class MetadataManager extends RepositoryManager {
                                     "HtmlUtils.checkboxClicked",
                                     HtmlUtils.comma(
                                         "event", HtmlUtils.squote("cbx_"),
-                                        HtmlUtils.squote(cbxId)))));
+                                        HtmlUtils.squote(cbxId)))),"Select");
 
                 StringBuilder metadataEntry = new StringBuilder();
                 HtmlUtils.comment(metadataEntry, "Metadata part begin");
                 metadataEntry.append(HtmlUtils.formTable());
-                metadataEntry.append(HtmlUtils.formEntry("",
-                        cbx + HtmlUtils.space(2) + msg("Select")));
+                metadataEntry.append(HtmlUtils.formEntry("",cbx));
                 metadataEntry.append("\n");
                 metadataEntry.append(html[1]);
                 HtmlUtils.formTableClose(metadataEntry);
