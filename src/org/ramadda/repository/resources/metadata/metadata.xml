@@ -94,7 +94,9 @@
        searchable="true"
        browsable="true"
        displaygroup="Authors" 
-       id="metadata_author">
+       id="metadata_author"
+	priority="10"
+       >
       <element name="Name"/>
       <element name="Email"/>
       <element name="Organization"/>
