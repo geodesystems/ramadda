@@ -89,7 +89,9 @@
 
 
 
-  <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project"      metadata="project_pi,project_person,project_funding,enum_tag,content.keyword">
+
+   <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project"
+	 metadata="project_pi,project_person,project_funding,enum_tag,content.keyword">
      <property name="icon" value="/fieldproject/page_world.png"/>
 
      <property name="form.file.show" value="false"/>
@@ -106,10 +108,9 @@
      <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
      <wiki><![CDATA[
-+section
++section title={{name}}
 +row
-+col-md-8
-:title {{name}}
++col-8
 <div style="max-height: 400px; overflow-y: auto;">
 {{description wikify="true"}}
 </div>
@@ -124,13 +125,7 @@
 {{field name="location" row.label="Location:"}}
 {{field name="notes" row.label="Notes:"}}
 </table>
-
-{{properties metadata.types="project_pi,project_person,project_funding" message="" }}
-
 {{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
-
-{{properties metadata.types="!content.attachment,!content.thumbnail,!project_pi,!project_person,!project_funding" message="" }}
-{{links entry="Links" message=""}}
 -col
 +col-md-4
 <center>
@@ -138,6 +133,9 @@
 </center>
 <p>
 {{mapentry width="350" message=""}}
+{{properties metadata.types="project_pi,project_person,project_funding" message="" }}
+{{properties metadata.types="!content.attachment,!content.thumbnail,!project_pi,!project_person,!project_funding" message="" }}
+{{links entry="Links" message=""}}
 -col
 -row
 -section
@@ -153,6 +151,8 @@
 
 
    </type>
+
+
 
   <type name="project_site"  description="Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project" mefirst="true">
      <property name="icon" value="/fieldproject/site.png"/>
@@ -374,7 +374,9 @@
 
 
 
-  <type name="project_dataset"  description="Dataset" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+    <type name="project_dataset"  description="Dataset" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project"
+	metadata="content.license,enum_tag,content.keyword,metadata_author,dif.data_set_citation,enum_gcmdkeyword"
+	  >
      <property name="icon" value="/fieldproject/dataset.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -393,28 +395,20 @@
 <div style="max-height: 400px; overflow-y: auto;">
 {{description wikify="true"}}
 </div>
-
-
-==Dataset Information==
+:lheading Dataset Information
 <table class="formtable">
 {{resource row.label="URL:"  message=""}}
 {{field name="dataset_id" row.label="Dataset ID:"}}
 {{field name="data_type" row.label="Data Type:"}}
 {{field name="usage_notes" row.label="Usage Notes:"}}
 </table>
-
-{{properties metadata.types="project_pi,project_person,project_funding" message="" }}
-
 {{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
-
-
-{{properties metadata.types="!project_pi,!project_person,!project_funding,!content.sort" message="" }}
 -col
 +col-md-4
 {{datapolicies prefix="<b>Data Policies:</b>" xmessage="No data policies available"}}
 {{image src="::*" message="" width="300"}}
-<p>
 {{mapentry width="350" message=""}}
+{{properties}}
 -col
 -row
 
