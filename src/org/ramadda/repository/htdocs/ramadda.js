@@ -198,7 +198,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(props.showThumbnails) {
 			let thumbnail = entry.getThumbnail();
 			if(thumbnail)
-			    tds.push(HU.div(['style',HU.css('max-height','100px','overflow-y','auto')], HU.image(thumbnail,['class','ramadda-clickable ramadda-thumbnail-image','title','Click to enlarge',
+			    tds.push(HU.div(['class','ramadda-thumbnail','style',HU.css('max-height','100px','overflow-y','auto')], HU.image(thumbnail,['class','ramadda-clickable ramadda-thumbnail-image','title','Click to enlarge',
 															'style',HU.css('width','100px')])));
 		    }
 		    if(props.showCrumbs && entry.breadcrumbs) {
