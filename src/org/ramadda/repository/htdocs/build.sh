@@ -76,6 +76,7 @@ rm ${dir}/tmp.js
 ##${dir}/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js \
 
 
+echo "making jquery_lib_all.min.js"
 cat \
 ${dir}/now.txt \
 ${dir}/lib/jquery/js/jquery.cookie.js \
