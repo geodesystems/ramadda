@@ -1330,6 +1330,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
 	{p:'sortAscending',ex:'true|false',d:true},
 	{p:'showSortDirection',ex:true},		
+	{p:'sortOnDate',ex:'true'},
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'showDisplayFieldsMenu',ex:true},
@@ -2848,6 +2849,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return [];
 	},
 	sortRecords: function(records, sortFields) {
+	    if(this.getProperty("sortOnDate")) {
+		records.sort(function(a, b) {
+		    if (a.getDate() && b.getDate()) {
+			if (a.getDate().getTime() < b.getDate().getTime()) return -1;
+			if (a.getDate().getTime() > b.getDate().getTime()) return 1;
+			return 0;
+		    }
+		});
+	    }
+
+
 	    if(!sortFields) {
 		let f = this.getProperty("sortFields", "", true);
 		if(f=="${fields}") f = this.getProperty("fields", "", true);
@@ -2856,6 +2868,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    sortFields = [this.sortByFields[0]];
 		}
 	    }
+
 
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);
@@ -6828,6 +6841,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
+
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
 
@@ -6931,6 +6945,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.handleError("Error creating display:<br>" + err,err);
 		return;
 	    }
+
+
             if (!reload) {
                 this.lastPointData = pointData;
                 this.propagateEvent(DisplayEvent.pointDataLoaded, pointData);
@@ -8133,17 +8149,4 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 }
 
 
-/*
-let foo={bar:{}};
-let key = "";
-let times = [];
-let z=0;
-times.push(new Date());
-for(let i=0;i<100000;i++) {
-    if(typeof foo.bar[key]!='undefined') {
-	z++;
-    }
-}
-times.push(new Date());
-Utils.displayTimes("time",times);
-<*/
+
