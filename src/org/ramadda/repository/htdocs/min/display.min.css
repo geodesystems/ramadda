@@ -2082,6 +2082,25 @@ font-weight:bold;
     margin:10px;
 }
 
+.display-images-strip {
+}
+
+.display-images-strip td {
+    padding:0px;
+}
+
+.display-images-strip-image {
+    padding:6px;
+}
+.display-images-strip-image:hover {
+    cursor:pointer;
+}
+
+.display-images-strip-image-selected {
+    background:#ccc;
+    background:#B0E0E6;    
+}
+
 .display-images {
     display:flex;
     flex-wrap: wrap;
