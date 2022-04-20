@@ -2419,6 +2419,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 if (getProperty(wikiUtil, props, "addAttributes", false)) {
                     jsonUrl += "&addAttributes=true";
                 }
+		if(getProperty(wikiUtil, props, "imagesOnly", false)) {
+                    jsonUrl += "&imagesOnly=true";
+		}
 		String entryTypes = getProperty(wikiUtil, props, "entryTypes",(String)null);
                 if (entryTypes!=null) {
                     jsonUrl += "&entryTypes=" + entryTypes;

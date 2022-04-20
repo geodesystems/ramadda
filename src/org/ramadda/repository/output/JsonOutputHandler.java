@@ -293,7 +293,7 @@ public class JsonOutputHandler extends OutputHandler {
         entries = EntryUtil.sortEntriesOnDate(entries, false);
         List<String> fields = new ArrayList<String>();
         boolean      remote = request.get("remoteRequest", false);
-
+        boolean      imagesOnly = request.get("imagesOnly", false);	
 
         /*      items.add(JsonUtil.quote(entry.getName()));
         items.add(JsonUtil.quote(entry.getDescription()));
@@ -386,6 +386,10 @@ public class JsonOutputHandler extends OutputHandler {
 
         List<String> values = new ArrayList<String>();
         for (Entry entry : entries) {
+	    if(imagesOnly) {
+		if(!entry.isImage()) continue;
+	    }
+
             List<String> entryArray = new ArrayList<String>();
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
@@ -870,7 +874,6 @@ public class JsonOutputHandler extends OutputHandler {
                                        ? request.getAbsoluteUrl(url)
                                        : url));
         }
-
 
         if (addThumbnails) {
             List<String> urls = new ArrayList<String>();
