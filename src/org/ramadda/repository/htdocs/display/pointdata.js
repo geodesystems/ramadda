@@ -1051,6 +1051,7 @@ function makePointData(json, derived, source,url) {
 	else
             values = tuple.values;
 
+
         //lat,lon,alt,time,data values
         let date = null;
         if (isArray || !hasDate) {
@@ -1173,11 +1174,13 @@ function makePointData(json, derived, source,url) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
-
-        var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
+	
+        let record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
         pointRecords.push(record);
 
     });
+
+
 
 
     if (source != null) {
@@ -1211,6 +1214,8 @@ function makePointData(json, derived, source,url) {
         name = "Point Data";
     }
 
+    /*
+      don't do this for now
     pointRecords.sort(function(a, b) {
         if (a.getDate() && b.getDate()) {
             if (a.getDate().getTime() < b.getDate().getTime()) return -1;
@@ -1218,6 +1223,8 @@ function makePointData(json, derived, source,url) {
             return 0;
         }
     });
+    */
+
 
     let pd =  new PointData(name, fields, pointRecords,url);
     return pd;
