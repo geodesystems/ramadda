@@ -889,11 +889,22 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 
 function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
+    const ID_STRIP = "strip";    
+    //If we are showing the strip then make sure there is a width set
+    if(properties.imageField && properties.showStrip && !Utils.isDefined(properties.width)) {
+	properties.width="800px";
+    }
+
 //    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
     let myProps = [
 	{label:'Slides Attributes'},
-	{p:'template',ex:''}
+	{p:'template',ex:''},
+	{p:'imageField',ex:''},
+	{p:'showStrip',ex:'true',tt:'Show the navigation strip'},
+	{p:'thumbnailField',ex:''},
+	{p:'urlField',ex:''},
+	{p:'nameField',ex:''},	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
@@ -934,18 +945,60 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    if(!this.records) return;
             this.fields = this.getData().getRecordFields();
 	    this.records= this.sortRecords(this.records);
-	    var template = this.getProperty("template","");
-	    var slideWidth = this.getProperty("slideWidth","100%");
-            var height = this.getHeightForStyle("400");
-	    var left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,"display-slides-arrow-left fas fa-angle-left"]);
-	    var right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,"display-slides-arrow-right fas fa-angle-right"]);
-	    var slide = HU.div([STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,"display-slides-slide"]);
+	    this.theTemplate = this.getProperty('template','');
+//	    this.fields.forEach(f=>{console.log(f.getId());});
+	    this.urlField = this.getFieldById(null, this.getProperty("urlField"));
+	    this.nameField = this.getFieldById(null, this.getProperty("nameField"));	    
+	    this.imageField = this.getFieldById(null, this.getProperty("imageField"));
+	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.imageField;
+	    let slideWidth = this.getProperty('slideWidth','100%');
+            let height = this.getHeightForStyle('400');
+	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'display-slides-arrow-left fas fa-angle-left']);
+	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,'display-slides-arrow-right fas fa-angle-right']);
+	    let slide = HU.div([STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
 
-	    var navStyle = "padding-top:20px;";
-	    var contents = HU.div([STYLE,HU.css('position','relative')], "<table width=100%><tr valign=top><td width=20>" + HU.div([STYLE,navStyle], left) + "</td><td>" +
-					 slide + "</td>" +
-					 "<td width=20>" + HU.div([STYLE,navStyle],right) + "</td></tr></table>");
+	    let top = "";
+	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
+	    if(this.showStrip) {
+		let stripStyle = HU.css('overflow-x','auto','max-width','100%') +this.getProperty('stripStyle','');
+		top = HU.div([ID,this.domId(ID_STRIP),'style',stripStyle]);
+	    }
+	    let navStyle = 'padding-top:20px;';
+	    let contents = HU.div([STYLE,HU.css('width','100%','position','relative')], top+'<table cellspacing=0 cellpadding=0 width=100%><tr valign=top><td width=20>' + HU.div([STYLE,navStyle], left) + '</td><td>' +
+					 slide + '</td>' +
+					 '<td width=20>' + HU.div([STYLE,navStyle],right) + '</td></tr></table>');
 	    this.setContents(contents);
+
+
+	    if(this.showStrip) {
+		let strip = "<table class='display-images-strip' width=100%><tr valign=top>";
+		this.records.forEach((record,idx)=>{
+		    let url = this.thumbnailField.getValue(record);
+		    //The null in the thumbnail file gets turned into a NaN
+		    if((""+url)=="NaN") url = null;
+		    if(!Utils.stringDefined(url)) {
+			url = this.imageField.getValue(record);
+		    }
+		    if(Utils.stringDefined(url)) {
+			let clazz = 'display-images-strip-image';
+			if(idx==0) clazz+=' display-images-strip-image-selected';
+			strip += HU.td([],HU.image(url,['width','100px','class',clazz,RECORD_INDEX,idx]));
+		    }
+		});
+		strip+='</tr></table>';
+		let stripDom = this.jq(ID_STRIP);
+		stripDom.html(strip);
+		let _this = this;
+		this.stripImages = stripDom.find('.display-images-strip-image');
+		this.stripImages.click(function() {
+		    _this.stripImages.removeClass('display-images-strip-image-selected');
+		    $(this).addClass('display-images-strip-image-selected');
+		    _this.slideIndex = $(this).attr(RECORD_INDEX);
+		    _this.displaySlide(true,true);
+		});
+	    }
+
+
 	    this.jq(ID_PREV).click(() =>{
 		this.slideIndex--;
 		this.displaySlide(true);
@@ -958,7 +1011,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.displaySlide();},200);
 
 	},
-	displaySlide: function(propagateEvent) {
+	displaySlide: function(propagateEvent,fromStrip) {
+	    let _this = this;
 	    if(this.slideIndex<0) this.slideIndex=0;
 	    if(this.slideIndex>=this.records.length) this.slideIndex=this.records.length-1;
 	    if(this.slideIndex==0)
@@ -969,12 +1023,37 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).hide();
 	    else
 		this.jq(ID_NEXT).show();
-	    var record = this.records[this.slideIndex];
-	    var row = this.getDataValues(record);
-	    var html = this.applyRecordTemplate(record, row,this.fields,this.getProperty("template",""));
+	    if(!fromStrip && this.showStrip) {
+		this.stripImages.removeClass('display-images-strip-image-selected');
+		this.stripImages.find(HtmlUtils.attrSelect(RECORD_INDEX,this.slideIndex)).addClass('display-images-strip-image-selected');
+		this.stripImages.each(function() {
+		    if(+$(this).attr(RECORD_INDEX) == _this.slideIndex) {
+			$(this).addClass('display-images-strip-image-selected');
+			$(this).scrollintoview({
+			    direction:'x'
+			});
+		    }
+		});
+	    }
+
+	    let record = this.records[this.slideIndex];
+	    let row = this.getDataValues(record);
+	    let html = "";
+	    if(Utils.stringDefined(this.theTemplate)) {
+		html = this.applyRecordTemplate(record, row,this.fields,this.theTemplate);
+	    } else if(this.imageField) {
+		html = HU.image(this.imageField.getValue(record),['width','100%']);
+		if(this.urlField) {
+		    html = HU.href(this.urlField.getValue(record), html,['target','_link']);
+		}
+		if(this.nameField) {
+		    html = HU.div([TITLE,this.nameField.getValue(record)], html);
+		}
+		
+	    }
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);
-	    var args = {highlight:true,record: record};
+	    let args = {highlight:true,record: record};
 	    if(propagateEvent)
 		this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 	},
