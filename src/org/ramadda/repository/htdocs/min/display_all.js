@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 19 21:46:06 MDT 2022";
+var build_date="RAMADDA build date: Wed Apr 20 09:12:40 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4367,6 +4367,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
 	{p:'sortAscending',ex:'true|false',d:true},
 	{p:'showSortDirection',ex:true},		
+	{p:'sortOnDate',ex:'true'},
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'showDisplayFieldsMenu',ex:true},
@@ -5885,6 +5886,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return [];
 	},
 	sortRecords: function(records, sortFields) {
+	    if(this.getProperty("sortOnDate")) {
+		records.sort(function(a, b) {
+		    if (a.getDate() && b.getDate()) {
+			if (a.getDate().getTime() < b.getDate().getTime()) return -1;
+			if (a.getDate().getTime() > b.getDate().getTime()) return 1;
+			return 0;
+		    }
+		});
+	    }
+
+
 	    if(!sortFields) {
 		let f = this.getProperty("sortFields", "", true);
 		if(f=="${fields}") f = this.getProperty("fields", "", true);
@@ -5893,6 +5905,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    sortFields = [this.sortByFields[0]];
 		}
 	    }
+
 
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);
@@ -9865,6 +9878,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
+
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
 
@@ -9968,6 +9982,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.handleError("Error creating display:<br>" + err,err);
 		return;
 	    }
+
+
             if (!reload) {
                 this.lastPointData = pointData;
                 this.propagateEvent(DisplayEvent.pointDataLoaded, pointData);
@@ -11170,20 +11186,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 }
 
 
-/*
-let foo={bar:{}};
-let key = "";
-let times = [];
-let z=0;
-times.push(new Date());
-for(let i=0;i<100000;i++) {
-    if(typeof foo.bar[key]!='undefined') {
-	z++;
-    }
-}
-times.push(new Date());
-Utils.displayTimes("time",times);
-<*/
+
 /**
    Copyright 2008-2021 Geode Systems LLC
 */
@@ -12952,6 +12955,7 @@ function makePointData(json, derived, source,url) {
 	else
             values = tuple.values;
 
+
         //lat,lon,alt,time,data values
         let date = null;
         if (isArray || !hasDate) {
@@ -13074,11 +13078,13 @@ function makePointData(json, derived, source,url) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
-
-        var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
+	
+        let record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
         pointRecords.push(record);
 
     });
+
+
 
 
     if (source != null) {
@@ -13112,6 +13118,8 @@ function makePointData(json, derived, source,url) {
         name = "Point Data";
     }
 
+    /*
+      don't do this for now
     pointRecords.sort(function(a, b) {
         if (a.getDate() && b.getDate()) {
             if (a.getDate().getTime() < b.getDate().getTime()) return -1;
@@ -13119,6 +13127,8 @@ function makePointData(json, derived, source,url) {
             return 0;
         }
     });
+    */
+
 
     let pd =  new PointData(name, fields, pointRecords,url);
     return pd;
@@ -21205,10 +21215,9 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_STRIP = "strip";    
     //If we are showing the strip then make sure there is a width set
     if(properties.imageField && properties.showStrip && !Utils.isDefined(properties.width)) {
-	properties.width="800px";
+	//properties.width="100%";
     }
-
-//    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
+    
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
     let myProps = [
 	{label:'Slides Attributes'},
@@ -21217,7 +21226,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	{p:'showStrip',ex:'true',tt:'Show the navigation strip'},
 	{p:'thumbnailField',ex:''},
 	{p:'urlField',ex:''},
-	{p:'nameField',ex:''},	
+	{p:'labelField',ex:''},
+	{p:'tooltipField',ex:''},	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
@@ -21261,13 +21271,14 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.theTemplate = this.getProperty('template','');
 //	    this.fields.forEach(f=>{console.log(f.getId());});
 	    this.urlField = this.getFieldById(null, this.getProperty("urlField"));
-	    this.nameField = this.getFieldById(null, this.getProperty("nameField"));	    
+	    this.labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    this.tooltipField = this.getFieldById(null, this.getProperty("tooltipField"));	    	    
 	    this.imageField = this.getFieldById(null, this.getProperty("imageField"));
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.imageField;
 	    let slideWidth = this.getProperty('slideWidth','100%');
             let height = this.getHeightForStyle('400');
-	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'display-slides-arrow-left fas fa-angle-left']);
-	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,'display-slides-arrow-right fas fa-angle-right']);
+	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
+	    let right = HU.div([ID, this.domId(ID_NEXT), STYLE,HU.css('font-size','200%'), CLASS,'ramadda-clickable  display-slides-arrow-right fas fa-angle-right']);
 	    let slide = HU.div([STYLE,HU.css('overflow-y','auto','max-height', height), ID, this.domId(ID_SLIDE), CLASS,'display-slides-slide']);
 
 	    let top = "";
@@ -21277,14 +21288,14 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		top = HU.div([ID,this.domId(ID_STRIP),'style',stripStyle]);
 	    }
 	    let navStyle = 'padding-top:20px;';
-	    let contents = HU.div([STYLE,HU.css('width','100%','position','relative')], top+'<table cellspacing=0 cellpadding=0 width=100%><tr valign=top><td width=20>' + HU.div([STYLE,navStyle], left) + '</td><td>' +
+	    let contents = top+'<table width=100%><tr valign=top><td width=25>' + HU.div([STYLE,navStyle], left) + '</td><td>' +
 					 slide + '</td>' +
-					 '<td width=20>' + HU.div([STYLE,navStyle],right) + '</td></tr></table>');
+					 '<td width=25>' + HU.div([STYLE,navStyle],right) + '</td></tr></table>';
+
 	    this.setContents(contents);
 
-
 	    if(this.showStrip) {
-		let strip = "<table class='display-images-strip' width=100%><tr valign=top>";
+		let strip="";
 		this.records.forEach((record,idx)=>{
 		    let url = this.thumbnailField.getValue(record);
 		    //The null in the thumbnail file gets turned into a NaN
@@ -21292,20 +21303,29 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    if(!Utils.stringDefined(url)) {
 			url = this.imageField.getValue(record);
 		    }
-		    if(Utils.stringDefined(url)) {
-			let clazz = 'display-images-strip-image';
-			if(idx==0) clazz+=' display-images-strip-image-selected';
-			strip += HU.td([],HU.image(url,['width','100px','class',clazz,RECORD_INDEX,idx]));
+		    if(!Utils.stringDefined(url)) {return;}
+		    let clazz = 'display-slides-strip-image';
+		    if(idx==0) clazz+=' display-slides-strip-image-selected';
+		    if(url.match(/youtube.com\/watch/)) {
+			let label = "";
+			if(this.labelField) {
+			    label = this.labelField.getValue(record);
+			} else {
+			    label = "Record:" + idx;
+			}
+			strip += HU.div(['title',label,'style',HU.css('display','inline-block','width','100px','overflow-x','hidden'),'class',clazz,RECORD_INDEX,idx],label);
+		    } else {
+			strip += HU.image(url,['width','100px','class',clazz,RECORD_INDEX,idx]);
 		    }
 		});
-		strip+='</tr></table>';
+		strip = HU.div([CLASS,'display-slides-strip'], strip);
 		let stripDom = this.jq(ID_STRIP);
 		stripDom.html(strip);
 		let _this = this;
-		this.stripImages = stripDom.find('.display-images-strip-image');
+		this.stripImages = stripDom.find('.display-slides-strip-image');
 		this.stripImages.click(function() {
-		    _this.stripImages.removeClass('display-images-strip-image-selected');
-		    $(this).addClass('display-images-strip-image-selected');
+		    _this.stripImages.removeClass('display-slides-strip-image-selected');
+		    $(this).addClass('display-slides-strip-image-selected');
 		    _this.slideIndex = $(this).attr(RECORD_INDEX);
 		    _this.displaySlide(true,true);
 		});
@@ -21337,11 +21357,11 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    else
 		this.jq(ID_NEXT).show();
 	    if(!fromStrip && this.showStrip) {
-		this.stripImages.removeClass('display-images-strip-image-selected');
-		this.stripImages.find(HtmlUtils.attrSelect(RECORD_INDEX,this.slideIndex)).addClass('display-images-strip-image-selected');
+		this.stripImages.removeClass('display-slides-strip-image-selected');
+		this.stripImages.find(HtmlUtils.attrSelect(RECORD_INDEX,this.slideIndex)).addClass('display-slides-strip-image-selected');
 		this.stripImages.each(function() {
 		    if(+$(this).attr(RECORD_INDEX) == _this.slideIndex) {
-			$(this).addClass('display-images-strip-image-selected');
+			$(this).addClass('display-slides-strip-image-selected');
 			$(this).scrollintoview({
 			    direction:'x'
 			});
@@ -21355,12 +21375,33 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    if(Utils.stringDefined(this.theTemplate)) {
 		html = this.applyRecordTemplate(record, row,this.fields,this.theTemplate);
 	    } else if(this.imageField) {
-		html = HU.image(this.imageField.getValue(record),['width','100%']);
+		let url = this.imageField.getValue(record);
+		if(url.match(/youtube.com\/watch/)) {
+                    let toks = url.match(/.*watch\?v=(.*)$/);
+                    if(!toks || toks.length!=2) {
+                        html =  HU.href(url,url);
+                    } else {
+                        let id = toks[1];
+                        let autoplay  = "false";
+                        let playerId = "video_1";
+                        let embedUrl = "//www.youtube.com/embed/" + id +
+                            "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
+                        html =  HU.tag('iframe',[ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
+                                                 WIDTH,640,HEIGHT,360, 
+                                                 SRC,embedUrl
+                                                ]);
+                    }
+		} else {
+		    html = HU.image(url,[STYLE,HU.css('width','100%')]);
+		}
 		if(this.urlField) {
 		    html = HU.href(this.urlField.getValue(record), html,['target','_link']);
 		}
-		if(this.nameField) {
-		    html = HU.div([TITLE,this.nameField.getValue(record)], html);
+		if(this.tooltipField) {
+		    html = HU.div([TITLE,this.tooltipField.getValue(record)], html);
+		}
+		if(this.labelField) {
+		    html = html+HU.div(['class','display-slides-label'], this.tooltipField.getValue(record));
 		}
 		
 	    }
