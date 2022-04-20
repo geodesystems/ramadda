@@ -83,6 +83,7 @@ ${dir}/lib/jquery.easing.1.3.min.js \
 ${dir}/lib/jquery.ui.touch-punch.min.js \
 ${dir}/lib/superfish/js/superfish.min.js \
 ${dir}/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js \
+${dir}/lib/jquery.scrollintoview.min.js \
 ${dir}/lib/dom-drag.min.js \
 > ${dir}/min/jquery_lib_all.min.js
 
