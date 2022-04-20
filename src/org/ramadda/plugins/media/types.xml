@@ -140,8 +140,22 @@
      <wiki><![CDATA[
 +section title="{{name}}" #
 {{noheading}}
-{{description}}
+{{description wikify=true}}
 {{gallery columns="3"}}
+-section
+]]>
+</wiki>
+</type>
+
+<type name="media_slideshow"  description="Slide Show" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Media"
+      help="A collection of images displayed as a photo album"      >
+     <property name="icon" value="/media/pictures.png"/>
+     <property name="form.resource.show" value="false"/>
+     <wiki><![CDATA[
++section title="{{name}}" #
+{{noheading}}
+{{description wikify=true}}
+{{display_slides doEntries=true showStrip=true imageField=file_url imagesOnly=true addThumbnails=true thumbnailField=thumbnail urlField=entry_url nameField=name}}
 -section
 ]]>
 </wiki>
