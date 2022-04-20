@@ -1513,6 +1513,7 @@ a.ramadda-menubar-button:hover {
     width: 100px;
 }
 
+
 .ramadda-thumbnail {
     margin:5px;
     position:relative;
@@ -1522,8 +1523,13 @@ a.ramadda-menubar-button:hover {
     overflow-x:hidden;
     max-height:100px;
     overflow-y:auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
 }
 
+.ramadda-thumbnail::-webkit-scrollbar {
+    display: none;
+}
 
 .ramadda-frame-outer {
     background:#F2F0EE;
