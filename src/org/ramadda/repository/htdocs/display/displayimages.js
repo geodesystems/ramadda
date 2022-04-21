@@ -1078,7 +1078,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    html = HU.div([TITLE,this.tooltipField.getValue(record)], html);
 		}
 		if(this.labelField) {
-		    html = html+HU.div(['class','display-slides-label'], this.tooltipField.getValue(record));
+		    html = html+HU.div(['class','display-slides-label'], this.labelField.getValue(record));
 		}
 		
 	    }
