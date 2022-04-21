@@ -1472,24 +1472,9 @@ var Utils =  {
 
                         if(t.attrs["youtube"]) {
                             if(value.trim().length==0) return null;
-                            let toks = value.match(/.*watch\?v=(.*)$/);
-                            if(!toks || toks.length!=2) {
-                                s +=  HU.href(value,value);
-                            } else {
-                                let id = toks[1];
-                                let autoplay  = t.attrs["autoplay"]||"false";
-                                let playerId = "video_1";
-                                let embedUrl = "//www.youtube.com/embed/" + id +
-                                    "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
-                                s +=  HU.href(value,"Link") +"<br>";
-                                s+=  HU.tag('iframe',[ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
-                                                      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs['height']||400, 
-                                                      SRC,embedUrl
-                                                     ]);
-                            }
+			    s+=Utils.embedYoutube(value, t.attrs);
                             return s;
                         }
-
 
                         if(t.attrs["list"]) {
                             value = String(value);
@@ -1727,6 +1712,26 @@ var Utils =  {
                 }
                };
     },
+    embedYoutube:function(url, attrs) {
+	attrs  =attrs||{};
+        let toks = url.match(/.*watch\?v=(.*)$/);
+        if(!toks || toks.length!=2) {
+            return  HU.href(url,url);
+        } 
+        let id = toks[1];
+        let autoplay  = attrs["autoplay"]||"false";
+        let playerId = "video_1";
+        let embedUrl = "//www.youtube.com/embed/" + id +
+            "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
+        let s =  "";
+	if(attrs['includeLink']) s +=HU.href(url,"Link") +"<br>";
+        s+=  HU.tag('iframe',[ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
+                              WIDTH,attrs['width']||640,HEIGHT,attrs['height']||360, 
+                              SRC,embedUrl
+                             ]);
+	return s;
+    },
+
     toggleShowMore: function(id) {
         let toggle = $("#" + id);
         let open = toggle.attr('open');
