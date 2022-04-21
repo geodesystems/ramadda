@@ -4345,6 +4345,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     javascriptLink: function(url) {
         return "<script type='text/javascript' src='" + url+"'></script>";
     },  
+    makeMultiline:function(l) {
+	return Utils.join(l,"&#10;");
+    },
     getDimension(d) {
         if(!d) return null;
         d = String(d).trim();

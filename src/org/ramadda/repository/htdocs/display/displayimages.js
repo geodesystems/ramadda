@@ -902,9 +902,10 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	{p:'imageField',ex:''},
 	{p:'showStrip',ex:'true',tt:'Show the navigation strip'},
 	{p:'thumbnailField',ex:''},
+	{p:'thumbnailWidth',ex:'100px'},	
 	{p:'urlField',ex:''},
 	{p:'labelField',ex:''},
-	{p:'tooltipField',ex:''},	
+	{p:'tooltipFields',ex:''},	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
@@ -949,7 +950,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 //	    this.fields.forEach(f=>{console.log(f.getId());});
 	    this.urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    this.labelField = this.getFieldById(null, this.getProperty("labelField"));
-	    this.tooltipField = this.getFieldById(null, this.getProperty("tooltipField"));	    	    
+	    this.tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields"));	    	    
 	    this.imageField = this.getFieldById(null, this.getProperty("imageField"));
 	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.imageField;
 	    let slideWidth = this.getProperty('slideWidth','100%');
@@ -972,6 +973,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.setContents(contents);
 
 	    if(this.showStrip) {
+		let width = HU.getDimension(this.getThumbnailWidth("100px"));
 		let strip="";
 		this.records.forEach((record,idx)=>{
 		    let url = this.thumbnailField.getValue(record);
@@ -983,6 +985,10 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    if(!Utils.stringDefined(url)) {return;}
 		    let clazz = 'display-slides-strip-image';
 		    if(idx==0) clazz+=' display-slides-strip-image-selected';
+		    let tt = HU.makeMultiline(this.tooltipFields.map(f=>{
+			return  f.getValue(record);
+		    }));
+
 		    if(url.match(/youtube.com\/watch/)) {
 			let label = "";
 			if(this.labelField) {
@@ -990,12 +996,14 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			} else {
 			    label = "Record:" + idx;
 			}
-			strip += HU.div(['title',label,'style',HU.css('display','inline-block','width','100px','overflow-x','hidden'),'class',clazz,RECORD_INDEX,idx],label);
+			if(tt=="") tt = label;
+			label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
+			strip += HU.div(['title',tt,'style',HU.css('display','inline-block','min-width',width,'width',width,'overflow-x','hidden'),'class',clazz,RECORD_INDEX,idx],label);
 		    } else {
-			strip += HU.image(url,['width','100px','class',clazz,RECORD_INDEX,idx]);
+			strip += HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]);
 		    }
 		});
-		strip = HU.div([CLASS,'display-slides-strip'], strip);
+		strip = HU.div([STYLE,HU.css('display','flex'),CLASS,'display-slides-strip'], strip);
 		let stripDom = this.jq(ID_STRIP);
 		stripDom.html(strip);
 		let _this = this;
@@ -1074,8 +1082,11 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		if(this.urlField) {
 		    html = HU.href(this.urlField.getValue(record), html,['target','_link']);
 		}
-		if(this.tooltipField) {
-		    html = HU.div([TITLE,this.tooltipField.getValue(record)], html);
+		if(this.tooltipFields) {
+		    let tt = HU.makeMultiline(this.tooltipFields.map(f=>{
+			return  f.getValue(record);
+		    }));
+		    html = HU.div([TITLE,tt], html);
 		}
 		if(this.labelField) {
 		    html = html+HU.div(['class','display-slides-label'], this.labelField.getValue(record));
