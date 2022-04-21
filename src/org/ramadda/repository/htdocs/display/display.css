@@ -2094,6 +2094,7 @@ font-weight:bold;
 
 
 .display-slides-strip {
+    display:flex;
     position: sticky;
     white-space:nowrap;
     overflow-x: scroll;
@@ -2101,6 +2102,10 @@ font-weight:bold;
     max-width:100%;
     -ms-overflow-style: none;  
     scrollbar-width: none;  
+}
+
+.display-slides-strip:focus {
+    outline: none;
 }
 
 .display-slides-strip::-webkit-scrollbar {

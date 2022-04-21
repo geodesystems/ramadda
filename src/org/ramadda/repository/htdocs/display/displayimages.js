@@ -889,7 +889,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 
 function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
-    const ID_STRIP = "strip";    
+    const ID_STRIP = "strip";
     //If we are showing the strip then make sure there is a width set
     if(properties.imageField && properties.showStrip && !Utils.isDefined(properties.width)) {
 	//properties.width="100%";
@@ -963,7 +963,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
 	    if(this.showStrip) {
 		let stripStyle = HU.css('overflow-x','auto','max-width','100%') +this.getProperty('stripStyle','');
-		top = HU.div([ID,this.domId(ID_STRIP),'style',stripStyle]);
+		top = HU.div([ID,this.domId(ID_STRIP),CLASS,'display-slides-strip','tabindex','0','style',stripStyle]);
 	    }
 	    let navStyle = 'padding-top:20px;';
 	    let contents = top+'<table width=100%><tr valign=top><td width=25>' + HU.div([STYLE,navStyle], left) + '</td><td>' +
@@ -1003,11 +1003,22 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			strip += HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]);
 		    }
 		});
-		strip = HU.div([STYLE,HU.css('display','flex'),CLASS,'display-slides-strip'], strip);
 		let stripDom = this.jq(ID_STRIP);
 		stripDom.html(strip);
 		let _this = this;
 		this.stripImages = stripDom.find('.display-slides-strip-image');
+		stripDom.mouseenter(function(event) {
+		    stripDom.focus();
+		});
+		stripDom.keydown(function(event) {
+		    if(event.which==39) {
+			_this.slideIndex++;
+			_this.displaySlide(true);
+		    } else if(event.which==37) {
+			_this.slideIndex--;
+			_this.displaySlide(true);
+		    }
+		});
 		this.stripImages.click(function() {
 		    _this.stripImages.removeClass('display-slides-strip-image-selected');
 		    $(this).addClass('display-slides-strip-image-selected');
@@ -1062,20 +1073,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    } else if(this.imageField) {
 		let url = this.imageField.getValue(record);
 		if(url.match(/youtube.com\/watch/)) {
-                    let toks = url.match(/.*watch\?v=(.*)$/);
-                    if(!toks || toks.length!=2) {
-                        html =  HU.href(url,url);
-                    } else {
-                        let id = toks[1];
-                        let autoplay  = "false";
-                        let playerId = "video_1";
-                        let embedUrl = "//www.youtube.com/embed/" + id +
-                            "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
-                        html =  HU.tag('iframe',[ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
-                                                 WIDTH,640,HEIGHT,360, 
-                                                 SRC,embedUrl
-                                                ]);
-                    }
+		    html = Utils.embedYoutube(url);
 		} else {
 		    html = HU.image(url,[STYLE,HU.css('width','100%')]);
 		}
