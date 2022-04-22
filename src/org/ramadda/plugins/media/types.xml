@@ -155,7 +155,7 @@
 +section title="{{name}}" #
 {{noheading}}
 {{description wikify=true}}
-{{display_slides doEntries=true showStrip=true imageField=file_url imagesOnly=true addThumbnails=true thumbnailField=thumbnail urlField=entry_url nameField=name}}
+{{display_slides doEntries=true showStrip=true mediaField=file_url imagesOnly=true addThumbnails=true thumbnailField=thumbnail urlField=entry_url nameField=name}}
 -section
 ]]>
 </wiki>
@@ -309,7 +309,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
   <column name="rights" type="string" size="2000" label="Rights"/>    
   <column name="usage" type="string" size="2000" label="Usage"/>
   <column name="media_type" type="string"  label="Media Type"/>
-  <column name="media_url" type="url"  label="Media URL"/>        
+  <column name="media_url" type="url"  label="Media URL" ismediaurl="true"/>        
 <wiki><![CDATA[
 +section title={{name}}
 +center
@@ -317,31 +317,23 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 :br
 {{field name="interviewer" }} - Interviewer &nbsp;|&nbsp; {{field name="interviewee" }} - Interviewee
 -center
-+accordion decorate=false collapsible=true activeSegment=-1
-+segment Information
 +row
-+col-6
++col-8
+{{ohms_viewer}}
+-col
++col-4
++toggle Information
 :heading Description
 +inset
 {{description wikify="false"}}
 :p
 {{map width="100%" height="300"   message=""}}
 -inset
--col
-+col-6
 :heading OHMS Information
 +inset
 {{information  details="true"  showTitle="false"  }}
 -inset
--col
--row
--segment
--accordion
-+row
-+col-8
-{{ohms_viewer}}
--col
-+col-4
+-toggle
 {{field name="rights"  prefix=":lheading Rights" box.maxheight="100"}}
 {{field name="usage"  prefix=":lheading Usage" box.maxheight="100"}}
 {{properties}}
