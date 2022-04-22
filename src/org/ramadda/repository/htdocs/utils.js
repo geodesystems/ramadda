@@ -86,6 +86,18 @@ var Utils =  {
         console.log("writing" +value);
     },
 
+    getFileTail:function(url) {
+	try {
+	    let _url = new URL(url);
+	    return    _url.pathname.replace(/.*\/([^\/]+)$/g,"$1");	    
+	} catch(e) {
+	    return null;
+	}
+    },
+    isImage:function(url) {
+        if(!url) return false;
+	return url.search(/(\.png|\.jpg|\.jpeg|\.gif|\.webp|\.heic)/i) >= 0;
+    },
     initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText) {
         let origCss=null;
         target.on('dragover', (event) => {
@@ -1712,9 +1724,17 @@ var Utils =  {
                 }
                };
     },
+    embedAudio: function(url) {
+	let type = 'audio/mpeg';
+	return HU.tag('audio',['controls',null],
+		      HU.tag('source',['src',url,'type',type],'Your browser does not support the audio tag.'));
+    },
     embedYoutube:function(url, attrs) {
 	attrs  =attrs||{};
         let toks = url.match(/.*watch\?v=(.*)$/);
+        if(!toks || toks.length!=2) {
+	    toks = url.match(/.*youtu.be\/(.*)$/);
+	}
         if(!toks || toks.length!=2) {
             return  HU.href(url,url);
         } 
@@ -4350,8 +4370,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     javascriptLink: function(url) {
         return "<script type='text/javascript' src='" + url+"'></script>";
     },  
+    BR_ENTITY:"&#10;",
     makeMultiline:function(l) {
-	return Utils.join(l,"&#10;");
+	return Utils.join(l,HtmlUtils.BR_ENTITY);
     },
     getDimension(d) {
         if(!d) return null;
