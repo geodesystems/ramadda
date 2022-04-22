@@ -384,10 +384,8 @@ public class GpxTypeHandler extends PointTypeHandler {
         double           maxLon  = Double.NEGATIVE_INFINITY;
         double           minLon  = Double.POSITIVE_INFINITY;
 
-
         //        <time>2012-11-24T14:47:34</time>
-        //        System.err.println ("Looking for time");
-
+	//This grabs all of the time nodes in the entire document
         for (Element child :
                 ((List<Element>) XmlUtil.findDescendants(root,
                     GpxUtil.TAG_TIME))) {
