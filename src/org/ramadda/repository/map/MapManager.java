@@ -1748,6 +1748,20 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
     }
 
+    public String getMapResourceUrl(Request request, Entry entry) {
+	return getMapResourceUrl(request, getEntryManager().getEntryResourceUrl(request, entry));
+    }
+
+
+    /**
+       sometime we need to check if the url is a kmz and do some sort of conversion
+     */
+    public String getMapResourceUrl(Request request, String url) {
+	return url;
+    }
+    
+
+
     /**
      * Add the entry to the map
      *
