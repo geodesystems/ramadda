@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Apr 21 08:49:02 MDT 2022";
+var build_date="RAMADDA build date: Fri Apr 22 06:55:10 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -21222,7 +21222,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Slides Attributes'},
 	{p:'template',ex:''},
-	{p:'imageField',ex:''},
+	{p:'mediaField',ex:'',tt:'Field that contains a URL to an image, youtube, etc'},
 	{p:'showStrip',ex:'true',tt:'Show the navigation strip'},
 	{p:'thumbnailField',ex:''},
 	{p:'thumbnailWidth',ex:'100px'},	
@@ -21274,8 +21274,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    this.labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    this.tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields"));	    	    
-	    this.imageField = this.getFieldById(null, this.getProperty("imageField"));
-	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.imageField;
+	    this.mediaField = this.getFieldById(null, this.getProperty("mediaField"));
+	    this.thumbnailField = this.getFieldById(null, this.getProperty("thumbnailField")) || this.mediaField;
 	    let slideWidth = this.getProperty('slideWidth','100%');
             let height = this.getHeightForStyle('400');
 	    let left = HU.div([ID, this.domId(ID_PREV), STYLE,HU.css('font-size','200%'),CLASS,'ramadda-clickable display-slides-arrow-left fas fa-angle-left']);
@@ -21303,7 +21303,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    //The null in the thumbnail file gets turned into a NaN
 		    if((""+url)=="NaN") url = null;
 		    if(!Utils.stringDefined(url)) {
-			url = this.imageField.getValue(record);
+			if(this.mediaField) 
+			    url = this.mediaField.getValue(record);
 		    }
 		    if(!Utils.stringDefined(url)) {return;}
 		    let clazz = 'display-slides-strip-image';
@@ -21312,18 +21313,24 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			return  f.getValue(record);
 		    }));
 
-		    if(url.match(/youtube.com\/watch/)) {
+
+		    if(Utils.isImage(url)) {
+			strip += HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]);
+		    } else {
 			let label = "";
 			if(this.labelField) {
 			    label = this.labelField.getValue(record);
 			} else {
 			    label = "Record:" + idx;
+			    let tail = Utils.getFileTail(url);
+			    if(tail) label+="<br>" + tail;
 			}
 			if(tt=="") tt = label;
-			label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
+			if(url.match(/youtube.com\/watch/)) {
+			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
+			}
+			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
 			strip += HU.div(['title',tt,'style',HU.css('display','inline-block','min-width',width,'width',width,'overflow-x','hidden'),'class',clazz,RECORD_INDEX,idx],label);
-		    } else {
-			strip += HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
@@ -21391,18 +21398,34 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    let record = this.records[this.slideIndex];
 	    let row = this.getDataValues(record);
 	    let html = "";
+	    let mainLink="";
+	    let mainUrl;
+	    if(this.urlField) {
+		mainUrl = this.urlField.getValue(record);
+	    }
+
 	    if(Utils.stringDefined(this.theTemplate)) {
 		html = this.applyRecordTemplate(record, row,this.fields,this.theTemplate);
-	    } else if(this.imageField) {
-		let url = this.imageField.getValue(record);
-		if(url.match(/youtube.com\/watch/)) {
-		    html = Utils.embedYoutube(url);
-		} else {
+	    } else if(this.mediaField) {
+		let url = this.mediaField.getValue(record);
+		if(Utils.isImage(url)) {
 		    html = HU.image(url,[STYLE,HU.css('width','100%')]);
+		} else if(url.match('.mp3')) {
+		    html =HU.center( Utils.embedAudio(url));
+		} else if(url.match('soundcloud')) {
+		    html = HU.center("<iframe scrolling='no' src='https://w.soundcloud.com/player/?visual=true&url=" +
+				     url +"&maxwidth=450' width='450' height='390' frameborder='no'></iframe>");
+		} else {
+		    if(url.match(/youtube.com\/watch/)||url.match(/youtu.be/)) {
+			
+			html = HU.center(Utils.embedYoutube(url));
+		    } else {
+			html = HU.center(HU.tag("iframe",['src',url,'width','640','height','351','frameborder','0',
+							  'webkitallowfullscreen',true,'mozallowfullscreen','true','allowfullscreen','true']));
+		    }
 		}
-		if(this.urlField) {
-		    html = HU.href(this.urlField.getValue(record), html,['target','_link']);
-		}
+		if(html&&mainUrl)
+		    html = html+"<br>"+HU.href(mainUrl, "Link",['target','_link']);
 		if(this.tooltipFields) {
 		    let tt = HU.makeMultiline(this.tooltipFields.map(f=>{
 			return  f.getValue(record);
