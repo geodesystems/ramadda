@@ -260,6 +260,13 @@ public class OhmsTypeHandler extends GenericTypeHandler {
 	    } catch(Exception exc) {
 		System.err.println("Err:" + exc);
 	    }
+	} else {
+	    /**
+	       Don't do this for now
+	    getMetadataManager().addThumbnailUrl(request, entry,
+						 Utils.getInputStream("/org/ramadda/plugins/media/htdocs/media/audio.png", getClass()),
+						 "thumnail.png");
+	    */
 	}
 
 

@@ -565,10 +565,19 @@ public class MetadataManager extends RepositoryManager {
     public void addThumbnailUrl(Request request, Entry entry, String url,
                                 String name) {
         try {
-            File f = getRepository().getStorageManager().getTmpFile(request,
-                         name);
             InputStream is =
                 getRepository().getStorageManager().getInputStream(url);
+	    addThumbnailUrl(request, entry, is, name);
+        } catch (Exception exc) {
+            System.err.println("Error fetching thumbnail:" + url);
+        }
+    }
+
+    public void addThumbnailUrl(Request request, Entry entry, InputStream is,
+                                String name) {
+        try {	    
+            File f = getRepository().getStorageManager().getTmpFile(request,
+                         name);
             OutputStream fos =
                 getRepository().getStorageManager().getFileOutputStream(f);
             try {
@@ -586,7 +595,7 @@ public class MetadataManager extends RepositoryManager {
                 IOUtil.close(is);
             }
         } catch (Exception exc) {
-            System.err.println("Error fetching youtube thumbnail:" + url);
+	    getLogManager().logError("Error fetching thumbnail",exc);
         }
     }
 

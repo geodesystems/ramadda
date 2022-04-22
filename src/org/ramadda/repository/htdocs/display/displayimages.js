@@ -992,7 +992,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]);
+			strip += HU.div([],HU.image(url,['title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
 			if(this.labelField) {
