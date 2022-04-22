@@ -10,10 +10,10 @@
 myDir=`dirname $0`
 if [ -e ${myDir}/lib/tabula.jar ]
 then
-    java -jar ${myDir}/lib/tabula.jar $1
+    java -jar ${myDir}/lib/tabula.jar "$1"
 elif [ -e ${myDir}/tabula.jar ]
 then
-    java -jar ${myDir}/tabula.jar $1
+    java -jar ${myDir}/tabula.jar "$1"
 else
     echo "Cannot find tabula.jar"
 fi
