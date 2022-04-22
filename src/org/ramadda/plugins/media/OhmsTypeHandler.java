@@ -208,8 +208,8 @@ public class OhmsTypeHandler extends GenericTypeHandler {
         String  host    = XmlUtil.getGrandChildText(media, "host", "");
         String mediaUrl = XmlUtil.getGrandChildText(record, "media_url",
                               null);
+
         entry.setValue(IDX_MEDIA_TYPE, host);
-        entry.setValue(IDX_MEDIA_URL, mediaUrl);
         if (host.equals("YouTube")) {
             String youTubeId = YouTubeVideoTypeHandler.getYouTubeId(mediaUrl);
             YouTubeVideoTypeHandler.addThumbnail(getRepository(), request,
@@ -221,6 +221,9 @@ public class OhmsTypeHandler extends GenericTypeHandler {
                                     "player.vimeo.com/video/([0-9]+)");
                 if (toks != null) {
                     String id = toks[0];
+		    if(!Utils.stringDefined(mediaUrl)) {
+			mediaUrl = "https://player.vimeo.com/video/" + id;
+		    }
                     String jsonUrl =
                         "https://vimeo.com/api/oembed.json?url=https://vimeo.com/"
                         + toks[0];
@@ -234,7 +237,33 @@ public class OhmsTypeHandler extends GenericTypeHandler {
                     }
                 }
             }
-        }
+        } else if(host.equals("SoundCloud") && mediaUrl!=null) {
+	    //For now use this client_id since SC isn't accepting new app registrations now
+	    try {
+		String client_id="Iy5e1Ri4GTNgrafaXe4mLpmJLXbXEfBR";
+		String jsonUrl =
+		    "https://api-widget.soundcloud.com/resolve?format=json&url=" + mediaUrl+"&client_id="+client_id;
+		String jsons = IOUtil.readContents(jsonUrl, getClass());
+		JSONObject json =
+		    new JSONObject(jsons);
+
+		String thumbnail =  json.optString("artwork_url",null);
+		
+		if(!Utils.stringDefined(thumbnail)) {
+		    thumbnail = JsonUtil.readValue(json,"user.avatar_url",null);
+		}
+		
+		if(Utils.stringDefined(thumbnail)) {
+		    getMetadataManager().addThumbnailUrl(request, entry,
+							 thumbnail, "thumnail.jpg");
+		}
+	    } catch(Exception exc) {
+		System.err.println("Err:" + exc);
+	    }
+	}
+
+
+	entry.setValue(IDX_MEDIA_URL, mediaUrl);
 
     }
 
@@ -348,7 +377,6 @@ public class OhmsTypeHandler extends GenericTypeHandler {
         if (host.equals("Vimeo")) {
             if (embed == null) {
                 sb.append("No Vimeo embed");
-
                 return sb.toString();
             }
             player = embed;
@@ -373,7 +401,6 @@ public class OhmsTypeHandler extends GenericTypeHandler {
         } else if (host.equals("SoundCloud")) {
             if ( !Utils.stringDefined(mediaUrl)) {
                 sb.append("No SoundCloud media url");
-
                 return sb.toString();
             }
             String url = HU.urlEncode(mediaUrl);
