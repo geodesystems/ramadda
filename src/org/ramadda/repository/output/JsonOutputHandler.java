@@ -332,6 +332,7 @@ public class JsonOutputHandler extends OutputHandler {
         boolean addPointUrl   = request.get("addPointUrl", false);
         boolean addThumbnails = request.get("addThumbnails", false);
         boolean addImages     = request.get("addImages", false);
+        boolean addMediaUrl     = request.get("addMediaUrl", false);	
         if (addPointUrl) {
             addPointHeader(fields, "pointurl", "Point URL", "url",
                            "forDisplay", "true");
@@ -345,6 +346,10 @@ public class JsonOutputHandler extends OutputHandler {
             addPointHeader(fields, "image", "Image", "image", "forDisplay",
                            "false");
         }
+        if (addMediaUrl) {
+            addPointHeader(fields, "media_url", "Media URL", "url", "forDisplay",
+                           "false");
+        }	
 
 
         TypeHandler  typeHandler = null;
@@ -395,7 +400,7 @@ public class JsonOutputHandler extends OutputHandler {
             //the columns will mismatch
             String array = toPointJson(request, entry, addSnippets,
                                        addAttributes, addPointUrl,
-                                       addThumbnails, addImages, typeHandler,
+                                       addThumbnails, addImages, addMediaUrl, typeHandler,
                                        columns, showFileUrl, remote);
             entryArray.add("values");
             entryArray.add(array);
@@ -832,6 +837,7 @@ public class JsonOutputHandler extends OutputHandler {
                                boolean addSnippets, boolean addAttributes,
                                boolean addPointUrl, boolean addThumbnails,
                                boolean addImages,
+			       boolean addMediaUrl,
                                TypeHandler mainTypeHandler,
                                List<Column> columns, boolean showFileUrl,
                                boolean remote)
@@ -904,6 +910,14 @@ public class JsonOutputHandler extends OutputHandler {
                 items.add(JsonUtil.quote(""));
             }
         }
+        if (addMediaUrl) {
+	    url = entry.getTypeHandler().getMediaUrl(request, entry);
+	    items.add(JsonUtil.quote((url == null)
+				     ? ""
+				     : remote
+				     ? request.getAbsoluteUrl(url)
+				     : url));
+        }	
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes && (columns != null)) {
             Object[] extraParameters = entry.getValues();
