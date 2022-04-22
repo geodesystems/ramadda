@@ -131,10 +131,7 @@ public class OhmsTypeHandler extends GenericTypeHandler {
         Element record = XmlUtil.findChild(root, "record");
         //<title>SAMPLE 001: Interview with Georgia Davis Powers, April 26, 2013</title>
         String title = XmlUtil.getGrandChildText(record, "title", null);
-        if ( !Utils.stringDefined(entry.getName())) {
-            entry.setName(title);
-        }
-
+	entry.setName(title);
         //<date format="yyyy-mm-dd" value="2013-05-29"/>
         Element date = XmlUtil.findChild(record, "date");
         String  dt   = XmlUtil.getAttribute(date, "value");
