@@ -667,6 +667,33 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getMediaUrl(Request request, Entry entry) throws Exception {
+        List<Column> columns = getColumns();
+        if (columns != null) {
+            for (Column column : columns) {
+                if (column.isMediaUrl()) {
+                    String url = column.getString(entry.getValues());
+                    if (Utils.stringDefined(url)) {
+                        return url;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return getEntryResourceUrl(request, entry);
+    }
+
+
 
     /**
      * _more_
@@ -1164,7 +1191,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      *
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      */
     public String getExtraText(Entry entry) {
         return null;
@@ -1488,7 +1515,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      *
      * @param request _more_
-      * @return _more_
+     *  @return _more_
      */
     public boolean canCreate(Request request) {
         if (adminOnly()) {
@@ -2383,8 +2410,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    /**
+      * @return _more_
+     */
     public String getFilePattern() {
-	return filePattern;
+        return filePattern;
     }
 
     /**
@@ -3718,7 +3748,7 @@ public class TypeHandler extends RepositoryManager {
      * @param request _more_
      * @param entry _more_
      * @param inline _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */

@@ -321,6 +321,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean addFileToSearch = false;
 
+    /**  */
+    private boolean isMediaUrl = false;
 
     /** _more_ */
     private int numberOfSearchWidgets = 1;
@@ -572,8 +574,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         addNot     = getAttributeOrTag(element, "addnot", addNot);
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
                                             addFileToSearch);
-        dflt    = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
-        doStats = getAttributeOrTag(element, "dostats", doStats);
+        isMediaUrl = getAttributeOrTag(element, "ismediaurl", false);
+        dflt       = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
+        doStats    = getAttributeOrTag(element, "dostats", doStats);
 
         databaseDflt = getAttributeOrTag(element, "databaseDefault",
                                          (String) null);
@@ -1083,6 +1086,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     /**
+      * @return _more_
+     */
+    public boolean isMediaUrl() {
+        return isMediaUrl;
+    }
+
+    /**
      * _more_
      *
      * @return _more_
@@ -1161,7 +1171,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /**
      *
      * @param values _more_
-      * @return _more_
+     *  @return _more_
      */
     public String toString(Object[] values) {
         return toString(values, offset);
