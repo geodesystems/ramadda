@@ -1504,7 +1504,7 @@ public class Utils extends IO {
     /**
      *
      * @param values _more_
-      * @return _more_
+     *  @return _more_
      */
     public List arrayToList(Object... values) {
         List v = new ArrayList();
@@ -5698,6 +5698,20 @@ public class Utils extends IO {
 
 
     /**
+     */
+    public interface UniConsumer<T> {
+
+        /**
+         * _more_
+         *
+         * @param t _more_
+         * @param u _more_
+         * @param v _more_
+         */
+        void accept(T t);
+    }
+
+    /**
      * Interface description
      *
      *
@@ -5705,7 +5719,7 @@ public class Utils extends IO {
      * @param <U>
      * @param <V>
      *
-     * @author         Enter your name here...
+     * @author         Enter your name here...    
      */
     public interface TriConsumer<T, U, V> {
 

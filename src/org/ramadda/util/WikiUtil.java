@@ -814,6 +814,46 @@ public class WikiUtil {
 	String menuId = null;
 
 
+	Utils.UniConsumer<String> segmentOpen = (tline) ->{
+	    if (accordionStates.size() == 0) {
+		buff.append("No open accordion tag");
+		return;
+	    }
+	    AccordionState accordionState =
+	    accordionStates.get(accordionStates.size() - 1);
+	    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
+	    String       title = (toks.size() > 1)
+	    ? toks.get(1)
+	    : "";
+	    buff.append("\n");
+	    buff.append(HU.open(HU.TAG_H3,
+				HU.cssClass(" ui-accordion-header ui-helper-reset ui-corner-top")
+				+ (accordionState.decorate
+				   ? ""
+				   : " style=\"border:0px;background:none;\" ")));
+	    buff.append("\n");
+	    buff.append("<a href=\"#\">");
+	    buff.append(title);
+	    buff.append("</a></h3>");
+	    buff.append("\n");
+	    String contentsId = HU.getUniqueId("accordion_contents_");
+	    buff.append(
+                        HU.open(
+				"div",
+				HU.id(contentsId)
+				+ HU.cssClass("ramadda-accordion-contents")));
+	    buff.append("\n");
+	    accordionState.segmentId++;
+	};
+
+	Utils.UniConsumer<String> segmentClose = (tline) ->{
+	    buff.append("\n");
+	    buff.append("</div>");
+	    buff.append("\n");
+	};
+
+
+
 
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
@@ -1712,11 +1752,15 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+accordian")
-                        || tline.startsWith("+accordion")) {
+                        || tline.startsWith("+accordion")||
+		    tline.startsWith("+toggle")) {
                     AccordionState accordionState = new AccordionState();
                     accordionStates.add(accordionState);
                     String       divClass = "";
-		    Hashtable props = getProps.apply(tline);
+		    boolean isToggle = tline.startsWith("+toggle");
+		    Hashtable props = isToggle?new Hashtable():getProps.apply(tline);
+		    if(isToggle) Utils.put(props,"activeSegment",tline.startsWith("+toggleopen")?
+					   "0":"-1","decorate","false");
 		    accordionState.activeSegment =
 			Misc.getProperty(props, "activeSegment", 0);
 		    accordionState.animate = Misc.getProperty(props,
@@ -1736,15 +1780,23 @@ public class WikiUtil {
                                 " ui-accordion ui-widget ui-helper-reset") + HU
                                     .id(accordionState.id)));
                     buff.append("\n");
+		    if(isToggle) {
+			segmentOpen.accept(tline);
+		    }
                     continue;
                 }
 
                 if (tline.startsWith("-accordian")
-                        || tline.startsWith("-accordion")) {
+                        || tline.startsWith("-accordion")
+		    || tline.startsWith("-toggle")) {
                     if (accordionStates.size() == 0) {
                         buff.append("No open accordion tag");
                         continue;
                     }
+		    if(tline.startsWith("-toggle")) {
+			segmentClose.accept(tline);
+		    }
+
                     buff.append("\n");
                     buff.append("</div>");
                     buff.append("\n");
@@ -1768,44 +1820,12 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+segment")) {
-                    if (accordionStates.size() == 0) {
-                        buff.append("No open accordion tag");
-
-                        continue;
-                    }
-                    AccordionState accordionState =
-                        accordionStates.get(accordionStates.size() - 1);
-                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
-                    String       title = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "";
-                    buff.append("\n");
-                    buff.append(HU.open(HU.TAG_H3,
-                            HU.cssClass(" ui-accordion-header ui-helper-reset ui-corner-top")
-                            + (accordionState.decorate
-                               ? ""
-                               : " style=\"border:0px;background:none;\" ")));
-                    buff.append("\n");
-                    buff.append("<a href=\"#\">");
-                    buff.append(title);
-                    buff.append("</a></h3>");
-                    buff.append("\n");
-                    String contentsId = HU.getUniqueId("accordion_contents_");
-                    buff.append(
-                        HU.open(
-                            "div",
-                            HU.id(contentsId)
-                            + HU.cssClass("ramadda-accordion-contents")));
-                    buff.append("\n");
-                    accordionState.segmentId++;
-                    continue;
-                }
+		    segmentOpen.accept(tline);
+		    continue;
+		}
 
                 if (tline.startsWith("-segment")) {
-                    buff.append("\n");
-                    buff.append("</div>");
-                    buff.append("\n");
-
+		    segmentClose.accept(tline);
                     continue;
                 }
 
