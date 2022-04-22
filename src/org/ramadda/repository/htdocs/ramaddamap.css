@@ -1,4 +1,14 @@
 
+.ramadda-map-message {
+    position:absolute;
+    top:10px;
+    left:100px;
+    background:#FFFEEC;
+    z-index:1000;
+    border:var(--basic-border);
+    padding:5px;
+}
+
 /* Add this so when we show a graticule it doesn't pick up the mouse clicks */
 .olLayerDiv canvas {
     pointer-events:none;

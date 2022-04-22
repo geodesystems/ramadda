@@ -2357,6 +2357,12 @@ RepositoryMap.prototype = {
     },
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+	if(url.match(".kmz")) {
+	    let div = $("<div  class=ramadda-map-message>Note: KMZ files are not supported</div>")[0];
+            this.getMap().viewPortDiv.appendChild(div);
+	    return;
+	}
+
         let layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
