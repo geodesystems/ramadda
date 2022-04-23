@@ -1166,8 +1166,7 @@ public class Utils extends IO {
     public static void main(String[] args) throws Exception {
         if (true) {
             for (String s : args) {
-                System.err.println(s + " = "
-                                   + parseRelativeDate(new Date(), s, 0));
+		System.err.println(s +" " + toInt(split(s,",",true,true)));
             }
             System.exit(0);
         }
@@ -1691,8 +1690,9 @@ public class Utils extends IO {
     }
 
 
+
     /**
-     * _more_
+     * Parse the integer tokens of the form:1,2-4,8-20:3 
      *
      * @param toks _more_
      *
@@ -1701,6 +1701,27 @@ public class Utils extends IO {
     public static List<Integer> toInt(List<String> toks) {
         List<Integer> ints = new ArrayList<Integer>();
         for (String tok : toks) {
+	    int index = tok.indexOf("-");
+	    if(index>=0) {
+		List<String> range = Utils.splitUpTo(tok,"-",2);
+		if(range.size()==2) {
+		    int start = Integer.parseInt(range.get(0));
+		    int step = 1;
+		    int end;
+		    int index2 = range.get(1).indexOf(":");
+		    if(index2>=0) {
+			List<String> toks3 = Utils.splitUpTo(range.get(1),":",2);
+			end=Integer.parseInt(toks3.get(0));
+			step=Integer.parseInt(toks3.get(1));			
+		    } else {
+			end = Integer.parseInt(range.get(1));		    
+		    }
+		    for(int i=start;i<=end;i+=step) {
+			ints.add(new Integer(i));
+		    }
+		}
+		continue;
+	    }
             ints.add(new Integer(tok));
         }
 
