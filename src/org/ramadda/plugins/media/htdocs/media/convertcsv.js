@@ -304,7 +304,6 @@ function  ConvertForm(inputId, entry,params) {
 	    this.editor.session.setMode("ace/mode/csvconvert");
 	    this.editor.on("guttermousedown", (e)=> {
 		if(e.domEvent.ctrlKey) {
-		    console.log("M");
 		    let row = +e.getDocumentPosition().row+1;
 		    let lines =this.editor.getValue().split("\n");
 		    let text = "";
@@ -951,8 +950,13 @@ function  ConvertForm(inputId, entry,params) {
 
 			idComps.css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id').click(function() {
 			    let id = $(this).attr('fieldid');
-			    if(!id) return;
 			    _this.insertColumnIndex(id,true);
+			});
+			let cnt = 0;
+			idComps.each(function() {
+			    let id = $(this).attr('fieldid');
+			    $(this).attr('title',$(this).attr('title')+" - " + id +" (#" + cnt+")");
+			    cnt++;
 			});
 			if(table) {
 			    HtmlUtils.formatTable(output.find( ".ramadda-table"),{paging:false,height:"200px",fixedHeader: true,scrollX:true});
@@ -961,6 +965,9 @@ function  ConvertForm(inputId, entry,params) {
   			let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$4</a>$5</th>");
 			result = newresult;
 			output.html(result);
+			output.find(".csv_header_field").each(function() {
+			});
+
 			output.find(".csv_header_field").click(function(event) {
 			    $(this).attr(STYLE,"color:black;");
 			    let label = $(this).attr("label");
