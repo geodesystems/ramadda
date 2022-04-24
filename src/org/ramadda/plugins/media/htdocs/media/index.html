@@ -26,7 +26,17 @@ e.g.:
 service.soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
 </pre>
 
-<a name=zoomable>
+<a name=tesseract/>
+<h2>OCR for images</h2>
+RAMADDA can use the Tesseract OCR package to extract text from images to be added to the
+Lucene search index. Install <a href=https://github.com/tesseract-ocr/tesseract>Tesseract</a>
+on your server and set the following property in your repository.properties:
+<pre>
+ramadda.tesseract=/path/to/tesseract
+</pre>
+
+
+<a name=zoomable/>
 <h2>Zoomable Images</h2>
 RAMADDA supports zoomable images using <a href="https://openseadragon.github.io/">OpenSeadragon</a>.
 RAMADDA will autotmatically create the set of image tiles. To enable this functionality you need to have the
