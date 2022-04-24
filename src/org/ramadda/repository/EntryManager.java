@@ -916,6 +916,35 @@ public class EntryManager extends RepositoryManager {
 	
 
 
+    public Result processEntryFile(Request request) throws Exception {
+	//	/repository/entry/file/id/...
+	String path = request.getRequestPath();
+	int idx = path.indexOf("/entryfile/");
+	path = path.substring(idx+"/entryfile/".length());
+	idx = path.indexOf("/");
+	String id = path.substring(0,idx);
+	path = path.substring(idx);
+	Entry entry = getEntry(request, id);
+	if(entry==null) {
+	    return getRepository().make404(request);
+	}
+	File dir = getStorageManager().getEntryDir(entry.getId(),false);
+	if(!dir.exists()) {
+	    return getRepository().make404(request);
+	}
+	File f = new File(dir,path);
+	if(!f.exists()) {
+	    return getRepository().make404(request);
+	}
+	f = getStorageManager().checkReadFile(f);
+        String mimeType = getRepository().getMimeTypeFromSuffix(
+								IOUtil.getFileExtension(f.toString()));
+	return new Result(BLANK,
+			  getStorageManager().getFileInputStream(f),
+			  mimeType);
+    }
+
+
     public Result processEntryData(Request request) throws Exception {
 	request.put("output","points.product");
 	request.put("product","points.json");

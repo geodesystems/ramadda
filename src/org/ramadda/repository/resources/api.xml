@@ -46,6 +46,7 @@
       <api request="/entry/dump"             method="processEntryDump" admin="true"/>
       <api request="/entry/types"             method="processEntryTypes"/>
       <api request="/entry/activity"          method="processEntryActivity"       actions="edit"/>
+      <api request="/entryfile/*"             method="processEntryFile"/>
   </group>
 
 
