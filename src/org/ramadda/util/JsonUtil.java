@@ -574,13 +574,12 @@ public class JsonUtil {
      *
      * @return  the quoted string
      */
-    public static String quote(String s) {
+    public static String quote(Object s) {
         if (s == null) {
             return NULL;
         }
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
-
         return sb.toString();
     }
 
@@ -590,13 +589,13 @@ public class JsonUtil {
      * @param sb _more_
      * @param s _more_
      */
-    public static void quote(Appendable sb, String s) {
+    public static void quote(Appendable sb, Object o) {
         try {
-            if (s == null) {
+            if (o == null) {
                 sb.append(NULL);
-
                 return;
             }
+	    String s = o.toString();
             //      s = cleanString(s);
             //            s = s.replaceAll("\n", "\\n");
             //            s = s.replaceAll("\r", "\\r");
@@ -609,7 +608,7 @@ public class JsonUtil {
             sb.append(JSONWriter.valueToString(s));
             //      sb.append("\"");        sb.append(s);           sb.append("\"");
         } catch (Exception exc) {
-            throw new IllegalArgumentException("Could not quote string:" + s);
+            throw new IllegalArgumentException("Could not quote string:" + o);
         }
     }
 

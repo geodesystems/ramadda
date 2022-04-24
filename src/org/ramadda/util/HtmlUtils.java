@@ -5059,7 +5059,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
     /** _more_ */
-    public static int blockCnt = 0;
+    public static int blockCnt = 10000;
 
 
     /**
@@ -5070,7 +5070,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String getUniqueId(String prefix) {
-        return prefix + (blockCnt++);
+	blockCnt++;
+	if(blockCnt<0) blockCnt=10000;
+        return prefix + blockCnt;
     }
 
 
