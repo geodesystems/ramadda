@@ -55,6 +55,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.*;
 import org.apache.lucene.index.*;
@@ -71,6 +72,7 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 
+import org.ramadda.util.ProcessRunner;
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
@@ -177,16 +179,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     public final List<RequestUrl> searchUrls =
         RequestUrl.toList(new RequestUrl[] { URL_SEARCH_FORM,
-                                             URL_SEARCH_TYPE,
-                                             URL_SEARCH_BROWSE,
-                                             URL_SEARCH_ASSOCIATIONS_FORM });
+					    URL_SEARCH_TYPE,
+					    URL_SEARCH_BROWSE,
+					    URL_SEARCH_ASSOCIATIONS_FORM });
 
     /** _more_ */
     public final List<RequestUrl> remoteSearchUrls =
         RequestUrl.toList(new RequestUrl[] { URL_SEARCH_FORM,
-                                             URL_SEARCH_TYPE,
-                                             URL_SEARCH_BROWSE,
-                                             URL_SEARCH_ASSOCIATIONS_FORM });
+					    URL_SEARCH_TYPE,
+					    URL_SEARCH_BROWSE,
+					    URL_SEARCH_ASSOCIATIONS_FORM });
 
 
     private static final String  FIELD_ENTRYORDER ="entryorder";
@@ -246,6 +248,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     private boolean isLuceneEnabled = true;
 
+    private String tesseractPath;
+
 
     /** _more_ */
     private SearchProvider thisSearchProvider;
@@ -293,6 +297,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public void initAttributes() {
         super.initAttributes();
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
+	tesseractPath = getRepository().getProperty("ramadda.tesseract");
         isLuceneEnabled =
             getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
 	try {
@@ -475,14 +480,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
 			}
 			/*
-			if(entry.getParentEntry()==null) {
-			    if(entry.getId().equals("2e485e95-eb29-44fc-8987-76e6ac74365a")) {
-				System.err.println("*************** top:" + entry +"  "+ entry.getId());
-			    } else {
-				cnt[0]++;
-				System.err.println(cnt[0]+" missing:" + entry +"  "+ entry.getId());
-			    }
-			    }*/
+			  if(entry.getParentEntry()==null) {
+			  if(entry.getId().equals("2e485e95-eb29-44fc-8987-76e6ac74365a")) {
+			  System.err.println("*************** top:" + entry +"  "+ entry.getId());
+			  } else {
+			  cnt[0]++;
+			  System.err.println(cnt[0]+" missing:" + entry +"  "+ entry.getId());
+			  }
+			  }*/
 			indexEntry(writer, entry, null, false);
 			getEntryManager().removeFromCache(entry);
 			//			if(true) continue;
@@ -725,8 +730,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 	//	} catch(Exception exc) {
-	    //	    exc.printStackTrace();
-	    //	    System.exit(0);
+	//	    exc.printStackTrace();
+	//	    System.exit(0);
 	//	}
 
 
@@ -739,6 +744,25 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (entry.isFile()) {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), fileCorpus);
+	    if(tesseractPath!=null && entry.isImage()) {
+		try {
+		    File tmp  =getStorageManager().getUniqueScratchFile("output");
+		    List<String> commands = new ArrayList<String>();
+		    Utils.add(commands, tesseractPath,entry.getResource().getPath(), tmp.toString());
+		    ProcessBuilder pb = new ProcessBuilder(commands);
+		    pb.redirectErrorStream(true);
+		    Process     process = pb.start();
+		    InputStream is      = process.getInputStream();
+		    String      result  = new String(IOUtil.readBytes(is));
+		    //		System.err.println(commands);
+		    //		System.err.println(result);		
+		    String imageText = IO.readContents(tmp.toString()+".txt", getClass());
+		    fileCorpus.append(imageText);
+		} catch(Exception exc) {
+		    getLogManager().logError("Error running tesseract for:" + entry.getName(), exc);
+		}
+	    }
+
 	    corpus.append(fileCorpus);
 	    if(/*isNew && */request!=null && request.get(ARG_EXTRACT_TAGS,false)) {
 		List<String> keywords = getKeywords(request, entry, fileCorpus);
@@ -752,7 +776,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		    List<Entry> tmp = new ArrayList<Entry>();
 		    tmp.add(entry);
-		    System.err.println("keywords:" + keywords);
 		    getEntryManager().updateEntries(request, tmp,false);
 		}
 	    }
@@ -978,9 +1001,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	request.put(ARG_MAX,20);
 	for(Entry entry:  getEntryManager().getEntries(request, new StringBuilder())) {
 	    String obj = JsonUtil.map(Utils.makeList("name", JsonUtil.quote(entry.getName()), "id",
-				  JsonUtil.quote(entry.getId()),
-				  "type",JsonUtil.quote(entry.getTypeHandler().getType()),
-				  "icon",
+						     JsonUtil.quote(entry.getId()),
+						     "type",JsonUtil.quote(entry.getTypeHandler().getType()),
+						     "icon",
 						     JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);
 	}
@@ -1098,8 +1121,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long min = Long.MIN_VALUE;
 	    long max = Long.MAX_VALUE;
             Date[] dateRange = request.getDateRange(arg.getFrom(),
-                                   arg.getTo(), arg.getRelative(),
-                                   new Date());
+						    arg.getTo(), arg.getRelative(),
+						    new Date());
 	    Date date1 = dateRange[0];
 	    Date date2 = dateRange[1];
 	    if(date1==null && date2==null) continue;
@@ -1606,8 +1629,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         XmlUtil.create(OpenSearchUtil.TAG_URL, root, "",
                        new String[] { OpenSearchUtil.ATTR_TYPE,
-                                      "application/atom+xml",
-                                      OpenSearchUtil.ATTR_TEMPLATE, url });
+			   "application/atom+xml",
+			   OpenSearchUtil.ATTR_TEMPLATE, url });
 
         String xml = XmlUtil.getHeader() + XmlUtil.toString(root);
 
@@ -1783,8 +1806,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                  HtmlUtils.cssClass("ramadda-search-form")));
 	Function<String,String> inset = c->{
-		return HtmlUtils.insetDiv(c, 5, 10, 10, 0);
-	    };
+	    return HtmlUtils.insetDiv(c, 5, 10, 10, 0);
+	};
 
 
 	if(isLuceneEnabled()) {
@@ -1919,7 +1942,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    + msg("ascending");
         return HU.b("Output:") +" " +
 	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
-			     request.getString(ARG_OUTPUT, "")) +
+		      request.getString(ARG_OUTPUT, "")) +
 	    " " + HU.b("Order By:")+ " " +orderBy;
     }
 
@@ -3013,7 +3036,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String      extra1      = " class=subnavnolink ";
         String      extra2      = " class=subnavlink ";
         String[]    whats       = { WHAT_ENTRIES, WHAT_TAG,
-                                    WHAT_ASSOCIATION };
+	    WHAT_ASSOCIATION };
         String[]    names       = { LABEL_ENTRIES, "Tags", "Associations" };
 
         String      formType    = request.getString(ARG_FORM_TYPE, "basic");
