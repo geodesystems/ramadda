@@ -24,6 +24,18 @@ to your repository.properties file:
 service.soffice=path to soffice
 e.g.:
 service.soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
+
+<a name=zoomable>
+<h2>Zoomable Images</h2>
+RAMADDA supports zoomable images using <a href="https://openseadragon.github.io/">OpenSeadragon</a>.
+RAMADDA will autotmatically create the set of image tiles. To enable this functionality you need to have the
+<a href="https://imagemagick.org/index.php">ImageMagick</a> package installed on your server. Then
+install the <a href="https://github.com/VoidVolker/MagickSlicer">MagickSlicer</a> script on your server
+and set the property in your repository.properties file:
+<pre>
+ramadda.image.slicer=/path/to/magick-slicer.sh
+</pre>
+
 </body>
 </html>
 

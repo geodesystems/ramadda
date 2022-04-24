@@ -253,15 +253,17 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 
 
   <type name="media_zoomify"  
-        description="Zoomify" 
+        description="Zoomable Image" 
         handler="org.ramadda.plugins.media.ZoomifyTypeHandler" 
         category="Media" >
      <property name="icon" value="/icons/image.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
+<!--
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="false"/>
+-->
      <column name="image_width" type="int" label="Image Width"/>
      <column name="image_height" type="int" label="Image Height"/>     
      <column name="tiles_url" type="string" label="Tiles URL" />
@@ -269,7 +271,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{zoomify}}
+{{zoomable}}
 ]]>
 </wiki>
 </type>
