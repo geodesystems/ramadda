@@ -4527,7 +4527,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    private  Result make404(Request request) throws Exception {
+    public  Result make404(Request request) throws Exception {
         String userAgent = request.getHeaderArg(HtmlUtils.HTTP_USER_AGENT);
         if (userAgent == null) {
             userAgent = "Unknown";
