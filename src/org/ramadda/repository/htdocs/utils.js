@@ -2233,6 +2233,7 @@ var Utils =  {
         if(here.length>0 && here.is(':checked') && ramaddaThisEntry)
             url +="&ancestor=" + ramaddaThisEntry;
         url+="&ascending=" + Utils.searchAscending;
+        url+="&orderby=createdate";
         let jqxhr = $.getJSON(url, function(data) {
             if(searchCnt!=_this.searchCnt) {
                 return;
