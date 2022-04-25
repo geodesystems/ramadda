@@ -42,6 +42,8 @@ import java.util.Properties;
 public class ContentMetadataHandler extends MetadataHandler {
 
 
+    public static final String TYPE_PROPERTY = "property";
+
     /** _more_ */
     public static final String TYPE_THUMBNAIL = "content.thumbnail";
 
