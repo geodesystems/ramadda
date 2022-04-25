@@ -1832,7 +1832,9 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
         URL           url        = new URL(path);
         URLConnection connection = url.openConnection();
-        InputStream   fromStream = connection.getInputStream();
+	//        InputStream   fromStream = connection.getInputStream();
+	InputStream fromStream = IO.doMakeInputStream(path,true);
+
         File          tmpFile    = getTmpFile(null, IOUtil.getFileTail(path));
         OutputStream  toStream   = getFileOutputStream(tmpFile);
         IOUtil.writeTo(fromStream, toStream);
