@@ -5972,7 +5972,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             List<Entry> imageEntries, Hashtable props,
                             StringBuilder sb)
 	throws Exception {
-
         String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
         int serverImageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
                                            -1);
@@ -6025,6 +6024,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             colCnt++;
             String url = null;
 
+
             if (thumbnail) {
                 List<String> urls = new ArrayList<String>();
                 getMetadataManager().getThumbnailUrls(request, child, urls);
@@ -6034,7 +6034,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
             if (url == null) {
-		if(child.getResource().isImage()) {
+		if(child.isImage()) {
 		    url = child.getTypeHandler().getEntryResourceUrl(request,
 								     child);
 		    /*                url = HU.url(
@@ -6043,7 +6043,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 				      child.getId());*/
 		}
             }
-	    if(url==null) continue;
+
+	    if(url==null) {
+		continue;
+	    }
             if (serverImageWidth > 0) {
                 url = url + "&" + ARG_IMAGEWIDTH + "=" + serverImageWidth;
             }
@@ -6075,6 +6078,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             extra = extra + HU.attr("id", idPrefix + "img" + num) +
 		HU.attr("loading","lazy");
             String img = HU.img(url, "", extra);
+
 	    if(imageStyle!=null) {
 		img = HU.div(img,HU.attrs("style",imageStyle));
 	    }
