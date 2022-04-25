@@ -119,7 +119,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,"","showTitle","false"),
-                            new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
+                            new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000","style","",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
@@ -2168,12 +2168,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		return  wikifyEntry(request, entry, wikiUtil, txt.toString(),
 				    false, null, null, null, false);
 	    }
+	    String style = "";
 	    if(maxHeight>0) {
-		return HU.pre(txt.toString(),
-			      HU.style("max-height:" + maxHeight
-				       + "px; overflow-y:auto;"));
-	    } else if(!raw) {
-		return HU.pre(txt.toString());
+		style += HU.style("max-height:" + maxHeight   + "px; overflow-y:auto;");
+	    }
+	    style +=  getProperty(wikiUtil, props, "style","");
+	    if(maxHeight>0 || !raw) {
+		return HU.pre(txt.toString(), style);
 	    } else {
 		return txt.toString();
 	    }
