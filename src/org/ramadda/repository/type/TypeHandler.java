@@ -1910,6 +1910,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public Entry createEntry() {
+	return createEntry(getRepository().getGUID());
+    }
+
+
     /**
      * _more_
      *
