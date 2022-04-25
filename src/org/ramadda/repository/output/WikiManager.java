@@ -2170,11 +2170,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	    String style = "";
 	    if(maxHeight>0) {
-		style += HU.style("max-height:" + maxHeight   + "px; overflow-y:auto;");
+		style += HU.css("max-height", maxHeight   + "px","overflow-y","auto");
 	    }
 	    style +=  getProperty(wikiUtil, props, "style","");
 	    if(maxHeight>0 || !raw) {
-		return HU.pre(txt.toString(), style);
+		return HU.pre(txt.toString(), HU.style(style));
 	    } else {
 		return txt.toString();
 	    }
