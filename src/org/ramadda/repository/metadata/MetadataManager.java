@@ -1206,12 +1206,14 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addMetadata(Entry entry, String type, String value)
+    public void addMetadata(Entry entry, String type, String ...values)
             throws Exception {
         addMetadata(entry,
                     new Metadata(getRepository().getGUID(), entry.getId(),
-                                 type, false, value, Metadata.DFLT_ATTR,
-                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
+                                 type, false, values[0],
+				 values.length>1 && values[1]!=null?values[1]:Metadata.DFLT_ATTR,
+				 values.length>2 &&values[2]!=null?values[2]:Metadata.DFLT_ATTR,
+				 values.length>3 && values[3]!=null?values[3]:Metadata.DFLT_ATTR,
                                  Metadata.DFLT_EXTRA));
     }
 
