@@ -2614,11 +2614,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String labeledRadio(String name, String value,
                                       boolean checked, String label) {
-        return Utils.concatString(tag(TAG_INPUT, attrs(  /*ATTR_CLASS, CLASS_RADIO,*/
-            ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
-            value) + (checked
-                      ? " checked "
-                      : "")), "&nbsp;", label);
+	String radio = tag(TAG_INPUT, attrs(  /*ATTR_CLASS, CLASS_RADIO,*/
+					    ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
+					    value) + (checked
+						      ? " checked "
+						      : ""));
+        return tag("label","",radio+ "&nbsp;"+ label);
     }
 
 
