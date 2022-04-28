@@ -2864,6 +2864,9 @@ var Utils =  {
         if(!r || !g || !b) return null;
         return "#" + Utils.componentToHex(r) + Utils.componentToHex(g) + Utils.componentToHex(b);
     },
+    hexStringToInt:function(s) {
+	return hex = parseInt(s.replace(/^#/, ''), 16);
+    }
 };
 
 
