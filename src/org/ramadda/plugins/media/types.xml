@@ -346,4 +346,37 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 </wiki>
 </type>
 
+  <type name="media_3dmodel"  
+        description="3D Model" 
+        handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
+        category="Media" >
+    <property name="icon" value="/media/3dmodel.png"/>
+    <property name="upload.zip" value="true"/>
+
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+<!--
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="false"/>
+-->
+
+     <column name="model_file" type="string" label="Model File" showinform="false"/>
+     <column name="image_width" type="int" label="Image Width"/>
+     <column name="image_height" type="int" label="Image Height"/>
+     <column name="camera_position" type="string" label="Camera Position" help="Comma separated x,y,z"/>
+     <column name="camera_rotation" type="string" label="Camera Rotation" help="Comma separated x,y,z"/>
+
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
++center
+{{3dmodel}}
+-center
+]]>
+</wiki>
+</type>
+
+
+
 </types>
