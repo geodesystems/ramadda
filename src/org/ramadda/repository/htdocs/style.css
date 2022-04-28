@@ -112,6 +112,10 @@ select:focus {
     outline:none;
 }
 
+.ramadda-nooutline:focus {
+    outline:none;
+}
+
 /*Resets for bootstrap*/
 h1 {
     font-size: 170%;
