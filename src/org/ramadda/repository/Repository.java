@@ -4450,9 +4450,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (path.startsWith("/a/")) {
             alias = path.substring("/a/".length());
         } else {
-	    /**
-	       For now don't do this
-	       if (path.endsWith("/")) {
+	    if (path.endsWith("/")) {
                 path = path.substring(0, path.length() - 1);
             }
             if (path.length() > 0) {
@@ -4462,7 +4460,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     tryingOnePathAsAlias = true;
                 }
             }
-	    */
         }
 
 
@@ -4507,7 +4504,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
                             return result;
                         } else {
-                            return null;
+			    return make404(request);
                         }
                     }
                     request.put(ARG_ENTRYID, entry.getId());
