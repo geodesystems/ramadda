@@ -2235,18 +2235,26 @@ public class CsvUtil {
 		"Sum values keying on key column value. If no value columns specified then do a count",
 		"key columns", "value columns", "carry over columns"),
         new Cmd(
+		"-pivot",
+		"Make a pivot table",
+		new Arg("key columns","Columns to key on","type","columns"),
+		new Arg("column columns", "The columns the values of which are used to make the new columns in the result","type","columns"),
+		new Arg("value column","The value column","type","column"),
+		new Arg("operator","The operator to apply -  count,sum,average,min,max")),
+
+        new Cmd(
 		"-summary",
-		"count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count",
+		"count/sum/average/min/max values keying on key column value. If no value columns specified then do a count",
 		new Arg("key columns","Columns to key on","type","columns"), new Arg("value columns", "Columns to apply operators on","type","columns"),
 		new Arg("carry over columns","Extra columns to include","type","columns"),
-		new Arg("ops","any of count,sum,avg,min,max")),
+		new Arg("ops","any of count,sum,average,min,max")),
         new Cmd(
 		"-histogram",
 		"Make a histogram with the given column and bins",
 		new Arg("column","The column","type","column"),
 		new Arg("bins","Comma separated set of bin values"),
 		new Arg("value columns","Extra columns to sum up","type","columns"),
-		new Arg("ops","ops to apply to extra columns - any of count,sum,avg,min,max")),		
+		new Arg("ops","ops to apply to extra columns - any of count,sum,average,min,max")),		
         new Cmd("-percent", "", "columns to add"),
         new Cmd("-increase", "Calculate percent increase",
                 new Arg("column", "", "type", "columns"), "how far back"),
@@ -3075,7 +3083,15 @@ public class CsvUtil {
 		List<String> what   = Utils.split(args.get(++i),",",true,true);
 		ctx.addProcessor(new RowCollector.Summary(ctx, what,keys, values, extra));
 		return i;
-	    });	
+	    });
+	defineFunction("-pivot",4,(ctx,args,i) -> {
+		List<String> keys   = getCols(args.get(++i));
+		List<String> columns = getCols(args.get(++i));
+		String value = args.get(++i);
+		List<String> ops   = Utils.split(args.get(++i),",",true,true);
+		ctx.addProcessor(new RowCollector.Pivot(ctx, keys, columns, value, ops));
+		return i;
+	    });		
 	defineFunction("-histogram",4,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Histogram(ctx, args.get(++i),args.get(++i),getCols(args.get(++i)),args.get(++i)));
 		return i;

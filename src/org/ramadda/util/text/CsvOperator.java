@@ -94,6 +94,8 @@ public class CsvOperator {
     /**  */
     public static final String OPERAND_AVERAGE = "average";
 
+    public static final String OPERAND_AVG = "avg";    
+
 
     /** _more_ */
     protected int rowCnt = 0;
@@ -1028,5 +1030,67 @@ public class CsvOperator {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...    
+     */
+    public static class Tuple {
+
+	/**  */
+	int count = 0;
+
+	/**  */
+	double min = 0;
+
+	/**  */
+	double max = 0;
+
+	/**  */
+	double sum = 0;
+
+	int nanCount =0;
+
+	public double getValue(String op) {
+	    if(op.equals(OPERAND_COUNT)) return count;
+	    if(op.equals(OPERAND_SUM)) return sum;
+	    if(op.equals(OPERAND_MIN)) return min;
+	    if(op.equals(OPERAND_MAX)) return max;	    	    
+	    if(op.equals(OPERAND_AVERAGE)||op.equals(OPERAND_AVG)) {
+		if(count==0) return Double.NaN;
+		return sum/count;
+	    }
+	    throw new IllegalArgumentException("Unknown operator:" + op);
+	}
+
+	public void add(double v) {
+	    if(Double.isNaN(v)) {
+		nanCount++;
+		return;
+	    }
+	    if(count==0) {
+		min =v;
+		max=v;
+	    } else {
+		min = Math.min(min,v);
+		max = Math.max(max,v);
+	    }
+	    count++;
+	    sum+=v;
+	}
+
+
+
+	/**
+	 *
+	 * @return _more_
+	 */
+	public String toString() {
+	    return "cnt:" + count + " min:" + min + " max:" + max
+		+ " sum:" + sum;
+	}
+    }
 
 }

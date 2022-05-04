@@ -1,4 +1,4 @@
-name,value
-foo,bar
-john,doe
-
+name,value1,value2
+jane,foo,bar
+jane,bar,bar
+john,doe,xxx

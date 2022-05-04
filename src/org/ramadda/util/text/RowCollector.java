@@ -30,9 +30,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -263,43 +265,12 @@ public class RowCollector extends Processor {
                 this.op = OP_MIN;
             } else if (op.equals(OPERAND_MAX)) {
                 this.op = OP_MAX;
-            } else if (op.equals("count")) {
+            } else if (op.equals(OPERAND_COUNT)) {
                 this.op = OP_COUNT;
             } else {
                 throw new RuntimeException("unknown operator:" + op);
             }
             this.valueCols = values;
-        }
-
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Thu, Nov 4, '21
-         * @author         Enter your name here...    
-         */
-        private static class Tuple {
-
-            /**  */
-            int count = 0;
-
-            /**  */
-            double min = 0;
-
-            /**  */
-            double max = 0;
-
-            /**  */
-            double sum = 0;
-
-            /**
-             *
-             * @return _more_
-             */
-            public String toString() {
-                return "cnt:" + count + " min:" + min + " max:" + max
-		    + " sum:" + sum;
-            }
         }
 
 
@@ -358,14 +329,7 @@ public class RowCollector extends Processor {
                             continue;
                         }
                         Tuple tuple = tuples.get(i);
-                        tuple.count++;
-                        tuple.min = first
-			    ? v
-			    : Math.min(v, tuple.min);
-                        tuple.max = first
-			    ? v
-			    : Math.max(v, tuple.max);
-                        tuple.sum += v;
+			tuple.add(v);
                     }
                 }
                 for (int i = 0; i < valueIndices.size(); i++) {
@@ -399,72 +363,75 @@ public class RowCollector extends Processor {
     }
 
 
-	private static  class Count {
-	    Row sample;
-	    double min;
-	    double max;
-	    int count;
-	    double[]totals;
-	    double[]mins;
-	    double[]maxs; 	    	    
 
-	    Count() {}
-	    Count(Row sample) {
-		this.sample = sample;
+
+
+    private static  class Count {
+	Row sample;
+	double min;
+	double max;
+	int count;
+	double[]totals;
+	double[]mins;
+	double[]maxs; 	    	    
+
+	Count() {}
+	Count(Row sample) {
+	    this.sample = sample;
+	}
+	public void addValues(List<Integer> indices, Row row) {
+	    count++;
+	    if(indices.size()==0) return;
+	    if(totals==null)  {
+		totals = new double[indices.size()];
+		for(int i=0;i<totals.length;i++) totals[i]=0;
+		mins = new double[indices.size()];
+		for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
+		maxs = new double[indices.size()];
+		for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
 	    }
-	    public void addValues(List<Integer> indices, Row row) {
-		count++;
-		if(indices.size()==0) return;
-		if(totals==null)  {
-		    totals = new double[indices.size()];
-		    for(int i=0;i<totals.length;i++) totals[i]=0;
-		    mins = new double[indices.size()];
-		    for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
-		    maxs = new double[indices.size()];
-		    for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
-		}
-		for(int i=0;i<indices.size();i++) {
-		    double v = Double.parseDouble(row.getString(indices.get(i)));
-		    if(Double.isNaN(v)) continue;
-		    totals[i]+=v;
-		    mins[i] =Math.min(v,mins[i]);
-		    maxs[i] =Math.max(v,maxs[i]);		    
-		}
+	    for(int i=0;i<indices.size();i++) {
+		double v = Double.parseDouble(row.getString(indices.get(i)));
+		if(Double.isNaN(v)) continue;
+		totals[i]+=v;
+		mins[i] =Math.min(v,mins[i]);
+		maxs[i] =Math.max(v,maxs[i]);		    
 	    }
 	}
+    }
 
-	private  static class Bin extends Count {
-	    String label;
+    private  static class Bin extends Count {
+	String label;
 
 
-	    Bin(double min,double max) {this.min = min;this.max = max;}
-	    public boolean firstBin() {
-		return (min==Double.NEGATIVE_INFINITY);
-	    }
+	Bin(double min,double max) {this.min = min;this.max = max;}
+	public boolean firstBin() {
+	    return (min==Double.NEGATIVE_INFINITY);
+	}
 
-	    public boolean lastBin() {
-		return (max==Double.POSITIVE_INFINITY);
-	    }
+	public boolean lastBin() {
+	    return (max==Double.POSITIVE_INFINITY);
+	}
 	    
-	    public boolean inRange(double v) {
-		if(firstBin()) {
-		    return v<max;
-		}
-		return v>=min && v<max;
+	public boolean inRange(double v) {
+	    if(firstBin()) {
+		return v<max;
 	    }
-
-	    public String getLabel() {
-		if(label!=null) return label;
-		if(min==Double.NEGATIVE_INFINITY)
-		    return "<" + Utils.format(max);
-		if(max==Double.POSITIVE_INFINITY)
-		    return ">" + Utils.format(min);		
-		return Utils.format(min) +" - " + Utils.format(max);		
-	    }
-	    public String toString() {
-		return "bin min:" + min + " max:" + max +" count:" + count;
-	    }
+	    return v>=min && v<max;
 	}
+
+	public String getLabel() {
+	    if(label!=null) return label;
+	    if(min==Double.NEGATIVE_INFINITY)
+		return "<" + Utils.format(max);
+	    if(max==Double.POSITIVE_INFINITY)
+		return ">" + Utils.format(min);		
+	    return Utils.format(min) +" - " + Utils.format(max);		
+	}
+	public String toString() {
+	    return "bin min:" + min + " max:" + max +" count:" + count;
+	}
+    }
 
 
 
@@ -1707,6 +1674,7 @@ public class RowCollector extends Processor {
             allRows.remove(0);
             Hashtable<Object, Row> map = new Hashtable<Object, Row>();
             for (Row row : allRows) {
+		if(!row.indexOk(keyIndex)) continue;
                 Object key      = row.get(keyIndex);
                 Row    existing = map.get(key);
                 Object value    = row.get(valueIndex);
@@ -2530,11 +2498,11 @@ public class RowCollector extends Processor {
          * @param extra _more_
          */
         public Summary(TextReader ctx, List<String> what,List<String> keys, List<String> values,
-                      List<String> extra) {
+		       List<String> extra) {
 	    
 	    if(what.size()==0) {
 		what =new ArrayList<String>();
-		what.add("count");
+		what.add(OPERAND_COUNT);
 	    }
 	    this.what = what;
             this.keyCols   = keys;
@@ -2609,6 +2577,257 @@ public class RowCollector extends Processor {
 	    }
 	    for(int i:valueIndices) {
 		for(String w: what) {
+		    if(w.equals(OPERAND_COUNT))
+			newHeader.add(headerRow.get(i)+" Count");
+		    else
+			newHeader.add(headerRow.get(i)+" " + w);
+		}
+	    }	    
+
+            if (valueIndices.size() == 0) {
+                newHeader.add("Count");
+            }
+            for (int j : extraIndices) {
+                newHeader.add(firstRow.get(j));
+            }
+            newRows.add(newHeader);
+            for (String key : keys) {
+                Count count = counts.get(key);
+                if (valueIndices.size() == 0) {
+                    //just count them
+                    Row       row      = count.sample;
+                    Row       newRow   = new Row();
+                    newRows.add(newRow);
+                    for (int i : uniqueIndices) {
+                        newRow.add(row.get(i));
+                    }
+                    newRow.add(count.count);
+                    for (int j : extraIndices) {
+                        newRow.add(row.get(j));
+                    }
+                    continue;
+                }
+		
+                Row newRow = null;
+                for (int i = 0; i < valueIndices.size(); i++) {
+                    int    valueIdx = valueIndices.get(i);
+		    if (newRow == null) {
+			newRow = new Row();
+			for (int u = 0; u < uniqueIndices.size(); u++) {
+			    newRow.add(count.sample.get(uniqueIndices.get(u)));
+			}
+			newRows.add(newRow);
+		    }
+
+		    for(String w: what) {
+			if(w.equals(OPERAND_SUM)) {
+			    newRow.add(new Double(count.totals[i]));
+ 			} else if(w.equals(OPERAND_MIN)) {
+			    newRow.add(new Double(count.mins[i]));
+ 			} else if(w.equals(OPERAND_MAX)) {
+			    newRow.add(new Double(count.maxs[i]));
+ 			} else if(w.equals(OPERAND_AVG) || w.equals(OPERAND_AVERAGE)) {
+			    newRow.add(new Double(count.totals[i]/count.count));
+ 			} else if(w.equals(OPERAND_COUNT)) {
+			    newRow.add(new Integer(count.count));
+			}
+		    }
+		}
+                for (int j : extraIndices) {
+                    newRow.add(count.sample.get(j));
+                }
+            }
+
+            return newRows;
+
+
+        }
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class Pivot extends RowCollector {
+	LinkedHashMap<String,String> seenColumns = new LinkedHashMap<String,String>();
+	LinkedHashMap<String,String> seenRows = new LinkedHashMap<String,String>();	
+	Hashtable<String, Tuple> values = new Hashtable<String,Tuple>();
+        LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
+	    StringBuilder>();
+
+
+        /** _more_ */
+        private List<String> keyCols;
+        private List<String> columnCols;	
+	private List<String> operators;
+	private String valueColumn;
+	
+        /** _more_ */
+        private List<Integer> keyIndices;
+
+        /** _more_ */
+        private List<Integer> columnIndices;
+
+        /** _more_ */
+        private int valueIndex;
+
+
+	private Row  headerRow;
+
+
+        /**
+         *
+         * @param keys _more_
+         * @param values _more_
+         * @param extra _more_
+         */
+        public Pivot(TextReader ctx, List<String> keys,List<String> columns, String valueColumn,
+		     List<String> operators) {
+	    if(operators.size()==0) {
+		operators.add(OPERAND_COUNT);
+	    }
+            this.keyCols   = keys;
+            this.columnCols = columns;
+	    this.valueColumn = valueColumn;
+            this.operators  = operators;
+        }
+
+
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    if(rowCnt++==0) {
+		headerRow= row;
+		return null;
+	    }
+
+	    if(keyIndices==null) {
+		keyIndices = getIndices(ctx, keyCols);
+		columnIndices  = getIndices(ctx, columnCols);
+		valueIndex  = getIndex(ctx, valueColumn);
+	    }
+	    StringBuilder columnValue = null;
+	    for(int index: columnIndices) {
+		if(!row.indexOk(index)) continue;
+		String v = row.getString(index);
+		if(columnValue==null)
+		    columnValue = new StringBuilder();
+		else
+		    columnValue.append(" - ");
+		columnValue.append(v);
+	    }
+	    if(columnValue==null) {
+		return null;
+	    }
+	    String colKey = columnValue.toString();
+	    if(seenColumns.get(colKey)==null) {
+		seenColumns.put(colKey,"seen");
+		//		System.err.println("C:" + colKey);
+	    }
+
+
+	    StringBuilder keyValue = null;
+	    for(int index: keyIndices) {
+		if(!row.indexOk(index)) continue;
+		String v = row.getString(index);
+		if(keyValue==null)
+		    keyValue = new StringBuilder();
+		else
+		    keyValue.append(" - ");
+		keyValue.append(v);
+	    }
+	    if(keyValue==null) {
+		return null;
+	    }
+
+	    String rowKey= keyValue.toString();
+	    if(seenRows.get(rowKey)==null) {
+		seenRows.put(rowKey,"seen");
+		//		System.err.println("K:" + rowKey);
+	    }
+	    String valueKey = getValueKey(rowKey,colKey);
+	    Tuple tuple = values.get(valueKey);
+	    if(tuple==null) values.put(valueKey,tuple=new Tuple());
+	    double value = row.getDouble(valueIndex);
+	    tuple.add(value);
+	    return null;
+	}
+
+
+	public String getValueKey(Object row,Object col) {
+	    return row+"----" + col;
+	}
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+	    Set<String> cols = seenColumns.keySet();
+	    List<Row> newRows = new ArrayList<Row>();
+
+	    StringBuilder keyValue = null;
+	    for(int index: keyIndices) {
+		if(!headerRow.indexOk(index)) continue;
+		String v = headerRow.getString(index);
+		if(keyValue==null)
+		    keyValue = new StringBuilder();
+		else
+		    keyValue.append(" - ");
+		keyValue.append(v);
+	    }
+	    Row newHeaderRow = new Row();
+	    newRows.add(newHeaderRow);
+	    newHeaderRow.add(keyValue.toString());
+
+	    for(String colKey: cols) {
+		if(operators.size()==1)
+		    newHeaderRow.add(colKey);
+		else {
+		    for(String op: operators) {
+			newHeaderRow.add(colKey +" - " + op);
+		    }
+		}
+	    }
+
+
+	    for (String rowKey : seenRows.keySet()) {
+		Row row = new Row();
+		row.add(rowKey);
+		newRows.add(row);
+		for(String colKey: cols) {
+		    String valueKey = getValueKey(rowKey,colKey);
+		    Tuple t= values.get(valueKey);
+		    if(t==null) {
+			for(String op: operators) {
+			    row.add("NaN");
+			}
+			continue;
+		    } 
+		    for(String op: operators) {
+			row.add(t.getValue(op));
+		    }
+		}
+	    }
+
+	    return newRows;
+	    /*
+            List<Row> newRows   = new ArrayList<Row>();
+            Row       newHeader = new Row();
+	    for(int i:uniqueIndices) {
+		newHeader.add(headerRow.get(i));
+	    }
+	    for(int i:valueIndices) {
+		for(String w: what) {
 		    if(w.equals("count"))
 		       newHeader.add(headerRow.get(i)+" Count");
 		    else
@@ -2658,23 +2877,25 @@ public class RowCollector extends Processor {
 			    newRow.add(new Double(count.mins[i]));
  			} else if(w.equals(OPERAND_MAX)) {
 			    newRow.add(new Double(count.maxs[i]));
- 			} else if(w.equals("avg")) {
-			    newRow.add(new Double(count.totals[i]/count.count));
- 			} else if(w.equals("count")) {
-			    newRow.add(new Integer(count.count));
-			}
-		    }
-		}
-                for (int j : extraIndices) {
-                    newRow.add(count.sample.get(j));
-                }
-            }
+	      } else if(w.equals(OPERAND_AVERAGE)) {
+	      newRow.add(new Double(count.totals[i]/count.count));
+	      } else if(w.equals("count")) {
+	      newRow.add(new Integer(count.count));
+	      }
+	      }
+	      }
+	      for (int j : extraIndices) {
+	      newRow.add(count.sample.get(j));
+	      }
+	      }
 
-            return newRows;
+	      return newRows;
 
-
-        }
+	    */
+	}
     }
+
+
 
     /**
      * Class description
