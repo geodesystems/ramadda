@@ -2092,15 +2092,26 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
-            if ( !entry.isFile()
-		 || ( !isTextFile(entry.getResource().getPath())
-		      && !getProperty(wikiUtil, props, ATTR_FORCE,
-				      false))) {
-                return "Entry isn't a text file";
-            }
+            boolean doUrl = getProperty(wikiUtil, props, "dourl",   false);
+
+
+	    if(doUrl) {
+	    } else {
+		if ( !entry.isFile()
+		     || ( !isTextFile(entry.getResource().getPath())
+			  && !getProperty(wikiUtil, props, ATTR_FORCE,
+					  false))) {
+		    return "Entry isn't a text file";
+		}
+	    }
             StringBuilder txt = new StringBuilder("");
-            InputStream fis = getStorageManager().getFileInputStream(
-								     entry.getResource().getPath());
+            InputStream fis; 
+	    if(doUrl) {
+		fis = getStorageManager().getInputStream(entry.getResource().getPath());
+	    } else {
+		fis = getStorageManager().getFileInputStream(
+							     entry.getResource().getPath());
+	    }
             BufferedReader br =
                 new BufferedReader(new InputStreamReader(fis));
             boolean raw = getProperty(wikiUtil, props, "raw",   false);
