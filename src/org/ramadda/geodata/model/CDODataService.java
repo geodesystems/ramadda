@@ -472,7 +472,7 @@ public abstract class CDODataService extends Service {
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
             getRepository().getJobManager().executeCommand(commands, envMap,
-        processDir, 300);
+                processDir, 300);
         //processDir, -1);
         //System.out.println("processing took: " + (System.currentTimeMillis()-millis));
         String errorMsg = results.getStderrMsg();
@@ -1076,7 +1076,8 @@ public abstract class CDODataService extends Service {
                 } else {
                     // Aggregate by time via ncml
                     String id =
-                        ModelUtil.makeValuesKey(oneOfThem.getValues(), true, "_");
+                        ModelUtil.makeValuesKey(oneOfThem.getValues(), true,
+                            "_");
                     id += "_" + collectionNum;
                     List<Entry> aggEntries = opEntries;
                     // reduce the daily files to just the years requested
@@ -1089,20 +1090,23 @@ public abstract class CDODataService extends Service {
                             id += "_reduced_" + opNum;
                         }
                         List<Entry> newEntries = new ArrayList<Entry>();
-                        for (Entry e: aggEntries) {
+                        for (Entry e : aggEntries) {
                             newEntries.add(e);
                         }
                         ServiceOperand newOp =
-                            new ServiceOperand(so.getDescription(), newEntries);
+                            new ServiceOperand(so.getDescription(),
+                                newEntries);
                         copyServiceOperandProperties(so, newOp);
                         newOps.add(newOp);
                     } else {
                         Entry agg = ModelUtil.aggregateEntriesByTime(request,
-                                    aggEntries, id, input.getProcessDir());
+                                        aggEntries, id,
+                                        input.getProcessDir());
                         List<Entry> newEntries = new ArrayList<Entry>();
                         newEntries.add(agg);
                         ServiceOperand newOp =
-                            new ServiceOperand(so.getDescription(), newEntries);
+                            new ServiceOperand(so.getDescription(),
+                                newEntries);
                         copyServiceOperandProperties(so, newOp);
                         newOps.add(newOp);
                     }

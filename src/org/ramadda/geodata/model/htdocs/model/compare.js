@@ -623,6 +623,7 @@ function CollectionForm(formId, plottype, args) {
                 var currentValueIsInNewList = false;
                 var html = "";
                 var select =  this.getFieldSelect(collection, fieldIdx);
+                var isMultiple = select.attr('multiple');
                 for(var i=0;i<data.length;i++)  {
                     var objIQ = data[i];
                     var value,label;
@@ -658,7 +659,11 @@ function CollectionForm(formId, plottype, args) {
                     //    extra = " selected ";
                     //    currentValueIsInNewList = true;
                     //}
-                    html += "<option value=\'"+value+"\'   " + extra +" >" + label +"</option>";
+                    if (isMultiple) {
+                      html += HtmlUtils.div(HtmlUtils.checkbox(value, [], currentValueIsInNewList, label));
+                    } else {
+                      html += "<option value=\'"+value+"\'   " + extra +" >" + label +"</option>";
+                    }
                 }
                 //Check if the select has been selectBox'ed
                 //var select =  this.getFieldSelect(collection, fieldIdx);

@@ -33,9 +33,9 @@ import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
 import org.w3c.dom.Element;
@@ -783,8 +783,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     if (operands.isEmpty()) {
                         if (returnjson) {
                             StringBuilder data = new StringBuilder();
-                            data.append(JsonUtil.mapAndQuote(Utils.makeList("Error",
-									    "You need to select all fields")));
+                            data.append(
+                                JsonUtil.mapAndQuote(Utils.makeList("Error",
+                                        "You need to select all fields")));
 
                             return new Result("", data, JsonUtil.MIMETYPE);
                         } else {
@@ -843,8 +844,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } else {
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
-                        data.append(JsonUtil.mapAndQuote(Utils.makeList("Error",
-									"You need to select a time series")));
+                        data.append(
+                            JsonUtil.mapAndQuote(Utils.makeList("Error",
+                                    "You need to select a time series")));
 
                         return new Result("", data, JsonUtil.MIMETYPE);
                     }  /*else {
@@ -893,8 +895,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } catch (Exception exc) {
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
-                        data.append(JsonUtil.mapAndQuote(Utils.makeList("error",
-									exc.getMessage())));
+                        data.append(
+                            JsonUtil.mapAndQuote(Utils.makeList("error",
+                                    exc.getMessage())));
 
                         return new Result("", data, JsonUtil.MIMETYPE);
                     } else {
@@ -906,7 +909,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             } else {
                 if (returnjson) {
                     StringBuilder data = new StringBuilder();
-                    data.append(JsonUtil.map(Utils.makeList("error", "No fields selected.")));
+                    data.append(JsonUtil.map(Utils.makeList("error",
+                            "No fields selected.")));
 
                     return new Result("", data, JsonUtil.MIMETYPE);
                 } else {
@@ -1279,24 +1283,24 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } else {
 
                     String extraSelect = "";
-                    String selectBox = "";
+                    String selectBox   = "";
                     if (type.equals(ARG_ACTION_MULTI_COMPARE)
                             && column.getName().equals("model")) {
                         extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
                                 "true") + HtmlUtils.attr("size", "4");
                         selectBox = HtmlUtils.select(arg, values,
-                                           selectedValues,
-                                           HtmlUtils.cssClass(selectClass)
-                                           + HtmlUtils.attr("id",
-                                                   getFieldSelectId(formId,
-                                                           collection,
-                                                           fieldIdx)) + extraSelect);
+                                selectedValues,
+                                HtmlUtils.cssClass(selectClass)
+                                + HtmlUtils.attr("id",
+                                        getFieldSelectId(formId,
+                                                collection,
+                                                fieldIdx)) + extraSelect);
                     } else if ((type.equals(
-                            //ARG_ACTION_ENS_COMPARE) && frequency.equals(
-                            //"monthly")) || type.equals(
-                            ARG_ACTION_ENS_COMPARE) || type.equals(
-                                ARG_ACTION_CORRELATION) || type.equals(
-                                ARG_ACTION_MULTI_TIMESERIES))
+                    //ARG_ACTION_ENS_COMPARE) && frequency.equals(
+                    //"monthly")) || type.equals(
+                    ARG_ACTION_ENS_COMPARE) || type.equals(
+                            ARG_ACTION_CORRELATION) || type.equals(
+                            ARG_ACTION_MULTI_TIMESERIES))
                                && column.getName().equals("ensemble")) {
                         //String multiple = (frequency.equals("monthly")) ? "true" : "false";
                         String multiple = "true";
@@ -1306,6 +1310,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             + HtmlUtils.attr(
                                 "title",
                                 "Select one or more ensemble members");
+                        /*
+                        selectBox = HtmlUtils.select(arg, values,
+                                selectedValues,
+                                HtmlUtils.cssClass(selectClass)
+                                + HtmlUtils.attr("id",
+                                        getFieldSelectId(formId,
+                                                collection,
+                                                fieldIdx)) + extraSelect);
+                                                           */
                         selectBox = HtmlUtils.checkboxSelect(arg, values,
                                            selectedValues,
                                            //HtmlUtils.cssClass(selectClass)
@@ -1316,13 +1329,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                                            fieldIdx)) + extraSelect);
 
                     } else {
-                    selectBox = HtmlUtils.select(arg, values,
-                                           selectedValues,
-                                           HtmlUtils.cssClass(selectClass)
-                                           + HtmlUtils.attr("id",
-                                                   getFieldSelectId(formId,
-                                                           collection,
-                                                           fieldIdx)) + extraSelect);
+                        selectBox = HtmlUtils.select(arg, values,
+                                selectedValues,
+                                HtmlUtils.cssClass(selectClass)
+                                + HtmlUtils.attr("id",
+                                        getFieldSelectId(formId,
+                                                collection,
+                                                fieldIdx)) + extraSelect);
                     }
                     String select = "<label class=\"selector\" for=\""
                                     + getFieldSelectId(formId, collection,

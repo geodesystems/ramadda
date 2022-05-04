@@ -365,7 +365,9 @@ public class CDOArealStatisticsService extends CDODataService {
         Entry        sample      = opEntries.get(0);
         List<String> commands    = null;
         if (op.getEntries().size() > 1) {
-            String id = ModelUtil.makeValuesKey(sample.getValues(), true);
+            String id = ModelUtil.makeValuesKey(sample.getValues(), true, "_");
+            int collectionNum     = ModelUtil.getOperandCollectionNumber(op);
+            id += "_" + collectionNum;
             sample = ModelUtil.aggregateEntriesByTime(timeRequest, opEntries,
                     id, dpi.getProcessDir());
         }
@@ -399,7 +401,7 @@ public class CDOArealStatisticsService extends CDODataService {
         Object actionId = dpi.getProperty("actionId", null);
         if (actionId != null) {
             String name = ModelUtil.buildOutputName(timeRequest, values,
-                              opNum);
+                              opNum, true);
             getActionManager().setActionMessage(actionId,
                     "Processing: " + name);
         }
@@ -729,7 +731,9 @@ public class CDOArealStatisticsService extends CDODataService {
         Entry        sample      = opEntries.get(0);
         List<String> commands    = null;
         if (op.getEntries().size() > 1) {
-            String id = ModelUtil.makeValuesKey(sample.getValues(), true);
+            String id = ModelUtil.makeValuesKey(sample.getValues(), true, "_");
+            int collectionNum     = ModelUtil.getOperandCollectionNumber(op);
+            id += "_" + collectionNum;
             sample = ModelUtil.aggregateEntriesByTime(timeRequest, opEntries,
                     id, dpi.getProcessDir());
         }

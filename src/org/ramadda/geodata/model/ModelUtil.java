@@ -419,6 +419,21 @@ public class ModelUtil {
      */
     public static String buildOutputName(Request request, Object[] values,
                                          int opNum) {
+    	return buildOutputName(request, values, opNum, false);
+    }
+
+    /**
+     * Build an output name for an operand entry and request
+     *
+     * @param request the request
+     * @param values the entry values
+     * @param opNum the operator number
+     * @param isDaily true if is daily data
+     *
+     * @return the string name of this request
+     */
+    public static String buildOutputName(Request request, Object[] values,
+                                         int opNum, boolean isDaily) {
 
         StringBuilder outputName = new StringBuilder();
         // values = collection,model,experiment,ens,var
@@ -448,6 +463,7 @@ public class ModelUtil {
                                 ? ""
                                 : String.valueOf(opNum + 1);
         int           startMonth, endMonth;
+        int           startDay=1, endDay=1;
         if (request.getString(
                 CDOOutputHandler.ARG_CDO_MONTHS).equalsIgnoreCase("all")) {
             startMonth = 1;
@@ -461,12 +477,36 @@ public class ModelUtil {
                                      startMonth)
                        : startMonth;
         }
+        if (isDaily) {
+            startDay = request.defined(CDOOutputHandler.ARG_CDO_STARTDAY)
+                         ? request.get(CDOOutputHandler.ARG_CDO_STARTDAY, 1)
+                         : 1;
+            endDay = request.defined(CDOOutputHandler.ARG_CDO_ENDDAY)
+                   ? request.get(CDOOutputHandler.ARG_CDO_ENDDAY,
+                                 startDay)
+                   : startDay;
+        	
+        }
         if (startMonth == endMonth) {
             dateSB.append(MONTHS[startMonth - 1]);
+            if (isDaily ) {
+            	dateSB.append(" ");
+            	dateSB.append(startDay);
+                dateSB.append("-");
+            	dateSB.append(endDay);
+            }
         } else {
             dateSB.append(MONTHS[startMonth - 1]);
-            dateSB.append("-");
+            if (isDaily) {
+            	dateSB.append(" ");
+            	dateSB.append(startDay);
+                dateSB.append("-");
+            }
             dateSB.append(MONTHS[endMonth - 1]);
+            if (isDaily) {
+            	dateSB.append(" ");
+            	dateSB.append(endDay);
+            }
         }
         dateSB.append(" ");
         if (request.defined(CDOOutputHandler.ARG_CDO_YEARS + yearNum)) {
