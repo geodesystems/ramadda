@@ -4979,7 +4979,7 @@ public abstract class Converter extends Processor {
                 }
                 cnt++;
             }
-            if (op.equals("average")) {
+            if (op.equals(OPERAND_AVERAGE)) {
                 if (cnt == 0) {
                     value = Double.NaN;
                 } else {

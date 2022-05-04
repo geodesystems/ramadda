@@ -36,7 +36,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 243 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 244 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -1881,7 +1881,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Numeric/Boolean'></a><b style='font-size:120%;'>Numeric/Boolean</b><br>
-<div class=header>Commands: <a href='#-scale'>-scale</a> <a href='#-generate'>-generate</a> <a href='#-decimals'>-decimals</a> <a href='#-fuzz'>-fuzz</a> <a href='#-ceil'>-ceil</a> <a href='#-floor'>-floor</a> <a href='#-delta'>-delta</a> <a href='#-operator'>-operator</a> <a href='#-round'>-round</a> <a href='#-abs'>-abs</a> <a href='#-clip'>-clip</a> <a href='#-rand'>-rand</a> <a href='#-even'>-even</a> <a href='#-sum'>-sum</a> <a href='#-summary'>-summary</a> <a href='#-histogram'>-histogram</a> <a href='#-percent'>-percent</a> <a href='#-increase'>-increase</a> <a href='#-average'>-average</a> <a href='#-ranges'>-ranges</a> <a href='#-bytes'>-bytes</a> <a href='#-column_and'>-column_and</a> <a href='#-colum_nor'>-colum_nor</a> <a href='#-column_not'>-column_not</a> </div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
+<div class=header>Commands: <a href='#-scale'>-scale</a> <a href='#-generate'>-generate</a> <a href='#-decimals'>-decimals</a> <a href='#-fuzz'>-fuzz</a> <a href='#-ceil'>-ceil</a> <a href='#-floor'>-floor</a> <a href='#-delta'>-delta</a> <a href='#-operator'>-operator</a> <a href='#-round'>-round</a> <a href='#-abs'>-abs</a> <a href='#-clip'>-clip</a> <a href='#-rand'>-rand</a> <a href='#-even'>-even</a> <a href='#-sum'>-sum</a> <a href='#-pivot'>-pivot</a> <a href='#-summary'>-summary</a> <a href='#-histogram'>-histogram</a> <a href='#-percent'>-percent</a> <a href='#-increase'>-increase</a> <a href='#-average'>-average</a> <a href='#-ranges'>-ranges</a> <a href='#-bytes'>-bytes</a> <a href='#-column_and'>-column_and</a> <a href='#-colum_nor'>-colum_nor</a> <a href='#-column_not'>-column_not</a> </div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -2048,7 +2048,64 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
-</div><a name='-summary'></a><div class=command> <i><a href='#-summary'>-summary</a></i>  &lt;key columns&gt;  &lt;value columns&gt;  &lt;carry over columns&gt;  &lt;ops&gt; </div><div class=command-block>count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count<br>
+</div><a name='-pivot'></a><div class=command> <i><a href='#-pivot'>-pivot</a></i>  &lt;key columns&gt;  &lt;column columns&gt;  &lt;value column&gt;  &lt;operator&gt; </div><div class=command-block>Make a pivot table<br>
+<b>Arguments:</b><br>
+<ul>
+<i>key columns</i>
+Columns to key on<br>
+<i>column columns</i>
+The columns the values of which are used to make the new columns in the result<br>
+<i>value column</i>
+The value column<br>
+<i>operator</i>
+The operator to apply -  count,sum,average,min,max<br>
+<br>
+</ul>
+For example, with the input file:
+<pre>
+Region,Date,Units,Sales
+West,2016,1,11.00
+South,2016,8,96.00
+West,2016,2,26.00
+North,2016,7,84.00
+North,2016,8,104.00
+South,2016,2,22.00
+</pre>
+
+Running:
+<pre>
+csv -pivot region date sales count  -p input.csv 
+</pre>
+
+Gives:
+<pre>
+Region,2016,2017,2018,2019
+West,15.0,51.0,49.0,42.0
+South,25.0,23.0,31.0,14.0
+North,15.0,27.0,56.0,39.0
+East,10.0,24.0,18.0,13.0
+</pre>
+
+You can also specify multiple operators:
+<pre>
+csv -pivot region date sales count,min,max  -p input.csv 
+</pre>
+
+Gives:
+<pre>
+Region,2016 - count,2016 - min,2016 - max,2017 - count,2017 - min,2017 - max,2018 - count,2018 - min,2018 - max,2019 - count,2019 - min,2019 - max
+West,15.0,11.0,96.0,51.0,11.0,104.0,49.0,11.0,112.0,42.0,13.0,120.0
+South,25.0,12.0,96.0,23.0,11.0,104.0,31.0,11.0,120.0,14.0,12.0,112.0
+North,15.0,12.0,104.0,27.0,12.0,96.0,56.0,11.0,120.0,39.0,13.0,120.0
+East,10.0,24.0,96.0,24.0,11.0,104.0,18.0,11.0,112.0,13.0,12.0,105.0
+</pre>
+
+
+
+
+
+  
+<p></div><a name='-summary'></a><div class=command> <i><a href='#-summary'>-summary</a></i>  &lt;key columns&gt;  &lt;value columns&gt;  &lt;carry over columns&gt;  &lt;ops&gt; </div><div class=command-block>count/sum/average/min/max values keying on key column value. If no value columns specified then do a count<br>
 <b>Arguments:</b><br>
 <ul>
 <i>key columns</i>
@@ -2058,10 +2115,63 @@ Columns to apply operators on<br>
 <i>carry over columns</i>
 Extra columns to include<br>
 <i>ops</i>
-any of count,sum,avg,min,max<br>
+any of count,sum,average,min,max<br>
 <br>
 </ul>
-</div><a name='-histogram'></a><div class=command> <i><a href='#-histogram'>-histogram</a></i>  &lt;column&gt;  &lt;bins&gt;  &lt;value columns&gt;  &lt;ops&gt; </div><div class=command-block>Make a histogram with the given column and bins<br>
+For example, with the below data, if you wanted to summarize the total units by region:
+<pre>
+Region,Color,Units,Sales
+West,Red,1,11.00
+South,Blue,8,96.00
+West,Green,2,26.00
+North,Blue,7,84.00
+North,Green,8,104.00
+South,Red,2,22.00
+East,Blue,5,60.00
+West,Green,2,26.00
+</pre>
+
+You would do:
+<pre>
+  csv -summary region units ""  sum  -p summary.csv
+</pre>
+Which gives:
+<pre>
+Region,Units sum
+West,683.0
+South,399.0
+North,672.0
+East,294.0
+</pre>
+
+
+If you wanted to get the sum and average of the sales:
+<pre>
+csv -summary region sales ""  sum,avg  -p summary.csv 
+</pre>
+You'd get:
+<pre>
+Region,Sales sum,Sales avg
+West,8873.0,56.51592356687898
+South,5044.0,54.236559139784944
+North,8709.0,63.56934306569343
+East,3730.0,57.38461538461539
+</pre>
+
+The carry over column just gets the first value for the key column. So, if you wanted to include the color column do:
+<pre>
+csv -summary region sales color  sum,avg  -p summary.csv 
+</pre>
+
+Which gives:
+<pre>
+Region,Sales sum,Sales avg,Color
+West,8873.0,56.51592356687898,Red
+South,5044.0,54.236559139784944,Blue
+North,8709.0,63.56934306569343,Blue
+East,3730.0,57.38461538461539,Blue
+</pre>
+<p></div><a name='-histogram'></a><div class=command> <i><a href='#-histogram'>-histogram</a></i>  &lt;column&gt;  &lt;bins&gt;  &lt;value columns&gt;  &lt;ops&gt; </div><div class=command-block>Make a histogram with the given column and bins<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -2071,10 +2181,51 @@ Comma separated set of bin values<br>
 <i>value columns</i>
 Extra columns to sum up<br>
 <i>ops</i>
-ops to apply to extra columns - any of count,sum,avg,min,max<br>
+ops to apply to extra columns - any of count,sum,average,min,max<br>
 <br>
 </ul>
-</div><a name='-percent'></a><div class=command> <i><a href='#-percent'>-percent</a></i>  &lt;columns to add&gt; </div><div class=command-block><b>Arguments:</b><br>
+The bins value is a comma separated list of the numeric ranges that define how
+to bin the data. e.g., for a set of age ranges one can specify:
+<pre>
+bins="18,30,40,50,60,70"
+</pre>
+This results in bins of:
+<pre>
+  0-18
+  18-30
+  30-40
+  40-50
+  etc.
+</pre>
+
+You can also specify a range with an optional step value.
+For example this:
+<pre>
+bins="18-30" 
+</pre>
+Will give you the bins:
+<pre>
+  18-19
+  19-20
+  20-21
+  ...
+  29-30
+  30-infinity
+</pre>
+
+Or you can specify a step
+<pre>
+bins="18-30:2" 
+</pre>
+Will give you the bins:
+<pre>
+  18-20
+  20-22
+  22-24
+  ...
+</pre>
+
+<p></div><a name='-percent'></a><div class=command> <i><a href='#-percent'>-percent</a></i>  &lt;columns to add&gt; </div><div class=command-block><b>Arguments:</b><br>
 <ul>
 <i>columns to add</i>
 <br>

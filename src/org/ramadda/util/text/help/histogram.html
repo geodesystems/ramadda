@@ -1,0 +1,41 @@
+The bins value is a comma separated list of the numeric ranges that define how
+to bin the data. e.g., for a set of age ranges one can specify:
+<pre>
+bins="18,30,40,50,60,70"
+</pre>
+This results in bins of:
+<pre>
+  0-18
+  18-30
+  30-40
+  40-50
+  etc.
+</pre>
+
+You can also specify a range with an optional step value.
+For example this:
+<pre>
+bins="18-30" 
+</pre>
+Will give you the bins:
+<pre>
+  18-19
+  19-20
+  20-21
+  ...
+  29-30
+  30-infinity
+</pre>
+
+Or you can specify a step
+<pre>
+bins="18-30:2" 
+</pre>
+Will give you the bins:
+<pre>
+  18-20
+  20-22
+  22-24
+  ...
+</pre>
+

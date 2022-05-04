@@ -117,6 +117,10 @@ public class Row {
         return sb.toString();
     }
 
+    public boolean indexOk(int index) {
+	return index>=0 && index<size();
+    }
+
     /**
      * Set the Values property.
      *
@@ -145,6 +149,12 @@ public class Row {
     public Object get(int index) {
         return values.get(index);
     }
+
+    public double getDouble(int index) {
+	String s = getString(index);
+	return Double.parseDouble(s);
+    }
+
 
     /**
      * _more_
