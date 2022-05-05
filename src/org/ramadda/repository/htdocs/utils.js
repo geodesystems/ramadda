@@ -4912,12 +4912,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     checkbox: function(id, attrs, checked,label) {
+	attrs = attrs||[];
         attrs.push("id");
         attrs.push(id);
         attrs.push("type");
         attrs.push("checkbox");
-        attrs.push("value");
-        attrs.push("true");
+	if(!attrs.includes("value")) {
+            attrs.push("value");
+            attrs.push("true");
+	}
         if (checked) {
             attrs.push("checked");
             attrs.push(null);
