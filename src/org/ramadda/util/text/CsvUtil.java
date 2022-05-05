@@ -123,7 +123,8 @@ public class CsvUtil {
     /** _more_ */
     private String comment;
 
-    private String dateFormatString = "yyyy-MM-dd HH:mm";
+    private String dateFormatString = "yyyy-MM-dd HH:mm:ss";
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
     
     private String timezone="";
@@ -2188,6 +2189,12 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"),
                 new Arg("destformat", "date format")),
 
+        new Cmd("-adddate", "Add date", 
+                new Arg("date_column", "Date Column", "type", "column"),
+                new Arg("value", "Value Column"),		
+                new Arg("value_type", "Value type - millisecond,second,minute,hour,day,week,month,year"),
+                new Arg("output_format", "Output format, e.g. yyyy-MM-dd")),		
+
         new Cmd("-extractdate", "Extract date",
 		new Arg("date column", "", "type", "column"),
 		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
@@ -3558,6 +3565,16 @@ public class CsvUtil {
 				 new Converter.DateConverter(
 							     col, dateFormatString,
 							     sdf2));
+		return i;
+	    });
+	defineFunction("-adddate",2,(ctx,args,i) -> {
+		String dateCol =args.get(++i);
+		String valueCol =args.get(++i);
+		String type =args.get(++i);				
+		String outFormat =args.get(++i);
+		if(!Utils.stringDefined(outFormat)) outFormat = dateFormatString;
+		ctx.addProcessor(
+				 new Converter.DateAdder(dateCol, valueCol, type,dateFormatString, outFormat));
 		return i;
 	    });
 

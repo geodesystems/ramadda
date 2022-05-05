@@ -3047,6 +3047,83 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Mon, Oct 14, '19
+     * @author         Enter your name here...
+     */
+    public static class DateAdder extends Converter {
+
+
+	private int type;
+
+        /** _more_ */
+        private SimpleDateFormat inSdf;
+        private SimpleDateFormat outSdf;	
+	private String inFormat;
+	private String outFormat;	
+
+	private String valueCol;
+	private int valueIndex=-1;
+
+
+        /**
+         * @param col _more_
+         */
+        public DateAdder(String dateCol, String valueCol, String what, String inFormat, String outFormat) {
+            super(dateCol);
+            this.inSdf = new SimpleDateFormat(this.inFormat = inFormat);
+            this.outSdf = new SimpleDateFormat(this.outFormat = outFormat);	    
+	    this.valueCol = valueCol;
+	    if(what.equals("millisecond")) type =  GregorianCalendar.MILLISECOND;
+	    else if(what.equals("second")) type =  GregorianCalendar.SECOND;	    
+	    else if(what.equals("minute")) type =  GregorianCalendar.MINUTE;
+	    else if(what.equals("hour")) type =  GregorianCalendar.HOUR_OF_DAY;
+	    else if(what.equals("day")) type =  GregorianCalendar.DATE;
+	    else if(what.equals("week")) type =  GregorianCalendar.WEEK_OF_YEAR;
+	    else if(what.equals("year")) type =  GregorianCalendar.YEAR;
+	    else throw new IllegalArgumentException("Unknown date type:" + what +" should be one of millisecond,second,minute,hour,day,week,month,year");
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		valueIndex = getIndex(ctx,valueCol);
+                return row;
+            }
+	    int col = getIndex(ctx);
+	    Date dttm=null;
+	    String s = row.getString(col);
+            try {
+		dttm = inSdf.parse(s);
+            } catch (Exception exc) {
+                fatal(ctx,
+                      "Could not parse date:" + s + " with format:"
+                      + inFormat);
+            }
+
+	    int value = (int) Double.parseDouble(row.getString(valueIndex));
+
+	    GregorianCalendar cal = new GregorianCalendar();
+	    cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    cal.setTime(dttm);
+	    cal.add(type,value);
+	    dttm = cal.getTime();
+	    row.set(col, outSdf.format(dttm));
+            return row;
+        }
+
+    }
+    
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Tue, Nov 19, '19
      * @author         Enter your name here...
      */
