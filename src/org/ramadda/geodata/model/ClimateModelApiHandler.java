@@ -1319,6 +1319,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                                 collection,
                                                 fieldIdx)) + extraSelect);
                                                            */
+			//jeffmc:If there is only the "all" value then don't include any
+			if(values.size()==1) {
+			    values = new ArrayList();
+			}
                         selectBox = HtmlUtils.checkboxSelect(arg, values,
                                            selectedValues,
                                            //HtmlUtils.cssClass(selectClass)
