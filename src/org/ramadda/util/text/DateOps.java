@@ -452,6 +452,83 @@ public abstract class DateOps extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
+    public static class Diff extends Converter {
+
+
+        /**  */
+        private int index1;
+        private int index2;	
+	private String col1;
+	private String col2;
+	private String unit;
+	private double divisor;
+
+        /**
+         * @param col _more_
+         */
+        public Diff(String col1,String col2, String unit) {
+            super();
+	    this.col1= col1;
+	    this.col2= col2;
+	    this.unit = unit;
+	    if(unit.equals("milliseconds")) {
+		divisor = 1;
+	    } else if(unit.equals("seconds")) {
+		divisor = 1000;
+	    } else if(unit.equals("minutes")) {
+		divisor = 60*1000;
+	    } else if(unit.equals("hours")) {
+		divisor = 60*60*1000;
+	    } else if(unit.equals("days")) {
+		divisor = 60*60*24*1000;				
+	    } else {
+		throw new IllegalArgumentException("-datediff: unknown unit:" + unit);
+	    }
+	    System.err.println(divisor);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		index1 = getIndex(ctx,col1);
+		index2 = getIndex(ctx,col2);		
+                row.add(Utils.makeLabel(unit));
+                return row;
+            }
+
+            try {
+                Date date1 = ctx.parseDate(row.get(index1).toString());
+                Date date2 = ctx.parseDate(row.get(index2).toString());		
+		double diff = (double)(date1.getTime()-date2.getTime());
+		double value = diff/divisor;
+		value = Utils.decimals(value,2);
+		if(value==(int)value)
+		    row.add(((int)value)+"");
+		else
+		    row.add(value+"");
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+
+            return row;
+        }
+
+    }
+
+    
     public static class DateFormatSetter extends Processor {
 	boolean in;
 	CsvUtil.Dater dater;

@@ -2222,6 +2222,11 @@ public class CsvUtil {
         new Cmd("-elapsed", "Calculate elapsed time (ms) between rows",
                 new Arg("column")),
 
+        new Cmd("-datediff", "Calculate elapsed time between columns column1-column2",
+                new Arg("column1","Column 1","type","column"),
+                new Arg("column2","Column 2","type","column"),
+		new Arg("unit","Unit-milliseconds,seconds,minutes,hours,days","type","enumeration","values","milliseconds,seconds,minutes,hours,days")),	
+
         /** *  Numeric * */
         new Cmd(true, "Numeric/Boolean"),
         new Cmd("-scale", "Set value={value+delta1}*scale+delta2",
@@ -3566,6 +3571,11 @@ public class CsvUtil {
 		ctx.addProcessor(new DateOps.Elapsed(args.get(++i)));
 		return i;
 	    });
+
+	defineFunction("-datediff", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new DateOps.Diff(args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });	
 
 
 	defineFunction(new String[]{"-indateformat","-dateformat"}, 2,(ctx,args,i) -> {
