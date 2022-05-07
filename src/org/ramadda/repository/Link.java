@@ -48,6 +48,8 @@ public class Link {
     /** _more_ */
     String category;
 
+    String tooltip;
+    
     /**
      * _more_
      *
@@ -251,6 +253,24 @@ public class Link {
         return icon;
     }
 
+
+    /**
+       Set the Tooltip property.
+
+       @param value The new value for Tooltip
+    **/
+    public void setTooltip (String value) {
+	tooltip = value;
+    }
+
+    /**
+       Get the Tooltip property.
+
+       @return The Tooltip
+    **/
+    public String getTooltip () {
+	return tooltip;
+    }
 
 
 }
