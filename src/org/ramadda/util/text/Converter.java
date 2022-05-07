@@ -5,23 +5,15 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util.text;
 
-
 import org.apache.commons.codec.language.Soundex;
 
-
 import org.json.*;
-
 import org.ramadda.util.HtmlUtils;
-
-
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.PatternProps;
 import org.ramadda.util.Utils;
 
-import org.ramadda.util.geo.Feature;
-import org.ramadda.util.geo.GeoUtils;
-import org.ramadda.util.geo.Place;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -30,30 +22,21 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 
 import java.net.URL;
-
 import java.security.MessageDigest;
-
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
+
 
 import java.util.regex.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -63,7 +46,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 import javax.script.*;
-
 
 
 /**
@@ -1900,6 +1882,7 @@ public abstract class Converter extends Processor {
                 System.err.println("addheader: returning row:" + row);
             }
 
+
             return row;
 
         }
@@ -2967,412 +2950,6 @@ public abstract class Converter extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
-    public static class DateConverter extends Converter {
-
-
-        /* */
-
-        /**  */
-        private String format1;
-
-        /**  */
-        private String format2;
-
-
-        /** _more_ */
-        private SimpleDateFormat sdf1;
-
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat sdf2;
-
-
-        /**
-         * @param col _more_
-         * @param format1 _more_
-         * @param format2 _more_
-         */
-        public DateConverter(String col, String format1, String format2) {
-            super(col);
-            this.sdf1 = new SimpleDateFormat(this.format1 = format1);
-            this.sdf2 = new SimpleDateFormat(this.format2 = format2);
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            int col = getIndex(ctx);
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                return row;
-            }
-            Date   d = null;
-            String s = row.get(col).toString();
-            try {
-                d = sdf1.parse(s);
-            } catch (Exception exc) {
-                fatal(ctx,
-                      "Could not parse date:" + s + " with format:"
-                      + format1);
-            }
-            try {
-                //              System.err.println(s + " D:" + d  +" " + sdf2.format(d));
-                row.set(col, sdf2.format(d));
-            } catch (Exception exc) {
-                fatal(ctx,
-                      "Could not format date:" + s + " with format:"
-                      + format2);
-            }
-
-            return row;
-        }
-
-    }
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
-    public static class DateAdder extends Converter {
-
-
-	private int type;
-
-        /** _more_ */
-        private SimpleDateFormat inSdf;
-        private SimpleDateFormat outSdf;	
-	private String inFormat;
-	private String outFormat;	
-
-	private String valueCol;
-	private int valueIndex=-1;
-
-
-        /**
-         * @param col _more_
-         */
-        public DateAdder(String dateCol, String valueCol, String what, String inFormat, String outFormat) {
-            super(dateCol);
-            this.inSdf = new SimpleDateFormat(this.inFormat = inFormat);
-            this.outSdf = new SimpleDateFormat(this.outFormat = outFormat);	    
-	    this.valueCol = valueCol;
-	    if(what.equals("millisecond")) type =  GregorianCalendar.MILLISECOND;
-	    else if(what.equals("second")) type =  GregorianCalendar.SECOND;	    
-	    else if(what.equals("minute")) type =  GregorianCalendar.MINUTE;
-	    else if(what.equals("hour")) type =  GregorianCalendar.HOUR_OF_DAY;
-	    else if(what.equals("day")) type =  GregorianCalendar.DATE;
-	    else if(what.equals("week")) type =  GregorianCalendar.WEEK_OF_YEAR;
-	    else if(what.equals("year")) type =  GregorianCalendar.YEAR;
-	    else throw new IllegalArgumentException("Unknown date type:" + what +" should be one of millisecond,second,minute,hour,day,week,month,year");
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            if (rowCnt++ == 0) {
-		valueIndex = getIndex(ctx,valueCol);
-                return row;
-            }
-	    int col = getIndex(ctx);
-	    Date dttm=null;
-	    String s = row.getString(col);
-            try {
-		dttm = inSdf.parse(s);
-            } catch (Exception exc) {
-                fatal(ctx,
-                      "Could not parse date:" + s + " with format:"
-                      + inFormat);
-            }
-
-	    int value = (int) Double.parseDouble(row.getString(valueIndex));
-
-	    GregorianCalendar cal = new GregorianCalendar();
-	    cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-	    cal.setTime(dttm);
-	    cal.add(type,value);
-	    dttm = cal.getTime();
-	    row.set(col, outSdf.format(dttm));
-            return row;
-        }
-
-    }
-    
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
-    public static class DateExtracter extends Converter {
-
-
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat sdf;
-
-        /* */
-
-        /** _more_ */
-        private TimeZone tz;
-
-        /* */
-
-        /** _more_ */
-        private String whatLabel = "Hour";
-
-        /* */
-
-        /** _more_ */
-        private int what = GregorianCalendar.HOUR;
-
-
-
-        /**
-         * @param col _more_
-         * @param sdf _more_
-         * @param tz _more_
-         * @param what _more_
-         */
-        public DateExtracter(String col, String sdf, String tz, String what) {
-            super(col);
-            if (sdf.length() > 0) {
-                this.sdf = new SimpleDateFormat(sdf);
-                this.sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            }
-
-
-            if (tz.length() > 0) {
-                tz      = tz.toUpperCase();
-                this.tz = TimeZone.getTimeZone(tz);
-
-                System.err.println(tz + " tz:" + this.tz);
-
-            }
-            whatLabel = StringUtil.camelCase(what);
-            what      = what.toUpperCase();
-            if (what.equals("ERA")) {
-                this.what = GregorianCalendar.ERA;
-            } else if (what.equals("YEAR")) {
-                this.what = GregorianCalendar.YEAR;
-            } else if (what.equals("MONTH")) {
-                this.what = GregorianCalendar.MONTH;
-            } else if (what.equals("DAY_OF_MONTH")) {
-                this.what = GregorianCalendar.DAY_OF_MONTH;
-            } else if (what.equals("DAY_OF_WEEK")) {
-                this.what = GregorianCalendar.DAY_OF_WEEK;
-            } else if (what.equals("WEEK_OF_MONTH")) {
-                this.what = GregorianCalendar.WEEK_OF_MONTH;
-            } else if (what.equals("DAY_OF_WEEK_IN_MONTH")) {
-                this.what = GregorianCalendar.DAY_OF_WEEK_IN_MONTH;
-            } else if (what.equals("AM_PM")) {
-                this.what = GregorianCalendar.AM_PM;
-            } else if (what.equals("HOUR")) {
-                this.what = GregorianCalendar.HOUR;
-            } else if (what.equals("HOUR_OF_DAY")) {
-                this.what = GregorianCalendar.HOUR_OF_DAY;
-            } else if (what.equals("MINUTE")) {
-                this.what = GregorianCalendar.MINUTE;
-            } else if (what.equals("SECOND")) {
-                this.what = GregorianCalendar.SECOND;
-            } else if (what.equals("MILLISECOND")) {
-                this.what = GregorianCalendar.MILLISECOND;
-            }
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                add(ctx, row, whatLabel);
-
-                return row;
-            }
-            int col = getIndex(ctx);
-            try {
-                String            s   = row.get(col).toString();
-                Date              d   = (sdf == null)
-                                        ? Utils.parseDate(s)
-                                        : sdf.parse(s);
-                GregorianCalendar cal = new GregorianCalendar();
-                cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-                cal.setTime(d);
-                if (this.tz != null) {
-                    cal.setTimeZone(this.tz);
-                }
-                String v = "NA";
-                v = "" + cal.get(what);
-                add(ctx, row, v);
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
-            return row;
-        }
-
-    }
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
-    public static class DateBefore extends Converter {
-
-        /* */
-
-        /** _more_ */
-        private int col;
-
-        /* */
-
-        /** _more_ */
-        private Date date;
-
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat sdf1;
-
-        /**
-         * @param col _more_
-         * @param sdf1 _more_
-         * @param date _more_
-         */
-        public DateBefore(int col, SimpleDateFormat sdf1, Date date) {
-            this.col  = col;
-            this.sdf1 = sdf1;
-            this.date = date;
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                return row;
-            }
-            try {
-                String s = row.get(col).toString().trim();
-                if (s.length() == 0) {
-                    return null;
-                }
-                Date d = sdf1.parse(s);
-                if (d.getTime() > date.getTime()) {
-                    return null;
-                }
-
-                return row;
-            } catch (Exception exc) {
-                exc.printStackTrace();
-
-                throw new RuntimeException(exc);
-            }
-        }
-
-    }
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
-    public static class DateAfter extends Converter {
-
-        /* */
-
-        /** _more_ */
-        private int col;
-
-        /* */
-
-        /** _more_ */
-        private Date date;
-
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat sdf1;
-
-        /**
-         * @param col _more_
-         * @param sdf1 _more_
-         * @param date _more_
-         */
-        public DateAfter(int col, SimpleDateFormat sdf1, Date date) {
-            this.col  = col;
-            this.sdf1 = sdf1;
-            this.date = date;
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                return row;
-            }
-            try {
-                String s = row.get(col).toString().trim();
-                if (s.length() == 0) {
-                    return null;
-                }
-
-                Date d = sdf1.parse(s);
-                if (d.getTime() < date.getTime()) {
-                    return null;
-                }
-
-                return row;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-
-    }
-
 
 
 
@@ -3824,140 +3401,6 @@ public abstract class Converter extends Processor {
                     }
                     System.err.println("column: " + idx + "=" + s);
                 }
-            }
-
-            return row;
-        }
-
-    }
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Jan 26, '19
-     * @author         Enter your name here...
-     */
-    public static class DateFormatter extends Converter {
-
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat from;
-
-        /* */
-
-        /** _more_ */
-        private SimpleDateFormat to;
-
-        /**
-         * @param cols _more_
-         * @param from _more_
-         * @param to _more_
-         */
-        public DateFormatter(List<String> cols, SimpleDateFormat from,
-                             String to) {
-            super(cols);
-            try {
-                this.from = from;
-                if (to.length() == 0) {
-                    to = "yyyyMMdd'T'HHmmss Z";
-                }
-                this.to = new SimpleDateFormat(to);
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                if ( !ctx.getAllData()) {
-                    return row;
-                }
-            }
-
-            List<Integer> indices = getIndices(ctx);
-            for (Integer idx : indices) {
-                int    index = idx.intValue();
-                String value = row.getString(index);
-                Date   dttm  = null;
-                try {
-                    dttm = from.parse(value);
-                } catch (java.text.ParseException exc) {
-                    throw new IllegalArgumentException(
-                        "Bad parse date format:" + value);
-                }
-                String toDate = to.format(dttm);
-                row.set(index, toDate);
-            }
-
-            return row;
-        }
-
-    }
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
-    public static class Elapsed extends Converter {
-
-        /** _more_ */
-        private SimpleDateFormat from;
-
-        /**  */
-        private Date lastDate;
-
-        /**  */
-        private int index;
-
-        /**
-         * @param col _more_
-         * @param from _more_
-         */
-        public Elapsed(String col, SimpleDateFormat from) {
-            super(col);
-            this.from = from;
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                index = getIndex(ctx);
-                row.add("elapsed");
-
-                return row;
-            }
-
-            try {
-                Date date = from.parse(row.get(index).toString());
-                if (lastDate != null) {
-                    row.add(date.getTime() - lastDate.getTime());
-                } else {
-                    row.add(0);
-                }
-                lastDate = date;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
             }
 
             return row;
@@ -7194,6 +6637,5 @@ public abstract class Converter extends Processor {
             org.mozilla.javascript.Context.exit();
         }
     }
-
 
 }

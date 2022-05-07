@@ -29,6 +29,7 @@ import java.nio.channels.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -264,6 +265,12 @@ public class TextReader implements Cloneable {
     private Bounds bounds;
 
 
+    private CsvUtil.Dater  inDater;
+
+    private CsvUtil.Dater  outDater;
+
+
+
     /**
      * _more_
      */
@@ -346,7 +353,6 @@ public class TextReader implements Cloneable {
             //            getWriter().flush();
             */
         }
-
         return row;
     }
 
@@ -406,6 +412,29 @@ public class TextReader implements Cloneable {
     public boolean getVerbose() {
         return verbose;
     }
+
+
+    public void setInDater(CsvUtil.Dater dater) {
+	this.inDater = dater;
+    }
+
+    public void setOutDater(CsvUtil.Dater dater) {
+	this.outDater = dater;
+    }    
+    
+    public Date parseDate(String d) {
+	return inDater.parseDate(d);
+    }
+
+    public String formatDate(Date d) {
+	return outDater.formatDate(d);
+    }
+    
+    public TimeZone getTimeZone() {
+	return inDater.getTimeZone();
+    }
+
+
 
 
     /**

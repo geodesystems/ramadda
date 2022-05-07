@@ -5,57 +5,26 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util.text;
 
-
-import org.apache.commons.codec.language.Soundex;
-
-
 import org.json.*;
-
-import org.ramadda.util.HtmlUtils;
-
-
 import org.ramadda.util.IO;
-import org.ramadda.util.JsonUtil;
-import org.ramadda.util.PatternProps;
 import org.ramadda.util.Utils;
-
 import org.ramadda.util.geo.Address;
 import org.ramadda.util.geo.Feature;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.geo.Place;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-
 import java.net.URL;
 
-import java.security.MessageDigest;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
 
-import java.util.regex.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.script.*;
 
 
 /**

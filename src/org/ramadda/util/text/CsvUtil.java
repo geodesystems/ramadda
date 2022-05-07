@@ -43,6 +43,7 @@ import java.nio.channels.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 
 import java.util.function.*;
@@ -123,11 +124,7 @@ public class CsvUtil {
     /** _more_ */
     private String comment;
 
-    private String dateFormatString = "yyyy-MM-dd HH:mm:ss";
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
-    
-    private String timezone="";
     
     /** _more_ */
     private List<String> changeTo = new ArrayList<String>();
@@ -135,6 +132,9 @@ public class CsvUtil {
     /** _more_ */
     private StringBuilder js = new StringBuilder();
 
+
+    private Dater inDater = new Dater();    
+    private Dater outDater = new Dater();
 
     private PropertyProvider propertyProvider;
 
@@ -229,12 +229,26 @@ public class CsvUtil {
     }
 
 
+    private TextReader initTextReader(TextReader textReader) {
+	textReader.setInDater(inDater);
+	textReader.setOutDater(outDater);	
+	return textReader;
+    }
+
+    private TextReader makeTextReader() {
+	TextReader textReader = new TextReader();
+	return initTextReader(textReader);
+    }
+
+
     /**
      * _more_
      *
      * @param csvUtil _more_
      */
     public void initWith(CsvUtil csvUtil) {
+	this.inDater = csvUtil.inDater;
+	this.outDater = csvUtil.outDater;	
         this.comment = csvUtil.comment;
         this.js      = csvUtil.js;
 	this.sinks = csvUtil.sinks;
@@ -324,6 +338,7 @@ public class CsvUtil {
 	}
 	return System.getenv(name);
     }
+
 
     /**
        Set the Interactive property.
@@ -566,7 +581,7 @@ public class CsvUtil {
         List<String> iterateValues = new ArrayList<String>();
 
         String       prepend       = null;
-        myTextReader = new TextReader(destDir, outputFile, outputStream);
+        myTextReader = initTextReader(new TextReader(destDir, outputFile, outputStream));
 
         boolean      printArgs = false;
         List<String> extra     = new ArrayList<String>();
@@ -2181,19 +2196,20 @@ public class CsvUtil {
 
         /** *  Dates * */
         new Cmd(true, "Dates"),
-        new Cmd("-dateformat", "Specify date format for later use",
+        new Cmd("-indateformat", "Specify date format for parsing",
                 new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
 		new Arg("timezone", "")),
+        new Cmd("-outdateformat", "Specify date format for formatting",
+                new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
+		new Arg("timezone", "")),		
 
         new Cmd("-convertdate", "Convert date", 
-                new Arg("column", "", "type", "columns"),
-                new Arg("destformat", "date format")),
+                new Arg("column", "", "type", "columns")),
 
         new Cmd("-adddate", "Add date", 
                 new Arg("date_column", "Date Column", "type", "column"),
                 new Arg("value", "Value Column"),		
-                new Arg("value_type", "Value type - millisecond,second,minute,hour,day,week,month,year"),
-                new Arg("output_format", "Output format, e.g. yyyy-MM-dd")),		
+                new Arg("value_type", "Value type - millisecond,second,minute,hour,hour_of_day,week,month,year")),
 
         new Cmd("-extractdate", "Extract date",
 		new Arg("date column", "", "type", "column"),
@@ -2942,7 +2958,7 @@ public class CsvUtil {
 		    ifArgs.add(a);
 		}
 		//		System.err.println("if args:" + ifArgs);
-		TextReader ifCtx = new TextReader();
+		TextReader ifCtx = makeTextReader();
 		for(int j=0;j<ifArgs.size();j++) {
 		    String arg = ifArgs.get(j);
 		    CsvFunctionHolder func = getFunction(arg);
@@ -3541,49 +3557,46 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-formatdate", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.DateFormatter(getCols(args.get(++i)), dateFormat, args.get(++i)));
+	defineFunction("-formatdate", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new DateOps.DateFormatter(getCols(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-elapsed", 1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Elapsed(args.get(++i), dateFormat));
+		ctx.addProcessor(new DateOps.Elapsed(args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-dateformat", 2,(ctx,args,i) -> {
-		this.dateFormat = new SimpleDateFormat(dateFormatString = args.get(++i));
-		this.timezone = args.get(++i);
+	defineFunction(new String[]{"-indateformat","-dateformat"}, 2,(ctx,args,i) -> {
+		inDater = new Dater(args.get(++i),args.get(++i));
+		ctx.addProcessor(new DateOps.DateFormatSetter(true, inDater));
 		return i;
 	    });
 
-	defineFunction("-convertdate",2,(ctx,args,i) -> {
-		String col  = args.get(++i);
-		String sdf2 = args.get(++i);
-		ctx.addProcessor(
-				 new Converter.DateConverter(
-							     col, dateFormatString,
-							     sdf2));
+	defineFunction(new String[]{"-outdateformat"}, 2,(ctx,args,i) -> {
+		outDater = new Dater(args.get(++i),args.get(++i));
+		ctx.addProcessor(new DateOps.DateFormatSetter(false, outDater));
+		return i;
+	    });	
+
+	defineFunction("-convertdate",1,(ctx,args,i) -> {
+		ctx.addProcessor(new DateOps.DateConverter(args.get(++i)));
 		return i;
 	    });
-	defineFunction("-adddate",2,(ctx,args,i) -> {
+
+	defineFunction("-adddate",3,(ctx,args,i) -> {
 		String dateCol =args.get(++i);
 		String valueCol =args.get(++i);
 		String type =args.get(++i);				
-		String outFormat =args.get(++i);
-		if(!Utils.stringDefined(outFormat)) outFormat = dateFormatString;
-		ctx.addProcessor(
-				 new Converter.DateAdder(dateCol, valueCol, type,dateFormatString, outFormat));
+		ctx.addProcessor(new DateOps.DateAdder(ctx, dateCol, valueCol, type));
 		return i;
 	    });
 
 	defineFunction("-extractdate",2,(ctx,args,i) -> {
 		String col  = args.get(++i);
 		String what = args.get(++i);
-		ctx.addProcessor(
-				 new Converter.DateExtracter(col, dateFormatString, timezone, what));
-
+		ctx.addProcessor(new DateOps.DateExtracter(col, what));
 		return i;
 	    });
 
@@ -3605,7 +3618,7 @@ public class CsvUtil {
 			dttm = Utils.parseDate(date);
 		    }
 		    ctx.addProcessor(
-				     new Converter.DateBefore(
+				     new DateOps.DateBefore(
 							      col, new SimpleDateFormat(sdf1), dttm));
 
 		    return i;
@@ -3630,7 +3643,7 @@ public class CsvUtil {
 			dttm = Utils.parseDate(date);
 		    }
 		    ctx.addProcessor(
-				     new Converter.DateAfter(
+				     new DateOps.DateAfter(
 							     col, new SimpleDateFormat(sdf1), dttm));
 
 		    return i;
@@ -4845,6 +4858,52 @@ public class CsvUtil {
 	System.exit(0);
     }
 
+    public static class Dater {
+	private static String DFLT_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+	private String sdfString = DFLT_DATEFORMAT;
+	private SimpleDateFormat sdf = new SimpleDateFormat(sdfString);
+	private String timezone="UTC";
+
+	public Dater() {
+	}
+
+	public Dater(String fmt, String tz) {
+	    setFormat(fmt,tz);
+	}
+
+
+	public void setFormat(String fmt, String timezone) {
+	    sdf = new SimpleDateFormat(sdfString = fmt);
+	    if(!Utils.stringDefined(timezone)) {
+		this.timezone = timezone;
+	    }
+	    sdf.setTimeZone(TimeZone.getTimeZone(this.timezone));
+	}
+	
+	public Date parseDate(String d) {
+	    try {
+		return sdf.parse(d);
+            } catch (Exception exc) {
+		throw new CsvUtil.MessageException("Could not parse date:" + d + " with format:"
+						   + sdfString);
+            }
+	}
+
+	public String formatDate(Date d) {
+	    //	    System.err.println("FMT:" + sdfString +" " + sdf.format(d));
+	    return sdf.format(d);
+	}
+	
+	public TimeZone getTimeZone() {
+	    return TimeZone.getTimeZone(timezone);
+	}
+
+	public String toString() {
+	    return "fmt:" + sdfString;
+	}
+
+
+    }
 
 
 }

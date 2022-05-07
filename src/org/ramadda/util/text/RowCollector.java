@@ -859,9 +859,7 @@ public class RowCollector extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            System.err.println("Html.processRow");
             printRow(ctx, row, true);
-
             return row;
         }
 
@@ -876,6 +874,7 @@ public class RowCollector extends Processor {
          */
         public void printRow(TextReader ctx, Row row, boolean addCnt)
 	    throws Exception {
+
             List values = row.getValues();
             if (cnt == 0) {
                 ctx.getWriter().println(
@@ -2177,9 +2176,9 @@ public class RowCollector extends Processor {
 			//			if(col.skip) continue;
 			if(i<row.size()) {
 			    if(col.mergeNext) {
-				r.add(col.format(row.get(i))+"," + cols.get(i+1).format(row.get(i+1)));
+				r.add(col.format(ctx,row.get(i))+"," + cols.get(i+1).format(ctx,row.get(i+1)));
 			    } else {
-				r.add(col.format(row.get(i)));
+				r.add(col.format(ctx,row.get(i)));
 			    }
 			}
 		    }
@@ -2345,11 +2344,12 @@ public class RowCollector extends Processor {
              *
              * @return _more_
              */
-            public Object format(Object v) {
+            public Object format(TextReader ctx,Object v) {
                 if (type.equals("date") && (format != null)) {
                     Date date = getDate(v);
                     if (date != null) {
-                        return fmtSdf.format(date);
+			return ctx.formatDate(date);
+			//                        return fmtSdf.format(date);
                     }
 
                     return "bad date:" + v;
@@ -2361,6 +2361,13 @@ public class RowCollector extends Processor {
                     }
                 }
 
+		//Clean up any tags
+		if(v!=null) {
+		    String sv = v.toString();
+		    sv = sv.replaceAll("<","&lt;");
+		    sv = sv.replaceAll(">","&gt;");
+		    return sv;
+		}
                 return v;
             }
 
