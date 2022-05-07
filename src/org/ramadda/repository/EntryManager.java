@@ -6713,9 +6713,11 @@ public class EntryManager extends RepositoryManager {
 			getIconImage(link.getIcon()));
             }
 	    sb.append(HU.SPACE);
+	    String tooltip = link.getTooltip();
+	    if(!Utils.stringDefined(tooltip)) tooltip = link.getLabel();
 	    HU.href(sb,
 		    link.getUrl(), msg(link.getLabel()),
-		    HU.attrs("title",link.getLabel(),"class",
+		    HU.attrs("title",tooltip,"class",
 			     CSS_CLASS_MENUITEM_LINK));
             sb.append(HU.close(HU.TAG_DIV));
         }
