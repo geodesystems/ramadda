@@ -202,10 +202,7 @@ public abstract class DateOps extends Processor {
                 String s = row.get(col).toString();
                 Date   d = ctx.parseDate(s);
                 cal.setTime(d);
-                System.err.println("S:" + s + " D:" + d + " "
-                                   + cal.get(what));
-                String v = "NA";
-                v = "" + cal.get(what);
+                String v =  "" + cal.get(what);
                 add(ctx, row, v);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);

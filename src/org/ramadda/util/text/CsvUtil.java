@@ -4873,6 +4873,7 @@ public class CsvUtil {
 
 
 	public void setFormat(String fmt, String timezone) {
+	    if(!Utils.stringDefined(fmt)) fmt = DFLT_DATEFORMAT;
 	    sdf = new SimpleDateFormat(sdfString = fmt);
 	    if(!Utils.stringDefined(timezone)) {
 		this.timezone = timezone;
