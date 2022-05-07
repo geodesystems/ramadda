@@ -3261,12 +3261,15 @@ public class TypeHandler extends RepositoryManager {
                       + formatFileLength(entry.getResource().getFileSize())
                       + ")";
 
-        String fileTail = getStorageManager().getFileTail(entry);
-        fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
+        String tail = getStorageManager().getFileTail(entry);
+        String fileTail = HtmlUtils.urlEncodeExceptSpace(tail);
 
-        return new Link(getEntryManager().getEntryResourceUrl(request,
-                entry), ICON_FETCH, msg(label) + size,
+        Link link  = new Link(getEntryManager().getEntryResourceUrl(request,
+							      entry), ICON_FETCH,
+			msg(label) + size,
                         OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
+	link.setTooltip(tail);
+	return link;
     }
 
 
