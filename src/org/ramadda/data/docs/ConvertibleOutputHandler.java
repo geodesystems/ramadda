@@ -171,19 +171,23 @@ public class ConvertibleOutputHandler extends OutputHandler {
         String lastInput =
             (String) getSessionManager().getSessionProperty(request,
                 "csv.lastinput." + entry.getId());
+
         if ((lastInput == null)
                 && entry.getTypeHandler().isType("type_convertible")) {
             lastInput =
                 (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
 
-            if ((lastInput == null) || (lastInput.length() == 0)) {
+
+            if (!Utils.stringDefined(lastInput)) {
                 if (entry.getTypeHandler().isType(
                         TabularTypeHandler.TYPE_TABULAR)) {
                     lastInput = (String) entry.getValue(
-                        TabularTypeHandler.IDX_CONVERT);
+							TabularTypeHandler.IDX_CONVERT);
                 }
             }
         }
+
+
         if (lastInput != null) {
             //A hack but escaping the escapes in java is a pain
             lastInput = lastInput.replaceAll("\r\n", "_escnl_");
@@ -191,6 +195,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
             lastInput = lastInput.replaceAll("\n", "_escnl_");
             lastInput = lastInput.replaceAll("\"", "_escquote_");
             lastInput = lastInput.replaceAll("\\\\", "_escslash_");
+            lastInput = lastInput.replaceAll("<", "_esclt_");
+            lastInput = lastInput.replaceAll(">", "_escgt_");	    	    
         }
         String id = HtmlUtils.getUniqueId("convert");
 
