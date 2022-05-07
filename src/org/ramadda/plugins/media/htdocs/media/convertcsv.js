@@ -54,7 +54,7 @@ function  ConvertForm(inputId, entry,params) {
 	    let _this  =this;
 	    let text = $("#" + this.baseId +"_lastinput").html();
 	    if(text!=null) {
-		text = text.replace(/_escnl_/g,"\n").replace(/_escquote_/g,'&quot;').replace(/_escslash_/g,"\\").replace(/\"/g,'&quot;');
+		text = text.replace(/_escnl_/g,"\n").replace(/_escquote_/g,'&quot;').replace(/_escslash_/g,"\\").replace(/\"/g,'&quot;').replace(/_esclt_/g,"&lt;").replace(/_escgt_/g,"&gt;");
 	    }  else {
 		text = this.getInput(true)||"";
 	    }
@@ -75,17 +75,27 @@ function  ConvertForm(inputId, entry,params) {
 		html+=HU.leftRight(this.params.extraTopLeft ||"",this.params.extraTopRight ||"");
 	    }
 	    
+
 	    let topLeft = HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
 	    let topRight =  HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS),TITLE,"Settings",STYLE,HU.css("cursor","pointer")],HU.getIconImage("fa-cog")) +SPACE2 +
 		HtmlUtil.span([ID,this.domId(ID_HELP),CLASS,"ramadda-clickable", TITLE,"Help"], HtmlUtils.getIconImage("fa-question-circle"))+SPACE2;
 	    
 	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
+
 	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
+
+
 	    html+=HU.div([ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(this.params.height||'200px'),'position','relative')],input);
+
+
+
 	    let left ="";
 	    left += HtmlUtil.span([ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_PROCESS),CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
+
+
+
 	    let right = "";
 	    right += HtmlUtil.span([ID,this.domId(ID_CLEAR),CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
 	    right += HtmlUtil.span([ID,this.domId(ID_LIST),CLASS,"ramadda-clickable", TITLE,"List temp files"],HU.getIconImage("fa-list")) +SPACE2;
@@ -97,8 +107,9 @@ function  ConvertForm(inputId, entry,params) {
 	    html +=  HtmlUtil.div([ID, this.domId(ID_OUTPUT),STYLE,HU.css("margin-top","5px", "max-height","500px","overflow-y","auto")],"");
 	    html += HtmlUtil.div([ID, this.domId(ID_SCRATCH)],"");
 
+
 	    jqid(this.inputId).addClass("ramadda-seesv");
-	    $("#" +  this.inputId).html(html);
+	    jqid(this.inputId).html(html);
 
 	    this.jq("resize").resizable({
 		handles: 's',
