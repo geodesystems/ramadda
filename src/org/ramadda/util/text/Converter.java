@@ -6108,6 +6108,54 @@ public abstract class Converter extends Processor {
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
+    public static class Unfill extends Converter {
+
+        /**  */
+        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
+                                                           String>();
+
+
+        /**
+         * @param cols _more_
+         */
+        public Unfill(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+            for (int col : indices) {
+                String v = row.getString(col);
+                v = v.trim();
+		String lastv = lastValue.get(col);
+		if(lastv!=null && v.equals(lastv)) {
+		    row.set(col,"");
+		} else {
+		    lastValue.put(col,v);
+		}
+            }
+
+            return row;
+        }
+    }
+
+
 
     /**
      * Class description

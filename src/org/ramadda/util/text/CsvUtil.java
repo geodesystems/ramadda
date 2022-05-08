@@ -2072,6 +2072,10 @@ public class CsvUtil {
 		"Fill down with last non-null value",
 		new Arg("columns", "", "type", "columns")),
         new Cmd(
+		"-unfill",
+		"Set following cells to blank if the same as previous cell",
+		new Arg("columns", "", "type", "columns")),	
+        new Cmd(
 		"-priorprefix",
 		"Append prefix from the previous element to rows that match pattern",
 		new Arg("column", "", "type", "column"),
@@ -4060,6 +4064,10 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.FillDown(getCols(args.get(++i))));
 		return i;
 	    });
+	defineFunction("-unfill", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Unfill(getCols(args.get(++i))));
+		return i;
+	    });	
 
 
 	defineFunction("-priorprefix", 3,(ctx,args,i) -> {
