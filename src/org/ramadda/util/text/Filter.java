@@ -1559,7 +1559,6 @@ public class Filter extends Processor {
             if (rowCnt++ == 0) {
                 return true;
             }
-            boolean debug = rowCnt < 50;
             boolean ok    = true;
             for (int idx : getIndices(ctx)) {
                 if (idx >= row.size()) {
@@ -1580,8 +1579,6 @@ public class Filter extends Processor {
                     } else if ( !inRange && between) {
                         ok = false;
                     }
-                    //              if(debug) System.out.println(min +" " + value  +" " +max  +" " + inRange +" " + ok);
-
                     if ( !ok) {
                         break;
                     }
@@ -1594,6 +1591,87 @@ public class Filter extends Processor {
         }
     }
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jan 12, '15
+     * @author         Enter your name here...
+     */
+    public static class BetweenString extends ColumnFilter {
+
+	private boolean not;
+
+        /**  */
+        private boolean between;
+
+        /** _more_ */
+        private String start;
+
+        /**  */
+        private String end;
+	private boolean inside = false;
+
+
+        /**
+         * _more_
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param between _more_
+         * @param cols _more_
+         * @param min _more_
+         * @param max _more_
+         */
+        public BetweenString(TextReader ctx,  boolean not,
+			     String col, String start, String end) {
+            super(col);
+	    this.not = not;
+            this.start = start;
+            this.end = end;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return true;
+            }
+
+	    int idx = getIndex(ctx);
+	    if (idx >= row.size()) {
+		return false;
+	    }
+	    boolean nextInside = inside;
+
+	    String v = row.getString(idx).trim();
+	    if(!inside) {
+		nextInside = v.equals(start);
+		if(nextInside) inside = true;
+	    } else {
+		if(end.length()!=0) {
+		    if(v.equals(end)) nextInside=false;
+		}
+	    }
+
+	    boolean ok = not? !inside:inside;
+	    inside = nextInside;
+	    return ok;
+
+        }
+    }
+    
     /**
      * Class description
      *

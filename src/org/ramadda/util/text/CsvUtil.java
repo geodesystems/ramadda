@@ -1817,6 +1817,11 @@ public class CsvUtil {
 
 	new Cmd("-notbetween","Extract rows that are not within the range",
                 new Arg("column", "", "type", "column"), new Arg("min value"),new Arg("max value")),
+        new Cmd("-betweenstring", "Extract rows that are between the given strings",
+                new Arg("column", "", "type", "column"), new Arg("start string"),new Arg("end string")),
+
+        new Cmd("-notbetweenstring", "Extract rows that are between the given strings",
+                new Arg("column", "", "type", "column"), new Arg("start string"),new Arg("end string")),
         new Cmd("-groupfilter", "One row in each group has to match",
                 new Arg("column", "key column", "type", "column"),
                 new Arg("value_column", "Value column", "type", "column"),
@@ -4231,6 +4236,24 @@ public class CsvUtil {
 		return i;
 	    });
 
+
+	defineFunction("-betweenstring", 3,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.BetweenString(ctx,false,
+						       args.get(++i), 
+						       args.get(++i),
+						       args.get(++i)));
+		return i;
+	    });
+
+	defineFunction("-notbetweenstring", 3,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.BetweenString(ctx,true,
+						       args.get(++i), 
+						       args.get(++i),
+						       args.get(++i)));
+		return i;
+	    });
 
 	defineFunction("-between", 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
