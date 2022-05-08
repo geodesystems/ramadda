@@ -2241,7 +2241,12 @@ public class CsvUtil {
         new Cmd("-datediff", "Calculate elapsed time between columns column1-column2",
                 new Arg("column1","Column 1","type","column"),
                 new Arg("column2","Column 2","type","column"),
-		new Arg("unit","Unit-milliseconds,seconds,minutes,hours,days","type","enumeration","values","milliseconds,seconds,minutes,hours,days")),	
+		new Arg("unit","Unit-milliseconds,seconds,minutes,hours,days","type","enumeration","values","milliseconds,seconds,minutes,hours,days")),
+	new Cmd("-datecompare", "add a true/false column comparing the date values",
+		new Arg("column1", "", "type", "column"),
+		new Arg("column2", "", "type", "column"),
+		new Arg("operator", "<,<=,=,!=,>=,>", "type", "enumeration","values","<,<=,=,!=,>=,>")),	
+	
 
         /** *  Numeric * */
         new Cmd(true, "Numeric/Boolean"),
@@ -2264,7 +2269,8 @@ public class CsvUtil {
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,%,average"),
-        new Cmd("-compare", "add a true/false column comparing the values",
+
+	new Cmd("-compare", "add a true/false column comparing the values",
 		new Arg("column1", "", "type", "column"),
 		new Arg("column2", "", "type", "column"),
 		new Arg("operator", "<,<=,=,!=,>=,>", "type", "enumeration","values","<,<=,=,!=,>=,>")),
@@ -3978,6 +3984,13 @@ public class CsvUtil {
 		return i;
 	    });
 
+
+	defineFunction("-datecompare", 3,(ctx,args,i) -> {
+		Processor processor = new DateOps.CompareDate(args.get(++i),args.get(++i),args.get(++i));
+		ctx.addProcessor(processor);
+		return i;
+	    });
+	
 
 	defineFunction("-js", 1,(ctx,args,i) -> {
 		js.append(args.get(++i));

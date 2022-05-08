@@ -549,6 +549,72 @@ public abstract class DateOps extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class CompareDate extends Converter {
+
+        /** _more_ */
+        private String op;
+
+	private String scol1;
+	private String scol2;
+	private int col1;
+	private int col2;	
+
+
+        /**
+         * @param indices _more_
+         * @param name _more_
+         * @param op _more_
+         */
+        public CompareDate(String col1, String col2, String op) {
+	    this.scol1=  col1;
+	    this.scol2=  col2;	    
+            this.op   = op;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		col1 = getIndex(ctx, scol1);
+		col2 = getIndex(ctx, scol2);		
+		row.add(row.getString(col1) +" " + op +" " + row.getString(col2));
+                return row;
+            }
+	    if(col1>= row.size()) return row;
+	    if(col2>= row.size()) return row;	    
+            Date dvalue1 = ctx.parseDate(row.getString(col1));
+            Date dvalue2 = ctx.parseDate(row.getString(col2));	    
+	    long value1 = dvalue1.getTime();
+	    long value2 = dvalue2.getTime();	    
+	    boolean value = true;
+	    if(op.equals("<")) value  = value1 < value2;
+	    else if(op.equals("<=")) value  = value1 <= value2;
+	    else if(op.equals("=")) value  = value1 == value2;
+	    else if(op.equals("!=")) value  = value1 != value2;	    
+	    else if(op.equals(">")) value  = value1 > value2;
+	    else if(op.equals(">=")) value  = value1 >= value2;    	    
+	    else fatal(ctx,"Unknown operator:" + op);
+            row.getValues().add(value + "");
+            return row;
+        }
+
+    }
+    
+
+
+
 
     /**
      *
