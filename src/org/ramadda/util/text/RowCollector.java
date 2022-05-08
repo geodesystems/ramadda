@@ -1811,8 +1811,8 @@ public class RowCollector extends Processor {
          * @param col _more_
          * @param asc _more_
          */
-        public Sorter(TextReader ctx, String col, boolean asc) {
-            super(col);
+        public Sorter(TextReader ctx, List<String> cols, boolean asc) {
+            super(cols);
             this.asc = asc;
         }
 
@@ -1830,14 +1830,14 @@ public class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            int index = getIndex(ctx);
+	    List<Integer>indices = getIndices(ctx);
             rows = new ArrayList<Row>(getRows(rows));
             if (rows.size() == 0) {
                 return rows;
             }
             Row headerRow = rows.get(0);
             rows.remove(0);
-            Collections.sort(rows, new Row.RowCompare(index, asc));
+            Collections.sort(rows, new Row.RowCompare(indices, asc));
             rows.add(0, headerRow);
 
             return rows;

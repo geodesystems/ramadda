@@ -2368,7 +2368,7 @@ public class CsvUtil {
 		new Arg("columns", "Columns to expand with", "type", "columns"),
 		new Arg("commands", "Commands", "rows", "6")),
         new Cmd("-sort", "",
-                new Arg("column", "Column to sort on", "type", "column")),
+                new Arg("columns", "Column to sort on", "type", "columns")),
         new Cmd("-descsort", "",
                 new Arg("column", "Column to descending sort on", "type",
                         "column")),
@@ -3037,13 +3037,13 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-sort",1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Sorter(ctx,args.get(++i), true));
+		ctx.addProcessor(new RowCollector.Sorter(ctx,getCols(args.get(++i)), true));
 
 		return i;
 	    });
 
 	defineFunction("-descsort",1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Sorter(ctx,args.get(++i), false));
+		ctx.addProcessor(new RowCollector.Sorter(ctx,getCols(args.get(++i)), false));
 		return i;
 	    });
 

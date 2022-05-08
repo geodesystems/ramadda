@@ -274,13 +274,19 @@ public class Row {
         private boolean checked = false;
 
         /** _more_ */
-        private int idx;
+        private List<Integer> indices;
 
         /** _more_ */
         private boolean ascending;
 
         /** _more_ */
         private boolean isNumber = false;
+
+        public RowCompare(List<Integer>indices, boolean asc) {
+	    this.indices = indices;
+            this.ascending = asc;
+	}
+
 
         /**
          * _more_
@@ -290,7 +296,8 @@ public class Row {
          * @param asc _more_
          */
         public RowCompare(int idx, boolean asc) {
-            this.idx       = idx;
+	    this.indices= new ArrayList<Integer>();
+	    this.indices.add(idx);
             this.ascending = asc;
         }
 
@@ -305,45 +312,47 @@ public class Row {
          */
         public int compare(Row r1, Row r2) {
             int result;
-            if ((idx < 0) || (idx >= r1.size())) {
-                return 1;
-            }
-            if ((idx < 0) || (idx >= r2.size())) {
-                return 0;
-            }
-            Object o1 = r1.get(idx);
-            Object o2 = r2.get(idx);
-            String s1 = o1.toString();
-            String s2 = o2.toString();
-            if ( !checked) {
-                try {
-                    checked = true;
-                    double d = Double.parseDouble(s1);
-                    isNumber = true;
-                } catch (Exception e) {}
-            }
+	    for(int idx: indices) {
+		if ((idx < 0) || (idx >= r1.size())) {
+		    return 1;
+		}
+		if ((idx < 0) || (idx >= r2.size())) {
+		    return 0;
+		}
+		Object o1 = r1.get(idx);
+		Object o2 = r2.get(idx);
+		String s1 = o1.toString();
+		String s2 = o2.toString();
+		if ( !checked) {
+		    try {
+			checked = true;
+			double d = Double.parseDouble(s1);
+			isNumber = true;
+		    } catch (Exception e) {}
+		}
+		int dir = 0;
+		if (isNumber) {
+		    double d1 = Double.parseDouble(s1);
+		    double d2 = Double.parseDouble(s2);
+		    if (d1 < d2) {
+			dir = -1;
+		    } else if (d1 > d2) {
+			dir = 1;
+		    } else {
+			dir = 0;
+		    }
+		} else {
+		    dir = s1.compareTo(s2);
+		}
+		if (dir == 0) {
+		    continue;
+		}
+		return ascending
+		    ? dir
+		    : -dir;
+	    }
+	    return 0;
 
-            int dir = 0;
-            if (isNumber) {
-                double d1 = Double.parseDouble(s1);
-                double d2 = Double.parseDouble(s2);
-                if (d1 < d2) {
-                    dir = -1;
-                } else if (d1 > d2) {
-                    dir = 1;
-                } else {
-                    dir = 0;
-                }
-            } else {
-                dir = s1.compareTo(s2);
-            }
-            if (dir == 0) {
-                return 0;
-            }
-
-            return ascending
-                   ? dir
-                   : -dir;
         }
 
     }
