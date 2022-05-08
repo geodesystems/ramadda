@@ -1,0 +1,22 @@
+For example, given the following data
+<pre>
+name,value1,value2
+jane,foo,1
+jane,bar,2
+john,doe,3
+bill,doe,4
+bill,doe,4
+</pre>
+
+Calling:
+<pre>
+  csv -betweenstring name jane john
+</pre>
+
+Will give:
+<pre>
+name,value1,value2
+jane,foo,1
+jane,bar,2
+john,doe,3
+</pre>
