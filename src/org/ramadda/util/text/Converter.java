@@ -4492,6 +4492,8 @@ public abstract class Converter extends Processor {
                             value = value - v;
                         } else if (op.equals("*")) {
                             value = value * v;
+                        } else if (op.equals("%")) {
+                            value = value % v;			    
                         } else if (op.equals("/")) {
                             value = value / v;
                         }
@@ -5343,6 +5345,58 @@ public abstract class Converter extends Processor {
      * @version        $version$, Fri, Feb 12, '21
      * @author         Enter your name here...
      */
+    public static class Subst extends Converter {
+	private List<String>header;
+	private List<String>_header;
+	private String name;
+	private String template;
+
+        /**
+         */
+        public Subst(String name, String template) {
+	    this.name = name;
+	    this.template = template;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		header = new ArrayList<String>();
+		_header = new ArrayList<String>();
+		for(int i=0;i<row.size();i++) {
+		    header.add(row.getString(i));
+		    _header.add(row.getString(i).toLowerCase());
+		}
+                row.add(name);
+                return row;
+            }
+	    String v = template;
+	    for(int i=0;i<row.size();i++) {	    
+		v = Utils.replaceAll(v,"${" + header.get(i) +"}", row.getString(i));
+		v = Utils.replaceAll(v,"${" + _header.get(i) +"}", row.getString(i));
+		v = Utils.replaceAll(v,"${" + i +"}", row.getString(i));
+	    }
+	    row.add(v);
+            return row;
+        }
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Feb 12, '21
+     * @author         Enter your name here...
+     */
     public static class SoundexMaker extends Converter {
 
         /**  */
@@ -5661,7 +5715,6 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             if ((rowCnt++ == 0) && !label.equals("none")) {
                 row.getValues().add(label);
-
                 return row;
             }
             if (value == null) {

@@ -2153,6 +2153,9 @@ public class CsvUtil {
 
        /** *  Add values * */
         new Cmd(true, "Add Values"),
+        new Cmd("-subst", "Create a new column with the template",
+                new Arg("column_name", "New Column Name"),
+                new Arg("template", "Template - use ${column_name} ... ")),
         new Cmd("-md", "Make a message digest of the column values",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("type", "", "values", "MD5,SHA-1,SHA-256")),
@@ -2247,7 +2250,7 @@ public class CsvUtil {
                 new Arg("key columns"), new Arg("columns")),
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
-                new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,average"),
+                new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,%,average"),
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
 	//TODO:
@@ -3974,6 +3977,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ColumnRand(args.get(++i), Double.parseDouble(args.get(++i)),Double.parseDouble(args.get(++i))));
 		return i;
 	    });		
+	defineFunction("-subst", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Subst(args.get(++i),args.get(++i)));
+		return i;
+	    });
+
 	defineFunction("-md", 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.MD(ctx,getCols(args.get(++i)),args.get(++i)));
 		return i;
