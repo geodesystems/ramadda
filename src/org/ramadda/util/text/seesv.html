@@ -36,7 +36,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 246 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 251 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -495,7 +495,7 @@ Number of lines to leave<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
-<div class=header>Commands: <a href='#-skiplines'>-skiplines</a> <a href='#-if'>-if</a> <a href='#-start'>-start</a> <a href='#-stop'>-stop</a> <a href='#-rawlines'>-rawlines</a> <a href='#-inputnotcontains'>-inputnotcontains</a> <a href='#-min'>-min</a> <a href='#-max'>-max</a> <a href='#-numcolumns'>-numcolumns</a> <a href='#-pattern'>-pattern</a> <a href='#-notpattern'>-notpattern</a> <a href='#-fuzzypattern'>-fuzzypattern</a> <a href='#-lengthgreater'>-lengthgreater</a> <a href='#-same'>-same</a> <a href='#-notsame'>-notsame</a> <a href='#-unique'>-unique</a> <a href='#-dups'>-dups</a> <a href='#-sample'>-sample</a> <a href='#-maxvalue'>-maxvalue</a> <a href='#-eq'>-eq</a> <a href='#-ne'>-ne</a> <a href='#-gt'>-gt</a> <a href='#-ge'>-ge</a> <a href='#-lt'>-lt</a> <a href='#-le'>-le</a> <a href='#-between'>-between</a> <a href='#-notbetween'>-notbetween</a> <a href='#-groupfilter'>-groupfilter</a> <a href='#-before'>-before</a> <a href='#-after'>-after</a> <a href='#-latest'>-latest</a> <a href='#-countvalue'>-countvalue</a> <a href='#-decimate'>-decimate</a> <a href='#-ifin'>-ifin</a> <a href='#-ifnotin'>-ifnotin</a> <a href='#-ifmatchesfile'>-ifmatchesfile</a> <a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a> <a href='#-skippattern'>-skippattern</a> <a href='#-skip'>-skip</a> </div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
+<div class=header>Commands: <a href='#-skiplines'>-skiplines</a> <a href='#-if'>-if</a> <a href='#-start'>-start</a> <a href='#-stop'>-stop</a> <a href='#-rawlines'>-rawlines</a> <a href='#-inputnotcontains'>-inputnotcontains</a> <a href='#-min'>-min</a> <a href='#-max'>-max</a> <a href='#-numcolumns'>-numcolumns</a> <a href='#-pattern'>-pattern</a> <a href='#-notpattern'>-notpattern</a> <a href='#-fuzzypattern'>-fuzzypattern</a> <a href='#-lengthgreater'>-lengthgreater</a> <a href='#-same'>-same</a> <a href='#-notsame'>-notsame</a> <a href='#-unique'>-unique</a> <a href='#-dups'>-dups</a> <a href='#-sample'>-sample</a> <a href='#-maxvalue'>-maxvalue</a> <a href='#-eq'>-eq</a> <a href='#-ne'>-ne</a> <a href='#-gt'>-gt</a> <a href='#-ge'>-ge</a> <a href='#-lt'>-lt</a> <a href='#-le'>-le</a> <a href='#-between'>-between</a> <a href='#-notbetween'>-notbetween</a> <a href='#-betweenstring'>-betweenstring</a> <a href='#-notbetweenstring'>-notbetweenstring</a> <a href='#-groupfilter'>-groupfilter</a> <a href='#-before'>-before</a> <a href='#-after'>-after</a> <a href='#-latest'>-latest</a> <a href='#-countvalue'>-countvalue</a> <a href='#-decimate'>-decimate</a> <a href='#-ifin'>-ifin</a> <a href='#-ifnotin'>-ifnotin</a> <a href='#-ifmatchesfile'>-ifmatchesfile</a> <a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a> <a href='#-skippattern'>-skippattern</a> <a href='#-skip'>-skip</a> </div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
 <b>Arguments:</b><br>
 <ul>
 <i>lines</i>
@@ -723,7 +723,72 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
-</div><a name='-groupfilter'></a><div class=command> <i><a href='#-groupfilter'>-groupfilter</a></i>  &lt;column&gt;  &lt;value_column&gt;  &lt;operator&gt;  &lt;value&gt; </div><div class=command-block>One row in each group has to match<br>
+</div><a name='-betweenstring'></a><div class=command> <i><a href='#-betweenstring'>-betweenstring</a></i>  &lt;column&gt;  &lt;start string&gt;  &lt;end string&gt; </div><div class=command-block>Extract rows that are between the given strings<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column</i>
+<br>
+<i>start string</i>
+<br>
+<i>end string</i>
+<br>
+<br>
+</ul>
+For example, given the following data
+<pre>
+name,value1,value2
+jane,foo,1
+jane,bar,2
+john,doe,3
+bill,doe,4
+bill,doe,4
+</pre>
+
+Calling:
+<pre>
+  csv -betweenstring name jane john
+</pre>
+
+Will give:
+<pre>
+name,value1,value2
+jane,foo,1
+jane,bar,2
+john,doe,3
+</pre>
+<p></div><a name='-notbetweenstring'></a><div class=command> <i><a href='#-notbetweenstring'>-notbetweenstring</a></i>  &lt;column&gt;  &lt;start string&gt;  &lt;end string&gt; </div><div class=command-block>Extract rows that are between the given strings<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column</i>
+<br>
+<i>start string</i>
+<br>
+<i>end string</i>
+<br>
+<br>
+</ul>
+For example, given the following data
+<pre>
+name,value1,value2
+jane,foo,1
+jane,bar,2
+john,doe,3
+bill,doe,4
+bill,doe,4
+</pre>
+
+Calling:
+<pre>
+  csv -notbetweenstring name jane john
+</pre>
+
+Will give:
+<pre>
+name,value1,value2
+bill,doe,4
+bill,doe,4
+</pre>
+<p></div><a name='-groupfilter'></a><div class=command> <i><a href='#-groupfilter'>-groupfilter</a></i>  &lt;column&gt;  &lt;value_column&gt;  &lt;operator&gt;  &lt;value&gt; </div><div class=command-block>One row in each group has to match<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -1311,7 +1376,7 @@ Regexp to apply to header with () defining column values<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> <a href='#-faker'>-faker</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-unfill'>-unfill</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> <a href='#-faker'>-faker</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1424,7 +1489,38 @@ Column indices. Can include ranges, e.g. 0-5<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
-</div><a name='-priorprefix'></a><div class=command> <i><a href='#-priorprefix'>-priorprefix</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;delimiter&gt; </div><div class=command-block>Append prefix from the previous element to rows that match pattern<br>
+</div><a name='-unfill'></a><div class=command> <i><a href='#-unfill'>-unfill</a></i>  &lt;columns&gt; </div><div class=command-block>Set following cells to blank if the same as previous cell<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+For example, given the following data
+<pre>
+name,value1,value2
+jane,foo,1
+jane,bar,2
+john,doe,3
+bill,doe,4
+bill,doe,4
+</pre>
+
+Calling:
+<pre>
+  csv -unfill name,value1
+</pre>
+
+Will give:
+<pre>
+name,value1,value2
+jane,foo,1
+&lt;blank&gt;,bar,2
+john,doe,3
+bill,&lt;blank&gt;,4
+&lt;blank&gt;,&lt;blank&gt;,4
+</pre>
+<p></div><a name='-priorprefix'></a><div class=command> <i><a href='#-priorprefix'>-priorprefix</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;delimiter&gt; </div><div class=command-block>Append prefix from the previous element to rows that match pattern<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -1721,7 +1817,16 @@ medicinename
 symptoms
 </pre>  
 <p></div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
-<div class=header>Commands: <a href='#-md'>-md</a> <a href='#-tob64'>-tob64</a> <a href='#-fromb64'>-fromb64</a> <a href='#-rot13'>-rot13</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
+<div class=header>Commands: <a href='#-subst'>-subst</a> <a href='#-md'>-md</a> <a href='#-tob64'>-tob64</a> <a href='#-fromb64'>-fromb64</a> <a href='#-rot13'>-rot13</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-subst'></a><div class=command> <i><a href='#-subst'>-subst</a></i>  &lt;column_name&gt;  &lt;template&gt; </div><div class=command-block>Create a new column with the template<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column_name</i>
+New Column Name<br>
+<i>template</i>
+Template - use ${column_name} ... <br>
+<br>
+</ul>
+</div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1835,7 +1940,7 @@ File suffix<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Dates'></a><b style='font-size:120%;'>Dates</b><br>
-<div class=header>Commands: <a href='#-indateformat'>-indateformat</a> <a href='#-outdateformat'>-outdateformat</a> <a href='#-convertdate'>-convertdate</a> <a href='#-adddate'>-adddate</a> <a href='#-extractdate'>-extractdate</a> <a href='#-formatdate'>-formatdate</a> <a href='#-elapsed'>-elapsed</a> </div><a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br>
+<div class=header>Commands: <a href='#-indateformat'>-indateformat</a> <a href='#-outdateformat'>-outdateformat</a> <a href='#-convertdate'>-convertdate</a> <a href='#-adddate'>-adddate</a> <a href='#-extractdate'>-extractdate</a> <a href='#-formatdate'>-formatdate</a> <a href='#-elapsed'>-elapsed</a> <a href='#-datediff'>-datediff</a> </div><a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br>
 <b>Arguments:</b><br>
 <ul>
 <i>format</i>
@@ -1896,6 +2001,17 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <ul>
 <i>column</i>
 <br>
+<br>
+</ul>
+</div><a name='-datediff'></a><div class=command> <i><a href='#-datediff'>-datediff</a></i>  &lt;column1&gt;  &lt;column2&gt;  &lt;unit&gt; </div><div class=command-block>Calculate elapsed time between columns column1-column2<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column1</i>
+Column 1<br>
+<i>column2</i>
+Column 2<br>
+<i>unit</i>
+Unit-milliseconds,seconds,minutes,hours,days values:milliseconds,seconds,minutes,hours,days <br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Numeric/Boolean'></a><b style='font-size:120%;'>Numeric/Boolean</b><br>
@@ -2001,14 +2117,14 @@ Value<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
-</div><a name='-operator'></a><div class=command> <i><a href='#-operator'>-operator</a></i>  &lt;columns&gt;  &lt;new col name&gt;  &lt;operator +,-,*,/,average&gt; </div><div class=command-block>Apply the operator to the given columns and create new one<br>
+</div><a name='-operator'></a><div class=command> <i><a href='#-operator'>-operator</a></i>  &lt;columns&gt;  &lt;new col name&gt;  &lt;operator +,-,*,/,%,average&gt; </div><div class=command-block>Apply the operator to the given columns and create new one<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
 Columns<br>
 <i>new col name</i>
 <br>
-<i>operator +,-,*,/,average</i>
+<i>operator +,-,*,/,%,average</i>
 <br>
 <br>
 </ul>
@@ -2661,9 +2777,9 @@ Columns to expand with<br>
 Commands<br>
 <br>
 </ul>
-</div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;column&gt; </div><div class=command-block><b>Arguments:</b><br>
+</div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block><b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<i>columns</i>
 Column to sort on<br>
 <br>
 </ul>
