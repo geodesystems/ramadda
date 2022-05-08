@@ -3088,6 +3088,91 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
+    public static class UrlEncode extends Converter {
+
+
+
+        /**
+         * @param name _more_
+         */
+        public UrlEncode(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		for(int idx:getIndices(ctx)) {
+		    row.add(row.getString(idx)+" encoded");
+		}
+                return row;
+            }
+	    for(int idx:getIndices(ctx)) {
+		try {
+		    row.add(java.net.URLEncoder.encode(row.getString(idx), "UTF-8"));
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    }
+            return row;
+        }
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
+    public static class UrlDecode extends Converter {
+
+
+
+        /**
+         * @param name _more_
+         */
+        public UrlDecode(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		for(int idx:getIndices(ctx)) {
+		    row.add(row.getString(idx)+" decoded");
+		}
+                return row;
+            }
+	    for(int idx:getIndices(ctx)) {
+		try {
+		    row.add(java.net.URLDecoder.decode(row.getString(idx), "UTF-8"));
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    }
+            return row;
+        }
+    }
+    
 
 
     /**

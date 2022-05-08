@@ -2140,6 +2140,10 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"),
                 new Arg("argname", "URL arg name")),
 
+        new Cmd("-urlencode", "URL encode the columns",
+                new Arg("columns", "", "type", "columns")),
+        new Cmd("-urldecode", "URL decode the columns",
+                new Arg("columns", "", "type", "columns")),	
         new Cmd("-map", "Change values in column to new values",
                 new Arg("column", "", "type", "columns"), "new columns name",
                 "value newvalue ..."),
@@ -3549,6 +3553,16 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-urlencode",1,(ctx,args,i) -> {
+		ctx.addProcessor(
+				 new Converter.UrlEncode(getCols(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-urldecode",1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.UrlDecode(getCols(args.get(++i))));
+		return i;
+	    });	
+	
 
 
 	defineFunction("-truncate",3,(ctx,args,i) -> {
