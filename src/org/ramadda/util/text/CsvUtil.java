@@ -4970,6 +4970,7 @@ public class CsvUtil {
 	
 	public Date parseDate(String d) {
 	    try {
+		if(!Utils.stringDefined(d)) return null;
 		return sdf.parse(d);
             } catch (Exception exc) {
 		throw new CsvUtil.MessageException("Could not parse date:" + d + " with format:"

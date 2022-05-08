@@ -596,6 +596,10 @@ public abstract class DateOps extends Processor {
 	    if(col2>= row.size()) return row;	    
             Date dvalue1 = ctx.parseDate(row.getString(col1));
             Date dvalue2 = ctx.parseDate(row.getString(col2));	    
+	    if(dvalue1==null || dvalue2==null) {
+		row.add("NA");
+		return row;
+	    }
 	    long value1 = dvalue1.getTime();
 	    long value2 = dvalue2.getTime();	    
 	    boolean value = true;
