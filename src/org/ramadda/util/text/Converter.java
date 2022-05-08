@@ -4603,6 +4603,70 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class CompareNumber extends Converter {
+
+
+        /** _more_ */
+        private String op;
+
+	private String scol1;
+	private String scol2;
+	private int col1;
+	private int col2;	
+
+
+        /**
+         * @param indices _more_
+         * @param name _more_
+         * @param op _more_
+         */
+        public CompareNumber(String col1, String col2, String op) {
+	    this.scol1=  col1;
+	    this.scol2=  col2;	    
+            this.op   = op;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		col1 = getIndex(ctx, scol1);
+		col2 = getIndex(ctx, scol2);		
+		row.add(row.getString(col1) +" " + op +" " + row.getString(col2));
+                return row;
+            }
+	    if(col1>= row.size()) return row;
+	    if(col2>= row.size()) return row;	    
+            double value1 = row.getDouble(col1);
+            double value2 = row.getDouble(col2);	    
+	    boolean value = true;
+	    if(op.equals("<")) value  = value1 < value2;
+	    else if(op.equals("<=")) value  = value1 <= value2;
+	    else if(op.equals("=")) value  = value1 == value2;
+	    else if(op.equals("!=")) value  = value1 != value2;	    
+	    else if(op.equals(">")) value  = value1 > value2;
+	    else if(op.equals(">=")) value  = value1 >= value2;    	    
+	    else fatal(ctx,"Unknown operator:" + op);
+            row.getValues().add(value + "");
+            return row;
+        }
+
+    }
+    
+
+
 
     /**
      * Class description

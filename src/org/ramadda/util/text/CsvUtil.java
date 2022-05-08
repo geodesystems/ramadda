@@ -2264,6 +2264,10 @@ public class CsvUtil {
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,%,average"),
+        new Cmd("-compare", "add a true/false column comparing the values",
+		new Arg("column1", "", "type", "column"),
+		new Arg("column2", "", "type", "column"),
+		new Arg("operator", "<,<=,=,!=,>=,>", "type", "enumeration","values","<,<=,=,!=,>=,>")),
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
 	//TODO:
@@ -3967,6 +3971,13 @@ public class CsvUtil {
 		ctx.addProcessor(processor);
 		return i;
 	    });
+
+	defineFunction("-compare", 3,(ctx,args,i) -> {
+		Processor processor = new Converter.CompareNumber(args.get(++i),args.get(++i),args.get(++i));
+		ctx.addProcessor(processor);
+		return i;
+	    });
+
 
 	defineFunction("-js", 1,(ctx,args,i) -> {
 		js.append(args.get(++i));
