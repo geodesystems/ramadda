@@ -1,0 +1,39 @@
+With the following data:
+
+letters.csv:
+<pre>
+letter
+a
+b
+c
+d
+</pre>
+
+<pre>
+number
+1
+2
+3
+</pre>
+
+The command:
+<pre>
+csv -cross numbers.csv -p letters.csv
+</pre>  
+
+Would give:
+<pre>
+letter,number
+a,1
+a,2
+a,3
+b,1
+b,2
+b,3
+c,1
+c,2
+c,3
+d,1
+d,2
+d,3
+</pre>

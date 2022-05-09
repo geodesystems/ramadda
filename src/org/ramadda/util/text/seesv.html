@@ -36,7 +36,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 251 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 260 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -991,7 +991,7 @@ How many rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-add'>-add</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
+Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-add'>-add</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-concatrows'>-concatrows</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-cross'>-cross</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1109,7 +1109,35 @@ Column indices. Can include ranges, e.g. 0-5<br>
 Name of new colums<br>
 <br>
 </ul>
-</div><a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br>
+</div><a name='-concatrows'></a><div class=command> <i><a href='#-concatrows'>-concatrows</a></i>  &lt;num_rows&gt; </div><div class=command-block>Concatenate multiple rows into a single row<br>
+<b>Arguments:</b><br>
+<ul>
+<i>num_rows</i>
+Number of rows<br>
+<br>
+</ul>
+For example, if you have this data:
+<pre>
+name,value
+joe,5
+jill,2
+jack,1
+jim,7
+</pre>
+
+Running:
+<pre>
+  csv -concatrows 2
+</pre>
+
+
+Would give:
+<pre>
+name,value,name,value
+joe,5,jill,5
+jack,1,jim,7
+</pre>
+<p></div><a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -1282,7 +1310,53 @@ source key columns<br>
 default value<br>
 <br>
 </ul>
-</div><a name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br>
+</div><a name='-cross'></a><div class=command> <i><a href='#-cross'>-cross</a></i>  &lt;file&gt; </div><div class=command-block>Make a cross product of 2 data files<br>
+<b>Arguments:</b><br>
+<ul>
+<i>file</i>
+File to cross with<br>
+<br>
+</ul>
+With the following data:
+
+letters.csv:
+<pre>
+letter
+a
+b
+c
+d
+</pre>
+
+<pre>
+number
+1
+2
+3
+</pre>
+
+The command:
+<pre>
+csv -cross numbers.csv -p letters.csv
+</pre>  
+
+Would give:
+<pre>
+letter,number
+a,1
+a,2
+a,3
+b,1
+b,2
+b,3
+c,1
+c,2
+c,3
+d,1
+d,2
+d,3
+</pre>
+<p></div><a name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br>
 <b>Arguments:</b><br>
 <ul>
 <i>threshold</i>
@@ -1376,7 +1450,7 @@ Regexp to apply to header with () defining column values<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-unfill'>-unfill</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> <a href='#-faker'>-faker</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-unfill'>-unfill</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-urlencode'>-urlencode</a> <a href='#-urldecode'>-urldecode</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> <a href='#-faker'>-faker</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1692,6 +1766,20 @@ use 'none' for no replacement<br>
 URL arg name<br>
 <br>
 </ul>
+</div><a name='-urlencode'></a><div class=command> <i><a href='#-urlencode'>-urlencode</a></i>  &lt;columns&gt; </div><div class=command-block>URL encode the columns<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-urldecode'></a><div class=command> <i><a href='#-urldecode'>-urldecode</a></i>  &lt;columns&gt; </div><div class=command-block>URL decode the columns<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
 </div><a name='-map'></a><div class=command> <i><a href='#-map'>-map</a></i>  &lt;column&gt;  &lt;new columns name&gt;  &lt;value newvalue ...&gt; </div><div class=command-block>Change values in column to new values<br>
 <b>Arguments:</b><br>
 <ul>
@@ -1817,7 +1905,7 @@ medicinename
 symptoms
 </pre>  
 <p></div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
-<div class=header>Commands: <a href='#-subst'>-subst</a> <a href='#-md'>-md</a> <a href='#-tob64'>-tob64</a> <a href='#-fromb64'>-fromb64</a> <a href='#-rot13'>-rot13</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-subst'></a><div class=command> <i><a href='#-subst'>-subst</a></i>  &lt;column_name&gt;  &lt;template&gt; </div><div class=command-block>Create a new column with the template<br>
+<div class=header>Commands: <a href='#-subst'>-subst</a> <a href='#-md'>-md</a> <a href='#-tob64'>-tob64</a> <a href='#-fromb64'>-fromb64</a> <a href='#-rot13'>-rot13</a> <a href='#-encrypt'>-encrypt</a> <a href='#-decrypt'>-decrypt</a> <a href='#-uuid'>-uuid</a> <a href='#-number'>-number</a> <a href='#-letter'>-letter</a> <a href='#-soundex'>-soundex</a> <a href='#-wikidesc'>-wikidesc</a> <a href='#-image'>-image</a> <a href='#-embed'>-embed</a> <a href='#-fetch'>-fetch</a> <a href='#-imagefill'>-imagefill</a> <a href='#-download'>-download</a> <a href='#-gender'>-gender</a> </div><a name='-subst'></a><div class=command> <i><a href='#-subst'>-subst</a></i>  &lt;column_name&gt;  &lt;template&gt; </div><div class=command-block>Create a new column with the template<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column_name</i>
@@ -1832,7 +1920,7 @@ Template - use ${column_name} ... <br>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>type</i>
- values:MD5,SHA-1,SHA-256 <br>
+ values:MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512, <br>
 <br>
 </ul>
 </div><a name='-tob64'></a><div class=command> <i><a href='#-tob64'>-tob64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
@@ -1854,6 +1942,24 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <ul>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
+<br>
+</ul>
+</div><a name='-encrypt'></a><div class=command> <i><a href='#-encrypt'>-encrypt</a></i>  &lt;columns&gt;  &lt;password&gt; </div><div class=command-block>Encrypt using AES with SHA-256 key<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<i>password</i>
+<br>
+<br>
+</ul>
+</div><a name='-decrypt'></a><div class=command> <i><a href='#-decrypt'>-decrypt</a></i>  &lt;columns&gt;  &lt;password&gt; </div><div class=command-block>Encrypt using AES with SHA-256 key<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<i>password</i>
+<br>
 <br>
 </ul>
 </div><a name='-uuid'></a><div class=command> <i><a href='#-uuid'>-uuid</a></i> </div><div class=command-block>Add a UUID field<br>
@@ -1940,7 +2046,7 @@ File suffix<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Dates'></a><b style='font-size:120%;'>Dates</b><br>
-<div class=header>Commands: <a href='#-indateformat'>-indateformat</a> <a href='#-outdateformat'>-outdateformat</a> <a href='#-convertdate'>-convertdate</a> <a href='#-adddate'>-adddate</a> <a href='#-extractdate'>-extractdate</a> <a href='#-formatdate'>-formatdate</a> <a href='#-elapsed'>-elapsed</a> <a href='#-datediff'>-datediff</a> </div><a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br>
+<div class=header>Commands: <a href='#-indateformat'>-indateformat</a> <a href='#-outdateformat'>-outdateformat</a> <a href='#-convertdate'>-convertdate</a> <a href='#-adddate'>-adddate</a> <a href='#-extractdate'>-extractdate</a> <a href='#-formatdate'>-formatdate</a> <a href='#-elapsed'>-elapsed</a> <a href='#-datediff'>-datediff</a> <a href='#-datecompare'>-datecompare</a> </div><a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br>
 <b>Arguments:</b><br>
 <ul>
 <i>format</i>
@@ -2014,8 +2120,19 @@ Column 2<br>
 Unit-milliseconds,seconds,minutes,hours,days values:milliseconds,seconds,minutes,hours,days <br>
 <br>
 </ul>
+</div><a name='-datecompare'></a><div class=command> <i><a href='#-datecompare'>-datecompare</a></i>  &lt;column1&gt;  &lt;column2&gt;  &lt;operator&gt; </div><div class=command-block>add a true/false column comparing the date values<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column1</i>
+<br>
+<i>column2</i>
+<br>
+<i>operator</i>
+<,<=,=,!=,>=,> values:<,<=,=,!=,>=,> <br>
+<br>
+</ul>
 </div></ul><br><hr><a name='Numeric/Boolean'></a><b style='font-size:120%;'>Numeric/Boolean</b><br>
-<div class=header>Commands: <a href='#-scale'>-scale</a> <a href='#-generate'>-generate</a> <a href='#-decimals'>-decimals</a> <a href='#-fuzz'>-fuzz</a> <a href='#-ceil'>-ceil</a> <a href='#-floor'>-floor</a> <a href='#-delta'>-delta</a> <a href='#-operator'>-operator</a> <a href='#-round'>-round</a> <a href='#-abs'>-abs</a> <a href='#-clip'>-clip</a> <a href='#-rand'>-rand</a> <a href='#-even'>-even</a> <a href='#-sum'>-sum</a> <a href='#-pivot'>-pivot</a> <a href='#-summary'>-summary</a> <a href='#-histogram'>-histogram</a> <a href='#-percent'>-percent</a> <a href='#-increase'>-increase</a> <a href='#-average'>-average</a> <a href='#-ranges'>-ranges</a> <a href='#-bytes'>-bytes</a> <a href='#-column_and'>-column_and</a> <a href='#-colum_nor'>-colum_nor</a> <a href='#-column_not'>-column_not</a> </div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
+<div class=header>Commands: <a href='#-scale'>-scale</a> <a href='#-generate'>-generate</a> <a href='#-decimals'>-decimals</a> <a href='#-fuzz'>-fuzz</a> <a href='#-ceil'>-ceil</a> <a href='#-floor'>-floor</a> <a href='#-delta'>-delta</a> <a href='#-operator'>-operator</a> <a href='#-compare'>-compare</a> <a href='#-round'>-round</a> <a href='#-abs'>-abs</a> <a href='#-clip'>-clip</a> <a href='#-rand'>-rand</a> <a href='#-even'>-even</a> <a href='#-sum'>-sum</a> <a href='#-pivot'>-pivot</a> <a href='#-summary'>-summary</a> <a href='#-histogram'>-histogram</a> <a href='#-percent'>-percent</a> <a href='#-increase'>-increase</a> <a href='#-average'>-average</a> <a href='#-ranges'>-ranges</a> <a href='#-bytes'>-bytes</a> <a href='#-column_and'>-column_and</a> <a href='#-colum_nor'>-colum_nor</a> <a href='#-column_not'>-column_not</a> </div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -2126,6 +2243,17 @@ Columns<br>
 <br>
 <i>operator +,-,*,/,%,average</i>
 <br>
+<br>
+</ul>
+</div><a name='-compare'></a><div class=command> <i><a href='#-compare'>-compare</a></i>  &lt;column1&gt;  &lt;column2&gt;  &lt;operator&gt; </div><div class=command-block>add a true/false column comparing the values<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column1</i>
+<br>
+<i>column2</i>
+<br>
+<i>operator</i>
+<,<=,=,!=,>=,> values:<,<=,=,!=,>=,> <br>
 <br>
 </ul>
 </div><a name='-round'></a><div class=command> <i><a href='#-round'>-round</a></i>  &lt;columns&gt; </div><div class=command-block>round the values<br>
@@ -2913,14 +3041,21 @@ If you want to skip a line the return the string "_null_".
 
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands: <a href='#-print'>-print</a> <a href='#-printdelim'>-printdelim</a> <a href='#-printheader'>-printheader</a> <a href='#-raw'>-raw</a> <a href='#-table'>-table</a> <a href='#-cols'>-cols</a> <a href='#-stats'>-stats</a> <a href='#-record'>-record</a> <a href='#-toxml'>-toxml</a> <a href='#-tojson'>-tojson</a> <a href='#-todb'>-todb</a> <a href='#-template'>-template</a> <a href='#-addheader'>-addheader</a> <a href='#-db'>-db</a> <a href='#-dbprops'>-dbprops</a> <a href='#-fields'>-fields</a> <a href='#-run'>-run</a> <a href='#-progress'>-progress</a> <a href='#-debugrows'>-debugrows</a> <a href='#-script'>-script</a> <a href='#-args'>-args</a> <a href='#-pointheader'>-pointheader</a> </div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+<div class=header>Commands: <a href='#-print'>-print</a> <a href='#-printdelim'>-printdelim</a> <a href='#-comment'>-comment</a> <a href='#-printheader'>-printheader</a> <a href='#-raw'>-raw</a> <a href='#-table'>-table</a> <a href='#-cols'>-cols</a> <a href='#-stats'>-stats</a> <a href='#-record'>-record</a> <a href='#-toxml'>-toxml</a> <a href='#-tojson'>-tojson</a> <a href='#-todb'>-todb</a> <a href='#-template'>-template</a> <a href='#-addheader'>-addheader</a> <a href='#-db'>-db</a> <a href='#-dbprops'>-dbprops</a> <a href='#-fields'>-fields</a> <a href='#-run'>-run</a> <a href='#-progress'>-progress</a> <a href='#-debugrows'>-debugrows</a> <a href='#-script'>-script</a> <a href='#-args'>-args</a> <a href='#-pointheader'>-pointheader</a> </div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
 <br>
 </ul>
 </div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
 <b>Arguments:</b><br>
 <ul>
 <i>delimiter</i>
-Delimiter - ,|^ etc. Use tab for tab<br>
+Delimiter - ,|^ etc. Use "tab" for tab<br>
+<br>
+</ul>
+</div><a name='-comment'></a><div class=command> <i><a href='#-comment'>-comment</a></i>  &lt;comment&gt; </div><div class=command-block>Add a comment to the output<br>
+<b>Arguments:</b><br>
+<ul>
+<i>comment</i>
+The comment<br>
 <br>
 </ul>
 </div><a name='-printheader'></a><div class=command> <i><a href='#-printheader'>-printheader</a></i> </div><div class=command-block>Print header<br>

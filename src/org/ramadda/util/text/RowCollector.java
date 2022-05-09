@@ -3414,4 +3414,100 @@ public class RowCollector extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...
+     */
+    public static class Crosser extends RowCollector {
+
+        /** _more_ */
+        private String file;
+	private List<Row> rows2;
+
+
+        /**
+         * _more_
+         * @param file _more_
+         */
+        public Crosser(TextReader ctx,  String file) {
+            this.file    = file;
+            try {
+                init(ctx);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @throws Exception _more_
+         */
+        private void init(TextReader ctx) throws Exception {
+            if ( !IO.okToReadFrom(file)) {
+                throw new RuntimeException("Cannot read file:" + file);
+            }
+            BufferedReader br = new BufferedReader(
+                                    new InputStreamReader(
+                                        getInputStream(file)));
+            CsvOperator operator = null;
+            TextReader  reader   = new TextReader(br);
+            rows2        = new ArrayList<Row>();
+            String delimiter = null;
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                line = line.trim();
+                if (line.length() == 0) {
+                    continue;
+                }
+                if (delimiter == null) {
+                    if (line.indexOf("\t") >= 0) {
+                        delimiter = "\t";
+                    } else {
+                        delimiter = ",";
+                    }
+                }
+                List<String> cols = Utils.tokenizeColumns(line, delimiter);
+                Row row = new Row(cols);
+		rows2.add(row);
+            }
+        }
+
+
+	private Row makeRow(Row row1,Row row2) {
+	    Row newRow = new Row();
+	    for(Object o: row1.getValues()) newRow.add(o);
+	    for(Object o: row2.getValues()) newRow.add(o);		    
+	    return newRow;
+	}
+
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> tmp)
+	    throws Exception {
+            List<Row> result = new ArrayList<Row>();
+            tmp = getRows(tmp);
+	    result.add(makeRow(tmp.get(0), rows2.get(0)));
+	    for(int i=1;i<tmp.size();i++) {
+		Row row1= tmp.get(i);
+		for(int j=1;j<rows2.size();j++) {
+		    Row row2= rows2.get(j);
+		    result.add(makeRow(row1,row2));
+		}
+	    }
+            return result;
+        }
+    }
+
+
+
+
 }
