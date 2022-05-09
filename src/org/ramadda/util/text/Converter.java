@@ -23,6 +23,7 @@ import java.io.*;
 
 import java.net.URL;
 import java.security.MessageDigest;
+import java.security.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import java.util.regex.Pattern;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
@@ -6694,31 +6696,22 @@ public abstract class Converter extends Processor {
          * @param ctx _more_
          * @param cols _more_
          * @param cipherSpec _more_
-         * @param key _more_
          *
          * @throws Exception _more_
          */
         public Crypt(boolean encrypt, TextReader ctx, List<String> cols,
-                     String cipherSpec, String key)
+                     String password)
                 throws Exception {
             super(cols);
-            if ( !Utils.stringDefined(cipherSpec)) {
-                cipherSpec = "AES/CBC/PKCS5Padding";
-            }
-            cipherSpec = "AES_128/CFB/NoPadding";
-            byte[] b = key.getBytes();
-            if (b.length < 8) {
-                throw new RuntimeException(
-                    "Key length must be greater than or equals to 8");
-            }
-            DESKeySpec dks = new DESKeySpec(b);
-            SecretKey desKey =
-                SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
-            Cipher cipher = Cipher.getInstance(cipherSpec);
-            cipher.init(encrypt
-                        ? Cipher.ENCRYPT_MODE
-                        : Cipher.DECRYPT_MODE, desKey);
-        }
+	    MessageDigest digester = MessageDigest.getInstance("SHA-256");
+	    digester.update(password.getBytes("UTF-8"));
+	    byte[] key = digester.digest();
+	    SecretKeySpec spec = new SecretKeySpec(key, "AES");
+	    cipher = Cipher.getInstance("AES");
+	    cipher.init(encrypt
+			? Cipher.ENCRYPT_MODE
+			: Cipher.DECRYPT_MODE, spec);
+	}
     }
 
     /**
@@ -6728,7 +6721,8 @@ public abstract class Converter extends Processor {
      * @version        $version$, Wed, Apr 6, '22
      * @author         Enter your name here...
      */
-    public static class Encrypt extends Crypt {
+    public static class EncryptDecrypt extends Crypt {
+	boolean mode;
 
         /**
          *
@@ -6739,10 +6733,11 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Encrypt(TextReader ctx, List<String> cols, String cipherSpec,
+        public EncryptDecrypt(TextReader ctx, boolean encrypt, List<String> cols, 
                        String key)
                 throws Exception {
-            super(true, ctx, cols, cipherSpec, key);
+            super(encrypt, ctx, cols, key);
+	    this.mode = encrypt;
         }
 
         /**
@@ -6754,16 +6749,22 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 for (int i : getIndices(ctx)) {
-                    row.add(row.getString(i) + " encrypt");
+                    row.add(row.getString(i) + (mode?" encrypted":" encrypted"));
                 }
-            } else {
-                try {
-                    for (int i : getIndices(ctx)) {
-                        row.add(new String(cipher.doFinal(row.getBytes(i))));
-                    }
-                } catch (Exception exc) {
-                    fatal(ctx, "Error encrypting", exc);
-                }
+		return row;
+            }
+	    try {
+		for (int i : getIndices(ctx)) {
+		    if(mode) {
+			byte[]bytes = cipher.doFinal(row.getBytes(i));
+			row.add(Utils.encodeBase64Bytes(bytes));
+		    } else {
+			byte[]bytes = Utils.decodeBase64(row.getBytes(i));
+			row.add(new String(cipher.doFinal(bytes)));
+		    }
+		}
+	    } catch (Exception exc) {
+		fatal(ctx, "Error encrypting", exc);
             }
 
             return row;

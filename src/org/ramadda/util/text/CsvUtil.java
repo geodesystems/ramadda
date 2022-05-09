@@ -2171,18 +2171,19 @@ public class CsvUtil {
                 new Arg("template", "Template - use ${column_name} ... ")),
         new Cmd("-md", "Make a message digest of the column values",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("type", "", "values", "MD5,SHA-1,SHA-256")),
+                new Arg("type", "", "type","enumeration","values", "MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512,")),
         new Cmd("-tob64", "Base 64 Decode",
 		new Arg("columns", "", "type", "columns")),
         new Cmd("-fromb64", "Base 64 Decode",
 		new Arg("columns", "", "type", "columns")),
         new Cmd("-rot13", "Rot 13",
 		new Arg("columns", "", "type", "columns")),
-	/*        new Cmd("-encrypt", "Encrypt",
+	new Cmd("-encrypt", "Encrypt using AES with SHA-256 key",
 		new Arg("columns", "", "type", "columns"),
-		new Arg("cipher", "Cipher-blank|AES/CBC/PKCS5Padding|AES/CBC/NoPadding|AES/ECB/NoPadding|AES/ECB/PKCS5Padding|DES/CBC/NoPadding|DES/CBC/PKCS5Padding|DES/ECB/NoPadding|DES/ECB/PKCS5Padding|DESede/CBC/NoPadding|DESede/CBC/PKCS5Padding|DESede/ECB/NoPadding|DESede/ECB/PKCS5Padding|RSA/ECB/PKCS1Padding"),
-		new Arg("key")),
-	*/
+		new Arg("password")),
+	new Cmd("-decrypt", "Encrypt using AES with SHA-256 key",
+		new Arg("columns", "", "type", "columns"),
+		new Arg("password")),	
         new Cmd("-uuid", "Add a UUID field"),
         new Cmd("-number", "Add 1,2,3... as column"),
         new Cmd("-letter", "Add 'A','B', ... as column"),
@@ -2906,16 +2907,22 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.Rot13(ctx,getCols(args.get(++i))));
 		return i;
 	    });
-	/*
-	defineFunction("-encrypt",3,(ctx,args,i) -> {
+	defineFunction("-encrypt",2,(ctx,args,i) -> {
 		try {
-		    ctx.addProcessor(new Converter.Encrypt(ctx,getCols(args.get(++i)),args.get(++i),args.get(++i)));
+		    ctx.addProcessor(new Converter.EncryptDecrypt(ctx,true,getCols(args.get(++i)),args.get(++i)));
 		} catch(Exception exc) {
 		    throw new RuntimeException(exc);
 		}
 		return i;
-	    });		    		
-	*/
+	    });
+	defineFunction("-decrypt",2,(ctx,args,i) -> {
+		try {
+		    ctx.addProcessor(new Converter.EncryptDecrypt(ctx,false,getCols(args.get(++i)),args.get(++i)));
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+		return i;
+	    });		    			
 
 	defineFunction("-start",1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
