@@ -1723,6 +1723,16 @@ public abstract class Processor extends CsvOperator {
             }
             if (theTemplate == null) {
                 writer.append("\n");
+		if(firstRow) {
+		    for(String comment: ctx.getComments()) {
+			if(commentChar==null)
+			    writer.append("#");
+			else
+			    writer.append(commentChar);			
+			writer.append(comment);
+			writer.append("\n");
+		    }
+		}
             } else {
                 writer.append(theTemplate);
             }

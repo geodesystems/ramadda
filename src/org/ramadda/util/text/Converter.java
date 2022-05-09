@@ -1375,7 +1375,6 @@ public abstract class Converter extends Processor {
             this.asPoint = asPoint;
         }
 
-
         /**
          * @param ctx _more_
          * @param row _more_
@@ -1627,7 +1626,6 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-
             boolean debug = Misc.equals(props.get("debug"), "true");
             //      debug = true;
             rowCnt++;

@@ -131,6 +131,9 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String comment = "#";
 
+    private List<String> comments = new ArrayList<String>();
+
+
     /** _more_ */
     private String outputDelimiter = ",";
 
@@ -782,6 +785,7 @@ public class TextReader implements Cloneable {
                               OutputStream output)
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
+	that.comments = this.comments;
         that.cleanInput = this.cleanInput;
         that.debug      = this.debug;
         that.input      = input;
@@ -848,6 +852,15 @@ public class TextReader implements Cloneable {
 
         return that;
     }
+
+    public void addComment(String comment) {
+	comments.add(comment);
+    }
+
+    public List<String> getComments() {
+	return comments;
+    }
+	    
 
     /**
      * _more_

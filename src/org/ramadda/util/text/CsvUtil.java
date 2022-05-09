@@ -695,7 +695,7 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.equals("-commentChar")) {
+            if (arg.equalsIgnoreCase("-commentchar")) {
                 myTextReader.setCommentChar(args.get(++i));
                 continue;
             }
@@ -2437,7 +2437,8 @@ public class CsvUtil {
         /*  Output   */
         new Cmd(true, "Output"), 
 	new Cmd("-print", "Delimited output"),
-	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use tab for tab")),	
+	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
+        new Cmd("-comment", "Add a comment to the output",new Arg("comment","The comment")),
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
         new Cmd("-table", "Print HTML table and stats"),
@@ -4451,6 +4452,14 @@ public class CsvUtil {
 				 new Processor.Prettifier());
 		return i;
 	    });
+
+
+
+	defineFunction("-comment",0,(ctx,args,i) -> {
+		ctx.addComment(args.get(++i));
+		return i;
+	    });	
+
 
 	defineFunction(new String[]{"-tocsv","-print","-p","-printdelim"}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;

@@ -30,9 +30,7 @@ import java.util.Properties;
  * @author Jeff McWhirter
  */
 
-public abstract class DataSink extends Processor implements Cloneable,
-        CsvPlugin {
-
+public abstract class DataSink extends Processor implements Cloneable,CsvPlugin {
 
     /**
      * _more_
@@ -47,9 +45,6 @@ public abstract class DataSink extends Processor implements Cloneable,
     public DataSink(CsvUtil csvUtil) {
         this.csvUtil = csvUtil;
     }
-
-
-
 
     /**
      *
@@ -271,6 +266,11 @@ public abstract class DataSink extends Processor implements Cloneable,
             if (header == null) {
                 header = row;
                 writer.println("<" + tag + ">");
+		for(String comment: ctx.getComments()) {
+		    writer.append("<!--");
+		    writer.append(comment);
+		    writer.append("-->\n");
+		}
 
                 return row;
             }
