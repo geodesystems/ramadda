@@ -2480,7 +2480,7 @@ public abstract class Converter extends Processor {
                 if (names.size() == 0) {
                     if (o == null) {
                         return row;
-                    }
+		    }
                     String s = o.toString();
                     if (s.equals("false")) {
                         return null;
@@ -4499,6 +4499,75 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class RowConcat extends Converter {
+
+        /** _more_ */
+        private int num;
+	private List<Row> rows = new ArrayList<Row>();
+
+        /**
+         */
+        public RowConcat(int num) {
+	    this.num = num;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		Row newRow = new Row();
+		for(int i=0;i<num;i++) {
+		    for(Object o: row.getValues()) {
+			newRow.add(o);
+		    }
+		}
+		return newRow;
+            }
+	    rows.add(row);
+	    if(rows.size()>=num) {
+		Row newRow = makeRow();
+		rows = new ArrayList<Row>();
+		return newRow;
+	    }
+            return null;
+	}
+
+        @Override
+        public void finish(TextReader ctx) throws Exception {
+	    if(rows.size()>0) {
+		Row newRow = makeRow();
+		Processor nextProcessor = getNextProcessor();
+		if (nextProcessor != null) {
+		    nextProcessor.handleRow(ctx,newRow);
+		}
+	    }
+            super.finish(ctx);
+	}
+
+
+	private Row makeRow() {
+	    Row newRow = new Row();
+	    for(Row row: rows) {
+		for(Object o: row.getValues())
+		    newRow.add(o);
+	    }
+	    return newRow;
+	}
+
+    }
+    
+
 
     /**
      * Class description
@@ -4595,9 +4664,9 @@ public abstract class Converter extends Processor {
             }
             //      System.err.println("\tfinal value:" + value);
             row.getValues().add(value + "");
-
             return row;
         }
+
 
     }
 

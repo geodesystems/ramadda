@@ -1920,6 +1920,8 @@ public class CsvUtil {
         new Cmd("-concat", "Create a new column from the given columns",
                 new Arg("columns", "", "type", "columns"), "delimiter",
 		new Arg("name","Name of new colums")),
+        new Cmd("-concatrows", "Concatenate multiple rows into a single row",
+                new Arg("num_rows", "Number of rows", "type", "number")), 
         new Cmd("-combine",
                 "Combine columns with the delimiter. deleting columns",
                 new Arg("column", "", "type", "columns"), "delimiter",
@@ -3959,6 +3961,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ColumnNewer(getCols(args.get(++i)), args.get(++i),args.get(++i)));
 		return i;
 	    });
+
+	defineFunction("-concatrows", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.RowConcat(Integer.parseInt(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction("-splat", 4,(ctx,args,i) -> {
 		String key       = args.get(++i);

@@ -1,0 +1,21 @@
+For example, if you have this data:
+<pre>
+name,value
+joe,5
+jill,2
+jack,1
+jim,7
+</pre>
+
+Running:
+<pre>
+  csv -concatrows 2
+</pre>
+
+
+Would give:
+<pre>
+name,value,name,value
+joe,5,jill,5
+jack,1,jim,7
+</pre>
