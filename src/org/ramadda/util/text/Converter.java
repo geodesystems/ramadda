@@ -149,6 +149,54 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class RowAppender  extends Converter {
+	private int skip;
+	private int count;
+	private String delimiter;
+	private List<Row> rows = new ArrayList<Row>();
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public RowAppender(int skip, int count, String delimiter) {
+	    this.skip = skip;
+	    this.count = count;
+	    this.delimiter = delimiter;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(skip>0) {
+		skip--;
+		return row;
+	    }
+	    if(count<=0) return row;
+	    rows.add(row);
+	    count--;
+	    if(count<=0) {
+		Row newRow = null;
+		for(Row r: rows) {
+		    if(newRow==null) newRow = r;
+		    else {
+			for(int i=0;i<r.size();i++) {
+			    newRow.set(i,newRow.getString(i)+delimiter+r.getString(i));
+			}
+		    }
+		}
+		return newRow;
+	    }
+	    return null;
+        }
+    }
+
+
     /**
      * Class description
      *

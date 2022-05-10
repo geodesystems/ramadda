@@ -1757,8 +1757,6 @@ public class CsvUtil {
         new Cmd("-inputnotcontains", "Filter out input lines that contain any of the strings",
                 new Arg("filters",
                         "Comma separated list of strings to filter one")),
-
-
         new Cmd(
 		"-min",
 		"Only pass thorough lines that have at least this number of columns",
@@ -1957,6 +1955,11 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"), "value"),
         new Cmd("-deletecell",  "Delete cell at row/column", new Arg("row"),
                 new Arg("column", "", "type", "column")),
+        new Cmd("-appendrows", "Only include specified rows",
+                new Arg("skip", "How many rows to skip", "type", "number"),
+                new Arg("count", "How many rows to merge", "type", "number"),
+                new Arg("delimiter", "How many rows to merge")),
+
         new Cmd("-mergerows", "Merge rows",
                 new Arg("rows", "2 or more rows", "type", "rows"),
                 new Arg("delimiter"), new Arg("close")),
@@ -2139,7 +2142,7 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"),
                 new Arg("pattern", "", "type", "pattern"),
                 new Arg("replace with", "use 'none' for no replacement"),
-                "new column name"),
+                new Arg("name","new column name")),
         new Cmd("-urlarg", "Extract URL argument and make a new column",
                 new Arg("column", "", "type", "column"),
                 new Arg("argname", "URL arg name")),
@@ -2831,6 +2834,12 @@ public class CsvUtil {
 
 	defineFunction("-image",2, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ImageSearch(ctx, getCols(args.get(++i)), args.get(++i)));
+		return i;
+	    });
+	defineFunction("-appendrows",3, (ctx,args,i) -> {
+		ctx.addProcessor(new Converter.RowAppender(Integer.parseInt(args.get(++i)),
+							  Integer.parseInt(args.get(++i)),
+							  args.get(++i)));
 		return i;
 	    });
 	defineFunction("-rows_first",2, (ctx,args,i) -> {

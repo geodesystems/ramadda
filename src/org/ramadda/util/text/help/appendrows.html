@@ -1,0 +1,19 @@
+For example, with the below data:
+<pre>
+category,category,category
+fruit,vegetable,meat
+1,2,3
+4,5,6
+</pre>
+
+Running:
+<pre>
+  csv -appendrows 0 1 " - "
+</pre>
+
+Would give:
+<pre>
+category - fruit,category - vegetable,category - meat
+1,2,3
+4,5,6
+</pre>
