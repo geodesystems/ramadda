@@ -36,7 +36,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 260 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 261 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -991,7 +991,7 @@ How many rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-add'>-add</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-concatrows'>-concatrows</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-cross'>-cross</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
+Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-add'>-add</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-concatrows'>-concatrows</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-appendrows'>-appendrows</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-cross'>-cross</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> <a href='#-fromheading'>-fromheading</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1236,7 +1236,37 @@ Comma separated list of values to fill out the new row<br>
 <br>
 <br>
 </ul>
-</div><a name='-mergerows'></a><div class=command> <i><a href='#-mergerows'>-mergerows</a></i>  &lt;rows&gt;  &lt;delimiter&gt;  &lt;close&gt; </div><div class=command-block>Merge rows<br>
+</div><a name='-appendrows'></a><div class=command> <i><a href='#-appendrows'>-appendrows</a></i>  &lt;skip&gt;  &lt;count&gt;  &lt;delimiter&gt; </div><div class=command-block>Only include specified rows<br>
+<b>Arguments:</b><br>
+<ul>
+<i>skip</i>
+How many rows to skip<br>
+<i>count</i>
+How many rows to merge<br>
+<i>delimiter</i>
+How many rows to merge<br>
+<br>
+</ul>
+For example, with the below data:
+<pre>
+category,category,category
+fruit,vegetable,meat
+1,2,3
+4,5,6
+</pre>
+
+Running:
+<pre>
+  csv -appendrows 0 1 " - "
+</pre>
+
+Would give:
+<pre>
+category - fruit,category - vegetable,category - meat
+1,2,3
+4,5,6
+</pre>
+<p></div><a name='-mergerows'></a><div class=command> <i><a href='#-mergerows'>-mergerows</a></i>  &lt;rows&gt;  &lt;delimiter&gt;  &lt;close&gt; </div><div class=command-block>Merge rows<br>
 <b>Arguments:</b><br>
 <ul>
 <i>rows</i>
@@ -1744,7 +1774,7 @@ javascript expression<br>
 <br>
 <br>
 </ul>
-</div><a name='-extract'></a><div class=command> <i><a href='#-extract'>-extract</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;replace with&gt;  &lt;new column name&gt; </div><div class=command-block>Extract text from column and make a new column<br>
+</div><a name='-extract'></a><div class=command> <i><a href='#-extract'>-extract</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;replace with&gt;  &lt;name&gt; </div><div class=command-block>Extract text from column and make a new column<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -1753,8 +1783,8 @@ javascript expression<br>
 <br>
 <i>replace with</i>
 use 'none' for no replacement<br>
-<i>new column name</i>
-<br>
+<i>name</i>
+new column name<br>
 <br>
 </ul>
 </div><a name='-urlarg'></a><div class=command> <i><a href='#-urlarg'>-urlarg</a></i>  &lt;column&gt;  &lt;argname&gt; </div><div class=command-block>Extract URL argument and make a new column<br>
@@ -2929,7 +2959,19 @@ Name<br>
 Alias<br>
 <br>
 </ul>
-</div><a name='-value'></a><div class=command> <i><a href='#-value'>-value</a></i>  &lt;name&gt;  &lt;value&gt; </div><div class=command-block>Define a macro value for later use<br>
+The alias command can be used to make your commands easier to deal with if you have long field names.
+For example, say you have data like:
+<pre>
+some_really_long_field_name
+1
+2
+</pre>  
+
+You can use the alias command to provide a short name, e.g.:
+<pre>
+csv -alias  some_really_long_field_name name -columns name ...
+</pre>  
+<p></div><a name='-value'></a><div class=command> <i><a href='#-value'>-value</a></i>  &lt;name&gt;  &lt;value&gt; </div><div class=command-block>Define a macro value for later use<br>
 <b>Arguments:</b><br>
 <ul>
 <i>name</i>
