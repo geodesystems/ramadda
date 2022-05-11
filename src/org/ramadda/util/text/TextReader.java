@@ -785,6 +785,7 @@ public class TextReader implements Cloneable {
                               OutputStream output)
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
+	that.fieldAliases = this.fieldAliases;
 	that.comments = this.comments;
         that.cleanInput = this.cleanInput;
         that.debug      = this.debug;
