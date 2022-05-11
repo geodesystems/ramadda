@@ -1,0 +1,12 @@
+The alias command can be used to make your commands easier to deal with if you have long field names.
+For example, say you have data like:
+<pre>
+some_really_long_field_name
+1
+2
+</pre>  
+
+You can use the alias command to provide a short name, e.g.:
+<pre>
+csv -alias  some_really_long_field_name name -columns name ...
+</pre>  
