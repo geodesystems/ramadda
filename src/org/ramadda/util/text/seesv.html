@@ -617,14 +617,23 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
-</div><a name='-unique'></a><div class=command> <i><a href='#-unique'>-unique</a></i>  &lt;columns&gt; </div><div class=command-block>Pass through unique values<br>
+</div><a name='-unique'></a><div class=command> <i><a href='#-unique'>-unique</a></i>  &lt;columns&gt;  &lt;mode&gt; </div><div class=command-block>Pass through unique values<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
 Column indices. Can include ranges, e.g. 0-5<br>
+<i>mode</i>
+What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match values:exact,clean,fuzzy:threshold <br>
 <br>
 </ul>
-</div><a name='-dups'></a><div class=command> <i><a href='#-dups'>-dups</a></i>  &lt;columns&gt; </div><div class=command-block>Pass through duplicate values<br>
+The mode fuzzy:threshold uses the
+<a href="https://github.com/xdrop/fuzzywuzzy">Fuzzywuzzy</a> package which is based on the
+<a href="https://github.com/seatgeek/fuzzywuzzy">FuzzyWuzzy Python</a> algorithm which uses
+the <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a>
+to calculate similarity between strings.
+
+
+<p></div><a name='-dups'></a><div class=command> <i><a href='#-dups'>-dups</a></i>  &lt;columns&gt; </div><div class=command-block>Pass through duplicate values<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>

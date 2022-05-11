@@ -1762,10 +1762,16 @@ public class Filter extends Processor {
      * @author         Jeff McWhirter
      */
     public static class Unique extends Filter {
+    	private static final int MODE_EXACT = 0;
+	private static final int MODE_CLEAN = 1;
+	private static final int MODE_FUZZY = 2;	
 
+	private int mode;
+	private int fuzzyThreshold=100;
 
         /** _more_ */
         private HashSet<String> seen = new HashSet<String>();
+        private List<String> past = new ArrayList<String>();
 
         /**
          * _more_
@@ -1774,10 +1780,18 @@ public class Filter extends Processor {
          * @param ctx _more_
          * @param toks _more_
          */
-        public Unique(TextReader ctx, List<String> toks) {
+        public Unique(TextReader ctx, List<String> toks, String mode) {
             super(toks);
+	    if(mode.equals("") || mode.equals("exact")) this.mode = MODE_EXACT;    
+	    else if(mode.equals("clean")) this.mode = MODE_CLEAN;
+	    else if(mode.startsWith("fuzzy")) {
+		this.mode = MODE_FUZZY;
+		if(mode.startsWith("fuzzy:")) {
+		    fuzzyThreshold = Integer.parseInt(mode.substring("fuzzy:".length()));
+		}
+	    }
+    
         }
-
 
         /**
          * _more_
@@ -1789,22 +1803,37 @@ public class Filter extends Processor {
          */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
-            boolean       inRange = false;
+	    if(rowCnt++==0) return true;
             StringBuilder sb      = new StringBuilder();
             for (int i : getIndices(ctx)) {
                 if ((i < 0) || (i >= row.size())) {
                     continue;
                 }
-                Object value = row.getValues().get(i);
+                Object value = row.getString(i);
+		if(sb.length()>0) sb.append("---");
                 sb.append(value);
-                sb.append("--");
             }
             String s = sb.toString();
+	    if(mode==MODE_CLEAN || mode==MODE_FUZZY) {
+		s = s.toLowerCase().replaceAll("  +"," ");
+	    }
+	    if(mode==MODE_FUZZY) {
+		//		System.err.println("value:" + s);
+		for(String p:past) {
+		    int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,p);
+		    //		    System.err.println("\t" + score+" " +p);
+		    if(score>=fuzzyThreshold) {
+			//			System.err.println("\tskipping " + s); 
+			return false;
+		    }
+		}
+		past.add(s);
+		return true;
+	    }
             if (seen.contains(s)) {
                 return false;
             }
             seen.add(s);
-
             return true;
         }
     }

@@ -1791,7 +1791,8 @@ public class CsvUtil {
         new Cmd("-notsame", "Pass through where the 2 columns don't have the same value",
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),			
-        new Cmd("-unique", "Pass through unique values", new Arg("columns","","type","columns")),
+        new Cmd("-unique", "Pass through unique values", new Arg("columns","","type","columns"),
+		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match","type","enumeration","values","exact,clean,fuzzy:threshold")),
         new Cmd("-dups", "Pass through duplicate values", new Arg("columns","","type","columns")),
         new Cmd("-sample", "Pass through rows based on probablity",
                 new Arg("probablity", "0-1 probability of passing through a row")),
@@ -3177,9 +3178,9 @@ public class CsvUtil {
 		return i;
 	    });	
 
-	defineFunction(new String[]{"-u","-unique"},1,(ctx,args,i) -> {
+	defineFunction(new String[]{"-u","-unique"},2,(ctx,args,i) -> {
 		List<String> toks = getCols(args.get(++i));
-		ctx.addProcessor(new Filter.Unique(ctx, toks));
+		ctx.addProcessor(new Filter.Unique(ctx, toks,args.get(++i)));
 		return i;
 	    });
 	defineFunction(new String[]{"-sample"},1,(ctx,args,i) -> {
