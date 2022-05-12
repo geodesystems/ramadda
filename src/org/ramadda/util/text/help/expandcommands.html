@@ -11,11 +11,11 @@ column1,column2
 The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. 
 You use the ${column} macro to replace the given column ID. So, running:
 <pre>
-csv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns
+seesv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns
 </pre>  
 
 This expands out to:
 <pre>
-csv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1 
+seesv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1 
 </pre>
 

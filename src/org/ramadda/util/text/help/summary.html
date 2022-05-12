@@ -13,7 +13,7 @@ West,Green,2,26.00
 
 You would do:
 <pre>
-  csv -summary region units ""  sum  -p summary.csv
+seesv -summary region units ""  sum  -p summary.csv
 </pre>
 Which gives:
 <data>
@@ -27,7 +27,7 @@ East,294.0
 
 If you wanted to get the sum and average of the sales:
 <pre>
-csv -summary region sales ""  sum,avg  -p summary.csv 
+seesv -summary region sales ""  sum,avg  -p summary.csv 
 </pre>
 You'd get:
 <pre>
@@ -40,7 +40,7 @@ East,3730.0,57.38461538461539
 
 The carry over column just gets the first value for the key column. So, if you wanted to include the color column do:
 <pre>
-csv -summary region sales color  sum,avg  -p summary.csv 
+seesv -summary region sales color  sum,avg  -p summary.csv 
 </pre>
 
 Which gives:
