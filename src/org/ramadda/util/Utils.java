@@ -1159,66 +1159,6 @@ public class Utils extends IO {
     /**
      * _more_
      *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        if (true) {
-            for (String s : args) {
-		System.err.println(s +" " + toInt(split(s,",",true,true)));
-            }
-            System.exit(0);
-        }
-        if (true) {
-            for (Provider provider : Security.getProviders()) {
-                System.out.println(provider.getName());
-                for (String key : provider.stringPropertyNames()) {
-                    System.out.println("\t" + key + "\t"
-                                       + provider.getProperty(key));
-                }
-            }
-        }
-
-
-
-        InputStream fis = new FileInputStream(args[0]);
-        byte[]      b   = decodeBase64(IOUtil.readBytes(fis));
-        IOUtil.writeBytes(new File("out.pdf"), b);
-        System.exit(0);
-
-        System.err.println(getStack(10, null, true));
-        System.err.println(getStack(10, null, false));
-        System.exit(0);
-
-
-        Date d = new Date();
-        System.err.println(formatIso(d));
-
-
-        System.exit(0);
-
-
-
-        String s = "hello there hello";
-        System.err.println(s.replace("hello", "xxx"));
-        if (true) {
-            return;
-        }
-
-
-
-        for (String dateString : new String[] { "04/01/2021" }) {
-            debugDate = true;
-            Date date = parseDate(dateString);
-            System.err.println("date:" + dateString + " date:" + date);
-        }
-        System.exit(0);
-    }
-
-    /**
-     * _more_
-     *
      * @param source _more_
      * @param datePatterns _more_
      * @param dateFormats _more_
@@ -4805,7 +4745,8 @@ public class Utils extends IO {
         }
         String s = o.toString();
         delim = Pattern.quote(delim);
-        String[] a = s.split(delim);
+	//Pass in -1 so it includes trailing blanks
+        String[] a = s.split(delim,-1);
         for (String tok : a) {
             if (trim) {
                 tok = tok.trim();
@@ -5830,6 +5771,74 @@ public class Utils extends IO {
          */
         void accept(T t, U u, V v, W w);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        if (true) {
+	    System.err.println("S:" + split("hello,"));
+	    return;
+	}
+
+        if (true) {
+            for (String s : args) {
+		System.err.println(s +" " + toInt(split(s,",",true,true)));
+            }
+            System.exit(0);
+        }
+        if (true) {
+            for (Provider provider : Security.getProviders()) {
+                System.out.println(provider.getName());
+                for (String key : provider.stringPropertyNames()) {
+                    System.out.println("\t" + key + "\t"
+                                       + provider.getProperty(key));
+                }
+            }
+        }
+
+
+
+        InputStream fis = new FileInputStream(args[0]);
+        byte[]      b   = decodeBase64(IOUtil.readBytes(fis));
+        IOUtil.writeBytes(new File("out.pdf"), b);
+        System.exit(0);
+
+        System.err.println(getStack(10, null, true));
+        System.err.println(getStack(10, null, false));
+        System.exit(0);
+
+
+        Date d = new Date();
+        System.err.println(formatIso(d));
+
+
+        System.exit(0);
+
+
+
+        String s = "hello there hello";
+        System.err.println(s.replace("hello", "xxx"));
+        if (true) {
+            return;
+        }
+
+
+
+        for (String dateString : new String[] { "04/01/2021" }) {
+            debugDate = true;
+            Date date = parseDate(dateString);
+            System.err.println("date:" + dateString + " date:" + date);
+        }
+        System.exit(0);
+    }
+
+
 
 
 }
