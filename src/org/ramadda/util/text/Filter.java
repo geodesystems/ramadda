@@ -1768,7 +1768,7 @@ public class Filter extends Processor {
 
 	private int mode;
 	private int fuzzyThreshold=100;
-
+	private boolean debug = false;
         /** _more_ */
         private HashSet<String> seen = new HashSet<String>();
         private List<String> past = new ArrayList<String>();
@@ -1787,7 +1787,9 @@ public class Filter extends Processor {
 	    else if(mode.startsWith("fuzzy")) {
 		this.mode = MODE_FUZZY;
 		if(mode.startsWith("fuzzy:")) {
-		    fuzzyThreshold = Integer.parseInt(mode.substring("fuzzy:".length()));
+		    mode = mode.substring("fuzzy:".length());
+		    if(mode.equals("?")) debug = true;
+		    else fuzzyThreshold = Integer.parseInt(mode);
 		}
 	    }
     
@@ -1818,16 +1820,16 @@ public class Filter extends Processor {
 		s = s.toLowerCase().replaceAll("  +"," ");
 	    }
 	    if(mode==MODE_FUZZY) {
-		//		System.err.println("value:" + s);
+		if(debug) System.out.println("value:" + s);
 		for(String p:past) {
 		    int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,p);
-		    //		    System.err.println("\t" + score+" " +p);
+		    if(debug && !s.equals(p)) System.out.println("\t" + score+" " +p);
 		    if(score>=fuzzyThreshold) {
-			//			System.err.println("\tskipping " + s); 
 			return false;
 		    }
 		}
 		past.add(s);
+		if(debug) return false;
 		return true;
 	    }
             if (seen.contains(s)) {

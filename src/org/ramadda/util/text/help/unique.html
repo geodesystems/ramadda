@@ -4,4 +4,28 @@ The mode fuzzy:threshold uses the
 the <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a>
 to calculate similarity between strings.
 
+You can view what the calculated threshold values are:
+<pre>
+csv -unique column fuzzy:?
+</pre>  
+
+This will print out the threshold values, e.g:
+<pre>
+value:joey smith
+        95 joe smith
+value:sam jones
+        44 joe smith
+        42 joey smith
+value:sam jones
+        44 joe smith
+        42 joey smith
+value:sue washington
+        43 joe smith
+        42 joey smith
+        35 sam jones
+value:sue washington
+        43 joe smith
+        42 joey smith
+        35 sam jones
+</pre>
 

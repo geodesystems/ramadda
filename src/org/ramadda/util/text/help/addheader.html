@@ -10,7 +10,7 @@ v1,v2,v3
 The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
 text with {...} brackets.
 <pre>
-  seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
+seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
 </pre>
 
 The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
@@ -19,12 +19,12 @@ name is the column header cleaned up - lowercase, spaces converted to "_", strip
 
 <p>
 For example, say you have a file like this:
-<pre>
+<data>
 some date,year,some field
 2018-09-01,2023,10
 2019-10-01,2024,20
 2020-09-01,2024,30
-</pre>
+</data>
 
 Running this command:
 <pre>

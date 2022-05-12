@@ -1,5 +1,5 @@
 For example, with the below data, if you wanted to summarize the total units by region:
-<pre>
+<data>
 Region,Color,Units,Sales
 West,Red,1,11.00
 South,Blue,8,96.00
@@ -9,20 +9,20 @@ North,Green,8,104.00
 South,Red,2,22.00
 East,Blue,5,60.00
 West,Green,2,26.00
-</pre>
+</data>
 
 You would do:
 <pre>
   csv -summary region units ""  sum  -p summary.csv
 </pre>
 Which gives:
-<pre>
+<data>
 Region,Units sum
 West,683.0
 South,399.0
 North,672.0
 East,294.0
-</pre>
+</data>
 
 
 If you wanted to get the sum and average of the sales:
@@ -44,10 +44,10 @@ csv -summary region sales color  sum,avg  -p summary.csv
 </pre>
 
 Which gives:
-<pre>
+<data>
 Region,Sales sum,Sales avg,Color
 West,8873.0,56.51592356687898,Red
 South,5044.0,54.236559139784944,Blue
 North,8709.0,63.56934306569343,Blue
 East,3730.0,57.38461538461539,Blue
-</pre>
+</data>

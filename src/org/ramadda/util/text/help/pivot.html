@@ -1,5 +1,5 @@
 For example, with the input file:
-<pre>
+<data>
 Region,Date,Units,Sales
 West,2016,1,11.00
 South,2016,8,96.00
@@ -7,7 +7,7 @@ West,2016,2,26.00
 North,2016,7,84.00
 North,2016,8,104.00
 South,2016,2,22.00
-</pre>
+</data>
 
 Running:
 <pre>
@@ -15,13 +15,13 @@ csv -pivot region date sales count  -p input.csv
 </pre>
 
 Gives:
-<pre>
+<data>
 Region,2016,2017,2018,2019
 West,15.0,51.0,49.0,42.0
 South,25.0,23.0,31.0,14.0
 North,15.0,27.0,56.0,39.0
 East,10.0,24.0,18.0,13.0
-</pre>
+</data>
 
 You can also specify multiple operators:
 <pre>
@@ -29,13 +29,13 @@ csv -pivot region date sales count,min,max  -p input.csv
 </pre>
 
 Gives:
-<pre>
+<data>
 Region,2016 - count,2016 - min,2016 - max,2017 - count,2017 - min,2017 - max,2018 - count,2018 - min,2018 - max,2019 - count,2019 - min,2019 - max
 West,15.0,11.0,96.0,51.0,11.0,104.0,49.0,11.0,112.0,42.0,13.0,120.0
 South,25.0,12.0,96.0,23.0,11.0,104.0,31.0,11.0,120.0,14.0,12.0,112.0
 North,15.0,12.0,104.0,27.0,12.0,96.0,56.0,11.0,120.0,39.0,13.0,120.0
 East,10.0,24.0,96.0,24.0,11.0,104.0,18.0,11.0,112.0,13.0,12.0,105.0
-</pre>
+</data>
 
 
 

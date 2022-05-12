@@ -3,21 +3,21 @@ For each line in the file it creates a regular expression pattern using the temp
 by substituting the line into the pattern with the macro <i>${value}</i>.
 <p>
 For example, say you have a file of addresses short.csv:
-<pre>
+<data>
 address,city,state
 123 oak, boulder, co
 345 main, denver,co
 ...
-</pre>
+</data>
 
 And your source data has a set of full addresses full.csv:
-<pre>
+<data>
 full address,city,state
 123 oak unit #5
 789 pine apt 3
 345 main
 ...
-</pre>
+</data>
 
 And you only want to pass through rows in full.csv
 address begins with some address in the short.csv file. To do this call:

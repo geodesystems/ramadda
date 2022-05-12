@@ -1792,7 +1792,7 @@ public class CsvUtil {
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),			
         new Cmd("-unique", "Pass through unique values", new Arg("columns","","type","columns"),
-		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match","type","enumeration","values","exact,clean,fuzzy:threshold")),
+		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match. use fuzzy:? to print out values)","type","enumeration","values","exact,clean,fuzzy:threshold")),
         new Cmd("-dups", "Pass through duplicate values", new Arg("columns","","type","columns")),
         new Cmd("-sample", "Pass through rows based on probablity",
                 new Arg("probablity", "0-1 probability of passing through a row")),
@@ -1916,7 +1916,7 @@ public class CsvUtil {
 			"values",
 			"Single value or comma separated for multiple rows", "type",
 			"list")),
-        new Cmd("-concat", "Create a new column from the given columns",
+	new Cmd("-concat", "Create a new column from the given columns",
                 new Arg("columns", "", "type", "columns"), "delimiter",
 		new Arg("name","Name of new colums")),
         new Cmd("-concatrows", "Concatenate multiple rows into a single row",
@@ -2368,20 +2368,20 @@ public class CsvUtil {
                 new Arg("latitude", "latitude column"),
                 new Arg("latitude", "latitude column")),		
         new Cmd("-statename", "Add state name from state ID",
-                new Arg("column")),
+                new Arg("state_column","State ID column")),
 	new Cmd("-geoname", "Look up location name",
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("fields","fields in shapefile"),		
-                new Arg("lat", "Latitude column", "type", "column"),
-                new Arg("lon", "Longitude column", "type", "column")),
+                new Arg("latitude_column", "Latitude column", "type", "column"),
+                new Arg("longitude_column", "Longitude column", "type", "column")),
 	new Cmd("-geocontains", "Check for containment",
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("name","new column name"),		
-                new Arg("lat", "Latitude column", "type", "column"),
-                new Arg("lon", "Longitude column", "type", "column")),		
+                new Arg("latitude_column", "Latitude column", "type", "column"),
+                new Arg("longitude_column", "Longitude column", "type", "column")),		
 	new Cmd("-elevation", "Look up elevation(using 1/3 arc-second DEM)",
-                new Arg("lat", "Latitude column", "type", "column"),
-                new Arg("lon", "Longitude column", "type", "column")),	
+                new Arg("latitude_column", "Latitude column", "type", "column"),
+                new Arg("longitude_column", "Longitude column", "type", "column")),	
 
         new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns","x and y columns")),
         new Cmd("-region", "Add the state's region",
@@ -2390,13 +2390,13 @@ public class CsvUtil {
                 new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county: or city:"), "suffix"),
 	new Cmd("-neighborhood", "Look up neighborhood for a given location",
-                new Arg("lat", "Latitude column", "type", "column"),
-                new Arg("lon", "Longitude column", "type", "column")),	
+                new Arg("latitude_column", "Latitude column", "type", "column"),
+                new Arg("longitude_column", "Longitude column", "type", "column")),	
 
 
         /** * Other  * */
         new Cmd(true, "Misc."),
-        new Cmd("-expand", "The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. Up to -endexpand are",
+        new Cmd("-expandcommands", "Apply the commands to each of the columns",
 		new Arg("columns", "Columns to expand with", "type", "columns"),
 		new Arg("commands", "Commands", "rows", "6")),
         new Cmd("-sort", "",
@@ -2657,7 +2657,6 @@ public class CsvUtil {
 	StringBuilder header = new StringBuilder();	
 
 	List<StringBuilder> headers = new ArrayList<StringBuilder>();
-
 	boolean open = false;
 	StringBuilder hb = new StringBuilder();
 	int cnt = 0;
@@ -2672,8 +2671,9 @@ public class CsvUtil {
 		sb.append("<b style='font-size:120%;'>" + c.cmd+"</b><br>\n");
 		sb.append(c.desc);
 		sb.append("${header" + headers.size()+"}");
-		hb = new StringBuilder("Commands: ");
+		hb = new StringBuilder("Commands:<ul>");
 		headers.add(hb);
+		hb.append("</ul>");
 		String extra = IO.readContents("/org/ramadda/util/text/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
 		if(extra!=null) sb.append(extra);
 		continue;
@@ -2683,7 +2683,7 @@ public class CsvUtil {
 	    String extra = IO.readContents(path,(String)null);
 	    if(c.cmd.startsWith("-help")) continue;
 	    sb.append("<a name='" + c.cmd+"'></a>");
-	    hb.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a> ");
+	    hb.append("<li> <a href='#" + c.cmd +"'><i>" + c.cmd+"</i>: " + c.desc +"</a>");
 	    sb.append("<div class=command> <i><a href='#" + c.cmd +"'>" + c.cmd+"</a></i> ");
 	    for(Arg arg: c.args) {
 		sb.append(" &lt;" +arg.id+"&gt; ");
@@ -2709,7 +2709,47 @@ public class CsvUtil {
 	    sb.append("<br>\n");
 	    sb.append("</ul>\n");
 	    if(extra!=null) {
-		sb.append(extra);
+		boolean inData = false;
+		List<String> dataLines = null;
+		for(String line:Utils.split(extra,"\n")) {
+		    String _line = line.trim();
+		    if(_line.equals("<data>")) {
+			inData = true;
+			dataLines = new ArrayList<String>();
+			continue;
+		    }
+		    if(_line.equals("</data>")) {
+			inData = false;
+			sb.append("<br>");
+			sb.append("<table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'>");
+			for(int i=0;i<dataLines.size();i++) {
+			    String l = dataLines.get(i);
+			    sb.append("<tr>");
+			    List<String> cells = Utils.split(l,",",false,false);
+			    String cellExtra = "";
+			    String style = "padding:4px;border:1px solid #ccc;";
+			    if(i==0) {
+				cellExtra = " align=center ";
+				style+="background:#F5F5F5;";
+			    }
+			    for(String cell:cells) {
+				if(cell.trim().equals("")) cell ="&lt;blank&gt;";
+				sb.append("<td style='" + style+"' " + cellExtra+">"+cell+"</td>");
+			    }
+			    sb.append("</tr>");
+			    sb.append("\n");
+			}
+			sb.append("</table>");
+			sb.append("<br>");
+			continue;
+		    }
+		    if(inData) {
+			dataLines.add(line);
+			continue;
+		    }
+		    sb.append(line);
+		    sb.append("\n");
+		}
 		sb.append("<p>");
 	    }
 	    sb.append("</div>");
@@ -3035,13 +3075,13 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-expand",1, (ctx,args,i) -> {
+	defineFunction("-expandcommands",1, (ctx,args,i) -> {
 		List<String> cols =  Utils.split(args.get(++i), ",", true, true);
 		List<String> applyArgs = new ArrayList<String>();
 		while(true) {
 		    if(i>=args.size()) throw new RuntimeException("Unclosed -exand");
 		    String a = args.get(++i);
-		    if(a.equals("-endexpand")) break;
+		    if(a.equals("-endexpandcommands")) break;
 		    applyArgs.add(a);
 		}
 		ctx.addProcessor(new Processor.Expand(this,ctx,cols,applyArgs));

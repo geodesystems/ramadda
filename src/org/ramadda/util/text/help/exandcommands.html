@@ -1,0 +1,21 @@
+The  expandcommands treats the given set of commands as a function or macro where they are applied to
+each of the columns in sequence.
+
+Assume you have the below data and you wanted to trim the decimal places and then make an absolute value for both columns
+<data>
+column1,column2
+1.234,-5.890  
+-7.123,8.456
+</data>
+
+The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. 
+You use the ${column} macro to replace the given column ID. So, running:
+<pre>
+csv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns
+</pre>  
+
+This expands out to:
+<pre>
+csv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1 
+</pre>
+

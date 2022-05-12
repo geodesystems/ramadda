@@ -151,8 +151,8 @@ seesv -notcolumns column1 -p test.csv > newtest.csv
 #subset columns and then change the values 
 seesv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
 
-#Only include column1 and then only pass through unique values
-seesv -columns column1 -unique 0 -p test.csv > newtest.csv
+#Only include column1 and then only pass through unique values matching exactly
+seesv -columns column1 -unique 0 exact -p test.csv > newtest.csv
 
 #Only pass throught unique values in the first column and then sort the output
 seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
