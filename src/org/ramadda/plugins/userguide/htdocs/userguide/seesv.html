@@ -386,7 +386,7 @@ Gives:
 Note: you don't have to specify all of the example values.
 For example, using this:
 <pre>
-csv -synthetic "name,value" "example name,example value" 5
+seesv -synthetic "name,value" "example name,example value" 5
 </pre>
 
 Gives:
@@ -660,7 +660,7 @@ to calculate similarity between strings.
 
 You can view what the calculated threshold values are:
 <pre>
-csv -unique column fuzzy:?
+seesv -unique column fuzzy:?
 </pre>  
 
 This will print out the threshold values, e.g:
@@ -700,7 +700,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 For example, if you only want 5% of the data sampled do:
 <pre>
-csv -sample 0.05 ...
+seesv -sample 0.05 ...
 </pre>
 
 
@@ -1179,7 +1179,7 @@ For example, if you have this data:
 </table><br>
 Running:
 <pre>
-csv -concatrows 2
+seesv -concatrows 2
 </pre>
 
 
@@ -1306,7 +1306,7 @@ For example, with the below data:
 </table><br>
 Running:
 <pre>
-csv -appendrows 0 1 " - "
+seesv -appendrows 0 1 " - "
 </pre>
 
 Would give:
@@ -1415,7 +1415,7 @@ number
 
 The command:
 <pre>
-csv -cross numbers.csv -p letters.csv
+seesv -cross numbers.csv -p letters.csv
 </pre>  
 
 Would give:
@@ -2419,7 +2419,7 @@ For example, with the input file:
 </table><br>
 Running:
 <pre>
-csv -pivot region date sales count  -p input.csv 
+seesv -pivot region date sales count  -p input.csv 
 </pre>
 
 Gives:
@@ -2431,7 +2431,7 @@ Gives:
 </table><br>
 You can also specify multiple operators:
 <pre>
-csv -pivot region date sales count,min,max  -p input.csv 
+seesv -pivot region date sales count,min,max  -p input.csv 
 </pre>
 
 Gives:
@@ -2473,7 +2473,7 @@ For example, with the below data, if you wanted to summarize the total units by 
 </table><br>
 You would do:
 <pre>
-  csv -summary region units ""  sum  -p summary.csv
+seesv -summary region units ""  sum  -p summary.csv
 </pre>
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Units sum</td></tr>
@@ -2485,7 +2485,7 @@ Which gives:
 
 If you wanted to get the sum and average of the sales:
 <pre>
-csv -summary region sales ""  sum,avg  -p summary.csv 
+seesv -summary region sales ""  sum,avg  -p summary.csv 
 </pre>
 You'd get:
 <pre>
@@ -2498,7 +2498,7 @@ East,3730.0,57.38461538461539
 
 The carry over column just gets the first value for the key column. So, if you wanted to include the color column do:
 <pre>
-csv -summary region sales color  sum,avg  -p summary.csv 
+seesv -summary region sales color  sum,avg  -p summary.csv 
 </pre>
 
 Which gives:
@@ -2804,7 +2804,7 @@ For example, with this data:
 </table><br>
 Running the commands:
 <pre>
-csv -decodelatlon latitude -decodelatlon longitude
+seesv -decodelatlon latitude -decodelatlon longitude
 </pre>
 
 Gives:
@@ -2816,7 +2816,7 @@ Gives:
 </table><br>
 If you wanted to have less precision then call:
 <pre>
-csv -decodelatlon latitude -decodelatlon longitude  -decimals latitude,longitude 5 -p test.csv  
+seesv -decodelatlon latitude -decodelatlon longitude  -decimals latitude,longitude 5 -p test.csv  
 </pre>
 
 Which gives:
@@ -3007,7 +3007,27 @@ Columns to expand with<br>
 Commands<br>
 <br>
 </ul>
-</div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block><b>Arguments:</b><br>
+The  expandcommands treats the given set of commands as a function or macro where they are applied to
+each of the columns in sequence.
+
+Assume you have the below data and you wanted to trim the decimal places and then make an absolute value for both columns
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >column1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >column2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >1.234</td><td style='padding:4px;border:1px solid #ccc;' >-5.890  </td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >-7.123</td><td style='padding:4px;border:1px solid #ccc;' >8.456</td></tr>
+</table><br>
+The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. 
+You use the ${column} macro to replace the given column ID. So, running:
+<pre>
+seesv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns
+</pre>  
+
+This expands out to:
+<pre>
+seesv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1 
+</pre>
+
+
+<p></div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block><b>Arguments:</b><br>
 <ul>
 <i>columns</i>
 Column to sort on<br>
@@ -3039,7 +3059,7 @@ For example, say you have data like:
 </table><br>
 You can use the alias command to provide a short name, e.g.:
 <pre>
-csv -alias  some_really_long_field_name name -columns name ...
+seesv -alias  some_really_long_field_name name -columns name ...
 </pre>  
 
 <p></div><a name='-value'></a><div class=command> <i><a href='#-value'>-value</a></i>  &lt;name&gt;  &lt;value&gt; </div><div class=command-block>Define a macro value for later use<br>
