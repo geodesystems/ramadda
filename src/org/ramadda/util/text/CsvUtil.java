@@ -1670,17 +1670,31 @@ public class CsvUtil {
                 "print help that matches topic"),
 
         /** * Input   * */
-        new Cmd(true, "Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc"),
+        new Cmd(true, "Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
         new Cmd("-delimiter", "Specify a delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
                         "size", "5")),
-        new Cmd("-tab", "Use tabs"),
-        new Cmd("-widths", "Columns are fixed widths",
-                new Arg("widths", "w1,w2,...,wN")),
+        new Cmd("-tab", "Use tabs. A shortcut for -delimiter tab"),
+        new Cmd("-widths", "Columns are fixed widths", new Arg("widths", "w1,w2,...,wN")),
         new Cmd("-quotesnotspecial", "Don't treat quotes as special characters"),
         new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files"),
         new Cmd("-bom", "Input has a leading byte order mark (BOM) that should be stripped out"),		
         new Cmd("-header", "Raw header",  new Arg("header", "Column names", "type", "list")),
+        new Cmd("-json", "Parse the input as json",
+                new Arg("arrayPath",
+			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
+			"label", "Array path"), new Arg("objectPaths",
+							"One or more paths to the objects e.g. geometry,features",
+							"size", "30", "label", "Object paths", "type",
+							"list", "size", "30")),
+        new Cmd("-geojson", "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
+        new Cmd("-pdf", "Read input from a PDF file."),	
+        new Cmd("-xml", "Parse the input as xml",
+                new Arg("path", "Path to the elements", "size", "60")),
+        new Cmd("-shapefile", "Parse the input shapefile",
+                new Arg("props", "\"addPoints true addShapes false\"")),	
+        new Cmd("-lines", "Parse the input as text lines"),
+
         new Cmd("-htmltable", "Parse the table in the input html file",
                 new Arg("skip", "Number of tables to skip", "type",
 			"number"), new Arg("pattern", "Pattern to skip to",
@@ -1696,34 +1710,10 @@ public class CsvUtil {
                         "type", "pattern")),
         new Cmd("-harvest", "Harvest links in web page. This results in a 2 column dataset with fields: label,url",
 		new Arg("pattern","regexp to match")),
-        new Cmd("-json", "Parse the input as json",
-                new Arg("arrayPath",
-			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
-			"label", "Array path"), new Arg("objectPaths",
-							"One or more paths to the objects e.g. geometry,features",
-							"size", "30", "label", "Object paths", "type",
-							"list", "size", "30")),
-        new Cmd("-geojson", "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
-        new Cmd("-pdf", "Read input from a PDF file."),	
-        new Cmd("-xml", "Parse the input as xml",
-                new Arg("path", "Path to the elements", "size", "60")),
-        new Cmd("-shapefile", "Parse the input shapefile",
-                new Arg("props", "\"addPoints true addShapes false\"")),	
-        new Cmd("-lines", "Parse the input as text lines"),
         new Cmd("-text", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
-	/*
-        new Cmd("-text2", "Extract rows from the text",
-                new Arg("comma separated header"),
-                new Arg("chunk pattern", "", "type", "pattern"),
-                new Arg("token pattern", "", "type", "pattern")),
-	*/
-        new Cmd("-synthetic", "Generate an empty file with the given number of rows",
-                new Arg("header","comma separated header"),
-                new Arg("values","comma separated values"),		
-                new Arg("rows")),
         new Cmd("-extractpattern", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("token pattern", "", "type", "pattern")),
@@ -1736,6 +1726,11 @@ public class CsvUtil {
 		new Arg("columns", "Comma separated list of columns to select"),
 		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike","type","rows","delimiter",";","size","60"),				
 		new Arg("properties", "name space value properties. e.g., join col1,col2")),
+        new Cmd("-synthetic", "Generate an empty file with the given number of rows",
+                new Arg("header","comma separated header"),
+                new Arg("values","comma separated values"),		
+                new Arg("rows")),
+
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
@@ -2671,18 +2666,22 @@ public class CsvUtil {
 	    if(c.category) {
 		if(open) sb.append("</ul><br>");
 		open = true;
+		String extra = IO.readContents("/org/ramadda/util/text/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
 		if(header.length()>0) header.append(" | ");
 		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
 		sb.append("<hr>");
 		sb.append("<a name='" + c.cmd+"'></a>");
 		sb.append("<b style='font-size:120%;'>" + c.cmd+"</b><br>\n");
 		sb.append(c.desc);
+		if(extra!=null) {
+		    sb.append(" ");
+		    sb.append(extra);
+		}
 		sb.append("${header" + headers.size()+"}");
+
 		hb = new StringBuilder("Commands:<ul>");
 		headers.add(hb);
 		hb.append("</ul>");
-		String extra = IO.readContents("/org/ramadda/util/text/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
-		if(extra!=null) sb.append(extra);
 		continue;
 	    }
 	    cnt++;

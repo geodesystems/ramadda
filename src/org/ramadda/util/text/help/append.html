@@ -1,0 +1,36 @@
+This concatenates the input files, passing through the first file whole but skipping over the given number of lines in the subsequent files.
+
+So with files:
+
+test1.csv:
+<data>
+name,value
+foo,bar
+</data>
+
+test2.csv:
+<data>
+name,value
+x,y
+</data>
+
+test3.csv:
+<data>
+name,value
+l,m
+</data>  
+
+Calling:
+<pre>
+seesv -append 1 test1.csv test2.csv test3.csv
+</pre>
+
+Results in:
+<data>
+name,value
+foo,bar
+x,y
+l,m
+</data>
+
+
