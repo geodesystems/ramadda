@@ -42,13 +42,15 @@
 <h2>Introduction</h2>
 The RAMADDA SeeSV can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
+In depth interactive examples are available <a href="https://ramadda.org/repository/a/seesv">here</a>.
 <p>
 For brevity, in the below documentation we're assuming  that you are using an alias:
 <pre>
-alias seesv="sh ~/seesv/seesv.sh"  
+alias seesv="sh /path/to/seesv/seesv.sh"  
 </pre>
 
-The examples here show the command line use. If running interactively the commands are the same form except for the seesv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+The examples here show the command line use. If running interactively through the RAMADDA web interface
+the commands are the same form except for the seesv command call and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
 seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
