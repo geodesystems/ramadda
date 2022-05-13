@@ -42,13 +42,15 @@
 <h2>Introduction</h2>
 The RAMADDA SeeSV can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
+In depth interactive examples are available <a href="https://ramadda.org/repository/a/seesv">here</a>.
 <p>
 For brevity, in the below documentation we're assuming  that you are using an alias:
 <pre>
-alias seesv="sh ~/seesv/seesv.sh"  
+alias seesv="sh /path/to/seesv/seesv.sh"  
 </pre>
 
-The examples here show the command line use. If running interactively the commands are the same form except for the seesv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+The examples here show the command line use. If running interactively through the RAMADDA web interface
+the commands are the same form except for the seesv command call and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
 seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
@@ -1504,7 +1506,7 @@ Regexp to apply to header with () defining column values<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-change'><i>-change</i>: Change columns</a><li> <a href='#-changerow'><i>-changerow</i>: Change the values in the row/cols</a><li> <a href='#-replace'><i>-replace</i>: Replace</a><li> <a href='#-set'><i>-set</i>: Write the value into the cells</a><li> <a href='#-macro'><i>-macro</i>: Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header</a><li> <a href='#-setcol'><i>-setcol</i>: Write the value into the write col for rows that match the pattern</a><li> <a href='#-copyif'><i>-copyif</i>: Copy column 2 to column 3 if all of the columns match the pattern</a><li> <a href='#-copycolumns'><i>-copycolumns</i>: Copy columns 1  to columns 2</a><li> <a href='#-filldown'><i>-filldown</i>: Fill down with last non-null value</a><li> <a href='#-unfill'><i>-unfill</i>: Set following cells to blank if the same as previous cell</a><li> <a href='#-priorprefix'><i>-priorprefix</i>: Append prefix from the previous element to rows that match pattern</a><li> <a href='#-case'><i>-case</i>: Change case of column - type:lower,upper,proper,capitalize</a><li> <a href='#-padleft'><i>-padleft</i>: Pad left with given character</a><li> <a href='#-padright'><i>-padright</i>: Pad right with given character</a><li> <a href='#-trim'><i>-trim</i>: Trim leading and trailing white space</a><li> <a href='#-trimquotes'><i>-trimquotes</i>: Trim leading and trailing quotes</a><li> <a href='#-width'><i>-width</i>: Limit the string size of the columns</a><li> <a href='#-prepend'><i>-prepend</i>: Add the text to the beginning of the file. use _nl_ to insert newlines</a><li> <a href='#-pad'><i>-pad</i>: Add or remove columns to achieve the count</a><li> <a href='#-prefix'><i>-prefix</i>: Add prefix to column</a><li> <a href='#-suffix'><i>-suffix</i>: Add suffix to column</a><li> <a href='#-ascii'><i>-ascii</i>: Convert non ascii characters</a><li> <a href='#-ismobile'><i>-ismobile</i>: Add a true/false if the string is a mobile phone</a><li> <a href='#-js'><i>-js</i>: Define Javascript (e.g., functions) to use later in the -func call</a><li> <a href='#-func'><i>-func</i>: Apply the javascript function. Use _colname or _col#</a><li> <a href='#-endswith'><i>-endswith</i>: Ensure that each column ends with the string</a><li> <a href='#-truncate'><i>-truncate</i>: </a><li> <a href='#-extract'><i>-extract</i>: Extract text from column and make a new column</a><li> <a href='#-urlarg'><i>-urlarg</i>: Extract URL argument and make a new column</a><li> <a href='#-urlencode'><i>-urlencode</i>: URL encode the columns</a><li> <a href='#-urldecode'><i>-urldecode</i>: URL decode the columns</a><li> <a href='#-map'><i>-map</i>: Change values in column to new values</a><li> <a href='#-format'><i>-format</i>: Apply decimal format to the columns</a><li> <a href='#-denormalize'><i>-denormalize</i>: Read the id,value from file and substitute the value in the dest file col idx</a><li> <a href='#-break'><i>-break</i>: Break apart column values and make new rows</a><li> <a href='#-makeids'><i>-makeids</i>: Turn the header row into IDs (lowercase, no space, a-z0-9_</a><li> <a href='#-faker'><i>-faker</i>: Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker</a></div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-change'><i>-change</i>: Change columns</a><li> <a href='#-changerow'><i>-changerow</i>: Change the values in the row/cols</a><li> <a href='#-replace'><i>-replace</i>: Replace</a><li> <a href='#-set'><i>-set</i>: Write the value into the cells</a><li> <a href='#-macro'><i>-macro</i>: Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header</a><li> <a href='#-setcol'><i>-setcol</i>: Write the value into the write col for rows that match the pattern</a><li> <a href='#-copyif'><i>-copyif</i>: Copy column 2 to column 3 if all of the columns match the pattern</a><li> <a href='#-copycolumns'><i>-copycolumns</i>: Copy columns 1  to columns 2</a><li> <a href='#-filldown'><i>-filldown</i>: Fill down with last non-null value</a><li> <a href='#-unfill'><i>-unfill</i>: Set following cells to blank if the same as previous cell</a><li> <a href='#-priorprefix'><i>-priorprefix</i>: Append prefix from the previous element to rows that match pattern</a><li> <a href='#-case'><i>-case</i>: Change case of column - type:lower,upper,proper,capitalize</a><li> <a href='#-padleft'><i>-padleft</i>: Pad left with given character</a><li> <a href='#-padright'><i>-padright</i>: Pad right with given character</a><li> <a href='#-trim'><i>-trim</i>: Trim leading and trailing white space</a><li> <a href='#-trimquotes'><i>-trimquotes</i>: Trim leading and trailing quotes</a><li> <a href='#-width'><i>-width</i>: Limit the string size of the columns</a><li> <a href='#-prepend'><i>-prepend</i>: Add the text to the beginning of the file. use _nl_ to insert newlines</a><li> <a href='#-pad'><i>-pad</i>: Add or remove columns to achieve the count</a><li> <a href='#-prefix'><i>-prefix</i>: Add prefix to column</a><li> <a href='#-suffix'><i>-suffix</i>: Add suffix to column</a><li> <a href='#-subst'><i>-subst</i>: Create a new column with the template</a><li> <a href='#-ascii'><i>-ascii</i>: Convert non ascii characters</a><li> <a href='#-ismobile'><i>-ismobile</i>: Add a true/false if the string is a mobile phone</a><li> <a href='#-js'><i>-js</i>: Define Javascript (e.g., functions) to use later in the -func call</a><li> <a href='#-func'><i>-func</i>: Apply the javascript function. Use _colname or _col#</a><li> <a href='#-endswith'><i>-endswith</i>: Ensure that each column ends with the string</a><li> <a href='#-truncate'><i>-truncate</i>: </a><li> <a href='#-extract'><i>-extract</i>: Extract text from column and make a new column</a><li> <a href='#-urlarg'><i>-urlarg</i>: Extract URL argument and make a new column</a><li> <a href='#-urlencode'><i>-urlencode</i>: URL encode the columns</a><li> <a href='#-urldecode'><i>-urldecode</i>: URL decode the columns</a><li> <a href='#-map'><i>-map</i>: Change values in column to new values</a><li> <a href='#-format'><i>-format</i>: Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)</a><li> <a href='#-denormalize'><i>-denormalize</i>: Read the id,value from file and substitute the value in the dest file col idx</a><li> <a href='#-break'><i>-break</i>: Break apart column values and make new rows</a><li> <a href='#-makeids'><i>-makeids</i>: Turn the header row into IDs (lowercase, no space, a-z0-9_)</a><li> <a href='#-faker'><i>-faker</i>: Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker</a></div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1516,15 +1518,33 @@ use $1, $2, etc for pattern (...) matches<br>
 <br>
 </ul>
 
-You can specify a file that holds a number of patterns:
+For example, with the below data:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >label</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >xxxsome valueyyy</td></tr>
+</table><br>
+You can strip out the xxx...yyy and add a label: prefix with:
 <pre>
-  -change columns  file:file.txt ""
+seesv  -change label "xxx(.*)yyy" "label:$1"
+</pre>
+
+Which would give:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >label</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >label:some value</td></tr>
+</table><br>
+
+You can also specify a file that holds a number of patterns:
+<pre>
+seesv -change columns  file:file.txt ""
 </pre>
 
 The file is of the form:
 <pre>
-pattern::replace_string
+pattern1::replace_string1
+pattern2::replace_string2  
+</pre>
+
 e.g.:
+<pre>
 (?i).*foo.*::foobar
 .*value.*::new value
 </pre>
@@ -1745,6 +1765,15 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
+</div><a name='-subst'></a><div class=command> <i><a href='#-subst'>-subst</a></i>  &lt;column_name&gt;  &lt;template&gt; </div><div class=command-block>Create a new column with the template<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column_name</i>
+New Column Name<br>
+<i>template</i>
+Template - use ${column_name} ... <br>
+<br>
+</ul>
 </div><a name='-ascii'></a><div class=command> <i><a href='#-ascii'>-ascii</a></i>  &lt;columns&gt;  &lt;substitution string&gt; </div><div class=command-block>Convert non ascii characters<br>
 <b>Arguments:</b><br>
 <ul>
@@ -1843,7 +1872,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
-</div><a name='-format'></a><div class=command> <i><a href='#-format'>-format</a></i>  &lt;columns&gt;  &lt;format&gt; </div><div class=command-block>Apply decimal format to the columns<br>
+</div><a name='-format'></a><div class=command> <i><a href='#-format'>-format</a></i>  &lt;columns&gt;  &lt;format&gt; </div><div class=command-block>Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1880,10 +1909,22 @@ From csv file<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
-</div><a name='-makeids'></a><div class=command> <i><a href='#-makeids'>-makeids</a></i> </div><div class=command-block>Turn the header row into IDs (lowercase, no space, a-z0-9_<br>
+</div><a name='-makeids'></a><div class=command> <i><a href='#-makeids'>-makeids</a></i> </div><div class=command-block>Turn the header row into IDs (lowercase, no space, a-z0-9_)<br>
 <br>
 </ul>
-</div><a name='-faker'></a><div class=command> <i><a href='#-faker'>-faker</a></i>  &lt;what&gt;  &lt;columns&gt; </div><div class=command-block>Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker<br>
+For example, if you had the below data:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Some header label with some punctuation-+/</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center > Some other header label</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
+</table><br>Running:
+<pre>
+seesv -makeids
+</pre>  
+  
+Gives
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >some_header_label_with_some_punctuation</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center > some_other_header_label</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
+</table><br>
+<p></div><a name='-faker'></a><div class=command> <i><a href='#-faker'>-faker</a></i>  &lt;what&gt;  &lt;columns&gt; </div><div class=command-block>Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker<br>
 <b>Arguments:</b><br>
 <ul>
 <i>what</i>
@@ -1958,16 +1999,7 @@ symptoms
 </pre>  
 
 <p></div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-subst'><i>-subst</i>: Create a new column with the template</a><li> <a href='#-md'><i>-md</i>: Make a message digest of the column values</a><li> <a href='#-tob64'><i>-tob64</i>: Base 64 Decode</a><li> <a href='#-fromb64'><i>-fromb64</i>: Base 64 Decode</a><li> <a href='#-rot13'><i>-rot13</i>: Rot 13</a><li> <a href='#-encrypt'><i>-encrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-decrypt'><i>-decrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-uuid'><i>-uuid</i>: Add a UUID field</a><li> <a href='#-number'><i>-number</i>: Add 1,2,3... as column</a><li> <a href='#-letter'><i>-letter</i>: Add 'A','B', ... as column</a><li> <a href='#-soundex'><i>-soundex</i>: Generate a soundex code</a><li> <a href='#-wikidesc'><i>-wikidesc</i>: Add a description from wikipedia</a><li> <a href='#-image'><i>-image</i>: Search for an image</a><li> <a href='#-embed'><i>-embed</i>: Download the URL and embed the image contents</a><li> <a href='#-fetch'><i>-fetch</i>: Fetch the the URL and embed the contents</a><li> <a href='#-imagefill'><i>-imagefill</i>: Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. </a><li> <a href='#-download'><i>-download</i>: Download the URL</a><li> <a href='#-gender'><i>-gender</i>: Figure out the gender of the name in the column</a></div><a name='-subst'></a><div class=command> <i><a href='#-subst'>-subst</a></i>  &lt;column_name&gt;  &lt;template&gt; </div><div class=command-block>Create a new column with the template<br>
-<b>Arguments:</b><br>
-<ul>
-<i>column_name</i>
-New Column Name<br>
-<i>template</i>
-Template - use ${column_name} ... <br>
-<br>
-</ul>
-</div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-md'><i>-md</i>: Make a message digest of the column values</a><li> <a href='#-tob64'><i>-tob64</i>: Base 64 Decode</a><li> <a href='#-fromb64'><i>-fromb64</i>: Base 64 Decode</a><li> <a href='#-rot13'><i>-rot13</i>: Rot 13</a><li> <a href='#-encrypt'><i>-encrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-decrypt'><i>-decrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-uuid'><i>-uuid</i>: Add a UUID field</a><li> <a href='#-number'><i>-number</i>: Add 1,2,3... as column</a><li> <a href='#-letter'><i>-letter</i>: Add 'A','B', ... as column</a><li> <a href='#-soundex'><i>-soundex</i>: Generate a soundex code</a><li> <a href='#-wikidesc'><i>-wikidesc</i>: Add a description from wikipedia</a><li> <a href='#-image'><i>-image</i>: Search for an image</a><li> <a href='#-embed'><i>-embed</i>: Download the URL and embed the image contents</a><li> <a href='#-fetch'><i>-fetch</i>: Fetch the URL and embed the contents</a><li> <a href='#-imagefill'><i>-imagefill</i>: Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. </a><li> <a href='#-download'><i>-download</i>: Download the URL</a><li> <a href='#-gender'><i>-gender</i>: Figure out the gender of the name in the column</a></div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -2063,7 +2095,7 @@ matches the string provided by the given columns.
 <br>
 <br>
 </ul>
-</div><a name='-fetch'></a><div class=command> <i><a href='#-fetch'>-fetch</a></i>  &lt;name&gt;  &lt;url&gt; </div><div class=command-block>Fetch the the URL and embed the contents<br>
+</div><a name='-fetch'></a><div class=command> <i><a href='#-fetch'>-fetch</a></i>  &lt;name&gt;  &lt;url&gt; </div><div class=command-block>Fetch the URL and embed the contents<br>
 <b>Arguments:</b><br>
 <ul>
 <i>name</i>
@@ -2087,7 +2119,7 @@ URL template, e.g., https://foo.com/${column_name}<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
-<br>
+Column that holds the URL<br>
 <i>suffix</i>
 File suffix<br>
 <br>
