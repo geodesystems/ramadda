@@ -1,13 +1,35 @@
 
-You can specify a file that holds a number of patterns:
+For example, with the below data:
+<data>
+label
+xxxsome valueyyy
+</data>
+
+You can strip out the xxx...yyy and add a label: prefix with:
 <pre>
-  -change columns  file:file.txt ""
+seesv  -change label "xxx(.*)yyy" "label:$1"
+</pre>
+
+Which would give:
+<data>
+label
+label:some value
+</data>
+
+
+You can also specify a file that holds a number of patterns:
+<pre>
+seesv -change columns  file:file.txt ""
 </pre>
 
 The file is of the form:
 <pre>
-pattern::replace_string
+pattern1::replace_string1
+pattern2::replace_string2  
+</pre>
+
 e.g.:
+<pre>
 (?i).*foo.*::foobar
 .*value.*::new value
 </pre>
