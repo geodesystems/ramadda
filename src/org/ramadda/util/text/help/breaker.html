@@ -1,0 +1,24 @@
+
+For example, with the below data we want to break up each row 
+<data>
+state,region_reg,region_census,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003
+Alabama,Southeast,South,0.356,0.335,0.324,0.33,0.32,0.323,0.316,0.312,0.301,0.294,0.287,0.277,0.284
+Alaska,Northwest,North,0.356,0.335,0.324,0.33,0.32,0.323,0.316,0.312,0.301,0.294,0.287,0.277,0.284
+...
+</data>
+
+Calling:
+<pre>
+csv -break  Value Year 3-20 -p breaker.csv
+</pre>
+
+Gives:
+<data>
+state,region_reg,region_census,Value,Year
+Alabama,Southeast,South,0.356,2015
+Alabama,Southeast,South,0.335,2014
+Alabama,Southeast,South,0.324,2013
+Alabama,Southeast,South,0.33,2012
+Alabama,Southeast,South,0.32,2011
+...
+</data>
