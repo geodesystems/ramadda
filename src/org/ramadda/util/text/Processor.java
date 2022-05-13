@@ -1511,7 +1511,6 @@ public abstract class Processor extends CsvOperator {
          */
         public Printer(String prefix, String template, String delimiter,
                        String suffix) {
-            //      System.err.println("new printer " + Utils.getStack(6));
             this.prefix   = prefix;
             this.template = template;
             initDelimiter(delimiter);
@@ -1525,7 +1524,6 @@ public abstract class Processor extends CsvOperator {
          * @param trim _more_
          */
         public Printer(String template, boolean trim) {
-            //      System.err.println("new printer " + Utils.getStack(6));
             this.template = template;
             this.trim     = trim;
         }
@@ -1536,7 +1534,6 @@ public abstract class Processor extends CsvOperator {
          * @param addHeader _more_
          */
         public Printer(boolean addHeader) {
-            //      System.err.println("new printer " + Utils.getStack(6));
             this.addPointHeader = addHeader;
         }
 
@@ -1586,11 +1583,9 @@ public abstract class Processor extends CsvOperator {
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(ctx.getWriter(), row, null /*exValues*/);
-
                 return row;
             }
             handleRow(ctx, ctx.getWriter(), row);
-
             return row;
         }
 
@@ -1658,11 +1653,12 @@ public abstract class Processor extends CsvOperator {
                 throws Exception {
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
-            if (firstRow) {
+            if (firstRow&&row.isFirstRowInData()) {
                 headerRow   = row;
                 commentChar = ctx.getCommentChar();
                 if (prefix != null) {
                     writer.append(prefix);
+		    prefix = null;
                 }
                 if (theTemplate != null) {
                     return;
@@ -1674,6 +1670,11 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
             }
+	    //handle multiple data sources
+	    if(!firstRow && row.isFirstRowInData()) {
+		return;
+	    }
+
             List    values        = row.getValues();
             boolean escapeColumns = true;
             if (theTemplate == null) {

@@ -72,8 +72,24 @@ public abstract class DataProvider extends CsvOperator {
      * @throws Exception _more_
      */
     public void initialize(CsvUtil csvUtil, TextReader ctx)
-            throws Exception {}
+            throws Exception {
+	rowCnt=0;
+    }
 
+
+    private int rowCnt=0;
+    public Row makeRow() {
+	Row     row         = new Row();
+	row.setRowCount(rowCnt++);
+	return row;
+    }
+
+    public Row makeRow(List values) {
+	Row     row         = new Row(values);
+	row.setRowCount(rowCnt++);
+	return row;
+	
+    }
 
     /**
      * _more_
@@ -162,6 +178,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader textReader)
                 throws Exception {
+	    super.initialize(csvUtil,textReader);
             String s = textReader.convertContents(textReader.readContents());
             tokenize(textReader, s);
         }
@@ -332,7 +349,7 @@ public abstract class DataProvider extends CsvOperator {
                     if (debug) {
                         System.out.println("\trow: " + tr);
                     }
-                    Row     row         = new Row();
+                    Row     row         = makeRow();
                     boolean checkHeader = true;
                     int     colCnt      = 0;
                     while (true) {
@@ -464,12 +481,12 @@ public abstract class DataProvider extends CsvOperator {
             URL url = new URL(ctx.getInputFile());
             List<HtmlUtils.Link> links = HtmlUtils.extractLinks(url, s,
                                              pattern);
-            Row row = new Row();
+            Row row = makeRow();
             row.add("Label");
             row.add("URL");
             addRow(row);
             for (HtmlUtils.Link link : links) {
-                row = new Row();
+                row = makeRow();
                 row.add(link.getLabel());
                 row.add(link.getUrl().toString());
                 addRow(row);
@@ -536,7 +553,7 @@ public abstract class DataProvider extends CsvOperator {
             int numLines = ctx.getMaxRows();
             pattern = Utils.convertPattern(pattern);
             if (cols.length() > 0) {
-                addRow(new Row(Utils.split(cols, ",")));
+                addRow(makeRow(Utils.split(cols, ",")));
             }
 
             //      System.err.println(start);
@@ -568,7 +585,7 @@ public abstract class DataProvider extends CsvOperator {
                 if ( !matcher.find()) {
                     break;
                 }
-                Row row = new Row();
+                Row row = makeRow();
                 addRow(row);
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String tok = matcher.group(i);
@@ -739,7 +756,7 @@ public abstract class DataProvider extends CsvOperator {
                             //Maybe it is an array of strings
                             for (int arrayIdx2 = 0;
                                     arrayIdx2 < array.length(); arrayIdx2++) {
-                                Row row = new Row();
+                                Row row = makeRow();
                                 row.add(array.getString(arrayIdx2));
                                 addRow(row);
                             }
@@ -758,7 +775,7 @@ public abstract class DataProvider extends CsvOperator {
                 }
                 if (names == null) {
                     names = new ArrayList<String>();
-                    Row row = new Row();
+                    Row row = makeRow();
                     addRow(row);
                     if (arrayKeys.size() > 0) {
                         names.addAll(arrayKeys);
@@ -785,7 +802,7 @@ public abstract class DataProvider extends CsvOperator {
                 ***/
 
                 for (Hashtable h : secondary) {
-                    Row row = new Row();
+                    Row row = makeRow();
                     addRow(row);
                     for (String name : names) {
                         Object value = h.get(name);
@@ -838,7 +855,7 @@ public abstract class DataProvider extends CsvOperator {
             tokenizer.setEmptyTokenAsNull(true);
             for (String line : Utils.split(sb.toString(), "\n", true, true)) {
                 List<String> toks = Utils.tokenizeColumns(line, tokenizer);
-                Row          row  = new Row(toks);
+                Row          row  = makeRow(toks);
                 addRow(row);
             }
         }
@@ -919,6 +936,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
+	    super.initialize(csvUtil,ctx);
             this.connection = csvUtil.getDbConnection(ctx, this, props, db,
                     table);
             List<Clause> clauses = new ArrayList<Clause>();
@@ -969,7 +987,7 @@ public abstract class DataProvider extends CsvOperator {
             for (int i = 0; i < this.columnCount; i++) {
                 values.add(rsmd.getColumnName(i + 1).toLowerCase());
             }
-            headerRow = new Row(values);
+            headerRow = makeRow(values);
             maxRows   = ctx.getMaxRows();
         }
 
@@ -1005,7 +1023,7 @@ public abstract class DataProvider extends CsvOperator {
                 //                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
             }
 
-            return new Row(values);
+            return makeRow(values);
         }
 
         /**
@@ -1060,7 +1078,7 @@ public abstract class DataProvider extends CsvOperator {
         public void tokenize(TextReader ctx, String s) throws Exception {
 
             Element root   = XmlUtil.getRoot(s);
-            Row     header = new Row();
+            Row     header = makeRow();
             addRow(header);
             List<Element> nodes =
                 (List<Element>) Utils.findDescendantsFromPath(root,
@@ -1118,7 +1136,7 @@ public abstract class DataProvider extends CsvOperator {
 
             for (Element parent : nodes) {
                 NodeList children = XmlUtil.getElements(parent);
-                Row      row      = new Row();
+                Row      row      = makeRow();
                 addRow(row);
                 for (int i = 0; i < colCnt; i++) {
                     row.add("");
@@ -1194,6 +1212,7 @@ public abstract class DataProvider extends CsvOperator {
         @Override
         public void initialize(CsvUtil csvUtil, TextReader textReader)
                 throws Exception {
+	    super.initialize(csvUtil,textReader);
             List<String> files = csvUtil.getInputFiles();
             if (files.size() == 0) {
                 return;
@@ -1257,12 +1276,12 @@ public abstract class DataProvider extends CsvOperator {
               <altitudeMode>relativeToGround</altitudeMode>
               <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
               </LookAt>         */
-            Row header = new Row();
+            Row header = makeRow();
             header.add("Latitude", "Longitude", "Elevation", "Heading",
                        "Tilt", "Range");
             addRow(header);
             for (Element lookAt : lookAts) {
-                Row row = new Row();
+                Row row = makeRow();
                 addRow(row);
                 row.add(XmlUtil.getGrandChildText(lookAt, "latitude", "NaN"));
                 row.add(XmlUtil.getGrandChildText(lookAt, "longitude",
@@ -1297,12 +1316,12 @@ public abstract class DataProvider extends CsvOperator {
 
 
              */
-            Row header = new Row();
+            Row header = makeRow();
             header.add("Name", "Image", "Latitude", "Longitude", "North",
                        "South", "East", "West");
             addRow(header);
             for (Element node : nodes) {
-                Row row = new Row();
+                Row row = makeRow();
                 addRow(row);
                 row.add(XmlUtil.getGrandChildText(node, "name", ""));
                 Element icon = XmlUtil.findChild(node, "Icon");
@@ -1349,12 +1368,12 @@ public abstract class DataProvider extends CsvOperator {
          */
         private void readPlacemarks(List<Element> placemarks)
                 throws Exception {
-            Row header = new Row();
+            Row header = makeRow();
             header.add("Name", "Description", "Latitude", "Longitude",
                        "Elevation");
             addRow(header);
             for (Element placemark : placemarks) {
-                Row row = new Row();
+                Row row = makeRow();
                 addRow(row);
                 row.add(XmlUtil.getGrandChildText(placemark, "name", ""));
                 row.add(XmlUtil.getGrandChildText(placemark, "description",
@@ -1415,7 +1434,7 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-            addRow(new Row(header));
+            addRow(makeRow(header));
             if (pattern.length() == 0) {
                 return;
             }
@@ -1425,7 +1444,7 @@ public abstract class DataProvider extends CsvOperator {
                 if ( !matcher.find()) {
                     break;
                 }
-                Row row = new Row();
+                Row row = makeRow();
                 addRow(row);
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     row.add(matcher.group(i));
@@ -1485,7 +1504,7 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-            Row headerRow = new Row();
+            Row headerRow = makeRow();
             addRow(headerRow);
             for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
@@ -1519,7 +1538,7 @@ public abstract class DataProvider extends CsvOperator {
                         if (cnt < getRows().size()) {
                             row = getRows().get(cnt);
                         } else {
-                            row = new Row();
+                            row = makeRow();
                             addRow(row);
                         }
                         cnt++;
@@ -1581,7 +1600,7 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-            Row headerRow = new Row();
+            Row headerRow = makeRow();
             addRow(headerRow);
             for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
@@ -1620,7 +1639,7 @@ public abstract class DataProvider extends CsvOperator {
                                      : "") + " remainder is the same as before");
                 }
                 remLength = s.length();
-                Row row = new Row();
+                Row row = makeRow();
                 addRow(row);
                 for (int i = 1; i <= m1.groupCount(); i++) {
                     String tok = m1.group(i).trim();
@@ -1681,7 +1700,7 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-            Row headerRow = new Row();
+            Row headerRow = makeRow();
             addRow(headerRow);
             for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
@@ -1711,7 +1730,7 @@ public abstract class DataProvider extends CsvOperator {
                     if ( !m2.find()) {
                         break;
                     }
-                    Row row = new Row();
+                    Row row = makeRow();
                     addRow(row);
                     for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
                         String tok = m2.group(i2);
@@ -1805,6 +1824,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
+	    super.initialize(csvUtil,ctx);
             this.ctx = ctx;
         }
 
@@ -1822,7 +1842,7 @@ public abstract class DataProvider extends CsvOperator {
                     //              System.err.println("Done reading CSV file read");
                     return null;
                 }
-                //              if(true) return  new Row(Utils.tokenizeColumns(line, getTokenizer(ctx)));
+                //              if(true) return  makeRow(Utils.tokenizeColumns(line, getTokenizer(ctx)));
 
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
@@ -1867,11 +1887,11 @@ public abstract class DataProvider extends CsvOperator {
                     //                    continue;
                 }
                 if (widths != null) {
-                    return new Row(Utils.tokenizeColumns(line, widths));
+                    return makeRow(Utils.tokenizeColumns(line, widths));
                 } else if (ctx.getSplitOnSpaces()) {
-                    return new Row(Utils.split(line, " ", true, true));
+                    return makeRow(Utils.split(line, " ", true, true));
                 } else {
-                    return new Row(Utils.tokenizeColumns(line,
+                    return makeRow(Utils.tokenizeColumns(line,
                             getTokenizer(ctx)));
                 }
             }
@@ -1912,6 +1932,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
+	    super.initialize(csvUtil,ctx);
             this.ctx = ctx;
         }
 
@@ -1923,7 +1944,7 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public Row readRow() throws Exception {
-            Row row = new Row();
+            Row row = makeRow();
             if ( !didFirst) {
                 didFirst = true;
                 row.add("line");
@@ -1992,6 +2013,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
+	    super.initialize(csvUtil,ctx);
             this.ctx = ctx;
         }
 
@@ -2006,7 +2028,7 @@ public abstract class DataProvider extends CsvOperator {
             if (count > rows) {
                 return null;
             }
-            Row row = new Row();
+            Row row = makeRow();
             if (count == 0) {
                 for (String name : header) {
                     row.add(name);
@@ -2081,6 +2103,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
+	    super.initialize(csvUtil,ctx);
             this.ctx = ctx;
             Runtime rt = Runtime.getRuntime();
             if (tabula == null) {
@@ -2132,7 +2155,7 @@ public abstract class DataProvider extends CsvOperator {
 
             List<String> toks = Utils.tokenizeColumns(line, tokenizer);
 
-            return new Row(toks);
+            return makeRow(toks);
         }
 
     }

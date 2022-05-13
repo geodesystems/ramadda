@@ -772,13 +772,16 @@ public class CsvUtil {
 		for(String file: files) {
 		    if(Utils.isUrl(file)) newWay=false;
 		}
+		int providerCnt = 0;
                 for (DataProvider provider : providers) {
+		    providerCnt++;
 		    if(newWay) {
 			for (NamedChannel input : getChannels(files)) {
 			    myTextReader.resetProcessors();
 			    TextReader clone = myTextReader.cloneMe(input,
 								    outputFile, outputStream);
 			    process(clone, provider);
+			    myTextReader.setFirstRow(null);
 			    input.close();
 			    provider.finish();
 			}
@@ -788,10 +791,13 @@ public class CsvUtil {
 			    TextReader clone = myTextReader.cloneMe(input,
 								    outputFile, outputStream);
 			    process(clone, provider);
+			    myTextReader.setFirstRow(null);
 			    input.close();
 			    provider.finish();
 			}
 		    }
+		    myTextReader.flush();
+		    myTextReader.close();
                 }
             }
         }
@@ -807,6 +813,8 @@ public class CsvUtil {
         DataProvider.CsvDataProvider provider =
             new DataProvider.CsvDataProvider(ctx,0);
         process(ctx, provider);
+	ctx.flush();
+	ctx.close();
     }
 
 
@@ -873,6 +881,7 @@ public class CsvUtil {
                 continue;
             }
 	    if ( !processRow(ctx, row)) {
+		System.err.println("\tDONE");
 		break;
 	    }
         }
@@ -881,8 +890,6 @@ public class CsvUtil {
         if (okToRun) {
             ctx.finishProcessing();
         }
-        ctx.flush();
-        ctx.close();
     }
 
     /**
@@ -1194,7 +1201,6 @@ public class CsvUtil {
                 writer.println("");
             }
         }
-        System.err.println("CsvUtil.done");
         writer.flush();
         writer.close();
     }
@@ -2197,7 +2203,6 @@ public class CsvUtil {
         new Cmd("-uuid", "Add a UUID field"),
         new Cmd("-number", "Add 1,2,3... as column"),
         new Cmd("-letter", "Add 'A','B', ... as column"),
-	//        new Cmd(true, "Lookup"),
 	new Cmd("-soundex", "Generate a soundex code",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-wikidesc", "Add a description from wikipedia",
@@ -2206,7 +2211,7 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"), "suffix"),
         new Cmd("-embed", "Download the URL and embed the image contents",
                 new Arg("url column")),
-        new Cmd("-fetch", "Fetch the the URL and embed the contents",
+        new Cmd("-fetch", "Fetch the URL and embed the contents",
                 new Arg("name","Name of new column"),
                 new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
         new Cmd(
@@ -2215,7 +2220,7 @@ public class CsvUtil {
 		new Arg("querycolumn", "", "type", "columns"), "suffix",
 		new Arg("imagecolumn", "", "type", "column")),
         new Cmd("-download", "Download the URL",
-                new Arg("column", "", "type", "column"),
+                new Arg("column", "Column that holds the URL", "type", "column"),
 		new Arg("suffix", "File suffix")),
         new Cmd("-gender", "Figure out the gender of the name in the column",
                 new Arg("column", "", "type", "columns")),

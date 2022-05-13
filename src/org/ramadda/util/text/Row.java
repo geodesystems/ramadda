@@ -38,9 +38,11 @@ public class Row {
     private int id = (cnt++);
 
 
+    /**  */
+    private int rowCount = -1;
+
     /** _more_ */
     private List values;
-
 
     /**
      * _more_
@@ -90,6 +92,33 @@ public class Row {
 
 
     /**
+       is this row the first row created by the DataProvider
+     */
+    public boolean isFirstRowInData() {
+	return rowCount==0;
+    }
+
+    /**
+     * Set the RowCount property.
+     *
+     * @param value The new value for RowCount
+     */
+    public void setRowCount(int value) {
+        rowCount = value;
+    }
+
+    /**
+     * Get the RowCount property.
+     *
+     * @return The RowCount
+     */
+    public int getRowCount() {
+        return rowCount;
+    }
+
+
+
+    /**
      * _more_
      *
      * @return _more_
@@ -117,8 +146,13 @@ public class Row {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param index _more_
+      * @return _more_
+     */
     public boolean indexOk(int index) {
-	return index>=0 && index<size();
+        return (index >= 0) && (index < size());
     }
 
     /**
@@ -150,9 +184,15 @@ public class Row {
         return values.get(index);
     }
 
+    /**
+     *
+     * @param index _more_
+      * @return _more_
+     */
     public double getDouble(int index) {
-	String s = getString(index);
-	return Double.parseDouble(s);
+        String s = getString(index);
+
+        return Double.parseDouble(s);
     }
 
 
@@ -282,10 +322,16 @@ public class Row {
         /** _more_ */
         private boolean isNumber = false;
 
-        public RowCompare(List<Integer>indices, boolean asc) {
-	    this.indices = indices;
+        /**
+         
+         *
+         * @param indices _more_
+         * @param asc _more_
+         */
+        public RowCompare(List<Integer> indices, boolean asc) {
+            this.indices   = indices;
             this.ascending = asc;
-	}
+        }
 
 
         /**
@@ -296,8 +342,8 @@ public class Row {
          * @param asc _more_
          */
         public RowCompare(int idx, boolean asc) {
-	    this.indices= new ArrayList<Integer>();
-	    this.indices.add(idx);
+            this.indices = new ArrayList<Integer>();
+            this.indices.add(idx);
             this.ascending = asc;
         }
 
@@ -312,46 +358,48 @@ public class Row {
          */
         public int compare(Row r1, Row r2) {
             int result;
-	    for(int idx: indices) {
-		if ((idx < 0) || (idx >= r1.size())) {
-		    return 1;
-		}
-		if ((idx < 0) || (idx >= r2.size())) {
-		    return 0;
-		}
-		Object o1 = r1.get(idx);
-		Object o2 = r2.get(idx);
-		String s1 = o1.toString();
-		String s2 = o2.toString();
-		if ( !checked) {
-		    try {
-			checked = true;
-			double d = Double.parseDouble(s1);
-			isNumber = true;
-		    } catch (Exception e) {}
-		}
-		int dir = 0;
-		if (isNumber) {
-		    double d1 = Double.parseDouble(s1);
-		    double d2 = Double.parseDouble(s2);
-		    if (d1 < d2) {
-			dir = -1;
-		    } else if (d1 > d2) {
-			dir = 1;
-		    } else {
-			dir = 0;
-		    }
-		} else {
-		    dir = s1.compareTo(s2);
-		}
-		if (dir == 0) {
-		    continue;
-		}
-		return ascending
-		    ? dir
-		    : -dir;
-	    }
-	    return 0;
+            for (int idx : indices) {
+                if ((idx < 0) || (idx >= r1.size())) {
+                    return 1;
+                }
+                if ((idx < 0) || (idx >= r2.size())) {
+                    return 0;
+                }
+                Object o1 = r1.get(idx);
+                Object o2 = r2.get(idx);
+                String s1 = o1.toString();
+                String s2 = o2.toString();
+                if ( !checked) {
+                    try {
+                        checked = true;
+                        double d = Double.parseDouble(s1);
+                        isNumber = true;
+                    } catch (Exception e) {}
+                }
+                int dir = 0;
+                if (isNumber) {
+                    double d1 = Double.parseDouble(s1);
+                    double d2 = Double.parseDouble(s2);
+                    if (d1 < d2) {
+                        dir = -1;
+                    } else if (d1 > d2) {
+                        dir = 1;
+                    } else {
+                        dir = 0;
+                    }
+                } else {
+                    dir = s1.compareTo(s2);
+                }
+                if (dir == 0) {
+                    continue;
+                }
+
+                return ascending
+                       ? dir
+                       : -dir;
+            }
+
+            return 0;
 
         }
 

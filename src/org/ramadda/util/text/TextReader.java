@@ -716,7 +716,7 @@ public class TextReader implements Cloneable {
      * @return The FirstRow
      */
     public Row getFirstRow() {
-        return firstRow;
+	return  firstRow;
     }
 
 
@@ -1406,7 +1406,6 @@ public class TextReader implements Cloneable {
             return writer;
         } catch (Exception exc) {
             exc.printStackTrace();
-
             throw new RuntimeException(exc);
         }
 
