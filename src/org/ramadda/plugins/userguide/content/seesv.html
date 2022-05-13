@@ -163,33 +163,44 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 </pre>
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
-Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands:<ul></ul><li> <a href='#-delimiter'><i>-delimiter</i>: Specify a delimiter</a><li> <a href='#-tab'><i>-tab</i>: Use tabs</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse the table in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Make the header be ids</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a></div>
-<b style='font-size:120%;'>Examples</b>  
-
-<pre class=examples>
-#Specify a bar as a delimiter
-seesv -delimiter "|" 
-
-#Specify tab as  delimiter
-seesv -delimiter tab  
-
-#Specify spaces as  delimiter
-seesv -delimiter space  
-
-#Fixed widths
-#e.g,, 4 columns with the widths
-seesv -widths 10,5,15,30 
-
-#prepend the column names
-seesv -header "name1,name2,name3"
-
-#clean up the header names
-#This removes extraneous characters and upper cases the first letter of each word
-seesv -headernames
-
-
+Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc. The default input type is CSV. To print out a CSV file just do:
+<pre>
+seesv -p test.csv
 </pre>
-<a name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify a delimiter<br>
+
+The SeeSV package can also handle  zipped or gzipped input files:
+<pre>
+seesv -p test.csv.zip
+seesv -p test.csv.gz  
+</pre>
+
+Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
+<pre>
+seesv -p test.xls
+</pre>
+
+
+The SeeSV package does have some support for handling multiple input files.
+It is assumed that each file is has the same set of columns.
+Note: not all commands work with multiple input files.
+
+<pre>
+seesv -p test1.csv test2.csv
+</pre>
+
+Other file types (see below for more details) are handled as:
+
+<pre>
+#Read each <a href="#-lines">line</a> as a single column
+seesv -lines -p test.xml
+
+#Process <a href="#-xml">xml</a> with the given path 
+seesv -xml "path.to.rows" -p test.xml  
+
+#Process <a href="#-json">JSON</a>
+seesv -json "path.to.array" "object_paths" -p test.json
+</pre>
+<div class=header>Commands:<ul></ul><li> <a href='#-delimiter'><i>-delimiter</i>: Specify a delimiter</a><li> <a href='#-tab'><i>-tab</i>: Use tabs</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse the table in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Make the header be ids</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a></div><a name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify a delimiter<br>
 <b>Arguments:</b><br>
 <ul>
 <i>delimiter</i>
@@ -206,7 +217,19 @@ Use 'space' for space, 'tab' for tab<br>
 w1,w2,...,wN<br>
 <br>
 </ul>
-</div><a name='-quotesnotspecial'></a><div class=command> <i><a href='#-quotesnotspecial'>-quotesnotspecial</a></i> </div><div class=command-block>Don't treat quotes as special characters<br>
+For example, with the below data that has Xs to represent spaces
+<pre>
+nameXXXvalue1XXXXXvalue2XXXXX   
+foo    1          2
+bar    3          4
+</pre>
+
+You would set the -widths to be:
+<pre>
+seesv -widths 7,11,11
+</pre>  
+
+<p></div><a name='-quotesnotspecial'></a><div class=command> <i><a href='#-quotesnotspecial'>-quotesnotspecial</a></i> </div><div class=command-block>Don't treat quotes as special characters<br>
 <br>
 </ul>
 </div><a name='-cleaninput'></a><div class=command> <i><a href='#-cleaninput'>-cleaninput</a></i> </div><div class=command-block>Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files<br>
@@ -473,14 +496,39 @@ Number of leading bytes to remove<br>
 </div><a name='-ids'></a><div class=command> <i><a href='#-ids'>-ids</a></i> </div><div class=command-block>Use canonical names<br>
 <br>
 </ul>
-</div><a name='-cat'></a><div class=command> <i><a href='#-cat'>-cat</a></i>  &lt;*.csv&gt; </div><div class=command-block>Concat the columns in one or more csv files<br>
+This command converts the column names to a standardized format. Changing the names to lower case and
+converting punctuation, etc to "_".
+
+<p></div><a name='-cat'></a><div class=command> <i><a href='#-cat'>-cat</a></i>  &lt;*.csv&gt; </div><div class=command-block>Concat the columns in one or more csv files<br>
 <b>Arguments:</b><br>
 <ul>
 <i>*.csv</i>
 <br>
 <br>
 </ul>
-</div><a name='-append'></a><div class=command> <i><a href='#-append'>-append</a></i>  &lt;skip&gt;  &lt;files&gt; </div><div class=command-block>Append the files, skipping the given rows in the latter files<br>
+For example, with the following 2 files:
+
+test1.csv:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >bar</td><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+</table><br>
+test2.csv:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >xxx</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >yyy2</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
+</table><br>
+Calling:
+<pre>
+  seesv -cat test1.csv test2.csv
+</pre>
+
+Would result in an out file:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >xxx</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >bar</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >yyy</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
+</table><br>
+<p></div><a name='-append'></a><div class=command> <i><a href='#-append'>-append</a></i>  &lt;skip&gt;  &lt;files&gt; </div><div class=command-block>Append the files, skipping the given rows in the latter files<br>
 <b>Arguments:</b><br>
 <ul>
 <i>skip</i>
@@ -489,7 +537,36 @@ Number of rows to skip<br>
 *.csv<br>
 <br>
 </ul>
-</div><a name='-chop'></a><div class=command> <i><a href='#-chop'>-chop</a></i>  &lt;numlines&gt;  &lt;file&gt; </div><div class=command-block>Write out last N lines. include the header<br>
+This concatenates the input files, passing through the first file whole but skipping over the given number of lines in the subsequent files.
+
+So with files:
+
+test1.csv:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >bar</td></tr>
+</table><br>
+test2.csv:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >x</td><td style='padding:4px;border:1px solid #ccc;' >y</td></tr>
+</table><br>
+test3.csv:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >l</td><td style='padding:4px;border:1px solid #ccc;' >m</td></tr>
+</table><br>
+Calling:
+<pre>
+seesv -append 1 test1.csv test2.csv test3.csv
+</pre>
+
+Results in:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >bar</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >x</td><td style='padding:4px;border:1px solid #ccc;' >y</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >l</td><td style='padding:4px;border:1px solid #ccc;' >m</td></tr>
+</table><br>
+
+
+<p></div><a name='-chop'></a><div class=command> <i><a href='#-chop'>-chop</a></i>  &lt;numlines&gt;  &lt;file&gt; </div><div class=command-block>Write out last N lines. include the header<br>
 <b>Arguments:</b><br>
 <ul>
 <i>numlines</i>
