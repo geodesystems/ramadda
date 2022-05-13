@@ -1079,6 +1079,8 @@ public class CsvUtil {
             String csv = XlsUtil.xlsxToCsv(file);
             return new BufferedInputStream(
 					   new ByteArrayInputStream(csv.getBytes()));
+	} else if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
+	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file)));
         } else if (file.toLowerCase().endsWith(".zip")) {
             InputStream    fis = IO.getInputStream(file.toString());
             ZipInputStream zin = new ZipInputStream(fis);
@@ -2122,6 +2124,9 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"), new Arg("prefix")),
         new Cmd("-suffix", "Add suffix to column",
                 new Arg("column", "", "type", "column"), "suffix"),
+        new Cmd("-subst", "Create a new column with the template",
+                new Arg("column_name", "New Column Name"),
+                new Arg("template", "Template - use ${column_name} ... ")),
         new Cmd("-ascii", "Convert non ascii characters",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("substitution string", "")),
@@ -2155,7 +2160,7 @@ public class CsvUtil {
         new Cmd("-map", "Change values in column to new values",
                 new Arg("column", "", "type", "columns"), "new columns name",
                 "value newvalue ..."),
-        new Cmd("-format", "Apply decimal format to the columns", 
+        new Cmd("-format", "Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)", 
 		new Arg("columns", "", "type", "columns"),
                 new Arg("format", "Decimal format  e.g. '##0.00'")),
         new Cmd(
@@ -2166,7 +2171,7 @@ public class CsvUtil {
         new Cmd("-break", "Break apart column values and make new rows",
                 "label1", "label2", "columns"),
 
-        new Cmd("-makeids", "Turn the header row into IDs (lowercase, no space, a-z0-9_"),
+        new Cmd("-makeids", "Turn the header row into IDs (lowercase, no space, a-z0-9_)"),
 
         new Cmd("-faker", "Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker",
 		new Arg("what","firstname|lastname|fullname|etc"),
@@ -2174,9 +2179,6 @@ public class CsvUtil {
 
        /** *  Add values * */
         new Cmd(true, "Add Values"),
-        new Cmd("-subst", "Create a new column with the template",
-                new Arg("column_name", "New Column Name"),
-                new Arg("template", "Template - use ${column_name} ... ")),
         new Cmd("-md", "Make a message digest of the column values",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("type", "", "type","enumeration","values", "MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512,")),
