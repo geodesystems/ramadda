@@ -30,7 +30,8 @@ pre {
 </head>    
 <notcl>
 <style type='text/css'>
-  body {font-family: Arial, sans-serif;}
+  body {font-family: Arial, sans-serif;    line-height:1.3em;
+       }
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
   h2 {
@@ -51,14 +52,25 @@ pre {
       max-height: 400px;
       overflow-y:auto;
   }
-  .command {border : 1px #ccc solid; padding:4px; background:#E7EFF4;}
+  .command {margin-top:10px;border : 1px #ccc solid; padding:4px; background:#E7EFF4;}
   .command-block {
       margin-left:20px;
   }
   .cmd {
       font-style:italic;
   }
+  seesv {
+      font-style:italic;
+      display:block;
+      border:1px solid #ccc;
+      background:rgb(245,245,245);
+      padding:4px;
+      border-radius: 4px;
+      margin-bottom:5px;
+      margin-top:5px;
+      padding:4px;
 
+  }
 
 </style>
 
@@ -191,58 +203,52 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
 Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc. The default input type is CSV. To print out a CSV file just do:
-<pre>
+<seesv>
 seesv -p test.csv
-</pre>
+</seesv>
 
 The SeeSV package can also handle  zipped or gzipped input files:
-<pre>
+<seesv>
 seesv -p test.csv.zip
 seesv -p test.csv.gz  
-</pre>
+</seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
-<pre>
+<seesv>
 seesv -p test.xls
-</pre>
+</seesv>
 
 
 The SeeSV package does have some support for handling multiple input files.
 It is assumed that each file is has the same set of columns.
 Note: not all commands work with multiple input files.
 
-<pre>
+<seesv>
 seesv -p test1.csv test2.csv
-</pre>
+</seesv>
 
 Other file types (see below for more details) are handled as:
 
-<pre>
+<seesv>
 #Read each <a href="#-lines">line</a> as a single column
-seesv -lines -p test.xml
+seesv -lines -p test.txt
 
 #Process <a href="#-xml">xml</a> with the given path 
 seesv -xml "path.to.rows" -p test.xml  
 
 #Process <a href="#-json">JSON</a>
 seesv -json "path.to.array" "object_paths" -p test.json
-</pre>
-<div class=header>Commands:<ul></ul><li> <a href='#-delimiter'><i>-delimiter</i>: Specify a delimiter</a><li> <a href='#-tab'><i>-tab</i>: Use tabs. A shortcut for -delimiter tab</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse the table in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Make the header be ids</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a></div><a name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify a delimiter<br>
-<b>Arguments:</b><br>
+</seesv>
+<div class=header>Commands:<ul></ul><li> <a href='#-delimiter'><i>-delimiter</i>: Specify a delimiter</a><li> <a href='#-tab'><i>-tab</i>: Use tabs. A shortcut for -delimiter tab</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse tables in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Make the header be ids</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a></div><a name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify a delimiter<br>
 <ul>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 Use 'space' for space, 'tab' for tab<br>
-<br>
 </ul>
 </div><a name='-tab'></a><div class=command> <i><a href='#-tab'>-tab</a></i> </div><div class=command-block>Use tabs. A shortcut for -delimiter tab<br>
-<br>
-</ul>
 </div><a name='-widths'></a><div class=command> <i><a href='#-widths'>-widths</a></i>  &lt;widths&gt; </div><div class=command-block>Columns are fixed widths<br>
-<b>Arguments:</b><br>
 <ul>
-<i>widths</i>
+<li> <i>widths</i>:
 w1,w2,...,wN<br>
-<br>
 </ul>
 For example, with the below data that has Xs to represent spaces
 <pre>
@@ -252,40 +258,30 @@ bar    3          4
 </pre>
 
 You would set the -widths to be:
-<pre>
+<seesv>
 seesv -widths 7,11,11
-</pre>  
+</seesv>  
 
 <p></div><a name='-quotesnotspecial'></a><div class=command> <i><a href='#-quotesnotspecial'>-quotesnotspecial</a></i> </div><div class=command-block>Don't treat quotes as special characters<br>
-<br>
-</ul>
 Normally, when parsing a CSV file if a quote is encountered it is assumed to be a special character
 enclosing commas or new lines. If the quotes in your CSV file aren't special then use this command.
 
 
 <p></div><a name='-cleaninput'></a><div class=command> <i><a href='#-cleaninput'>-cleaninput</a></i> </div><div class=command-block>Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files<br>
-<br>
-</ul>
 </div><a name='-bom'></a><div class=command> <i><a href='#-bom'>-bom</a></i> </div><div class=command-block>Input has a leading byte order mark (BOM) that should be stripped out<br>
-<br>
-</ul>
 </div><a name='-header'></a><div class=command> <i><a href='#-header'>-header</a></i>  &lt;header&gt; </div><div class=command-block>Raw header<br>
-<b>Arguments:</b><br>
 <ul>
-<i>header</i>
+<li> <i>header</i>:
 Column names<br>
-<br>
 </ul>
 Use this if your file does not have a header.
 
 <p></div><a name='-json'></a><div class=command> <i><a href='#-json'>-json</a></i>  &lt;arrayPath&gt;  &lt;objectPaths&gt; </div><div class=command-block>Parse the input as json<br>
-<b>Arguments:</b><br>
 <ul>
-<i>arrayPath</i>
+<li> <i>arrayPath</i>:
 Path to the array e.g., obj1.arr[2].obj2<br>
-<i>objectPaths</i>
+<li> <i>objectPaths</i>:
 One or more paths to the objects e.g. geometry,features<br>
-<br>
 </ul>
 The -json command takes as first argument a path to the array of objects that constitute the data.
 
@@ -303,9 +299,9 @@ For example, if you had JSON like:
 </pre>  
 
 The command would be:
-<pre>
+<seesv>
 seesv  -json p1.p2.values ""
-</pre>
+</seesv>
 
 Since the values array just holds numeric values there is no column name. The data would be:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >1</td></tr>
@@ -331,9 +327,9 @@ the second element of the array, e.g.:
 </pre>  
 
 The command would be:
-<pre>
+<seesv>
 seesv -json "p1[1].p2.values" "" 
-</pre>
+</seesv>
 
 Here is an example where the value array holds objects.
 <pre>
@@ -356,9 +352,9 @@ Here is an example where the value array holds objects.
 </pre>  
 
 The command is:
-<pre>
+<seesv>
 seesv  -json "p1.p2.values" ""
-</pre>
+</seesv>
 
 With the result using the object attribute names as column names:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
@@ -393,9 +389,9 @@ object, e.g.:
 </pre>  
 
 You would use the second argument to specify an inner path to the object of interest:
-<pre>
+<seesv>
 seesv  -json "p1.p2.values" "goodvalues"
-</pre>
+</seesv>
 
 If the object within the array is a nested object and you only wanted to access multiple inner
 objects, e.g.:
@@ -444,38 +440,27 @@ Resulting in:
 
 
 <p></div><a name='-geojson'></a><div class=command> <i><a href='#-geojson'>-geojson</a></i>  &lt;includePolygon&gt; </div><div class=command-block>Parse the input as geojson<br>
-<b>Arguments:</b><br>
 <ul>
-<i>includePolygon</i>
+<li> <i>includePolygon</i>:
 true|false Include polygon<br>
-<br>
 </ul>
 </div><a name='-pdf'></a><div class=command> <i><a href='#-pdf'>-pdf</a></i> </div><div class=command-block>Read input from a PDF file.<br>
-<br>
-</ul>
-
-
-
 The RAMADDA_TABULA environment variable needs to be set to the tabula.sh file found in this release
 
 <pre>
-  export RAMADDA_TABULA=/path/to/tabula.sh
+export RAMADDA_TABULA=/path/to/tabula.sh
 </pre>
 
 
 <p></div><a name='-xml'></a><div class=command> <i><a href='#-xml'>-xml</a></i>  &lt;path&gt; </div><div class=command-block>Parse the input as xml<br>
-<b>Arguments:</b><br>
 <ul>
-<i>path</i>
+<li> <i>path</i>:
 Path to the elements<br>
-<br>
 </ul>
 </div><a name='-shapefile'></a><div class=command> <i><a href='#-shapefile'>-shapefile</a></i>  &lt;props&gt; </div><div class=command-block>Parse the input shapefile<br>
-<b>Arguments:</b><br>
 <ul>
-<i>props</i>
+<li> <i>props</i>:
 "addPoints true addShapes false"<br>
-<br>
 </ul>
 The -shapefile command can either take a .shp shapefile or a .zip shapefile.
 If it is a .zip shapefile that contains a .dbf file then then values within
@@ -483,63 +468,62 @@ the .dbf file are extracted and added as output.
 
 The argument is a set of name/value pairs. For now these can contain an addPoints and an addShapes
 values, e.g. the below will add a point which is the calculated centroid of the shape.
-<pre>
+<seesv>
 seesv -shapefile "addPoints true" -p test.zip
-</pre>  
+</seesv>  
 
 
 With addShapes=true the polygon will be extracted and added as a column value:
-<pre>
+<seesv>
 seesv -shapefile "addShapes true" -p test.zip
-</pre>
+</seesv>
 
 
 
 <p></div><a name='-lines'></a><div class=command> <i><a href='#-lines'>-lines</a></i> </div><div class=command-block>Parse the input as text lines<br>
-<br>
-</ul>
 For each line in the input file this creates a row that contains one column which holds the line.
 
-<p></div><a name='-htmltable'></a><div class=command> <i><a href='#-htmltable'>-htmltable</a></i>  &lt;skip&gt;  &lt;pattern&gt;  &lt;properties&gt; </div><div class=command-block>Parse the table in the input html file<br>
-<b>Arguments:</b><br>
+<p></div><a name='-htmltable'></a><div class=command> <i><a href='#-htmltable'>-htmltable</a></i>  &lt;skip&gt;  &lt;pattern&gt;  &lt;properties&gt; </div><div class=command-block>Parse tables in the input html file<br>
 <ul>
-<i>skip</i>
+<li> <i>skip</i>:
 Number of tables to skip<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Pattern to skip to<br>
-<i>properties</i>
-Other attributes -  &nbsp;&nbsp;removeEntity false removePattern pattern exrtractUrls true column1.extractUrls true stripTags false column1.stripTags false<br>
-<br>
+<li> <i>properties</i>:
+Other name value args - <ul><li> numTables N:Number of tables to process. Default is 1<li> removeEntity true:remove HTML entities <li> removePattern pattern<li> extractUrls true <li> columnN.extractUrls true: N=column number<li> stripTags false: strip any HTML tags. Default =true<li> columnN.stripTags false: N=column number. Set stripTags for the column</ul><br>
 </ul>
-</div><a name='-htmlpattern'></a><div class=command> <i><a href='#-htmlpattern'>-htmlpattern</a></i>  &lt;columns&gt;  &lt;startPattern&gt;  &lt;endPattern&gt;  &lt;pattern&gt; </div><div class=command-block>Parse the input html file<br>
-<b>Arguments:</b><br>
+If "pattern" is specified then skip to the first line that matches the pattern.
+Then skip over the "skip" number of tables.
+Then process each table up to the numTables (default=1).
+<p>
+The properties are defined as:
+<seesv>
+seesv -htmltable 0 "" "numTable 3 removePattern {some pattern} stripTags true"
+</seesv>  
+
+<p></div><a name='-htmlpattern'></a><div class=command> <i><a href='#-htmlpattern'>-htmlpattern</a></i>  &lt;columns&gt;  &lt;startPattern&gt;  &lt;endPattern&gt;  &lt;pattern&gt; </div><div class=command-block>Parse the input html file<br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column names<br>
-<i>startPattern</i>
+<li> <i>startPattern</i>:
 <br>
-<i>endPattern</i>
+<li> <i>endPattern</i>:
 <br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Row pattern. Use (...) to match columns<br>
-<br>
 </ul>
 </div><a name='-harvest'></a><div class=command> <i><a href='#-harvest'>-harvest</a></i>  &lt;pattern&gt; </div><div class=command-block>Harvest links in web page. This results in a 2 column dataset with fields: label,url<br>
-<b>Arguments:</b><br>
 <ul>
-<i>pattern</i>
+<li> <i>pattern</i>:
 regexp to match<br>
-<br>
 </ul>
 </div><a name='-text'></a><div class=command> <i><a href='#-text'>-text</a></i>  &lt;comma separated header&gt;  &lt;chunk pattern&gt;  &lt;token pattern&gt; </div><div class=command-block>Extract rows from the text<br>
-<b>Arguments:</b><br>
 <ul>
-<i>comma separated header</i>
+<li> <i>comma separated header</i>:
 <br>
-<i>chunk pattern</i>
+<li> <i>chunk pattern</i>:
 <br>
-<i>token pattern</i>
-<br>
+<li> <i>token pattern</i>:
 <br>
 </ul>
 
@@ -558,22 +542,20 @@ and more
 </pre>
 
 We are going to extract the names and age with:
-<pre>
+<seesv>
 seesv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
-#The (?m)(?s) are directives to match multiple lines
-#The (.*?$) in the first pattern is the group that is matched 
-#The second pattern: name:(.*?)age: *(\d+)  has 2 groups, one  for the name and one for the age
-</pre>
+</seesv>
 
+The (?m)(?s) are directives to match multiple lines.<br>
+The (.*?$) in the first pattern is the group that is matched.<br> 
+The second pattern: name:(.*?)age: *(\d+)  has 2 groups, one  for the name and one for the age.
 
 
 <p></div><a name='-extractpattern'></a><div class=command> <i><a href='#-extractpattern'>-extractpattern</a></i>  &lt;comma separated header&gt;  &lt;token pattern&gt; </div><div class=command-block>Extract rows from the text<br>
-<b>Arguments:</b><br>
 <ul>
-<i>comma separated header</i>
+<li> <i>comma separated header</i>:
 <br>
-<i>token pattern</i>
-<br>
+<li> <i>token pattern</i>:
 <br>
 </ul>
 If you have a row oriented but  unstructured  text file the 
@@ -589,38 +571,34 @@ Person:  name: Sally age: 93
 </pre>
 
 Extract the data with:
-<pre>
+<seesv>
 seesv -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt
-</pre>
+</seesv>
 
 
 
 
 <p></div><a name='-tokenize'></a><div class=command> <i><a href='#-tokenize'>-tokenize</a></i>  &lt;header&gt;  &lt;pattern&gt; </div><div class=command-block>Tokenize the input from the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>header</i>
+<li> <i>header</i>:
 header1,header2...<br>
-<i>pattern</i>
-<br>
+<li> <i>pattern</i>:
 <br>
 </ul>
 </div><a name='-sql'></a><div class=command> <i><a href='#-sql'>-sql</a></i>  &lt;db&gt;  &lt;table&gt;  &lt;columns&gt;  &lt;where&gt;  &lt;properties&gt; </div><div class=command-block>Read data from the given database<br>
-<b>Arguments:</b><br>
 <ul>
-<i>db</i>
+<li> <i>db</i>:
 The database id (defined in the environment) values:property:seesv_dbs <br>
-<i>table</i>
+<li> <i>table</i>:
 Comma separate list of tables to select from<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Comma separated list of columns to select<br>
-<i>where</i>
+<li> <i>where</i>:
 column1:expr:value;column2:expr:value;...
 e.g.: name:like:joe;age:>:60
 Where expr is: =|<|>|<>|like|notlike<br>
-<i>properties</i>
+<li> <i>properties</i>:
 name space value properties. e.g., join col1,col2<br>
-<br>
 </ul>
 
 The -sql command uses a number of RAMADDA properties or environment variables that define the databases that can
@@ -647,15 +625,13 @@ export seesv_db_test_tables=test_table1,test_table2,test_table3
 
 
 <p></div><a name='-synthetic'></a><div class=command> <i><a href='#-synthetic'>-synthetic</a></i>  &lt;header&gt;  &lt;values&gt;  &lt;rows&gt; </div><div class=command-block>Generate an empty file with the given number of rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>header</i>
+<li> <i>header</i>:
 comma separated header<br>
-<i>values</i>
+<li> <i>values</i>:
 comma separated values<br>
-<i>rows</i>
+<li> <i>rows</i>:
 Row indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 For example using this:
 <pre>
@@ -671,9 +647,9 @@ Gives:
 </table><br>
 Note: you don't have to specify all of the example values.
 For example, using this:
-<pre>
+<seesv>
 seesv -synthetic "name,value" "example name,example value" 5
-</pre>
+</seesv>
 
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
@@ -685,32 +661,20 @@ Gives:
 </table><br>
 
 <p></div><a name='-prune'></a><div class=command> <i><a href='#-prune'>-prune</a></i>  &lt;bytes&gt; </div><div class=command-block>Prune out the first N bytes<br>
-<b>Arguments:</b><br>
 <ul>
-<i>bytes</i>
+<li> <i>bytes</i>:
 Number of leading bytes to remove<br>
-<br>
 </ul>
 </div><a name='-deheader'></a><div class=command> <i><a href='#-deheader'>-deheader</a></i> </div><div class=command-block>Strip off the RAMADDA point header<br>
-<br>
-</ul>
 </div><a name='-headernames'></a><div class=command> <i><a href='#-headernames'>-headernames</a></i> </div><div class=command-block>Make the header proper capitalization<br>
-<br>
-</ul>
 </div><a name='-headerids'></a><div class=command> <i><a href='#-headerids'>-headerids</a></i> </div><div class=command-block>Make the header be ids<br>
-<br>
-</ul>
 </div><a name='-ids'></a><div class=command> <i><a href='#-ids'>-ids</a></i> </div><div class=command-block>Use canonical names<br>
-<br>
-</ul>
 This command converts the column names to a standardized format. Changing the names to lower case and
 converting punctuation, etc to "_".
 
 <p></div><a name='-cat'></a><div class=command> <i><a href='#-cat'>-cat</a></i>  &lt;*.csv&gt; </div><div class=command-block>Concat the columns in one or more csv files<br>
-<b>Arguments:</b><br>
 <ul>
-<i>*.csv</i>
-<br>
+<li> <i>*.csv</i>:
 <br>
 </ul>
 For example, with the following 2 files:
@@ -726,9 +690,9 @@ test2.csv:
 <tr><td style='padding:4px;border:1px solid #ccc;' >yyy2</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
 </table><br>
 Calling:
-<pre>
-  seesv -cat test1.csv test2.csv
-</pre>
+<seesv>
+seesv -cat test1.csv test2.csv
+</seesv>
 
 Would result in an out file:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value3</td></tr>
@@ -736,13 +700,11 @@ Would result in an out file:
 <tr><td style='padding:4px;border:1px solid #ccc;' >bar</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >yyy</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
 </table><br>
 <p></div><a name='-append'></a><div class=command> <i><a href='#-append'>-append</a></i>  &lt;skip&gt;  &lt;files&gt; </div><div class=command-block>Append the files, skipping the given rows in the latter files<br>
-<b>Arguments:</b><br>
 <ul>
-<i>skip</i>
+<li> <i>skip</i>:
 Number of rows to skip<br>
-<i>files</i>
+<li> <i>files</i>:
 *.csv<br>
-<br>
 </ul>
 This concatenates the input files, passing through the first file whole but skipping over the given number of lines in the subsequent files.
 
@@ -761,9 +723,9 @@ test3.csv:
 <tr><td style='padding:4px;border:1px solid #ccc;' >l</td><td style='padding:4px;border:1px solid #ccc;' >m</td></tr>
 </table><br>
 Calling:
-<pre>
+<seesv>
 seesv -append 1 test1.csv test2.csv test3.csv
-</pre>
+</seesv>
 
 Results in:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
@@ -774,147 +736,113 @@ Results in:
 
 
 <p></div><a name='-chop'></a><div class=command> <i><a href='#-chop'>-chop</a></i>  &lt;numlines&gt;  &lt;file&gt; </div><div class=command-block>Write out last N lines. include the header<br>
-<b>Arguments:</b><br>
 <ul>
-<i>numlines</i>
+<li> <i>numlines</i>:
 Number of lines to leave<br>
-<i>file</i>
+<li> <i>file</i>:
 *.csv<br>
-<br>
 </ul>
 </div></ul><br><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-pattern'><i>-pattern</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notpattern'><i>-notpattern</i>: Pass through rows that don't match the pattern</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-latest'><i>-latest</i>: Pass through rows whose date is the latest in the group of rows defined by the key column</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skip'><i>-skip</i>: Skip number of processed rows.</a></div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
-<b>Arguments:</b><br>
 <ul>
-<i>lines</i>
+<li> <i>lines</i>:
 How many raw lines to skip<br>
-<br>
 </ul>
 </div><a name='-if'></a><div class=command> <i><a href='#-if'>-if</a></i> </div><div class=command-block>Next N args specify a filter command followed by any change commands followed by an -endif.<br>
-<br>
-</ul>
 For example, the below command would change the value of column2 for all rows
 that match the -pattern column1 string command.
 
-<pre>
+<seesv>
 seesv -if -pattern column1 string -change column2 .* XXX  -endif
-</pre>
+</seesv>
 
 <p></div><a name='-start'></a><div class=command> <i><a href='#-start'>-start</a></i>  &lt;start pattern&gt; </div><div class=command-block>Start at pattern in source file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>start pattern</i>
-<br>
+<li> <i>start pattern</i>:
 <br>
 </ul>
 </div><a name='-stop'></a><div class=command> <i><a href='#-stop'>-stop</a></i>  &lt;stop pattern&gt; </div><div class=command-block>End at pattern in source file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>stop pattern</i>
-<br>
+<li> <i>stop pattern</i>:
 <br>
 </ul>
-</div><a name='-rawlines'></a><div class=command> <i><a href='#-rawlines'>-rawlines</a></i>  &lt;lines&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>lines</i>
+</div><a name='-rawlines'></a><div class=command> <i><a href='#-rawlines'>-rawlines</a></i>  &lt;lines&gt; </div><div class=command-block><ul>
+<li> <i>lines</i>:
 Pass through and print out rawlines unprocesed<br>
-<br>
 </ul>
 </div><a name='-inputnotcontains'></a><div class=command> <i><a href='#-inputnotcontains'>-inputnotcontains</a></i>  &lt;filters&gt; </div><div class=command-block>Filter out input lines that contain any of the strings<br>
-<b>Arguments:</b><br>
 <ul>
-<i>filters</i>
+<li> <i>filters</i>:
 Comma separated list of strings to filter on<br>
-<br>
 </ul>
 These patterns are applied to the raw lines that are read in before they
 are tokenized into columns.
 
 <p></div><a name='-min'></a><div class=command> <i><a href='#-min'>-min</a></i>  &lt;min # columns&gt; </div><div class=command-block>Only pass thorough lines that have at least this number of columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>min # columns</i>
-<br>
+<li> <i>min # columns</i>:
 <br>
 </ul>
 </div><a name='-max'></a><div class=command> <i><a href='#-max'>-max</a></i>  &lt;max # columns&gt; </div><div class=command-block>Only pass through lines that have no more than this number of columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>max # columns</i>
-<br>
+<li> <i>max # columns</i>:
 <br>
 </ul>
 </div><a name='-numcolumns'></a><div class=command> <i><a href='#-numcolumns'>-numcolumns</a></i>  &lt;number&gt; </div><div class=command-block>Remove or add values so each row has the number of columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>number</i>
-<br>
+<li> <i>number</i>:
 <br>
 </ul>
 </div><a name='-pattern'></a><div class=command> <i><a href='#-pattern'>-pattern</a></i>  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Pass through rows that the columns each match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 regexp or prefix with includes:s1,s2 to do substrings match<br>
-<br>
 </ul>
 </div><a name='-notpattern'></a><div class=command> <i><a href='#-notpattern'>-notpattern</a></i>  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Pass through rows that don't match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 regexp or prefix with includes:s1,s2 to do substrings match<br>
-<br>
 </ul>
 </div><a name='-fuzzypattern'></a><div class=command> <i><a href='#-fuzzypattern'>-fuzzypattern</a></i>  &lt;threshold&gt;  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Pass through rows that the columns each fuzzily match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>threshold</i>
+<li> <i>threshold</i>:
 Score threshold 0-100. Default:85. Higher number better match<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern</i>
-<br>
+<li> <i>pattern</i>:
 <br>
 </ul>
 </div><a name='-lengthgreater'></a><div class=command> <i><a href='#-lengthgreater'>-lengthgreater</a></i>  &lt;columns&gt;  &lt;length&gt; </div><div class=command-block>Pass through rows that the length of the columns is greater than<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>length</i>
-<br>
+<li> <i>length</i>:
 <br>
 </ul>
 </div><a name='-same'></a><div class=command> <i><a href='#-same'>-same</a></i>  &lt;column1&gt;  &lt;column2&gt; </div><div class=command-block>Pass through where the 2 columns have the same value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column1</i>
+<li> <i>column1</i>:
 <br>
-<i>column2</i>
-<br>
+<li> <i>column2</i>:
 <br>
 </ul>
 </div><a name='-notsame'></a><div class=command> <i><a href='#-notsame'>-notsame</a></i>  &lt;column1&gt;  &lt;column2&gt; </div><div class=command-block>Pass through where the 2 columns don't have the same value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column1</i>
+<li> <i>column1</i>:
 <br>
-<i>column2</i>
-<br>
+<li> <i>column2</i>:
 <br>
 </ul>
 </div><a name='-unique'></a><div class=command> <i><a href='#-unique'>-unique</a></i>  &lt;columns&gt;  &lt;mode&gt; </div><div class=command-block>Pass through unique values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>mode</i>
+<li> <i>mode</i>:
 What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match. use fuzzy:? to print out values) values:exact,clean,fuzzy:threshold <br>
-<br>
 </ul>
 The mode fuzzy:threshold uses the
 <a href="https://github.com/xdrop/fuzzywuzzy">Fuzzywuzzy</a> package which is based on the
@@ -923,9 +851,9 @@ the <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein dis
 to calculate similarity between strings.
 
 You can view what the calculated threshold values are:
-<pre>
+<seesv>
 seesv -unique column fuzzy:?
-</pre>  
+</seesv>  
 
 This will print out the threshold values, e.g:
 <pre>
@@ -949,119 +877,95 @@ value:sue washington
 
 
 <p></div><a name='-dups'></a><div class=command> <i><a href='#-dups'>-dups</a></i>  &lt;columns&gt; </div><div class=command-block>Pass through duplicate values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-sample'></a><div class=command> <i><a href='#-sample'>-sample</a></i>  &lt;probablity&gt; </div><div class=command-block>Pass through rows based on probablity<br>
-<b>Arguments:</b><br>
 <ul>
-<i>probablity</i>
+<li> <i>probablity</i>:
 0-1 probability of passing through a row<br>
-<br>
 </ul>
 For example, if you only want 5% of the data sampled do:
-<pre>
+<seesv>
 seesv -sample 0.05 ...
-</pre>
+</seesv>
 
 
 <p></div><a name='-maxvalue'></a><div class=command> <i><a href='#-maxvalue'>-maxvalue</a></i>  &lt;key column&gt;  &lt;value column&gt; </div><div class=command-block>Pass through the row that has the max value in the group of columns defined by the key column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key column</i>
+<li> <i>key column</i>:
 <br>
-<i>value column</i>
-<br>
+<li> <i>value column</i>:
 <br>
 </ul>
 </div><a name='-eq'></a><div class=command> <i><a href='#-eq'>-eq</a></i>  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Pass through rows that the column value equals the given value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-ne'></a><div class=command> <i><a href='#-ne'>-ne</a></i>  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Pass through rows that the column value does not equal the given value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-gt'></a><div class=command> <i><a href='#-gt'>-gt</a></i>  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Pass through rows that the column value is greater than the given value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-ge'></a><div class=command> <i><a href='#-ge'>-ge</a></i>  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Pass through rows that the column value is greater than or equals the given value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-lt'></a><div class=command> <i><a href='#-lt'>-lt</a></i>  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Pass through rows that the column value is less than the given value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-le'></a><div class=command> <i><a href='#-le'>-le</a></i>  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Pass through rows that the column value is less than or equals the given value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-between'></a><div class=command> <i><a href='#-between'>-between</a></i>  &lt;column&gt;  &lt;min value&gt;  &lt;max value&gt; </div><div class=command-block>Extract rows that are within the range<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>min value</i>
+<li> <i>min value</i>:
 <br>
-<i>max value</i>
-<br>
+<li> <i>max value</i>:
 <br>
 </ul>
 </div><a name='-notbetween'></a><div class=command> <i><a href='#-notbetween'>-notbetween</a></i>  &lt;column&gt;  &lt;min value&gt;  &lt;max value&gt; </div><div class=command-block>Extract rows that are not within the range<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>min value</i>
+<li> <i>min value</i>:
 <br>
-<i>max value</i>
-<br>
+<li> <i>max value</i>:
 <br>
 </ul>
 </div><a name='-betweenstring'></a><div class=command> <i><a href='#-betweenstring'>-betweenstring</a></i>  &lt;column&gt;  &lt;start string&gt;  &lt;end string&gt; </div><div class=command-block>Extract rows that are between the given strings<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>start string</i>
+<li> <i>start string</i>:
 <br>
-<i>end string</i>
-<br>
+<li> <i>end string</i>:
 <br>
 </ul>
 For example, given the following data
@@ -1073,9 +977,9 @@ For example, given the following data
 <tr><td style='padding:4px;border:1px solid #ccc;' >bill</td><td style='padding:4px;border:1px solid #ccc;' >doe</td><td style='padding:4px;border:1px solid #ccc;' >4</td></tr>
 </table><br>
 Calling:
-<pre>
-  csv -betweenstring name jane john
-</pre>
+<seesv>
+seesv -betweenstring name jane john
+</seesv>
 
 Will give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
@@ -1084,14 +988,12 @@ Will give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >john</td><td style='padding:4px;border:1px solid #ccc;' >doe</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
 </table><br>
 <p></div><a name='-notbetweenstring'></a><div class=command> <i><a href='#-notbetweenstring'>-notbetweenstring</a></i>  &lt;column&gt;  &lt;start string&gt;  &lt;end string&gt; </div><div class=command-block>Extract rows that are between the given strings<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>start string</i>
+<li> <i>start string</i>:
 <br>
-<i>end string</i>
-<br>
+<li> <i>end string</i>:
 <br>
 </ul>
 For example, given the following data
@@ -1103,9 +1005,9 @@ For example, given the following data
 <tr><td style='padding:4px;border:1px solid #ccc;' >bill</td><td style='padding:4px;border:1px solid #ccc;' >doe</td><td style='padding:4px;border:1px solid #ccc;' >4</td></tr>
 </table><br>
 Calling:
-<pre>
-  csv -notbetweenstring name jane john
-</pre>
+<seesv>
+seesv -notbetweenstring name jane john
+</seesv>
 
 Will give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
@@ -1113,83 +1015,69 @@ Will give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >bill</td><td style='padding:4px;border:1px solid #ccc;' >doe</td><td style='padding:4px;border:1px solid #ccc;' >4</td></tr>
 </table><br>
 <p></div><a name='-groupfilter'></a><div class=command> <i><a href='#-groupfilter'>-groupfilter</a></i>  &lt;column&gt;  &lt;value_column&gt;  &lt;operator&gt;  &lt;value&gt; </div><div class=command-block>One row in each group has to match<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 key column<br>
-<i>value_column</i>
+<li> <i>value_column</i>:
 Value column<br>
-<i>operator</i>
+<li> <i>operator</i>:
  values:=,!=,~,<,<=,>,>= <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-before'></a><div class=command> <i><a href='#-before'>-before</a></i>  &lt;column&gt;  &lt;format&gt;  &lt;date&gt;  &lt;format2&gt; </div><div class=command-block>Pass through rows whose date is before the given date<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>format</i>
+<li> <i>format</i>:
 Date Format, e.g. yyyy-MM-dd<br>
-<i>date</i>
+<li> <i>date</i>:
 <br>
-<i>format2</i>
+<li> <i>format2</i>:
 Date Format, e.g. yyyy-MM-dd<br>
-<br>
 </ul>
 </div><a name='-after'></a><div class=command> <i><a href='#-after'>-after</a></i>  &lt;column&gt;  &lt;format&gt;  &lt;date&gt;  &lt;format2&gt; </div><div class=command-block>Pass through rows whose date is after the given date<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>format</i>
+<li> <i>format</i>:
 Date Format, e.g. yyyy-MM-dd<br>
-<i>date</i>
+<li> <i>date</i>:
 <br>
-<i>format2</i>
+<li> <i>format2</i>:
 Date Format, e.g. yyyy-MM-dd<br>
-<br>
 </ul>
 </div><a name='-latest'></a><div class=command> <i><a href='#-latest'>-latest</a></i>  &lt;columns&gt;  &lt;column&gt;  &lt;format&gt; </div><div class=command-block>Pass through rows whose date is the latest in the group of rows defined by the key column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Key columns<br>
-<i>column</i>
+<li> <i>column</i>:
 Date column<br>
-<i>format</i>
+<li> <i>format</i>:
 Date Format, e.g. yyyy-MM-dd<br>
-<br>
 </ul>
 </div><a name='-countvalue'></a><div class=command> <i><a href='#-countvalue'>-countvalue</a></i>  &lt;column&gt;  &lt;count&gt; </div><div class=command-block>No more than count unique values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>count</i>
-<br>
+<li> <i>count</i>:
 <br>
 </ul>
 </div><a name='-decimate'></a><div class=command> <i><a href='#-decimate'>-decimate</a></i>  &lt;rows&gt;  &lt;skip&gt; </div><div class=command-block>only include every <skip factor> row<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 # of start rows to include<br>
-<i>skip</i>
+<li> <i>skip</i>:
 skip factor<br>
-<br>
 </ul>
 </div><a name='-ifin'></a><div class=command> <i><a href='#-ifin'>-ifin</a></i>  &lt;column&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID is in given file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 Column in the file<br>
-<i>file</i>
+<li> <i>file</i>:
 The file<br>
-<i>column2</i>
+<li> <i>column2</i>:
 Column in main file<br>
-<br>
 </ul>
 The  <span class=cmd>-ifin</span> command takes a file of values and will only pass through the row if the
 value in the row matches at least one of the values in the file.
@@ -1208,42 +1096,38 @@ And a file voters.csv:
 <tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
 </table><br>
 If you only want voters whose  precinct is in the precints.csv you would do:
-<pre>
+<seesv>
 seesv -ifin precinct precincts.csv voter_precinct -p voters.csv
-</pre>
+</seesv>
 
 The  <span class=cmd>-ifnotin</span> command does the opposite only passing through rows that are not in the file, e.g.:
-<pre>
+<seesv>
 seesv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
-</pre>
+</seesv>
 
 
 
 
 
 <p></div><a name='-ifnotin'></a><div class=command> <i><a href='#-ifnotin'>-ifnotin</a></i>  &lt;column&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID is not in given file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 Column in the file<br>
-<i>file</i>
+<li> <i>file</i>:
 The file<br>
-<i>column2</i>
+<li> <i>column2</i>:
 Column in main file<br>
-<br>
 </ul>
 </div><a name='-ifmatchesfile'></a><div class=command> <i><a href='#-ifmatchesfile'>-ifmatchesfile</a></i>  &lt;pattern&gt;  &lt;column&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID begins with something in the given file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Pattern template, e.g. ^${value}<br>
-<i>column</i>
+<li> <i>column</i>:
 Column in the file<br>
-<i>file</i>
+<li> <i>file</i>:
 The file<br>
-<i>column2</i>
+<li> <i>column2</i>:
 Column in main file<br>
-<br>
 </ul>
 The  <span class=cmd>-ifmatchesfile</span> command takes a pattern template and a file of strings.
 For each line in the file it creates a regular expression pattern using the template
@@ -1264,9 +1148,9 @@ And your source data has a set of full addresses full.csv:
 </table><br>
 And you only want to pass through rows in full.csv
 address begins with some address in the short.csv file. To do this call:
-<pre>
+<seesv>
 seesv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
-</pre>
+</seesv>
 
 What this does is construct regexp patterns as:
 <pre>
@@ -1284,155 +1168,119 @@ can match.
 
 
 <p></div><a name='-ifnotmatchesfile'></a><div class=command> <i><a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a></i>  &lt;pattern&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID does not begin with something in the given file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Pattern template, e.g. ^${value}<br>
-<i>file</i>
+<li> <i>file</i>:
 The file<br>
-<i>column2</i>
+<li> <i>column2</i>:
 Column in main file<br>
-<br>
 </ul>
 </div><a name='-skippattern'></a><div class=command> <i><a href='#-skippattern'>-skippattern</a></i>  &lt;pattern&gt; </div><div class=command-block>Skip any line that matches the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>pattern</i>
-<br>
+<li> <i>pattern</i>:
 <br>
 </ul>
 </div><a name='-skip'></a><div class=command> <i><a href='#-skip'>-skip</a></i>  &lt;rows&gt; </div><div class=command-block>Skip number of processed rows.<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 How many rows to skip<br>
-<br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
 Add/remove columns, rows, restructure, etc<div class=header>Commands:<ul></ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-notcolumns'><i>-notcolumns</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-furl'><i>-furl</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-notcolumns'></a><div class=command> <i><a href='#-notcolumns'>-notcolumns</a></i>  &lt;columns&gt; </div><div class=command-block>Don't include given columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-firstcolumns'></a><div class=command> <i><a href='#-firstcolumns'>-firstcolumns</a></i>  &lt;columns&gt; </div><div class=command-block>Move columns to beginning<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-columnsbefore'></a><div class=command> <i><a href='#-columnsbefore'>-columnsbefore</a></i>  &lt;column&gt;  &lt;columns&gt; </div><div class=command-block>Move columns before the given column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 Column to move before<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns to move<br>
-<br>
 </ul>
 </div><a name='-columnsafter'></a><div class=command> <i><a href='#-columnsafter'>-columnsafter</a></i>  &lt;column&gt;  &lt;columns&gt; </div><div class=command-block>Move columns after given column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 Column to move after<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns to move<br>
-<br>
 </ul>
 </div><a name='-delete'></a><div class=command> <i><a href='#-delete'>-delete</a></i>  &lt;columns&gt; </div><div class=command-block>Remove the columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-cut'></a><div class=command> <i><a href='#-cut'>-cut</a></i>  &lt;rows&gt; </div><div class=command-block>Drop rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 One or more rows. -1 to the end. e.g., 0-3,5,10,-1<br>
-<br>
 </ul>
 </div><a name='-include'></a><div class=command> <i><a href='#-include'>-include</a></i>  &lt;rows&gt; </div><div class=command-block>Only include specified rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 one or more rows, -1 to the end<br>
-<br>
 </ul>
 </div><a name='-rows_first'></a><div class=command> <i><a href='#-rows_first'>-rows_first</a></i>  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Move rows to the top that match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 columns to match on<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Pattern<br>
-<br>
 </ul>
 </div><a name='-rows_last'></a><div class=command> <i><a href='#-rows_last'>-rows_last</a></i>  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Move rows to the end of list that match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 columns to match on<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Pattern<br>
-<br>
 </ul>
 </div><a name='-copy'></a><div class=command> <i><a href='#-copy'>-copy</a></i>  &lt;column&gt;  &lt;name&gt; </div><div class=command-block>Copy column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>name</i>
-<br>
+<li> <i>name</i>:
 <br>
 </ul>
 </div><a name='-add'></a><div class=command> <i><a href='#-add'>-add</a></i>  &lt;names&gt;  &lt;values&gt; </div><div class=command-block>Add new columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>names</i>
+<li> <i>names</i>:
 Comma separated list of new column names<br>
-<i>values</i>
+<li> <i>values</i>:
 Comma separated list of new values<br>
-<br>
 </ul>
 </div><a name='-insert'></a><div class=command> <i><a href='#-insert'>-insert</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;values&gt; </div><div class=command-block>Insert new column values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 Column to insert before<br>
-<i>name</i>
+<li> <i>name</i>:
 Name of new column<br>
-<i>values</i>
+<li> <i>values</i>:
 Single value or comma separated for multiple rows<br>
-<br>
 </ul>
 </div><a name='-concat'></a><div class=command> <i><a href='#-concat'>-concat</a></i>  &lt;columns&gt;  &lt;delimiter&gt;  &lt;name&gt; </div><div class=command-block>Create a new column from the given columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 <br>
-<i>name</i>
+<li> <i>name</i>:
 Name of new colums<br>
-<br>
 </ul>
 </div><a name='-concatrows'></a><div class=command> <i><a href='#-concatrows'>-concatrows</a></i>  &lt;num_rows&gt; </div><div class=command-block>Concatenate multiple rows into a single row<br>
-<b>Arguments:</b><br>
 <ul>
-<i>num_rows</i>
+<li> <i>num_rows</i>:
 Number of rows<br>
-<br>
 </ul>
 For example, if you have this data:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
@@ -1442,9 +1290,9 @@ For example, if you have this data:
 <tr><td style='padding:4px;border:1px solid #ccc;' >jim</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
 </table><br>
 Running:
-<pre>
+<seesv>
 seesv -concatrows 2
-</pre>
+</seesv>
 
 
 Would give:
@@ -1453,114 +1301,94 @@ Would give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >jack</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >jim</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
 </table><br>
 <p></div><a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 <br>
-<i>new column name</i>
-<br>
+<li> <i>new column name</i>:
 <br>
 </ul>
 </div><a name='-combineinplace'></a><div class=command> <i><a href='#-combineinplace'>-combineinplace</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 <br>
-<i>new column name</i>
-<br>
+<li> <i>new column name</i>:
 <br>
 </ul>
 </div><a name='-merge'></a><div class=command> <i><a href='#-merge'>-merge</a></i>  &lt;columns&gt;  &lt;name&gt;  &lt;operator&gt; </div><div class=command-block>Apply operators to columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns to merge<br>
-<i>name</i>
+<li> <i>name</i>:
 New column(s) name<br>
-<i>operator</i>
+<li> <i>operator</i>:
 Operator values:average,min,max,count <br>
-<br>
 </ul>
 </div><a name='-split'></a><div class=command> <i><a href='#-split'>-split</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;names&gt; </div><div class=command-block>Split the column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 What to split on<br>
-<i>names</i>
+<li> <i>names</i>:
 Comma separated new column names<br>
-<br>
 </ul>
 </div><a name='-splat'></a><div class=command> <i><a href='#-splat'>-splat</a></i>  &lt;key col&gt;  &lt;column&gt;  &lt;delimiter&gt;  &lt;name&gt; </div><div class=command-block>Create a new column from the values in the given column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key col</i>
+<li> <i>key col</i>:
 <br>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 <br>
-<i>name</i>
+<li> <i>name</i>:
 new column name<br>
-<br>
 </ul>
 </div><a name='-shift'></a><div class=command> <i><a href='#-shift'>-shift</a></i>  &lt;rows&gt;  &lt;column&gt;  &lt;count&gt; </div><div class=command-block>Shift columns over by count for given rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 Rows to apply to<br>
-<i>column</i>
+<li> <i>column</i>:
 Column to start at<br>
-<i>count</i>
-<br>
+<li> <i>count</i>:
 <br>
 </ul>
 </div><a name='-slice'></a><div class=command> <i><a href='#-slice'>-slice</a></i>  &lt;columns&gt;  &lt;dest&gt;  &lt;fill&gt; </div><div class=command-block>Slide columns down and over to append new rows to the bottom<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns to move<br>
-<i>dest</i>
+<li> <i>dest</i>:
 Desc column to move to<br>
-<i>fill</i>
+<li> <i>fill</i>:
 Comma separated list of values to fill out the new row<br>
-<br>
 </ul>
 </div><a name='-addcell'></a><div class=command> <i><a href='#-addcell'>-addcell</a></i>  &lt;row&gt;  &lt;column&gt;  &lt;value&gt; </div><div class=command-block>Add a new cell at row/column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>row</i>
+<li> <i>row</i>:
 <br>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-deletecell'></a><div class=command> <i><a href='#-deletecell'>-deletecell</a></i>  &lt;row&gt;  &lt;column&gt; </div><div class=command-block>Delete cell at row/column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>row</i>
+<li> <i>row</i>:
 <br>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div><a name='-appendrows'></a><div class=command> <i><a href='#-appendrows'>-appendrows</a></i>  &lt;skip&gt;  &lt;count&gt;  &lt;delimiter&gt; </div><div class=command-block>Only include specified rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>skip</i>
+<li> <i>skip</i>:
 How many rows to skip<br>
-<i>count</i>
+<li> <i>count</i>:
 How many rows to merge<br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 How many rows to merge<br>
-<br>
 </ul>
 For example, with the below data:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category</td></tr>
@@ -1569,9 +1397,9 @@ For example, with the below data:
 <tr><td style='padding:4px;border:1px solid #ccc;' >4</td><td style='padding:4px;border:1px solid #ccc;' >5</td><td style='padding:4px;border:1px solid #ccc;' >6</td></tr>
 </table><br>
 Running:
-<pre>
+<seesv>
 seesv -appendrows 0 1 " - "
-</pre>
+</seesv>
 
 Would give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category - fruit</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category - vegetable</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category - meat</td></tr>
@@ -1579,230 +1407,186 @@ Would give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >4</td><td style='padding:4px;border:1px solid #ccc;' >5</td><td style='padding:4px;border:1px solid #ccc;' >6</td></tr>
 </table><br>
 <p></div><a name='-mergerows'></a><div class=command> <i><a href='#-mergerows'>-mergerows</a></i>  &lt;rows&gt;  &lt;delimiter&gt;  &lt;close&gt; </div><div class=command-block>Merge rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 2 or more rows<br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 <br>
-<i>close</i>
-<br>
+<li> <i>close</i>:
 <br>
 </ul>
 </div><a name='-rowop'></a><div class=command> <i><a href='#-rowop'>-rowop</a></i>  &lt;keys&gt;  &lt;values&gt;  &lt;operator&gt; </div><div class=command-block>Apply an operator to columns and merge rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>keys</i>
+<li> <i>keys</i>:
 Key columns<br>
-<i>values</i>
+<li> <i>values</i>:
 Value columns<br>
-<i>operator</i>
+<li> <i>operator</i>:
 Operator values:average,min,max,count <br>
-<br>
 </ul>
 </div><a name='-rotate'></a><div class=command> <i><a href='#-rotate'>-rotate</a></i> </div><div class=command-block>Rotate the data<br>
-<br>
-</ul>
 </div><a name='-flip'></a><div class=command> <i><a href='#-flip'>-flip</a></i> </div><div class=command-block>Reverse the order of the rows except the header<br>
-<br>
-</ul>
 </div><a name='-makefields'></a><div class=command> <i><a href='#-makefields'>-makefields</a></i>  &lt;column&gt;  &lt;value columns&gt;  &lt;unique column&gt;  &lt;other columns&gt; </div><div class=command-block>Make new columns from data values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 column to get new column header#<br>
-<i>value columns</i>
+<li> <i>value columns</i>:
 Columns to get values from<br>
-<i>unique column</i>
+<li> <i>unique column</i>:
 The unique value, e.g. date<br>
-<i>other columns</i>
+<li> <i>other columns</i>:
 Other columns to include<br>
-<br>
 </ul>
 </div><a name='-furl'></a><div class=command> <i><a href='#-furl'>-furl</a></i>  &lt;columns&gt;  &lt;header label&gt;  &lt;value label&gt; </div><div class=command-block>Use values in header to make new row<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>header label</i>
+<li> <i>header label</i>:
 <br>
-<i>value label</i>
-<br>
+<li> <i>value label</i>:
 <br>
 </ul>
 </div><a name='-explode'></a><div class=command> <i><a href='#-explode'>-explode</a></i>  &lt;column&gt; </div><div class=command-block>Make separate files based on value of column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div><a name='-join'></a><div class=command> <i><a href='#-join'>-join</a></i>  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key columns</i>
+<li> <i>key columns</i>:
 key columns the file to join with<br>
-<i>value_columns</i>
+<li> <i>value_columns</i>:
 value columns<br>
-<i>file</i>
+<li> <i>file</i>:
 File to join with<br>
-<i>source_columns</i>
+<li> <i>source_columns</i>:
 source key columns<br>
-<i>default_value</i>
+<li> <i>default_value</i>:
 default value<br>
-<br>
 </ul>
 </div><a name='-cross'></a><div class=command> <i><a href='#-cross'>-cross</a></i>  &lt;file&gt; </div><div class=command-block>Make a cross product of 2 data files<br>
-<b>Arguments:</b><br>
 <ul>
-<i>file</i>
+<li> <i>file</i>:
 File to cross with<br>
-<br>
 </ul>
 With the following data:
 
 letters.csv:
-<pre>
-letter
-a
-b
-c
-d
-</pre>
-
-<pre>
-number
-1
-2
-3
-</pre>
-
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >letter</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >a</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >b</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >c</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >d</td></tr>
+</table><br>
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >number</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+</table><br>
 The command:
-<pre>
+<seesv>
 seesv -cross numbers.csv -p letters.csv
-</pre>  
+</seesv>  
 
 Would give:
-<pre>
-letter,number
-a,1
-a,2
-a,3
-b,1
-b,2
-b,3
-c,1
-c,2
-c,3
-d,1
-d,2
-d,3
-</pre>
-
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >letter</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >number</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >a</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >a</td><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >a</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >b</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >b</td><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >b</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >c</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >c</td><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >c</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >d</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >d</td><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >d</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
+</table><br>
 <p></div><a name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br>
-<b>Arguments:</b><br>
 <ul>
-<i>threshold</i>
+<li> <i>threshold</i>:
 Score threshold 0-100. Default:85. Higher number better match<br>
-<i>key columns</i>
+<li> <i>key columns</i>:
 Numeric column numbers of the file to join with<br>
-<i>value_columns</i>
+<li> <i>value_columns</i>:
 numeric columns of the values to join<br>
-<i>file</i>
+<li> <i>file</i>:
 File to join with<br>
-<i>source_columns</i>
+<li> <i>source_columns</i>:
 source key columns<br>
-<i>default_value</i>
+<li> <i>default_value</i>:
 default value<br>
-<br>
 </ul>
 </div><a name='-normal'></a><div class=command> <i><a href='#-normal'>-normal</a></i>  &lt;columns&gt; </div><div class=command-block>Normalize the strings<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns<br>
-<br>
 </ul>
 </div><a name='-countunique'></a><div class=command> <i><a href='#-countunique'>-countunique</a></i>  &lt;columns&gt; </div><div class=command-block>Count number of unique values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-dissect'></a><div class=command> <i><a href='#-dissect'>-dissect</a></i>  &lt;column&gt;  &lt;pattern&gt; </div><div class=command-block>Make fields based on patterns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 e.g., "(field1:.*) (field2:.*) ..."<br>
-<br>
 </ul>
 </div><a name='-keyvalue'></a><div class=command> <i><a href='#-keyvalue'>-keyvalue</a></i>  &lt;column&gt; </div><div class=command-block>Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div><a name='-firstchars'></a><div class=command> <i><a href='#-firstchars'>-firstchars</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;number&gt; </div><div class=command-block>Extract first N characters and create new column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>number</i>
+<li> <i>number</i>:
 Number of characters<br>
-<br>
 </ul>
 </div><a name='-lastchars'></a><div class=command> <i><a href='#-lastchars'>-lastchars</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;number&gt; </div><div class=command-block>Extract last N characters and create new column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>number</i>
+<li> <i>number</i>:
 Number of characters<br>
-<br>
 </ul>
 </div><a name='-between_indices'></a><div class=command> <i><a href='#-between_indices'>-between_indices</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;start&gt;  &lt;end&gt; </div><div class=command-block>Extract characters between the 2 indices<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>start</i>
+<li> <i>start</i>:
 Start index<br>
-<i>end</i>
+<li> <i>end</i>:
 End index<br>
-<br>
 </ul>
 </div><a name='-fromheading'></a><div class=command> <i><a href='#-fromheading'>-fromheading</a></i>  &lt;columns&gt;  &lt;names&gt;  &lt;pattern&gt; </div><div class=command-block>Extract column values from headings<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns of headings<br>
-<i>names</i>
+<li> <i>names</i>:
 Comma separated list of new column names<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Regexp to apply to header with () defining column values<br>
-<br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-change'><i>-change</i>: Change columns</a><li> <a href='#-changerow'><i>-changerow</i>: Change the values in the row/cols</a><li> <a href='#-replace'><i>-replace</i>: Replace</a><li> <a href='#-set'><i>-set</i>: Write the value into the cells</a><li> <a href='#-macro'><i>-macro</i>: Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header</a><li> <a href='#-setcol'><i>-setcol</i>: Write the value into the write col for rows that match the pattern</a><li> <a href='#-copyif'><i>-copyif</i>: Copy column 2 to column 3 if all of the columns match the pattern</a><li> <a href='#-copycolumns'><i>-copycolumns</i>: Copy columns 1  to columns 2</a><li> <a href='#-filldown'><i>-filldown</i>: Fill down with last non-null value</a><li> <a href='#-unfill'><i>-unfill</i>: Set following cells to blank if the same as previous cell</a><li> <a href='#-priorprefix'><i>-priorprefix</i>: Append prefix from the previous element to rows that match pattern</a><li> <a href='#-case'><i>-case</i>: Change case of column - type:lower,upper,proper,capitalize</a><li> <a href='#-padleft'><i>-padleft</i>: Pad left with given character</a><li> <a href='#-padright'><i>-padright</i>: Pad right with given character</a><li> <a href='#-trim'><i>-trim</i>: Trim leading and trailing white space</a><li> <a href='#-trimquotes'><i>-trimquotes</i>: Trim leading and trailing quotes</a><li> <a href='#-width'><i>-width</i>: Limit the string size of the columns</a><li> <a href='#-prepend'><i>-prepend</i>: Add the text to the beginning of the file. use _nl_ to insert newlines</a><li> <a href='#-pad'><i>-pad</i>: Add or remove columns to achieve the count</a><li> <a href='#-prefix'><i>-prefix</i>: Add prefix to column</a><li> <a href='#-suffix'><i>-suffix</i>: Add suffix to column</a><li> <a href='#-subst'><i>-subst</i>: Create a new column with the template</a><li> <a href='#-ascii'><i>-ascii</i>: Convert non ascii characters</a><li> <a href='#-ismobile'><i>-ismobile</i>: Add a true/false if the string is a mobile phone</a><li> <a href='#-js'><i>-js</i>: Define Javascript (e.g., functions) to use later in the -func call</a><li> <a href='#-func'><i>-func</i>: Apply the javascript function. Use _colname or _col#</a><li> <a href='#-endswith'><i>-endswith</i>: Ensure that each column ends with the string</a><li> <a href='#-truncate'><i>-truncate</i>: </a><li> <a href='#-extract'><i>-extract</i>: Extract text from column and make a new column</a><li> <a href='#-urlarg'><i>-urlarg</i>: Extract URL argument and make a new column</a><li> <a href='#-urlencode'><i>-urlencode</i>: URL encode the columns</a><li> <a href='#-urldecode'><i>-urldecode</i>: URL decode the columns</a><li> <a href='#-map'><i>-map</i>: Change values in column to new values</a><li> <a href='#-format'><i>-format</i>: Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)</a><li> <a href='#-denormalize'><i>-denormalize</i>: Read the id,value from file and substitute the value in the dest file col idx</a><li> <a href='#-break'><i>-break</i>: Break apart column values and make new rows</a><li> <a href='#-makeids'><i>-makeids</i>: Turn the header row into IDs (lowercase, no space, a-z0-9_)</a><li> <a href='#-faker'><i>-faker</i>: Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker</a></div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>substitution string</i>
+<li> <i>substitution string</i>:
 use $1, $2, etc for pattern (...) matches<br>
-<br>
 </ul>
 
 For example, with the below data:
@@ -1810,9 +1594,9 @@ For example, with the below data:
 <tr><td style='padding:4px;border:1px solid #ccc;' >xxxsome valueyyy</td></tr>
 </table><br>
 You can strip out the xxx...yyy and add a label: prefix with:
-<pre>
+<seesv>
 seesv  -change label "xxx(.*)yyy" "label:$1"
-</pre>
+</seesv>
 
 Which would give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >label</td></tr>
@@ -1820,9 +1604,9 @@ Which would give:
 </table><br>
 
 You can also specify a file that holds a number of patterns:
-<pre>
+<seesv>
 seesv -change columns  file:file.txt ""
-</pre>
+</seesv>
 
 The file is of the form:
 <pre>
@@ -1840,97 +1624,79 @@ e.g.:
 
 
 <p></div><a name='-changerow'></a><div class=command> <i><a href='#-changerow'>-changerow</a></i>  &lt;rows&gt;  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change the values in the row/cols<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 Row indices. Can include ranges, e.g. 0-5<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>substitution string</i>
-<br>
+<li> <i>substitution string</i>:
 <br>
 </ul>
 </div><a name='-replace'></a><div class=command> <i><a href='#-replace'>-replace</a></i>  &lt;columns&gt;  &lt;substitution string&gt; </div><div class=command-block>Replace<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>substitution string</i>
+<li> <i>substitution string</i>:
 use {value} for value<br>
-<br>
 </ul>
 </div><a name='-set'></a><div class=command> <i><a href='#-set'>-set</a></i>  &lt;columns&gt;  &lt;rows&gt;  &lt;value&gt; </div><div class=command-block>Write the value into the cells<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>rows</i>
+<li> <i>rows</i>:
 Row indices. Can include ranges, e.g. 0-5<br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-macro'></a><div class=command> <i><a href='#-macro'>-macro</a></i>  &lt;pattern&gt;  &lt;template&gt;  &lt;column label&gt; </div><div class=command-block>Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header<br>
-<b>Arguments:</b><br>
 <ul>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>template</i>
+<li> <i>template</i>:
 <br>
-<i>column label</i>
-<br>
+<li> <i>column label</i>:
 <br>
 </ul>
 </div><a name='-setcol'></a><div class=command> <i><a href='#-setcol'>-setcol</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;write column&gt;  &lt;value&gt; </div><div class=command-block>Write the value into the write col for rows that match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 match col #<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>write column</i>
+<li> <i>write column</i>:
 <br>
-<i>value</i>
-<br>
+<li> <i>value</i>:
 <br>
 </ul>
 </div><a name='-copyif'></a><div class=command> <i><a href='#-copyif'>-copyif</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;column1&gt;  &lt;column2&gt; </div><div class=command-block>Copy column 2 to column 3 if all of the columns match the pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>column1</i>
+<li> <i>column1</i>:
 <br>
-<i>column2</i>
-<br>
+<li> <i>column2</i>:
 <br>
 </ul>
 </div><a name='-copycolumns'></a><div class=command> <i><a href='#-copycolumns'>-copycolumns</a></i>  &lt;columns1&gt;  &lt;columns2&gt; </div><div class=command-block>Copy columns 1  to columns 2<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns1</i>
+<li> <i>columns1</i>:
 <br>
-<i>columns2</i>
-<br>
+<li> <i>columns2</i>:
 <br>
 </ul>
 </div><a name='-filldown'></a><div class=command> <i><a href='#-filldown'>-filldown</a></i>  &lt;columns&gt; </div><div class=command-block>Fill down with last non-null value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-unfill'></a><div class=command> <i><a href='#-unfill'>-unfill</a></i>  &lt;columns&gt; </div><div class=command-block>Set following cells to blank if the same as previous cell<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 For example, given the following data
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
@@ -1941,9 +1707,9 @@ For example, given the following data
 <tr><td style='padding:4px;border:1px solid #ccc;' >bill</td><td style='padding:4px;border:1px solid #ccc;' >doe</td><td style='padding:4px;border:1px solid #ccc;' >4</td></tr>
 </table><br>
 Calling:
-<pre>
-  csv -unfill name,value1
-</pre>
+<seesv>
+seesv -unfill name,value1
+</seesv>
 
 Will give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
@@ -1954,271 +1720,215 @@ Will give:
 <tr><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td><td style='padding:4px;border:1px solid #ccc;' >4</td></tr>
 </table><br>
 <p></div><a name='-priorprefix'></a><div class=command> <i><a href='#-priorprefix'>-priorprefix</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;delimiter&gt; </div><div class=command-block>Append prefix from the previous element to rows that match pattern<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>delimiter</i>
-<br>
+<li> <i>delimiter</i>:
 <br>
 </ul>
 </div><a name='-case'></a><div class=command> <i><a href='#-case'>-case</a></i>  &lt;column&gt;  &lt;type&gt; </div><div class=command-block>Change case of column - type:lower,upper,proper,capitalize<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>type</i>
+<li> <i>type</i>:
  values:lower,upper,proper,capitalize <br>
-<br>
 </ul>
 </div><a name='-padleft'></a><div class=command> <i><a href='#-padleft'>-padleft</a></i>  &lt;columns&gt;  &lt;character&gt;  &lt;length&gt; </div><div class=command-block>Pad left with given character<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>character</i>
+<li> <i>character</i>:
 Character to pad to<br>
-<i>length</i>
+<li> <i>length</i>:
 Length<br>
-<br>
 </ul>
 </div><a name='-padright'></a><div class=command> <i><a href='#-padright'>-padright</a></i>  &lt;columns&gt;  &lt;character&gt;  &lt;length&gt; </div><div class=command-block>Pad right with given character<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>character</i>
+<li> <i>character</i>:
 Character to pad to<br>
-<i>length</i>
+<li> <i>length</i>:
 Length<br>
-<br>
 </ul>
 </div><a name='-trim'></a><div class=command> <i><a href='#-trim'>-trim</a></i>  &lt;columns&gt; </div><div class=command-block>Trim leading and trailing white space<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-trimquotes'></a><div class=command> <i><a href='#-trimquotes'>-trimquotes</a></i>  &lt;columns&gt; </div><div class=command-block>Trim leading and trailing quotes<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-width'></a><div class=command> <i><a href='#-width'>-width</a></i>  &lt;columns&gt;  &lt;size&gt; </div><div class=command-block>Limit the string size of the columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>size</i>
-<br>
+<li> <i>size</i>:
 <br>
 </ul>
 </div><a name='-prepend'></a><div class=command> <i><a href='#-prepend'>-prepend</a></i>  &lt;text&gt; </div><div class=command-block>Add the text to the beginning of the file. use _nl_ to insert newlines<br>
-<b>Arguments:</b><br>
 <ul>
-<i>text</i>
-<br>
+<li> <i>text</i>:
 <br>
 </ul>
 </div><a name='-pad'></a><div class=command> <i><a href='#-pad'>-pad</a></i>  &lt;count&gt;  &lt;pad string&gt; </div><div class=command-block>Add or remove columns to achieve the count<br>
-<b>Arguments:</b><br>
 <ul>
-<i>count</i>
+<li> <i>count</i>:
 <br>
-<i>pad string</i>
-<br>
+<li> <i>pad string</i>:
 <br>
 </ul>
 </div><a name='-prefix'></a><div class=command> <i><a href='#-prefix'>-prefix</a></i>  &lt;column&gt;  &lt;prefix&gt; </div><div class=command-block>Add prefix to column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>prefix</i>
+<li> <i>prefix</i>:
 String to use<br>
-<br>
 </ul>
 </div><a name='-suffix'></a><div class=command> <i><a href='#-suffix'>-suffix</a></i>  &lt;column&gt;  &lt;suffix&gt; </div><div class=command-block>Add suffix to column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
 </div><a name='-subst'></a><div class=command> <i><a href='#-subst'>-subst</a></i>  &lt;column_name&gt;  &lt;template&gt; </div><div class=command-block>Create a new column with the template<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column_name</i>
+<li> <i>column_name</i>:
 New Column Name<br>
-<i>template</i>
+<li> <i>template</i>:
 Template - use ${column_name} ... <br>
-<br>
 </ul>
 </div><a name='-ascii'></a><div class=command> <i><a href='#-ascii'>-ascii</a></i>  &lt;columns&gt;  &lt;substitution string&gt; </div><div class=command-block>Convert non ascii characters<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>substitution string</i>
-<br>
+<li> <i>substitution string</i>:
 <br>
 </ul>
 </div><a name='-ismobile'></a><div class=command> <i><a href='#-ismobile'>-ismobile</a></i>  &lt;columns&gt; </div><div class=command-block>Add a true/false if the string is a mobile phone<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-js'></a><div class=command> <i><a href='#-js'>-js</a></i>  &lt;javascript&gt; </div><div class=command-block>Define Javascript (e.g., functions) to use later in the -func call<br>
-<b>Arguments:</b><br>
 <ul>
-<i>javascript</i>
-<br>
+<li> <i>javascript</i>:
 <br>
 </ul>
 </div><a name='-func'></a><div class=command> <i><a href='#-func'>-func</a></i>  &lt;names&gt;  &lt;javascript&gt; </div><div class=command-block>Apply the javascript function. Use _colname or _col#<br>
-<b>Arguments:</b><br>
 <ul>
-<i>names</i>
+<li> <i>names</i>:
 New column names<br>
-<i>javascript</i>
+<li> <i>javascript</i>:
 javascript expression<br>
-<br>
 </ul>
 </div><a name='-endswith'></a><div class=command> <i><a href='#-endswith'>-endswith</a></i>  &lt;column&gt;  &lt;string&gt; </div><div class=command-block>Ensure that each column ends with the string<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>string</i>
-<br>
+<li> <i>string</i>:
 <br>
 </ul>
-</div><a name='-truncate'></a><div class=command> <i><a href='#-truncate'>-truncate</a></i>  &lt;column&gt;  &lt;max length&gt;  &lt;suffix&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>column</i>
+</div><a name='-truncate'></a><div class=command> <i><a href='#-truncate'>-truncate</a></i>  &lt;column&gt;  &lt;max length&gt;  &lt;suffix&gt; </div><div class=command-block><ul>
+<li> <i>column</i>:
 <br>
-<i>max length</i>
+<li> <i>max length</i>:
 <br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
 </div><a name='-extract'></a><div class=command> <i><a href='#-extract'>-extract</a></i>  &lt;column&gt;  &lt;pattern&gt;  &lt;replace with&gt;  &lt;name&gt; </div><div class=command-block>Extract text from column and make a new column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 <br>
-<i>replace with</i>
+<li> <i>replace with</i>:
 use 'none' for no replacement<br>
-<i>name</i>
+<li> <i>name</i>:
 new column name<br>
-<br>
 </ul>
 </div><a name='-urlarg'></a><div class=command> <i><a href='#-urlarg'>-urlarg</a></i>  &lt;column&gt;  &lt;argname&gt; </div><div class=command-block>Extract URL argument and make a new column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>argname</i>
+<li> <i>argname</i>:
 URL arg name<br>
-<br>
 </ul>
 </div><a name='-urlencode'></a><div class=command> <i><a href='#-urlencode'>-urlencode</a></i>  &lt;columns&gt; </div><div class=command-block>URL encode the columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-urldecode'></a><div class=command> <i><a href='#-urldecode'>-urldecode</a></i>  &lt;columns&gt; </div><div class=command-block>URL decode the columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-map'></a><div class=command> <i><a href='#-map'>-map</a></i>  &lt;column&gt;  &lt;new columns name&gt;  &lt;value newvalue ...&gt; </div><div class=command-block>Change values in column to new values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>new columns name</i>
+<li> <i>new columns name</i>:
 <br>
-<i>value newvalue ...</i>
-<br>
+<li> <i>value newvalue ...</i>:
 <br>
 </ul>
 </div><a name='-format'></a><div class=command> <i><a href='#-format'>-format</a></i>  &lt;columns&gt;  &lt;format&gt; </div><div class=command-block>Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>format</i>
+<li> <i>format</i>:
 Decimal format  e.g. '##0.00'<br>
-<br>
 </ul>
 </div><a name='-denormalize'></a><div class=command> <i><a href='#-denormalize'>-denormalize</a></i>  &lt;file&gt;  &lt;from id idx&gt;  &lt;from value idx&gt;  &lt;to idx&gt;  &lt;new col name&gt;  &lt;mode replace add&gt; </div><div class=command-block>Read the id,value from file and substitute the value in the dest file col idx<br>
-<b>Arguments:</b><br>
 <ul>
-<i>file</i>
+<li> <i>file</i>:
 From csv file<br>
-<i>from id idx</i>
+<li> <i>from id idx</i>:
 <br>
-<i>from value idx</i>
+<li> <i>from value idx</i>:
 <br>
-<i>to idx</i>
+<li> <i>to idx</i>:
 <br>
-<i>new col name</i>
+<li> <i>new col name</i>:
 <br>
-<i>mode replace add</i>
-<br>
+<li> <i>mode replace add</i>:
 <br>
 </ul>
 </div><a name='-break'></a><div class=command> <i><a href='#-break'>-break</a></i>  &lt;label1&gt;  &lt;label2&gt;  &lt;columns&gt; </div><div class=command-block>Break apart column values and make new rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>label1</i>
+<li> <i>label1</i>:
 <br>
-<i>label2</i>
+<li> <i>label2</i>:
 <br>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-makeids'></a><div class=command> <i><a href='#-makeids'>-makeids</a></i> </div><div class=command-block>Turn the header row into IDs (lowercase, no space, a-z0-9_)<br>
-<br>
-</ul>
 For example, if you had the below data:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Some header label with some punctuation-+/</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center > Some other header label</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
 </table><br>Running:
-<pre>
+<seesv>
 seesv -makeids
-</pre>  
+</seesv>  
   
 Gives
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >some_header_label_with_some_punctuation</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center > some_other_header_label</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
 </table><br>
 <p></div><a name='-faker'></a><div class=command> <i><a href='#-faker'>-faker</a></i>  &lt;what&gt;  &lt;columns&gt; </div><div class=command-block>Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker<br>
-<b>Arguments:</b><br>
 <ul>
-<i>what</i>
+<li> <i>what</i>:
 firstname|lastname|fullname|etc<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns to change. Of none given then add the fake value<br>
-<br>
 </ul>
 The -faker command uses the <a href="https://github.com/DiUS/java-faker">Java Faker</a> package
 and takes any of the below commands:
@@ -2287,267 +1997,204 @@ symptoms
 
 <p></div></ul><br><hr><a name='Add Values'></a><b style='font-size:120%;'>Add Values</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-md'><i>-md</i>: Make a message digest of the column values</a><li> <a href='#-tob64'><i>-tob64</i>: Base 64 Decode</a><li> <a href='#-fromb64'><i>-fromb64</i>: Base 64 Decode</a><li> <a href='#-rot13'><i>-rot13</i>: Rot 13</a><li> <a href='#-encrypt'><i>-encrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-decrypt'><i>-decrypt</i>: Encrypt using AES with SHA-256 key</a><li> <a href='#-uuid'><i>-uuid</i>: Add a UUID field</a><li> <a href='#-number'><i>-number</i>: Add 1,2,3... as column</a><li> <a href='#-letter'><i>-letter</i>: Add 'A','B', ... as column</a><li> <a href='#-soundex'><i>-soundex</i>: Generate a soundex code</a><li> <a href='#-wikidesc'><i>-wikidesc</i>: Add a description from wikipedia</a><li> <a href='#-image'><i>-image</i>: Search for an image</a><li> <a href='#-embed'><i>-embed</i>: Download the URL and embed the image contents</a><li> <a href='#-fetch'><i>-fetch</i>: Fetch the URL and embed the contents</a><li> <a href='#-imagefill'><i>-imagefill</i>: Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. </a><li> <a href='#-download'><i>-download</i>: Download the URL</a><li> <a href='#-gender'><i>-gender</i>: Figure out the gender of the name in the column</a></div><a name='-md'></a><div class=command> <i><a href='#-md'>-md</a></i>  &lt;columns&gt;  &lt;type&gt; </div><div class=command-block>Make a message digest of the column values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>type</i>
+<li> <i>type</i>:
  values:MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512, <br>
-<br>
 </ul>
 </div><a name='-tob64'></a><div class=command> <i><a href='#-tob64'>-tob64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-fromb64'></a><div class=command> <i><a href='#-fromb64'>-fromb64</a></i>  &lt;columns&gt; </div><div class=command-block>Base 64 Decode<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-rot13'></a><div class=command> <i><a href='#-rot13'>-rot13</a></i>  &lt;columns&gt; </div><div class=command-block>Rot 13<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-encrypt'></a><div class=command> <i><a href='#-encrypt'>-encrypt</a></i>  &lt;columns&gt;  &lt;password&gt; </div><div class=command-block>Encrypt using AES with SHA-256 key<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>password</i>
-<br>
+<li> <i>password</i>:
 <br>
 </ul>
 </div><a name='-decrypt'></a><div class=command> <i><a href='#-decrypt'>-decrypt</a></i>  &lt;columns&gt;  &lt;password&gt; </div><div class=command-block>Encrypt using AES with SHA-256 key<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>password</i>
-<br>
+<li> <i>password</i>:
 <br>
 </ul>
 </div><a name='-uuid'></a><div class=command> <i><a href='#-uuid'>-uuid</a></i> </div><div class=command-block>Add a UUID field<br>
-<br>
-</ul>
 </div><a name='-number'></a><div class=command> <i><a href='#-number'>-number</a></i> </div><div class=command-block>Add 1,2,3... as column<br>
-<br>
-</ul>
 </div><a name='-letter'></a><div class=command> <i><a href='#-letter'>-letter</a></i> </div><div class=command-block>Add 'A','B', ... as column<br>
-<br>
-</ul>
 </div><a name='-soundex'></a><div class=command> <i><a href='#-soundex'>-soundex</a></i>  &lt;columns&gt; </div><div class=command-block>Generate a soundex code<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-wikidesc'></a><div class=command> <i><a href='#-wikidesc'>-wikidesc</a></i>  &lt;column&gt;  &lt;suffix&gt; </div><div class=command-block>Add a description from wikipedia<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
-
-
 This uses the API at https://en.wikipedia.org/w/api.php to get the description of a wikipedia page that
 matches the string provided by the given columns.
 
 
-
 <p></div><a name='-image'></a><div class=command> <i><a href='#-image'>-image</a></i>  &lt;column&gt;  &lt;suffix&gt; </div><div class=command-block>Search for an image<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
 </div><a name='-embed'></a><div class=command> <i><a href='#-embed'>-embed</a></i>  &lt;url column&gt; </div><div class=command-block>Download the URL and embed the image contents<br>
-<b>Arguments:</b><br>
 <ul>
-<i>url column</i>
-<br>
+<li> <i>url column</i>:
 <br>
 </ul>
 </div><a name='-fetch'></a><div class=command> <i><a href='#-fetch'>-fetch</a></i>  &lt;name&gt;  &lt;url&gt; </div><div class=command-block>Fetch the URL and embed the contents<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 Name of new column<br>
-<i>url</i>
+<li> <i>url</i>:
 URL template, e.g., https://foo.com/${column_name}<br>
-<br>
 </ul>
 </div><a name='-imagefill'></a><div class=command> <i><a href='#-imagefill'>-imagefill</a></i>  &lt;querycolumn&gt;  &lt;suffix&gt;  &lt;imagecolumn&gt; </div><div class=command-block>Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. <br>
-<b>Arguments:</b><br>
 <ul>
-<i>querycolumn</i>
+<li> <i>querycolumn</i>:
 <br>
-<i>suffix</i>
+<li> <i>suffix</i>:
 <br>
-<i>imagecolumn</i>
-<br>
+<li> <i>imagecolumn</i>:
 <br>
 </ul>
 </div><a name='-download'></a><div class=command> <i><a href='#-download'>-download</a></i>  &lt;column&gt;  &lt;suffix&gt; </div><div class=command-block>Download the URL<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 Column that holds the URL<br>
-<i>suffix</i>
+<li> <i>suffix</i>:
 File suffix<br>
-<br>
 </ul>
 </div><a name='-gender'></a><div class=command> <i><a href='#-gender'>-gender</a></i>  &lt;column&gt; </div><div class=command-block>Figure out the gender of the name in the column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div></ul><br><hr><a name='Dates'></a><b style='font-size:120%;'>Dates</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-indateformat'><i>-indateformat</i>: Specify date format for parsing</a><li> <a href='#-outdateformat'><i>-outdateformat</i>: Specify date format for formatting</a><li> <a href='#-convertdate'><i>-convertdate</i>: Convert date</a><li> <a href='#-adddate'><i>-adddate</i>: Add date</a><li> <a href='#-extractdate'><i>-extractdate</i>: Extract date</a><li> <a href='#-formatdate'><i>-formatdate</i>: Format date</a><li> <a href='#-elapsed'><i>-elapsed</i>: Calculate elapsed time (ms) between rows</a><li> <a href='#-datediff'><i>-datediff</i>: Calculate elapsed time between columns column1-column2</a><li> <a href='#-datecompare'><i>-datecompare</i>: add a true/false column comparing the date values</a></div><a name='-indateformat'></a><div class=command> <i><a href='#-indateformat'>-indateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for parsing<br>
-<b>Arguments:</b><br>
 <ul>
-<i>format</i>
+<li> <i>format</i>:
 e.g. yyyy-MM-dd HH:mm:ss<br>
-<i>timezone</i>
-<br>
+<li> <i>timezone</i>:
 <br>
 </ul>
 </div><a name='-outdateformat'></a><div class=command> <i><a href='#-outdateformat'>-outdateformat</a></i>  &lt;format&gt;  &lt;timezone&gt; </div><div class=command-block>Specify date format for formatting<br>
-<b>Arguments:</b><br>
 <ul>
-<i>format</i>
+<li> <i>format</i>:
 e.g. yyyy-MM-dd HH:mm:ss<br>
-<i>timezone</i>
-<br>
+<li> <i>timezone</i>:
 <br>
 </ul>
 </div><a name='-convertdate'></a><div class=command> <i><a href='#-convertdate'>-convertdate</a></i>  &lt;column&gt; </div><div class=command-block>Convert date<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div><a name='-adddate'></a><div class=command> <i><a href='#-adddate'>-adddate</a></i>  &lt;date_column&gt;  &lt;value&gt;  &lt;value_type&gt; </div><div class=command-block>Add date<br>
-<b>Arguments:</b><br>
 <ul>
-<i>date_column</i>
+<li> <i>date_column</i>:
 Date Column<br>
-<i>value</i>
+<li> <i>value</i>:
 Value Column<br>
-<i>value_type</i>
+<li> <i>value_type</i>:
 Value type - millisecond,second,minute,hour,hour_of_day,week,month,year<br>
-<br>
 </ul>
 </div><a name='-extractdate'></a><div class=command> <i><a href='#-extractdate'>-extractdate</a></i>  &lt;date column&gt;  &lt;what&gt; </div><div class=command-block>Extract date<br>
-<b>Arguments:</b><br>
 <ul>
-<i>date column</i>
+<li> <i>date column</i>:
 <br>
-<i>what</i>
+<li> <i>what</i>:
 What to extract, e.g., year, month, day_of_week, etc values:era,year,month,day_of_month,day_of_week,week_of_month,
 day_of_week_in_month,am_pm,hour,hour_of_day,
 minute,second,millisecond <br>
-<br>
 </ul>
 </div><a name='-formatdate'></a><div class=command> <i><a href='#-formatdate'>-formatdate</a></i>  &lt;columns&gt;  &lt;target date format&gt; </div><div class=command-block>Format date<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>target date format</i>
-<br>
+<li> <i>target date format</i>:
 <br>
 </ul>
 </div><a name='-elapsed'></a><div class=command> <i><a href='#-elapsed'>-elapsed</a></i>  &lt;column&gt; </div><div class=command-block>Calculate elapsed time (ms) between rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div><a name='-datediff'></a><div class=command> <i><a href='#-datediff'>-datediff</a></i>  &lt;column1&gt;  &lt;column2&gt;  &lt;unit&gt; </div><div class=command-block>Calculate elapsed time between columns column1-column2<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column1</i>
+<li> <i>column1</i>:
 Column 1<br>
-<i>column2</i>
+<li> <i>column2</i>:
 Column 2<br>
-<i>unit</i>
+<li> <i>unit</i>:
 Unit-milliseconds,seconds,minutes,hours,days values:milliseconds,seconds,minutes,hours,days <br>
-<br>
 </ul>
 </div><a name='-datecompare'></a><div class=command> <i><a href='#-datecompare'>-datecompare</a></i>  &lt;column1&gt;  &lt;column2&gt;  &lt;operator&gt; </div><div class=command-block>add a true/false column comparing the date values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column1</i>
+<li> <i>column1</i>:
 <br>
-<i>column2</i>
+<li> <i>column2</i>:
 <br>
-<i>operator</i>
+<li> <i>operator</i>:
 <,<=,=,!=,>=,> values:<,<=,=,!=,>=,> <br>
-<br>
 </ul>
 </div></ul><br><hr><a name='Numeric/Boolean'></a><b style='font-size:120%;'>Numeric/Boolean</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-scale'><i>-scale</i>: Set value={value+delta1}*scale+delta2</a><li> <a href='#-generate'><i>-generate</i>: Add row values</a><li> <a href='#-decimals'><i>-decimals</i>: Round decimals</a><li> <a href='#-fuzz'><i>-fuzz</i>: fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out</a><li> <a href='#-ceil'><i>-ceil</i>: Set the max value</a><li> <a href='#-floor'><i>-floor</i>: Set the min value</a><li> <a href='#-delta'><i>-delta</i>: Add column that is the delta from the previous step</a><li> <a href='#-operator'><i>-operator</i>: Apply the operator to the given columns and create new one</a><li> <a href='#-compare'><i>-compare</i>: add a true/false column comparing the values</a><li> <a href='#-round'><i>-round</i>: round the values</a><li> <a href='#-abs'><i>-abs</i>: make absolute values</a><li> <a href='#-clip'><i>-clip</i>: clip the number to within the range</a><li> <a href='#-rand'><i>-rand</i>: make random value</a><li> <a href='#-even'><i>-even</i>: Add true if the column starts with an even number</a><li> <a href='#-sum'><i>-sum</i>: Sum values keying on key column value. If no value columns specified then do a count</a><li> <a href='#-pivot'><i>-pivot</i>: Make a pivot table</a><li> <a href='#-summary'><i>-summary</i>: count/sum/average/min/max values keying on key column value. If no value columns specified then do a count</a><li> <a href='#-histogram'><i>-histogram</i>: Make a histogram with the given column and bins</a><li> <a href='#-percent'><i>-percent</i>: </a><li> <a href='#-increase'><i>-increase</i>: Calculate percent increase</a><li> <a href='#-average'><i>-average</i>: Calculate a moving average</a><li> <a href='#-ranges'><i>-ranges</i>: Create a new column with the (string) ranges where the value falls in</a><li> <a href='#-bytes'><i>-bytes</i>: Convert suffixed values (e.g., 2 MB) into the number</a><li> <a href='#-column_and'><i>-column_and</i>: And values</a><li> <a href='#-colum_nor'><i>-colum_nor</i>: Or values</a><li> <a href='#-column_not'><i>-column_not</i>: Not value</a></div><a name='-scale'></a><div class=command> <i><a href='#-scale'>-scale</a></i>  &lt;column&gt;  &lt;delta1&gt;  &lt;scale&gt;  &lt;delta2&gt; </div><div class=command-block>Set value={value+delta1}*scale+delta2<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>delta1</i>
+<li> <i>delta1</i>:
 <br>
-<i>scale</i>
+<li> <i>scale</i>:
 <br>
-<i>delta2</i>
-<br>
+<li> <i>delta2</i>:
 <br>
 </ul>
 </div><a name='-generate'></a><div class=command> <i><a href='#-generate'>-generate</a></i>  &lt;label&gt;  &lt;start&gt;  &lt;step&gt; </div><div class=command-block>Add row values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>label</i>
+<li> <i>label</i>:
 <br>
-<i>start</i>
+<li> <i>start</i>:
 <br>
-<i>step</i>
-<br>
+<li> <i>step</i>:
 <br>
 </ul>
 </div><a name='-decimals'></a><div class=command> <i><a href='#-decimals'>-decimals</a></i>  &lt;column&gt;  &lt;num_decimals&gt; </div><div class=command-block>Round decimals<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>num_decimals</i>
+<li> <i>num_decimals</i>:
 how many decimals to round to<br>
-<br>
 </ul>
 </div><a name='-fuzz'></a><div class=command> <i><a href='#-fuzz'>-fuzz</a></i>  &lt;column&gt;  &lt;num_places&gt;  &lt;num_random_digits&gt; </div><div class=command-block>fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>num_places</i>
+<li> <i>num_places</i>:
 how many places to round to. use <=0 for decimals<br>
-<i>num_random_digits</i>
+<li> <i>num_random_digits</i>:
 how many random digits<br>
-<br>
 </ul>
 The -fuzz command works to anonymize numeric values.
 <p>
@@ -2558,9 +2205,10 @@ that is the number of decimal places the number is rounded to.
 If there are fewer than num_places decimals than those decimals are converted to "0".
 The randomized digits are then appended to the number.
 For example with R = random digit:
-<pre>
--fuzz -2 3
-</pre>
+<seesv>
+seesv -fuzz -2 3
+</seesv>
+
 Gives:
 <pre>
 12345.6789 -&gt; 12345.67RR
@@ -2574,9 +2222,9 @@ the num_places least significant digits are converted to 0.
 If the number of digits is &lt; num_places then the number is converted to 0.
 The randomized digits are then addedto the number.
 For example with R = random digit:
-<pre>
--fuzz 2 3
-</pre>
+<seesv>
+seesv -fuzz 2 3
+</seesv>
 
 Gives:
 <pre>
@@ -2587,120 +2235,96 @@ Gives:
 
 
 <p></div><a name='-ceil'></a><div class=command> <i><a href='#-ceil'>-ceil</a></i>  &lt;columns&gt;  &lt;value&gt; </div><div class=command-block>Set the max value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>value</i>
+<li> <i>value</i>:
 Value<br>
-<br>
 </ul>
 </div><a name='-floor'></a><div class=command> <i><a href='#-floor'>-floor</a></i>  &lt;columns&gt;  &lt;value&gt; </div><div class=command-block>Set the min value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>value</i>
+<li> <i>value</i>:
 Value<br>
-<br>
 </ul>
 </div><a name='-delta'></a><div class=command> <i><a href='#-delta'>-delta</a></i>  &lt;key columns&gt;  &lt;columns&gt; </div><div class=command-block>Add column that is the delta from the previous step<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key columns</i>
+<li> <i>key columns</i>:
 <br>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-operator'></a><div class=command> <i><a href='#-operator'>-operator</a></i>  &lt;columns&gt;  &lt;new col name&gt;  &lt;operator +,-,*,/,%,average&gt; </div><div class=command-block>Apply the operator to the given columns and create new one<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns<br>
-<i>new col name</i>
+<li> <i>new col name</i>:
 <br>
-<i>operator +,-,*,/,%,average</i>
-<br>
+<li> <i>operator +,-,*,/,%,average</i>:
 <br>
 </ul>
 </div><a name='-compare'></a><div class=command> <i><a href='#-compare'>-compare</a></i>  &lt;column1&gt;  &lt;column2&gt;  &lt;operator&gt; </div><div class=command-block>add a true/false column comparing the values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column1</i>
+<li> <i>column1</i>:
 <br>
-<i>column2</i>
+<li> <i>column2</i>:
 <br>
-<i>operator</i>
+<li> <i>operator</i>:
 <,<=,=,!=,>=,> values:<,<=,=,!=,>=,> <br>
-<br>
 </ul>
 </div><a name='-round'></a><div class=command> <i><a href='#-round'>-round</a></i>  &lt;columns&gt; </div><div class=command-block>round the values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-abs'></a><div class=command> <i><a href='#-abs'>-abs</a></i>  &lt;columns&gt; </div><div class=command-block>make absolute values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-clip'></a><div class=command> <i><a href='#-clip'>-clip</a></i>  &lt;columns&gt;  &lt;min&gt;  &lt;max&gt; </div><div class=command-block>clip the number to within the range<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>min</i>
+<li> <i>min</i>:
 <br>
-<i>max</i>
-<br>
+<li> <i>max</i>:
 <br>
 </ul>
 </div><a name='-rand'></a><div class=command> <i><a href='#-rand'>-rand</a></i>  &lt;column name&gt;  &lt;minrange&gt;  &lt;maxrange&gt; </div><div class=command-block>make random value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column name</i>
+<li> <i>column name</i>:
 <br>
-<i>minrange</i>
+<li> <i>minrange</i>:
 Minimum range (e.g. 0)<br>
-<i>maxrange</i>
+<li> <i>maxrange</i>:
 Maximum range (e.g. 1)<br>
-<br>
 </ul>
 </div><a name='-even'></a><div class=command> <i><a href='#-even'>-even</a></i>  &lt;columns&gt; </div><div class=command-block>Add true if the column starts with an even number<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-sum'></a><div class=command> <i><a href='#-sum'>-sum</a></i>  &lt;key columns&gt;  &lt;value columns&gt;  &lt;carry over columns&gt; </div><div class=command-block>Sum values keying on key column value. If no value columns specified then do a count<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key columns</i>
+<li> <i>key columns</i>:
 <br>
-<i>value columns</i>
+<li> <i>value columns</i>:
 <br>
-<i>carry over columns</i>
-<br>
+<li> <i>carry over columns</i>:
 <br>
 </ul>
 </div><a name='-pivot'></a><div class=command> <i><a href='#-pivot'>-pivot</a></i>  &lt;key columns&gt;  &lt;column columns&gt;  &lt;value column&gt;  &lt;operator&gt; </div><div class=command-block>Make a pivot table<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key columns</i>
+<li> <i>key columns</i>:
 Columns to key on<br>
-<i>column columns</i>
+<li> <i>column columns</i>:
 The columns the values of which are used to make the new columns in the result<br>
-<i>value column</i>
+<li> <i>value column</i>:
 The value column<br>
-<i>operator</i>
+<li> <i>operator</i>:
 The operator to apply -  count,sum,average,min,max<br>
-<br>
 </ul>
 For example, with the input file:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Date</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Units</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales</td></tr>
@@ -2712,9 +2336,9 @@ For example, with the input file:
 <tr><td style='padding:4px;border:1px solid #ccc;' >South</td><td style='padding:4px;border:1px solid #ccc;' >2016</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >22.00</td></tr>
 </table><br>
 Running:
-<pre>
+<seesv>
 seesv -pivot region date sales count  -p input.csv 
-</pre>
+</seesv>
 
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019</td></tr>
@@ -2724,9 +2348,9 @@ Gives:
 <tr><td style='padding:4px;border:1px solid #ccc;' >East</td><td style='padding:4px;border:1px solid #ccc;' >10.0</td><td style='padding:4px;border:1px solid #ccc;' >24.0</td><td style='padding:4px;border:1px solid #ccc;' >18.0</td><td style='padding:4px;border:1px solid #ccc;' >13.0</td></tr>
 </table><br>
 You can also specify multiple operators:
-<pre>
+<seesv>
 seesv -pivot region date sales count,min,max  -p input.csv 
-</pre>
+</seesv>
 
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016 - max</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017 - max</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018 - max</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019 - max</td></tr>
@@ -2742,17 +2366,15 @@ Gives:
   
 
 <p></div><a name='-summary'></a><div class=command> <i><a href='#-summary'>-summary</a></i>  &lt;key columns&gt;  &lt;value columns&gt;  &lt;carry over columns&gt;  &lt;ops&gt; </div><div class=command-block>count/sum/average/min/max values keying on key column value. If no value columns specified then do a count<br>
-<b>Arguments:</b><br>
 <ul>
-<i>key columns</i>
+<li> <i>key columns</i>:
 Columns to key on<br>
-<i>value columns</i>
+<li> <i>value columns</i>:
 Columns to apply operators on<br>
-<i>carry over columns</i>
+<li> <i>carry over columns</i>:
 Extra columns to include<br>
-<i>ops</i>
+<li> <i>ops</i>:
 any of count,sum,average,min,max<br>
-<br>
 </ul>
 For example, with the below data, if you wanted to summarize the total units by region:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Color</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Units</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales</td></tr>
@@ -2766,9 +2388,10 @@ For example, with the below data, if you wanted to summarize the total units by 
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >Green</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >26.00</td></tr>
 </table><br>
 You would do:
-<pre>
+<seesv>
 seesv -summary region units ""  sum  -p summary.csv
-</pre>
+</seesv>
+
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Units sum</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >683.0</td></tr>
@@ -2778,22 +2401,20 @@ Which gives:
 </table><br>
 
 If you wanted to get the sum and average of the sales:
-<pre>
+<seesv>
 seesv -summary region sales ""  sum,avg  -p summary.csv 
-</pre>
+</seesv>
 You'd get:
-<pre>
-Region,Sales sum,Sales avg
-West,8873.0,56.51592356687898
-South,5044.0,54.236559139784944
-North,8709.0,63.56934306569343
-East,3730.0,57.38461538461539
-</pre>
-
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales sum</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales avg</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >8873.0</td><td style='padding:4px;border:1px solid #ccc;' >56.51592356687898</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >South</td><td style='padding:4px;border:1px solid #ccc;' >5044.0</td><td style='padding:4px;border:1px solid #ccc;' >54.236559139784944</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >North</td><td style='padding:4px;border:1px solid #ccc;' >8709.0</td><td style='padding:4px;border:1px solid #ccc;' >63.56934306569343</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >East</td><td style='padding:4px;border:1px solid #ccc;' >3730.0</td><td style='padding:4px;border:1px solid #ccc;' >57.38461538461539</td></tr>
+</table><br>
 The carry over column just gets the first value for the key column. So, if you wanted to include the color column do:
-<pre>
+<seesv>
 seesv -summary region sales color  sum,avg  -p summary.csv 
-</pre>
+</seesv>
 
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales sum</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales avg</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Color</td></tr>
@@ -2803,23 +2424,22 @@ Which gives:
 <tr><td style='padding:4px;border:1px solid #ccc;' >East</td><td style='padding:4px;border:1px solid #ccc;' >3730.0</td><td style='padding:4px;border:1px solid #ccc;' >57.38461538461539</td><td style='padding:4px;border:1px solid #ccc;' >Blue</td></tr>
 </table><br>
 <p></div><a name='-histogram'></a><div class=command> <i><a href='#-histogram'>-histogram</a></i>  &lt;column&gt;  &lt;bins&gt;  &lt;value columns&gt;  &lt;ops&gt; </div><div class=command-block>Make a histogram with the given column and bins<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 The column<br>
-<i>bins</i>
+<li> <i>bins</i>:
 Comma separated set of bin values<br>
-<i>value columns</i>
+<li> <i>value columns</i>:
 Extra columns to sum up<br>
-<i>ops</i>
+<li> <i>ops</i>:
 ops to apply to extra columns - any of count,sum,average,min,max<br>
-<br>
 </ul>
 The bins value is a comma separated list of the numeric ranges that define how
 to bin the data. e.g., for a set of age ranges one can specify:
 <pre>
 bins="18,30,40,50,60,70"
 </pre>
+
 This results in bins of:
 <pre>
 0-18
@@ -2857,96 +2477,75 @@ Will give you the bins:
 </pre>
 
 
-<p></div><a name='-percent'></a><div class=command> <i><a href='#-percent'>-percent</a></i>  &lt;columns to add&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>columns to add</i>
-<br>
+<p></div><a name='-percent'></a><div class=command> <i><a href='#-percent'>-percent</a></i>  &lt;columns to add&gt; </div><div class=command-block><ul>
+<li> <i>columns to add</i>:
 <br>
 </ul>
 </div><a name='-increase'></a><div class=command> <i><a href='#-increase'>-increase</a></i>  &lt;column&gt;  &lt;how far back&gt; </div><div class=command-block>Calculate percent increase<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>how far back</i>
-<br>
+<li> <i>how far back</i>:
 <br>
 </ul>
 </div><a name='-average'></a><div class=command> <i><a href='#-average'>-average</a></i>  &lt;columns&gt;  &lt;period&gt;  &lt;label&gt; </div><div class=command-block>Calculate a moving average<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>period</i>
+<li> <i>period</i>:
 <br>
-<i>label</i>
-<br>
+<li> <i>label</i>:
 <br>
 </ul>
 </div><a name='-ranges'></a><div class=command> <i><a href='#-ranges'>-ranges</a></i>  &lt;column&gt;  &lt;name&gt;  &lt;start&gt;  &lt;size&gt; </div><div class=command-block>Create a new column with the (string) ranges where the value falls in<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 <br>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>start</i>
+<li> <i>start</i>:
 Numeric start of range<br>
-<i>size</i>
+<li> <i>size</i>:
 Numeric size of range<br>
-<br>
 </ul>
 </div><a name='-bytes'></a><div class=command> <i><a href='#-bytes'>-bytes</a></i>  &lt;unit&gt;  &lt;column&gt; </div><div class=command-block>Convert suffixed values (e.g., 2 MB) into the number<br>
-<b>Arguments:</b><br>
 <ul>
-<i>unit</i>
+<li> <i>unit</i>:
  values:binary,metric <br>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div><a name='-column_and'></a><div class=command> <i><a href='#-column_and'>-column_and</a></i>  &lt;name&gt;  &lt;columns&gt; </div><div class=command-block>And values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-colum_nor'></a><div class=command> <i><a href='#-colum_nor'>-colum_nor</a></i>  &lt;name&gt;  &lt;columns&gt; </div><div class=command-block>Or values<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<br>
 </ul>
 </div><a name='-column_not'></a><div class=command> <i><a href='#-column_not'>-column_not</a></i>  &lt;name&gt;  &lt;column&gt; </div><div class=command-block>Not value<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 New column name<br>
-<i>column</i>
-<br>
+<li> <i>column</i>:
 <br>
 </ul>
 </div></ul><br><hr><a name='Geospatial'></a><b style='font-size:120%;'>Geospatial</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-geocode'><i>-geocode</i>: Geocode using given columns</a><li> <a href='#-geocodeifneeded'><i>-geocodeifneeded</i>: Geocode if needed</a><li> <a href='#-geocodeaddressdb'><i>-geocodeaddressdb</i>: Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column</a><li> <a href='#-geocodejoin'><i>-geocodejoin</i>: Geocode with file</a><li> <a href='#-bounds'><i>-bounds</i>: Geocode within bounds</a><li> <a href='#-decodelatlon'><i>-decodelatlon</i>: Decode latlon</a><li> <a href='#-getaddress'><i>-getaddress</i>: Get address from lat/lon</a><li> <a href='#-statename'><i>-statename</i>: Add state name from state ID</a><li> <a href='#-geoname'><i>-geoname</i>: Look up location name</a><li> <a href='#-geocontains'><i>-geocontains</i>: Check for containment</a><li> <a href='#-elevation'><i>-elevation</i>: Look up elevation(using 1/3 arc-second DEM)</a><li> <a href='#-mercator'><i>-mercator</i>: Convert x/y to lon/lat</a><li> <a href='#-region'><i>-region</i>: Add the state's region</a><li> <a href='#-population'><i>-population</i>: Add in population from address</a><li> <a href='#-neighborhood'><i>-neighborhood</i>: Look up neighborhood for a given location</a></div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Address columns<br>
-<i>prefix</i>
+<li> <i>prefix</i>:
 optional prefix e.g., state: or county: or country:<br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
-
-
-
 You can use Google or geocode.io for geocoding by setting the following environment variables.
 Else, this defaults to using US Census geocode API.
 <p>
@@ -2973,20 +2572,20 @@ To geocode, e.g.,  with the following file:
 <tr><td style='padding:4px;border:1px solid #ccc;' >Buffalo</td><td style='padding:4px;border:1px solid #ccc;' >NY</td></tr>
 </table><br>
 Run:
-<pre class=examples>
+<seesv>
 seesv -geocode city,state "" "" ...
-</pre>
+</seesv>
 
 This concatenates the city and state field, e.g., "Boulder CO" and calls the API to geolocate.
 <p>
 To use internal location tables set the prefix argument to one of:
-<pre>
+<seesv>
 seesv -geocode columns "city:" "" ...
 seesv -geocode columns "county:" "" ...
 seesv -geocode columns "state:" "" ...
 seesv -geocode columns "zip:" "" ...  
 seesv -geocode columns "country:" "" ...    
-</pre>
+</seesv>
 
 
 The suffix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
@@ -2997,56 +2596,49 @@ The suffix gets appended to the query string. For example if you had a file with
 <tr><td style='padding:4px;border:1px solid #ccc;' >Pueblo</td></tr>
 </table><br>
 You can geocode with:
-<pre>
+<seesv>
 seesv -geocode city "" "CO"
-</pre>
+</seesv>
 
 
 
 
 
 <p></div><a name='-geocodeifneeded'></a><div class=command> <i><a href='#-geocodeifneeded'>-geocodeifneeded</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt;  &lt;latitude&gt;  &lt;longitude&gt; </div><div class=command-block>Geocode if needed<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Address columns<br>
-<i>prefix</i>
+<li> <i>prefix</i>:
 optional prefix e.g., state: or county: or country:<br>
-<i>suffix</i>
+<li> <i>suffix</i>:
 <br>
-<i>latitude</i>
+<li> <i>latitude</i>:
 latitude column<br>
-<i>longitude</i>
+<li> <i>longitude</i>:
 longitude column<br>
-<br>
 </ul>
 </div><a name='-geocodeaddressdb'></a><div class=command> <i><a href='#-geocodeaddressdb'>-geocodeaddressdb</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 columns<br>
-<i>prefix</i>
+<li> <i>prefix</i>:
 <br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
 </div><a name='-geocodejoin'></a><div class=command> <i><a href='#-geocodejoin'>-geocodejoin</a></i>  &lt;column&gt;  &lt;csv file&gt;  &lt;key idx&gt;  &lt;lat idx&gt;  &lt;lon idx&gt; </div><div class=command-block>Geocode with file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>column</i>
+<li> <i>column</i>:
 key column<br>
-<i>csv file</i>
+<li> <i>csv file</i>:
 File to get lat/lon from<br>
-<i>key idx</i>
+<li> <i>key idx</i>:
 <br>
-<i>lat idx</i>
+<li> <i>lat idx</i>:
 <br>
-<i>lon idx</i>
-<br>
+<li> <i>lon idx</i>:
 <br>
 </ul>
-
 This assumes you have a separate file that contains a key value and latitude/longitude
 and the source file has a key value. For example, you might have a list of precincts, e.g.:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >precinct</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >latitude</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >longitude</td></tr>
@@ -3061,31 +2653,27 @@ The source file is a list of voters, e.g.:
 <tr><td style='padding:4px;border:1px solid #ccc;' >Jim Smith</td><td style='padding:4px;border:1px solid #ccc;' >2171207308</td></tr>
 </table><br>
 To add the lat/lon:
-<pre>
+<seesv>
 seesv -geocodejoin precinct precincts.csv precinct latitude longitude
-</pre>
+</seesv>
 
 
 
 <p></div><a name='-bounds'></a><div class=command> <i><a href='#-bounds'>-bounds</a></i>  &lt;north&gt;  &lt;west&gt;  &lt;south&gt;  &lt;east&gt; </div><div class=command-block>Geocode within bounds<br>
-<b>Arguments:</b><br>
 <ul>
-<i>north</i>
+<li> <i>north</i>:
 <br>
-<i>west</i>
+<li> <i>west</i>:
 <br>
-<i>south</i>
+<li> <i>south</i>:
 <br>
-<i>east</i>
-<br>
+<li> <i>east</i>:
 <br>
 </ul>
 </div><a name='-decodelatlon'></a><div class=command> <i><a href='#-decodelatlon'>-decodelatlon</a></i>  &lt;columns&gt; </div><div class=command-block>Decode latlon<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Lat or Lon column<br>
-<br>
 </ul>
 This converts a column that is of the form degrees minutes seconds into it decimal degrees equivalent.
 
@@ -3097,9 +2685,9 @@ For example, with this data:
 <tr><td style='padding:4px;border:1px solid #ccc;' >40:1</td><td style='padding:4px;border:1px solid #ccc;' >107:40</td></tr>
 </table><br>
 Running the commands:
-<pre>
+<seesv>
 seesv -decodelatlon latitude -decodelatlon longitude
-</pre>
+</seesv>
 
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >latitude</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >longitude</td></tr>
@@ -3109,9 +2697,9 @@ Gives:
 <tr><td style='padding:4px;border:1px solid #ccc;' >40.016666666666666</td><td style='padding:4px;border:1px solid #ccc;' >107.66666666666667</td></tr>
 </table><br>
 If you wanted to have less precision then call:
-<pre>
+<seesv>
 seesv -decodelatlon latitude -decodelatlon longitude  -decimals latitude,longitude 5 -p test.csv  
-</pre>
+</seesv>
 
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >latitude</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >longitude</td></tr>
@@ -3121,41 +2709,31 @@ Which gives:
 <tr><td style='padding:4px;border:1px solid #ccc;' >40.01667</td><td style='padding:4px;border:1px solid #ccc;' >107.66667</td></tr>
 </table><br>
 <p></div><a name='-getaddress'></a><div class=command> <i><a href='#-getaddress'>-getaddress</a></i>  &lt;latitude&gt;  &lt;latitude&gt; </div><div class=command-block>Get address from lat/lon<br>
-<b>Arguments:</b><br>
 <ul>
-<i>latitude</i>
+<li> <i>latitude</i>:
 latitude column<br>
-<i>latitude</i>
+<li> <i>latitude</i>:
 latitude column<br>
-<br>
 </ul>
-
-
-
 This function takes a latitude and longitude column and does an address lookup using either
 geocod.io or here.com apis. See above for the API keys that need to be set. 
 
 <p></div><a name='-statename'></a><div class=command> <i><a href='#-statename'>-statename</a></i>  &lt;state_column&gt; </div><div class=command-block>Add state name from state ID<br>
-<b>Arguments:</b><br>
 <ul>
-<i>state_column</i>
+<li> <i>state_column</i>:
 State ID column<br>
-<br>
 </ul>
 </div><a name='-geoname'></a><div class=command> <i><a href='#-geoname'>-geoname</a></i>  &lt;lookup&gt;  &lt;fields&gt;  &lt;latitude_column&gt;  &lt;longitude_column&gt; </div><div class=command-block>Look up location name<br>
-<b>Arguments:</b><br>
 <ul>
-<i>lookup</i>
+<li> <i>lookup</i>:
 ('counties' or 'states' or 'countries' or 'timezones')<br>
-<i>fields</i>
+<li> <i>fields</i>:
 fields in shapefile<br>
-<i>latitude_column</i>
+<li> <i>latitude_column</i>:
 Latitude column<br>
-<i>longitude_column</i>
+<li> <i>longitude_column</i>:
 Longitude column<br>
-<br>
 </ul>
-
 This uses one of the shapefiles provided by RAMADDA and finds the name of the feature that
 contains the given lat/lon.
 
@@ -3168,34 +2746,30 @@ For example if you had the following data file:
 </table><br>
 You can add the country and timezone with:
 
-<pre>
+<seesv>
 seesv -geoname countries  latitude longitude -geoname timezones  latitude longitude
-</pre>
+</seesv>
 
 
 
 
 <p></div><a name='-geocontains'></a><div class=command> <i><a href='#-geocontains'>-geocontains</a></i>  &lt;lookup&gt;  &lt;name&gt;  &lt;latitude_column&gt;  &lt;longitude_column&gt; </div><div class=command-block>Check for containment<br>
-<b>Arguments:</b><br>
 <ul>
-<i>lookup</i>
+<li> <i>lookup</i>:
 ('counties' or 'states' or 'countries' or 'timezones')<br>
-<i>name</i>
+<li> <i>name</i>:
 new column name<br>
-<i>latitude_column</i>
+<li> <i>latitude_column</i>:
 Latitude column<br>
-<i>longitude_column</i>
+<li> <i>longitude_column</i>:
 Longitude column<br>
-<br>
 </ul>
 </div><a name='-elevation'></a><div class=command> <i><a href='#-elevation'>-elevation</a></i>  &lt;latitude_column&gt;  &lt;longitude_column&gt; </div><div class=command-block>Look up elevation(using 1/3 arc-second DEM)<br>
-<b>Arguments:</b><br>
 <ul>
-<i>latitude_column</i>
+<li> <i>latitude_column</i>:
 Latitude column<br>
-<i>longitude_column</i>
+<li> <i>longitude_column</i>:
 Longitude column<br>
-<br>
 </ul>
 This uses the web service at https://nationalmap.gov/epqs/pqs.php to look up the elevation
 for the given lat/lon.
@@ -3207,28 +2781,23 @@ For example if you had the following data file:
 </table><br>
 You can add the elevation with:
 
-<pre>
+<seesv>
 seesv -geoname countries  latitude longitude -geoname timezones  latitude longitude
-</pre>
+</seesv>
 
 
 
 
 <p></div><a name='-mercator'></a><div class=command> <i><a href='#-mercator'>-mercator</a></i>  &lt;columns&gt; </div><div class=command-block>Convert x/y to lon/lat<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 x and y columns<br>
-<br>
 </ul>
 </div><a name='-region'></a><div class=command> <i><a href='#-region'>-region</a></i>  &lt;columns&gt; </div><div class=command-block>Add the state's region<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns with state name or abbrev.<br>
-<br>
 </ul>
-
 This does a lookup from an internal table of the regions that maps state name (or abbrev) to region:
 <pre>
 Alaska=West
@@ -3249,29 +2818,25 @@ Colorado
 
 The region is added with:
 
-<pre>
+<seesv>
 seesv -region name
-</pre>
+</seesv>
 
 <p></div><a name='-population'></a><div class=command> <i><a href='#-population'>-population</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Add in population from address<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>prefix</i>
+<li> <i>prefix</i>:
 e.g., state: or county: or city:<br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
 </div><a name='-neighborhood'></a><div class=command> <i><a href='#-neighborhood'>-neighborhood</a></i>  &lt;latitude_column&gt;  &lt;longitude_column&gt; </div><div class=command-block>Look up neighborhood for a given location<br>
-<b>Arguments:</b><br>
 <ul>
-<i>latitude_column</i>
+<li> <i>latitude_column</i>:
 Latitude column<br>
-<i>longitude_column</i>
+<li> <i>longitude_column</i>:
 Longitude column<br>
-<br>
 </ul>
 
 
@@ -3283,9 +2848,9 @@ PRECISELY_API_KEY=
 </pre>
 
 Call:
-<pre>
+<seesv>
 seesv -neighborhood latitude_column longitude_column
-</pre>  
+</seesv>  
 
 
 
@@ -3293,13 +2858,11 @@ seesv -neighborhood latitude_column longitude_column
 
 <p></div></ul><br><hr><a name='Misc.'></a><b style='font-size:120%;'>Misc.</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-expandcommands'><i>-expandcommands</i>: Apply the commands to each of the columns</a><li> <a href='#-sort'><i>-sort</i>: </a><li> <a href='#-descsort'><i>-descsort</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-maxrows'><i>-maxrows</i>: </a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-verify'><i>-verify</i>: Throw error if a row has a different number of columns</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-comment'><i>-comment</i>: </a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a></div><a name='-expandcommands'></a><div class=command> <i><a href='#-expandcommands'>-expandcommands</a></i>  &lt;columns&gt;  &lt;commands&gt; </div><div class=command-block>Apply the commands to each of the columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Columns to expand with<br>
-<i>commands</i>
+<li> <i>commands</i>:
 Commands<br>
-<br>
 </ul>
 The  expandcommands treats the given set of commands as a function or macro where they are applied to
 each of the columns in sequence.
@@ -3311,39 +2874,31 @@ Assume you have the below data and you wanted to trim the decimal places and the
 </table><br>
 The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. 
 You use the ${column} macro to replace the given column ID. So, running:
-<pre>
+<seesv>
 seesv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns
-</pre>  
+</seesv>  
 
 This expands out to:
-<pre>
+<seesv>
 seesv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1 
-</pre>
+</seesv>
 
 
-<p></div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>columns</i>
+<p></div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block><ul>
+<li> <i>columns</i>:
 Column to sort on<br>
-<br>
 </ul>
-</div><a name='-descsort'></a><div class=command> <i><a href='#-descsort'>-descsort</a></i>  &lt;column&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>column</i>
+</div><a name='-descsort'></a><div class=command> <i><a href='#-descsort'>-descsort</a></i>  &lt;column&gt; </div><div class=command-block><ul>
+<li> <i>column</i>:
 Column to descending sort on<br>
-<br>
 </ul>
 </div><a name='-count'></a><div class=command> <i><a href='#-count'>-count</a></i> </div><div class=command-block>Show count<br>
-<br>
-</ul>
 </div><a name='-alias'></a><div class=command> <i><a href='#-alias'>-alias</a></i>  &lt;name&gt;  &lt;alias&gt; </div><div class=command-block>Set a field alias<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 Name<br>
-<i>alias</i>
+<li> <i>alias</i>:
 Alias<br>
-<br>
 </ul>
 The alias command can be used to make your commands easier to deal with if you have long field names.
 For example, say you have data like:
@@ -3352,104 +2907,78 @@ For example, say you have data like:
 <tr><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
 </table><br>
 You can use the alias command to provide a short name, e.g.:
-<pre>
+<seesv>
 seesv -alias  some_really_long_field_name name -columns name ...
-</pre>  
+</seesv>  
 
 <p></div><a name='-value'></a><div class=command> <i><a href='#-value'>-value</a></i>  &lt;name&gt;  &lt;value&gt; </div><div class=command-block>Define a macro value for later use<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 Name<br>
-<i>value</i>
+<li> <i>value</i>:
 Value<br>
-<br>
 </ul>
 </div><a name='-filepattern'></a><div class=command> <i><a href='#-filepattern'>-filepattern</a></i>  &lt;name&gt;  &lt;pattern&gt; </div><div class=command-block>Extract a macro value from a filename<br>
-<b>Arguments:</b><br>
 <ul>
-<i>name</i>
+<li> <i>name</i>:
 Macro name<br>
-<i>pattern</i>
+<li> <i>pattern</i>:
 Pattern<br>
-<br>
 </ul>
-</div><a name='-maxrows'></a><div class=command> <i><a href='#-maxrows'>-maxrows</a></i>  &lt;Max rows to process&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>Max rows to process</i>
-<br>
+</div><a name='-maxrows'></a><div class=command> <i><a href='#-maxrows'>-maxrows</a></i>  &lt;Max rows to process&gt; </div><div class=command-block><ul>
+<li> <i>Max rows to process</i>:
 <br>
 </ul>
 </div><a name='-changeline'></a><div class=command> <i><a href='#-changeline'>-changeline</a></i>  &lt;from&gt;  &lt;to&gt; </div><div class=command-block>Change the line<br>
-<b>Arguments:</b><br>
 <ul>
-<i>from</i>
+<li> <i>from</i>:
 <br>
-<i>to</i>
-<br>
+<li> <i>to</i>:
 <br>
 </ul>
 </div><a name='-changeraw'></a><div class=command> <i><a href='#-changeraw'>-changeraw</a></i>  &lt;from&gt;  &lt;to&gt; </div><div class=command-block>Change input text<br>
-<b>Arguments:</b><br>
 <ul>
-<i>from</i>
+<li> <i>from</i>:
 From pattern<br>
-<i>to</i>
+<li> <i>to</i>:
 To string<br>
-<br>
 </ul>
 </div><a name='-crop'></a><div class=command> <i><a href='#-crop'>-crop</a></i>  &lt;columns&gt;  &lt;pattern1,pattern2&gt; </div><div class=command-block>Crop last part of string after any of the patterns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>columns</i>
+<li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
-<i>pattern1,pattern2</i>
-<br>
+<li> <i>pattern1,pattern2</i>:
 <br>
 </ul>
 </div><a name='-strict'></a><div class=command> <i><a href='#-strict'>-strict</a></i> </div><div class=command-block>Be strict on columns. any rows that are not the size of the other rows are dropped<br>
-<br>
-</ul>
 </div><a name='-flag'></a><div class=command> <i><a href='#-flag'>-flag</a></i> </div><div class=command-block>Be strict on columns. any rows that are not the size of the other rows are shown<br>
-<br>
-</ul>
 </div><a name='-verify'></a><div class=command> <i><a href='#-verify'>-verify</a></i>  &lt;# columns&gt; </div><div class=command-block>Throw error if a row has a different number of columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i># columns</i>
-<br>
+<li> <i># columns</i>:
 <br>
 </ul>
 </div><a name='-prop'></a><div class=command> <i><a href='#-prop'>-prop</a></i>  &lt;property&gt;  &lt;value&gt; </div><div class=command-block>Set a property<br>
-<b>Arguments:</b><br>
 <ul>
-<i>property</i>
+<li> <i>property</i>:
  values:position <br>
-<i>value</i>
+<li> <i>value</i>:
 start, end, etc<br>
-<br>
 </ul>
-</div><a name='-comment'></a><div class=command> <i><a href='#-comment'>-comment</a></i>  &lt;string&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>string</i>
-<br>
+</div><a name='-comment'></a><div class=command> <i><a href='#-comment'>-comment</a></i>  &lt;string&gt; </div><div class=command-block><ul>
+<li> <i>string</i>:
 <br>
 </ul>
 </div><a name='-verify'></a><div class=command> <i><a href='#-verify'>-verify</a></i> </div><div class=command-block>Verify that all of the rows have the same # of columns<br>
-<br>
-</ul>
 </div><a name='-ext'></a><div class=command> <i><a href='#-ext'>-ext</a></i>  &lt;program_id&gt; </div><div class=command-block>Execute the external program<br>
-<b>Arguments:</b><br>
 <ul>
-<i>program_id</i>
+<li> <i>program_id</i>:
 matches with seesv.ext.&lt;program_id&gt;=/path<br>
-<br>
 </ul>
 The -ext command allows one to integrate external programs into the processing flow.
 
-<pre>
-  -ext &lt;id&gt; &lt;arguments&gt;
-</pre>
+<seesv>
+seesv  -ext &lt;id&gt; &lt;arguments&gt;
+</seesv>
 
 The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
 <pre>
@@ -3470,95 +2999,65 @@ If you want to skip a line the return the string "_null_".
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
 <div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Print text columns</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-record'><i>-record</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
-<br>
-</ul>
 </div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
-<b>Arguments:</b><br>
 <ul>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 Delimiter - ,|^ etc. Use "tab" for tab<br>
-<br>
 </ul>
 </div><a name='-comment'></a><div class=command> <i><a href='#-comment'>-comment</a></i>  &lt;comment&gt; </div><div class=command-block>Add a comment to the output<br>
-<b>Arguments:</b><br>
 <ul>
-<i>comment</i>
+<li> <i>comment</i>:
 The comment<br>
-<br>
 </ul>
 </div><a name='-outputprefix'></a><div class=command> <i><a href='#-outputprefix'>-outputprefix</a></i>  &lt;text&gt; </div><div class=command-block>Specify text to add to the beginning of the file<br>
-<b>Arguments:</b><br>
 <ul>
-<i>text</i>
+<li> <i>text</i>:
 The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order mark.<br>
-<br>
 </ul>
 </div><a name='-printheader'></a><div class=command> <i><a href='#-printheader'>-printheader</a></i> </div><div class=command-block>Print header<br>
-<br>
-</ul>
 </div><a name='-raw'></a><div class=command> <i><a href='#-raw'>-raw</a></i> </div><div class=command-block>Print the file raw<br>
-<br>
-</ul>
 </div><a name='-table'></a><div class=command> <i><a href='#-table'>-table</a></i> </div><div class=command-block>Print HTML table and stats<br>
-<br>
-</ul>
 </div><a name='-cols'></a><div class=command> <i><a href='#-cols'>-cols</a></i>  &lt;width&gt; </div><div class=command-block>Print text columns<br>
-<b>Arguments:</b><br>
 <ul>
-<i>width</i>
+<li> <i>width</i>:
 Column width<br>
-<br>
 </ul>
 </div><a name='-stats'></a><div class=command> <i><a href='#-stats'>-stats</a></i> </div><div class=command-block>Print summary stats<br>
-<br>
-</ul>
 </div><a name='-record'></a><div class=command> <i><a href='#-record'>-record</a></i> </div><div class=command-block>Print records<br>
-<br>
-</ul>
 </div><a name='-toxml'></a><div class=command> <i><a href='#-toxml'>-toxml</a></i>  &lt;outer tag&gt;  &lt;inner tag&gt; </div><div class=command-block>Generate XML<br>
-<b>Arguments:</b><br>
 <ul>
-<i>outer tag</i>
+<li> <i>outer tag</i>:
 <br>
-<i>inner tag</i>
-<br>
+<li> <i>inner tag</i>:
 <br>
 </ul>
 </div><a name='-tojson'></a><div class=command> <i><a href='#-tojson'>-tojson</a></i> </div><div class=command-block>Generate JSON<br>
-<br>
-</ul>
 </div><a name='-todb'></a><div class=command> <i><a href='#-todb'>-todb</a></i>  &lt;db id&gt;  &lt;table&gt;  &lt;columns&gt;  &lt;properties&gt; </div><div class=command-block>Write to Database<br>
-<b>Arguments:</b><br>
 <ul>
-<i>db id</i>
+<li> <i>db id</i>:
 <br>
-<i>table</i>
+<li> <i>table</i>:
 table name<br>
-<i>columns</i>
+<li> <i>columns</i>:
 database columns<br>
-<i>properties</i>
+<li> <i>properties</i>:
 name value properties<br>
-<br>
 </ul>
 </div><a name='-template'></a><div class=command> <i><a href='#-template'>-template</a></i>  &lt;prefix&gt;  &lt;template&gt;  &lt;delimiter&gt;  &lt;suffix&gt; </div><div class=command-block>Apply the template to make the output<br>
-<b>Arguments:</b><br>
 <ul>
-<i>prefix</i>
+<li> <i>prefix</i>:
 <br>
-<i>template</i>
+<li> <i>template</i>:
 Use ${0},${1}, etc for values<br>
-<i>delimiter</i>
+<li> <i>delimiter</i>:
 Output between rows<br>
-<i>suffix</i>
-<br>
+<li> <i>suffix</i>:
 <br>
 </ul>
 </div><a name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br>
-<b>Arguments:</b><br>
 <ul>
-<i>properties</i>
+<li> <i>properties</i>:
 name1 value1 ... nameN valueN<br>
-<br>
 </ul>
 The -addheader command adds RAMADDA's point data header to the output file.
 The header specifies the canonical field ids and a set of properties for
@@ -3571,9 +3070,9 @@ v1,v2,v3
 
 The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
 text with {...} brackets.
-<pre>
+<seesv>
 seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
-</pre>
+</seesv>
 
 The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
 name is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
@@ -3587,9 +3086,9 @@ For example, say you have a file like this:
 <tr><td style='padding:4px;border:1px solid #ccc;' >2020-09-01</td><td style='padding:4px;border:1px solid #ccc;' >2024</td><td style='padding:4px;border:1px solid #ccc;' >30</td></tr>
 </table><br>
 Running this command:
-<pre>
+<seesv>
 seesv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
-</pre>
+</seesv>
 
 Will result in an output:
 <pre>
@@ -3625,15 +3124,14 @@ Other field properties include:
 You can specify the type as "value.*.type integer".
 <p>
 Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
-<pre>
--addheader "(value.*).*.label {Some label \$1}" 
-</pre>    
-</ul>
+<seesv>
+seesv -addheader "(value.*).*.label {Some label \$1}" 
+</seesv>    
+
 
 <p></div><a name='-db'></a><div class=command> <i><a href='#-db'>-db</a></i>  &lt;properties&gt; </div><div class=command-block>Generate the RAMADDA db xml from the header<br>
-<b>Arguments:</b><br>
 <ul>
-<i>properties</i>
+<li> <i>properties</i>:
 Name value pairs:
 		table.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>
 		<column>.id <new id for column> <column>.label <new label>
@@ -3642,49 +3140,32 @@ Name value pairs:
 		<column>.canlist false <column>.cansearch false
 		install <true|false install the new db table>
 		nukedb <true|false careful! this deletes any prior created dbs<br>
-<br>
 </ul>
 </div><a name='-dbprops'></a><div class=command> <i><a href='#-dbprops'>-dbprops</a></i>  &lt;id pattern&gt;  &lt;suffix pattern&gt; </div><div class=command-block>Print to stdout props for db generation<br>
-<b>Arguments:</b><br>
 <ul>
-<i>id pattern</i>
+<li> <i>id pattern</i>:
 <br>
-<i>suffix pattern</i>
-<br>
+<li> <i>suffix pattern</i>:
 <br>
 </ul>
 </div><a name='-fields'></a><div class=command> <i><a href='#-fields'>-fields</a></i> </div><div class=command-block>Print the fields<br>
-<br>
-</ul>
-</div><a name='-run'></a><div class=command> <i><a href='#-run'>-run</a></i>  &lt;Name of process directory&gt; </div><div class=command-block><b>Arguments:</b><br>
-<ul>
-<i>Name of process directory</i>
-<br>
+</div><a name='-run'></a><div class=command> <i><a href='#-run'>-run</a></i>  &lt;Name of process directory&gt; </div><div class=command-block><ul>
+<li> <i>Name of process directory</i>:
 <br>
 </ul>
 </div><a name='-progress'></a><div class=command> <i><a href='#-progress'>-progress</a></i>  &lt;rows&gt; </div><div class=command-block>Show progress<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 How often to print<br>
-<br>
 </ul>
 </div><a name='-debugrows'></a><div class=command> <i><a href='#-debugrows'>-debugrows</a></i>  &lt;rows&gt; </div><div class=command-block>Debug # rows<br>
-<b>Arguments:</b><br>
 <ul>
-<i>rows</i>
+<li> <i>rows</i>:
 # of rows<br>
-<br>
 </ul>
 </div><a name='-script'></a><div class=command> <i><a href='#-script'>-script</a></i> </div><div class=command-block>Generate the script to call<br>
-<br>
-</ul>
 </div><a name='-args'></a><div class=command> <i><a href='#-args'>-args</a></i> </div><div class=command-block>Generate the CSV file commands<br>
-<br>
-</ul>
 </div><a name='-pointheader'></a><div class=command> <i><a href='#-pointheader'>-pointheader</a></i> </div><div class=command-block>Generate the RAMADDA point properties<br>
-<br>
-</ul>
 </div></ul>
 </div>
 <p>
