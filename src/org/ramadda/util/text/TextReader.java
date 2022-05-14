@@ -133,6 +133,7 @@ public class TextReader implements Cloneable {
 
     private List<String> comments = new ArrayList<String>();
 
+    private String outputPrefix;
 
     /** _more_ */
     private String outputDelimiter = ",";
@@ -643,25 +644,6 @@ public class TextReader implements Cloneable {
     }
 
 
-    /**
-     * Set the Comment property.
-     *
-     * @param value The new value for Comment
-     */
-    public void setComment(String value) {
-        comment = value;
-    }
-
-    /**
-     * Get the Comment property.
-     *
-     * @return The Comment
-     */
-    public String getComment() {
-        return comment;
-    }
-
-
 
     /**
      * Set the VisitedRows property.
@@ -787,6 +769,7 @@ public class TextReader implements Cloneable {
         TextReader that = (TextReader) super.clone();
 	that.fieldAliases = this.fieldAliases;
 	that.comments = this.comments;
+	that.outputPrefix = this.outputPrefix;
         that.cleanInput = this.cleanInput;
         that.debug      = this.debug;
         that.input      = input;
@@ -853,6 +836,26 @@ public class TextReader implements Cloneable {
 
         return that;
     }
+
+    /**
+       Set the OutputPrefix property.
+
+       @param value The new value for OutputPrefix
+    **/
+    public void setOutputPrefix (String value) {
+	outputPrefix = value;
+    }
+
+    /**
+       Get the OutputPrefix property.
+
+       @return The OutputPrefix
+    **/
+    public String getOutputPrefix () {
+	return outputPrefix;
+    }
+
+
 
     public void addComment(String comment) {
 	comments.add(comment);
@@ -1087,7 +1090,7 @@ public class TextReader implements Cloneable {
 
 
     /**
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      */
@@ -1609,8 +1612,8 @@ public class TextReader implements Cloneable {
             NamedInputStream input = getInput();
             InputStreamReader isr =
                 new InputStreamReader(
-                    input.getInputStream(),
-                    java.nio.charset.StandardCharsets.UTF_8);
+				      input.getInputStream(),
+				      java.nio.charset.StandardCharsets.UTF_8);
             reader = new BufferedReader(isr);
         }
 
@@ -1685,8 +1688,8 @@ public class TextReader implements Cloneable {
         this.prepend = text;
         if (text != null) {
             this.prependReader = new BufferedReader(
-                new InputStreamReader(
-                    new ByteArrayInputStream(text.getBytes())));
+						    new InputStreamReader(
+									  new ByteArrayInputStream(text.getBytes())));
         } else {
             this.prependReader = null;
         }
@@ -2113,7 +2116,6 @@ public class TextReader implements Cloneable {
 
         System.exit(0);
     }
-
 
 
 }

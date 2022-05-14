@@ -1675,6 +1675,15 @@ public abstract class Processor extends CsvOperator {
 		return;
 	    }
 
+	    String prefix = ctx.getOutputPrefix();
+	    if(prefix!=null) {
+		ctx.setOutputPrefix(null);
+		prefix = prefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");		
+		writer.append(prefix);
+	    }
+
+
+
             List    values        = row.getValues();
             boolean escapeColumns = true;
             if (theTemplate == null) {

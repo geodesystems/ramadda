@@ -122,11 +122,6 @@ public class CsvUtil {
     private String delimiter;
 
     /** _more_ */
-    private String comment;
-
-
-    
-    /** _more_ */
     private List<String> changeTo = new ArrayList<String>();
 
     /** _more_ */
@@ -249,7 +244,6 @@ public class CsvUtil {
     public void initWith(CsvUtil csvUtil) {
 	this.inDater = csvUtil.inDater;
 	this.outDater = csvUtil.outDater;	
-        this.comment = csvUtil.comment;
         this.js      = csvUtil.js;
 	this.sinks = csvUtil.sinks;
 	this.macros.putAll(csvUtil.macros);
@@ -1756,10 +1750,10 @@ public class CsvUtil {
                 new Arg("stop pattern", "", "type", "pattern")),
         new Cmd("-rawlines", "",
                 new Arg("lines",
-                        "How many lines to pass through unprocesed")),
+                        "Pass through and print out rawlines unprocesed")),
         new Cmd("-inputnotcontains", "Filter out input lines that contain any of the strings",
                 new Arg("filters",
-                        "Comma separated list of strings to filter one")),
+                        "Comma separated list of strings to filter on")),
         new Cmd(
 		"-min",
 		"Only pass thorough lines that have at least this number of columns",
@@ -2122,7 +2116,7 @@ public class CsvUtil {
         new Cmd("-pad", "Add or remove columns to achieve the count",
                 new Arg("count"), new Arg("pad string")),
         new Cmd("-prefix", "Add prefix to column",
-                new Arg("column", "", "type", "column"), new Arg("prefix")),
+                new Arg("column", "", "type", "column"), new Arg("prefix","String to use")),
         new Cmd("-suffix", "Add suffix to column",
                 new Arg("column", "", "type", "column"), "suffix"),
         new Cmd("-subst", "Create a new column with the template",
@@ -2449,6 +2443,7 @@ public class CsvUtil {
 	new Cmd("-print", "Delimited output"),
 	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
         new Cmd("-comment", "Add a comment to the output",new Arg("comment","The comment")),
+        new Cmd("-outputprefix", "Specify text to add to the beginning of the file",new Arg("text","The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order mark.")),	
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
         new Cmd("-table", "Print HTML table and stats"),
@@ -3327,11 +3322,6 @@ public class CsvUtil {
 		    widths.add(Integer.parseInt(tok));
 		}
 		ctx.setWidths(widths);
-		return i;
-	    });
-
-	defineFunction("-comment",1,(ctx,args,i) -> {
-		ctx.setComment(comment = args.get(++i));
 		return i;
 	    });
 
@@ -4523,13 +4513,16 @@ public class CsvUtil {
 		return i;
 	    });
 
-
-
-	defineFunction("-comment",0,(ctx,args,i) -> {
+	defineFunction("-comment",1,(ctx,args,i) -> {
 		ctx.addComment(args.get(++i));
 		return i;
 	    });	
 
+	defineFunction("-outputprefix",1,(ctx,args,i) -> {
+		ctx.setOutputPrefix(args.get(++i));
+		return i;
+	    });	
+	
 
 	defineFunction(new String[]{"-tocsv","-print","-p","-printdelim"}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
@@ -4637,9 +4630,6 @@ public class CsvUtil {
 	boolean            doArgs2       = false;
 	int                doArgsCnt     = 0;
 	int                doArgsIndex   = 1;
-	if (comment != null) {
-	    ctx.setComment(comment);
-	}
 	if (delimiter != null) {
 	    ctx.setDelimiter(delimiter);
 	}

@@ -1839,11 +1839,8 @@ public abstract class DataProvider extends CsvOperator {
             while (true) {
                 String line = ctx.readLine();
                 if (line == null) {
-                    //              System.err.println("Done reading CSV file read");
                     return null;
                 }
-                //              if(true) return  makeRow(Utils.tokenizeColumns(line, getTokenizer(ctx)));
-
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
