@@ -278,7 +278,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
 
-            int count = Utils.getProperty(props, "count", 1);
+            int count = Utils.getProperty(props, "numTables", 1);
             if ((pattern == null) || (pattern.trim().length() == 0)) {
                 pattern = props.get("pattern");
             }
@@ -299,7 +299,6 @@ public abstract class DataProvider extends CsvOperator {
                         extractUrls), Utils.getProperty(props,
                             prefix + "stripTags", stripTags)));
             }
-
 
 
             String removePattern =

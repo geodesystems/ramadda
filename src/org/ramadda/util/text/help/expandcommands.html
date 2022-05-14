@@ -10,12 +10,12 @@ column1,column2
 
 The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. 
 You use the ${column} macro to replace the given column ID. So, running:
-<pre>
+<seesv>
 seesv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns
-</pre>  
+</seesv>  
 
 This expands out to:
-<pre>
+<seesv>
 seesv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1 
-</pre>
+</seesv>
 

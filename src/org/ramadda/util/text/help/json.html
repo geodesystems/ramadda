@@ -6,9 +6,9 @@ import:jsonexample1.json
 </pre>  
 
 The command would be:
-<pre>
+<seesv>
 seesv  -json p1.p2.values ""
-</pre>
+</seesv>
 
 Since the values array just holds numeric values there is no column name. The data would be:
 <data>
@@ -25,9 +25,9 @@ import:jsonexample2.json
 </pre>  
 
 The command would be:
-<pre>
+<seesv>
 seesv -json "p1[1].p2.values" "" 
-</pre>
+</seesv>
 
 Here is an example where the value array holds objects.
 <pre>
@@ -35,9 +35,9 @@ import:jsonexample3.json
 </pre>  
 
 The command is:
-<pre>
+<seesv>
 seesv  -json "p1.p2.values" ""
-</pre>
+</seesv>
 
 With the result using the object attribute names as column names:
 <data>
@@ -53,9 +53,9 @@ import:jsonexample4.json
 </pre>  
 
 You would use the second argument to specify an inner path to the object of interest:
-<pre>
+<seesv>
 seesv  -json "p1.p2.values" "goodvalues"
-</pre>
+</seesv>
 
 If the object within the array is a nested object and you only wanted to access multiple inner
 objects, e.g.:

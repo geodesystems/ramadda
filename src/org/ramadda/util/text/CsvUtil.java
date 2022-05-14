@@ -1690,12 +1690,12 @@ public class CsvUtil {
                 new Arg("props", "\"addPoints true addShapes false\"")),	
         new Cmd("-lines", "Parse the input as text lines"),
 
-        new Cmd("-htmltable", "Parse the table in the input html file",
+        new Cmd("-htmltable", "Parse tables in the input html file",
                 new Arg("skip", "Number of tables to skip", "type",
 			"number"), new Arg("pattern", "Pattern to skip to",
 					   "type", "pattern", "size",
 					   "40"), new Arg("properties",
-							  "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern exrtractUrls true column1.extractUrls true stripTags false column1.stripTags false",
+							  "Other name value args - <ul><li> numTables N:Number of tables to process. Default is 1<li> removeEntity true:remove HTML entities <li> removePattern pattern<li> extractUrls true <li> columnN.extractUrls true: N=column number<li> stripTags false: strip any HTML tags. Default =true<li> columnN.stripTags false: N=column number. Set stripTags for the column</ul>",
 							  "rows", "6", "size", "40")),
         new Cmd("-htmlpattern", "Parse the input html file",
                 new Arg("columns", "Column names", "type", "columns"),
@@ -2696,20 +2696,19 @@ public class CsvUtil {
 		sb.append("<br>\n");
 	    }
 	    if(c.args.size()>0) {
-		sb.append("<b>Arguments:</b><br>\n");
+		//		sb.append("<b>Arguments:</b><br>\n");
 		sb.append("<ul>\n");
 		for(Arg arg: c.args) {
-		    sb.append("<i>" +arg.id+"</i>\n");
-		    if(Utils.stringDefined(arg.desc)) sb.append(arg.desc.replace("<br>"," "));
+		    sb.append("<li> <i>" +arg.id+"</i>:\n");
+		    if(Utils.stringDefined(arg.desc)) sb.append(arg.desc.replace("<xbr>"," "));
 		    for(int i=0;i<arg.props.length;i+=2) {
 			if(arg.props[i].equals("values"))
 			    sb.append(" values:" + arg.props[i+1]+" "); 
 		    }
 		    sb.append("<br>\n");
 		}
+		sb.append("</ul>\n");		
 	    }
-	    sb.append("<br>\n");
-	    sb.append("</ul>\n");
 	    if(extra!=null) {
 		boolean inData = false;
 		List<String> dataLines = null;

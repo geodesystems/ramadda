@@ -6,9 +6,9 @@ xxxsome valueyyy
 </data>
 
 You can strip out the xxx...yyy and add a label: prefix with:
-<pre>
+<seesv>
 seesv  -change label "xxx(.*)yyy" "label:$1"
-</pre>
+</seesv>
 
 Which would give:
 <data>
@@ -18,9 +18,9 @@ label:some value
 
 
 You can also specify a file that holds a number of patterns:
-<pre>
+<seesv>
 seesv -change columns  file:file.txt ""
-</pre>
+</seesv>
 
 The file is of the form:
 <pre>
