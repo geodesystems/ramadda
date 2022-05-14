@@ -477,7 +477,25 @@ Path to the elements<br>
 "addPoints true addShapes false"<br>
 <br>
 </ul>
-</div><a name='-lines'></a><div class=command> <i><a href='#-lines'>-lines</a></i> </div><div class=command-block>Parse the input as text lines<br>
+The -shapefile command can either take a .shp shapefile or a .zip shapefile.
+If it is a .zip shapefile that contains a .dbf file then then values within
+the .dbf file are extracted and added as output.
+
+The argument is a set of name/value pairs. For now these can contain an addPoints and an addShapes
+values, e.g. the below will add a point which is the calculated centroid of the shape.
+<pre>
+seesv -shapefile "addPoints true" -p test.zip
+</pre>  
+
+
+With addShapes=true the polygon will be extracted and added as a column value:
+<pre>
+seesv -shapefile "addShapes true" -p test.zip
+</pre>
+
+
+
+<p></div><a name='-lines'></a><div class=command> <i><a href='#-lines'>-lines</a></i> </div><div class=command-block>Parse the input as text lines<br>
 <br>
 </ul>
 For each line in the input file this creates a row that contains one column which holds the line.
