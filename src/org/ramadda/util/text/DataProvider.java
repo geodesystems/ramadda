@@ -756,8 +756,10 @@ public abstract class DataProvider extends CsvOperator {
                             //Maybe it is an array of strings
                             for (int arrayIdx2 = 0;
                                     arrayIdx2 < array.length(); arrayIdx2++) {
+                                String v = array.optString(arrayIdx2);
+				if(v==null) continue;
                                 Row row = makeRow();
-                                row.add(array.getString(arrayIdx2));
+				row.add(v);
                                 addRow(row);
                             }
 

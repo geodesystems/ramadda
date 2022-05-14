@@ -3273,8 +3273,6 @@ public class RowCollector extends Processor {
                     result.add(newRow);
                 }
             }
-            System.err.println("DONE:" + result.size());
-
             return result;
         }
 

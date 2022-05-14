@@ -137,6 +137,8 @@ public class CsvUtil {
 
     private List<String> inputFiles;
 
+    private boolean makeInputStreamRaw = false;
+
     private CsvContext csvContext;
 
     private List<DataSink> sinks;
@@ -875,7 +877,6 @@ public class CsvUtil {
                 continue;
             }
 	    if ( !processRow(ctx, row)) {
-		System.err.println("\tDONE");
 		break;
 	    }
         }
@@ -1082,7 +1083,7 @@ public class CsvUtil {
 					   new ByteArrayInputStream(csv.getBytes()));
 	} else if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
 	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file)));
-        } else if (file.toLowerCase().endsWith(".zip")) {
+        } else if (!makeInputStreamRaw && file.toLowerCase().endsWith(".zip")) {
             InputStream    fis = IO.getInputStream(file.toString());
             ZipInputStream zin = new ZipInputStream(fis);
             ZipEntry       ze  = null;
@@ -2713,6 +2714,17 @@ public class CsvUtil {
 		boolean inData = false;
 		List<String> dataLines = null;
 		for(String line:Utils.split(extra,"\n")) {
+		    if(line.startsWith("import:")) {
+			line = line.substring("import:".length()).trim();
+			if(!line.startsWith("/")) {
+			    line = "/org/ramadda/util/text/help/" + line;
+			}
+			String include = IO.readContents(line,(String)null);
+			if(include==null) throw new IllegalArgumentException("Bad import:" + line);
+			include = include.replaceAll("<","&lt;").replaceAll(">","&gt;");
+			sb.append(include);
+			continue;
+		    }
 		    String _line = line.trim();
 		    if(_line.equals("<data>")) {
 			inData = true;
@@ -3866,6 +3878,7 @@ public class CsvUtil {
 	
 
 	defineFunction("-shapefile",1,(ctx,args,i) -> {
+		makeInputStreamRaw = true;
 		ctx.getProviders().add(new ShapefileProvider(parseProps(args.get(++i))));
 		return i;
 	    });

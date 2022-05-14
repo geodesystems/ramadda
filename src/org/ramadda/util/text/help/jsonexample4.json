@@ -1,0 +1,22 @@
+{
+    "p1": {
+	"p2": {
+	    "values": [
+		{
+		    "foo":"bar",
+		    "goodvalues": {
+			"name":"jim",
+			"value":5
+		    }
+		},
+		{
+		    "foo":"bar",
+		    "goodvalues": {
+			"name":"jill",
+			"value":10
+		    }
+		},
+	    ]
+	}
+    }
+}

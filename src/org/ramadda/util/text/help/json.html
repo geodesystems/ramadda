@@ -1,0 +1,79 @@
+The -json command takes as first argument a path to the array of objects that constitute the data.
+
+For example, if you had JSON like:
+<pre>
+import:jsonexample1.json
+</pre>  
+
+The command would be:
+<pre>
+seesv  -json p1.p2.values ""
+</pre>
+
+Since the values array just holds numeric values there is no column name. The data would be:
+<data>
+1
+2
+3
+4
+</data>
+
+If you had a path that had an array component that you wanted to access, for example,
+the second element of the array, e.g.:
+<pre>
+import:jsonexample2.json
+</pre>  
+
+The command would be:
+<pre>
+seesv -json "p1[1].p2.values" "" 
+</pre>
+
+Here is an example where the value array holds objects.
+<pre>
+import:jsonexample3.json
+</pre>  
+
+The command is:
+<pre>
+seesv  -json "p1.p2.values" ""
+</pre>
+
+With the result using the object attribute names as column names:
+<data>
+name,value
+jim,5
+jill,10
+</data>
+
+If the object within the array is a nested object and you only want to access an inner
+object, e.g.:
+<pre>
+import:jsonexample4.json
+</pre>  
+
+You would use the second argument to specify an inner path to the object of interest:
+<pre>
+seesv  -json "p1.p2.values" "goodvalues"
+</pre>
+
+If the object within the array is a nested object and you only wanted to access multiple inner
+objects, e.g.:
+<pre>
+import:jsonexample5.json
+</pre>  
+
+Then  the second argument can be a comma separated list of path specifications:
+<pre>
+seesv  -json "p1.p2.values" "goodvalues,moregoodvalues"
+</pre>
+
+Resulting in:
+<data>
+age,name,value
+74,jim,5
+80,jill,10
+</data>
+
+
+
