@@ -30,7 +30,7 @@ pre {
 </head>    
 <notcl>
 <style type='text/css'>
-  body {font-family: Arial, sans-serif;    line-height:1.3em;
+  body {font-family: Arial, sans-serif;    line-height:1.5em;
        }
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
@@ -40,6 +40,7 @@ pre {
       margin:0px;
   }
   pre {
+      line-height:1.3em;
       border : 1px #ccc solid;
       background:rgb(245,245,245);
       padding:4px;
@@ -603,11 +604,11 @@ name space value properties. e.g., join col1,col2<br>
 
 The -sql command uses a number of RAMADDA properties or environment variables that define the databases that can
 be accessed. The command specifies a database as:
-<pre>
-  -sql &lt;db&gt; ...
+<seesv>
+seesv  -sql &lt;db&gt; ...
 e.g.:
-  -sql test ...  
-</pre>
+seesv -sql test ...  
+</seesv>
 
 Where  for the given db  there should be 2 environment variables:
 <pre>
