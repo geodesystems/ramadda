@@ -34,8 +34,6 @@
       font-style:italic;
   }
   seesv {
-      unicode-bidi: embed;
-      white-space: pre;
       font-style:italic;
       display:block;
       border:1px solid #ccc;
@@ -45,7 +43,6 @@
       margin-bottom:5px;
       margin-top:5px;
       padding:4px;
-
   }
 
 </style>
@@ -182,8 +179,10 @@ Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XM
 <seesv>seesv -p test.csv</seesv>
 
 The SeeSV package can also handle  zipped or gzipped input files:
-<seesv>seesv -p test.csv.zip
-seesv -p test.csv.gz</seesv>
+<seesv>
+seesv -p test.csv.zip<br>
+seesv -p test.csv.gz
+</seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
 <seesv>seesv -p test.xls</seesv>
@@ -197,13 +196,14 @@ Note: not all commands work with multiple input files.
 
 Other file types (see below for more details) are handled as:
 
-<seesv>#Read each <a href="#-lines">line</a> as a single column
-seesv -lines -p test.txt
-
-#Process <a href="#-xml">xml</a> with the given path 
-seesv -xml "path.to.rows" -p test.xml  
-
-#Process <a href="#-json">JSON</a>
+<seesv>
+#Read each <a href="#-lines">line</a> as a single column<br>
+seesv -lines -p test.txt<br>
+<br>
+#Process <a href="#-xml">xml</a> with the given path <br>
+seesv -xml "path.to.rows" -p test.xml  <br>
+<br>
+#Process <a href="#-json">JSON</a><br>
 seesv -json "path.to.array" "object_paths" -p test.json
 </seesv>
 <div class=header>Commands:<ul></ul><li> <a href='#-delimiter'><i>-delimiter</i>: Specify a delimiter</a><li> <a href='#-tab'><i>-tab</i>: Use tabs. A shortcut for -delimiter tab</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse tables in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Make the header be ids</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a></div><a name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify a delimiter<br>
@@ -550,9 +550,10 @@ name space value properties. e.g., join col1,col2<br>
 
 The -sql command uses a number of RAMADDA properties or environment variables that define the databases that can
 be accessed. The command specifies a database as:
-<seesv>seesv  -sql &lt;db&gt; ...
-e.g.:
-seesv -sql test ...  
+<seesv>
+seesv  -sql &lt;db&gt; ...<br>
+e.g.:<br>
+seesv -sql test ...  <br>
 </seesv>
 
 Where  for the given db  there should be 2 environment variables:
@@ -2473,11 +2474,11 @@ Run:
 This concatenates the city and state field, e.g., "Boulder CO" and calls the API to geolocate.
 <p>
 To use internal location tables set the prefix argument to one of:
-<seesv>seesv -geocode columns "city:" "" ...
-seesv -geocode columns "county:" "" ...
-seesv -geocode columns "state:" "" ...
-seesv -geocode columns "zip:" "" ...  
-seesv -geocode columns "country:" "" ...    
+<seesv>seesv -geocode columns "city:" "" ...<br>
+seesv -geocode columns "county:" "" ...<br>
+seesv -geocode columns "state:" "" ...<br>
+seesv -geocode columns "zip:" "" ...  <br>
+seesv -geocode columns "country:" "" ...  <br>  
 </seesv>
 
 

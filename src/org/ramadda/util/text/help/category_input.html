@@ -2,8 +2,10 @@ The default input type is CSV. To print out a CSV file just do:
 <seesv>seesv -p test.csv</seesv>
 
 The SeeSV package can also handle  zipped or gzipped input files:
-<seesv>seesv -p test.csv.zip
-seesv -p test.csv.gz</seesv>
+<seesv>
+seesv -p test.csv.zip<br>
+seesv -p test.csv.gz
+</seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
 <seesv>seesv -p test.xls</seesv>
@@ -17,12 +19,13 @@ Note: not all commands work with multiple input files.
 
 Other file types (see below for more details) are handled as:
 
-<seesv>#Read each <a href="#-lines">line</a> as a single column
-seesv -lines -p test.txt
-
-#Process <a href="#-xml">xml</a> with the given path 
-seesv -xml "path.to.rows" -p test.xml  
-
-#Process <a href="#-json">JSON</a>
+<seesv>
+#Read each <a href="#-lines">line</a> as a single column<br>
+seesv -lines -p test.txt<br>
+<br>
+#Process <a href="#-xml">xml</a> with the given path <br>
+seesv -xml "path.to.rows" -p test.xml  <br>
+<br>
+#Process <a href="#-json">JSON</a><br>
 seesv -json "path.to.array" "object_paths" -p test.json
 </seesv>
