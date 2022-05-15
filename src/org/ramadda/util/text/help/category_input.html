@@ -1,32 +1,23 @@
 The default input type is CSV. To print out a CSV file just do:
-<seesv>
-seesv -p test.csv
-</seesv>
+<seesv>seesv -p test.csv</seesv>
 
 The SeeSV package can also handle  zipped or gzipped input files:
-<seesv>
-seesv -p test.csv.zip
-seesv -p test.csv.gz  
-</seesv>
+<seesv>seesv -p test.csv.zip
+seesv -p test.csv.gz</seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
-<seesv>
-seesv -p test.xls
-</seesv>
+<seesv>seesv -p test.xls</seesv>
 
 
 The SeeSV package does have some support for handling multiple input files.
 It is assumed that each file is has the same set of columns.
 Note: not all commands work with multiple input files.
 
-<seesv>
-seesv -p test1.csv test2.csv
-</seesv>
+<seesv>seesv -p test1.csv test2.csv</seesv>
 
 Other file types (see below for more details) are handled as:
 
-<seesv>
-#Read each <a href="#-lines">line</a> as a single column
+<seesv>#Read each <a href="#-lines">line</a> as a single column
 seesv -lines -p test.txt
 
 #Process <a href="#-xml">xml</a> with the given path 

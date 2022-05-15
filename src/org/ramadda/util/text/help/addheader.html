@@ -9,9 +9,7 @@ v1,v2,v3
 
 The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
 text with {...} brackets.
-<seesv>
-seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
-</seesv>
+<seesv>seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"</seesv>
 
 The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
 name is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
@@ -27,9 +25,7 @@ some date,year,some field
 </data>
 
 Running this command:
-<seesv>
-seesv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
-</seesv>
+<seesv>seesv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv</seesv>
 
 Will result in an output:
 <pre>
@@ -65,7 +61,5 @@ Other field properties include:
 You can specify the type as "value.*.type integer".
 <p>
 Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
-<seesv>
-seesv -addheader "(value.*).*.label {Some label \$1}" 
-</seesv>    
+<seesv>seesv -addheader "(value.*).*.label {Some label \$1}" </seesv>    
 
