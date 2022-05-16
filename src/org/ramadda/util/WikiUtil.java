@@ -629,7 +629,7 @@ public class WikiUtil {
             s = s.replaceAll("\r\r", "\n<p></p>\n");
         }
 
-        s = s.replace("\\\\[", "_BRACKETOPEN_");
+        s = s.replace("\\[", "_BRACKETOPEN_");
         s = s.replaceAll("''''(.*?)''''", "<b><i>$1</i></b>");
         s = s.replaceAll("'''(.*?)'''", "<b>$1</b>");
         s = s.replaceAll("''(.*?)''", "<i>$1</i>");
