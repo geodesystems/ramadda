@@ -2410,6 +2410,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         } else if (theTag.equals(WIKI_TAG_DISPLAY)
                    || theTag.startsWith("display_")
                    || theTag.equals(WIKI_TAG_CHART)) {
+	    if(entry==null) {
+		return "{{"+ theTag+" " +"No entry" +"}}";
+	    }
             String jsonUrl = null;
 	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",

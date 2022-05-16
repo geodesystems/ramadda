@@ -4368,30 +4368,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     putHtdocsCache(path, bytes, false);
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".html")) {
-                    String html = IOUtil.readInputStream(inputStream);
-                    html = getPageHandler().applyBaseMacros(html);
-                    html = html.replace("${version}",
-                                        getProperty(PROP_BUILD_VERSION,
-                                            "1.0"));
-                    html = html.replace("${hostname}",
-                                        request.getServerName());
-
-		    //                    if ((path.indexOf(".wiki.") >= 0) || html.startsWith(WIKI_PREFIX)) {
-		    html = getWikiManager().wikify(request, html);
-		    //                    }
-                    Result result = new Result(BLANK,
-                                        new StringBuilder(html));
                     //If its just sitting on the server then don't decorate
                     if (new File(fullPath).exists()) {
                         decorate = false;
                     }
-                    if (decorate) {
-                        return getEntryManager().addHeaderToAncillaryPage(
-                            request, result);
-                    }
-                    result.setShouldDecorate(false);
-
-                    return result;
+		    return processHtmlPage(request, inputStream, decorate);
                 }
 
                 return makeResult(request, path, inputStream, mimeType, true);
@@ -4425,16 +4406,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 putHtdocsCache(path, bytes, false);
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".html")) {
-                String html = IOUtil.readInputStream(inputStream);
-                html = getPageHandler().applyBaseMacros(html);
-                html = html.replace("${hostname}", request.getServerName());
-		//Always wikify
-		html = getWikiManager().wikify(request, html);
-		//                if ((path.indexOf(".wiki.") >= 0)|| html.startsWith(WIKI_PREFIX)) {
-		    //                }
-
-                return getEntryManager().addHeaderToAncillaryPage(request,
-                        new Result(BLANK, new StringBuilder(html)));
+		return processHtmlPage(request, inputStream, true);
             }
 
             return makeResult(request, path, inputStream, mimeType, true);
@@ -4521,6 +4493,33 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(debug)
 	    System.err.println("\t404");
 	return make404(request);
+    }
+
+
+    private Result processHtmlPage(Request request, InputStream inputStream, boolean decorate) throws Exception {
+	String html = IOUtil.readInputStream(inputStream);
+	html = getPageHandler().applyBaseMacros(html);
+	html = html.replace("${version}",
+			    getProperty(PROP_BUILD_VERSION,
+					"1.0"));
+	html = html.replace("${hostname}",
+			    request.getServerName());
+	
+	String title = null;
+	if (decorate) {
+	    title = StringUtil.findPattern(html, "(?s).*<title>(.+?)</title>");
+	    html = (String)Utils.getNonNull(StringUtil.findPattern(html, "(?s).*<body[^>]*>(.+)</body>.*"), html);
+	}
+
+	html = getWikiManager().wikify(request, html);
+	Result result = new Result(title!=null?title:BLANK,
+				   new StringBuilder(html));
+	if (decorate) {
+	    return getEntryManager().addHeaderToAncillaryPage(
+							      request, result);
+	}
+	result.setShouldDecorate(false);
+	return result;
     }
 
 
