@@ -12,7 +12,7 @@ West,Green,2,26.00
 </data>
 
 You would do:
-<seesv>seesv -summary region units ""  sum  -p summary.csv</seesv>
+seesv:seesv -summary region units ""  sum  -p summary.csv
 
 Which gives:
 <data>
@@ -25,7 +25,7 @@ East,294.0
 
 
 If you wanted to get the sum and average of the sales:
-<seesv>seesv -summary region sales ""  sum,avg  -p summary.csv</seesv>
+seesv:seesv -summary region sales ""  sum,avg  -p summary.csv
 
 You'd get:
 <data>
@@ -37,7 +37,7 @@ East,3730.0,57.38461538461539
 </data>
 
 The carry over column just gets the first value for the key column. So, if you wanted to include the color column do:
-<seesv>seesv -summary region sales color  sum,avg  -p summary.csv</seesv>
+seesv:seesv -summary region sales color  sum,avg  -p summary.csv
 
 Which gives:
 <data>

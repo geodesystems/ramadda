@@ -2448,9 +2448,9 @@ public class CsvUtil {
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
         new Cmd("-table", "Print HTML table and stats"),
-        new Cmd("-cols", "Print text columns",new Arg("width","Column width")),		
+        new Cmd("-cols", "Set the width of the columns for output. Use with -p",new Arg("width","Column width")),		
         new Cmd("-stats", "Print summary stats"),
-        new Cmd("-record", "Print records"),
+        new Cmd("-torecord", "Print records"),
         new Cmd("-toxml", "Generate XML", new Arg("outer tag"),new Arg("inner tag")),
         new Cmd("-tojson", "Generate JSON"),
         new Cmd("-todb", "Write to Database",
@@ -2460,10 +2460,11 @@ public class CsvUtil {
 		new Arg("properties","name value properties")),		
         new Cmd("-template", "Apply the template to make the output",
                 new Arg("prefix", "", "size", "40"),
-                new Arg("template", "Use ${0},${1}, etc for values", "rows",
-                        "6"), new Arg("delimiter", "Output between rows",
-                                      "size", "40"), new Arg("suffix", "",
-							     "size", "40")),
+                new Arg("template", "Use ${column_name} or indices: ${0},${1}, etc for values", "rows",
+                        "6"),
+		new Arg("row_delimiter", "Output between rows",
+			"size", "40"),
+		new Arg("suffix", "", "size", "40")),
         new Cmd("-addheader", "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
                         "rows", "6")),
@@ -2700,7 +2701,9 @@ public class CsvUtil {
 		sb.append("<ul>\n");
 		for(Arg arg: c.args) {
 		    sb.append("<li> <i>" +arg.id+"</i>:\n");
-		    if(Utils.stringDefined(arg.desc)) sb.append(arg.desc.replace("<xbr>"," "));
+		    if(Utils.stringDefined(arg.desc)) {
+			sb.append(arg.desc.replace("<xbr>"," ").replace("[","\\["));
+		    }
 		    for(int i=0;i<arg.props.length;i+=2) {
 			if(arg.props[i].equals("values"))
 			    sb.append(" values:" + arg.props[i+1]+" "); 
@@ -2713,6 +2716,15 @@ public class CsvUtil {
 		boolean inData = false;
 		List<String> dataLines = null;
 		for(String line:Utils.split(extra,"\n")) {
+		    if(line.trim().startsWith("seesv:")) {
+			line = line.substring("seesv:".length()).trim();
+			line = line.replaceAll("<","&lt;").replaceAll(">","&gt;");
+			if(!line.startsWith("seesv")) line = "seesv " + line;
+			sb.append("<seesv>");
+			sb.append(line);
+			sb.append("</seesv>");
+			continue;
+		    }
 		    if(line.startsWith("import:")) {
 			line = line.substring("import:".length()).trim();
 			if(!line.startsWith("/")) {
@@ -2724,6 +2736,17 @@ public class CsvUtil {
 			sb.append(include);
 			continue;
 		    }
+		    if(line.startsWith("data:")) {
+			line = line.substring("data:".length()).trim();
+			if(!line.startsWith("/")) {
+			    line = "/org/ramadda/util/text/test/" + line;
+			}
+			String include = IO.readContents(line,(String)null);
+			if(include==null) throw new IllegalArgumentException("Bad import:" + line);
+			genHelpData(sb, Utils.split(include,"\n"));
+			continue;
+		    }
+
 		    String _line = line.trim();
 		    if(_line.equals("<data>")) {
 			inData = true;
@@ -2732,27 +2755,7 @@ public class CsvUtil {
 		    }
 		    if(_line.equals("</data>")) {
 			inData = false;
-			sb.append("<br>");
-			sb.append("<table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'>");
-			for(int i=0;i<dataLines.size();i++) {
-			    String l = dataLines.get(i);
-			    sb.append("<tr>");
-			    List<String> cells = Utils.split(l,",",false,false);
-			    String cellExtra = "";
-			    String style = "padding:4px;border:1px solid #ccc;";
-			    if(i==0) {
-				cellExtra = " align=center ";
-				style+="background:#F5F5F5;";
-			    }
-			    for(String cell:cells) {
-				if(cell.trim().equals("")) cell ="&lt;blank&gt;";
-				sb.append("<td style='" + style+"' " + cellExtra+">"+cell+"</td>");
-			    }
-			    sb.append("</tr>");
-			    sb.append("\n");
-			}
-			sb.append("</table>");
-			sb.append("<br>");
+			genHelpData(sb,dataLines);
 			continue;
 		    }
 		    if(inData) {
@@ -2774,6 +2777,7 @@ public class CsvUtil {
 	pw.println(intro);
 
 	String html = sb.toString();
+	//	html = html.replace("[","\\[");
 	for(int i=0;i< headers.size(); i++) {
 	    String s  = "<div class=header>" + headers.get(i).toString() +"</div>";
 	    html = html.replace("${header" + i+"}", s);
@@ -2783,6 +2787,30 @@ public class CsvUtil {
     }
 
 
+    private void genHelpData(StringBuilder sb, List<String> dataLines) {
+	sb.append("<br>");
+	sb.append("<table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'>");
+	for(int i=0;i<dataLines.size();i++) {
+	    String l = dataLines.get(i);
+	    sb.append("<tr>");
+	    List<String> cells = Utils.split(l,",",false,false);
+	    String cellExtra = "";
+	    String style = "padding:4px;border:1px solid #ccc;";
+	    if(i==0) {
+		cellExtra = " align=center ";
+		style+="background:#F5F5F5;";
+	    }
+	    for(String cell:cells) {
+		if(cell.trim().equals("")) cell ="&lt;blank&gt;";
+		sb.append("<td style='" + style+"' " + cellExtra+">"+cell+"</td>");
+	    }
+	    sb.append("</tr>");
+	    sb.append("\n");
+	}
+	sb.append("</table>");
+	sb.append("<br>");
+
+    }
 
     /**
      * _more_
@@ -4519,7 +4547,7 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-record",0,(ctx,args,i) -> {
+	defineFunction(new String[]{"-torecord","-record"},0,(ctx,args,i) -> {
 		ctx.addProcessor(
 				 new Processor.Prettifier());
 		return i;

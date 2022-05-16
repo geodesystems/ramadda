@@ -14,7 +14,7 @@ and more
 </pre>
 
 We are going to extract the names and age with:
-<seesv>seesv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"</seesv>
+seesv:seesv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
 
 The (?m)(?s) are directives to match multiple lines.<br>
 The (.*?$) in the first pattern is the group that is matched.<br> 

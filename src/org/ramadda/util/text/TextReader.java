@@ -1396,7 +1396,7 @@ public class TextReader implements Cloneable {
         try {
             if (writer == null) {
                 OutputStream os = this.getOutput();
-                //              System.err.println("bos");
+		//System.err.println("MAKING WRITER");
                 writer = new PrintWriter(os);
                 if (getDebug()) {
                     if (debugSB.length() > 0) {

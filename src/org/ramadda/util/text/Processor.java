@@ -1483,10 +1483,10 @@ public abstract class Processor extends CsvOperator {
         private String prefix;
 
         /** _more_ */
-        private String delimiter;
+        private String suffix;
 
         /** _more_ */
-        private String suffix;
+        private String delimiter;
 
         /** _more_ */
         private boolean addPointHeader = false;
@@ -1511,10 +1511,10 @@ public abstract class Processor extends CsvOperator {
          */
         public Printer(String prefix, String template, String delimiter,
                        String suffix) {
-            this.prefix   = prefix;
-            this.template = template;
-            initDelimiter(delimiter);
-            this.suffix = suffix;
+            this.prefix   = initDelimiter(prefix);
+            this.template = initDelimiter(template);
+            this.delimiter = initDelimiter(delimiter);
+            this.suffix = initDelimiter(suffix);
         }
 
         /**
@@ -1547,7 +1547,7 @@ public abstract class Processor extends CsvOperator {
          */
         public Printer(boolean addHeader, boolean trim, String delimiter) {
             this(addHeader);
-            initDelimiter(delimiter);
+            this.delimiter = initDelimiter(delimiter);
             this.trim = trim;
         }
 
@@ -1555,16 +1555,13 @@ public abstract class Processor extends CsvOperator {
          *
          * @param delimiter _more_
          */
-        private void initDelimiter(String delimiter) {
-            this.delimiter = delimiter;
-            if (delimiter != null) {
-                if (this.delimiter.equals("tab")) {
-                    this.delimiter = "\t";
-                }
-                if (this.delimiter.equals("\\n")) {
-                    this.delimiter = "\n";
-                }
-            }
+        private String initDelimiter(String s) {
+            if (s == null) {return s;}
+	    if (s.equals("tab")) {
+		s = "\t";
+	    }
+	    s = s.replace("\\n","\n").replaceAll("_tab_","\t").replaceAll("_nl_","\n");
+	    return s;
         }
 
         /**
@@ -1631,11 +1628,12 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public void finish(TextReader ctx) throws Exception {
-            super.finish(ctx);
             debug("finish");
             if (suffix != null) {
                 ctx.getWriter().print(suffix);
+		ctx.flush();
             }
+            super.finish(ctx);
         }
 
 
@@ -1664,10 +1662,9 @@ public abstract class Processor extends CsvOperator {
                     return;
                 }
             } else {
-                if (delimiter != null) {
-                    if (theTemplate != null) {
-                        writer.append(delimiter);
-                    }
+		//		System.err.println("ROW:" + rowCnt);
+                if (rowCnt>2 && delimiter != null && theTemplate != null) {
+		    writer.append(delimiter);
                 }
             }
 	    //handle multiple data sources
