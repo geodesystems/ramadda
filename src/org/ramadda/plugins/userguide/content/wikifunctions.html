@@ -90,8 +90,8 @@ allow one to show a phrase only if a text filter value is selected by the user.
 [ht::cimg images/charts/template.png {} {width="90%"}]
 
 The template display is specified as:
-<pre>
- {{display  type="template"  displayStyle="background:rgba(0,0,0,0);"
+[wiki::text {
+{{display_template  displayStyle="background:rgba(0,0,0,0);"
 headerTemplate="There are a total of ${selectedCount} peaks 
 between ${filter_elev_min} and ${filter_elev_max} feet 
 with elevation gain between ${filter_elev_gain_min} and ${filter_elev_gain_max} feet 
@@ -99,7 +99,7 @@ ${filter_class prefix=' of class '}
 ${filter_range prefix=' in the ' suffix=' range'}" 
 filterFields="elev,elev_gain,distance,range,class" hideFilterWidget="true"
 }} 
-</pre>
+}]
 
 
 
@@ -108,10 +108,10 @@ showing mass shooting data uses two different template displays as defined here.
 
 [ht::cimg images/template2.png {Template Example} {width=600}]
 
-<pre>
-{{display  type="template" 
+[wiki::text {
+{{display_template
 headerTemplate="There have been a total of ${totalCount} mass shootings with ${fatalities_total} fatalities and ${injured_total} injured"}} 
-{{display  type="template" 
+{{display_template
 headerTemplate="Top 3 mass shootings: &lt;br&gt;&lt;table cellpadding=5&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Fatalities&lt;/td&gt;&lt;td&gt;Injured&lt;/td&gt;&lt;/tr&gt;" 
 template="&lt;tr&gt;&lt;td&gt;${title}&lt;/td&gt;&lt;td&gt;${fatalities}&lt;/td&gt;&lt;td&gt;${injured}&lt;/td&gt;&lt;/tr&gt;"
 footerTemplate="&lt;/table&gt;" 
@@ -119,7 +119,7 @@ maxNumber="3"
 sortFields=fatalities 
 sortAscending=false
 }} 
-</pre>
+}]
 
 
 
@@ -133,7 +133,8 @@ one of the displays shows the turnout percentage using the following attributes:
 functionName="turnout"}]
 
 The full wiki text is:
-[ht::pre {{{display  type="areachart"  column="0" 
+[wiki::text {
+{{display_areachart  column="0" 
 layoutHere="true"  showTitle="true"  title="Line Chart with Function"  
 vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
 function="total_ballots/active_voters" functionName="turnout"}}}]
@@ -147,8 +148,8 @@ The data values and or displayed unit of the point data that is displayed in cha
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
 
-[ug::xml {
-{{display type="linechart" offset1=-"273.15" unit="C" }}
+[wiki::text {
+{{display_linechart offset1=-"273.15" unit="C" }}
 }]
 
 There are also scale and offset2 values supported where the end value is calculated as:
@@ -158,8 +159,8 @@ value = (offset1+value)*scale + offset2
 
 You can specify values specific for a particular field using:
 
-[ug::xml {
-{{display type="linechart" Temperature_surface.offset1=-"273.15" Temperature_surface.unit="C"
+[wiki::text {
+{{display_linechart Temperature_surface.offset1=-"273.15" Temperature_surface.unit="C"
 }}
 }]
 
@@ -173,7 +174,7 @@ for the displays showing temperature and pressure data can be specified. However
 that show this data one would have to specify these attributes for every display tag. However, using the <i>displayPropert</i>
 tag global properties can be specified that are applicable to all displays on the page:
 
-[ug::xml {
+[wiki::text {
 {{displayProperty name="Temperature_surface.offset1" value="-273.15"}}
 {{displayProperty name="Temperature_surface.unit" value="C"}}
 {{displayProperty name="Pressure_surface.scale" value="0.01"}}
@@ -192,14 +193,11 @@ numericFilterValue="number"
 numericFilterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
 </pre>
 e.g.: below would only show data where the 1st matches the string "Texas" and the 3rd needs to be less that 5000.
-<pre>
-{{display  type="sankey" height="800" 
+[wiki::text {
+{{display_sankey height="800" 
 patternFilterField="#1" filterPattern="Texas"
 numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
 }}
-</pre>
-
-
-
+}]
 [ht::foot]
 

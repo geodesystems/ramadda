@@ -38,7 +38,8 @@ The Notebook display provides an interactive notebook that can display html, exe
 View this in action on <a href="/repository/entry/show?entryid=14bb9793-bc3d-4b3f-8eda-b6c046e39983">RAMADDA</a>.
 <br>
 Notebooks are created with the wiki tag:
-<pre>{{display type="notebook"}}</pre> 
+<pre>
+{<noop>{display_notebook}}</pre> 
 <ul>
 <li> Notebooks are made up of any number of cells
 <li> A cell has an input area and an output area
@@ -65,20 +66,20 @@ Notebooks are created with the wiki tag:
 <a name="creating"></a><p><div class="ramadda-help-heading">6.6.1 <a href="#creating">Creating a notebook</a></div> 
 
 A notebook can be created for any entry with the following wiki text:
-<div style="margin:10p;"><pre>
-{{display type=&quot;notebook&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
-</pre></div>
+<pre>
+{<noop>{display_notebook showMenu="false" showTitle="false"}}
+</pre>
 
 Notebooks are always associated with an entry. You can have multiple notebooks for an entry using the notebookId attribute:
 
-<div style="margin:10p;"><pre>
+<pre>
 //This is the default notebook
-{{display type=&quot;notebook&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
+{<noop>{display_notebook showMenu="false" showTitle="false"}}
 
-{{display type=&quot;notebook&quot; notebookId=&quot;notebook2&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
+{<noop>{display_notebook notebookId="notebook2" showMenu="false" showTitle="false"}}
 
-{{display type=&quot;notebook&quot; notebookId=&quot;notebook3&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
-</pre></div>
+{<noop>{display_notebook notebookId="notebook3" showMenu="false" showTitle="false"}}
+</pre>
 
 
 When a notebook is saved (see below) it is saved as a JSON file and is  attached to the entry as a property. 
@@ -349,8 +350,8 @@ state.write(current.getName());
 state.write(parent.getName());
 
 //Create wiki text for the given entry
-state.wiki("{{tree}}", current);
-state.wiki(":title {{name}}", root);
+state.wiki("{<noop>{tree}}", current);
+state.wiki(":title {<noop>{name}}", root);
 </pre>
 
 

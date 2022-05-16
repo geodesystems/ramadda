@@ -9,7 +9,8 @@ The Notebook display provides an interactive notebook that can display html, exe
 View this in action on <a href="/repository/entry/show?entryid=14bb9793-bc3d-4b3f-8eda-b6c046e39983">RAMADDA</a>.
 <br>
 Notebooks are created with the wiki tag:
-<pre>{{display type="notebook"}}</pre> 
+[wiki::text {
+{{display_notebook}}}] 
 <ul>
 <li> Notebooks are made up of any number of cells
 <li> A cell has an input area and an output area
@@ -36,19 +37,19 @@ Notebooks are created with the wiki tag:
 [ug::subheading {Creating a notebook} creating]
 
 A notebook can be created for any entry with the following wiki text:
-[ug::xml {
-{{display type="notebook" showMenu="false" showTitle="false"}}
+[wiki::text {
+{{display_notebook showMenu="false" showTitle="false"}}
 }]
 
 Notebooks are always associated with an entry. You can have multiple notebooks for an entry using the notebookId attribute:
 
-[ug::xml {
+[wiki::text {
 //This is the default notebook
-{{display type="notebook" showMenu="false" showTitle="false"}}
+{{display_notebook showMenu="false" showTitle="false"}}
 
-{{display type="notebook" notebookId="notebook2" showMenu="false" showTitle="false"}}
+{{display_notebook notebookId="notebook2" showMenu="false" showTitle="false"}}
 
-{{display type="notebook" notebookId="notebook3" showMenu="false" showTitle="false"}}
+{{display_notebook notebookId="notebook3" showMenu="false" showTitle="false"}}
 }]
 
 
@@ -320,8 +321,8 @@ state.write(current.getName());
 state.write(parent.getName());
 
 //Create wiki text for the given entry
-state.wiki("{{tree}}", current);
-state.wiki(":title {{name}}", root);
+state.wiki("{<noop>{tree}}", current);
+state.wiki(":title {<noop>{name}}", root);
 </pre>
 
 

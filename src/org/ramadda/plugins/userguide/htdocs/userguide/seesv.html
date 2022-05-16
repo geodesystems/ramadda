@@ -34,6 +34,9 @@ pre {
        }
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
+  a:hover {
+      text-decoration:underline;
+  }
   h2 {
       font-size:120%;
       font-weight:bold;
@@ -203,7 +206,7 @@ seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
 Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc. The default input type is CSV. To print out a CSV file just do:
-<seesv>seesv -p test.csv</seesv>
+seesv:seesv -p test.csv
 
 The SeeSV package can also handle  zipped or gzipped input files:
 <seesv>
@@ -212,14 +215,14 @@ seesv -p test.csv.gz
 </seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
-<seesv>seesv -p test.xls</seesv>
+seesv:seesv -p test.xls
 
 
 The SeeSV package does have some support for handling multiple input files.
 It is assumed that each file is has the same set of columns.
 Note: not all commands work with multiple input files.
 
-<seesv>seesv -p test1.csv test2.csv</seesv>
+seesv:seesv -p test1.csv test2.csv
 
 Other file types (see below for more details) are handled as:
 
@@ -252,8 +255,7 @@ bar    3          4
 </pre>
 
 You would set the -widths to be:
-<seesv>seesv -widths 7,11,11</seesv>  
-
+<seesv>seesv -widths 7,11,11</seesv>
 <p></div><a name='-quotesnotspecial'></a><div class=command> <i><a href='#-quotesnotspecial'>-quotesnotspecial</a></i> </div><div class=command-block>Don't treat quotes as special characters<br>
 Normally, when parsing a CSV file if a quote is encountered it is assumed to be a special character
 enclosing commas or new lines. If the quotes in your CSV file aren't special then use this command.
@@ -271,7 +273,7 @@ Use this if your file does not have a header.
 <p></div><a name='-json'></a><div class=command> <i><a href='#-json'>-json</a></i>  &lt;arrayPath&gt;  &lt;objectPaths&gt; </div><div class=command-block>Parse the input as json<br>
 <ul>
 <li> <i>arrayPath</i>:
-Path to the array e.g., obj1.arr[2].obj2<br>
+Path to the array e.g., obj1.arr\[2].obj2<br>
 <li> <i>objectPaths</i>:
 One or more paths to the objects e.g. geometry,features<br>
 </ul>
@@ -292,7 +294,6 @@ For example, if you had JSON like:
 
 The command would be:
 <seesv>seesv  -json p1.p2.values ""</seesv>
-
 Since the values array just holds numeric values there is no column name. The data would be:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >1</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
@@ -317,8 +318,7 @@ the second element of the array, e.g.:
 </pre>  
 
 The command would be:
-<seesv>seesv -json "p1[1].p2.values" "" </seesv>
-
+<seesv>seesv -json "p1\[1\].p2.values" ""</seesv>
 Here is an example where the value array holds objects.
 <pre>
 {
@@ -341,7 +341,6 @@ Here is an example where the value array holds objects.
 
 The command is:
 <seesv>seesv  -json "p1.p2.values" ""</seesv>
-
 With the result using the object attribute names as column names:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >jim</td><td style='padding:4px;border:1px solid #ccc;' >5</td></tr>
@@ -376,7 +375,6 @@ object, e.g.:
 
 You would use the second argument to specify an inner path to the object of interest:
 <seesv>seesv  -json "p1.p2.values" "goodvalues"</seesv>
-
 If the object within the array is a nested object and you only wanted to access multiple inner
 objects, e.g.:
 <pre>
@@ -452,12 +450,10 @@ the .dbf file are extracted and added as output.
 
 The argument is a set of name/value pairs. For now these can contain an addPoints and an addShapes
 values, e.g. the below will add a point which is the calculated centroid of the shape.
-<seesv>seesv -shapefile "addPoints true" -p test.zip</seesv>  
-
+<seesv>seesv -shapefile "addPoints true" -p test.zip</seesv>
 
 With addShapes=true the polygon will be extracted and added as a column value:
 <seesv>seesv -shapefile "addShapes true" -p test.zip</seesv>
-
 
 
 <p></div><a name='-lines'></a><div class=command> <i><a href='#-lines'>-lines</a></i> </div><div class=command-block>Parse the input as text lines<br>
@@ -477,8 +473,7 @@ Then skip over the "skip" number of tables.
 Then process each table up to the numTables (default=1).
 <p>
 The properties are defined as:
-<seesv>seesv -htmltable 0 "" "numTable 3 removePattern {some pattern} stripTags true"</seesv>  
-
+<seesv>seesv -htmltable 0 "" "numTable 3 removePattern {some pattern} stripTags true"</seesv>
 <p></div><a name='-htmlpattern'></a><div class=command> <i><a href='#-htmlpattern'>-htmlpattern</a></i>  &lt;columns&gt;  &lt;startPattern&gt;  &lt;endPattern&gt;  &lt;pattern&gt; </div><div class=command-block>Parse the input html file<br>
 <ul>
 <li> <i>columns</i>:
@@ -521,7 +516,6 @@ and more
 
 We are going to extract the names and age with:
 <seesv>seesv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"</seesv>
-
 The (?m)(?s) are directives to match multiple lines.<br>
 The (.*?$) in the first pattern is the group that is matched.<br> 
 The second pattern: name:(.*?)age: *(\d+)  has 2 groups, one  for the name and one for the age.
@@ -548,7 +542,6 @@ Person:  name: Sally age: 93
 
 Extract the data with:
 <seesv>seesv -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt</seesv>
-
 
 
 
@@ -608,8 +601,7 @@ comma separated values<br>
 Row indices. Can include ranges, e.g. 0-5<br>
 </ul>
 For example using this:
-<seesv>seesv -synthetic "name,value" "example name,example value" 5</seesv>
-Gives:
+<seesv>seesv -synthetic "name,value" "example name,example value" 5</seesv>Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >example name</td><td style='padding:4px;border:1px solid #ccc;' >example value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >example name</td><td style='padding:4px;border:1px solid #ccc;' >example value</td></tr>
@@ -620,7 +612,6 @@ Gives:
 Note: you don't have to specify all of the example values.
 For example, using this:
 <seesv>seesv -synthetic "name,value" "example name,example value" 5</seesv>
-
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td></tr>
@@ -657,11 +648,10 @@ test1.csv:
 test2.csv:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value3</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >xxx</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
-<tr><td style='padding:4px;border:1px solid #ccc;' >yyy2</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >yyy</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
 </table><br>
 Calling:
 <seesv>seesv -cat test1.csv test2.csv</seesv>
-
 Would result in an out file:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value3</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >xxx</td><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
@@ -692,7 +682,6 @@ test3.csv:
 </table><br>
 Calling:
 <seesv>seesv -append 1 test1.csv test2.csv test3.csv</seesv>
-
 Results in:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >bar</td></tr>
@@ -719,7 +708,6 @@ For example, the below command would change the value of column2 for all rows
 that match the -pattern column1 string command.
 
 <seesv>seesv -if -pattern column1 string -change column2 .* XXX  -endif</seesv>
-
 <p></div><a name='-start'></a><div class=command> <i><a href='#-start'>-start</a></i>  &lt;start pattern&gt; </div><div class=command-block>Start at pattern in source file<br>
 <ul>
 <li> <i>start pattern</i>:
@@ -815,8 +803,7 @@ the <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein dis
 to calculate similarity between strings.
 
 You can view what the calculated threshold values are:
-<seesv>seesv -unique column fuzzy:?</seesv>  
-
+<seesv>seesv -unique column fuzzy:?</seesv>
 This will print out the threshold values, e.g:
 <pre>
 value:joey smith
@@ -850,7 +837,6 @@ Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 For example, if you only want 5% of the data sampled do:
 <seesv>seesv -sample 0.05 ...</seesv>
-
 
 <p></div><a name='-maxvalue'></a><div class=command> <i><a href='#-maxvalue'>-maxvalue</a></i>  &lt;key column&gt;  &lt;value column&gt; </div><div class=command-block>Pass through the row that has the max value in the group of columns defined by the key column<br>
 <ul>
@@ -938,7 +924,6 @@ For example, given the following data
 </table><br>
 Calling:
 <seesv>seesv -betweenstring name jane john</seesv>
-
 Will give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >jane</td><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
@@ -964,7 +949,6 @@ For example, given the following data
 </table><br>
 Calling:
 <seesv>seesv -notbetweenstring name jane john</seesv>
-
 Will give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >bill</td><td style='padding:4px;border:1px solid #ccc;' >doe</td><td style='padding:4px;border:1px solid #ccc;' >4</td></tr>
@@ -1053,10 +1037,8 @@ And a file voters.csv:
 </table><br>
 If you only want voters whose  precinct is in the precints.csv you would do:
 <seesv>seesv -ifin precinct precincts.csv voter_precinct -p voters.csv</seesv>
-
 The  <span class=cmd>-ifnotin</span> command does the opposite only passing through rows that are not in the file, e.g.:
 <seesv>seesv -ifnotin precinct precincts.csv voter_precinct -p voters.csv</seesv>
-
 
 
 
@@ -1101,7 +1083,6 @@ And your source data has a set of full addresses full.csv:
 And you only want to pass through rows in full.csv
 address begins with some address in the short.csv file. To do this call:
 <seesv>seesv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv</seesv>
-
 What this does is construct regexp patterns as:
 <pre>
 ^123 oak.*
@@ -1242,7 +1223,6 @@ For example, if you have this data:
 Running:
 <seesv>seesv -concatrows 2</seesv>
 
-
 Would give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >joe</td><td style='padding:4px;border:1px solid #ccc;' >5</td><td style='padding:4px;border:1px solid #ccc;' >jill</td><td style='padding:4px;border:1px solid #ccc;' >5</td></tr>
@@ -1346,7 +1326,6 @@ For example, with the below data:
 </table><br>
 Running:
 <seesv>seesv -appendrows 0 1 " - "</seesv>
-
 Would give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category - fruit</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category - vegetable</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >category - meat</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >1</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
@@ -1430,8 +1409,7 @@ letters.csv:
 <tr><td style='padding:4px;border:1px solid #ccc;' >3</td></tr>
 </table><br>
 The command:
-<seesv>seesv -cross numbers.csv -p letters.csv</seesv>  
-
+<seesv>seesv -cross numbers.csv -p letters.csv</seesv>
 Would give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >letter</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >number</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >a</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
@@ -1539,7 +1517,6 @@ For example, with the below data:
 </table><br>
 You can strip out the xxx...yyy and add a label: prefix with:
 <seesv>seesv  -change label "xxx(.*)yyy" "label:$1"</seesv>
-
 Which would give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >label</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >label:some value</td></tr>
@@ -1547,7 +1524,6 @@ Which would give:
 
 You can also specify a file that holds a number of patterns:
 <seesv>seesv -change columns  file:file.txt ""</seesv>
-
 The file is of the form:
 <pre>
 pattern1::replace_string1
@@ -1648,7 +1624,6 @@ For example, given the following data
 </table><br>
 Calling:
 <seesv>seesv -unfill name,value1</seesv>
-
 Will give:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >jane</td><td style='padding:4px;border:1px solid #ccc;' >foo</td><td style='padding:4px;border:1px solid #ccc;' >1</td></tr>
@@ -1854,7 +1829,6 @@ For example, if you had the below data:
 <tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
 </table><br>Running:
 <seesv>seesv -makeids</seesv>  
-  
 Gives
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >some_header_label_with_some_punctuation</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center > some_other_header_label</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
@@ -2143,7 +2117,6 @@ The randomized digits are then appended to the number.
 For example with R = random digit:
 
 <seesv>seesv -fuzz -2 3</seesv>
-
 Gives:
 <pre>
 12345.6789 -&gt; 12345.67RR
@@ -2158,7 +2131,6 @@ If the number of digits is &lt; num_places then the number is converted to 0.
 The randomized digits are then addedto the number.
 For example with R = random digit:
 <seesv>seesv -fuzz 2 3</seesv>
-
 Gives:
 <pre>
 12345.678 -&gt; 123RR
@@ -2269,8 +2241,7 @@ For example, with the input file:
 <tr><td style='padding:4px;border:1px solid #ccc;' >South</td><td style='padding:4px;border:1px solid #ccc;' >2016</td><td style='padding:4px;border:1px solid #ccc;' >2</td><td style='padding:4px;border:1px solid #ccc;' >22.00</td></tr>
 </table><br>
 Running:
-<seesv>seesv -pivot region date sales count  -p input.csv </seesv>
-
+<seesv>seesv -pivot region date sales count  -p input.csv</seesv>
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >15.0</td><td style='padding:4px;border:1px solid #ccc;' >51.0</td><td style='padding:4px;border:1px solid #ccc;' >49.0</td><td style='padding:4px;border:1px solid #ccc;' >42.0</td></tr>
@@ -2279,8 +2250,7 @@ Gives:
 <tr><td style='padding:4px;border:1px solid #ccc;' >East</td><td style='padding:4px;border:1px solid #ccc;' >10.0</td><td style='padding:4px;border:1px solid #ccc;' >24.0</td><td style='padding:4px;border:1px solid #ccc;' >18.0</td><td style='padding:4px;border:1px solid #ccc;' >13.0</td></tr>
 </table><br>
 You can also specify multiple operators:
-<seesv>seesv -pivot region date sales count,min,max  -p input.csv </seesv>
-
+<seesv>seesv -pivot region date sales count,min,max  -p input.csv</seesv>
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2016 - max</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2017 - max</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2018 - max</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019 - count</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019 - min</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >2019 - max</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >15.0</td><td style='padding:4px;border:1px solid #ccc;' >11.0</td><td style='padding:4px;border:1px solid #ccc;' >96.0</td><td style='padding:4px;border:1px solid #ccc;' >51.0</td><td style='padding:4px;border:1px solid #ccc;' >11.0</td><td style='padding:4px;border:1px solid #ccc;' >104.0</td><td style='padding:4px;border:1px solid #ccc;' >49.0</td><td style='padding:4px;border:1px solid #ccc;' >11.0</td><td style='padding:4px;border:1px solid #ccc;' >112.0</td><td style='padding:4px;border:1px solid #ccc;' >42.0</td><td style='padding:4px;border:1px solid #ccc;' >13.0</td><td style='padding:4px;border:1px solid #ccc;' >120.0</td></tr>
@@ -2318,7 +2288,6 @@ For example, with the below data, if you wanted to summarize the total units by 
 </table><br>
 You would do:
 <seesv>seesv -summary region units ""  sum  -p summary.csv</seesv>
-
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Units sum</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >683.0</td></tr>
@@ -2329,7 +2298,6 @@ Which gives:
 
 If you wanted to get the sum and average of the sales:
 <seesv>seesv -summary region sales ""  sum,avg  -p summary.csv</seesv>
-
 You'd get:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales sum</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales avg</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >8873.0</td><td style='padding:4px;border:1px solid #ccc;' >56.51592356687898</td></tr>
@@ -2339,7 +2307,6 @@ You'd get:
 </table><br>
 The carry over column just gets the first value for the key column. So, if you wanted to include the color column do:
 <seesv>seesv -summary region sales color  sum,avg  -p summary.csv</seesv>
-
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Region</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales sum</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Sales avg</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >Color</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >West</td><td style='padding:4px;border:1px solid #ccc;' >8873.0</td><td style='padding:4px;border:1px solid #ccc;' >56.51592356687898</td><td style='padding:4px;border:1px solid #ccc;' >Red</td></tr>
@@ -2497,7 +2464,6 @@ To geocode, e.g.,  with the following file:
 </table><br>
 Run:
 <seesv>seesv -geocode city,state "" "" ...</seesv>
-
 This concatenates the city and state field, e.g., "Boulder CO" and calls the API to geolocate.
 <p>
 To use internal location tables set the prefix argument to one of:
@@ -2518,7 +2484,6 @@ The suffix gets appended to the query string. For example if you had a file with
 </table><br>
 You can geocode with:
 <seesv>seesv -geocode city "" "CO"</seesv>
-
 
 
 
@@ -2575,7 +2540,6 @@ To add the lat/lon:
 <seesv>seesv -geocodejoin precinct precincts.csv precinct latitude longitude</seesv>
 
 
-
 <p></div><a name='-bounds'></a><div class=command> <i><a href='#-bounds'>-bounds</a></i>  &lt;north&gt;  &lt;west&gt;  &lt;south&gt;  &lt;east&gt; </div><div class=command-block>Geocode within bounds<br>
 <ul>
 <li> <i>north</i>:
@@ -2603,7 +2567,6 @@ For example, with this data:
 </table><br>
 Running the commands:
 <seesv>seesv -decodelatlon latitude -decodelatlon longitude</seesv>
-
 Gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >latitude</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >longitude</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >40.0</td><td style='padding:4px;border:1px solid #ccc;' >-107.0</td></tr>
@@ -2613,7 +2576,6 @@ Gives:
 </table><br>
 If you wanted to have less precision then call:
 <seesv>seesv -decodelatlon latitude -decodelatlon longitude  -decimals latitude,longitude 5 -p test.csv</seesv>
-
 Which gives:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >latitude</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >longitude</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >40.0</td><td style='padding:4px;border:1px solid #ccc;' >-107.0</td></tr>
@@ -2663,7 +2625,6 @@ You can add the country and timezone with:
 
 
 
-
 <p></div><a name='-geocontains'></a><div class=command> <i><a href='#-geocontains'>-geocontains</a></i>  &lt;lookup&gt;  &lt;name&gt;  &lt;latitude_column&gt;  &lt;longitude_column&gt; </div><div class=command-block>Check for containment<br>
 <ul>
 <li> <i>lookup</i>:
@@ -2693,7 +2654,6 @@ For example if you had the following data file:
 You can add the elevation with:
 
 <seesv>seesv -geoname countries  latitude longitude -geoname timezones  latitude longitude</seesv>
-
 
 
 
@@ -2728,7 +2688,6 @@ Colorado
 The region is added with:
 
 <seesv>seesv -region name</seesv>
-
 <p></div><a name='-population'></a><div class=command> <i><a href='#-population'>-population</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Add in population from address<br>
 <ul>
 <li> <i>columns</i>:
@@ -2755,8 +2714,7 @@ PRECISELY_API_KEY=
 </pre>
 
 Call:
-<seesv>seesv -neighborhood latitude_column longitude_column</seesv>  
-
+<seesv>seesv -neighborhood latitude_column longitude_column</seesv>
 
 
 
@@ -2779,11 +2737,9 @@ Assume you have the below data and you wanted to trim the decimal places and the
 </table><br>
 The ${column} and ${column_name} macros in the commands are replaced with the column ids and names. 
 You use the ${column} macro to replace the given column ID. So, running:
-<seesv>seesv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns</seesv>  
-
+<seesv>seesv -expandcommands column1,colum2  -decimals "${column}" 2 -abs "${column}" -endexpandcolumns</seesv>
 This expands out to:
 <seesv>seesv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1</seesv>
-
 
 <p></div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block><ul>
 <li> <i>columns</i>:
@@ -2808,8 +2764,7 @@ For example, say you have data like:
 <tr><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
 </table><br>
 You can use the alias command to provide a short name, e.g.:
-<seesv>seesv -alias  some_really_long_field_name name -columns name ...</seesv>  
-
+<seesv>seesv -alias  some_really_long_field_name name -columns name ...</seesv>
 <p></div><a name='-value'></a><div class=command> <i><a href='#-value'>-value</a></i>  &lt;name&gt;  &lt;value&gt; </div><div class=command-block>Define a macro value for later use<br>
 <ul>
 <li> <i>name</i>:
@@ -2876,7 +2831,6 @@ matches with seesv.ext.&lt;program_id&gt;=/path<br>
 The -ext command allows one to integrate external programs into the processing flow.
 
 <seesv>seesv  -ext &lt;id&gt; &lt;arguments&gt;</seesv>
-
 The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
 <pre>
 seesv_ext_&lt;id&gt;=/path/to/executable
@@ -2895,7 +2849,7 @@ If you want to skip a line the return the string "_null_".
 
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Print text columns</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-record'><i>-record</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
 </div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
 <ul>
 <li> <i>delimiter</i>:
@@ -2914,13 +2868,14 @@ The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order 
 </div><a name='-printheader'></a><div class=command> <i><a href='#-printheader'>-printheader</a></i> </div><div class=command-block>Print header<br>
 </div><a name='-raw'></a><div class=command> <i><a href='#-raw'>-raw</a></i> </div><div class=command-block>Print the file raw<br>
 </div><a name='-table'></a><div class=command> <i><a href='#-table'>-table</a></i> </div><div class=command-block>Print HTML table and stats<br>
-</div><a name='-cols'></a><div class=command> <i><a href='#-cols'>-cols</a></i>  &lt;width&gt; </div><div class=command-block>Print text columns<br>
+</div><a name='-cols'></a><div class=command> <i><a href='#-cols'>-cols</a></i>  &lt;width&gt; </div><div class=command-block>Set the width of the columns for output. Use with -p<br>
 <ul>
 <li> <i>width</i>:
 Column width<br>
 </ul>
-</div><a name='-stats'></a><div class=command> <i><a href='#-stats'>-stats</a></i> </div><div class=command-block>Print summary stats<br>
-</div><a name='-record'></a><div class=command> <i><a href='#-record'>-record</a></i> </div><div class=command-block>Print records<br>
+
+<p></div><a name='-stats'></a><div class=command> <i><a href='#-stats'>-stats</a></i> </div><div class=command-block>Print summary stats<br>
+</div><a name='-torecord'></a><div class=command> <i><a href='#-torecord'>-torecord</a></i> </div><div class=command-block>Print records<br>
 </div><a name='-toxml'></a><div class=command> <i><a href='#-toxml'>-toxml</a></i>  &lt;outer tag&gt;  &lt;inner tag&gt; </div><div class=command-block>Generate XML<br>
 <ul>
 <li> <i>outer tag</i>:
@@ -2940,18 +2895,51 @@ database columns<br>
 <li> <i>properties</i>:
 name value properties<br>
 </ul>
-</div><a name='-template'></a><div class=command> <i><a href='#-template'>-template</a></i>  &lt;prefix&gt;  &lt;template&gt;  &lt;delimiter&gt;  &lt;suffix&gt; </div><div class=command-block>Apply the template to make the output<br>
+</div><a name='-template'></a><div class=command> <i><a href='#-template'>-template</a></i>  &lt;prefix&gt;  &lt;template&gt;  &lt;row_delimiter&gt;  &lt;suffix&gt; </div><div class=command-block>Apply the template to make the output<br>
 <ul>
 <li> <i>prefix</i>:
 <br>
 <li> <i>template</i>:
-Use ${0},${1}, etc for values<br>
-<li> <i>delimiter</i>:
+Use ${column_name} or indices: ${0},${1}, etc for values<br>
+<li> <i>row_delimiter</i>:
 Output between rows<br>
 <li> <i>suffix</i>:
 <br>
 </ul>
-</div><a name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br>
+For example, with this data:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >joe</td><td style='padding:4px;border:1px solid #ccc;' >5</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >jill</td><td style='padding:4px;border:1px solid #ccc;' >2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >bill</td><td style='padding:4px;border:1px solid #ccc;' >7</td></tr>
+</table><br>
+Calling:
+<seesv>seesv -template "PREFIX\n" "name:\${name} value:\${value}" "\nROW DELIMITER\n" "\nSUFFIX\n" test.csv</seesv>Results in:
+<pre>
+PREFIX
+name:joe value:5
+ROW DELIMITER
+name:jill value:2
+ROW DELIMITER
+name:bill value:7
+SUFFIX
+</pre>
+
+Note: the row delimiter is only printed between rows.
+<p>
+If you wanted to generated custom XML, for example, call:
+<seesv>seesv -template "&lt;mytags&gt;\n" "&lt;tag name=\"\${name}\" value=\"\${value}\"&gt;&lt;/tag&gt;" "\n" "\n&lt;/mytags&gt;\n" test.csv</seesv>Which results in:
+<pre>
+&lt;mytags&gt;
+&lt;tag name="joe" value="5"&gt;&lt;/tag&gt;
+&lt;tag name="jill" value="2"&gt;&lt;/tag&gt;
+&lt;tag name="bill" value="7"&gt;&lt;/tag&gt;
+&lt;/mytags&gt;
+</pre>
+
+
+
+
+<p></div><a name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br>
 <ul>
 <li> <i>properties</i>:
 name1 value1 ... nameN valueN<br>
@@ -2968,7 +2956,6 @@ v1,v2,v3
 The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
 text with {...} brackets.
 <seesv>seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"</seesv>
-
 The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
 name is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
 
@@ -2982,7 +2969,6 @@ For example, say you have a file like this:
 </table><br>
 Running this command:
 <seesv>seesv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv</seesv>
-
 Will result in an output:
 <pre>
 #fields=some_date[label="Some Date"  type="date" format="yyyy-MM-dd" ] ,year[label="Year"  type="date" format="yyyy" ] ,temperature[label="Some Field"  type="integer" chartable="true" ] 
@@ -3017,8 +3003,7 @@ Other field properties include:
 You can specify the type as "value.*.type integer".
 <p>
 Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
-<seesv>seesv -addheader "(value.*).*.label {Some label \$1}" </seesv>    
-
+<seesv>seesv -addheader "(value.*).*.label {Some label \$1}"</seesv>
 
 <p></div><a name='-db'></a><div class=command> <i><a href='#-db'>-db</a></i>  &lt;properties&gt; </div><div class=command-block>Generate the RAMADDA db xml from the header<br>
 <ul>
