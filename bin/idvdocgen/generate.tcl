@@ -569,6 +569,10 @@ proc gen::getFile {f} {
 }
 
 proc gen::writeFile {f c} {
+    if {[regexp {<%toc%>} $c]} {
+	   foreach {toc fulltoc  frametoc} [gen::getToc [gen::getTopFile] 1] break
+	   regsub {<%toc%>} $c $toc c
+    }
     set fp [open $f w]
     fconfigure $fp -buffering full -buffersize 262144
     puts $fp $c
@@ -1322,6 +1326,7 @@ proc gen::definePage {file actualFilePath parent includeInNav includeInToc {page
     if {$::doXml} {
 	   gen::setDoTemplate $file 0
      }
+
 
     if {[gen::getTopFile] == ""} {
         gen::setTopFile $file
@@ -2891,7 +2896,7 @@ proc gen::writeFiles  {} {
             gen::createGeneralFile [file join [gen::getTargetDir] imageindex.html] "Images" $imageHtml
     }
 
-
+       
     foreach {toc fulltoc  frametoc} [gen::getToc [gen::getTopFile] 1] break
     if {[gen::getDoAncillaryFiles]} {
             gen::createGeneralFile [file join [gen::getTargetDir] toc.html] "Table of Contents" "<div class=ramadda-links>$toc</div>"
