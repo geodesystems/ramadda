@@ -747,7 +747,12 @@ public class WikiUtil {
 
         Utils.TriConsumer<StringBuffer,String,Integer> defineHeading = (sb,label,level) -> {
             String id = Utils.makeID(label);
-            label = Utils.stripTags(label);
+	    String noTags = label.replaceAll("<[^>]+>[^<]*<[^>]+>","").trim().replaceAll("-+$","").trim();
+	    if(noTags.length()>0) {
+		label = noTags;
+	    }  else {
+		label = Utils.stripTags(label).trim();
+	    }
             //      String id = "heading_" + HU.blockCnt++;
             headings2.add(new Object[]{id, label,level});
             sb.append("<a class=ramadda-nav-anchor name='" + id +"'></a>");
