@@ -132,21 +132,17 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
         StringBuilder sb     = new StringBuilder();
-        String        width  = "800px";
-        String        height = "600px";
-        if (entry.isFile()) {
-            width  = Utils.getProperty(props, "width", width);
-            height = Utils.getProperty(props, "height", height);
-        }
+        String        width  = Utils.getProperty(props, "width", "800px");
+        String        height = Utils.getProperty(props, "height", "600px");
         String style = HU.css("width", HU.makeDim(width, null), "height",
                               HU.makeDim(height, null), "border",
                               "1px solid #aaa", "color", "#333",
                               "background-color", "#fff");
-
         String s = (String) entry.getValue(IDX_STYLE);
         if (Utils.stringDefined(s)) {
             style += s;
         }
+	style += Utils.getProperty(props, "style","");
         style = style.replaceAll("\n", " ");
         //      sb.append(HU.importCss( ".openseadragon {" + style +"}"));
         if (request.getExtraProperty("seadragon_added") == null) {
