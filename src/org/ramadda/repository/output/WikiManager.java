@@ -202,7 +202,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_TOOLS),
                             new WikiTag(WIKI_TAG_TOOLBAR),
                             new WikiTag(WIKI_TAG_LAYOUT),
-			    new WikiTag(WIKI_TAG_MENU,null,"popup","true","ifUser","false"),
+			    new WikiTag(WIKI_TAG_MENU,null,"title","","popup","true","ifUser","false"),
                             new WikiTag(WIKI_TAG_ENTRYID),
                             new WikiTag(WIKI_TAG_SEARCH,null,
                                         ATTR_TYPE, "", 
@@ -2593,6 +2593,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
             String links = getEntryManager().getEntryActionsTable(request,
 								  entry, type);
+	    String title = getProperty(wikiUtil, props, "title",null);
             if (getProperty(wikiUtil, props, "popup", true)) {
                 StringBuilder popup  = new StringBuilder();
                 if (getProperty(wikiUtil, props, "breadcrumbs", true)) {
@@ -2612,11 +2613,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 								       "fas fa-caret-down"), msg(
 												 "Click to show menu"), HU.cssClass(
 																    "ramadda-breadcrumbs-menu-img"));
+		if(Utils.stringDefined(title)) menuLinkImg += " " + title;
 		String menuLink = HU.makePopup(popup, menuLinkImg, links);
                 popup.append(menuLink);
                 return popup.toString();
             }
 
+	    if(Utils.stringDefined(title)) links = title +"<br>" + links;
             return links;
         } else if (theTag.equals(WIKI_TAG_MULTI)) {
             //      wikiUtil = initWikiUtil(request, new WikiUtil(wikiUtil), entry);
