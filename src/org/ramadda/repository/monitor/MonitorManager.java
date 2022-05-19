@@ -425,7 +425,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
             return new Result(
                 HtmlUtils.url(
-			      getAdmin().URL_ADMIN_MONITORS.toString(),
+			      request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
                     ARG_MONITOR_ID, monitor.getId()));
         }
 
@@ -519,7 +519,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         return new Result(
             HtmlUtils.url(
-                getAdmin().URL_ADMIN_MONITORS.toString(),
+			  request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
                 ARG_MONITOR_ID, monitor.getId()));
     }
 
@@ -663,14 +663,14 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
-                        getAdmin().URL_ADMIN_MONITORS.toString(),
+				  request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
                         ARG_MONITOR_ID, monitor.getId()), HtmlUtils.img(
                             getIconUrl(ICON_EDIT))));
             sb.append(HtmlUtils.space(1));
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
-                        getAdmin().URL_ADMIN_MONITORS.toString(),
+				  request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
                         ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
                         monitor.getId()), HtmlUtils.img(
                             getIconUrl(ICON_DELETE))));
