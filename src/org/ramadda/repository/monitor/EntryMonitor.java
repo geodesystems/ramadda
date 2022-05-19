@@ -383,9 +383,10 @@ public class EntryMonitor implements Constants {
 
         if (what.equals(ARG_ANCESTOR)) {
             String ancestorId = request.getString(ARG_ANCESTOR + "_hidden",
-                                    "");
-            addFilter(new Filter(what, ancestorId, doNot));
-
+						  "");
+	    if(Utils.stringDefined(ancestorId)) {
+		addFilter(new Filter(what, ancestorId, doNot));
+	    }
             return;
         }
 

@@ -414,7 +414,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
             return new Result(
                 request.makeUrl(
-                    getRepositoryBase().URL_USER_MONITORS, ARG_MESSAGE,
+                    getAdmin().URL_ADMIN_MONITORS, ARG_MESSAGE,
                     getRepository().translate(request, "Monitor deleted")));
         }
 
@@ -425,7 +425,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
             return new Result(
                 HtmlUtils.url(
-                    getRepositoryBase().URL_USER_MONITORS.toString(),
+			      getAdmin().URL_ADMIN_MONITORS.toString(),
                     ARG_MONITOR_ID, monitor.getId()));
         }
 
@@ -435,7 +435,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         sb.append(HtmlUtils.space(1));
         sb.append(monitor.getName());
         request.formPostWithAuthToken(sb,
-                                      getRepositoryBase().URL_USER_MONITORS,
+                                      getAdmin().URL_ADMIN_MONITORS,
                                       HtmlUtils.attr(HtmlUtils.ATTR_NAME,
                                           "monitorform"));
         sb.append(HtmlUtils.hidden(ARG_MONITOR_ID, monitor.getId()));
@@ -454,8 +454,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
             sb.append(HtmlUtils.sectionClose());
 
-            return getUserManager().makeResult(request,
-                    msg("Monitor Delete"), sb);
+            return getAdmin().makeResult(request,
+					 msg("Monitor Delete"), sb);
         }
 
 
@@ -472,7 +472,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         sb.append(HtmlUtils.sectionClose());
 
-        return getUserManager().makeResult(request,
+        return getAdmin().makeResult(request,
                                            msg("Edit Entry Monitor"), sb);
     }
 
@@ -519,7 +519,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         return new Result(
             HtmlUtils.url(
-                getRepositoryBase().URL_USER_MONITORS.toString(),
+                getAdmin().URL_ADMIN_MONITORS.toString(),
                 ARG_MONITOR_ID, monitor.getId()));
     }
 
@@ -629,7 +629,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_TD));
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                      HtmlUtils.style("padding-left:10px;")));
-            sb.append(request.form(getRepositoryBase().URL_USER_MONITORS));
+            sb.append(request.form(getAdmin().URL_ADMIN_MONITORS));
             sb.append(HtmlUtils.submit(templateAction.getActionLabel(),
                                        ARG_MONITOR_CREATE));
             sb.append(HtmlUtils.hidden(ARG_MONITOR_TYPE,
@@ -663,14 +663,14 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
-                        getRepositoryBase().URL_USER_MONITORS.toString(),
+                        getAdmin().URL_ADMIN_MONITORS.toString(),
                         ARG_MONITOR_ID, monitor.getId()), HtmlUtils.img(
                             getIconUrl(ICON_EDIT))));
             sb.append(HtmlUtils.space(1));
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
-                        getRepositoryBase().URL_USER_MONITORS.toString(),
+                        getAdmin().URL_ADMIN_MONITORS.toString(),
                         ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
                         monitor.getId()), HtmlUtils.img(
                             getIconUrl(ICON_DELETE))));
@@ -707,9 +707,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         sb.append(HtmlUtils.sectionClose());
 
-        return getUserManager().makeResult(request, msg("Entry Monitors"),
-                                           sb);
-
+        return getAdmin().makeResult(request, "Entry Monitors", sb);
     }
 
 

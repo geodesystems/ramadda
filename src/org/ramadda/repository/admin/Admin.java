@@ -178,6 +178,10 @@ public class Admin extends RepositoryManager {
     public RequestUrl URL_ADMIN_SETTINGS = new RequestUrl(this,
                                                "/admin/settings", "Settings");
 
+    /** _more_ */
+    public RequestUrl URL_ADMIN_MONITORS = new RequestUrl(this,
+                                               "/admin/monitors", "Monitors");    
+
 
     /** _more_ */
     public RequestUrl URL_ADMIN_PLUGIN_UPLOAD = new RequestUrl(this,
@@ -219,14 +223,15 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     private List<RequestUrl> adminUrls = RequestUrl.toList(new RequestUrl[] {
-        URL_ADMIN_SETTINGS, getRepositoryBase().URL_USER_LIST,
-        URL_ADMIN_STATS, URL_ADMIN_ACCESS,
-        getHarvesterManager().URL_HARVESTERS_LIST,
-        getRegistryManager().URL_REGISTRY_REMOTESERVERS,
-        /*URL_ADMIN_STARTSTOP,*/
-        /*URL_ADMIN_TABLES, */
-        URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS, URL_ADMIN_CLEANUP
-    });
+	    URL_ADMIN_SETTINGS, getRepositoryBase().URL_USER_LIST,
+	    URL_ADMIN_STATS, URL_ADMIN_ACCESS,
+	    getHarvesterManager().URL_HARVESTERS_LIST,
+	    URL_ADMIN_MONITORS,	
+	    getRegistryManager().URL_REGISTRY_REMOTESERVERS,
+	    /*URL_ADMIN_STARTSTOP,*/
+	    /*URL_ADMIN_TABLES, */
+	    URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS, URL_ADMIN_CLEANUP
+	});
 
 
     /** _more_ */
@@ -1786,6 +1791,11 @@ public class Admin extends RepositoryManager {
         getRepository().getMailManager().sendEmail(to, from, subject,
                 contents, bcc, asHtml, null);
     }
+
+    public Result processMonitors(Request request) throws Exception {
+	return getRepository().getMonitorManager().processMonitors(request);
+    }
+
 
     /**
      * _more_

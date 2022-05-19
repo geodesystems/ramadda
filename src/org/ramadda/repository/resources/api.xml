@@ -178,9 +178,6 @@
   </group>
 
   <api request="/repos/*" admin="false"   method="handleRepos"       handler="localrepositorymanager"/>
-  <group handler="monitormanager">
-      <api request="/user/monitors" method="processMonitors" admin="false"/>
-   </group>
 
   <group handler="logmanager" needs_ssl="true" admin="true">
       <api request="/admin/log"          method="adminLog"           />
@@ -202,6 +199,7 @@
       <api request="/admin/scan"         method="adminScanForBadParents" />
       <api request="/admin/stack"        method="adminPrintStack" />
       <api request="/admin/snapshots"      method="adminSnapshots"           />
+      <api request="/admin/monitors"       method="processMonitors"/>
   </group>
 
   <group handler="harvestermanager">

@@ -227,14 +227,12 @@ public class UserManager extends RepositoryManager {
     protected List<RequestUrl> userUrls =
         RequestUrl.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_FORM,
-            getRepositoryBase().URL_USER_HOME,
-            getRepositoryBase().URL_USER_MONITORS });
+            getRepositoryBase().URL_USER_HOME});
 
     /** _more_ */
     protected List<RequestUrl> remoteUserUrls =
         RequestUrl.toList(new RequestUrl[] {
-            getRepositoryBase().URL_USER_HOME,
-            getRepositoryBase().URL_USER_MONITORS });
+            getRepositoryBase().URL_USER_HOME});
 
 
     /** urls to use with no user */
