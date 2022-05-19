@@ -1,5 +1,6 @@
 org.ramadda.plugins.atlassian.HipchatHarvester
-org.ramadda.plugins.atlassian.HipchatAction
+##Don't do these actions
+##org.ramadda.plugins.atlassian.HipchatAction
 
 ##To specify a JIRA search provider add a local classes.txt file to you
 ##plugins directory with the following:

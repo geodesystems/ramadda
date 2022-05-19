@@ -1,5 +1,7 @@
 org.ramadda.plugins.slack.SlackHarvester
-org.ramadda.plugins.slack.SlackAction
+
+##Not now:
+##org.ramadda.plugins.slack.SlackAction
 
 #To add a slack search provider first get an authentication token from https://api.slack.com/web
 #create a classes.txt file and add:
