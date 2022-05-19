@@ -352,6 +352,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
+		toks = toks.map(tok=>{return tok.replace(/_comma_/g,",")});		
 		let getUrl = url =>{
 		    if(url.startsWith("resources")) {
 			url = ramaddaBaseUrl +"/" + url;
@@ -3059,7 +3060,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
-	    console.log(polygonField);
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
