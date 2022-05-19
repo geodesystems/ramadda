@@ -1107,8 +1107,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                 : HtmlUtils.squote(type)), ((entry != null)
                                             ? HtmlUtils.squote(entry.getId())
                                             : "null"), HtmlUtils.squote(
-                                                request.getString(
-                                                    ARG_ENTRYTYPE, ""))));
+									request==null?"":request.getString(ARG_ENTRYTYPE, ""))));
 
         return event;
     }
