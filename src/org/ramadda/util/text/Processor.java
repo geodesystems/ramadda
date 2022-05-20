@@ -1633,6 +1633,7 @@ public abstract class Processor extends CsvOperator {
                 ctx.getWriter().print(suffix);
 		ctx.flush();
             }
+            ctx.flush();
             super.finish(ctx);
         }
 
@@ -1689,35 +1690,34 @@ public abstract class Processor extends CsvOperator {
                     if (colIdx > 0) {
                         writer.append(delimiter);
                     }
-                    if (v != null) {
-                        String sv = v.toString();
-                        if (trim) {
-                            sv = sv.trim();
-                        }
-                        if ((firstRow && sv.startsWith("#"))
-                                || ((colIdx == 0) && (commentChar != null)
-                                    && sv.startsWith(commentChar))) {
-                            escapeColumns = false;
-                        }
-                        boolean addQuote = false;
-                        if (escapeColumns) {
-                            addQuote = (sv.indexOf(delimiter) >= 0)
-                                       || (sv.indexOf("\n") >= 0);
-                            if (sv.indexOf("\"") >= 0) {
-                                addQuote = true;
-                                sv       = sv.replaceAll("\"", "\"\"");
-                            }
-                            if (addQuote) {
-                                writer.append("\"");
-                            }
-                        }
-                        writer.append(sv);
-                        if (addQuote) {
-                            writer.append("\"");
-                        }
-                    } else {
-                        writer.append("");
-                    }
+                    if (v == null) {
+			continue;
+		    }
+		    String sv = v.toString();
+		    if (trim) {
+			sv = sv.trim();
+		    }
+		    if ((firstRow && sv.startsWith("#"))
+			|| ((colIdx == 0) && (commentChar != null)
+			    && sv.startsWith(commentChar))) {
+			escapeColumns = false;
+		    }
+		    boolean addQuote = false;
+		    if (escapeColumns) {
+			addQuote = (sv.indexOf(delimiter) >= 0)
+			    || (sv.indexOf("\n") >= 0);
+			if (sv.indexOf("\"") >= 0) {
+			    addQuote = true;
+			    sv       = sv.replaceAll("\"", "\"\"");
+			}
+			if (addQuote) {
+			    writer.append("\"");
+			}
+		    }
+		    writer.append(sv);
+		    if (addQuote) {
+			writer.append("\"");
+		    }
                 }
             } else {
                 for (int colIdx = 0; colIdx < values.size(); colIdx++) {
@@ -1743,7 +1743,6 @@ public abstract class Processor extends CsvOperator {
             } else {
                 writer.append(theTemplate);
             }
-            writer.flush();
         }
 
 
