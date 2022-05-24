@@ -99,10 +99,8 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
 
         String modelFile = "";
         for (String path : files) {
-            System.err.println("FILE:" + path);
             if (path.toLowerCase().matches(".*(fbx|gltf).*")) {
                 modelFile = path;
-
                 break;
             }
         }
@@ -136,7 +134,6 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
                 continue;
             }
             String parent = new File(path).getParent();
-            System.err.println("PATH:" + path + " PARENT:" + parent);
             File parentDir = (parent == null)
                              ? entryDir
                              : new File(entryDir, parent);
@@ -208,7 +205,12 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
                         "ramadda-nooutline"));
         List<String> jsonProps = new ArrayList<String>();
         Utils.add(jsonProps, "id", JsonUtil.quote(id));
-        String js = "new Model3D(" + HtmlUtils.quote(url) + ","
+	List tmp = Utils.makeList(props);
+	for(int i=0;i<tmp.size();i+=2) {
+	    Utils.add(jsonProps,tmp.get(i),
+		      JsonUtil.quote(tmp.get(i+1)));
+	}
+        String js = "new Model3D([" + HtmlUtils.quote(url) + "],"
                     + JsonUtil.map(jsonProps) + ");";
         HU.script(sb, js);
 
