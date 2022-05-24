@@ -1161,6 +1161,7 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             rowCnt++;
+	    ctx.flush();
             if (every == 0) {
                 System.err.println(rowCnt);
             } else if ((rowCnt) % every == 0) {

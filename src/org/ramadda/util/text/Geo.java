@@ -488,12 +488,10 @@ public abstract class Geo extends Processor {
                     Double.parseDouble(row.getString(latColumn));
                 double lonValue =
                     Double.parseDouble(row.getString(lonColumn));
-                String result =
-                    IO.readUrl(
-                        new URL(
-                            "https://nationalmap.gov/epqs/pqs.php?x="
-                            + lonValue + "&y=" + latValue
-                            + "&units=feet&output=xml"));
+		String url = "https://nationalmap.gov/epqs/pqs.php?x="
+		    + lonValue + "&y=" + latValue
+		    + "&units=feet&output=xml";
+		String result =IO.readUrl(new URL(url));
                 String elev = StringUtil.findPattern(result,
                                   "<Elevation>([^<]+)</Elevation>");
                 if (elev != null) {
