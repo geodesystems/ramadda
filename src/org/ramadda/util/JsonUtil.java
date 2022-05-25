@@ -18,6 +18,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
+import java.util.regex.Pattern;
 import java.text.StringCharacterIterator;
 
 import java.util.ArrayList;
@@ -150,7 +151,6 @@ public class JsonUtil {
     public static String map(List values) {
         StringBuffer row = new StringBuffer();
         map(row, values);
-
         return row.toString();
     }
 
@@ -471,6 +471,17 @@ public class JsonUtil {
         return attr(name, value, DFLT_QUOTE);
     }
 
+    public static String quoteType(Object v) {
+	String s = v.toString();
+        if (s.equals("true") || s.equals("false")) {
+	    return s;
+        }
+        if (Pattern.matches("^[+-]?([0-9]*[.])?[0-9]+$", s)) {
+	    return s;
+	}
+	return quote(s);
+    }
+
     /**
      *
      * @param name _more_
@@ -484,7 +495,6 @@ public class JsonUtil {
         }
         try {
             double d = Double.parseDouble(v);
-
             return attr(name, d);
         } catch (Exception ignore) {}
 
