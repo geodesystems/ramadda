@@ -586,6 +586,13 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
+    public void getWikiTags(List<String[]> tags, Entry entry) {
+        if(this.parent!=null) {
+	    this.parent.getWikiTags(tags, entry);
+	}
+    }
+
+
     /**
      *
      * @param type _more_
