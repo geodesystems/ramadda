@@ -70,6 +70,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
+import java.lang.reflect.*;
 import java.text.DecimalFormat;
 import java.io.*;
 
@@ -242,6 +243,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
     private WikiUtil dummyWikiUtil = new WikiUtil();
 
+    private Hashtable<String,WikiTagHandler> tagHandlers =  new Hashtable<String,WikiTagHandler>();
+
+
     /**
      * ctor
      *
@@ -270,6 +274,32 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
         WikiUtil.setGlobalProperties(wikiMacros);
 
+	tagHandlers =  new Hashtable<String,WikiTagHandler>();
+	try {
+	    for(Class c: getPluginManager().getSpecialClasses()) {
+		if (WikiTagHandler.class.isAssignableFrom(c)) {
+		    Constructor ctor = Misc.findConstructor(c,
+							    new Class[] { Repository.class });
+		
+		    if (ctor == null) {
+			System.err.println("Could not find WikiTagHandler constructor:" + c.getName());
+			continue;
+		    }
+		    if (ctor != null) {
+			WikiTagHandler tagHandler = (WikiTagHandler) ctor.newInstance(new Object[] { getRepository()});
+			tagHandler.initTags(tagHandlers);
+		    }
+		}
+	    }
+	    for(TypeHandler typeHandler:getRepository().getTypeHandlers()) {
+		if (WikiTagHandler.class.isAssignableFrom(typeHandler.getClass())) {
+		    ((WikiTagHandler)typeHandler).initTags(tagHandlers);
+		}
+	    
+	    }
+	} catch(Exception exc) {
+            getLogManager().logError("WikiManager.creating tagHandlers", exc);
+	}
     }
 
 
@@ -1724,6 +1754,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    sb.append(HU.formClose());
 	    return sb.toString();
 	}
+	WikiTagHandler tagHandler = tagHandlers.get(theTag);
+	if(tagHandler!=null) {
+	    String s = tagHandler.handleTag(wikiUtil, request,
+					    originalEntry, entry, theTag,
+					    props, remainder);
+	    if(s!=null) return s;
+	}
+
+
+
         if (theTag.equals(WIKI_TAG_INFORMATION)) {
             Request myRequest = request.cloneMe();
             myRequest.put(ATTR_SHOWTITLE,
@@ -6644,7 +6684,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					     HU.hbox(misc1, misc2,misc3));
 
         String entriesButton = makeButton.apply("Entries",
-						makeTagsMenu(textAreaId));
+						makeTagsMenu(entry,textAreaId));
         String displaysButton = HU.href(
 					"javascript:noop()", "Displays",
 					HU.attrs(
@@ -6703,11 +6743,34 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      *
      * @return _more_
      */
-    public String makeTagsMenu(String textAreaId) {
+    public String makeTagsMenu(Entry entry,String textAreaId) {
         StringBuilder sb     = new StringBuilder();
         String        inset  = "&nbsp;&nbsp;";
         int           rowCnt = 0;
-        sb.append("<table border=0><tr valign=top><td valign=top>\n");
+	List<String[]> fromType = new ArrayList<String[]>();
+	if(entry!=null) {
+	    entry.getTypeHandler().getWikiTags(fromType,entry);
+	}
+	sb.append("<table border=0><tr valign=top>\n");
+	if(fromType.size()>0) {
+            sb.append("<td valign=top>");
+            sb.append(HU.b(entry.getTypeHandler().getLabel()));
+            sb.append(HU.br());
+	    for(String[]tuple: fromType) {
+                String  textToInsert = tuple[1].replace("\n","\\n");
+                String js2 = "javascript:insertTags(" + HU.squote(textAreaId)
+		    + "," + HU.squote("{{" + textToInsert + " ")
+		    + "," + HU.squote("}}") + "," + HU.squote("")
+		    + ");";
+                sb.append(inset);
+                sb.append(HU.href(js2, tuple[0]));
+                sb.append(HU.br());
+                sb.append("\n");
+	    }
+            sb.append("</td>");
+	}
+
+	sb.append("<td valign=top>\n");
         for (int i = 0; i < WIKITAGS.length; i++) {
             WikiTagCategory cat = WIKITAGS[i];
             if (rowCnt + cat.tags.length > 10) {
