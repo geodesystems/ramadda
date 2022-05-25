@@ -356,16 +356,13 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
-<!--
-     <property name="form.file.show" value="false"/>
-     <property name="form.url.show" value="false"/>
--->
-
      <column name="model_file" type="string" label="Model File" showinform="false"/>
      <column name="image_width" type="int" label="Image Width"/>
      <column name="image_height" type="int" label="Image Height"/>
      <column name="camera_position" type="string" label="Camera Position" help="Comma separated x,y,z"/>
      <column name="camera_rotation" type="string" label="Camera Rotation" help="Comma separated x,y,z"/>
+     <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity e.g., #f0f0f0,1"/>
+     <column name="lights" type="string" label="Lights" size="60" help="color1,x1,y1,z1;color2,x2,y2,z2 e.g., #f0f0f0,10,0,0;#00ff00,0,10,0"/>     
 
      <wiki><![CDATA[
 +section title={{name}}

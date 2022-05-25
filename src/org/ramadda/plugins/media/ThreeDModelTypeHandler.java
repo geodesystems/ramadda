@@ -35,7 +35,7 @@ import java.util.zip.*;
  *
  *
  */
-public class ThreeDModelTypeHandler extends GenericTypeHandler {
+public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiTagHandler {
 
     /**  */
     private static int IDX = 0;
@@ -50,10 +50,14 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
     private static final int IDX_IMAGE_HEIGHT = IDX++;
 
     /**  */
-    private static final int IDX_TILES_URL = IDX++;
+    private static final int IDX_CAMERA_POSITION = IDX++;
+
+    private static final int IDX_CAMERA_ROTATION = IDX++;    
 
     /**  */
-    private static final int IDX_STYLE = IDX++;
+    private static final int IDX_AMBIENT_LIGHT = IDX++;
+
+    private static final int IDX_LIGHTS = IDX++;    
 
     /**
      * _more_
@@ -176,12 +180,40 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-        String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
-        if ( !Utils.stringDefined(modelFile)) {
-            return "No model file found";
-        }
-        String url = getRepository().getUrlBase() + "/entryfile/"
+	List<Entry> entries = new ArrayList<Entry>();
+	entries.add(entry);
+	return get3DModelWiki(wikiUtil, request,originalEntry, entries,props);
+    }
+
+    public String get3DModelWiki(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, List<Entry> entries,
+                                 Hashtable props)
+            throws Exception {
+
+
+	List<String> models = new ArrayList<String>();
+	for(Entry entry: entries) {
+	    String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
+	    if ( !Utils.stringDefined(modelFile)) {
+		continue;
+	    }
+	    String url = getRepository().getUrlBase() + "/entryfile/"
                      + entry.getId() + "/" + modelFile;
+	    List attrs = Utils.makeList("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
+					"name",JsonUtil.quote(entry.getName()));
+	    String ambientLight = (String)entry.getValue(IDX_AMBIENT_LIGHT);
+	    if(Utils.stringDefined(ambientLight)) {
+		Utils.add(attrs,"ambientLight",JsonUtil.quote(ambientLight));
+	    }
+	    String lights = (String)entry.getValue(IDX_LIGHTS);
+	    if(Utils.stringDefined(lights)) {
+		Utils.add(attrs,"lights",JsonUtil.quote(lights));
+	    }	    
+	    models.add(JsonUtil.map(attrs));
+	}
+	if(models.size()==0) {
+            return "No model files found";
+	}
         StringBuilder sb = new StringBuilder();
         if (request.getExtraProperty("3dmodeljs") == null) {
             for (String js : new String[] {
@@ -200,7 +232,8 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
         }
         String id = HU.getUniqueId("model_");
         HU.div(sb, "",
-               HU.attrs("style", HU.css("width", "600px", "height", "400px"),
+               HU.attrs("style", HU.css("width", HU.makeDim(Utils.getProperty(props,"width","600"),"px"), 
+					"height", HU.makeDim(Utils.getProperty(props,"height","400"),"px")),
                         "tabindex", "1", "id", id, "class",
                         "ramadda-nooutline"));
         List<String> jsonProps = new ArrayList<String>();
@@ -208,15 +241,59 @@ public class ThreeDModelTypeHandler extends GenericTypeHandler {
 	List tmp = Utils.makeList(props);
 	for(int i=0;i<tmp.size();i+=2) {
 	    Utils.add(jsonProps,tmp.get(i),
-		      JsonUtil.quote(tmp.get(i+1)));
+		      JsonUtil.quoteType(tmp.get(i+1)));
 	}
-        String js = "new Model3D([" + HtmlUtils.quote(url) + "],"
-                    + JsonUtil.map(jsonProps) + ");";
+        String js = "new Model3D(" +
+	    JsonUtil.list(models) + "," +
+	    JsonUtil.map(jsonProps) + ");";
         HU.script(sb, js);
-
         return sb.toString();
     }
 
 
 
+    public void getWikiTags(List<String[]> tags, Entry entry) {
+	tags.add(new String[]{"3dmodel","3dmodel \n#width=600 #height=400 #background=f4f4f4 \n" +
+			      "#showAxes=true #axesColor=red \n" +
+			      "#showBox=true #bboxColor=#ff0000 \n" +
+			      "#cameraPosition=\"x,y,z\" #cameraRotation=\"x,y,z\" \n" +
+			      "#ambientLight=\"#404040,30\" #lights=\"#ff0000,x,y,z,intensity;...\" \n"
+	    });
+    }
+
+    public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
+	tagHandlers.put("3dmodel",this);
+    }
+
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param theTag _more_
+     * @param props _more_
+     * @param remainder _more_
+      * @return _more_
+     */
+    public String handleTag(WikiUtil wikiUtil, Request request,
+                            Entry originalEntry, Entry entry, String theTag,
+                            Hashtable props, String remainder) throws Exception {
+	if(entry.getTypeHandler().isType(this.getType())) {
+	    return getWikiInclude(wikiUtil, request, originalEntry,  entry,
+				  theTag, props);
+	}
+	
+	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
+											   originalEntry, entry, props),
+							       getType());
+
+	if(children.size()==0) {
+	    return "No 3d Model entries";
+	}
+	return get3DModelWiki(wikiUtil, request,originalEntry, children,props);
+    }
+
+
 }
+
