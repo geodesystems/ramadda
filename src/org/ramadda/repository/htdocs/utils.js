@@ -269,8 +269,8 @@ var Utils =  {
         return {x:nx, y:ny};
     },
     split: function(s,delim,trim,excludeEmpty) {
-        if(s===null) return null;
         let l = [];
+        if(!Utils.isDefined(s)) return l;
         s.split(delim||",").forEach((tok)=>{
             tok = tok.replace(/_comma_/g,",");
             if(trim) tok = tok.trim();
