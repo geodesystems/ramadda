@@ -14,8 +14,8 @@ function Model3D(models,props) {
 	cameraAngle:75,
 	showBbox:false,
 	bboxColor:"#ff0000",
-	cameraPosition:[0.11023511030283133,3.220465244981674,17.053542069869387], 
-	cameraRotation:[-0.12947709924571024,0.006409864567801695,0.0008345938147183319],
+	cameraPosition:"0.11023511030283133,3.220465244981674,17.053542069869387", 
+	cameraRotation:"-0.12947709924571024,0.006409864567801695,0.0008345938147183319",
 	ambientLight:"#f0f0f0,1",
 	lights:"#f0f0f0,0,10,0,1;"
     }
@@ -40,16 +40,15 @@ function Model3D(models,props) {
             this.renderer.setSize(this.opts.width,this.opts.height);
 
             let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,100);
-	    if(typeof this.opts.cameraPosition  == "string")
-		this.opts.cameraPosition = this.opts.cameraPosition.split(",");
-	    camera.position.set(+this.opts.cameraPosition[0],
-				+this.opts.cameraPosition[1],
-				+this.opts.cameraPosition[2]);
-	    if(typeof this.opts.cameraRotation  == "string")
-		this.opts.cameraRotation = this.opts.cameraRotation.split(",");
-	    camera.rotation.set(+this.opts.cameraRotation[0],
-				+this.opts.cameraRotation[1],
-				+this.opts.cameraRotation[2]);	    
+	    let a = this.getProperty("cameraPosition","").split(",");
+	    if(a.length==3) {
+		camera.position.set(+a[0],+a[1],+a[2]);
+	    }
+	    a = this.getProperty("cameraRotation","").split(",");
+	    if(a.length==3) {
+		camera.rotation.set(+a[0],+a[1],+a[2]);
+	    }	    
+
 
             let controls = new THREE.OrbitControls(camera,this.renderer.domElement );
             controls.addEventListener('change', (event)=>{
@@ -71,8 +70,8 @@ function Model3D(models,props) {
 		    return
 		}
 		if(event.keyCode==100) {
-		    let str = "cameraPosition=\"" +camera.position.x+","+camera.position.y+","+camera.position.z+"\"" +"\n" +
-			"cameraRotation=\"" +camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+"\"";
+		    let str = "cameraPosition: " +camera.position.x+","+camera.position.y+","+camera.position.z+"\n" +
+			"cameraRotation: " +camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z;
 		    Utils.copyToClipboard(str);
 		    console.log("copied to clipboard:");
 		    console.log(str);
