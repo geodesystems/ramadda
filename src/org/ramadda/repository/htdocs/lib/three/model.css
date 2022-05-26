@@ -1,0 +1,21 @@
+
+.ramadda-model-toc {
+    max-width:200px;
+    overflow-x:hidden;
+    border:1px solid #ccc;
+    border-right:0px solid #ccc;    
+}
+
+.ramadda-model-toc-item {
+    white-space:nowrap;
+    padding:2px;
+    border-bottom:1px solid #efefef;
+}
+
+.ramadda-model-toc-item-off {
+}
+
+
+.ramadda-model-toc-item-on {
+    background:#dfdfdf;
+}
