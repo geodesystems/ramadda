@@ -362,7 +362,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column name="camera_position" type="string" label="Camera Position" help="Comma separated x,y,z"/>
      <column name="camera_rotation" type="string" label="Camera Rotation" help="Comma separated x,y,z"/>
      <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity e.g., #f0f0f0,1"/>
-     <column name="lights" type="string" label="Lights" size="60" help="color1,x1,y1,z1;color2,x2,y2,z2 e.g., #f0f0f0,10,0,0;#00ff00,0,10,0"/>     
+     <column changetype="true" name="lights" type="string" label="Lights" columns="100" size="1000" help="color1,x1,y1,z1;color2,x2,y2,z2 e.g., #f0f0f0,10,0,0;#00ff00,0,10,0"/>     
 
      <wiki><![CDATA[
 +section title={{name}}

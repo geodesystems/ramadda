@@ -201,13 +201,27 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
                      + entry.getId() + "/" + modelFile;
 	    List attrs = Utils.makeList("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
 					"name",JsonUtil.quote(entry.getName()));
-	    String ambientLight = (String)entry.getValue(IDX_AMBIENT_LIGHT);
-	    if(Utils.stringDefined(ambientLight)) {
-		Utils.add(attrs,"ambientLight",JsonUtil.quote(ambientLight));
+	    String tmp;
+	    
+	    tmp = (String)entry.getValue(IDX_CAMERA_POSITION);
+	    if(Utils.stringDefined(tmp)) {
+		Utils.add(attrs,"cameraPosition",JsonUtil.quote(tmp));
 	    }
-	    String lights = (String)entry.getValue(IDX_LIGHTS);
-	    if(Utils.stringDefined(lights)) {
-		Utils.add(attrs,"lights",JsonUtil.quote(lights));
+
+
+	    tmp = (String)entry.getValue(IDX_CAMERA_ROTATION);
+	    if(Utils.stringDefined(tmp)) {
+		Utils.add(attrs,"cameraRotation",JsonUtil.quote(tmp));
+	    }
+
+
+	    tmp = (String)entry.getValue(IDX_AMBIENT_LIGHT);
+	    if(Utils.stringDefined(tmp)) {
+		Utils.add(attrs,"ambientLight",JsonUtil.quote(tmp));
+	    }
+	    tmp= (String)entry.getValue(IDX_LIGHTS);
+	    if(Utils.stringDefined(tmp)) {
+		Utils.add(attrs,"lights",JsonUtil.quote(tmp));
 	    }	    
 	    models.add(JsonUtil.map(attrs));
 	}
