@@ -1,9 +1,10 @@
 function Model3D(models,props) {
     this.models = models;
+    this.properties = props||{};
     this.opts = {
 	background:'#f4f4f4',
-	width:600,
-	height:400,
+	width:640,
+	height:480,
 	boxSize:10,
 	showAxes:false,
 	axesSize:10,
@@ -14,8 +15,7 @@ function Model3D(models,props) {
 	cameraAngle:75,
 	showBbox:false,
 	bboxColor:"#ff0000",
-	cameraPosition:"0.11023511030283133,3.220465244981674,17.053542069869387", 
-	cameraRotation:"-0.12947709924571024,0.006409864567801695,0.0008345938147183319",
+	cameraPosition:"0.11023,3.22046,17.05354;-0.12947,0.00640,0.00083",
 	ambientLight:"#f0f0f0,1",
 	lights:"#f0f0f0,0,10,0,1;"
     }
@@ -30,7 +30,6 @@ function Model3D(models,props) {
     jqid(this.divId).html(HU.div(['style',HU.css('padding-top','30px','text-align','center')],loading));
     $.extend(this, {
 	init:function() {
-	    //Initial code from https://redstapler.co/add-3d-model-to-website-threejs/
 	    let _this = this;
 	    let scene = this.scene = new THREE.Scene();
             scene.background = new THREE.Color(this.opts.background);	    
@@ -40,22 +39,14 @@ function Model3D(models,props) {
             this.renderer.setSize(this.opts.width,this.opts.height);
 
             let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,100);
-	    let a = this.getProperty("cameraPosition","").split(",");
-	    if(a.length==3) {
-		camera.position.set(+a[0],+a[1],+a[2]);
-	    }
-	    a = this.getProperty("cameraRotation","").split(",");
-	    if(a.length==3) {
-		camera.rotation.set(+a[0],+a[1],+a[2]);
-	    }	    
-
-
-            let controls = new THREE.OrbitControls(camera,this.renderer.domElement );
+            let controls = this.controls = new THREE.OrbitControls(camera,this.renderer.domElement );
             controls.addEventListener('change', (event)=>{
 		this.renderer.render(scene,camera);
 	    });
-	    controls.target.set(0,1,0);
-	    controls.update();
+//	    controls.target.set(0,1,0);
+	    setTimeout(()=>{
+		this.setCameraPosition();
+	    },1);
 
 
 	    jqid(this.divId).mouseenter(function() {
@@ -69,12 +60,21 @@ function Model3D(models,props) {
 		    });
 		    return
 		}
-		if(event.keyCode==100) {
-		    let str = "cameraPosition: " +camera.position.x+","+camera.position.y+","+camera.position.z+"\n" +
-			"cameraRotation: " +camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z;
+		if(event.key=="r") {
+		    this.setCameraPosition();
+		    return;
+		}
+		if(event.key=="d") {
+		    let get=(o)=>{
+			let decimals = 5;
+			return Utils.trimDecimals(o.x,decimals)+","+Utils.trimDecimals(o.y,decimals)+","+Utils.trimDecimals(o.z,decimals);
+		    };
+		    let str = get(camera.position)+";" + get(camera.rotation) +";"+get(this.controls.target);
 		    Utils.copyToClipboard(str);
 		    console.log("copied to clipboard:");
 		    console.log(str);
+//		    console.dir(camera);
+//		    console.dir(this.controls);
 		}
 	    });
 	    if(this.opts.showAxes) {
@@ -148,6 +148,36 @@ function Model3D(models,props) {
 		}
 	    });
 	},
+	setCameraPosition: function() {
+	    this.controls.enabled = false;
+	    let camera = this.camera;
+	    let a = this.getProperty("cameraPosition","");
+	    //Format is x,y,z;targetx,targety,targetz
+	    if(Utils.stringDefined(a)) {
+		let p = a.split(";");
+		a = p[0].split(",");
+		if(a.length==3) {
+		    camera.position.set(+a[0],+a[1],+a[2]);
+		}
+		if(p.length>1) {
+		    a = p[1].split(",");
+		    if(a.length==3) {
+			this.camera.rotation.set(+a[0],+a[1],+a[2]);
+		    }
+		}
+		if(p.length>2) {
+		    a = p[2].split(",");
+		    if(a.length==3) {
+			this.controls.target.set(+a[0],+a[1],+a[2]);
+		    }
+		}
+
+	    }
+
+	    this.camera.lookAt( this.controls.target );
+	    this.controls.enabled = true;
+	    this.controls.update();
+	},
 	initObject: function(idx,model,object) {
 	    this.objects.push(object);
 	    if(!this.addedRenderer) {
@@ -191,6 +221,10 @@ function Model3D(models,props) {
 	    }
 	},
 	getProperty:function(what,dflt) {
+	    if(Utils.isDefined(this.properties[what])) {
+		return this.properties[what];
+	    }
+
 	    let v = null;
 	    this.models.every(model=>{
 		if(Utils.isDefined(model[what])) {
