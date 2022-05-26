@@ -44,15 +44,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
     private static final int IDX_MODEL_FILE = IDX++;
 
     /**  */
-    private static final int IDX_IMAGE_WIDTH = IDX++;
-
-    /**  */
-    private static final int IDX_IMAGE_HEIGHT = IDX++;
-
-    /**  */
     private static final int IDX_CAMERA_POSITION = IDX++;
-
-    private static final int IDX_CAMERA_ROTATION = IDX++;    
 
     /**  */
     private static final int IDX_AMBIENT_LIGHT = IDX++;
@@ -208,13 +200,6 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		Utils.add(attrs,"cameraPosition",JsonUtil.quote(tmp));
 	    }
 
-
-	    tmp = (String)entry.getValue(IDX_CAMERA_ROTATION);
-	    if(Utils.stringDefined(tmp)) {
-		Utils.add(attrs,"cameraRotation",JsonUtil.quote(tmp));
-	    }
-
-
 	    tmp = (String)entry.getValue(IDX_AMBIENT_LIGHT);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"ambientLight",JsonUtil.quote(tmp));
@@ -246,8 +231,8 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         }
         String id = HU.getUniqueId("model_");
         HU.div(sb, "",
-               HU.attrs("style", HU.css("width", HU.makeDim(Utils.getProperty(props,"width","600"),"px"), 
-					"height", HU.makeDim(Utils.getProperty(props,"height","400"),"px")),
+               HU.attrs("style", HU.css("width", HU.makeDim(Utils.getProperty(props,"width","640"),"px"), 
+					"height", HU.makeDim(Utils.getProperty(props,"height","480"),"px")),
                         "tabindex", "1", "id", id, "class",
                         "ramadda-nooutline"));
         List<String> jsonProps = new ArrayList<String>();

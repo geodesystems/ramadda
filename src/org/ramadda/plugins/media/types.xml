@@ -357,12 +357,9 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <column name="model_file" type="string" label="Model File" showinform="false"/>
-     <column name="image_width" type="int" label="Image Width"/>
-     <column name="image_height" type="int" label="Image Height"/>
-     <column name="camera_position" type="string" label="Camera Position" help="Comma separated x,y,z"/>
-     <column name="camera_rotation" type="string" label="Camera Rotation" help="Comma separated x,y,z"/>
-     <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity e.g., #f0f0f0,1"/>
-     <column changetype="true" name="lights" type="string" label="Lights" columns="100" size="1000" help="color1,x1,y1,z1;color2,x2,y2,z2 e.g., #f0f0f0,10,0,0;#00ff00,0,10,0"/>     
+     <column changetype="true" name="camera_position"  columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz"/>
+     <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity -- e.g., #f0f0f0,1"/>
+     <column changetype="true" name="lights" type="string" label="Lights" columns="100" size="1000" help="color1,x1,y1,z1;color2,x2,y2,z2 -- e.g., #f0f0f0,10,0,0;#00ff00,0,10,0"/>     
 
      <wiki><![CDATA[
 +section title={{name}}
