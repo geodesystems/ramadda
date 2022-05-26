@@ -1813,6 +1813,14 @@ var Utils =  {
 
 
     numberToString:null,
+    trimDecimals:function(d,decimals) {
+        if (decimals == 0) {
+            return parseInt(d);
+        }
+	d = parseFloat(d);
+        let i = parseInt((d * Math.pow(10, decimals)));
+        return  (i / Math.pow(10, decimals));
+    },
     roundDecimals: function(value, decimals,debug) {
         //create the NumberFormat for better performance
         if(this.numberToString==null) {
