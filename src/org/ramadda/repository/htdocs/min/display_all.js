@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May 25 11:50:33 MDT 2022";
+var build_date="RAMADDA build date: Thu May 26 09:11:51 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
