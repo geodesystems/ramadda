@@ -2965,9 +2965,11 @@ public class EntryManager extends RepositoryManager {
     private String getEntryDescription(Request request, Entry entry) throws Exception {
         boolean isWiki      = request.get(ARG_ISWIKI, false);
 	boolean isDescriptionWiki= entry==null?false: entry.getTypeHandler().isDescriptionWiki(entry);
+	String dflt = entry!=null?entry.getDescription():BLANK;
+	if(dflt==null) dflt = BLANK;
         String  description = request.getAnonymousEncodedString(isWiki
 								? ARG_WIKITEXT
-								: ARG_DESCRIPTION, BLANK).trim();
+								: ARG_DESCRIPTION, dflt).trim();
         if (request.get(ARG_ISWIKI, false)) {
             if ( !description.startsWith(WIKI_PREFIX)) {
                 description = WIKI_PREFIX+"\n" + description;
