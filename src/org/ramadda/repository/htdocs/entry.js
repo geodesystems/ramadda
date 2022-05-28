@@ -726,6 +726,9 @@ function Entry(props) {
         getIdForDom: function() {
             return this.domId;
         },
+	canEdit:function() {
+	    return this.canedit;
+	},
 	isSynth: function() {
 	    return this.id.startsWith("synth:");
 	},
