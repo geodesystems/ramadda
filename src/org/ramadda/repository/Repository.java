@@ -3665,7 +3665,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
 
-            if ((request.getUser() != null) && request.getUser().getAdmin()) {
+            if (!request.responseAsJson() && (request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(
                     HtmlUtils.pre(
                         HtmlUtils.entityEncode(
