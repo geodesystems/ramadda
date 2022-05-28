@@ -535,6 +535,9 @@ public class JsonOutputHandler extends OutputHandler {
         if (request.get("includedescription", true)) {
             JsonUtil.quoteAttr(items, "description", entry.getDescription());
         }
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        JsonUtil.attr(items, "canedit", canEdit+"");
+
         TypeHandler type = entry.getTypeHandler();
 
         /**
