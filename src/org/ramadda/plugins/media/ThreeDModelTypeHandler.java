@@ -49,7 +49,8 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
     /**  */
     private static final int IDX_AMBIENT_LIGHT = IDX++;
 
-    private static final int IDX_LIGHTS = IDX++;    
+    private static final int IDX_LIGHTS = IDX++;
+    private static final int IDX_ANNOTATIONS = IDX++;        
 
     /**
      * _more_
@@ -84,6 +85,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
         }
         String resource = entry.getResource().getPath();
         if ( !resource.toLowerCase().endsWith(".zip")) {
+	    entry.setValue(IDX_MODEL_FILE, "");
             return;
         }
 
@@ -185,12 +187,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
 	List<String> models = new ArrayList<String>();
 	for(Entry entry: entries) {
+	    String url;
 	    String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
-	    if ( !Utils.stringDefined(modelFile)) {
-		continue;
+	    if (!Utils.stringDefined(modelFile)) {
+		url = getEntryManager().getEntryResourceUrl(request, entry);
+	    } else {
+		url = getRepository().getUrlBase() + "/entryfile/"
+		    + entry.getId() + "/" + modelFile;
 	    }
-	    String url = getRepository().getUrlBase() + "/entryfile/"
-                     + entry.getId() + "/" + modelFile;
 	    List attrs = Utils.makeList("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
 					"name",JsonUtil.quote(entry.getName()));
 	    String tmp;
@@ -207,11 +211,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    tmp= (String)entry.getValue(IDX_LIGHTS);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"lights",JsonUtil.quote(tmp));
+	    }
+	    tmp= (String)entry.getValue(IDX_ANNOTATIONS);
+	    if(Utils.stringDefined(tmp)) {
+		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
 	    }	    
+	    
+	    Utils.add(attrs,"entryid",JsonUtil.quote(entry.getId()));
 	    models.add(JsonUtil.map(attrs));
-	}
-	if(models.size()==0) {
-            return "No model files found";
 	}
         StringBuilder sb = new StringBuilder();
         if (request.getExtraProperty("3dmodeljs") == null) {
@@ -221,28 +228,44 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
                 "//unpkg.com/three",
                 "//unpkg.com/three/examples/js/loaders/GLTFLoader.js",
                 "//unpkg.com/three/examples/js/loaders/FBXLoader.js",
+		"//unpkg.com/three/examples/js/loaders/ColladaLoader.js",
                 getRepository().getHtdocsUrl(
-                        "/lib/three/controls/OrbitControls.js"),
+					     "/lib/three/controls/OrbitControls.js"),
                 getRepository().getHtdocsUrl("/lib/three/model.js")
             }) {
                 HU.importJS(sb, js);
             }
+	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/three/model.css"));
             request.putExtraProperty("3dmodeljs", "true");
         }
         String id = HU.getUniqueId("model_");
+	sb.append("<table border=0 cellspacing=0 cellpadding=0><tr valign=top><td>");
+
+        HU.div(sb, "",HU.attrs("id", id+"_toc"));
+	sb.append("</td><td>");
         HU.div(sb, "",
                HU.attrs("style", HU.css("width", HU.makeDim(Utils.getProperty(props,"width","640"),"px"), 
 					"height", HU.makeDim(Utils.getProperty(props,"height","480"),"px")),
                         "tabindex", "1", "id", id, "class",
-                        "ramadda-nooutline"));
+                        "ramadda-model-display ramadda-nooutline"));
+	sb.append("</td><td>");
+        HU.div(sb, "",HU.attrs("id", id+"_annotations"));
+	sb.append("</td></tr></table>");
         List<String> jsonProps = new ArrayList<String>();
         Utils.add(jsonProps, "id", JsonUtil.quote(id));
+	String sessionId = request.getSessionId();
+	if(sessionId!=null) {
+	    String authToken = RepositoryUtil.hashString(sessionId);
+	    Utils.add(jsonProps, "authtoken", JsonUtil.quote(authToken));
+	}
+
+
 	List tmp = Utils.makeList(props);
 	for(int i=0;i<tmp.size();i+=2) {
 	    Utils.add(jsonProps,tmp.get(i),
 		      JsonUtil.quoteType(tmp.get(i+1)));
 	}
-        String js = "new Model3D(" +
+        String js = "new Ramadda3DDisplay(" +
 	    JsonUtil.list(models) + "," +
 	    JsonUtil.map(jsonProps) + ");";
         HU.script(sb, js);
@@ -255,7 +278,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	tags.add(new String[]{"3dmodel","3dmodel \n#width=600 #height=400 #background=f4f4f4 \n" +
 			      "#showAxes=true #axesColor=red \n" +
 			      "#showBox=true #bboxColor=#ff0000 \n" +
-			      "#cameraPosition=\"x,y,z\" #cameraRotation=\"x,y,z\" \n" +
+			      "#cameraPosition=\"posx,posy,posz;rotx;roty;rotz\" \n" +
 			      "#ambientLight=\"#404040,30\" #lights=\"#ff0000,x,y,z,intensity;...\" \n"
 	    });
     }
