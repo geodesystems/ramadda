@@ -1,4 +1,19 @@
 
+.ramadda-model-display {
+    border:1px solid #ccc;
+}
+
+.ramadda-model-annotations {
+    border:1px solid #ccc;
+    border-left:0px solid #ccc;    
+    padding:5px;
+    max-width:200px;
+}
+
+.ramadda-model-annotation-delete {
+    margin-right:4px;
+}
+
 .ramadda-model-toc {
     max-width:200px;
     overflow-x:hidden;

@@ -1,13 +1,41 @@
-function Model3D(models,props) {
-    this.models = models;
+function RamaddaModel3D(display,model,idx) {
+    this.display = display;
+    this.index = idx;
+    this.visible = idx==0;
+    $.extend(this,model);
+    $.extend(this,{
+	setObject:function(object) {
+	    this.object = object;
+	    if(!this.visible)
+		this.object.visible   =false;
+	},
+
+	setVisible:function(v){
+	    if(this.object)
+		this.object.visible = v;
+	    this.visible = v;
+	    if(this.helper)
+		this.helper.visible = v;
+	}
+    });
+}
+
+
+function Ramadda3DDisplay(models,props) {
+    this.models = models.map((model,idx)=>{
+	return new RamaddaModel3D(this,model,idx);
+    });
+    
+    this.lights = [];
     this.properties = props||{};
     this.opts = {
+	showToc:false,
 	background:'#f4f4f4',
 	width:640,
 	height:480,
 	boxSize:10,
 	showAxes:false,
-	axesSize:10,
+	axesSize:0,
 	axesColor:"green",
 	axesColorX:null,
 	axesColorY:null,
@@ -19,18 +47,45 @@ function Model3D(models,props) {
 	ambientLight:"#f0f0f0,1",
 	lights:"#f0f0f0,0,10,0,1;"
     }
+
+
+    let getBbox = (object) =>{
+	return new THREE.Box3().setFromObject(object);
+    };
+
+    let getCenter = (object) =>{
+	let center = new THREE.Vector3();
+	getBbox(object).getCenter(center);
+	return center;
+    };	    
+
+    let doScale = (object,size) =>{
+	let referenceBox = new THREE.Box3(new THREE.Vector3(-size,-size,-size),new THREE.Vector3(size,size,size));
+	let referenceSize = referenceBox.getSize(new THREE.Vector3());
+	let objectSize = getBbox(object).getSize(new THREE.Vector3());
+	let ratio = referenceSize.divide( objectSize );
+	let scale = Math.min(ratio.x, Math.min(ratio.y, ratio.z));
+	object.scale.multiplyScalar(scale);
+	object.updateWorldMatrix(true,true);
+    };
+
+
     $.extend(this.opts, props||{});
 
-    this.objects = [];
-    this.visible = true;
-    this.divId = this.opts.id||'model';
-    $("#"+ this.divId).css('background',"#"+this.opts.background);
-    let loading = "Loading..." +"<br>" +
-	HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','10%')]);
-    jqid(this.divId).html(HU.div(['style',HU.css('padding-top','30px','text-align','center')],loading));
     $.extend(this, {
 	init:function() {
 	    let _this = this;
+	    this.loadingCount = 0;
+	    this.visible = true;
+	    this.divId = this.opts.id||'model';
+	    this.threeId = this.domId("_three");
+	    jqid(this.divId).css('background',"#"+this.opts.background).css('position','relative');
+	    let loading = "Loading..." +"<br>" +
+		HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]);
+	    let html = HU.div(['id',this.threeId]) +
+		HU.div(['style',HU.css('display','none','width','100px','text-align','center','position','absolute','left','10px','top','10px'),'id',this.domId('_loading')],loading);
+	    jqid(this.divId).html(html);
+
 	    let scene = this.scene = new THREE.Scene();
             scene.background = new THREE.Color(this.opts.background);	    
 	    
@@ -38,12 +93,34 @@ function Model3D(models,props) {
             this.renderer = new THREE.WebGLRenderer({antialias:true});
             this.renderer.setSize(this.opts.width,this.opts.height);
 
-            let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,100);
+//	    const loader = new THREE.TextureLoader();
+//	    const bgTexture = loader.load('resources/images/daikanyama.jpg');
+//	    scene.background = bgTexture;
+
+/*
+
+	    let group = new THREE.Group();
+	    scene.add(group);
+	    var loader = new THREE.TextureLoader();
+	    loader.crossOrigin = '';
+	    loader.load('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/640px-Equirectangular_projection_SW.jpg', function(texture) {
+		var geometry = new THREE.SphereGeometry(180, 32, 32);
+		var material = new THREE.MeshBasicMaterial({
+//		    side: THREE.BackSide,
+		    map: texture,
+		    overdraw: 0.5
+		});
+		var mesh = new THREE.Mesh(geometry, material);
+		group.add(mesh);
+	    });
+
+*/
+
+            let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,1000);
             let controls = this.controls = new THREE.OrbitControls(camera,this.renderer.domElement );
             controls.addEventListener('change', (event)=>{
 		this.renderer.render(scene,camera);
 	    });
-//	    controls.target.set(0,1,0);
 	    setTimeout(()=>{
 		this.setCameraPosition();
 	    },1);
@@ -55,8 +132,8 @@ function Model3D(models,props) {
 	    jqid(this.divId).keypress((event) =>{
 		if(event.keyCode==118) {
 		    this.visible = !this.visible;
-		    this.objects.forEach(object=>{
-			object.visible = this.visible;
+		    this.models.forEach(model=>{
+			model.setVisible(this.visible);
 		    });
 		    return
 		}
@@ -65,11 +142,7 @@ function Model3D(models,props) {
 		    return;
 		}
 		if(event.key=="d") {
-		    let get=(o)=>{
-			let decimals = 5;
-			return Utils.trimDecimals(o.x,decimals)+","+Utils.trimDecimals(o.y,decimals)+","+Utils.trimDecimals(o.z,decimals);
-		    };
-		    let str = get(camera.position)+";" + get(camera.rotation) +";"+get(this.controls.target);
+		    let str = this.getCameraPosition();
 		    Utils.copyToClipboard(str);
 		    console.log("copied to clipboard:");
 		    console.log(str);
@@ -78,13 +151,191 @@ function Model3D(models,props) {
 		}
 	    });
 	    if(this.opts.showAxes) {
-		let axes = new THREE.AxesHelper(+this.opts.axesSize);
+		let size = this.opts.axesSize;
+		if(size==0) size = this.opts.width;
+		let axes = new THREE.AxesHelper(size);
 		axes.setColors(new THREE.Color(this.opts.axesColorX || this.opts.axesColor ),
 			       new THREE.Color(this.opts.axesColorY || this.opts.axesColor ),
 			       new THREE.Color(this.opts.axesColorZ || this.opts.axesColor ));			       
 		scene.add(axes);
 	    }
 
+	    if(this.models.length==1 && this.models[0].entryid) {
+		let model = this.models[0];
+		getGlobalRamadda().getEntry(model.entryid,entry=>{
+		    this.entry = entry;
+		    if(Utils.stringDefined(model.annotations)|| entry.canEdit()) {
+			let annotations = Utils.split(model.annotations,"\n",true,true);
+			this.initAnnotations(annotations);
+		    }
+		});
+	    }
+
+	    this.addLights();
+
+
+
+	    if(this.getProperty("showToc")) {
+		let html = "";
+		let toc = this.getTocDiv();
+		toc.addClass('ramadda-model-toc');
+		this.models.forEach((model,idx)=>{
+		    let clazz = model.visible?'ramadda-model-toc-item-on':'ramadda-model-toc-item-off';
+		    let prefix ="";
+		    if(model.entryid) {
+			prefix = HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png'),
+				 ['title','View entry:' + model.name,'target','_entry']) +' ';
+		    }
+		    html+=HU.div(['model-index',idx,'class','ramadda-model-toc-item ' + clazz+' ramadda-clickable','id',this.divId+'_model_' + idx,'title','Toggle '+ model.name],prefix+HU.div(['style','display:inline-block;width:100%;','class','ramadda-model-toc-item-name', 'model-index',idx],model.name));
+		});
+		toc.css('height',this.opts.height+"px");
+		toc.html(html);
+		toc.find('.ramadda-model-toc-item-name').click(function() {
+		    let item = $(this).parent();
+		    let model =_this.models[$(this).attr('model-index')];
+		    if(model.visible) {
+			model.setVisible(false);
+			item.removeClass('ramadda-model-toc-item-on');
+			item.addClass('ramadda-model-toc-item-off');			
+		    } else {
+			model.setVisible(true);
+			item.removeClass('ramadda-model-toc-item-off');
+			item.addClass('ramadda-model-toc-item-on');			
+			if(!model.object) {
+			    _this.loadModel(model);
+			}
+		    }
+		    if(model.object) {
+			_this.layoutModels();
+		    }
+		    _this.addLights();
+		});
+	    }
+
+	    this.models.forEach((model,idx)=>{
+		if(model.visible) {
+		    this.loadModel(model);
+		}
+	    });
+	},
+	incrLoading:function(d) {
+	    this.loadingCount +=d;
+	    if(this.loadingCount<=0) {
+		this.loadingCount=0;
+	    }
+	    this.checkLoading();
+	},
+	getCameraPosition:function() {
+	    let camera = this.camera;
+	    let get=(o)=>{
+		let decimals = 5;
+		return Utils.trimDecimals(o.x,decimals)+","+Utils.trimDecimals(o.y,decimals)+","+Utils.trimDecimals(o.z,decimals);
+	    };	    
+	    return  get(camera.position)+";" + get(camera.rotation) +";"+get(this.controls.target);
+	},
+	checkLoading:function() {
+	    if(this.loadingCount>0) this.jq('_loading').show();
+	    else  this.jq('_loading').hide();
+	},
+	jq:function(suffix) {
+	    return jqid(this.domId(suffix));
+	},
+	domId:function(suffix) {
+	    return this.divId+suffix;
+	},
+	canEdit: function() {
+	    if(!this.entry) return false;
+	    return this.entry.canEdit();
+	},
+	initAnnotations:function(annotations) {
+	    let html = "";
+	    let _this = this;
+	    let canEdit = this.canEdit();
+	    annotations = annotations.map(line=>{
+		let toks = Utils.split(line,";");
+		if(toks.length!=4) return null;
+		return line;
+	    });
+	    annotations.forEach((line,idx)=>{
+		//pos;rot;target;comment
+		let toks = Utils.split(line,";");
+		let pos = toks[0]+";"+toks[1]+";"+toks[2];
+		let btns = "";
+		if(canEdit) {
+		    btns =
+			HU.span(['annotation-index',idx,'title','Edit annotation','class','ramadda-clickable ramadda-model-annotation-edit'],
+				HU.getIconImage("fas fa-pen")) +" " +
+			HU.span(['annotation-index',idx,'title','Delete annotation','class','ramadda-clickable ramadda-model-annotation-delete'],
+				HU.getIconImage("fas fa-trash-can"));
+		}
+		let label = HU.span(['3dposition',pos,'class','ramadda-clickable ramadda-model-annotation'], toks[3]);
+		html+=HU.div([],btns +label);
+	    });
+	    if(canEdit || html!="") {
+		this.getAnnotationsDiv().css('height',this.opts.height+"px");
+		let topLabel = HU.b("Annotations");
+		if(canEdit) {
+		    topLabel+=" " + HU.span(['class','ramadda-clickable ramadda-model-annotation-add','title','Add annotation'],HU.getIconImage('fas fa-plus'));
+		}
+		this.getAnnotationsDiv().html(HU.div(['style',HU.css('height',this.opts.height+"px"),'class','ramadda-model-annotations'], topLabel + html));
+		this.getAnnotationsDiv().find('.ramadda-model-annotation').click(function() {
+		    _this.setCameraPosition($(this).attr('3dposition'));
+		});
+		this.getAnnotationsDiv().find('.ramadda-model-annotation-add').click(function() {
+		    let comment = prompt("Annotation:");
+		    if(!Utils.stringDefined(comment)) return;
+		    let line =  _this.getCameraPosition()+";" + comment;
+		    annotations.push(line);
+		    _this.saveAnnotations(annotations);
+		});
+		this.getAnnotationsDiv().find('.ramadda-model-annotation-edit').click(function() {
+		    let idx = $(this).attr('annotation-index');
+		    let line = annotations[idx];
+		    let toks = Utils.split(line,";");
+		    let pos = toks[0]+";"+toks[1]+";"+toks[2];
+		    let comment = prompt("Annotation:",toks[3]);
+		    if(Utils.stringDefined(comment)) {
+			annotations[idx] = pos +";" + comment;
+			_this.saveAnnotations(annotations);
+		    }
+		});		
+		this.getAnnotationsDiv().find('.ramadda-model-annotation-delete').click(function() {
+		    if(!window.confirm("Are you sure you want to delete the annotation?")) return
+		    let idx = $(this).attr('annotation-index');
+		    annotations.splice(idx,1);
+		    _this.saveAnnotations(annotations);
+		});		
+	    }
+	},
+	saveAnnotations:function(annotations) {
+	    this.initAnnotations(annotations);
+	    let a = Utils.join(annotations,"\n");
+	    let args = {
+		"edit_media_3dmodel_annotations":a,
+		entryid:this.models[0].entryid,
+		authtoken:this.opts.authtoken,
+		response:"json"
+	    }
+
+	    let url = ramaddaBaseUrl +"/entry/change";
+            $.post(url, args, (result) => {
+	    }).fail(error=>{
+		try {
+		    let json = JSON.parse(error.responseText);
+		    if(json.error)  {
+			alert("Error:" + json.error);
+			return;
+		    }
+		} catch(err) {
+		}
+		alert("Error:" + error.responseText);
+	    });
+	},
+	addLights: function() {
+	    this.lights.forEach(light=>{
+		this.scene.remove(light);
+	    });
+	    this.lights = [];
 	    let ambientLight = this.getProperty("ambientLight",null);
 	    if(Utils.stringDefined(ambientLight) && ambientLight!="none") {
 		let al = Utils.split(ambientLight,",");
@@ -92,7 +343,9 @@ function Model3D(models,props) {
 		else if(al.length==1) al.push("30");
 		if(al[0]=="") al[0]="#404040";
 		if(al[1]=="") al[0]="5";
-		scene.add(new THREE.AmbientLight(new THREE.Color(al[0]).getHex(),+al[1]));
+		let light = new THREE.AmbientLight(new THREE.Color(al[0]).getHex(),+al[1]);
+		this.lights.push(light);
+		this.scene.add(light);
 	    }
 	    let addLight=(v,x,y,z,i) =>{
 		if(!Utils.isDefined(i)) i=1;
@@ -100,6 +353,7 @@ function Model3D(models,props) {
 		let light = new THREE.PointLight(c.getHex(),i,0,2);
 //		let light = new THREE.DirectionalLight(c.getHex());
 		light.position.set(+x,+y,+z);
+		this.lights.push(light);
 		this.scene.add(light);
 	    }
 	    let lights =this.getProperty("lights","");
@@ -113,45 +367,69 @@ function Model3D(models,props) {
 		    addLight(tuple[0],tuple[1],tuple[2],tuple[3],tuple[4]);
 		});
 	    }
-
+	},	    
+	getTocDiv:function() {
+	    return jqid(this.divId+"_toc");
+	},
+	getAnnotationsDiv:function() {
+	    return jqid(this.divId+"_annotations");
+	},	
+	loadModel:function(model) {
+	    let _this = this;
 	    let update = (xhr)=>{
 //		console.log("loading...");
 	    };
 	    let error =  (error) => {
+		this.incrLoading(-1);
 		jqid(this.divId).html(error);
 		console.log(error)
 	    };
-	    this.models.forEach((model,idx)=>{
-		let url = model.url;
-		if(url.match(/\.gltf/gi)) {
-		    const loader = new THREE.GLTFLoader();
-		    loader.load(url, function(gltf){
-			console.log("loaded gltf model:" + model.name +" " +url);
-			let obj = gltf.scene.children[0];
-			_this.initObject(idx,model,gltf.scene);
-			_this.scene.add(gltf.scene);
-			_this.animate();
-		    },update,error);
-		} else  if(url.match(/\.fbx/gi)) {
-		    const fbxLoader = new THREE.FBXLoader()
-		    fbxLoader.load(
-			url,
-			(object) => {
-			    console.log("loaded fbx model:" + model.name +" " +url);
-			    _this.scene.add(object);
-			    _this.initObject(idx,model,object);
-			    _this.animate();
-			},
-			update,error);
-		} else {
-		    alert("Unknown model:" + url);
-		}
-	    });
+	    let url = model.url;
+	    if(url.match(/\.gltf/gi)) {
+		const loader = new THREE.GLTFLoader();
+		this.incrLoading(1);
+		loader.load(url, (gltf)=>{
+		    this.incrLoading(-1);
+		    console.log('loaded gltf model:' + model.name +' ' +url);
+		    let obj = gltf.scene.children[0];
+		    this.initObject(model,gltf.scene);
+		    this.scene.add(gltf.scene);
+		    this.animate();
+		},update,error);
+	    } else  if(url.match(/\.fbx/gi)) {
+		const fbxLoader = new THREE.FBXLoader()
+		this.loadingModelCount++;
+		this.incrLoading(1);
+		fbxLoader.load(
+		    url,
+		    (object) => {
+			this.incrLoading(-1);
+			console.log("loaded fbx model:" + model.name +" " +url);
+			this.scene.add(object);
+			this.initObject(model,object);
+			this.animate();
+		    },
+		    update,error);
+	    } else  if(url.match(/\.dae/gi)) {
+		const loader = new THREE.ColladaLoader();
+		this.incrLoading(1);
+		loader.load(url,collada =>{
+		    this.incrLoading(-1);
+		    console.log("loaded dae model:" + model.name +" " +url);
+		    let player = collada.scene;
+		    this.scene.add( player );
+		    this.initObject(model,player);
+		    this.animate();
+		});
+	    } else {
+		alert("Unknown model:" + url);
+	    }
 	},
-	setCameraPosition: function() {
+
+	setCameraPosition: function(a) {
 	    this.controls.enabled = false;
 	    let camera = this.camera;
-	    let a = this.getProperty("cameraPosition","");
+	    a = a || this.getProperty("cameraPosition","");
 	    //Format is x,y,z;targetx,targety,targetz
 	    if(Utils.stringDefined(a)) {
 		let p = a.split(";");
@@ -178,78 +456,111 @@ function Model3D(models,props) {
 	    this.controls.enabled = true;
 	    this.controls.update();
 	},
-	initObject: function(idx,model,object) {
-	    this.objects.push(object);
+	initObject: function(model,object) {
+	    model.setObject(object);
 	    if(!this.addedRenderer) {
-		jqid(this.divId).html(this.renderer.domElement);
+		jqid(this.threeId).html(this.renderer.domElement);
 		this.addedRenderer = true;
 	    }
-	    let debug = msg =>{
-		console.log(msg,object.position,object.rotation,object.scale);
-	    };
 
-	    let getBbox = () =>{
-		return new THREE.Box3().setFromObject(object);
-	    };
-	    let getCenter = () =>{
-		let center = new THREE.Vector3();
-		getBbox().getCenter(center);
-		return center;
-	    };	    
-	    doScale = () =>{
-		var referenceBox = new THREE.Box3(new THREE.Vector3(-this.opts.boxSize,-this.opts.boxSize,-this.opts.boxSize),new THREE.Vector3(this.opts.boxSize,this.opts.boxSize,this.opts.boxSize));
-		var referenceSize = referenceBox.getSize(new THREE.Vector3());
-		var objectSize = getBbox().getSize(new THREE.Vector3());
-		var ratio = referenceSize.divide( objectSize );
-		var scale = Math.min(ratio.x, Math.min(ratio.y, ratio.z));
-		object.scale.multiplyScalar(scale);
-		object.updateWorldMatrix(true,true);
-	    };
 	    object.updateWorldMatrix(true,true);
-	    doScale();
-	    object.position.sub(getCenter());
+	    doScale(object,this.opts.boxSize);
+	    object.position.sub(getCenter(object));
 	    object.updateWorldMatrix(true,true);
-	    if(offset = this.getModelOpt(idx,model,"offset")) {
+	    if(offset = this.getModelOpt(model,"offset")) {
 		offset = offset.split(",");
 		let base = offset[0];
 		object.position.add(new THREE.Vector3(parseFloat(offset[0]),parseFloat(offset[1]||0),parseFloat(offset[2]||0)));
 	    }
 
+	    this.layoutModels();
+
 	    object.updateWorldMatrix(true,true);
-	    if(this.getModelOpt(idx,model,"showBbox",false)) {
-		this.addHelper(object,this.getModelOpt(idx,model,"bboxColor"));
-	    }
+	    this.addHelper(model,this.getModelOpt(model,"bboxColor"));
 	},
+	layoutModels:function() {
+	    let visible = [];
+	    this.models.forEach(model=>{if(model.visible && model.object) visible.push(model);});
+	    if(visible.length==0) return;
+	    let clear = model=>{
+		if(model.layoutOffset) {
+		    model.object.position.sub(model.layoutOffset);
+		    model.layoutOffset=null;
+		}
+		if(model.helper) {
+		    this.scene.remove(model.helper);
+		    model.helper = null;
+		}
+	    };
+	    if(visible.length==1) {
+		clear(visible[0]);
+		this.addHelper(visible[0],this.getModelOpt(visible[0],"bboxColor"));
+		return;
+	    }
+	    let w = 1.2*this.opts.boxSize;
+	    let cols = Math.ceil(Math.sqrt(visible.length));
+	    let rows = parseInt(visible.length/cols);
+
+	    let dx = -w*Math.ceil(cols/2);
+	    let cnt = visible.length;
+	    let col=0;
+
+	    visible.forEach(model=>{
+		clear(model);
+		let offsetX=dx;
+		dx+=w;
+		model.layoutOffset = new THREE.Vector3(offsetX,0,0);
+		model.object.position.add(model.layoutOffset);		    
+		this.addHelper(model,this.getModelOpt(model,"bboxColor"));
+	    });
+	},
+
 	getProperty:function(what,dflt) {
+	    let debug = false;
+	    if(debug)
+		console.log("getProperty:" + what);
 	    if(Utils.isDefined(this.properties[what])) {
 		return this.properties[what];
 	    }
-
 	    let v = null;
 	    this.models.every(model=>{
+		if(!model.visible) return true;
 		if(Utils.isDefined(model[what])) {
+		    if(debug)
+			console.log("\tfrom:" +model.name +" " + model[what]);
 		    v = model[what];
 		    return false;
 		}
 		return true;
 	    });
 	    if(v) return v;
-	    if(Utils.isDefined(this.opts[what])) return this.opts[what];
+	    if(Utils.isDefined(this.opts[what])) {
+		if(debug)
+		    console.log("\tfrom opts:" + this.opts[what]);
+		return this.opts[what];
+	    }
 	    return dflt;
 	},
 
-	getModelOpt:function(idx,model,what,dflt) {
+	getModelOpt:function(model,what,dflt) {
+	    let idx = model.index;
 	    if(Utils.isDefined(model[what])) {
 		return model[what];
 	    }
 	    return this.opts[what+"_" + model.id] || this.opts[what+"_" + idx] || this.opts[what] || dflt;
 	},
-	addHelper:function(object, color) {
+	addHelper:function(model, color) {
+	    if(!this.getModelOpt(model,"showBbox",false)) {
+		return;
+	    }
 	    if(typeof color == "string") color = new THREE.Color(color).getHex();
 	    if(!Utils.isDefined(color)) color = 0xff0000;
-	    let helper = new THREE.BoxHelper(object, color);
-	    helper.update();
-	    this.scene.add(helper);	    
+	    if(model.helper) {
+		this.scene.remove(model.helper);
+	    }
+	    model.helper = new THREE.BoxHelper(model.object, color);
+	    model.helper.update();
+	    this.scene.add(model.helper);	    
 	},
 	parseInt:function(v,dflt) {
 	    if(typeof v == "number") return v;
