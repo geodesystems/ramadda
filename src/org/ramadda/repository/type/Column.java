@@ -3013,8 +3013,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         String urlArg = getEditArg();
-
-
         if (isType(DATATYPE_LATLON)) {
             if (request.exists(urlArg + "_latitude")) {
                 values[offset] = new Double(request.getString(urlArg
@@ -3034,7 +3032,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (Utils.stringDefined(lonString)) {
                     lon = Utils.decodeLatLon(lonString);
                 }
-
                 values[offset]     = lat;
                 values[offset + 1] = lon;
             }
@@ -3042,55 +3039,52 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_LATLONBBOX)) {
             if (request.exists(urlArg + "_north")) {
                 values[offset] = new Double(request.get(urlArg + "_north",
-                        Entry.NONGEO));
+							(Double)Utils.getNonNull(values[offset], new Double(Entry.NONGEO))));
                 values[offset + 1] = new Double(request.get(urlArg + "_west",
-                        Entry.NONGEO));
-                values[offset + 2] = new Double(request.get(urlArg
-                        + "_south", Entry.NONGEO));
-                values[offset + 3] = new Double(request.get(urlArg + "_east",
-                        Entry.NONGEO));
-            } else {
-                values[offset] = new Double(request.get(urlArg + ".north",
-                        Entry.NONGEO));
-                values[offset + 1] = new Double(request.get(urlArg + ".west",
-                        Entry.NONGEO));
-                values[offset + 2] = new Double(request.get(urlArg
-                        + ".south", Entry.NONGEO));
-                values[offset + 3] = new Double(request.get(urlArg + ".east",
-                        Entry.NONGEO));
+							    (Double)Utils.getNonNull(values[offset+1], new Double(Entry.NONGEO))));
+		values[offset + 2] = new Double(request.get(urlArg
+							    + "_south",
+							    (Double)Utils.getNonNull(values[offset+2], new Double(Entry.NONGEO))));							    
 
-            }
+                values[offset + 3] = new Double(request.get(urlArg + "_east",
+							    (Double)Utils.getNonNull(values[offset+3], new Double(Entry.NONGEO))));							    
+	    } else {
+                values[offset] = new Double(request.get(urlArg + ".north",
+							(Double)Utils.getNonNull(values[offset+0], new Double(Entry.NONGEO))));							    
+		values[offset + 1] = new Double(request.get(urlArg + ".west",
+							    (Double)Utils.getNonNull(values[offset+1], new Double(Entry.NONGEO))));							    
+		values[offset + 2] = new Double(request.get(urlArg  + ".south",
+							    (Double)Utils.getNonNull(values[offset+2], new Double(Entry.NONGEO))));							    							    
+		values[offset + 3] = new Double(request.get(urlArg + ".east",
+							    (Double)Utils.getNonNull(values[offset+3], new Double(Entry.NONGEO))));							    
+	    }
         } else if (isDate()) {
-            values[offset] = request.getDate(urlArg, new Date());
+            values[offset] = request.getDate(urlArg, (Date) Utils.getNonNull(values[offset],new Date()));
         } else if (isType(DATATYPE_BOOLEAN)) {
             //Note: using the default will not work if we use checkboxes for the widget
             //For now we are using a yes/no combobox
             String value = request.getString(urlArg,
-                                             (Utils.stringDefined(dflt)
-                    ? dflt
-                    : "true")).toLowerCase();
+					     Utils.getNonNull(values[offset],
+							      dflt,"true").toString()).toLowerCase();
             //            String value = request.getString(urlArg, "false");
             values[offset] = new Boolean(value);
         } else if (isType(DATATYPE_ENUMERATION)) {
             if (request.exists(urlArg)) {
                 values[offset] = request.getAnonymousEncodedString(urlArg,
-                        ((dflt != null)
-                         ? dflt
-                         : ""));
+								   (String)Utils.getNonNull(values[offset],
+											    dflt,""));
             } else {
-                values[offset] = dflt;
+                values[offset] = Utils.getNonNull(values[offset],dflt);
             }
         } else if (isType(DATATYPE_LIST)) {
             if (request.exists(urlArg)) {
                 String value = request.getAnonymousEncodedString(urlArg,
-                                   ((dflt != null)
-                                    ? dflt
-                                    : ""));
+								 (String)Utils.getNonNull(values[offset],dflt,""));
                 value = StringUtil.join(", ",
                                         Utils.split(value, "\n", true, true));
                 values[offset] = value;
             } else {
-                values[offset] = dflt;
+                values[offset] = Utils.getNonNull(values[offset],dflt);
             }
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
@@ -3107,14 +3101,15 @@ public class Column implements DataTypes, Constants, Cloneable {
                          : ""));
 
             } else {
-                theValue = dflt;
+                theValue = (String)Utils.getNonNull(values[offset],dflt);
             }
             values[offset] = theValue;
             typeHandler.addEnumValue(this, entry, theValue);
         } else if (isType(DATATYPE_INT)) {
-            int dfltValue = (Utils.stringDefined(dflt)
-                             ? new Integer(dflt).intValue()
-                             : 0);
+            Integer dfltValue = (Integer)Utils.getNonNull(values[offset],
+							  (Utils.stringDefined(dflt)
+							   ? new Integer(dflt).intValue()
+							   : 0));
             if (request.exists(urlArg)) {
                 values[offset] = new Integer(request.get(urlArg, dfltValue));
             } else {
@@ -3122,20 +3117,21 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
 
         } else if (isType(DATATYPE_PERCENTAGE)) {
-            double dfltValue = (Utils.stringDefined(dflt)
-                                ? new Double(dflt.trim()).doubleValue()
-                                : 0);
+            Double dfltValue = (Double)Utils.getNonNull(values[offset],
+							(Utils.stringDefined(dflt)
+							 ? new Double(dflt.trim()).doubleValue()
+							 : 0));
             if (request.exists(urlArg)) {
                 values[offset] = new Double(request.get(urlArg, dfltValue)
                                             / 100);
             } else {
                 values[offset] = dfltValue;
-
             }
         } else if (isDouble()) {
-            double dfltValue = (Utils.stringDefined(dflt)
-                                ? new Double(dflt.trim()).doubleValue()
-                                : 0);
+            Double dfltValue = (Double)Utils.getNonNull(values[offset],
+							(Utils.stringDefined(dflt)
+							 ? new Double(dflt.trim()).doubleValue()
+							 : 0));
             if (request.exists(urlArg)) {
                 values[offset] = new Double(request.get(urlArg, dfltValue));
             } else {
@@ -3143,7 +3139,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             }
         } else if (isType(DATATYPE_ENTRY)) {
-            values[offset] = request.getString(urlArg + "_hidden", "");
+            values[offset] = request.getString(urlArg + "_hidden", (String)Utils.getNonNull(values[offset],
+											    ""));
         } else {
             //string
             if (request.exists(urlArg)) {
@@ -3152,7 +3149,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                          ? dflt
                          : ""));
             } else {
-                values[offset] = dflt;
+                values[offset] = Utils.getNonNull(values[offset],dflt);
             }
         }
 
