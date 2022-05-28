@@ -361,7 +361,11 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity -- e.g., #f0f0f0,1"/>
      <column changetype="true" name="lights" type="string" label="Lights" columns="60" size="1000" help="color1,x1,y1,z1;color2,x2,y2,z2 -- e.g., #f0f0f0,10,0,0;#00ff00,0,10,0"/>
      <column name="annotations" type="string" rows="10" columns="90" size="10000" label="Annotations" showinform="true"
-	     help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz;note"
+	     help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz;note"/>
+     <column name="test" type="int" label="test"/>
+     <column name="testd" type="double" label="testd"/>
+     <column name="teste" type="enumerationplus" label="teste"/>
+     <column name="testb" type="boolean" label="testb"/>               
 />     
 
 <wiki><![CDATA[

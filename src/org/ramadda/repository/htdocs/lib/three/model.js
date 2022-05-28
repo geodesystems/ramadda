@@ -295,7 +295,8 @@ function Ramadda3DDisplay(models,props) {
 		    let pos = toks[0]+";"+toks[1]+";"+toks[2];
 		    let comment = prompt("Annotation:",toks[3]);
 		    if(Utils.stringDefined(comment)) {
-			annotations[idx] = pos +";" + comment;
+			let line =  _this.getCameraPosition()+";" + comment;
+			annotations[idx] = line;
 			_this.saveAnnotations(annotations);
 		    }
 		});		
