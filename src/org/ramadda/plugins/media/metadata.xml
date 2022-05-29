@@ -21,6 +21,21 @@
       <element name="Rotation"  default="0 0 0" suffix=""/>            
     </type>
 
-
 </handler>
+
+  <handler category="Thumbnails, Page Style,  Etc.">
+    <type
+       name="3D Model Background Image"
+       id="3dmodel_background">
+      <element name="Background Image" datatype="file" thumbnail="false"/>
+    </type>
+    <type
+       name="3D Model Fixed Background Image"
+       id="3dmodel_fixed_background">
+      <element name="Background Image" datatype="file" thumbnail="false"/>
+    </type>    
+  </handler>
+
+
+
 </metadata>

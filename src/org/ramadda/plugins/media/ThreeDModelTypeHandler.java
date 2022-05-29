@@ -97,7 +97,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
         String modelFile = "";
         for (String path : files) {
-            if (path.toLowerCase().matches(".*(fbx|gltf).*")) {
+            if (path.toLowerCase().matches(".*(fbx|gltf|dae).*")) {
                 modelFile = path;
                 break;
             }
@@ -203,6 +203,18 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"cameraPosition",JsonUtil.quote(tmp));
 	    }
+
+	    String thumbnail = getMetadataManager().getThumbnailUrl(request,  entry);
+	    if(thumbnail!=null)
+		Utils.add(attrs,"thumbnail",JsonUtil.quote(thumbnail));
+
+
+	    String background = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_background");
+	    if(background!=null)
+		Utils.add(attrs,"backgroundImage",JsonUtil.quote(background));
+	    background = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_fixed_background");
+	    if(background!=null)
+		Utils.add(attrs,"fixedBackgroundImage",JsonUtil.quote(background));	    
 
 	    tmp = (String)entry.getValue(IDX_AMBIENT_LIGHT);
 	    if(Utils.stringDefined(tmp)) {
