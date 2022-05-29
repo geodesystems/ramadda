@@ -34,3 +34,15 @@
 .ramadda-model-toc-item-on {
     background:#dfdfdf;
 }
+
+.ramadda-model-toolbar {
+    border:1px solid transparent;
+    border-top:0px;
+    padding-left:5px;
+    padding-right:5px;    
+}
+
+.ramadda-model-toolbar:hover {
+    /*border:1px solid #ccc;*/
+    border-top:0px;
+}

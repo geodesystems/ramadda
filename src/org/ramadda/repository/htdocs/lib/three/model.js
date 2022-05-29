@@ -11,11 +11,15 @@ function RamaddaModel3D(display,model,idx) {
 	},
 
 	setVisible:function(v){
+	    if(this.backgroundSphere)
+		this.backgroundSphere.visible = v;
 	    if(this.object)
 		this.object.visible = v;
 	    this.visible = v;
 	    if(this.helper)
 		this.helper.visible = v;
+
+
 	}
     });
 }
@@ -30,6 +34,7 @@ function Ramadda3DDisplay(models,props) {
     this.properties = props||{};
     this.opts = {
 	showToc:false,
+	rotating:false,
 	background:'#f4f4f4',
 	width:640,
 	height:480,
@@ -74,6 +79,7 @@ function Ramadda3DDisplay(models,props) {
 
     $.extend(this, {
 	init:function() {
+	    this.addBackground(this.opts.backgroundImage,this.opts.fixeBackgroundImage,this);
 	    let _this = this;
 	    this.loadingCount = 0;
 	    this.visible = true;
@@ -82,39 +88,59 @@ function Ramadda3DDisplay(models,props) {
 	    jqid(this.divId).css('background',"#"+this.opts.background).css('position','relative');
 	    let loading = "Loading..." +"<br>" +
 		HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]);
+	    let buttons = [];
+	    buttons.push(HU.span(['id',this.domId('_toolbarholder')]));
+	    buttons.push(HU.span(['title','Set ambient light','class','ramadda-clickable','id',this.domId('_light')],HU.getIconImage('fas fa-lightbulb')));
+	    buttons.push(HU.span(['title','Reset view','class','ramadda-clickable','id',this.domId('_home')],HU.getIconImage('fas fa-house')));
+	    buttons.push(HU.span(['title','Auto-rotate','class','ramadda-clickable','id',this.domId('_play')],HU.getIconImage('fas fa-play')));
+	    let toolbar = HU.div(['class','ramadda-model-toolbar'], Utils.join(buttons,HU.space(3)));
 	    let html = HU.div(['id',this.threeId]) +
-		HU.div(['style',HU.css('display','none','width','100px','text-align','center','position','absolute','left','10px','top','10px'),'id',this.domId('_loading')],loading);
+		HU.div(['style',HU.css('display','none','width','100px','text-align','center','position','absolute','left','10px','top','10px'),'id',this.domId('_loading')],loading) +
+		HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'id',this.domId('_toolbar')],toolbar)		
+;
 	    jqid(this.divId).html(html);
 
+	    jqid(this.domId('_light')).click(()=> {
+		let light = prompt("Set Light (format: color,intensity e.g, #ff0000,5):",this.getProperty("ambientLight",null));
+		if(light===null) return;
+		light=light.trim();
+		if(light=="")
+		    this.properties['ambientLight'] = null;
+		else
+		    this.properties['ambientLight'] = light;
+		this.addLights();
+		if(this.canEdit()) {
+		    let args = {"edit_media_3dmodel_ambient_light":light}
+		    this.doSave(args);
+		}
+	    });
+
+	    jqid(this.domId('_home')).click(()=> {
+		this.setCameraPosition();
+		this.models.forEach(model=>{
+		    if(model.object && model.originalRotation) {
+			model.object.rotation.x =  model.originalRotation.x;
+			model.object.rotation.y =  model.originalRotation.y;
+			model.object.rotation.z =  model.originalRotation.z;
+		    }});
+	    });
+	    jqid(this.domId('_play')).click(function() {
+		_this.opts.rotating = !_this.opts.rotating;
+		if(_this.opts.rotating) {
+		    $(this).html(HU.getIconImage('fas fa-stop'));
+		} else {
+		    $(this).html(HU.getIconImage('fas fa-play'));
+		}
+	    });
+	    this.clock   = new THREE.Clock();
 	    let scene = this.scene = new THREE.Scene();
-            scene.background = new THREE.Color(this.opts.background);	    
+	    scene.background = new THREE.Color(this.opts.background);
+
+
 	    
 	    this.addedRenderer = false;
             this.renderer = new THREE.WebGLRenderer({antialias:true});
             this.renderer.setSize(this.opts.width,this.opts.height);
-
-//	    const loader = new THREE.TextureLoader();
-//	    const bgTexture = loader.load('resources/images/daikanyama.jpg');
-//	    scene.background = bgTexture;
-
-/*
-
-	    let group = new THREE.Group();
-	    scene.add(group);
-	    var loader = new THREE.TextureLoader();
-	    loader.crossOrigin = '';
-	    loader.load('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/640px-Equirectangular_projection_SW.jpg', function(texture) {
-		var geometry = new THREE.SphereGeometry(180, 32, 32);
-		var material = new THREE.MeshBasicMaterial({
-//		    side: THREE.BackSide,
-		    map: texture,
-		    overdraw: 0.5
-		});
-		var mesh = new THREE.Mesh(geometry, material);
-		group.add(mesh);
-	    });
-
-*/
 
             let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,1000);
             let controls = this.controls = new THREE.OrbitControls(camera,this.renderer.domElement );
@@ -130,24 +156,11 @@ function Ramadda3DDisplay(models,props) {
 		$(this).focus();
 	    });
 	    jqid(this.divId).keypress((event) =>{
-		if(event.keyCode==118) {
-		    this.visible = !this.visible;
-		    this.models.forEach(model=>{
-			model.setVisible(this.visible);
-		    });
-		    return
-		}
-		if(event.key=="r") {
-		    this.setCameraPosition();
-		    return;
-		}
 		if(event.key=="d") {
 		    let str = this.getCameraPosition();
 		    Utils.copyToClipboard(str);
 		    console.log("copied to clipboard:");
 		    console.log(str);
-//		    console.dir(camera);
-//		    console.dir(this.controls);
 		}
 	    });
 	    if(this.opts.showAxes) {
@@ -164,6 +177,18 @@ function Ramadda3DDisplay(models,props) {
 		let model = this.models[0];
 		getGlobalRamadda().getEntry(model.entryid,entry=>{
 		    this.entry = entry;
+		    if(this.canEdit()) {
+			let buttons = [
+			    HU.span(['title','Set default camera position','class','ramadda-clickable','id',this.domId('_setcamera')],HU.getIconImage('fas fa-camera'))];
+			this.jq('_toolbarholder').html(Utils.join(buttons,HU.space(3)));
+			this.jq('_setcamera').click(()=>{
+			    let pos = this.getCameraPosition();
+			    let args = {'edit_media_3dmodel_camera_position':pos}
+			    this.doSave(args);
+			});
+		    }
+
+
 		    if(Utils.stringDefined(model.annotations)|| entry.canEdit()) {
 			let annotations = Utils.split(model.annotations,"\n",true,true);
 			this.initAnnotations(annotations);
@@ -186,7 +211,12 @@ function Ramadda3DDisplay(models,props) {
 			prefix = HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png'),
 				 ['title','View entry:' + model.name,'target','_entry']) +' ';
 		    }
-		    html+=HU.div(['model-index',idx,'class','ramadda-model-toc-item ' + clazz+' ramadda-clickable','id',this.divId+'_model_' + idx,'title','Toggle '+ model.name],prefix+HU.div(['style','display:inline-block;width:100%;','class','ramadda-model-toc-item-name', 'model-index',idx],model.name));
+		    let label = model.name;
+		    if(model.thumbnail) {
+			label +="<br>" + HU.image(model.thumbnail,['width','100px']);
+		    }
+
+		    html+=HU.div(['model-index',idx,'class','ramadda-model-toc-item ' + clazz+' ramadda-clickable','id',this.divId+'_model_' + idx,'title','Toggle '+ model.name],prefix+HU.div(['style','display:inline-block;width:100%;','class','ramadda-model-toc-item-name', 'model-index',idx],label));
 		});
 		toc.css('height',this.opts.height+"px");
 		toc.html(html);
@@ -243,6 +273,10 @@ function Ramadda3DDisplay(models,props) {
 	domId:function(suffix) {
 	    return this.divId+suffix;
 	},
+	doSave:function(args) {
+	    this.entry.doSave(this.opts.authtoken,args);
+	},
+
 	canEdit: function() {
 	    if(!this.entry) return false;
 	    return this.entry.canEdit();
@@ -310,27 +344,10 @@ function Ramadda3DDisplay(models,props) {
 	},
 	saveAnnotations:function(annotations) {
 	    this.initAnnotations(annotations);
-	    let a = Utils.join(annotations,"\n");
 	    let args = {
-		"edit_media_3dmodel_annotations":a,
-		entryid:this.models[0].entryid,
-		authtoken:this.opts.authtoken,
-		response:"json"
+		"edit_media_3dmodel_annotations":Utils.join(annotations,"\n"),
 	    }
-
-	    let url = ramaddaBaseUrl +"/entry/change";
-            $.post(url, args, (result) => {
-	    }).fail(error=>{
-		try {
-		    let json = JSON.parse(error.responseText);
-		    if(json.error)  {
-			alert("Error:" + json.error);
-			return;
-		    }
-		} catch(err) {
-		}
-		alert("Error:" + error.responseText);
-	    });
+	    this.entry.doSave(this.opts.authtoken,args);
 	},
 	addLights: function() {
 	    this.lights.forEach(light=>{
@@ -369,6 +386,30 @@ function Ramadda3DDisplay(models,props) {
 		});
 	    }
 	},	    
+	addBackground:function(backgroundImage, fixedBackgroundImage,object) {
+//	    let backgroundImage = this.opts.backgroundImage;
+//	    if(!backgroundImage) this.models.every(model=>{backgroundImage = model.backgroundImage;return !backgroundImage;});
+//	    let fixedBackgroundImage = this.opts.fixedBackgroundImage;
+//	    if(!fixedBackgroundImage) this.models.every(model=>{fixedBackgroundImage = model.fixedBackgroundImage;return !fixedBackgroundImage;});
+	    if(backgroundImage) {
+		var backgroundSphere = new THREE.Mesh(
+		    new THREE.SphereGeometry(100,10,10),
+		    new THREE.MeshBasicMaterial({
+			map: (new THREE.TextureLoader).load(backgroundImage),
+			side: THREE.DoubleSide
+		    })
+		);
+		this.scene.add(backgroundSphere);
+		object.backgroundSphere = backgroundSphere;
+	    }
+	    if(fixedBackgroundImage) {
+		new THREE.TextureLoader().load(fixedBackgroundImage, texture=> {
+		    this.scene.background = texture;  
+		    object.background = texture;
+		});
+	    }
+	},
+
 	getTocDiv:function() {
 	    return jqid(this.divId+"_toc");
 	},
@@ -458,6 +499,8 @@ function Ramadda3DDisplay(models,props) {
 	    this.controls.update();
 	},
 	initObject: function(model,object) {
+	    this.addBackground(model.backgroundImage, model.fixedBackgroundImage,model);
+
 	    model.setObject(object);
 	    if(!this.addedRenderer) {
 		jqid(this.threeId).html(this.renderer.domElement);
@@ -575,6 +618,17 @@ function Ramadda3DDisplay(models,props) {
 	animate:function() {
 	    this.renderer.render(this.scene,this.camera);
 	    requestAnimationFrame(()=>{this.animate();});
+	    if(this.opts.rotating) {
+		const delta = this.clock.getDelta();
+		this.models.forEach(model=>{
+		    if(model.object) {
+			if(!Utils.isDefined(model.originalRotation)) {
+			    model.originalRotation = {x:model.object.rotation.x,y:model.object.rotation.y,z:model.object.rotation.z};
+			}
+			model.object.rotation.y += 0.005;
+		    }
+		});
+	    }
 	}
     });
     setTimeout(()=>{this.init();},1);

@@ -250,6 +250,8 @@ function RamaddaRepository(repositoryRoot) {
         getJsonUrl: function(entryId) {
             return this.repositoryRoot + "/entry/show?entryid=" + entryId + "&output=json";
         },
+	
+
         createEntriesFromJson: function(data) {
             let entries = new Array();
             for (let i = 0; i < data.length; i++) {
@@ -735,6 +737,38 @@ function Entry(props) {
         getFullId: function() {
             return this.getRamadda().getRoot() + "," + this.id;
         },
+	//Note: this does not set this entry object's values
+	doSave: function(authtoken,args, success,error) {
+	    args = args||{};
+	    args.entryid = this.getId();
+	    args.authtoken = authtoken;
+	    args.response = "json";
+	    let url = ramaddaBaseUrl +"/entry/change";
+            $.post(url, args, (result) => {
+		if(success) {
+		    success(result);
+		}
+	    }).fail(error=>{
+		try {
+		    let json = JSON.parse(error.responseText);
+		    if(json.error)  {
+			if(error) {
+			    error(json.error);
+			}  else {
+			    alert("Error:" + json.error);
+			}
+			return;
+		    } else {
+		    }
+		} catch(err) {
+		}
+		if(error) {
+		    error(error.responseText);
+		} else {
+		    alert("Error:" + error.responseText);
+		}
+	    });
+	},
         getDisplayName: function() {
             if (this.displayName) return this.displayName;
             return this.getName();
