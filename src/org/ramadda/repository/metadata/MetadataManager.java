@@ -715,6 +715,16 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    public String getMetadataUrl(Request request, Entry entry, String type)
+            throws Exception {
+        List<Metadata> metadataList =  findMetadata(request, entry,type,true);
+	if(metadataList==null || metadataList.size()==0) return null;
+	String[]tuple=  getFileUrl(request, entry, metadataList.get(0));
+	if(tuple==null) return null;
+	return tuple[1];
+    }
+
+
 
     /**
      * _more_
