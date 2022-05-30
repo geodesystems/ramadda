@@ -346,10 +346,11 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 </wiki>
 </type>
 
-  <type name="media_3dmodel"  
-        description="3D Model" 
-        handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
-        category="Media" >
+<type name="media_3dmodel"
+      metadata="3dmodel_background,3dmodel_fixed_background,3dmodel_texture,3dmodel_normal"      
+      description="3D Model" 
+      handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
+      category="Media" >
     <property name="icon" value="/media/3dmodel.png"/>
     <property name="upload.zip" value="true"/>
 

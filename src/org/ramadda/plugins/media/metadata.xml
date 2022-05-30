@@ -23,7 +23,7 @@
 
 </handler>
 
-  <handler category="Thumbnails, Page Style,  Etc.">
+  <handler category="Miscellaneous">
     <type
        name="3D Model Background Image"
        id="3dmodel_background">
@@ -33,7 +33,17 @@
        name="3D Model Fixed Background Image"
        id="3dmodel_fixed_background">
       <element name="Background Image" datatype="file" thumbnail="false"/>
-    </type>    
+    </type>
+    <type
+       name="3D Model Texture"
+       id="3dmodel_texture">
+      <element name="Texture Image" datatype="file" thumbnail="false"/>
+    </type>
+    <type
+       name="3D Model Normal Map"
+       id="3dmodel_normal">
+      <element name="Normal Image" datatype="file" thumbnail="false"/>
+    </type>            
   </handler>
 
 

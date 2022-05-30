@@ -97,7 +97,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
         String modelFile = "";
         for (String path : files) {
-            if (path.toLowerCase().matches(".*(fbx|gltf|dae).*")) {
+            if (path.toLowerCase().matches(".*\\.(fbx|gltf|dae|3ds|obj)$")) {
                 modelFile = path;
                 break;
             }
@@ -179,6 +179,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	return get3DModelWiki(wikiUtil, request,originalEntry, entries,props);
     }
 
+
+    private void importJS(Request request, StringBuilder sb, String js) {
+        if (request.getExtraProperty(js) == null) {
+            request.putExtraProperty(js, "true");
+	    HU.importJS(sb, js);
+	}
+    }
+
     public String get3DModelWiki(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, List<Entry> entries,
                                  Hashtable props)
@@ -186,14 +194,47 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
 
 	List<String> models = new ArrayList<String>();
+	String[] jsImports = new String[]{
+	    ".gltf",  "//unpkg.com/three/examples/js/loaders/GLTFLoader.js",
+	    ".fbx","//unpkg.com/three/examples/js/loaders/FBXLoader.js",
+	    ".3ds","//unpkg.com/three/examples/js/loaders/TDSLoader.js",
+	    ".obj","//unpkg.com/three/examples/js/loaders/OBJLoader.js",			    
+	    ".dae","//unpkg.com/three/examples/js/loaders/ColladaLoader.js"};
+
+
+
+        StringBuilder sb = new StringBuilder();
+
+        if (request.getExtraProperty("3dmodeljs") == null) {
+            for (String js : new String[] {
+                "//unpkg.com/fflate",
+                "//cdn.jsdelivr.net/npm/fflate/umd/index.js",
+                "//unpkg.com/three",
+                getRepository().getHtdocsUrl("/lib/three/controls/OrbitControls.js"),
+                getRepository().getHtdocsUrl("/lib/three/model.js")
+            }) {
+                HU.importJS(sb, js);
+            }
+	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/three/model.css"));
+            request.putExtraProperty("3dmodeljs", "true");
+	}
+
+	
+
+
+	int cnt = 0;
 	for(Entry entry: entries) {
 	    String url;
 	    String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
+	    String  file;
+
 	    if (!Utils.stringDefined(modelFile)) {
 		url = getEntryManager().getEntryResourceUrl(request, entry);
+		file = entry.getResource().getPath();
 	    } else {
 		url = getRepository().getUrlBase() + "/entryfile/"
 		    + entry.getId() + "/" + modelFile;
+		file = modelFile;
 	    }
 	    List attrs = Utils.makeList("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
 					"name",JsonUtil.quote(entry.getName()));
@@ -207,6 +248,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    String thumbnail = getMetadataManager().getThumbnailUrl(request,  entry);
 	    if(thumbnail!=null)
 		Utils.add(attrs,"thumbnail",JsonUtil.quote(thumbnail));
+
+
+	    String include = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_texture");
+	    if(include!=null)
+		Utils.add(attrs,"texture",JsonUtil.quote(include));
+	    include = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_normal");
+	    if(include!=null)
+		Utils.add(attrs,"normal",JsonUtil.quote(include));	    
 
 
 	    String background = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_background");
@@ -229,27 +278,26 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
 	    }	    
 	    
+	    String snippet = getWikiManager().getSnippet(request, entry, true,null);
+	    if(snippet!=null) 
+		Utils.add(attrs,"description",JsonUtil.quote(snippet));
+
 	    Utils.add(attrs,"entryid",JsonUtil.quote(entry.getId()));
 	    models.add(JsonUtil.map(attrs));
+
+	    boolean gotOne = false;
+	    for(int i=0;i<jsImports.length;i+=2) {
+		if(file.indexOf(jsImports[i])>=0) {
+		    importJS(request, sb, jsImports[i+1]);
+		    gotOne = true;
+		    break;
+		}
+	    }
+	    if(!gotOne) {
+		return "Unknown file type:" +file;
+	    }
 	}
-        StringBuilder sb = new StringBuilder();
-        if (request.getExtraProperty("3dmodeljs") == null) {
-            for (String js : new String[] {
-                "//unpkg.com/fflate",
-                "//cdn.jsdelivr.net/npm/fflate/umd/index.js",
-                "//unpkg.com/three",
-                "//unpkg.com/three/examples/js/loaders/GLTFLoader.js",
-                "//unpkg.com/three/examples/js/loaders/FBXLoader.js",
-		"//unpkg.com/three/examples/js/loaders/ColladaLoader.js",
-                getRepository().getHtdocsUrl(
-					     "/lib/three/controls/OrbitControls.js"),
-                getRepository().getHtdocsUrl("/lib/three/model.js")
-            }) {
-                HU.importJS(sb, js);
-            }
-	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/three/model.css"));
-            request.putExtraProperty("3dmodeljs", "true");
-        }
+
         String id = HU.getUniqueId("model_");
 	sb.append("<table border=0 cellspacing=0 cellpadding=0><tr valign=top><td>");
 
@@ -277,7 +325,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    Utils.add(jsonProps,tmp.get(i),
 		      JsonUtil.quoteType(tmp.get(i+1)));
 	}
-        String js = "new Ramadda3DDisplay(" +
+        String js = "new Ramadda3DDisplayManager(" +
 	    JsonUtil.list(models) + "," +
 	    JsonUtil.map(jsonProps) + ");";
         HU.script(sb, js);
