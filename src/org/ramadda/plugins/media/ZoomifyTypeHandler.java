@@ -95,12 +95,13 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         List<String> commands = new ArrayList<String>();
         Utils.add(commands, "sh", slicer, "-i",
                   entry.getResource().getPath(), "-o", imagesDir.toString());
+	System.err.println(commands);
         ProcessBuilder pb = new ProcessBuilder(commands);
         pb.redirectErrorStream(true);
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
         String      result  = new String(IOUtil.readBytes(is));
-        if (result.trim().length() > 0) {
+        if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
             throw new IllegalArgumentException("Error running image slicer:"
                     + result);
         }
