@@ -3,34 +3,122 @@ function RamaddaModel3D(display,model,idx) {
     this.index = idx;
     this.visible = idx==0;
     $.extend(this,model);
-    $.extend(this,{
-	setObject:function(object) {
-	    this.object = object;
-	    if(!this.visible)
-		this.object.visible   =false;
-	},
+}
 
-	setVisible:function(v){
-	    if(this.backgroundSphere)
-		this.backgroundSphere.visible = v;
-	    if(this.object)
-		this.object.visible = v;
-	    this.visible = v;
-	    if(this.helper)
-		this.helper.visible = v;
+RamaddaModel3D.prototype = {
+    setObject:function(object) {
+	this.object = object;
+	if(!this.visible)
+	    this.object.visible   =false;
+    },
+
+    setVisible:function(v){
+	if(this.backgroundSphere)
+	    this.backgroundSphere.visible = v;
+	if(this.object)
+	    this.object.visible = v;
+	this.visible = v;
+	if(this.helper)
+	    this.helper.visible = v;
+    }
+}
 
 
-	}
+function Ramadda3DDisplayManager(models,props) {
+    this.properties = props||{};
+    this.opts = {
+	showToc:false,
+    }
+    $.extend(this.opts, props||{});
+    this.models = models.map((model,idx)=>{
+	return new RamaddaModel3D(this,model,idx);
     });
+
+    this.divId = this.opts.id||'model';
+
+    this.displays = [new Ramadda3DDisplay(this.models,props)];
+    setTimeout(()=>{this.init();},1);
+}
+
+Ramadda3DDisplayManager.prototype = {
+    init:function() {
+	if(this.opts.showToc) {
+	    this.showToc();
+	}
+	this.displays.forEach(display=>{display.init();});
+	this.models.forEach((model,idx)=>{
+	    if(model.visible) {
+		this.displays[0].loadModel(model);
+	    }
+	});
+
+    },
+    showToc:function() {
+	let _this = this;
+	let html = "";
+	let toc = this.getTocDiv();
+	toc.addClass('ramadda-model-toc');
+	this.models.forEach((model,idx)=>{
+	    let clazz = model.visible?'ramadda-model-toc-item-on':'ramadda-model-toc-item-off';
+	    let prefix ="";
+	    if(model.entryid) {
+		prefix = HU.div(['style',HU.css('margin-right','4px')],
+				HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png'),
+					['title','View entry:' + model.name,'target','_entry']));
+	    }
+	    let label = model.name;
+	    if(model.thumbnail) {
+		label +="<br>" + HU.image(model.thumbnail,['width','100px']);
+	    }
+
+	    let extra = "";
+	    if(model.description) {
+		extra +=HU.div(['model-index',idx,'class','ramadda-model-toc-item-description',
+				'style',HU.css('display',model.visible?'block':'none')], model.description);
+	    }
+
+	    html+=HU.div(['model-index',idx,'class','ramadda-model-toc-item ' + clazz,'id',this.divId+'_model_' + idx,'title','Toggle '+ model.name],
+			 '<table width=100%><tr valign=top><td>' +prefix+'</td><td width=99%>'+
+			 HU.div(['style','display:inline-block;width:100%;','class','ramadda-model-toc-item-name  ramadda-clickable', 'model-index',idx],label)+
+			 '</td></tr></table>'+extra);
+	});
+	toc.css('height',this.opts.height+"px");
+	toc.html(html);
+	toc.find('.ramadda-model-toc-item-name').click(function() {
+	    let item = $(this).closest('.ramadda-model-toc-item');
+	    let model =_this.models[$(this).attr('model-index')];
+	    let extra = item.find('.ramadda-model-toc-item-description');
+	    let display = _this.displays[0];
+	    if(model.visible) {
+		model.setVisible(false);
+		extra.hide();
+		item.removeClass('ramadda-model-toc-item-on');
+		
+		item.addClass('ramadda-model-toc-item-off');			
+	    } else {
+		model.setVisible(true);
+		extra.show();
+		item.removeClass('ramadda-model-toc-item-off');
+		item.addClass('ramadda-model-toc-item-on');			
+		if(!model.object) {
+		    _this.displays[0].loadModel(model);
+		}
+	    }
+	    if(model.object) {
+		display.layoutModels();
+	    }
+	    display.addLights();
+	});
+    },
+    getTocDiv:function() {
+	return jqid(this.divId+"_toc");
+    },
 }
 
 
 function Ramadda3DDisplay(models,props) {
-    this.models = models.map((model,idx)=>{
-	return new RamaddaModel3D(this,model,idx);
-    });
-    
     this.lights = [];
+    this.models = models;
     this.properties = props||{};
     this.opts = {
 	showToc:false,
@@ -40,8 +128,8 @@ function Ramadda3DDisplay(models,props) {
 	height:480,
 	boxSize:10,
 	showAxes:false,
-	axesSize:0,
-	axesColor:"green",
+	axesSize:10,
+	axesColor:"#000000",
 	axesColorX:null,
 	axesColorY:null,
 	axesColorZ:null,		
@@ -52,7 +140,6 @@ function Ramadda3DDisplay(models,props) {
 	ambientLight:"#f0f0f0,1",
 	lights:"#f0f0f0,0,10,0,1;"
     }
-
 
     let getBbox = (object) =>{
 	return new THREE.Box3().setFromObject(object);
@@ -90,6 +177,7 @@ function Ramadda3DDisplay(models,props) {
 		HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]);
 	    let buttons = [];
 	    buttons.push(HU.span(['id',this.domId('_toolbarholder')]));
+	    buttons.push(HU.span(['title','Show grid','class','ramadda-clickable','id',this.domId('_grid')],HU.getIconImage('fas fa-table-cells')));
 	    buttons.push(HU.span(['title','Set ambient light','class','ramadda-clickable','id',this.domId('_light')],HU.getIconImage('fas fa-lightbulb')));
 	    buttons.push(HU.span(['title','Reset view','class','ramadda-clickable','id',this.domId('_home')],HU.getIconImage('fas fa-house')));
 	    buttons.push(HU.span(['title','Auto-rotate','class','ramadda-clickable','id',this.domId('_play')],HU.getIconImage('fas fa-play')));
@@ -99,6 +187,10 @@ function Ramadda3DDisplay(models,props) {
 		HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'id',this.domId('_toolbar')],toolbar)		
 ;
 	    jqid(this.divId).html(html);
+
+	    jqid(this.domId('_grid')).click(()=> {
+		this.toggleGrid();
+	    });
 
 	    jqid(this.domId('_light')).click(()=> {
 		let light = prompt("Set Light (format: color,intensity e.g, #ff0000,5):",this.getProperty("ambientLight",null));
@@ -135,11 +227,9 @@ function Ramadda3DDisplay(models,props) {
 	    this.clock   = new THREE.Clock();
 	    let scene = this.scene = new THREE.Scene();
 	    scene.background = new THREE.Color(this.opts.background);
-
-
-	    
 	    this.addedRenderer = false;
             this.renderer = new THREE.WebGLRenderer({antialias:true});
+	    this.renderer.outputEncoding = THREE.sRGBEncoding;
             this.renderer.setSize(this.opts.width,this.opts.height);
 
             let camera = this.camera = new THREE.PerspectiveCamera(this.opts.cameraAngle,this.opts.width/this.opts.height,1,1000);
@@ -195,58 +285,7 @@ function Ramadda3DDisplay(models,props) {
 		    }
 		});
 	    }
-
 	    this.addLights();
-
-
-
-	    if(this.getProperty("showToc")) {
-		let html = "";
-		let toc = this.getTocDiv();
-		toc.addClass('ramadda-model-toc');
-		this.models.forEach((model,idx)=>{
-		    let clazz = model.visible?'ramadda-model-toc-item-on':'ramadda-model-toc-item-off';
-		    let prefix ="";
-		    if(model.entryid) {
-			prefix = HU.href(ramaddaBaseUrl + '/entry/show?entryid=' + model.entryid,HU.getIconImage(ramaddaBaseUrl+'/media/3dmodel.png'),
-				 ['title','View entry:' + model.name,'target','_entry']) +' ';
-		    }
-		    let label = model.name;
-		    if(model.thumbnail) {
-			label +="<br>" + HU.image(model.thumbnail,['width','100px']);
-		    }
-
-		    html+=HU.div(['model-index',idx,'class','ramadda-model-toc-item ' + clazz+' ramadda-clickable','id',this.divId+'_model_' + idx,'title','Toggle '+ model.name],prefix+HU.div(['style','display:inline-block;width:100%;','class','ramadda-model-toc-item-name', 'model-index',idx],label));
-		});
-		toc.css('height',this.opts.height+"px");
-		toc.html(html);
-		toc.find('.ramadda-model-toc-item-name').click(function() {
-		    let item = $(this).parent();
-		    let model =_this.models[$(this).attr('model-index')];
-		    if(model.visible) {
-			model.setVisible(false);
-			item.removeClass('ramadda-model-toc-item-on');
-			item.addClass('ramadda-model-toc-item-off');			
-		    } else {
-			model.setVisible(true);
-			item.removeClass('ramadda-model-toc-item-off');
-			item.addClass('ramadda-model-toc-item-on');			
-			if(!model.object) {
-			    _this.loadModel(model);
-			}
-		    }
-		    if(model.object) {
-			_this.layoutModels();
-		    }
-		    _this.addLights();
-		});
-	    }
-
-	    this.models.forEach((model,idx)=>{
-		if(model.visible) {
-		    this.loadModel(model);
-		}
-	    });
 	},
 	incrLoading:function(d) {
 	    this.loadingCount +=d;
@@ -349,7 +388,38 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	    this.entry.doSave(this.opts.authtoken,args);
 	},
+	grids:null,
+	toggleGrid:function() {
+	    if(this.grids==null) {
+		let grids = this.grids = [];
+		let gridSize  = this.getProperty("gridSize",50);
+		let divisions=this.getProperty("gridDivisions",10);
+		let gc = this.getProperty("gridColor",0x888888);
+		var gridXZ = new THREE.GridHelper(gridSize,divisions, gc,gc);
+		gridXZ.position.y = -gridSize/2;
+		grids.push(gridXZ);
+
+		var gridXY = new THREE.GridHelper(gridSize,divisions, gc,gc);
+		gridXY.position.z = -gridSize/2;
+		gridXY.rotation.x = Math.PI / 2;
+		grids.push(gridXY);
+
+		var gridYZ = new THREE.GridHelper(gridSize,divisions, gc,gc);
+		gridYZ.position.x = -gridSize/2;
+		gridYZ.rotation.z = Math.PI / 2;
+		grids.push(gridYZ);
+		grids.forEach(grid=>{
+		    this.scene.add(grid);
+		});
+		this.gridVisible = true;
+		return
+	    }
+	    this.gridVisible = !this.gridVisible;
+	    this.grids.forEach(grid=>{grid.visible = this.gridVisible;});
+	},
+
 	addLights: function() {
+
 	    this.lights.forEach(light=>{
 		this.scene.remove(light);
 	    });
@@ -410,9 +480,7 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	},
 
-	getTocDiv:function() {
-	    return jqid(this.divId+"_toc");
-	},
+
 	getAnnotationsDiv:function() {
 	    return jqid(this.divId+"_annotations");
 	},	
@@ -452,6 +520,16 @@ function Ramadda3DDisplay(models,props) {
 			this.animate();
 		    },
 		    update,error);
+	    } else  if(url.match(/\.3ds/gi)) {
+		let loader = new THREE.TDSLoader( );
+		this.incrLoading(1);
+		loader.load(url, ( object )=> {
+		    this.incrLoading(-1);
+		    console.log("loaded 3ds model:" + model.name +" " +url);
+		    this.scene.add(object);
+		    this.initObject(model,object);
+		    this.animate();
+		} );
 	    } else  if(url.match(/\.dae/gi)) {
 		const loader = new THREE.ColladaLoader();
 		this.incrLoading(1);
@@ -463,6 +541,16 @@ function Ramadda3DDisplay(models,props) {
 		    this.initObject(model,player);
 		    this.animate();
 		});
+	    } else  if(url.match(/\.obj/gi)) {
+		const loader = new THREE.OBJLoader();
+		this.incrLoading(1);
+		loader.load(url,object =>{
+		    this.incrLoading(-1);
+		    console.log("loaded obj model:" + model.name +" " +url);
+		    this.scene.add( object );
+		    this.initObject(model,object);
+		    this.animate();
+		});		
 	    } else {
 		alert("Unknown model:" + url);
 	    }
@@ -499,6 +587,24 @@ function Ramadda3DDisplay(models,props) {
 	    this.controls.update();
 	},
 	initObject: function(model,object) {
+	    if(model.texture) {
+		const textureLoader = new THREE.TextureLoader( );
+		const texture = textureLoader.load(model.texture);
+		object.traverse( function ( child ) {
+		    if ( child.isMesh ) child.material.map = texture;
+		} );		
+	    }
+
+	    if(model.normal) {
+		const normal = new THREE.TextureLoader().load(model.normal);
+		object.traverse( function ( child ) {
+		    if (child.isMesh ) {
+			child.material.specular.setScalar( 0.1 );
+			child.material.normalMap = normal;
+		    }
+		} );
+	    }
+
 	    this.addBackground(model.backgroundImage, model.fixedBackgroundImage,model);
 
 	    model.setObject(object);
@@ -619,7 +725,6 @@ function Ramadda3DDisplay(models,props) {
 	    this.renderer.render(this.scene,this.camera);
 	    requestAnimationFrame(()=>{this.animate();});
 	    if(this.opts.rotating) {
-		const delta = this.clock.getDelta();
 		this.models.forEach(model=>{
 		    if(model.object) {
 			if(!Utils.isDefined(model.originalRotation)) {
@@ -631,5 +736,4 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	}
     });
-    setTimeout(()=>{this.init();},1);
 }

@@ -15,7 +15,8 @@
 }
 
 .ramadda-model-toc {
-    max-width:200px;
+    width:250px;
+    max-width:250px;
     overflow-x:hidden;
     border:1px solid #ccc;
     border-right:0px solid #ccc;    
@@ -27,12 +28,21 @@
     border-bottom:1px solid #efefef;
 }
 
+.ramadda-model-toc-item-description {
+    white-space:normal;
+}
+
+.ramadda-model-toc-item-description {
+}
+
 .ramadda-model-toc-item-off {
 }
 
 
 .ramadda-model-toc-item-on {
-    background:#dfdfdf;
+    background:#f4f4f4;
+    xborder-top:1px solid #ccc;
+    border-bottom:1px solid #ccc;    
 }
 
 .ramadda-model-toolbar {
