@@ -244,6 +244,7 @@ public class MetadataManager extends RepositoryManager {
                                               null)), jlicense, priority);
                 licenses.add(license);
                 licenseMap.put(license.getId(), license);
+                licenseMap.put(license.getId().toLowerCase(), license);		
             }
         }
         Collections.sort(licenses);
