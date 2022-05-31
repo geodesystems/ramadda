@@ -37,6 +37,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapManager;
+import org.ramadda.repository.metadata.License;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.metadata.MetadataType;
@@ -2119,6 +2120,26 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         } else if (theTag.equals(WIKI_TAG_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
 							 getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
+        } else if (theTag.equals("license")) {
+	    License license = getMetadataManager().getLicense(remainder.trim());
+	    if(license==null) {
+		//a hack  for the cc licenses
+		license = getMetadataManager().getLicense(remainder.trim()+"-4.0");
+	    }
+	    if(license==null) {
+		return remainder;
+	    }
+	    String result= "";
+	    String icon = license.getIcon();
+	    if(icon!=null) {
+		result =   HU.image(icon,
+                                    HU.attrs("title",license.getName(),"width", "60", "border", "0"));
+	    } else {
+		result = license.getName();
+	    }
+	    String url = license.getUrl();
+            if(url!=null) result =  HU.href(url, result, "target=_other");
+	    return result;
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
