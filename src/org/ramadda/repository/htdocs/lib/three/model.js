@@ -449,7 +449,6 @@ function Ramadda3DDisplay(models,props) {
 
 
 	addLights: function() {
-
 	    this.lights.forEach(light=>{
 		this.scene.remove(light);
 	    });
@@ -470,7 +469,6 @@ function Ramadda3DDisplay(models,props) {
 		this.scene.add(light);
 	    }
 	    let addLight=(v,x,y,z,i) =>{
-		return
 		if(!Utils.isDefined(i)) i=1;
 		let c = new THREE.Color(v);
 		let light = new THREE.PointLight(c.getHex(),i,0,2);
@@ -481,8 +479,14 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	    let lights =this.getProperty("lights","");
 	    if(Utils.stringDefined(lights) && lights!="none") {
-		Utils.split(lights,";",true,true).forEach(s=>{
+		let color = null;
+		Utils.split(lights,"\n",true,true).forEach(s=>{
 		    let tuple = s.split(",");
+		    if(tuple.length==4)  {
+			color = tuple[0];
+		    } else if(tuple.length==3 && color) {
+			tuple = [color,...tuple];
+		    }
 		    if(tuple.length<4)  {
 			console.log("Bad light:" + s);
 			return;
@@ -492,10 +496,6 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	},	    
 	addBackground:function(backgroundImage, fixedBackgroundImage,object) {
-//	    let backgroundImage = this.opts.backgroundImage;
-//	    if(!backgroundImage) this.models.every(model=>{backgroundImage = model.backgroundImage;return !backgroundImage;});
-//	    let fixedBackgroundImage = this.opts.fixedBackgroundImage;
-//	    if(!fixedBackgroundImage) this.models.every(model=>{fixedBackgroundImage = model.fixedBackgroundImage;return !fixedBackgroundImage;});
 	    if(backgroundImage) {
 		var backgroundSphere = new THREE.Mesh(
 		    new THREE.SphereGeometry(100,10,10),
