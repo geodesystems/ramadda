@@ -21,6 +21,7 @@ import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.IOUtil;
 
 import java.io.*;
@@ -50,6 +51,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
     private static final int IDX_AMBIENT_LIGHT = IDX++;
 
     private static final int IDX_LIGHTS = IDX++;
+    private static final int IDX_PROPERTIES = IDX++;        
     private static final int IDX_ANNOTATIONS = IDX++;        
 
     /**
@@ -273,6 +275,17 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"lights",JsonUtil.quote(tmp));
 	    }
+	    tmp= (String)entry.getValue(IDX_PROPERTIES);
+	    if(Utils.stringDefined(tmp)) {
+		for(String line: Utils.split(tmp,"\n",true,true)) {
+		    List<String> toks = StringUtil.splitUpTo(line,"=",2);
+		    if(toks.size()==2) {
+			Utils.add(attrs,toks.get(0).trim(),JsonUtil.quoteType(toks.get(1).trim()));
+		    }
+		}
+	    }
+
+
 	    tmp= (String)entry.getValue(IDX_ANNOTATIONS);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
