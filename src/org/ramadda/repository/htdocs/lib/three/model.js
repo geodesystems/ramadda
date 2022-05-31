@@ -139,7 +139,7 @@ function Ramadda3DDisplay(models,props) {
 	bboxColor:"#ff0000",
 	cameraPosition:"0.11023,3.22046,17.05354;-0.12947,0.00640,0.00083",
 	ambientLight:"#f0f0f0,1",
-	lights:"#f0f0f0,0,10,0,1;"
+	lights:""
     }
 
     let getBbox = (object) =>{
@@ -461,10 +461,11 @@ function Ramadda3DDisplay(models,props) {
 		if(al[0]=="") al[0]="#404040";
 		if(al[1]=="") al[0]="5";
 		let light;
-		if(al.length==2)
+		if(al.length==2) {
 		    light = new THREE.AmbientLight(new THREE.Color(al[0]).getHex(),+al[1]);
-		else
-		    light = new THREE.HemisphereLight(new THREE.Color(al[0]).getHex(),new THREE.Color(al[1]).getHex(),+al[2]);		
+		} else {
+		    light = new THREE.HemisphereLight(new THREE.Color(al[0]).getHex(),new THREE.Color(al[1]).getHex(),+al[2]);
+		}
 		this.lights.push(light);
 		this.scene.add(light);
 	    }
