@@ -127,6 +127,7 @@ function Ramadda3DDisplay(models,props) {
 	width:640,
 	height:480,
 	boxSize:10,
+	showCheckerboard:false,
 	showAxes:false,
 	axesSize:10,
 	axesColor:"#000000",
@@ -286,6 +287,14 @@ function Ramadda3DDisplay(models,props) {
 		});
 	    }
 	    this.addLights();
+	    if(this.getProperty("showGrid")) {
+		this.toggleGrid();
+	    }
+
+	    if(this.getProperty("showCheckerboard")) {
+		this.addChecker(this.opts.width);
+	    }
+	    this.animate();
 	},
 	incrLoading:function(d) {
 	    this.loadingCount +=d;
@@ -418,6 +427,27 @@ function Ramadda3DDisplay(models,props) {
 	    this.grids.forEach(grid=>{grid.visible = this.gridVisible;});
 	},
 
+	addChecker:function(width) {
+	    const planeSize = width*1.1;
+	    const loader = new THREE.TextureLoader();
+	    const texture = loader.load(ramaddaBaseUrl+'/images/checker.png');
+	    texture.wrapS = THREE.RepeatWrapping;
+	    texture.wrapT = THREE.RepeatWrapping;
+	    texture.magFilter = THREE.NearestFilter;
+	    const repeats = planeSize / 2;
+	    texture.repeat.set(repeats, repeats);
+	    const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+	    const planeMat = new THREE.MeshPhongMaterial({
+		map: texture,
+		side: THREE.DoubleSide,
+	    });
+	    const mesh = new THREE.Mesh(planeGeo, planeMat);
+	    mesh.rotation.x = Math.PI * -.5;
+	    mesh.position.y = -10;
+	    this.scene.add(mesh);
+	},
+
+
 	addLights: function() {
 
 	    this.lights.forEach(light=>{
@@ -431,11 +461,16 @@ function Ramadda3DDisplay(models,props) {
 		else if(al.length==1) al.push("30");
 		if(al[0]=="") al[0]="#404040";
 		if(al[1]=="") al[0]="5";
-		let light = new THREE.AmbientLight(new THREE.Color(al[0]).getHex(),+al[1]);
+		let light;
+		if(al.length==2)
+		    light = new THREE.AmbientLight(new THREE.Color(al[0]).getHex(),+al[1]);
+		else
+		    light = new THREE.HemisphereLight(new THREE.Color(al[0]).getHex(),new THREE.Color(al[1]).getHex(),+al[2]);		
 		this.lights.push(light);
 		this.scene.add(light);
 	    }
 	    let addLight=(v,x,y,z,i) =>{
+		return
 		if(!Utils.isDefined(i)) i=1;
 		let c = new THREE.Color(v);
 		let light = new THREE.PointLight(c.getHex(),i,0,2);
@@ -504,7 +539,6 @@ function Ramadda3DDisplay(models,props) {
 		    let obj = gltf.scene.children[0];
 		    this.initObject(model,gltf.scene);
 		    this.scene.add(gltf.scene);
-		    this.animate();
 		},update,error);
 	    } else  if(url.match(/\.fbx/gi)) {
 		const fbxLoader = new THREE.FBXLoader()
@@ -517,7 +551,6 @@ function Ramadda3DDisplay(models,props) {
 			console.log("loaded fbx model:" + model.name +" " +url);
 			this.scene.add(object);
 			this.initObject(model,object);
-			this.animate();
 		    },
 		    update,error);
 	    } else  if(url.match(/\.3ds/gi)) {
@@ -528,7 +561,6 @@ function Ramadda3DDisplay(models,props) {
 		    console.log("loaded 3ds model:" + model.name +" " +url);
 		    this.scene.add(object);
 		    this.initObject(model,object);
-		    this.animate();
 		} );
 	    } else  if(url.match(/\.dae/gi)) {
 		const loader = new THREE.ColladaLoader();
@@ -539,7 +571,6 @@ function Ramadda3DDisplay(models,props) {
 		    let player = collada.scene;
 		    this.scene.add( player );
 		    this.initObject(model,player);
-		    this.animate();
 		});
 	    } else  if(url.match(/\.obj/gi)) {
 		const loader = new THREE.OBJLoader();
@@ -549,7 +580,6 @@ function Ramadda3DDisplay(models,props) {
 		    console.log("loaded obj model:" + model.name +" " +url);
 		    this.scene.add( object );
 		    this.initObject(model,object);
-		    this.animate();
 		});		
 	    } else {
 		alert("Unknown model:" + url);
@@ -617,7 +647,7 @@ function Ramadda3DDisplay(models,props) {
 	    doScale(object,this.opts.boxSize);
 	    object.position.sub(getCenter(object));
 	    object.updateWorldMatrix(true,true);
-	    if(offset = this.getModelOpt(model,"offset")) {
+	    if(offset = this.getModelProperty(model,"offset")) {
 		offset = offset.split(",");
 		let base = offset[0];
 		object.position.add(new THREE.Vector3(parseFloat(offset[0]),parseFloat(offset[1]||0),parseFloat(offset[2]||0)));
@@ -626,7 +656,7 @@ function Ramadda3DDisplay(models,props) {
 	    this.layoutModels();
 
 	    object.updateWorldMatrix(true,true);
-	    this.addHelper(model,this.getModelOpt(model,"bboxColor"));
+	    this.addHelper(model,this.getModelProperty(model,"bboxColor"));
 	},
 	layoutModels:function() {
 	    let visible = [];
@@ -644,7 +674,7 @@ function Ramadda3DDisplay(models,props) {
 	    };
 	    if(visible.length==1) {
 		clear(visible[0]);
-		this.addHelper(visible[0],this.getModelOpt(visible[0],"bboxColor"));
+		this.addHelper(visible[0],this.getModelProperty(visible[0],"bboxColor"));
 		return;
 	    }
 	    let w = 1.2*this.opts.boxSize;
@@ -661,7 +691,7 @@ function Ramadda3DDisplay(models,props) {
 		dx+=w;
 		model.layoutOffset = new THREE.Vector3(offsetX,0,0);
 		model.object.position.add(model.layoutOffset);		    
-		this.addHelper(model,this.getModelOpt(model,"bboxColor"));
+		this.addHelper(model,this.getModelProperty(model,"bboxColor"));
 	    });
 	},
 
@@ -692,7 +722,7 @@ function Ramadda3DDisplay(models,props) {
 	    return dflt;
 	},
 
-	getModelOpt:function(model,what,dflt) {
+	getModelProperty:function(model,what,dflt) {
 	    let idx = model.index;
 	    if(Utils.isDefined(model[what])) {
 		return model[what];
@@ -700,7 +730,7 @@ function Ramadda3DDisplay(models,props) {
 	    return this.opts[what+"_" + model.id] || this.opts[what+"_" + idx] || this.opts[what] || dflt;
 	},
 	addHelper:function(model, color) {
-	    if(!this.getModelOpt(model,"showBbox",false)) {
+	    if(!this.getModelProperty(model,"showBbox",false)) {
 		return;
 	    }
 	    if(typeof color == "string") color = new THREE.Color(color).getHex();
