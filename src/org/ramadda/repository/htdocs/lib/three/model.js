@@ -296,6 +296,9 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	    this.animate();
 	},
+	singleModel:function() {
+	    return this.models.length==1;
+	},
 	incrLoading:function(d) {
 	    this.loadingCount +=d;
 	    if(this.loadingCount<=0) {
@@ -497,6 +500,7 @@ function Ramadda3DDisplay(models,props) {
 	    }
 	},	    
 	addBackground:function(backgroundImage, fixedBackgroundImage,object) {
+	    if(!this.singleModel()) return;
 	    if(backgroundImage) {
 		var backgroundSphere = new THREE.Mesh(
 		    new THREE.SphereGeometry(100,10,10),
