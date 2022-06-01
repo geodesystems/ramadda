@@ -395,6 +395,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 +center
 {{3dmodel  width=800 height=500 showToc=true sort="entryorder,name"}}
 -center
+:p
 :heading Model Files
 {{tabletree  simple="false"  message=""}} 
 -section
