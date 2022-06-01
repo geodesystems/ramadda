@@ -4488,10 +4488,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    snippet = StringUtil.findPattern(
 						     text, "(?s)\\+snippet(.*?)-snippet");
 		}
-		if (snippet == null) {
-		    snippet = StringUtil.findPattern(
-						     text, "(?s)\\+note.*?(.*?)-note");
-		}		
 	    }
 	}
         child.setSnippet(snippet);
