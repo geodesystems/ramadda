@@ -281,7 +281,6 @@ Ramadda3DDisplay.prototype = {
 		$(this).html(icon('fas fa-play'));
 	    }
 	});
-	this.clock   = new THREE.Clock();
 	let scene = this.scene = new THREE.Scene();
 	scene.background = new THREE.Color(this.opts.background);
 	this.addedRenderer = false;
@@ -608,7 +607,6 @@ Ramadda3DDisplay.prototype = {
     loadModel:function(model) {
 	let _this = this;
 	let update = (xhr)=>{
-	    //		console.log("loading...");
 	};
 	let error =  (error) => {
 	    this.incrLoading(-1);
@@ -738,11 +736,14 @@ Ramadda3DDisplay.prototype = {
 	    let base = offset[0];
 	    object.position.add(new THREE.Vector3(parseFloat(offset[0]),parseFloat(offset[1]||0),parseFloat(offset[2]||0)));
 	}
-
 	this.layoutModels();
-
 	object.updateWorldMatrix(true,true);
 	this.addHelper(model,this.getModelProperty(model,"bboxColor"));
+	//Set the camera position if this is the first model loaded
+	if(!this.loadedModels) {
+	    this.loadedModels =true;
+	    this.setCameraPosition();
+	}
     },
     layoutModels:function() {
 	let visible = [];
