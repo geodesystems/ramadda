@@ -2309,7 +2309,6 @@ public class RowCollector extends Processor {
 						    Utils.getProperty(props, "format", this.format));
                     if (this.format != null) {
                         sdf = new SimpleDateFormat(this.format);
-
                     }
                 }
             }
@@ -2318,6 +2317,7 @@ public class RowCollector extends Processor {
 		return name;
 	    }
 
+	    boolean loggedError = false;
             /**
              * _more_
              *
@@ -2330,9 +2330,12 @@ public class RowCollector extends Processor {
                     if (format.equals("SSS")) {
                         return new Date(Long.parseLong(v.toString()) * 1000);
                     }
-
                     return sdf.parse(v.toString());
                 } catch (Exception exc) {
+		    if(!loggedError) {
+			System.err.println("Unable to parse date:" + v +" with format:" + this.format);
+			loggedError = true;
+		    }
                     return null;
                 }
             }
