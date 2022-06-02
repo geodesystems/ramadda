@@ -74,6 +74,9 @@ Ramadda3DDisplayManager.prototype = {
 	});
 
     },
+    annotationsEnabled: function() {
+	return this.models.length==1 && this.models[0].entryid;
+    },
     getSubDivId:function(idx) {
 	return  this.divId +'_display' + idx;
     },
@@ -440,7 +443,11 @@ Ramadda3DDisplay.prototype = {
 	if(!this.entry) return false;
 	return this.entry.canEdit();
     },
+    getManager:function() {
+	return this.opts.manager;
+    },
     initAnnotations:function(annotations) {
+	if(!this.getManager().annotationsEnabled()) return;
 	let html = "";
 	let _this = this;
 	let canEdit = this.canEdit();
@@ -470,7 +477,7 @@ Ramadda3DDisplay.prototype = {
 	    if(canEdit) {
 		topLabel+=" " + HU.span(['class','ramadda-clickable ramadda-model-annotation-add','title','Add annotation'],HU.getIconImage('fas fa-plus'));
 	    }
-	    div.html(HU.div(['style',HU.css('height',this.opts.manager.opts.height+'px'),'class','ramadda-model-annotations'], topLabel + html));
+	    div.html(HU.div(['style',HU.css('height',this.getManager().opts.height+'px'),'class','ramadda-model-annotations'], topLabel + html));
 	    div.find('.ramadda-model-annotation').click(function() {
 		_this.setCameraPosition($(this).attr('3dposition'));
 	    });
@@ -690,7 +697,7 @@ Ramadda3DDisplay.prototype = {
 
 
     getAnnotationsDiv:function() {
-	return jqid(this.opts.manager.divId+"_annotations");
+	return jqid(this.getManager().divId+"_annotations");
     },	
     loadModel:function(model) {
 	let _this = this;
