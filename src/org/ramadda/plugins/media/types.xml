@@ -362,7 +362,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <column name="ambient_light" type="string" label="Ambient Light" help="color,intensity -- e.g., #f0f0f0,1"/>
      <column changetype="true" name="lights" type="string" label="Lights" rows="5" columns="60" size="1000" help="color1,x1,y1,z1 e.g., #f0f0f0,10,0,0"/>
      <column name="properties" type="string" rows="10" columns="90" size="10000" label="Properties" showinform="true"
-	     help="showCheckerboard=true&lt;br&gt;showAxes=true&lt;br&gt;showBbox=true&lt;br&gt;showGrid=true gridColor=blue gridSize=50 gridDivisions=10"/>
+	     help="showPlanes=true planeColorX=#ff0000 planeSize=50 showCheckerboard=true showAxes=true showBbox=true showGrid=true gridColor=blue gridSize=50 gridDivisions=10 addLightHelper=true"/>
      <column name="annotations" type="string" rows="10" columns="90" size="10000" label="Annotations" showinform="true"
 	     help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz;note"/>
 />     
