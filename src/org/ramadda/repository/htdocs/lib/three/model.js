@@ -240,12 +240,6 @@ Ramadda3DDisplay.prototype = {
 	scene.background = new THREE.Color(this.opts.background);
 
 
-	if(this.getProperty("showPlanes",false)) {
-	    this.addPlanes();
-	}
-
-
-
 	this.addedRenderer = false;
         this.renderer = new THREE.WebGLRenderer({antialias:true});
 	this.renderer.outputEncoding = THREE.sRGBEncoding;
@@ -300,9 +294,15 @@ Ramadda3DDisplay.prototype = {
 	    });
 	}
 	this.addLights();
-	if(this.getProperty("showGrid")) {
+	let debug = false;
+//	let debug = this.models[0].name.indexOf("Burden")>=0;
+	if(this.getProperty("showGrid",false,debug)) {
 	    this.toggleGrid();
 	}
+	if(this.getProperty("showPlanes",false,debug)) {
+	    this.addPlanes();
+	}
+
 	this.animate();
     },
     showMenu:function(button) {
@@ -878,16 +878,20 @@ Ramadda3DDisplay.prototype = {
 	});
     },
 
-    getProperty:function(what,dflt) {
-	let debug = false;
+    getProperty:function(what,dflt,debug) {
 	if(debug)
 	    console.log("getProperty:" + what);
 	if(Utils.isDefined(this.properties[what])) {
+	    if(debug)
+		console.log("\tfrom this.properties[what]");
 	    return this.properties[what];
 	}
 	let v = null;
 	this.models.every(model=>{
-	    if(!model.visible) return true;
+	    if(!model.visible) {
+		if(this.models.length>1)
+		    return true;
+	    }
 	    if(Utils.isDefined(model[what])) {
 		if(debug)
 		    console.log("\tfrom:" +model.name +" " + model[what]);
@@ -902,6 +906,8 @@ Ramadda3DDisplay.prototype = {
 		console.log("\tfrom opts:" + this.opts[what]);
 	    return this.opts[what];
 	}
+	if(debug)
+	    console.log("\tfrom dflt:" + dflt);
 	return dflt;
     },
 
