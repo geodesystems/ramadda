@@ -51,6 +51,7 @@ function Ramadda3DDisplayManager(models,props) {
     jqid(this.divId).css('width',this.opts.width).css('height',this.opts.height).css('max-width',this.opts.width).css('max-height',this.opts.height).css('overflow-y','hide');
     jqid(this.divId).html(html);
     this.displays = [];
+    props.manager = this;
     this.models.forEach((model,idx)=>{
 	let displayProps = $.extend({},props);
 	displayProps.divId = this.getSubDivId(idx);
@@ -464,23 +465,23 @@ Ramadda3DDisplay.prototype = {
 	    html+=HU.div([],btns +label);
 	});
 	if(canEdit || html!="") {
-	    this.getAnnotationsDiv().css('height',this.opts.height+"px");
+	    let div = this.getAnnotationsDiv();
 	    let topLabel = HU.b("Annotations");
 	    if(canEdit) {
 		topLabel+=" " + HU.span(['class','ramadda-clickable ramadda-model-annotation-add','title','Add annotation'],HU.getIconImage('fas fa-plus'));
 	    }
-	    this.getAnnotationsDiv().html(HU.div(['style',HU.css('height',this.opts.height+"px"),'class','ramadda-model-annotations'], topLabel + html));
-	    this.getAnnotationsDiv().find('.ramadda-model-annotation').click(function() {
+	    div.html(HU.div(['style',HU.css('height',this.opts.manager.opts.height+'px'),'class','ramadda-model-annotations'], topLabel + html));
+	    div.find('.ramadda-model-annotation').click(function() {
 		_this.setCameraPosition($(this).attr('3dposition'));
 	    });
-	    this.getAnnotationsDiv().find('.ramadda-model-annotation-add').click(function() {
+	    div.find('.ramadda-model-annotation-add').click(function() {
 		let comment = prompt("Annotation:");
 		if(!Utils.stringDefined(comment)) return;
 		let line =  _this.getCameraPosition()+";" + comment;
 		annotations.push(line);
 		_this.saveAnnotations(annotations);
 	    });
-	    this.getAnnotationsDiv().find('.ramadda-model-annotation-edit').click(function() {
+	    div.find('.ramadda-model-annotation-edit').click(function() {
 		let idx = $(this).attr('annotation-index');
 		let line = annotations[idx];
 		let toks = Utils.split(line,";");
@@ -492,7 +493,7 @@ Ramadda3DDisplay.prototype = {
 		    _this.saveAnnotations(annotations);
 		}
 	    });		
-	    this.getAnnotationsDiv().find('.ramadda-model-annotation-delete').click(function() {
+	    div.find('.ramadda-model-annotation-delete').click(function() {
 		if(!window.confirm("Are you sure you want to delete the annotation?")) return
 		let idx = $(this).attr('annotation-index');
 		annotations.splice(idx,1);
@@ -689,7 +690,7 @@ Ramadda3DDisplay.prototype = {
 
 
     getAnnotationsDiv:function() {
-	return jqid(this.divId+"_annotations");
+	return jqid(this.opts.manager.divId+"_annotations");
     },	
     loadModel:function(model) {
 	let _this = this;
