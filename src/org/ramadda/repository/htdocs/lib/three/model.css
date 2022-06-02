@@ -4,6 +4,13 @@
     line-height:0px;
 }
 
+.ramadda-model-3ddisplay {
+}
+
+.ramadda-model-3ddisplay:focus {
+ outline: none;
+}
+
 .ramadda-model-annotations {
     border:1px solid #ccc;
     border-left:0px solid #ccc;    
@@ -46,6 +53,7 @@
 }
 
 .ramadda-model-toolbar {
-    margin-right:2px;    
+    padding-top:6px;    
+    margin-right:6px;    
 }
 
