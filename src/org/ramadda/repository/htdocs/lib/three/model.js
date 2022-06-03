@@ -157,7 +157,7 @@ Ramadda3DDisplayManager.prototype = {
 	    cols = Math.ceil(Math.sqrt(cntVisible));
 	    let rows = Math.ceil(cntVisible/cols);
 	    width = width/cols-1;
-	    height = Math.floor(baseHeight/rows);
+	    height = Math.floor(baseHeight/rows)-1;
 	    if(cntVisible==2) height=baseHeight;
 	}
 	let cnt=0;
@@ -224,22 +224,8 @@ Ramadda3DDisplay.prototype = {
 	this.threeId = this.domId("_three");
 	jqid(this.divId).css('background',"#"+this.opts.background).css('position','relative');
 	let menuButton = HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars'));
-	let background="";
-	let loading = HU.div(['style',HU.css('width','100px','text-align','center','position','absolute','left','10px','top','10px')],
-			     "Loading..." +"<br>" +
-			     HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]));
-	
-	if(this.models.length>0 && this.models[0].thumbnail) {
-	    let thumbnail = this.models[0].thumbnail
-	    background+=HU.div(['style',HU.css('position','absolute','left','0px','right','0px')],
-			       HU.image(thumbnail,['width','100%','style','filter: blur(3px);-webkit-filter: blur(3px);']));
-	}
-	background+=loading;
-
-
+	let background=HU.div(['id',this.domId('_background'),'style',HU.css('position','relative','width','100%')]);
 	let extra = HU.div(['id',this.domId('_background')], background)   +   menuButton;
-
-
 	let html = HU.div(['id',this.threeId]) +  extra;
 	
 
@@ -391,6 +377,9 @@ Ramadda3DDisplay.prototype = {
     },
     resize:function(width,height) {
 	if(!this.camera || !this.renderer) return;
+	this.opts.width=width;
+	this.opts.height=height;
+	this.jq('_loadingbg').css('max-height',HU.getDimension(this.opts.height));
 	if(this.checkerBoard) this.scene.remove(this.checkerBoard);
 	if(this.getProperty("showCheckerboard")) {
 	    this.addChecker(width);
@@ -437,8 +426,12 @@ Ramadda3DDisplay.prototype = {
 	return  get(camera.position)+";" + get(camera.rotation) +";"+get(this.controls.target);
     },
     checkLoading:function() {
-	if(this.loadingCount>0) this.jq('_background').show();
-	else  this.jq('_background').hide();
+	if(this.loadingCount>0) {
+	    this.jq('_background').show();
+	} else {
+	    this.jq('_background').hide();
+	    this.jq('_loadingbg').hide();
+	}
     },
     jq:function(suffix) {
 	return jqid(this.domId(suffix));
@@ -706,11 +699,25 @@ Ramadda3DDisplay.prototype = {
 	}
     },
 
-
     getAnnotationsDiv:function() {
 	return jqid(this.getManager().divId+"_annotations");
     },	
     loadModel:function(model) {
+	let loading = "";
+	if(this.models.length>0 && this.models[0].thumbnail) {
+	    let thumbnail = this.models[0].thumbnail
+	    loading+=HU.div(['id',this.domId('_loadingbg'),'style',HU.css('max-height',HU.getDimension(this.opts.height),'overflow-y','hidden','margin','1px','position','absolute','left','0px','right','0px')],
+			    HU.image(thumbnail,['width','100%','style','filter: blur(3px);-webkit-filter: blur(3px);']));
+	}
+
+	loading += HU.div(['style',HU.css('width','100px','text-align','center','position','absolute','left','10px','top','10px')],
+			     "Loading..." +"<br>" +
+			     HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]));
+	
+	this.jq('_background').html(loading);
+
+
+
 	let _this = this;
 	let update = (xhr)=>{
 	};
