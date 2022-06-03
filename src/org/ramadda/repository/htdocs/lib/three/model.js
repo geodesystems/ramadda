@@ -223,14 +223,25 @@ Ramadda3DDisplay.prototype = {
 	this.divId = this.opts.divId;
 	this.threeId = this.domId("_three");
 	jqid(this.divId).css('background',"#"+this.opts.background).css('position','relative');
-	let loading = "Loading..." +"<br>" +
-	    HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]);
-	let menuButton = HU.div(['class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars'));
-	let html = HU.div(['id',this.threeId]) +
-	    HU.div(['style',HU.css('display','none','width','100px','text-align','center','position','absolute','left','10px','top','10px'),'id',this.domId('_loading')],loading) +
-	    HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'id',this.domId('_toolbar')],menuButton);		
-	;
+	let menuButton = HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars'));
+	let background="";
+	let loading = HU.div(['style',HU.css('width','100px','text-align','center','position','absolute','left','10px','top','10px')],
+			     "Loading..." +"<br>" +
+			     HU.image(ramaddaBaseUrl  + "/icons/mapprogress.gif",['style',HU.css('width','60px')]));
+	
+	if(this.models.length>0 && this.models[0].thumbnail) {
+	    let thumbnail = this.models[0].thumbnail
+	    background+=HU.div(['style',HU.css('position','absolute','left','0px','right','0px')],
+			       HU.image(thumbnail,['width','100%','style','filter: blur(3px);-webkit-filter: blur(3px);']));
+	}
+	background+=loading;
 
+
+	let extra = HU.div(['id',this.domId('_background')], background)   +   menuButton;
+
+
+	let html = HU.div(['id',this.threeId]) +  extra;
+	
 
 	jqid(this.divId).html(html);
 
@@ -426,8 +437,8 @@ Ramadda3DDisplay.prototype = {
 	return  get(camera.position)+";" + get(camera.rotation) +";"+get(this.controls.target);
     },
     checkLoading:function() {
-	if(this.loadingCount>0) this.jq('_loading').show();
-	else  this.jq('_loading').hide();
+	if(this.loadingCount>0) this.jq('_background').show();
+	else  this.jq('_background').hide();
     },
     jq:function(suffix) {
 	return jqid(this.domId(suffix));
