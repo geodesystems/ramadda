@@ -858,7 +858,7 @@ Ramadda3DDisplay.prototype = {
 	}
 	this.layoutModels();
 	object.updateWorldMatrix(true,true);
-	this.addHelper(model,this.getModelProperty(model,"bboxColor"));
+	this.addBbox(model,this.getModelProperty(model,"bboxColor"));
 	//Set the camera position if this is the first model loaded
 	if(!this.loadedModels) {
 	    this.loadedModels =true;
@@ -876,14 +876,14 @@ Ramadda3DDisplay.prototype = {
 		model.object.position.sub(model.layoutOffset);
 		model.layoutOffset=null;
 	    }
-	    if(model.helper) {
-		this.scene.remove(model.helper);
-		model.helper = null;
+	    if(model.bbox) {
+		this.scene.remove(model.bbox);
+		model.bbox = null;
 	    }
 	};
 	if(visible.length==1) {
 	    clear(visible[0]);
-	    this.addHelper(visible[0],this.getModelProperty(visible[0],"bboxColor"));
+	    this.addBbox(visible[0],this.getModelProperty(visible[0],"bboxColor"));
 	    return;
 	}
 	let w = 1.2*this.opts.boxSize;
@@ -900,7 +900,7 @@ Ramadda3DDisplay.prototype = {
 	    dx+=w;
 	    model.layoutOffset = new THREE.Vector3(offsetX,0,0);
 	    model.object.position.add(model.layoutOffset);		    
-	    this.addHelper(model,this.getModelProperty(model,"bboxColor"));
+	    this.addBbox(model,this.getModelProperty(model,"bboxColor"));
 	});
     },
 
@@ -944,28 +944,19 @@ Ramadda3DDisplay.prototype = {
 	}
 	return this.opts[what+"_" + model.id] || this.opts[what+"_" + idx] || this.opts[what] || dflt;
     },
-    addHelper:function(model, color) {
+    addBbox:function(model, color) {
 	if(!this.getModelProperty(model,"showBbox",false)) {
 	    return;
 	}
 	if(typeof color == "string") color = new THREE.Color(color).getHex();
 	if(!Utils.isDefined(color)) color = 0xff0000;
-	if(model.helper) {
-	    this.scene.remove(model.helper);
+	if(model.bbox) {
+	    this.scene.remove(model.bbox);
 	}
-	model.helper = new THREE.BoxHelper(model.object, color);
-	model.helper.update();
-	this.scene.add(model.helper);	    
+	model.bbox = new THREE.BoxHelper(model.object, color);
+	model.bbox.update();
+	this.scene.add(model.bbox);	    
     },
-    parseInt:function(v,dflt) {
-	if(typeof v == "number") return v;
-	if(!v) return  dflt;
-	if(v.match("rgb")) v = Utils.rgbToHex(v);
-	if(v.startsWith("#")) v = v.substring(1);
-	if(!v.startsWith("0x")) v = '0x' + v;
-	return parseInt(Number(v), 10);
-    },
-
     animate:function() {
 	this.renderer.render(this.scene,this.camera);
 	requestAnimationFrame(()=>{this.animate();});
