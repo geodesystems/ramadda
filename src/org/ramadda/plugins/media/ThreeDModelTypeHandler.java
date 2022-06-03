@@ -246,6 +246,11 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"cameraPosition",JsonUtil.quote(tmp));
 	    }
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
+	    if(urls.size()>0) {
+		Utils.add(attrs,"thumbnail",JsonUtil.quote(urls.get(0)));
+	    }
 
 	    String thumbnail = getMetadataManager().getThumbnailUrl(request,  entry);
 	    if(thumbnail!=null)
