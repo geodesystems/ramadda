@@ -80,7 +80,7 @@ Ramadda3DDisplayManager.prototype = {
     getSubDivId:function(idx) {
 	return  this.divId +'_display' + idx;
     },
-    isSeparate: function() {
+    hasMultiples: function() {
 	return this.separate && this.models.length>1;
     },
     showToc:function() {
@@ -132,7 +132,7 @@ Ramadda3DDisplayManager.prototype = {
 		    model.display.loadModel(model);
 		}
 	    }
-	    if(_this.isSeparate()) {
+	    if(_this.hasMultiples()) {
 		_this.doLayout();
 	    }
 	    if(model.object) {
@@ -257,6 +257,9 @@ Ramadda3DDisplay.prototype = {
         let controls = this.controls = new THREE.OrbitControls(camera,this.renderer.domElement );
         controls.addEventListener('change', (event)=>{
 	    this.renderer.render(scene,camera);
+	    if(this.getManager().shareCameraPosition) {
+		this.shareCamera();
+	    }
 	});
 	setTimeout(()=>{
 	    this.setCameraPosition();
@@ -306,6 +309,27 @@ Ramadda3DDisplay.prototype = {
 
 	this.animate();
     },
+    shareCamera: function() {
+	this.sharingCamera = true;
+	let pos = this.getCameraPosition();
+	this.getManager().models.forEach(model=>{
+	    let otherDisplay = model.display;
+	    if(otherDisplay.sharingCamera || !otherDisplay.showingModels()) return;
+	    otherDisplay.setCameraPosition(pos);
+	});
+	this.sharingCamera = false;
+    },
+    showingModels:function() {
+	let showing = false;
+	this.models.every(model=>{
+	    if(model.object) {
+		showing = true;
+		return false;
+	    }
+	    return true;
+	});
+	return showing;
+    },
     showMenu:function(button) {
 	let _this =  this;
 	let icon=(i,lbl)=>{
@@ -321,6 +345,8 @@ Ramadda3DDisplay.prototype = {
 	}
 	
 	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?'fas fa-stop':'fas fa-play','Auto-rotate')));
+	buttons.push(HU.checkbox(this.domId('_sharing'), [],this.getManager().shareCameraPosition,"Share position"));
+	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?'fas fa-stop':'fas fa-play','Auto-rotate')));	
 	buttons.push(HU.span(['id',this.domId('_grid')],icon('fas fa-table-cells','Show grid')));
 	buttons.push(HU.span(['id',this.domId('_light')],icon('fas fa-lightbulb','Set ambient light')));
 	buttons.push(HU.span(['id',this.domId('_home')],icon('fas fa-house','Reset view')));
@@ -334,7 +360,10 @@ Ramadda3DDisplay.prototype = {
 	    this.toggleGrid();
 	});
 
-	jqid(this.domId('_light')).click(()=> {
+	this.jq('_sharing').change(function() {
+	    _this.getManager().shareCameraPosition = $(this).is(':checked');
+	});
+	this.jq('_light').click(()=> {
 	    let light = prompt("Set Light (format: color,intensity e.g, #ff0000,5):",this.getProperty("ambientLight",null));
 	    if(light===null) return;
 	    light=light.trim();
