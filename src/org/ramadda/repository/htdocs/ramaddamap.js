@@ -2234,6 +2234,7 @@ RepositoryMap.prototype = {
         tick.css("zIndex", "100");
     },
     dateFeatureOver:  function(feature) {
+	this.closeTicks();
         let tick = this.getFeatureTick(feature);
         tick.css("background-color", this.params.tickHoverColor);
         tick.css("zIndex", "100");
@@ -2244,6 +2245,7 @@ RepositoryMap.prototype = {
         tick.tooltip("open");
     },
     dateFeatureOut:  function(feature) {
+	this.closeTicks();
         let tick = this.getFeatureTick(feature);
         if (feature && (feature == this.startFeature || feature == this.endFeature)) {
             tick.css("background-color", this.params.tickSelectColor);
@@ -2253,7 +2255,15 @@ RepositoryMap.prototype = {
             tick.css("zIndex", "0");
         }
         this.tickOpen = null;
-        tick.tooltip("close");
+    },
+    closeTicks:function() {
+	let all =this.getAllTicks();
+	all.tooltip("close");
+        all.css("background-color", "");
+    },
+
+    getAllTicks:function() {
+	return jqid(this.mapDivId + "_animation_ticks").find(".ramadda-map-animation-tick");
     },
     getFeatureTick:  function(feature) {
         if (!feature)
