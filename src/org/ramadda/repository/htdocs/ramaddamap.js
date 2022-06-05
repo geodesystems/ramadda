@@ -1553,6 +1553,38 @@ RepositoryMap.prototype = {
             "default": defaultStyle,
             "select": selectStyle
         });
+
+	let ruleString =this.getProperty("rules");
+	if(Utils.stringDefined(ruleString)) {
+	    let rules = [];
+	    Utils.split(ruleString,";",true,true).forEach(line=>{
+		let toks = Utils.split(line,":");
+		//rules="OWN_TYPE_NAME:~:.*Conversation.*:fillColor:red"
+		if(toks.length<3) {
+		    console.log("bad rule:" + line);
+		    return;
+		}
+		let tmp = $.extend({},defaultStyle);
+		for(let i=3;i<toks.length;i+=2) {
+		    tmp[toks[i]] = toks[i+1];
+		}
+//		console.log("TOKS:" + toks[0] + ":" + toks[1] +":" + toks[2]+":"+OpenLayers.Filter.Comparison.LIKE);
+		var rule = new OpenLayers.Rule({
+		    filter: new OpenLayers.Filter.Comparison({
+			property: toks[0],
+			type: toks[1],
+			value: toks[2]
+		    }),
+		    symbolizer: tmp
+		});
+		rules.push(rule);
+	    });
+	    var elseRule = new OpenLayers.Rule({
+		elseFilter: true
+	    });
+	    rules.push(elseRule);
+	    map.styles.default.addRules(rules);
+	}
         return map;
     },
 
@@ -1887,7 +1919,7 @@ RepositoryMap.prototype = {
                     else if (lclabel == "awater") label = "Water Area";
                     label = label.replace(/_/g, " ");
                     label = Utils.camelCase(label);
-                    out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                    out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + HU.span(['title',attr],label) + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
                     let value;
                     if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
                         let o = p[attr];
@@ -1899,7 +1931,7 @@ RepositoryMap.prototype = {
                         value = "<a href='" + value + "'>" + value + "</a>";
                     }
                     if (value == "null") continue;
-                    out += value;
+		    out += value;
                     out += "</div></td></tr>";
                 }
                 out += "</table>";
