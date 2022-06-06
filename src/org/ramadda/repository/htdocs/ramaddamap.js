@@ -2944,7 +2944,16 @@ RepositoryMap.prototype = {
 
             //                cbx.prop("checked", cbxall.is(':checked')).trigger("change");
         });
+
+	for(let markerIdx=1;true;markerIdx++) {
+	    let marker = this.getProperty("marker" + markerIdx);
+	    if(!marker) break;
+	    this.addMarkerEmbed(marker);
+	}	
+
+
     },
+
 
     applyDefaultLocation:  function() {	
 	if(debugBounds)
@@ -4078,6 +4087,52 @@ RepositoryMap.prototype = {
         feature.what = "marker";
         return feature;
     },
+
+    addMarkerEmbed:function(marker) {
+	let props = {};
+	if(marker.startsWith("base64:")) {
+	    marker = window.atob(marker.substring(7));
+	}
+	if (marker.indexOf("{") == 0) {
+	    props = JSON.parse(marker);
+	} else {
+	    let [lat,lon,text] = marker.split(",");
+	    props.lat = lat;props.lon = lon; props.text = text;
+	}
+	let point = new OpenLayers.LonLat(parseFloat(props.lon), parseFloat(props.lat));
+	if(props.size==null || props.size=="") props.size=16;
+	let type = props.type || "icon"
+	let attrs = props;
+	attrs.pointRadius=props.size||"16";
+	attrs.labelYOffset = -8-attrs.pointRadius;
+	/*
+	  if(!props.description) props.description = "";
+	  if(!Utils.isAnonymous()) {
+	  props.description +="<br>" + "edit";
+	  }
+	*/
+
+	if(type == "icon") {
+	    let icon = props.icon || "/markers/marker-red.png";
+	    //addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect) {
+	    this.addMarker("", point,icon,props.description,props.description,"",parseFloat(props.size||"16"),null,true,attrs);
+	} else {
+	    //addPoint:  function(id, point, attrs, text, notReally, textGetter)
+	    attrs.fillColor=attrs.fillColor||"blue";
+	    attrs.strokeWidth=attrs.strokeWidth||"1";		    
+	    attrs.graphicName=type;
+	    if(type=="none") {
+		attrs.graphicName = "circle";
+		attrs.pointRadius=0;
+		attrs.fillColor="transparent";
+	    }
+	    this.addPoint("", point, attrs, props.description);
+	    if(attrs.graphicName!="circle") 
+		this.addPoint("", point, {pointRadius:attrs.pointRadius, strokeColor:"transparent", fillColor:"transparent"},props.description);
+	}
+	this.doPopup=true;
+    },
+
 
    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
