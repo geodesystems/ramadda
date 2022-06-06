@@ -7888,53 +7888,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 defaultLayer = layers.get(0).getAttr1();
             }
 
-            List<Metadata> markers =
-                getMetadataManager().findMetadata(request, entry,
-						  new String[]{"map_marker"}, true);
-            if ((markers != null) && (markers.size() > 0)) {
-                int cnt = 1;
-                for (Metadata mtd : markers) {
-                    int idx = 1;
-                    //The order is defined in resources/metadata.xml Map Marker metadata
-                    List<String> attrs      = new ArrayList<String>();
-                    String       markerDesc = mtd.getAttr(idx++);
-                    List<String> toks =
-                        Utils.splitUpTo(mtd.getAttr(idx++), ",", 2);
-                    String lat        = (toks.size() > 0)
-			? toks.get(0)
-			: "";
-                    String lon        = (toks.size() > 1)
-			? toks.get(1)
-			: "";
-                    String markerType = mtd.getAttr(idx++);
-                    String markerIcon = mtd.getAttr(idx++);
-                    Utils.add(attrs, "metadataId", mtd.getId(),
-                              "description", markerDesc, "lat", lat, "lon",
-                              lon, "type", markerType, "icon", markerIcon);
-                    for (String attr :
-			     Utils.split(mtd.getAttr(idx++), "\n", true,
-					 true)) {
-                        if (attr.startsWith("#")) {
-                            continue;
-                        }
-                        List<String> pair = Utils.splitUpTo(attr, "=",
-							    2);
-                        attrs.addAll(pair);
-                        if (pair.size() == 1) {
-                            attrs.add("");
-                        }
-                    }
-                    String json = JsonUtil.mapAndQuote(attrs);
-                    Utils.add(propList, "marker" + cnt,
-                              JsonUtil.quote("base64:"
-					     + Utils.encodeBase64(json)));
-                    cnt++;
-                }
-            }
-        }
+	    getMapManager().addMapMarkerMetadata(request, entry, propList);
 
+	}
 
-        if (defaultLayer != null) {
+	if (defaultLayer != null) {
             Utils.add(propList, "defaultMapLayer", JsonUtil.quote(defaultLayer));
             props.remove("defaultLayer");
             props.remove("defaultMapLayer");

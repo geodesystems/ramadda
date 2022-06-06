@@ -1103,8 +1103,11 @@ public class MapInfo {
      */
     public void addLine(Entry entry, String id, double fromLat,
                         double fromLon, double toLat, double toLon,
-                        String info) {
+                        String info)  {
         StringBuilder attrs = new StringBuilder("{");
+	JsonUtil.attr(attrs,"strokeWidth","2");
+	attrs.append(",");
+	JsonUtil.attr(attrs,"strokeColor",JsonUtil.quote("red"));	
         entry.getTypeHandler().initMapAttrs(entry, this, attrs);
         attrs.append("}");
         String name = entry.getName().replaceAll("'", "\\\\'");
