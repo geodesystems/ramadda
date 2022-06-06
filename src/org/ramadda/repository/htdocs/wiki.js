@@ -1356,6 +1356,8 @@ class  WikiEditor {
 		{p:'layerFillColor',ex:'red'},
 		{p:'layerFillOpacity',ex:'0.5'},				
 
+		{p:'rules',ex:'attr1:== or != or &lt; or &gt; or  ~ (like):value:fillColor:red:strokeColor:black;attr2:',
+		 tt:'Specify style rules based on feature properties'},
 		{p:'pointRadius',ex:''},
 		{p:'strokeColor',ex:''},
 		{p:'strokeWidth',ex:''},
