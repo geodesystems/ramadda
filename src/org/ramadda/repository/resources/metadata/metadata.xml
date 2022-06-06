@@ -195,24 +195,6 @@ Control how entries are displayed.
       <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
     </type>
 
-    <type
-       name="Entry Map Bubble"
-       category="Map"
-       showinhtml="false"       
-       id="content.mapbubble">
-      <help>
-<![CDATA[
-Specify a wiki template to use for the map bubble shown for an entry
-]]>
-</help>
-      <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="folder:Folder,file:File"
-               suffix="Entry type that this page style is applicable to"/>
-      <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
-               suffix=""/>
-      <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
-      <element name="wikitemplate" label="Wiki Template" datatype="wiki" rows="20"/>
-    </type>
-
 
     <type
        name="Page Template"
@@ -334,22 +316,10 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     </type>
   </handler>
 
-  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"   category="Map" >
-    <type
-       name="Camera direction"
-       id="camera.direction">
-      <help>
-<![CDATA[
-This gets draw in maps as a direction indicator.
-]]>
-</help>
-      <element name="Direction" datatype="double" suffix="Degrees"/>
-      <element name="Distance" datatype="double" suffix="KM" default="1.0"/>
-    </type>
-  </handler>
 
 
-  <handler class="org.ramadda.repository.metadata.MetadataHandler"        category="Miscellaneous">
+  <handler class="org.ramadda.repository.metadata.MetadataHandler"
+	   category="Miscellaneous">
     <type name="Contact" id="content.contact">
       <element name="Name" />
       <element name="Email" datatype="email"/>
@@ -365,56 +335,7 @@ This gets draw in maps as a direction indicator.
     </type>
 -->
 
-    <type 
-       name="Named Spatial Region"
-       foruser="false"
-       category="Map"
-       id="spatial.region">
-      <element name="value"/>
-    </type>
 
-
-
-    <type
-       name="Map Marker"
-       foruser="true"
-       category="Map"
-       showinhtml="false"
-       id="map_marker">
-<!-- todo: sometime implement a change facility 
-      <change generation="1" type="insert" index="0" value=""/>
--->
-      <element name="Description" rows="3" />
-      <element name="Position" datatype="latlon"/>
-      <element name="Type" datatype="enumeration" default="icon" values="icon,circle,square,rectangle,star,cross,triangle,none"/>
-      <element name="Icon" datatype="enumerationplus" default="/markers/marker-red.png" values="/markers/marker-red.png:red,/markers/marker-green.png:green,/markers/marker-blue.png:blue,/markers/marker-gold.png:gold"/>
-      <element name="Attributes" rows="6" suffix="e.g.,&lt;br&gt;label=&lt;br&gt;size=16&lt;br&gt;strokeColor=red&lt;br&gt;strokeWidth=4&lt;br&gt;fillColor=blue&lt;br&gt;"/>      
-    </type>
-
-
-
-    <type
-       name="Spatial Polygon Coordinates"
-       foruser="true"
-       category="Map"
-       showinhtml="false"
-       id="spatial.polygon">
-      <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
-      <element name="polygon2" suffix="..."/>
-      <element name="polygon3" suffix="..."/>
-      <element name="polygon4" suffix="..."/>
-      <element name="polygon5" suffix="..."/>
-      <element name="polygon6" suffix="..."/>      
-    </type>
-
-    <type
-       name="KML Polygon Coordinates"
-       category="Map"
-       foruser="false"
-       showinhtml="false"
-       id="spatial.kmlpolycoords">
-      <element name="polygon1" suffix="lon,lat "/>
-    </type>
 
     <type name="Biography" id="content.biography"       displaycategory="Biography">
       <element  name="Name"/>
