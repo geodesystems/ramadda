@@ -453,10 +453,13 @@ public class JsonUtil {
      *
      * @throws Exception _more_
      */
-    public static void attr(Appendable sb, String name, String value)
-            throws Exception {
-        sb.append(mapKey(name));
-        sb.append(getString(value, false));
+    public static void attr(Appendable sb, String name, String value) {
+	try {
+	    sb.append(mapKey(name));
+	    sb.append(getString(value, false));
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     /**
