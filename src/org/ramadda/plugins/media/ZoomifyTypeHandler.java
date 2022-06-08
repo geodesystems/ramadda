@@ -39,6 +39,7 @@ import java.util.List;
  */
 public class ZoomifyTypeHandler extends GenericTypeHandler {
 
+    private static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
     /**  */
     private static int IDX = 0;
 
@@ -53,6 +54,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
 
     /**  */
     private static final int IDX_STYLE = IDX++;
+    private static final int IDX_ANNOTATIONS = IDX++;    
 
     /**
      * _more_
@@ -107,6 +109,10 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         }
     }
 
+    private String htdocs(String path) {
+	return getPageHandler().makeHtdocsUrl(path);
+    }
+
 
     /**
      * _more_
@@ -133,37 +139,51 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
         StringBuilder sb     = new StringBuilder();
-        String        width  = Utils.getProperty(props, "width", "800px");
-        String        height = Utils.getProperty(props, "height", "600px");
-        String style = HU.css("width", HU.makeDim(width, null), "height",
-                              HU.makeDim(height, null), "border",
+	int iwidth = entry.getValue(IDX_IMAGE_WIDTH,0);
+	int iheight = entry.getValue(IDX_IMAGE_HEIGHT,0);	
+        String        width  = Utils.getProperty(props, "width", iwidth==0?"800px":iwidth+"px");
+        String        height = Utils.getProperty(props, "height", iheight==0?"600px":iheight+"px");
+        String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
+				  HU.makeDim(height, null),
+				  "padding","1px");
+        String style = HU.css("width", HU.makeDim(width, null),
+			      "border",
                               "1px solid #aaa", "color", "#333",
                               "background-color", "#fff");
+
+
         String s = (String) entry.getValue(IDX_STYLE);
         if (Utils.stringDefined(s)) {
             style += s;
         }
 	style += Utils.getProperty(props, "style","");
         style = style.replaceAll("\n", " ");
-        //      sb.append(HU.importCss( ".openseadragon {" + style +"}"));
         if (request.getExtraProperty("seadragon_added") == null) {
-            HU.importJS(
-                sb,
-                getPageHandler().makeHtdocsUrl(
-                    "/lib/openseadragon/openseadragon.min.js"));
+            HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon.min.js"));
+	    HU.cssLink(sb, htdocs("/lib/annotorius/annotorious.min.css"));
+            HU.importJS(sb,htdocs("/lib/annotorius/openseadragon-annotorious.min.js"));
+            HU.importJS(sb,htdocs("/lib/annotorius/annotorious-toolbar.min.js"));
+	    HU.cssLink(sb,htdocs("/media/zoomify.css"));
+            HU.importJS(sb,htdocs("/media/zoomify.js"));	    	    
             request.putExtraProperty("seadragon_added", "true");
         }
 
-        String id = HU.getUniqueId("seadragon_div");
-        sb.append("<center>\n");
-        HU.div(sb, "", HU.attrs("id", id, "style", style));
-        sb.append("\n</center>\n");
+	boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        sb.append("<div style='text-align:center;'><div style='text-align:left;display:inline-block;'\n");
+        String id = HU.getUniqueId("zoomify_div");
+	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
+	String top = HU.div("", HU.attrs("id", id+"_top"));
+	String bottom = HU.div("", HU.attrs("id", id+"_bottom"));
+        sb.append(HU.div(top +
+			 HU.div(main + bottom,HU.attrs("style", style)),""));
+	       
+        sb.append("\n</div></div>\n");
         List<String> jsonProps = new ArrayList<String>();
         List<String> tiles     = new ArrayList<String>();
         Utils.add(jsonProps, "id", JsonUtil.quote(id), "showNavigator",
                   "true", "maxZoomLevel", "18", "prefixUrl",
                   JsonUtil.quote(getRepository().getUrlBase()
-                                 + "/lib/openseadragon/images/"));
+                                 + OSD_PATH+"/images/"));
         Utils.add(jsonProps, "showRotationControl", "true",
                   "gestureSettingsTouch",
                   JsonUtil.map(Utils.add(null, "pinchRotate", "true")));
@@ -192,8 +212,19 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         String attrs = JsonUtil.map(jsonProps);
 
         String var   = HU.getUniqueId("seadragon");
-        HU.script(sb, "var " + var + "=OpenSeadragon(" + attrs + ");\n");
-
+	StringBuilder js = new StringBuilder();
+        String annotations = (String) entry.getValue(IDX_ANNOTATIONS);
+	if(!Utils.stringDefined(annotations)) {
+	    annotations = "[]";
+	}
+	js.append("var annotations = " + annotations+"\n");
+	String authToken = "";
+	String sessionId = request.getSessionId();	
+	if(sessionId!=null) {
+	    authToken = RepositoryUtil.hashString(sessionId);
+	}
+	js.append("new RamaddaZoomify(" + HU.comma(HU.quote(entry.getId()),HU.quote(authToken),attrs,HU.quote(id),""+ canEdit,annotations)+");\n");
+	HU.script(sb, js.toString());
         return sb.toString();
     }
 

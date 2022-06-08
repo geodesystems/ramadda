@@ -1,0 +1,21 @@
+
+.ramadda-zoomify-annotation-bar {
+    vertical-align:top;
+    border-top:1px solid #ccc;
+    overflow-x:auto;
+}
+
+
+.ramadda-zoomify-annotation {
+    min-width:150px;
+    padding-left:5px;
+    padding-right:5px;
+}
+
+.ramadda-zoomify-annotation-body {
+    max-height:150px;
+    overflow-y:auto;
+}
+
+.a9s-annotation .a9s-inner {
+}
