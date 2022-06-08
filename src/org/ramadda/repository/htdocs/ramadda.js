@@ -11,6 +11,39 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     fileDrops:{
     },
+    doSave: function(entryId,authtoken,args, success,errorFunc) {
+	args = args||{};
+	args.entryid = entryId;
+	args.authtoken = authtoken;
+	args.response = "json";
+	let url = ramaddaBaseUrl +"/entry/change";
+        $.post(url, args, (result) => {
+	    if(success) {
+		success(result);
+	    }
+	}).fail(error=>{
+	    try {
+		let json = JSON.parse(error.responseText);
+		if(json.error)  {
+		    if(error) {
+			error(json.error);
+		    }  else {
+			alert("Error:" + json.error);
+		    }
+		    return;
+		} else {
+		}
+	    } catch(err) {
+	    }
+	    if(errorFunc) {
+		errorFunc(error.responseText);
+	    } else {
+		alert("Error:" + error.responseText);
+	    }
+	});
+    },
+
+
     initEntryTable:function(id,opts,json) {
 	let entryMap = {};
 	if(Utils.isDefined(opts.details) && opts.details==false) {
