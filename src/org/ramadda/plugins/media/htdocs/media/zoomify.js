@@ -30,6 +30,8 @@ RamaddaZoomify.prototype = {
     showAnnotations: function(annotations) {
 	let html = "";
 	annotations = annotations ||this.annotation.getAnnotations();
+	let width = "100%";
+	if(annotations.length>0) width = Math.floor(100/annotations.length) +"%";
 	annotations.forEach((annotation,aidx)=>{
 	    let contents = [];
 	    let title = "";
@@ -50,7 +52,7 @@ RamaddaZoomify.prototype = {
 	    if(contents.length>0) {
 		body += HU.div(['class','ramadda-zoomify-annotation-body'],Utils.join(contents,"<br>"));
 	    }
-	    html+=HU.td(['class','ramadda-clickable ramadda-hoverable ramadda-zoomify-annotation','index',aidx], body);
+	    html+=HU.td(['width',width,'class','ramadda-clickable ramadda-hoverable ramadda-zoomify-annotation','index',aidx], body);
 	});
 
 	html = HU.div(['class','ramadda-zoomify-annotation-bar'], HU.table([],HU.tr(['valign','top'],html)));

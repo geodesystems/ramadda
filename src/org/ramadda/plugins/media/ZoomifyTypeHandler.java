@@ -145,7 +145,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         String        height = Utils.getProperty(props, "height", "600px");
         String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
 				  HU.makeDim(height, null),
-				  "padding","1px");
+				  "padding","2px");
         String style = HU.css("width", HU.makeDim(width, null),
 			      "border",
                               "1px solid #aaa", "color", "#333",
@@ -175,7 +175,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
 	String top = HU.div("", HU.attrs("id", id+"_top"));
 	String bottom = HU.div("", HU.attrs("id", id+"_bottom"));
         sb.append(HU.div(top +
-			 HU.div(main + bottom,HU.attrs("style", style)),""));
+			 HU.div(bottom+main,HU.attrs("style", style)),""));
 	       
         sb.append("\n</div></div>\n");
         List<String> jsonProps = new ArrayList<String>();

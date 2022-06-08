@@ -1,7 +1,7 @@
 
 .ramadda-zoomify-annotation-bar {
     vertical-align:top;
-    border-top:1px solid #ccc;
+    border-bottom:1px solid #ccc;
     overflow-x:auto;
 }
 
@@ -13,7 +13,7 @@
 }
 
 .ramadda-zoomify-annotation-body {
-    max-height:150px;
+    max-height:80px;
     overflow-y:auto;
 }
 
