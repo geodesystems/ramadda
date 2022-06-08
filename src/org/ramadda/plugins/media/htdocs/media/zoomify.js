@@ -52,7 +52,7 @@ RamaddaZoomify.prototype = {
 	    if(contents.length>0) {
 		body += HU.div(['class','ramadda-zoomify-annotation-body'],Utils.join(contents,"<br>"));
 	    }
-	    html+=HU.td(['width',width,'class','ramadda-clickable ramadda-hoverable ramadda-zoomify-annotation','index',aidx], body);
+	    html+=HU.td(['title','Click to view&#013;Shift-click to highlight','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-zoomify-annotation','index',aidx], body);
 	});
 
 	html = HU.div(['class','ramadda-zoomify-annotation-bar'], HU.table([],HU.tr(['valign','top'],html)));
@@ -73,7 +73,6 @@ RamaddaZoomify.prototype = {
 	    "edit_media_zoomify_annotations_json":annotations
 	}
 	let success = r=>{
-	    console.dir(r);
 	};
 	
 	let error = r=>{
