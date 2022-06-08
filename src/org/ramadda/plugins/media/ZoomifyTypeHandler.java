@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2022 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.media;
@@ -12,19 +12,17 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
-import org.ramadda.util.FormInfo;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 
 
-import org.ramadda.util.ProcessRunner;
-
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
 
 import java.io.*;
 
@@ -40,6 +38,8 @@ import java.util.List;
 public class ZoomifyTypeHandler extends GenericTypeHandler {
 
     private static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
+    private static final String ANN_PATH = "/lib/annotorius";
+
     /**  */
     private static int IDX = 0;
 
@@ -65,7 +65,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public ZoomifyTypeHandler(Repository repository, Element entryNode)
-            throws Exception {
+	throws Exception {
         super(repository, entryNode);
     }
 
@@ -82,7 +82,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
-            throws Exception {
+	throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
         if ( !entry.isFile()) {
             return;
@@ -102,10 +102,10 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         pb.redirectErrorStream(true);
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
-        String      result  = new String(IOUtil.readBytes(is));
+        String      result  = new String(IO.readBytes(is,-1));
         if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
             throw new IllegalArgumentException("Error running image slicer:"
-                    + result);
+					       + result);
         }
     }
 
@@ -132,7 +132,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
 
         if ( !tag.equals("zoomify") && !tag.equals("zoomable")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
@@ -141,8 +141,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         StringBuilder sb     = new StringBuilder();
 	int iwidth = entry.getValue(IDX_IMAGE_WIDTH,0);
 	int iheight = entry.getValue(IDX_IMAGE_HEIGHT,0);	
-        String        width  = Utils.getProperty(props, "width", iwidth==0?"800px":iwidth+"px");
-        String        height = Utils.getProperty(props, "height", iheight==0?"600px":iheight+"px");
+        String        width  = Utils.getProperty(props, "width", "800px");
+        String        height = Utils.getProperty(props, "height", "600px");
         String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
 				  HU.makeDim(height, null),
 				  "padding","1px");
@@ -160,9 +160,9 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         style = style.replaceAll("\n", " ");
         if (request.getExtraProperty("seadragon_added") == null) {
             HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon.min.js"));
-	    HU.cssLink(sb, htdocs("/lib/annotorius/annotorious.min.css"));
-            HU.importJS(sb,htdocs("/lib/annotorius/openseadragon-annotorious.min.js"));
-            HU.importJS(sb,htdocs("/lib/annotorius/annotorious-toolbar.min.js"));
+	    HU.cssLink(sb, htdocs(ANN_PATH+"/annotorious.min.css"));
+	    HU.importJS(sb,htdocs(ANN_PATH+"/openseadragon-annotorious.min.js"));
+	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious-toolbar.min.js"));
 	    HU.cssLink(sb,htdocs("/media/zoomify.css"));
             HU.importJS(sb,htdocs("/media/zoomify.js"));	    	    
             request.putExtraProperty("seadragon_added", "true");
@@ -207,7 +207,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
             Utils.add(jsonProps, "tileSources", JsonUtil.map(tiles));
         } else {
             throw new IllegalArgumentException(
-                "No image tile source defined");
+					       "No image tile source defined");
         }
         String attrs = JsonUtil.map(jsonProps);
 
