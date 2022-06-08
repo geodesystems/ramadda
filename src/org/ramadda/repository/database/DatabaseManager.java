@@ -2579,6 +2579,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public String convertType(String type, int size) {
         if (type.equals("clob")) {
             if (db.equals(SqlUtil.DB_DERBY)) {
+		size= 2000000000;
                 return "clob(" + size + ") ";
             }
             if (db.equals(SqlUtil.DB_MYSQL)) {

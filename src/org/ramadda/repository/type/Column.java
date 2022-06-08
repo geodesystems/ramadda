@@ -1762,8 +1762,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                                 + getLabel() + " is required");
                     }
                 }
+		boolean isClob= isType(DATATYPE_CLOB);
                 getDatabaseManager().setString(statement, statementIdx,
-                        getName(), value, size);
+					       getName(), value, isClob?Integer.MAX_VALUE:size);
             } else {
                 statement.setString(statementIdx, null);
             }
