@@ -346,7 +346,6 @@ Ramadda3DDisplay.prototype = {
 	
 	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?'fas fa-stop':'fas fa-play','Auto-rotate')));
 	buttons.push(HU.checkbox(this.domId('_sharing'), [],this.getManager().shareCameraPosition,"Share position"));
-	buttons.push(HU.span(['id',this.domId('_play')],icon(_this.opts.rotating?'fas fa-stop':'fas fa-play','Auto-rotate')));	
 	buttons.push(HU.span(['id',this.domId('_grid')],icon('fas fa-table-cells','Show grid')));
 	buttons.push(HU.span(['id',this.domId('_light')],icon('fas fa-lightbulb','Set ambient light')));
 	buttons.push(HU.span(['id',this.domId('_home')],icon('fas fa-house','Reset view')));
