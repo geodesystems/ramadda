@@ -106,7 +106,7 @@ RamaddaZoomify.prototype = {
 	    if(contents.length>0) {
 		body += HU.div(['class','ramadda-zoomify-annotation-body'],Utils.join(contents,"<br>"));
 	    }
-	    html+=HU.td(['title','Click to view&#013;Shift-click to highlight','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-zoomify-annotation','index',aidx], body);
+	    html+=HU.td(['title','Click to view&#013;Shift-click to zoom to','width',width,'class','ramadda-clickable ramadda-hoverable ramadda-zoomify-annotation','index',aidx], body);
 	});
 
 	html = HU.div(['class','ramadda-zoomify-annotation-bar'], HU.table([],HU.tr(['valign','top'],html)));
@@ -115,10 +115,12 @@ RamaddaZoomify.prototype = {
 	this.bottom.find('.ramadda-zoomify-annotation').click(function(event) {
 	    let annotation = 	annotations[$(this).attr('index')];
 	    if(!annotation) return;
-	    _this.annotation.panTo(annotation);
-//            if (event.shiftKey) {
-		_this.annotation.selectAnnotation(annotation);
-//	    }
+            if (event.shiftKey) {
+		_this.annotation.fitBounds(annotation);
+//		_this.annotation.selectAnnotation(annotation);
+	    } else {
+		_this.annotation.panTo(annotation);
+	    }
 	});
     },
     doSave:function() {
@@ -130,8 +132,9 @@ RamaddaZoomify.prototype = {
 	};
 	
 	let error = r=>{
-	    if(typeof r   == "string") r = JSON.parse(r);
-	    alert("An error occurred:" + r.error);
+	    let e = r;
+	    if(typeof e   == "string") e = JSON.parse(e);
+	    alert("An error occurred:" + (e?e.error:r));
 	};	
 	RamaddaUtil.doSave(this.entryId,this.authToken,args, success,error);
     }
