@@ -580,7 +580,7 @@ public class Result {
      */
     public void setReturnFilename(String filename, boolean inline) {
         filename = filename.replaceAll(" ", "_");
-        //      System.err.println("Result.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+	System.err.println("Result.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
         if (inline) {
             addHttpHeader("Content-disposition", "filename=" + filename);
         } else {
