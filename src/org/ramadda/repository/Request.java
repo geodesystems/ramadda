@@ -1607,12 +1607,7 @@ public class Request implements Constants, Cloneable {
      * _more_
      */
     public void ensureAuthToken() {
-        /*
-          System.err.println("ensureAuthToken:");
-          for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
-          System.err.println("\tkey:" + keys.nextElement());
-          }
-        */
+	boolean debug = true;
         String authToken    = getString(ARG_AUTHTOKEN, (String) null);
         String mySessionId  = getSessionId();
         String argSessionId = getString(ARG_SESSIONID, (String) null);
@@ -1620,20 +1615,32 @@ public class Request implements Constants, Cloneable {
             mySessionId = argSessionId;
         }
 
-        //        System.err.println("ensureAuthToken authToken:" + authToken +" arg session:"+ argSessionId +" session id:"+ mySessionId);
-        if ((authToken == null) && (argSessionId != null)) {
+	if(debug) {
+	    System.err.println("ensureAuthToken authToken:" + authToken +" arg session:"+ argSessionId +" session id:"+ mySessionId);
+	    for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+		System.err.println("\tkey:" + keys.nextElement());
+	    }
+	}
+
+       if ((authToken == null) && (argSessionId != null)) {
             if (argSessionId.equals(mySessionId)) {
-                //                System.err.println("ensureAuthToken arg session id == session id");
+		if(debug) 
+		    System.err.println("\tensureAuthToken arg session id == session id");
                 return;
             }
-            //            System.err.println("ensureAuthToken arg session id != session id");
+	    if(debug) 
+		System.err.println("\tensureAuthToken arg session id != session id");
         }
 
         if ((authToken != null) && (mySessionId != null)) {
-            //            System.err.println("checking auth token");
+	    if(debug) 
+		System.err.println("\tchecking auth token");
             String sessionAuth = RepositoryUtil.hashString(mySessionId);
-            //            System.err.println ("Request.ensureAuthToken:" + sessionId + " hashed:" +  sessionAuth +" token:" + authToken);
+	    if(debug)
+		System.err.println ("\tRequest.ensureAuthToken:" + sessionId + " hashed:" +  sessionAuth +" token:" + authToken);
             if (authToken.trim().equals(sessionAuth)) {
+		if(debug) 
+		    System.err.println ("\tok");
                 return;
             }
             getRepository().getLogManager().logError(
@@ -1648,6 +1655,8 @@ public class Request implements Constants, Cloneable {
         }
 
 
+	if(debug) 
+	    System.err.println("Bad");
         getRepository().getLogManager().logError(
             "Request.ensureAuthToken: something null:" + "\n\tsession:"
             + mySessionId + "\n\tauth token:" + authToken, null);
