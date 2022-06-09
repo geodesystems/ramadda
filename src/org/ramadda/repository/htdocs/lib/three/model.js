@@ -223,7 +223,7 @@ Ramadda3DDisplay.prototype = {
 	this.divId = this.opts.divId;
 	this.threeId = this.domId("_three");
 	jqid(this.divId).css('background',"#"+this.opts.background).css('position','relative');
-	let menuButton = HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars'));
+	let menuButton = HU.div(['style',HU.css('position','absolute','right','0px','top','0px'),'class','ramadda-clickable ramadda-model-toolbar','id',this.domId('_menu')], HU.getIconImage('fas fa-bars',[],['style',HU.css('color','#000')]));
 	let background=HU.div(['id',this.domId('_background'),'style',HU.css('position','relative','width','100%')]);
 	let extra = HU.div(['id',this.domId('_background')], background)   +   menuButton;
 	let html = HU.div(['id',this.threeId]) +  extra;
