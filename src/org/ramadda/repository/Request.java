@@ -464,8 +464,8 @@ public class Request implements Constants, Cloneable {
      * @param inline _more_
      */
     public void setReturnFilename(String filename, boolean inline) {
-        filename = filename.replaceAll(" ", "_");
-	System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+        filename = filename.replaceAll(" ", "_").replaceAll(",","_");
+	//	System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
         if (inline) {
             httpServletResponse.setHeader("Content-disposition",
                                           "filename=" + filename);
