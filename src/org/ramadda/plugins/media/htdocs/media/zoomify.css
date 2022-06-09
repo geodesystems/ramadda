@@ -17,5 +17,24 @@
     overflow-y:auto;
 }
 
-.a9s-annotation .a9s-inner {
+
+.a9s-annotationlayer .a9s-annotation .a9s-outer, 
+.a9s-annotationlayer .a9s-selection .a9s-outer {
+    stroke-width:0px;
+    stroke:#000;  
+}
+
+.a9s-annotationlayer .a9s-annotation .a9s-inner,
+.a9s-annotationlayer .a9s-selection .a9s-inner {
+    stroke-width:4px;
+    stroke:#fff !important;  
+}
+
+
+.a9s-annotationlayer circle.a9s-handle-inner {
+    display:none;
+}
+
+.a9s-annotationlayer .a9s-annotation.editable .a9s-inner:hover {
+    fill:transparent;
 }
