@@ -160,6 +160,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         style = style.replaceAll("\n", " ");
         if (request.getExtraProperty("seadragon_added") == null) {
             HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon.min.js"));
+            HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon-bookmark-url.js"));
 	    HU.cssLink(sb, htdocs(ANN_PATH+"/annotorious.min.css"));
 	    HU.importJS(sb,htdocs(ANN_PATH+"/openseadragon-annotorious.min.js"));
 	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious-toolbar.min.js"));
