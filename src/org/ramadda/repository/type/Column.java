@@ -600,7 +600,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                            canExport);
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
         canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
-        size           = getAttributeOrTag(element, ATTR_SIZE, size);
+	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:size);
         min            = getAttributeOrTag(element, ATTR_MIN, min);
         max            = getAttributeOrTag(element, ATTR_MAX, max);
         required       = getAttributeOrTag(element, ATTR_REQUIRED, required);
@@ -3008,7 +3008,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     public void setValue(Request request, Entry entry, Object[] values)
             throws Exception {
 
-        if ( !showInForm || !editable) {
+	//        if ( !showInForm || !editable) {
+	//Don't check for editable here as the API call to change a field goes hits this method
+        if ( !showInForm) {
             //            System.err.println (this + " not adding to form" );
             return;
         }
