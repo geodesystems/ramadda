@@ -468,6 +468,10 @@ Ramadda3DDisplay.prototype = {
 	return this.divId+suffix;
     },
     doSave:function(args) {
+	if(!this.opts.authtoken) {
+	    alert('No auth token');
+	    return;
+	}
 	this.entry.doSave(this.opts.authtoken,args);
     },
 
@@ -544,6 +548,10 @@ Ramadda3DDisplay.prototype = {
 	this.initAnnotations(annotations);
 	let args = {
 	    "edit_media_3dmodel_annotations":Utils.join(annotations,"\n"),
+	}
+	if(!this.opts.authtoken) {
+	    alert('No auth token');
+	    return;
 	}
 	this.entry.doSave(this.opts.authtoken,args);
     },
