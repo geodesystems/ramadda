@@ -50,7 +50,12 @@
                 var oldUrl = location.pathname + location.hash;
 		//jeffmc: add the below to set the hash on the window
 		var hash = '#zoom=' + zoom + '&x=' + pan.x + '&y=' + pan.y;
-		window.location.hash = hash;
+		if(window.history.replaceState)  {
+		    window.history.replaceState(undefined, undefined, hash);
+		    console.log("R");
+		} else  {
+		    window.location.hash = hash;
+		}
 		/* The old way doesn't handle normal URL arguments
 		var url = location.pathname + '#zoom=' + zoom + '&x=' + pan.x + '&y=' + pan.y;
                 if (trackPage) {
