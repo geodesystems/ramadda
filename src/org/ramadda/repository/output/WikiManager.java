@@ -6338,6 +6338,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			return request.getExtraProperty(key);
 		    }
 		};
+	    myRequest.setSessionId(request.getSessionId());
 
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 Object key = keys.nextElement();
