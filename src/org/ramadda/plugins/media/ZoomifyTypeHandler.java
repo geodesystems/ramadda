@@ -170,7 +170,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         }
 
 	boolean canEdit = getAccessManager().canDoEdit(request, entry);
-        sb.append("<div style='text-align:center;'><div style='text-align:left;display:inline-block;'\n");
+	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","center","width",width)));
+	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
         String id = HU.getUniqueId("zoomify_div");
 	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
@@ -210,7 +211,12 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
             throw new IllegalArgumentException(
 					       "No image tile source defined");
         }
+        String        doBookmark  = Utils.getProperty(props, "doBookmark", "false");
+	Utils.add(jsonProps, "doBookmark", JsonUtil.quoteType(doBookmark));
+
         String attrs = JsonUtil.map(jsonProps);
+
+
 
         String var   = HU.getUniqueId("seadragon");
 	StringBuilder js = new StringBuilder();
