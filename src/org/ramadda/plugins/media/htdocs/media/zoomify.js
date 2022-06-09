@@ -8,8 +8,10 @@ function RamaddaZoomify(entryId,authToken,attrs,id,canEdit,annotations) {
     this.authToken = authToken;
     this.canEdit = canEdit;    
     let osd =this.osd = OpenSeadragon(attrs);
-    //call the bookmark plugin so the location is tracked in a URL hash
-    osd.bookmarkUrl();
+    if(attrs.doBookmark) {
+	//call the bookmark plugin so the location is tracked in a URL hash
+	osd.bookmarkUrl();
+    }
 
     var formatter = (annotation) => {
 	let color=null;
