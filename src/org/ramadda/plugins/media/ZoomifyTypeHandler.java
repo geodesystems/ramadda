@@ -102,7 +102,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         pb.redirectErrorStream(true);
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
-        String      result  = new String(IO.readBytes(is,-1));
+	byte[] bytes = IO.readBytes(is,100000);
+        String      result  = new String(bytes);
         if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
             throw new IllegalArgumentException("Error running image slicer:"
 					       + result);
