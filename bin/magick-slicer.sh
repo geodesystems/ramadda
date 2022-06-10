@@ -2,6 +2,9 @@
 version="0.004"
 date="05/08/2015"
 
+#jeffmc: note: this was changed to handle files with spaces in them
+#original from https://github.com/VoidVolker/MagickSlicer
+
 # ####### Options ####### #
 # resultExt='png'
 resultExt=''
@@ -605,11 +608,13 @@ fi
 debugMsg "Section: Functions"
 
 getImgW(){ # image_file
-    echo `identify -format "%[fx:w]" $1`
+    #jeffmc: quote the imageSource arg
+    echo `identify -format "%[fx:w]" "$1"`
 }
 
 getImgH(){ # image_file
-    echo `identify -format "%[fx:h]" $1`
+    #jeffmc: quote the imageSource arg
+    echo `identify -format "%[fx:h]" "$1"`
 }
 
 # ———————————————————————————————————————————————————————————————————————————————————
@@ -703,7 +708,7 @@ zoomImage(){ # zoom size -> file_path
     # local file="${dir}.png"
     # local size=`scaleToPercents $s`
     mkdir -p $dir   # Imagemagick can't create directories
-    convert $imageSource $resizeFilter -resize $size $imOptions $file
+    convert "$imageSource" $resizeFilter -resize $size $imOptions $file
     echo $file
 }
 
@@ -743,7 +748,7 @@ sliceImage(){ # zoom image
 
     # Slice image to tiles
     # convert $src -crop $wxh -set filename:tile $tilesFormat +repage +adjoin -background none -gravity $gravity $ext $file
-    convert $src -gravity $gravity -crop $wxh -set filename:tile $tilesFormat +repage +adjoin -gravity $gravity $ext $file
+    convert "$src" -gravity $gravity -crop $wxh -set filename:tile $tilesFormat +repage +adjoin -gravity $gravity $ext $file
 }
 
 sliceA(){
@@ -834,7 +839,7 @@ resizeImageH(){ # zoom -> file_path
     local file="${dir}.${resultExt}"
     local size=`zoomPixels $zoom $tileW`
     mkdir -p $dir   # Imagemagick can't create directories
-    convert $imageSource $resizeFilter -resize $size $imOptions $file
+    convert "$imageSource" $resizeFilter -resize $size $imOptions $file
     echo $file
 }
 
@@ -844,7 +849,7 @@ resizeImageV(){ # zoom -> file_path
     local file="${dir}.${resultExt}"
     local size=`zoomPixels $zoom $tileH`
     mkdir -p $dir   # Imagemagick can't create directories
-    convert $imageSource $resizeFilter -resize "x${size}" $imOptions $file
+    convert "$imageSource" $resizeFilter -resize "x${size}" $imOptions $file
     echo $file
 }
 
@@ -927,8 +932,9 @@ init(){
         exit 1
     fi
     # Getting image sizes
-    imageW=`getImgW $imageSource`
-    imageH=`getImgH $imageSource`
+    #jeffmc: quote the imageSource arg
+    imageW=`getImgW "$imageSource"`
+    imageH=`getImgH "$imageSource"`
 
     # Set options for selected format
     setFormat
