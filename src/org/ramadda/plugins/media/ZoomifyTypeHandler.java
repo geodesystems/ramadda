@@ -171,6 +171,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         }
 
 	boolean canEdit = getAccessManager().canDoEdit(request, entry);
+	HU.open(sb,"center");
 	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","center","width",width)));
 	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
         String id = HU.getUniqueId("zoomify_div");
@@ -180,7 +181,9 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
         sb.append(HU.div(top +
 			 HU.div(bottom+main,HU.attrs("style", style)),""));
 	       
+
         sb.append("\n</div></div>\n");
+	HU.close(sb,"center");
         List<String> jsonProps = new ArrayList<String>();
         List<String> tiles     = new ArrayList<String>();
         Utils.add(jsonProps, "id", JsonUtil.quote(id), "showNavigator",
