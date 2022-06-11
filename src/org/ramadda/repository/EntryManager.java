@@ -8490,6 +8490,9 @@ public class EntryManager extends RepositoryManager {
     public List<Entry> getChildren(Request request, Entry parentEntry)
 	throws Exception {
         List<Entry> children = new ArrayList<Entry>();
+	if(parentEntry==null) {
+	    throw new IllegalArgumentException("No parent entry given");
+	}
         if ( !parentEntry.isGroup()) {
             return children;
         }

@@ -5624,18 +5624,26 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    //children;filter:
             //            entries="children:<other id>
             List<String> toks = Utils.splitUpTo(entryid, ":", 2);
-            if (toks.size() == 2) {
+	    //Handle the case like children:
+	    if(toks.size()==1 && entryid.endsWith(":")) entryid = entryid.replace(":","");
+	    else if (toks.size() == 2) {
                 //TODO: handle specifying a type
                 entryid = toks.get(0);
                 String       suffix = toks.get(1);
                 List<String> toks2  = Utils.splitUpTo(suffix, ":", 2);
                 if (toks2.size() == 2) {}
                 else {
-                    theBaseEntry = getEntryManager().getEntry(request,
-							      suffix);
+		    if (suffix.equals(ID_THIS)) {
+			theBaseEntry =  baseEntry;
+		    } else {
+			theBaseEntry = getEntryManager().getEntry(request,
+								  suffix);
+			if(theBaseEntry==null) {
+			    throw new IllegalArgumentException("Could not find entry from:"+ suffix);
+			}
+		    }
                 }
             }
-
 
             //            entries="children;type;type
             String filter = null;
@@ -5832,7 +5840,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
             if (entryid.equals(ID_CHILDREN)) {
-		//		System.err.println("base:" + theBaseEntry);
                 List<Entry> children = getEntryManager().getChildren(request,
 								     theBaseEntry);
 		entries.addAll(children);
