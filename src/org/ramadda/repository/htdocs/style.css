@@ -903,6 +903,7 @@ a.ramadda-menubar-button:hover {
     border-radius: var(--default-radius);
 }
 
+
 .ramadda-note-outer {
     text-align:center;
     margin-top:2px;
@@ -919,6 +920,10 @@ a.ramadda-menubar-button:hover {
     border : var(--basic-border);
     display: inline-block;
     background-color : var(--color-mellow-yellow);
+}
+
+.note-left, .ramadda-note-left {
+    text-align:left;
 }
 
 
