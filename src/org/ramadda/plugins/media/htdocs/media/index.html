@@ -41,11 +41,37 @@ ramadda.tesseract=/path/to/tesseract
 RAMADDA supports zoomable images using <a href="https://openseadragon.github.io/">OpenSeadragon</a>.
 RAMADDA will autotmatically create the set of image tiles. To enable this functionality you need to have the
 <a href="https://imagemagick.org/index.php">ImageMagick</a> package installed on your server. Then
-install the <a href="https://github.com/VoidVolker/MagickSlicer">MagickSlicer</a> script on your server
-and set the property in your repository.properties file:
+install the <a href="https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh">MagickSlicer</a>
+script on your server and set the property in your repository.properties file:
 <pre>
 ramadda.image.slicer=/path/to/magick-slicer.sh
 </pre>
+
+Now, create a new entry of type Zoomable Image and upload your high resolution image. RAMADDA will use the
+MagickSlicer script to generate the set of varying resolution tiled images.
+<a href="https://ramadda.org/repository/entry/show?entryid=cb06451a-ebad-49b4-91bc-f650441a40f8">Here</a>
+is an example.
+<p>
+The Zoomable Image entry also supports annotations. If you are logged in and can edit the Zoomable Image
+entry then there will be a toolbar displayed at the top of the page that allows you to draw rectangles or
+polygons on the image. Once drawn a dialog will be shown where you can add text and tags. The first line of the
+text is used as a bold title.
+<p>
+To color the annotation add a tag of the form:
+<pre>
+color:&lt;some color&gt;
+e.g.:
+color:red
+color:rgb(255,255,0)
+</pre>  
+
+To change the line width, e.g. to 5,  add a tag:
+<pre>
+width:5
+</pre>
+
+The annotation text will be displayed along the top of the image. Clicking on an annotation will
+pan the image to that area. Shift-clicking on the annotation will pan and zoom.
 
 </body>
 </html>
