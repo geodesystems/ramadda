@@ -52,7 +52,6 @@
 		var hash = '#zoom=' + zoom + '&x=' + pan.x + '&y=' + pan.y;
 		if(window.history.replaceState)  {
 		    window.history.replaceState(undefined, undefined, hash);
-		    console.log("R");
 		} else  {
 		    window.location.hash = hash;
 		}
