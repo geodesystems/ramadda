@@ -35,7 +35,7 @@ import java.util.List;
  *
  *
  */
-public class ZoomifyTypeHandler extends GenericTypeHandler {
+public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHandler {
 
     private static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
     private static final String ANN_PATH = "/lib/annotorius";
@@ -115,6 +115,109 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
     }
 
 
+
+    private void initImports(Request request, StringBuilder sb) throws Exception {
+        if (request.getExtraProperty("seadragon_added") == null) {
+            HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon.min.js"));
+            HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon-bookmark-url.js"));
+	    HU.cssLink(sb, htdocs(ANN_PATH+"/annotorious.min.css"));
+	    HU.importJS(sb,htdocs(ANN_PATH+"/openseadragon-annotorious.min.js"));
+	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious-toolbar.min.js"));
+	    HU.cssLink(sb,htdocs("/media/zoomify.css"));
+            HU.importJS(sb,htdocs("/media/zoomify.js"));	    	    
+            request.putExtraProperty("seadragon_added", "true");
+        }
+    }	
+
+
+    private List<String> getProperties(Request request, Entry entry,Hashtable props) throws Exception {
+	List<String> jsonProps = new ArrayList<String>();
+        List<String> tiles     = new ArrayList<String>();
+        Utils.add(jsonProps,  "showNavigator",
+                  "true", "maxZoomLevel", "18", "prefixUrl",
+                  JsonUtil.quote(getRepository().getUrlBase()
+                                 + OSD_PATH+"/images/"));
+        Utils.add(jsonProps, "showRotationControl", "true",
+                  "gestureSettingsTouch",
+                  JsonUtil.map(Utils.add(null, "pinchRotate", "true")));
+
+        //If its a file then we did the tiling ourselves
+        if (entry.isFile()) {
+            Utils.add(jsonProps, "tileSources",
+                      JsonUtil.quote(getRepository().getUrlBase()
+                                     + "/entryfile/" + entry.getId()
+                                     + "/images.dzi"));
+        } else if (Utils.stringDefined("" + entry.getValue(IDX_TILES_URL))) {
+	    String        width  = Utils.getProperty(props, "width", "800px");
+	    String        height = Utils.getProperty(props, "height", "600px");
+            if (entry.getValue(IDX_IMAGE_WIDTH, 0) != 0) {
+                width = "" + entry.getValue(IDX_IMAGE_WIDTH, 0);
+            }
+            if (entry.getValue(IDX_IMAGE_HEIGHT, 0) != 0) {
+                height = "" + entry.getValue(IDX_IMAGE_HEIGHT, 0);
+            }
+            Utils.add(tiles, "type", JsonUtil.quote("zoomifytileservice"),
+                      "tilesUrl", JsonUtil.quote(entry.getValue(2)));
+            Utils.add(tiles, "width", width, "height", height);
+            Utils.add(jsonProps, "tileSources", JsonUtil.map(tiles));
+        } else {
+            throw new IllegalArgumentException(
+					       "No image tile source defined");
+        }
+        String        doBookmark  = Utils.getProperty(props, "doBookmark", "false");
+	Utils.add(jsonProps, "doBookmark", JsonUtil.quoteType(doBookmark));
+
+        String annotations = (String) entry.getValue(IDX_ANNOTATIONS);
+	if(!Utils.stringDefined(annotations)) {
+	    annotations = "[]";
+	}
+	Utils.add(jsonProps, "annotations", annotations);
+	Utils.add(jsonProps,"canedit",""+ getAccessManager().canDoEdit(request, entry));
+	String authToken = "";
+	String sessionId = request.getSessionId();	
+	if(sessionId!=null) {
+	    authToken = RepositoryUtil.hashString(sessionId);
+	}
+	Utils.add(jsonProps,"authtoken",HU.quote(authToken));
+	Utils.add(jsonProps,"entryid",HU.quote(entry.getId()));
+	Utils.add(jsonProps,"name",HU.quote(entry.getName()));	
+        return  jsonProps;
+    }
+
+    private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props) throws Exception {
+	initImports(request,sb);
+        String        width  = Utils.getProperty(props, "width", "800px");
+        String        height = Utils.getProperty(props, "height", "600px");
+        String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
+				  HU.makeDim(height, null),
+				  "padding","2px");
+        String style = HU.css("width", HU.makeDim(width, null),
+			      "border",
+                              "1px solid #aaa", "color", "#333",
+                              "background-color", "#fff");
+
+        String s = (String) entry.getValue(IDX_STYLE);
+        if (Utils.stringDefined(s)) {
+            style += s;
+        }
+	style += Utils.getProperty(props, "style","");
+        style = style.replaceAll("\n", " ");
+	HU.open(sb,"center");
+	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","center","width",width)));
+	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
+        String id = HU.getUniqueId("zoomify_div");
+	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
+	String top = HU.div("", HU.attrs("id", id+"_top"));
+	String bottom = HU.div("", HU.attrs("id", id+"_bottom"));
+        sb.append(HU.div(top +
+			 HU.div(bottom+main,HU.attrs("style", style)),""));
+	       
+
+        sb.append("\n</div></div>\n");
+	HU.close(sb,"center");
+	return id;
+    }
+    
     /**
      * _more_
      *
@@ -140,105 +243,39 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
         StringBuilder sb     = new StringBuilder();
-	int iwidth = entry.getValue(IDX_IMAGE_WIDTH,0);
-	int iheight = entry.getValue(IDX_IMAGE_HEIGHT,0);	
-        String        width  = Utils.getProperty(props, "width", "800px");
-        String        height = Utils.getProperty(props, "height", "600px");
-        String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
-				  HU.makeDim(height, null),
-				  "padding","2px");
-        String style = HU.css("width", HU.makeDim(width, null),
-			      "border",
-                              "1px solid #aaa", "color", "#333",
-                              "background-color", "#fff");
-
-
-        String s = (String) entry.getValue(IDX_STYLE);
-        if (Utils.stringDefined(s)) {
-            style += s;
-        }
-	style += Utils.getProperty(props, "style","");
-        style = style.replaceAll("\n", " ");
-        if (request.getExtraProperty("seadragon_added") == null) {
-            HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon.min.js"));
-            HU.importJS(sb,htdocs(OSD_PATH+"/openseadragon-bookmark-url.js"));
-	    HU.cssLink(sb, htdocs(ANN_PATH+"/annotorious.min.css"));
-	    HU.importJS(sb,htdocs(ANN_PATH+"/openseadragon-annotorious.min.js"));
-	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious-toolbar.min.js"));
-	    HU.cssLink(sb,htdocs("/media/zoomify.css"));
-            HU.importJS(sb,htdocs("/media/zoomify.js"));	    	    
-            request.putExtraProperty("seadragon_added", "true");
-        }
-
-	boolean canEdit = getAccessManager().canDoEdit(request, entry);
-	HU.open(sb,"center");
-	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","center","width",width)));
-	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
-        String id = HU.getUniqueId("zoomify_div");
-	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
-	String top = HU.div("", HU.attrs("id", id+"_top"));
-	String bottom = HU.div("", HU.attrs("id", id+"_bottom"));
-        sb.append(HU.div(top +
-			 HU.div(bottom+main,HU.attrs("style", style)),""));
-	       
-
-        sb.append("\n</div></div>\n");
-	HU.close(sb,"center");
-        List<String> jsonProps = new ArrayList<String>();
-        List<String> tiles     = new ArrayList<String>();
-        Utils.add(jsonProps, "id", JsonUtil.quote(id), "showNavigator",
-                  "true", "maxZoomLevel", "18", "prefixUrl",
-                  JsonUtil.quote(getRepository().getUrlBase()
-                                 + OSD_PATH+"/images/"));
-        Utils.add(jsonProps, "showRotationControl", "true",
-                  "gestureSettingsTouch",
-                  JsonUtil.map(Utils.add(null, "pinchRotate", "true")));
-
-        //If its a file then we did the tiling ourselves
-        if (entry.isFile()) {
-            Utils.add(jsonProps, "tileSources",
-                      JsonUtil.quote(getRepository().getUrlBase()
-                                     + "/entryfile/" + entry.getId()
-                                     + "/images.dzi"));
-        } else if (Utils.stringDefined("" + entry.getValue(IDX_TILES_URL))) {
-            if (entry.getValue(IDX_IMAGE_WIDTH, 0) != 0) {
-                width = "" + entry.getValue(IDX_IMAGE_WIDTH, 0);
-            }
-            if (entry.getValue(IDX_IMAGE_HEIGHT, 0) != 0) {
-                height = "" + entry.getValue(IDX_IMAGE_HEIGHT, 0);
-            }
-            Utils.add(tiles, "type", JsonUtil.quote("zoomifytileservice"),
-                      "tilesUrl", JsonUtil.quote(entry.getValue(2)));
-            Utils.add(tiles, "width", width, "height", height);
-            Utils.add(jsonProps, "tileSources", JsonUtil.map(tiles));
-        } else {
-            throw new IllegalArgumentException(
-					       "No image tile source defined");
-        }
-        String        doBookmark  = Utils.getProperty(props, "doBookmark", "false");
-	Utils.add(jsonProps, "doBookmark", JsonUtil.quoteType(doBookmark));
-
-        String attrs = JsonUtil.map(jsonProps);
-
-
-
-        String var   = HU.getUniqueId("seadragon");
-	StringBuilder js = new StringBuilder();
-        String annotations = (String) entry.getValue(IDX_ANNOTATIONS);
-	if(!Utils.stringDefined(annotations)) {
-	    annotations = "[]";
-	}
-	js.append("var annotations = " + annotations+"\n");
-	String authToken = "";
-	String sessionId = request.getSessionId();	
-	if(sessionId!=null) {
-	    authToken = RepositoryUtil.hashString(sessionId);
-	}
-	js.append("new RamaddaZoomify(" + HU.comma(HU.quote(entry.getId()),HU.quote(authToken),attrs,HU.quote(id),""+ canEdit,annotations)+");\n");
-	HU.script(sb, js.toString());
+	String id = makeLayout(request, entry,sb,props);
+	List<String> jsonProps =  getProperties(request, entry,props);	
+        Utils.add(jsonProps, "id", JsonUtil.quote(id));
+	HU.script(sb, "new RamaddaZoomify(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
         return sb.toString();
     }
 
+
+    public void getWikiTags(List<String[]> tags, Entry entry) {
+	tags.add(new String[]{"zoomify_collection","zoomify_collection"});
+    }
+
+    public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
+	tagHandlers.put("zoomify_collection",this);
+    }
+
+    public String handleTag(WikiUtil wikiUtil, Request request,
+                            Entry originalEntry, Entry entry, String theTag,
+                            Hashtable props, String remainder) throws Exception {
+	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
+											   originalEntry, entry, props),
+							       getType());
+
+	if(children.size()==0) {
+	    return "No zoomable images";
+	}
+        StringBuilder sb     = new StringBuilder();
+	String id = makeLayout(request, children.get(0),sb,props);
+	List<String> jsonProps =  getProperties(request, children.get(0),props);	
+        Utils.add(jsonProps, "id", JsonUtil.quote(id));
+	HU.script(sb, "new RamaddaZoomify(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
+        return sb.toString();
+    }
 
 
 }

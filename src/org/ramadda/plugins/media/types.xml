@@ -272,7 +272,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{zoomable doBookmark=true}}
+{{zoomable doBookmark=true width=95%}}
 ]]>
 </wiki>
 </type>
