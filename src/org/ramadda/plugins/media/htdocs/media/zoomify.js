@@ -1,52 +1,18 @@
 
-function RamaddaZoomify(entryId,authToken,attrs,id,canEdit,annotations) {
-    this.colorMap = {};
-    this.widthMap = {};
-    this.divId = id;
-    this.bottom = jqid(id+"_bottom");
-    this.entryId = entryId;
-    this.authToken = authToken;
-    this.canEdit = canEdit;    
+function RamaddaZoomableImage(attrs,id) {
     let osd =this.osd = OpenSeadragon(attrs);
     if(attrs.doBookmark) {
 	//call the bookmark plugin so the location is tracked in a URL hash
 	osd.bookmarkUrl();
     }
-
-    var formatter = (annotation) => {
-	let color=null;
-	let width=null;	
-	annotation.bodies.forEach(function(b) {
-            if(b.purpose != 'tagging' || !b.value) return false;
-	    if(b.value.startsWith("color:")) {
-		color = b.value;
-	    } else if(b.value.startsWith("width:")) {
-		width = b.value.replace("width:","");
-	    }
-	});
-	
-	let classes = "";
-	if (color) {
-	    classes+= this.checkColor(color) +" ";
-	}
-	if(width) {
-	    classes+= this.checkWidth(width) +" ";
-	}
-	return classes;
-    };
-
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
-		  readOnly:!canEdit,
-		  formatter:formatter,
-//		  disableEditor: !canEdit
+		  readOnly:!attrs.canEdit,
+		  formatter:new  RamaddaAnnotationFormatter().getFormatter(),
 		 };
-
-
     let anno =this.annotation =  OpenSeadragon.Annotorious(osd,aattrs);
-
-    if(annotations) anno.setAnnotations(annotations);
-    if(canEdit) {
+    if(attrs.annotations) anno.setAnnotations(attrs.annotations);
+    if(attrs.canEdit) {
 	Annotorious.Toolbar(anno, document.getElementById(id+"_top"));
 	let changed = (a) =>{
 	    this.doSave();
@@ -56,34 +22,11 @@ function RamaddaZoomify(entryId,authToken,attrs,id,canEdit,annotations) {
 	anno.on('updateAnnotation', changed);
 	anno.on('deleteAnnotation', changed);		
     }
-    setTimeout(()=>{
-	this.showAnnotations(annotations);
-    },500);
+    
+    this.annotator = new  RamaddaAnnotation(anno,id+'+bottom',attrs.entryId,"edit_media_zoomify_annotations_json",attrs.authToken);
 }
 
-RamaddaZoomify.prototype = {
-    //Convert the color to a name and if we haven't written css for it then do so
-    //return the name
-    checkColor:function(color) {
-	if(color.startsWith("color:")) color = color.replace("color:","");
-	let name = color.replace(/#/g,"").replace(/\(/g,"_").replace(/\)/g,"_").replace(/,/g,"_");
-	if(this.colorMap[color]) return name;
-	this.colorMap[color] = true;
-	let template = ".a9s-annotationlayer .a9s-annotation.{name} .a9s-inner, .a9s-annotationlayer .a9s-annotation.{name}.editable.selected .a9s-inner {stroke:{value} !important;}\n.a9s-annotationlayer .a9s-annotation.{name}:hover .a9s-inner  {stroke:yellow !important;}";
-	let css = template.replace(/{name}/g,name).replace(/{value}/g,color);
-	$("<style type='text/css'>" + css+"</css>").appendTo(document.body);
-	return   name;
-    },
-    checkWidth:function(width) {
-	let name = "width_" + width;
-	if(this.widthMap[name]) return name;
-	this.widthMap[name] = true;
-	let template = ".a9s-annotationlayer .a9s-annotation.{name} .a9s-inner, .a9s-annotationlayer .a9s-annotation.{name}.editable.selected .a9s-inner {stroke-width:{value} !important;}";
-	let css = template.replace(/{name}/g,name).replace(/{value}/g,width);
-	$("<style type='text/css'>" + css+"</css>").appendTo(document.body);
-	return   name;
-    },
-
+RamaddaZoomableImage.prototype = {
     showAnnotations: function(annotations) {
 	let html = "";
 	annotations = annotations ||this.annotation.getAnnotations();
@@ -140,6 +83,6 @@ RamaddaZoomify.prototype = {
 	    if(typeof e   == "string") e = JSON.parse(e);
 	    alert("An error occurred:" + (e?e.error:r));
 	};	
-	RamaddaUtil.doSave(this.entryId,this.authToken,args, success,error);
+	RamaddaUtil.doSave(attrs.entryId,attrs.authToken,args, success,error);
     }
 }

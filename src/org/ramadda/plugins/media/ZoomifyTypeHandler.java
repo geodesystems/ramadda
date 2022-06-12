@@ -123,8 +123,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	    HU.cssLink(sb, htdocs(ANN_PATH+"/annotorious.min.css"));
 	    HU.importJS(sb,htdocs(ANN_PATH+"/openseadragon-annotorious.min.js"));
 	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious-toolbar.min.js"));
-	    HU.cssLink(sb,htdocs("/media/zoomify.css"));
-            HU.importJS(sb,htdocs("/media/zoomify.js"));	    	    
+	    HU.cssLink(sb,htdocs("/media/annotation.css"));
+            HU.importJS(sb,htdocs("/media/annotation.js"));	    	    
             request.putExtraProperty("seadragon_added", "true");
         }
     }	
@@ -172,14 +172,14 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	    annotations = "[]";
 	}
 	Utils.add(jsonProps, "annotations", annotations);
-	Utils.add(jsonProps,"canedit",""+ getAccessManager().canDoEdit(request, entry));
+	Utils.add(jsonProps,"canEdit",""+ getAccessManager().canDoEdit(request, entry));
 	String authToken = "";
 	String sessionId = request.getSessionId();	
 	if(sessionId!=null) {
 	    authToken = RepositoryUtil.hashString(sessionId);
 	}
-	Utils.add(jsonProps,"authtoken",HU.quote(authToken));
-	Utils.add(jsonProps,"entryid",HU.quote(entry.getId()));
+	Utils.add(jsonProps,"authToken",HU.quote(authToken));
+	Utils.add(jsonProps,"entryId",HU.quote(entry.getId()));
 	Utils.add(jsonProps,"name",HU.quote(entry.getName()));	
         return  jsonProps;
     }
@@ -203,17 +203,14 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	style += Utils.getProperty(props, "style","");
         style = style.replaceAll("\n", " ");
 	HU.open(sb,"center");
-	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","center","width",width)));
 	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
         String id = HU.getUniqueId("zoomify_div");
 	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
-	String bottom = HU.div("", HU.attrs("id", id+"_bottom"));
+	String bottom = HU.div("", HU.attrs("id", id+"_annotations"));
         sb.append(HU.div(top +
 			 HU.div(bottom+main,HU.attrs("style", style)),""));
-	       
-
-        sb.append("\n</div></div>\n");
+        sb.append("\n</div>\n");
 	HU.close(sb,"center");
 	return id;
     }
@@ -246,7 +243,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	String id = makeLayout(request, entry,sb,props);
 	List<String> jsonProps =  getProperties(request, entry,props);	
         Utils.add(jsonProps, "id", JsonUtil.quote(id));
-	HU.script(sb, "new RamaddaZoomify(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
+	HU.script(sb, "new RamaddaZoomableImage(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
         return sb.toString();
     }
 
