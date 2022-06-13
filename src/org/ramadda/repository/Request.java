@@ -2508,7 +2508,13 @@ public class Request implements Constants, Cloneable {
         return sessionId;
     }
 
-
+    public String getAuthToken() {
+	String sessionId = getSessionId();	
+	if(sessionId!=null) {
+	    return  RepositoryUtil.hashString(sessionId);
+	}	
+	return "";
+    }
 
 
 
