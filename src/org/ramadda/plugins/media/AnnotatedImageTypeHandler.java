@@ -1,0 +1,158 @@
+/**
+   Copyright (c) 2008-2022 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
+package org.ramadda.plugins.media;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
+
+
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JsonUtil;
+
+
+import org.ramadda.util.IO;
+import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
+
+import org.w3c.dom.*;
+
+
+import java.io.*;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+
+/**
+ */
+public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
+
+    private static final String ANN_PATH = "/lib/annotorius";
+
+    /**  */
+    private static int IDX = ImageTypeHandler.IDX_LAST+1;
+
+    private static final int IDX_ANNOTATIONS = IDX++;    
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    public AnnotatedImageTypeHandler(Repository repository, Element entryNode)
+	throws Exception {
+        super(repository, entryNode);
+    }
+
+    private String htdocs(String path) {
+	return getPageHandler().makeHtdocsUrl(path);
+    }
+
+
+    private void initImports(Request request, StringBuilder sb) throws Exception {
+        if (request.getExtraProperty("annotation_added") == null) {
+	    HU.cssLink(sb, htdocs(ANN_PATH+"/annotorious.min.css"));
+	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious.min.js"));
+	    HU.importJS(sb,htdocs(ANN_PATH+"/annotorious-toolbar.min.js"));
+	    HU.cssLink(sb,htdocs("/media/annotation.css"));
+            HU.importJS(sb,htdocs("/media/annotation.js"));	    	    
+            request.putExtraProperty("annotation_added", "true");
+        }
+    }	
+
+
+    private List<String> getProperties(Request request, Entry entry,Hashtable props) throws Exception {
+	List<String> jsonProps = new ArrayList<String>();
+        String annotations = (String) entry.getValue(IDX_ANNOTATIONS);
+	if(!Utils.stringDefined(annotations)) {
+	    annotations = "[]";
+	}
+	Utils.add(jsonProps, "annotations", annotations);
+	Utils.add(jsonProps,"canEdit",""+ getAccessManager().canDoEdit(request, entry));
+	String authToken = "";
+	String sessionId = request.getSessionId();	
+	if(sessionId!=null) {
+	    authToken = RepositoryUtil.hashString(sessionId);
+	}
+	Utils.add(jsonProps,"authToken",HU.quote(authToken));
+	Utils.add(jsonProps,"entryId",HU.quote(entry.getId()));
+	Utils.add(jsonProps,"name",HU.quote(entry.getName()));	
+        return  jsonProps;
+    }
+
+    private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props) throws Exception {
+	initImports(request,sb);
+        String        width  = Utils.getProperty(props, "width", "800px");
+        String        height = Utils.getProperty(props, "height", "600px");
+        String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
+				  HU.makeDim(height, null),
+				  "padding","2px");
+        String style = HU.css("width", HU.makeDim(width, null),
+			      "border",
+                              "1px solid #aaa", "color", "#333",
+                              "background-color", "#fff");
+
+
+	HU.open(sb,"center");
+	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
+        String id = HU.getUniqueId("annotated_image");
+	String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+	String image    = HtmlUtils.img(imgUrl, "", HU.attrs("width","100%","id",id));
+	String main = HU.div(image,HU.attrs("style",mainStyle));
+
+
+
+	String top = HU.div("", HU.attrs("id", id+"_top"));
+	String bottom = HU.div("", HU.attrs("id", id+"_annotations"));
+        sb.append(HU.div(top +
+			 HU.div(bottom+main,HU.attrs("style", style)),""));
+        sb.append("\n</div>\n");
+	HU.close(sb,"center");
+	return id;
+    }
+    
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+	throws Exception {
+
+        if ( !tag.equals("annotated_image")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+        StringBuilder sb     = new StringBuilder();
+	String id = makeLayout(request, entry,sb,props);
+	List<String> jsonProps =  getProperties(request, entry,props);	
+        Utils.add(jsonProps, "id", JsonUtil.quote(id));
+	HU.script(sb, "new RamaddaAnnotatedImage(" + HU.comma(JsonUtil.map(jsonProps),HU.quote(id))+");\n");
+        return sb.toString();
+    }
+
+
+}
