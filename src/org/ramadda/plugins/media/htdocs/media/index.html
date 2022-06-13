@@ -52,26 +52,55 @@ MagickSlicer script to generate the set of varying resolution tiled images.
 <a href="https://ramadda.org/repository/entry/show?entryid=cb06451a-ebad-49b4-91bc-f650441a40f8">Here</a>
 is an example.
 <p>
-The Zoomable Image entry also supports annotations. If you are logged in and can edit the Zoomable Image
-entry then there will be a toolbar displayed at the top of the page that allows you to draw rectangles or
-polygons on the image. Once drawn a dialog will be shown where you can add text and tags. The first line of the
-text is used as a bold title.
+The Zoomable Image entry also supports annotations.
+
+
+<a name=annotations/>
+<h2>Annotations</h2>
+The Zoomable Image and the Annotated Image support drawing
+rectangle and polygon annotations.
+If you are logged in and can edit the 
+entry then there will be a toolbar displayed at the top of the page.
+Select the tool and drag in the image.
+Once drawn a dialog will be shown where you can add text and tags. The first line of the
+text is used as a bold title shown in the header.
+<p>
+The annotation text will be displayed along the top of the image. For the Zoomable Image
+clicking on an annotation will
+pan the image to that area. Shift-clicking on the annotation will pan and zoom.
+For the Annotated Image clicking on an annotation will bring up the
+text dialog.
 <p>
 To color the annotation add a tag of the form:
 <pre>
-color:&lt;some color&gt;
+c:&lt;some color&gt;
 e.g.:
-color:red
-color:rgb(255,255,0)
+c:red
+c:rgb(255,255,0)
 </pre>  
+
+
 
 To change the line width, e.g. to 5,  add a tag:
 <pre>
-width:5
+w:5
 </pre>
 
-The annotation text will be displayed along the top of the image. Clicking on an annotation will
-pan the image to that area. Shift-clicking on the annotation will pan and zoom.
+To show a label along with the annotation add a tag with the label: prefix:
+<pre>
+label:some label
+</pre>  
+
+If you want all of your annotations to share the same color and/or width add a default:
+tag to one of the annotations that have the shared color or width, e.g. the following:
+<pre>
+label:some label
+c:red
+</pre>
+Will cause all of the annotations to be colored red.
+
+
+
 
 </body>
 </html>
