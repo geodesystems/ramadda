@@ -1,3 +1,5 @@
+
+
 .ramadda-annotation-wrapper {
     border:1px solid #ccc;
 }
@@ -34,6 +36,9 @@
     stroke:#888 !important;      
 }
 
+.ramadda-annotated-image>div {
+    width:100%;
+}
 
 .a9s-annotationlayer circle.a9s-handle-inner {
     display:none;

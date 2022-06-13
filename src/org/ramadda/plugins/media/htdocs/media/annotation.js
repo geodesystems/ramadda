@@ -3,12 +3,12 @@ function RamaddaAnnotatedImage(attrs,id) {
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
 		  readOnly:!attrs.canEdit,
-		  formatter:new  RamaddaAnnotationFormatter(this).getFormatter(),
 		  image: document.getElementById(id)	 
 		 };
     let anno = this.annotorius = Annotorious.init(aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
     this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_type_annotated_image_annotations_json");
+    anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
 function RamaddaZoomableImage(attrs,id) {
@@ -20,11 +20,11 @@ function RamaddaZoomableImage(attrs,id) {
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
 		  readOnly:!attrs.canEdit,
-		  formatter:new  RamaddaAnnotationFormatter(this).getFormatter(),
 		 };
     let anno =this.annotorius =  OpenSeadragon.Annotorious(osd,aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
     this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_media_zoomify_annotations_json");
+    anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
 

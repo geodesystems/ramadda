@@ -90,22 +90,18 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 
     private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props) throws Exception {
 	initImports(request,sb);
-        String        width  = Utils.getProperty(props, "width", "800px");
-        String        height = Utils.getProperty(props, "height", "600px");
-        String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
-				  HU.makeDim(height, null),
-				  "padding","2px");
+        String        width  = Utils.getProperty(props, "width", "100%");
+        String mainStyle = HU.css("width", HU.makeDim(width, null));
         String style = HU.css("width", HU.makeDim(width, null),
 			      "color", "#333",
                               "background-color", "#fff");
 
-
-	HU.open(sb,"center");
-	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
+	//	HU.open(sb,"center");
+	//	HU.open(sb,"div",HU.attrs("style",HU.css("text-align","left","display","inline-block","width",width)));
         String id = HU.getUniqueId("annotated_image");
 	String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
 	String image    = HtmlUtils.img(imgUrl, "", HU.attrs("width","100%","id",id));
-	String main = HU.div(image,HU.attrs("style",mainStyle));
+	String main = HU.div(image,HU.attrs("class","ramadda-annotated-image","style",mainStyle));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
 	String bar = HU.div("", HU.attrs("id", id+"_annotations"));
 	if(!Utils.getProperty(props, "showAnnotationBar", true)) {
@@ -114,8 +110,8 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 
         sb.append(HU.div(top +
 			 HU.div(bar+main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),""));
-        sb.append("\n</div>\n");
-	HU.close(sb,"center");
+	//        sb.append("\n</div>\n");
+	//	HU.close(sb,"center");
 	return id;
     }
     
