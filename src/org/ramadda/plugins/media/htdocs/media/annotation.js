@@ -76,6 +76,14 @@ RamaddaAnnotation.prototype = {
 		    }
 		});
 	    });
+	    if(title=="") {
+		annotation.body.forEach(function(b) {
+		    if(b.purpose != 'tagging' || !b.value) return false;
+		    if(b.value.startsWith("label:")) {
+			title =  b.value.replace("label:","");
+		    }
+		});
+	    }
 	    if(title=="") title = "&lt;annotation&gt;"
 
 	    title  = HU.b(title.replace(/ /g,"&nbsp;"));
@@ -133,26 +141,44 @@ RamaddaAnnotationFormatter.prototype = {
 	    let color=null;
 	    let width=null;	
 	    let result = {};
-	    annotation.bodies.forEach(function(b) {
+	    let bg = null;
+	    let border = null;	    
+	    let tags =  annotation.bodies.filter(b=>{
 		if(b.purpose != 'tagging' || !b.value) return false;
-		if(b.value.startsWith("color:")) {
-		    color = b.value;
-		} else if(b.value.startsWith("width:")) {
-		    width = b.value.replace("width:","");
-		}  else if(b.value.startsWith("label:")) {
-		    let label =  b.value.replace("label:","");
+		return true;
+	    });
+	    tags.forEach(function(b) {
+		let v = b.value;
+		if(v.startsWith("bg:")) {
+		    bg = v.replace("bg:","");		    
+		} else if(v.startsWith("border:")) {
+		    border = v.replace("border:","");
+		}
+	    });
+	    tags.forEach(function(b) {
+		let v = b.value;
+		if(v.startsWith("color:")) {
+		    color = v;
+		} else if(v.startsWith("width:")) {
+		    width = v.replace("width:","");
+		} else if(v.startsWith("label:")) {
+		    let label =  v.replace("label:","");
 		    //original from the shapelabel plugin
 		    //https://github.com/recogito/recogito-client-plugins/blob/main/plugins/annotorious-shape-labels
 		    //modified to check for the label: tag
-					const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+		    const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
 
 		    // Overflow is set to visible, but the foreignObject needs >0 zero size,
 		    // otherwise FF doesn't render...
 		    foreignObject.setAttribute('width', '1px');
 		    foreignObject.setAttribute('height', '1px');
-
-		    foreignObject.innerHTML = '<div xmlns="http://www.w3.org/1999/xhtml" class="a9s-shape-label-wrapper"><div class="a9s-shape-label">' + label +
-			'</div></div>';
+		    let html = '<div xmlns="http://www.w3.org/1999/xhtml" class="a9s-shape-label-wrapper">';
+		    let style="";
+		    if(bg) style+=HU.css('background',bg);
+		    if(border) style+=HU.css('border',border);		    
+		    html +=HU.div(['style',style,'class','a9s-shape-label'],label);
+		    html+="</div>";
+		    foreignObject.innerHTML = html;
 		    result.element= foreignObject;
 		}
 	    });
