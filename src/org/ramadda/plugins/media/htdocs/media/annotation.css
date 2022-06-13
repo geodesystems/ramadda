@@ -40,6 +40,15 @@
     width:100%;
 }
 
+.a9s-toolbar-btn.active svg rect,.a9s-toolbar-btn.active svg circle,.a9s-toolbar-btn.active svg path {
+    stroke:#000 !important;
+}
+
+.a9s-toolbar-btn svg rect,.a9s-toolbar-btn svg circle,.a9s-toolbar-btn svg path {
+    stroke:#aaa !important;
+}
+
+
 .a9s-annotationlayer circle.a9s-handle-inner {
     display:none;
 }
