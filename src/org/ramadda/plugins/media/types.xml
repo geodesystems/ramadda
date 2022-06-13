@@ -188,6 +188,19 @@
     <column   name="filename" label="Alternate filename"  showinhtml="false" />
 </type>
 
+<type name="type_annotated_image"  super="type_image" description="Annotated Image" 
+      category="Media" handler="org.ramadda.plugins.media.AnnotatedImageTypeHandler" >
+    <property name="icon" value="/icons/image.png"/>
+    <property name="file.accept" value="image/*"/>
+    <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{annotated_image doBookmark=true width=95%}}
+]]>
+</wiki>
+</type>
+
 
 <type name="type_animatedgif"  super="type_image" description="Animated GIF" foruser="true" category="Media"
 handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">

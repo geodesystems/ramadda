@@ -1,5 +1,14 @@
 
-function RamaddaAnnotatedImage(entryId,authToken,attrs,id,canEdit,annotations) {
+function RamaddaAnnotatedImage(attrs,id) {
+    let aattrs = {locale: 'auto',
+		  allowEmpty: true,
+		  readOnly:!attrs.canEdit,
+		  formatter:new  RamaddaAnnotationFormatter().getFormatter(),
+		  image: document.getElementById(id)	 
+		 };
+    let anno = Annotorious.init(aattrs);
+    if(attrs.annotations) anno.setAnnotations(attrs.annotations);
+    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_type_annotated_image_annotations_json");
 }
 
 function RamaddaZoomableImage(attrs,id) {
@@ -84,9 +93,11 @@ RamaddaAnnotation.prototype = {
 	    let annotation = 	annotations[$(this).attr('index')];
 	    if(!annotation) return;
             if (event.shiftKey && _this.getAnno().fitBounds) {
-		_this.getAnno().fitBounds(annotation);
-	    } else {
+		_this.getAnno().fitBounds(annotation)
+	    } else if(_this.getAnno().panTo) {
 		_this.getAnno().panTo(annotation);
+	    } else {
+		_this.getAnno().selectAnnotation(annotation);                                      
 	    }
 	});
     },

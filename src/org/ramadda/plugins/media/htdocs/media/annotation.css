@@ -28,7 +28,7 @@
 .a9s-annotationlayer .a9s-annotation .a9s-inner,
 .a9s-annotationlayer .a9s-selection .a9s-inner {
     stroke-width:4px;
-    stroke:#fff !important;  
+    stroke:#888 !important;      
 }
 
 
@@ -39,6 +39,7 @@
 .a9s-annotationlayer .a9s-annotation.editable .a9s-inner:hover {
     fill:transparent;
 }
+
 
 .a9s-annotationlayer .a9s-annotation:hover .a9s-inner  {stroke:yellow !important;}
 
