@@ -173,11 +173,7 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	}
 	Utils.add(jsonProps, "annotations", annotations);
 	Utils.add(jsonProps,"canEdit",""+ getAccessManager().canDoEdit(request, entry));
-	String authToken = "";
-	String sessionId = request.getSessionId();	
-	if(sessionId!=null) {
-	    authToken = RepositoryUtil.hashString(sessionId);
-	}
+	String authToken = request.getAuthToken();	
 	Utils.add(jsonProps,"authToken",HU.quote(authToken));
 	Utils.add(jsonProps,"entryId",HU.quote(entry.getId()));
 	Utils.add(jsonProps,"name",HU.quote(entry.getName()));	
@@ -192,8 +188,8 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 				  HU.makeDim(height, null),
 				  "padding","2px");
         String style = HU.css("width", HU.makeDim(width, null),
-			      "border",
-                              "1px solid #aaa", "color", "#333",
+			      //			      "border", "1px solid #aaa", 
+			      "color", "#333",
                               "background-color", "#fff");
 
         String s = (String) entry.getValue(IDX_STYLE);
@@ -207,9 +203,9 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         String id = HU.getUniqueId("zoomify_div");
 	String main = HU.div("",HU.attrs("style",mainStyle,"id", id));
 	String top = HU.div("", HU.attrs("id", id+"_top"));
-	String bottom = HU.div("", HU.attrs("id", id+"_annotations"));
+	String bar = HU.div("", HU.attrs("id", id+"_annotations"));
         sb.append(HU.div(top +
-			 HU.div(bottom+main,HU.attrs("style", style)),""));
+			 HU.div(bar+main,HU.attrs("class","ramadda-annotation-wrapper","style", style)),""));
         sb.append("\n</div>\n");
 	HU.close(sb,"center");
 	return id;

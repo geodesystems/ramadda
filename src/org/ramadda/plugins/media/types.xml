@@ -196,7 +196,7 @@
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-{{annotated_image doBookmark=true width=95%}}
+{{annotated_image doBookmark=true width=100% showAnnotationBar=true}}
 ]]>
 </wiki>
 </type>

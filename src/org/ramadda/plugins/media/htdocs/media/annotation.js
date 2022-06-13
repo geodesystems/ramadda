@@ -3,10 +3,10 @@ function RamaddaAnnotatedImage(attrs,id) {
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
 		  readOnly:!attrs.canEdit,
-		  formatter:new  RamaddaAnnotationFormatter().getFormatter(),
+		  formatter:new  RamaddaAnnotationFormatter(this).getFormatter(),
 		  image: document.getElementById(id)	 
 		 };
-    let anno = Annotorious.init(aattrs);
+    let anno = this.annotorius = Annotorious.init(aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
     this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_type_annotated_image_annotations_json");
 }
@@ -20,9 +20,9 @@ function RamaddaZoomableImage(attrs,id) {
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
 		  readOnly:!attrs.canEdit,
-		  formatter:new  RamaddaAnnotationFormatter().getFormatter(),
+		  formatter:new  RamaddaAnnotationFormatter(this).getFormatter(),
 		 };
-    let anno =this.annotation =  OpenSeadragon.Annotorious(osd,aattrs);
+    let anno =this.annotorius =  OpenSeadragon.Annotorious(osd,aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
     this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_media_zoomify_annotations_json");
 }
@@ -36,9 +36,11 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
     this.entryId = attrs.entryId;
     this.canEdit = attrs.canEdit;
     this.authToken = attrs.authToken;
+    this.annotations = attrs.annotations;
     if(this.canEdit) {
 	Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
 	let changed = (a) =>{
+	    this.annotations = this.getAnno().getAnnotations();
 	    this.doSave();
 	    this.showAnnotations();
 	};
@@ -55,6 +57,10 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
 }
 
 RamaddaAnnotation.prototype = {
+    getAnnotations:function() {
+	if(this.annotations) return this.annotations;
+	return this.getAnno().getAnnotations();
+    },
     showAnnotations: function(annotations) {
 	let html = "";
 	annotations = annotations ||this.getAnno().getAnnotations();
@@ -129,7 +135,8 @@ RamaddaAnnotation.prototype = {
 }
 
 
-function RamaddaAnnotationFormatter() {
+function RamaddaAnnotationFormatter(holder) {
+    this.holder= holder;
 }
 
 
@@ -138,44 +145,81 @@ RamaddaAnnotationFormatter.prototype = {
     //return the name
     getFormatter:function() {
 	return  (annotation) => {
-	    let color=null;
-	    let width=null;	
-	    let result = {};
+	    let getBodies=annotation=>{
+		if(annotation.bodies) return annotation.bodies;
+		if(annotation.body) return annotation.body;
+		return [];
+	    };
+
 	    let bg = null;
 	    let border = null;	    
-	    let tags =  annotation.bodies.filter(b=>{
-		if(b.purpose != 'tagging' || !b.value) return false;
-		return true;
+
+	    let getTags = annotation=>{
+		return  getBodies(annotation).filter(b=>{
+		    if(b.purpose != 'tagging' || !b.value) return false;
+		    return true;
+		});
+	    };
+	    let state = {
+	    }
+	    this.holder.annotator.getAnnotations().forEach(annotation=>{
+		let tags =  getTags(annotation);
+		let isDefault = false;
+		tags.every(function(b) {
+		    let v = b.value;
+		    if(v.startsWith("default:")) {
+			isDefault  =true;
+			return false;
+		    }
+		    return true;
+		});
+		if(!isDefault) return;
+		tags.forEach(function(b) {
+		    let v = b.value;
+		    if(v.startsWith("bg:")) {
+			state.bg = v.replace("bg:","");		    
+		    } else if(v.startsWith("b:")) {
+			state.border = v.replace("b:","");
+		    } else if(v.startsWith("c:")) {
+			state.color = v.replace("c:","");
+		    } else if(v.startsWith("w:")) {
+			state.width = v.replace("w:","");
+		    }
+		});
 	    });
+
+
+	    let tags =  getTags(annotation);
 	    tags.forEach(function(b) {
 		let v = b.value;
 		if(v.startsWith("bg:")) {
-		    bg = v.replace("bg:","");		    
-		} else if(v.startsWith("border:")) {
-		    border = v.replace("border:","");
+		    state.bg = v.replace("bg:","");		    
+		} else if(v.startsWith("b:")) {
+		    state.border = v.replace("b:","");
 		}
 	    });
+
+	    let result = {};
 	    tags.forEach(function(b) {
 		let v = b.value;
-		if(v.startsWith("color:")) {
-		    color = v;
-		} else if(v.startsWith("width:")) {
-		    width = v.replace("width:","");
+		if(v.startsWith("c:")) {
+		    state.color = v.replace("c:","");
+		} else if(v.startsWith("w:")) {
+		    state.width = v.replace("w:","");
 		} else if(v.startsWith("label:")) {
 		    let label =  v.replace("label:","");
 		    //original from the shapelabel plugin
 		    //https://github.com/recogito/recogito-client-plugins/blob/main/plugins/annotorious-shape-labels
 		    //modified to check for the label: tag
 		    const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-
 		    // Overflow is set to visible, but the foreignObject needs >0 zero size,
 		    // otherwise FF doesn't render...
 		    foreignObject.setAttribute('width', '1px');
 		    foreignObject.setAttribute('height', '1px');
 		    let html = '<div xmlns="http://www.w3.org/1999/xhtml" class="a9s-shape-label-wrapper">';
 		    let style="";
-		    if(bg) style+=HU.css('background',bg);
-		    if(border) style+=HU.css('border',border);		    
+		    if(state.bg) style+=HU.css('background',state.bg);
+		    if(state.border) style+=HU.css('border',state.border);		    
 		    html +=HU.div(['style',style,'class','a9s-shape-label'],label);
 		    html+="</div>";
 		    foreignObject.innerHTML = html;
@@ -184,11 +228,11 @@ RamaddaAnnotationFormatter.prototype = {
 	    });
 	    
 	    let classes = "";
-	    if (color) {
-		classes+= this.checkColor(color) +" ";
+	    if (state.color) {
+		classes+= this.checkColor(state.color) +" ";
 	    }
-	    if(width) {
-		classes+= this.checkWidth(width) +" ";
+	    if(state.width) {
+		classes+= this.checkWidth(state.width) +" ";
 	    }
 	    result.className  =classes;
 	    return result;
@@ -198,7 +242,7 @@ RamaddaAnnotationFormatter.prototype = {
 
     checkColor:function(color) {
 	if(!this.colorMap) this.colorMap = {};
-	if(color.startsWith("color:")) color = color.replace("color:","");
+	if(color.startsWith("c:")) color = color.replace("c:","");
 	let name = color.replace(/#/g,"").replace(/\(/g,"_").replace(/\)/g,"_").replace(/,/g,"_");
 	if(this.colorMap[color]) return name;
 	this.colorMap[color] = true;
