@@ -1622,6 +1622,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setHereKey(getProperty("here.key", (String) null));	    
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
         }
+
+
+	//Call this so it gets instantiated
+	getMonitorManager();
+
     }
 
 
@@ -7027,9 +7032,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param entries _more_
      */
     public void checkNewEntries(final Request request, final List<Entry> entries) {
+	final boolean debug = false;
+	if(debug) System.err.println("checkNewEntries:" + entries);
         Misc.run(new Runnable() {
             public void run() {
                 for (EntryChecker entryMonitor : getEntryCheckers()) {
+		    if(debug) System.err.println("\tentryMonitor:" + entryMonitor);
                     entryMonitor.entriesCreated(request, entries);
                 }
             }
