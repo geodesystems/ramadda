@@ -458,12 +458,16 @@ public class Request implements Constants, Cloneable {
         setReturnFilename(filename, true);
     }
 
+    public boolean isNormalRequest() {
+	return httpServletResponse!=null;
+    }
     /**
      *
      * @param filename _more_
      * @param inline _more_
      */
     public void setReturnFilename(String filename, boolean inline) {
+	if(!isNormalRequest()) return;
         filename = filename.replaceAll(" ", "_").replaceAll(",","_");
 	//	System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
         if (inline) {
