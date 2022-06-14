@@ -53,6 +53,7 @@ import java.util.List;
  * @author IDV Development Team
  * @version $Revision: 1.18 $
  */
+@SuppressWarnings("unchecked")
 public class HttpFormEntry
 {
 
