@@ -140,6 +140,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     private void initActions() throws Exception {
         actions.add(new EmailAction());
         actions.add(new CopyAction());
+        actions.add(new PublishAction());
         //        actions.add(new FtpAction());
         actions.add(new ExecAction());
 
@@ -303,13 +304,14 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      */
     private void handleEntriesChangedInner(List<Entry> entries,
                                            boolean isNew) {
+	boolean debug = false;
         try {
             List<EntryMonitor> tmpMonitors;
             synchronized (monitors) {
                 tmpMonitors = new ArrayList<EntryMonitor>(monitors);
             }
             for (Entry entry : entries) {
-                //                System.err.println("check entry: " + entry);
+		if(debug) System.err.println("MonitorManager check entry: " + entry);
                 for (EntryMonitor entryMonitor : tmpMonitors) {
                     if ( !isNew) {
                         if (entryMonitor.getOnlyNew()) {
