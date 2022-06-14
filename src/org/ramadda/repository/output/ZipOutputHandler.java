@@ -276,6 +276,7 @@ public class ZipOutputHandler extends OutputHandler {
         OutputStream os        = null;
         boolean      doingFile = false;
         File         tmpFile   = null;
+	boolean isInternal = false;
         Element      root      = null;
         boolean      ok        = true;
         //First recurse down without a zos to check the size
@@ -315,14 +316,19 @@ public class ZipOutputHandler extends OutputHandler {
                     false).getDir();
             fileWriter = new FileWriter(writeToDiskDir);
         } else {
-            if (request.getHttpServletResponse() != null) {
+	    tmpFile = (File) request.getExtraProperty("zipfile");
+            if (tmpFile==null && request.getHttpServletResponse() != null) {
                 os = request.getHttpServletResponse().getOutputStream();
                 request.getHttpServletResponse().setContentType(
                     getMimeType(OUTPUT_ZIP));
             } else {
-                tmpFile =
-                    getRepository().getStorageManager().getTmpFile(request,
-                        ".zip");
+		if(tmpFile==null) {
+		    tmpFile =
+			getRepository().getStorageManager().getTmpFile(request,
+								       ".zip");
+		} else {
+		    isInternal = true;
+		}
                 os = getStorageManager().getUncheckedFileOutputStream(
                     tmpFile);
                 doingFile = true;
@@ -357,7 +363,6 @@ public class ZipOutputHandler extends OutputHandler {
         }
         if (doingFile) {
             IOUtil.close(os);
-
             return new Result(
                 "", getStorageManager().getFileInputStream(tmpFile),
                 getMimeType(OUTPUT_ZIP));
