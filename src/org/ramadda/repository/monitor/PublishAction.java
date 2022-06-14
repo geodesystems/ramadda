@@ -1,0 +1,306 @@
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
+
+package org.ramadda.repository.monitor;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.client.RepositoryClient;
+
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
+
+import java.io.File;
+
+import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ *
+ *
+ * @author RAMADDA Development Team
+ * @version $Revision: 1.30 $
+ */
+public class PublishAction extends MonitorAction {
+
+    /** _more_ */
+    public static final String ARG_DESTRAMADDA = "destramadda";
+
+    /**  */
+    public static final String ARG_USERID = "userid";
+
+    /**  */
+    public static final String ARG_PASSWORD = "password";
+
+    /**  */
+    public static final String ARG_PARENTENTRYID = "parententryid";
+
+
+    /** _more_ */
+    private String destRamadda;
+
+    /**  */
+    private String userId;
+
+    /**  */
+    private String password;
+
+    /**  */
+    private String parentEntryId;
+
+
+    /**
+     * _more_
+     */
+    public PublishAction() {}
+
+    /**
+     * _more_
+     *
+     * @param id _more_
+     */
+    public PublishAction(String id) {
+        super(id);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getActionName() {
+        return "publish";
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getActionLabel() {
+        return "Publish Action";
+    }
+
+    /**
+     * _more_
+     *
+     *
+     * @param entryMonitor _more_
+     * @return _more_
+     */
+    public String getSummary(EntryMonitor entryMonitor) {
+        return "Publish entry to:" + destRamadda;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param monitor _more_
+     */
+    public void applyEditForm(Request request, EntryMonitor monitor) {
+        super.applyEditForm(request, monitor);
+        destRamadda = request.getString(getArgId(ARG_DESTRAMADDA),
+                                        destRamadda).trim();
+        userId = request.getString(getArgId(ARG_USERID), userId).trim();
+        password = request.getString(getArgId(ARG_PASSWORD), password).trim();
+        parentEntryId = request.getString(getArgId(ARG_PARENTENTRYID),
+                                          parentEntryId).trim();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param monitor _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void addToEditForm(EntryMonitor monitor, Appendable sb)
+            throws Exception {
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.colspan("Publish Action", 2));
+        sb.append(
+            HtmlUtils.formEntry(
+                "Destination RAMADDA:",
+                HtmlUtils.input(
+                    getArgId(ARG_DESTRAMADDA), destRamadda,
+                    HtmlUtils.SIZE_60) + " " + "e.g., https://ramadda.org"));
+        sb.append(HtmlUtils.formEntry("User ID:",
+                                      HtmlUtils.input(getArgId(ARG_USERID),
+                                          userId, HtmlUtils.SIZE_40)));
+        sb.append(HtmlUtils.formEntry("Password:",
+                HtmlUtils.input(getArgId(ARG_PASSWORD), password,
+                    HtmlUtils.SIZE_40) + " "
+                        + "Use &lt;property&gt; to look up password as a property"));
+        sb.append(
+            HtmlUtils.formEntry(
+                "Destination Parent Entry ID:",
+                HtmlUtils.input(
+                    getArgId(ARG_PARENTENTRYID), parentEntryId,
+                    HtmlUtils.SIZE_40)));
+        sb.append(HtmlUtils.formTableClose());
+    }
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param monitor _more_
+     * @param entry _more_
+     * @param isNew _more_
+     */
+    public void entryMatched(EntryMonitor monitor, Entry entry,
+                             boolean isNew) {
+        try {
+            if ( !Utils.stringDefined(destRamadda)) {
+                monitor.getRepository().getLogManager().logError(
+                    "PublishAction: no destination RAMADDA specified");
+
+                return;
+            }
+            if ( !Utils.stringDefined(userId)) {
+                monitor.getRepository().getLogManager().logError(
+                    "PublishAction:" + destRamadda + " no user id specified");
+
+                return;
+            }
+            if ( !Utils.stringDefined(parentEntryId)) {
+                monitor.getRepository().getLogManager().logError(
+                    "PublishAction:" + destRamadda
+                    + " no parent entry id specified");
+
+                return;
+            }
+            String password = this.password.trim();
+            if (password.startsWith("<") && password.endsWith(">")) {
+                String key = password.substring(1);
+                key = key.substring(0, key.length() - 1);
+                password = monitor.getRepository().getProperty(key,
+                        (String) null);
+                if (password == null) {
+                    monitor.getRepository().getLogManager().logError(
+                        "PublishAction:" + destRamadda
+                        + " no password property defined for:" + key);
+
+                    return;
+                }
+            }
+
+            if ( !Utils.stringDefined(password)) {
+                monitor.getRepository().getLogManager().logError(
+                    "PublishAction:" + destRamadda
+                    + " no password specified");
+
+                return;
+            }
+
+            Request request = monitor.getRepository().getAdminRequest();
+            File file =
+                monitor.getRepository().getStorageManager().getTmpFile(
+                    request, ".zip");
+
+            request.putExtraProperty("zipfile", file);
+            List<Entry> entries = new ArrayList<Entry>();
+            entries.add(entry);
+            monitor.getRepository().getZipOutputHandler().toZip(request, "",
+                    entries, true, true);
+
+            String id =
+                RepositoryClient.importToRamadda(new URL(destRamadda),
+                    userId, password, parentEntryId, file.toString());
+            monitor.getRepository().getLogManager().logInfo(
+                "PublishAction: published to:" + destRamadda + " id:" + id);
+        } catch (Exception exc) {
+            monitor.handleError("Error handling Publish Action", exc);
+        }
+    }
+
+
+    /**
+     *  Set the ParentGroupId property.
+     *
+     *  @param value The new value for ParentGroupId
+     */
+    public void setDestRamadda(String value) {
+        this.destRamadda = value;
+    }
+
+    /**
+     *  Get the DestRamadda property.
+     *
+     *  @return The DestRamadda
+     */
+    public String getDestRamadda() {
+        return this.destRamadda;
+    }
+
+    /**
+     *  Set the UserId property.
+     *
+     *  @param value The new value for UserId
+     */
+    public void setUserId(String value) {
+        userId = value;
+    }
+
+    /**
+     *  Get the UserId property.
+     *
+     *  @return The UserId
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     *  Set the Password property.
+     *
+     *  @param value The new value for Password
+     */
+    public void setPassword(String value) {
+        password = value;
+    }
+
+    /**
+     *  Get the Password property.
+     *
+     *  @return The Password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     *  Set the ParentEntryId property.
+     *
+     *  @param value The new value for ParentEntryId
+     */
+    public void setParentEntryId(String value) {
+        parentEntryId = value;
+    }
+
+    /**
+     *  Get the ParentEntryId property.
+     *
+     *  @return The ParentEntryId
+     */
+    public String getParentEntryId() {
+        return parentEntryId;
+    }
+
+
+
+}
