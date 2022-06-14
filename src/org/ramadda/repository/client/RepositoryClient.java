@@ -11,12 +11,15 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
+
+
+import org.ramadda.util.HttpFormEntry;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import ucar.unidata.ui.HttpFormEntry;
+//import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
@@ -176,7 +179,14 @@ public class RepositoryClient extends RepositoryBase {
      */
     public RepositoryClient(URL serverUrl, String user, String password)
             throws Exception {
-        setPort(serverUrl.getPort());
+        int port = serverUrl.getPort();
+        if (serverUrl.getProtocol().equals("https")) {
+            if (port == -1) {
+                port = 443;
+            }
+            setHttpsPort(port);
+        }
+        setPort(port);
         setHostname(serverUrl.getHost());
         setUrlBase(serverUrl.getPath());
         this.user     = user;
@@ -350,7 +360,7 @@ public class RepositoryClient extends RepositoryBase {
                                              String entryDescription,
                                              String parent, String filePath)
             throws Exception {
-        return uploadFileToRamadda(new URL("http://" + host + ":" + port
+        return uploadFileToRamadda(new URL("https://" + host + ":" + port
                                            + base), user, passwd, entryName,
                                                entryDescription, parent,
                                                    filePath);
@@ -382,6 +392,26 @@ public class RepositoryClient extends RepositoryBase {
 
         return client.uploadFile(entryName, entryDescription, parent,
                                  filePath);
+    }
+
+    /**
+     *
+     * @param host _more_
+     * @param user _more_
+     * @param passwd _more_
+     * @param parent _more_
+     * @param filePath _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String importToRamadda(URL host, String user,
+                                         String passwd, String parent,
+                                         String filePath)
+            throws Exception {
+        RepositoryClient client = new RepositoryClient(host, user, passwd);
+
+        return client.importToRamadda(parent, filePath);
     }
 
 
@@ -495,6 +525,7 @@ public class RepositoryClient extends RepositoryBase {
 
 
 
+
     /**
      * _more_
      *
@@ -599,6 +630,50 @@ public class RepositoryClient extends RepositoryBase {
                                             + XmlUtil.toString(response));
         }
     }
+
+
+    /**
+     *
+     * @param parent _more_
+     * @param filePath _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String importToRamadda(String parent, String filePath)
+            throws Exception {
+        checkSession();
+
+        File                file        = new File(filePath);
+        List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+        postEntries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
+        postEntries.add(HttpFormEntry.hidden(ARG_GROUP, parent));
+        postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
+        postEntries.add(new HttpFormEntry(ARG_FILE, filePath, (byte[]) null));
+
+
+        RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
+                                             "/entry/xmlcreate", useSsl());
+        String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
+        if (result[0] != null) {
+            throw new EntryErrorException(result[0]);
+        }
+
+        Element response = XmlUtil.getRoot(result[1]);
+        if ( !responseOk(response)) {
+            String body = XmlUtil.getChildText(response);
+
+            throw new EntryErrorException(body);
+        }
+        Element newEntryNode = XmlUtil.findChild(response, TAG_ENTRY);
+        if (newEntryNode == null) {
+            throw new IllegalStateException("No entry node found in:"
+                                            + XmlUtil.toString(response));
+        }
+
+        return XmlUtil.getAttribute(newEntryNode, ATTR_ID);
+    }
+
 
 
 
@@ -1263,11 +1338,14 @@ public class RepositoryClient extends RepositoryBase {
      *
      */
     public boolean doLogin(String[] msg) {
+        boolean debug = false;
         if (isAnonymous()) {
             return true;
         }
         try {
-            //            System.err.println ("RepositoryClient: doLogin");
+            if (debug) {
+                System.err.println("RepositoryClient: doLogin");
+            }
             //first get the basic information including the ssl port
             getInfo();
 
@@ -1285,23 +1363,36 @@ public class RepositoryClient extends RepositoryBase {
                 return false;
             }
             String contents = result[1];
-            //            System.err.println(contents);
+            if (debug) {
+                System.err.println("\tcontents:" + contents);
+            }
             Element root = XmlUtil.getRoot(contents);
             String  body = XmlUtil.getChildText(root).trim();
             if (responseOk(root)) {
                 sessionId = body;
+                if (debug) {
+                    System.err.println("\tok");
+                }
 
                 return true;
             } else {
                 msg[0] = body;
+                if (debug) {
+                    System.err.println("\tnot ok:" + body);
+                }
 
                 return false;
             }
         } catch (java.io.IOException exc) {
+            if (debug) {
+                System.err.println("\tIO error:" + exc);
+            }
             exc.printStackTrace();
             msg[0] = "Could not connect to server: " + getHostname();
-
         } catch (Exception exc) {
+            if (debug) {
+                System.err.println("\terror:" + exc);
+            }
             msg[0] = "An error occurred: " + exc + "\n";
         }
 
@@ -1336,11 +1427,14 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     private void getInfo() throws Exception {
+        boolean debug = false;
         String url = HtmlUtils.url(URL_INFO.getFullUrl(),
                                    new String[] { ARG_RESPONSE,
                 RESPONSE_XML });
 
-        //        System.err.println("url:" + url);
+        if (debug) {
+            System.err.println("getInfo:" + url);
+        }
         doTimeout();
         String contents = IOUtil.readContents(url, getClass());
         callTimestamp++;
