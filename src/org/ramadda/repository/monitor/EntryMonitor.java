@@ -383,10 +383,11 @@ public class EntryMonitor implements Constants {
 
         if (what.equals(ARG_ANCESTOR)) {
             String ancestorId = request.getString(ARG_ANCESTOR + "_hidden",
-						  "");
-	    if(Utils.stringDefined(ancestorId)) {
-		addFilter(new Filter(what, ancestorId, doNot));
-	    }
+                                    "");
+            if (Utils.stringDefined(ancestorId)) {
+                addFilter(new Filter(what, ancestorId, doNot));
+            }
+
             return;
         }
 
@@ -421,9 +422,13 @@ public class EntryMonitor implements Constants {
      * @return _more_
      */
     public boolean nameMatch(String pattern, String s2) {
+        boolean debug = false;
         if (StringUtil.containsRegExp(pattern)) {
-            System.err.println("EntryMonitor string:" + s2 + " pattern:"
-                               + pattern + " matches:" + s2.matches(pattern));
+            if (debug) {
+                System.err.println("EntryMonitor string:" + s2 + " pattern:"
+                                   + pattern + " matches:"
+                                   + s2.matches(pattern));
+            }
 
             return s2.matches(pattern);
         }
@@ -733,17 +738,34 @@ public class EntryMonitor implements Constants {
      * @throws Exception _more_
      */
     public boolean checkEntry(Entry entry, boolean isNew) throws Exception {
+        boolean debug = false;
+        if (debug) {
+            System.err.println("EntryMonitor.checkEntry:" + name + " entry:"
+                               + entry);
+        }
         if ( !isActive()) {
+            if (debug) {
+                System.err.println("\tnot active");
+            }
+
             return false;
         }
 
         if (filters.size() == 0) {
+            if (debug) {
+                System.err.println("\tno filters");
+            }
+
             return false;
         }
 
         //        System.err.println(getName() + " checking entry:" + entry.getName());
 
         if ( !okToView(entry)) {
+            if (debug) {
+                System.err.println("\t!ok to view");
+            }
+
             //            System.err.println("can't view");
             return false;
         }
@@ -752,13 +774,21 @@ public class EntryMonitor implements Constants {
 
         for (Filter filter : filters) {
             boolean ok = checkEntry(filter, entry, isNew);
-            //            System.err.println("Checking " + ok + " filter=" + filter);
+            if (debug) {
+                System.err.println("\tChecking " + ok + " filter=" + filter);
+            }
             if ( !ok) {
-                //                System.err.println("filter not OK");
+                if (debug) {
+                    System.err.println("\tfilter not OK");
+                }
+
                 return false;
             }
         }
 
+        if (debug) {
+            System.err.println("\tentry matched");
+        }
         entryMatched(entry, isNew);
 
         return true;
