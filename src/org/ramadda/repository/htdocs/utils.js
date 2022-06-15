@@ -4952,7 +4952,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
 
-    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook) {
+    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook,includeCopyJson) {
         if (skip == null) {
             skip = [".*OpenLayers_Control.*", "authtoken"];
         }
@@ -4961,6 +4961,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var cnt = 0;
         var seen = {};
         var pairs = [];
+	let jsonList = [];
+
         inputs.each(function(i, item) {
             if (item.name == "" || item.value == null || item.value == "") return;
             if (item.value == "-all-") return;
@@ -4986,7 +4988,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             }
             if (item.name && seen[item.name]) {
-                return;
+		//Don't skip duplicates
+		//                return;
             }
             if (item.name) {
                 seen[item.name] = true;
@@ -5014,6 +5017,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 values.push(item.value);
             }
 
+
+	    if(values.length==1) {
+		jsonList.push({arg:item.name,values:values});
+	    }
+
             for (v in values) {
                 if (cnt > 0) url += "&";
                 cnt++;
@@ -5026,11 +5034,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
         });
 
-        var base = window.location.protocol + "//" + window.location.host;
+	let json = JSON.stringify(jsonList,null,1);
+        let base = window.location.protocol + "//" + window.location.host;
         url = base + url;
 
-        var input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
-        var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaCdn + "/icons/link.png")) + " " + input);
+        let input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
+        let html = '<p>' +HtmlUtils.div(["class", "ramadda-form-url"], 
+					(includeCopyJson?
+					 HU.span(['id','jsoncopy','class','ramadda-clickable','title','Copy json for subset action'],
+						 HtmlUtils.getIconImage('fas fa-earth-americas')) +' ':'')+
+				 HtmlUtils.href(url, HtmlUtils.getIconImage('fas fa-link')) + " " + input);
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -5040,12 +5053,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             });
         }
         $("#" + outputId).html(html);
+	jqid('jsoncopy').click(()=>{
+	    Utils.copyToClipboard(json);
+	    alert('json for subset is copied to clipboard');
+	});
     },
-    makeUrlShowingForm: function(entryId, formId, outputId, skip, hook) {
+    makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,includeCopyJson) {
         $("#" + formId + " :input").change(function() {
-            HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
+            HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,includeCopyJson);
         });
-        HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
+        HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,includeCopyJson);
     },
     select: function(name, attrs,list, selected,maxWidth) {
         var select = this.openTag("select", attrs);
