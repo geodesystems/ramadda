@@ -55,7 +55,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, entryNode);
 	//Example file in this plugin
-	InputStream testIS =  Utils.getInputStream("/org/ramadda/plugins/media/test.sh", getClass());
+	InputStream testIS =  Utils.getInputStream("/org/ramadda/plugins/media/test.txt", getClass());
 	//Get the destination file and outputstream
 	File dest = new File(getStorageManager().getRepositoryDir()+"/test.sh");
 	FileOutputStream destOS = new FileOutputStream(dest);
