@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.cdmdata;
 
 
-import org.json.*;
+
 
 
 import org.ramadda.repository.*;
@@ -18,9 +18,10 @@ import org.ramadda.repository.monitor.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
+
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.IOUtil;
 
 import java.io.File;
@@ -40,12 +41,12 @@ import java.util.List;
 public class GridSubsetAction extends MonitorAction {
 
     /**  */
-    public static final String ARG_ARGJSON = "argjson";
+    public static final String ARG_ARGS = "args";
 
 
 
     /**  */
-    private String argJson = "";
+    private String args = "";
 
 
     /**
@@ -103,7 +104,7 @@ public class GridSubsetAction extends MonitorAction {
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
         applyGroupEditForm(request, monitor);
-        argJson = request.getString(getArgId(ARG_ARGJSON), argJson).trim();
+        args = request.getString(getArgId(ARG_ARGS), args).trim();
     }
 
 
@@ -124,8 +125,8 @@ public class GridSubsetAction extends MonitorAction {
 
         sb.append(
             HtmlUtils.formEntryTop(
-                "Grid Subset JSON:",
-                HtmlUtils.textArea(getArgId(ARG_ARGJSON), argJson, 5, 60)
+                "Grid Subset Arguments:",
+                HtmlUtils.textArea(getArgId(ARG_ARGS), args, 5, 60)
                 + " " + "Arguments from the grid subset form"));
 
         sb.append(HtmlUtils.formTableClose());
@@ -183,27 +184,22 @@ public class GridSubsetAction extends MonitorAction {
                 return;
             }
 
-            if ( !Utils.stringDefined(argJson)) {
+            if ( !Utils.stringDefined(args)) {
                 monitor.getRepository().getLogManager().logError(
-                    "Grid Subset Action:" + " no arg json specified");
+                    "Grid Subset Action:" + " no args specified");
 
                 return;
             }
 
             Request   request = monitor.getRepository().getAdminRequest();
-            JSONArray args    = new JSONArray(argJson);
-
-            for (int i = 0; i < args.length(); i++) {
-                JSONObject arg    = args.getJSONObject(i);
-                JSONArray  values = arg.getJSONArray("values");
-                String     name   = arg.getString("arg");
+	    for(String line:Utils.split(args,"\n",true,true)) {
+		List<String> toks = StringUtil.splitUpTo(line,"=",2);
+		String name = toks.get(0);
+		String value = toks.size()>1?toks.get(1):"";
                 if (name.equals("entryid")) {
                     continue;
                 }
-                for (int j = 0; j < values.length(); j++) {
-                    String value = values.getString(j);
-                    request.put(name, value, false);
-                }
+		request.put(name, value, false);
             }
 
             String fileName =
@@ -237,22 +233,24 @@ public class GridSubsetAction extends MonitorAction {
 
 
     /**
-     * Set the ArgJson property.
+     * Set the Args property.
      *
-     * @param value The new value for ArgJson
+     * @param value The new value for Args
      */
-    public void setArgJson(String value) {
-        argJson = value;
+    public void setArgs(String value) {
+        args = value;
     }
 
     /**
-     * Get the ArgJson property.
+     * Get the Args property.
      *
-     * @return The ArgJson
+     * @return The Args
      */
-    public String getArgJson() {
-        return argJson;
+    public String getArgs() {
+        return args;
     }
 
+    public void setArgJson(String tmp) {
+    }
 
 }
