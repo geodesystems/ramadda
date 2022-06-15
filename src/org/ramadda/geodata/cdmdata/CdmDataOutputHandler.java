@@ -919,9 +919,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridSubsetForm(Request request, Entry entry)
             throws Exception {
 
+
         boolean canAdd = getRepository().getAccessManager().canDoNew(request,
                              entry.getParentEntry());
-
 
         String       path    = getPath(request, entry);
         StringBuffer sb      = new StringBuffer();
@@ -1014,7 +1014,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit(msg("Subset")));
         addUrlShowingForm(sb, null, formId,
-                          "[\".*OpenLayers_Control.*\",\".*original.*\"]",null,true);
+                          "[\".*OpenLayers_Control.*\",\".*original.*\"]",
+                          null, true);
         sb.append(HtmlUtils.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
@@ -1040,6 +1041,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridSubset(Request request, Entry entry)
             throws Exception {
 
+        //request.remove("formurl");
+        //      System.err.println("R:" + request);
         boolean canAdd = getRepository().getAccessManager().canDoNew(request,
                              entry.getParentEntry());
 
@@ -1189,8 +1192,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             sb.append(
                 getPageHandler().showDialogWarning("No variables selected"));
         } else {
-            File f = getRepository().getStorageManager().getTmpFile(request,
-                         "subset" + ncVersion.getSuffix());
+            boolean doingLocal = false;
+            File    f          =
+                (File) request.getExtraProperty("subsetfile");
+            if (f == null) {
+                f = getRepository().getStorageManager().getTmpFile(request,
+                        "subset" + ncVersion.getSuffix());
+            } else {
+                doingLocal = true;
+            }
 
             /**
              * System.err.println(f.getPath());
@@ -1287,9 +1297,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                           */
 
             getCdmManager().returnGridDataset(path, gds);
-
-
-
 
             if (doingPublish(request)) {
                 TypeHandler typeHandler =
