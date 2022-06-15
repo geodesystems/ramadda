@@ -19,6 +19,7 @@ import ucar.unidata.util.IOUtil;
 
 import java.util.Hashtable;
 
+import java.io.*;
 import java.util.List;
 
 
@@ -53,6 +54,14 @@ public class ImageTypeHandler extends GenericTypeHandler {
     public ImageTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
+	//Example file in this plugin
+	InputStream testIS =  Utils.getInputStream("/org/ramadda/plugins/media/test.sh", getClass());
+	//Get the destination file and outputstream
+	File dest = new File(getStorageManager().getRepositoryDir()+"/test.sh");
+	FileOutputStream destOS = new FileOutputStream(dest);
+	//Copy the input to the output
+	IOUtil.writeTo(testIS,destOS);
+	destOS.close();
     }
 
 
