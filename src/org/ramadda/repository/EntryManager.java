@@ -7590,6 +7590,9 @@ public class EntryManager extends RepositoryManager {
                                 group, name, desc, user, typeHandler,
                                 initializer);
 
+	List<Entry> entries = new ArrayList<Entry>();
+	entries.add(entry);
+	addInitialMetadata(request, entries, true, false);
         addNewEntry(request, entry);
 
         return entry;
