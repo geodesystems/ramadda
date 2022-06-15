@@ -102,7 +102,7 @@ public class CopyAction extends MonitorAction {
      */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
-	applyGroupEditForm(request, monitor);Su
+	applyGroupEditForm(request, monitor);
         this.subGroup = request.getString(getArgId(ARG_SUBGROUP), "").trim();
     }
 
