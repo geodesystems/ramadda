@@ -162,15 +162,17 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      */
     private void initMonitors() throws Exception {
         Statement stmt =
-            getDatabaseManager().select(Tables.MONITORS.COL_ENCODED_OBJECT,
+            getDatabaseManager().select(Tables.MONITORS.COL_MONITOR_ID+","+
+					Tables.MONITORS.COL_ENCODED_OBJECT,
                                         Tables.MONITORS.NAME, new Clause(),
                                         " order by "
                                         + Tables.MONITORS.COL_NAME);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
         ResultSet        results;
+	
         while ((results = iter.getNext()) != null) {
-            String xml = results.getString(1);
-
+            String id = results.getString(1);
+            String xml = results.getString(2);
             try {
                 //Uggh
                 xml = xml.replaceAll(
@@ -196,7 +198,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                     */
                 }
             } catch (Throwable ignore) {
-                System.err.println("No monitor class found: " + ignore);
+                System.err.println("No monitor class found: " + "id:" + id +" error:" +ignore);
             }
         }
     }
