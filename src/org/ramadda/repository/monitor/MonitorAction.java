@@ -1,9 +1,12 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.monitor;
+
+
+import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.repository.*;
@@ -27,6 +30,15 @@ public abstract class MonitorAction implements Constants, Cloneable {
 
     /** _more_ */
     private String id;
+
+
+    /** _more_ */
+    protected String parentGroupId;
+
+    /** _more_ */
+    protected Entry group;
+
+
 
 
     /**
@@ -122,7 +134,7 @@ public abstract class MonitorAction implements Constants, Cloneable {
      * @throws Exception _more_
      */
     public void addToEditForm(EntryMonitor monitor, Appendable sb)
-            throws Exception {}
+	throws Exception {}
 
     /**
      * _more_
@@ -164,7 +176,81 @@ public abstract class MonitorAction implements Constants, Cloneable {
         return id;
     }
 
+    /**
+     *  Set the ParentGroupId property.
+     *
+     *  @param value The new value for ParentGroupId
+     */
+    public void setParentGroupId(String value) {
+        this.parentGroupId = value;
+    }
+
+    /**
+     *  Get the ParentGroupId property.
+     *
+     *  @return The ParentGroupId
+     */
+    public String getParentGroupId() {
+        return this.parentGroupId;
+    }
+
+    /**
+     * _more_
+     *
+     * @param entryMonitor _more_
+     *
+     * @return _more_
+     */
+    public Entry getGroup(EntryMonitor entryMonitor) {
+        try {
+            if (group == null) {
+                group =
+                    (Entry) entryMonitor.getRepository().getEntryManager()
+		    .findGroup(null, parentGroupId);
+            }
+            return group;
+        } catch (Exception exc) {
+            return null;
+        }
+    }
+
+    public void addGroupToEditForm(EntryMonitor monitor, Appendable sb) throws Exception {
+	Entry  group      = getGroup(monitor);
+	String errorLabel = "";
+	if ((group != null) && !monitor.okToAddNew(group)) {
+	    errorLabel = HtmlUtils.span(
+					monitor.getRepository().msg(
+								    "You cannot add to the folder"), HtmlUtils.cssClass(
+															HtmlUtils.CLASS_ERRORLABEL));
+	}
+	String groupName = ((group != null)
+			    ? group.getFullName()
+			    : "");
+	String inputId   = getArgId(ARG_GROUP);
+	String select =
+	    monitor.getRepository().getHtmlOutputHandler().getSelect(
+								     null, inputId,
+								     HtmlUtils.img(
+										   monitor.getRepository().getIconUrl(
+														      ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
+								     + monitor.getRepository().msg(
+												   "Select"), false, "");
+	sb.append(HtmlUtils.hidden(inputId + "_hidden", parentGroupId,
+				   HtmlUtils.id(inputId + "_hidden")));
+	sb.append(
+		  HtmlUtils.formEntry(
+				      "Folder:",
+				      HtmlUtils.disabledInput(
+							      inputId, groupName,
+							      HtmlUtils.SIZE_60 + HtmlUtils.id(inputId)) + select));
 
 
+    }
+
+    public void applyGroupEditForm(Request request, EntryMonitor monitor) {
+        this.parentGroupId = request.getString(getArgId(ARG_GROUP)
+                + "_hidden", "");
+        this.group    = null;
+    }
 
 }

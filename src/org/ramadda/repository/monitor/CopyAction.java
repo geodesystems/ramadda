@@ -38,14 +38,9 @@ public class CopyAction extends MonitorAction {
     public static final String ARG_SUBGROUP = "subgroup";
 
 
-    /** _more_ */
-    private String parentGroupId;
 
     /** _more_ */
     private String subGroup = "";
-
-    /** _more_ */
-    private Entry group;
 
     /**
      * _more_
@@ -80,26 +75,6 @@ public class CopyAction extends MonitorAction {
         return "Copy Action";
     }
 
-    /**
-     * _more_
-     *
-     * @param entryMonitor _more_
-     *
-     * @return _more_
-     */
-    private Entry getGroup(EntryMonitor entryMonitor) {
-        try {
-            if (group == null) {
-                group =
-                    (Entry) entryMonitor.getRepository().getEntryManager()
-                        .findGroup(null, parentGroupId);
-            }
-
-            return group;
-        } catch (Exception exc) {
-            return null;
-        }
-    }
 
     /**
      * _more_
@@ -127,9 +102,7 @@ public class CopyAction extends MonitorAction {
      */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
-        this.parentGroupId = request.getString(getArgId(ARG_GROUP)
-                + "_hidden", "");
-        this.group    = null;
+	applyGroupEditForm(request, monitor);Su
         this.subGroup = request.getString(getArgId(ARG_SUBGROUP), "").trim();
     }
 
@@ -148,34 +121,7 @@ public class CopyAction extends MonitorAction {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("Copy Action", 2));
         try {
-            Entry  group      = getGroup(monitor);
-            String errorLabel = "";
-            if ((group != null) && !monitor.okToAddNew(group)) {
-                errorLabel = HtmlUtils.span(
-                    monitor.getRepository().msg(
-                        "You cannot add to the folder"), HtmlUtils.cssClass(
-                        HtmlUtils.CLASS_ERRORLABEL));
-            }
-            String groupName = ((group != null)
-                                ? group.getFullName()
-                                : "");
-            String inputId   = getArgId(ARG_GROUP);
-            String select =
-                monitor.getRepository().getHtmlOutputHandler().getSelect(
-                    null, inputId,
-                    HtmlUtils.img(
-                        monitor.getRepository().getIconUrl(
-                            ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
-                                + monitor.getRepository().msg(
-                                    "Select"), false, "");
-            sb.append(HtmlUtils.hidden(inputId + "_hidden", parentGroupId,
-                                       HtmlUtils.id(inputId + "_hidden")));
-            sb.append(
-                HtmlUtils.formEntry(
-                    "Folder:",
-                    HtmlUtils.disabledInput(
-                        inputId, groupName,
-                        HtmlUtils.SIZE_60 + HtmlUtils.id(inputId)) + select));
+	    addGroupToEditForm(monitor, sb);
             sb.append(
                 HtmlUtils.formEntry(
                     "Sub-Folder Template:",
@@ -210,23 +156,6 @@ public class CopyAction extends MonitorAction {
     }
 
 
-    /**
-     *  Set the ParentGroupId property.
-     *
-     *  @param value The new value for ParentGroupId
-     */
-    public void setParentGroupId(String value) {
-        this.parentGroupId = value;
-    }
-
-    /**
-     *  Get the ParentGroupId property.
-     *
-     *  @return The ParentGroupId
-     */
-    public String getParentGroupId() {
-        return this.parentGroupId;
-    }
 
     /**
      *  Set the SubGroup property.
