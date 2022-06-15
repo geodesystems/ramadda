@@ -4952,7 +4952,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
 
-    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook,includeCopyJson) {
+    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook,includeCopyArgs) {
         if (skip == null) {
             skip = [".*OpenLayers_Control.*", "authtoken"];
         }
@@ -4961,7 +4961,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var cnt = 0;
         var seen = {};
         var pairs = [];
-	let jsonList = [];
+	let args = "";
 
         inputs.each(function(i, item) {
             if (item.name == "" || item.value == null || item.value == "") return;
@@ -5019,7 +5019,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
 	    if(values.length==1) {
-		jsonList.push({arg:item.name,values:values});
+		values.forEach(value=>{
+		    args+=item.name+"=" + value+"\n";
+		});
 	    }
 
             for (v in values) {
@@ -5034,14 +5036,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
         });
 
-	let json = JSON.stringify(jsonList,null,1);
         let base = window.location.protocol + "//" + window.location.host;
         url = base + url;
 
         let input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
         let html = '<p>' +HtmlUtils.div(["class", "ramadda-form-url"], 
-					(includeCopyJson?
-					 HU.span(['id','jsoncopy','class','ramadda-clickable','title','Copy json for subset action'],
+					(includeCopyArgs?
+					 HU.span(['id','argscopy','class','ramadda-clickable','title','Copy json for subset action'],
 						 HtmlUtils.getIconImage('fas fa-earth-americas')) +' ':'')+
 				 HtmlUtils.href(url, HtmlUtils.getIconImage('fas fa-link')) + " " + input);
         if (hook) {
@@ -5053,9 +5054,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             });
         }
         $("#" + outputId).html(html);
-	jqid('jsoncopy').click(()=>{
-	    Utils.copyToClipboard(json);
-	    alert('json for subset is copied to clipboard');
+	jqid('argscopy').click(()=>{
+	    Utils.copyToClipboard(args);
+	    alert('args for subset are copied to clipboard');
 	});
     },
     makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,includeCopyJson) {
