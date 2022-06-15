@@ -1013,8 +1013,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         sb.append("</ul>");
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit(msg("Subset")));
-        addUrlShowingForm(sb, formId,
-                          "[\".*OpenLayers_Control.*\",\".*original.*\"]");
+        addUrlShowingForm(sb, null, formId,
+                          "[\".*OpenLayers_Control.*\",\".*original.*\"]",null,true);
         sb.append(HtmlUtils.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
