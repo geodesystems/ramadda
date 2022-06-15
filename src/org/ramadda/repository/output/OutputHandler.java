@@ -989,7 +989,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public static void addUrlShowingForm(Appendable sb, Entry entry,
                                          String formId, String skipList,
-                                         String hook, boolean includeCopyJson)
+                                         String hook, boolean includeCopyArgs)
             throws Exception {
         String outputId = HtmlUtils.getUniqueId("output_");
         HtmlUtils.div(sb, "", HtmlUtils.id(outputId));
@@ -1003,7 +1003,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                                     outputId), (skipList
                                                         != null)
                 ? skipList
-					: "null", "" + hook,""+includeCopyJson));
+					: "null", "" + hook,""+includeCopyArgs));
     }
 
 
