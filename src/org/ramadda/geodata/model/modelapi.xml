@@ -7,5 +7,6 @@
       <api request="/model/timeseries/*"    method="processTimeSeriesRequest"  name="Model Time Series" admin="false"/>
       <api request="/model/multitimeseries/*"    method="processMultiTimeSeriesRequest"  name="Multi-Ensemble Time Series" admin="false"/>
       <api request="/model/correlation/*"    method="processCorrelationRequest"  name="Model Correlation" admin="false"/>
+      <api request="/model/test/*"    method="processTestRequest"  name="Test Request" admin="false"/>
     </group>
 </api>

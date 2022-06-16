@@ -84,6 +84,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /** correlation action */
     public static final String ARG_ACTION_CORRELATION = "action.correlation";
 
+    /** test action */
+    public static final String ARG_ACTION_TEST = "action.test";
+
     /** fixed collection id */
     public static final String ARG_COLLECTION = "collection";
 
@@ -196,6 +199,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 processes.add(process);
             }
             process = new NCLModelPlotDataService(repository);
+            if (process.isEnabled()) {
+                processes.add(process);
+            }
+        } else if (action.equals(ARG_ACTION_TEST)) {
+            Service process = new TestDataService(repository);
             if (process.isEnabled()) {
                 processes.add(process);
             }
@@ -703,6 +711,20 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
     /**
+     * handle the correlation
+     *
+     * @param request request
+     *
+     * @return result
+     *
+     * @throws Exception on badness
+     */
+    public Result processTestRequest(Request request)
+            throws Exception {
+        return handleRequest(request, ARG_ACTION_TEST);
+    }
+
+    /**
      * handle the request
      *
      * @param request request
@@ -883,6 +905,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             if (hasOperands) {
                 try {
                     if (type.equals(ARG_ACTION_COMPARE)
+                            || type.equals(ARG_ACTION_TEST)
                             || type.equals(ARG_ACTION_ENS_COMPARE)
                             || type.equals(ARG_ACTION_MULTI_COMPARE)
                             || type.equals(ARG_ACTION_CORRELATION)) {
@@ -983,6 +1006,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             fieldsHelpFile = "enscompare-fields.html";
             helpFile =
                 "/org/ramadda/geodata/model/htdocs/model/timeseries.html";
+        } else if (type.equals(ARG_ACTION_TEST)) {
+            formType       = "test";
+            fieldsHelpFile = formType + "-fields.html";
         }
 
 
@@ -1030,7 +1056,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String title = "Model Comparison";
         String desc  = "";
-        if (type.equals(ARG_ACTION_COMPARE)) {
+        if (type.equals(ARG_ACTION_COMPARE) || type.equals(ARG_ACTION_TEST)) {
             if (request.defined(ARG_EVENT_GROUP)) {
                 String groupName =
                     request.getSanitizedString(ARG_EVENT_GROUP, "");
@@ -1107,6 +1133,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
         if (hasOperands) {
             if (type.equals(ARG_ACTION_COMPARE)
+                    || type.equals(ARG_ACTION_TEST)
                     || type.equals(ARG_ACTION_CORRELATION)) {
                 plotButton = HtmlUtils.submit(msg("Make Plot"), type,
                         HtmlUtils.id(formId + "_submit"));
@@ -1371,6 +1398,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (type.equals(ARG_ACTION_COMPARE)
                 || type.equals(ARG_ACTION_TIMESERIES)
                 || type.equals(ARG_ACTION_ENS_COMPARE)
+                || type.equals(ARG_ACTION_TEST)
                 || type.equals(ARG_ACTION_CORRELATION)) {
             sb.append(HtmlUtils.div(msg(datasetTitles.get(0)),
                                     HtmlUtils.cssClass(
@@ -2028,6 +2056,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             base.append("/model/timeseries");
         } else if (type.equals(ARG_ACTION_MULTI_TIMESERIES)) {
             base.append("/model/multitimeseries");
+        } else if (type.equals(ARG_ACTION_TEST)) {
+            base.append("/model/test");
         }
         if (request.defined(ARG_FREQUENCY)) {
             base.append("?");
