@@ -331,7 +331,7 @@ function CollectionForm(formId, plottype, args) {
             }
             html += this.outputImages(images);
             html += this.outputKMZ(kmz);
-            if (this.plottype === "compare") {
+            if (this.plottype === "compare" || this.plottype === "test") {
                 html += this.outputPlotFiles(plotfiles);
                 //html += this.outputTimeSeriesFiles(tsfiles);
                 html += HtmlUtil.href(
