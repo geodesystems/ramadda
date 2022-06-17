@@ -2423,6 +2423,11 @@ var Utils =  {
         obj.style.filter = "alpha(opacity=80)";
         obj.style.opacity = "0.8";
     },
+    centerDiv:function(c) {
+	return this.div(['style','text-align:center;'],
+			this.div(['style','display:inline-block;text-align:left;'],
+				 c));
+    },
     moveFloatDiv:function(x, y) {
         let obj = $("#ramadda-floatdiv");
         if (obj.length) {
