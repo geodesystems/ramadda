@@ -16,6 +16,7 @@ import org.ramadda.repository.output.JsonOutputHandler;
 
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
@@ -80,6 +81,8 @@ public class RepositoryManager implements RepositorySource, Constants,
 
     /** _more_ */
     public static final HtmlUtils HU = null;
+
+    public static final JsonUtil JU = null;    
 
     /**
      * _more_
