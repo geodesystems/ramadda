@@ -601,6 +601,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static String centerDiv(String contents) {
+	return open(TAG_DIV,
+		    style("text-align:center;")) +
+	    div(contents,
+		style(
+			    "display:inline-block;text-align:left;")) +
+	    close(TAG_DIV);
+    }
+
+
     /**
      * _more_
      *
