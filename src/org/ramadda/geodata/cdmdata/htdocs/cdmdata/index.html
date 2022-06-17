@@ -4,8 +4,25 @@
 <body>
 <div class="ramadda-section">
 <h2>CDM Data</h2>
+:navtop
 
-<h3>NetCDF Point Subset Type</h3>
+:heading Grid Subset Monitor
+The Grid Subset Monitor allows  a site administrator to automatically create a subset of a newly
+created grid data file using RAMADDA's <a href="https://ramadda.org/repository/userguide/monitors.html">monitor facility</a>.
+:p
+When logged in to RAMADDA go the Admin-&gt;Monitors page and select New Grid Subset Action.
+Specify the Data range, etc. In the Search Criteria section specify ...
+For example, if you are adding Gridded Data to a particular folder
+called Models you can specify the Grid Subset Action is applied to new Gridded File entries
+under that folder. In the action you specify the target folder to add the new subsetted grid
+file under and a set of subset arguments. To specify the subset arguments go to an example
+of one of the source grid files and choose the Subset Grid view. Specify your subset, e.g., spatial
+bounds, time range, parameters, etc. Then at the bottom of the page click on the 
+<span><i class="fas fa-earth-americas"></i></span> link. This copies to your clipboard the arguments. You can then go to your  Grid Subset Action and paste the arguments into the form field.
+
+
+
+:heading NetCDF Point Subset Type
 RAMADDA provides a NetCDF Point Subset entry type that takes as input the
 URL for the Thredds Data Server (TDS) Netcdf Point Subset Service. To use this 
 got to the TDS subset form, e.g.
