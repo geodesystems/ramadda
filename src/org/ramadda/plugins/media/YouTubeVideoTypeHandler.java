@@ -11,7 +11,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
@@ -34,21 +34,13 @@ import java.util.List;
  *
  *
  */
-public class YouTubeVideoTypeHandler extends GenericTypeHandler {
+public class YouTubeVideoTypeHandler extends MediaTypeHandler {
 
     /** _more_ */
-    private static int IDX = 0;
-
+    private static int IDX = MediaTypeHandler.IDX_LAST+1;
 
     /** _more_ */
     public static final int IDX_ID = IDX++;
-
-
-    /** _more_ */
-    public static final int IDX_WIDTH = IDX++;
-
-    /** _more_ */
-    public static final int IDX_HEIGHT = IDX++;
 
     /** _more_ */
     public static final int IDX_START = IDX++;
@@ -78,6 +70,12 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
+    @Override
+    public String getMediaType(Request request, Entry entry) {
+	return  MEDIA_YOUTUBE;
+    }
+
+
     /**
      * _more_
      *
@@ -91,9 +89,9 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-
         boolean autoPlay = entry.getValue(IDX_AUTOPLAY, false);
         String  sdisplay = entry.getValue(IDX_DISPLAY, "true");
+        String id  = entry.getValue(IDX_ID, (String) null);
         boolean display  = (sdisplay.length() == 0)
                            ? true
                            : Misc.equals("true", sdisplay);
@@ -103,12 +101,11 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
 
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-
-
         sb.append(getRepository().getWikiManager().wikifyEntry(request,
                 entry, entry.getDescription()));
         String url = entry.getResource().getPath();
-        String id  = entry.getValue(IDX_ID, (String) null);
+
+
         //For legacy entries
         if (id == null) {
             id = getYouTubeId(url);
@@ -121,18 +118,18 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
                         "Could not find ID in YouTube URL:" + url)));
         }
 
-
         String width  = entry.getValue(IDX_WIDTH, "640");
         String height = entry.getValue(IDX_HEIGHT, "390");
+	if(width.equals("0")) width = "640";
+	if(height.equals("0")) height = "390";
+	String embed = addMedia(request, entry, new Hashtable(),MEDIA_YOUTUBE,null,url,null);
+	/*
         double start  = entry.getValue(IDX_START, 0.0);
         double end    = entry.getValue(IDX_END, -1);
-        sb.append("\n");
-
         String playerId = embedPlayer(sb, id, width, height, start, end,
                                       autoPlay);
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.href(url, url));
-
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry, "video_cue",
                 false);
@@ -153,29 +150,34 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
             }
             StringBuffer embed = sb;
             sb = new StringBuffer();
-
-            sb.append(
-                HtmlUtils.importJS("http://www.youtube.com/player_api"));
+            sb.append(HtmlUtils.importJS("http://www.youtube.com/player_api"));
             StringBuffer js = new StringBuffer("\n");
-            js.append(
-                "function onYouTubePlayerAPIReady(id) {/*alert(id);*/}\n");
             js.append("function cueVideo (id,minutes) {\n");
             js.append("player = document.getElementById('ytplayer');");
-            js.append("alert(player.playVideo);");
             js.append("player.playVideo();");
             js.append("}\n");
             sb.append("\n");
             sb.append(HtmlUtils.script(js.toString()));
-            sb.append("<table cellspacing=5><tr valign=top><td>");
+*/
             sb.append(embed);
-            sb.append("</td><td>");
-            sb.append(links);
-            sb.append("</td></tr></table>");
-        }
-
+	    //            sb.append(links);
         getPageHandler().entrySectionClose(request, entry, sb);
-
         return new Result("", sb);
+    }
+
+
+    @Override
+    public String embedYoutube(Request request, Entry entry,Hashtable props, StringBuilder sb, List attrs,
+                               String mediaUrl) {
+        boolean autoPlay = entry.getValue(IDX_AUTOPLAY, false);
+        double start  = entry.getValue(IDX_START, 0.0);
+        double end    = entry.getValue(IDX_END, -1);
+	Utils.add(attrs,"autoplay",autoPlay?"1":"0");
+	if(start>0)
+	    Utils.add(attrs,"start",""+(int) start);
+	if(end>0)
+	    Utils.add(attrs,"end",""+(int) end);	
+	return 	super.embedYoutube(request, entry, props, sb, attrs, mediaUrl);
     }
 
     /**

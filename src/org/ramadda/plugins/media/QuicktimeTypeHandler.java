@@ -39,16 +39,12 @@ import java.util.List;
  *
  *
  */
-public class QuicktimeTypeHandler extends GenericTypeHandler {
+public class QuicktimeTypeHandler extends MediaTypeHandler {
+
+    private static int IDX = MediaTypeHandler.IDX_LAST+1;
 
     /** _more_ */
-    public static final int IDX_WIDTH = 0;
-
-    /** _more_ */
-    public static final int IDX_HEIGHT = 1;
-
-    /** _more_ */
-    public static final int IDX_AUTOPLAY = 2;
+    public static final int IDX_AUTOPLAY = IDX++;
 
 
     /**
@@ -64,95 +60,7 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public String getWikiInclude(WikiUtil wikiUtil, Request request,
-                                 Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props)
-            throws Exception {
-        if ( !tag.equals("video")) {
-            return super.getWikiInclude(wikiUtil, request, originalEntry,
-                                        entry, tag, props);
-        }
-        String width  = entry.getValue(IDX_WIDTH, "320");
-        String height = entry.getValue(IDX_HEIGHT, "256");
-
-        boolean autoplay = entry.getValue(IDX_AUTOPLAY,
-                                          "false").equals("true");
-
-        String header = getWikiManager().wikifyEntry(request, entry,
-                            DFLT_WIKI_HEADER);
-        StringBuffer sb = new StringBuffer(header);
-        String url = entry.getTypeHandler().getEntryResourceUrl(request,
-                         entry);
-        sb.append("\n");
-        /*
- <video width="320" height="240" controls>
-  <source src="movie.mp4" type="video/mp4">
-  <source src="movie.ogg" type="video/ogg">
-Your browser does not support the video tag.
-</video>
-        */
-
-
-
-        String extra = (autoplay
-                        ? " autoplay "
-                        : "");
-        sb.append(HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
-            HtmlUtils.ATTR_SRC, url, HtmlUtils.ATTR_CLASS,
-            "ramadda-video-embed", HtmlUtils.ATTR_WIDTH, width,
-            HtmlUtils.ATTR_HEIGHT, height,
-        }) + " controls "
-           + extra, HtmlUtils.tag("source",
-                                  HtmlUtils.attrs(new String[] {
-                                      HtmlUtils.ATTR_SRC,
-                                      url }))));
-
-        /*
-       sb.append(HtmlUtils.tag(HtmlUtils.TAG_EMBED,
-                                 HtmlUtils.attrs(new String[] {
-                                         HtmlUtils.ATTR_SRC, url,
-                                         HtmlUtils.ATTR_CLASS,
-                                         "ramadda-video-embed", HtmlUtils.ATTR_WIDTH, width,
-                                         HtmlUtils.ATTR_HEIGHT, height, "autoplay", "false", "controls",""
-                                     })));
-         */
-        return sb.toString();
+    public String getMediaType(Request request, Entry entry) {
+	return  MEDIA_OTHER;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param props _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getSimpleDisplay(Request request, Hashtable props,
-                                   Entry entry)
-            throws Exception {
-        return getWikiInclude(null, request, entry, entry, "video",
-                              new Hashtable());
-    }
-
-
 }

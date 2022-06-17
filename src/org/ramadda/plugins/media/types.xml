@@ -54,7 +54,25 @@
 
 
 
+<type name="type_media"   foruser="false"         handler="org.ramadda.plugins.media.MediaTypeHandler" >
+   <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
+   <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
+   <column name="transcriptions_json" type="clob" label="Transcriptions" xshowinhtml="false"   xcandisplay="false" xeditable="false"/>     
+     <wiki><![CDATA[
++section title="{{name}}" 
+{{noheading}}
+{{description wikify=true}}
+{{media}}
+-section
+]]>
+</wiki>
+</type>
+
+<type name="type_video"   foruser="false"      super="type_media">
+</type>
+
   <type name="media_youtubevideo"  
+	super="type_video"
         description="YouTube Video" 
         handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
         category="Media" 
@@ -66,9 +84,6 @@
      <property name="form.file.show" value="false"/>
      <property name="form.url.label" value="YouTube Video URL"/>
      <column name="video_id" type="string" label="Video ID" showinhtml="false" editable="false"/>
-
-     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
-     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
      <column name="video_start" type="double" label="Start"  suffix="(minutes)" default="0" showinhtml="false"/>
      <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
      <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
@@ -99,22 +114,14 @@
 +section title="{{name}}" #
 {{noheading}}
 {{audio}}
-
 {{description wikify="true"}}
-
 -section
 ]]>
 </wiki>
 </type>
 
-
-  <type name="media_video"   foruser="false">
-     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
-     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
-  </type>
-
   <type name="media_video_quicktime"  
-        super="media_video"
+        super="type_video"
         description="Quicktime Video" 
         handler="org.ramadda.plugins.media.QuicktimeTypeHandler" 
         category="Media" 
@@ -122,14 +129,14 @@
      <property name="icon" value="/icons/mov.png"/>
      <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
      <service link="media.qttools.thumbnail" id="initmov"  target="attachment"/>
-     <wiki><![CDATA[
+     <xwiki><![CDATA[
 +section title="{{name}}" #
 {{noheading}}
 {{description wikify=true}}
 {{video}}
 -section
 ]]>
-</wiki>
+</xwiki>
 </type>
 
 
@@ -315,7 +322,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 <type name="type_document_ohms"  description="OHMS Oral History"
       pattern="(?i).*ohms.*\.xml"
       handler="org.ramadda.plugins.media.OhmsTypeHandler" 
-      super="type_document" supercategory="" category="Data">
+      super="type_media" supercategory="" category="Data">
   <property name="icon" value="/media/ohms.png"/>
   <column name="ohms_type" type="enumerationplus" label="Type"/>
   <column name="interviewee" type="string" label="Interviewee"/>
