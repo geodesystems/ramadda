@@ -132,8 +132,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
         String searchId  = "search_" + id;
         String var       = "points_" + id;
         StringBuilder sb     = new StringBuilder();
-        sb.append(HtmlUtils.cssLink(getHtdocsUrl("/media/ohms.css")));
-        sb.append(HtmlUtils.importJS(getHtdocsUrl("/media/ohms.js")));
+        sb.append(HtmlUtils.cssLink(getHtdocsUrl("/media/media.css")));
+        sb.append(HtmlUtils.importJS(getHtdocsUrl("/media/media.js")));
         StringBuilder js      = new StringBuilder();
         String transcriptions = (String) entry.getValue(IDX_TRANSCRIPTIONS);
 	if(!Utils.stringDefined(transcriptions)) {
