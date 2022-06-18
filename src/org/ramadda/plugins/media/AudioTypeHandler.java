@@ -7,21 +7,13 @@ package org.ramadda.plugins.media;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
-
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -30,8 +22,7 @@ import java.util.List;
  *
  *
  */
-public class AudioTypeHandler extends GenericTypeHandler {
-
+public class AudioTypeHandler extends MediaTypeHandler {
 
     /**
      * _more_
@@ -46,7 +37,10 @@ public class AudioTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-
+    @Override
+    public String getHeight(Request request, Entry entry, Hashtable props) {
+	return Utils.getProperty(props,"height",AUDIO_HEIGHT);
+    }
 
 
     /**

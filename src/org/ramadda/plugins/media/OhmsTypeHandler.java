@@ -271,6 +271,54 @@ public class OhmsTypeHandler extends MediaTypeHandler {
 
     }
 
+    @Override
+    public boolean canAddTranscription(Request request, Entry entry) {
+	return false;
+    }
+
+
+
+    @Override
+    public String getTranscriptions(Request request, Entry entry) throws Exception {
+        Element       root   = getRoot(entry);
+        Element       record = XmlUtil.findChild(root, "record");
+        Element       media  = XmlUtil.findChild(record, "mediafile");
+        String mediaType   = XmlUtil.getGrandChildText(media, "host", "");
+        Element       index  = XmlUtil.findChild(record, "index");
+        List<String>  points = new ArrayList<String>();
+        if (index != null) {
+            for (Object o : XmlUtil.findDescendants(index, "point")) {
+                Element point = (Element) o;
+                String  time  = XmlUtil.getGrandChildText(point, "time",
+                                    null);
+                if (time == null) {
+                    continue;
+                }
+                String title = XmlUtil.getGrandChildText(point, "title", "");
+                List attrs =
+                    JsonUtil.quoteList(
+                        Utils.makeList(
+                            "time", time, "title", title, "transcript",
+                            XmlUtil.getGrandChildText(
+                                point, "partial_transcript", ""), "synopsis",
+                                    XmlUtil.getGrandChildText(
+							      point, "synopsis", "")));
+		Utils.add(attrs,"keywords",
+			    JU.quoteAll(Utils.split(XmlUtil.getGrandChildText(
+								  point, "keywords",
+								  ""), ";",true,true)));
+		Utils.add(attrs, "subjects",
+			  JU.quoteAll(Utils.split(XmlUtil.getGrandChildText(
+									point, "subjects",
+									""),";",true,true)));
+                Utils.add(points, JsonUtil.map(attrs));
+            }
+        }
+
+	return JU.list(points);
+    }
+
+
     /**
      *
      * @param entry _more_

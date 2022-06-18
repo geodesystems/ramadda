@@ -29,6 +29,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
     /** _more_ */
     private static int IDX = 0;
 
+    public static final String AUDIO_HEIGHT="40";
+
     /** _more_ */
     public static final int IDX_WIDTH = IDX++;
 
@@ -119,8 +121,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
     }
 
     public String getHeight(Request request, Entry entry, Hashtable props) {
-        String height  = Utils.getProperty(props, "height", entry.getValue(IDX_HEIGHT, "380"));
-	if(height.equals("0")) height = "380";
+        String height  = Utils.getProperty(props, "height", entry.getValue(IDX_HEIGHT, "360"));
+	if(height.equals("0")) height = "360";
 	return height;
     }    
 
@@ -128,14 +130,14 @@ public class MediaTypeHandler extends GenericTypeHandler {
 			   List<String>  points) throws Exception {
         String player    = "";
         String id        = HtmlUtils.getUniqueId("player_");
-        String pointsDiv = "pointsdiv_" + id;
+        String pointsDivId = "pointsdiv_" + id;
         String searchId  = "search_" + id;
         String var       = "points_" + id;
         StringBuilder sb     = new StringBuilder();
         sb.append(HtmlUtils.cssLink(getHtdocsUrl("/media/media.css")));
         sb.append(HtmlUtils.importJS(getHtdocsUrl("/media/media.js")));
         StringBuilder js      = new StringBuilder();
-        String transcriptions = (String) entry.getValue(IDX_TRANSCRIPTIONS);
+        String transcriptions = getTranscriptions(request, entry);
 	if(!Utils.stringDefined(transcriptions)) {
 	    transcriptions = "[]";
 	}
@@ -149,7 +151,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	    Utils.add(attrs,"authToken",JU.quote(request.getAuthToken()));
 	}
 
-	Utils.add(attrs, "id",JU.quote(id), "div",JU.quote(pointsDiv),
+	Utils.add(attrs, "id",JU.quote(id), "div",JU.quote(pointsDivId),
 		  "points",var, "searchId",JU.quote(searchId));
 	if(Utils.stringDefined(mediaUrl)) {
 	    Utils.add(attrs,"mediaUrl",JU.quote(mediaUrl));
@@ -174,17 +176,16 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	    return sb.toString();
 	}
 	js.append("new RamaddaMediaTranscript(" + JU.map(attrs)+");\n");
-        String playerDiv = HtmlUtils.centerDiv(HU.div(player,
-					       HU.attrs("style", "display:inline-block;",
-							"id", id)));
         String searchDiv =
             HU.div("",
                    HU.attrs("style",
                             "vertical-align:top;", "id",
                             searchId));
-        sb.append(playerDiv);
-        sb.append(searchDiv);
-        sb.append(HU.div("", HU.attrs("id", pointsDiv)));
+
+	String pointsDiv= HU.div("", HU.attrs("id", pointsDivId));
+        String playerDiv = HtmlUtils.centerDiv(HU.div(player,
+						      HU.attrs("id", id))+searchDiv+pointsDiv);
+	sb.append(playerDiv);
         sb.append(HtmlUtils.script(js.toString()));
         return sb.toString();
 	
@@ -194,6 +195,11 @@ public class MediaTypeHandler extends GenericTypeHandler {
     public boolean canAddTranscription(Request request, Entry entry) {
 	return true;
     }
+
+    public String getTranscriptions(Request request, Entry entry) throws Exception {
+	return (String) entry.getValue(IDX_TRANSCRIPTIONS);
+    }
+
 
     public String getMediaType(Request request, Entry entry) {
 	return  MEDIA_OTHER;
@@ -294,18 +300,20 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	    String height  = getHeight(request, entry,props);	
             String mediaId = HtmlUtils.getUniqueId("media_");
             Utils.add(attrs, "mediaId", JU.quote(mediaId));
-            if (mediaUrl.toLowerCase().endsWith(".mp3") || _path.endsWith(".mp3")) {
+            if (mediaUrl.toLowerCase().endsWith(".mp3") || _path.endsWith(".mp3") || _path.endsWith(".m4a")|| _path.endsWith("ogg")|| _path.endsWith("wav")) {
                 player =
-                    "<audio controls " + HU.attr("id", mediaId)
-                    + "><source src='" + mediaUrl
-                    + "' type='audio/mpeg'>Your browser does not support the audio tag.</audio>";
+                    HU.tag("audio",HU.attrs(new String[]{"controls","","id", mediaId,
+							 "style",
+							 HU.css("height",HU.makeDim(AUDIO_HEIGHT,"px"),"width",HU.makeDim(width,"px"))}),
+			HU.tag("source",HU.attrs(new String[]{"src=", mediaUrl,				
+							      "type","audio/mpeg"}),
+			       "Your browser does not support the audio tag."));
                 Utils.add(attrs, "media", JU.quote("media"));
             } else if (mediaUrl.toLowerCase().endsWith(".m4v") || _path.endsWith(".m4v")) {
                 player =
-                    "<video " + HU.attr("id", mediaId)
-                    + " controls='' height='360' width='480'><source src='"
-                    + mediaUrl
-                    + "' type='video/mp4'></source></source></video>";
+                    HU.tag("video",HU.attrs(new String[]{"id", mediaId,"controls","","height",height,"width",width}),
+			   HU.tag("source",HU.attrs(new String[]{
+				       "src",mediaUrl,"type","video/mp4"})));
                 Utils.add(attrs, "media", JU.quote("media"));
             } else if (mediaUrl.toLowerCase().endsWith(".mov") || _path.endsWith(".mov")) {
 		player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {

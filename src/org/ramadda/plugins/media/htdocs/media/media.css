@@ -1,16 +1,24 @@
 
-.ramadda-ohms-points {
+.ramadda-media-points {
     max-height:400px;
     overflow-y:auto;
 }
 
-.ramadda-ohms-point {
+.ramadda-media-point {
 }
     
-.ramadda-ohms-point-details-inner {
+.ramadda-media-point-details-inner {
     background: #efefef;
     padding-left:10px;
 }
 
-.ramadda-ohms-search {
+.ramadda-media-search {
+}
+
+.ramadda-media-point-edit, .ramadda-media-point-delete {
+    margin-right:10px;
+}
+
+.ramadda-video-embed {
+    border:1px #ccc solid;
 }
