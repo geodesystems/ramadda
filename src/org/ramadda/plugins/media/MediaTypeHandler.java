@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.media;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -13,8 +12,9 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-import ucar.unidata.util.StringUtil;
 import org.w3c.dom.*;
+
+import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -29,7 +29,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
     /** _more_ */
     private static int IDX = 0;
 
-    public static final String AUDIO_HEIGHT="40";
+    /**  */
+    public static final String AUDIO_HEIGHT = "40";
 
     /** _more_ */
     public static final int IDX_WIDTH = IDX++;
@@ -37,16 +38,25 @@ public class MediaTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_HEIGHT = IDX++;
 
+    /**  */
     public static final int IDX_TRANSCRIPTIONS = IDX++;
 
-    public static final int IDX_LAST = IDX-1;    
+    /**  */
+    public static final int IDX_LAST = IDX - 1;
 
-
+    //These need to match up with what is used in media.js
+    
+    /**  */
     public static final String MEDIA_VIMEO = "vimeo";
-    public static final String MEDIA_YOUTUBE = "youtube";    
-    public static final String MEDIA_SOUNDCLOUD = "soundcloud";
-    public static final String MEDIA_OTHER = "other";
 
+    /**  */
+    public static final String MEDIA_YOUTUBE = "youtube";
+
+    /**  */
+    public static final String MEDIA_SOUNDCLOUD = "soundcloud";
+
+    /**  */
+    public static final String MEDIA_OTHER = "other";
 
 
 
@@ -64,6 +74,18 @@ public class MediaTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -73,10 +95,11 @@ public class MediaTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-	
+
         StringBuilder sb = new StringBuilder();
-	getMediaHtml(request, entry, props,sb);
-	return sb.toString();
+        getMediaHtml(request, entry, props, sb);
+
+        return sb.toString();
     }
 
     /**
@@ -98,157 +121,262 @@ public class MediaTypeHandler extends GenericTypeHandler {
                               new Hashtable());
     }
 
-    
 
-    private void getMediaHtml(Request request, Entry entry, Hashtable props, Appendable sb) throws Exception {
-	String url = entry.getResource().getPath();
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    private void getMediaHtml(Request request, Entry entry, Hashtable props,
+                              Appendable sb)
+            throws Exception {
+        String url    = entry.getResource().getPath();
         String width  = entry.getValue(IDX_WIDTH, "640");
         String height = entry.getValue(IDX_HEIGHT, "390");
-	if(width.equals("0")) width = "640";
-	if(height.equals("0")) height = "390";
-	if(entry.getResource().isFile()) {
-	    url = getEntryManager().getEntryResourceUrl(request, entry);
-	}
-	String embed = addMedia(request, entry, props, getMediaType(request, entry),null,url,null);
-	sb.append(embed);
+        if (width.equals("0")) {
+            width = "640";
+        }
+        if (height.equals("0")) {
+            height = "390";
+        }
+        if (entry.getResource().isFile()) {
+            url = getEntryManager().getEntryResourceUrl(request, entry);
+        }
+        String embed = addMedia(request, entry, props,
+                                getMediaType(request, entry), null, url,
+                                null);
+        sb.append(embed);
     }
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
+      * @return _more_
+     */
     public String getWidth(Request request, Entry entry, Hashtable props) {
-        String width  = Utils.getProperty(props, "width", entry.getValue(IDX_WIDTH, "640"));
-	if(width.equals("0")) width = "640";
-	return width;
-    }
+        String width = Utils.getProperty(props, "width",
+                                         entry.getValue(IDX_WIDTH, "640"));
+        if (width.equals("0")) {
+            width = "640";
+        }
 
-    public String getHeight(Request request, Entry entry, Hashtable props) {
-        String height  = Utils.getProperty(props, "height", entry.getValue(IDX_HEIGHT, "360"));
-	if(height.equals("0")) height = "360";
-	return height;
-    }    
-
-    public String addMedia(Request request, Entry entry, Hashtable props, String mediaType, String embed, String mediaUrl,
-			   List<String>  points) throws Exception {
-        String player    = "";
-        String id        = HtmlUtils.getUniqueId("player_");
-        String pointsDivId = "pointsdiv_" + id;
-        String searchId  = "search_" + id;
-        String var       = "points_" + id;
-        StringBuilder sb     = new StringBuilder();
-        sb.append(HtmlUtils.cssLink(getHtdocsUrl("/media/media.css")));
-        sb.append(HtmlUtils.importJS(getHtdocsUrl("/media/media.js")));
-        StringBuilder js      = new StringBuilder();
-        String transcriptions = getTranscriptions(request, entry);
-	if(!Utils.stringDefined(transcriptions)) {
-	    transcriptions = "[]";
-	}
-        js.append("var " + var + "=" + transcriptions+";\n");
-	List attrs = new ArrayList<String>();
-	boolean  canEdit = getAccessManager().canDoEdit(request, entry);
-	boolean canAddTranscription = canEdit && canAddTranscription(request, entry);
-
-	Utils.add(attrs, "canEdit",""+canEdit,"canAddTranscription",""+canAddTranscription,"entryId",JU.quote(entry.getId()));
-	if(canAddTranscription) {
-	    Utils.add(attrs,"authToken",JU.quote(request.getAuthToken()));
-	}
-
-	Utils.add(attrs, "id",JU.quote(id), "div",JU.quote(pointsDivId),
-		  "points",var, "searchId",JU.quote(searchId));
-	if(Utils.stringDefined(mediaUrl)) {
-	    Utils.add(attrs,"mediaUrl",JU.quote(mediaUrl));
-	}
-        String width  = getWidth(request, entry, props);
-        String height  = getHeight(request, entry,props);	
-	Utils.add(attrs, "width",width,"height",height);
-
-	//	System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
-        if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
-	    player = embedVimeo(request, entry,props,sb,attrs,embed,mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_YOUTUBE)) {
-	    player = embedYoutube(request, entry,props,sb,attrs,mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_SOUNDCLOUD)) {
-	    player = embedSoundcloud(request, entry, props, sb,attrs,mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_OTHER)) {
-	    player = embedMedia(request, entry, props, sb, attrs, embed,mediaUrl);
-	} else {
-	    sb.append("Unknown media");
-	    return sb.toString();
-	}
-	if (player == null) {
-	    return sb.toString();
-	}
-	js.append("new RamaddaMediaTranscript(" + JU.map(attrs)+");\n");
-        String searchDiv =
-            HU.div("",
-                   HU.attrs("style",
-                            "vertical-align:top;", "id",
-                            searchId));
-
-	String pointsDiv= HU.div("", HU.attrs("id", pointsDivId));
-        String playerDiv = HtmlUtils.centerDiv(HU.div(player,
-						      HU.attrs("id", id))+searchDiv+pointsDiv);
-	sb.append(playerDiv);
-        sb.append(HtmlUtils.script(js.toString()));
-        return sb.toString();
-	
-    }	
-
-
-    public boolean canAddTranscription(Request request, Entry entry) {
-	return true;
-    }
-
-    public String getTranscriptions(Request request, Entry entry) throws Exception {
-	return (String) entry.getValue(IDX_TRANSCRIPTIONS);
-    }
-
-
-    public String getMediaType(Request request, Entry entry) {
-	String _path = entry.getResource().getPath().toLowerCase();
-	//https://soundcloud.com/the-wisdom-project/004-martin-luther-king-jr-malcolm-x-and-robert-penn-warren
-	if(_path.indexOf("soundcloud.com")>=0)  return MEDIA_SOUNDCLOUD;
-	if(_path.indexOf("vimeo.com")>=0) return MEDIA_VIMEO;
-	return  MEDIA_OTHER;
+        return width;
     }
 
     /**
      *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
+      * @return _more_
+     */
+    public String getHeight(Request request, Entry entry, Hashtable props) {
+        String height = Utils.getProperty(props, "height",
+                                          entry.getValue(IDX_HEIGHT, "360"));
+        if (height.equals("0")) {
+            height = "360";
+        }
+
+        return height;
+    }
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
+     * @param mediaType _more_
+     * @param embed _more_
+     * @param mediaUrl _more_
+     * @param points _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String addMedia(Request request, Entry entry, Hashtable props,
+                           String mediaType, String embed, String mediaUrl,
+                           List<String> points)
+            throws Exception {
+        String        player      = "";
+        String        id          = HtmlUtils.getUniqueId("player_");
+        String        pointsDivId = "pointsdiv_" + id;
+        String        searchId    = "search_" + id;
+        String        var         = "points_" + id;
+        StringBuilder sb          = new StringBuilder();
+        sb.append(HtmlUtils.cssLink(getHtdocsUrl("/media/media.css")));
+        sb.append(HtmlUtils.importJS(getHtdocsUrl("/media/media.js")));
+        StringBuilder js             = new StringBuilder();
+        String        transcriptions = getTranscriptions(request, entry);
+        if ( !Utils.stringDefined(transcriptions)) {
+            transcriptions = "[]";
+        }
+        js.append("var " + var + "=" + transcriptions + ";\n");
+        List    attrs = new ArrayList<String>();
+        boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        boolean canAddTranscription = canEdit
+                                      && canAddTranscription(request, entry);
+
+        Utils.add(attrs, "canEdit", "" + canEdit, "canAddTranscription",
+                  "" + canAddTranscription, "entryId",
+                  JU.quote(entry.getId()));
+        if (canAddTranscription) {
+            Utils.add(attrs, "authToken", JU.quote(request.getAuthToken()));
+        }
+
+        Utils.add(attrs, "id", JU.quote(id), "div", JU.quote(pointsDivId),
+                  "points", var, "searchId", JU.quote(searchId));
+        if (Utils.stringDefined(mediaUrl)) {
+            Utils.add(attrs, "mediaUrl", JU.quote(mediaUrl));
+        }
+        String width  = getWidth(request, entry, props);
+        String height = getHeight(request, entry, props);
+        Utils.add(attrs, "width", width, "height", height);
+
+        //      System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
+        if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
+            player = embedVimeo(request, entry, props, sb, attrs, embed,
+                                mediaUrl);
+        } else if (mediaType.equalsIgnoreCase(MEDIA_YOUTUBE)) {
+            player = embedYoutube(request, entry, props, sb, attrs, mediaUrl);
+        } else if (mediaType.equalsIgnoreCase(MEDIA_SOUNDCLOUD)) {
+            player = embedSoundcloud(request, entry, props, sb, attrs,
+                                     mediaUrl);
+        } else if (mediaType.equalsIgnoreCase(MEDIA_OTHER)) {
+            player = embedMedia(request, entry, props, sb, attrs, embed,
+                                mediaUrl);
+        } else {
+            sb.append("Unknown media");
+
+            return sb.toString();
+        }
+        if (player == null) {
+            return sb.toString();
+        }
+        js.append("new RamaddaMediaTranscript(" + JU.map(attrs) + ");\n");
+        String searchDiv = HU.div("",
+                                  HU.attrs("style", "vertical-align:top;",
+                                           "id", searchId));
+
+        String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
+        String playerDiv = HtmlUtils.centerDiv(HU.div(player,
+                               HU.attrs("id", id)) + searchDiv + pointsDiv);
+        sb.append(playerDiv);
+        sb.append(HtmlUtils.script(js.toString()));
+
+        return sb.toString();
+
+    }
+
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     */
+    public boolean canAddTranscription(Request request, Entry entry) {
+        return true;
+    }
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getTranscriptions(Request request, Entry entry)
+            throws Exception {
+        return (String) entry.getValue(IDX_TRANSCRIPTIONS);
+    }
+
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     */
+    public String getMediaType(Request request, Entry entry) {
+        String _path = entry.getResource().getPath().toLowerCase();
+        //https://soundcloud.com/the-wisdom-project/004-martin-luther-king-jr-malcolm-x-and-robert-penn-warren
+        if (_path.indexOf("soundcloud.com") >= 0) {
+            return MEDIA_SOUNDCLOUD;
+        }
+        if (_path.indexOf("vimeo.com") >= 0) {
+            return MEDIA_VIMEO;
+        }
+
+        return MEDIA_OTHER;
+    }
+
+    /**
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
      * @param sb _more_
      * @param attrs _more_
      * @param embed _more_
+     * @param mediaUrl _more_
      *  @return _more_
      */
-    public String embedVimeo(Request request, Entry entry, Hashtable props,StringBuilder sb, List attrs, String embed,String mediaUrl) {
-        if (!Utils.stringDefined(embed) && !Utils.stringDefined(mediaUrl)) {
+    public String embedVimeo(Request request, Entry entry, Hashtable props,
+                             StringBuilder sb, List attrs, String embed,
+                             String mediaUrl) {
+        if ( !Utils.stringDefined(embed) && !Utils.stringDefined(mediaUrl)) {
             sb.append("No Vimeo embed");
+
             return null;
         }
-       if (!Utils.stringDefined(embed)) {
-	   String id = StringUtil.findPattern(mediaUrl, "https://vimeo.com/([0-9]+)");
-	   if(id==null) {
-	       sb.append("Could not find Vimeo id:" + mediaUrl);
-	       return null;
-	   }
-	   String url = "https://player.vimeo.com/video/" + id;
-	   embed = "<iframe src='" + url+"' width='640' height='351' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
-       }
-       sb.append(
-		 "<script src='https://player.vimeo.com/api/player.js'></script>");
+        if ( !Utils.stringDefined(embed)) {
+            String id = StringUtil.findPattern(mediaUrl,
+                            "https://vimeo.com/([0-9]+)");
+            if (id == null) {
+                sb.append("Could not find Vimeo id:" + mediaUrl);
+
+                return null;
+            }
+            String url = "https://player.vimeo.com/video/" + id;
+            embed =
+                "<iframe src='" + url
+                + "' width='640' height='351' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
+        }
+        sb.append(
+            "<script src='https://player.vimeo.com/api/player.js'></script>");
         Utils.add(attrs, "media", JU.quote("vimeo"));
+
         return embed;
     }
 
 
     /**
      *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
      * @param sb _more_
      * @param attrs _more_
      * @param mediaUrl _more_
      *  @return _more_
      */
-    public String embedYoutube(Request request, Entry entry, Hashtable props, StringBuilder sb, List attrs,
+    public String embedYoutube(Request request, Entry entry, Hashtable props,
+                               StringBuilder sb, List attrs,
                                String mediaUrl) {
         if ( !Utils.stringDefined(mediaUrl)) {
             sb.append("No YouTube media url");
+
             return null;
         }
         sb.append(
@@ -262,13 +390,18 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
     /**
      *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
      * @param sb _more_
      * @param attrs _more_
      * @param mediaUrl _more_
      *  @return _more_
      */
-    public String embedSoundcloud(Request request, Entry entry, Hashtable props,StringBuilder sb, List attrs,
-                                  String mediaUrl) {
+    public String embedSoundcloud(Request request, Entry entry,
+                                  Hashtable props, StringBuilder sb,
+                                  List attrs, String mediaUrl) {
         if ( !Utils.stringDefined(mediaUrl)) {
             sb.append("No SoundCloud media url");
 
@@ -288,58 +421,69 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
     /**
      *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param props _more_
      * @param sb _more_
      * @param attrs _more_
      * @param embed _more_
      * @param mediaUrl _more_
      *  @return _more_
      */
-    public String embedMedia(Request request, Entry entry, Hashtable props,StringBuilder sb, List attrs, String embed,
+    public String embedMedia(Request request, Entry entry, Hashtable props,
+                             StringBuilder sb, List attrs, String embed,
                              String mediaUrl) {
         String player = "";
-	String _path = entry.getResource().getPath().toLowerCase();
+        String _path  = entry.getResource().getPath().toLowerCase();
         if (Utils.stringDefined(embed)) {
             player = embed;
         } else if (Utils.stringDefined(mediaUrl)) {
-	    String width  = getWidth(request, entry,props);
-	    String height  = getHeight(request, entry,props);	
+            String width   = getWidth(request, entry, props);
+            String height  = getHeight(request, entry, props);
             String mediaId = HtmlUtils.getUniqueId("media_");
             Utils.add(attrs, "mediaId", JU.quote(mediaId));
-            if (mediaUrl.toLowerCase().endsWith(".mp3") || _path.endsWith(".mp3") || _path.endsWith(".m4a")|| _path.endsWith("ogg")|| _path.endsWith("wav")) {
-                player =
-                    HU.tag("audio",HU.attrs(new String[]{"controls","","id", mediaId,
-							 "style",
-							 HU.css("height",HU.makeDim(AUDIO_HEIGHT,"px"),"width",HU.makeDim(width,"px"))}),
-			HU.tag("source",HU.attrs(new String[]{"src", mediaUrl,				
-							      "type","audio/mpeg"}),
-			       "Your browser does not support the audio tag."));
+            if (mediaUrl.toLowerCase().endsWith(".mp3")
+                    || _path.endsWith(".mp3") || _path.endsWith(".m4a")
+                    || _path.endsWith("ogg") || _path.endsWith("wav")) {
+                player = HU.tag("audio", HU.attrs(new String[] {
+                    "controls", "", "id", mediaId, "style",
+                    HU.css("height", HU.makeDim(AUDIO_HEIGHT, "px"), "width",
+                           HU.makeDim(width, "px"))
+                }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
+                        "type",
+                        "audio/mpeg" }), "Your browser does not support the audio tag."));
                 Utils.add(attrs, "media", JU.quote("media"));
-            } else if (mediaUrl.toLowerCase().endsWith(".m4v") || _path.endsWith(".m4v")) {
-                player =
-                    HU.tag("video",HU.attrs(new String[]{"id", mediaId,"controls","","preload","metadata","height",height,"width",width}),
-			   HU.tag("source",HU.attrs(new String[]{
-				       "src",mediaUrl,"type","video/mp4"})));
+            } else if (mediaUrl.toLowerCase().endsWith(".m4v")
+                       || _path.endsWith(".m4v")) {
+                player = HU.tag("video", HU.attrs(new String[] {
+                    "id", mediaId, "controls", "", "preload", "metadata",
+                    "height", height, "width", width
+                }), HU.tag("source", HU.attrs(new String[] { "src", mediaUrl,
+                        "type", "video/mp4" })));
                 Utils.add(attrs, "media", JU.quote("media"));
-            } else if (mediaUrl.toLowerCase().endsWith(".mov") || _path.endsWith(".mov")) {
-		player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
-			    "id",mediaId,
-			    HtmlUtils.ATTR_SRC, mediaUrl, HtmlUtils.ATTR_CLASS,
-			    "ramadda-video-embed", HtmlUtils.ATTR_WIDTH, width,
-			    HtmlUtils.ATTR_HEIGHT, height,
-			}) + " controls ",
-		    HtmlUtils.tag("source",
-				  HtmlUtils.attrs(new String[] {
-					  HtmlUtils.ATTR_SRC,
-					  mediaUrl })));
-                Utils.add(attrs, "media", JU.quote("media"));		
+            } else if (mediaUrl.toLowerCase().endsWith(".mov")
+                       || _path.endsWith(".mov")) {
+                player = HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
+                    "id", mediaId, HtmlUtils.ATTR_SRC, mediaUrl,
+                    HtmlUtils.ATTR_CLASS, "ramadda-video-embed",
+                    HtmlUtils.ATTR_WIDTH, width, HtmlUtils.ATTR_HEIGHT,
+                    height,
+                }) + " controls ", HtmlUtils.tag("source",
+                        HtmlUtils.attrs(new String[] { HtmlUtils.ATTR_SRC,
+                        mediaUrl })));
+                Utils.add(attrs, "media", JU.quote("media"));
             } else {
                 sb.append("Unknown media URL:" + mediaUrl);
+
                 return null;
             }
         } else {
             sb.append("Unknown media");
+
             return null;
         }
+
         return player;
     }
 
