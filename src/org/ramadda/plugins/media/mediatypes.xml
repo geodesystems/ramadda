@@ -57,8 +57,8 @@
      <wiki><![CDATA[
 +section title="{{name}}" #
 :br
-{{media}}
 {{description wikify="true"}}
+{{media}}
 -section
 ]]>
 </wiki>

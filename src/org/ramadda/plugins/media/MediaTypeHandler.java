@@ -305,7 +305,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                     HU.tag("audio",HU.attrs(new String[]{"controls","","id", mediaId,
 							 "style",
 							 HU.css("height",HU.makeDim(AUDIO_HEIGHT,"px"),"width",HU.makeDim(width,"px"))}),
-			HU.tag("source",HU.attrs(new String[]{"src=", mediaUrl,				
+			HU.tag("source",HU.attrs(new String[]{"src", mediaUrl,				
 							      "type","audio/mpeg"}),
 			       "Your browser does not support the audio tag."));
                 Utils.add(attrs, "media", JU.quote("media"));
