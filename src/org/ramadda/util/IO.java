@@ -74,6 +74,7 @@ public class IO {
      * @param files _more_
      */
     public static void addOkToReadFromDirs(List<File> files) {
+	System.err.println("OK to read:" + files);
         synchronized (okToReadFromDirs) {
             for (File f : files) {
                 if ( !okToReadFromDirs.contains(f)) {
@@ -81,6 +82,12 @@ public class IO {
                 }
             }
         }
+    }
+
+
+
+    public interface FileReadChecker {
+	public boolean canReadFile(File file);
     }
 
 
