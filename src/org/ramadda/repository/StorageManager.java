@@ -74,7 +74,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 @SuppressWarnings("unchecked")
 public class StorageManager extends RepositoryManager implements PointFile
-    .FileReader, Utils.FileChecker {
+    .FileReader, IO.FileChecker {
 
 
     /** file separator */
@@ -236,6 +236,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public StorageManager(Repository repository) {
         super(repository);
+	IO.addFileChecker(this);
         PointFile.setFileReader(this);
     }
 
@@ -2291,15 +2292,17 @@ public class StorageManager extends RepositoryManager implements PointFile
      *
      * @param file _more_
      */
-    public void checkFile(String file) {
+    public boolean canReadFile(String file) {
         try {
             //Check if its a file:// url
             file = new URL(file).toURI().toString();
         } catch (Exception exc) {}
         File f = new File(file);
         if (f.exists()) {
+	    //this throws an exception if file cannot be read
             checkReadFile(f);
         }
+	return true;
     }
 
     /**
