@@ -164,7 +164,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
     public String getWidth(Request request, Entry entry, Hashtable props) {
         String width = Utils.getProperty(props, "width",
                                          entry.getValue(IDX_WIDTH, "640"));
-        if (width.equals("0")) {
+        if (!Utils.stringDefined(width) || width.equals("0")) {
             width = "640";
         }
 
@@ -181,7 +181,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
     public String getHeight(Request request, Entry entry, Hashtable props) {
         String height = Utils.getProperty(props, "height",
                                           entry.getValue(IDX_HEIGHT, "360"));
-        if (height.equals("0")) {
+        if (!Utils.stringDefined(height) || height.equals("0")) {
             height = "360";
         }
 
@@ -238,7 +238,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
         }
         String width  = getWidth(request, entry, props);
         String height = getHeight(request, entry, props);
-        Utils.add(attrs, "width", width, "height", height);
+        Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 
         //      System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
         if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
@@ -266,8 +266,12 @@ public class MediaTypeHandler extends GenericTypeHandler {
                                            "id", searchId));
 
         String pointsDiv = HU.div("", HU.attrs("id", pointsDivId));
-        String playerDiv = HtmlUtils.centerDiv(HU.div(player,
-                               HU.attrs("id", id)) + searchDiv + pointsDiv);
+	String bottom = HU.div(searchDiv + pointsDiv,HU.style("margin-top","5px","width",HU.makeDim(width,"px")));
+        String playerDiv = "<div style='width:100%;display:flex;justify-content:center;'>" +
+	    HU.div(player, HU.attrs("id", id,"style","width:" + HU.makeDim(width,"px")+";display:flex;justify-content:center;")) +
+	    "</div>" +
+	    "<div style='display:flex;justify-content:center;'>" +
+	    bottom    +"</div>";
         sb.append(playerDiv);
         sb.append(HtmlUtils.script(js.toString()));
 

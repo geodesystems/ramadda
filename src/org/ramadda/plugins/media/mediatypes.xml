@@ -1,7 +1,7 @@
 <types category="Media">
 <type name="type_media"   foruser="false"         handler="org.ramadda.plugins.media.MediaTypeHandler" >
-   <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
-   <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
+   <column name="media_width" type="string" label="Width"  default="640" showinhtml="false"/>
+   <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
    <column name="transcriptions_json" type="clob" label="Transcriptions" xshowinhtml="false"   xcandisplay="false" xeditable="false"/>     
      <wiki><![CDATA[
 +section title="{{name}}" 

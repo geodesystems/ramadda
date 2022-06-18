@@ -89,6 +89,7 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
+	if(true) return null;
         boolean autoPlay = entry.getValue(IDX_AUTOPLAY, false);
         String  sdisplay = entry.getValue(IDX_DISPLAY, "true");
         String id  = entry.getValue(IDX_ID, (String) null);

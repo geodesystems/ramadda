@@ -358,8 +358,8 @@ RamaddaMediaTranscript.prototype = {
 	if(this.attrs.end)  playerVars.end = this.attrs.end;
 	if(Utils.isDefined(this.attrs.autoplay))  playerVars.autoplay = this.attrs.autoplay;
 	let player = new YT.Player(this.id, {
-            height: Utils.isDefined(this.attrs.height) && this.attrs.height>0?this.attrs.height:'390',
-            width: Utils.isDefined(this.attrs.width) && this.attrs.width>0?this.attrs.width:'640',
+            height: Utils.isDefined(this.attrs.height)?this.attrs.height:'390',
+            width: Utils.isDefined(this.attrs.width)?this.attrs.width:'640',
             videoId: this.attrs.videoId,
             playerVars: playerVars,
             events: {
