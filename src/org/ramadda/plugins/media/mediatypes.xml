@@ -13,7 +13,10 @@
 </wiki>
 </type>
 
-<type name="type_video"   foruser="false"      super="type_media">
+<type name="type_video"   foruser="true"      super="type_media"
+      pattern="(https://.*vimeo.com/[0-9]+|https://soundcloud.com.*)"
+      handler="org.ramadda.plugins.media.MediaTypeHandler" 
+>
 </type>
 
   <type name="media_youtubevideo"  

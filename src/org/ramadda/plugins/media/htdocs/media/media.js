@@ -24,19 +24,17 @@ RamaddaMediaTranscript.prototype = {
 	    console.log("Unknown media:" + this.media);
 	}
 
+	this.player = {}
 	if(!func) {
 	    return;
 	}
-	if(typeof func == "function") {
-	    this.gotoTime =  func;
-	} else  {
-	    this.gotoTime = func.gotoTime;
-	    this.getTime = func.getTime;	    
-	}
+	
+	this.player = func;
+
 	   
 	if(!this.points) this.points = [];
 //	this.points = [{time:30,title:"30 seconds in"}]
-	if(this.gotoTime && this.points)  {
+	if(this.player.gotoTime && this.points)  {
 	    this.makePoints();
 	}
     },	
@@ -154,9 +152,10 @@ RamaddaMediaTranscript.prototype = {
 	    });
 	}
 	let html = "";
-	if(canAdd && this.getTime) {
+	if(canAdd && this.player.getTime) {
 	    html+=HU.div(['title','Add transcription','id',this.domId('_addtranscription'),'class','ramadda-clickable'], HU.getIconImage('fas fa-plus'));
 	}
+
 
 	html+=table;
 	jqid(this.div).html(html);
@@ -191,7 +190,7 @@ RamaddaMediaTranscript.prototype = {
 	});	    
 	jqid(this.div).find('.ramadda-media-play').click(function() {
 	    let time  = +$(this).attr('data-player-time');
-	    if(_this.gotoTime) _this.gotoTime(time);
+	    if(_this.player.gotoTime) _this.player.gotoTime(time);
 	});
     },
 
@@ -199,6 +198,7 @@ RamaddaMediaTranscript.prototype = {
 	this.closeEditDialog();
 	let point;
 	let add = false;
+	if(this.player.pause) this.player.pause();
 	if(!Utils.isDefined(index) || index<0) {
 	    add=true;
 	    point = {title:''};
@@ -209,12 +209,12 @@ RamaddaMediaTranscript.prototype = {
 	let form = "<table class=formtable>";
 	form+=HU.formEntry("Title:",HU.input("",point.title,['size','60','id',this.domId('edit_title')]));
 	form+=HU.formEntry("Synopsis:",HU.textarea("",point.synopsis||"",['rows','5','cols','60','id',this.domId('edit_synopsis')]));
+	let timeSpan = HU.span(['id',this.domId('_timespan')]);
 	if(!add) {
 	    form+=HU.formEntry("",HU.checkbox("",['id',this.domId('edit_settime')],false,"Set time to: " +
-					      this.formatTime(this.getTime())));
+					      timeSpan));
 	} else {
-	    form+=HU.formEntry("","Current time: " +
-			       this.formatTime(this.getTime()));
+	    form+=HU.formEntry("","Current time: " + timeSpan);
 	}
 	form+="</table>";
 	form+="<br>";
@@ -224,6 +224,12 @@ RamaddaMediaTranscript.prototype = {
 	form=HU.div(['style',HU.css('margin','10px')], form);
 
 	this.editDialog = HU.makeDialog({content:form,my:"left top",at:"left bottom",anchor:widget,draggable:true,header:true,xinPlace:false});
+	//getTime is async
+	this.player.getTime(t=>{
+	    this.jq('_timespan').html(this.formatTime(t));
+	});
+
+
 	let _this = this;
 	this.jq('edit_title').focus();
 	this.jq('edit_title').keypress((event)=>{
@@ -243,13 +249,16 @@ RamaddaMediaTranscript.prototype = {
     applyEdit:function(add,point) {
 	point.title = this.jq('edit_title').val();
 	point.synopsis = this.jq('edit_synopsis').val();	
-	if(add || this.jq('edit_settime').is(':checked')) {
-	    point.time = Math.floor(this.getTime());
+	let cb = time=>{
+	    if(add || this.jq('edit_settime').is(':checked')) {
+		point.time = Math.floor(time);
+	    }
+	    this.closeEditDialog();
+	    if(add) this.points.push(point);
+	    this.writeTranscription();
+	    this.makePoints();
 	}
-	this.closeEditDialog();
-	if(add) this.points.push(point);
-	this.writeTranscription();
-	this.makePoints();
+	this.player.getTime(cb);
     },
     closeEditDialog: function() {
 	if(this.editDialog) 
@@ -276,26 +285,45 @@ RamaddaMediaTranscript.prototype = {
     initVimeo:function() {
 	let iframe = document.querySelector('#' + this.id +' iframe');    
 	let player = new Vimeo.Player(iframe);
-	return (seconds)=>{
-	    player.setCurrentTime(seconds);
-	    try {
-		player.play();
-	    } catch {
-	    }};
+	return {
+	    pause: ()=>{
+		player.pause();
+	    },
+	    getTime:cb=>{
+		player.getCurrentTime().then(time=>{
+		    cb(time);
+		});
+	    },
+	    gotoTime:
+	    (seconds)=>{
+		player.setCurrentTime(seconds);
+		try {
+		    player.play();
+		} catch {
+		}}
+	}
     },
     initSoundcloud:function() {
 	let iframe = document.querySelector('#' + this.id +' iframe');    
 	let player = SC.Widget(iframe);
-	player.getPosition(p=>{console.log("P:" + p)})
-	return (seconds)=>{
-	    player.seekTo(seconds*1000);
-	    try {
-		player.play();
-	    } catch {
+	return {
+	    pause: ()=>{
+		player.pause();
+	    },
+	    getTime: (cb)=>{
+		player.getPosition((p)=> {
+		    cb(p/1000);
+		});
+	    },
+	    gotoTime:(seconds)=>{
+		player.seekTo(seconds*1000);
+		try {
+		    player.play();
+		} catch {
+		}
 	    }
 	};
     },
-
 
     initMedia:function() {
 	let player = document.querySelector('#' + this.attrs.mediaId);
@@ -309,10 +337,11 @@ RamaddaMediaTranscript.prototype = {
 	    } catch {
 	    }
 	};
-	let getTime = ()=> {
-	    return player.currentTime;
-	}
-	return {gotoTime:gotoTime,getTime:getTime};
+	
+	return {gotoTime:gotoTime,
+		getTime:(cb)=> {cb(player.currentTime);},
+		pause:()=>{player.pause()}
+};
     },
 
 
@@ -338,7 +367,10 @@ RamaddaMediaTranscript.prototype = {
 	});
 
 	return {
-	    getTime: ()=>{return player.getCurrentTime();},
+	    pause:()=>{
+		player.pauseVideo();
+	    },
+	    getTime: (cb)=>{cb(player.getCurrentTime());},
 	    gotoTime:(seconds)=>{
 		player.seekTo(seconds,true)
 	    }
@@ -346,6 +378,7 @@ RamaddaMediaTranscript.prototype = {
     },
 
     formatTime:function(seconds) {
+	if(isNaN(seconds)) return "NA";
 	seconds= Math.floor(seconds);
 	seconds = +seconds;
 	let hours = Math.floor(seconds/3600);

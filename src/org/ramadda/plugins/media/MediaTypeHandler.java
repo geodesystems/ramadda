@@ -109,7 +109,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
 	if(entry.getResource().isFile()) {
 	    url = getEntryManager().getEntryResourceUrl(request, entry);
 	}
-	String embed = addMedia(request, entry, props, MEDIA_OTHER,null,url,null);
+	String embed = addMedia(request, entry, props, getMediaType(request, entry),null,url,null);
 	sb.append(embed);
     }
 
@@ -160,6 +160,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
         String height  = getHeight(request, entry,props);	
 	Utils.add(attrs, "width",width,"height",height);
 
+	//	System.err.println("U:" + mediaType+" " + mediaUrl +" " + embed);
         if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
 	    player = embedVimeo(request, entry,props,sb,attrs,embed,mediaUrl);
         } else if (mediaType.equalsIgnoreCase(MEDIA_YOUTUBE)) {
@@ -202,6 +203,10 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
 
     public String getMediaType(Request request, Entry entry) {
+	String _path = entry.getResource().getPath().toLowerCase();
+	//https://soundcloud.com/the-wisdom-project/004-martin-luther-king-jr-malcolm-x-and-robert-penn-warren
+	if(_path.indexOf("soundcloud.com")>=0)  return MEDIA_SOUNDCLOUD;
+	if(_path.indexOf("vimeo.com")>=0) return MEDIA_VIMEO;
 	return  MEDIA_OTHER;
     }
 
@@ -311,7 +316,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
                 Utils.add(attrs, "media", JU.quote("media"));
             } else if (mediaUrl.toLowerCase().endsWith(".m4v") || _path.endsWith(".m4v")) {
                 player =
-                    HU.tag("video",HU.attrs(new String[]{"id", mediaId,"controls","","height",height,"width",width}),
+                    HU.tag("video",HU.attrs(new String[]{"id", mediaId,"controls","","preload","metadata","height",height,"width",width}),
 			   HU.tag("source",HU.attrs(new String[]{
 				       "src",mediaUrl,"type","video/mp4"})));
                 Utils.add(attrs, "media", JU.quote("media"));
