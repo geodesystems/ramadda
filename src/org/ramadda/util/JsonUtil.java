@@ -128,6 +128,15 @@ public class JsonUtil {
         return quoted;
     }
 
+    public static List quoteAll(List values) {
+        List quoted = new ArrayList();
+        for (int i = 0; i < values.size(); i ++) {
+            String value = values.get(i).toString();
+            quoted.add(quote(value));
+        }
+        return quoted;
+    }    
+
 
     /**
      * _more_
