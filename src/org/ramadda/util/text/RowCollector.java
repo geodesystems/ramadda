@@ -841,7 +841,8 @@ public class RowCollector extends Processor {
          * _more_
          *
          */
-        public Html(TextReader ctx) {}
+        public Html(TextReader ctx) {
+	}
 
 
         /** _more_ */
@@ -874,6 +875,7 @@ public class RowCollector extends Processor {
          */
         public void printRow(TextReader ctx, Row row, boolean addCnt)
 	    throws Exception {
+
 
             List values = row.getValues();
             if (cnt == 0) {
@@ -978,6 +980,7 @@ public class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
+	    System.err.println("finish");
             if (ctx.getDebug()) {
                 ctx.getWriter().print("");
 
@@ -1887,6 +1890,7 @@ public class RowCollector extends Processor {
             this.util      = util;
             this.justStats = justStats;
             interactive    = util.getInteractive();
+	    interactive=true;
         }
 
 
@@ -1941,7 +1945,6 @@ public class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-
             PrintWriter w = ctx.getWriter();
 	    //J-
             BiFunction<String,String,String> layout = (label,value) -> {
@@ -2195,6 +2198,7 @@ public class RowCollector extends Processor {
 		    col.finish(ctx.getWriter());
 		}
 	    }
+
 
 	    //J+
             return rows;

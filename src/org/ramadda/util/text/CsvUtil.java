@@ -828,6 +828,7 @@ public class CsvUtil {
         try {
             errorDescription = null;
             processInner(ctx, provider);
+	    ctx.flush();
         } catch (Exception exc) {
             CsvOperator op = (ctx == null)
 		? null
@@ -904,6 +905,7 @@ public class CsvUtil {
             return false;
         }
 	row        = ctx.processRow(this,row);
+
 	if ( !ctx.getOkToRun()) {
 	    return false;
 	}
