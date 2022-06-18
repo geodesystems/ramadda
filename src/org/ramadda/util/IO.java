@@ -125,11 +125,14 @@ public class IO {
      */
     public static boolean okToReadFrom(String file) {
         File f = new File(file);
+	System.err.println("IO.okToReadFrom:" + file);
         if (okToReadFromDirs.size() > 0) {
             boolean ok = false;
             for (File dir : okToReadFromDirs) {
+		System.err.println("\tdir:" + dir);
                 if (isADescendent(dir, f)) {
-                    ok = true;
+		    System.err.println("\tok");
+		    return true;
                 }
             }
 
