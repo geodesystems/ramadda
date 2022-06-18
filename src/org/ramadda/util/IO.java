@@ -53,6 +53,7 @@ public class IO {
     private static List<File> okToReadFromDirs = new ArrayList<File>();
 
 
+
     /**
      * _more_
      *
@@ -74,7 +75,6 @@ public class IO {
      * @param files _more_
      */
     public static void addOkToReadFromDirs(List<File> files) {
-	System.err.println("OK to read:" + files);
         synchronized (okToReadFromDirs) {
             for (File f : files) {
                 if ( !okToReadFromDirs.contains(f)) {
@@ -86,9 +86,7 @@ public class IO {
 
 
 
-    public interface FileReadChecker {
-	public boolean canReadFile(File file);
-    }
+
 
 
 
@@ -124,14 +122,15 @@ public class IO {
      * @return _more_
      */
     public static boolean okToReadFrom(String file) {
+	for(FileChecker  checker: fileCheckers) {
+	    if(checker.canReadFile(file)) return true;
+	}
+
         File f = new File(file);
-	System.err.println("IO.okToReadFrom:" + file);
         if (okToReadFromDirs.size() > 0) {
             boolean ok = false;
             for (File dir : okToReadFromDirs) {
-		System.err.println("\tdir:" + dir);
                 if (isADescendent(dir, f)) {
-		    System.err.println("\tok");
 		    return true;
                 }
             }
@@ -600,7 +599,6 @@ public class IO {
      */
     public static String readContents(File file) throws IOException {
         checkFile(file.toString());
-
         return IOUtil.readContents(file);
     }
 
@@ -989,17 +987,14 @@ public class IO {
 
 
 
-    /** _more_ */
-    private static FileChecker fileChecker;
 
-    /**
-     * _more_
-     *
-     * @param checker _more_
-     */
-    public static void setFileChecker(FileChecker checker) {
-        fileChecker = checker;
+    private static List<FileChecker> fileCheckers = new ArrayList<FileChecker>();
+
+
+    public static void addFileChecker(FileChecker checker) {
+	fileCheckers.add(checker);
     }
+
 
     /**
      * _more_
@@ -1021,9 +1016,9 @@ public class IO {
      * @param file _more_
      */
     public static void checkFile(String file) {
-        if (fileChecker != null) {
-            fileChecker.checkFile(file);
-        }
+	if(!okToReadFrom(file)) {
+	    throw new RuntimeException("Cannot read file:" + file);
+	}
     }
 
     /**
@@ -1039,7 +1034,7 @@ public class IO {
          *
          * @param file _more_
          */
-        public void checkFile(String file);
+        public boolean canReadFile(String file);
     }
 
 
