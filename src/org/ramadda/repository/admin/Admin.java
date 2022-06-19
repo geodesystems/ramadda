@@ -650,7 +650,6 @@ public class Admin extends RepositoryManager {
             installStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         }
 
-
         boolean firstTime =
             !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN);
         //Always check the password
@@ -801,24 +800,7 @@ public class Admin extends RepositoryManager {
                         IOUtil.close(fis);
                     }
 
-
-                    if (description == null) {
-                        description = getRepository().getResource(
-                            "/org/ramadda/repository/resources/install/initdescription.txt");
-                    }
-
-                    description = description.replace("${topid}",
-                            topEntry.getId());
-                    description = description.replace("${root}",
-                            getRepository().getUrlBase());
-                    topEntry.setDescription(description);
-                    getEntryManager().updateEntry(null, topEntry);
-
-                    //NOT NOW
-                    //getRegistryManager().doFinalInitialization();
-
                     //Make sure we do this now before we do the final init entries
-
                     boolean didPlugin = false;
                     for (String plugin : PluginManager.PLUGINS) {
                         if (request.get(makePluginID(plugin), false)) {
@@ -830,6 +812,23 @@ public class Admin extends RepositoryManager {
                     if (didPlugin) {
                         getRepository().loadPluginResources();
                     }
+
+                    if (description == null) {
+			String resourcePath = "/org/ramadda/repository/resources/install/initdescription.txt";
+			resourcePath = getRepository().getProperty("ramadda.install.initdescription",resourcePath);
+                        description = getRepository().getResource(resourcePath);
+                    }
+
+                    description = description.replace("${topid}",
+                            topEntry.getId());
+                    description = description.replace("${root}",
+                            getRepository().getUrlBase());
+                    topEntry.setDescription(description);
+                    getEntryManager().updateEntry(null, topEntry);
+
+		    
+
+
                     addInitEntries(user);
                     sb.append(getUserManager().makeLoginForm(request));
                     if (errorBuffer.length() > 0) {
@@ -979,8 +978,9 @@ public class Admin extends RepositoryManager {
         }
 
         if (initEntriesXml == null) {
-            initEntriesXml = getRepository().getResource(
-                "/org/ramadda/repository/resources/install/initentries.xml");
+	    String resourcePath = "/org/ramadda/repository/resources/install/initentries.xml";
+	    resourcePath = getRepository().getProperty("ramadda.install.initentries",resourcePath);
+            initEntriesXml = getRepository().getResource(resourcePath);
         }
         Element root       = XmlUtil.getRoot(initEntriesXml);
         Request tmpRequest = getRepository().getRequest(user);
