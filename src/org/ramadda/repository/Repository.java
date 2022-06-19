@@ -1129,7 +1129,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             : " SSL not enabled"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
 
-
         if (getProperty("ramadda.beep", false)) {
             Toolkit.getDefaultToolkit().beep();
             Misc.sleep(200);
@@ -1650,6 +1649,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void loadPluginResources() throws Exception {
+        getPluginManager().loadPropertyFiles();
+
 	//Do the licenses before we do the types
 	getMetadataManager().loadLicenses();
 	long t1 = System.currentTimeMillis();
@@ -4041,6 +4042,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         apiMethod.incrNumberOfCalls();
 
         if ( !getAdmin().getInstallationComplete()) {
+	    //Check for the favicon.ico request
+	    String path       = request.getRequestPath();
+	    if(path.equals("/favicon.ico")) return  processFavIcon(request);
             return getAdmin().doInstall(request);
         }
 
@@ -4291,6 +4295,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	boolean debug = false;
         request.setCORSHeaderOnResponse();
         String path       = request.getRequestPath();
+	if(path.equals("/favicon.ico")) return  processFavIcon(request);
 	if(debug)
 	    System.err.println("\n* path 1:" + path);
 	//Right off the bat exclude any path with .. as, if it is a non-hacker request from a browser then
