@@ -218,7 +218,10 @@ public class MediaTypeHandler extends GenericTypeHandler {
         if ( !Utils.stringDefined(transcriptions)) {
             transcriptions = "[]";
         }
-        js.append("var " + var + "=" + transcriptions + ";\n");
+	//In case the transcriptions is broken we first define the var in one block of JS
+	//then we set it again in another block
+        HtmlUtils.script(sb,"var " + var + "=[];\n");
+        HtmlUtils.script(sb,var + "=" + transcriptions + ";\n");
         List    attrs = new ArrayList<String>();
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         boolean canAddTranscription = canEdit
