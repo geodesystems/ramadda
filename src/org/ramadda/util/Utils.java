@@ -4551,8 +4551,8 @@ public class Utils extends IO {
         s = s.replaceAll("&", "_AMP_");
         s = s.replaceAll("<", "_LT_");
         s = s.replaceAll(">", "_GT_");
-        s = s.replaceAll("\"", "&quot;");
-
+	//I don't think we need to encode the quotes
+	//        s = s.replaceAll("\"", "&quot;");
         //        s = HtmlUtils.urlEncode(s);
         //       s = s.replace("+", " ");
         return s;
