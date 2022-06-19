@@ -3730,42 +3730,49 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (okToAddCookie && (result != null)
                 && (request.getSessionIdWasSet()
                     || (request.getSessionId() == null))) {
-            if (request.getSessionId() == null) {
-                request.setSessionId(getSessionManager().createSessionId());
-            }
-            String sessionId = request.getSessionId();
-            if (cookieExpirationDate == null) {
-                //expire the cookie in 4 years year
-                //Assume this ramadda doesn't run continuously for more than 4 years
-                Date future = new Date(new Date().getTime()
-                                       + DateUtil.daysToMillis(365 * 4));
-                SimpleDateFormat sdf =
-                    new SimpleDateFormat("EEE, dd-MMM-yyyy");
-                cookieExpirationDate = sdf.format(future);
-            }
-            //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
-            if (debugSession) {
-                //                debugSession(request,
-                //                             "Cookie:"+ getSessionManager().getSessionCookieName()+ "=" + sessionId + " path=" + getUrlBase());
-            }
-            String path;
-
-            if (getShutdownEnabled() && (getParentRepository() == null)) {
-                path = "/";
-            } else {
-                path = getUrlBase();
-            }
-
-            result.addCookie(getSessionManager().getSessionCookieName(),
-                             sessionId + "; path=" + path + "; expires="
-                             + cookieExpirationDate + " 23:59:59 GMT"
-                             + (isSSLEnabled(request)
-                                ? "; secure"
-                                : "") + "; HttpOnly;SameSite=Strict");
-
+	    handleRequestCookie(request, result);
         }
 
         return result;
+
+    }
+
+
+    public void handleRequestCookie(Request request, Result result) {
+	//	if(result.getCookieWasAdded()) return;
+	if(request.getCookieWasAdded()) return;	
+	if (request.getSessionId() == null) {
+	    request.setSessionId(getSessionManager().createSessionId());
+	}
+	String sessionId = request.getSessionId();
+	if (cookieExpirationDate == null) {
+	    //expire the cookie in 4 years year
+	    //Assume this ramadda doesn't run continuously for more than 4 years
+	    Date future = new Date(new Date().getTime()
+				   + DateUtil.daysToMillis(365 * 4));
+	    SimpleDateFormat sdf =
+		new SimpleDateFormat("EEE, dd-MMM-yyyy");
+	    cookieExpirationDate = sdf.format(future);
+	}
+	//            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
+	if (debugSession) {
+	    //                debugSession(request,
+	    //                             "Cookie:"+ getSessionManager().getSessionCookieName()+ "=" + sessionId + " path=" + getUrlBase());
+	}
+	String path;
+
+	if (getShutdownEnabled() && (getParentRepository() == null)) {
+	    path = "/";
+	} else {
+	    path = getUrlBase();
+	}
+
+	request.addCookie(getSessionManager().getSessionCookieName(),
+			 sessionId + "; path=" + path + "; expires="
+			 + cookieExpirationDate + " 23:59:59 GMT"
+			 + (isSSLEnabled(request)
+			    ? "; secure"
+			    : "") + "; HttpOnly;SameSite=Strict");
 
     }
 
