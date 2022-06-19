@@ -135,7 +135,7 @@ public class SessionManager extends RepositoryManager {
      * @param msg _more_
      */
     public void debugSession(Request request, String msg) {
-        getRepository().debugSession(request, msg);
+        getRepository().debugSession(request, "\t"+msg);
     }
 
     /**
@@ -391,7 +391,6 @@ public class SessionManager extends RepositoryManager {
             return dflt;
         }
 
-        //        System.err.println("getSession:" + key);
         String id = request.getSessionId();
         if (id == null) {
             Object obj = request.getExtraProperty(key);
@@ -632,9 +631,7 @@ public class SessionManager extends RepositoryManager {
                     session.setUser(user);
                     request.setSessionId(cookieValue);
                     if (Repository.debugSession) {
-                        getRepository().debugSession(request,
-                                "checkSession: got session from cookie:"
-                                + session);
+                        //debugSession(request,   "checkSession: got session from cookie:" + session);
                     }
 
                     break;
@@ -759,7 +756,7 @@ public class SessionManager extends RepositoryManager {
             if (session == null) {
                 getRepository().debugSession(
                     request,
-                    "checkSession: adding anonymous session:"
+                    "\t******* checkSession: adding anonymous session:"
                     + request.getSessionId());
                 session = new UserSession(request.getSessionId(), user,
                                           new Date());
