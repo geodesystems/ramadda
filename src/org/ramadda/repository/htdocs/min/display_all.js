@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jun 18 17:58:32 MDT 2022";
+var build_date="RAMADDA build date: Sun Jun 19 09:54:19 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3834,7 +3834,11 @@ function DisplayThing(argId, argProperties) {
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
-	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
+	    let linkLabel = value||"Link";
+	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
+	    linkLabel = linkLabel.replace(/\?.*/,"");
+	    linkLabel = linkLabel.replace(/\/$/,"");	    
+	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || linkLabel;
 	    return  HU.href(value,label,["target","_link"]);
 	},
 
