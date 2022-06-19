@@ -16,7 +16,8 @@
 <type name="type_video"   foruser="true"      super="type_media"
       pattern="(https://.*vimeo.com/[0-9]+|https://soundcloud.com.*)"
       handler="org.ramadda.plugins.media.MediaTypeHandler" 
->
+      >
+       <property name="icon" value="/media/video.png"/>
 </type>
 
   <type name="media_youtubevideo"  
