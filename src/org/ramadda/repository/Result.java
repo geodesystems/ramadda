@@ -580,7 +580,6 @@ public class Result {
      */
     public void setReturnFilename(String filename, boolean inline) {
         // filename = filename.replaceAll(" ", "_").replaceAll(",","_");
-	//	System.err.println("Result.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
         if (inline) {
             addHttpHeader("Content-disposition", "filename=" + filename);
         } else {
@@ -622,17 +621,6 @@ public class Result {
      */
     public List<String> getHttpHeaderArgs() {
         return httpHeaderArgs;
-    }
-
-
-    /**
-     * Add a cookie
-     *
-     * @param name cookie name
-     * @param value cookie value
-     */
-    public void addCookie(String name, String value) {
-        addHttpHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
     }
 
 

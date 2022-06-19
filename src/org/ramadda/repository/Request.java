@@ -1620,13 +1620,17 @@ public class Request implements Constants, Cloneable {
         }
 
 	if(debug) {
-	    System.err.println("ensureAuthToken authToken:" + authToken +" arg session:"+ argSessionId +" session id:"+ mySessionId);
-	    for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
-		System.err.println("\tkey:" + keys.nextElement());
-	    }
+	    System.err.println("ensureAuthToken");
+	    System.err.println("\tauthToken:" + authToken);
+	    System.err.println("\targ session:"+ argSessionId);
+	    System.err.println("\tmySessionId:"+ mySessionId);	    
+	    /*
+	    for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {System.err.println("\tkey:" + keys.nextElement());	    }
+	    */
 	}
+	//	debug = false;
 
-       if ((authToken == null) && (argSessionId != null)) {
+       if (authToken == null && argSessionId != null) {
             if (argSessionId.equals(mySessionId)) {
 		if(debug) 
 		    System.err.println("\tensureAuthToken arg session id == session id");
@@ -1636,12 +1640,12 @@ public class Request implements Constants, Cloneable {
 		System.err.println("\tensureAuthToken arg session id != session id");
         }
 
-        if ((authToken != null) && (mySessionId != null)) {
+        if (authToken != null && mySessionId != null) {
 	    if(debug) 
 		System.err.println("\tchecking auth token");
             String sessionAuth = RepositoryUtil.hashString(mySessionId);
 	    if(debug)
-		System.err.println ("\tRequest.ensureAuthToken:" + sessionId + " hashed:" +  sessionAuth +" token:" + authToken);
+		System.err.println ("\thashed sessionId:" +  sessionAuth);
             if (authToken.trim().equals(sessionAuth)) {
 		if(debug) 
 		    System.err.println ("\tok");
@@ -1665,7 +1669,7 @@ public class Request implements Constants, Cloneable {
             "Request.ensureAuthToken: something null:" + "\n\tsession:"
             + mySessionId + "\n\tauth token:" + authToken, null);
 
-        throw new IllegalArgumentException("Bad authentication token");
+	throw new IllegalArgumentException("Bad authentication token");
     }
 
 
@@ -1826,7 +1830,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        //If the user is anonymous then replace all "script" strings with "_script_"
+        //If the user is anonymous then clean up the input
         if (isAnonymous()) {
             v = cleanupInput(v);
         }
@@ -3178,11 +3182,23 @@ public class Request implements Constants, Cloneable {
         getHttpServletResponse().setContentType(mimeType);
         setReturnFilename(filename, true);
         Result result = new Result(filename, (byte[]) null, mimeType);
+	getRepository().handleRequestCookie(this, result);
         result.setNeedToWrite(false);
-
         return result;
     }
 
+    boolean cookieWasAdded=false;
+
+
+    public boolean getCookieWasAdded() {
+	return cookieWasAdded;
+    }
+
+    public void addCookie(String name, String value) {
+	//	System.err.println("\taddCookie:"+ value.substring(0,10));
+	cookieWasAdded= true;
+	httpServletResponse.setHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
+    }
 
 
     /**
@@ -3214,7 +3230,7 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
-     *  Get the SessionHasBeenHandled property.
+     *  Getthe SessionHasBeenHandled property.
      *
      *  @return The SessionHasBeenHandled
      */
