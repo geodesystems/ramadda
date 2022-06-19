@@ -11,7 +11,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
-import org.ramadda.util.XlsUtil;
+
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -122,36 +122,6 @@ public abstract class TextFile extends PointFile {
                     Hashtable properties) {
         super(filename, context, properties);
     }
-
-    /**
-     * _more_
-     *
-     *
-     * @param visitInfo _more_
-     * @param buffered _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
-            throws Exception {
-        String file = getFilename();
-        if ((file != null) && file.toLowerCase().endsWith(".xls")) {
-            return new RecordIO(
-                new BufferedReader(new StringReader(XlsUtil.xlsToCsv(file))));
-        }
-
-        if ((file != null) && file.toLowerCase().endsWith(".xlsx")) {
-            return new RecordIO(
-                new BufferedReader(new StringReader(XlsUtil.xlsxToCsv(file))));
-        }	
-
-
-        return super.doMakeInputIO(visitInfo, buffered);
-    }
-
 
     /** _more_ */
     private static Hashtable<String, String> fieldsMap =

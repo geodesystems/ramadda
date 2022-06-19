@@ -9,6 +9,7 @@ package org.ramadda.data.record;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.XlsUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -649,6 +650,15 @@ public abstract class RecordFile {
         if (debug) {
             System.err.println(mycnt+" RecordFile.doMakeInputStream path:" + path);
         }
+
+        if (path.toLowerCase().endsWith(".xls")) {
+	    new ByteArrayInputStream(XlsUtil.xlsToCsv(path).getBytes());
+        }
+
+        if (path.toLowerCase().endsWith(".xlsx")) {
+	    new ByteArrayInputStream(XlsUtil.xlsxToCsv(path).getBytes());
+        }	
+
 
         if (path.endsWith(".zip") || getProperty("isZip", false)) {
             InputStream    fis = IO.getInputStream(path);
