@@ -268,9 +268,9 @@ var Utils =  {
         var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
         return {x:nx, y:ny};
     },
-    split: function(s,delim,trim,excludeEmpty) {
+    split: function(s,delim,trim,excludeEmpty,dflt) {
+        if(!Utils.isDefined(s)) return dflt;
         let l = [];
-        if(!Utils.isDefined(s)) return l;
         s.split(delim||",").forEach((tok)=>{
             tok = tok.replace(/_comma_/g,",");
             if(trim) tok = tok.trim();
