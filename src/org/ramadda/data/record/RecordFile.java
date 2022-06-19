@@ -652,11 +652,11 @@ public abstract class RecordFile {
         }
 
         if (path.toLowerCase().endsWith(".xls")) {
-	    new ByteArrayInputStream(XlsUtil.xlsToCsv(path).getBytes());
+	    return new ByteArrayInputStream(XlsUtil.xlsToCsv(path).getBytes());
         }
 
         if (path.toLowerCase().endsWith(".xlsx")) {
-	    new ByteArrayInputStream(XlsUtil.xlsxToCsv(path).getBytes());
+	    return new ByteArrayInputStream(XlsUtil.xlsxToCsv(path).getBytes());
         }	
 
 
