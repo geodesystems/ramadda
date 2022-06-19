@@ -3146,11 +3146,18 @@ public class Column implements DataTypes, Constants, Cloneable {
 											    ""));
         } else {
             //string
-            if (request.exists(urlArg)) {
-                values[offset] = request.getAnonymousEncodedString(urlArg,
-                        ((dflt != null)
-                         ? dflt
-                         : ""));
+	    if (request.exists(urlArg)) {
+		if(isType(DATATYPE_CLOB)) {
+		    values[offset] = request.getString(urlArg,
+						       ((dflt != null)
+							? dflt
+							: ""));
+		} else {
+		    values[offset] = request.getAnonymousEncodedString(urlArg,
+								       ((dflt != null)
+									? dflt
+									: ""));
+		}
             } else {
                 values[offset] = Utils.getNonNull(values[offset],dflt);
             }
