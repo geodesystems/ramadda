@@ -25,7 +25,7 @@
         description="YouTube Video" 
         handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
         pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
-     <property name="icon" value="/media/youtube.png"/>
+     <property name="icon" value="/media/youtube-new.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -57,7 +57,7 @@
         handler="org.ramadda.plugins.media.AudioTypeHandler" 
 	super="type_media"
         pattern="(.*\.wav|.*\.m4a)">
-     <property name="icon" value="/media/sound.png"/>
+     <property name="icon" value="/media/audio-new.png"/>
      <wiki><![CDATA[
 +section title="{{name}}" #
 :br
