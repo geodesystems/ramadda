@@ -797,7 +797,11 @@ function DisplayThing(argId, argProperties) {
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
-	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
+	    let linkLabel = value||"Link";
+	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
+	    linkLabel = linkLabel.replace(/\?.*/,"");
+	    linkLabel = linkLabel.replace(/\/$/,"");	    
+	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || linkLabel;
 	    return  HU.href(value,label,["target","_link"]);
 	},
 
