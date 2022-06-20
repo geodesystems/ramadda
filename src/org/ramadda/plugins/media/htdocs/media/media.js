@@ -37,7 +37,48 @@ RamaddaMediaTranscript.prototype = {
 	if(this.player.gotoTime && this.points)  {
 	    this.makePoints();
 	}
+	setTimeout(()=>{
+	    this.lastPlayTime = 0;
+	    this.checkPlayTime();
+	},2000);
+
+
     },	
+    checkPlayTime:function() {
+	let cb = time=>{
+	    if(time!=this.lastPlayTime) {
+		this.lastPlayTime = time;
+		let closest = null;
+//		console.log("tick:" + this.formatTime(time));
+		this.points.every(p=>{
+		    if(time <p.time) {
+			return false;
+		    }
+		    closest=p;
+		    return true;
+		});
+		let lastClosest = this.lastClosest;
+		if(closest && closest==this.lastClosest) {
+//		    console.dir("\tthe same:" + closest.title +" " +this.lastClosest.title);
+		    closest=lastClosest=null;
+		} 
+		if(lastClosest) {
+//		    console.log("\tHAD LAST:" + lastClosest.title);
+		    jqid(lastClosest.rowId).removeClass("ramadda-media-point-inplay");
+		    this.lastClosest=null;
+		}
+		if(closest) {
+		    jqid(closest.rowId).addClass("ramadda-media-point-inplay");
+		    this.lastClosest = closest;
+//		    console.log("\tclosest:" + this.lastClosest.title);
+		}
+	    }
+	    setTimeout(()=>{
+		this.checkPlayTime();
+	    },1000);
+	};
+	this.player.getTime(cb);
+    },
     domId:function(suffix) {
 	return this.id +"_" + suffix;
     },
