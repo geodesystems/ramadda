@@ -135,11 +135,17 @@ public class Oembed {
                    + ".js'></script>\n";
         }
 
+	//https://jsfiddle.net/afabbro/vrVAP/
+	//<script async src="//jsfiddle.net/afabbro/vrVAP/embed/"></script>
         id = StringUtil.findPattern(
-            url, "https://jsfiddle.net/(.*macloo/bvwvd0ao)/?");
+				    url, "https://jsfiddle.net/(.+/[^/]+)/?");
+
         if (id != null) {
+	    if(true)
+		return  "<iframe width='100%' height='300' src='//jsfiddle.net/" + id+"/embedded/' allowfullscreen='allowfullscreen' allowpaymentrequest frameborder='0'></iframe>";
+
             return "\n<script async src='https://jsfiddle.net/" + id
-                   + "/embed/js,html,css,result/dark'></script>\n";
+                   + "/embed'></script>\n";
         }
 
         return null;
