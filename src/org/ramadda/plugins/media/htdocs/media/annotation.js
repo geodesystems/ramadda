@@ -7,11 +7,13 @@ function RamaddaAnnotatedImage(attrs,id) {
 		 };
     let anno = this.annotorius = Annotorious.init(aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
+    attrs.zoomable = false;
     this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_type_annotated_image_annotations_json");
     anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
 function RamaddaZoomableImage(attrs,id) {
+    attrs.zoomable = true;
     let osd =this.osd = OpenSeadragon(attrs);
     if(attrs.doBookmark) {
 	//call the bookmark plugin so the location is tracked in a URL hash
@@ -37,6 +39,7 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
     this.canEdit = attrs.canEdit;
     this.authToken = attrs.authToken;
     this.annotations = attrs.annotations;
+    this.zoomable = attrs.zoomable;
     if(this.canEdit) {
 	Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
 	let changed = (a) =>{
@@ -111,7 +114,7 @@ RamaddaAnnotation.prototype = {
 	    } else if(_this.getAnno().panTo) {
 		_this.getAnno().panTo(annotation);
 	    }
-	    if (event.metaKey) {
+	    if (event.metaKey || !_this.zoomable) {
 		_this.getAnno().selectAnnotation(annotation);                                      
 	    }
 	});
