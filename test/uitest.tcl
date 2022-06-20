@@ -200,6 +200,15 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		    set seenFailed 1
 		}
 	    }
+	    if {[regexp {\[Log\]} $line]} {
+		continue;
+	    }
+	    if {[regexp {\[Debug\]} $line]} {
+		continue;
+	    }
+	    if {[regexp {\[Info\]} $line]} {
+		continue;
+	    }	    
 	    if {[regexp {not represented on screen} $line]} {
 		continue;
 	    }
