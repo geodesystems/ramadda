@@ -110,7 +110,8 @@ RamaddaAnnotation.prototype = {
 		_this.getAnno().fitBounds(annotation)
 	    } else if(_this.getAnno().panTo) {
 		_this.getAnno().panTo(annotation);
-	    } else {
+	    }
+	    if (event.metaKey) {
 		_this.getAnno().selectAnnotation(annotation);                                      
 	    }
 	});
