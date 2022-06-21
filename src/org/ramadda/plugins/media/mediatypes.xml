@@ -7,6 +7,7 @@
 +section title="{{name}}" 
 {{noheading}}
 {{description wikify=true}}
+{{tags}}
 {{media}}
 -section
 ]]>
@@ -36,6 +37,22 @@
      <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
      <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
      <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
+</type>
+
+  <type name="media_tiktok"  
+	super="type_video"
+        description="TikTok Video" 
+        handler="org.ramadda.plugins.media.TikTokTypeHandler" 
+        pattern="^(http|https)://www.tiktok.com.*">
+     <property name="icon" value="/media/tiktok.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.label" value="TikTok URL"/>
+<!--
+     <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false"/>     
+-->
 </type>
 
 

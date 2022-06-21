@@ -52,6 +52,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
     /**  */
     public static final String MEDIA_YOUTUBE = "youtube";
 
+    public static final String MEDIA_TIKTOK = "tiktok";
+
     /**  */
     public static final String MEDIA_SOUNDCLOUD = "soundcloud";
 
@@ -132,7 +134,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void getMediaHtml(Request request, Entry entry, Hashtable props,
+    public void getMediaHtml(Request request, Entry entry, Hashtable props,
                               Appendable sb)
             throws Exception {
         String url    = entry.getResource().getPath();
