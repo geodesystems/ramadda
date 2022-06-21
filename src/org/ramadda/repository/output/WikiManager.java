@@ -3101,7 +3101,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		sb.append("<div class=metadata-tags>");
 		for(Metadata metadata: metadataList) {
 		    String mtd = metadata.getAttr(1);
-		    HU.div(sb,mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+		    String url = getMetadataManager().findType(metadata.getType()).getSearchUrl(request, metadata);
+		    HU.div(sb,HU.href(url, mtd),HU.attr("title","Search")+HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
 		}
 		sb.append("</div>");
 	    }
