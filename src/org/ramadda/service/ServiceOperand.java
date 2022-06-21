@@ -79,6 +79,11 @@ public class ServiceOperand {
         this.entries     = entries;
     }
 
+    @Override
+    public String toString() {
+	return "ServiceOperand:" + description +" entries:" + entries;
+    }
+
     /**
      * _more_
      *
