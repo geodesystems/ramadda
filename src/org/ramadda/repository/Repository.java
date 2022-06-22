@@ -5699,10 +5699,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         typeHandler.putProperty("icon", ICON_FILE);
 
         addTypeHandler(ProcessFileTypeHandler.TYPE_PROCESS,
-                       new ProcessFileTypeHandler(this));
+                       processFileTypeHandler = new ProcessFileTypeHandler(this));
 
     }
 
+    private  ProcessFileTypeHandler processFileTypeHandler;
+
+    public ProcessFileTypeHandler getProcessFileTypeHandler() {
+	return processFileTypeHandler;
+    }
 
 
     /**
