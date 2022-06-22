@@ -126,6 +126,10 @@ public class AccessManager extends RepositoryManager {
     /**  */
     private boolean debugDataPolicy = false;
 
+    /** _more_ */
+    public static boolean debug = false;
+
+
 
     /**
      * _more_
@@ -200,11 +204,10 @@ public class AccessManager extends RepositoryManager {
      */
     private synchronized boolean doDataPolicyFetch() throws Exception {
         boolean debug = debugDataPolicy;
-        //      debug = true;
         List<String> urls = new ArrayList<String>();
         List<Entry> entries = getEntryManager().getEntriesWithType(
-                                  getRepository().getAdminRequest(),
-                                  "type_datapolicy_source");
+								   getRepository().getAdminRequest(),
+								   "type_datapolicy_source");
         for (Entry entry : entries) {
             String url = entry.getResource().getPath();
             if (Utils.stringDefined(url)) {
@@ -383,17 +386,21 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoAction(Request request, String action)
-            throws Exception {
+	throws Exception {
+        boolean debug =false;
+	if(debug) System.err.println("canDoAction:" + action);
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
                     || action.equals(Permission.ACTION_FILE))) {
+		if(debug) System.err.println("\tisReadOnly and action isn't allowed");
                 return false;
             }
         }
         User user = request.getUser();
         //The admin can do anything
         if (user.getAdmin()) {
+	    if(debug) System.err.println("\tisAdmin");
             return true;
         }
 
@@ -506,11 +513,14 @@ public class AccessManager extends RepositoryManager {
                                boolean log)
             throws Exception {
 
+        boolean debug =false;
+	if(debug) System.err.println("canDoAction:" + action+" entry:" + entry);
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                     || action.equals(Permission.ACTION_EXPORT)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
                     || action.equals(Permission.ACTION_FILE))) {
+		if(debug) System.err.println("\tnot ok: isReadOnly");
                 return false;
             }
         }
@@ -544,19 +554,24 @@ public class AccessManager extends RepositoryManager {
                                 boolean log, Entry entry, String action)
             throws Exception {
 
+        boolean debug =false;
+	if(debug) System.err.println("canDoAction: user:" + user +" entry:" + entry +" action:" + action);
         if (entry == null) {
             return false;
         }
 
         if (entry.getIsLocalFile()) {
             if (action.equals(Permission.ACTION_NEW)) {
+		if(debug) System.err.println("\tnot ok: newing a local file");
                 return false;
             }
             if (action.equals(Permission.ACTION_DELETE)) {
                 if (getStorageManager().isProcessFile(entry.getFile())) {
+		    if(debug) System.err.println("\tok:isLocalFile and action is delete");
                     return true;
                 }
 
+		if(debug) System.err.println("\tnot ok:isLocalFile");
                 return false;
             }
         }
@@ -573,6 +588,7 @@ public class AccessManager extends RepositoryManager {
                         + okToView);
             }
             if ( !okToView) {
+		if(debug) System.err.println("\tnot ok: cannot view");
                 return false;
             }
         }
@@ -581,7 +597,7 @@ public class AccessManager extends RepositoryManager {
 
         if (user == null) {
             logInfo("Upload:canDoAction: user is null");
-
+	    if(debug) System.err.println("\tnot ok: not user");
             return false;
         }
 
@@ -593,6 +609,7 @@ public class AccessManager extends RepositoryManager {
             }
 
             //            System.err.println("user is admin");
+	    if(debug) System.err.println("\tok: user is admin");
             return true;
         }
 
@@ -604,7 +621,7 @@ public class AccessManager extends RepositoryManager {
                 logInfo("Upload:user is owner");
             }
 
-            //            System.err.println("user is owner of entry");
+	    if(debug) System.err.println("\tok: user is owner of entry");
             return true;
         }
 
@@ -624,16 +641,26 @@ public class AccessManager extends RepositoryManager {
                 }
 
                 //            logInfo("Upload:canDoAction: cache");
+		if(debug) System.err.println("\tcached:" + ok);
                 return ok.booleanValue();
             } else {
                 recentPermissions.remove(key);
             }
         }
 
-        boolean debug = false;
+	//        boolean debug = false;
         //      debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
         boolean result = canDoActionInner(request, requestIp, user, log,
                                           entry, action);
+	if(!result) {
+	    debug = true;
+	    canDoActionInner(request, requestIp, user, log,
+			     entry, action);
+	    debug = false;
+	}
+
+	if(debug) System.err.println("\tresult:" + result);
+	    
         if (debug) {
             //      System.err.println("CANDO:" + entry +" " + result);
             //      System.err.println(Utils.getStack(10));
@@ -692,10 +719,9 @@ public class AccessManager extends RepositoryManager {
         if (entry == null) {
             return false;
         }
-        //        boolean stop = stopAtFirstRole;
-        boolean debug = false;
-        //      debug = action.equals("view") && entry.getName().indexOf("test")>=0; 
-
+	boolean debug = false;
+	if(debug)
+	    System.err.println("canDoActionInner:" + user +" entry:"+ entry +" id:" + entry.getId() +" action:" + action);
         boolean    hadInherit = false;
         boolean    hadAny     = false;
         List<Role> roles      = getRoles(entry, action);
@@ -717,15 +743,13 @@ public class AccessManager extends RepositoryManager {
                 hadAny = true;
                 boolean negated = role.getNegated();
                 if (debug) {
-                    System.err.println("\tROLE:" + role.getBaseRole()
-                                       + " negated:" + negated);
+		    //                    System.err.println("\tROLE:" + role.getBaseRole() + " negated:" + negated);
                 }
                 if (role.getIsIp()) {
                     if (requestIp != null) {
                         if (requestIp.startsWith(role.getBaseRole())) {
                             if (debug) {
-                                System.err.println("\tIP negated:" + negated
-                                        + " " + requestIp);
+				//                                System.err.println("\tIP negated:" + negated   + " " + requestIp);
                             }
 
                             return !negated;
@@ -740,44 +764,50 @@ public class AccessManager extends RepositoryManager {
                 }
                 if (Role.ROLE_ANY.isRole(role)) {
                     if (debug) {
-                        System.err.println("\tIs ANY negated: " + negated);
+			//                        System.err.println("\tIs ANY negated: " + negated);
                     }
 
                     return !negated;
                 }
                 if (Role.ROLE_NONE.isRole(role)) {
                     if (debug) {
-                        System.err.println("\tIs NONE negated:" + negated);
+			//                        System.err.println("\tIs NONE negated:" + negated);
                     }
 
                     return negated;
                 }
                 if (user.isRole(role)) {
                     if (debug) {
-                        System.err.println("\tuser.isRole: " + role);
+			//                        System.err.println("\tuser.isRole: " + role);
                     }
 
                     return !negated;
                 }
             }
-            //If we had an access grant here then block access
-            /*
-            if(hadAny) {
-                if (!hadInherit) {
-                    if(stop) {
-                        if(debug)
-                            System.err.println("\thadAny=true stop=true returning FALSE");
-                        return false;
-                    }
-                }
-                }*/
         }
 
+
         //LOOK: make sure we pass in false here which says do not check for access control
-        entry = getEntryManager().getParent(request, entry, false);
-        if (entry != null) {
-            return canDoAction(request, requestIp, user, log, entry, action);
+        Entry parent = getEntryManager().getParent(request, entry, false);
+        if (parent != null) {
+            return canDoAction(request, requestIp, user, log, parent, action);
         }
+
+
+
+	if(entry.isFile() && getStorageManager().isProcessFile(entry.getFile())) {
+	    if(debug)
+		System.err.println("isProcessFile:" + entry);
+	    return true;
+	}
+
+
+	if(entry.getTypeHandler().equals(getRepository().getProcessFileTypeHandler())) {
+	    if(debug)
+		System.err.println("isProcess:" + entry);
+	    return true;
+	}
+
         if (debug) {
             System.err.println("\tparent is NULL");
         }
@@ -893,8 +923,6 @@ public class AccessManager extends RepositoryManager {
     }
 
 
-    /** _more_ */
-    public static boolean debug = false;
 
     /**
      * _more_
@@ -919,17 +947,21 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry filterEntry(Request request, Entry entry) throws Exception {
+	//	debug = true;
+	if(debug) System.err.println("filterEntry:" + entry);
         if (entry.getIsRemoteEntry()) {
+	    if(debug) System.err.println("\tok: is Remote");
             return entry;
         }
         if (entry.getResource() != null) {
             if (entry.getResource().isFileType()) {
                 if ( !entry.getResource().getTheFile().exists()) {
-                    //                    System.err.println ("filterEntry: file is missing");
+                    if(debug)System.err.println ("\tfile is missing");
                     entry = getEntryManager().handleMissingFileEntry(request,
                             entry);
                     if (entry == null) {
-                        //                        System.err.println ("filterEntry: missing entry got deleted");
+			if(debug)
+			    System.err.println ("\tnot ok: missing entry got deleted");
                         return null;
                     }
                 }
@@ -938,6 +970,7 @@ public class AccessManager extends RepositoryManager {
         //        System.err.println ("filter:" + entry.getFullName());
         long t1 = System.currentTimeMillis();
         if ( !canDoAction(request, entry, Permission.ACTION_VIEW)) {
+	    if(debug) System.err.println("\tnot ok: cannot do view");
             return null;
         }
         long t2 = System.currentTimeMillis();
@@ -948,6 +981,7 @@ public class AccessManager extends RepositoryManager {
         if ((parent != null)
                 && !canDoAction(request, parent,
                                 Permission.ACTION_VIEWCHILDREN)) {
+	    if(debug) System.err.println("\tnot ok: parent cannot view children");
             return null;
         }
 
