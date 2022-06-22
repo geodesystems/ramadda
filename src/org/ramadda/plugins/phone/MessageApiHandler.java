@@ -143,9 +143,8 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
 
         Request request = getRepository().getAdminRequest();
         request.put(Constants.ARG_TYPE, "phone_mttf");
-        StringBuilder tmp = new StringBuilder();
         List<Entry> entries =
-            getRepository().getEntryManager().getEntries(request, tmp);
+            getRepository().getEntryManager().getEntriesFromDb(request);
         Date now = new Date();
         for (Entry entry : entries) {
             if ( !entry.getValue(MTTFTypeHandler.IDX_ENABLED, false)) {

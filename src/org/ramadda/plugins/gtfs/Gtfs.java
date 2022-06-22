@@ -1586,7 +1586,7 @@ public class Gtfs implements Constants {
             (List<String[]>) request.getRepository().decodeObject(
                 Utils.uncompress(s));
 
-        StringBuilder tmp = new StringBuilder();
+
         for (String[] tuple : tuples) {
             String stopId    = tuple[0];
             String arrival   = tuple[1];
@@ -1602,8 +1602,7 @@ public class Gtfs implements Constants {
                 searchRequest.put("search.type_gtfs_stop.stop_id",
                                   "=" + stopId);
                 List<Entry> entries =
-                    request.getRepository().getEntryManager().getEntries(
-                        searchRequest, tmp);
+                    request.getRepository().getEntryManager().getEntriesFromDb(searchRequest);
                 stopEntry = (entries.size() > 0)
                             ? entries.get(0)
                             : null;
@@ -1646,10 +1645,8 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_stop.stop_id", "=" + stopId);
         searchRequest.put("search.type_gtfs_stop.agency_id",
                           "=" + agency.getId());
-        StringBuilder tmp = new StringBuilder();
         List<Entry> entries =
-            request.getRepository().getEntryManager().getEntries(
-                searchRequest, tmp);
+            request.getRepository().getEntryManager().getEntriesFromDb(searchRequest);
 
         return (entries.size() > 0)
                ? entries.get(0)
@@ -1680,10 +1677,8 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_route.route_id", "=" + routeId);
         searchRequest.put("search.type_gtfs_route.agency_id",
                           "=" + agency.getId());
-        StringBuilder tmp = new StringBuilder();
         List<Entry> entries =
-            request.getRepository().getEntryManager().getEntries(
-                searchRequest, tmp);
+            request.getRepository().getEntryManager().getEntriesFromDb(searchRequest);
 
         return (entries.size() > 0)
                ? entries.get(0)
@@ -1714,10 +1709,8 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_trip.trip_id", "=" + tripId);
         searchRequest.put("search.type_gtfs_trip.agency_id",
                           "=" + agency.getId());
-        StringBuilder tmp = new StringBuilder();
         List<Entry> entries =
-            request.getRepository().getEntryManager().getEntries(
-                searchRequest, tmp);
+            request.getRepository().getEntryManager().getEntriesFromDb(searchRequest);
 
         return (entries.size() > 0)
                ? entries.get(0)
@@ -2063,9 +2056,7 @@ public class Gtfs implements Constants {
         q.append(entry.getValue(GtfsStopTypeHandler.IDX_STOP_ID, ""));
         q.append("]");
         searchRequest.put("search.type_gtfs_trip.stop_ids", q);
-        StringBuilder tmp = new StringBuilder();
-        trips = request.getRepository().getEntryManager().getEntries(
-            searchRequest, tmp);
+        trips = request.getRepository().getEntryManager().getEntriesFromDb(searchRequest);
         agency.putTransientProperty(entry.getId() + ".trips", trips);
 
         return trips;

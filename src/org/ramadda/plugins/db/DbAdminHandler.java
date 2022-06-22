@@ -227,7 +227,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb, "Select Database", false);
         //      let url = HtmlUtils.getUrl("/db/search/list",["type", otherTable,"widgetId",widgetId,"column",column,"otherColumn",otherColumn]);
-        List<Entry> entries = getEntryManager().getEntries(request);
+        List<Entry> entries = getEntryManager().getEntriesFromDb(request);
         if (entries.size() == 0) {
             sb.append("No databases found");
         }
