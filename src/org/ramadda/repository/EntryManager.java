@@ -4119,7 +4119,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        List<Entry> entries =getEntries(request);
+        List<Entry> entries =getEntriesFromDb(request,null,null);
         if (entries.size() == 0) {
             throw new IllegalArgumentException(
 					       "Could not find entry with file");
@@ -6083,7 +6083,7 @@ public class EntryManager extends RepositoryManager {
         Date        now     = new Date();
         for (Resource resource : resources) {
 	    if(unique) {
-		List<Entry> tmp = getEntriesWithResouce(getRepository().getAdminRequest(), resource);
+		List<Entry> tmp = getEntriesWithResource(getRepository().getAdminRequest(), resource);
 		if(tmp.size()>0) {
 		    msg.append("<li> Non-unique file: " + resource);
 		    continue;
@@ -7128,6 +7128,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (andFilter && (entry != null)) {
+
             entry = getAccessManager().filterEntry(request, entry);
             debug("getEntry: after filter 2:" + entry);
         }
@@ -7203,32 +7204,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> getEntries(Request request) throws Exception {
-        return getEntries(request, new StringBuilder());
-    }
+
+    private static final boolean LUCENE_OK = true;
+    private static final boolean LUCENE_NOTOK = false;
 
     /**
      * _more_
      *
      * @param request _more_
-     * @param searchCriteriaSB _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Entry> getEntries(Request request, Appendable searchCriteriaSB)
+    public List<Entry> searchEntries(Request request)
 	throws Exception {
-        return getEntries(request, searchCriteriaSB, null);
+        return searchEntries(request, (List<Clause>)null);
     }
 
 
@@ -7236,25 +7227,20 @@ public class EntryManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
-     * @param searchCriteriaSB _more_
      * @param extraClauses _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Entry> getEntries(Request request, Appendable searchCriteriaSB,
-				  List<Clause> extraClauses)
+    public List<Entry> searchEntries(Request request, List<Clause> extraClauses)
 	throws Exception {
-
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
-        List<Clause> where = typeHandler.assembleWhereClause(request,
-							     searchCriteriaSB);
+        List<Clause> clauses = typeHandler.assembleWhereClause(request);
         if (extraClauses != null) {
-            where.addAll(extraClauses);
+            clauses.addAll(extraClauses);
         }
-
-        return getEntries(request, where, typeHandler);
+	return getEntries(request, clauses, typeHandler, LUCENE_OK);
     }
 
 
@@ -7263,19 +7249,16 @@ public class EntryManager extends RepositoryManager {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 	List<Clause> clauses = new ArrayList<Clause>();
         clauses.add(Clause.eq(Tables.ENTRIES.COL_TYPE, type));
-	//false->don't do lucense search
-	return  getEntries(request,  clauses, typeHandler,false);
+	return  getEntriesFromDb(request,  clauses, typeHandler);
     }
 
-    public List<Entry> getEntriesWithResouce(Request request, Resource resource) 
+    public List<Entry> getEntriesWithResource(Request request, Resource resource) 
 	throws Exception {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 	List<Clause> clauses = new ArrayList<Clause>();
         clauses.add(Clause.eq(Tables.ENTRIES.COL_RESOURCE, resource.getPath()));
-	//false->don't do lucense search
-	return  getEntries(request,  clauses, typeHandler,false);
+	return  getEntriesFromDb(request,  clauses, typeHandler);
     }
-
 
 
     public List<Entry> getEntryRootTree(Request request) throws Exception {
@@ -7299,25 +7282,21 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param clauses _more_
-     * @param typeHandler _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Entry> getEntries(Request request, List<Clause> clauses,
-                                    TypeHandler typeHandler)
+    public List<Entry> getEntriesFromDb(Request request) 
 	throws Exception {
-	return getEntries(request, clauses, typeHandler, true);
+	return getEntriesFromDb(request, (List<Clause>)null, (TypeHandler)null);
+
     }
 
 
-    public List<Entry> getEntries(Request request, List<Clause> clauses,
+    public List<Entry> getEntriesFromDb(Request request, List<Clause> clauses,
+					     TypeHandler typeHandler)
+	throws Exception {
+	return getEntries(request, clauses, typeHandler, LUCENE_NOTOK);
+    }    
+
+
+    private List<Entry> getEntries(Request request, List<Clause> clauses,
 				  TypeHandler typeHandler,boolean luceneOk)
 	throws Exception {	
 
@@ -7338,27 +7317,20 @@ public class EntryManager extends RepositoryManager {
 	}
 
 
+
         List<Entry> allEntries    = new ArrayList<Entry>();
 	boolean didSearch = false;
 
 	//Check if we should let lucene do the searching
 	if(luceneOk && getSearchManager().isLuceneEnabled()) {
-	    List<String> columns = new ArrayList<String>();
-	    for(Clause clause: clauses)
-		clause.getColumns(columns);
-	    // check if its just the text search with the default order by
-	    boolean isTextSearch = (columns.size()==3 && columns.contains(Tables.ENTRIES.COL_NAME) &&
-				    columns.contains(Tables.ENTRIES.COL_DESCRIPTION) &&
-				    columns.contains(Tables.ENTRIES.COL_RESOURCE));//  || columns.size()==0;
-	    isTextSearch  = true;
-	    if(isTextSearch) {
-		getSearchManager().processLuceneSearch(request, allEntries);
-		didSearch = true;
-	    }
+	    System.err.println("LUCENE");
+	    getSearchManager().processLuceneSearch(request, allEntries);
+	    didSearch = true;
 	}
 
 
 	if(!didSearch) {
+	    System.err.println("NOT LUCENE");
 	    int skipCnt = request.get(ARG_SKIP, 0);
 	    SqlUtil.debug = false;
 	    boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
@@ -7368,6 +7340,9 @@ public class EntryManager extends RepositoryManager {
 	    Metadata[] mtd = new Metadata[]{null};
 
 	    String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo(),mtd);
+	    if(typeHandler==null)
+		typeHandler =  getRepository().getTypeHandler(request);
+	    if(clauses==null) clauses = new ArrayList<Clause>();
 	    Statement statement = typeHandler.select(request,
 						     Tables.ENTRIES.COLUMNS, clauses,
 						     order);
