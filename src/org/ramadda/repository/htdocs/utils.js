@@ -3761,11 +3761,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },    
 
     makeSlides: function(id,args) {
+        if(!HtmlUtils.loadSlides()) {
+	    setTimeout(()=>{
+		HtmlUtils.makeSlides(id,args);
+	    },1000);
+	}
         let opts = {
             dots:true
         };
         if(args) $.extend(opts,args);
-        HtmlUtils.loadSlides();
         $("#" + id).slick(opts);
         HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
@@ -3791,7 +3795,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             imports = HU.javascriptLink(base+"slick.min.js");
             $(imports).appendTo("body");
             HtmlUtils.slidesLoaded = true;
-        }
+	    return false;
+	}
+	return true;
     },
     loadKatex: function(callback, error) {
         if (!window["katex"]) {
