@@ -7323,14 +7323,14 @@ public class EntryManager extends RepositoryManager {
 
 	//Check if we should let lucene do the searching
 	if(luceneOk && getSearchManager().isLuceneEnabled()) {
-	    System.err.println("LUCENE");
+	    //	    System.err.println("LUCENE");
 	    getSearchManager().processLuceneSearch(request, allEntries);
 	    didSearch = true;
 	}
 
 
 	if(!didSearch) {
-	    System.err.println("NOT LUCENE");
+	    //	    System.err.println("NOT LUCENE");
 	    int skipCnt = request.get(ARG_SKIP, 0);
 	    SqlUtil.debug = false;
 	    boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
@@ -10081,8 +10081,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getProcessEntry() throws Exception {
-        return getRepository().getTypeHandler(
-					      ProcessFileTypeHandler.TYPE_PROCESS).getSynthTopLevelEntry();
+        return getRepository().getProcessFileTypeHandler().getSynthTopLevelEntry();
     }
 
     /**
