@@ -1667,7 +1667,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         tmpRequest.put(ARG_TYPE, "type_psd_monthly_climate_index");
 
-        return getEntryManager().getEntries(tmpRequest);
+        return getEntryManager().getEntriesFromDb(tmpRequest);
     }
 
 
@@ -1774,8 +1774,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
 
-        List<Entry> entries = getEntryManager().getEntries(request, clauses,
-                                  typeHandler.getGranuleTypeHandler());
+        List<Entry> entries = getEntryManager().getEntriesFromDb(request, clauses,
+							   typeHandler.getGranuleTypeHandler());
 
         entries = getEntryUtil().sortEntriesOnName(entries, false);
 
@@ -2102,7 +2102,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         ""));
         }
 
-        return getEntryManager().getEntries(tmpRequest);
+        return getEntryManager().getEntriesFromDb(tmpRequest);
     }
 
     /**

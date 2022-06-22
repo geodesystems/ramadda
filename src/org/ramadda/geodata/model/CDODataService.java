@@ -189,7 +189,7 @@ public abstract class CDODataService extends Service {
 
         }
 
-        return outputHandler.getEntryManager().getEntries(request, clauses,
+        return outputHandler.getEntryManager().getEntriesFromDb(request, clauses,
                 ctypeHandler.getGranuleTypeHandler());
 
     }
