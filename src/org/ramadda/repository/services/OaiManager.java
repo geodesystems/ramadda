@@ -840,7 +840,7 @@ public class OaiManager extends RepositoryManager {
             newRequest.put(ARG_UNTIL, request.getString(ARG_UNTIL, ""));
         }
 
-        List<Entry> entries = getEntryManager().getEntries(newRequest);
+        List<Entry> entries = getEntryManager().getEntriesFromDb(newRequest);
         String      token   = null;
         if (entries.size() > 0) {
             if (entries.size() >= max) {

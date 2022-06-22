@@ -866,8 +866,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         addClauses(request, group, clauses);
 
         //Pass in false to say not to do lucene search if its enabled
-        return getEntryManager().getEntries(request, clauses,
-                                            getGranuleTypeHandler(), false);
+        return getEntryManager().getEntriesFromDb(request, clauses,
+						       getGranuleTypeHandler());
     }
 
     /**

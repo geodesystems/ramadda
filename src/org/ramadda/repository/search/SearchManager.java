@@ -999,7 +999,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Result processEntrySuggest(Request request) throws Exception {
         List<String> names  = new ArrayList<String>();
 	request.put(ARG_MAX,20);
-	for(Entry entry:  getEntryManager().getEntries(request, new StringBuilder())) {
+	for(Entry entry:  getEntryManager().searchEntries(request)) {
 	    String obj = JsonUtil.map(Utils.makeList("name", JsonUtil.quote(entry.getName()), "id",
 						     JsonUtil.quote(entry.getId()),
 						     "type",JsonUtil.quote(entry.getTypeHandler().getType()),

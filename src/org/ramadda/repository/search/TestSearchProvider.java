@@ -135,9 +135,7 @@ public class TestSearchProvider extends SearchProvider {
             runnable.run();
         } else {
             System.err.println("TestSearchProvider.getEntries");
-            StringBuilder sb = new StringBuilder();
-            results = getEntryManager().getEntries(request, sb, null);
-            searchInfo.addMessage(this, sb.toString());
+            results = getEntryManager().searchEntries(request);
         }
 
         return results;

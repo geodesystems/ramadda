@@ -312,9 +312,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     }
 
 
-
-
-
     /**
      * _more_
      *
@@ -327,7 +324,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      */
     public Result processSearchRequest(Request request, Appendable sb)
             throws Exception {
-
 
         int contentsWidth  = 750;
         int contentsHeight = 450;
@@ -352,7 +348,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         if (doSearch) {
-            StringBuffer criteriaSB = new StringBuffer();
             List<Clause> extra      = null;
             if (syntheticFields.size() > 0) {
                 extra = new ArrayList<Clause>();
@@ -376,8 +371,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }
 
             allEntries =
-                getRepository().getEntryManager().getEntries(request,
-                    criteriaSB, extra);
+                getRepository().getEntryManager().searchEntries(request,extra);
 
         }
 
