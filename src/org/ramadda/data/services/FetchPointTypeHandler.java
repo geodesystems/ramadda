@@ -111,7 +111,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         Request request = getRepository().getTmpRequest();
         request.put(ARG_TYPE, "type_point_fetch");
         List<Entry> entries =
-            request.getRepository().getEntryManager().getEntries(request);
+            request.getRepository().getEntryManager().getEntriesFromDb(request);
         for (Entry entry : entries) {
             fetchEntry(entry);
         }
