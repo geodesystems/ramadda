@@ -12,7 +12,6 @@ https://geodesystems.com/repository/entry/show/Home/Explore?entryid=a96b9616-40b
 https://geodesystems.com/repository/entry/show/Home/Explore/Business+Knowledge+Management?entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
 https://geodesystems.com/repository/entry/show/Home/Explore/Business+Knowledge+Management?output=html.info&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44&ascending=false&orderby=fromdate
 https://geodesystems.com/repository/entry/comments/show?entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
-https://geodesystems.com/repository/entry/show/Home/Explore/Business+Knowledge+Management?output=user.cart.add&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44&ascending=false&orderby=fromdate
 https://geodesystems.com/repository/entry/links?entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
 https://geodesystems.com/repository/entry/show/Business%20Knowledge%20Management_download.sh?max=20000&output=bulk.curl&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
 https://geodesystems.com/repository/entry/show/Home/Explore/Business+Knowledge+Management?output=default.html&entryid=a42905f9-cddc-4b80-96d9-bfcb0fabcc44
