@@ -1326,6 +1326,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     //ARG_ACTION_ENS_COMPARE) && frequency.equals(
                     //"monthly")) || type.equals(
                     ARG_ACTION_ENS_COMPARE) || type.equals(
+                    ARG_ACTION_TEST) || type.equals(
                             ARG_ACTION_CORRELATION) || type.equals(
                             ARG_ACTION_MULTI_TIMESERIES))
                                && column.getName().equals("ensemble")) {
@@ -1952,6 +1953,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         StringBuilder sb = new StringBuilder();
         boolean showBlank =
             !(((type.equals(ARG_ACTION_ENS_COMPARE)
+                || type.equals(ARG_ACTION_TEST)
                 || type.equals(ARG_ACTION_MULTI_TIMESERIES)
                 || type.equals(
                     ARG_ACTION_CORRELATION)) && myColumn.getName().equals(
