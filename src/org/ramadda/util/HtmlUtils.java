@@ -3639,7 +3639,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                       List values, List selected,
                                       String boxStyle, String extra)
             throws Exception {
-        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle) + extra));
+        sb.append(open(TAG_DIV, HtmlUtils.style(boxStyle) + HtmlUtils.attr("checkboxname",name)+extra));
         sb.append("\n");
 
         HashSet seenSelected = new HashSet();
