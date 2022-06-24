@@ -737,6 +737,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     public Result handleRequest(Request request, String type)
             throws Exception {
 
+	boolean debug = false;
+	if(debug) System.err.println("handleRequest:" + request);
         if (getServices(request, type).isEmpty()) {
             throw new RuntimeException(
                 "Data processes for model comparison are not configured.");
@@ -1278,6 +1280,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 columns = typeHandler.getGranuleColumns();
             }
             int numColumns = columns.size();
+
             for (int fieldIdx = 0; fieldIdx < numColumns; fieldIdx++) {
                 Column column = columns.get(fieldIdx);
                 //String key = "values::" + entry.getId()+"::" +column.getName();
@@ -1291,6 +1294,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         && !selectedValues.get(0).toString().isEmpty()) {
                     values.addAll(selectedValues);
                 }
+		if(debug)
+		    System.err.println("\tcolumn:" + column +" arg:" + arg +" values:" + values);
                 // don't show variable selector for subsequent collections when we have a fixed
                 // collection
                 if (request.defined(ARG_COLLECTION)
