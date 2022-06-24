@@ -1869,6 +1869,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     private Result processJsonRequest(Request request, String type)
             throws Exception {
 
+	boolean debug = false;
+	if(debug)
+	    System.err.println("processJsonRequest");
 
         //        System.err.println("Request:" + request);
         Entry entry = getEntryManager().getEntry(request,
@@ -1909,7 +1912,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
             }
         }
-        //System.err.println("x: " + clauses);
+	if(debug) {
+	    System.err.println("\tclauses: " + clauses);
+	    System.err.println("\tors: " + ors);
+	}
 
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
@@ -1920,11 +1926,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         int          numOrs    = ors.size();
         int          orNum     = 0;
         List<String> values    = new ArrayList<String>();
-        if (ors.size() > 1) {
+        if (ors.size() > 0) {
             for (Clause or : ors) {
                 List<Clause> orClauses = new ArrayList<Clause>(clauses);
                 orClauses.add(or);
-                //System.err.println("or: "+ orClauses);
                 values = new ArrayList<String>(
                     ((CollectionTypeHandler) entry.getTypeHandler()).getUniqueColumnValues(
                         entry,
@@ -1938,6 +1943,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 if (orNum == numOrs - 1) {
                     values = uniqueOrs;
+		    if(debug)
+			System.err.println("final or values:" + values);
                 }
                 orNum++;
             }
@@ -1949,7 +1956,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     myColumn,
                     clauses,
                     false));
+	    if(debug)
+		System.err.println("values:" + values);
         }
+
         StringBuilder sb = new StringBuilder();
         boolean showBlank =
             !(((type.equals(ARG_ACTION_ENS_COMPARE)
