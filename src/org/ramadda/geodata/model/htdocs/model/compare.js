@@ -1,5 +1,3 @@
-
-
 var ARG_ACTION_SEARCH = "action.search";
 var TYPE_IMAGE = "type_image";
 var TYPE_KMZ = "geo_kml";
@@ -187,7 +185,6 @@ function CollectionForm(formId, plottype, args) {
 
                 //Don: Uncomment this if you want the server to just run through a test loop
                 //jsonUrl+="&testit=true";
-
 
                 //Post the request
                 $.post(jsonUrl, data=>{
@@ -535,7 +532,7 @@ function CollectionForm(formId, plottype, args) {
 	    };
 	    //jeffmc: handle the multi checkboxes
 	    if(this.isFieldMultiple(collection, fieldIdx)) {
-		this.getMulipleCheckboxes(collection, fieldIdx).change(func);
+		this.getMultipleCheckboxes(collection, fieldIdx).change(func);
 	    } else {
 		this.getFieldSelect(collection, fieldIdx).change(func);
 	    }
@@ -545,6 +542,7 @@ function CollectionForm(formId, plottype, args) {
         },
         //Gets called when the collection select widget is changed
         collectionChanged: function  (collection, selectId) {
+
             var collectionId = this.getCollectionSelect(collection).val();
             var fieldIdx = 0;
             if(!collectionId || collectionId == "") {
@@ -570,6 +568,7 @@ function CollectionForm(formId, plottype, args) {
                     }
                 }
             }
+
             var collectionForm = this;
             $.getJSON(url, function(data) {
                 var currentValueIsInNewList = collectionForm.setFieldValues(collection, data, fieldIdx);
@@ -602,17 +601,27 @@ function CollectionForm(formId, plottype, args) {
             return fieldSelect.attr('multiple');
 	},
 	//jeffmc: get the multiple checkboxes
-	getMulipleCheckboxes:function(collection, fieldIdx) {
+	getMultipleCheckboxes:function(collection, fieldIdx,debug) {
 	    let fieldSelect = this.getFieldSelect(collection, fieldIdx);
-	    return fieldSelect.find(".ramadda-toggle");
+	    //First check if there are the cbxes with the class ramadda-toggle set
+	    //We look for the class as there is also the toggle all checkbox
+	    let checkboxes =fieldSelect.find(".ramadda-toggle");
+	    if(checkboxes.length==0) {
+		//If not set then these might be checkboxes created by the server. If that is the case then
+		//look for for all of the checkboxes
+		checkboxes =fieldSelect.find(":checkbox");
+	    }
+	    return checkboxes;
 	},
 	//jeffmc: this gets the field values and handles the checkboxes for the multiple select
-	getFieldValues:function(collection, fieldIdx) {
+	getFieldValues:function(collection, fieldIdx,debug) {
             let isMultiple = this.isFieldMultiple(collection, fieldIdx);
 	    if(isMultiple) {
 		let values = [];
-		let checkboxes = this.getMulipleCheckboxes(collection, fieldIdx);
+		let checkboxes = this.getMultipleCheckboxes(collection, fieldIdx,debug);
+		if(debug) console.dir("getFieldValues:" + fieldIdx +" #checkboxes:" + checkboxes.length);
 		checkboxes.each(function() {
+		    if(debug) console.dir("\t" +$(this).attr("value") +" checked:" + $(this).is(':checked'));
 		    if($(this).is(':checked')) {
 			values.push($(this).val());
 		    }
@@ -654,15 +663,15 @@ function CollectionForm(formId, plottype, args) {
         },
         setFieldValues: function(collection, data, fieldIdx) {
             if (data == null) return false;
-            var currentValue =    this.getFieldValues(collection, fieldIdx);
-            var currentValueIsInNewList = false;
-            var html = "";
-            var select =  this.getFieldSelect(collection, fieldIdx);
-            var isMultiple = this.isFieldMultiple(collection, fieldIdx);
-            for(var i=0;i<data.length;i++)  {
-                var objIQ = data[i];
-                var value,label;
-                var type = typeof(objIQ);
+            let currentValue =    this.getFieldValues(collection, fieldIdx);
+            let html = "";
+            let select =  this.getFieldSelect(collection, fieldIdx);
+            let isMultiple = this.isFieldMultiple(collection, fieldIdx);
+	    let currentValueIsInNewList = false;
+            for(let i=0;i<data.length;i++)  {
+                let objIQ = data[i];
+                let value,label;
+                let type = typeof(objIQ);
                 if (type == 'object') {  
                     // made from TwoFacedObject [ {id:id1,value:value1}, {id:id2,value:value2} ]
                     value = objIQ.id;
@@ -675,34 +684,36 @@ function CollectionForm(formId, plottype, args) {
                     label =  "--";
                 }
                 if (value == "sprd" || value == "clim") continue;
-                var extra = "";
+                let extra = "";
                 // if multiple is available for ensemble members, select them all
                 //if (fieldIdx == 2 && select.prop('multiple')) {
                 //    extra = " selected ";
                 //    currentValueIsInNewList = true;
                 //} else
-                if (!(currentValue === undefined || currentValue == null)) {
-                    for (var j = 0; j < currentValue.length; j++) {
-                        var s = currentValue[j];
+		let isSelected = false;
+                if (Utils.isDefined(currentValue)) {
+                    for (let j = 0; j < currentValue.length; j++) {
+                        let s = currentValue[j];
                         if (s == value) {
                             extra = " selected ";
                             currentValueIsInNewList = true;
+			    isSelected = true;
                         }
                     }
                 }
-                //if(currentValue == value) {
-                //    extra = " selected ";
-                //    currentValueIsInNewList = true;
-                //}
                 if (isMultiple) {
+
+
 		    //jeffmc: add in the select all. set the class to ramadda-toggleall so we can find this later
+		    let checkboxName=select.attr("checkboxname")||"";
 		    if(html=="") {
 			html += HtmlUtils.div([],HtmlUtils.checkbox("", ['class','ramadda-toggleall','title','Toggle all']));
 		    }
 
 		    //jeffmc: don't show the blank value. set the class to ramadda-toggle so we can find this later
 		    if(value!="") {
-			html += HtmlUtils.div([],HtmlUtils.checkbox(value, ['value',value,'index',i,'class','ramadda-toggle'], currentValueIsInNewList, label));
+			html += HtmlUtils.div([],HtmlUtils.checkbox(value, ['name',checkboxName,'value',value,'index',i,'class','ramadda-toggle'], isSelected, label));
+			
 		    }
 
 
@@ -711,8 +722,8 @@ function CollectionForm(formId, plottype, args) {
                 }
             }
             //Check if the select has been selectBox'ed
-            //var select =  this.getFieldSelect(collection, fieldIdx);
-            var selectBoxData = select.data("selectBox-selectBoxIt");
+            //let select =  this.getFieldSelect(collection, fieldIdx);
+            let selectBoxData = select.data("selectBox-selectBoxIt");
 	    if(selectBoxData !=null) {
                 selectBoxData.remove();
                 selectBoxData.add(html);
@@ -725,7 +736,7 @@ function CollectionForm(formId, plottype, args) {
 		this.initField(collection, fieldIdx);
 
 		//find all of the regular checkboxes
-		let checkboxes = this.getMulipleCheckboxes(collection, fieldIdx);
+		let checkboxes = this.getMultipleCheckboxes(collection, fieldIdx);
 		//find the toggle all cbx and on click set the other checkboxes
 		let collectionForm = this;
 		select.find(".ramadda-toggleall").click(function(){
