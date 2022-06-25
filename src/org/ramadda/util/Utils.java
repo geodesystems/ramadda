@@ -4947,6 +4947,19 @@ public class Utils extends IO {
         return false;
     }
 
+
+    /**
+       Clip the length of the string to the given length. Add the suffix at the end if clipped
+     */
+    public static String clip(String s, int length,String suffix) {
+	if(s==null) return null;
+	if(s.length()>length) {
+	    s = s.substring(0,length) +suffix;
+	}
+	return s;
+    }
+
+
     /**
      * _more_
      *
