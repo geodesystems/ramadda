@@ -5,51 +5,23 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
-
 import org.ramadda.repository.metadata.*;
-
-
-import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
-import org.ramadda.util.sql.Clause;
-
-
-import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
 import java.io.File;
 import java.io.FilenameFilter;
 
-import java.sql.PreparedStatement;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-
-
-
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -60,9 +32,6 @@ import java.util.Properties;
  * @version $Revision: 1.3 $
  */
 public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
-
-
-
 
     /**
      * _more_
@@ -179,29 +148,33 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                                     Entry parentEntry, String synthId)
             throws Exception {
 
-        //        System.err.println ("**** getSynthIds: "+ synthId);
+	boolean debug = true;
+	if(debug)
+	    System.err.println ("LocalFileTypeHandler.getSynthIds: entry:"+  mainEntry.getName() +" " +mainEntry.getId() +" synthid:" + synthId);
+	//	System.err.println (Utils.getStack(10));
 
         List<String>  ids           = new ArrayList<String>();
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(mainEntry);
         if ( !localFileInfo.isDefined()) {
-            //            System.err.println ("not defined");
+	    if(debug) System.err.println ("\tlocalFileInfo not defined");
             return ids;
         }
 
         int    max         = request.get(ARG_MAX, VIEW_MAX_ROWS);
+	max = 10000;
         int    skip        = request.get(ARG_SKIP, 0);
-
         long   t1          = System.currentTimeMillis();
 
         String rootDirPath = localFileInfo.getRootDir().toString();
         File   childPath = getFileFromId(synthId, localFileInfo.getRootDir());
         //        System.err.println ("synthId:" + synthId);
-        //        System.err.println ("child path:" + childPath);
+	if(debug) System.err.println ("\tchild path:" + childPath +" max:" +max +" skip:"+  skip);
 
         if ( !childPath.exists()) {
             getLogManager().logWarning(
                 "Server side files:  file does not exist:" + childPath);
 
+	    if(debug) System.err.println ("\tchild path does not exist");
             return new ArrayList<String>();
         }
 
@@ -211,6 +184,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 "Server side files:  got a null file listing for:"
                 + childPath);
 
+	    if(debug) System.err.println ("\tnull file listing");
             return new ArrayList<String>();
         }
         //        files = IOUtil.sortFilesOnName(files);
@@ -226,6 +200,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
         boolean descending = !request.get(ARG_ASCENDING, false);
         String  by         = request.getString(ARG_ORDERBY, ORDERBY_FROMDATE);
+	System.err.println(request);
         if (sortMetadata != null) {
             if ( !request.exists(ARG_ASCENDING)) {
                 if (Misc.equals(sortMetadata.getAttr2(), "true")) {
@@ -419,6 +394,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         //        System.err.println("parentId:" + parentId +" prefix:" + prefix);
         return prefix + ":" + subId;
     }
+
+
+
 
     /**
      * _more_
@@ -708,6 +686,26 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
     public LocalFileInfo doMakeLocalFileInfo(Entry entry) throws Exception {
         return new LocalFileInfo(getRepository(), entry);
     }
+
+    @Override
+    public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
+	if(entry!=null && column.getName().equals("localfilepath")) {
+	    String path = column.getString(values);
+	    String error = null;
+	    if(Utils.stringDefined(path)) {
+		File f = new File(path);
+		if(!f.exists()) error = "Error: directory does not exist";
+		else if(!f.isDirectory()) error = "Error: file is not a directory";
+		else if(!getStorageManager().isLocalFileOk(new File(path)))
+		    error = "Error: directory is not under one of the allowable file system areas. Set this under the Admin-&gt;Access settings area";
+	    }
+	    if(error!=null)
+		formBuffer.append(formEntry(request, "", HU.span(error,HU.cssClass("ramadda-error"))));
+	}
+	super.addWidgetHelp(request, entry, formBuffer, column,values);
+    }
+
+
 
 
 
