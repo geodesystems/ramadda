@@ -162,8 +162,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
-
-
     /** _more_ */
     public static final String ATTR_LOOKUPDB = "lookupdb";
 
@@ -332,6 +330,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private String help;
+
+    private String searchHelp;
 
     /** _more_ */
     private String placeholder;
@@ -514,6 +514,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                 ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
+        searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
+
+	//	if(Utils.stringDefined(suffix))
+	//	    System.err.println(typeHandler +" " +name + " suffix:" + Utils.clip(suffix,20,"...").replaceAll("\n"," "));	
+
         placeholder = Utils.getAttributeOrTag(element, "placeholder",
                 (String) null);
         placeholderMin = Utils.getAttributeOrTag(element, "placeholderMin",
@@ -2580,12 +2585,18 @@ public class Column implements DataTypes, Constants, Cloneable {
             state.put(group, group);
         }
 
-        if (help != null) {
+        if (Utils.stringDefined(help)) {
             formBuffer.append(typeHandler.formEntry(request, "",
                     getRepository().getPageHandler().applyBaseMacros(help)));
         }
 
 
+	typeHandler.addWidgetHelp(request,entry,formBuffer,this,values);
+
+
+	if(Utils.stringDefined(suffix)) {
+	    widget = HU.hbox(widget, suffix);
+	}
         if (rows > 1) {
             formBuffer.append(typeHandler.formEntryTop(request,
                     getLabel() + ":", widget));
@@ -3587,7 +3598,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         typeHandler.formEntry(formBuffer, request, getLabel() + ":",
-                              Utils.stringDefined(suffix)
+                              Utils.stringDefined(searchHelp)
                               ? "<table cellspacing=0 cellpadding=0 border=0>"
                                 + HtmlUtils.row(HtmlUtils.cols(widget,
                                     suffix)) + "</table>"
