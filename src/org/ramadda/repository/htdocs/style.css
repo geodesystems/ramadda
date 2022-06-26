@@ -170,7 +170,8 @@ a
 
 .ramadda-error {
     font-weight: bold; 
-    background: #BA3B28;
+    background: salmon;
+    padding:4px;
 }
 
 .ramadda-shadow-box {
