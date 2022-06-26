@@ -4304,6 +4304,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+	public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
+	}
+
+
+
 
     /**
      * _more_
