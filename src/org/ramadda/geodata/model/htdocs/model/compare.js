@@ -707,7 +707,7 @@ function CollectionForm(formId, plottype, args) {
 		    //jeffmc: add in the select all. set the class to ramadda-toggleall so we can find this later
 		    let checkboxName=select.attr("checkboxname")||"";
 		    if(html=="") {
-			html += HtmlUtils.div([],HtmlUtils.checkbox("", ['class','ramadda-toggleall','title','Toggle all']));
+			html += HtmlUtils.div([],HtmlUtils.checkbox("", ['class','ramadda-toggleall','title','Select All'], isSelected, 'Select All'));
 		    }
 
 		    //jeffmc: don't show the blank value. set the class to ramadda-toggle so we can find this later
