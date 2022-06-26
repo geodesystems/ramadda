@@ -318,60 +318,13 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addToInstallForm(Request request, StringBuffer sb)
-            throws Exception {
-        String msg = msgLabel("Servers this server registers with");
-        msg = HtmlUtils.space(1)
-              + HtmlUtils.href(HELP_ROOT + "/userguide/remoteservers.html",
-                               msg("Help"),
-                               HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
-                                   "_help"));
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Registry Servers"),
-                msg + HtmlUtils.br()
-                + HtmlUtils.textArea(
-                    PROP_REGISTRY_SERVERS,
-                    getRepository().getProperty(
-                        PROP_REGISTRY_SERVERS,
-                        getRepository().getProperty(
-                            PROP_REGISTRY_DEFAULTSERVER,
-                            "http://ramadda.org/repository")), 5, 60)));
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
-    public void applyInstallForm(Request request) throws Exception {
-        List<String> newList =
-            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS, ""),
-                        "\n", true, true);
-
-
-        getRepository().writeGlobal(PROP_REGISTRY_SERVERS,
-                                    StringUtil.join("\n", newList));
-    }
-
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     public void doFinalInitialization() throws Exception {
-        //        Misc.printStack("doFinal");
+	//                Misc.printStack("doFinal");
         if (isEnabledAsServer()) {
             Misc.run(new Runnable() {
                 public void run() {
