@@ -1,5 +1,5 @@
 <types>
-  <type name="type_document_tika"  foruser="false" includeInSearch="true" description="PDF, Word, PPT, etc"  super="type_document" handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
+  <type name="type_document_tika"  foruser="false"  description="PDF, Word, PPT, etc"  super="type_document" handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
      <property name="icon" value="/icons/page.png"/>
      <service link="tika_extractmetadata"/>
     <wiki><![CDATA[
@@ -13,7 +13,7 @@
 
 
 
-  <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" super="type_document_tika">
+  <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika">
      <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
      <property name="file.accept" value="application/pdf"/>    
@@ -41,12 +41,12 @@
 
 </type>
 
-  <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
+  <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"   includeInSearch="true" super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
      <property name="icon" value="/icons/doc.png"/>
      <property name="file.accept" value=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
 </type>
 
-  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"    priority="10" >
+  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"   includeInSearch="true" super="type_document_tika"    priority="10" >
      <service link="media_soffice_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/ppt.png"/>
      <property name="file.accept" value=".ppt,.pptx"/>
