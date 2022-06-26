@@ -233,7 +233,8 @@ public class MetadataManager extends RepositoryManager {
         files.addAll(getPluginManager().getLicenseFiles());
         for (String file : files) {
             JSONObject obj       = new JSONObject(IOUtil.readContents(file));
-            JSONArray  jlicenses = obj.getJSONArray("licenses");
+            JSONArray  jlicenses = obj.optJSONArray("licenses");
+	    if(jlicenses==null) continue;
             int        priority  = obj.optInt("priority", 100);
             for (int i = 0; i < jlicenses.length(); i++) {
                 JSONObject jlicense = jlicenses.getJSONObject(i);
