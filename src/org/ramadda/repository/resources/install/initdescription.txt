@@ -19,9 +19,9 @@ Geode Systems
 -col
 +col-md-8
 * Use the <i class="fas fa-cog"></i> icon above to <a  href="/repository/user/login">login</a> and <a href="/repository/admin/settings">administer</a> your RAMADDA
-* <a href="/repository/entry/form?entryid=13cd5246-0672-46cb-b68d-ab7b671a7cbe">Edit</a> this page - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
+* <a href="/repository/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
 * Lots of ways to view and edit this page with the <i class="fas fa-caret-down"></i> menu above
-* Create new <a href="/repository/entry/form?group=13cd5246-0672-46cb-b68d-ab7b671a7cbe&type=group">folders</a> or upload <a href="/repository/entry/form?group=13cd5246-0672-46cb-b68d-ab7b671a7cbe&type=file">files</a>
+* Create new <a href="/repository/entry/form?group=${topid}&type=group">folders</a> or upload <a href="/repository/entry/form?group=${topid}&type=file">files</a>
 * <a href="/repository/search/form">Search</a> this repository
 <p>
 -col
