@@ -228,7 +228,6 @@ public class EntryManager extends RepositoryManager {
             }
 
 
-
             if (getRepository().getEnableHostnameMapping()
 		&& (request != null)) {
                 Entry fromHostname = getEntryFromAlias(request,
@@ -240,7 +239,6 @@ public class EntryManager extends RepositoryManager {
                     return fromHostname;
                 }
             }
-
             return topEntry;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -650,6 +648,13 @@ public class EntryManager extends RepositoryManager {
      */
     protected void removeFromCache(String id) {
         synchronized (MUTEX_ENTRY) {
+	    //Check if its the root. if it is then clear the root cache
+	    if(rootCache!=null) {
+		Entry topEntry = rootCache.get();
+		if(topEntry!=null && topEntry.getId().equals(id)) {
+		    rootCache.clearCache();
+		}
+	    }
             getEntryCache().remove(id);
             getSynthEntryCache().remove(id);
         }
@@ -1077,7 +1082,9 @@ public class EntryManager extends RepositoryManager {
 	    if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
                 continue;
             }
-	    if(only!=null &&!only.contains(typeHandler.getType())) continue;
+	    if(only!=null &&!only.contains(typeHandler.getType())) {
+		continue;
+	    }
             if (checkCnt) {
                 int cnt = getEntryUtil().getEntryCount(typeHandler);
                 if (!typeHandler.getIncludeInSearch() && cnt == 0) {
@@ -1484,7 +1491,6 @@ public class EntryManager extends RepositoryManager {
 	Result result = null;
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
-
         if (request.getIsRobot()) {
             if ( !outputHandler.allowRobots()) {
                 return getRepository().getNoRobotsResult(request);
@@ -1558,7 +1564,6 @@ public class EntryManager extends RepositoryManager {
         if (doLatest) {
             if (entries.size() > 0) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, true);
-
                 return outputHandler.outputEntry(request, outputType,
 						 entries.get(0));
             }
@@ -1566,6 +1571,7 @@ public class EntryManager extends RepositoryManager {
 
         group.setSubEntries(entries);
         group.setSubGroups(subGroups);
+
 
         OutputType dfltOutputType = getDefaultOutputType(request, group,
 							 subGroups, entries);
@@ -8521,15 +8527,10 @@ public class EntryManager extends RepositoryManager {
             Entry        mainEntry = group;
             String       synthId   = null;
             if (isSynthEntry) {
-
                 String[] pair    = getSynthId(mainEntry.getId());
                 String   entryId = pair[0];
                 synthId = pair[1];
-
-
                 TypeHandler synthTypeHandler = getSynthTypeHandler(entryId);
-
-
                 Entry       tmpMainEntry     = null;
                 if (synthTypeHandler != null) {
                     tmpMainEntry = synthTypeHandler.getSynthTopLevelEntry();
