@@ -124,6 +124,9 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_ENTRY_FOOTER = "entry.footer";
 
+
+
+
     /** html template macro */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
 
@@ -146,6 +149,11 @@ public class PageHandler extends RepositoryManager {
 
     /** html template macro */
     public static final String MACRO_FOOTER = "footer";
+
+    public static final String MACRO_FOOTER_ACKNOWLEDGEMENT = "footer.acknowledgement";    
+
+
+
 
     /** html template macro */
     public static final String MACRO_TITLE = "title";
@@ -710,11 +718,16 @@ public class PageHandler extends RepositoryManager {
                                   arg("animate", false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
 
+	
+	//hard code the ack
+	String ack = "<div class='ramadda-acknowledgement'>Powered by <a href='https://geodesystems.com'>Geode Systems and RAMADDA</a></div>";
+
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
             repository.getRepositoryName(), MACRO_FOOTER, theFooter,
+	    MACRO_FOOTER_ACKNOWLEDGEMENT,ack,
             MACRO_TITLE, result.getTitle(), MACRO_BOTTOM, bottom,
             MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
