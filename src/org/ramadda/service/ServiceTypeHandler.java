@@ -137,15 +137,14 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry,
-                                 List<Entry> subGroups, List<Entry> entries)
+                                 List<Entry> children)
             throws Exception {
         Service service = getService(request, entry);
         if (service == null) {
@@ -159,8 +158,8 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, null);
 
-        subGroups.addAll(entries);
-        addListForm(request, entry, subGroups, sb);
+
+        addListForm(request, entry, children, sb);
 
         String params = entry.getValue(IDX_PARAMETERS, "");
 
@@ -180,7 +179,7 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
 
 
         if ( !soh.doExecute(request)) {
-            soh.makeForm(request, service, entry, entries,
+            soh.makeForm(request, service, entry, children,
                          HtmlOutputHandler.OUTPUT_HTML, sb);
 
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -190,7 +189,7 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
 
         return soh.evaluateService(request, getRepository().URL_ENTRY_SHOW,
                                    HtmlOutputHandler.OUTPUT_HTML, entry,
-                                   entries, service, "");
+                                   children, service, "");
 
     }
 

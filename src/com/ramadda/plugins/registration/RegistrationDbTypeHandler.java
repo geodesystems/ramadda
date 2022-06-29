@@ -271,6 +271,7 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
 
@@ -578,8 +579,7 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
 
 
 
-        template = template.replace("${banner}",
-                                    PageHandler.REGISTER_MESSAGE);
+        template = template.replace("${banner}","banner");
         template = template.replace("${form1}", infoSB.toString());
         template = template.replace("${reg}", regSB.toString());
         template = template.replace("${license}", licenseSB.toString());
