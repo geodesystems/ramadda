@@ -277,9 +277,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      *
      * @return    true if showing all
      */
-    public boolean showingAll(Request request, List<Entry> subGroups,
-                              List<Entry> entries) {
-        int cnt = subGroups.size() + entries.size();
+    public boolean showingAll(Request request, List<Entry> children) {
+        int cnt = children.size();
         int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             return false;
@@ -315,6 +314,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                          List<Entry> entries, Appendable sb)
             throws Exception {
         int cnt = subGroups.size() + entries.size();
+        showNext(request, cnt, sb);
+    }
+
+    public void showNext(Request request, List<Entry> children, Appendable sb)
+            throws Exception {
+        int cnt = children.size();
         showNext(request, cnt, sb);
     }
 
@@ -370,14 +375,14 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                     HtmlUtils.href(
                         request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
                         + (skip - max), HtmlUtils.faIcon(
-                            "fa-step-backward", "title", "View previous")));
+                            "fa-caret-left", "title", "View previous")));
             }
             //      if (cnt >= max) {
             toks.add(
                 HtmlUtils.href(
                     request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
                     + (skip + max), HtmlUtils.faIcon(
-                        "fa-step-forward", "title", "View next")));
+                        "fa-caret-right", "title", "View next")));
             //            }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -387,6 +392,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             if (lessMax < 1) {
                 lessMax = 1;
             }
+	    request=request.cloneMe();
             request.put(ARG_MAX, "" + moreMax);
             //      if (cnt >= max) {
             toks.add(HtmlUtils.href(request.getUrl(),
@@ -501,6 +507,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             }
 
         }
+
 
         /**
          * Create some State for the Entry and others
@@ -819,32 +826,18 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-
         return outputGroup(request, outputType,
                            getEntryManager().getDummyGroup(),
-                           new ArrayList<Entry>(), entries);
+                           entries);
     }
 
 
-    /**
-     * Output a group
-     *
-     * @param request     the Request
-     * @param outputType  the OutputType
-     * @param group       the Entry group
-     * @param subGroups   the subgroup Entrys
-     * @param entries     Entries at the same level
-     *
-     * @return   the result
-     *
-     * @throws Exception  problem with the Repository
-     */
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         return notImplemented("outputGroup");
     }
+
 
 
 

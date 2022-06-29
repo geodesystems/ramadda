@@ -819,7 +819,7 @@ public class EntryManager extends RepositoryManager {
 	request.putExtraProperty("snapshotfiles", snapshotFiles);
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
-	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null,null);
+	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null);
 	Result tmpResult = new Result("",sb);
 	tmpResult.setTitle(entry.getName());
 	Request tmpRequest = request.cloneMe();
@@ -1510,7 +1510,7 @@ public class EntryManager extends RepositoryManager {
             } else {
                 printRequest(request, entry);
                 OutputType dfltOutputType = getDefaultOutputType(request,
-								 entry, null, null);
+								 entry, null);
                 if (dfltOutputType != null) {
                     outputType = dfltOutputType;
                     outputHandler =
@@ -1547,11 +1547,10 @@ public class EntryManager extends RepositoryManager {
         boolean      doLatest    = request.get(ARG_LATEST, false);
         TypeHandler  typeHandler = group.getTypeHandler();
         List<Clause> where       = typeHandler.assembleWhereClause(request);
-        List<Entry>  entries     = new ArrayList<Entry>();
-        List<Entry>  subGroups   = new ArrayList<Entry>();
+        List<Entry>  children     = new ArrayList<Entry>();
         try {
             typeHandler.getChildrenEntries(
-					   request, group, entries, subGroups,
+					   request, group, children,
 					   new SelectInfo(where, outputHandler.getMaxEntryCount()));
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -1562,25 +1561,21 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (doLatest) {
-            if (entries.size() > 0) {
-                entries = getEntryUtil().sortEntriesOnDate(entries, true);
+            if (children.size() > 0) {
+                children = getEntryUtil().sortEntriesOnDate(children, true);
                 return outputHandler.outputEntry(request, outputType,
-						 entries.get(0));
+						 children.get(0));
             }
         }
-
-        group.setSubEntries(entries);
-        group.setSubGroups(subGroups);
+        group.setSubEntries(children);
 
 
-        OutputType dfltOutputType = getDefaultOutputType(request, group,
-							 subGroups, entries);
+        OutputType dfltOutputType = getDefaultOutputType(request, group, children);
         if (dfltOutputType != null) {
             outputType    = dfltOutputType;
             outputHandler = getRepository().getOutputHandler(outputType);
         }
-        Result result = outputHandler.outputGroup(request, outputType, group,
-						  subGroups, entries);
+        Result result = outputHandler.outputGroup(request, outputType, group, children);
 
         return result;
     }
@@ -1592,20 +1587,17 @@ public class EntryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param subFolders _more_
-     * @param subEntries _more_
      *
      * @return _more_
      */
     private OutputType getDefaultOutputType(Request request, Entry entry,
-                                            List<Entry> subFolders,
-                                            List<Entry> subEntries) {
+                                            List<Entry> children) {
         if ( !request.defined(ARG_OUTPUT)) {
             for (PageDecorator pageDecorator :
 		     repository.getPluginManager().getPageDecorators()) {
                 String defaultOutput =
                     pageDecorator.getDefaultOutputType(getRepository(),
-						       request, entry, subFolders, subEntries);
+						       request, entry, children);
                 if (defaultOutput != null) {
                     OutputType outputType =
                         getRepository().findOutputType(defaultOutput);
@@ -4456,7 +4448,7 @@ public class EntryManager extends RepositoryManager {
         Result result = outputHandler.outputGroup(request,
 						  request.getOutput(),
 						  getDummyGroup(dummyGroupName),
-						  new ArrayList<Entry>(), entries);
+						  entries);
 
         return addEntryHeader(request, (group != null)
 			      ? group
