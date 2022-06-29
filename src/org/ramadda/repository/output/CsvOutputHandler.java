@@ -534,9 +534,9 @@ public class CsvOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children) 
             throws Exception {
         if (group.isDummy()) {
             request.setReturnFilename("Search_Results.csv");
@@ -549,9 +549,7 @@ public class CsvOutputHandler extends OutputHandler {
 
             return listEntries(request, tmp);
         }
-        subGroups.addAll(entries);
-
-        return listEntries(request, subGroups);
+        return listEntries(request, children);
     }
 
 

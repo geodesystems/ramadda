@@ -725,16 +725,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request  the Request
      * @param entry    the entry
-     * @param subGroups    the subgroups
-     * @param entries      the Entries
      *
      * @return  the Result
      *
      * @throws Exception  problem getting the HTML
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry,
-                                 List<Entry> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry entry,  List<Entry> children)
             throws Exception {
         //Always call this to init things
         getGranuleTypeHandler();

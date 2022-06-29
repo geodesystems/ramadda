@@ -345,15 +345,12 @@ public class GraphOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
-        subGroups.add(0, group);
-        subGroups.addAll(entries);
-
-        return outputGraphEntries(request, group, subGroups);
-        //        return outputEntry(request, outputType, group);
+        children.add(0, group);
+        return outputGraphEntries(request, group, children);
     }
 
 

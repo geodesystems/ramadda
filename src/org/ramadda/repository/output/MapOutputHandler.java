@@ -7,41 +7,19 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.JpegMetadataHandler;
-import org.ramadda.repository.metadata.Metadata;
-import org.ramadda.repository.metadata.MetadataHandler;
-import org.ramadda.repository.type.*;
+
 import org.ramadda.util.HtmlUtils;
-
-
-import org.ramadda.util.sql.SqlUtil;
-
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-import java.io.*;
-
-import java.net.*;
-
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-
-
-import java.util.regex.*;
-
-import java.util.zip.*;
-
 
 /**
- *
  *
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
@@ -173,30 +151,25 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
      * @param request      The Request
      * @param outputType   the type of output
      * @param group        the group Entry
-     * @param subGroups    the subgroups
-     * @param entries      The list of Entrys
      *
      * @return  the resule
      *
      * @throws Exception    problem on output
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
-        List<Entry> entriesToUse = new ArrayList<Entry>(subGroups);
-        entriesToUse.addAll(entries);
         StringBuilder sb     = new StringBuilder();
         String        prefix = request.getPrefixHtml();
-        if (prefix != null) {
+        if (Utils.stringDefined(prefix)) {
             sb.append(prefix);
         } else {
             getPageHandler().entrySectionOpen(request, group, sb, "Map",
                     true);
         }
 
-
-        if (entriesToUse.size() == 0) {
+        if (children.size() == 0) {
             sb.append(HtmlUtils.b(msg(LABEL_NO_ENTRIES_FOUND))
                       + HtmlUtils.p());
 
@@ -206,12 +179,12 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 
             return makeLinksResult(request,
                                    msg("Map") + " - " + group.getName(), sb,
-                                   new State(group, subGroups, entries));
+                                   new State(group, children));
         }
 
-        showNext(request, subGroups, entries, sb);
+        showNext(request, children, sb);
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, "", "",
+            getMapManager().getGoogleEarth(request, children, sb, "", "",
                                            true, false);
 
             if (prefix == null) {
@@ -227,7 +200,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");
-        MapInfo map = getMapManager().getMap(request, group, entriesToUse,
+        MapInfo map = getMapManager().getMap(request, group, children,
                                              sb, "100%", "500", null, props);
 
         if (prefix == null) {
@@ -235,7 +208,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         }
 
         return makeLinksResult(request, msg("Map") + " - " + group.getName(),
-                               sb, new State(group, subGroups, entries));
+                               sb, new State(group, children));
     }
 
 

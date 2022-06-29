@@ -131,16 +131,14 @@ public class JsonOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         if (group.isDummy()) {
@@ -160,8 +158,7 @@ public class JsonOutputHandler extends OutputHandler {
         } else if (request.get(ARG_ONLYENTRY, false)) {
             allEntries.add(group);
         } else {
-            allEntries.addAll(subGroups);
-            allEntries.addAll(entries);
+            allEntries.addAll(children);
         }
         StringBuilder sb = new StringBuilder();
         if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {

@@ -125,18 +125,15 @@ public class ExampleOutputHandler extends OutputHandler {
      * @param request The request
      * @param outputType _more_
      * @param group The group
-     * @param subGroups Children groups
-     * @param entries Children entries
      *
      * @return A Result object that holds the content
      *
      * @throws Exception On badness
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
-
         //Here output should be example1
 
         //The stringbuffer holds the content we are creating
@@ -145,9 +142,9 @@ public class ExampleOutputHandler extends OutputHandler {
         //Lets just make a list of links to the children
         //All access urls are defined using the RequestUrl class
         //URL_ENTRY_SHOW is used for showing all content through the output handlers
-        if (subGroups.size() > 0) {
-            sb.append("Sub-groups:<br>");
-            for (Entry childGroup : subGroups) {
+        if (children.size() > 0) {
+            sb.append("Children:<br>");
+            for (Entry childGroup : children) {
                 sb.append(
                     HtmlUtils.href(
                         request.entryUrl(
@@ -157,24 +154,13 @@ public class ExampleOutputHandler extends OutputHandler {
             }
         }
 
-        if (entries.size() > 0) {
-            sb.append("<p>Sub-entries:<br>");
-            for (Entry entry : entries) {
-                sb.append(
-                    HtmlUtils.href(
-                        request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW,
-                            entry), entry.getName()));
-                sb.append(HtmlUtils.br());
-            }
-        }
 
         //All content gets passed back through a Result object.
         //Here we make one with the "Example 1" title and the stringbuffer which assumes it is html
         Result result = new Result("Example 1", sb);
 
         //This adds the navigation links to other output handlers that are applicable to this content
-        addLinks(request, result, new State(group, subGroups, entries));
+        addLinks(request, result, new State(group, children));
 
         return result;
     }

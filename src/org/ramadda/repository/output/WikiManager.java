@@ -581,13 +581,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent)
 	throws Exception {
-        return wikifyEntry(request, entry, wikiContent, true, null, null);
+        return wikifyEntry(request, entry, wikiContent, true, null);
     }
 
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent,boolean wrap)
 	throws Exception {
-        return wikifyEntry(request, entry, wikiContent, wrap, null, null);
+        return wikifyEntry(request, entry, wikiContent, wrap, null);
     }    
 
 
@@ -598,8 +598,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      * @param entry   the Entry
      * @param wikiContent  the content to wikify
      * @param wrapInDiv    true to wrap in a div tag
-     * @param subGroups    the list of subgroups to include
-     * @param subEntries   the list of subentries to include
      *
      * @return the wikified Entry
      *
@@ -607,10 +605,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
-                              List<Entry> subGroups, List<Entry> subEntries)
+                              List<Entry> children)
 	throws Exception {
-        return wikifyEntry(request, entry, wikiContent, wrapInDiv, subGroups,
-                           subEntries, null);
+        return wikifyEntry(request, entry, wikiContent, wrapInDiv, children, null);
     }
 
 
@@ -621,8 +618,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      * @param entry _more_
      * @param wikiContent _more_
      * @param wrapInDiv _more_
-     * @param subGroups _more_
-     * @param subEntries _more_
      * @param notTags _more_
      *
      * @return _more_
@@ -631,7 +626,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
-                              List<Entry> subGroups, List<Entry> subEntries,
+                              List<Entry> children,
                               HashSet notTags)
 	throws Exception {
 
@@ -663,7 +658,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    wikiUtil.putProperty("primaryEntry", entry);
 	}
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
-                           subGroups, subEntries, notTags, true);
+                           children, notTags, true);
     }
 
 
@@ -675,8 +670,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      * @param wikiUtil The wiki util
      * @param wikiContent  the content to wikify
      * @param wrapInDiv    true to wrap in a div tag
-     * @param subGroups    the list of subgroups to include
-     * @param subEntries   the list of subentries to include
      * @param notTags _more_
      * @param includeJavascript _more_
      *
@@ -686,8 +679,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public String wikifyEntry(Request request, Entry entry,
                               WikiUtil wikiUtil, String wikiContent,
-                              boolean wrapInDiv, List<Entry> subGroups,
-                              List<Entry> subEntries, HashSet notTags,
+                              boolean wrapInDiv, List<Entry> children, HashSet notTags,
                               boolean includeJavascript)
 	throws Exception {
 
@@ -697,17 +689,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    wikiUtil.removeProperty(PROP_SHOW_TITLE);
 	}
 
-        List children = new ArrayList();
-        if (subGroups != null) {
-            wikiUtil.putProperty(entry.getId() + "_subgroups", subGroups);
-            children.addAll(subGroups);
-        }
-
-        if (subEntries != null) {
-            wikiUtil.putProperty(entry.getId() + "_subentries", subEntries);
-            children.addAll(subEntries);
-        }
-
+	if(children==null) children = new ArrayList<Entry>();
 
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
@@ -1429,7 +1411,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             //Convert ant _nl_, _qt_, etc
             prefix = Utils.convertPattern(prefix);
             prefix = wikifyEntry(request, entry, wikiUtil, prefix, false,
-                                 null, null, wikiUtil.getNotTags(), true);
+                                 null, wikiUtil.getNotTags(), true);
             sb.append(prefix);
         }
 
@@ -1935,7 +1917,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 text = getWikiMetadataLabel(request, entry, id, text);
             }
             if (wikify) {
-                text = wikifyEntry(request, entry, text, false, null, null,
+                text = wikifyEntry(request, entry, text, false, null, 
                                    wikiUtil.getNotTags());
 
             }
@@ -2109,7 +2091,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (wikify) {
                 //Pass in the wikiUtil so any state (e.g., headings) gets passed up
                 desc = wikifyEntry(request, entry, wikiUtil, desc, false,
-                                   null, null, wikiUtil.getNotTags(), true);
+                                   null, wikiUtil.getNotTags(), true);
                 //                desc = makeWikiUtil(request, false).wikify(desc, null);
             }
             if (getProperty(wikiUtil, props, "convert_newline", false)) {
@@ -2238,7 +2220,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	    if(embedWikify) {
 		return  wikifyEntry(request, entry, wikiUtil, txt.toString(),
-				    false, null, null, null, false);
+				    false, null, null, false);
 	    }
 	    String style = "";
 	    if(maxHeight>0) {
@@ -2865,9 +2847,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 if (s != null) {
                     s = s.replaceAll("_dollar_", "\\$").replaceAll("_nl_", "\n").replaceAll("_qt_","\"");
 		    //		    System.err.println("WIKIFY:" + s);
-		    //                    String tmp = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
 		    String tmp=  wikifyEntry(request, theEntry, wikiUtil, s,
-                                             false, null, null, null, false);
+                                             false, null,  null, false);
 
 
                     buff.append(tmp);
@@ -3806,7 +3787,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (fromTypeHandler != null) {
                 if (wikify) {
                     fromTypeHandler = wikifyEntry(request, entry,
-						  fromTypeHandler, false, null, null,
+						  fromTypeHandler, false, null, 
 						  wikiUtil.getNotTags());
                 }
 
@@ -3830,7 +3811,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (fromProperty != null) {
                 if (wikify) {
                     fromProperty = wikifyEntry(request, entry, fromProperty,
-					       false, null, null, wikiUtil.getNotTags());
+					       false, null, wikiUtil.getNotTags());
                 }
 
                 return fromProperty;
@@ -4095,6 +4076,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	if(wikiUtil==null)  wikiUtil = new WikiUtil();
 	if(props==null) props = new Hashtable();
 	StringBuilder sb = new StringBuilder();
+        int max = request.get(ARG_MAX, -1);
+        if (max == -1) {
+            max = getProperty(wikiUtil, props, ATTR_MAX, -1);
+        }
+	if(max>0)
+	    getRepository().getHtmlOutputHandler().showNext(request,
+							    children.size(), max,sb);
+
 	String guid = Utils.getGuid().replaceAll("-","_");
 	StringBuilder js = new StringBuilder();
 	String var = "entries_" + guid;
@@ -4637,7 +4626,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if (showSnippet || showSnippetHover) {
             String snippet = getSnippet(request, entry, false,null);
             if (Utils.stringDefined(snippet)) {
-                snippet = wikifyEntry(request, entry, snippet, false, null,
+                snippet = wikifyEntry(request, entry, snippet, false, 
                                       null, wikiUtil.getNotTags());
                 if (showSnippet) {
                     HU.div(card, snippet, HU.cssClass("ramadda-snippet"));
@@ -4674,8 +4663,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		boolean showicon = getShowIcon(wikiUtil, props, false);
 		String wiki = getProperty(wikiUtil, props,"childrenWiki",
 					  "{{links showIcon=" + showicon+"}}"); 
-		String  list = wikifyEntry(request,  entry,
-					   wiki, false,children,new ArrayList<Entry>());
+		String  list = wikifyEntry(request,  entry, wiki, false,children);
 
 		HU.div(card,list,HU.style(HU.css("max-height","200px","overflow-y","auto")));
 		imageUrl = null;
@@ -5290,7 +5278,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
     /**
-     * _more_
+     * main getEntries method
      *
      * @param request the request
      * @param wikiUtil _more_
@@ -5311,8 +5299,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                   boolean onlyImages, String attrPrefix)
 	throws Exception {
 
-
-
         if (props == null) {
             props = new Hashtable();
         }
@@ -5329,11 +5315,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             max = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX, count);
         }
         if (max > 0) {
-            request.put(ARG_MAX, "" + max);
+	    //            request.put(ARG_MAX, "" + max);
         }
 
         List<Entry> entries = getEntries(request, wikiUtil, entry,
                                          userDefinedEntries, props);
+
         String filter = getProperty(wikiUtil, props,
                                     attrPrefix + ATTR_ENTRIES + ".filter",
                                     (String) null);
@@ -7196,8 +7183,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (wikify) {
             if ( !originalEntry.equals(entry)) {
-                content = wikifyEntry(request, entry, content, false, null,
-                                      null);
+                content = wikifyEntry(request, entry, content, false, null);
             } else {
                 content = makeWikiUtil(request, false).wikify(content, null);
             }

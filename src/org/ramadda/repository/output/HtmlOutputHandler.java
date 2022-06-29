@@ -542,7 +542,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
         } else {
-            handleDefaultWiki(request, entry, sb, null, null);
+            handleDefaultWiki(request, entry, sb, null);
         }
 
         resultHandler.finish();
@@ -564,8 +564,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void handleDefaultWiki(Request request, Entry entry,
-                                  Appendable sb, List<Entry> folders,
-                                  List<Entry> files)
+                                  Appendable sb, List<Entry> children)
             throws Exception {
         String wikiTemplate = getWikiText(request, entry);
         String innerContent = null;
@@ -609,9 +608,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        if (files != null) {
+        if (children != null) {
             sb.append(getWikiManager().wikifyEntry(request, entry,
-                    wikiTemplate, true, files, folders));
+						   wikiTemplate, true, children));
         } else {
             sb.append(getWikiManager().wikifyEntry(request, entry,
                     wikiTemplate));
@@ -872,15 +871,13 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param parent _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public Result getChildrenXml(Request request, Entry parent,
-                                 List<Entry> subGroups, List<Entry> entries)
+                                 List<Entry> children)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
         String       folder     = getIconUrl(ICON_FOLDER_CLOSED);
@@ -893,9 +890,9 @@ public class HtmlOutputHandler extends OutputHandler {
         String       cbxId;
         String       cbxWrapperId;
 
-        if ( !showingAll(request, subGroups, entries)) {
+        if ( !showingAll(request, children)) {
             sb.append(msgLabel("Showing") + " 1.."
-                      + (subGroups.size() + entries.size()));
+                      + (children.size()));
             sb.append(HU.space(2));
             String url = request.getEntryUrlPath(
                              getRepository().URL_ENTRY_SHOW.toString(),
@@ -908,20 +905,12 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean showDetails = request.get(ARG_DETAILS, true);
         boolean showIcon    = request.get("showIcon", true);
 
-        for (Entry subGroup : subGroups) {
+        for (Entry subGroup : children) {
             cnt++;
             addEntryTableRow(request, subGroup, sb, jsSB, showDetails,
                              showIcon);
         }
 
-
-        if ( !onlyGroups) {
-            for (Entry entry : entries) {
-                cnt++;
-                addEntryTableRow(request, entry, sb, jsSB, showDetails,
-                                 showIcon);
-            }
-        }
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
@@ -989,15 +978,13 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public Result getSelectXml(Request request, Entry group,
-                               List<Entry> subGroups, List<Entry> entries)
+                               List<Entry> children)
             throws Exception {
 
         String        selectType = request.getString(ARG_SELECTTYPE, "");
@@ -1118,7 +1105,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         HU.open(sb, "div", HU.clazz("ramadda-select-inner"));
-        for (Entry subGroup : subGroups) {
+        for (Entry subGroup : children) {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
             }
@@ -1128,21 +1115,6 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(getSelectLink(request, subGroup, seen, target));
         }
 
-
-        if (request.get(ARG_ALLENTRIES, false)) {
-            String entryType = request.getString(ARG_ENTRYTYPE,
-                                   (String) null);
-            for (Entry entry : entries) {
-                if (Utils.stringDefined(entryType)
-                        && !entry.getTypeHandler().isType(entryType)) {
-                    continue;
-                }
-                if (isImage && !entry.isImage() && !entry.isGroup()) {
-                    continue;
-                }
-                sb.append(getSelectLink(request, entry, seen, target));
-            }
-        }
         HU.close(sb, "div");
         HU.close(sb, "div");
         String s = sb.toString();
@@ -1289,24 +1261,19 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public Result outputGrid(Request request, Entry group,
-                             List<Entry> subGroups, List<Entry> entries)
+                             List<Entry> children)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
-        List<Entry>  allEntries = new ArrayList<Entry>();
-        allEntries.addAll(subGroups);
-        allEntries.addAll(entries);
-        makeGrid(request, allEntries, sb);
+        makeGrid(request, children, sb);
 
         return makeLinksResult(request, group.getName(), sb,
-                               new State(group, subGroups, entries));
+                               new State(group, children));
     }
 
 
@@ -1315,26 +1282,20 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result outputTreeView(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    public Result outputTreeView(Request request, Entry group,  List<Entry> children)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
-        List<Entry>  allEntries = new ArrayList<Entry>();
-        allEntries.addAll(subGroups);
-        allEntries.addAll(entries);
         getPageHandler().entrySectionOpen(request, group, sb, "Tree View");
-        makeTreeView(request, allEntries, sb, 750, 500, true);
+        makeTreeView(request, children, sb, 750, 500, true);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
-                               new State(group, subGroups, entries));
+                               new State(group, children));
     }
 
 
@@ -1343,15 +1304,13 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public Result outputTest(Request request, Entry group,
-                             List<Entry> subGroups, List<Entry> entries)
+                             List<Entry> children)
             throws Exception {
         return outputTest(request, group);
     }
@@ -1451,15 +1410,13 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public Result outputTable(Request request, Entry group,
-                              List<Entry> subGroups, List<Entry> entries)
+                              List<Entry> children)
             throws Exception {
         StringBuffer sb     = new StringBuffer();
         String       prefix = request.getPrefixHtml();
@@ -1470,16 +1427,13 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        List<Entry> allEntries = new ArrayList<Entry>();
-        allEntries.addAll(subGroups);
-        allEntries.addAll(entries);
-        makeTable(request, allEntries, sb, null);
+        makeTable(request, children, sb, null);
         if (prefix == null) {
             getPageHandler().entrySectionClose(request, group, sb);
         }
 
         return makeLinksResult(request, group.getName(), sb,
-                               new State(group, subGroups, entries));
+                               new State(group, children));
     }
 
 
@@ -1918,16 +1872,14 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
 
@@ -1936,7 +1888,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (request.get("timelinexml", false)) {
             Result timelineResult =
                 getCalendarOutputHandler().handleIfTimelineXml(request,
-                    group, subGroups, entries);
+                    group, children);
 
             return timelineResult;
         }
@@ -1950,8 +1902,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_INLINE)) {
             //      if(true) throw new IllegalArgumentException("output inline called");
             request.setCORSHeaderOnResponse();
-
-            return getChildrenXml(request, group, subGroups, entries);
+            return getChildrenXml(request, group, children);
         }
 
         if (outputType.equals(OUTPUT_SELECTXML)) {
@@ -1967,7 +1918,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             //Else handle it as a group
-            return getSelectXml(request, group, subGroups, entries);
+            return getSelectXml(request, group, children);
         }
 
         if (outputType.equals(OUTPUT_METADATAXML)) {
@@ -1982,33 +1933,32 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_GRID)) {
-            return outputGrid(request, group, subGroups, entries);
+            return outputGrid(request, group, children);
         }
         if (outputType.equals(OUTPUT_TREEVIEW)) {
-            return outputTreeView(request, group, subGroups, entries);
+            return outputTreeView(request, group, children);
         }
 
         if (outputType.equals(OUTPUT_TEST)) {
-            return outputTest(request, group, subGroups, entries);
+            return outputTest(request, group, children);
         }
 
         if (outputType.equals(OUTPUT_TABLE)) {
-            return outputTable(request, group, subGroups, entries);
+            return outputTable(request, group, children);
         }
+
 
         boolean doSimpleListing = !request.exists(ARG_OUTPUT);
 
         //If no children then show the details of this group
-        if ((subGroups.size() == 0) && (entries.size() == 0)) {
+        if (children.size()==0) {
             //            doSimpleListing = false;
         }
         boolean doingInfo = outputType.equals(OUTPUT_INFO);
 
         if ( !doingInfo) {
             if (typeHandler != null) {
-                Result typeResult = typeHandler.getHtmlDisplay(request,
-                                        group, subGroups, entries);
-
+                Result typeResult = typeHandler.getHtmlDisplay(request,   group, children);
                 if (typeResult != null) {
                     return typeResult;
                 }
@@ -2016,21 +1966,19 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         ResultHandler resultHandler = new ResultHandler(request, this, group,
-                                          new State(group, subGroups,
-                                              entries));
+                                          new State(group, children));
         Appendable sb = resultHandler.getAppendable();
         request.appendMessage(sb);
         String prefix = request.getPrefixHtml();
         if (prefix != null) {
             sb.append(prefix);
         }
-        boolean hasChildren = ((subGroups.size() != 0)
-                               || (entries.size() != 0));
+        boolean hasChildren = children.size()!=0;
 
         String        wikiTemplate = null;
         StringBuilder suffix       = new StringBuilder();
         if ( !doingInfo && !group.isDummy()) {
-            handleDefaultWiki(request, group, sb, subGroups, entries);
+            handleDefaultWiki(request, group, sb, children);
         } else {
             if ( !group.isDummy()) {
                 getPageHandler().entrySectionOpen(request, group, sb,
@@ -2051,24 +1999,20 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
-            List<Entry> allEntries = new ArrayList<Entry>();
-            allEntries.addAll(subGroups);
-            allEntries.addAll(entries);
             if (request.defined(ARG_ORDERBY)) {
-                allEntries = getEntryUtil().sortEntriesOn(allEntries,
+                children = getEntryUtil().sortEntriesOn(children,
                         request.getString(ARG_ORDERBY),
                         !request.get(ARG_ASCENDING, false));
             }
 
-            if (allEntries.size() > 0) {
+            if (children.size() > 0) {
                 Hashtable props = new Hashtable();
                 props.put(ARG_SHOWCRUMBS, "" + group.isDummy());
                 sb.append(getWikiManager().makeTableTree(request, null,
-                        props, allEntries));
+                        props, children));
             }
 
-            if ( !group.isDummy() && (subGroups.size() == 0)
-                    && (entries.size() == 0)) {
+            if ( !group.isDummy() && (children.size() == 0)) {
                 if (getAccessManager().hasPermissionSet(group,
                         Permission.ACTION_VIEWCHILDREN)) {
                     if ( !getAccessManager().canDoViewChildren(request,

@@ -61,15 +61,12 @@ public class PageDecorator extends RepositoryManager {
      * @param repository _more_
      * @param request _more_
      * @param entry _more_
-     * @param subFolders _more_
-     * @param subEntries _more_
      *
      * @return _more_
      */
     public String getDefaultOutputType(Repository repository,
                                        Request request, Entry entry,
-                                       List<Entry> subFolders,
-                                       List<Entry> subEntries) {
+                                       List<Entry> children) {
         return null;
     }
 

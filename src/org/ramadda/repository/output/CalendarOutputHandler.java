@@ -176,23 +176,16 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public Result handleIfTimelineXml(Request request, Entry group,
-                                      List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      List<Entry> children)
             throws Exception {
         if (request.get("timelinexml", false)) {
-            List<Entry> allEntries = new ArrayList<Entry>();
-            allEntries.addAll(subGroups);
-            allEntries.addAll(entries);
-
-            return outputTimelineXml(request, group, allEntries);
+            return outputTimelineXml(request, group, children);
         }
 
         return null;
@@ -205,41 +198,35 @@ public class CalendarOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
-        Result timelineResult = handleIfTimelineXml(request, group,
-                                    subGroups, entries);
+        Result timelineResult = handleIfTimelineXml(request, group,  children);
         if (timelineResult != null) {
             return timelineResult;
         }
 
         StringBuffer sb = new StringBuffer();
-        showNext(request, subGroups, entries, sb);
-        entries.addAll(subGroups);
+        showNext(request, children, sb);
         Result result;
         if (outputType.equals(OUTPUT_DATE_GRID)) {
-            result = outputDateGrid(request, group, entries, sb);
+            result = outputDateGrid(request, group, children, sb);
         } else if (outputType.equals(OUTPUT_TIMELINE)) {
-            List allEntries = new ArrayList(entries);
             getPageHandler().entrySectionOpen(request, group, sb, "Timeline");
-            makeTimeline(request, group, allEntries, sb, "height: 300px;",
+            makeTimeline(request, group, children, sb, "height: 300px;",
                          new Hashtable());
             getPageHandler().entrySectionClose(request, group, sb);
             result = makeLinksResult(request,
                                      msg("Timeline") + " - "
                                      + group.getName(), sb,
-                                         new State(group, subGroups,
-                                             entries));
+                                         new State(group, children));
 
             return result;
         } else {
@@ -249,13 +236,13 @@ public class CalendarOutputHandler extends OutputHandler {
             } else {
                 getPageHandler().entrySectionOpen(request, group, sb, "");
             }
-            result = outputCalendar(request, group, entries, sb);
+            result = outputCalendar(request, group, children, sb);
             if (Utils.stringDefined(prefix)) {
                 getPageHandler().entrySectionClose(request, group, sb);
             }
         }
 
-        addLinks(request, result, new State(group, subGroups, entries));
+        addLinks(request, result, new State(group, children));
 
         return result;
     }

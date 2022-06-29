@@ -1456,11 +1456,11 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+                                 List<Entry> children)
             throws Exception {
 
         if (parent != null) {
-            return parent.getHtmlDisplay(request, group, subGroups, entries);
+            return parent.getHtmlDisplay(request, group, children);
         }
 
         return null;
@@ -6593,33 +6593,24 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request The request
      * @param group _more_
-     * @param entries _more_
-     * @param subGroups _more_
      * @param select _more_
      *
      * @throws Exception _more_
      */
     public void getChildrenEntries(Request request, Entry group,
-                                   List<Entry> entries,
-                                   List<Entry> subGroups, SelectInfo select)
+                                   List<Entry> children, SelectInfo select)
             throws Exception {
         List<String> ids = getEntryManager().getChildIds(request, group,
                                select);
         List<Entry> myEntries   = new ArrayList<Entry>();
-        List<Entry> mySubGroups = new ArrayList<Entry>();
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
                 continue;
             }
-            if (getEntryManager().handleEntryAsGroup(entry)) {
-                mySubGroups.add(entry);
-            } else {
-                myEntries.add(entry);
-            }
+	    myEntries.add(entry);
         }
-        subGroups.addAll(postProcessEntries(request, mySubGroups));
-        entries.addAll(postProcessEntries(request, myEntries));
+        children.addAll(postProcessEntries(request, myEntries));
     }
 
     /**

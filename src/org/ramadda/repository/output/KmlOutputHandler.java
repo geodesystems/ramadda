@@ -141,9 +141,7 @@ public class KmlOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-
-        return outputGroup(request, outputType, entry,
-                           new ArrayList<Entry>(), entries);
+        return outputGroup(request, outputType, entry, entries);
 
     }
 
@@ -160,9 +158,9 @@ public class KmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         request.setMakeAbsoluteUrls(true);
@@ -170,12 +168,11 @@ public class KmlOutputHandler extends OutputHandler {
             request.setReturnFilename("Search_Results.kml");
         }
 
-        boolean justOneEntry = group.isDummy() && (entries.size() == 1)
-                               && (subGroups.size() == 0);
+        boolean justOneEntry = group.isDummy() && (children.size() == 1);
 
 
         String  title = (justOneEntry
-                         ? entries.get(0).getName()
+                         ? children.get(0).getName()
                          : group.getFullName());
         Element root  = KmlUtil.kml(title);
 
@@ -195,30 +192,9 @@ public class KmlOutputHandler extends OutputHandler {
             KmlUtil.description(defaultFolder, group.getDescription());
         }
 
-        int cnt  = subGroups.size() + entries.size();
+        int cnt  = children.size();
         int max  = request.get(ARG_MAX, DB_MAX_ROWS);
         int skip = Math.max(0, request.get(ARG_SKIP, 0));
-        if (true) {
-            entries.addAll(subGroups);
-        } else {
-            for (Entry childGroup : subGroups) {
-                String url = request.getAbsoluteUrl(
-                                 request.makeUrl(
-                                     repository.URL_ENTRY_SHOW, ARG_ENTRYID,
-                                     childGroup.getId(), ARG_OUTPUT,
-                                     OUTPUT_KML.toString()));
-                Element link = KmlUtil.networkLink(defaultFolder,
-                                   childGroup.getName(), url);
-                if (childGroup.getDescription().length() > 0) {
-                    KmlUtil.description(link, childGroup.getDescription());
-                }
-
-                KmlUtil.visible(link, request.get(ARG_VISIBLE, false));
-                KmlUtil.open(link, false);
-                link.setAttribute(KmlUtil.ATTR_ID, childGroup.getId());
-            }
-        }
-
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             if (cnt >= max) {
                 String skipArg = request.getString(ARG_SKIP, null);
@@ -241,7 +217,7 @@ public class KmlOutputHandler extends OutputHandler {
         }
 
 
-        for (Entry entry : (List<Entry>) entries) {
+        for (Entry entry : children) {
             String category = entry.getTypeHandler().getCategory(
                                   entry).getLabel().toString();
             Element parentFolder = defaultFolder;

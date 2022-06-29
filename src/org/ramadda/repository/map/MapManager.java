@@ -1364,7 +1364,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             //If its not json then wikify it
             if ( !fromEntry.startsWith("{")) {
                 fromEntry = getWikiManager().wikifyEntry(request, entry,
-							 fromEntry, false, null, null,
+							 fromEntry, false, null, 
 							 Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
 									   WikiConstants.WIKI_TAG_MAP));
                 fromEntry = getRepository().translate(request, fromEntry);
@@ -1469,7 +1469,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if (bubble != null) {
             bubble = getWikiManager().wikifyEntry(request, entry, bubble,
-						  false, null, null,
+						  false, null, 
 						  Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
 								    WikiConstants.WIKI_TAG_MAP));
 
@@ -1486,7 +1486,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(
-						       request, entry, wikiTemplate, true, null, null,
+						       request, entry, wikiTemplate, true, null, 
 						       Utils.makeHashSet(
 									 WikiConstants.WIKI_TAG_MAPENTRY,
 									 WikiConstants.WIKI_TAG_MAP,

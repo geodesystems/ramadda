@@ -379,12 +379,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (request.isOutputDefined()) {
             OutputHandler outputHandler =
                 getRepository().getOutputHandler(request);
-            List<Entry> groups  = getEntryUtil().getGroups(allEntries);
-            List<Entry> entries = getEntryUtil().getNonGroups(allEntries);
-
             return outputHandler.outputGroup(
-                request, null, getEntryManager().getDummyGroup(), groups,
-                entries);
+					     request, null, getEntryManager().getDummyGroup(), allEntries);
         }
 
         if (request.exists("timelinexml")) {

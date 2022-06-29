@@ -3343,15 +3343,12 @@ public class UserManager extends RepositoryManager {
             }
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Entry group, List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      Entry group, List<Entry> children)
                     throws Exception {
                 OutputType output = request.getOutput();
                 User       user   = request.getUser();
                 if (group.isDummy()) {
-                    addFavorites(request, user, entries);
-                    addFavorites(request, user,
-                                 (List<Entry>) new ArrayList(subGroups));
+                    addFavorites(request, user, children);
                 } else {
                     addFavorites(request, user,
                                  (List<Entry>) Misc.newList(group));

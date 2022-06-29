@@ -106,6 +106,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         PythonInterpreter interp = interpPool.get("interp");
@@ -128,8 +129,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    protected Result getHtmlDisplay(Request request, Entry entry,
-                                    PythonInterpreter interp)
+    protected Result getHtmlDisplay(Request request, Entry entry,  PythonInterpreter interp)
             throws Exception {
 
 

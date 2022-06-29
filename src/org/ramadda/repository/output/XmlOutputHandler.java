@@ -129,16 +129,14 @@ public class XmlOutputHandler extends OutputHandler {
      * @param request      the Request
      * @param outputType   the output type
      * @param group        the group Entry
-     * @param subGroups    the subgroups
-     * @param entries      Entrys in the group
      *
      * @return  the Result
      *
      * @throws Exception  couldn't generate the Result
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         if (outputType.equals(OUTPUT_XMLENTRY)) {
@@ -147,14 +145,14 @@ public class XmlOutputHandler extends OutputHandler {
 
         Document doc  = XmlUtil.makeDocument();
         Element  root = getGroupTag(request, group, doc, null);
-        for (Entry subgroup : subGroups) {
-            getGroupTag(request, subgroup, doc, root);
-        }
-        for (Entry entry : entries) {
-            getEntryTag(request, entry, null, doc, root, false, true);
+        for (Entry child: children) {
+	    if(getEntryManager().handleEntryAsGroup(child)) {
+		getGroupTag(request, child, doc, root);
+	    } else {
+            getEntryTag(request, child, null, doc, root, false, true);
+	    }
         }
         StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
-
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 

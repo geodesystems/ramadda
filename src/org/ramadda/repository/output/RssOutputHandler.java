@@ -157,13 +157,11 @@ public class RssOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children) 
             throws Exception {
-        entries.addAll(subGroups);
-
-        return outputEntries(request, group, entries);
+        return outputEntries(request, group, children);
     }
 
 

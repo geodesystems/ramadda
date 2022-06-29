@@ -175,8 +175,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         }
         request.setReturnFilename("download.sh");
 
-        return outputGroup(request, outputType, null, new ArrayList<Entry>(),
-                           (List<Entry>) Misc.newList(entry));
+        return outputGroup(request, outputType, null, (List<Entry>) Misc.newList(entry));
     }
 
 
@@ -193,9 +192,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      *
      * @throws Exception  problem creating the script
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children) 
             throws Exception {
 
         if ( !request.getUser().getAdmin()) {
@@ -209,10 +208,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         request.setReturnFilename("download.sh");
 
         StringBuilder sb = new StringBuilder();
-        subGroups.addAll(entries);
         boolean recurse   = request.get(ARG_RECURSE, true);
         boolean overwrite = request.get(ARG_OVERWRITE, false);
-        process(request, sb, group, subGroups, recurse, overwrite,
+        process(request, sb, group, children, recurse, overwrite,
                 new HashSet<String>(), wget);
 
         return new Result("", sb, getMimeType(OUTPUT_CURL));

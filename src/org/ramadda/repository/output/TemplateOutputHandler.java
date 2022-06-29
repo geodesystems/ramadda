@@ -224,8 +224,7 @@ public class TemplateOutputHandler extends OutputHandler {
      */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children) 
             throws Exception {
         String wiki = folderWikiTemplate;
         if (embed) {
@@ -235,7 +234,7 @@ public class TemplateOutputHandler extends OutputHandler {
         }
 
         wiki = getWikiManager().wikifyEntry(request, group, wiki, false,
-                                            subGroups, entries);
+                                            children);
 
         return new Result("", new StringBuffer(wiki));
 

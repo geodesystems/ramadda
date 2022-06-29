@@ -203,35 +203,25 @@ public class ZipOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_ZIPTREE)) {
-            List<Entry> all = new ArrayList<Entry>();
-            all.addAll(subGroups);
-            all.addAll(entries);
             getLogManager().logInfo("Doing zip tree");
-
-            return toZip(request, group.getName(), all, true, false);
+            return toZip(request, group.getName(), children, true, false);
         }
         if (output.equals(OUTPUT_EXPORT)) {
-            List<Entry> all = new ArrayList<Entry>();
-            all.addAll(subGroups);
-            all.addAll(entries);
-
-            return toZip(request, group.getName(), all, true, true);
+            return toZip(request, group.getName(), children, true, true);
         } else {
-            return toZip(request, group.getName(), entries, false, false);
+            return toZip(request, group.getName(), children, false, false);
         }
     }
 

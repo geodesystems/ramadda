@@ -68,17 +68,15 @@ public class TestPageDecorator extends PageDecorator {
      * @param repository _more_
      * @param request _more_
      * @param entry _more_
-     * @param subFolders _more_
-     * @param subEntries _more_
      *
      * @return _more_
      */
+    @Override
     public String getDefaultOutputType(Repository repository,
                                        Request request, Entry entry,
-                                       List<Entry> subFolders,
-                                       List<Entry> subEntries) {
+                                       List<Entry> children) {
         if (entry.isGroup()) {
-            for (Entry child : subEntries) {
+            for (Entry child : children) {
                 if (child.getResource().isImage()) {
                     return ImageOutputHandler.OUTPUT_PLAYER.getId();
                 }

@@ -3108,32 +3108,31 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
 
+		@Override
             public Result outputGroup(Request request, OutputType outputType,
-                                      Entry group, List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      Entry group, List<Entry> children)
                     throws Exception {
 
                 OutputType output = request.getOutput();
                 if (output.equals(OUTPUT_PUBLISH)) {
-                    return getEntryManager().publishEntries(request, entries);
+                    return getEntryManager().publishEntries(request, children);
                 }
 
 
                 if (output.equals(OUTPUT_METADATA_SHORT)) {
                     return getEntryManager().addInitialMetadataToEntries(
-                        request, entries, true);
+                        request, children, true);
                 }
 
 
                 if (output.equals(OUTPUT_METADATA_FULL)) {
                     return getEntryManager().addInitialMetadataToEntries(
-                        request, entries, false);
+                        request, children, false);
                 }
-                entries.addAll(subGroups);
                 request.remove(ARG_DELETE_CONFIRM);
 
                 return getEntryManager().processEntryListDelete(request,
-                        entries);
+                        children);
             }
         };
         outputHandler.addType(OUTPUT_DELETER);
@@ -3175,8 +3174,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Entry group, List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      Entry group, List<Entry> children)
                     throws Exception {
                 if (request.getUser().getAnonymous()) {
                     return new Result("", "");
@@ -3185,8 +3183,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     return outputEntry(request, outputType, group);
                 }
                 StringBuilder idBuffer = new StringBuilder();
-                entries.addAll(subGroups);
-                for (Entry entry : entries) {
+                for (Entry entry : children) {
                     idBuffer.append(",");
                     idBuffer.append(entry.getId());
                 }
@@ -3229,8 +3226,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Entry group, List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      Entry group, List<Entry> children)
                     throws Exception {
                 return outputSnapshot(request, group);
             }
@@ -3282,8 +3278,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Entry group, List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      Entry group, List<Entry> children)
                     throws Exception {
                 if (request.getUser().getAnonymous()) {
                     return new Result("", "");
@@ -3292,8 +3287,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     return outputEntry(request, outputType, group);
                 }
                 StringBuilder idBuffer = new StringBuilder();
-                entries.addAll(subGroups);
-                for (Entry entry : entries) {
+                for (Entry entry : children) {
                     idBuffer.append(",");
                     idBuffer.append(entry.getId());
                 }
@@ -3337,10 +3331,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Entry group, List<Entry> subGroups,
-                                      List<Entry> entries)
+                                      Entry group, List<Entry> children)
                     throws Exception {
-                return outputFileListing(request, group, entries);
+                return outputFileListing(request, group, children);
 
             }
             public Result outputFileListing(Request request, Entry entry,

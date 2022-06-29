@@ -2714,15 +2714,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         ServerInfo       thisServer = getRepository().getServerInfo();
 
-        List<Entry>      groups     = new ArrayList<Entry>();
-        List<Entry>      entries    = new ArrayList<Entry>();
+        List<Entry>      children    = new ArrayList<Entry>();
 
 	//	System.err.println("calling doSearch:" + request.getString(ARG_TEXT,""));
 	List[] pair = doSearch(request, searchInfo);
 	//	System.err.println("done calling doSearch");
-	groups.addAll((List<Entry>) pair[0]);
-	entries.addAll((List<Entry>) pair[1]);
-        int   total    = groups.size() + entries.size();
+	children.addAll((List<Entry>) pair[0]);
+	children.addAll((List<Entry>) pair[1]);
+        int   total    = children.size();
         Entry theGroup = null;
 
         if (request.defined(ARG_GROUP)) {
@@ -2731,7 +2730,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
 
         request.remove(ARG_SEARCH_SUBMIT);
-        boolean       foundAny = (groups.size() > 0) || (entries.size() > 0);
+        boolean       foundAny = (children.size() > 0);
 
         StringBuilder header   = new StringBuilder();
         getPageHandler().sectionOpen(request, header, "Search", false);
@@ -2752,7 +2751,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         Result result =
             getRepository().getOutputHandler(request).outputGroup(request,
 								  request.getOutput(), theGroup,
-								  groups, entries);
+								  children);
         Result r;
         if (theGroup.isDummy()) {
             r = addHeaderToAncillaryPage(request, result);
