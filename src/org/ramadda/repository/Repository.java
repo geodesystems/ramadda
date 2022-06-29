@@ -3173,6 +3173,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return "Copy handler";
             }
 
+		@Override
             public Result outputGroup(Request request, OutputType outputType,
                                       Entry group, List<Entry> children)
                     throws Exception {
@@ -3225,6 +3226,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
 
+		@Override
             public Result outputGroup(Request request, OutputType outputType,
                                       Entry group, List<Entry> children)
                     throws Exception {
@@ -3277,6 +3279,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return "Type Change handler";
             }
 
+		@Override
             public Result outputGroup(Request request, OutputType outputType,
                                       Entry group, List<Entry> children)
                     throws Exception {
@@ -3330,6 +3333,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                          (List<Entry>) Misc.newList(entry));
             }
 
+		@Override
             public Result outputGroup(Request request, OutputType outputType,
                                       Entry group, List<Entry> children)
                     throws Exception {

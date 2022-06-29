@@ -454,17 +454,15 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @param request the request
      * @param outputType output type
      * @param group The group
-     * @param subGroups groups
-     * @param entries entries
      *
      * @return The result
      *
      * @throws Exception on badness
      */
+    @Override
     public Result outputGroup(final Request request,
                               final OutputType outputType, final Entry group,
-                              final List<Entry> subGroups,
-                              final List<Entry> entries)
+                              final List<Entry> children)
             throws Exception {
 
 

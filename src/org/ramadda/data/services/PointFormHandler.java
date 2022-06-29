@@ -315,9 +315,9 @@ public class PointFormHandler extends RecordFormHandler {
      * @throws Exception on badness
      */
     public Result outputGroupForm(Request request, Entry group,
-                                  List<Entry> subGroups, List<Entry> entries)
+                                  List<Entry> children)
             throws Exception {
-        return outputGroupForm(request, group, subGroups, entries,
+        return outputGroupForm(request, group, children,
                                new StringBuffer());
     }
 
@@ -327,8 +327,6 @@ public class PointFormHandler extends RecordFormHandler {
      *
      * @param request the request
      * @param group the group
-     * @param subGroups sub groups
-     * @param entries sub entries
      * @param msgSB _more_
      *
      * @return the ramadda result
@@ -336,7 +334,7 @@ public class PointFormHandler extends RecordFormHandler {
      * @throws Exception on badness
      */
     public Result outputGroupForm(Request request, Entry group,
-                                  List<Entry> subGroups, List<Entry> entries,
+                                  List<Entry> children,
                                   StringBuffer msgSB)
             throws Exception {
         StringBuilder sb = new StringBuilder();
@@ -352,7 +350,7 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(HtmlUtils.hidden(ARG_RECORDENTRY_CHECK, "true"));
 
         List<? extends RecordEntry> recordEntries =
-            getOutputHandler().makeRecordEntries(request, entries, false);
+            getOutputHandler().makeRecordEntries(request, children, false);
 
         StringBuffer entrySB = new StringBuffer();
         entrySB.append("<table width=100%>");

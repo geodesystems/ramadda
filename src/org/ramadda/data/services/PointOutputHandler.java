@@ -1052,17 +1052,14 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param request the request
      * @param outputType output type
      * @param group The group
-     * @param subGroups groups
-     * @param entries entries
-     *
      * @return The result
      *
      * @throws Exception on badness
      */
+    @Override
     public Result outputGroup(final Request request,
                               final OutputType outputType, final Entry group,
-                              final List<Entry> subGroups,
-                              final List<Entry> entries)
+                              final List<Entry> children)
             throws Exception {
 
         if (group.getTypeHandler() instanceof PointTypeHandler) {
@@ -1072,7 +1069,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         Result parentResult = super.outputGroup(request, outputType, group,
-                                  subGroups, entries);
+						children);
         if (parentResult != null) {
             return parentResult;
         }
@@ -1081,7 +1078,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             return outputEntryBounds(request, group);
         }
 
-        for (Entry entry : subGroups) {
+	List<Entry> entries = new ArrayList<Entry>();
+        for (Entry entry : children) {
             if (entry.getTypeHandler().isType("type_point")) {
                 entries.add(entry);
             }
@@ -1099,7 +1097,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         if ( !doingPointCount && request.defined(ARG_GETDATA)) {
             if ( !request.defined(ARG_PRODUCT)) {
                 return getPointFormHandler().outputGroupForm(
-                    request, group, subGroups, entries,
+                    request, group, children,
                     new StringBuffer(
                         getPageHandler().showDialogError(
                             "No products selected")));
@@ -1109,11 +1107,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if (outputType.equals(OUTPUT_FORM)) {
             return getPointFormHandler().outputGroupForm(request, group,
-                    subGroups, entries, new StringBuffer());
+							 children, new StringBuffer());
         }
 
-        //        System.err.println("entries:" + entries);
-        //        System.err.println("record entries:" + makeRecordEntries(request, entries, true));
+        //        System.err.println("entries:" + children);
+        //        System.err.println("record entries:" + makeRecordEntries(request, children, true));
         final List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(doSubsetEntries(request,
                 makeRecordEntries(request, entries, true)));
@@ -1155,7 +1153,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                       + pointCount));
 
             return getPointFormHandler().outputGroupForm(request, group,
-                    subGroups, entries, sb);
+							 children, sb);
         }
 
 
@@ -1189,7 +1187,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
 
             return getPointFormHandler().outputGroupForm(request, group,
-                    subGroups, entries, sb);
+							 children, sb);
         }
 
         if ( !request.defined(ARG_PRODUCT)) {

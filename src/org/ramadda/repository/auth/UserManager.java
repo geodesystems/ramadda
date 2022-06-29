@@ -3342,6 +3342,7 @@ public class UserManager extends RepositoryManager {
                 return output.equals(OUTPUT_FAVORITE);
             }
 
+		@Override
             public Result outputGroup(Request request, OutputType outputType,
                                       Entry group, List<Entry> children)
                     throws Exception {
