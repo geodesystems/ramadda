@@ -84,8 +84,11 @@ public class PageHandler extends RepositoryManager {
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
     /** _more_ */
-    public static final String REGISTER_MESSAGE =
-        "<div class=\"ramadda-register-outer\"><div class=\"ramadda-register\">Powered by <a href=\"https://geodesystems.com\">Geode Systems RAMADDA</a></div></div>";
+    private static final String ACK_MESSAGE =
+        "<div class='ramadda-acknowledgement'>Powered by <a href='https://geodesystems.com'>Geode Systems' RAMADDA<br><img width=100px  src='${root}/images/logo.png'></a></div>";
+
+    /**  */
+    private String ackMessage;
 
 
 
@@ -150,7 +153,9 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_FOOTER = "footer";
 
-    public static final String MACRO_FOOTER_ACKNOWLEDGEMENT = "footer.acknowledgement";    
+    /**  */
+    public static final String MACRO_FOOTER_ACKNOWLEDGEMENT =
+        "footer.acknowledgement";
 
 
 
@@ -350,7 +355,7 @@ public class PageHandler extends RepositoryManager {
     /**
      *
      * @param resource _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -488,9 +493,14 @@ public class PageHandler extends RepositoryManager {
         return headerIcon;
     }
 
+    /**
+     *
+     * @param entry _more_
+      * @return _more_
+     */
     public String getEntryTooltip(Entry entry) {
-	return entry.getName()+HU.NL +
-	    " - " + entry.getTypeHandler().getLabel();
+        return entry.getName() + HU.NL + " - "
+               + entry.getTypeHandler().getLabel();
     }
 
 
@@ -550,7 +560,7 @@ public class PageHandler extends RepositoryManager {
      * @param sb _more_
      * @param prefix _more_
      * @param suffix _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -590,7 +600,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-        String template      = htmlTemplate.getTemplate();
+        String template = htmlTemplate.getTemplate();
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  (String) null);
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
@@ -598,24 +608,24 @@ public class PageHandler extends RepositoryManager {
         String entryBreadcrumbs =
             (String) result.getProperty(PROP_ENTRY_BREADCRUMBS,
                                         (String) null);
-        String     header   = entryHeader;
+        String     header        = entryHeader;
 
-        Appendable contents = new StringBuilder();
-     
-        String systemMessage = getRepository().getSystemMessage(request);
-	boolean hasContents = htmlTemplate.hasMacro(MACRO_CONTENT);
-	String extraMessage = null;
-	if (Utils.stringDefined(systemMessage)) {
-	    extraMessage = HU.div(systemMessage,
-				  HU.cssClass("ramadda-system-message"));
+        Appendable contents      = new StringBuilder();
+
+        String     systemMessage = getRepository().getSystemMessage(request);
+        boolean    hasContents   = htmlTemplate.hasMacro(MACRO_CONTENT);
+        String     extraMessage  = null;
+        if (Utils.stringDefined(systemMessage)) {
+            extraMessage = HU.div(systemMessage,
+                                  HU.cssClass("ramadda-system-message"));
         }
 
-	if(extraMessage!=null && hasContents) {
-	    contents.append(extraMessage);
-	}
+        if ((extraMessage != null) && hasContents) {
+            contents.append(extraMessage);
+        }
 
 
-	
+
         String jsContent = getTemplateJavascriptContent();
         String bottom    = null;
         if (fullTemplate || suffix) {
@@ -718,22 +728,19 @@ public class PageHandler extends RepositoryManager {
                                   arg("animate", false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
 
-	
-	//hard code the ack
-	String ack = "<div class='ramadda-acknowledgement'>Powered by <a href='https://geodesystems.com'>Geode Systems and RAMADDA</a></div>";
 
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
             repository.getRepositoryName(), MACRO_FOOTER, theFooter,
-	    MACRO_FOOTER_ACKNOWLEDGEMENT,ack,
-            MACRO_TITLE, result.getTitle(), MACRO_BOTTOM, bottom,
-            MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
-            MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
-            MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
-            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_IMPORTS, imports,
-            MACRO_HEADFINAL, "", MACRO_ROOT, repository.getUrlBase(),
+            MACRO_FOOTER_ACKNOWLEDGEMENT, getAckMessage(), MACRO_TITLE,
+            result.getTitle(), MACRO_BOTTOM, bottom, MACRO_SEARCH_URL,
+            getSearchManager().getSearchUrl(request), MACRO_CONTENT, content,
+            MACRO_ENTRY_HEADER, entryHeader, MACRO_HEADER, header,
+            MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
+            entryBreadcrumbs, MACRO_IMPORTS, imports, MACRO_HEADFINAL, "",
+            MACRO_ROOT, repository.getUrlBase(),
         };
 
 
@@ -774,9 +781,9 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-	if(extraMessage!=null && !hasContents && prefix) {
-	    sb.append(extraMessage);
-	}
+        if ((extraMessage != null) && !hasContents && prefix) {
+            sb.append(extraMessage);
+        }
 
 
         //
@@ -2096,8 +2103,14 @@ public class PageHandler extends RepositoryManager {
         return getDialog(h, extra, null, false);
     }
 
+    /**
+     *
+     * @param entry _more_
+      * @return _more_
+     */
     public String showAccessRestricted(Entry entry) {
-	return showDialogWarning("Access to " + entry.getName() +" is restricted");
+        return showDialogWarning("Access to " + entry.getName()
+                                 + " is restricted");
     }
 
     /**
@@ -3632,6 +3645,18 @@ public class PageHandler extends RepositoryManager {
     private static String CDN = null;
 
     /**
+      * @return _more_
+     */
+    private String getAckMessage() {
+        if (ackMessage == null) {
+            ackMessage = applyBaseMacros(ACK_MESSAGE);
+        }
+
+        return ackMessage;
+    }
+
+
+    /**
      * _more_
      *
      * @param s _more_
@@ -3693,7 +3718,7 @@ public class PageHandler extends RepositoryManager {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     private String getCdn() {
         if (CDN == null) {
