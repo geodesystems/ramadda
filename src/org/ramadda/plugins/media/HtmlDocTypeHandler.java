@@ -94,16 +94,13 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry,
-                                 List<Entry> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry entry, List<Entry> children)
             throws Exception {
         String style = entry.getValue(IDX_STYLE, "none");
         if (style.equals("none")) {

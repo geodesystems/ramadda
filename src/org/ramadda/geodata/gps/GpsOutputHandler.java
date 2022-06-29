@@ -364,28 +364,26 @@ public class GpsOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         if (outputType.equals(OUTPUT_GPS_TORINEX)) {
-            return outputRinex(request, group, entries);
+            return outputRinex(request, group, children);
         }
         if (outputType.equals(OUTPUT_GPS_BULKEDIT)) {
-            return outputBulkEdit(request, group, entries);
+            return outputBulkEdit(request, group, children);
         }
         if (outputType.equals(OUTPUT_GPS_CONTROLPOINTS)) {
-            return outputControlpoint(request, group, entries);
+            return outputControlpoint(request, group, children);
         }
 
-        return outputOpus(request, group, entries);
+        return outputOpus(request, group, children);
     }
 
 

@@ -107,21 +107,17 @@ public class GpxOutputHandler extends OutputHandler {
      * @param request      The Request
      * @param outputType   the type of output
      * @param group        the group Entry
-     * @param subGroups    the subgroups
-     * @param entries      The list of Entrys
+     * @param children _more_
      *
      * @return  the resule
      *
      * @throws Exception    problem on output
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
-        List<Entry> entriesToUse = new ArrayList<Entry>(subGroups);
-        entriesToUse.addAll(entries);
-
-        return outputGpx(request, group, entriesToUse);
+        return outputGpx(request, group, children);
     }
 
     /**

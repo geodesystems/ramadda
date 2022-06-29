@@ -2348,16 +2348,14 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * @param request The request
      * @param outputType  the output type
      * @param group  the group
-     * @param subGroups  any subgroups
-     * @param entries    the entries
      *
      * @return  the Result
      *
      * @throws Exception On badness
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         if (group.getType().equals(
@@ -2365,8 +2363,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             return outputEntry(request, outputType, group);
         }
 
-        return super.outputGroup(request, outputType, group, subGroups,
-                                 entries);
+        return super.outputGroup(request, outputType, group, children);
     }
 
 

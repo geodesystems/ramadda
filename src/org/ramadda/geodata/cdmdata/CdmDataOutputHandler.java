@@ -2324,24 +2324,21 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      * @param request     the Request
      * @param outputType  the output type
      * @param group       the group
-     * @param subGroups   the subgroups
-     * @param entries     the List of Entrys
      *
      * @return  the Result
      *
      * @throws Exception  problem outputting group
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         if (getCdmManager().isAggregation(group)) {
             return outputEntry(request, outputType, group);
         }
 
         //        System.err.println("group:" + group + " " + group.getType());
-        return super.outputGroup(request, outputType, group, subGroups,
-                                 entries);
+        return super.outputGroup(request, outputType, group, children);
     }
 
 

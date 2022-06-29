@@ -74,20 +74,16 @@ public class PasteitCollectionTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-
         boolean canAdd = getAccessManager().canDoNew(request, group);
-
         if (canAdd) {
             /*
             sb.append(HtmlUtils
@@ -100,7 +96,6 @@ public class PasteitCollectionTypeHandler extends ExtensibleGroupTypeHandler {
                            msg("New FAQ Question"))));
             */
         }
-
 
 
         return new Result(msg("Paste It Collection"), sb);

@@ -70,22 +70,5 @@ public class DisasterTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result getHtmlDisplay(Request request, Entry entry)
-            throws Exception {
-        return null;
-    }
-
-
-
 
 }

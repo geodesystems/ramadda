@@ -439,9 +439,9 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
-            throws Exception {
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
+	throws Exception {
 
         if (request.defined(ARG_OUTPUT)) {
             return null;
@@ -460,7 +460,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         }
 
         return calendarOutputHandler.outputGroup(request,
-                request.getOutput(), group, subGroups, entries);
+                request.getOutput(), group, children);
     }
 
 

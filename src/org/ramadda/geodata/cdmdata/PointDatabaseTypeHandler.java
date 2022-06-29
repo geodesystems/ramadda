@@ -2231,6 +2231,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         boolean canEdit = getAccessManager().canDoEdit(request, entry);

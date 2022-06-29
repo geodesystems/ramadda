@@ -2,7 +2,9 @@
 Copyright (c) 2008-2021 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
+
 package org.ramadda.plugins.map;
+
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
@@ -10,13 +12,15 @@ import org.ramadda.repository.type.GenericTypeHandler;
 
 import org.ramadda.util.geo.KmlUtil;
 
+import org.w3c.dom.*;
+import org.w3c.dom.Element;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import org.w3c.dom.*;
-import org.w3c.dom.Element;
 import java.util.List;
 import java.util.zip.*;
+
 
 /**
  */
@@ -351,10 +355,11 @@ public class KmlTypeHandler extends GenericTypeHandler {
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
-	String file = entry.getResource().getPath();
+        String file = entry.getResource().getPath();
         map.addKmlUrl(entry.getName(),
-		      getMapManager().getMapResourceUrl(request,entry),
+                      getMapManager().getMapResourceUrl(request, entry),
                       true, null);
+
         return false;
     }
 

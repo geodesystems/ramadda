@@ -13,9 +13,9 @@ import org.ramadda.repository.job.*;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.GenericTypeHandler;
-import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
 
 import org.w3c.dom.Element;

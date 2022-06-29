@@ -110,16 +110,14 @@ public class CatalogImporter extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(final Request request, OutputType outputType,
-                              final Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              final Entry group, List<Entry> children)
             throws Exception {
 
         if ( !getAccessManager().canDoNew(request, group)) {

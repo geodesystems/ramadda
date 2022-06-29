@@ -126,16 +126,14 @@ public class IdvWebstartOutputHandler extends OutputHandler {
      * @param request     the Request
      * @param outputType  the OutputType
      * @param group       the group to output
-     * @param subGroups   subgroups
-     * @param entries     list of Entrys
      *
      * @return  the Result
      *
      * @throws Exception  problems
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         return outputEntry(request, outputType, group);
     }

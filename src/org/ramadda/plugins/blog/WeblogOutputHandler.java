@@ -116,22 +116,19 @@ public class WeblogOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
-        subGroups.addAll(entries);
         StringBuilder sb          = new StringBuilder();
         StringBuilder blogEntries = new StringBuilder();
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             if ( !entry.getTypeHandler().isType("blogentry")) {
                 continue;
             }

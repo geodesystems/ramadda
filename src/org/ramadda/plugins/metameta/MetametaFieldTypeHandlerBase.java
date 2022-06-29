@@ -118,18 +118,15 @@ public abstract class MetametaFieldTypeHandlerBase extends ExtensibleGroupTypeHa
      *
      * @param request request
      * @param parent the parent entry
-     * @param subGroups child groups
-     * @param entries child entries
      *
      * @return result
      *
      * @throws Exception on badness
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry parent,
-                                 List<Entry> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry parent,  List<Entry> children)
             throws Exception {
-        return super.getHtmlDisplay(request, parent, subGroups, entries);
+        return super.getHtmlDisplay(request, parent, children);
     }
 
     /**

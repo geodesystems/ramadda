@@ -109,45 +109,19 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param entries _more_
-     * @param subGroups _more_
-     *
-     *  @return _more_
-     * @throws Exception _more_
-     */
-    /*
-    @Override
-    public void getChildrenEntries(Request request, Entry group,
-                                   List<Entry> entries,
-                                   List<Entry> subGroups, SelectInfo select)
-            throws Exception {
-        if ( !request.defined(ARG_OUTPUT) && !request.defined(ARG_LETTER)) {
-            return;
-        }
-        super.getChildrenEntries(request, group, entries, subGroups, select);
-    }
-    */
-
 
     /**
      * _more_
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
             throws Exception {
 
         if ( !isDefaultHtmlOutput(request)) {
@@ -175,13 +149,12 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> letters = new ArrayList<String>();
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
-        subGroups.addAll(entries);
         sb.append("<center>");
         List<String> header    = new ArrayList<String>();
         String       theLetter = request.getString(ARG_LETTER, "");
         HashSet      seen      = new HashSet();
         seen.add("all");
-        for (Entry e : subGroups) {
+        for (Entry e : children) {
             if (e.getName().length() > 0) {
                 seen.add(e.getName().substring(0, 1).toUpperCase());
             }
@@ -208,13 +181,13 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
         sb.append("</center>");
 
-        if ((subGroups.size() == 0) && request.defined(ARG_LETTER)) {
+        if ((children.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(getPageHandler().showDialogNote(msg("No notes found")));
         }
         sb.append(
             "<style type=\"text/css\">.note {margin:0px;margin-bottom:5px;}\n");
         sb.append(".notes {margin:0px;margin-bottom:5px;}\n</style>");
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             String name   = entry.getName();
             String letter = "-";
             if (name.length() > 0) {

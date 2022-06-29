@@ -58,16 +58,13 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
      *
      * @param request _more_
      * @param parent _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception on badness
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry parent,
-                                 List<Entry> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry parent, List<Entry> children)
             throws Exception {
         if ( !getEntryManager().canAddTo(request, parent)) {
             return null;
@@ -76,8 +73,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, parent, sb, null);
 
-        subGroups.addAll(entries);
-        addListForm(request, parent, subGroups, sb);
+        addListForm(request, parent, children, sb);
 
         getPageHandler().entrySectionClose(request, parent, sb);
 

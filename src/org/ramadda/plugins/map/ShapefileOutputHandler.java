@@ -20,11 +20,11 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
-import org.ramadda.util.geo.KmlUtil;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.CDATASection;
@@ -135,7 +135,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         addType(OUTPUT_FIELDS_TABLE);
         addType(OUTPUT_FIELDS_LIST);
         //Create the cache with a 1 minute TTL
-        cache = new TTLCache<String, ShapefileWrapper>(60 * 1000,"Shapefile Cache") {
+        cache = new TTLCache<String, ShapefileWrapper>(60 * 1000,
+                             "Shapefile Cache") {
             @Override
             public void cacheRemove(ShapefileWrapper wrapper) {
                 IOUtil.close(wrapper.inputStream);
@@ -1109,8 +1110,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         List<DbaseDataWrapper> fieldDatum = fc.getDatum();
 
 
- 
-	Element                root       = KmlUtil.kml(getName());
+
+        Element                root       = KmlUtil.kml(getName());
         Element                doc = KmlUtil.document(root, getName(), true);
         boolean                haveSchema = false;
         if ( !properties.isEmpty()

@@ -157,23 +157,20 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
      * @param request     the Request
      * @param outputType  the output type
      * @param group       the group
-     * @param subGroups   the subgroups
-     * @param entries     the List of Entrys
      *
      * @return  the Result
      *
      * @throws Exception  problem outputting group
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         if (getCdmManager().isAggregation(group)) {
             return outputEntry(request, outputType, group);
         }
 
-        return super.outputGroup(request, outputType, group, subGroups,
-                                 entries);
+        return super.outputGroup(request, outputType, group, children);
     }
 
 

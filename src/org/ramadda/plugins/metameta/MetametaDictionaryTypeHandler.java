@@ -81,16 +81,13 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      *
      * @param request _more_
      * @param parent _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry parent,
-                                 List<Entry> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry parent,  List<Entry> children) 
             throws Exception {
         if ( !getEntryManager().canAddTo(request, parent)) {
             return null;
@@ -100,8 +97,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         List<String> contents = new ArrayList<String>();
 
         StringBuffer sb       = new StringBuffer();
-        subGroups.addAll(entries);
-        addListForm(request, parent, subGroups, sb);
+        addListForm(request, parent, children, sb);
 
         titles.add(msg("Fields"));
         contents.add(sb.toString());

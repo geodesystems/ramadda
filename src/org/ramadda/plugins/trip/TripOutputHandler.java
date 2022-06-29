@@ -107,16 +107,14 @@ public class TripOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         TimeZone         utcTimeZone = TimeZone.getTimeZone("UTC");
@@ -146,22 +144,21 @@ public class TripOutputHandler extends OutputHandler {
             sb.append(handler.getWikiInclude(null, request, group, group,
                                              "newheader", null));
         }
-        subGroups.addAll(entries);
 
         List<Entry> eventEntries = new ArrayList<Entry>();
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             if (entry.getTypeHandler() instanceof TripItemHandler) {
                 eventEntries.add(entry);
             }
         }
-        subGroups = eventEntries;
+        children = eventEntries;
 
 
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/trip/trip.css"));
-        subGroups = getEntryUtil().sortEntriesOnDate(subGroups, false);
+        children = getEntryUtil().sortEntriesOnDate(children, false);
         String currentDate = "";
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             String entryDate = sdf.format(new Date(entry.getStartDate()));
             if ( !Misc.equals(currentDate, entryDate)) {
                 if (currentDate.length() > 0) {
@@ -256,7 +253,7 @@ public class TripOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.div(desc.toString(), ""));
             }
         }
-        if (subGroups.size() > 0) {
+        if (children.size() > 0) {
             sb.append("</div>");
         }
 

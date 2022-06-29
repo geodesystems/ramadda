@@ -131,15 +131,13 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children)
             throws Exception {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
@@ -174,9 +172,6 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
 
-        subGroups.addAll(entries);
-
-
         sb.append(HtmlUtils.p());
         sb.append("<center>");
         List<String> header    = new ArrayList<String>();
@@ -198,7 +193,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
         sb.append("</center>");
 
-        if ((subGroups.size() == 0) && request.defined(ARG_LETTER)) {
+        if ((children.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(
                 getPageHandler().showDialogNote(
                     msg("No glossary entries found")));
@@ -207,7 +202,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
             "<style type=\"text/css\">.glossary_entry {margin:0px;margin-bottom:5px;}\n");
         sb.append(
             ".glossary_entries {margin:0px;margin-bottom:5px;}\n</style>");
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             String name   = entry.getName();
             String letter = "-";
             if (name.length() > 0) {

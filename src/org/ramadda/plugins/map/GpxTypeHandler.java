@@ -22,12 +22,12 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 
-import org.ramadda.util.geo.KmlUtil;
-
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
+
+import org.ramadda.util.geo.KmlUtil;
 
 
 import org.w3c.dom.*;
@@ -81,7 +81,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 
     /**  */
     private static TTLCache<String, List<String>> extraTagsCache =
-        new TTLCache<String, List<String>>(60 * 60 * 1000,"Gpx extra tags");
+        new TTLCache<String, List<String>>(60 * 60 * 1000, "Gpx extra tags");
 
 
     /**
@@ -385,7 +385,7 @@ public class GpxTypeHandler extends PointTypeHandler {
         double           minLon  = Double.POSITIVE_INFINITY;
 
         //        <time>2012-11-24T14:47:34</time>
-	//This grabs all of the time nodes in the entire document
+        //This grabs all of the time nodes in the entire document
         for (Element child :
                 ((List<Element>) XmlUtil.findDescendants(root,
                     GpxUtil.TAG_TIME))) {
@@ -851,7 +851,8 @@ public class GpxTypeHandler extends PointTypeHandler {
             extra.append("</div>");
             if (tfos.size() > 0) {
                 String js =
-		    map.getVariableName()+".highlightMarkers('.gpx-map-links .gpx-map-link','#ffffcc');";
+                    map.getVariableName()
+                    + ".highlightMarkers('.gpx-map-links .gpx-map-link','#ffffcc');";
                 extra.append(HtmlUtils.script(JQuery.ready(js)));
                 map.appendExtraNav(extra.toString());
             }

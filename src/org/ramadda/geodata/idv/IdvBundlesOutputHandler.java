@@ -94,26 +94,23 @@ public class IdvBundlesOutputHandler extends OutputHandler {
      * @param request      The Request
      * @param outputType   the type of output
      * @param group        the group Entry
-     * @param subGroups    the subgroups
-     * @param entries      The list of Entrys
      *
      * @return  the resule
      *
      * @throws Exception    problem on output
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
-        boolean justOneEntry = group.isDummy() && (entries.size() == 1)
-                               && (subGroups.size() == 0);
+        boolean justOneEntry = group.isDummy() && (children.size()==1);
 
         // can't use category since that is the data type
         String topCategory = request.getString(ARG_TOP, DEFAULT_TOPCATEGORY);
 
         String title       = (justOneEntry
-                              ? entries.get(0).getName()
+                              ? children.get(0).getName()
                               : group.getName());
         title = request.getString(ARG_TITLE, title);
         Document doc = XmlUtil.makeDocument();
@@ -122,13 +119,10 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                 title });
 
         if (justOneEntry) {
-            addEntryToXml(request, entries.get(0), root, topCategory, 1);
+            addEntryToXml(request, children.get(0), root, topCategory, 1);
         } else {
             topCategory += ">" + title;
-            for (Entry entry : entries) {
-                addEntryToXml(request, entry, root, topCategory, 1);
-            }
-            for (Entry sg : subGroups) {
+            for (Entry sg : children) {
                 addEntryToXml(request, sg, root, topCategory, 1);
             }
         }

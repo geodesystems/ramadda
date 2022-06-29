@@ -74,15 +74,13 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
             throws Exception {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
@@ -95,7 +93,7 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         return weblogOutputHandler.outputGroup(request,
-                weblogOutputHandler.OUTPUT_BLOG, group, subGroups, entries);
+                weblogOutputHandler.OUTPUT_BLOG, group, children);
     }
 
 

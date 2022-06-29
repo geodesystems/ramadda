@@ -313,28 +313,22 @@ public class CatalogOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
 
-
-        boolean justOneEntry = group.isDummy() && (entries.size() == 1)
-                               && (subGroups.size() == 0);
-
-
+        boolean justOneEntry = group.isDummy() && (children.size() == 1);
         int      depth = Math.min(5, request.get(ARG_DEPTH, 1));
 
         String   title = (justOneEntry
-                          ? entries.get(0).getName()
+                          ? children.get(0).getName()
                           : group.getName());
         Document doc   = XmlUtil.makeDocument();
         Element root = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
@@ -361,8 +355,8 @@ public class CatalogOutputHandler extends OutputHandler {
         if (doingLatest) {
             topDataset = root;
             boolean didone = false;
-            entries = getEntryUtil().sortEntriesOnDate(entries, true);
-            for (Entry entry : entries) {
+            children = getEntryUtil().sortEntriesOnDate(children, true);
+            for (Entry entry : children) {
                 if (canDataLoad(request, entry)) {
                     outputEntry(entry, request, catalogInfo, root,
                                 doingLatest);
@@ -372,7 +366,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 }
             }
         } else if (justOneEntry) {
-            outputEntry(entries.get(0), request, catalogInfo, root,
+            outputEntry(children.get(0), request, catalogInfo, root,
                         doingLatest);
         } else {
             topDataset = XmlUtil.create(doc, CatalogUtil.TAG_DATASET, root,
@@ -380,13 +374,11 @@ public class CatalogOutputHandler extends OutputHandler {
                     title });
             addServices(group, request, catalogInfo, topDataset, doingLatest);
             addMetadata(request, group, catalogInfo, topDataset);
-            int cnt = subGroups.size() + entries.size();
+            int cnt = children.size();
             //            int max  = request.get(ARG_MAX, DB_MAX_ROWS);
             int max  = request.get(ARG_MAX, DB_VIEW_ROWS);
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
-            //            System.err.println ("entries:" + entries.size() + " groups:" + subGroups.size()+ " max:" + max+" skip:" + skip);
-
-            toCatalogInner(request, group, subGroups, catalogInfo,
+            toCatalogInner(request, group, children, catalogInfo,
                            topDataset, depth);
             if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
                 if (cnt >= max) {
@@ -410,7 +402,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 }
             }
 
-            toCatalogInner(request, group, entries, catalogInfo, topDataset,
+            toCatalogInner(request, group, children, catalogInfo, topDataset,
                            0);
             if ( !group.isDummy()
                     && (catalogInfo.serviceMap.get(SERVICE_OPENDAP)
@@ -954,7 +946,6 @@ public class CatalogOutputHandler extends OutputHandler {
             EntryGroup subGroup = entryGroup.find(typeDesc);
             subGroup.add(entry);
         }
-
         generate(request, entryGroup, catalogInfo, parent);
 
     }

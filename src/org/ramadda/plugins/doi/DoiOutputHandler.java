@@ -466,9 +466,9 @@ public class DoiOutputHandler extends OutputHandler {
      *
      * @throws Exception    problem on output
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         return outputEntry(request, outputType, group);
     }

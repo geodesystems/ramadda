@@ -51,17 +51,14 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request  the Request
      * @param group    the group
-     * @param subGroups    the subgroups
-     * @param entries      the Entries
      *
      * @return  the Result
      *
      * @throws Exception  problem getting the HTML
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group,   List<Entry> children)
             throws Exception {
-
         if ( !isDefaultHtmlOutput(request)) {
             return null;
         }
@@ -93,10 +90,9 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         Hashtable<String, StringBuffer> catAnswerMap = new Hashtable<String,
                                                            StringBuffer>();
         List cats = new ArrayList();
-        subGroups.addAll(entries);
         sb.append(
             "<style type=\"text/css\">.faq_question {margin:0px;margin-bottom:5px;}\n.faq_question a {text-decoration:none;}\n</style>");
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             String cat = "General";
             if (entry.getType().equals(FaqEntryTypeHandler.TYPE_FAQENTRY)) {
                 cat = (String) entry.getValue(0, cat);

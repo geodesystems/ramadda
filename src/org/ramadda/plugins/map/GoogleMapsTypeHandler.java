@@ -92,6 +92,7 @@ public class GoogleMapsTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         String  sdisplay = entry.getValue(IDX_DISPLAY, "true");

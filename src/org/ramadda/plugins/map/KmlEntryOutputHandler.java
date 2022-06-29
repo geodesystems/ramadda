@@ -47,7 +47,7 @@ public class KmlEntryOutputHandler extends OutputHandler {
                        "", ICON_KML);
 
 
-    
+
 
     /**
      * Create a MapOutputHandler
@@ -103,7 +103,7 @@ public class KmlEntryOutputHandler extends OutputHandler {
             return outputKmlHtml(request, entry);
         }
 
-	
+
         return null;
     }
 

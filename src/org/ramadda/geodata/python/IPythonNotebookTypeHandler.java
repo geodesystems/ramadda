@@ -76,6 +76,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)

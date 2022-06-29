@@ -156,17 +156,15 @@ public class WmsImageOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
      * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
 
         String wmsRequest = request.getString("request", "");
@@ -174,8 +172,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             return outputMap(request, group);
         }
         StringBuffer sb = new StringBuffer();
-
-        return outputCapabilities(request, group, entries);
+        return outputCapabilities(request, group, children);
     }
 
 

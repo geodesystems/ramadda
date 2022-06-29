@@ -16,12 +16,12 @@ import org.ramadda.repository.output.KmlOutputHandler;
 
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
-
-import org.ramadda.util.geo.GeoJson;
-import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Bounds;
+
+import org.ramadda.util.geo.GeoJson;
 
 
 import org.w3c.dom.Element;

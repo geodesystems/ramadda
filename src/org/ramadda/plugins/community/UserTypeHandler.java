@@ -104,15 +104,13 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
-                                 List<Entry> subGroups, List<Entry> entries)
+    @Override
+    public Result getHtmlDisplay(Request request, Entry group, List<Entry> children)
             throws Exception {
         if (true) {
             return null;
@@ -134,9 +132,8 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
             */
         }
 
-        subGroups.addAll(entries);
 
-        for (Entry entry : subGroups) {
+        for (Entry entry : children) {
             String link = HtmlUtils.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW,

@@ -63,6 +63,7 @@ public class FramesTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();

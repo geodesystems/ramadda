@@ -289,7 +289,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         sb.append(getRepository().getWikiManager().wikifyEntry(request,
                 entry, wikiUtil, (template != null)
                                  ? template
-                                 : wikiText, true, null, null, null, true));
+                                 : wikiText, true, null, null, true));
         Hashtable links = (Hashtable) wikiUtil.getProperty("wikilinks");
         if (links != null) {
             List<Association> associations =
@@ -455,9 +455,9 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> children)
             throws Exception {
         return outputEntry(request, outputType, group);
     }

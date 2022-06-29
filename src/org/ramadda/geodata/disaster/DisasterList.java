@@ -64,8 +64,7 @@ public class DisasterList extends SpecialSearch implements RequestHandler {
         Result tmpResult =
             getRepository().getHtmlOutputHandler().outputGroup(request,
                 HtmlOutputHandler.OUTPUT_HTML,
-                getRepository().getEntryManager().getDummyGroup(), entries,
-                new ArrayList<Entry>());
+							       getRepository().getEntryManager().getDummyGroup(), entries);
 
         sb.append(new String(tmpResult.getContent()));
     }
