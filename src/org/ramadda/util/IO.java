@@ -11,6 +11,7 @@ import org.apache.commons.net.ftp.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
 
 import java.awt.Image;
 
@@ -21,7 +22,11 @@ import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
@@ -36,6 +41,7 @@ import javax.imageio.*;
  * @author Jeff McWhirter
  */
 
+@SuppressWarnings("unchecked")
 public class IO {
 
     /** the file separator id */
@@ -1415,5 +1421,139 @@ public class IO {
             }
         });
     }
+
+
+    
+    /**
+     * _more_
+     *
+     * @param files _more_
+     * @param ascending _more_
+     *
+     * @return _more_
+     */
+    public static File[] sortFilesOnSize(File[] files,
+                                         final boolean ascending) {
+
+        ArrayList<IOUtil.FileWrapper> sorted =
+            (ArrayList<IOUtil.FileWrapper>) new ArrayList();
+
+        for (int i = 0; i < files.length; i++) {
+            sorted.add(new IOUtil.FileWrapper(files[i], ascending));
+        }
+
+        Collections.sort(sorted, new FileSizeCompare(ascending));
+
+
+        for (int i = 0; i < files.length; i++) {
+            files[i] = sorted.get(i).getFile();
+        }
+
+        return files;
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Apr 12, '14
+     * @author         Enter your name here...
+     */
+    private static class FileSizeCompare implements Comparator<IOUtil
+        .FileWrapper> {
+
+        /** _more_ */
+        private boolean ascending;
+
+        /**
+         * _more_
+         *
+         * @param ascending _more_
+         */
+        public FileSizeCompare(boolean ascending) {
+            this.ascending = ascending;
+        }
+
+        /**
+         * _more_
+         *
+         * @param o1 _more_
+         * @param o2 _more_
+         *
+         * @return _more_
+         */
+        public int compare(IOUtil.FileWrapper o1, IOUtil.FileWrapper o2) {
+            int result;
+            if (o1.length() < o2.length()) {
+                result = -1;
+            } else if (o1.length() > o2.length()) {
+                result = 1;
+            } else {
+                result = o1.getFile().compareTo(o1.getFile());
+            }
+            if ( !ascending || (result == 0)) {
+                return result;
+            }
+
+            return -result;
+
+        }
+
+    }
+
+
+
+
+    public static File[] sortFilesOnNumber(File[] files,
+            final boolean descending) {
+        List tmp = new ArrayList();
+        for (File file: files) {
+            String s1 = StringUtil.findPattern(file.getName(), "([0-9]+)");
+            if (s1 == null) {
+                s1 = "9999";
+            }
+            double v1 = Double.parseDouble(s1);
+            tmp.add(new Object[] { file, v1 });
+        }
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Object[] t1     = (Object[]) o1;
+                Object[] t2     = (Object[]) o2;
+                double   v1     = (double) t1[1];
+                double   v2     = (double) t2[1];
+                int      result = (v1 < v2)
+                                  ? -1
+                                  : (v1 == v2)
+                                    ? 0
+                                    : 1;
+                if (descending) {
+                    if (result >= 1) {
+                        return -1;
+                    } else if (result <= -1) {
+                        return 1;
+                    }
+
+                    return 0;
+                }
+
+                return result;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = tmp.toArray();
+        Arrays.sort(array, comp);
+        List<File> result = new ArrayList<File>();
+        for (int i=0;i<array.length;i++) {
+	    Object[] tuple = (Object[]) array[i];
+	    files[i] = (File) tuple[0];
+        }
+        return files;
+    }
+    
+
+
 
 }
