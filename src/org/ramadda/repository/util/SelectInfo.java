@@ -6,22 +6,33 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.util;
 
 
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.metadata.Metadata;
+
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 
-
-
+import ucar.unidata.util.Misc;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 
 
 /**
  * Holds information for generating entries in entries.xml
  */
-public class SelectInfo {
+public class SelectInfo implements Constants {
+
+    /**  */
+    private boolean haveInited = false;
+
+    /**  */
+    private Request request;
+
+    /**  */
+    private Entry entry;
 
     /** _more_ */
     private List<Clause> where;
@@ -29,31 +40,124 @@ public class SelectInfo {
     /** _more_ */
     private int max = -1;
 
-    /**
-     * _more_
-     */
-    public SelectInfo() {}
+    /**  */
+    String orderBy;
+
+    /**  */
+    Boolean ascending = null;
 
 
     /**
      * _more_
      *
+     * @param request _more_
+     * @param entry _more_
+     */
+    public SelectInfo(Request request, Entry entry) {
+        this.request = request;
+        this.entry   = entry;
+    }
+
+    /**
+     *
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param max _more_
+     * @param orderBy _more_
+     * @param ascending _more_
+     */
+    public SelectInfo(Request request, Entry entry, int max, String orderBy,
+                      boolean ascending) {
+        this(request, entry);
+        this.max       = max;
+        this.orderBy   = orderBy;
+        this.ascending = new Boolean(ascending);
+    }
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
      * @param where _more_
      */
-    public SelectInfo(List<Clause> where) {
-        this(where, -1);
+    public SelectInfo(Request request, Entry entry, List<Clause> where) {
+        this(request, entry, where, -1);
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
+     * @param entry _more_
      * @param where _more_
      * @param max _more_
      */
-    public SelectInfo(List<Clause> where, int max) {
+    public SelectInfo(Request request, Entry entry, List<Clause> where,
+                      int max) {
+        this(request, entry);
         this.where = where;
         this.max   = max;
     }
+
+
+    /**
+     */
+    private void init() {
+        if (haveInited) {
+            return;
+        }
+        haveInited = true;
+        if (max < 0) {
+            if (entry != null) {
+                max = entry.getTypeHandler().getDefaultQueryLimit(request,
+                        entry);
+            }
+        }
+        max = request.get(Constants.ARG_MAX, max);
+        if (max <= 0) {
+            max = Constants.DB_MAX_ROWS;
+        }
+
+        orderBy = request.getString(Constants.ARG_ORDERBY, orderBy);
+        //Use the metadata if there wasn't an orderby in the request arg
+        if ((orderBy == null) && (entry != null)) {
+            try {
+                Metadata sortMetadata =
+                    request.getRepository().getMetadataManager()
+                        .getSortOrderMetadata(request, entry);
+                if (sortMetadata != null) {
+                    if (Misc.equals(sortMetadata.getAttr2(), "true")) {
+                        ascending = new Boolean(true);
+                    } else {
+                        ascending = new Boolean(false);
+                    }
+                    orderBy = sortMetadata.getAttr1();
+                    String tmp = sortMetadata.getAttr3();
+                    if (Utils.stringDefined(tmp)) {
+                        int tmpMax = Integer.parseInt(tmp.trim());
+                        if (tmpMax > 0) {
+                            max = tmpMax;
+                        }
+                    }
+                }
+            } catch (Exception ignore) {}
+        }
+
+        if (orderBy == null) {
+            orderBy = Constants.ORDERBY_CREATEDATE;
+        }
+        if (request.defined(Constants.ARG_ASCENDING)) {
+            ascending = new Boolean(request.defined(Constants.ARG_ASCENDING));
+        }
+
+    }
+
 
     /**
      * _more_
@@ -64,14 +168,63 @@ public class SelectInfo {
         return where;
     }
 
+
+
     /**
-     * _more_
+     *  Get the Max property.
      *
-     * @return _more_
+     *  @return The Max
      */
-    public int getMaxCount() {
+    public int getMax() {
+        init();
+
         return max;
     }
+
+    /**
+      * @return _more_
+     */
+    public int getSkip() {
+        init();
+
+        return request.get(ARG_SKIP, 0);
+    }
+
+    /**
+     *  Get the OrderBy property.
+     *
+     *  @return The OrderBy
+     */
+    public String getOrderBy() {
+        init();
+
+        return orderBy;
+    }
+
+
+    /**
+     *  Get the Ascending property.
+     *
+     *  @return The Ascending
+     */
+    public boolean getAscending() {
+        init();
+        if (ascending != null) {
+            return ascending;
+        }
+
+        return false;
+    }
+
+    /**
+      * @return _more_
+     */
+    public boolean hasAscending() {
+        init();
+
+        return ascending != null;
+    }
+
 
     /**
      * _more_
@@ -79,6 +232,10 @@ public class SelectInfo {
      * @return _more_
      */
     public String toString() {
+        init();
+
         return " max:" + max;
     }
+
+
 }
