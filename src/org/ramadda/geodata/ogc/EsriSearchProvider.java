@@ -11,6 +11,8 @@ import org.json.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
+import org.ramadda.repository.util.SelectInfo;
+
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
@@ -229,7 +231,7 @@ public class EsriSearchProvider extends SearchProvider {
      * @throws Exception _more_
      */
     @Override
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
         return parentEntry.getChildIds();

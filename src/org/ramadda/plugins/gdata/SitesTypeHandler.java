@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.gdata;
 
 
+import org.ramadda.repository.util.SelectInfo;
+
 import com.google.gdata.client.*;
 import com.google.gdata.client.*;
 import com.google.gdata.client.calendar.*;
@@ -120,7 +122,8 @@ public class SitesTypeHandler extends GdataTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    @Override
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
         List<String> ids = parentEntry.getChildIds();
@@ -128,7 +131,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
             return ids;
         }
 
-        return getSynthIds(request, mainEntry, parentEntry, synthId,
+        return getSynthIds(request, select, mainEntry, parentEntry, synthId,
                            new Hashtable<String, Entry>());
     }
 
@@ -146,7 +149,8 @@ public class SitesTypeHandler extends GdataTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    @Override
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId,
                                     Hashtable<String, Entry> entryMap)
             throws Exception {

@@ -100,7 +100,7 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry, List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry entry, Entries children)
             throws Exception {
         String style = entry.getValue(IDX_STYLE, "none");
         if (style.equals("none")) {

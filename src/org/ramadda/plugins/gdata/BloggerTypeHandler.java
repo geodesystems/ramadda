@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.gdata;
 
+import org.ramadda.repository.util.SelectInfo;
 
 import com.google.gdata.client.*;
 import com.google.gdata.client.*;
@@ -160,7 +161,8 @@ public class BloggerTypeHandler extends GdataTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    @Override
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
         List<String> ids = parentEntry.getChildIds();

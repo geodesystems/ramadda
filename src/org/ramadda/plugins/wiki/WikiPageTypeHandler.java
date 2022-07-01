@@ -131,7 +131,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
+    public Result getHtmlDisplay(Request request, Entry group,  Entries children) 
             throws Exception {
         return getRepository().getOutputHandler(
             WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
@@ -299,7 +299,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 
             getRepository().getWikiManager().wikifyEntry(request, entry,
-                    wikiUtil, newText, true, null, null, true);
+                    wikiUtil, newText, true, null, true);
 
 
             Hashtable<Entry, Entry> links =

@@ -99,60 +99,6 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public Result getHtmlDisplay(Request request, Entry group, List<Entry> children)
-            throws Exception {
-        if (true) {
-            return null;
-        }
-        StringBuffer sb = new StringBuffer();
-
-        boolean canAdd = getAccessManager().canDoNew(request, group);
-
-        if (canAdd) {
-            /*
-            sb.append(HtmlUtils
-                .href(HtmlUtils
-                    .url(request
-                        .entryUrlWithArg(getRepository().URL_ENTRY_FORM, group,
-                            ARG_GROUP), ARG_TYPE,
-                         FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtils
-                      .img(getRepository().getIconUrl(ICON_NEW),
-                           msg("New Note"))));
-            */
-        }
-
-
-        for (Entry entry : children) {
-            String link = HtmlUtils.href(
-                              request.entryUrl(
-                                  getRepository().URL_ENTRY_SHOW,
-                                  entry), HtmlUtils.img(
-                                      getRepository().getIconUrl(ICON_ENTRY),
-                                      msg("View entry details")));
-            sb.append("<a name=" + entry.getId() + "></a>");
-            sb.append("<li>");
-            sb.append(" ");
-            sb.append(HtmlUtils.b(entry.getName()));
-            sb.append(HtmlUtils.br());
-            sb.append(entry.getDescription());
-        }
-
-
-        return new Result(msg("Missing Person"), sb);
-    }
-
-
 
 
 }

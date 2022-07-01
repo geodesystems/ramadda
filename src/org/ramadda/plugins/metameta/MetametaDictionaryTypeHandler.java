@@ -87,7 +87,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry parent,  List<Entry> children) 
+    public Result getHtmlDisplay(Request request, Entry parent,  Entries children) 
             throws Exception {
         if ( !getEntryManager().canAddTo(request, parent)) {
             return null;
@@ -97,7 +97,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         List<String> contents = new ArrayList<String>();
 
         StringBuffer sb       = new StringBuffer();
-        addListForm(request, parent, children, sb);
+        addListForm(request, parent, children.get(), sb);
 
         titles.add(msg("Fields"));
         contents.add(sb.toString());

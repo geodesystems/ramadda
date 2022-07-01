@@ -64,7 +64,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry parent, List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry parent, Entries children)
             throws Exception {
         if ( !getEntryManager().canAddTo(request, parent)) {
             return null;
@@ -73,7 +73,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, parent, sb, null);
 
-        addListForm(request, parent, children, sb);
+        addListForm(request, parent, children.get(), sb);
 
         getPageHandler().entrySectionClose(request, parent, sb);
 

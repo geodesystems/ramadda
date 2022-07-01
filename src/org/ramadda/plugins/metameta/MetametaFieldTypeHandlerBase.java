@@ -124,7 +124,7 @@ public abstract class MetametaFieldTypeHandlerBase extends ExtensibleGroupTypeHa
      * @throws Exception on badness
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry parent,  List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry parent,  Entries children)
             throws Exception {
         return super.getHtmlDisplay(request, parent, children);
     }

@@ -80,7 +80,7 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
+    public Result getHtmlDisplay(Request request, Entry group,  Entries children) 
             throws Exception {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
@@ -93,7 +93,7 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         return weblogOutputHandler.outputGroup(request,
-                weblogOutputHandler.OUTPUT_BLOG, group, children);
+					       weblogOutputHandler.OUTPUT_BLOG, group, children.get());
     }
 
 

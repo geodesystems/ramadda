@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.gdata;
 
 
+import org.ramadda.repository.util.SelectInfo;
+
 import com.google.gdata.client.*;
 
 import com.google.gdata.client.calendar.*;
@@ -342,7 +344,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    @Override
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
         if (synthId == null) {
@@ -440,7 +443,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
+    public Result getHtmlDisplay(Request request, Entry group,  Entries children) 
 	throws Exception {
 
         if (request.defined(ARG_OUTPUT)) {
@@ -460,7 +463,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         }
 
         return calendarOutputHandler.outputGroup(request,
-                request.getOutput(), group, children);
+						 request.getOutput(), group, children.get());
     }
 
 

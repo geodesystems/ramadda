@@ -107,7 +107,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
      * @throws Exception  problem getting the HTML
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry,   List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry entry,   Entries children)
             throws Exception {
         //Always call this to initialize things
         getGranuleTypeHandler();

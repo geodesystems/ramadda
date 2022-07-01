@@ -121,7 +121,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
+    public Result getHtmlDisplay(Request request, Entry group,  Entries children) 
             throws Exception {
 
         if ( !isDefaultHtmlOutput(request)) {
@@ -154,7 +154,8 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         String       theLetter = request.getString(ARG_LETTER, "");
         HashSet      seen      = new HashSet();
         seen.add("all");
-        for (Entry e : children) {
+	List<Entry> entries = children.get();
+        for (Entry e : entries) {
             if (e.getName().length() > 0) {
                 seen.add(e.getName().substring(0, 1).toUpperCase());
             }
@@ -181,13 +182,13 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
         sb.append("</center>");
 
-        if ((children.size() == 0) && request.defined(ARG_LETTER)) {
+        if ((entries.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(getPageHandler().showDialogNote(msg("No notes found")));
         }
         sb.append(
             "<style type=\"text/css\">.note {margin:0px;margin-bottom:5px;}\n");
         sb.append(".notes {margin:0px;margin-bottom:5px;}\n</style>");
-        for (Entry entry : children) {
+        for (Entry entry : entries) {
             String name   = entry.getName();
             String letter = "-";
             if (name.length() > 0) {

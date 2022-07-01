@@ -80,7 +80,7 @@ public class PasteitCollectionTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry group,  Entries children)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         boolean canAdd = getAccessManager().canDoNew(request, group);

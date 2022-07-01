@@ -107,7 +107,7 @@ public class BlogEntryTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group, List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry group, Entries children)
             throws Exception {
         return getHtmlDisplay(request, group);
     }

@@ -12,6 +12,8 @@ import org.json.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.util.SelectInfo;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.ProcessRunner;
@@ -78,7 +80,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public List<String> getSynthIds(Request request, Entry rootEntry,
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry rootEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
 

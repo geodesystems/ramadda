@@ -87,7 +87,7 @@ public class CalendarTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,  List<Entry> children) 
+    public Result getHtmlDisplay(Request request, Entry group,  Entries children) 
             throws Exception {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
@@ -99,7 +99,7 @@ public class CalendarTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         return calendarOutputHandler.outputGroup(request,
-                request.getOutput(), group, children);
+						 request.getOutput(), group, children.get());
     }
 
 

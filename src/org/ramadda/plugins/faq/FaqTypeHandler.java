@@ -57,7 +57,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception  problem getting the HTML
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry group,   List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry group,   Entries children)
             throws Exception {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
@@ -92,7 +92,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         List cats = new ArrayList();
         sb.append(
             "<style type=\"text/css\">.faq_question {margin:0px;margin-bottom:5px;}\n.faq_question a {text-decoration:none;}\n</style>");
-        for (Entry entry : children) {
+        for (Entry entry : children.get()) {
             String cat = "General";
             if (entry.getType().equals(FaqEntryTypeHandler.TYPE_FAQENTRY)) {
                 cat = (String) entry.getValue(0, cat);

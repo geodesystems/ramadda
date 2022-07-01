@@ -108,25 +108,6 @@ public abstract class MetametaDictionaryTypeHandlerBase extends MetametaGroupTyp
     }
 
 
-
-
-
-    /**
-     * If this entry type is a group then this method gets called to create the default HTML display
-     *
-     * @param request request
-     * @param parent the parent entry
-     *
-     * @return result
-     *
-     * @throws Exception on badness
-     */
-    @Override
-    public Result getHtmlDisplay(Request request, Entry parent,  List<Entry> children)
-	throws Exception {
-        return super.getHtmlDisplay(request, parent, children);
-    }
-
     /**
      * _more_
      *

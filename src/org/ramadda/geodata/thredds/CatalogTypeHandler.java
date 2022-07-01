@@ -8,6 +8,8 @@ package org.ramadda.geodata.thredds;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.util.SelectInfo;
+
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -271,7 +273,8 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    @Override
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String id)
             throws Exception {
         if (id == null) {
