@@ -500,8 +500,8 @@ public class ModelUtil {
             if (isDaily) {
             	dateSB.append(" ");
             	dateSB.append(startDay);
-                dateSB.append("-");
-            }
+            } 
+            dateSB.append("-");
             dateSB.append(MONTHS[endMonth - 1]);
             if (isDaily) {
             	dateSB.append(" ");

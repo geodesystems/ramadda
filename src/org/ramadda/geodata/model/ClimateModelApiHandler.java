@@ -25,6 +25,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.RequestHandler;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.repository.type.Column;
@@ -49,9 +50,11 @@ import ucar.unidata.util.TwoFacedObject;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -288,6 +291,21 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         return doCompare(request, dpi, type, null);
     }
 
+    
+    /**
+     * Get the system commands for listing  directory
+     */
+    private List<String> getDirListCommands() {
+        List<String> commands = new ArrayList<String>();
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().indexOf("windows") >= 0) {
+        	commands.add("dir");
+        } else {
+            commands.add("/bin/ls");
+            commands.add("-l");
+        }
+        return commands;
+    }
 
     /**
      * Do the compare
@@ -315,6 +333,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             processDir = getStorageManager().createProcessDir();
         }
 
+        List<String> commands = getDirListCommands();
+        commands.add(processDir.toString());
+        Map<String, String> envMap = new HashMap<String, String>();
         List<ServiceOutput> outputs   = new ArrayList<ServiceOutput>();
         ServiceInput        nextInput = dpi;
         for (Service process : processesToRun) {
@@ -332,12 +353,20 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
             //make a new input for the next process
             nextInput = dpi.makeInput(output);
+            JobManager.CommandResults results =
+                getRepository().getJobManager().executeCommand(commands, envMap,
+                    processDir, 60);
+            String errorMsg = results.getStderrMsg();
+            String outMsg   = results.getStdoutMsg();
+            //System.err.println(outMsg);
+            //System.out.println(processDir.listFiles());
 
             //Are we done? This should probably be a check to see if the output has a Result
             //if (output.hasOutput()) {
             //    break;
             //}
         }
+        
 
         boolean    anyKMZ    = false;
         List<File> files     = new ArrayList<File>();
@@ -386,7 +415,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
         IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
                 ".this.ramadda.xml")), template);
-
 
 
         //If no processing was done then return the raw files
@@ -719,8 +747,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      *
      * @throws Exception on badness
      */
-    public Result processTestRequest(Request request)
-            throws Exception {
+    public Result processTestRequest(Request request) throws Exception {
         return handleRequest(request, ARG_ACTION_TEST);
     }
 
@@ -737,8 +764,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     public Result handleRequest(Request request, String type)
             throws Exception {
 
-	boolean debug = false;
-	if(debug) System.err.println("handleRequest:" + request);
+        boolean debug = false;
+        if (debug) {
+            System.err.println("handleRequest:" + request);
+        }
         if (getServices(request, type).isEmpty()) {
             throw new RuntimeException(
                 "Data processes for model comparison are not configured.");
@@ -1294,8 +1323,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         && !selectedValues.get(0).toString().isEmpty()) {
                     values.addAll(selectedValues);
                 }
-		if(debug)
-		    System.err.println("\tcolumn:" + column +" arg:" + arg +" values:" + values);
+                if (debug) {
+                    System.err.println("\tcolumn:" + column + " arg:" + arg
+                                       + " values:" + values);
+                }
                 // don't show variable selector for subsequent collections when we have a fixed
                 // collection
                 if (request.defined(ARG_COLLECTION)
@@ -1316,33 +1347,54 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
                     String extraSelect = "";
                     String selectBox   = "";
+                    String multiboxCss =    HU.css("padding",
+                               "5px",
+                               "max-height",
+                               "100px",
+                               "overflow-y",
+                               "auto",
+                               "border",
+                               "1px solid #ccc");
+                    /*
                     if (type.equals(ARG_ACTION_MULTI_COMPARE)
                             && column.getName().equals("model")) {
-                        extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
-                                "true") + HtmlUtils.attr("size", "4");
-                        selectBox = HtmlUtils.select(arg, values,
-                                selectedValues,
-                                HtmlUtils.cssClass(selectClass)
-                                + HtmlUtils.attr("id",
-                                        getFieldSelectId(formId,
-                                                collection,
-                                                fieldIdx)) + extraSelect);
-                    } else if ((type.equals(
-                    //ARG_ACTION_ENS_COMPARE) && frequency.equals(
-                    //"monthly")) || type.equals(
-                    ARG_ACTION_ENS_COMPARE) || type.equals(
-                    ARG_ACTION_TEST) || type.equals(
-                            ARG_ACTION_CORRELATION) || type.equals(
-                            ARG_ACTION_MULTI_TIMESERIES))
-                               && column.getName().equals("ensemble")) {
-                        //String multiple = (frequency.equals("monthly")) ? "true" : "false";
                         String multiple = "true";
                         extraSelect =
                             HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE, multiple)
                             + HtmlUtils.attr("size", "4")
                             + HtmlUtils.attr(
                                 "title",
-                                "Select one or more ensemble members");
+                                "Select one or more models");
+                        if (values.size() == 1) {
+                            values = new ArrayList();
+                        }
+                        selectBox = HtmlUtils.checkboxSelect(arg, values,
+                                selectedValues, multiboxCss,  HtmlUtils.attr("id",
+                                       getFieldSelectId(formId,
+                                               collection,
+                                               fieldIdx)) + extraSelect);
+                    } else if (((type.equals(
+                    		*/
+                    		
+                    if (((type.equals(
+                    ARG_ACTION_ENS_COMPARE) || type.equals(
+                            ARG_ACTION_TEST) || type.equals(
+                            ARG_ACTION_CORRELATION) || type.equals(
+                            ARG_ACTION_MULTI_TIMESERIES))
+                               && column.getName().equals("ensemble")) ||
+                    (type.equals(ARG_ACTION_MULTI_COMPARE)
+                            && column.getName().equals("model"))) {
+                        //String multiple = (frequency.equals("monthly")) ? "true" : "false";
+                        String hint = "Select one or more ensemble members";
+                    	if (type.equals(ARG_ACTION_MULTI_COMPARE)) {
+                    		hint = "Select one or more models";
+                    	}
+                        String multiple = "true";
+                        extraSelect =
+                            HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE, multiple)
+                            + HtmlUtils.attr("size", "4")
+                            + HtmlUtils.attr(
+                                "title", hint);
                         /*
                         selectBox = HtmlUtils.select(arg, values,
                                 selectedValues,
@@ -1352,18 +1404,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                                 collection,
                                                 fieldIdx)) + extraSelect);
                                                            */
-			//jeffmc:If there is only the "all" value then don't include any
-			if(values.size()==1) {
-			    values = new ArrayList();
-			}
+                        //jeffmc:If there is only the "all" value then don't include any
+                        if (values.size() == 1) {
+                            values = new ArrayList();
+                        }
                         selectBox = HtmlUtils.checkboxSelect(arg, values,
-                                           selectedValues,
-                                           //HtmlUtils.cssClass(selectClass)
-                                           HU.css("padding","5px","max-height","100px","overflow-y","auto","border","1px solid #ccc"),
-                                           HtmlUtils.attr("id",
-                                                   getFieldSelectId(formId,
-                                                           collection,
-                                                           fieldIdx)) + extraSelect);
+                                selectedValues, multiboxCss, HtmlUtils.attr("id",
+                                       getFieldSelectId(formId,
+                                               collection,
+                                               fieldIdx)) + extraSelect);
 
                     } else {
                         selectBox = HtmlUtils.select(arg, values,
@@ -1780,8 +1829,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
 
-        List<Entry> entries = getEntryManager().getEntriesFromDb(request, clauses,
-							   typeHandler.getGranuleTypeHandler());
+        List<Entry> entries = getEntryManager().getEntriesFromDb(request,
+                                  clauses,
+                                  typeHandler.getGranuleTypeHandler());
 
         entries = getEntryUtil().sortEntriesOnName(entries, false);
 
@@ -1874,9 +1924,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     private Result processJsonRequest(Request request, String type)
             throws Exception {
 
-	boolean debug = false;
-	if(debug)
-	    System.err.println("processJsonRequest");
+        boolean debug = false;
+        if (debug) {
+            System.err.println("processJsonRequest");
+        }
 
         //        System.err.println("Request:" + request);
         Entry entry = getEntryManager().getEntry(request,
@@ -1917,10 +1968,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
             }
         }
-	if(debug) {
-	    System.err.println("\tclauses: " + clauses);
-	    System.err.println("\tors: " + ors);
-	}
+        if (debug) {
+            System.err.println("\tclauses: " + clauses);
+            System.err.println("\tors: " + ors);
+        }
 
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
@@ -1948,8 +1999,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 if (orNum == numOrs - 1) {
                     values = uniqueOrs;
-		    if(debug)
-			System.err.println("final or values:" + values);
+                    if (debug) {
+                        System.err.println("final or values:" + values);
+                    }
                 }
                 orNum++;
             }
@@ -1961,8 +2013,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     myColumn,
                     clauses,
                     false));
-	    if(debug)
-		System.err.println("values:" + values);
+            if (debug) {
+                System.err.println("values:" + values);
+            }
         }
 
         StringBuilder sb = new StringBuilder();
