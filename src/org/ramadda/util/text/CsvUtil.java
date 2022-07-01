@@ -58,7 +58,6 @@ import java.util.zip.*;
 
 
 import java.sql.*;
-import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
 
