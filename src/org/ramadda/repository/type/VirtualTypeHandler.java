@@ -8,6 +8,7 @@ package org.ramadda.repository.type;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
@@ -142,7 +143,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
 

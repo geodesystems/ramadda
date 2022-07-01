@@ -182,7 +182,7 @@ public class AccessManager extends RepositoryManager {
         Misc.sleepSeconds(2);
         debugDataPolicy = getRepository().getProperty(PROP_DATAPOLICY_DEBUG,
                 false);
-        int minutes = getRepository().getProperty(PROP_DATAPOLICY_SLEEP, 1);
+        int minutes = getRepository().getProperty(PROP_DATAPOLICY_SLEEP, 5);
         while (true) {
             haveDoneDataPolicyFetch = true;
             try {

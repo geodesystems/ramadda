@@ -233,8 +233,8 @@ public class TemplateOutputHandler extends OutputHandler {
             wiki = outerTemplate.replace("${innercontent}", wiki);
         }
 
-        wiki = getWikiManager().wikifyEntry(request, group, wiki, false,
-                                            children);
+	//TODO: what to do with the children
+        wiki = getWikiManager().wikifyEntry(request, group, wiki, false);
 
         return new Result("", new StringBuffer(wiki));
 

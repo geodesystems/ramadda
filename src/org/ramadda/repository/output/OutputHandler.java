@@ -162,6 +162,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     }
 
 
+    public boolean requiresChildrenEntries(Request request, OutputType type, Entry parent) {
+	return true;
+    }
+
+
     /**
      * _more_
      *
@@ -616,7 +621,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             throws Exception {
         Result result = new Result(title, sb);
         addLinks(request, result, state);
-
         return result;
     }
 

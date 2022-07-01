@@ -1280,6 +1280,12 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public void putIfNull(Object key, Object value) {
+	if(parameters.get(key)==null)
+	    put(key,value);
+    }
+
+
     /**
      * _more_
      *

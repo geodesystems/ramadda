@@ -7,6 +7,7 @@ package org.ramadda.repository.type;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
@@ -144,11 +145,11 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
 
-	boolean debug = true;
+	boolean debug = false;
 	if(debug)
 	    System.err.println ("LocalFileTypeHandler.getSynthIds: entry:"+  mainEntry.getName() +" " +mainEntry.getId() +" synthid:" + synthId);
 	//	System.err.println (Utils.getStack(10));
@@ -160,9 +161,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             return ids;
         }
 
-        int    max         = request.get(ARG_MAX, VIEW_MAX_ROWS);
-	max = 10000;
-        int    skip        = request.get(ARG_SKIP, 0);
+        int    max         = select.getMax();
+        int    skip        = select.getSkip();
         long   t1          = System.currentTimeMillis();
 
         String rootDirPath = localFileInfo.getRootDir().toString();
@@ -187,39 +187,15 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	    if(debug) System.err.println ("\tnull file listing");
             return new ArrayList<String>();
         }
-        //        files = IOUtil.sortFilesOnName(files);
-
-        Metadata sortMetadata = null;
-        if (mainEntry != null) {
-            try {
-                sortMetadata =
-                    getMetadataManager().getSortOrderMetadata(request,
-                        mainEntry);
-            } catch (Exception ignore) {}
-        }
-
-        boolean descending = !request.get(ARG_ASCENDING, false);
-        String  by         = request.getString(ARG_ORDERBY, ORDERBY_FROMDATE);
-	System.err.println(request);
-        if (sortMetadata != null) {
-            if ( !request.exists(ARG_ASCENDING)) {
-                if (Misc.equals(sortMetadata.getAttr2(), "true")) {
-                    descending = false;
-                } else {
-                    descending = true;
-                }
-            }
-            if ( !request.exists(ARG_ORDERBY)) {
-                by = sortMetadata.getAttr1();
-            }
-        }
-
-
+        boolean descending = !select.getAscending();
+        String  by         = select.getOrderBy();
+	//	System.err.println("order:" + by +" desc:" + descending);
         if (by.equals(ORDERBY_NAME)) {
             files = IOUtil.sortFilesOnName(files, descending);
         } else if (by.equals(ORDERBY_SIZE)) {
             files = Utils.sortFilesOnSize(files, descending);
-
+        } else if (by.equals(ORDERBY_NUMBER)) {
+            files = IO.sortFilesOnNumber(files, descending);	    
         } else if (by.equals(ORDERBY_MIXED)) {
             List<File> filesByDate = new ArrayList<File>();
             List<File> filesByName = new ArrayList<File>();

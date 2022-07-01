@@ -52,6 +52,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.auth.DataPolicy;
+import org.ramadda.repository.util.SelectInfo;
 
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.BufferMapList;
@@ -578,17 +579,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      *
      * @throws Exception  problem wikifying
      */
-    public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent)
+    public String wikifyEntry(Request request, Entry entry, String wikiContent)
 	throws Exception {
-        return wikifyEntry(request, entry, wikiContent, true, null);
+        return wikifyEntry(request, entry, wikiContent, true);
     }
 
-    public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent,boolean wrap)
-	throws Exception {
-        return wikifyEntry(request, entry, wikiContent, wrap, null);
-    }    
 
 
     /**
@@ -604,10 +599,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      * @throws Exception  problem wikifying
      */
     public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent, boolean wrapInDiv,
-                              List<Entry> children)
+                              String wikiContent, boolean wrapInDiv)
 	throws Exception {
-        return wikifyEntry(request, entry, wikiContent, wrapInDiv, children, null);
+        return wikifyEntry(request, entry, wikiContent, wrapInDiv, (HashSet)null);
     }
 
 
@@ -626,7 +620,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
-                              List<Entry> children,
                               HashSet notTags)
 	throws Exception {
 
@@ -658,7 +651,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    wikiUtil.putProperty("primaryEntry", entry);
 	}
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
-                           children, notTags, true);
+                           notTags, true);
     }
 
 
@@ -679,7 +672,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public String wikifyEntry(Request request, Entry entry,
                               WikiUtil wikiUtil, String wikiContent,
-                              boolean wrapInDiv, List<Entry> children, HashSet notTags,
+                              boolean wrapInDiv,  HashSet notTags,
                               boolean includeJavascript)
 	throws Exception {
 
@@ -689,7 +682,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    wikiUtil.removeProperty(PROP_SHOW_TITLE);
 	}
 
-	if(children==null) children = new ArrayList<Entry>();
 
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
@@ -1411,7 +1403,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             //Convert ant _nl_, _qt_, etc
             prefix = Utils.convertPattern(prefix);
             prefix = wikifyEntry(request, entry, wikiUtil, prefix, false,
-                                 null, wikiUtil.getNotTags(), true);
+                                 wikiUtil.getNotTags(), true);
             sb.append(prefix);
         }
 
@@ -1917,7 +1909,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 text = getWikiMetadataLabel(request, entry, id, text);
             }
             if (wikify) {
-                text = wikifyEntry(request, entry, text, false, null, 
+                text = wikifyEntry(request, entry, text, false, 
                                    wikiUtil.getNotTags());
 
             }
@@ -2091,7 +2083,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (wikify) {
                 //Pass in the wikiUtil so any state (e.g., headings) gets passed up
                 desc = wikifyEntry(request, entry, wikiUtil, desc, false,
-                                   null, wikiUtil.getNotTags(), true);
+                                   wikiUtil.getNotTags(), true);
                 //                desc = makeWikiUtil(request, false).wikify(desc, null);
             }
             if (getProperty(wikiUtil, props, "convert_newline", false)) {
@@ -2220,7 +2212,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
 	    if(embedWikify) {
 		return  wikifyEntry(request, entry, wikiUtil, txt.toString(),
-				    false, null, null, false);
+				    false,  (HashSet)null, false);
 	    }
 	    String style = "";
 	    if(maxHeight>0) {
@@ -2848,7 +2840,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     s = s.replaceAll("_dollar_", "\\$").replaceAll("_nl_", "\n").replaceAll("_qt_","\"");
 		    //		    System.err.println("WIKIFY:" + s);
 		    String tmp=  wikifyEntry(request, theEntry, wikiUtil, s,
-                                             false, null,  null, false);
+                                             false, (HashSet) null, false);
 
 
                     buff.append(tmp);
@@ -3615,7 +3607,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 Appendable tmp = new StringBuilder();
                 String     msg = msg("New on") + " "
 		    + dateFormat.format(date);
-                tmp.append("<table width=100% border=0>");
+               tmp.append("<table width=100% border=0>");
                 tmp.append(map.get(date).toString());
                 tmp.append("</table>");
                 sb.append(HU.makeShowHideBlock(msg, tmp.toString(), true));
@@ -3787,7 +3779,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (fromTypeHandler != null) {
                 if (wikify) {
                     fromTypeHandler = wikifyEntry(request, entry,
-						  fromTypeHandler, false, null, 
+						  fromTypeHandler, false, 
 						  wikiUtil.getNotTags());
                 }
 
@@ -3811,7 +3803,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (fromProperty != null) {
                 if (wikify) {
                     fromProperty = wikifyEntry(request, entry, fromProperty,
-					       false, null, wikiUtil.getNotTags());
+					       false, wikiUtil.getNotTags());
                 }
 
                 return fromProperty;
@@ -4627,7 +4619,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             String snippet = getSnippet(request, entry, false,null);
             if (Utils.stringDefined(snippet)) {
                 snippet = wikifyEntry(request, entry, snippet, false, 
-                                      null, wikiUtil.getNotTags());
+                                      wikiUtil.getNotTags());
                 if (showSnippet) {
                     HU.div(card, snippet, HU.cssClass("ramadda-snippet"));
 
@@ -4659,11 +4651,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    List<Entry> children = getEntryManager().getChildren(request,
 								 entry);
 	    if(children.size()>0) {
-
+		//TODO: what to do with the children
 		boolean showicon = getShowIcon(wikiUtil, props, false);
 		String wiki = getProperty(wikiUtil, props,"childrenWiki",
 					  "{{links showIcon=" + showicon+"}}"); 
-		String  list = wikifyEntry(request,  entry, wiki, false,children);
+		//		String  list = wikifyEntry(request,  entry, wiki, false,children);
+		String  list = wikifyEntry(request,  entry, wiki, false);
 
 		HU.div(card,list,HU.style(HU.css("max-height","200px","overflow-y","auto")));
 		imageUrl = null;
@@ -5315,7 +5308,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             max = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX, count);
         }
         if (max > 0) {
-	    //            request.put(ARG_MAX, "" + max);
+	    request.put(ARG_MAX, "" + max);
         }
 
         List<Entry> entries = getEntries(request, wikiUtil, entry,
@@ -5559,7 +5552,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                   Hashtable props)
 	throws Exception {
 
-
         if (props == null) {
             props = new Hashtable();
         }
@@ -5567,11 +5559,31 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
-        Request myRequest = new Request(getRepository(), request.getUser());
-
-        int         max         = -1;
+        Request myRequest = request.cloneMe();
+	String prefix = getProperty(wikiUtil,props,"argPrefix","");
+        int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
         String      orderBy     = null;
         Boolean     orderDir    = null;
+
+        if (orderBy == null) {
+            orderBy = getProperty(wikiUtil, props, "sort");
+	    if (orderBy == null) {
+		orderBy = getProperty(wikiUtil, props, "sortby");
+	    }
+        }
+
+        if (props.get(ATTR_SORT_DIR) != null) {
+            orderDir = new Boolean(props.get(ATTR_SORT_DIR).equals("down"));
+        } else  if (props.get(ATTR_SORT_ORDER) != null) {
+            orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
+        }
+
+        if (orderDir == null) {
+            orderDir = true;
+        }
+
+
+
         HashSet     nots        = new HashSet();
 
         for (String entryid : Utils.split(ids, ",", true, true)) {
@@ -5580,7 +5592,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             if (entryid.startsWith("not:")) {
                 nots.add(entryid.substring("not:".length()));
-
                 continue;
             }
 
@@ -5592,7 +5603,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             if (entryid.startsWith("entries.orderby=")) {
                 orderBy = entryid.substring("entries.orderby=".length());
-
                 continue;
             }
             if (entryid.startsWith("entries.orderdir=")) {
@@ -5828,11 +5838,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
             if (entryid.equals(ID_CHILDREN)) {
-                List<Entry> children = getEntryManager().getChildren(request,
-								     theBaseEntry);
-		entries.addAll(children);
-		//TODO:
-		//                entries.addAll(applyFilter(request, wikiUtil, children,filter, props));
+		SelectInfo select = new SelectInfo(request, theBaseEntry, max,orderBy,orderDir);
+                List<Entry> children = getEntryManager().getChildren(myRequest,
+								     theBaseEntry,select);
+		entries.addAll(applyFilter(request, wikiUtil, children,filter, props));
                 continue;
             }
 
@@ -5939,23 +5948,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-        if (orderBy == null) {
-            orderBy = getProperty(wikiUtil, props, "sort");
-	    if (orderBy == null) {
-		orderBy = getProperty(wikiUtil, props, "sortby");
-	    }
-        }
-
-        if (props.get(ATTR_SORT_DIR) != null) {
-            orderDir = new Boolean(props.get(ATTR_SORT_DIR).equals("down"));
-        } else  if (props.get(ATTR_SORT_ORDER) != null) {
-            orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
-        }
-
-        if (orderDir == null) {
-            orderDir = true;
-        }
-
         if (orderBy != null) {
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, orderDir);
@@ -5969,7 +5961,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
         }
 
-
+	max = request.get(ARG_MAX,max);
         if (max > 0) {
             List<Entry> l = new ArrayList<Entry>();
             for (int i = 0; (i < max) && (i < entries.size()); i++) {
@@ -7183,7 +7175,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (wikify) {
             if ( !originalEntry.equals(entry)) {
-                content = wikifyEntry(request, entry, content, false, null);
+                content = wikifyEntry(request, entry, content, false);
             } else {
                 content = makeWikiUtil(request, false).wikify(content, null);
             }

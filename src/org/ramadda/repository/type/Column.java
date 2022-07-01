@@ -1473,7 +1473,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(request,
-                        entry, s, false, null, null);
+                        entry, s, false, null);
             } else if (isEnumeration() && !raw) {
                 String label = getEnumLabel(s);
                 if (label != null) {

@@ -2621,13 +2621,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (db.equals(SqlUtil.DB_MYSQL)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
         } else if (db.equals(SqlUtil.DB_DERBY)) {
-            return " OFFSET " + skip + " ROWS ";
+            return " OFFSET " + skip + " ROWS " + " FETCH FIRST " + max +" ROWS ONLY ";
         } else if (db.equals(SqlUtil.DB_POSTGRES)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
-
         } else if (db.equals(SqlUtil.DB_H2)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
-        }
+	}
 
         return "";
     }
@@ -2638,17 +2637,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean canDoSelectOffset() {
-        if (db.equals(SqlUtil.DB_MYSQL)) {
-            return true;
-        } else if (db.equals(SqlUtil.DB_DERBY)) {
-            return true;
-        } else if (db.equals(SqlUtil.DB_POSTGRES)) {
-            return true;
-        } else if (db.equals(SqlUtil.DB_H2)) {
-            return true;
-        }
-
-        return false;
+	//All dbs can do skip now
+	return true;
     }
 
 
@@ -2673,12 +2663,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
     /**
-     * Class SelectInfo _more_
+     * Class DbQueryInfo _more_
      *
      *
      * @author RAMADDA Development Team
      */
-    private static class SelectInfo {
+    private static class DbQueryInfo {
 
         /** _more_ */
         long time;
@@ -2707,7 +2697,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
          * @param extra _more_
          * @param max _more_
          */
-        public SelectInfo(String what, List tables, Clause clause,
+        public DbQueryInfo(String what, List tables, Clause clause,
                           String extra, int max) {
             time        = System.currentTimeMillis();
             this.what   = what;
@@ -2740,7 +2730,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (extra != null) {
             extra = escapeString(extra);
         }
-        SelectInfo selectInfo = new SelectInfo(what, tables, clause, extra,
+        DbQueryInfo queryInfo = new DbQueryInfo(what, tables, clause, extra,
                                     max);
         final boolean[] done = { false };
         String msg = "Select what:" + what + "\ntables:" + tables

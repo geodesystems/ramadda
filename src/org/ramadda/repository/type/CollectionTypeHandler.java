@@ -731,7 +731,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception  problem getting the HTML
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry,  List<Entry> children)
+    public Result getHtmlDisplay(Request request, Entry entry,  Entries children)
             throws Exception {
         //Always call this to init things
         getGranuleTypeHandler();
@@ -747,9 +747,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(entry.getDescription());
-
-
-
         String formId = "selectform" + HtmlUtils.blockCnt++;
 
         sb.append(

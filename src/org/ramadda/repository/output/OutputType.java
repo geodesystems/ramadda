@@ -4,51 +4,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.output;
-
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.util.HtmlUtils;
-
-import org.ramadda.util.sql.SqlUtil;
-
-
-import org.w3c.dom.*;
-
 import ucar.unidata.util.Counter;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
-
-import java.io.*;
-
-import java.io.File;
-
-
-import java.net.*;
-
-
-
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-
-
-
-import java.util.regex.*;
-
-import java.util.zip.*;
-
 
 /**
  *

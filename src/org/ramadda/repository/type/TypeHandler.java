@@ -53,6 +53,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
+import java.util.function.Supplier;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1455,17 +1456,26 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry group,
+    public Result xgetHtmlDisplay(Request request, Entry group,
                                  List<Entry> children)
             throws Exception {
 
         if (parent != null) {
-            return parent.getHtmlDisplay(request, group, children);
+            return parent.xgetHtmlDisplay(request, group, children);
         }
 
         return null;
     }
 
+    public Result getHtmlDisplay(Request request, Entry group,
+                                 Entries children)
+            throws Exception {
+	        if (parent != null) {
+            return parent.getHtmlDisplay(request, group, children);
+        }
+
+        return null;
+    }
 
     /**
      * _more_
@@ -1562,11 +1572,11 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Entry mainEntry,
+    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry ancestor, String synthId)
             throws Exception {
         if (parent != null) {
-            return parent.getSynthIds(request, mainEntry, ancestor, synthId);
+            return parent.getSynthIds(request, select, mainEntry, ancestor, synthId);
         }
 
         throw new IllegalArgumentException(
@@ -7825,8 +7835,8 @@ public class TypeHandler extends RepositoryManager {
         System.err.println(args[0].toLowerCase().matches(pattern));
     }
 
-
-
-
+    public interface Entries extends Supplier<List<Entry>> {
+	public List<Entry> get();
+    }
 
 }

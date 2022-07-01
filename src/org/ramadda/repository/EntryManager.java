@@ -76,8 +76,6 @@ import java.sql.Statement;
 
 import java.text.SimpleDateFormat;
 
-import java.util.function.Function;
-import java.util.function.BiFunction;
 import java.util.function.BiConsumer;
 
 import javax.xml.bind.DatatypeConverter;
@@ -128,6 +126,8 @@ public class EntryManager extends RepositoryManager {
 
     /** _more_ */
     public static boolean debug = false;
+
+    public static boolean debugGetEntries = false;    
 
     //In sql
 
@@ -819,7 +819,7 @@ public class EntryManager extends RepositoryManager {
 	request.putExtraProperty("snapshotfiles", snapshotFiles);
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
-	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null);
+	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb);
 	Result tmpResult = new Result("",sb);
 	tmpResult.setTitle(entry.getName());
 	Request tmpRequest = request.cloneMe();
@@ -1025,7 +1025,7 @@ public class EntryManager extends RepositoryManager {
             List<String> ids =
                 getChildIds(request,
                             findGroup(request, entry.getParentEntryId()),
-                            new SelectInfo(new ArrayList<Clause>()));
+                            null);
             String nextId = null;
             int    index  = ids.indexOf(entry.getId());
             if (index >= 0) {
@@ -1545,28 +1545,25 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
         printRequest(request, group);
         boolean      doLatest    = request.get(ARG_LATEST, false);
-        TypeHandler  typeHandler = group.getTypeHandler();
-        List<Clause> where       = typeHandler.assembleWhereClause(request);
         List<Entry>  children     = new ArrayList<Entry>();
-        try {
-            typeHandler.getChildrenEntries(
-					   request, group, children,
-					   new SelectInfo(where, outputHandler.getMaxEntryCount()));
-        } catch (Exception exc) {
-            exc.printStackTrace();
-            request.put(ARG_MESSAGE,
-                        getRepository().translate(request,
-						  "Error finding children") + ":"
-			+ exc.getMessage());
-        }
-
+	if(outputHandler.requiresChildrenEntries(request, outputType, group)) {
+	    try {
+		getChildrenEntries(request, outputHandler,group, children);
+	    } catch (Exception exc) {
+		exc.printStackTrace();
+		request.put(ARG_MESSAGE,
+			    getRepository().translate(request,
+						      "Error finding children") + ":"
+			    + exc.getMessage());
+	    }
+	}
         if (doLatest) {
             if (children.size() > 0) {
                 children = getEntryUtil().sortEntriesOnDate(children, true);
                 return outputHandler.outputEntry(request, outputType,
 						 children.get(0));
             }
-        }
+	}
         group.setSubEntries(children);
 
 
@@ -1581,6 +1578,21 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    
+    public void getChildrenEntries(Request request, OutputHandler outputHandler, Entry group, List<Entry>children) throws Exception {
+	TypeHandler  typeHandler = group.getTypeHandler();
+	List<Clause> where       = typeHandler.assembleWhereClause(request);
+	//	debugGetEntries = true;
+	typeHandler.getChildrenEntries(
+				       request, group, children,
+				       new SelectInfo(request, group,where, outputHandler.getMaxEntryCount()));
+	if(debugGetEntries) {
+	    System.err.println("got:" + children.size());
+	    for(int i=0;i<children.size() && i<10;i++) {
+		System.err.println("E:" + children.get(i).getName());
+	    }
+	}
+    }
 
     /**
      * _more_
@@ -7335,9 +7347,8 @@ public class EntryManager extends RepositoryManager {
 	    Hashtable   seen          = new Hashtable();
 
 
-	    Metadata[] mtd = new Metadata[]{null};
-
-	    String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo(),mtd);
+	    SelectInfo select = new SelectInfo(request, null);
+	    String order = getQueryOrderAndLimit(request, false, null,  select);
 	    if(typeHandler==null)
 		typeHandler =  getRepository().getTypeHandler(request);
 	    if(clauses==null) clauses = new ArrayList<Clause>();
@@ -7378,7 +7389,7 @@ public class EntryManager extends RepositoryManager {
 		getDatabaseManager().closeAndReleaseConnection(statement);
 	    }
 
-	    if(mtd[0]!=null && Misc.equals(mtd[0].getAttr1(),"number")) {
+	    if(select.getOrderBy().equals("number")) {
 		//TODO: sort
 		//	    String pattern = "number:" + mtd[0].getAttr4();
 	    }
@@ -8463,7 +8474,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Entry> getChildren(Request request, Entry parentEntry)
+    public List<Entry> getChildren(Request request, Entry parentEntry, SelectInfo...selects)
 	throws Exception {
         List<Entry> children = new ArrayList<Entry>();
 	if(parentEntry==null) {
@@ -8472,9 +8483,13 @@ public class EntryManager extends RepositoryManager {
         if ( !parentEntry.isGroup()) {
             return children;
         }
+	SelectInfo select = selects.length>0?selects[0]:new SelectInfo(request, parentEntry);
         List<Entry>  entries      = new ArrayList<Entry>();
-        List<String> ids          = getChildIds(request, parentEntry, null);
+        List<String> ids          = getChildIds(request, parentEntry, select);
         boolean      doingOrderBy = request.exists(ARG_ORDERBY);
+
+
+
         for (String id : ids) {
             Entry entry = getEntry(request, id);
             if (entry == null) {
@@ -8512,6 +8527,8 @@ public class EntryManager extends RepositoryManager {
                                     SelectInfo select)
 	throws Exception {
 
+	if(select==null) select = new SelectInfo(request, group);
+
         boolean isSynthEntry = isSynthEntry(group.getId());
         if (group.getTypeHandler().isSynthType() || isSynthEntry) {
             List<String> ids       = new ArrayList<String>();
@@ -8540,9 +8557,8 @@ public class EntryManager extends RepositoryManager {
 
             //            System.err.println("****  Get synthids:" + mainEntry.getTypeHandler().getSynthIds(request, mainEntry,
             //                                                                                              group, synthId));
-
             try {
-                return mainEntry.getMasterTypeHandler().getSynthIds(request,
+                return mainEntry.getMasterTypeHandler().getSynthIds(request,select,
 								    mainEntry, group, synthId);
             } catch (Exception exc) {
                 getLogManager().logError("Error getting synthIds from:"
@@ -8584,9 +8600,7 @@ public class EntryManager extends RepositoryManager {
                             group.getId()));
 
 
-        String orderBy = getQueryOrderAndLimit(request, true, group, select, null);
-
-
+        String orderBy = getQueryOrderAndLimit(request, true, group, select);
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         int         skipCnt     = request.get(ARG_SKIP, 0);
         Statement statement = typeHandler.select(request,
@@ -10235,72 +10249,20 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     private String getQueryOrderAndLimit(Request request, boolean addOrderBy,
-					 Entry forEntry, SelectInfo select,Metadata[]mtdHolder) {
-
-        List<Metadata> metadataList = null;
-
-        Metadata       sortMetadata = null;
-        if ((forEntry != null) && !request.exists(ARG_ORDERBY)) {
-            try {
-                sortMetadata =
-                    getMetadataManager().getSortOrderMetadata(request,
-							      forEntry);
-		if(mtdHolder!=null) mtdHolder[0] = sortMetadata;
-            } catch (Exception ignore) {}
-        }
-
-	boolean desc = true;
-        boolean haveOrder = request.exists(ARG_ASCENDING);
-        String  by        = null;
-        int     max       = ((select == null)
-                             ? -1
-                             : select.getMaxCount());
-
-        if (max <= 0) {
-            max = DB_MAX_ROWS;
-        }
-
-        if (forEntry != null) {
-            max = forEntry.getTypeHandler().getDefaultQueryLimit(request,
-								 forEntry);
-        }
-
-        if (sortMetadata != null) {
-            haveOrder = true;
-            if (Misc.equals(sortMetadata.getAttr2(), "true")) {
-                desc = false;
-            } else {
-                desc = true;
-            }
-            by = sortMetadata.getAttr1();
-            String tmp = sortMetadata.getAttr3();
-            if ((tmp != null) && (tmp.length() > 0)) {
-                int tmpMax = Integer.parseInt(tmp.trim());
-                if (tmpMax > 0) {
-                    max = tmpMax;
-                    if ( !request.defined(ARG_MAX)) {
-                        request.put(ARG_MAX, "" + max);
-                    }
-                }
-            }
-        } else {
-            by = request.getString(ARG_ORDERBY, (String) null);
-            if (request.get(ARG_ASCENDING, false)) {
-                desc = false;
-            }
-        }
+					 Entry forEntry, SelectInfo select) {
 
 
-	max = request.get(ARG_MAX, max);
-        String limitString = BLANK;
-        limitString =
-            getDatabaseManager().getLimitString(request.get(ARG_SKIP, 0),
-						max);
+	if(select==null) select = new SelectInfo(request, forEntry);
+        String  by        =  select.getOrderBy();
+	boolean desc = !select.getAscending();
+        boolean haveOrder = request.exists(ARG_ASCENDING) || select.hasAscending();
+        String limitString =
+	    getDatabaseManager().getLimitString(select.getSkip(),select.getMax());
 
         String orderBy = BLANK;
         if (addOrderBy) {
             orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
-        }
+        }	
         if (by != null) {
             if (by.equals(ORDERBY_FROMDATE)) {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
@@ -10322,6 +10284,8 @@ public class EntryManager extends RepositoryManager {
                 orderBy = SqlUtil.orderBy("LOWER("+Tables.ENTRIES.COL_NAME+")",desc);
             }
         }
+	if(debugGetEntries)
+	    System.err.println("order:" + orderBy + " limit:" + limitString);
 	return orderBy + limitString;
     }
 

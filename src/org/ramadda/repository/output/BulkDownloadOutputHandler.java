@@ -317,7 +317,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 }
                 List<Entry> subEntries =
                     getEntryManager().getChildrenAll(request, entry,
-                        new SelectInfo(null, 20000));
+						     new SelectInfo(request, entry,null, 20000));
 
                 if (includeGroupOutputs || (subEntries.size() > 0)) {
                     wroteEntryXml = true;
