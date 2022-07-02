@@ -189,7 +189,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
         boolean descending = !select.getAscending();
         String  by         = select.getOrderBy();
-	//	System.err.println("order:" + by +" desc:" + descending);
         if (by.equals(ORDERBY_NAME)) {
             files = IOUtil.sortFilesOnName(files, descending);
         } else if (by.equals(ORDERBY_SIZE)) {
@@ -208,8 +207,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                     filesByName.add(f);
                 }
             }
-            //            System.err.println ("by date:" + filesByDate);
-            //            System.err.println ("by name:" + filesByName);
+
             File[] byDate = IOUtil.sortFilesOnAge(toArray(filesByDate),
                                 descending);
             File[] byName = IOUtil.sortFilesOnAge(toArray(filesByName),
@@ -230,20 +228,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         long         age = (long) (1000 * (localFileInfo.getAgeLimit() * 60));
         long         now      = System.currentTimeMillis();
         int          start    = skip;
-        List<File>   fileList = new ArrayList<File>();
-        List<File>   dirList  = new ArrayList<File>();
-        for (int i = start; i < files.length; i++) {
-            File childFile = files[i];
-            if (childFile.isDirectory()) {
-                dirList.add(childFile);
-            } else {
-                fileList.add(childFile);
-            }
-        }
-        dirList.addAll(fileList);
-
         int cnt = 0;
-        for (File childFile : dirList) {
+        for (int i =start;i<files.length;i++) {
+	    File childFile = files[i];
             if (childFile.isHidden()) {
                 continue;
             }
