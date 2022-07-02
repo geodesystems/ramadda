@@ -85,7 +85,7 @@ public class PageHandler extends RepositoryManager {
 
     /** _more_ */
     private static final String ACK_MESSAGE =
-        "<div class='ramadda-acknowledgement'>Powered by <a href='https://geodesystems.com'>Geode Systems' RAMADDA<br><img width=100px  src='${root}/images/logo.png'></a></div>";
+        "<div class='ramadda-acknowledgement'>Powered by <a href='https://geodesystems.com'>Geode Systems' RAMADDA<br><img width=100px  src='${cdnpath}/images/logo.png'></a></div>";
 
     /**  */
     private String ackMessage;
@@ -815,7 +815,6 @@ public class PageHandler extends RepositoryManager {
             logoImage = "${cdnpath}/images/logo.png";
         }
         logoImage = applyBaseMacros(logoImage);
-
         return logoImage;
     }
 
