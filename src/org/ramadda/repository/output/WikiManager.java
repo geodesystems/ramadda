@@ -5563,8 +5563,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	String prefix = getProperty(wikiUtil,props,"argPrefix","");
         int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
         String      orderBy     = null;
-        Boolean     orderDir    = null;
-
         if (orderBy == null) {
             orderBy = getProperty(wikiUtil, props, "sort");
 	    if (orderBy == null) {
@@ -5572,18 +5570,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    }
         }
 
-        if (props.get(ATTR_SORT_DIR) != null) {
-            orderDir = new Boolean(props.get(ATTR_SORT_DIR).equals("down"));
-        } else  if (props.get(ATTR_SORT_ORDER) != null) {
-            orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
-        }
-
-        if (orderDir == null) {
-            orderDir = true;
-        }
-
-
-
+	boolean descending = getProperty(wikiUtil,props,ATTR_SORT_DIR,
+					 getProperty(wikiUtil,props,ATTR_SORT_ORDER,"down")).equals("down");
         HashSet     nots        = new HashSet();
 
         for (String entryid : Utils.split(ids, ",", true, true)) {
@@ -5606,10 +5594,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 continue;
             }
             if (entryid.startsWith("entries.orderdir=")) {
-                orderDir = new Boolean(
-				       entryid.substring("entries.orderdir=".length()).equals(
-											      "up"));
-
+                descending=  entryid.substring("entries.orderdir=".length()).equals("down");
                 continue;
             }
 
@@ -5838,7 +5823,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
             if (entryid.equals(ID_CHILDREN)) {
-		SelectInfo select = new SelectInfo(request, theBaseEntry, max,orderBy,orderDir);
+		SelectInfo select = new SelectInfo(request, theBaseEntry, max,orderBy,!descending);
                 List<Entry> children = getEntryManager().getChildren(myRequest,
 								     theBaseEntry,select);
 		entries.addAll(applyFilter(request, wikiUtil, children,filter, props));
@@ -5950,14 +5935,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (orderBy != null) {
             if (orderBy.equals(ORDERBY_DATE)) {
-                entries = getEntryUtil().sortEntriesOnDate(entries, orderDir);
+                entries = getEntryUtil().sortEntriesOnDate(entries, descending);
             } else if (orderBy.equals(ORDERBY_CREATEDATE)) {
                 entries = getEntryUtil().sortEntriesOnCreateDate(entries,
-								 orderDir);
+								 descending);
             } else if (orderBy.equals(ORDERBY_NUMBER)) {
-                entries = getEntryUtil().sortEntriesOnNumber(entries, orderDir);		
+                entries = getEntryUtil().sortEntriesOnNumber(entries, descending);		
             } else {
-                entries = getEntryUtil().sortEntriesOnName(entries, orderDir);
+                entries = getEntryUtil().sortEntriesOnName(entries, descending);
             }
         }
 
@@ -7065,7 +7050,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
 
-            System.err.println("missing:" + name);
             //If its an anonymous user then jusst show the label or the name
             if (request.isAnonymous()) {
                 String extra = HU.cssClass("wiki-link-noexist");
