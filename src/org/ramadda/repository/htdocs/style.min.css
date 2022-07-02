@@ -7,7 +7,7 @@
 :root {
     --font-size:12pt;
     --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;    
-    --basic-border:1px #ccc solid;
+    --basic-border:1px #ddd solid;
     --highlight-border:1px #aaa solid;
     --nav-color:#000;
     --nav-link-color:#000;
@@ -2318,7 +2318,8 @@ td.entry-table-block {
 
 
 .entry-page-main {
-    border-right: 1px #efefef solid;
+    border-right: var(--basic-border);
+    min-height:100vh;
     padding-left:30px;
     padding-right:15px;
     padding-top:8px;
@@ -3486,7 +3487,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entry-tools-box {
-    border: 1px #efefef solid;
+    border: var(--basic-border);
     padding-left: 8px;
     padding-bottom: 2px;
     padding-top: 6px;
