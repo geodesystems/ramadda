@@ -1548,7 +1548,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry>  children     = new ArrayList<Entry>();
 	if(outputHandler.requiresChildrenEntries(request, outputType, group)) {
 	    try {
-		getChildrenEntries(request, outputHandler,group, children);
+		getChildrenEntries(request,outputHandler,group, children);
 	    } catch (Exception exc) {
 		exc.printStackTrace();
 		request.put(ARG_MESSAGE,
@@ -4197,9 +4197,9 @@ public class EntryManager extends RepositoryManager {
 					       + request);
         }
         StringBuilder sb = new StringBuilder();
-        List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
-        String links = getEntryManager().getEntryActionsTable(request, entry,
-							      OutputType.TYPE_MENU, linkList, false, null);
+        List<Link> linkList = getEntryLinks(request, entry);
+        String links = getEntryActionsTable(request, entry,
+					    OutputType.TYPE_MENU, linkList, false, null);
 
 	Result result = new Result("",new StringBuilder(links));
 	result.setShouldDecorate(false);
@@ -6555,7 +6555,14 @@ public class EntryManager extends RepositoryManager {
     public List<Link> getEntryLinks(Request request, Entry entry)
 	throws Exception {
         List<Link>          links = new ArrayList<Link>();
-        OutputHandler.State state = new OutputHandler.State(entry);
+        OutputHandler.State state;
+	if (handleEntryAsGroup(entry)) {
+	    List<Entry>  children     = new ArrayList<Entry>();
+	    getChildrenEntries(request, getRepository().getHtmlOutputHandler(),entry, children);
+	    state = new OutputHandler.State(entry,children);
+	} else  {
+	    state = new OutputHandler.State(entry);
+	}
         entry.getTypeHandler().getEntryLinks(request, entry, links);
         links.addAll(getRepository().getOutputLinks(request, state));
         return links;
