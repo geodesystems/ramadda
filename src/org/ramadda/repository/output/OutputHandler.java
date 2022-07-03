@@ -1488,15 +1488,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             if (true) {
                 return null;
             }
-
-            /*
-            if (entry.hasAreaDefined()) {
-                return request.makeUrl(repository.URL_GETMAP, ARG_SOUTH,
-                                   "" + entry.getSouth(), ARG_WEST,
-                                   "" + entry.getWest(), ARG_NORTH,
-                                   "" + entry.getNorth(), ARG_EAST,
-                                   "" + entry.getEast());
-                                   }*/
             return null;
         }
 
@@ -1512,11 +1503,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
 
 
-        return HU.url(request.makeUrl(repository.URL_ENTRY_GET) + "/"
-                      + (addVersion
-                         ? ("v" + (imageVersionCnt++))
-                         : "") + getStorageManager().getFileTail(
-                             entry), ARG_ENTRYID, entry.getId());
+	String name = HU.urlEncode(getStorageManager().getFileTail(entry));
+	url =  HU.url(request.makeUrl(repository.URL_ENTRY_GET) + "/"
+		      + (addVersion
+			 ? ("v" + (imageVersionCnt++))
+			 : "") + name, ARG_ENTRYID, entry.getId());
+	return url;
     }
 
 
