@@ -215,6 +215,7 @@ public class TemplateOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *
@@ -222,7 +223,7 @@ public class TemplateOutputHandler extends OutputHandler {
      */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> children) 
+                              Entry group, List<Entry> children)
             throws Exception {
         String wiki = folderWikiTemplate;
         if (embed) {
@@ -231,7 +232,7 @@ public class TemplateOutputHandler extends OutputHandler {
             wiki = outerTemplate.replace("${innercontent}", wiki);
         }
 
-	//TODO: what to do with the children
+        //TODO: what to do with the children
         wiki = getWikiManager().wikifyEntry(request, group, wiki, false);
 
         return new Result("", new StringBuffer(wiki));

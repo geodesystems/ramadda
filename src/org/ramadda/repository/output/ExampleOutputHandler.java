@@ -125,6 +125,7 @@ public class ExampleOutputHandler extends OutputHandler {
      * @param request The request
      * @param outputType _more_
      * @param group The group
+     * @param children _more_
      *
      * @return A Result object that holds the content
      *

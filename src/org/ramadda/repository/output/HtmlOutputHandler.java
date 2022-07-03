@@ -31,7 +31,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
-import java.util.function.Supplier;
+
 import java.net.*;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.regex.*;
 import java.util.zip.*;
 
@@ -199,7 +200,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param type _more_
      * @param parent _more_
-      * @return _more_
+     *  @return _more_
      */
     @Override
     public boolean requiresChildrenEntries(Request request, OutputType type,
@@ -572,8 +573,6 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param sb _more_
-
-     * @param children _more_
      *
      * @throws Exception _more_
      */
@@ -620,8 +619,8 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-	sb.append(getWikiManager().wikifyEntry(request, entry,
-					       wikiTemplate, true));
+        sb.append(getWikiManager().wikifyEntry(request, entry, wikiTemplate,
+                true));
     }
 
 
@@ -1891,30 +1890,30 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     @Override
-    public Result outputGroup(final Request request, final OutputType outputType,
-                              final Entry group, final List<Entry> children)
+    public Result outputGroup(final Request request,
+                              final OutputType outputType, final Entry group,
+                              final List<Entry> children)
             throws Exception {
 
 
-	final boolean[]haveCalled = {false};
-	TypeHandler.Entries getChildren = () -> {
-	    try {
-		if(children.size()==0 && !haveCalled[0]) {
-		    haveCalled[0] = true;
-		    getEntryManager().getChildrenEntries(request, this, group,children);
-		}
-	    return children;
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	};
-
+        final boolean[] haveCalled = { false };
+        TypeHandler.Entries getChildren = () -> {
+            try {
+                if(children.size()==0 && !haveCalled[0]) {
+                    haveCalled[0] = true;
+                    getEntryManager().getChildrenEntries(request, this, group,children);
+                }
+            return children;
+            } catch(Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        };
         //This is a terrible hack but check if the request is for the timeline xml. If it is let the 
         //CalendarOutputHandler handle it.
         if (request.get("timelinexml", false)) {
             Result timelineResult =
                 getCalendarOutputHandler().handleIfTimelineXml(request,
-							       group, getChildren.get());
+                    group, getChildren.get());
 
             return timelineResult;
         }
@@ -1926,6 +1925,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_INLINE)) {
             request.setCORSHeaderOnResponse();
+
             return getChildrenXml(request, group, getChildren.get());
         }
 
@@ -1977,7 +1977,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if ( !doingInfo) {
             if (typeHandler != null) {
                 Result typeResult = typeHandler.getHtmlDisplay(request,
-						       group, getChildren);
+                                        group, getChildren);
                 if (typeResult != null) {
                     return typeResult;
                 }
@@ -1985,7 +1985,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         ResultHandler resultHandler = new ResultHandler(request, this, group,
-							new State(group));
+                                          new State(group));
         Appendable sb = resultHandler.getAppendable();
         request.appendMessage(sb);
         String prefix = request.getPrefixHtml();
@@ -2016,7 +2016,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
-	    List<Entry> myChildren = getChildren.get();
+            List<Entry> myChildren = getChildren.get();
             if (request.defined(ARG_ORDERBY)) {
                 myChildren = getEntryUtil().sortEntriesOn(myChildren,
                         request.getString(ARG_ORDERBY),
@@ -2041,7 +2041,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
                 }
             }
-	}
+        }
 
         if (doingInfo && !group.isDummy()) {
             getPageHandler().entrySectionClose(request, group, sb);

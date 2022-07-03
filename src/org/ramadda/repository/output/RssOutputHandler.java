@@ -150,6 +150,7 @@ public class RssOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *
@@ -157,7 +158,7 @@ public class RssOutputHandler extends OutputHandler {
      */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> children) 
+                              Entry group, List<Entry> children)
             throws Exception {
         return outputEntries(request, group, children);
     }

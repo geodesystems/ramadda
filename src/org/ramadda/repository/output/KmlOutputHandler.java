@@ -141,6 +141,7 @@ public class KmlOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputGroup(request, outputType, entry, entries);
 
     }
@@ -151,6 +152,7 @@ public class KmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *

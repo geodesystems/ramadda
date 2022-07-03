@@ -35,11 +35,14 @@ public interface WikiTagHandler {
      * @param theTag _more_
      * @param props _more_
      * @param remainder _more_
-      * @return _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
      */
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
-                            Hashtable props, String remainder) throws Exception;
+                            Hashtable props, String remainder)
+     throws Exception;
 
 
 

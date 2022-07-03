@@ -175,7 +175,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         }
         request.setReturnFilename("download.sh");
 
-        return outputGroup(request, outputType, null, (List<Entry>) Misc.newList(entry));
+        return outputGroup(request, outputType, null,
+                           (List<Entry>) Misc.newList(entry));
     }
 
 
@@ -185,6 +186,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      * @param request    the Request
      * @param outputType the output type
      * @param group      the group (may be null)
+     * @param children _more_
      *
      * @return  the result
      *
@@ -192,7 +194,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
-                              Entry group, List<Entry> children) 
+                              Entry group, List<Entry> children)
             throws Exception {
 
         if ( !request.getUser().getAdmin()) {
@@ -205,9 +207,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         boolean wget = outputType.equals(OUTPUT_WGET);
         request.setReturnFilename("download.sh");
 
-        StringBuilder sb = new StringBuilder();
-        boolean recurse   = request.get(ARG_RECURSE, true);
-        boolean overwrite = request.get(ARG_OVERWRITE, false);
+        StringBuilder sb        = new StringBuilder();
+        boolean       recurse   = request.get(ARG_RECURSE, true);
+        boolean       overwrite = request.get(ARG_OVERWRITE, false);
         process(request, sb, group, children, recurse, overwrite,
                 new HashSet<String>(), wget);
 
@@ -315,7 +317,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 }
                 List<Entry> subEntries =
                     getEntryManager().getChildrenAll(request, entry,
-						     new SelectInfo(request, entry,null, 20000));
+                        new SelectInfo(request, entry, null, 20000));
 
                 if (includeGroupOutputs || (subEntries.size() > 0)) {
                     wroteEntryXml = true;

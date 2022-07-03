@@ -131,6 +131,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *
@@ -288,9 +289,9 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
         entries = EntryUtil.sortEntriesOnDate(entries, false);
-        List<String> fields = new ArrayList<String>();
-        boolean      remote = request.get("remoteRequest", false);
-        boolean      imagesOnly = request.get("imagesOnly", false);	
+        List<String> fields     = new ArrayList<String>();
+        boolean      remote     = request.get("remoteRequest", false);
+        boolean      imagesOnly = request.get("imagesOnly", false);
 
         /*      items.add(JsonUtil.quote(entry.getName()));
         items.add(JsonUtil.quote(entry.getDescription()));
@@ -329,7 +330,7 @@ public class JsonOutputHandler extends OutputHandler {
         boolean addPointUrl   = request.get("addPointUrl", false);
         boolean addThumbnails = request.get("addThumbnails", false);
         boolean addImages     = request.get("addImages", false);
-        boolean addMediaUrl     = request.get("addMediaUrl", false);	
+        boolean addMediaUrl   = request.get("addMediaUrl", false);
         if (addPointUrl) {
             addPointHeader(fields, "pointurl", "Point URL", "url",
                            "forDisplay", "true");
@@ -344,9 +345,9 @@ public class JsonOutputHandler extends OutputHandler {
                            "false");
         }
         if (addMediaUrl) {
-            addPointHeader(fields, "media_url", "Media URL", "url", "forDisplay",
-                           "false");
-        }	
+            addPointHeader(fields, "media_url", "Media URL", "url",
+                           "forDisplay", "false");
+        }
 
 
         TypeHandler  typeHandler = null;
@@ -388,17 +389,20 @@ public class JsonOutputHandler extends OutputHandler {
 
         List<String> values = new ArrayList<String>();
         for (Entry entry : entries) {
-	    if(imagesOnly) {
-		if(!entry.isImage()) continue;
-	    }
+            if (imagesOnly) {
+                if ( !entry.isImage()) {
+                    continue;
+                }
+            }
 
             List<String> entryArray = new ArrayList<String>();
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
             String array = toPointJson(request, entry, addSnippets,
                                        addAttributes, addPointUrl,
-                                       addThumbnails, addImages, addMediaUrl, typeHandler,
-                                       columns, showFileUrl, remote);
+                                       addThumbnails, addImages, addMediaUrl,
+                                       typeHandler, columns, showFileUrl,
+                                       remote);
             entryArray.add("values");
             entryArray.add(array);
             values.add(JsonUtil.map(entryArray));
@@ -533,7 +537,7 @@ public class JsonOutputHandler extends OutputHandler {
             JsonUtil.quoteAttr(items, "description", entry.getDescription());
         }
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
-        JsonUtil.attr(items, "canedit", canEdit+"");
+        JsonUtil.attr(items, "canedit", canEdit + "");
 
         TypeHandler type = entry.getTypeHandler();
 
@@ -824,6 +828,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @param addPointUrl _more_
      * @param addThumbnails _more_
      * @param addImages _more_
+     * @param addMediaUrl _more_
      * @param mainTypeHandler _more_
      * @param columns _more_
      * @param showFileUrl _more_
@@ -836,8 +841,7 @@ public class JsonOutputHandler extends OutputHandler {
     private String toPointJson(Request request, Entry entry,
                                boolean addSnippets, boolean addAttributes,
                                boolean addPointUrl, boolean addThumbnails,
-                               boolean addImages,
-			       boolean addMediaUrl,
+                               boolean addImages, boolean addMediaUrl,
                                TypeHandler mainTypeHandler,
                                List<Column> columns, boolean showFileUrl,
                                boolean remote)
@@ -911,13 +915,13 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
         if (addMediaUrl) {
-	    url = entry.getTypeHandler().getMediaUrl(request, entry);
-	    items.add(JsonUtil.quote((url == null)
-				     ? ""
-				     : remote
-				     ? request.getAbsoluteUrl(url)
-				     : url));
-        }	
+            url = entry.getTypeHandler().getMediaUrl(request, entry);
+            items.add(JsonUtil.quote((url == null)
+                                     ? ""
+                                     : remote
+                                       ? request.getAbsoluteUrl(url)
+                                       : url));
+        }
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes && (columns != null)) {
             Object[] extraParameters = entry.getValues();

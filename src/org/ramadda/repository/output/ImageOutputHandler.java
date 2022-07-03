@@ -315,6 +315,7 @@ public class ImageOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 if (entry.isImage()) {
                     ok = true;
+
                     break;
                 }
             }
@@ -948,6 +949,7 @@ public class ImageOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *
@@ -959,6 +961,7 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
         Result result = makeResult(request, group, children);
         addLinks(request, result, new State(group, children));
+
         return result;
     }
 

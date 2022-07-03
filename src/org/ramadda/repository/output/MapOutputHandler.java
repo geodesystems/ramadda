@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+
 /**
  *
  * @author RAMADDA Development Team
@@ -151,6 +152,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
      * @param request      The Request
      * @param outputType   the type of output
      * @param group        the group Entry
+     * @param children _more_
      *
      * @return  the resule
      *
@@ -200,8 +202,8 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");
-        MapInfo map = getMapManager().getMap(request, group, children,
-                                             sb, "100%", "500", null, props);
+        MapInfo map = getMapManager().getMap(request, group, children, sb,
+                                             "100%", "500", null, props);
 
         if (prefix == null) {
             getPageHandler().entrySectionClose(request, group, sb);

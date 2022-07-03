@@ -203,6 +203,7 @@ public class ZipOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *
@@ -216,6 +217,7 @@ public class ZipOutputHandler extends OutputHandler {
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_ZIPTREE)) {
             getLogManager().logInfo("Doing zip tree");
+
             return toZip(request, group.getName(), children, true, false);
         }
         if (output.equals(OUTPUT_EXPORT)) {
@@ -263,12 +265,12 @@ public class ZipOutputHandler extends OutputHandler {
                         boolean recurse, boolean forExport)
             throws Exception {
 
-        OutputStream os        = null;
-        boolean      doingFile = false;
-        File         tmpFile   = null;
-	boolean isInternal = false;
-        Element      root      = null;
-        boolean      ok        = true;
+        OutputStream os         = null;
+        boolean      doingFile  = false;
+        File         tmpFile    = null;
+        boolean      isInternal = false;
+        Element      root       = null;
+        boolean      ok         = true;
         //First recurse down without a zos to check the size
         try {
             processZip(request, entries, recurse, 0, null, prefix, 0,
@@ -306,19 +308,19 @@ public class ZipOutputHandler extends OutputHandler {
                     false).getDir();
             fileWriter = new FileWriter(writeToDiskDir);
         } else {
-	    tmpFile = (File) request.getExtraProperty("zipfile");
-            if (tmpFile==null && request.getHttpServletResponse() != null) {
+            tmpFile = (File) request.getExtraProperty("zipfile");
+            if ((tmpFile == null)
+                    && (request.getHttpServletResponse() != null)) {
                 os = request.getHttpServletResponse().getOutputStream();
                 request.getHttpServletResponse().setContentType(
                     getMimeType(OUTPUT_ZIP));
             } else {
-		if(tmpFile==null) {
-		    tmpFile =
-			getRepository().getStorageManager().getTmpFile(request,
-								       ".zip");
-		} else {
-		    isInternal = true;
-		}
+                if (tmpFile == null) {
+                    tmpFile = getRepository().getStorageManager().getTmpFile(
+                        request, ".zip");
+                } else {
+                    isInternal = true;
+                }
                 os = getStorageManager().getUncheckedFileOutputStream(
                     tmpFile);
                 doingFile = true;
@@ -353,6 +355,7 @@ public class ZipOutputHandler extends OutputHandler {
         }
         if (doingFile) {
             IOUtil.close(os);
+
             return new Result(
                 "", getStorageManager().getFileInputStream(tmpFile),
                 getMimeType(OUTPUT_ZIP));

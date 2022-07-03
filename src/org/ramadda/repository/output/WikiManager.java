@@ -3607,7 +3607,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 Appendable tmp = new StringBuilder();
                 String     msg = msg("New on") + " "
 		    + dateFormat.format(date);
-               tmp.append("<table width=100% border=0>");
+		tmp.append("<table width=100% border=0>");
                 tmp.append(map.get(date).toString());
                 tmp.append("</table>");
                 sb.append(HU.makeShowHideBlock(msg, tmp.toString(), true));
@@ -3828,7 +3828,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	boolean includeSnippet = getProperty(wikiUtil, props,
 					     "showSnippet", getProperty(wikiUtil,props,"includeSnippet",false));
 	boolean includeDescription = getProperty(wikiUtil, props,
-					     "showDescription", false);	
+						 "showDescription", false);	
 	boolean showicon = getShowIcon(wikiUtil, props, false);
 
 	boolean linkResource = getProperty(wikiUtil, props,
@@ -7600,10 +7600,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			icon = subToks.get(2);
 		    }
 		    String v =JsonUtil.map(Utils.makeList("id",JsonUtil.quote(id),
-					   "type",JsonUtil.quote(searchProvider.getType()),
-					   "name",JsonUtil.quote(label),
-					   "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
-					   "icon",JsonUtil.quote(icon),
+							  "type",JsonUtil.quote(searchProvider.getType()),
+							  "name",JsonUtil.quote(label),
+							  "capabilities",JsonUtil.quote(searchProvider.getCapabilities()),					       
+							  "icon",JsonUtil.quote(icon),
 							  "category",JsonUtil.quote(searchProvider.getCategory())));
 		    processed.add(v);
 		}

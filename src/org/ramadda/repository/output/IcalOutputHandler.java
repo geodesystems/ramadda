@@ -138,6 +138,7 @@ public class IcalOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      * @return _more_
      *
      * @throws Exception _more_

@@ -162,8 +162,16 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     }
 
 
-    public boolean requiresChildrenEntries(Request request, OutputType type, Entry parent) {
-	return true;
+    /**
+     *
+     * @param request _more_
+     * @param type _more_
+     * @param parent _more_
+      * @return _more_
+     */
+    public boolean requiresChildrenEntries(Request request, OutputType type,
+                                           Entry parent) {
+        return true;
     }
 
 
@@ -277,6 +285,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * Are we showing all
      *
      * @param request   the Request
+     * @param children _more_
      *
      * @return    true if showing all
      */
@@ -303,6 +312,14 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return AuthorizationMethod.AUTH_HTML;
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param children _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void showNext(Request request, List<Entry> children, Appendable sb)
             throws Exception {
         int cnt = children.size();
@@ -378,7 +395,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             if (lessMax < 1) {
                 lessMax = 1;
             }
-	    request=request.cloneMe();
+            request = request.cloneMe();
             request.put(ARG_MAX, "" + moreMax);
             //      if (cnt >= max) {
             toks.add(HtmlUtils.href(request.getUrl(),
@@ -482,8 +499,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         public State(Entry entry) {
             if (entry != null) {
                 if (entry.isGroup()) {
-                    group          = (Entry) entry;
-                    this.entries   = group.getChildren();
+                    group        = (Entry) entry;
+                    this.entries = group.getChildren();
                 } else {
                     this.entry = entry;
                 }
@@ -581,6 +598,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             throws Exception {
         Result result = new Result(title, sb);
         addLinks(request, result, state);
+
         return result;
     }
 
@@ -790,16 +808,27 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputGroup(request, outputType,
-                           getEntryManager().getDummyGroup(),
-                           entries);
+                           getEntryManager().getDummyGroup(), entries);
     }
 
 
+    /**
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param group _more_
+     * @param children _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
             throws Exception {
-        return notImplemented("outputGroup:" + outputType +" " + getClass().getName());
+        return notImplemented("outputGroup:" + outputType + " "
+                              + getClass().getName());
     }
 
 
@@ -909,7 +938,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public static void addUrlShowingForm(Appendable sb, String formId,
                                          String skipList)
             throws Exception {
-        addUrlShowingForm(sb, null, formId, skipList, null,false);
+        addUrlShowingForm(sb, null, formId, skipList, null, false);
     }
 
     /**
@@ -920,6 +949,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * @param formId _more_
      * @param skipList _more_
      * @param hook _more_
+     * @param includeCopyArgs _more_
      *
      * @throws Exception _more_
      */
@@ -939,7 +969,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                                     outputId), (skipList
                                                         != null)
                 ? skipList
-					: "null", "" + hook,""+includeCopyArgs));
+                : "null", "" + hook, "" + includeCopyArgs));
     }
 
 
@@ -1020,7 +1050,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * @param allEntries _more_
      * @param type _more_
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -1043,7 +1073,9 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                 : HtmlUtils.squote(type)), ((entry != null)
                                             ? HtmlUtils.squote(entry.getId())
                                             : "null"), HtmlUtils.squote(
-									request==null?"":request.getString(ARG_ENTRYTYPE, ""))));
+                                                (request == null)
+                ? ""
+                : request.getString(ARG_ENTRYTYPE, ""))));
 
         return event;
     }
@@ -1055,7 +1087,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * @param allEntries _more_
      * @param type _more_
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -2002,7 +2034,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      *
      *
      * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ResultHandler {
 
@@ -2032,7 +2064,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
 
         /**
-         
+         *
          *
          * @param request _more_
          * @param outputHandler _more_
@@ -2071,14 +2103,14 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
 
         /**
-          * @return _more_
+         *  @return _more_
          */
         public Appendable getAppendable() {
             return sb;
         }
 
         /**
-          * @return _more_
+         *  @return _more_
          */
         public Result getResult() {
             return result;
