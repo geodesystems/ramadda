@@ -277,8 +277,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * Are we showing all
      *
      * @param request   the Request
-     * @param subGroups the list of subgroups
-     * @param entries   the list of entries
      *
      * @return    true if showing all
      */
@@ -303,23 +301,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public AuthorizationMethod getAuthorizationMethod(Request request) {
         return AuthorizationMethod.AUTH_HTML;
-    }
-
-    /**
-     * Show the next bunch
-     *
-     * @param request   the Request
-     * @param subGroups the subgroups
-     * @param entries   the List of Entries
-     * @param sb        the output
-     *
-     * @throws Exception  problems showing entries
-     */
-    public void showNext(Request request, List<Entry> subGroups,
-                         List<Entry> entries, Appendable sb)
-            throws Exception {
-        int cnt = subGroups.size() + entries.size();
-        showNext(request, cnt, sb);
     }
 
     public void showNext(Request request, List<Entry> children, Appendable sb)
@@ -486,8 +467,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         /** the parent group */
         public Entry group;
 
-        /** the subgroups */
-        public List<Entry> subGroups;
 
         /** the entries */
         public List<Entry> entries;
@@ -504,28 +483,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             if (entry != null) {
                 if (entry.isGroup()) {
                     group          = (Entry) entry;
-                    this.subGroups = group.getSubGroups();
                     this.entries   = group.getSubEntries();
                 } else {
                     this.entry = entry;
                 }
             }
 
-        }
-
-
-        /**
-         * Create some State for the Entry and others
-         *
-         * @param group     the parent group
-         * @param subGroups subgroups
-         * @param entries   list of entries in this
-         */
-        public State(Entry group, List<Entry> subGroups,
-                     List<Entry> entries) {
-            this.group     = group;
-            this.entries   = entries;
-            this.subGroups = subGroups;
         }
 
 
@@ -574,9 +537,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         public List<Entry> getAllEntries() {
             if (allEntries == null) {
                 allEntries = new ArrayList();
-                if (subGroups != null) {
-                    allEntries.addAll(subGroups);
-                }
                 if (entries != null) {
                     allEntries.addAll(entries);
                 }

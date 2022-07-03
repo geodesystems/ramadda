@@ -1449,8 +1449,6 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request The request
      * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      *
      * @return _more_
      *
@@ -2866,9 +2864,6 @@ public class TypeHandler extends RepositoryManager {
                                       seen);
             didone |= addTypes(request, entry, links, pastTypes, seen);
 
-
-            didone |= addTypesFromEntries(request, entry, links,
-                                          entry.getSubGroups(), seen);
             didone |= addTypesFromEntries(request, entry, links,
                                           entry.getSubEntries(), seen);
 

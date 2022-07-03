@@ -276,6 +276,7 @@ public class ImageOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
+
         if (state.entry != null) {
             if (state.entry.isFile()) {
                 //                if (state.entry.isImage()) {
@@ -314,7 +315,6 @@ public class ImageOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 if (entry.isImage()) {
                     ok = true;
-
                     break;
                 }
             }
@@ -1096,7 +1096,7 @@ public class ImageOutputHandler extends OutputHandler {
 
 
         StringBuilder finalSB = new StringBuilder();
-        showNext(request, new ArrayList<Entry>(), entries, finalSB);
+        showNext(request, entries, finalSB);
 
         finalSB.append(HtmlUtils.p());
         finalSB.append(sb);

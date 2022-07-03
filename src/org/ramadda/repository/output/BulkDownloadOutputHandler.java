@@ -185,8 +185,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      * @param request    the Request
      * @param outputType the output type
      * @param group      the group (may be null)
-     * @param subGroups  the list of subgroups (may be null)
-     * @param entries    the list of entries
      *
      * @return  the result
      *

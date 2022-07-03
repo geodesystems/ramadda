@@ -186,8 +186,6 @@ public class Entry implements Cloneable {
     private boolean isGroup = false;
 
 
-    /** List of subgroups */
-    List<Entry> subGroups;
 
     /** List of subentries */
     List<Entry> subEntries;
@@ -1755,23 +1753,6 @@ public class Entry implements Cloneable {
     }
 
 
-    /**
-     *  Set the SubGroups property.
-     *
-     *  @param value The new value for SubGroups
-     */
-    public void setSubGroups(List<Entry> value) {
-        subGroups = value;
-    }
-
-    /**
-     *  Get the SubGroups property.
-     *
-     *  @return The SubGroups
-     */
-    public List<Entry> getSubGroups() {
-        return subGroups;
-    }
 
     /**
      * Set the SubEntries property.
