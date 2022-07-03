@@ -2865,7 +2865,7 @@ public class TypeHandler extends RepositoryManager {
             didone |= addTypes(request, entry, links, pastTypes, seen);
 
             didone |= addTypesFromEntries(request, entry, links,
-                                          entry.getSubEntries(), seen);
+                                          entry.getChildren(), seen);
 
 
             if (didone) {

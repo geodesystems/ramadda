@@ -1564,8 +1564,7 @@ public class EntryManager extends RepositoryManager {
 						 children.get(0));
             }
 	}
-        group.setSubEntries(children);
-
+        group.setChildren(children);
 
         OutputType dfltOutputType = getDefaultOutputType(request, group, children);
         if (dfltOutputType != null) {
@@ -6559,7 +6558,6 @@ public class EntryManager extends RepositoryManager {
         OutputHandler.State state = new OutputHandler.State(entry);
         entry.getTypeHandler().getEntryLinks(request, entry, links);
         links.addAll(getRepository().getOutputLinks(request, state));
-
         return links;
     }
 

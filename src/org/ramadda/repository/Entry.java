@@ -186,11 +186,6 @@ public class Entry implements Cloneable {
     private boolean isGroup = false;
 
 
-
-    /** List of subentries */
-    List<Entry> subEntries;
-
-
     /** the chillens ids */
     private List<String> childIds;
 
@@ -1752,25 +1747,6 @@ public class Entry implements Cloneable {
         return null;
     }
 
-
-
-    /**
-     * Set the SubEntries property.
-     *
-     * @param value The new value for SubEntries
-     */
-    public void setSubEntries(List<Entry> value) {
-        subEntries = value;
-    }
-
-    /**
-     * Get the SubEntries property.
-     *
-     * @return The SubEntries
-     */
-    public List<Entry> getSubEntries() {
-        return subEntries;
-    }
 
     /**
      * Initialize the Entry with these values

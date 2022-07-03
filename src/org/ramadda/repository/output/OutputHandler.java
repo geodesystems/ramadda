@@ -483,7 +483,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             if (entry != null) {
                 if (entry.isGroup()) {
                     group          = (Entry) entry;
-                    this.entries   = group.getSubEntries();
+                    this.entries   = group.getChildren();
                 } else {
                     this.entry = entry;
                 }
