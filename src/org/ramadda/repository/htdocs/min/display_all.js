@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul  3 10:19:12 MDT 2022";
+var build_date="RAMADDA build date: Sun Jul  3 23:43:01 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -21002,7 +21002,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGEZOOM, properties);
     let myProps = [
 	{label:"Image Zoom Attributes"},
-	{p:'labelFields'},
+	{p:'labelFields',d:'name'},
 	{p:'thumbField'},
 	{p:'thumbWidth',ex:'100'},
 	{p:'imageWidth',ex:'150'},
@@ -21023,7 +21023,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
             let records = this.filterData();
             if(!records) return;
             let fields = pointData.getRecordFields();
-            this.urlField = this.getFieldById(fields, this.getProperty("urlField", "url"));
+            this.urlField = this.getFieldById(fields, this.getUrlField("url"));
+	    if(!this.urlField) this.urlField = this.getFieldById(fields, 'entry_url');
 	    this.imageField = this.getFieldById(fields,"image");
 	    if(!this.imageField)
 		this.imageField = this.getFieldByType(fields,"image");
