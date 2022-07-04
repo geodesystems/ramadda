@@ -328,8 +328,8 @@ public class JsonOutputHandler extends OutputHandler {
 
         boolean addAttributes = request.get("addAttributes", false);
         boolean addPointUrl   = request.get("addPointUrl", false);
-        boolean addThumbnails = request.get("addThumbnails", false);
         boolean addImages     = request.get("addImages", false);
+        boolean addThumbnails = request.get("addThumbnails", addImages);
         boolean addMediaUrl   = request.get("addMediaUrl", false);
         if (addPointUrl) {
             addPointHeader(fields, "pointurl", "Point URL", "url",

@@ -174,6 +174,11 @@ public class ImageOutputHandler extends OutputHandler {
                                                      "image.zoom",
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);
+    /** _more_ */
+    public static final OutputType OUTPUT_FLIPCARDS = new OutputType("Flip Cards",
+                                                     "image.flipcards",
+                                                     OutputType.TYPE_VIEW,
+                                                     "", ICON_IMAGES);    
 
     /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
@@ -248,6 +253,7 @@ public class ImageOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_GALLERY);
         addType(OUTPUT_ZOOM);
+	addType(OUTPUT_FLIPCARDS);
         addType(OUTPUT_PLAYER);
         //        addType(OUTPUT_SLIDESHOW);
         addType(OUTPUT_CAPTION);
@@ -330,6 +336,7 @@ public class ImageOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_FLIPCARDS));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
             if (repository.getProperty("service.imagemagick") != null) {
                 links.add(makeLink(request, state.getEntry(),
@@ -837,8 +844,9 @@ public class ImageOutputHandler extends OutputHandler {
      */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_ZOOM)
-                || output.equals(OUTPUT_PLAYER)
-                || output.equals(OUTPUT_SLIDESHOW)) {
+	    || output.equals(OUTPUT_FLIPCARDS)
+	    || output.equals(OUTPUT_PLAYER)
+	    || output.equals(OUTPUT_SLIDESHOW)) {
             return repository.getMimeTypeFromSuffix(".html");
         }
 
@@ -876,14 +884,18 @@ public class ImageOutputHandler extends OutputHandler {
             getPageHandler().entrySectionOpen(request, group, sb,
                     "Image Zoom");
             String zoomTemplate =
-                "{{display_imagezoom height=\"300\" doEntries=\"true\" addThumbnails=\"true\" addImages=\"true\" \npopupImageWidth=2000 \nlabelFields=\"name\" \n thumbField=\"thumbnail\" \n imageField=\"image\"  urlField=\"entry_url\" \n}}";
+                "{{display_imagezoom height=\"300\" doEntries=\"true\" addImages=\"true\" }}";
             sb.append(getWikiManager().wikifyEntry(request, group,
                     zoomTemplate));
             getPageHandler().entrySectionClose(request, group, sb);
-        }
-
-
-        if (output.equals(OUTPUT_GALLERY)) {
+        } else if (output.equals(OUTPUT_FLIPCARDS)) {
+            getPageHandler().entrySectionOpen(request, group, sb,
+                    "Flip Cards");
+            String template ="{{flipcards  tag=card  height=150  width=150  includeChildren=false  addTags=false showSnippet=false  showSnippetHover=true  showLink=false  showHeading=true  showDate=true}}"; 
+            sb.append(getWikiManager().wikifyEntry(request, group,
+                    template));
+            getPageHandler().entrySectionClose(request, group, sb);
+        } else if (output.equals(OUTPUT_GALLERY)) {
             boolean useAttachment = request.get("useAttachment", false);
             getPageHandler().entrySectionOpen(request, group, sb, "Gallery");
 
@@ -892,10 +904,7 @@ public class ImageOutputHandler extends OutputHandler {
                 getWikiManager().getImageEntries(
                     request, entries, useAttachment), new Hashtable(), sb);
             getPageHandler().entrySectionClose(request, group, sb);
-
-
             return new Result(group.getName(), sb, getMimeType(output));
-
         }
 
         if (output.equals(OUTPUT_COLLAGE)) {
