@@ -668,6 +668,9 @@ function CollectionForm(formId, plottype, args) {
             let select =  this.getFieldSelect(collection, fieldIdx);
             let isMultiple = this.isFieldMultiple(collection, fieldIdx);
             let currentValueIsInNewList = false;
+            let onlyOneItem = false;
+            let haveBlank = false;
+            let numItems = data.length;
             for(let i=0;i<data.length;i++)  {
                 let objIQ = data[i];
                 let value,label;
@@ -682,14 +685,13 @@ function CollectionForm(formId, plottype, args) {
                 }
                 if(label == "") {
                     label =  "--";
+                    haveBlank = true;
                 }
-                if (value == "sprd" || value == "clim") continue;
+                if (value == "sprd" || value == "clim") {
+                    numItems--;
+                    continue;
+                }
                 let extra = "";
-                // if multiple is available for ensemble members, select them all
-                //if (fieldIdx == 2 && select.prop('multiple')) {
-                //    extra = " selected ";
-                //    currentValueIsInNewList = true;
-                //} else
                 let isSelected = false;
                 if (Utils.isDefined(currentValue)) {
                     for (let j = 0; j < currentValue.length; j++) {
@@ -701,6 +703,13 @@ function CollectionForm(formId, plottype, args) {
                         }
                     }
                 }
+                // Hack to automatically select the item if there is only one
+                if (haveBlank && numItems == 2 && i > 0) {
+                    extra = " selected ";
+                    currentValueIsInNewList = true;
+                    isSelected = true;
+                }
+              
                 if (isMultiple) {
 
                     //jeffmc: add in the select all. set the class to ramadda-toggleall so we can find this later

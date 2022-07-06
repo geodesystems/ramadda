@@ -68,8 +68,7 @@ begin
       if (unitsOut .eq. "F" .or. \
           unitsOut .eq. "degF" .or. \
           unitsOut .eq. "Fahrenheit") then
-        dataOut = dataIn-32
-        dataOut = (5*dataOut)/9
+        dataOut = (9*dataIn/5)+32
         dataOut@units = "F"
       end if
     end if

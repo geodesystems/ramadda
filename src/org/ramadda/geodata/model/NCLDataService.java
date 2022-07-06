@@ -265,7 +265,7 @@ public class NCLDataService extends Service {
             // if the previous variable was not temperature and we are doing a reload, make sure one of them is selected
             Request uRequest = request.cloneMe();
             if ((unit != null)
-                    && !(unit.equals("K") || unit.equals("degC"))) {
+                    && !(unit.equals("K") || unit.equals("degC") || unit.equals("F"))) {
                 uRequest.remove(ARG_NCL_UNITS);
             }
             StringBuilder unitsSB = new StringBuilder();
@@ -284,6 +284,14 @@ public class NCLDataService extends Service {
                         uRequest, ARG_NCL_UNITS, "K", false)));
             unitsSB.append(space1);
             unitsSB.append(Repository.msg("Kelvin"));
+            unitsSB.append(space2);
+            unitsSB.append(
+                HtmlUtils.radio(
+                    ARG_NCL_UNITS, "F",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        uRequest, ARG_NCL_UNITS, "F", false)));
+            unitsSB.append(space1);
+            unitsSB.append(Repository.msg("Fahrenheit"));
 
 
             sb.append(HtmlUtils.formEntry(Repository.msgLabel("Plot Units"),
