@@ -348,8 +348,8 @@ public class MyTrace {
                 writeTrace(">" + m + " " + extra);
             }
             deltaCurrentTab(1);
-            ticks.put(m, new Long(System.currentTimeMillis()));
-            mems.put(m, new Long(Misc.usedMemory()));
+            ticks.put(m, Long.valueOf(System.currentTimeMillis()));
+            mems.put(m, Long.valueOf(Misc.usedMemory()));
         }
     }
 
@@ -595,8 +595,8 @@ public class MyTrace {
         if ( !displayMsg) {
             return;
         }
-        //        Long l = new Long(System.currentTimeMillis());
-        Long l = new Long(System.nanoTime());
+        //        Long l = Long.valueOf(System.currentTimeMillis());
+        Long l = Long.valueOf(System.nanoTime());
         accum1Table.put(name, l);
     }
 
@@ -620,10 +620,10 @@ public class MyTrace {
         long delta = time - l.longValue();
         Long total = (Long) accumTable.get(name);
         if (total == null) {
-            total = new Long(delta);
+            total = Long.valueOf(delta);
             accumList.add(name);
         } else {
-            total = new Long(total.longValue() + delta);
+            total = Long.valueOf(total.longValue() + delta);
         }
         Integer cnt = (Integer) accumCntTable.get(name);
         if (cnt == null) {

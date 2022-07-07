@@ -11,6 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.monitor.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -33,6 +34,7 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.30 $
  */
+@SuppressWarnings("unchecked")
 public class LdmAction extends MonitorAction {
 
     /** _more_ */
@@ -254,10 +256,12 @@ public class LdmAction extends MonitorAction {
         if (productId.length() > 0) {
             productId = " -p \"" + productId + "\" ";
         }
-        String command = pqinsert + " " + productId + " -f " + feed + " -q "
-                         + queue + " " + file;
+	List<String> commands = (List<String>) Utils.makeList(pqinsert, productId,"-f",feed, "-q",
+							      queue, file);
         //        System.err.println("Executing:" + command);
-        Process process = Runtime.getRuntime().exec(command);
+	
+	ProcessBuilder pb = new ProcessBuilder(commands);
+	Process     process = pb.start();
         int     result  = process.waitFor();
         if (result == 0) {
             repository.getLogManager().logInfo(

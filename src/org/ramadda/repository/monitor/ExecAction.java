@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -162,7 +163,11 @@ public class ExecAction extends MonitorAction {
             monitor.getRepository().getEntryManager().replaceMacros(entry,
                 execLine);
         try {
-            Process process = Runtime.getRuntime().exec(command);
+	    //Assume it  is space delimited
+	    List<String> commands = Utils.split(command," ",true,true);
+	    ProcessBuilder pb = new ProcessBuilder(commands);
+	    Process     process = pb.start();
+	    //            Process process = Runtime.getRuntime().exec(command);
             int     result  = process.waitFor();
             if (result == 0) {
                 monitor.getRepository().getLogManager().logInfo(

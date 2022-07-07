@@ -496,7 +496,7 @@ public class Service extends RepositoryManager {
             if (ctor != null) {
                 commandObject = ctor.newInstance(new Object[] { repository });
             } else {
-                commandObject = c.newInstance();
+                commandObject = c.getDeclaredConstructor().newInstance();
             }
             Class[] paramTypes = new Class[] { Request.class, Service.class,
                     ServiceInput.class, List.class };

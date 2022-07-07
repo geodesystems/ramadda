@@ -25,6 +25,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class RecordTool {
 
     /** _more_ */
@@ -43,7 +44,7 @@ public class RecordTool {
     public RecordTool(String fileFactoryClass) throws Exception {
         if (fileFactoryClass != null) {
             recordFileFactory = (RecordFileFactory) Misc.findClass(
-                fileFactoryClass).newInstance();
+                fileFactoryClass).getDeclaredConstructor().newInstance();
         }
     }
 

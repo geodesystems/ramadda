@@ -311,7 +311,7 @@ public class RepositorySearch extends RepositoryClient {
                 continue;
             }
             String name = toks.get(0);
-            long   size = new Long(toks.get(1)).longValue();
+            long   size = Long.parseLong(toks.get(1));
             File   f    = new File(name);
             if (f.exists()) {
                 if ( !overwrite) {

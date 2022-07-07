@@ -267,7 +267,7 @@ public class CsvUtil {
 	try {
 	    for(Class c: csvContext.getClasses()) {
 		if (DataSink.class.isAssignableFrom(c)) {
-		    DataSink sink = (DataSink) c.newInstance();
+		    DataSink sink = (DataSink) c.getDeclaredConstructor().newInstance();
 		    sinks.add(sink);
 		}
 

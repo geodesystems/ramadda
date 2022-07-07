@@ -1140,7 +1140,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         : getProperty("ramadda.startupscript");
         if (script != null) {
             try {
-                Runtime.getRuntime().exec(script);
+		List<String> commands  =Utils.split(script," ", true,true);
+		ProcessBuilder pb = new ProcessBuilder(commands);
+		Process     process = pb.start();
             } catch (Exception exc) {
                 System.err.println("Error running startup script:" + script
                                    + "\n" + exc);
@@ -1948,7 +1950,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         new Object[] { Repository.this })));
             } else {
                 getAdmin().addAdminHandler(
-                    (AdminHandler) adminHandlerClass.newInstance());
+                    (AdminHandler) adminHandlerClass.getDeclaredConstructor().newInstance());
             }
             MyTrace.call2("handler:" + adminHandlerClass.getName());
         }
@@ -5121,7 +5123,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public long getProperty(String name, long dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
-            return new Long(prop).longValue();
+            return Long.parseLong(prop);
         }
 
         return dflt;

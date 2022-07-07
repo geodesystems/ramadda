@@ -166,7 +166,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             repositoryClassName = "org.ramadda.repository.Repository";
         }
         Class      repositoryClass = Misc.findClass(repositoryClassName);
-        Repository tmpRepository = (Repository) repositoryClass.newInstance();
+        Repository tmpRepository = (Repository) repositoryClass.getDeclaredConstructor().newInstance();
         tmpRepository.init(getInitParams(), port);
         //        Repository tmpRepository = new Repository(getInitParams(), port);
         tmpRepository.init(webAppProperties);

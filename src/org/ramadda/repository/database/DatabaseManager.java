@@ -1512,10 +1512,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                         values[colCnt++] = readString(dis);
                     } else if (type == ColumnInfo.TYPE_BIGINT) {
                         long v = dis.readLong();
-                        values[colCnt++] = new Long(v);
+                        values[colCnt++] = Long.valueOf(v);
                     } else if (type == ColumnInfo.TYPE_SMALLINT) {
                         short v = dis.readShort();
-                        values[colCnt++] = new Short(v);
+                        values[colCnt++] = Short.valueOf(v);
                     } else if (type == ColumnInfo.TYPE_UNKNOWN) {}
                     else {
                         throw new IllegalArgumentException(

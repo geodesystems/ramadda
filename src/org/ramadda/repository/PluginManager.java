@@ -900,7 +900,7 @@ public class PluginManager extends RepositoryManager {
                         (ImportHandler) ctor.newInstance(
                             new Object[] { getRepository() }));
                 } else {
-                    importHandlers.add((ImportHandler) c.newInstance());
+                    importHandlers.add((ImportHandler) c.getDeclaredConstructor().newInstance());
                 }
 
                 return;
@@ -929,7 +929,7 @@ public class PluginManager extends RepositoryManager {
                             (SearchProvider) ctor.newInstance(new Object[] {
                                 getRepository() });
                     } else {
-                        provider = (SearchProvider) c.newInstance();
+                        provider = (SearchProvider) c.getDeclaredConstructor().newInstance();
                     }
                 }
                 getSearchManager().addPluginSearchProvider(provider);
@@ -949,12 +949,12 @@ public class PluginManager extends RepositoryManager {
 
                 } else {
                     getUserManager().addUserAuthenticator(
-                        (UserAuthenticator) c.newInstance());
+                        (UserAuthenticator) c.getDeclaredConstructor().newInstance());
                 }
             } else if (PageDecorator.class.isAssignableFrom(c)) {
                 //                                System.out.println("class:" + c.getName());
                 pluginStat("Page decorator", c.getName());
-                PageDecorator pageDecorator = (PageDecorator) c.newInstance();
+                PageDecorator pageDecorator = (PageDecorator) c.getDeclaredConstructor().newInstance();
                 pageDecorator.setRepository(getRepository());
                 pageDecorators.add(pageDecorator);
             } else if (AdminHandler.class.isAssignableFrom(c)) {

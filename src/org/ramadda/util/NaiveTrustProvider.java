@@ -38,7 +38,7 @@ public final class NaiveTrustProvider extends Provider {
      */
 
     public NaiveTrustProvider() {
-        super(TRUST_PROVIDER_ID, (double) 0.1,
+        super(TRUST_PROVIDER_ID, 0.1,
               "NaiveTrustProvider (provides all secure socket factories by ignoring problems in the chain of certificate trust)");
 
         AccessController.doPrivileged(new PrivilegedAction() {

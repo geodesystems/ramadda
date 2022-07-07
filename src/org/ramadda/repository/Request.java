@@ -2145,7 +2145,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        return new Long(result).longValue();
+        return  Long.parseLong(result);
     }
 
     /**

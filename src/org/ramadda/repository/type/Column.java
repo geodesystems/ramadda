@@ -3261,7 +3261,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         if (importDateIsEpoch) {
-            long l = new Long(value).longValue();
+            long l = Long.parseLong(value);
 
             return new Date(l);
         }

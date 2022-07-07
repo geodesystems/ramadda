@@ -59,6 +59,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     /** _more_ */
@@ -128,7 +129,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      * @throws Exception _more_
      */
     public void addClass(Class c) throws Exception {
-        MonitorAction action = (MonitorAction) c.newInstance();
+        MonitorAction action = (MonitorAction) c.getDeclaredConstructor().newInstance();
         actions.add(action);
     }
 

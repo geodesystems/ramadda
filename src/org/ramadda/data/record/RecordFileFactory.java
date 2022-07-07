@@ -30,6 +30,7 @@ import java.util.Properties;
  * @version        Enter version here..., Fri, May 21, '10
  * @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class RecordFileFactory {
 
     /** _more_ */
@@ -77,7 +78,7 @@ public class RecordFileFactory {
             }
             //            System.err.println ("line:" + line);
             Class c = Misc.findClass(line);
-            addPrototype((RecordFile) c.newInstance());
+            addPrototype((RecordFile) c.getDeclaredConstructor().newInstance());
         }
     }
 

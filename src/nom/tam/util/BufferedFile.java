@@ -703,6 +703,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput,
      *
      * @throws IOException _more_
      */
+    @Deprecated
     public int readArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
@@ -1229,6 +1230,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput,
     /**
      * Clear up any pending output at cleanup.
      */
+    /** jeffmc: remove this since it is deprecated
     protected void finalize() {
         try {
             if (getFD().valid()) {
@@ -1237,6 +1239,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput,
             }
         } catch (Exception e) {}
     }
+    */
 
     /**
      * Write a boolean value
