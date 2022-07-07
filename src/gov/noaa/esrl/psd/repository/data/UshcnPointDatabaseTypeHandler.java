@@ -364,28 +364,28 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
                 for (PointDataMetadata pdm : metadata) {
                     Object value;
                     if (COL_ID.equals(pdm.getColumnName())) {
-                        value = new Integer(baseId);
+                        value = Integer.valueOf(baseId);
                         baseId++;
                     } else if (COL_LATITUDE.equals(pdm.getColumnName())) {
-                        value = new Double(checkWriteValue(lat));
+                        value = Double.valueOf(checkWriteValue(lat));
                     } else if (COL_LONGITUDE.equals(pdm.getColumnName())) {
-                        value = new Double(checkWriteValue(lon));
+                        value = Double.valueOf(checkWriteValue(lon));
                     } else if (COL_ALTITUDE.equals(pdm.getColumnName())) {
-                        value = new Double(checkWriteValue(alt));
+                        value = Double.valueOf(checkWriteValue(alt));
                     } else if (COL_DATE.equals(pdm.getColumnName())) {
                         value = time;
                     } else if (COL_HOUR.equals(pdm.getColumnName())) {
                         value =
-                            new Integer(calendar.get(GregorianCalendar.HOUR));
+                            Integer.valueOf(calendar.get(GregorianCalendar.HOUR));
                     } else if (COL_MONTH.equals(pdm.getColumnName())) {
-                        value = new Integer(
+                        value = Integer.valueOf(
                             calendar.get(GregorianCalendar.MONTH));
                     } else if (COL_STATION.equals(pdm.getColumnName())) {
                         value = station.getName();
                     } else {
                         double d = dv.getValue();
                         hadGoodNumericValue = (d == d);
-                        value               = new Double(checkWriteValue(d));
+                        value               = Double.valueOf(checkWriteValue(d));
                     }
                     values[pdm.getColumnNumber()] = value;
                 }
