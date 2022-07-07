@@ -298,7 +298,6 @@ https://geodesystems.com:443/repository/entry/show?entryid=7a4a1111-156b-4614-aa
 https://geodesystems.com:443/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
 https://geodesystems.com:443/repository/entry/show?entryid=cec5ea2e-b384-4eb9-9bc7-6a0ff6637f40&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=9b2f87fc-91f2-485c-8035-7ef588c35fda&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=8cd2b382-d9e7-4faa-bc05-b7af913347f2&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=b35f24fe-15a8-4f71-82da-f83df1fbe3c1
 https://geodesystems.com:443/repository/entry/show?entryid=b35f24fe-15a8-4f71-82da-f83df1fbe3c1&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=f841424c-90ec-4b2a-b8d8-da3f495790d9
