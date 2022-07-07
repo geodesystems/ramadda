@@ -4127,7 +4127,6 @@ public class EntryManager extends RepositoryManager {
             request.put(ARG_FILESUFFIX, file);
         }
 
-
         List<Entry> entries =getEntriesFromDb(request,null,null);
         if (entries.size() == 0) {
             throw new IllegalArgumentException(
@@ -7285,12 +7284,21 @@ public class EntryManager extends RepositoryManager {
      */
     public List<Entry> searchEntries(Request request, List<Clause> extraClauses)
 	throws Exception {
-        TypeHandler typeHandler = getRepository().getTypeHandler(request);
-        List<Clause> clauses = typeHandler.assembleWhereClause(request);
+        List<Clause> clauses = getClauses(request);
         if (extraClauses != null) {
             clauses.addAll(extraClauses);
         }
+        TypeHandler typeHandler = getRepository().getTypeHandler(request);
 	return getEntries(request, clauses, typeHandler, LUCENE_OK);
+    }
+
+    /**
+       This gets the search clauses in the request
+     */
+    private List<Clause> getClauses(Request request) throws Exception {
+        TypeHandler typeHandler = getRepository().getTypeHandler(request);
+        List<Clause> clauses = typeHandler.assembleWhereClause(request);
+	return clauses;
     }
 
 
@@ -7332,15 +7340,17 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /**
+       This bypasses the lucene search and does a search directly in the database
+     */
     public List<Entry> getEntriesFromDb(Request request) 
 	throws Exception {
-	return getEntriesFromDb(request, (List<Clause>)null, (TypeHandler)null);
-
+	return getEntriesFromDb(request, getClauses(request), (TypeHandler)null);
     }
 
 
     public List<Entry> getEntriesFromDb(Request request, List<Clause> clauses,
-					     TypeHandler typeHandler)
+					TypeHandler typeHandler)
 	throws Exception {
 	return getEntries(request, clauses, typeHandler, LUCENE_NOTOK);
     }    
@@ -7349,7 +7359,6 @@ public class EntryManager extends RepositoryManager {
     private List<Entry> getEntries(Request request, List<Clause> clauses,
 				  TypeHandler typeHandler,boolean luceneOk)
 	throws Exception {	
-
 	List<Entry> entryTree = getEntryRootTree(request);
 	if(entryTree!=null) {
 	    List<Clause> ors = new ArrayList<Clause>();
