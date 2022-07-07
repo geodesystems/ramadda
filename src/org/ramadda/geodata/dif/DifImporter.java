@@ -279,7 +279,7 @@ public class DifImporter extends ImportHandler {
                         DifUtil.TAG_Role)) {
                 String    role = XmlUtil.getChildText(roleNode);
                 Hashtable ht   = new Hashtable();
-                ht.put(new Integer(cnt), role);
+                ht.put(Integer.valueOf(cnt), role);
                 roles.add(ht);
                 cnt++;
             }

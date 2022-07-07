@@ -407,8 +407,8 @@ public class OaiManager extends RepositoryManager {
 
         if (request.defined(ARG_RESUMPTIONTOKEN)) {
             try {
-                new Integer(request.getString(ARG_RESUMPTIONTOKEN,
-                        "")).intValue();
+                Integer.parseInt(request.getString(ARG_RESUMPTIONTOKEN,
+						   ""));
             } catch (Exception exc) {
                 throw new MyException(ERROR_BADRESUMPTIONTOKEN,
                                       "bad resumption token");

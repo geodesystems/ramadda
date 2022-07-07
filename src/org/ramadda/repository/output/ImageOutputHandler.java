@@ -2123,7 +2123,7 @@ public class ImageOutputHandler extends OutputHandler {
             Object v = mainEntry.getTypeHandler().getEntryValue(mainEntry,
                            "delay");
             if (v != null) {
-                int delay = new Integer(v.toString()).intValue();
+                int delay =  Integer.parseInt(v.toString());
                 if (delay > 0) {
                     playerArgs.add("delay");
                     playerArgs.add("" + delay);

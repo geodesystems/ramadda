@@ -325,7 +325,7 @@ public class FeatureCollection {
                     if (data instanceof Double) {
                         double d = ((Double) data).doubleValue();
                         if ((int) d == d) {
-                            data = new Integer((int) d);
+                            data = Integer.valueOf((int) d);
                         }
                     }
                     schemaData.put(fieldDatum.get(j).getName(), data);

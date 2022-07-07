@@ -266,7 +266,7 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
                 Entry child = children.get(i);
                 index++;
                 child.getTypeHandler().setEntryValue(child, 0,
-                        new Integer(index));
+                        Integer.valueOf(index));
             }
             getEntryManager().updateEntries(request, children);
         }

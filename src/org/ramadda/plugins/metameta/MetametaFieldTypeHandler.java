@@ -150,7 +150,7 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
                     maxIndex = Math.max(maxIndex, siblingIndex);
                 }
             }
-            setEntryValue(entry, 0, new Integer(maxIndex + 1));
+            setEntryValue(entry, 0, Integer.valueOf(maxIndex + 1));
         }
 
     }

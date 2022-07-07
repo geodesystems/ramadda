@@ -1125,10 +1125,10 @@ public class EntryManager extends RepositoryManager {
 	public synchronized void addActivity(String activity) {
 	    Integer count = counts.get(activity);
 	    if(count==null) {
-		count = new Integer(0);
+		count = Integer.valueOf(0);
 		counts.put(activity,count);
 	    }
-	    counts.put(activity,new Integer(count.intValue()+1));
+	    counts.put(activity,Integer.valueOf(count.intValue()+1));
 	}
 
     }
@@ -1292,7 +1292,7 @@ public class EntryManager extends RepositoryManager {
 	    name = IOUtil.stripExtension(name);
 	    name = StringUtil.camelCase(name);
 	    Entry newEntry = addFileEntry(request, tmpFile,
-					  group, name, request.getString("description",""), request.getUser(),
+					  group, null, name, request.getString("description",""), request.getUser(),
 					  typeHandler, null);
 	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE);
 
@@ -4480,7 +4480,6 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryCopy(Request request) throws Exception {
 
-
         Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
 					   getRepository().URL_ENTRY_GET,true);
 
@@ -4726,7 +4725,7 @@ public class EntryManager extends RepositoryManager {
         } else if (isCopy) {
             Entry toGroup = (Entry) toEntry;
 
-            return processEntryCopy(request, toGroup, entries);
+            return processEntryCopy(request, toGroup, null, entries);
         } else if (isLink) {
             if (entries.size() == 1) {
                 return new Result(
@@ -4759,6 +4758,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryCopy(final Request request,
                                    final Entry toGroup,
+				   final String pathTemplate,
                                    final List<Entry> entries)
 	throws Exception {
 
@@ -4768,7 +4768,7 @@ public class EntryManager extends RepositoryManager {
 				     toGroup), "Continue");
         ActionManager.Action action = new ActionManager.Action() {
 		public void run(Object actionId) throws Exception {
-		    processEntryCopyAsynch(request, toGroup, entries, actionId,
+		    processEntryCopyAsynch(request, toGroup, pathTemplate, entries, actionId,
 					   link);
 		}
 	    };
@@ -4792,8 +4792,9 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      * @throws Exception _more_
      */
-    private List<Entry> processEntryCopyAsynch(final Request request,
-					       final Entry toGroup, final List<Entry> entries, Object actionId,
+    public List<Entry> processEntryCopyAsynch(final Request request,
+					       final Entry toGroup, final String pathTemplate,
+					       final List<Entry> entries, Object actionId,
 					       String link)
 	throws Exception {
 
@@ -4843,6 +4844,7 @@ public class EntryManager extends RepositoryManager {
                                    oldEntry.getEndDate(),
                                    oldEntry.getValues());
 
+		newEntry.setParentEntry(getPathEntry(request,newParent,newEntry,pathTemplate));
                 newEntry.setLocation(oldEntry);
                 newTypeHandler.initializeCopiedEntry(newEntry, oldEntry);
 
@@ -5219,7 +5221,7 @@ public class EntryManager extends RepositoryManager {
                 //TODO - check for extra desc here
                 if (entries.size() > 0) {
                     List<Entry> newEntries = processEntryCopyAsynch(request,
-								    entry, entries, null, null);
+								    entry, null, entries, null, null);
                     for (int i = 0; i < newEntries.size(); i++) {
                         String oldId = entries.get(i).getId();
                         String newId = newEntries.get(i).getId();
@@ -5364,7 +5366,6 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryImport(Request request) throws Exception {
         Entry group = findGroup(request);
-
         if ( !getAccessManager().canDoNew(request, group)) {
             throw new AccessException("You cannot import", request);
         }
@@ -6159,6 +6160,11 @@ public class EntryManager extends RepositoryManager {
                             createDate.getTime(), changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), null);
 
+	    String pathTemplate = request.getString(ARG_PATHTEMPLATE,"");
+	    if(Utils.stringDefined(pathTemplate)) {
+		entry.setParentEntry(getPathEntry(request,parentEntry,entry,pathTemplate));
+	    }
+
 	    if(!internal) {
 		entry.setRemoteParentEntryId(XmlUtil.getAttribute(node,"parent",(String)null));
 	    }
@@ -6224,6 +6230,35 @@ public class EntryManager extends RepositoryManager {
         return entries;
 
     }
+
+    public Entry getPathEntry(Request request, Entry parentEntry, Entry entry, String path) throws Exception {
+	if(!Utils.stringDefined(path)) return parentEntry;
+	List<String> toks = Utils.split(path,"/",true,true);
+	Entry pathEntry = parentEntry;
+	for(String tok: toks) {
+	    String parentType = "group";
+	    List<String> subToks = Utils.splitUpTo(tok,":",2);
+	    if(subToks.size()>1) {
+		tok = subToks.get(0).trim();
+		Hashtable props = Utils.getProperties(subToks.get(1));
+		parentType = Utils.getProperty(props,"type",parentType);
+	    }
+	    String parentName = replaceMacros(entry, tok);
+	    Entry newEntry = findEntryFromPath(request, pathEntry,parentName);
+	    if(newEntry==null) {
+		if(!getAccessManager().canDoNew(request, pathEntry)) {
+		    throw new AccessException("Can't create new entry:" + pathEntry,request);
+		}
+
+		
+		newEntry = makeNewGroup(pathEntry, parentName,request.getUser(),
+					null,parentType);
+	    }
+	    pathEntry  = newEntry;
+	}
+	return pathEntry;
+    }
+
 
     /**
      * _more_
@@ -6712,8 +6747,8 @@ public class EntryManager extends RepositoryManager {
                 continue;
             }
 	    Integer c = count.get(sb);
-	    if(c == null) c = new Integer(0);
-	    c  = new Integer(c.intValue()+1);
+	    if(c == null) c = Integer.valueOf(0);
+	    c  = Integer.valueOf(c.intValue()+1);
 	    count.put(sb,c);
 
 	    if(sb.length()==0) {
@@ -7537,10 +7572,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry addFileEntry(Request request, File newFile, Entry group,
+    public Entry addFileEntry(Request request, File newFile, Entry group,String pathTemplate,
                               String name, String desc, User user)
 	throws Exception {
-        return addFileEntry(request, newFile, group, name, desc, user, null, null);
+        return addFileEntry(request, newFile, group, pathTemplate, name, desc, user, null, null);
     }
 
     /**
@@ -7558,7 +7593,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry addFileEntry(Request request, File newFile, Entry group,
+    public Entry addFileEntry(Request request, File newFile, Entry parentEntry, String pathTemplate,
                               String name, String desc, User user,
                               TypeHandler typeHandler,
                               EntryInitializer initializer)
@@ -7576,9 +7611,10 @@ public class EntryManager extends RepositoryManager {
 
 
         Entry entry = makeEntry(request, new Resource(newFile, resourceType),
-                                group, name, desc, user, typeHandler,
+                                parentEntry, name, desc, user, typeHandler,
                                 initializer);
 
+	entry.setParentEntry(getPathEntry(request,parentEntry,entry,pathTemplate));
 	List<Entry> entries = new ArrayList<Entry>();
 	entries.add(entry);
 	addInitialMetadata(request, entries, true, false);
@@ -9649,6 +9685,7 @@ public class EntryManager extends RepositoryManager {
             date = new Date();
         }
 
+	if(type==null) type=TypeHandler.TYPE_GROUP;
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       group       = new Entry(getGroupId(parent), typeHandler);
         group.setName(name);
@@ -10335,7 +10372,7 @@ public class EntryManager extends RepositoryManager {
                 continue;
             }
             if (tok.matches("\\d+")) {
-                int index = new Integer(tok).intValue();
+                int index =  Integer.parseInt(tok);
                 index--;
                 List<Entry> children = getEntryManager().getChildren(request,
 								     cwd);

@@ -3931,7 +3931,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                     Integer uniqueCnt = numUniques.get(label);
                     if (uniqueCnt == null) {
-                        uniqueCnt = new Integer(0);
+                        uniqueCnt = Integer.valueOf(0);
                     }
                     numUniques.put(label, uniqueCnt.intValue() + 1);
                 }
@@ -6112,10 +6112,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         subClause = Clause.neq(whereColumn, whereValue);
                     } else if (op.equals("<")) {
                         subClause = Clause.lt(whereColumn,
-                                new Double(whereValue));
+					      Double.parseDouble(whereValue));
                     } else if (op.equals(">")) {
                         subClause = Clause.gt(whereColumn,
-                                new Double(whereValue));
+					      Double.parseDouble(whereValue));
                     } else {
                         throw new RuntimeException("Unknown operator:" + op);
                     }

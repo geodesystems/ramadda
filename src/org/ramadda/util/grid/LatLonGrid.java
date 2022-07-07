@@ -1130,7 +1130,7 @@ public class LatLonGrid extends Grid {
              * @return _more_
              */
             public int compare(Point o1, Point o2) {
-                return (new Integer(o1.x)).compareTo(new Integer(o2.x));
+                return (Integer.valueOf(o1.x)).compareTo(Integer.valueOf(o2.x));
             }
         }
     }

@@ -1897,7 +1897,7 @@ public class MetadataManager extends RepositoryManager {
             List tuples = new ArrayList();
             for (int i = 0; i < values.length; i++) {
                 if (cnt[i] > threshold) {
-                    tuples.add(new Object[] { new Integer(cnt[i]),
+                    tuples.add(new Object[] {  Integer.valueOf(cnt[i]),
                             values[i] });
                 }
             }
@@ -2408,7 +2408,7 @@ public class MetadataManager extends RepositoryManager {
         String          lbl = metadata.getType();
         dbm.executeInsert(Tables.METADATA.INSERT, new Object[] {
             metadata.getId(), metadata.getEntryId(), metadata.getType(),
-            new Integer(metadata.getInherited()
+            Integer.valueOf(metadata.getInherited()
                         ? 1
                         : 0),
             dbm.checkString(lbl, metadata.getAttr1(), Metadata.MAX_LENGTH),

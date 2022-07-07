@@ -129,7 +129,7 @@ public class Place {
         setLatitude(Double.parseDouble(toks.get(latIndex).trim()));
         setLongitude(Double.parseDouble(toks.get(lonIndex).trim()));
         if (popIndex > 0) {
-            setPopulation(new Integer(toks.get(popIndex).trim()));
+            setPopulation(Integer.parseInt(toks.get(popIndex).trim()));
         }
         //        System.out.println(fips);
     }

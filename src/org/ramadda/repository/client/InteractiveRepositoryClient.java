@@ -527,7 +527,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
             String ports = portFld.getText().trim();
             int    port  = ((ports.length() == 0)
                             ? 443
-                            : new Integer(ports));
+                            : Integer.parseInt(ports));
             if (sslCbx.isSelected() || (port == 443) || (port == 0)) {
                 setPort(0);
                 setHttpsPort(port);

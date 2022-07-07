@@ -81,7 +81,7 @@ public class JettyServer implements Constants {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
                 hadPort = true;
-                port    = new Integer(args[i + 1]).intValue();
+                port    = Integer.parseInt(args[i + 1]);
                 //              System.err.println("port args:" + port);
                 //Keep looping so we get the last -port in the arg list
             }

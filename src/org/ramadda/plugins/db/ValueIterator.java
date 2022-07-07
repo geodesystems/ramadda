@@ -1262,7 +1262,7 @@ public abstract class ValueIterator implements DbConstants {
                     }
                     Integer uniqueCnt = numUniques.get(label);
                     if (uniqueCnt == null) {
-                        uniqueCnt = new Integer(0);
+                        uniqueCnt = Integer.valueOf(0);
                     }
                     numUniques.put(label, uniqueCnt.intValue() + 1);
                 }

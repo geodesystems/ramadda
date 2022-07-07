@@ -1239,7 +1239,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                             String  value = "" + colorByField.getData(i);
                             Integer index = indexMap.get(value);
                             if (index == null) {
-                                index = new Integer(cnt++);
+                                index = Integer.valueOf(cnt++);
                                 indexMap.put(value, index);
                             }
                             color = ct.getColorByIndex(index);

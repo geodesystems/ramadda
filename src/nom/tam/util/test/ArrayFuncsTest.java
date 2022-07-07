@@ -63,15 +63,15 @@ public class ArrayFuncsTest extends TestCase {
         assertEquals(ArrayFuncs.computeSize("1234"), 4);
         assertEquals(ArrayFuncs.computeSize(new Object()), 0);
         assertEquals(ArrayFuncs.computeSize(new Double[5]), 0);
-        assertEquals(ArrayFuncs.computeSize(new Double[] { new Double(0),
-                new Double(1), new Double(2) }), 24);
+        assertEquals(ArrayFuncs.computeSize(new Double[] { Double.valueOf(0),
+							  Double.valueOf(1), Double.valueOf(2) }), 24);
         assertEquals(ArrayFuncs.computeLSize(x), 24);
         assertEquals(ArrayFuncs.computeLSize(new double[3]), 24);
         assertEquals(ArrayFuncs.computeLSize("1234"), 4);
         assertEquals(ArrayFuncs.computeLSize(new Object()), 0);
         assertEquals(ArrayFuncs.computeLSize(new Double[5]), 0);
-        assertEquals(ArrayFuncs.computeLSize(new Double[] { new Double(0),
-                new Double(1), new Double(2) }), 24);
+        assertEquals(ArrayFuncs.computeLSize(new Double[] { Double.valueOf(0),
+							   Double.valueOf(1),  Double.valueOf(2) }), 24);
     }
 
     /**
@@ -189,7 +189,7 @@ public class ArrayFuncsTest extends TestCase {
         int[]  result    = nom.tam.util.ArrayFuncs.getDimensions(o);
         assertEquals(expResult, result);
 
-        assertEquals(ArrayFuncs.getDimensions(new Integer(0)).length, 0);
+        assertEquals(ArrayFuncs.getDimensions(Integer.valueOf(0)).length, 0);
         int[][] test = new int[2][3];
         int[]   dims = ArrayFuncs.getDimensions(test);
         assertEquals(dims.length, 2);

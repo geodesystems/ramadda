@@ -96,7 +96,7 @@ public class EclipseTypeHandler extends FitsTypeHandler {
 
 
         values[IDX_MAGNITUDE] =
-            new Double(header.getDoubleValue(PROP_MAGNITUDE, 0));
+            Double.valueOf(header.getDoubleValue(PROP_MAGNITUDE, 0));
         values[IDX_LOCATION] = header.getStringValue("LOCATION");
         String source = header.getStringValue("SOURCE");
         if (source != null) {

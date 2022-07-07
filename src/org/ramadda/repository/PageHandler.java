@@ -865,22 +865,20 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String processTemplate(String template, boolean ignoreErrors) {
-        List<String>  toks   = Utils.splitMacros(template);
+        List<Utils.Macro>  toks   = Utils.splitMacros(template);
         StringBuilder result = new StringBuilder();
         if (toks.size() > 0) {
-            result.append(toks.get(0));
-            for (int i = 1; i < toks.size(); i++) {
-                if (2 * (i / 2) == i) {
-                    result.append(toks.get(i));
-                } else {
-                    String prop = getRepository().getProperty(toks.get(i),
-                                      (String) null);
+	    for(Utils.Macro macro: toks) {
+		if(macro.isText()) {
+		    result.append(macro.getText());
+		} else {
+                    String prop = getRepository().getProperty(macro.getId(),
+							      (String) null);
                     if (prop == null) {
                         if (ignoreErrors) {
-                            prop = "${" + toks.get(i) + "}";
+                            prop = "${" + macro.getId() + "}";
                         } else {
-                            throw new IllegalArgumentException(
-                                "Could not find property:" + toks.get(i)
+                            throw new IllegalArgumentException("Could not find property:" + macro.getId()
                                 + ":");
                         }
                     }

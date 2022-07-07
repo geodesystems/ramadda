@@ -653,8 +653,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                      "4", HtmlUtils.ATTR_CELLSPACING, "0")));
         if (monitors.size() > 0) {
             sb.append(HtmlUtils.row(HtmlUtils.cols("", boldMsg("Monitor"),
-                    boldMsg("User"), boldMsg("Search Criteria"),
-                    boldMsg("Action"))));
+						   boldMsg("Search Criteria"),
+						   boldMsg("Action"))));
         }
         for (EntryMonitor monitor : monitors) {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
@@ -685,8 +685,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             sb.append(HtmlUtils.close(HtmlUtils.TAG_TD));
             sb.append(HtmlUtils.col(monitor.getName(),
                                     HtmlUtils.cssClass("ramadda-td")));
-            sb.append(HtmlUtils.col(monitor.getUser().getLabel(),
-                                    HtmlUtils.cssClass("ramadda-td")));
+	    //            sb.append(HtmlUtils.col(monitor.getUser().getLabel(),
+	    //                                    HtmlUtils.cssClass("ramadda-td")));
             sb.append(HtmlUtils.col(monitor.getSearchSummary(),
                                     HtmlUtils.cssClass("ramadda-td")));
             sb.append(HtmlUtils.col(monitor.getActionSummary(),

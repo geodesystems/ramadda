@@ -838,16 +838,16 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                             || (type == java.sql.Types.NUMERIC)
                             || (type == java.sql.Types.REAL)
                             || (type == java.sql.Types.DECIMAL)) {
-                        value = new Double(results.getDouble(colIdx));
+                        value = Double.valueOf(results.getDouble(colIdx));
                     } else if (type == java.sql.Types.FLOAT) {
                         //                        value = new Float(results.getFloat(colIdx));
-                        value = new Double(results.getFloat(colIdx));
+                        value = Double.valueOf(results.getFloat(colIdx));
                     } else if ((type == java.sql.Types.INTEGER)
                                || (type == java.sql.Types.BIGINT)
                                || (type == java.sql.Types.SMALLINT)
                                || (type == java.sql.Types.TINYINT)) {
-                        //                        value = new Integer(results.getInt(colIdx));
-                        value = new Double(results.getInt(colIdx));
+                        //                        value = Integer.valueOf(results.getInt(colIdx));
+                        value = Double.valueOf(results.getInt(colIdx));
                     } else if (type == java.sql.Types.DATE) {
                         value = results.getDate(colIdx);
                     } else {

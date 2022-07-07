@@ -1371,7 +1371,7 @@ public class CommandHarvester extends Harvester {
         if (text.matches("\\d+")) {
             List<String> list = getCurrentList(request);
             if (list != null) {
-                int index = new Integer(text).intValue() - 1;
+                int index = Integer.parseInt(text) - 1;
                 if ((index >= 0) && (index < list.size())) {
                     text = list.get(index);
                 }

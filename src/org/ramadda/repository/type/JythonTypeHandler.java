@@ -145,8 +145,8 @@ public class JythonTypeHandler extends GenericTypeHandler {
         interp.set("repository", getRepository());
 
         interp.set("makeForm", (makeForm
-                                ? new Integer(1)
-                                : new Integer(0)));
+                                ? Integer.valueOf(1)
+                                : Integer.valueOf(0)));
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
@@ -319,7 +319,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                                  theEntry);
                 } else if (info.type == InputInfo.TYPE_NUMBER) {
                     interp.set(info.id,
-                               new Double(request.getString(info.id,
+                               Double.parseDouble(request.getString(info.id,
                                    "").trim()));
                 } else {
                     interp.set(info.id, request.getString(info.id, ""));

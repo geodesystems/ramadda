@@ -164,7 +164,7 @@ public class HashedList implements Collection {
          * @param ref _more_
          */
         public void add(Object ref) {
-            Integer nKey = new Integer(unkeyedIndex);
+            Integer nKey = Integer.valueOf(unkeyedIndex);
             unkeyedIndex += 1;
             HashedList.this.add(current, nKey, ref);
             current += 1;
@@ -207,7 +207,7 @@ public class HashedList implements Collection {
      * @return _more_
      */
     public boolean add(Object reference) {
-        Integer nKey = new Integer(unkeyedIndex);
+        Integer nKey = Integer.valueOf(unkeyedIndex);
         unkeyedIndex += 1;
         HashedList.this.add(ordered.size(), nKey, reference);
 

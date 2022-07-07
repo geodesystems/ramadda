@@ -90,7 +90,7 @@ public class QuoteTypeHandler extends ExtensibleGroupTypeHandler {
         String quantity = findMatch(descHolder, quantityPatterns, 2);
         if (quantity != null) {
             int d = (int) Double.parseDouble(quantity);
-            values[IDX_QUANTITY] = new Integer(d);
+            values[IDX_QUANTITY] = Integer.valueOf(d);
         }
 
         String[] materialPatterns = { "(?i)(mat|material)\\s*:\\s*\\$?\\s*([^$]+)" };
@@ -102,7 +102,7 @@ public class QuoteTypeHandler extends ExtensibleGroupTypeHandler {
         String[] costPatterns = { "(?i)(cost|unit)\\s*:\\s*\\$?\\s*(\\d+)" };
         String   cost         = findMatch(descHolder, costPatterns, 2);
         if (cost != null) {
-            values[IDX_UNIT_COST] = new Double(cost);
+            values[IDX_UNIT_COST] = Double.parseDouble(cost);
         }
 
         entry.setDescription(descHolder[0]);

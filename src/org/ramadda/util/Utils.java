@@ -668,8 +668,7 @@ public class Utils extends IO {
         List<Double> cols = new ArrayList<Double>();
         for (String tok : Utils.split(s, ",", true, true)) {
             if ((tok.indexOf("-") >= 0) && !tok.startsWith("-")) {
-                int from = new Double(Utils.split(tok, "-", true,
-                               true).get(0)).intValue();
+                int from = (int)Double.parseDouble(Utils.split(tok, "-", true, true).get(0));
 
                 double step  = 1;
                 String right = Utils.split(tok, "-", true, true).get(1);
@@ -1365,7 +1364,7 @@ public class Utils extends IO {
             return dflt;
         }
 
-        return new Integer(attrValue).intValue();
+        return Integer.parseInt(attrValue);
     }
 
 
@@ -1388,7 +1387,7 @@ public class Utils extends IO {
             return dflt;
         }
 
-        return new Double(attrValue).doubleValue();
+        return Double.parseDouble(attrValue);
     }
 
     /**
@@ -1657,12 +1656,12 @@ public class Utils extends IO {
 			end = Integer.parseInt(range.get(1));		    
 		    }
 		    for(int i=start;i<=end;i+=step) {
-			ints.add(new Integer(i));
+			ints.add(Integer.valueOf(i));
 		    }
 		}
 		continue;
 	    }
-            ints.add(new Integer(tok));
+            ints.add(Integer.parseInt(tok));
         }
 
         return ints;
@@ -2114,7 +2113,7 @@ public class Utils extends IO {
             return dflt;
         }
 
-        return new Boolean(s).booleanValue();
+        return Boolean.parseBoolean(s);
     }
 
     /**
@@ -2132,7 +2131,7 @@ public class Utils extends IO {
             return dflt;
         }
 
-        return new Integer(s).intValue();
+        return Integer.parseInt(s);
     }
 
 
@@ -2194,7 +2193,7 @@ public class Utils extends IO {
             if (args.get(i).equals(arg)) {
                 i++;
                 if (i < args.size()) {
-                    return new Integer(args.get(i)).intValue();
+                    return Integer.parseInt(args.get(i));
                 }
 
                 throw new IllegalArgumentException("Error: argument " + arg
@@ -2598,7 +2597,7 @@ public class Utils extends IO {
             if (isPercent) {
                 s = s.substring(0, s.length() - 1);
             }
-            int v = new Integer(s).intValue();
+            int v = Integer.parseInt(s);
             if (isPercent) {
                 v = -v;
             }
@@ -3422,7 +3421,7 @@ public class Utils extends IO {
                     quantity = quantity.substring(1);
                     factor   = -1;
                 }
-                long delta        = factor * new Integer(quantity).intValue();
+                long delta        = factor * Integer.parseInt(quantity);
                 long milliseconds = 0;
                 if (what.startsWith("second")) {
                     milliseconds = delta * 1000;
@@ -4592,10 +4591,62 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static List<String> splitMacros(String s) {
-        return StringUtil.splitMacros(s);
+    public static List<Macro> splitMacros(String s) {
+	List<String> toks  = StringUtil.splitMacros(s);
+	List<Macro> macros = new ArrayList<Macro>();
+	for(int i=0;i<toks.size();i++) {
+	    macros.add(new Macro(i / 2.0 == (int) i / 2,toks.get(i)));
+	}
+	return macros;
+    }
+
+    public static class Macro {
+	private boolean isText;
+	private String macro;
+	private Hashtable properties;
+	public Macro(boolean isText, String macro) {
+	    this.isText= isText;
+	    this.macro  =macro;
+	    if(!isText) {
+		//${macro name=value ...}
+		List<String> toks = splitUpTo(macro," ",2);
+		if(toks.size()>1) {
+		    this.macro = toks.get(0).trim();
+		    this.properties = Utils.getProperties(toks.get(1));
+		}
+		//		System.err.println("MACRO: is macro:" + macro +" props:" + properties );
+	    } else {
+		//		System.err.println("MACRO: is text:" + macro);
+	    }
+	}
+
+	public boolean isText() {
+	    return isText;
+	}
+
+	public String getText() {
+	    return macro;
+	}
+
+	public String getId() {
+	    return macro;
+	}	
+
+	public String toString() {
+	    return macro;
+	}
+
+	public String getProperty(String key, String dflt) {
+	    if(properties==null) return dflt;
+	    String v = (String) properties.get(key);
+	    if(v==null) return dflt;
+	    return v;
+	}
+
 
     }
+
+
 
     /**
      * _more_
@@ -5716,7 +5767,7 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
         if (true) {
-	    System.err.println("S:" + split("hello,"));
+	    System.err.println("S:" + splitMacros("hello there ${how foo=bar} i am ${fine}"));
 	    return;
 	}
 

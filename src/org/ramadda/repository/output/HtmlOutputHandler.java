@@ -759,11 +759,11 @@ public class HtmlOutputHandler extends OutputHandler {
                        HU.div(group, HU.cssClass("ramadda-lheading")));
             Boolean rowFlag = typeRow.get(group);
             if (rowFlag == null) {
-                rowFlag = new Boolean(true);
+                rowFlag = Boolean.TRUE;
                 typeRow.put(group, rowFlag);
             }
             boolean even = rowFlag.booleanValue();
-            typeRow.put(group, new Boolean( !even));
+            typeRow.put(group, Boolean.valueOf( !even));
             //      even=true;
 
             String  rowClass = !stripe

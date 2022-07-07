@@ -193,8 +193,8 @@ public class GgpPointFile extends CsvFile {
 
         //this needs to be in the same order as the wsbbtypes.xml in the point plugin
         setFileMetadata(new Object[] {
-            station, instrument, author, new Double(timeDelay),
-            new Double(gravityCalibration), new Double(pressureCalibration)
+            station, instrument, author, Double.valueOf(timeDelay),
+            Double.valueOf(gravityCalibration),  Double.valueOf(pressureCalibration)
         });
 
         //Define the fields

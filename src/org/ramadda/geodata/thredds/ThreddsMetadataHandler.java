@@ -457,25 +457,25 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
                 if (CdmUtil.ATTR_MAXLON.equals(name)
                         || name.equals("EastBoundingCoordinate")) {
-                    extra.put(ARG_MAXLON, new Double(value));
+                    extra.put(ARG_MAXLON, Double.parseDouble(value));
 
                     continue;
                 }
                 if (CdmUtil.ATTR_MINLON.equals(name)
                         || name.equals("WestBoundingCoordinate")) {
-                    extra.put(ARG_MINLON, new Double(value));
+                    extra.put(ARG_MINLON, Double.parseDouble(value));
 
                     continue;
                 }
                 if (CdmUtil.ATTR_MAXLAT.equals(name)
                         || name.equals("NorthBoundingCoordinate")) {
-                    extra.put(ARG_MAXLAT, new Double(value));
+                    extra.put(ARG_MAXLAT, Double.parseDouble(value));
 
                     continue;
                 }
                 if (CdmUtil.ATTR_MINLAT.equals(name)
                         || name.equals("SouthBoundingCoordinate")) {
-                    extra.put(ARG_MINLAT, new Double(value));
+                    extra.put(ARG_MINLAT, Double.parseDouble(value));
 
                     continue;
                 }

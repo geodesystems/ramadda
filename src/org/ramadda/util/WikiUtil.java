@@ -388,7 +388,7 @@ public class WikiUtil {
             return dflt;
         }
 
-        return new Boolean(v);
+        return Boolean.valueOf(v);
     }
 
 
@@ -702,7 +702,7 @@ public class WikiUtil {
                         + level + "\">" + label + "</div>";
                 //            if(level==1)
                 //                value = value+"<hr class=\"wiki-hr\">";
-                headings.add(new Object[] { new Integer(level), label });
+                headings.add(new Object[] {  Integer.valueOf(level), label });
             }
             s        = s.substring(0, start) + value + s.substring(end);
             matcher3 = pattern3.matcher(s);
@@ -2230,7 +2230,7 @@ public class WikiUtil {
                         Integer scnt  = (Integer) getProperty("section-cnt");
                         boolean first = false;
                         if (scnt == null) {
-                            scnt  = new Integer(-1);
+                            scnt  = Integer.valueOf(-1);
                             first = true;
                         }
                         int newCnt = scnt.intValue() + 1;
@@ -2243,7 +2243,7 @@ public class WikiUtil {
                         if (first) {
                             extraClass = "ramadda-section-first";
                         }
-                        putProperty("section-cnt", new Integer(newCnt));
+                        putProperty("section-cnt",  Integer.valueOf(newCnt));
                     }
                     if (classArg != null) {
                         extraClass += " " + classArg + " ";
@@ -4732,9 +4732,9 @@ public class WikiUtil {
                 String key = wikiUtil.getProperty(props, "key", "key") +"_counter";
                 Integer count = (Integer)wikiUtil.getProperty(key);
                 if(count == null) {
-                    count = new Integer(1);
+                    count = Integer.valueOf(1);
                 } else {
-                    count = new Integer(count.intValue()+1);
+                    count = Integer.valueOf(count.intValue()+1);
                 }
                 wikiUtil.putProperty(key, count);
                 return count.toString();
@@ -4749,9 +4749,9 @@ public class WikiUtil {
                 if(prefix.indexOf("#")>=0) {
                     Integer count = (Integer)wikiUtil.getProperty("imagecaption");
                     if(count == null) {
-                        count = new Integer(1);
+                        count = Integer.valueOf(1);
                     } else {
-                        count = new Integer(count.intValue()+1);
+                        count = Integer.valueOf(count.intValue()+1);
                     }
                     wikiUtil.putProperty("imagecaption", count);
                     prefix = prefix.replace("#",count.toString());

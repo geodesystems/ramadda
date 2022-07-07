@@ -627,7 +627,7 @@ public class RepositoryFtplet extends DefaultFtplet {
 
         System.err.println("making entry");
         EntryManager entryManager = getEntryManager();
-        Entry entry = entryManager.addFileEntry(request, newFile, group,
+        Entry entry = entryManager.addFileEntry(request, newFile, group,null,
                           name, "", request.getUser());
 
 

@@ -493,7 +493,7 @@ public class UserManager extends RepositoryManager {
                 getDatabaseManager().update(
                     Tables.USERS.NAME, Tables.USERS.COL_ID, user.getId(),
                     new String[] { Tables.USERS.COL_ADMIN },
-                    new Object[] { new Boolean(true) });
+                    new Object[] { Boolean.valueOf(true) });
             }
             logInfo("RAMADDA: password for:" + user.getId()
                     + " has been updated");
@@ -1008,8 +1008,8 @@ public class UserManager extends RepositoryManager {
                 user.getId(), user.getName(), user.getEmail(),
                 user.getQuestion(), user.getAnswer(),
                 user.getHashedPassword(), user.getDescription(),
-                new Boolean(user.getAdmin()), user.getLanguage(),
-                user.getTemplate(), new Boolean(user.getIsGuest()),
+                Boolean.valueOf(user.getAdmin()), user.getLanguage(),
+                user.getTemplate(),  Boolean.valueOf(user.getIsGuest()),
                 user.getPropertiesBlob()
             });
             userMap.put(user.getId(), user);
@@ -1032,9 +1032,9 @@ public class UserManager extends RepositoryManager {
         }, new Object[] {
             user.getName(), user.getHashedPassword(), user.getEmail(),
             user.getQuestion(), user.getAnswer(), user.getAdmin()
-                    ? new Integer(1)
-                    : new Integer(0), user.getLanguage(), user.getTemplate(),
-            new Boolean(user.getIsGuest()), user.getPropertiesBlob()
+                    ? Integer.valueOf(1)
+                    : Integer.valueOf(0), user.getLanguage(), user.getTemplate(),
+		    Boolean.valueOf(user.getIsGuest()), user.getPropertiesBlob()
         });
         userMap.remove(user.getId());
 
@@ -3110,7 +3110,7 @@ public class UserManager extends RepositoryManager {
         if (count == null) {
             return;
         }
-        count = new Integer(count.intValue() + 1);
+        count = Integer.valueOf(count.intValue() + 1);
         if (count.intValue() > MAX_BAD_PASSWORD_COUNT) {
             throw new IllegalArgumentException("Number of login attempts ("
                     + count + ") for user " + user
@@ -3130,9 +3130,9 @@ public class UserManager extends RepositoryManager {
     private void handleBadPassword(Request request, String user) {
         Integer count = badPasswordCount.get(user);
         if (count == null) {
-            count = new Integer(0);
+            count = Integer.valueOf(0);
         }
-        count = new Integer(count.intValue() + 1);
+        count =  Integer.valueOf(count.intValue() + 1);
         badPasswordCount.put(user, count);
         if (count.intValue() > MAX_BAD_PASSWORD_COUNT) {
             throw new IllegalArgumentException("Number of login attempts ("
@@ -3870,7 +3870,7 @@ public class UserManager extends RepositoryManager {
                 int v1 = (int) (Math.random() * 12);
                 int v2 = (int) (Math.random() * 12);
                 questions.add(v1 + "+" + v2);
-                answers.add(new Integer(v1 + v2));
+                answers.add(Integer.valueOf(v1 + v2));
             }
             ANSWERS   = answers;
             QUESTIONS = questions;

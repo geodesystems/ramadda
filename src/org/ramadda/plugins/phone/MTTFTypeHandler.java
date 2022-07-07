@@ -106,7 +106,7 @@ public class MTTFTypeHandler extends GenericTypeHandler {
                     twilio = null;
                 }
             }
-            twilioEnabled = new Boolean(twilio != null);
+            twilioEnabled =  Boolean.valueOf(twilio != null);
         }
 
         if ( !getMailManager().isEmailEnabled()

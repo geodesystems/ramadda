@@ -697,7 +697,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                     if (subValue == null) {
                         continue;
                     }
-                    map.put(new Integer(element.getIndex()), subValue);
+                    map.put(Integer.valueOf(element.getIndex()), subValue);
                 }
                 entries.add(map);
             }

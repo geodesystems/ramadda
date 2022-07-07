@@ -516,7 +516,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
                 System.err.println("\tdata:" + tuple[0] + " value:" + o
                                    + " column:" + column + " type:" + type);
                 if (type.equals("integer")) {
-                    o = new Integer((int) Double.parseDouble(o.toString()));
+                    o =  Integer.valueOf((int) Double.parseDouble(o.toString()));
                 } else if (type.equals("double")) {
                     o = Double.parseDouble(o.toString());
                 }

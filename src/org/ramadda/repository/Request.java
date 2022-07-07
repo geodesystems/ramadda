@@ -2127,7 +2127,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        return new Integer(result).intValue();
+        return Integer.parseInt(result);
     }
 
 
@@ -2162,7 +2162,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        return new Double(result).doubleValue();
+        return Double.parseDouble(result);
     }
 
 
@@ -2304,7 +2304,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        return new Boolean(result).booleanValue();
+        return Boolean.parseBoolean(result);
     }
 
 
@@ -2838,7 +2838,7 @@ public class Request implements Constants, Cloneable {
     public String getUniqueId(String prefix) {
         Integer base = (Integer) extraProperties.get("uniquebase");
         if (base == null) {
-            base = new Integer(0);
+            base = Integer.valueOf(0);
             extraProperties.put("uniquebase", base);
         }
         base = base.intValue() + 1;

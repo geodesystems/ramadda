@@ -117,7 +117,7 @@ public class GridVisitor extends BridgeRecordVisitor {
         for (String tok :
                 (List<String>) request.get(RecordOutputHandler.ARG_DIVISOR,
                                            new ArrayList<String>())) {
-            divisors.add(new Integer(tok));
+            divisors.add(Integer.parseInt(tok));
         }
 
     }

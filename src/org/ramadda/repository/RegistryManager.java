@@ -220,7 +220,7 @@ public class RegistryManager extends RepositoryManager {
                         Tables.REMOTESERVERS.COL_TITLE,
                         Tables.REMOTESERVERS.COL_SELECTED }, new Object[] {
                             url,
-                            label, new Boolean(isEnabled) });
+                            label, Boolean.valueOf(isEnabled) });
             }
             clearRemoteServers();
             checkApi();
@@ -934,8 +934,8 @@ public class RegistryManager extends RepositoryManager {
                                            new Object[] {
             serverInfo.getUrl(), serverInfo.getTitle(),
             serverInfo.getDescription(), serverInfo.getEmail(),
-            new Boolean(serverInfo.getIsRegistry()),
-            new Boolean(serverInfo.getEnabled())
+            Boolean.valueOf(serverInfo.getIsRegistry()),
+            Boolean.valueOf(serverInfo.getEnabled())
         });
         clearRemoteServers();
     }
@@ -984,7 +984,7 @@ public class RegistryManager extends RepositoryManager {
                                        clientServer.getTitle(),
                                        clientServer.getDescription(),
                                        clientServer.getEmail(),
-                                       new Boolean(
+                                       Boolean.valueOf(
                                            clientServer.getIsRegistry()) });
                     clearRegisteredServers();
 

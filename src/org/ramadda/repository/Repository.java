@@ -1411,7 +1411,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String ssls = getPropertyValue(PROP_SSL_PORT,
 						  (String) null, false);
         if ((ssls != null) && (ssls.trim().length() > 0)) {
-            sslPort = new Integer(ssls.trim());
+            sslPort = Integer.parseInt(ssls.trim());
         }
 	if(sslPort>0) setHttpsPort(sslPort);
 
@@ -5085,7 +5085,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public boolean getProperty(String name, boolean dflt) {
         String prop = getProperty(name);
         if (prop != null) {
-            return new Boolean(prop).booleanValue();
+            return Boolean.parseBoolean(prop);
         }
 
         return dflt;
@@ -5103,7 +5103,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public int getProperty(String name, int dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
-            return new Integer(prop.trim()).intValue();
+            return Integer.parseInt(prop.trim());
         }
 
         return dflt;
@@ -5138,7 +5138,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public double getProperty(String name, double dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
-            return new Double(prop).doubleValue();
+            return Double.parseDouble(prop);
         }
 
         return dflt;

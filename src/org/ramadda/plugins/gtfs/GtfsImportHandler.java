@@ -1577,7 +1577,7 @@ public class GtfsImportHandler extends ImportHandler {
                         System.err.println("tok:" + tok);
                     }
                     header.add(tok);
-                    map.put(tok, new Integer(i));
+                    map.put(tok, Integer.valueOf(i));
                 }
 
                 return true;

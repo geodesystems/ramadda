@@ -1408,7 +1408,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 } else if (gridLevel.equals("all") && (zVals != null)) {
                     zRange = new Range(0, zVals.length - 1);
                 } else {
-                    int index = new Integer(gridLevel).intValue();
+                    int index = Integer.parseInt(gridLevel);
                     if (index >= 0) {
                         zRange = new Range(index, index);
                     }

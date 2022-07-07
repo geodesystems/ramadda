@@ -326,7 +326,7 @@ public class Admin extends RepositoryManager {
      */
     public boolean getInstallationComplete() {
         if (installationComplete == null) {
-            installationComplete = new Boolean(
+            installationComplete = Boolean.valueOf(
                 getRepository().getDbProperty(
                     ARG_ADMIN_INSTALLCOMPLETE, false));
         }
@@ -344,7 +344,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public void setInstallationComplete(boolean v) throws Exception {
-        installationComplete = new Boolean(v);
+        installationComplete = Boolean.valueOf(v);
         getRepository().writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "" + v);
     }
 
@@ -393,8 +393,8 @@ public class Admin extends RepositoryManager {
             isRegistered = key.trim().equals("buenobueno");
             if (isRegistered) {
                 orgType = Utils.unobfuscate(toks.get(idx++), true);
-                numberUsers = new Integer(Utils.unobfuscate(toks.get(idx++),
-                        true)).intValue();
+                numberUsers =  Integer.parseInt(Utils.unobfuscate(toks.get(idx++),
+                        true));
             }
         } catch (Exception exc) {
             System.err.println("Repository.checkRegistration: error:" + exc);
@@ -2096,7 +2096,7 @@ public class Admin extends RepositoryManager {
                 continue;
             }
             tuples.add(new Object[] {
-                new Integer(apiMethod.getNumberOfCalls()),
+		    Integer.valueOf(apiMethod.getNumberOfCalls()),
                 apiMethod });
 
         }

@@ -663,7 +663,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         //All point types should have at least:
         //pointCount, properties
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
-        values[0] = new Integer(metadata.getCount());
+        values[0] = Integer.valueOf(metadata.getCount());
 
         //If the file has metadata then it better match up with the values that are defined in types.xml
         Object[] fileMetadata = pointEntry.getRecordFile().getFileMetadata();

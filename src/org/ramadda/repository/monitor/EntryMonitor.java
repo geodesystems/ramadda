@@ -284,7 +284,7 @@ public class EntryMonitor implements Constants {
 
         StringBuffer actionsSB = new StringBuffer();
         for (MonitorAction action : actions) {
-            action.addToEditForm(this, actionsSB);
+            action.addToEditForm(request,this, actionsSB);
         }
 
         sb.append(HtmlUtils.makeShowHideBlock("Settings", stateSB.toString(),
@@ -433,20 +433,16 @@ public class EntryMonitor implements Constants {
             return s2.matches(pattern);
         }
 
-        System.err.println("EntryMonitor: pattern is not a regexp");
         String s1 = pattern;
         //TODO: We need to have a StringMatcher object
         if (s1.endsWith("%")) {
             s1 = s1.substring(0, s1.length() - 1);
-
             return s2.startsWith(s1);
         }
         if (s1.startsWith("%")) {
             s1 = s1.substring(1);
-
             return s2.endsWith(s1);
         }
-
         return s2.equals(s1);
     }
 

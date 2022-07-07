@@ -177,12 +177,12 @@ public class MbTypeHandler extends GenericTypeHandler {
                     MbUtil.TAG_NUMBER_OF_RECORDS));
 
         Object[] values = getEntryValues(entry);
-        values[1] = new Integer(numberOfRecords);
+        values[1] = Integer.valueOf(numberOfRecords);
 
         Element navTotals = XmlUtil.findChild(root,
                                 MbUtil.TAG_TNAVIGATION_TOTALS);
-        values[2] = new Double(XmlUtil.getGrandChildText(navTotals,
-                MbUtil.TAG_TOTAL_TRACK_LENGTH_KM));
+        values[2] = Double.valueOf(XmlUtil.getGrandChildText(navTotals,
+							     MbUtil.TAG_TOTAL_TRACK_LENGTH_KM));
 
     }
 

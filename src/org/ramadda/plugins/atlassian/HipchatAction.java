@@ -105,7 +105,7 @@ public class HipchatAction extends MonitorAction {
      * @throws Exception _more_
      */
     @Override
-    public void addToEditForm(EntryMonitor monitor, Appendable sb)
+    public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("Post a link to the entry in Hipchat",

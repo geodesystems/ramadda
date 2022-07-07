@@ -152,7 +152,7 @@ public class LdmAction extends MonitorAction {
      * @throws Exception _more_
      */
     @Override
-    public void addToEditForm(EntryMonitor monitor, Appendable sb)
+    public void addToEditForm(Request request, EntryMonitor monitor, Appendable sb)
             throws Exception {
 
         sb.append(HtmlUtils.formTable());

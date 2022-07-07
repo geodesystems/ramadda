@@ -942,7 +942,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (currentId != null) {
             nextNum = currentId.intValue() + 1;
         }
-        request.putExtraProperty("ge.id", new Integer(nextNum));
+        request.putExtraProperty("ge.id", Integer.valueOf(nextNum));
         String id = "map3d" + nextNum;
         if (request.getExtraProperty("ge.inited") == null) {
             addGoogleEarthImports(request, sb);

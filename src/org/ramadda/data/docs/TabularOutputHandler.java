@@ -382,11 +382,11 @@ public class TabularOutputHandler extends OutputHandler {
                         int start = Integer.parseInt(toks.get(0));
                         int end   = Integer.parseInt(toks.get(1));
                         for (int i = start; i <= end; i++) {
-                            selectedColumns.add(new Integer(i - 1));
+                            selectedColumns.add(Integer.valueOf(i - 1));
                         }
                     }
                 } else {
-                    selectedColumns.add(new Integer(Integer.parseInt(col)
+                    selectedColumns.add(Integer.valueOf(Integer.parseInt(col)
                             - 1));
                 }
             }
@@ -457,7 +457,7 @@ public class TabularOutputHandler extends OutputHandler {
                             break;
                         }
                         tmp.add(cols.get(colIdx));
-                        dfltCols.add(new Integer(colIdx));
+                        dfltCols.add(Integer.valueOf(colIdx));
                     }
                     rowsToUse.add(tmp);
                 }
@@ -819,9 +819,9 @@ public class TabularOutputHandler extends OutputHandler {
                     Object   value = null;
                     CellType type  = cell.getCellType();
                     if (type == CellType.NUMERIC) {
-                        value = new Double(cell.getNumericCellValue());
+                        value = Double.valueOf(cell.getNumericCellValue());
                     } else if (type == CellType.BOOLEAN) {
-                        value = new Boolean(cell.getBooleanCellValue());
+                        value = Boolean.valueOf(cell.getBooleanCellValue());
                     } else if (type == CellType.ERROR) {
                         value = "" + cell.getErrorCellValue();
                     } else if (type == CellType.BLANK) {
@@ -1254,9 +1254,9 @@ public class TabularOutputHandler extends OutputHandler {
                     Object   value = null;
                     CellType type  = cell.getCellType();
                     if (type == CellType.NUMERIC) {
-                        value = new Double(cell.getNumericCellValue());
+                        value = Double.valueOf(cell.getNumericCellValue());
                     } else if (type == CellType.BOOLEAN) {
-                        value = new Boolean(cell.getBooleanCellValue());
+                        value = Boolean.valueOf(cell.getBooleanCellValue());
                     } else if (type == CellType.ERROR) {
                         value = "" + cell.getErrorCellValue();
                     } else if (type == CellType.BLANK) {

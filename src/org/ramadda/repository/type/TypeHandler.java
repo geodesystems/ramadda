@@ -555,7 +555,7 @@ public class TypeHandler extends RepositoryManager {
                                          "canCache", (String) null));
 
             if (tmpCanCache != null) {
-                canCache = new Boolean(tmpCanCache.equals("tmpCanCache"));
+                canCache = Boolean.valueOf(tmpCanCache.equals("tmpCanCache"));
             }
 
             setProperties(node);
@@ -4030,7 +4030,7 @@ public class TypeHandler extends RepositoryManager {
                                ? entry
                                : entry.getParentEntry();
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                     parent, name, "", request.getUser(),
+								parent, null, name, "", request.getUser(),
                                      typeHandler, null);
 
                 getRepository().addAuthToken(request);
@@ -6588,7 +6588,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     private Clause getSpatialDefinedClause(String column) {
-        return Clause.neq(column, new Double(Entry.NONGEO));
+        return Clause.neq(column, Double.valueOf(Entry.NONGEO));
     }
 
 

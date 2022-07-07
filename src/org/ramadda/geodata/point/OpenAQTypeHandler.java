@@ -133,7 +133,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         }
         Date now = new Date();
         Integer hoursOffset = (Integer) entry.getValue(IDX_HOURS_OFFSET,
-                                  new Integer(24));
+                                  Integer.valueOf(24));
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);

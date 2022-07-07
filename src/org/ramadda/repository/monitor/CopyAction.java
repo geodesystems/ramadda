@@ -34,13 +34,6 @@ import java.util.List;
  */
 public class CopyAction extends MonitorAction {
 
-    /** _more_ */
-    public static final String ARG_SUBGROUP = "subgroup";
-
-
-
-    /** _more_ */
-    private String subGroup = "";
 
     /**
      * _more_
@@ -103,7 +96,6 @@ public class CopyAction extends MonitorAction {
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
 	applyGroupEditForm(request, monitor);
-        this.subGroup = request.getString(getArgId(ARG_SUBGROUP), "").trim();
     }
 
 
@@ -116,18 +108,13 @@ public class CopyAction extends MonitorAction {
      * @throws Exception _more_
      */
     @Override
-    public void addToEditForm(EntryMonitor monitor, Appendable sb)
+    public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("Copy Action", 2));
         try {
 	    addGroupToEditForm(monitor, sb);
-            sb.append(
-                HtmlUtils.formEntry(
-                    "Sub-Folder Template:",
-                    HtmlUtils.input(
-                        getArgId(ARG_SUBGROUP), subGroup,
-                        HtmlUtils.SIZE_60)));
+	    addPathTemplateEditForm(request, monitor, sb);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -150,31 +137,13 @@ public class CopyAction extends MonitorAction {
             if (group == null) {
                 return;
             }
+	    List<Entry> entries = new ArrayList<Entry>();
+	    entries.add(entry);
+	    monitor.getRepository().getEntryManager().processEntryCopyAsynch(monitor.getRequest(),  group, getPathTemplate(), entries, null, null);
         } catch (Exception exc) {
             monitor.handleError("Error handling Copy Action", exc);
         }
     }
-
-
-
-    /**
-     *  Set the SubGroup property.
-     *
-     *  @param value The new value for SubGroup
-     */
-    public void setSubGroup(String value) {
-        this.subGroup = value;
-    }
-
-    /**
-     *  Get the SubGroup property.
-     *
-     *  @return The SubGroup
-     */
-    public String getSubGroup() {
-        return this.subGroup;
-    }
-
 
 
 }

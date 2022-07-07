@@ -1124,13 +1124,13 @@ public class Filter extends Processor {
             String  v     = row.getString(idx);
             Integer count = map.get(v);
             if (count == null) {
-                count = new Integer(0);
+                count = Integer.valueOf(0);
                 map.put(v, count);
             }
             if (count.intValue() >= this.count) {
                 return false;
             }
-            map.put(v, new Integer(count.intValue() + 1));
+            map.put(v, Integer.valueOf(count.intValue() + 1));
 
             return true;
         }

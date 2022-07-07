@@ -73,7 +73,7 @@ public class SelectInfo implements Constants {
         this(request, entry);
         this.max       = max;
         this.orderBy   = orderBy;
-        this.ascending = new Boolean(ascending);
+        this.ascending = Boolean.valueOf(ascending);
     }
 
 
@@ -133,9 +133,9 @@ public class SelectInfo implements Constants {
                         .getSortOrderMetadata(request, entry);
                 if (sortMetadata != null) {
                     if (Misc.equals(sortMetadata.getAttr2(), "true")) {
-                        ascending = new Boolean(true);
+                        ascending = Boolean.valueOf(true);
                     } else {
-                        ascending = new Boolean(false);
+                        ascending = Boolean.valueOf(false);
                     }
                     orderBy = sortMetadata.getAttr1();
                     String tmp = sortMetadata.getAttr3();
@@ -153,7 +153,7 @@ public class SelectInfo implements Constants {
             orderBy = Constants.ORDERBY_CREATEDATE;
         }
         if (request.defined(Constants.ARG_ASCENDING)) {
-            ascending = new Boolean(request.defined(Constants.ARG_ASCENDING));
+            ascending = Boolean.valueOf(request.defined(Constants.ARG_ASCENDING));
         }
 
     }

@@ -3032,12 +3032,12 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-min",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MinColumns(ctx,new Integer(args.get(++i))));
+		ctx.addProcessor(new Filter.MinColumns(ctx, Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-max",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MaxColumns(ctx, new Integer(args.get(++i))));
+		ctx.addProcessor(new Filter.MaxColumns(ctx, Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
@@ -3442,7 +3442,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-pad",2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Padder(new Integer(args.get(++i)).intValue(), args.get(++i)));
+		ctx.addProcessor(new Converter.Padder(Integer.parseInt(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
@@ -3679,8 +3679,8 @@ public class CsvUtil {
 
 
 	defineFunction("-truncate",3,(ctx,args,i) -> {
-		int    col    = new Integer(args.get(++i));
-		int    length = new Integer(args.get(++i));
+		int    col    = Integer.parseInt(args.get(++i));
+		int    length = Integer.parseInt(args.get(++i));
 		String suffix = args.get(++i);
 		ctx.addProcessor(
 				 new Converter.Truncater(col, length, suffix));
@@ -4027,12 +4027,12 @@ public class CsvUtil {
 
 
 	defineFunction("-decimals", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), new Integer(args.get(++i))));
+		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 	defineFunction("-fuzz", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Fuzzer(getCols(args.get(++i)), new Integer(args.get(++i)),
-						      new Integer(args.get(++i))));
+		ctx.addProcessor(new Converter.Fuzzer(getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
+						      Integer.parseInt(args.get(++i))));
 		return i;
 	    });	
 
@@ -4449,12 +4449,12 @@ public class CsvUtil {
 	    });
 
 	defineFunction(new String[]{"-progress","-dots"},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Dots(new Integer(args.get(++i))));
+		ctx.addProcessor(new Processor.Dots(Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-debugrows",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.DebugRows(new Integer(args.get(++i))));
+		ctx.addProcessor(new Processor.DebugRows(Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 	

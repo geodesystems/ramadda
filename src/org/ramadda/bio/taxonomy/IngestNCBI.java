@@ -170,9 +170,9 @@ public class IngestNCBI {
             }
             Integer i = rankCnt.get(node.rank);
             if (i == null) {
-                i = new Integer(0);
+                i = Integer.valueOf(0);
             }
-            rankCnt.put(node.rank, new Integer(i.intValue() + 1));
+            rankCnt.put(node.rank, Integer.valueOf(i.intValue() + 1));
             if (node.rank.equals("species") || node.rank.equals("no rank")) {
                 continue;
             }

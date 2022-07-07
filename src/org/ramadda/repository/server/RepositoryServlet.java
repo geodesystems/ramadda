@@ -187,7 +187,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             String ssls = tmpRepository.getPropertyValue(PROP_SSL_PORT,
                               (String) null, false);
             if ((ssls != null) && (ssls.trim().length() > 0)) {
-                sslPort = new Integer(ssls.trim());
+                sslPort = Integer.parseInt(ssls.trim());
             }
             if (sslPort >= 0) {
                 tmpRepository.getLogManager().logInfo("SSL: using port:"

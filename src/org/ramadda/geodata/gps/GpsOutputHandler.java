@@ -825,7 +825,7 @@ public class GpsOutputHandler extends OutputHandler {
                 };
 
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
-								parent, name, "",request.getUser(),
+								parent, null, name, "",request.getUser(),
                                      typeHandler, initializer);
 
                 if (cnt == 0) {
@@ -893,7 +893,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
             if (request.defined(ARG_GPS_ANTENNA_HEIGHT)) {
                 overrideHeight =
-                    new Double(request.get(ARG_GPS_ANTENNA_HEIGHT, 0.0));
+                    Double.valueOf(request.get(ARG_GPS_ANTENNA_HEIGHT, 0.0));
             }
 
             while (true) {
@@ -940,7 +940,7 @@ public class GpsOutputHandler extends OutputHandler {
                     values[IDX_ANTENNA_HEIGHT] = overrideHeight;
                 } else if (request.defined(ARG_GPS_ANTENNA_HEIGHT + suffix)) {
                     values[IDX_ANTENNA_HEIGHT] =
-                        new Double(request.get(ARG_GPS_ANTENNA_HEIGHT
+                        Double.valueOf(request.get(ARG_GPS_ANTENNA_HEIGHT
                             + suffix, 0.0));
                 }
                 entry.setValues(values);
@@ -1232,7 +1232,7 @@ public class GpsOutputHandler extends OutputHandler {
             final double[] pts = { maxLat, minLon, minLat, maxLon };
 
             Entry newEntry = getEntryManager().addFileEntry(request, f,
-							    parent, fileName, "",request.getUser(),
+							    parent, null, fileName, "",request.getUser(),
                                  typeHandler, new EntryInitializer() {
                 public void initEntry(Entry entry) {
                     entry.setNorth(pts[0]);
@@ -1382,7 +1382,7 @@ public class GpsOutputHandler extends OutputHandler {
         values[IDX_FORMAT]         = "";
         values[IDX_SITE_CODE]      = "";
         values[IDX_ANTENNA_TYPE]   = "";
-        values[IDX_ANTENNA_HEIGHT] = new Double(0);
+        values[IDX_ANTENNA_HEIGHT] = Double.valueOf(0);
 
         for (String line : StringUtil.split(gpsMetadata, "\n", true, true)) {
             List<String> toks = StringUtil.splitUpTo(line, ":", 2);
@@ -1412,7 +1412,7 @@ public class GpsOutputHandler extends OutputHandler {
             } else if (key.equals("antenna type")) {
                 values[IDX_ANTENNA_TYPE] = value;
             } else if (key.startsWith("antenna height")) {
-                values[IDX_ANTENNA_HEIGHT] = new Double(value);
+                values[IDX_ANTENNA_HEIGHT] = Double.parseDouble(value);
             } else if (key.startsWith("antenna latitude")) {
                 double v = Double.parseDouble(value);
                 if (v != 90) {
@@ -1999,7 +1999,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
         };
         Entry newEntry = getEntryManager().addFileEntry(request, f,
-							parentEntry, opusFileName, "", request.getUser(),
+							parentEntry, null, opusFileName, "", request.getUser(),
                              typeHandler, initializer);
 
 

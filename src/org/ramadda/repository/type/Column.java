@@ -688,7 +688,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             return null;
         }
         if (isNumeric()) {
-            double value = new Double(v.toString());
+            double value = Double.parseDouble(v.toString());
             for (Display d : displays) {
                 if ( !Double.isNaN(d.min) && !Double.isNaN(d.max)) {
                     if ((value >= d.min) && (value <= d.max)) {
@@ -1249,7 +1249,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean toBoolean(Object[] values, int idx) {
         if (values[idx] == null) {
             if (Utils.stringDefined(dflt)) {
-                return new Boolean(dflt).booleanValue();
+                return Boolean.parseBoolean(dflt);
             }
 
             return true;
@@ -1846,10 +1846,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                     value = (int) databaseDfltNum;
                 }
             }
-            values[offset] = new Integer(value);
+            values[offset] = Integer.valueOf(value);
             valueIdx++;
         } else if (isType(DATATYPE_PERCENTAGE)) {
-            values[offset] = new Double(results.getDouble(valueIdx));
+            values[offset] = Double.valueOf(results.getDouble(valueIdx));
             valueIdx++;
         } else if (isDouble()) {
             double value = results.getDouble(valueIdx);
@@ -1867,7 +1867,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             //            System.err.println("col: " + this +" " + results.wasNull() +" value:" + value);
             //            System.err.println(this  +" value=" + value);
-            values[offset] = new Double(value);
+            values[offset] = Double.valueOf(value);
             valueIdx++;
         } else if (isType(DATATYPE_BOOLEAN)) {
             String value = results.getString(valueIdx);
@@ -1878,23 +1878,23 @@ public class Column implements DataTypes, Constants, Cloneable {
                 value = "0";
             }
 
-            values[offset] = new Boolean(value.equals("true")
-                                         || value.equals("1"));
+            values[offset] =  Boolean.valueOf(value.equals("true")
+					      || value.equals("1"));
             valueIdx++;
         } else if (isDate()) {
             values[offset] = getDatabaseManager().getTimestamp(results,
                     valueIdx);
             valueIdx++;
         } else if (isType(DATATYPE_LATLON)) {
-            values[offset] = new Double(results.getDouble(valueIdx));
+            values[offset] = Double.valueOf(results.getDouble(valueIdx));
             valueIdx++;
-            values[offset + 1] = new Double(results.getDouble(valueIdx));
+            values[offset + 1] = Double.valueOf(results.getDouble(valueIdx));
             valueIdx++;
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            values[offset]     = new Double(results.getDouble(valueIdx++));
-            values[offset + 1] = new Double(results.getDouble(valueIdx++));
-            values[offset + 2] = new Double(results.getDouble(valueIdx++));
-            values[offset + 3] = new Double(results.getDouble(valueIdx++));
+            values[offset]     = Double.valueOf(results.getDouble(valueIdx++));
+            values[offset + 1] = Double.valueOf(results.getDouble(valueIdx++));
+            values[offset + 2] =  Double.valueOf(results.getDouble(valueIdx++));
+            values[offset + 3] = Double.valueOf(results.getDouble(valueIdx++));
         } else if (isType(DATATYPE_PASSWORD)) {
             String value = results.getString(valueIdx);
             if (value != null) {
@@ -2065,11 +2065,11 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public Object convert(String value) {
         if (isType(DATATYPE_INT)) {
-            return new Integer(value);
+            return Integer.parseInt(value);
         } else if (isDouble()) {
-            return new Double(value);
+            return Double.parseDouble(value);
         } else if (isType(DATATYPE_BOOLEAN)) {
-            return new Boolean(value);
+            return Boolean.parseBoolean(value);
         } else if (isType(DATATYPE_DATETIME)) {
             //TODO
         } else if (isType(DATATYPE_DATE)) {
@@ -2793,7 +2793,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (value.trim().length() == 0) {
                 value = "0";
             }
-            double d          = new Double(value).doubleValue();
+            double d          = Double.parseDouble(value);
             int    percentage = (int) (d * 100);
             widget = HtmlUtils.input(urlArg, percentage + "",
                                      HtmlUtils.SIZE_5) + "%";
@@ -3029,9 +3029,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         String urlArg = getEditArg();
         if (isType(DATATYPE_LATLON)) {
             if (request.exists(urlArg + "_latitude")) {
-                values[offset] = new Double(request.getString(urlArg
+                values[offset] = Double.parseDouble(request.getString(urlArg
                         + "_latitude", "0").trim());
-                values[offset + 1] = new Double(request.getString(urlArg
+                values[offset + 1] = Double.parseDouble(request.getString(urlArg
                         + "_longitude", "0").trim());
             } else if (request.exists(urlArg + ".latitude")) {
                 String latString = request.getString(urlArg + ".latitude",
@@ -3052,25 +3052,24 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         } else if (isType(DATATYPE_LATLONBBOX)) {
             if (request.exists(urlArg + "_north")) {
-                values[offset] = new Double(request.get(urlArg + "_north",
-							(Double)Utils.getNonNull(values[offset], new Double(Entry.NONGEO))));
-                values[offset + 1] = new Double(request.get(urlArg + "_west",
-							    (Double)Utils.getNonNull(values[offset+1], new Double(Entry.NONGEO))));
-		values[offset + 2] = new Double(request.get(urlArg
-							    + "_south",
-							    (Double)Utils.getNonNull(values[offset+2], new Double(Entry.NONGEO))));							    
+                values[offset] = Double.valueOf(request.get(urlArg + "_north",
+								(Double)Utils.getNonNull(values[offset], Double.valueOf(Entry.NONGEO))));
+                values[offset + 1] = Double.valueOf(request.get(urlArg + "_west",
+								    (Double)Utils.getNonNull(values[offset+1], Double.valueOf(Entry.NONGEO))));
+		values[offset + 2] = Double.valueOf(request.get(urlArg+ "_south",
+								(Double)Utils.getNonNull(values[offset+2], Double.valueOf(Entry.NONGEO))));							    
 
-                values[offset + 3] = new Double(request.get(urlArg + "_east",
-							    (Double)Utils.getNonNull(values[offset+3], new Double(Entry.NONGEO))));							    
+                values[offset + 3] = Double.valueOf(request.get(urlArg + "_east",
+								    (Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
 	    } else {
-                values[offset] = new Double(request.get(urlArg + ".north",
-							(Double)Utils.getNonNull(values[offset+0], new Double(Entry.NONGEO))));							    
-		values[offset + 1] = new Double(request.get(urlArg + ".west",
-							    (Double)Utils.getNonNull(values[offset+1], new Double(Entry.NONGEO))));							    
-		values[offset + 2] = new Double(request.get(urlArg  + ".south",
-							    (Double)Utils.getNonNull(values[offset+2], new Double(Entry.NONGEO))));							    							    
-		values[offset + 3] = new Double(request.get(urlArg + ".east",
-							    (Double)Utils.getNonNull(values[offset+3], new Double(Entry.NONGEO))));							    
+                values[offset] = Double.valueOf(request.get(urlArg + ".north",
+							    (Double)Utils.getNonNull(values[offset+0], Double.valueOf(Entry.NONGEO))));							    
+		values[offset + 1] = Double.valueOf(request.get(urlArg + ".west",
+							    (Double)Utils.getNonNull(values[offset+1], Double.valueOf(Entry.NONGEO))));							    
+		values[offset + 2] = Double.valueOf(request.get(urlArg  + ".south",
+							    (Double)Utils.getNonNull(values[offset+2], Double.valueOf(Entry.NONGEO))));							    							    
+		values[offset + 3] = Double.valueOf(request.get(urlArg + ".east",
+							    (Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
 	    }
         } else if (isDate()) {
             values[offset] = request.getDate(urlArg, (Date) Utils.getNonNull(values[offset],new Date()));
@@ -3081,7 +3080,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 					     Utils.getNonNull(values[offset],
 							      dflt,"true").toString()).toLowerCase();
             //            String value = request.getString(urlArg, "false");
-            values[offset] = new Boolean(value);
+            values[offset] =  Boolean.parseBoolean(value);
         } else if (isType(DATATYPE_ENUMERATION)) {
             if (request.exists(urlArg)) {
                 values[offset] = request.getAnonymousEncodedString(urlArg,
@@ -3122,10 +3121,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_INT)) {
             Integer dfltValue = (Integer)Utils.getNonNull(values[offset],
 							  (Utils.stringDefined(dflt)
-							   ? new Integer(dflt).intValue()
+							   ? Integer.parseInt(dflt)
 							   : 0));
             if (request.exists(urlArg)) {
-                values[offset] = new Integer(request.get(urlArg, dfltValue));
+                values[offset] = Integer.valueOf(request.get(urlArg, dfltValue));
             } else {
                 values[offset] = dfltValue;
             }
@@ -3133,10 +3132,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_PERCENTAGE)) {
             Double dfltValue = (Double)Utils.getNonNull(values[offset],
 							(Utils.stringDefined(dflt)
-							 ? new Double(dflt.trim()).doubleValue()
+							 ? Double.valueOf(dflt.trim())
 							 : 0));
             if (request.exists(urlArg)) {
-                values[offset] = new Double(request.get(urlArg, dfltValue)
+                values[offset] = Double.valueOf(request.get(urlArg, dfltValue)
                                             / 100);
             } else {
                 values[offset] = dfltValue;
@@ -3144,10 +3143,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isDouble()) {
             Double dfltValue = (Double)Utils.getNonNull(values[offset],
 							(Utils.stringDefined(dflt)
-							 ? new Double(dflt.trim()).doubleValue()
+							 ? Double.valueOf(dflt.trim())
 							 : 0));
             if (request.exists(urlArg)) {
-                values[offset] = new Double(request.get(urlArg, dfltValue));
+                values[offset] = Double.valueOf(request.get(urlArg, dfltValue));
             } else {
                 values[offset] = dfltValue;
 
@@ -3193,23 +3192,23 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (isType(DATATYPE_LATLON)) {
             List<String> toks = Utils.split(value, ";", true, true);
             if (toks.size() == 2) {
-                values[offset]     = new Double(toks.get(0));
-                values[offset + 1] = new Double(toks.get(1));
+                values[offset]     = Double.parseDouble(toks.get(0));
+                values[offset + 1] = Double.parseDouble(toks.get(1));
             } else {
                 toks = Utils.split(value, "|", true, true);
                 if (toks.size() == 2) {
-                    values[offset]     = new Double(toks.get(0));
-                    values[offset + 1] = new Double(toks.get(1));
+                    values[offset]     = Double.parseDouble(toks.get(0));
+                    values[offset + 1] = Double.parseDouble(toks.get(1));
                 } else {
                     //What to do here
                 }
             }
         } else if (isType(DATATYPE_LATLONBBOX)) {
             List<String> toks = Utils.split(value, ";", true, true);
-            values[offset]     = new Double(toks.get(0));
-            values[offset + 1] = new Double(toks.get(1));
-            values[offset + 2] = new Double(toks.get(2));
-            values[offset + 3] = new Double(toks.get(3));
+            values[offset]     = Double.parseDouble(toks.get(0));
+            values[offset + 1] = Double.parseDouble(toks.get(1));
+            values[offset + 2] = Double.parseDouble(toks.get(2));
+            values[offset + 3] = Double.parseDouble(toks.get(3));
         } else if (isDate()) {
             fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
             values[offset] = parseDate(value);
@@ -3217,16 +3216,16 @@ public class Column implements DataTypes, Constants, Cloneable {
             values[offset] = value;
         } else if (isType(DATATYPE_BOOLEAN)) {
             if (Utils.stringDefined(value)) {
-                values[offset] = new Boolean(value);
+                values[offset] = Boolean.parseBoolean(value);
             } else {
-                values[offset] = new Boolean(false);
+                values[offset] = Boolean.FALSE;
             }
         } else if (isType(DATATYPE_INT)) {
             try {
                 if (Utils.stringDefined(value)) {
-                    values[offset] = new Integer(value);
+                    values[offset] = Integer.parseInt(value);
                 } else {
-                    values[offset] = new Integer(0);
+                    values[offset] = Integer.valueOf(0);
                 }
             } catch (NumberFormatException nfe) {
                 throw new RuntimeException("Error parsing integer column:"
@@ -3235,9 +3234,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isType(DATATYPE_PERCENTAGE) || isDouble()) {
             if (Utils.stringDefined(value)) {
-                values[offset] = new Double(value);
+                values[offset] = Double.parseDouble(value);
             } else {
-                values[offset] = new Double(0);
+                values[offset] = Double.valueOf(0);
             }
         } else if (isType(DATATYPE_ENTRY)) {
             values[offset] = value;
@@ -4223,7 +4222,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             return dflt;
         }
 
-        return new Integer(attrValue).intValue();
+        return Integer.parseInt(attrValue);
     }
 
 
@@ -4246,7 +4245,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             return dflt;
         }
 
-        return new Double(attrValue).doubleValue();
+        return Double.parseDouble(attrValue);
     }
 
     /**

@@ -375,7 +375,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
                     } else {
                         width = swidth;
                         height = Integer.toString((int) (dim.height
-                                * new Integer(width) / (float) dim.width));
+                                * Integer.parseInt(width) / (float) dim.width));
                     }
                 }
             }

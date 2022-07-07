@@ -367,8 +367,8 @@ public class Service extends RepositoryManager {
                                          (String) null);
 
 
-        maxFileSize = new Double(XmlUtil.getAttributeFromTree(element,
-                ATTR_MAXFILESIZE, "-1.0")).doubleValue();
+        maxFileSize = Double.parseDouble(XmlUtil.getAttributeFromTree(element,
+                ATTR_MAXFILESIZE, "-1.0"));
 
         icon = XmlUtil.getAttributeFromTree(element, ATTR_ICON,
                                             (String) null);
@@ -1976,15 +1976,15 @@ public class Service extends RepositoryManager {
         }
         if (haveLink()) {
             requiresMultipleEntries =
-                new Boolean(link.requiresMultipleEntries());
+                Boolean.valueOf(link.requiresMultipleEntries());
         } else if (haveChildren()) {
             if (serial) {
                 requiresMultipleEntries =
-                    new Boolean(children.get(0).requiresMultipleEntries());
+                    Boolean.valueOf(children.get(0).requiresMultipleEntries());
             } else {
                 for (Service child : children) {
                     if ( !child.isEnabled()) {
-                        requiresMultipleEntries = new Boolean(false);
+                        requiresMultipleEntries = Boolean.valueOf(false);
 
                         break;
                     }
@@ -1993,14 +1993,14 @@ public class Service extends RepositoryManager {
         } else {
             for (ServiceArg arg : getArgs()) {
                 if (arg.isEntry()) {
-                    requiresMultipleEntries = new Boolean(arg.isMultiple());
+                    requiresMultipleEntries = Boolean.valueOf(arg.isMultiple());
 
                     break;
                 }
             }
         }
         if (requiresMultipleEntries == null) {
-            requiresMultipleEntries = new Boolean(false);
+            requiresMultipleEntries = Boolean.valueOf(false);
         }
 
         return requiresMultipleEntries;

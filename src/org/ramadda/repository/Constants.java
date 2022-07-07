@@ -929,6 +929,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_GROUP_CHILDREN = "group_children";
 
+    public static final String ARG_PATHTEMPLATE = "pathtemplate";
+
     /** _more_ */
     public static final String ARG_HARVESTER_CLASS = "harvester.class";
 

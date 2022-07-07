@@ -284,12 +284,12 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
         if (searchString.startsWith("\"") && searchString.endsWith("\"")) {
             searchString = searchString.replaceAll("\"", "");
             toks.add(searchString);
-            nots.add(new Boolean(false));
+            nots.add(Boolean.valueOf(false));
         } else {
             for (String tok :
                     StringUtil.split(searchString, " ", true, true)) {
                 boolean isNot = tok.startsWith("!");
-                nots.add(new Boolean(isNot));
+                nots.add(Boolean.valueOf(isNot));
                 if (isNot) {
                     tok = tok.substring(1);
                 }

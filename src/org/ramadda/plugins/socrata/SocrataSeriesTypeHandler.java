@@ -156,7 +156,7 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                 String     id  = col.get("fieldName").toString();
                 names.add(id);
                 if ( !id.startsWith(":")) {
-                    indexMap.put(id, new Integer(col.optInt("position", -1)));
+                    indexMap.put(id, Integer.valueOf(col.optInt("position", -1)));
                     fieldCnt++;
                 }
             }
@@ -171,7 +171,7 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                     continue;
                 }
                 //                System.err.println("name:" + name +" index:" + idx);
-                indexMap.put(name, new Integer(idx));
+                indexMap.put(name, Integer.valueOf(idx));
                 idx++;
             }
             */
@@ -201,7 +201,7 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                     didLocation        = true;
                     file.locationIndex = index.intValue() - 1;
                     entry.putProperty("socrata.locationIndex",
-                                      new Integer(file.locationIndex));
+                                      Integer.valueOf(file.locationIndex));
                     Utils.add(
                         fieldList, "location[label=Location type=string]",
                         "latitude[label=Latitude type=double islatitude=true]",

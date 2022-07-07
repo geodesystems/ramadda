@@ -294,8 +294,8 @@ public class CzoHeader {
             fields.append("]");
         }
 
-        int skip = new Integer(Misc.getProperty(properties,
-                       "databeginsonrow", "0")).intValue() - 1;
+        int skip = Integer.parseInt(Misc.getProperty(properties,
+                       "databeginsonrow", "0"))- 1;
         pointProps.append("\n\n");
         pointProps.append("skiplines=" + skip + "\n\n");
         pointProps.append("fields=" + fields);

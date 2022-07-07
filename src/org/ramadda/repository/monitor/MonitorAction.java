@@ -35,6 +35,9 @@ public abstract class MonitorAction implements Constants, Cloneable {
     /** _more_ */
     protected String parentGroupId;
 
+    private String pathTemplate;
+
+
     /** _more_ */
     protected Entry group;
 
@@ -133,7 +136,7 @@ public abstract class MonitorAction implements Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public void addToEditForm(EntryMonitor monitor, Appendable sb)
+    public void addToEditForm(Request request, EntryMonitor monitor, Appendable sb)
 	throws Exception {}
 
     /**
@@ -142,7 +145,10 @@ public abstract class MonitorAction implements Constants, Cloneable {
      * @param request _more_
      * @param monitor _more_
      */
-    public void applyEditForm(Request request, EntryMonitor monitor) {}
+    public void applyEditForm(Request request, EntryMonitor monitor) {
+        pathTemplate= request.getString(getArgId(ARG_PATHTEMPLATE),
+					pathTemplate);
+    }
 
 
     /**
@@ -247,10 +253,50 @@ public abstract class MonitorAction implements Constants, Cloneable {
 
     }
 
+
+    public void addPathTemplateEditForm(Request request, EntryMonitor monitor, Appendable sb) throws Exception {
+        sb.append(HtmlUtils.formEntry("Path Template:",
+				      HtmlUtils.input(getArgId(ARG_PATHTEMPLATE), pathTemplate,
+						      HtmlUtils.SIZE_60) + " "
+				      + "<br>Path under the destination parent to create. " +
+				      HtmlUtils.href(monitor.getRepository().getUrlBase()+"/userguide/monitors.html#pathtemplate","(Help)","target=_help") +
+				      "<br>e.g.:<br>" +
+				      "<i>Collection/Sub Collection</i><br>" +
+				      "Add in a macro for the date<br>"  +
+				      "<i>Collection ${create_monthname} ${create_year}</i><br>" +
+				      "Or specify a type:<br>" +
+				      "<i>Collection ${create_monthname} ${create_year}:type=type_point_collection</i><br>" +
+				      "Or specify a nested collection of point data:<br>" +
+				      "<i>Collection:type=type_point_collection_collection/${create_monthname} ${create_year}:type=type_point_collection</i>"));
+    }
+	
+
     public void applyGroupEditForm(Request request, EntryMonitor monitor) {
         this.parentGroupId = request.getString(getArgId(ARG_GROUP)
                 + "_hidden", "");
         this.group    = null;
     }
+
+
+
+    /**
+       Set the PathTemplate property.
+
+       @param value The new value for PathTemplate
+    **/
+    public void setPathTemplate (String value) {
+	pathTemplate = value;
+    }
+
+    /**
+       Get the PathTemplate property.
+
+       @return The PathTemplate
+    **/
+    public String getPathTemplate () {
+	return pathTemplate;
+    }
+
+
 
 }

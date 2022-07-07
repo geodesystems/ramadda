@@ -1000,8 +1000,8 @@ public class GeoUtils {
                         if (toks.size() == 4) {
                             addressToLocation.put(toks.get(0),
                                     new Place(toks.get(1),
-                                        new Double(toks.get(2)),
-                                        new Double(toks.get(3))));
+                                        Double.parseDouble(toks.get(2)),
+					      Double.parseDouble(toks.get(3))));
                         }
                     }
                 }

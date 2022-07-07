@@ -295,7 +295,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                 numFeatures++;
             }
             long t2 = System.currentTimeMillis();
-            getEntryValues(entry)[IDX_RECORD_COUNT] = new Integer(numPoints);
+            getEntryValues(entry)[IDX_RECORD_COUNT] = Integer.valueOf(numPoints);
             getEntryManager().updateEntry(request, entry);
         }
 

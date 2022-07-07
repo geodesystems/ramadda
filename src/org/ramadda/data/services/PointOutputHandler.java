@@ -1458,7 +1458,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                     //Set the georeference flag
                     if (request.get(ARG_GEOREFERENCE, false)) {
                         visitInfo.putProperty("georeference",
-                                new Boolean(true));
+                                Boolean.TRUE);
                     }
                     String url = request.getAbsoluteUrl(
                                      request.makeUrl(
@@ -1482,7 +1482,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 synchronized (visitInfo) {
                     if (visitInfo.getCount() == 0) {
                         visitInfo.putProperty(BaseRecord.PROP_INCLUDEVECTOR,
-                                new Boolean(request.get(ARG_INCLUDEWAVEFORM,
+					      Boolean.valueOf(request.get(ARG_INCLUDEWAVEFORM,
                                     false)));
                     }
                     try {
@@ -2074,7 +2074,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String destFileName = "hillshade" + imageSuffix;
                 if (forceHillshade) {
                     request.putExtraProperty(getOutputFilename(mainEntry,
-                            destFileName), new Boolean(false));
+                            destFileName),  Boolean.FALSE);
                 }
                 writeImage(request, imageFile, hillshadeGrid,
                            hillshadeGrid.getValueGrid(), missingValue,

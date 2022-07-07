@@ -252,7 +252,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         List<Entry> children = getEntryManager().getChildren(request,
                                    parentEntry);
         if (topEntryName.matches("\\d+")) {
-            int index = new Integer(topEntryName).intValue();
+            int index = Integer.parseInt(topEntryName);
             index--;
             if ((index >= 0) && (index < children.size())) {
                 return children.get(index);

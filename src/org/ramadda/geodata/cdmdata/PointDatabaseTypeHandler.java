@@ -837,21 +837,20 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             for (PointDataMetadata pdm : metadata) {
                 Object value;
                 if (COL_ID.equals(pdm.getColumnName())) {
-                    value = new Integer(baseId);
+                    value = Integer.valueOf(baseId);
                     baseId++;
                 } else if (COL_LATITUDE.equals(pdm.getColumnName())) {
-                    value = new Double(checkWriteValue(lat));
+                    value = Double.valueOf(checkWriteValue(lat));
                 } else if (COL_LONGITUDE.equals(pdm.getColumnName())) {
-                    value = new Double(checkWriteValue(lon));
+                    value = Double.valueOf(checkWriteValue(lon));
                 } else if (COL_ALTITUDE.equals(pdm.getColumnName())) {
-                    value = new Double(checkWriteValue(alt));
+                    value = Double.valueOf(checkWriteValue(alt));
                 } else if (COL_DATE.equals(pdm.getColumnName())) {
                     value = time;
                 } else if (COL_HOUR.equals(pdm.getColumnName())) {
-                    value = new Integer(calendar.get(GregorianCalendar.HOUR));
+                    value = Integer.valueOf(calendar.get(GregorianCalendar.HOUR));
                 } else if (COL_MONTH.equals(pdm.getColumnName())) {
-                    value =
-                        new Integer(calendar.get(GregorianCalendar.MONTH));
+                    value = Integer.valueOf(calendar.get(GregorianCalendar.MONTH));
                 } else {
                     StructureMembers.Member member =
                         structure.findMember((String) pdm.shortName);
@@ -867,7 +866,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                         if (d == d) {
                             hadGoodNumericValue = true;
                         }
-                        value = new Double(checkWriteValue(d));
+                        value = Double.valueOf(checkWriteValue(d));
                     }
                 }
                 values[pdm.getColumnNumber()] = value;
@@ -1287,7 +1286,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     pointData.setValue(pdm, results.getString(col).trim());
                 } else {
                     double d = checkReadValue(results.getDouble(col));
-                    pointData.setValue(pdm, new Double(d));
+                    pointData.setValue(pdm, Double.valueOf(d));
                 }
                 col++;
             }
@@ -3218,7 +3217,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          */
         public Object[] getValues() {
             return new Object[] {
-                tableName, getColumnName(), new Integer(getColumnNumber()),
+                tableName, getColumnName(), Integer.valueOf(getColumnNumber()),
                 shortName, longName, unit, varType
             };
         }
@@ -3399,25 +3398,25 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 return null;
             }
             if (col.equals(COL_ID)) {
-                return new Double(id);
+                return  Integer.valueOf(id);
             }
             if (col.equals(COL_LATITUDE)) {
-                return new Double(lat);
+                return Double.valueOf(lat);
             }
             if (col.equals(COL_LONGITUDE)) {
-                return new Double(lon);
+                return Double.valueOf(lon);
             }
             if (col.equals(COL_ALTITUDE)) {
-                return new Double(alt);
+                return Double.valueOf(alt);
             }
             if (col.equals(COL_DATE)) {
                 return date;
             }
             if (col.equals(COL_MONTH)) {
-                return new Double(month);
+                return Double.valueOf(month);
             }
             if (col.equals(COL_HOUR)) {
-                return new Double(hour);
+                return Double.valueOf(hour);
             }
 
             return values.get(col);

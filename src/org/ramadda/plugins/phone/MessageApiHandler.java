@@ -156,7 +156,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
             if (entry.getStartDate() > entry.getEndDate()) {
                 System.err.println("\tpast time");
                 entry.setValue(MTTFTypeHandler.IDX_ENABLED,
-                               new Boolean(false));
+                               Boolean.valueOf(false));
                 getEntryManager().updateEntry(request, entry);
 
                 continue;
@@ -205,19 +205,19 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                                        + new Date(entry.getStartDate()));
                 } else {
                     entry.setValue(MTTFTypeHandler.IDX_ENABLED,
-                                   new Boolean(false));
+                                   Boolean.valueOf(false));
                 }
                 needToUpdate = true;
             }
 
             if (inError) {
                 entry.setValue(MTTFTypeHandler.IDX_ENABLED,
-                               new Boolean(false));
+                               Boolean.valueOf(false));
                 needToUpdate = true;
             }
             if (entry.getStartDate() > entry.getEndDate()) {
                 entry.setValue(MTTFTypeHandler.IDX_ENABLED,
-                               new Boolean(false));
+                               Boolean.valueOf(false));
                 needToUpdate = true;
             }
             if (Misc.equals(status, originalStatus)) {

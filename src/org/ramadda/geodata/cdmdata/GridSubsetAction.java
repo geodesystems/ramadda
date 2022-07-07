@@ -117,12 +117,11 @@ public class GridSubsetAction extends MonitorAction {
      * @throws Exception _more_
      */
     @Override
-    public void addToEditForm(EntryMonitor monitor, Appendable sb)
+    public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
         addGroupToEditForm(monitor, sb);
-
-
+	addPathTemplateEditForm(request, monitor, sb);
         sb.append(
             HtmlUtils.formEntryTop(
                 "Grid Subset Arguments:",
@@ -219,7 +218,8 @@ public class GridSubsetAction extends MonitorAction {
                 monitor.getRepository().getTypeHandler("cdm_grid");
             Entry newEntry =
                 monitor.getRepository().getEntryManager().addFileEntry(
-                    request, file, group, newName, "", request.getUser(),
+								       request, file, group, getPathTemplate(),
+								       newName, "", request.getUser(),
                     gridTypeHandler, null);
             monitor.getRepository().getLogManager().logInfoAndPrint(
                 "Grid Subset published:" + newEntry.getName() + " id:"

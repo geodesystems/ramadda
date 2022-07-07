@@ -147,7 +147,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
             String arg = args[argIdx];
             if (arg.equals("-skip")) {
                 argIdx++;
-                skip = new Integer(args[argIdx]).intValue();
+                skip = Integer.parseInt(args[argIdx]);
 
                 continue;
             }

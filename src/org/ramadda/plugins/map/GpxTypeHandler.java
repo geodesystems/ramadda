@@ -185,27 +185,27 @@ public class GpxTypeHandler extends PointTypeHandler {
             //            initializeNewEntry(request, entry,false);
             //            getEntryManager().updateEntry(request, entry);
             double distance = (Double) entry.getValue(IDX_DISTANCE,
-                                  new Double(0));
+                                  Double.valueOf(0));
             double totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
-                                   new Double(0));
+                                   Double.valueOf(0));
             double movingTime = (Double) entry.getValue(IDX_MOVING_TIME,
-                                    new Double(0));
-            double speed = (Double) entry.getValue(IDX_SPEED, new Double(0));
-            double gain  = (Double) entry.getValue(IDX_GAIN, new Double(0));
-            double loss  = (Double) entry.getValue(IDX_LOSS, new Double(0));
+                                    Double.valueOf(0));
+            double speed = (Double) entry.getValue(IDX_SPEED, Double.valueOf(0));
+            double gain  = (Double) entry.getValue(IDX_GAIN, Double.valueOf(0));
+            double loss  = (Double) entry.getValue(IDX_LOSS, Double.valueOf(0));
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
             if (Double.isNaN(distance) || (distance == -1)
                     || (totalTime == -1)) {
                 initializeNewEntry(request, entry, false);
                 distance = (Double) entry.getValue(IDX_DISTANCE,
-                        new Double(0));
+                        Double.valueOf(0));
                 totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
-                        new Double(0));
+                        Double.valueOf(0));
                 movingTime = (Double) entry.getValue(IDX_MOVING_TIME,
-                        new Double(0));
-                speed = (Double) entry.getValue(IDX_SPEED, new Double(0));
-                gain  = (Double) entry.getValue(IDX_GAIN, new Double(0));
-                loss  = (Double) entry.getValue(IDX_LOSS, new Double(0));
+                        Double.valueOf(0));
+                speed = (Double) entry.getValue(IDX_SPEED, Double.valueOf(0));
+                gain  = (Double) entry.getValue(IDX_GAIN, Double.valueOf(0));
+                loss  = (Double) entry.getValue(IDX_LOSS, Double.valueOf(0));
                 if (distance != -1) {
                     try {
                         getEntryManager().updateEntry(request, entry);
@@ -539,7 +539,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 
                     double speed = 0;
                     if (ele != null) {
-                        ele = "" + (new Double(ele).doubleValue() * 3.28084);
+                        ele = "" + (Double.parseDouble(ele) * 3.28084);
                     }
                     String time = XmlUtil.getGrandChildText(trackPoint,
                                       "time", (String) null);
@@ -578,14 +578,14 @@ public class GpxTypeHandler extends PointTypeHandler {
         }
 
         entry.setValue(IDX_DISTANCE,
-                       new Double(Math.round(100.0 * totalDistance) / 100.0));
+                       Double.valueOf(Math.round(100.0 * totalDistance) / 100.0));
         entry.setValue(IDX_TOTAL_TIME,
-                       new Double((maxTime - minTime) / 1000.0 / 60 / 60));
-        entry.setValue(IDX_MOVING_TIME, new Double(movingTime));
+                       Double.valueOf((maxTime - minTime) / 1000.0 / 60 / 60));
+        entry.setValue(IDX_MOVING_TIME, Double.valueOf(movingTime));
         entry.setValue(IDX_SPEED,
-                       new Double(Math.round(100 * averageSpeed) / 100.0));
-        entry.setValue(IDX_GAIN, new Double((int) (3.28084 * elevationGain)));
-        entry.setValue(IDX_LOSS, new Double((int) (3.28084 * elevationLoss)));
+                       Double.valueOf(Math.round(100 * averageSpeed) / 100.0));
+        entry.setValue(IDX_GAIN, Double.valueOf((int) (3.28084 * elevationGain)));
+        entry.setValue(IDX_LOSS, Double.valueOf((int) (3.28084 * elevationLoss)));
 
     }
 

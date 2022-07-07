@@ -193,7 +193,7 @@ public class MyTrace {
         Thread  t   = Thread.currentThread();
         Integer tab = (Integer) tabs.get(t);
         if (tab == null) {
-            tab = new Integer(0);
+            tab =  Integer.valueOf(0);
             tabs.put(t, tab);
         }
 
@@ -255,7 +255,7 @@ public class MyTrace {
             return;
         }
         int v = getCurrentTab();
-        tabs.put(Thread.currentThread(), new Integer(v + delta));
+        tabs.put(Thread.currentThread(),  Integer.valueOf(v + delta));
     }
 
     /**
@@ -627,9 +627,9 @@ public class MyTrace {
         }
         Integer cnt = (Integer) accumCntTable.get(name);
         if (cnt == null) {
-            cnt = new Integer(1);
+            cnt = Integer.valueOf(1);
         } else {
-            cnt = new Integer(cnt.intValue() + 1);
+            cnt = Integer.valueOf(cnt.intValue() + 1);
         }
         accumCntTable.put(name, cnt);
         accumTable.put(name, total);
@@ -662,11 +662,11 @@ public class MyTrace {
     public static void count(String name) {
         Integer i = (Integer) counters.get(name);
         if (i == null) {
-            i = new Integer(0);
+            i = Integer.valueOf(0);
             counters.put(name, i);
             counterList.add(name);
         }
-        i = new Integer(i.intValue() + 1);
+        i = Integer.valueOf(i.intValue() + 1);
         counters.put(name, i);
     }
 

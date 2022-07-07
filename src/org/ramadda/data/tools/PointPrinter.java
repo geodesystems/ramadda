@@ -42,7 +42,7 @@ public class PointPrinter extends RecordTool {
             String arg = argList.get(i);
 
             if (arg.equals("-records")) {
-                numRecords = new Integer(argList.get(i + 1)).intValue();
+                numRecords =  Integer.parseInt(argList.get(i + 1));
                 i++;
 
                 continue;

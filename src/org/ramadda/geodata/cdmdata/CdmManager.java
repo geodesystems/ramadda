@@ -754,7 +754,7 @@ public class CdmManager extends RepositoryManager {
                     //                    System.err.println("error:" + ignoreThis);
                 }
             }
-            b = new Boolean(ok);
+            b = Boolean.valueOf(ok);
             cdmEntries.put(entry.getId(), b);
         }
 
@@ -813,7 +813,7 @@ public class CdmManager extends RepositoryManager {
                     ok = pointPool.containsOrCreate(getPath(entry));
                 } catch (Exception ignore) {}
             }
-            pointEntries.put(entry.getId(), b = new Boolean(ok));
+            pointEntries.put(entry.getId(), b =  Boolean.valueOf(ok));
         }
 
         return b.booleanValue();
@@ -847,7 +847,7 @@ public class CdmManager extends RepositoryManager {
                     ok = radarPool.containsOrCreate(getPath(entry));
                 } catch (Exception ignore) {}
             }
-            radarEntries.put(entry.getId(), b = new Boolean(ok));
+            radarEntries.put(entry.getId(), b = Boolean.valueOf(ok));
         }
 
         return b.booleanValue();
@@ -1046,7 +1046,7 @@ public class CdmManager extends RepositoryManager {
                     }
                 } catch (Exception ignoreThis) {}
             }
-            b = new Boolean(ok);
+            b = Boolean.valueOf(ok);
             gridEntries.put(entry.getId(), b);
         }
 
@@ -1095,7 +1095,7 @@ public class CdmManager extends RepositoryManager {
                     }
                 } catch (Exception ignoreThis) {}
             }
-            b = new Boolean(ok);
+            b = Boolean.valueOf(ok);
             cdmGridEntries.put(entry.getId(), b);
         }
 

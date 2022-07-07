@@ -960,7 +960,7 @@ public class EntryUtil extends RepositoryManager {
                 int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
                               Clause.eq(Tables.ENTRIES.COL_TYPE, type));
 
-                typesWeHave.put(type, new Integer(cnt));
+                typesWeHave.put(type, Integer.valueOf(cnt));
             }
             typeCache.put(typesWeHave);
         }

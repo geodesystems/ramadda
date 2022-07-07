@@ -495,9 +495,9 @@ public class Metadata implements Constants {
         }
         Hashtable<Integer, String> extraMap = getExtraMap();
         if (value == null) {
-            extraMap.remove(new Integer(idx));
+            extraMap.remove(Integer.valueOf(idx));
         } else {
-            extraMap.put(new Integer(idx), value);
+            extraMap.put(Integer.valueOf(idx), value);
         }
         this.extra = null;
     }
@@ -679,7 +679,7 @@ public class Metadata implements Constants {
         }
         Hashtable<Integer, String> extraMap = getExtraMap();
 
-        return extraMap.get(new Integer(idx));
+        return extraMap.get(Integer.valueOf(idx));
         //        throw new IllegalArgumentException("Bad attr idx:" + idx);
 
 
@@ -1084,7 +1084,7 @@ public class Metadata implements Constants {
                         if (text == null) {
                             text = "";
                         }
-                        tmp.put(new Integer(index), text);
+                        tmp.put(Integer.valueOf(index), text);
                     }
                 }
             } catch (Exception exc) {

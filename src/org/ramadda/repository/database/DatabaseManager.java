@@ -1503,9 +1503,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                         }
                         values[colCnt++] = s;
                     } else if (type == ColumnInfo.TYPE_INTEGER) {
-                        values[colCnt++] = new Integer(dis.readInt());
+                        values[colCnt++] =  Integer.valueOf(dis.readInt());
                     } else if (type == ColumnInfo.TYPE_DOUBLE) {
-                        values[colCnt++] = new Double(dis.readDouble());
+                        values[colCnt++] = Double.valueOf(dis.readDouble());
                     } else if (type == ColumnInfo.TYPE_CLOB) {
                         values[colCnt++] = readString(dis);
                     } else if (type == ColumnInfo.TYPE_BLOB) {

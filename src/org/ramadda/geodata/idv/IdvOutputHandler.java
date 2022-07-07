@@ -1048,7 +1048,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 List<Object[]> tuples = new ArrayList<Object[]>();
                 int            cnt    = 0;
                 for (Object time : times) {
-                    tuples.add(new Object[] { time, new Integer(cnt++) });
+                    tuples.add(new Object[] { time, Integer.valueOf(cnt++) });
                 }
                 tuples = (List<Object[]>) Misc.sortTuples(tuples, true);
                 List tfoTimes = new ArrayList();
@@ -1083,7 +1083,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 int  cnt       = 0;
                 for (Object level : levels) {
                     tfoLevels.add(new TwoFacedObject(level.toString(),
-                            new Integer(cnt++)));
+                            Integer.valueOf(cnt++)));
                 }
                 String levelWidget =
                     htmlSelect(request, ARG_LEVELS + displayIdx, tfoLevels,

@@ -1412,7 +1412,7 @@ public class PhoneHarvester extends Harvester {
 
             Entry childEntry = null;
             if (name.matches("\\d+")) {
-                int index = new Integer(name).intValue();
+                int index = Integer.parseInt(name);
                 index--;
                 List<Entry> children = (entries != null)
                                        ? entries

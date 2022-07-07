@@ -289,12 +289,12 @@ public class CsvOperator {
         }
         Integer cnt = debugCounts.get(msg);
         if (cnt == null) {
-            cnt = new Integer(0);
+            cnt = Integer.valueOf(0);
         } else {
             if (cnt > 5) {
                 return;
             }
-            cnt = new Integer(cnt + 1);
+            cnt = Integer.valueOf(cnt + 1);
         }
         debugCounts.put(msg, cnt);
         String c = getClass().getName();

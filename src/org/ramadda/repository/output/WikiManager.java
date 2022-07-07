@@ -1137,7 +1137,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (s.length() == 0) {
                 return dflt;
             }
-            int v = new Integer(s).intValue();
+            int v =  Integer.parseInt(s);
             if (isPercent) {
                 v = -v;
             }

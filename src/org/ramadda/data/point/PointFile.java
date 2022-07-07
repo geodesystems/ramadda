@@ -1030,10 +1030,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             }
             field.setIsGroup(getProperty(field, properties, "group",
                                          "false").equals("true"));
-            field.setColumnWidth(new Integer(getProperty(field, properties,
-                    "width", "0")).intValue());
-            field.setIndex(new Integer(getProperty(field, properties,
-                    "index", "-1")).intValue());
+            field.setColumnWidth(Integer.parseInt(getProperty(field, properties,
+                    "width", "0")));
+            field.setIndex(Integer.parseInt(getProperty(field, properties,
+                    "index", "-1")));
             field.setScale(Double.parseDouble(getProperty(field, properties,
                     ATTR_SCALE, "1.0")));
             field.setOffset1(Double.parseDouble(getProperty(field,
@@ -1075,7 +1075,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             String utcoffset = getProperty(field, properties, PROP_UTCOFFSET,
                                            (String) null);
             if (utcoffset != null) {
-                field.setUtcOffset(new Integer(utcoffset).intValue());
+                field.setUtcOffset(Integer.parseInt(utcoffset));
             }
             String precision = getProperty(field, properties, PROP_PRECISION,
                                            (String) null);

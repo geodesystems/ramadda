@@ -1200,12 +1200,12 @@ public class KmlUtil {
                         if (i / 3 >= max) {
                             break;
                         }
-                        result[0][cnt] = new Double(
-                            numbers.get(i).toString()).doubleValue();
-                        result[1][cnt] = new Double(numbers.get(i
-                                + 1).toString()).doubleValue();
-                        result[2][cnt] = new Double(numbers.get(i
-                                + 2).toString()).doubleValue();
+                        result[0][cnt] = Double.parseDouble(
+                            numbers.get(i).toString());
+                        result[1][cnt] = Double.parseDouble(numbers.get(i
+                                + 1).toString());
+                        result[2][cnt] = Double.parseDouble(numbers.get(i
+                                + 2).toString());
                         cnt++;
                     }
 
@@ -1223,8 +1223,8 @@ public class KmlUtil {
                 if (coordIdx >= max) {
                     break;
                 }
-                result[coordIdx][pointIdx] = new Double(
-                    numbers.get(coordIdx).toString()).doubleValue();
+                result[coordIdx][pointIdx] = Double.parseDouble(
+                    numbers.get(coordIdx).toString());
             }
         }
 

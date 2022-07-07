@@ -406,12 +406,12 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public static String importToRamadda(URL host, String user,
-                                         String passwd, String parent,
+                                         String passwd, String parent,String pathTemplate,
                                          String filePath)
             throws Exception {
         RepositoryClient client = new RepositoryClient(host, user, passwd);
 
-        return client.importToRamadda(parent, filePath);
+        return client.importToRamadda(parent, pathTemplate, filePath);
     }
 
 
@@ -640,7 +640,7 @@ public class RepositoryClient extends RepositoryBase {
      *
      * @throws Exception _more_
      */
-    public String importToRamadda(String parent, String filePath)
+    public String importToRamadda(String parent, String pathTemplate,String filePath)
             throws Exception {
         checkSession();
 
@@ -648,6 +648,7 @@ public class RepositoryClient extends RepositoryBase {
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
         postEntries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
         postEntries.add(HttpFormEntry.hidden(ARG_GROUP, parent));
+        postEntries.add(HttpFormEntry.hidden(ARG_PATHTEMPLATE, pathTemplate));	
         postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         postEntries.add(new HttpFormEntry(ARG_FILE, filePath, (byte[]) null));
 
@@ -1445,7 +1446,7 @@ public class RepositoryClient extends RepositoryBase {
         String sslPortProp = XmlUtil.getGrandChildText(root,
                                  ServerInfo.TAG_INFO_SSLPORT);
         if ((sslPortProp != null) && (sslPortProp.trim().length() > 0)) {
-            sslPort = new Integer(sslPortProp.trim()).intValue();
+            sslPort =  Integer.parseInt(sslPortProp.trim());
         }
 
         title = XmlUtil.getGrandChildText(root, ServerInfo.TAG_INFO_TITLE);
@@ -1821,7 +1822,7 @@ public class RepositoryClient extends RepositoryBase {
                 if (i >= args.length - 1) {
                     usage("Bad argument: " + arg);
                 }
-                timeout = new Integer(args[++i]);
+                timeout = Integer.parseInt(args[++i]);
 
                 continue;
             }

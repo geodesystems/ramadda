@@ -249,7 +249,7 @@ Easting (X)  [meters]      379359.228           836346.070
         for (int i = 0; i < patterns.length; i++) {
             String value = StringUtil.findPattern(opus, patterns[i]);
             if (value != null) {
-                values[indices[i]] = new Double(value);
+                values[indices[i]] = Double.parseDouble(value);
             } else {
                 System.err.println("no match: " + patterns[i]);
             }

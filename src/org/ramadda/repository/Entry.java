@@ -962,7 +962,7 @@ public class Entry implements Cloneable {
         }
         int retval = dflt;
         try {
-            retval = new Integer(sValue);
+            retval = Integer.parseInt(sValue);
         } catch (Exception e) {
             retval = dflt;
         }

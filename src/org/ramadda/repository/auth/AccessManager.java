@@ -669,7 +669,7 @@ public class AccessManager extends RepositoryManager {
         if (recentPermissions.size() > 10000) {
             clearCache();
         }
-        recentPermissions.put(key, new Object[] { now, new Boolean(result) });
+        recentPermissions.put(key, new Object[] { now, Boolean.valueOf(result) });
 
         return result;
 

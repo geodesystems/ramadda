@@ -367,7 +367,7 @@ public abstract class Geo extends Processor {
             } else if (writeForDb) {
                 add(ctx, row, lat + ";" + lon);
             } else {
-                add(ctx, row, new Double(lat), new Double(lon));
+                add(ctx, row,  Double.valueOf(lat), Double.valueOf(lon));
             }
 
             return row;
@@ -993,7 +993,7 @@ public abstract class Geo extends Processor {
                 //A hack for US
                 if (value.equals("US")
                         || value.toString().startsWith("United States")) {
-                    add(ctx, row, new Integer(327000000));
+                    add(ctx, row,  Integer.valueOf(327000000));
 
                     return row;
                 }
@@ -1009,10 +1009,10 @@ public abstract class Geo extends Processor {
             Place place = GeoUtils.getLocationFromAddress(key.toString(),
                               null);
             if (place != null) {
-                add(ctx, row, new Integer(place.getPopulation()));
+                add(ctx, row, Integer.valueOf(place.getPopulation()));
             } else {
                 //              System.out.println("NOT:" + key);
-                add(ctx, row, new Integer(0));
+                add(ctx, row, Integer.valueOf(0));
             }
 
             //      System.err.println("pop row:" + row);

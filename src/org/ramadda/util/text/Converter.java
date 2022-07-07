@@ -2040,19 +2040,19 @@ public abstract class Converter extends Processor {
             }
             double v = Double.parseDouble(row.get(col).toString());
             if (values.size() < step) {
-                add(ctx, row, new Double(Double.NaN));
+                add(ctx, row,  Double.valueOf(Double.NaN));
             } else {
                 double pastValue = values.get(0);
                 values.remove(0);
                 double increase = 0;
                 // 20 30
                 if (pastValue == 0) {
-                    add(ctx, row, new Double(Double.NaN));
+                    add(ctx, row, Double.valueOf(Double.NaN));
                 } else {
                     double diff = v - pastValue;
                     increase = diff / pastValue;
                     //              System.out.println("x:" + v +" " + pastValue +"  diff:" + diff +" i:" + increase);
-                    add(ctx, row, new Double(increase));
+                    add(ctx, row, Double.valueOf(increase));
                 }
             }
             values.add(v);
@@ -2606,7 +2606,7 @@ public abstract class Converter extends Processor {
                     newValues.add(s);
                 }
             }
-            newValues.add(new Double(total));
+            newValues.add(Double.valueOf(total));
             row.setValues(newValues);
 
             return row;
@@ -4173,7 +4173,7 @@ public abstract class Converter extends Processor {
                     double value =
                         Double.parseDouble(row.get(index).toString());
                     row.set(index,
-                            new Double((value + delta1) * scale
+                            Double.valueOf((value + delta1) * scale
                                        + delta2).toString());
                 } catch (NumberFormatException nfe) {}
             }
@@ -4228,10 +4228,10 @@ public abstract class Converter extends Processor {
                     double value =
                         Double.parseDouble(row.get(index).toString());
                     if (decimals == 0) {
-                        row.set(index, new Integer((int) value));
+                        row.set(index, Integer.valueOf((int) value));
                     } else {
                         value = (double) Math.round(value * tens) / tens;
-                        row.set(index, new Double(value));
+                        row.set(index, Double.valueOf(value));
                     }
                 } catch (NumberFormatException nfe) {}
             }
@@ -4377,7 +4377,7 @@ public abstract class Converter extends Processor {
                     double value =
                         Double.parseDouble(row.get(index).toString());
                     value = (double) Math.min(value, this.value);
-                    row.set(index, new Double(value));
+                    row.set(index, Double.valueOf(value));
                 } catch (NumberFormatException nfe) {}
             }
 
@@ -4426,7 +4426,7 @@ public abstract class Converter extends Processor {
                     double value =
                         Double.parseDouble(row.get(index).toString());
                     value = (double) Math.max(value, this.value);
-                    row.set(index, new Double(value));
+                    row.set(index, Double.valueOf(value));
                 } catch (NumberFormatException nfe) {}
             }
 
@@ -4906,9 +4906,9 @@ public abstract class Converter extends Processor {
             }
             List<Integer> indices = getIndices(ctx);
             double x =
-                new Double(row.getValues().get(indices.get(0)).toString());
+                Double.parseDouble(row.getValues().get(indices.get(0)).toString());
             double y =
-                new Double(row.getValues().get(indices.get(1)).toString());
+                Double.parseDouble(row.getValues().get(indices.get(1)).toString());
             double rMajor = 6378137;  //Equatorial Radius, WGS84
             double shift  = Math.PI * rMajor;
             double lon    = x / shift * 180.0;

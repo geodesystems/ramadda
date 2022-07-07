@@ -339,7 +339,7 @@ public class RowCollector extends Processor {
                     }
                     Tuple tuple = tuples.get(i);
                     if (op == OP_SUM) {
-                        aggRow.set(idx, new Double(tuple.sum));
+                        aggRow.set(idx, Double.valueOf(tuple.sum));
                     } else if (op == OP_COUNT) {
                         aggRow.set(idx, group.size());
                     } else if (op == OP_MIN) {
@@ -1135,8 +1135,8 @@ public class RowCollector extends Processor {
             for (int i = 0; i < newColumns.size(); i++) {
                 String       v    = newColumns.get(i);
                 List<String> toks = Utils.split(v, ":unit:");
-                indexMap.put(toks.get(0), new Integer(i));
-                indexMap.put(v, new Integer(i));
+                indexMap.put(toks.get(0), Integer.valueOf(i));
+                indexMap.put(v, Integer.valueOf(i));
             }
             List      header  = headerRow.getValues();
             List<Row> newRows = new ArrayList<Row>();
@@ -2420,9 +2420,9 @@ public class RowCollector extends Processor {
                 }
                 Integer cnt = uniques.get(v);
                 if (cnt == null) {
-                    cnt = new Integer(0);
+                    cnt = Integer.valueOf(0);
                 }
-                cnt = new Integer(cnt + 1);
+                cnt = Integer.valueOf(cnt + 1);
                 uniques.put(v, cnt);
             }
 
@@ -2635,15 +2635,15 @@ public class RowCollector extends Processor {
 
 		    for(String w: what) {
 			if(w.equals(OPERAND_SUM)) {
-			    newRow.add(new Double(count.totals[i]));
+			    newRow.add(Double.valueOf(count.totals[i]));
  			} else if(w.equals(OPERAND_MIN)) {
-			    newRow.add(new Double(count.mins[i]));
+			    newRow.add(Double.valueOf(count.mins[i]));
  			} else if(w.equals(OPERAND_MAX)) {
-			    newRow.add(new Double(count.maxs[i]));
+			    newRow.add(Double.valueOf(count.maxs[i]));
  			} else if(w.equals(OPERAND_AVG) || w.equals(OPERAND_AVERAGE)) {
-			    newRow.add(new Double(count.totals[i]/count.count));
+			    newRow.add(Double.valueOf(count.totals[i]/count.count));
  			} else if(w.equals(OPERAND_COUNT)) {
-			    newRow.add(new Integer(count.count));
+			    newRow.add(Integer.valueOf(count.count));
 			}
 		    }
 		}
@@ -2886,15 +2886,15 @@ public class RowCollector extends Processor {
 
 		    for(String w: what) {
 			if(w.equals(OPERAND_SUM)) {
-			    newRow.add(new Double(count.totals[i]));
+			    newRow.add(Double.valueOf(count.totals[i]));
  			} else if(w.equals(OPERAND_MIN)) {
-			    newRow.add(new Double(count.mins[i]));
+			    newRow.add(Double.valueOf(count.mins[i]));
  			} else if(w.equals(OPERAND_MAX)) {
-			    newRow.add(new Double(count.maxs[i]));
+			    newRow.add(Double.valueOf(count.maxs[i]));
 	      } else if(w.equals(OPERAND_AVERAGE)) {
-	      newRow.add(new Double(count.totals[i]/count.count));
+	      newRow.add(Double.valueOf(count.totals[i]/count.count));
 	      } else if(w.equals("count")) {
-	      newRow.add(new Integer(count.count));
+	      newRow.add(Integer.valueOf(count.count));
 	      }
 	      }
 	      }

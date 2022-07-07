@@ -340,10 +340,10 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
         values[IDX_DATE]     = new Date();
         values[IDX_COMMENTS] = "";
         values[IDX_TYPE]     = "";
-        values[IDX_LICENSE_AMOUNT]   = new Double(0);
-        values[IDX_SUPPORT_AMOUNT]   = new Double(0);
-        values[IDX_TOTAL_AMOUNT]   = new Double(0);
-        values[IDX_USERS]    = new Integer(1);
+        values[IDX_LICENSE_AMOUNT]   = Double.valueOf(0);
+        values[IDX_SUPPORT_AMOUNT]   = Double.valueOf(0);
+        values[IDX_TOTAL_AMOUNT]   = Double.valueOf(0);
+        values[IDX_USERS]    =  Integer.valueOf(1);
         values[IDX_SUPPORT_TIER]    = "1";
         values[IDX_ORGANIZATION_TYPE] = "normal";
 
@@ -444,10 +444,10 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
         if (ok && buying) {
             values[IDX_TYPE]   = STATE_PENDING;
             values[IDX_SUPPORT_TIER] = ""+supportTier;
-            values[IDX_LICENSE_AMOUNT] = new Double(licenseAmount);
-            values[IDX_SUPPORT_AMOUNT] = new Double(supportAmount);
-            values[IDX_TOTAL_AMOUNT] = new Double(totalAmount);
-            values[IDX_USERS]  = new Integer(users);
+            values[IDX_LICENSE_AMOUNT] = Double.valueOf(licenseAmount);
+            values[IDX_SUPPORT_AMOUNT] = Double.valueOf(supportAmount);
+            values[IDX_TOTAL_AMOUNT] = Double.valueOf(totalAmount);
+            values[IDX_USERS]  =  Integer.valueOf(users);
             values[IDX_ORGANIZATION_TYPE] = academic ?"academic":"other";
             //Store
             doStore(entry, values, true);

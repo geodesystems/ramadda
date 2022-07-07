@@ -217,7 +217,7 @@ public class GenericTypeHandler extends TypeHandler {
                     Element.class, Integer.TYPE });
             Column column = (Column) ctor.newInstance(new Object[] { this,
                     columnNode,
-                    new Integer(valuesOffset + colNames.size() - 1) });
+                    Integer.valueOf(valuesOffset + colNames.size() - 1) });
             myColumns.add(column);
             column.setColumnIndex(myColumns.size() - 1);
             if ((categoryColumn == null) && column.getIsCategory()) {

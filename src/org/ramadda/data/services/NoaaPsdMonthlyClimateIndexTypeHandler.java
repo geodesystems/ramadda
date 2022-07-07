@@ -75,7 +75,7 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
          */
         double missingValue = readMissingValue(loc);
         if ( !Double.isNaN(missingValue)) {
-            values[2] = new Double(missingValue);
+            values[2] = Double.valueOf(missingValue);
             entry.setValues(values);
         }
     }

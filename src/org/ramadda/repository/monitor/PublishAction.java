@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.monitor;
@@ -42,6 +42,7 @@ public class PublishAction extends MonitorAction {
     public static final String ARG_PARENTENTRYID = "parententryid";
 
 
+
     /** _more_ */
     private String destRamadda;
 
@@ -53,6 +54,7 @@ public class PublishAction extends MonitorAction {
 
     /**  */
     private String parentEntryId;
+
 
 
     /**
@@ -96,9 +98,8 @@ public class PublishAction extends MonitorAction {
      * @return _more_
      */
     public String getSummary(EntryMonitor entryMonitor) {
-        return "Publish entry to:" + destRamadda;
+        return "Publish entry to: " + (Utils.stringDefined(destRamadda)?destRamadda:"not defined");
     }
-
 
 
     /**
@@ -127,29 +128,30 @@ public class PublishAction extends MonitorAction {
      * @throws Exception _more_
      */
     @Override
-    public void addToEditForm(EntryMonitor monitor, Appendable sb)
-            throws Exception {
+    public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
+	throws Exception {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("Publish Action", 2));
         sb.append(
-            HtmlUtils.formEntry(
-                "Destination RAMADDA:",
-                HtmlUtils.input(
-                    getArgId(ARG_DESTRAMADDA), destRamadda,
-                    HtmlUtils.SIZE_60) + " " + "e.g., https://ramadda.org"));
+		  HtmlUtils.formEntry(
+				      "Destination RAMADDA:",
+				      HtmlUtils.input(
+						      getArgId(ARG_DESTRAMADDA), destRamadda,
+						      HtmlUtils.SIZE_60) + " " + "<br>e.g., https://ramadda.org/repository"));
         sb.append(HtmlUtils.formEntry("User ID:",
                                       HtmlUtils.input(getArgId(ARG_USERID),
-                                          userId, HtmlUtils.SIZE_40)));
+						      userId, HtmlUtils.SIZE_40)));
         sb.append(HtmlUtils.formEntry("Password:",
-                HtmlUtils.input(getArgId(ARG_PASSWORD), password,
-                    HtmlUtils.SIZE_40) + " "
-                        + "Use &lt;property&gt; to look up password as a property"));
+				      HtmlUtils.input(getArgId(ARG_PASSWORD), password,
+						      HtmlUtils.SIZE_40) + " "
+				      + "<br>Use &lt;property&gt; to look up password as a property"));
         sb.append(
-            HtmlUtils.formEntry(
-                "Destination Parent Entry ID:",
-                HtmlUtils.input(
-                    getArgId(ARG_PARENTENTRYID), parentEntryId,
-                    HtmlUtils.SIZE_40)));
+		  HtmlUtils.formEntry(
+				      "Destination Parent Entry ID:",
+				      HtmlUtils.input(
+						      getArgId(ARG_PARENTENTRYID), parentEntryId,
+						      HtmlUtils.SIZE_40)));
+	addPathTemplateEditForm(request, monitor, sb);
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -167,20 +169,20 @@ public class PublishAction extends MonitorAction {
         try {
             if ( !Utils.stringDefined(destRamadda)) {
                 monitor.getRepository().getLogManager().logError(
-                    "PublishAction: no destination RAMADDA specified");
+								 "PublishAction: no destination RAMADDA specified");
 
                 return;
             }
             if ( !Utils.stringDefined(userId)) {
                 monitor.getRepository().getLogManager().logError(
-                    "PublishAction:" + destRamadda + " no user id specified");
+								 "PublishAction:" + destRamadda + " no user id specified");
 
                 return;
             }
             if ( !Utils.stringDefined(parentEntryId)) {
                 monitor.getRepository().getLogManager().logError(
-                    "PublishAction:" + destRamadda
-                    + " no parent entry id specified");
+								 "PublishAction:" + destRamadda
+								 + " no parent entry id specified");
 
                 return;
             }
@@ -189,11 +191,11 @@ public class PublishAction extends MonitorAction {
                 String key = password.substring(1);
                 key = key.substring(0, key.length() - 1);
                 password = monitor.getRepository().getProperty(key,
-                        (String) null);
+							       (String) null);
                 if (password == null) {
                     monitor.getRepository().getLogManager().logError(
-                        "PublishAction:" + destRamadda
-                        + " no password property defined for:" + key);
+								     "PublishAction:" + destRamadda
+								     + " no password property defined for:" + key);
 
                     return;
                 }
@@ -201,8 +203,8 @@ public class PublishAction extends MonitorAction {
 
             if ( !Utils.stringDefined(password)) {
                 monitor.getRepository().getLogManager().logError(
-                    "PublishAction:" + destRamadda
-                    + " no password specified");
+								 "PublishAction:" + destRamadda
+								 + " no password specified");
 
                 return;
             }
@@ -210,19 +212,19 @@ public class PublishAction extends MonitorAction {
             Request request = monitor.getRepository().getAdminRequest();
             File file =
                 monitor.getRepository().getStorageManager().getTmpFile(
-                    request, ".zip");
+								       request, ".zip");
 
             request.putExtraProperty("zipfile", file);
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
             monitor.getRepository().getZipOutputHandler().toZip(request, "",
-                    entries, true, true);
+								entries, true, true);
 
             String id =
                 RepositoryClient.importToRamadda(new URL(destRamadda),
-                    userId, password, parentEntryId, file.toString());
+						 userId, password, parentEntryId, getPathTemplate(),file.toString());
             monitor.getRepository().getLogManager().logInfo(
-                "PublishAction: published to:" + destRamadda + " id:" + id);
+							    "PublishAction: published to:" + destRamadda + " id:" + id);
         } catch (Exception exc) {
             monitor.handleError("Error handling Publish Action", exc);
         }
@@ -303,4 +305,6 @@ public class PublishAction extends MonitorAction {
 
 
 
+
 }
+
