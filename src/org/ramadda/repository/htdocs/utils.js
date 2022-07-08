@@ -1253,7 +1253,10 @@ var Utils =  {
     makeLabel: function(s) {
         s  = String(s);
         s = s.trim();
-        return this.camelCase(s.replace(/_/g," "));
+	s = s.replace(/([A-Z])/g," $1");
+        s =  this.camelCase(s.replace(/_/g," "));
+	s = s.replace(/  +/g," ");
+	return s;
     },
     makeId: function(s) {
         s  = String(s);
