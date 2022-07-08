@@ -579,18 +579,23 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    props.push(a);
 		    values[a] = style[a];
 		}
+		if(feature.type==GLYPH_MARKER) {
+		    props = ["pointRadius","externalGraphic"];
+		} 
 	    } else {
-		props = ["strokeColor","strokeWidth","pointRadius","externalGraphic","fontSize","fontWeight","fontFamily"];
+		props = ["strokeColor","strokeWidth","strokeOpacity",
+			 "fillColor","fillOpacity",
+			 "pointRadius","externalGraphic","imageOpacity","fontSize","fontWeight","fontFamily"];
 	    }
 	    
 	    if(!props.includes("popupText")) props.push("popupText");
 	    props.forEach(prop=>{
 		if(prop=="labelSelect") return;
-		let label = prop;
-		label = label.replace('stroke','stroke ').replace('fill','fill ');
-		label   = Utils.makeLabel(label);		
+		if(prop=="cursor") return;		
+		let label =  Utils.makeLabel(prop);		
 		let widget;
 		if(prop=="externalGraphic") {
+		    label="Marker"
 		    let icons = ["/map/marker-blue.png","/map/marker-gold.png","/map/marker-green.png","/map/marker.png","/map/POI.png","/map/arts.png","/map/bar.png","/map/binocular.png","/map/blue-dot.png","/map/blue-pushpin.png","/map/building.png","/map/burn.png","/map/bus.png","/map/cabs.png","/map/calendar.png","/map/camera.png","/map/campfire.png","/map/campground.png","/map/car.png","/map/caution.png","/map/coffeehouse.png","/map/convienancestore.png","/map/cycling.png","/map/dollar.png","/map/drinking_water.png","/map/earthquake.png","/map/electronics.png","/map/envelope.png","/map/euro.png","/map/fallingrocks.png","/map/ferry.png","/map/film.png","/map/firedept.png","/map/fishing.png","/map/flag.png","/map/gas.png","/map/glass.png","/map/globe.png","/map/golfer.png","/map/green-dot.png","/map/grn-pushpin.png","/map/grocerystore.png","/map/hammer.png","/map/helicopter.png","/map/hiker.png","/map/home.png","/map/homegardenbusiness.png","/map/horsebackriding.png","/map/hospitals.png","/map/hotsprings.png","/map/info.png","/map/info_circle.png","/map/lodging.png","/map/ltblu-pushpin.png","/map/ltblue-dot.png","/map/man.png","/map/marina.png","/map/mechanic.png","/map/motorcycling.png","/map/mountain.png","/map/movies.png","/map/orange-dot.png","/map/paper-plane.png","/map/parkinglot.png","/map/partly_cloudy.png","/map/pharmacy-us.png","/map/phone.png","/map/picnic.png","/map/pink-dot.png","/map/pink-pushpin.png","/map/plane.png","/map/police.png","/map/postoffice-us.png","/map/purple-dot.png","/map/purple-pushpin.png","/map/question.png","/map/rail.png","/map/rainy.png","/map/rangerstation.png","/map/realestate.png","/map/recycle.png","/map/red-dot.png","/map/red-pushpin.png","/map/restaurant.png","/map/sailing.png","/map/salon.png","/map/shopping-basket.png","/map/shopping.png","/map/ski.png","/map/smiley.png","/map/snack_bar.png","/map/snowflake_simple.png","/map/sportvenue.png","/map/star.png","/map/sticky-note.png","/map/subway.png","/map/sunny.png","/map/swimming.png","/map/toilets.png","/map/trail.png","/map/tram.png","/map/tree.png","/map/truck.png","/map/volcano.png","/map/water.png","/map/waterfalls.png","/map/wheel_chair_accessible.png","/map/woman.png","/map/yellow-dot.png","/map/yen.png","/map/ylw-pushpin.png"];
 		    let options = "";
 		    let graphic = values[prop];
@@ -599,7 +604,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    icons.forEach(icon=>{
 			let extra ="";
 			let url =  ramaddaBaseUrl + icon;
-			let lbl = icon.replace("/map/","");
+			let lbl = Utils.makeLabel(icon.replace("/map/","").replace(".png","").replace(/-/g," "));
 			let attrs = ["value",icon, "data-class", "ramadda-select-icon","data-style", "", "img-src",url];
 			if(icon == graphic)
 			    attrs.push("selected","true");
@@ -622,14 +627,48 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			size="80"
 			widget =  HU.textarea("",v,[ID,this.domId(prop),"rows",5,"cols", 60]);
 		    } else if(prop=="popupText") {
-			label = "Popup text";
 			size="80"
-			widget =  HU.textarea("",v||"",[ID,this.domId(prop),"rows",5,"cols", 60]);			
+			widget =  HU.textarea("",v||"",[ID,this.domId(prop),"rows",5,"cols", 60]);
+		    } else if(prop=="fontWeight") {
+			    widget = HU.select("",['id',this.domId(prop)],["normal","bold","italic"],v);
 		    } else {
-			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="fontWeight" || prop=="imageOpacity") size="4";
+			if(props == "pointRadius") label="Size";
+			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop=="imageUrl") size="80";		    
-			widget =  HU.input("",v,[ID,this.domId(prop),"size",size]);
+			if(prop.indexOf("Color")>=0) {
+			    let id = this.domId(prop);
+			    let colors = Utils.split("transparent,red,orange,yellow,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
+
+			    let bar = "";
+			    let cnt = 0;
+			    colors.forEach(color=>{
+				bar += HU.div(['title',color,'color',color,'widget-id',id,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
+				cnt++;
+				if(cnt>=10) {
+				    cnt = 0;
+				    bar+="<br>";
+				}
+			    });
+			    bar = HU.div(['style','max-height:66px;overflow-y:auto;border:1px solid #ccc;'],bar);
+			    widget =  HU.input("",v,['class','ramadda-editablemap-color',ID,id,"size",8]);
+			    widget =  HU.div(['id',id+'_display','class','ramadda-dot', 'style',HU.css('background',v)]) +
+				HU.space(2)+widget;
+			    widget  = HU.table([],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
+			} else if(prop.indexOf("Width")>=0) {
+			    let id = this.domId(prop);
+			    if(!v || v=="") v= 1;
+			    widget =  HU.input("",v,[ID,this.domId(prop),"size",4])+HU.space(2) +
+				HU.div(['slider-min',1,'slider-max',50,'slider-step',1,'slider-value',v,'slider-id',id,ID,id+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
+
+			} else if(prop.indexOf("Opacity")>=0) {
+			    let id = this.domId(prop);
+			    if(!v || v=="") v= 1;
+			    widget =  HU.input("",v,[ID,this.domId(prop),"size",4])+HU.space(2) +
+				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',id,ID,id+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
+			} else {
+			    widget =  HU.input("",v,[ID,this.domId(prop),"size",size]);
+			}
 		    }
 		}
 		html+=HU.formEntry(label+":",widget);
@@ -651,6 +690,36 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    html+="</center>";
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true,remove:false});
+	    dialog.find('.ramadda-slider').each(function() {
+		let min = $(this).attr('slider-min');
+		let max = $(this).attr('slider-max');
+		let step = $(this).attr('slider-step')??0.01;
+		$(this).slider({		
+		    min: +min,
+		    max: +max,
+		    step:+step,
+		    value:$(this).attr('slider-value'),
+		    slide: function( event, ui ) {
+			let id = $(this).attr('slider-id');
+			$("#"+ id).val(ui.value);
+			//		    _this.params.imageOpacity = ui.value;
+		    }});
+	    });
+
+	    dialog.find('.ramadda-editablemap-color').change(function() {
+		let c = $(this).val();
+		let id = $(this).attr('id');
+		$("#"+ id+'_display').css('background',c);
+		asdsa
+	    });
+	    dialog.find('.ramadda-color-select').click(function(){
+		let c = $(this).attr('color');
+		let id = $(this).attr('widget-id');
+		$("#"+ id).val(c);
+		$("#"+ id+'_display').css('background',c);
+
+	    });
+
 
 	    this.jq("externalGraphic").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
 	    if(apply==null) {
@@ -714,7 +783,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    return
 		}
 		this.featureHasBeenChanged = false;
-		console.log(result);
 		if(result.error) {
 		    this.showMessage(result.error);
 		} else {
@@ -1084,7 +1152,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		new GlyphType(this,GLYPH_POINT,"Point",
 			     {strokeWidth:this.getProperty("strokeWidth",2), 
 			      fillColor:"transparent",
+			      fillOpacity:1,
 			      strokeColor:this.getStrokeColor(),
+			      strokeOpacity:1,
 			      pointRadius:this.getPointRadius(4)},
 			     OpenLayers.Handler.MyPoint),
 		new GlyphType(this,GLYPH_LABEL,"Label",
@@ -1102,15 +1172,17 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			     }, OpenLayers.Handler.Point),
 		new GlyphType(this,GLYPH_BOX, "Box",
 			      {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
+			       strokeWidth:this.getStrokeWidth(),
+			       strokeOpacity:1,
+			       fillColor:"transparent",
+			       fillOpacity:1.0},
 			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:90,sides:4,irregular:true}
 			    ),
 		new GlyphType(this,GLYPH_CIRCLE, "Circle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
+			      strokeOpacity:1,
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
 			     OpenLayers.Handler.MyRegularPolygon,
@@ -1119,6 +1191,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
+			      strokeOpacity:1,
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
 			     OpenLayers.Handler.MyRegularPolygon,
@@ -1127,6 +1200,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
+			      strokeOpacity:1,
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
 			     OpenLayers.Handler.MyRegularPolygon,
@@ -1134,18 +1208,23 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    ),		
 		new GlyphType(this,GLYPH_LINE, "Line",
 			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth()},
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeOpacity:1,
+			     },
 			      OpenLayers.Handler.MyPath,{maxVertices:2}),		
 
 		new GlyphType(this,GLYPH_POLYLINE, "Polyline",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
+			      strokeOpacity:1,
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
 			     OpenLayers.Handler.MyPath),
 		new GlyphType(this,GLYPH_FREEHAND,"Freehand",
 			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth()},
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeOpacity:1,     
+			     },
 			     OpenLayers.Handler.MyPath,
 			     {freehand:true}),
 		new GlyphType(this,GLYPH_IMAGE, "Image",
