@@ -3498,6 +3498,39 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    getEmojis: function(cb) {
+	if(this.emojis) {
+	    cb(this.emojis);
+	    return;
+	}
+        $.getJSON(ramaddaBaseUrl+"/emojis/emojis.json", data=>{
+	    let emojis  = [];
+	    let cats = {};
+	    this.emojis = [];
+	    data.forEach(item=>{
+		let cat = cats[item.category];
+		if(!cat) {
+		    cat = {
+			name:item.category,
+			images:[]
+		    }
+		    cats[item.category] = cat;
+		    emojis.push(cat);
+		}
+		let url = item.image;
+		if(!url.startsWith("/")) url = "/emojis/" + url
+		cat.images.push({name:item.name,
+				 image:ramaddaBaseUrl+url});
+
+	    })
+	    this.emojis=emojis;
+	    cb(this.emojis);
+	}).fail(data=>{
+	    console.log("Failed to load json:");
+	});
+
+
+    },
     loadJqueryLib: function(name,css,js,selector,callback) {
         if(!HtmlUtils.loaded[name]) {
 //          console.log('loading ' + name);
@@ -4910,6 +4943,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HU.href("javascript:noop();",  
                        content,extra);
 
+    },
+    url:function(path,args) {
+	let url = path;
+	for(let i=0;i<args.length;i+=2) {
+	    if(i==0) url+="?";
+	    else url+="&";
+	    let name = args[i];
+	    let value=args[i+1];
+	    url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+	}	
+	return url;
     },
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];
