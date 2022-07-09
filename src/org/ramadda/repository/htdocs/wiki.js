@@ -1380,8 +1380,10 @@ class  WikiEditor {
 		{p:'linked',ex:'true'},
 		{p:'linkMouse',ex:'true'},
 		{p:'linkGroup',ex:'some name'},		
-		{p:'layer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|shadedrelief|naips|osm.toner|osm.toner.lite|watercolor'},
 
+
+
+		{p:'layer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
 		{p:'iconsonly',ex:'false'},],
 	    name:[
 		{label:'Name Properties'},

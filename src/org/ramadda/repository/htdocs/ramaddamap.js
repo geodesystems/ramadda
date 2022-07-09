@@ -38,12 +38,18 @@ var map_osm_toner = "osm.toner";
 var map_osm_toner_lite = "osm.toner.lite";
 var map_ol_openstreetmap = "ol.openstreetmap";
 
+
 // Microsoft maps - only work for -180 to 180
 var map_ms_shaded = "ms.shaded";
 var map_ms_hybrid = "ms.hybrid";
 var map_ms_aerial = "ms.aerial";
 
 var map_default_layer = map_osm;
+
+var map_google_roads = "google.roads";
+var map_google_terrain = "google.terrain";
+var map_google_satellite = "google.satellite";
+
 
 
 /*
@@ -2460,25 +2466,35 @@ RepositoryMap.prototype = {
         if (!this.mapLayers) {
             this.mapLayers = [
                 map_osm,
-                map_esri_topo,
+		map_google_roads,
                 map_esri_street,
+
+                map_opentopo,
+                map_esri_topo,
+                map_forestservice,
+                map_usgs_topo,
+		map_google_terrain,		
+
+
+		map_google_satellite,
+		map_naip,
+                map_usgs_imagery,
+
 		map_esri_shaded,
 		map_esri_lightgray,
 		map_esri_darkgray,
-		map_esri_physical,
 		map_esri_terrain,
-		map_esri_aeronautical,
-                map_opentopo,
-                map_forestservice,
-                map_usgs_topo,
-                map_usgs_imagery,
-		map_naip,
-		map_publiclands,
 		map_shaded_relief,
+
+		map_esri_aeronautical,
+
+		map_publiclands,
 		map_historic,
+
                 map_osm_toner,
                 map_osm_toner_lite,
                 map_watercolor,
+
                 map_white,
 		map_lightblue,
                 map_gray,
@@ -2518,11 +2534,31 @@ RepositoryMap.prototype = {
                 newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls,{
                     numZoomLevels: MapUtils.defaults.zoomLevels,
 		});
+
+
+
+
             } else if (mapLayer == map_osm_toner) {
                 let urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls,{
                     numZoomLevels: MapUtils.defaults.zoomLevels,
 		});
+
+            } else if (mapLayer == map_google_roads) {
+		let urls = ['https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}'];
+                newLayer = new OpenLayers.Layer.OSM("Google Maps - Roads", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});
+            } else if (mapLayer == map_google_terrain) {
+		let urls = ['http://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}'];
+                newLayer = new OpenLayers.Layer.OSM("Google Maps - Terrain", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});
+            } else if (mapLayer == map_google_satellite) {
+		let urls = ['http://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}'];
+                newLayer = new OpenLayers.Layer.OSM("Google Maps - Satellite", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});				
             } else if (mapLayer == map_osm_toner_lite) {
                 let urls = ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner Lite", urls,{
