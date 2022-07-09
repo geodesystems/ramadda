@@ -49,6 +49,7 @@ var map_default_layer = map_osm;
 var map_google_roads = "google.roads";
 var map_google_terrain = "google.terrain";
 var map_google_satellite = "google.satellite";
+var map_google_hybrid = "google.hybrid";
 
 
 
@@ -2467,13 +2468,15 @@ RepositoryMap.prototype = {
             this.mapLayers = [
                 map_osm,
 		map_google_roads,
+		map_google_hybrid,		
                 map_esri_street,
 
                 map_opentopo,
                 map_esri_topo,
                 map_forestservice,
                 map_usgs_topo,
-		map_google_terrain,		
+		map_google_terrain,
+
 
 
 		map_google_satellite,
@@ -2549,6 +2552,11 @@ RepositoryMap.prototype = {
                 newLayer = new OpenLayers.Layer.OSM("Google Maps - Roads", urls,{
                     numZoomLevels: MapUtils.defaults.zoomLevels,
 		});
+            } else if (mapLayer == map_google_hybrid) {
+		let urls = ['https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}'];
+                newLayer = new OpenLayers.Layer.OSM("Google Maps - Hybrid", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});		
             } else if (mapLayer == map_google_terrain) {
 		let urls = ['http://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}'];
                 newLayer = new OpenLayers.Layer.OSM("Google Maps - Terrain", urls,{
