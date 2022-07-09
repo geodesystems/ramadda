@@ -167,6 +167,13 @@ public class GeoUtils {
     }
 
     /**
+      * @return _more_
+     */
+    public static String getHereKey() {
+        return hereKey;
+    }
+
+    /**
      * _more_
      *
      * @param key _more_
@@ -1001,7 +1008,7 @@ public class GeoUtils {
                             addressToLocation.put(toks.get(0),
                                     new Place(toks.get(1),
                                         Double.parseDouble(toks.get(2)),
-					      Double.parseDouble(toks.get(3))));
+                                        Double.parseDouble(toks.get(3))));
                         }
                     }
                 }
