@@ -2856,6 +2856,19 @@ table.dataTable tfoot td {
 
 
 
+.ramadda-dot {
+  height: 22px;
+  width: 22px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  border:1px solid #ccc;
+}
+.ramadda-dot:hover {
+    border:1px solid #000;
+}
+
+
 .ramadda-editablemap-message2 {
     display:none;
     min-width:200px;
