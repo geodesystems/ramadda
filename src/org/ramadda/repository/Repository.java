@@ -6156,6 +6156,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    is.close();
 	}
 	String js = baseJs;
+	String extra = "";
         String base    = getUrlBase();
 	js = js.replace(
 			"${ramadda.htdocs}",
@@ -6174,6 +6175,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	js = js.replace("${ramadda.user}",
 			request.getUser().getId());
 
+	String hereKey = GeoUtils.getHereKey();
+	if(hereKey!=null) {
+	    extra+="ramaddaState.routingEnabled = true;\n";
+	}
+	
+	js = js.replace("${ramadda.base.extra}",extra);
 	return js;
     }
 
