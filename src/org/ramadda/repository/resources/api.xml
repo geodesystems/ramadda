@@ -60,7 +60,8 @@
   <group handler="mapmanager">
     <api request="/wms"             method="processWms"/>
     <api request="/regions.json"    method="processRegions"/>    
-    <api request="/map/getaddress"    method="processGetAddress"/>    
+    <api request="/map/getaddress"    method="processGetAddress"/>
+    <api request="/map/getroute"    method="processGetRoute"/>    
     <api request="/geocode"          method="processGeocode"/>
     <api request="/map/extra/*"   method="processExtraJS"/>
   </group>
