@@ -5431,6 +5431,25 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    
+    public String applyTemplate(Entry entry, String template) {
+	List<Column> columns =getColumns();
+	if (columns != null) {
+            Object[] templateValues = entry.getValues();
+	    for (Column column : columns) {
+		String s = column.getString(templateValues);
+		if (s != null) {
+		    template = template.replace("${"
+						+ column.getName() + "}", s);
+		}
+	    }
+	}
+	return template;
+    }
+
+
+
+
     /**
      * _more_
      *
