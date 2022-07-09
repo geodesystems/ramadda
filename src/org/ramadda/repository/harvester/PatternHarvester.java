@@ -1533,8 +1533,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         if (dirGroup != null) {
             groupName = groupName.replace("${dirgroup}", dirGroup);
-            groupName = applyMacros(groupName, createDate, fromDate, toDate,
-                                    filename);
+	    groupName = applyMacros(groupName, createDate, fromDate, toDate,filename);
         }
         name = applyMacros(name, createDate, fromDate, toDate, filename);
         desc = applyMacros(desc, createDate, fromDate, toDate, filename);
@@ -1547,24 +1546,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (Utils.stringDefined(templateEntry.getDescription())) {
                 desc = templateEntry.getDescription();
             }
-
-            Object[] templateValues = templateEntry.getValues();
-            if (templateValues != null) {
-                values = templateValues;
-                List<Column> columns =
-                    templateEntry.getTypeHandler().getColumns();
-                if (columns != null) {
-                    for (Column column : columns) {
-                        String s = column.getString(templateValues);
-                        if (s != null) {
-                            groupName = groupName.replace("${"
-                                    + column.getName() + "}", s);
-                        }
-                    }
-                }
-            }
-        }
-
+	    groupName = templateEntry.getTypeHandler().applyTemplate(templateEntry, groupName);
+	}
 
         if (baseGroup != null) {
             groupName = baseGroup.getFullName() + Entry.PATHDELIMITER
@@ -1584,16 +1567,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         boolean                createIfNeeded = !getTestMode();
         final PatternHarvester theHarvester   = this;
-        Entry                  group          = noTree
-                ? baseGroup
-                : getEntryManager().findEntryFromName(getRequest(),
-                    groupName, getUser(), createIfNeeded, getLastGroupType(),
-                    dirTemplateEntry, new EntryInitializer() {
-      @Override
-      public void initEntry(Entry entry) {
-          theHarvester.initEntry(entry);
-      }
-  });
+        Entry group = noTree
+	    ? baseGroup
+	    : getEntryManager().findEntryFromName(getRequest(),
+						  groupName, getUser(), createIfNeeded, getLastGroupType(),
+						  dirTemplateEntry, new EntryInitializer() {
+							  @Override
+							  public void initEntry(Entry entry) {
+							      theHarvester.initEntry(entry);
+							  }
+						      });
 
         //System.err.println("GROUP:" + group);
         if (group == null) {
@@ -1645,7 +1628,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         } else {
             resource = new Resource(fileName, Resource.TYPE_FILE);
         }
-        entry.setParentEntry(group);
         entry.setUser(getUser());
 
         Date now = new Date();
@@ -1669,6 +1651,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             toDate.getTime(), values);
         }
 
+
+
+        entry.setParentEntry(group);
 
         //If it is an image then we create a thumbnail for it in the JpegMetadataHandler
         //else we check if there is a .thm file
