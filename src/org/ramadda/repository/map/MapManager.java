@@ -27,6 +27,7 @@ import org.ramadda.repository.output.WikiManager;
 
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
@@ -597,6 +598,37 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         return new Result(JsonUtil.list(results), Result.TYPE_JSON);
     }
 
+    public Result processGetRoute(Request request) throws Exception {
+	String hereKey = GeoUtils.getHereKey();
+	if(hereKey==null) {
+	    return new Result("{error:'No routing API defined'}", Result.TYPE_JSON);
+	}
+        if (request.isAnonymous()) {
+	    return new Result("{error:'Routing not available to non logged in users'}", Result.TYPE_JSON);
+	}
+
+	List<String> points = Utils.split(request.getString("points",""),",",true,true);
+	if(points.size()<4) {
+	    return new Result("{error:'Incorrect number of points in routing request'}", Result.TYPE_JSON);
+	}
+	String url = HU.url("https://router.hereapi.com/v8/routes",
+			    "transportMode",request.getString("mode","car"),
+			    "origin",points.get(0) +","+   points.get(1),
+			    "destination",
+			    points.get(points.size()-2) + "," +  points.get(points.size()-1),
+			    "return","polyline","apikey",  hereKey);
+	
+	if(points.size()>2) {
+	    for(int i=2;i<points.size()-3;i+=2) {
+		url +="&via=" + points.get(i) +"," + points.get(i+1);
+	    }
+	}
+	//	System.err.println(url);
+	String json = IO.readUrl(url);
+	//	System.err.println(json);
+        return new Result(json, Result.TYPE_JSON);
+    }
+    
 
 
 
