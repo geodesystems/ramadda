@@ -221,7 +221,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
-	    if(this.getProperty("showOpacitySlider")||true) {
+	    if(this.getProperty("showOpacitySlider")) {
 		params.showOpacitySlider=true;
 	    }
 	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity"].forEach(p=>{

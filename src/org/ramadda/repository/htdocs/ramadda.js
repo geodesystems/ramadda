@@ -1075,14 +1075,11 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 }
 
 
-
-
-
-
 var selectors = new Array();
 
-function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl) {
+function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl,props) {
     this.id = selectorId;
+    this.props = props;
     this.elementId = elementId;
     this.localeId = localeId;
     this.entryType = entryType;
@@ -1104,7 +1101,6 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         this.getHiddenComponent().val("");
         this.getTextComponent().val("");
     }
-
 
     this.handleClick = function(event) {
         let srcId = this.id + '_selectlink';
@@ -1177,7 +1173,11 @@ function selectClick(id, entryId, value, opts) {
 	if(editor) {
 	    editor.insertTags(entryId, " ", "importtype");
 	} else {
-	    insertText(selector.elementId,entryId);
+	    if(selector.props && selector.props.callback) {
+		selector.props.callback(entryId);
+	    } else {
+		insertText(selector.elementId,entryId);
+	    }
 	}
     } else if (selector.selecttype == "entry:entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
@@ -1197,10 +1197,10 @@ function selectCancel(override) {
 }
 
 
-function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl) {
+function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
     let key = selectorId + (baseUrl||"");
     if (!selectors[key]) {
-        selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl);
+        selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
     } else {
         //Don:  alert('have selector'):
         selectors[key].handleClick(event);
@@ -1240,8 +1240,13 @@ function handleSelect(request, id) {
     let pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), ["class","ramadda-popup-pin", "id",pinId]); 
     let closeImage = HtmlUtils.getIconImage(icon_close, []);
     let close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
-    let header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin);
-    let popup = HtmlUtils.div(["id",id+"-popup"], header + text);
+    let title = (selector.props?selector.props.title:"")??"";
+    let extra = (selector.props?selector.props.extra:"")??"";
+    if(Utils.stringDefined(title)) {
+	title = HU.span(['style','margin-left:5px;'], title);
+    }
+    let header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin+title);
+    let popup = HtmlUtils.div(["id",id+"-popup"], header + extra+text);
     selector.div.obj.innerHTML = popup;
     $("#" + selector.div.id).draggable();
     $("#" + pinId).click(function() {
@@ -1258,7 +1263,9 @@ function handleSelect(request, id) {
     for (let n = 0; n < arr.length; n++) {
 	eval(arr[n].innerHTML);
     }
-
+    if(selector.props && selector.props.initCallback) {
+	selector.props.initCallback();
+    }
 }
 
 
