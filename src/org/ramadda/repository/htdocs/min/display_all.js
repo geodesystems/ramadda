@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul  9 21:35:09 MDT 2022";
+var build_date="RAMADDA build date: Sun Jul 10 00:09:12 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -33075,7 +33075,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
-	    if(this.getProperty("showOpacitySlider")||true) {
+	    if(this.getProperty("showOpacitySlider")) {
 		params.showOpacitySlider=true;
 	    }
 	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity"].forEach(p=>{
@@ -38270,6 +38270,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_RESIZE = "resize";
     const ID_RESHAPE = "reshape";    
 
+    if(!Utils.isDefined(properties.showOpacitySlider)) properties.showOpacitySlider=true; 
+
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_EDITABLEMAP,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -38414,10 +38416,35 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let tmpStyle = {};
 		    $.extend(tmpStyle,glyph.getStyle());
 		    if(glyph.isImage()) {
-			let url = args.url||prompt("Image URL:",this.lastImageUrl);
-			if(!url) return;
-			this.lastImageUrl = url;
-			tmpStyle.imageUrl = this.lastImageUrl;
+			let callback = (entryId,imageUrl) =>{
+			    let url = imageUrl??ramaddaBaseUrl +'/entry/get?entryid=' + entryId;
+			    this.lastImageUrl = url;
+			    tmpStyle.imageUrl = url;
+			    cmd.handler.style = tmpStyle;
+			    cmd.handler.layerOptions.styleMap=styleMap;
+			    this.showCommandMessage("New Image");
+			    cmd.activate();
+			    selectCancel(true);
+			};
+
+			//Do this a bit later because the dialog doesn't get popped up
+			let initCallback = ()=>{
+			    this.jq('imageurl').keypress(function(e){
+				if(e.keyCode == 13) {
+				    callback("",$(this).val());
+				}
+			    });
+			};
+			let extra = HU.div(['style','margin:5px;'],
+					   HU.b("Enter Image URL: ") + HU.input("",this.lastImageUrl??"",['id',this.getDomId('imageurl'),'size','40']) +
+					   "<br>Or select entry:");
+
+			let props = {title:'Select Image Entry',
+				     extra:extra,
+				     initCallback:initCallback,
+				     callback:callback};
+			selectCreate(event, HU.getUniqueId(""),this.domId(ID_MENU_NEW),false,'entryid',this.getProperty('entryId'),'',null,props);
+			return
 		    } else if(glyph.isLabel()) {
 			let text = prompt("Label text:",this.lastText);
 			if(!text) return;
@@ -38508,7 +38535,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let features="<table width=100%>";
 	    this.featureListMap = {};
             this.myLayer.features.forEach((feature,idx)=>{
-		console.dir("F:",feature);
 		if(!feature.type) return;
 		this.featureListMap[idx]  = feature;
 		features+=HU.openTag("tr",['valign','top',"X" + CLASS,"ramadda-clickable ramadda-display-editablemap-feature","feature-idx",idx]);
@@ -39337,7 +39363,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if(!style.fillColor) style.fillColor = "transparent";
 		let feature;
 		let points=mapGlyph.points;
-		let oldWay = Utils.isDefined(points.latitude);
+		let oldWay = Utils.isDefined(points[0].latitude);
 		if(!oldWay) {
 		    let tmp = [];
 		    for(let i=0;i<points.length;i+=2) {
@@ -39345,7 +39371,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    }
 		    points = tmp;
 		}
-
 
 		if(points.length>1) {
 		    let latLons = [];
@@ -39382,7 +39407,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
                 dataType: 'text',
                 success: (data) => {
 		    if(data=="") data="[]";
-		    try {
+	//	    try {
 			_this.loadAnnotationJson(JSON.parse(data),_this.map,_this.myLayer,_this.glyphMap);
 			this.featureHasBeenChanged = false;
 			if(!_this.getProperty("embedded") && _this.myLayer.features.length>0 && !_this.getProperty("zoomLevel")) {
@@ -39392,12 +39417,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    });
 			    _this.map.zoomToExtent(bounds);
 			}
-		    } catch(err) {
+/*		    } catch(err) {
 			this.showMessage("Failed to load map:" + err);
 			console.log("error:" + err);
 			console.log(err.stack);
 			console.log("map json:" + data);
 		    }
+*/
                 }
             }).fail(err=>{
 		this.showMessage("Failed to load map:" + err);
