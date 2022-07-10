@@ -2715,8 +2715,6 @@ RepositoryMap.prototype = {
     },
 
 
-
-
     initSearch:  function(inputId) {
 	let _this = this;
         $("#" + inputId).keyup(function(e) {
@@ -2871,33 +2869,13 @@ RepositoryMap.prototype = {
         let keyboardControl = new OpenLayers.Control();
         let control = new OpenLayers.Control();
         let callbacks = {
+            keyup: function(evt) {
+		_this.handleKeyUp(evt);
+	    },
             keydown: function(evt) {
-                if (evt.keyCode == 79) {
-                    if (!_this.imageLayersList) return;
-		    if(_this.ignoreKeyEvents) return;
-		    _this.imageLayersList.forEach(image=>{
-                        if (!Utils.isDefined(image.opacity)) {
-                            image.opacity = 1.0;
-                        }
-                        opacity = image.opacity;
-                        if (evt.shiftKey) {
-                            opacity += .1;
-                        } else {
-                            opacity -= 0.1;
-                        }
-                        if (opacity < 0) opacity = 0;
-                        else if (opacity > 1) opacity = 1;
-                        image.setOpacity(opacity);
-                    });
-                }
-                if (evt.keyCode == 84) {
-                    if (_this.selectImage) {
-                        _this.selectImage.setVisibility(!_this.selectImage.getVisibility());
-                    }
-                }
+		_this.handleKeyDown(evt);
             }
-
-        };
+	};
         let handler = new OpenLayers.Handler.Keyboard(control, callbacks, {});
         handler.activate();
         this.getMap().addControl(keyboardControl);
@@ -2997,8 +2975,45 @@ RepositoryMap.prototype = {
 
 
     },
-
-
+    handleKeyUp:function(evt) {
+	if(this.keyUpListener) {
+	    this.keyUpListener(evt);
+	}
+    },
+    handleKeyDown:function(evt) {
+        if (evt.keyCode == 79) {
+            if (!this.imageLayersList) return;
+	    if(this.ignoreKeyEvents) return;
+	    this.imageLayersList.forEach(image=>{
+                if (!Utils.isDefined(image.opacity)) {
+                    image.opacity = 1.0;
+                }
+                opacity = image.opacity;
+                if (evt.shiftKey) {
+                    opacity += .1;
+                } else {
+                    opacity -= 0.1;
+                }
+                if (opacity < 0) opacity = 0;
+                else if (opacity > 1) opacity = 1;
+                image.setOpacity(opacity);
+            });
+        }
+        if (evt.keyCode == 84) {
+            if (this.selectImage) {
+                this.selectImage.setVisibility(!this.selectImage.getVisibility());
+            }
+        }
+	if(this.keyDownListener) {
+	    this.keyDownListener(evt);
+	}
+    },
+    addKeyUpListener:function(listener) {
+	this.keyUpListener = listener;
+    },
+    addKeyDownListener:function(listener) {
+	this.keyDownListener = listener;
+    },
     applyDefaultLocation:  function() {	
 	if(debugBounds)
 	    console.log("apply default location:" + this.defaultLocation);
