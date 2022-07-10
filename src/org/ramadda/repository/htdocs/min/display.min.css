@@ -2882,6 +2882,16 @@ table.dataTable tfoot td {
     top:5px;
 }
 
+.ramadda-editablemap-message3 {
+    min-width:200px;
+    min-height:1.5em;
+    padding:4px;
+    position: absolute;
+    right:10px;
+    bottom:5px;
+}
+
+
 .ramadda-display-editablemap-feature {
     border:1px solid transparent;
 }
