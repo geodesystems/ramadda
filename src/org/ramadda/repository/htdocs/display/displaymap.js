@@ -478,7 +478,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 
 function RamaddaMapDisplay(displayManager, id, properties) {
-    const ID_MAP = "map";
     const ID_MAP_SLIDER = "map_slider";    
     const ID_LATFIELD = "latfield";
     const ID_LONFIELD = "lonfield";

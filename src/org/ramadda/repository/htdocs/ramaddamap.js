@@ -922,7 +922,7 @@ RepositoryMap.prototype = {
 	    //Do this later for when this map is being shown for a display_map
 	    let makeSlider = () =>{
 	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","200px")],"");
-	    $("#" + this.mapDivId+"_header").append("Image Opacity: " + slider+"");
+	    $("#" + this.mapDivId+"_header").append("Image Opacity:&nbsp;" + slider+"");
 	    $("#"+ this.mapDivId +"_filter_range").slider({
 		min: 0,
 		max: 1,

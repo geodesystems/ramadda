@@ -149,9 +149,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    strokeWidth:4
 		},null,true);
 		route.style = $.extend({},this.style);
-		route.type=GLYPH_POLYLINE;
+		route.type=GLYPH_ROUTE;
 		this.display.addFeatures([route]);
 		this.display.clearCommands();
+		this.display.showDistances(route.geometry,GLYPH_ROUTE);
 	    }).fail(err=>{
 		this.display.removeFeatures([line]);
 		this.display.clearCommands();
@@ -310,23 +311,24 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let pt2 = pts[i+1];		
 		    let d = MapUtils.distance(pt1.y,pt1.x,pt2.y,pt2.x);
 		    total+=d;
-		    let unit = "ft";
+		    let unit = "feet";
 		    if(d>5280) {
-			unit = "m";
+			unit = "miles";
 			d = d/5280;
 		    }
 		    d = Utils.formatNumberComma(d);
 		    segments+= d +" " + unit +" ";
 		}
-		let unit = "ft";
+		let unit = "feet";
 		if(total>5280) {
-		    unit = "m";
+		    unit = "miles";
 		    total = total/5280;
 		}
 		msg = distancePrefix + Utils.formatNumberComma(total) +" " + unit;
 		if(pts.length>2 && pts.length<6)  {
 		    msg+="<br>Segments:" + segments;
 		}
+		if(pts.length<=1) msg="";
 	    }
 	    if(area>0) {
 		unit="ft";
@@ -524,7 +526,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		} else {
 		    $(this).addClass(clazz);
 		    if(feature) {
-			_this.featureSelector.clickFeature(feature);
+			_this.selectFeature(feature);
 		    }
 		}
 	    });
@@ -1044,7 +1046,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    obj.points.push({latitude:b.bottom,longitude:b.left});
 		    obj.points.push({latitude:b.top,longitude:b.left});		    		    		    		    
 		} else {
-		    console.log("#V:" + vertices.length);
 		    vertices.forEach(vertex=>{
 			let pt = vertex.clone().transform(this.map.sourceProjection, this.map.displayProjection);
 			let lat = Utils.trimDecimals(pt.y,6);
@@ -1118,7 +1119,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	showNewMenu: function(button) {
 	    let html ="";
 	    this.glyphs.forEach(g=>{
-		html+= this.menuItem(this.domId("menunew_" + g.type),"New " + g.label);
+		html+= this.menuItem(this.domId("menunew_" + g.type),g.label+SPACE2);
 	    });
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
@@ -1198,9 +1199,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	
+	selectFeature:function(feature) {
+	    this.featureSelector.clickFeature(feature);
+	},
 	selectAll:function() {
 	    this.myLayer.features.forEach(feature=>{
-		this.featureSelector.clickFeature(feature);
+		this.selectFeature(feature);
 	    });
 	},
 	setClipboard:function(features) {
@@ -1432,6 +1436,46 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:45,sides:40}
 			    ),
+		new GlyphType(this,GLYPH_LINE, "Line",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeDashstyle:'solid',
+			      strokeOpacity:1,
+			     },
+			      OpenLayers.Handler.MyPath,{maxVertices:2}),		
+		new GlyphType(this,GLYPH_POLYLINE, "Polyline",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeDashstyle:'solid',			      
+			      strokeOpacity:1,
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			     OpenLayers.Handler.MyPath),
+		new GlyphType(this,GLYPH_FREEHAND,"Freehand",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeDashstyle:'solid',
+			      strokeOpacity:1,     
+			     },
+			     OpenLayers.Handler.MyPath,
+			     {freehand:true}),
+		ramaddaState.routingEnabled?
+		    new GlyphType(this,GLYPH_ROUTE, "Route",
+				  {
+				      strokeColor:this.getStrokeColor(),
+				      strokeWidth:this.getStrokeWidth(),
+				      strokeDashstyle:'solid',
+				      strokeOpacity:1,
+				  },
+				  OpenLayers.Handler.MyPath,{xxxmaxVertices:2}):null,		
+		new GlyphType(this,GLYPH_IMAGE, "Image",
+			     {strokeColor:"blue",
+			      strokeWidth:1,
+			      imageOpacity:this.getImageOpacity(1),
+			      fillColor:"transparent"},
+			     OpenLayers.Handler.ImageHandler,
+			     {snapAngle:90,sides:4,irregular:true,isImage:true}
+			    ),
 		new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
@@ -1452,47 +1496,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:90,sides:6}
 			    ),		
-		new GlyphType(this,GLYPH_LINE, "Line",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,
-			     },
-			      OpenLayers.Handler.MyPath,{maxVertices:2}),		
-		ramaddaState.routingEnabled?
-		    new GlyphType(this,GLYPH_ROUTE, "Route",
-				  {
-				      strokeColor:this.getStrokeColor(),
-				      strokeWidth:this.getStrokeWidth(),
-				      strokeDashstyle:'solid',
-				      strokeOpacity:1,
-				  },
-				  OpenLayers.Handler.MyPath,{xxxmaxVertices:2}):null,		
-		new GlyphType(this,GLYPH_POLYLINE, "Polyline",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',			      
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			     OpenLayers.Handler.MyPath),
-		new GlyphType(this,GLYPH_FREEHAND,"Freehand",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,     
-			     },
-			     OpenLayers.Handler.MyPath,
-			     {freehand:true}),
-		new GlyphType(this,GLYPH_IMAGE, "Image",
-			     {strokeColor:"blue",
-			      strokeWidth:1,
-			      imageOpacity:this.getImageOpacity(1),
-			      fillColor:"transparent"},
-			     OpenLayers.Handler.ImageHandler,
-			     {snapAngle:90,sides:4,irregular:true,isImage:true}
-			    ),
-		
 	    ];
 	},
 	showCommandMessage:function(msg)  {
@@ -1551,10 +1554,15 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		control = new OpenLayers.Control();
 		let callbacks = {
 		    keydown: function(event) {
+			HtmlUtils.hidePopupObject();
 			if(event.key=='Escape') {
 			    _this.clearCommands();
 			    return;
 			}
+			if(event.key=='Backspace') {
+			    _this.doCut();
+			    return;
+			}			
 			if(!event.metaKey) return;
 			switch(event.key) {
 			case 'a': 
@@ -1727,11 +1735,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-editablemap-message2"],"");
 		this.jq(ID_MAP_CONTAINER).append(message2);
 
-		let message = HU.span([ID,this.domId(ID_MESSAGE),STYLE,HU.css("margin-left","10px")],"");
-		menuBar+=message;
-		let mapHeader = HU.div([STYLE,HU.css("margin-left","20px","display","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
-		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['width','50%'],menuBar) +
-							 HU.td(['width','50%'],mapHeader)));
+		let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css("display","inline-block","white-space","nowrap","margin-left","10px")],"");
+		let mapHeader = HU.div([STYLE,HU.css("margin-left","10px","xdisplay","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
+		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['xwidth','50%'],menuBar) +
+							 HU.td(['width','50%'], message) +
+							 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
 		this.jq(ID_TOP_LEFT).append(menuBar);
 		this.jq(ID_MENU_NEW).click(function() {
 		    _this.showNewMenu($(this));
