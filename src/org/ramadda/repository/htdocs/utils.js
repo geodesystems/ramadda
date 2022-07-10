@@ -9,6 +9,7 @@ var urlroot = ramaddaBaseUrl;
 var icon_close = "fas fa-window-close";
 var icon_pin = "fas fa-thumbtack";
 var icon_help = "fas fa-question-circle";
+var icon_command = ramaddaCdn + "/icons/command.png";
 var icon_rightarrow = ramaddaCdn + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaCdn + "/icons/downdart.gif";
 var icon_rightdart = ramaddaCdn + "/icons/rightdart.gif";
