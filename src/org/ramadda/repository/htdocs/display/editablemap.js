@@ -1207,7 +1207,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let html ="";
 	    this.glyphs.forEach(g=>{
 		let icon = g.options.icon||ramaddaBaseUrl+"/map/marker-blue.png";
-		let label = HU.image(icon,['width','14']) +SPACE1 + g.label;
+		let label = HU.image(icon,['width','16']) +SPACE1 + g.label;
 		html+= this.menuItem(this.domId("menunew_" + g.type),label+SPACE2);
 	    });
 	    html  = this.makeMenu(html);
