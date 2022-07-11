@@ -212,17 +212,35 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
                 "//unpkg.com/fflate",
                 "//cdn.jsdelivr.net/npm/fflate/umd/index.js",
                 "//unpkg.com/three",
-                getRepository().getHtdocsUrl("/lib/three/controls/OrbitControls.js"),
-                getRepository().getHtdocsUrl("/lib/three/model.js")
-            }) {
+                getRepository().getHtdocsUrl("/lib/three/controls/OrbitControls.js")
+		}) {
                 HU.importJS(sb, js);
+		sb.append("\n");
             }
 	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/three/model.css"));
             request.putExtraProperty("3dmodeljs", "true");
 	}
 
-	
+	//Import the loaders
+	for(Entry entry: entries) {
+	    String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
+	    String  file;
+	    if (!Utils.stringDefined(modelFile)) {
+		file = entry.getResource().getPath();
+	    } else {
+		file = modelFile;
+	    }
+	    for(int i=0;i<jsImports.length;i+=2) {
+		if(file.indexOf(jsImports[i])>=0) {
+		    importJS(request, sb, jsImports[i+1]);
+		    sb.append("\n");
+		    break;
+		}
+	    }
+	}	
 
+	//Now the model.js
+	importJS(request, sb, getRepository().getHtdocsUrl("/lib/three/model.js"));
 
 	int cnt = 0;
 	for(Entry entry: entries) {
@@ -306,7 +324,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    boolean gotOne = false;
 	    for(int i=0;i<jsImports.length;i+=2) {
 		if(file.indexOf(jsImports[i])>=0) {
-		    importJS(request, sb, jsImports[i+1]);
+		    //		    importJS(request, sb, jsImports[i+1]);
 		    gotOne = true;
 		    break;
 		}
