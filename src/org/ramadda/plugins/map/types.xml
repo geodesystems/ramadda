@@ -89,7 +89,12 @@ mapVar="gpxMap${entryid}" }}
 -section
 ]]>
 </wiki>
-   </type>
+<wikis tag="simple">
+<center>
+{{gpx.stats}}
+</center>
+{{mapentry detailed=true}}</wikis>
+</type>
 
 
   <type name="geo_shapefile"  description="Shapefile"   super="type_point" handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="shapefile_display,shapefile_color,map_displaymap">
