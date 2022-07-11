@@ -227,6 +227,16 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -section
 ]]>
 </wiki>
+<wikis tag="simple"><![CDATA[
+{{description wikify=true}}
++inset top=10 left=10 bottom=10 right=10
++center
+{{360image width="100%" height="400px"}}
++center
+-inset
+]]>
+</wikis>
+
 </type>
 
 
@@ -370,6 +380,14 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -section
 ]]>
 </wiki>
+<wikis tag="simple"><![CDATA[
+{{description wikify=true}}
++center
+{{3dmodel}}
+-center
+]]>
+</wikis>
+
 </type>
 
 
