@@ -5,6 +5,7 @@ function RamaddaAnnotatedImage(attrs,id) {
 		  readOnly:!attrs.canEdit,
 		  image: document.getElementById(id)	 
 		 };
+    if(!Utils.isDefined(attrs.showToolbar)) attrs.showToolbar= true;
     let anno = this.annotorius = Annotorious.init(aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
     attrs.zoomable = false;
@@ -40,7 +41,7 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
     this.authToken = attrs.authToken;
     this.annotations = attrs.annotations;
     this.zoomable = attrs.zoomable;
-    if(this.canEdit) {
+    if(this.canEdit && attrs.showToolbar) {
 	Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
 	let changed = (a) =>{
 	    this.annotations = this.getAnno().getAnnotations();
