@@ -85,6 +85,7 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 	Utils.add(jsonProps,"entryId",HU.quote(entry.getId()));
 	Utils.add(jsonProps,"name",HU.quote(entry.getName()));	
 	Utils.add(jsonProps,"showAnnotationBar",Utils.getProperty(props, "showAnnotationBar", "true"));
+	Utils.add(jsonProps,"showToolbar",Utils.getProperty(props, "showToolbar", "true"));	
         return  jsonProps;
     }
 
