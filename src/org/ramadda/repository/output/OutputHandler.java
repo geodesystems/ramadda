@@ -1203,6 +1203,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                             Utils.makeList(
                                 "entryType",
                                 HU.squote(entry.getTypeHandler().getType()),
+				"icon",HU.squote(getPageHandler().getIconUrl(request, entry)),
                                 "isGroup", "" + isGroup, "isImage",
                                 "" + isImage, "isGeo",
                                 "" + entry.isGeoreferenced())), HU.squote(
