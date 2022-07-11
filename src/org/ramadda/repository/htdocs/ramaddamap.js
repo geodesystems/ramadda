@@ -1022,13 +1022,7 @@ RepositoryMap.prototype = {
 				     size,
 				     text,
 				     true,
-				     ()=>{this.onPopupClose()});
-	/** If we uses a FramedCloud then the olPopup class css in style.css needs to be changed to not have a border 
-        return  new OpenLayers.Popup.FramedCloud("popup", projPoint,
-						     null, text, null, true,
-						     ()=>{this.onPopupClose()});
-	**/
-
+				     props.callback?props.callback:()=>{this.onPopupClose()});
     },
 
     highlightMarkers:function(selector,  background1, background2, id) {

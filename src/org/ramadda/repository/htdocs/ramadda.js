@@ -1175,7 +1175,7 @@ function selectClick(id, entryId, value, opts) {
 	    editor.insertTags(entryId, " ", "importtype");
 	} else {
 	    if(selector.props && selector.props.callback) {
-		selector.props.callback(entryId);
+		selector.props.callback(entryId,opts);
 	    } else {
 		insertText(selector.elementId,entryId);
 	    }
