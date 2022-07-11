@@ -592,11 +592,13 @@ var Utils =  {
             script.onreadystatechange = function() {
                 if ( script.readyState === "loaded" || script.readyState === "complete" ) {
                     script.onreadystatechange = null;
+		    info.loaded =true;
                     info.callbacks.forEach(callback=>callback());
                 }
             };
         } else {  //Others
             script.onload = function() {
+		info.loaded =true;
                 info.callbacks.forEach(callback=>callback());
             };
         }
