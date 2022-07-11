@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 11 13:22:42 MDT 2022";
+var build_date="RAMADDA build date: Mon Jul 11 13:38:04 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -39692,23 +39692,29 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let doPopup = (html,props)=>{
 		    let js =[];
 		    //Parse out any script tags 
-		    let regexp = /<script *src="?([^ "]+)"?.*?<\/script>/g;
+		    let regexp = /<script *src=("|')?([^ "']+)("|')?.*?<\/script>/g;
 		    let array = [...html.matchAll(regexp)];
 		    array.forEach(tuple=>{
 			html = html.replace(tuple[0],"");
-			js.push(tuple[1]);
+			let url = tuple[2];
+			url = url.replace(/'/g,"");
+			js.push(url);
+//			console.log("JS:" + url);
 		    });
 
 
 		    //Run through any script tags and load them
 		    //once done show the popup
 		    let cb = ()=>{
+//			console.log("cb");
 			if(js[0]==null) {
+//			    console.log("\tshowPopup");
 			    showPopup(html,props);
 			    return;
 			}
 			let url = js[0];
 			js.splice(0,1);
+//			console.log("\tloading:"+url);
 			Utils.loadScript(url,cb);
 		    };
 		    cb();
