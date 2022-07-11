@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jul 10 18:25:14 MDT 2022";
+var build_date="RAMADDA build date: Mon Jul 11 11:20:04 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38055,6 +38055,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
    Copyright 2008-2021 Geode Systems LLC
 */
 
+
 const DISPLAY_EDITABLEMAP = "editablemap";
 addGlobalDisplayType({
     type: DISPLAY_EDITABLEMAP,
@@ -38076,6 +38077,7 @@ var GLYPH_ROUTE = "route";
 var GLYPH_POLYLINE = "polyline";
 var GLYPH_FREEHAND = "freehand";
 var GLYPH_IMAGE = "image";
+var GLYPH_ENTRY = "entry";
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
@@ -38157,6 +38159,15 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
     });
 
+
+    OpenLayers.Handler.MyEntryPoint = OpenLayers.Class(OpenLayers.Handler.Point, {
+	finalize: function() {
+	    OpenLayers.Handler.Point.prototype.finalize.apply(this,arguments);
+	    this.display.featureChanged();
+	    this.display.clearCommands();	    	    
+	},
+    });
+    
 
     OpenLayers.Handler.MyPath = OpenLayers.Class(OpenLayers.Handler.Path, {
 	finalize: function() {
@@ -38430,14 +38441,20 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let styleMap = new OpenLayers.StyleMap({"default":{}});
 		    let tmpStyle = {};
 		    $.extend(tmpStyle,glyph.getStyle());
-		    if(glyph.isImage()) {
+		    if(glyph.isImage() || glyph.isEntry()) {
 			let callback = (entryId,imageUrl) =>{
 			    let url = imageUrl??ramaddaBaseUrl +'/entry/get?entryid=' + entryId;
-			    this.lastImageUrl = url;
-			    tmpStyle.imageUrl = url;
+			    tmpStyle.entryId = entryId;
+			    if(glyph.isImage()) {
+				this.lastImageUrl = url;
+				tmpStyle.imageUrl = url;
+			    }
+			    if(imageUrl.icon) {
+				tmpStyle.externalGraphic = imageUrl.icon;
+			    }
 			    cmd.handler.style = tmpStyle;
 			    cmd.handler.layerOptions.styleMap=styleMap;
-			    this.showCommandMessage("New Image");
+			    this.showCommandMessage(glyph.isImage()?"New Image":"New Entry");
 			    cmd.activate();
 			    selectCancel(true);
 			};
@@ -38455,7 +38472,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 					   "<br>Or select entry:");
 
 			let props = {title:'Select Image Entry',
-				     extra:extra,
+				     extra:glyph.isImage()?extra:null,
 				     initCallback:initCallback,
 				     callback:callback};
 			selectCreate(event, HU.getUniqueId(""),this.domId(ID_MENU_NEW),false,'entryid',this.getProperty('entryId'),'',null,props);
@@ -38779,7 +38796,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			 'pointRadius','externalGraphic','imageOpacity','fontSize','fontWeight','fontStyle','fontFamily','labelAlign'];
 	    }
 	    
-	    if(!props.includes("popupText")) props.push("popupText");
+	    if(props.includes("entryId") && !props.includes("wikiText")) props.push("wikiText");
+	    if(!props.includes("wikiText") && !props.includes("popupText")) props.push("popupText");
+
+
 	    props.forEach(prop=>{
 		if(prop=="labelSelect") return;
 		if(prop=="cursor") return;		
@@ -38803,7 +38823,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 		} else {
 		    let v = values[prop];
-		    if(!Utils.isDefined(v)) {
+		    if(!Utils.isDefined(v) && prop!="wikiText") {
 			let propFunc = "get" + prop[0].toUpperCase()+prop.substring(1);
 			v = this[propFunc]?this[propFunc]():this.getProperty(prop);
 		    }
@@ -38811,7 +38831,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    if(prop=="label") {
 			size="80"
 			widget =  HU.textarea("",v,[ID,this.domId(prop),"rows",5,"cols", 60]);
-		    } else if(prop=="popupText") {
+		    } else if(prop=="popupText" || prop=="wikiText") {
 			size="80"
 			widget =  HU.textarea("",v||"",[ID,this.domId(prop),"rows",5,"cols", 60]);
 		    } else if(prop=="strokeDashstyle") {
@@ -38885,7 +38905,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
 	    html+="</center>";
 	    this.map.ignoreKeyEvents = true;
-	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true,remove:false});
+	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true});
 
 	    //this.jq("externalGraphic").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
 	    let icons =dialog.find("#" + this.domId("externalGraphic_icons"));
@@ -39014,6 +39034,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    close();
 		});
 	    }
+	    console.log(this.jq(ID_OK).html());
 	    this.jq(ID_OK).button().click(()=>{
 		apply(feature,props);
 		this.addFeatureList();
@@ -39605,6 +39626,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:90,sides:6}
 			    ),		
+		new GlyphType(this,GLYPH_ENTRY,"Entry",
+			     {strokeWidth:0, 
+			      fillColor:"transparent",
+			      externalGraphic: ramaddaBaseUrl +"/icons/video.png",
+			      pointRadius:12},
+			      OpenLayers.Handler.MyEntryPoint,
+			     {isEntry:true}),
 	    ];
 	},
 	showCommandMessage:function(msg)  {
@@ -39646,13 +39674,46 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	    this.map.featureClickHandler = e=>{
 		if(this.command!=null) return;
-		if(!e.feature || !e.feature.style || !Utils.stringDefined(e.feature.style.popupText)) return;
-		let location = e.feature.geometry.getBounds().getCenterLonLat();
-		let text = e.feature.style.popupText;
+		if(!e.feature || !e.feature.style)return;
+		let style = e.feature.style;
+		let doPopup = (html,props)=>{
+		    let id = HU.getUniqueId("div");
+		    let div = HU.div(['id',id]);
+		    let location = e.feature.geometry.getBounds().getCenterLonLat();
+		    if(this.getMap().currentPopup) {
+			this.getMap().onPopupClose();
+		    }
+		    let popup =this.getMap().makePopup(location,div,props);
+		    this.getMap().currentPopup = popup;
+		    this.getMap().getMap().addPopup(popup);
+		    jqid(id).html(html);
+		};
+		let text= style.popupText;
+		if(style.entryId) {
+		    let wiki = style.wikiText;
+		    if(!Utils.stringDefined(wiki))
+			wiki = "+section title={{name}}\n{{simple}}\n-section";
+
+		    let url = ramaddaBaseUrl + "/wikify";
+		    let wikiCallback = html=>{
+//			console.log(html);
+			doPopup(html,{width:"600",height:"400"});
+		    };
+		    let wikiError = error=>{
+			alert("Error:" + error);
+		    };		    
+		    $.post(url,{
+			doImports:"false",
+			entryid:style.entryId,
+			text:wiki},
+			   wikiCallback).fail(wikiError);
+		    return;
+		}
+
+
+		if(!Utils.stringDefined(text)) return;
 		text = text.replace(/\n/g,"<br>");
-		let popup = this.getMap().makePopup(location,text);
-		this.getMap().getMap().addPopup(popup);
-		this.getMap().currentPopup = popup;
+		doPopup(text);
 	    };
 
 	    let control;
@@ -39940,7 +40001,10 @@ var GlyphType = function(display,type,label,style,handler,options) {
 	},
 	isImage:  function() {
 	    return this.options.isImage;
-	},	
+	},
+	isEntry:  function() {
+	    return this.options.isEntry;
+	},		
 	isRoute: function() {
 	    return this.type == GLYPH_ROUTE;
 	},
