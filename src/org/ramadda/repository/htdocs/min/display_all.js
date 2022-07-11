@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 11 11:39:59 MDT 2022";
+var build_date="RAMADDA build date: Mon Jul 11 13:22:42 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -39676,7 +39676,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if(this.command!=null) return;
 		if(!e.feature || !e.feature.style)return;
 		let style = e.feature.style;
-		let doPopup = (html,props)=>{
+		let showPopup = (html,props)=>{
 		    let id = HU.getUniqueId("div");
 		    let div = HU.div(['id',id]);
 		    let location = e.feature.geometry.getBounds().getCenterLonLat();
@@ -39687,6 +39687,31 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    this.getMap().currentPopup = popup;
 		    this.getMap().getMap().addPopup(popup);
 		    jqid(id).html(html);
+		}
+
+		let doPopup = (html,props)=>{
+		    let js =[];
+		    //Parse out any script tags 
+		    let regexp = /<script *src="?([^ "]+)"?.*?<\/script>/g;
+		    let array = [...html.matchAll(regexp)];
+		    array.forEach(tuple=>{
+			html = html.replace(tuple[0],"");
+			js.push(tuple[1]);
+		    });
+
+
+		    //Run through any script tags and load them
+		    //once done show the popup
+		    let cb = ()=>{
+			if(js[0]==null) {
+			    showPopup(html,props);
+			    return;
+			}
+			let url = js[0];
+			js.splice(0,1);
+			Utils.loadScript(url,cb);
+		    };
+		    cb();
 		};
 		let text= style.popupText;
 		if(style.entryId) {
@@ -39696,7 +39721,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 		    let url = ramaddaBaseUrl + "/wikify";
 		    let wikiCallback = html=>{
-//			console.log(html);
 			doPopup(html,{width:"600",height:"400"});
 		    };
 		    let wikiError = error=>{
