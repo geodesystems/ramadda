@@ -5848,7 +5848,6 @@ public class EntryManager extends RepositoryManager {
         List<Entry> entryList = createEntryFromXml(request, node,
 						   parentEntry, files, entryMap, checkAccess,
 						   internal,msg);
-	System.err.println("Result:" + entryList);
 	addImportedEntries(node,entryMap,entryList);
 	return entryList;
     }
@@ -6025,7 +6024,7 @@ public class EntryManager extends RepositoryManager {
         String directory = XmlUtil.getAttribute(node, ATTR_DIRECTORY,
 						(String) null);
 	boolean unique = XmlUtil.getAttributeFromTree(node, ATTR_UNIQUE,false);
-	System.err.println("name:" + name +" unique:" + unique);
+	boolean nameUnique = XmlUtil.getAttributeFromTree(node, "nameUnique",false);	
         List<Resource> resources = new ArrayList<Resource>();
 
         if (file != null) {
@@ -6104,7 +6103,6 @@ public class EntryManager extends RepositoryManager {
         for (Resource resource : resources) {
 	    if(unique) {
 		List<Entry> tmp = getEntriesWithResource(getRepository().getAdminRequest(), resource);
-		System.err.println("RESOURCE:" + resource +" tmp:"  +tmp);
 		if(tmp.size()>0) {
 		    msg.append("<li> Non-unique file: " + resource);
 		    continue;
@@ -6165,13 +6163,21 @@ public class EntryManager extends RepositoryManager {
                 entryName = resource.getTheFile().getName();
             }
 
+	    
+	    if(nameUnique) {
+		Entry  childEntry = findEntryWithName(request, parentEntry,   entryName);
+		if(childEntry!=null) {
+		    msg.append("<li> Non-unique entry: " + childEntry.getName());
+		}
+		continue;
+	    }
+
             entry.initEntry(entryName, description, parentEntry,
                             request.getUser(), resource, category,
 			    entryOrder,
                             createDate.getTime(), changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), null);
 
-	    System.err.println("NEW:" + entry);
 	    String pathTemplate = request.getString(ARG_PATHTEMPLATE,"");
 	    if(Utils.stringDefined(pathTemplate)) {
 		entry.setParentEntry(getPathEntry(request,parentEntry,entry,pathTemplate));
