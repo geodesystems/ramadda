@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 11 11:20:04 MDT 2022";
+var build_date="RAMADDA build date: Mon Jul 11 11:39:59 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38471,7 +38471,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 					   HU.b("Enter Image URL: ") + HU.input("",this.lastImageUrl??"",['id',this.getDomId('imageurl'),'size','40']) +
 					   "<br>Or select entry:");
 
-			let props = {title:'Select Image Entry',
+			let props = {title:glyph.isImage()?'Select Image Entry':'Select Entry',
 				     extra:glyph.isImage()?extra:null,
 				     initCallback:initCallback,
 				     callback:callback};

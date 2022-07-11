@@ -418,7 +418,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 					   HU.b("Enter Image URL: ") + HU.input("",this.lastImageUrl??"",['id',this.getDomId('imageurl'),'size','40']) +
 					   "<br>Or select entry:");
 
-			let props = {title:'Select Image Entry',
+			let props = {title:glyph.isImage()?'Select Image Entry':'Select Entry',
 				     extra:glyph.isImage()?extra:null,
 				     initCallback:initCallback,
 				     callback:callback};
