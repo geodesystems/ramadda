@@ -5781,7 +5781,9 @@ public class EntryManager extends RepositoryManager {
 		//                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
 		List<Entry> entryList =
 		    getEntryManager().createEntryFromXml(request, node,
-							 parentEntry, new Hashtable(), false, false,msg);
+							 parentEntry, new Hashtable(),
+							 new Hashtable<String,Entry>(),
+							 false, false,msg);
 
 		Entry entry = entryList.get(0);
 		//                            entry.setName("remote:" + entry.getName());
@@ -5813,7 +5815,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param node _more_
-     * @param entries _more_
+     * @param entryMap _more_
      * @param files _more_
      * @param checkAccess _more_
      * @param internal _more_
@@ -5823,13 +5825,13 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Entry> createEntryFromXml(Request request, Element node,
-                                          Hashtable<String, Entry> entries,
+                                          Hashtable<String, Entry> entryMap,
                                           Hashtable<String, File> files,
                                           boolean checkAccess,
                                           boolean internal,StringBuilder msg)
 	throws Exception {
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
-        Entry  parentEntry = (Entry) entries.get(parentId);
+        Entry  parentEntry = (Entry) entryMap.get(parentId);
         if (parentEntry == null) {
             parentEntry = (Entry) getEntry(request, parentId);
         }
@@ -5844,9 +5846,15 @@ public class EntryManager extends RepositoryManager {
         }
 
         List<Entry> entryList = createEntryFromXml(request, node,
-						   parentEntry, files, checkAccess,
+						   parentEntry, files, entryMap, checkAccess,
 						   internal,msg);
-        String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+	System.err.println("Result:" + entryList);
+	addImportedEntries(node,entryMap,entryList);
+	return entryList;
+    }
+
+    private void addImportedEntries(Element node, Hashtable<String,Entry> entries, List<Entry> entryList) {
+	String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (tmpid != null) {
             for (Entry entry : entryList) {
                 entries.put(tmpid, entry);
@@ -5860,11 +5868,7 @@ public class EntryManager extends RepositoryManager {
 		}
             }
         }	
-
-        return entryList;
     }
-
-
 
     /**
      *  trim and remove the delimiter character
@@ -5899,19 +5903,17 @@ public class EntryManager extends RepositoryManager {
     public List<Entry> createEntryFromXml(Request request, Element node,
                                           Entry parentEntry,
                                           Hashtable<String, File> files,
+					  Hashtable<String, Entry> entryMap,
                                           boolean checkAccess,
                                           boolean internal,StringBuilder msg)
 	throws Exception {
 
-
         boolean doAnonymousUpload = false;
-
         String name = cleanupEntryName(Utils.getAttributeOrTag(node,
 							       ATTR_NAME, ""));
 
         String originalId = XmlUtil.getAttribute(node, ATTR_ID,
 						 (String) null);
-
 
         String category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, "");
         int entryOrder = Utils.getAttributeOrTag(node, ATTR_ENTRYORDER, Entry.DEFAULT_ORDER);	
@@ -5938,8 +5940,6 @@ public class EntryManager extends RepositoryManager {
 	if(description.length()>10000) {
 	    //	    System.err.println("l:" + name + " " + description.length());
 	}
-
-
 
 
         if (checkAccess && (parentEntry != null)) {
@@ -6025,8 +6025,8 @@ public class EntryManager extends RepositoryManager {
         String directory = XmlUtil.getAttribute(node, ATTR_DIRECTORY,
 						(String) null);
 	boolean unique = XmlUtil.getAttributeFromTree(node, ATTR_UNIQUE,false);
+	System.err.println("name:" + name +" unique:" + unique);
         List<Resource> resources = new ArrayList<Resource>();
-
 
         if (file != null) {
             resources.add(new Resource(file, Resource.TYPE_STOREDFILE));
@@ -6082,17 +6082,29 @@ public class EntryManager extends RepositoryManager {
             resources.add(new Resource("", Resource.TYPE_UNKNOWN));
         }
 
-
-
         String type = Utils.getAttributeOrTag(node, ATTR_TYPE,
 					      TypeHandler.TYPE_FILE);
 
         //System.err.println("TYPE:" + type + ":");
         List<Entry> entries = new ArrayList<Entry>();
         Date        now     = new Date();
+	//Check for an entry with no file that already exists
+	if(unique && resources.size()==1 && resources.get(0).isUnknown()) {
+	    Entry  childEntry = findEntryWithName(request, parentEntry,
+						  name);
+	    if(childEntry!=null) {
+		entries.add(childEntry);
+		msg.append("<li> Non-unique entry: " + childEntry.getName());
+		addImportedEntries(node,entryMap,entries);
+		//Return empty list
+		entries = new ArrayList<Entry>();
+		return entries;
+	    }
+	}
         for (Resource resource : resources) {
 	    if(unique) {
 		List<Entry> tmp = getEntriesWithResource(getRepository().getAdminRequest(), resource);
+		System.err.println("RESOURCE:" + resource +" tmp:"  +tmp);
 		if(tmp.size()>0) {
 		    msg.append("<li> Non-unique file: " + resource);
 		    continue;
@@ -6159,6 +6171,7 @@ public class EntryManager extends RepositoryManager {
                             createDate.getTime(), changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), null);
 
+	    System.err.println("NEW:" + entry);
 	    String pathTemplate = request.getString(ARG_PATHTEMPLATE,"");
 	    if(Utils.stringDefined(pathTemplate)) {
 		entry.setParentEntry(getPathEntry(request,parentEntry,entry,pathTemplate));
