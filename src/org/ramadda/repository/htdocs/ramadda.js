@@ -713,6 +713,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
                 }
             }).fail((jqxhr, settings, exc) => {
                 console.log("/entry/menu failed:" + exc);
+		alert('Failed to contact the server');
             });
 	}
     },
