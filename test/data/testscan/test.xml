@@ -1,6 +1,6 @@
 <entries>
 <entry name="parent" id="id1" type="group" unique="true"/>
-<entry localfile="/Users/jeffmc/source/ramadda/test/data/testscan/test1.txt"    parent="id1" unique="true"/>
+<entry localfile="/Users/jeffmc/source/ramadda/test/data/testscan/test1.txt"    parent="id1" nameUnique="true"/>
 <entry localfile="/Users/jeffmc/source/ramadda/test/data/testscan/test2.txt"    parent="id1" unique="true"/>
 <entry localfile="/Users/jeffmc/source/ramadda/test/data/testscan/test3.txt"    parent="id1" unique="true"/>
 </entries>
