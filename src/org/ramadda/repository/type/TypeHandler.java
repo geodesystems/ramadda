@@ -42,7 +42,10 @@ import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
 
+
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -307,6 +310,9 @@ public class TypeHandler extends RepositoryManager {
     /** the wiki tag in types.xml. If defined then use this as the default html display for entries of this type */
     private String wikiTemplate;
 
+    private Hashtable<String,String> wikiText = new Hashtable<String,String>();
+
+
     /** _more_ */
     private String bubbleTemplate;
 
@@ -481,8 +487,20 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
+
             wikiTemplate = Utils.getAttributeOrTag(node, ATTR_WIKI,
                     (String) null);
+
+	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
+	    for (int i = 0; i < wikis.size(); i++) {
+		Element wiki = (Element) wikis.get(i);
+		String tag =XmlUtil.getAttribute(wiki,"tag");
+		String text = XmlUtil.getChildText(wiki);
+		if(text!=null)
+		    wikiText.put(tag,text);
+		else
+		    System.err.println("No text in wiki tag:" + XmlUtil.toString(wiki));
+	    }
 
             bubbleTemplate = Utils.getAttributeOrTag(node, ATTR_BUBBLE,
                     (String) null);
@@ -7211,6 +7229,17 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public String getWikiText(Request request, Entry entry, String tag) {
+	String text = wikiText.get(tag);
+	if(text==null && getParent() != null) {
+	    text = getParent().getWikiText(request, entry,tag);
+	}
+	return text;
+    }
+
+    public void putWikiText(String tag, String text) {
+	wikiText.put(tag,text);
+    }
 
 
     /**
