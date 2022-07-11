@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 11 13:38:04 MDT 2022";
+var build_date="RAMADDA build date: Mon Jul 11 15:24:15 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38443,13 +38443,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    $.extend(tmpStyle,glyph.getStyle());
 		    if(glyph.isImage() || glyph.isEntry()) {
 			let callback = (entryId,imageUrl) =>{
-			    let url = imageUrl??ramaddaBaseUrl +'/entry/get?entryid=' + entryId;
 			    tmpStyle.entryId = entryId;
 			    if(glyph.isImage()) {
+				//we might get passed back the info for the entry
+				if(imageUrl && imageUrl.entryType) {
+				    imageUrl = null;
+				}
+				let url = imageUrl??ramaddaBaseUrl +'/entry/get?entryid=' + entryId;
 				this.lastImageUrl = url;
 				tmpStyle.imageUrl = url;
-			    }
-			    if(imageUrl.icon) {
+			    } else if(imageUrl && imageUrl.icon) {
 				tmpStyle.externalGraphic = imageUrl.icon;
 			    }
 			    cmd.handler.style = tmpStyle;
@@ -38459,6 +38462,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    selectCancel(true);
 			};
 
+			if(args.url) {
+			    callback(null, args.url);
+			    return;
+			}
+	
 			//Do this a bit later because the dialog doesn't get popped up
 			let initCallback = ()=>{
 			    this.jq('imageurl').keypress(function(e){
