@@ -715,7 +715,9 @@ function CollectionForm(formId, plottype, args) {
                     //jeffmc: add in the select all. set the class to ramadda-toggleall so we can find this later
                     let checkboxName=select.attr("checkboxname")||"";
                     if(html=="") {
-                        html += HtmlUtils.div([],HtmlUtils.checkbox("", ['class','ramadda-toggleall','title','Select All'], isSelected, 'Select All'));
+                        if ((haveBlank && numItems > 2) || (!haveBlank && numItems > 1)) {  // don't show if there is only one item
+                            html += HtmlUtils.div([],HtmlUtils.checkbox("", ['class','ramadda-toggleall','title','Select All'], false, 'Select All'));
+                        }
                     }
     
                     //jeffmc: don't show the blank value. set the class to ramadda-toggle so we can find this later
