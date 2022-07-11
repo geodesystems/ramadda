@@ -293,7 +293,7 @@ Ramadda3DDisplay.prototype = {
 		this.entry = entry;
 		if(Utils.stringDefined(model.annotations)|| entry.canEdit()) {
 		    let annotations = Utils.split(model.annotations,"\n",true,true);
-		    this.initAnnotations(annotations);
+		    this.initAnnotations(annotations??[]);
 		}
 	    });
 	}
