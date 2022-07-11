@@ -266,6 +266,13 @@ public class Resource {
     }
 
     /**
+      * @return _more_
+     */
+    public boolean isUnknown() {
+        return type.equals(TYPE_UNKNOWN);
+    }
+
+    /**
      * _more_
      *
      * @return _more_
