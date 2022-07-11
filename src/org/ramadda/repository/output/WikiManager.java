@@ -7187,19 +7187,26 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                     Hashtable props, Entry originalEntry,
                                     Entry entry)
 	throws Exception {
-
-
         String fromType = entry.getTypeHandler().getSimpleDisplay(request,
 								  props, entry);
         if (fromType != null) {
             return fromType;
         }
 
+	String wikiText = entry.getTypeHandler().getWikiText(request, entry,WIKI_TAG_SIMPLE);
+	if(wikiText!=null) {
+	    return wikifyEntry(request, entry, wikiText);
+	}
 
         boolean sizeConstrained = getProperty(wikiUtil, props,
 					      ATTR_CONSTRAINSIZE, false);
         String content = getDescription(request, wikiUtil, props,
                                         originalEntry, entry);
+
+	if(TypeHandler.isWikiText(content)) {
+	    content = getSnippet(request, entry, true,"");
+	}
+
         boolean haveText = Utils.stringDefined(content);
         String  imageUrl = null;
 
@@ -7218,7 +7225,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (imageUrl != null) {
             StringBuilder extra = new StringBuilder();
-            String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
+            String position = request.getString(ATTR_TEXTPOSITION, POS_TOP);
             boolean layoutHorizontal = position.equals(POS_RIGHT)
 		|| position.equals(POS_LEFT);
             String imageWidth = null;
