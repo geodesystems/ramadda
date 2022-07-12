@@ -1530,6 +1530,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             Entry entry = getEntryManager().getEntry(request,
 						     request.getString(ARG_ENTRYID, ""));
+	    if(entry==null) {
+		Result result =  getRepository().makeErrorResult(request, "Unknown entry:" + request.getString(ARG_ENTRYID,""),false);
+		result.setShouldDecorate(false);
+		return result;
+	    }
             wiki = wikifyEntry(request, entry, wiki);
         } else {
             wiki = wikify(request, wiki);
@@ -1537,7 +1542,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         wiki = getPageHandler().translate(request, wiki);
         Result result = new Result("", new StringBuilder(wiki));
         result.setShouldDecorate(false);
-
         return result;
     }
 

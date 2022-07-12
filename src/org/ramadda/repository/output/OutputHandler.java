@@ -1192,6 +1192,23 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         boolean isImage   = entry.isImage();
 
         name = name.replace("'", "\\'");
+	
+	List attrs = Utils.makeList(
+                                "entryType",
+                                HU.squote(entry.getTypeHandler().getType()),
+				"entryName",JsonUtil.quote(entry.getName()),
+				"icon",HU.squote(getPageHandler().getIconUrl(request, entry)),
+                                "isGroup", "" + isGroup, "isImage",
+                                "" + isImage);
+	if(entry.isGeoreferenced()) {
+	    Utils.add(attrs, "isGeo","true");
+	    if(entry.hasAreaDefined()) {
+		Utils.add(attrs, "north",entry.getNorth(),"west",entry.getWest(),
+			  "south",entry.getSouth(),
+			  "east",entry.getEast());
+	    }
+	}
+
         sb.append(
             HU.mouseClickHref(
                 HU.call(
@@ -1199,14 +1216,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                     HU.comma(
                         HU.squote(target), HU.squote(entry.getId()),
                         HU.squote(name),
-                        JsonUtil.map(
-                            Utils.makeList(
-                                "entryType",
-                                HU.squote(entry.getTypeHandler().getType()),
-				"icon",HU.squote(getPageHandler().getIconUrl(request, entry)),
-                                "isGroup", "" + isGroup, "isImage",
-                                "" + isImage, "isGeo",
-                                "" + entry.isGeoreferenced())), HU.squote(
+                        JsonUtil.map(attrs), HU.squote(
                                     type))), linkText));
 
         HU.close(sb, "span");

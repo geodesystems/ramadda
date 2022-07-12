@@ -3851,7 +3851,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public Result makeErrorResult(Request request, String msg) {
-        StringBuilder sb = new StringBuilder(makeErrorResponse(request, msg));
+	return makeErrorResult(request, msg, true);
+    }
+    public Result makeErrorResult(Request request, String msg,boolean decorate) {	
+        StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg):msg);
         Result        result = null;
         if (request.responseAsJson()) {
             result = new Result("", sb, JsonUtil.MIMETYPE);
@@ -3865,7 +3868,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             result = new Result(msg("Error"), sb);
         }
-
+	result.setResponseCode(Result.RESPONSE_INTERNALERROR);
         return result;
     }
 
