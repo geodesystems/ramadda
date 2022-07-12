@@ -4341,13 +4341,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                             return;
                         }
                         let html = "";
-                        entries.forEach(entry=>{
-                            let call = "selectClick('" +  target +"','" + entry.getId() +
-                                "','" + entry.getName()+"');";
-                            html += HU.href("javascript:void(0);",entry.getIconImage() +" " + entry.getName(),
-                                            ["onclick",call]) +"<br>";
+
+                        entries.forEach((entry,idx)=>{
+                            html += HU.div(['index',idx, 'class','ramadda-clickable'], entry.getIconImage() +" " + entry.getName());
                         });
                         results.html(html);
+			results.find('.ramadda-clickable').click(function() {
+			    let entry = entries[$(this).attr('index')];
+                            selectClick(target, entry.getId(),entry.getName(),{
+				entryName: entry.getName(),
+				icon:entry.getIconUrl(),
+				entryType:entry.getType().id
+			    });
+			});
+			
                         results.show(400);
                     },
                     handleSearchError:function(url, error) {

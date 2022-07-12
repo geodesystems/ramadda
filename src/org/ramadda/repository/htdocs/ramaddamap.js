@@ -1327,6 +1327,7 @@ RepositoryMap.prototype = {
             this.getMap().addLayer(layer);
 	    if(nonSelectable)
 		this.nonSelectLayers.push(layer);
+
             this.checkLayerOrder();
         } else {
             this.initialLayers.push(layer);
@@ -1990,8 +1991,9 @@ RepositoryMap.prototype = {
 	this.allLayers = OpenLayers.Util.removeItem(this.allLayers, layer);
 	if(this.nonSelectLayers)
 	    this.nonSelectLayers = OpenLayers.Util.removeItem(this.nonSelectLayers, layer);
-	if(this.loadedLayers)
+	if(this.loadedLayers) {
 	    this.loadedLayers = OpenLayers.Util.removeItem(this.loadedLayers, layer);
+	}
 	if(this.imageLayersList) {
 	    this.imageLayersList = OpenLayers.Util.removeItem(this.imageLayersList, layer);
 	}
@@ -2398,9 +2400,19 @@ RepositoryMap.prototype = {
                     maxDepth: 2
                 })
 	    })});
+
+
 	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
-	    return layer;
-	},
+	return layer;
+    },
+
+    printLayers:function(label) {
+	console.log(label);
+	this.getMap().layers.forEach(l=>{
+	    if(l.name.indexOf("Cb")>=0)
+		console.log("\t" + l.name);
+	});
+    },
 
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
