@@ -977,6 +977,31 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
+    private List<Entry> getSelectEntries(Request request, List<Entry> children) {
+	if(request.defined(ARG_ENTRYTYPE)) {
+	    List<Entry> tmp = new ArrayList<Entry>();
+	    List<Entry> byType = new ArrayList<Entry>();	    
+	    List<String> types = Utils.split(request.getString(ARG_ENTRYTYPE,""), ",",true,true);
+	    for(Entry child: children) {
+		boolean didIt = false;
+		for(String type: types) {
+		    if(child.getTypeHandler().isType(type)) {
+			byType.add(child);
+			didIt = true;
+			break;
+		    }
+		}
+		if(didIt) continue;
+		if(child.isGroup()) {
+		    tmp.add(child);
+		    continue;
+		}
+	    }
+	    byType.addAll(tmp);
+	    children=byType;
+	}
+	return children;
+    }
 
     /**
      * _more_
@@ -993,6 +1018,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                List<Entry> children)
             throws Exception {
 
+	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
         boolean       isImage    = Misc.equals(selectType, "image");
         String        localeId   = request.getString(ARG_LOCALEID, null);
@@ -1050,7 +1076,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 HU.open(sb, "div", HU.cssClass("ramadda-select-inner"));
                 List    favoriteLinks = new ArrayList();
                 boolean didOne        = false;
-                for (Entry recent : recents) {
+                for (Entry recent : getSelectEntries(request, recents)) {
                     if (isImage && !recent.isImage() && !recent.isGroup()) {
                         continue;
                     }
@@ -1903,7 +1929,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     haveCalled[0] = true;
                     getEntryManager().getChildrenEntries(request, this, group,children);
                 }
-            return children;
+		return children;
             } catch(Exception exc) {
                 throw new RuntimeException(exc);
             }
