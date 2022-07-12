@@ -223,7 +223,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_PASTE= "paste";        
     const ID_COMMANDS = "commands";
     const ID_CLEAR = "clear";
-    const ID_CMD_LIST = "list";
+    const ID_CMD_LIST = "cmdlist";
     const ID_LIST = "list";        
     const ID_PROPERTIES = "properties";
     const ID_NAVIGATE = "navigate";
@@ -389,27 +389,38 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let styleMap = new OpenLayers.StyleMap({"default":{}});
 		    let tmpStyle = {};
 		    $.extend(tmpStyle,glyph.getStyle());
+		    tmpStyle.mapOptions = {
+			type:glyph.type
+		    }
 		    if(glyph.isImage() || glyph.isEntry() || glyph.isMap()) {
+			//imageUrl may be a url or it may be the entry attributes
 			let callback = (entryId,imageUrl) =>{
+			    let attrs = imageUrl||{};
+			    if(typeof imageUrl != "string") {
+				imageUrl = null;
+			    }
+
+			    attrs.entryId = entryId;
 			    tmpStyle.entryId = entryId;
+			    if(attrs.entryName) {
+				attrs.name  = attrs.entryName;
+				delete attrs.entryName;
+			    }
 			    if(glyph.isMap()) {
-				imageUrl.entryId = entryId;
-				let dummy = this.createMapGlyph(imageUrl,tmpStyle);
+				let dummy = this.createMapGlyph(attrs,tmpStyle);
 				if(dummy)
 				    this.addFeatures([dummy]);
 				return;
 			    }
 			    if(glyph.isImage()) {
-				//we might get passed back the info for the entry
-				if(imageUrl && imageUrl.entryType) {
-				    imageUrl = null;
-				}
 				let url = imageUrl??ramaddaBaseUrl +'/entry/get?entryid=' + entryId;
 				this.lastImageUrl = url;
 				tmpStyle.imageUrl = url;
-			    } else if(imageUrl && imageUrl.icon) {
-				tmpStyle.externalGraphic = imageUrl.icon;
+			    } else if(attrs.icon) {
+				tmpStyle.externalGraphic = attrs.icon;
 			    }
+			    tmpStyle.mapOptions.entryId = entryId;
+			    tmpStyle.mapOptions.name = attrs.name;			    
 			    cmd.handler.style = tmpStyle;
 			    cmd.handler.layerOptions.styleMap=styleMap;
 			    this.showCommandMessage(glyph.isImage()?"New Image":"New Entry");
@@ -438,7 +449,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				     extra:glyph.isImage()?extra:null,
 				     initCallback:initCallback,
 				     callback:callback};
-			selectCreate(event, HU.getUniqueId(""),this.domId(ID_MENU_NEW),false,'entryid',this.getProperty('entryId'),'',null,props);
+			let entryType = glyph.isImage()?'type_image':glyph.isMap()?'type_map,geo_gpx,geo_shapefile':'';
+			selectCreate(event, HU.getUniqueId(""),this.domId(ID_MENU_NEW),false,'entryid',this.getProperty('entryId'),entryType,null,props);
 			return
 		    } else if(glyph.isLabel()) {
 			let text = prompt("Label text:",this.lastText);
@@ -494,10 +506,25 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.clearSelected();
 	    this.myLayer.redraw();
 	},
+	getMapOptions: function(feature) {
+	    if(feature.mapOptions) return feature.mapOptions;
+	    let mapOptions = feature.style?feature.style.mapOptions:{};
+	    if(!mapOptions) {
+		mapOptions = {};
+		if(feature.style) {
+		    mapOptions.type = feature.style.type;
+		}
+	    }  else if(feature.style) {
+		delete feature.style.mapOptions;
+	    }
+	    feature.mapOptions = mapOptions;
+	    return mapOptions;
+	},
 	makeListItem:function(feature,idx) {
-	    let style  = feature.style;
+	    let style  = feature.style||{};
 	    let line = "";
-	    let title = feature.mapOptions.entryName || feature.mapOptions.type;
+	    let mapOptions=this.getMapOptions(feature);
+	    let title = mapOptions.name || mapOptions.type;
 	    title+="<br>" +
 		HU.span([CLASS,"ramadda-clickable",TITLE,"Edit","feature-idx",idx,"command","edit"],
 			HU.getIconImage("fas fa-cog")) +"&nbsp;" +
@@ -1102,11 +1129,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let list =[];
             this.myLayer.features.forEach(feature=>{
 		let geom = feature.geometry;
-		let mapOptions = feature.mapOptions;
-		if(!mapOptions) mapOptions = {
-		    type:feature.type
-		}
-		
+		let mapOptions=this.getMapOptions(feature);
 		let obj = {
 		    mapOptions:mapOptions,
 		    geometryType:geom.CLASS_NAME,
@@ -1516,13 +1539,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    case 'latlonimage': 
 		let w = 2048;
 		let h = 1024;
-		return this.getMap().addImageLayer(opts.entryId, opts.entryName,"",url,true,
+		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
 						   opts.north, opts.west,opts.south,opts.east, w,h);
 	    case 'geo_gpx': 
-		return this.getMap().addGpxLayer(opts.entryName,url,true, selectCallback, unSelectCallback,style);
+		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style);
 		break;
 	    case 'geo_geojson': 
-		return this.getMap().addGeoJsonLayer(opts.entryName,url,true, selectCallback, unSelectCallback,style);
+		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style);
 		break;		
 	    case 'geo_shapefile': 
 		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
@@ -1532,7 +1555,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    if(layer.features) {layer.features.forEach(f=>{f.style = style;});}
 		    layer.redraw();
 		};
-		let layer =  this.getMap().addKMLLayer(opts.entryName,url,true, selectCallback, unSelectCallback,style,loadCallback);
+		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback);
 
 		return layer;
 	    default:
