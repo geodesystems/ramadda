@@ -1,7 +1,9 @@
 <types supercategory="Geoscience" category="GIS Data">
 
 
-  <type name="geo_kml"  description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
+  <type name="type_map"  foruser="false"/>
+
+  <type name="geo_kml"  super="type_map" description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
      <property name="icon" value="/icons/kml.png"/>
      <column name="showmap" label="Show Map" type="boolean" showinhtml="false" default="true"/>
      <wiki><![CDATA[
@@ -23,7 +25,7 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
    </type>
 
 
-  <type name="latlonimage"  description="Lat-Lon Image" datatype="latlonimage"  handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
+  <type name="latlonimage"  super="type_map" description="Lat-Lon Image" datatype="latlonimage"  handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
      <property name="icon" value="/icons/map.png"/>
      <column name="map_width" label="Map Width" type="int" showinhtml="false" default="-100"/>
      <column name="map_height" label="Map Height" type="int" showinhtml="false" default="600"/>
