@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 12 11:39:00 MDT 2022";
+var build_date="RAMADDA build date: Tue Jul 12 13:37:52 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38131,7 +38131,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
 	    let mapBounds = this.feature.geometry.getBounds();
 	    if(this.image) {
-		this.display.map.removeLayer(this.image);
+		this.display.getMap().removeLayer(this.image);
 	    }
 	    let ring = this.feature.geometry.components[0];
 	    let pts = ring.components;
@@ -38460,7 +38460,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				delete attrs.entryName;
 			    }
 			    if(glyph.isMap()) {
-				let dummy = this.createMapGlyph(attrs,tmpStyle);
+				let dummy = this.createMapGlyph(attrs,tmpStyle,true);
 				if(dummy)
 				    this.addFeatures([dummy]);
 				return;
@@ -38724,10 +38724,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	removeFeatures: function(features) {
 	    features.forEach(feature=>{
 		if(feature.mapLayer) {
-		    this.getMap().getMap().removeLayer(feature.mapLayer);
+		    this.getMap().removeLayer(feature.mapLayer);
 		}
 	    });
-
 	    this.myLayer.removeFeatures(features);
 	    this.featureChanged();	    
 	},
@@ -39327,12 +39326,19 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.showLegend();
 	},
 	showNewMenu: function(button) {
-	    let html ="";
-	    this.glyphs.forEach(g=>{
-		let icon = g.options.icon||ramaddaBaseUrl+"/map/marker-blue.png";
-		let label = HU.image(icon,['width','16']) +SPACE1 + g.label;
-		html+= this.menuItem(this.domId("menunew_" + g.type),label+SPACE2);
+	    let html ="<table><tr valign=top>";
+	    let tmp = Utils.splitList(this.glyphs,this.glyphs.length/2);
+	    tmp.forEach(glyphs=>{
+		html+="<td>&nbsp;</td>";
+		html+="<td>";
+		glyphs.forEach(g=>{
+		    let icon = g.options.icon||ramaddaBaseUrl+"/map/marker-blue.png";
+		    let label = HU.image(icon,['width','16']) +SPACE1 + g.label;
+		    html+= this.menuItem(this.domId("menunew_" + g.type),label+SPACE2);
+		});
+		html+="</td>";
 	    });
+	    html+="</tr></table>";
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 	    let _this = this;
@@ -39430,7 +39436,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    if(!features) return;
 	    features.forEach(feature=>{
 		if(feature.image) {
-		    this.map.removeLayer(feature.image);
+		    this.getMap().removeLayer(feature.image);
 		    feature.image = null;
 		}
 	    });
@@ -39569,25 +39575,23 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		}
 	    });
 	},
-	createMapGlyph: function(attrs,style) {				
+	createMapGlyph: function(attrs,style,andZoom) {				
 	    style = style??{};
 	    let  dummy = this.getMap().createPolygon("", "", [], {strokeWidth:0},null,true);
 	    dummy.style = {};
 	    dummy.mapOptions = {type:GLYPH_MAP};
 	    $.extend(dummy.mapOptions,  attrs);
-	    let layer = this.addMapLayer(dummy.mapOptions,style);
+	    let layer = this.addMapLayer(dummy.mapOptions,style,andZoom);
 	    if(!layer) return;
 	    layer.style = style;
 	    dummy.mapLayer = layer;
 	    return dummy;
 	},
-
-	addMapLayer(opts,style) {
+	addMapLayer(opts,style,andZoom) {
 	    let url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
 	    let selectCallback = null;
 	    let unSelectCallback = null;	    
 //	    console.log(opts.entryType);
-
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
 		let w = 2048;
@@ -39595,10 +39599,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
 						   opts.north, opts.west,opts.south,opts.east, w,h);
 	    case 'geo_gpx': 
-		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style);
+		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style,null,andZoom);
 		break;
 	    case 'geo_geojson': 
-		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style);
+		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,null,andZoom);
 		break;		
 	    case 'geo_shapefile': 
 		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
@@ -39608,7 +39612,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    if(layer.features) {layer.features.forEach(f=>{f.style = style;});}
 		    layer.redraw();
 		};
-		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback);
+		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
 
 		return layer;
 	    default:
@@ -39715,27 +39719,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			      labelSelect:true,
 			     }, OpenLayers.Handler.Point,
 			      {icon:ramaddaBaseUrl+"/icons/text.png"}),
-		new GlyphType(this,GLYPH_BOX, "Box",
-			      {strokeColor:this.getStrokeColor(),
-			       strokeWidth:this.getStrokeWidth(),
-			       strokeDashstyle:'solid',
-			       strokeOpacity:1,
-			       fillColor:"transparent",
-			       fillOpacity:1.0},
-			     OpenLayers.Handler.MyRegularPolygon,
-			      {snapAngle:90,sides:4,irregular:true,
-			       icon:ramaddaBaseUrl+"/icons/rectangle.png"}
-			    ),
-		new GlyphType(this,GLYPH_CIRCLE, "Circle",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			     OpenLayers.Handler.MyRegularPolygon,
-			      {snapAngle:45,sides:40,icon:ramaddaBaseUrl+"/icons/ellipse.png"}
-			    ),
 		new GlyphType(this,GLYPH_LINE, "Line",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
@@ -39780,6 +39763,46 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			      {snapAngle:90,sides:4,irregular:true,isImage:true,
 			       icon:ramaddaBaseUrl+"/icons/imageicon.png"}
 			    ),
+		new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
+			     {strokeWidth:0, 
+			      fillColor:"transparent",
+			      externalGraphic: ramaddaBaseUrl +"/icons/video.png",
+			      pointRadius:12},
+			      OpenLayers.Handler.MyEntryPoint,
+			      {isEntry:true,
+			       icon:ramaddaBaseUrl+"/icons/entry.png"}),
+		new GlyphType(this,GLYPH_MAP,"Map",
+			      {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeDashstyle:'solid',			      
+			      strokeOpacity:1,
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			      OpenLayers.Handler.MyEntryPoint,
+			      {isMap:true,
+			       icon:ramaddaBaseUrl+"/icons/map.png"}),		
+		new GlyphType(this,GLYPH_BOX, "Box",
+			      {strokeColor:this.getStrokeColor(),
+			       strokeWidth:this.getStrokeWidth(),
+			       strokeDashstyle:'solid',
+			       strokeOpacity:1,
+			       fillColor:"transparent",
+			       fillOpacity:1.0},
+			     OpenLayers.Handler.MyRegularPolygon,
+			      {snapAngle:90,sides:4,irregular:true,
+			       icon:ramaddaBaseUrl+"/icons/rectangle.png"}
+			    ),
+		new GlyphType(this,GLYPH_CIRCLE, "Circle",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      strokeDashstyle:'solid',
+			      strokeOpacity:1,
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			     OpenLayers.Handler.MyRegularPolygon,
+			      {snapAngle:45,sides:40,icon:ramaddaBaseUrl+"/icons/ellipse.png"}
+			    ),
+
 		new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
@@ -39802,24 +39825,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			      {snapAngle:90,sides:6,
 			       icon:ramaddaBaseUrl+"/icons/hexagon.png"}
 			    ),		
-		new GlyphType(this,GLYPH_ENTRY,"Entry",
-			     {strokeWidth:0, 
-			      fillColor:"transparent",
-			      externalGraphic: ramaddaBaseUrl +"/icons/video.png",
-			      pointRadius:12},
-			      OpenLayers.Handler.MyEntryPoint,
-			      {isEntry:true,
-			       icon:ramaddaBaseUrl+"/icons/entry.png"}),
-		new GlyphType(this,GLYPH_MAP,"Map",
-			      {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',			      
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			      OpenLayers.Handler.MyEntryPoint,
-			      {isMap:true,
-			       icon:ramaddaBaseUrl+"/icons/map.png"}),		
+
 	    ];
 	},
 	showCommandMessage:function(msg)  {
