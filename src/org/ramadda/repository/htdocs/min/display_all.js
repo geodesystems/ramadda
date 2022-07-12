@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 12 13:37:52 MDT 2022";
+var build_date="RAMADDA build date: Tue Jul 12 17:22:12 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -39604,6 +39604,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    case 'geo_geojson': 
 		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,null,andZoom);
 		break;		
+	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
 		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
 		//fall thru to kml
