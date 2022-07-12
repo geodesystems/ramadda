@@ -1551,6 +1551,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    case 'geo_geojson': 
 		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,null,andZoom);
 		break;		
+	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
 		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
 		//fall thru to kml
