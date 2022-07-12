@@ -1374,6 +1374,7 @@ RepositoryMap.prototype = {
 	}
 	//            this.getMap().resetLayersZIndex();
     },
+
     addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
         let _this = this;
         let theArgs = {
@@ -2381,9 +2382,26 @@ RepositoryMap.prototype = {
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
 	this.checkLayerToggle(name,layer,idx,opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
-
         return layer;
     },
+
+    addGpxLayer: function(name, url,
+			  canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+	let layer = new OpenLayers.Layer.Vector(name, {
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            projection: this.displayProjection,
+            protocol: new OpenLayers.Protocol.HTTP({
+                url:url,
+                format: new OpenLayers.Format.GPX({
+                    extractStyles: true,
+                    extractAttributes: true,
+                    maxDepth: 2
+                })
+	    })});
+	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	    return layer;
+	},
+
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         let layer = new OpenLayers.Layer.Vector(name, {
@@ -2398,6 +2416,7 @@ RepositoryMap.prototype = {
 	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
 	return layer;
     },
+
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
 	if(url.match(".kmz")) {
@@ -4535,7 +4554,7 @@ RepositoryMap.prototype = {
         if (points.length > 1) {
             location = new OpenLayers.LonLat(points[0].x + (points[1].x - points[0].x) / 2,
 					     points[0].y + (points[1].y - points[0].y) / 2);
-        } else {
+        } else if(points.length>0) {
             location = new OpenLayers.LonLat(points[0].x, points[0].y);
         }
 
