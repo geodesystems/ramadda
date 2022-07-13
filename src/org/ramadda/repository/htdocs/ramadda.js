@@ -1080,7 +1080,7 @@ var selectors = new Array();
 
 function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl,props) {
     this.id = selectorId;
-    this.props = props;
+    this.props = props||{};
     this.elementId = elementId;
     this.localeId = localeId;
     this.entryType = entryType;
@@ -1104,16 +1104,23 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     }
 
     this.handleClick = function(event) {
-        let srcId = this.id + '_selectlink';
         let src = null;
-	if(event.target) {
-	    src = $(event.target);
+	if(this.props.eventSourceId) {
+	    src = jqid(this.props.eventSourceId);
 	}
-	if(src==null)
-	    src = $("#" + srcId);
-	if(src.length==0) {
-	    src = $("#" + this.id);
+	if(src==null || src.length==0) {
+	    if(event && event.target) {
+		src = $(event.target);
+	    }
 	}
+	if(src==null || src.length==0)  {
+            let srcId = this.id + '_selectlink';
+	    src = jqid(srcId);
+	}
+	if(src==null || src.length==0)  {
+	    src = jqid(this.id);
+	}
+
         HtmlUtils.hidePopupObject(event);
         this.div = GuiUtils.getDomObject('ramadda-selectdiv');
         let selectDiv = $("#ramadda-selectdiv");
@@ -1122,7 +1129,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             of: src,
             my: "left top",
             at: "left bottom",
-            collision: "none none"
+//            collision: "none none"
         });
 
         let url =  "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
