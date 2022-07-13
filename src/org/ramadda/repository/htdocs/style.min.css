@@ -2903,7 +2903,7 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-select-inner {
     padding-right:10px;
-    max-height:300px;
+    max-height:150px;
     overflow-y:auto;
 }
 
