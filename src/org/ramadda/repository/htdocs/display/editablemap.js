@@ -376,7 +376,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	setCommand:function(command, args) {
 	    args = args ||{};
 	    this.clearCommands();
-	    if(command!=ID_SELECTOR) this.unselectAll();
+	    if(command!=ID_SELECTOR && command!=ID_MOVER) this.unselectAll();
 	    this.command = command;
 	    let glyph = this.glyphMap[command];
 	    this.commands.forEach(cmd=>{
@@ -1241,6 +1241,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    east:latlon.right,
 		}
 	    };
+            let baseLayer = this.getMap().getMap().baseLayer?.ramaddaId;
+	    if(baseLayer) {
+		json.baseLayer = baseLayer;
+	    }
 	    return  JSON.stringify(json);
 	},
 
@@ -1454,6 +1458,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			if(idx%6!=0) return
 		    }
 		}
+		//Make a copy since this if there is a shared point it screws up the redraw of the original feature
+                pt = new OpenLayers.Geometry.Point(pt.x,pt.y);
 		let dot = new OpenLayers.Feature.Vector(pt,null,style);
 		feature.selectDots.push(dot);
 	    });
@@ -1698,6 +1704,14 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			this.showLegend();
 			let bounds = null;
 			let zoomLevel = -1;
+			if(json.baseLayer) {
+			    let base = _this.map.baseLayers[json.baseLayer];
+			    if(base) {
+				_this.map.getMap().setBaseLayer(base);
+			    }
+
+
+			}
 			if(!_this.getProperty("embedded") && !_this.getProperty("zoomLevel")) {
 			    if(json.bounds) {
 				zoomLevel = json.zoomLevel;
@@ -2133,9 +2147,22 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    _this.featureChanged();
 		};
 		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+		    moveFeature: function(pixel) {
+			let selected = _this.getSelected();
+			var res = this.map.getResolution();
+			if(selected.length==0) selected = [this.feature];
+			let dx = res * (pixel.x - this.lastPixel.x);
+			let dy = res * (this.lastPixel.y - pixel.y);
+			selected.forEach(feature=>{
+			    feature.geometry.move(dx,dy);
+			    this.layer.drawFeature(feature);
+			    imageChecker(feature);
+			    _this.checkSelected(feature);
+			});
+			this.lastPixel = pixel;
+
+		    },
 		    onDrag: function(feature, pixel) {
-			imageChecker(feature);
-			_this.checkSelected(feature);
 		    }
 		}));
 
