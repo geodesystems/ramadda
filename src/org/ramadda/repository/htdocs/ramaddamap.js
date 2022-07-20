@@ -2309,7 +2309,7 @@ RepositoryMap.prototype = {
     },
 
 
-    initMapVectorLayer:  function(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent) {
+    initMapVectorLayer:  function(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent) {
         let _this = this;
         this.showLoadingImage();
         layer.isMapLayer = true;
@@ -2319,7 +2319,7 @@ RepositoryMap.prototype = {
             "loadend": function(e) {
                 _this.hideLoadingImage();
                 if (e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
-                    console.log("An error occurred loading the map:" + JSON.stringify(e.response, null, 2));
+                    console.log("An error occurred loading the map:" + url+"\n" + JSON.stringify(e.response, null, 2));
                     return;
                 }
                 if (zoomToExtent) {
@@ -2353,7 +2353,7 @@ RepositoryMap.prototype = {
 	let v = this.getProperty(prop  +"_"+id, this.getProperty(prop+idx,this.getProperty(prop, dflt)));
 	return v;
     },
-    addMapFileLayer:  function(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+    addMapFileLayer:  function(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
 
 	let idx  = this.loadedLayers.length+1;
 	let opts =  {
@@ -2379,7 +2379,7 @@ RepositoryMap.prototype = {
 	$.extend(opts, args);
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
 	this.checkLayerToggle(name,layer,idx,opts);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
+        this.initMapVectorLayer(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
     },
 
@@ -2398,7 +2398,7 @@ RepositoryMap.prototype = {
 	    })});
 
 
-	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
 	return layer;
     },
 
@@ -2421,7 +2421,7 @@ RepositoryMap.prototype = {
             }),
         });
 
-	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
 	return layer;
     },
 
@@ -2445,7 +2445,7 @@ RepositoryMap.prototype = {
                 })
             }),
         });
-	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
         return layer;
     },
 

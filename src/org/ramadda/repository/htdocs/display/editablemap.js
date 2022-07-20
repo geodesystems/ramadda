@@ -1733,7 +1733,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    }				     
 			}
 			if(bounds) {
-			    _this.map.zoomToExtent(bounds);
+			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
 			}
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
 			    _this.getMap().getMap().zoomTo(zoomLevel);
