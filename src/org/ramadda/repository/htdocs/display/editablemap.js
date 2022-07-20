@@ -1449,13 +1449,18 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		strokeWidth:0,
 		pointRadius:4
 	    };
+
 	    if(this.isFeatureSelected(feature)) return;
 	    feature.selectDots = [];
 	    let vertices  = feature.geometry.getVertices();
+	    let step = 0;
+	    if(vertices.length>8) {
+		step = Math.round(vertices.length/20);
+	    }
 	    vertices.forEach((pt,idx)=>{
-		if(vertices.length>8) {
+		if(step>0) {
 		    if(idx>0 && idx!=vertices.length-1) {
-			if(idx%6!=0) return
+			if(idx%step!=0) return
 		    }
 		}
 		//Make a copy since this if there is a shared point it screws up the redraw of the original feature
