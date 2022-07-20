@@ -201,6 +201,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
 
+    const LIST_SELECTED_CLASS  = "ramadda-display-editablemap-feature-selected";
     const ID_EDIT_NAME  ="editname";
     const ID_MESSAGE  ="message";
     const ID_MESSAGE2  ="message2";    
@@ -375,6 +376,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	setCommand:function(command, args) {
 	    args = args ||{};
 	    this.clearCommands();
+	    if(command!=ID_SELECTOR) this.unselectAll();
 	    this.command = command;
 	    let glyph = this.glyphMap[command];
 	    this.commands.forEach(cmd=>{
@@ -494,6 +496,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	clearCommands:function() {
+//	    this.unselectAll();
 	    HtmlUtils.hidePopupObject();
 	    this.showCommandMessage("");
 	    let buttons = this.jq(ID_COMMANDS).find(".ramadda-clickable");
@@ -505,7 +508,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		cmd.deactivate();
 	    });
 	    this.command= null;
-	    this.clearSelected();
 	    this.myLayer.redraw();
 	},
 	getMapOptions: function(feature) {
@@ -603,7 +605,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    if(msg) {
 		col+="" + msg.replace(/<br>/g," ");
 	    }
-	    line+= HU.td([CLASS,"ramadda-clickable ramadda-display-editablemap-feature","feature-idx",idx,
+	    let clazz = "ramadda-clickable ramadda-display-editablemap-feature ";
+	    if(this.isFeatureSelected(feature)) {
+		clazz+= " " + LIST_SELECTED_CLASS;
+
+	    }
+
+	    line+= HU.td([CLASS,clazz,"feature-idx",idx,
 			  TITLE,'Shift click to edit',STYLE,HU.css("padding","5px")],col);
 	    return line;
 	},	    
@@ -635,7 +643,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 
 	    this.jq(ID_LIST).find(".ramadda-display-editablemap-feature").click(function(event) {
-		let clazz  = "ramadda-display-editablemap-feature-selected";
+		let clazz  = LIST_SELECTED_CLASS;
 		let idx  = $(this).attr("feature-idx");
 		let feature   = _this.featureListMap[idx];
 		if (event.shiftKey) {
@@ -649,7 +657,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if($(this).hasClass(clazz)) {
 		    $(this).removeClass(clazz);
 		    if(feature) {
-			_this.featureSelector.clickoutFeature(feature);
+			_this.unselectFeature(feature);
+//			_this.featureSelector.clickoutFeature(feature);
 		    }
 		} else {
 		    $(this).addClass(clazz);
@@ -725,6 +734,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    
 	removeFeatures: function(features) {
 	    features.forEach(feature=>{
+		if(feature.selectDots) {
+		    this.selectionLayer.removeFeatures(feature.selectDots);
+		    feature.selectDots = null;
+		}
 		if(feature.mapLayer) {
 		    this.getMap().removeLayer(feature.mapLayer);
 		}
@@ -800,15 +813,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		this.showLegend();
 	    };
 	},
-	clearSelected:function() {
-	    this.myLayer.selectedFeatures  = [];
-	    this.myLayer.redraw();
-	},
-	getSelected: function() {
-	    return this.myLayer.selectedFeatures ?? [];
-	},
 	doEdit: function(feature) {
-	    this.clearSelected();
 	    if(!feature) {
 		if(this.getSelected().length==0) return;
 		feature = this.getSelected()[0];
@@ -830,7 +835,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    if(cmd) {
 //		HU.image(icon_command,['width','12px']);
 		let prefix = '';
-		if(cmd!="Esc") prefix = 'ctrl-';
+		if(cmd!="Esc") prefix = 'Ctrl-';
 		label = HU.leftRightTable(label,HU.div(['style','margin-left:8px;'], HU.span(['style','color:#ccc'], prefix+cmd)));
 	    }
 	    return  HU.div([ID,id,CLASS,"ramadda-clickable"],label);
@@ -1275,6 +1280,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    this.jq(ID_CLEAR).click(function(){
 		_this.clearCommands();
+		_this.unselectAll();
 	    });	    
 	    this.jq(ID_CMD_LIST).click(function(){
 		_this.clearCommands();
@@ -1284,7 +1290,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	handleEditEvent:function() {
 	    if(this.getSelected().length==1) {
-		console.log("selected:"); 
 		this.doEdit(this.getSelected()[0]);
 		return;
 	    }
@@ -1321,7 +1326,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    this.jq(ID_MESSAGE3).find('.ramadda-clickable').click(function() {
 		let id = $(this).attr('id');
-		_this.clearSelected();
 		_this.selectFeature(map[id]);
 	    });
 	},
@@ -1413,22 +1417,68 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    [ID_SELECTOR,ID_MOVER,ID_RESHAPE,ID_RESIZE].forEach(command=>{
 		this.jq(command).click(function(){
 		    HtmlUtils.hidePopupObject();
-		    if(ID_SELECTOR==command) {
-			_this.clearSelected();
-		    }
 		    _this.setCommand(command);
 		});
 	    });
 	},
 	
+	checkSelected:function(feature) {
+	    if(this.isFeatureSelected(feature)) {
+		this.unselectFeature(feature);
+		this.selectFeature(feature);
+	    }
+	},
+	unselectFeature:function(feature) {
+	    if(feature.selectDots) {
+		this.selectionLayer.removeFeatures(feature.selectDots);
+		feature.selectDots= null;
+	    }
+	},
+	isFeatureSelected:function(feature) {
+	    return feature.selectDots!=null;
+	},
 	selectFeature:function(feature) {
-	    this.featureSelector.clickFeature(feature);
+//	    this.featureSelector.clickFeature(feature);
+	    let style={
+		fillColor:'#000',
+		fillOpacity:1,
+		strokeWidth:0,
+		pointRadius:4
+	    };
+	    if(this.isFeatureSelected(feature)) return;
+	    feature.selectDots = [];
+	    let vertices  = feature.geometry.getVertices();
+	    vertices.forEach((pt,idx)=>{
+		if(vertices.length>8) {
+		    if(idx>0 && idx!=vertices.length-1) {
+			if(idx%6!=0) return
+		    }
+		}
+		let dot = new OpenLayers.Feature.Vector(pt,null,style);
+		feature.selectDots.push(dot);
+	    });
+	    _this.selectionLayer.addFeatures(feature.selectDots);
+	    _this.selectionLayer.redraw();
+	},
+	getSelected: function() {
+	    let selected=[];
+	    this.myLayer.features.forEach(feature=>{
+		if(feature.selectDots) {
+		    return selected.push(feature);
+		}
+	    });
+	    return selected;
 	},
 	selectAll:function() {
 	    this.myLayer.features.forEach(feature=>{
 		this.selectFeature(feature);
 	    });
 	},
+	unselectAll:function() {
+	    this.myLayer.features.forEach(feature=>{
+		this.unselectFeature(feature);
+	    });
+	},	
 	setClipboard:function(features) {
 	    if(features)
 		this.clipboard = features.map(feature=>{return feature;});
@@ -1489,9 +1539,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	doCut: function() {
 //	    this.clearCommands();
-	    if(this.getSelected().length>0) {
-		this.removeImages(this.getSelected());
-		let features = this.getSelected().map(feature=>{return feature;});
+	    let selected = this.getSelected();
+	    if(selected.length>0) {
+		this.removeImages(selected);
+		let features = selected.map(feature=>{return feature;});
 		this.setClipboard(features);
 		this.removeFeatures(features);
 	    }
@@ -1520,6 +1571,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		}
 		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
 		let style = $.extend({},glyph?glyph.getStyle():{});
+		    
 		if(mapGlyph.style) $.extend(style,mapGlyph.style);
 		style = $.extend({},style);
 		if(style.label) {
@@ -1854,6 +1906,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    let _this = this;
 	    this.myLayer = this.map.createFeatureLayer("Annotation Features",false,null,{rendererOptions: {zIndexing: true}});
+	    this.selectionLayer = this.map.createFeatureLayer("Selection",false,null,{rendererOptions: {zIndexing: true}});	    
+	    this.selectionLayer.canSelect = false;
+//	    this.selectionLayer.setZIndex(1001);
+
+//	    console.dir(this.myLayer);
+//	    this.myLayer.isMapLayer = true;
 	    if(this.getProperty("layerIndex")) {
 		this.myLayer.ramaddaLayerIndex = +this.getProperty("layerIndex");
 	    }
@@ -1947,6 +2005,17 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	    let control;
 //	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
+	    this.getMap().xxxfeatureOverHandler = e=>{
+		e.feature.style.old_strokeColor=e.feature.style.strokeColor;
+		e.feature.style.strokeColor="green";		
+		e.feature.layer.redraw(e.feature);
+	    };
+//	    this.getMap().doMouseOver=true;
+	    this.getMap().xxxfeatureOutHandler = e=>{
+		e.feature.style.strokeColor=e.feature.style.old_strokeColor;
+		e.feature.layer.redraw(e.feature);
+	    };	    
+
 	    if(!Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
@@ -1956,6 +2025,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			HtmlUtils.hidePopupObject();
 			if(event.key=='Escape') {
 			    _this.clearCommands();
+			    _this.unselectAll();
 			    return;
 			}
 			if(event.key=='Backspace') {
@@ -2004,24 +2074,26 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		handler.activate();
 		this.map.getMap().addControl(keyboardControl);
 		this.addControl(ID_SELECTOR,"Click-drag to select",this.featureSelector = new OpenLayers.Control.SelectFeature(this.myLayer, {
-		    highlight: function(feature) {
-			let tmp = {};
-//			_this.selectFeature(feature);
-			$.extend(tmp,feature.style);
-			tmp.strokeColor = "#000";
-			if(tmp.pointRadius) tmp.pointRadius*=1.5;
-			if(tmp.strokeWidth) tmp.strokeWidth*=2;
-			//fontSize is, eg, 14px
-			if(tmp.fontSize) { 
-			    let match=String(tmp.fontSize).match(/([0-9\.]+)(.*)/);
-			    if(match) {
-				let num = 1.5*match[1];
-				tmp.fontSize=num+match[2];
-			    }
-			    tmp.fontWeight="bold";
+		    select: function(feature) {
+			if(this.isShiftKey() && _this.isFeatureSelected(feature)) {
+			    _this.unselectFeature(feature);
+			    return;
 			}
-			this.selectStyle = tmp;
-			OpenLayers.Control.SelectFeature.prototype.highlight.apply(this,arguments);
+			_this.selectFeature(feature);
+		    },
+		    selectBox: function(position) {
+			this.checkEvent();
+			OpenLayers.Control.SelectFeature.prototype.selectBox.apply(this,arguments);
+		    },
+		    isShiftKey:function() {
+			let event = this?.handlers?.feature?.evt;
+			if(!event) return false;
+			return event.shiftKey || event.metaKey;
+		    },
+		    checkEvent: function() {
+			if(!this.isShiftKey()) {
+			    _this.unselectAll();
+			}
 		    },
 		    selectStyle: {
 			pointRadius:this.getPointRadius(),
@@ -2063,6 +2135,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
 		    onDrag: function(feature, pixel) {
 			imageChecker(feature);
+			_this.checkSelected(feature);
 		    }
 		}));
 
@@ -2073,6 +2146,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			this.theDisplay.jq(ID_MESSAGE2).hide(1000);
 		    },
 		    dragVertex: function(vertex, pixel) {
+			this.theDisplay.checkSelected(this.feature);
 			this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 			if(!this.feature.image && this.feature.type!=GLYPH_BOX) {
 			    OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
@@ -2123,11 +2197,14 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 		let resizer = new MyMover(this.myLayer,{
 		    theDisplay:this,
-		    onDrag: function(feature, pixel) {imageChecker(feature);},
+		    onDrag: function(feature, pixel) {
+			imageChecker(feature);},
 		    mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
+
 		let reshaper = new MyMover(this.myLayer, {
 		    theDisplay:this,
-		    onDrag: function(feature, pixel) {imageChecker(feature);},
+		    onDrag: function(feature, pixel) {
+			imageChecker(feature);},
 		    createVertices:false,
 		    mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 		this.addControl(ID_RESIZE,"Click to resize",resizer);

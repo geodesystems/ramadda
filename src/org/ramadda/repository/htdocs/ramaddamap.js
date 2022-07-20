@@ -1106,7 +1106,6 @@ RepositoryMap.prototype = {
 	    }
 	}
 
-
         var layer = feature.layer;
         if (!(layer.isMapLayer === true)) {
             if (!skipText && feature.text) {
@@ -1114,9 +1113,6 @@ RepositoryMap.prototype = {
             }
             return;
         }
-	//            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
-
-
 	if (layer.canSelect === false) return;
 	if (layer.noHighlight) return;
 
@@ -1126,8 +1122,6 @@ RepositoryMap.prototype = {
             feature.style = null;
 	    //"temporary"
 	    let highlightStyle = this.getLayerHighlightStyle(layer);
-
-
 	    if(highlightStyle.fillColor!="transparent" && feature.originalStyle) {
 		highlightStyle.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlightStyle.fillColor,0.4);
 	    }
@@ -1174,7 +1168,9 @@ RepositoryMap.prototype = {
             }
             return;
         }
-        if (layer == null || layer.canSelect === false) return;
+        if (layer == null || layer.canSelect === false) {
+	    return;
+	}
         feature.style = feature.originalStyle;
         if (!feature.isSelected) {
             layer.drawFeature(feature, feature.style || "default");
