@@ -140,6 +140,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		mode:this.display.routeType??"car",
 		points:Utils.join(xys,",")
 	    };
+	    if(this.display.routeProvider)
+		args.provider = this.display.routeProvider;
 	    let url = ramaddaBaseUrl+"/map/getroute";
 	    this.finishedWithRoute = true;
 
@@ -158,12 +160,20 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let points = [];
-		data.routes[0].sections.forEach(section=>{
-		    let decoded = hereDecode(section.polyline);
-		    decoded.polyline.forEach(pair=>{
+		let routeData = data.routes[0];
+		if(routeData.overview_polyline) {
+		    let d = googleDecode(routeData.overview_polyline.points);
+		    d.forEach(pair=>{
 			points.push(new OpenLayers.Geometry.Point(pair[1],pair[0]));
 		    });
-		});
+		} else {
+		    routeData.sections.forEach(section=>{
+			let decoded = hereDecode(section.polyline);
+			decoded.polyline.forEach(pair=>{
+			    points.push(new OpenLayers.Geometry.Point(pair[1],pair[0]));
+			});
+		    });
+		}
 		let  route = this.display.getMap().createPolygon("", "", points, {
 		    strokeWidth:4
 		},null,true);
@@ -475,8 +485,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let message = glyph?"New " + glyph.label:cmd.message;
 		message = message||"";
 		if(glyph && glyph.isRoute()) {
-		    let html = "Route Type:&nbsp;" +  HU.select("",['id',this.domId("routetype")],["car","bicycle","pedestrian"],this.routeType);
-		    html+="<br>"
+		    let html =  HU.formTable();
+		    if(ramaddaState.hereRoutingEnabled && ramaddaState.googleRoutingEnabled) {
+			html+=HU.formEntry("Provider:", HU.select("",['id',this.domId("routeprovider")],["google","here"],this.routeProvider));
+		    }
+		    html+=HU.formEntry("Route Type:" , HU.select("",['id',this.domId("routetype")],["car","bicycle","pedestrian"],this.routeType));
+		    html += HU.close(TAG_TABLE);
 		    let buttons  =HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 			HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel");	    
 		    html+=HU.div(['style',HU.css('text-align','right','margin-top','5px')], buttons);
@@ -484,12 +498,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:"left top",at:"left bottom",anchor:this.jq(ID_MENU_NEW)});
 		    let ok = ()=>{
 			cmd.handler.finishedWithRoute = false;
+			this.routeProvider = this.jq('routeprovider').val();
 			this.routeType = this.jq('routetype').val();
 			dialog.remove();
 			this.showCommandMessage(message+": " + Utils.makeLabel(this.routeType)+" - Draw one or more line segments");
 			cmd.activate();
 		    };
-		    this.jq("routetype").change(ok);
 		    this.jq(ID_OK).button().click(ok);
 		    this.jq(ID_CANCEL).button().click(()=>{
 			dialog.remove();
