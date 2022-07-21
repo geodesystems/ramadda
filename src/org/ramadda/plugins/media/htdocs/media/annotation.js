@@ -1,4 +1,3 @@
-
 function RamaddaAnnotatedImage(attrs,id) {
     let aattrs = {locale: 'auto',
 		  allowEmpty: true,
@@ -15,6 +14,7 @@ function RamaddaAnnotatedImage(attrs,id) {
 
 function RamaddaZoomableImage(attrs,id) {
     attrs.zoomable = true;
+    if(!Utils.isDefined(attrs.showToolbar)) attrs.showToolbar= true;
     let osd =this.osd = OpenSeadragon(attrs);
     if(attrs.doBookmark) {
 	//call the bookmark plugin so the location is tracked in a URL hash
@@ -41,8 +41,11 @@ function RamaddaAnnotation(annotorius,divId,topDivId,attrs,entryAttribute) {
     this.authToken = attrs.authToken;
     this.annotations = attrs.annotations;
     this.zoomable = attrs.zoomable;
-    if(this.canEdit && attrs.showToolbar) {
-	Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
+
+    if(this.canEdit) {
+	if(attrs.showToolbar) {
+	    Annotorious.Toolbar(annotorius, document.getElementById(topDivId));
+	}
 	let changed = (a) =>{
 	    this.annotations = this.getAnno().getAnnotations();
 	    this.doSave();
