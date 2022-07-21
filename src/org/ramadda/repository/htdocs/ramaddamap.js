@@ -1249,6 +1249,9 @@ RepositoryMap.prototype = {
 	}
 	//layer.drawFeature(layer.selectedFeature, "select");
 	layer.drawFeature(layer.selectedFeature, style);
+
+
+
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
             if (feature.originalStyle) {
@@ -2341,6 +2344,8 @@ RepositoryMap.prototype = {
                     _this.showText(_this.getFeatureText(layer, layer.features[0]));
                 }
                 _this.initDates(layer);
+		return
+
             }
         });
 

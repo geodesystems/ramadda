@@ -404,15 +404,21 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    }
 
 			    attrs.entryId = entryId;
-			    tmpStyle.entryId = entryId;
+			    tmpStyle.mapOptions.entryId = entryId;
+			    tmpStyle.mapOptions.entryType = attrs.entryType;
 			    if(attrs.entryName) {
 				attrs.name  = attrs.entryName;
 				delete attrs.entryName;
 			    }
 			    if(glyph.isMap()) {
+				let mapOptions = tmpStyle.mapOptions;
+				delete tmpStyle.mapOptions;
 				let dummy = this.createMapGlyph(attrs,tmpStyle,true);
-				if(dummy)
+				if(dummy) {
+				    dummy.mapOptions = mapOptions;
+				    dummy.mapOptions.mapStyle = tmpStyle;
 				    this.addFeatures([dummy]);
+				}
 				return;
 			    }
 			    if(glyph.isImage()) {
@@ -738,6 +744,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    this.selectionLayer.removeFeatures(feature.selectDots);
 		    feature.selectDots = null;
 		}
+		if(feature.mapLayer && feature.mapLayer.features) {
+		    feature.mapLayer.features.forEach(feature=>{
+			this.unselectFeature(feature);
+		    });
+		}	    
+
 		if(feature.mapLayer) {
 		    this.getMap().removeLayer(feature.mapLayer);
 		}
@@ -757,7 +769,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	doPaste: function(evt) {
 	    if(!this.clipboard) return;
 	    let newOnes = this.clipboard.map(feature=>{
+		let mapOptions = feature.mapOptions;
 		feature= feature.clone();
+		feature.mapOptions = mapOptions;
 		if(feature.style) {
 		    feature.style =$.extend({},feature.style);
 		}
@@ -770,8 +784,17 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.pasteCount++;
 	    let delta = (this.pasteCount*0.05)*h;
 	    newOnes.forEach(feature=>{
-		feature.geometry.move(delta,-delta);
+		if(feature.geometry)
+		    feature.geometry.move(delta,-delta);
 		this.checkImage(feature);
+		if(feature.mapOptions.type == ID_MAP) {
+		    let layer = this.addMapLayer(feature.mapOptions,feature.mapOptions.mapStyle);
+		    if(layer) {
+			layer.style = feature.style;
+			feature.mapLayer = layer;
+			layer.dummyFeature = feature;
+		    }
+		}
 	    });
 	    this.addFeatures(newOnes);
 	},
@@ -788,16 +811,18 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    style[prop] = v;
 		    feature.style[prop] = v;
 		});
+		//If its a map then set the style on the map features
 		if(feature.mapLayer) {
 		    feature.mapLayer.styleMap = this.getMap().getVectorLayerStyleMap(feature.mapLayer, style);
 		    feature.mapLayer.style = style;
+		    feature.mapOptions.mapStyle = style;
 		    if(feature.mapLayer.features) {
-			feature.mapLayer.features.forEach(f=>{
-			    f.style = $.extend(f.style,style);
+			feature.mapLayer.features.forEach((f,idx)=>{
+			    f.style = $.extend({},style);
+			    f.originalStyle = $.extend({},style);			    
 			});
 		    }
 		    feature.mapLayer.redraw();
-
 		}
 
 		if(Utils.stringDefined(feature.style.popupText)) {
@@ -846,6 +871,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
 	doProperties: function(style, apply,feature) {
+	    style = feature?.mapOptions?.mapStyle||style;
 	    let html = "";
 	    html +=HU.formTable();
 	    let props;
@@ -1231,6 +1257,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	    });
 	    let latlon = this.getMap().getBounds();
+	    let tbounds =  _this.getMap().transformLLBounds(latlon);
 	    let json  = {
 		list:list,
 		zoomLevel:this.getMap().getMap().getZoom(),
@@ -1246,6 +1273,72 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		json.baseLayer = baseLayer;
 	    }
 	    return  JSON.stringify(json);
+	},
+	loadAnnotationJson: function(mapJson,map,layer, glyphMap) {
+	    let list = mapJson.list||mapJson;
+	    list.forEach(mapGlyph=>{
+		if(!mapGlyph.points) {
+		    console.log("No points defined:" + JSON.stringify(mapGlyph));
+		    return;
+		}
+		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
+		let style = $.extend({},glyph?glyph.getStyle():{});
+		if(mapGlyph.style) $.extend(style,mapGlyph.style);
+		style = $.extend({},style);
+		if(style.label) {
+		    style.pointRadius=0
+		}
+		if(Utils.stringDefined(style.popupText)) {
+		    style.cursor = 'pointer';
+		} else {
+		    style.cursor = 'auto';
+		}
+		let mapOptions = mapGlyph.mapOptions;
+		if(!mapOptions) {
+		    mapOptions = {
+			type:mapGlyph.type
+		    }
+		}
+		if(!style.fillColor) style.fillColor = "transparent";
+		let feature;
+		let points=mapGlyph.points;
+		if(points.length>0) {
+		    let oldWay = Utils.isDefined(points[0].latitude);
+		    if(!oldWay) {
+			let tmp = [];
+			for(let i=0;i<points.length;i+=2) {
+			    tmp.push({latitude:points[i],longitude:points[i+1]});			    
+			}
+			points = tmp;
+		    }
+		}
+
+		if(points.length>1) {
+		    let latLons = [];
+		    points.forEach(pt=>{
+			latLons.push(new OpenLayers.Geometry.Point(pt.longitude,pt.latitude));
+		    });
+		    if(mapGlyph.geometryType=="OpenLayers.Geometry.Polygon") {
+			map.transformPoints(latLons);
+			let linearRing = new OpenLayers.Geometry.LinearRing(latLons);
+			let geom = new OpenLayers.Geometry.Polygon(linearRing);
+			feature = new OpenLayers.Feature.Vector(geom,null,style);
+		    } else {
+			feature = map.createPolygon("","",latLons,style,	null,mapGlyph.geometryType=="OpenLayers.Geometry.LineString");
+		    }
+		} else if(mapOptions.type==GLYPH_MAP) {
+		    feature = this.createMapGlyph(mapOptions,style)
+		} else {
+		    let point =  MapUtils.createLonLat(points[0].longitude, points[0].latitude);
+		    feature = map.createPoint("",point,style);
+		}
+		if(feature) {
+		    feature.mapOptions = mapOptions;
+		    feature.style = style;
+		    this.checkImage(feature);
+		    this.addFeatures([feature]);
+		}
+	    });
 	},
 
 
@@ -1437,11 +1530,22 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		this.selectionLayer.removeFeatures(feature.selectDots);
 		feature.selectDots= null;
 	    }
+	    if(feature.mapLayer && feature.mapLayer.features) {
+		feature.mapLayer.features.forEach(feature=>{
+		    this.unselectFeature(feature);
+		});
+	    }	    
 	},
 	isFeatureSelected:function(feature) {
 	    return feature.selectDots!=null;
 	},
 	selectFeature:function(feature) {
+	    if(feature.mapLayer && feature.mapLayer.features) {
+		feature.mapLayer.features.forEach(feature=>{
+		    this.selectFeature(feature);
+		});
+	    }	    
+
 //	    this.featureSelector.clickFeature(feature);
 	    let style={
 		fillColor:'#000',
@@ -1454,7 +1558,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    feature.selectDots = [];
 	    let vertices  = feature.geometry.getVertices();
 	    let step = 0;
-	    if(vertices.length>8) {
+	    if(vertices.length>20) {
 		step = Math.round(vertices.length/20);
 	    }
 	    vertices.forEach((pt,idx)=>{
@@ -1573,78 +1677,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	addGlyph: function(glyph) {
 	    this.glyphs[glyph.getId()]= glyph;
 	},
-	loadAnnotationJson: function(mapJson,map,layer, glyphMap) {
-	    let list = mapJson.list||mapJson;
-	    list.forEach(mapGlyph=>{
-		if(!mapGlyph.points) {
-		    console.log("No points defined:" + JSON.stringify(mapGlyph));
-		    return;
-		}
-		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
-		let style = $.extend({},glyph?glyph.getStyle():{});
-		    
-		if(mapGlyph.style) $.extend(style,mapGlyph.style);
-		style = $.extend({},style);
-		if(style.label) {
-		    style.pointRadius=0
-		}
-		if(Utils.stringDefined(style.popupText)) {
-		    style.cursor = 'pointer';
-		} else {
-		    style.cursor = 'auto';
-		}
-		let mapOptions = mapGlyph.mapOptions;
-		if(!mapOptions) {
-		    mapOptions = {
-			type:mapGlyph.type
-		    }
-		}
-
-		if(!style.fillColor) style.fillColor = "transparent";
-		let feature;
-		let points=mapGlyph.points;
-		if(points.length>0) {
-		    let oldWay = Utils.isDefined(points[0].latitude);
-		    if(!oldWay) {
-			let tmp = [];
-			for(let i=0;i<points.length;i+=2) {
-			    tmp.push({latitude:points[i],longitude:points[i+1]});			    
-			}
-			points = tmp;
-		    }
-		}
-
-		if(points.length>1) {
-		    let latLons = [];
-		    points.forEach(pt=>{
-			latLons.push(new OpenLayers.Geometry.Point(pt.longitude,pt.latitude));
-		    });
-		    if(mapGlyph.geometryType=="OpenLayers.Geometry.Polygon") {
-			map.transformPoints(latLons);
-			let linearRing = new OpenLayers.Geometry.LinearRing(latLons);
-			let geom = new OpenLayers.Geometry.Polygon(linearRing);
-			feature = new OpenLayers.Feature.Vector(geom,null,style);
-		    } else {
-			feature = map.createPolygon("","",latLons,style,	null,mapGlyph.geometryType=="OpenLayers.Geometry.LineString");
-		    }
-		} else if(mapOptions.type==GLYPH_MAP) {
-		    feature = this.createMapGlyph(mapOptions,style)
-
-		} else {
-		    let point =  MapUtils.createLonLat(points[0].longitude, points[0].latitude);
-		    feature = map.createPoint("",point,style);
-		}
-		if(feature) {
-		    feature.mapOptions = mapOptions;
-		    feature.style = style;
-		    this.checkImage(feature);
-		    this.addFeatures([feature]);
-		}
-	    });
-	},
 	createMapGlyph: function(attrs,style,andZoom) {				
 	    style = style??{};
-	    let  dummy = this.getMap().createPolygon("", "", [], {strokeWidth:0},null,true);
+	    let  dummy = this.getMap().createPolygon("", "", [new OpenLayers.Geometry.Point(0,0)], {strokeWidth:0},null,true);
 	    dummy.style = {};
 	    dummy.mapOptions = {type:GLYPH_MAP};
 	    $.extend(dummy.mapOptions,  attrs);
@@ -1652,13 +1687,18 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    if(!layer) return;
 	    layer.style = style;
 	    dummy.mapLayer = layer;
+	    dummy.mapOptions.mapStyle = style;
+	    layer.dummyFeature = dummy;
 	    return dummy;
 	},
-	addMapLayer(opts,style,andZoom) {
+	addMapLayer:function(opts,style,andZoom) {
 	    let url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
-	    let selectCallback = null;
+	    let selectCallback = layer=>{
+		console.dir("select",layer);
+	    };
 	    let unSelectCallback = null;	    
-//	    console.log(opts.entryType);
+	    let loadCallback = layer=>{
+	    }
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
 		let w = 2048;
@@ -1666,17 +1706,17 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
 						   opts.north, opts.west,opts.south,opts.east, w,h);
 	    case 'geo_gpx': 
-		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style,null,andZoom);
+		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
 		break;
 	    case 'geo_geojson': 
-		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,null,andZoom);
+		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallbackl,andZoom);
 		break;		
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
 		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
 		//fall thru to kml
 	    case 'geo_kml': 
-		let loadCallback = (map,layer)=>{
+		loadCallback = (map,layer)=>{
 		    if(layer.features) {layer.features.forEach(f=>{f.style = style;});}
 		    layer.redraw();
 		};
@@ -1685,6 +1725,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		return layer;
 	    default:
 		console.error('Unknown map type:' + opts.entryType);
+		console.dir(opts);
 		return null;
 	    }
 	},
@@ -1704,9 +1745,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    if(data=="") data="[]";
 		    try {
 			let json = JSON.parse(data);
-			this.loadAnnotationJson(json,_this.map,_this.myLayer,_this.glyphMap);
-			this.featureHasBeenChanged = false;
-			this.showLegend();
 			let bounds = null;
 			let zoomLevel = -1;
 			if(json.baseLayer) {
@@ -1720,10 +1758,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			if(!_this.getProperty("embedded") && !_this.getProperty("zoomLevel")) {
 			    if(json.bounds) {
 				zoomLevel = json.zoomLevel;
-				bounds =  _this.getMap().transformLLBounds(MapUtils.createBounds(json.bounds.west,
-												 json.bounds.south,
-												 json.bounds.east,
-												 json.bounds.north));
+				bounds =  MapUtils.createBounds(json.bounds.west,
+								json.bounds.south,
+								json.bounds.east,
+								json.bounds.north);
+
+				bounds =  _this.getMap().transformLLBounds(bounds);
 			    } else if(_this.myLayer.features.length>0) {
 				bounds = new OpenLayers.Bounds();
 				_this.myLayer.features.forEach(feature=>{
@@ -1737,12 +1777,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				});
 			    }				     
 			}
-			if(bounds) {
-			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
-			}
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
 			    _this.getMap().getMap().zoomTo(zoomLevel);
 			}
+			if(bounds) {
+			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
+			}
+			this.loadAnnotationJson(json,_this.map,_this.myLayer,_this.glyphMap);
+			this.featureHasBeenChanged = false;
+			this.showLegend();
+
 		    } catch(err) {
 			this.showMessage("Failed to load map:" + err);
 			console.log("error:" + err);
@@ -1948,9 +1992,22 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 
 	    this.map.featureClickHandler = e=>{
-		if(this.command!=null) return;
-		if(!e.feature || !e.feature.style)return;
+		let feature = e.feature;
+		if(feature.layer && feature.layer.dummyFeature) {
+		    if(this.command==ID_EDIT) {
+			this.doEdit(feature.layer.dummyFeature);
+		    }
+		    return
+		}
+		if(!feature) return;
+		if(this.command!=null) {
+		    return;
+		}
+		if(!e.feature || !e.feature.style) {
+		    return;
+		}
 		let style = e.feature.style;
+		let mapOptions = e.feature.mapOptions||style.mapOptions||{};
 		let showPopup = (html,props)=>{
 		    let id = HU.getUniqueId("div");
 		    let div = HU.div(['id',id]);
@@ -1995,8 +2052,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    cb();
 		};
 		let text= style.popupText;
-		if(style.entryId) {
-		    let wiki = style.wikiText;
+		if(mapOptions.entryId) {
+		    let wiki = style.wikiText || style.popupText;
 		    if(!Utils.stringDefined(wiki))
 			wiki = "+section title={{name}}\n{{simple}}\n-section";
 
@@ -2010,7 +2067,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    };		    
 		    $.post(url,{
 			doImports:"false",
-			entryid:style.entryId,
+			entryid:mapOptions.entryId,
 			text:wiki},
 			   wikiCallback).fail(wikiError);
 		    return;
