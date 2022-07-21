@@ -599,34 +599,76 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     }
 
     public Result processGetRoute(Request request) throws Exception {
-	String hereKey = GeoUtils.getHereKey();
-	if(hereKey==null) {
-	    return new Result("{error:'No routing API defined'}", Result.TYPE_JSON);
-	}
         if (request.isAnonymous()) {
 	    return new Result("{error:'Routing not available to non logged in users'}", Result.TYPE_JSON);
 	}
+	String hereKey = GeoUtils.getHereKey();
+	String googleKey = GeoUtils.getGoogleKey();
+	if(hereKey==null && googleKey==null) {
+	    return new Result("{error:'No routing API defined'}", Result.TYPE_JSON);
+	}
 
+	String mode = request.getString("mode","car");
 	List<String> points = Utils.split(request.getString("points",""),",",true,true);
 	if(points.size()<4) {
 	    return new Result("{error:'Incorrect number of points in routing request'}", Result.TYPE_JSON);
 	}
-	String url = HU.url("https://router.hereapi.com/v8/routes",
-			    "transportMode",request.getString("mode","car"),
-			    "origin",points.get(0) +","+   points.get(1),
-			    "destination",
-			    points.get(points.size()-2) + "," +  points.get(points.size()-1),
-			    "return","polyline","apikey",  hereKey);
-	
-	if(points.size()>2) {
-	    for(int i=2;i<points.size()-3;i+=2) {
-		url +="&via=" + points.get(i) +"," + points.get(i+1);
+
+	String provider = request.getString("provider",googleKey!=null?"google":"here");
+	boolean doingGoogle = googleKey!=null && provider.equals("google");
+	boolean doingHere = hereKey!=null && !doingGoogle;
+
+	if(doingHere) {
+	    String url = HU.url("https://router.hereapi.com/v8/routes",
+				"transportMode",mode,
+				"origin",points.get(0) +","+   points.get(1),
+				"destination",
+				points.get(points.size()-2) + "," +  points.get(points.size()-1),
+				"return","polyline","apikey",  hereKey);
+	    
+	    if(points.size()>2) {
+		for(int i=2;i<points.size()-3;i+=2) {
+		    url +="&via=" + points.get(i) +"," + points.get(i+1);
+		}
 	    }
+	    //	System.err.println(url);
+	    String json = IO.readUrl(url);
+	    //	System.err.println(json);
+	    return new Result(json, Result.TYPE_JSON);
 	}
-	//	System.err.println(url);
-	String json = IO.readUrl(url);
-	//	System.err.println(json);
-        return new Result(json, Result.TYPE_JSON);
+
+
+	if(doingGoogle) {
+	    if(mode.equals("car")) mode=  "driving";
+	    else if(mode.equals("bicycle")) mode=  "bicycling";
+	    else if(mode.equals("pedestrian")) mode=  "walking";	    	    
+	    else mode = "transit";
+
+	    String url = HU.url("https://maps.googleapis.com/maps/api/directions/json",
+				"mode",mode,
+				"origin",points.get(0) +","+   points.get(1),
+				"destination",
+				points.get(points.size()-2) + "," +  points.get(points.size()-1),
+				"key",  googleKey);
+
+	    if(points.size()>2) {
+		String waypoints="";
+		for(int i=2;i<points.size()-3;i+=2) {
+		    if(waypoints.length()>0) waypoints+="%7C";
+		    waypoints += points.get(i) +"," + points.get(i+1);
+		}
+		url+="&waypoints=" + waypoints;
+	    }
+
+	    //	    System.err.println(url);
+	    String json = IO.readUrl(url);
+	    //	    System.err.println(json);
+	    return new Result(json, Result.TYPE_JSON);
+	}
+
+	return new Result("{error:'No routing service available'}", Result.TYPE_JSON);
+
+
     }
     
 
