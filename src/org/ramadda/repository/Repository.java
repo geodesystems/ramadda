@@ -6180,10 +6180,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			request.getUser().getId());
 
 	String hereKey = GeoUtils.getHereKey();
-	if(hereKey!=null) {
+	String googleKey = GeoUtils.getGoogleKey();	
+	if(hereKey!=null || googleKey!=null) {
 	    extra+="ramaddaState.routingEnabled = true;\n";
+	    if(hereKey!=null)
+		extra+="ramaddaState.hereRoutingEnabled = true;\n";
+	    if(googleKey!=null)
+		extra+="ramaddaState.googleRoutingEnabled = true;\n";	    	    
 	}
-	
 	js = js.replace("${ramadda.base.extra}",extra);
 	return js;
     }
