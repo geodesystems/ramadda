@@ -1004,15 +1004,18 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String urlTemplate;
 
+	private boolean ignoreErrors;
+
         /**
          *
          * @param ctx _more_
          * @param name _more_
          * @param urlTemplate _more_
          */
-        public Fetch(TextReader ctx, String name, String urlTemplate) {
+        public Fetch(TextReader ctx, String name, boolean ignoreErrors, String urlTemplate) {
             super();
             this.name        = name;
+	    this.ignoreErrors = ignoreErrors;
             this.urlTemplate = urlTemplate;
         }
 
@@ -1035,13 +1038,7 @@ public abstract class Converter extends Processor {
                 //              return row;
             }
 
-            String url = urlTemplate;
-            //Offset by -1 because we added the name to the end
-            for (int i = 0; i < headerRow.size() - 1; i++) {
-                String id = Utils.makeID(headerRow.getString(i));
-                url = url.replace("${" + id + "}", row.getString(i));
-            }
-
+            String url = replaceMacros(urlTemplate, headerRow,row);
             System.err.println("URL:" + url);
             if (url.toLowerCase().startsWith("file")) {
                 fatal(ctx, "Bad url:" + url);
@@ -1053,7 +1050,9 @@ public abstract class Converter extends Processor {
                 is.close();
                 row.add(contents);
             } catch (Exception exc) {
-                fatal(ctx, "Reading url:" + url, exc);
+		if(!ignoreErrors)
+		    fatal(ctx, "Reading url:" + url, exc);
+		row.add("");
             }
 
             return row;

@@ -2204,7 +2204,8 @@ public class CsvUtil {
                 new Arg("url column")),
         new Cmd("-fetch", "Fetch the URL and embed the contents",
                 new Arg("name","Name of new column"),
-                new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
+                new Arg("ignore_errors","Ignore Errors e.g., true or false","type","boolean"),
+		new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
         new Cmd(
 		"-imagefill",
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
@@ -2939,8 +2940,8 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.Embed(ctx, args.get(++i)));
 		return i;
 	    });
-	defineFunction("-fetch",2, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Fetch(ctx, args.get(++i), args.get(++i)));
+	defineFunction("-fetch",3, (ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Fetch(ctx, args.get(++i), args.get(++i).equals("true"), args.get(++i)));
 		return i;
 	    });		
 	defineFunction("-countunique",1, (ctx,args,i) -> {
