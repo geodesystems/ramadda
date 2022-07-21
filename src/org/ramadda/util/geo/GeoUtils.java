@@ -173,6 +173,10 @@ public class GeoUtils {
         return hereKey;
     }
 
+    public static String getGoogleKey() {
+        return googleKey;
+    }    
+
     /**
      * _more_
      *
