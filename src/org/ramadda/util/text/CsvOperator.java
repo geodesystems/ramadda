@@ -175,6 +175,18 @@ public class CsvOperator {
     }
 
 
+    public String replaceMacros(String v, Row header, Row row) {
+	for(int j=0;j<row.size();j++) {
+	    if(j<header.size()) {
+		v = v.replace("${" + Utils.makeID(header.getString(j))+"}", row.getString(j));
+		v = v.replace("${" + header.getString(j)+"}", row.getString(j));		
+	    }
+	    v = v.replace("${" + j+"}", row.getString(j));
+	    v = v.replace("${column_index}", ""+j);
+	}
+	return v;
+    }
+
     /**
      *
      * @param name _more_

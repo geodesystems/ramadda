@@ -7,11 +7,10 @@ The <i>id</i> is used to look up an environment variable (or RAMADDA runtime pro
 seesv_ext_&lt;id&gt;=/path/to/executable
 </pre>
 
-Any command line arguments given up to but not including an argument that begins with "-" are
+Any command line arguments given up to but not including an argument that equals "-" are
 passed in to the executable. The executable is called with the given arguments.
-Each row that is processed is converted into a CSV string which is passed to the external command.
-A CSV text string is then read from the external command.
-This line is then passed on in the processing flow.
+Each row that is processed is converted into a CSV string which is passed to the external command on the stdin.
+A CSV text string is then read from the external command. This line is then passed on in the processing flow.
 If you want to skip a line the return the string "_null_".
 
 

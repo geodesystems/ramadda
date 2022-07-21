@@ -2437,9 +2437,11 @@ public class CsvUtil {
         new Cmd("-ext",
                 "Execute the external program",
 		new Arg("program_id",
-			"matches with seesv.ext.&lt;program_id&gt;=/path")),	
-
-
+			"matches with seesv.ext.&lt;program_id&gt;=/path")),
+        new Cmd("-exec",
+                "Execute the external program for every line",
+		new Arg("program_id",
+			"matches with seesv.ext.&lt;program_id&gt;=/path")),
         /*  Output   */
         new Cmd(true, "Output"), 
 	new Cmd("-print", "Delimited output"),
@@ -2478,6 +2480,7 @@ public class CsvUtil {
 		"-dbprops", "Print to stdout props for db generation",
 		new Arg("id pattern"),
 		new Arg("suffix pattern")),
+        new Cmd("-write", "Write the contents of a row to a named file", new Arg("file name template"),new Arg("contents template")),
         new Cmd("-fields", "Print the fields"),
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-progress", "Show progress",
@@ -3284,12 +3287,24 @@ public class CsvUtil {
 		int j=i+1;
 		for(;j<args.size();j++) {
 		    String arg = args.get(j);
-		    if(arg.startsWith("-")) break;
+		    if(arg.equals("-")) break;
 		    a.add(arg);
 		}
 		ctx.addProcessor(new Processor.Ext(this,ctx,id,a));
-		return j-1;
-	    });	
+		return j;
+	    });
+	defineFunction("-exec",1,(ctx,args,i) -> {
+		List<String> a = new ArrayList<String>();
+		String id = args.get(++i);
+		int j=i+1;
+		for(;j<args.size();j++) {
+		    String arg = args.get(j);
+		    if(arg.equals("-")) break;
+		    a.add(arg);
+		}
+		ctx.addProcessor(new Processor.Exec(this,ctx,id,a));
+		return j;
+	    });		
 
 	defineFunction("-count",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Counter(ctx));
@@ -4528,6 +4543,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-write",2,(ctx,args,i) -> {
+		ctx.addProcessor(new DataSink.Write(this,args.get(++i),args.get(++i)));
+		return i;
+	    });
+	
 	
 
 

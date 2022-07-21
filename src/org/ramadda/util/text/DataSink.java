@@ -7,6 +7,8 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.IO;
+import ucar.unidata.util.IOUtil;
 
 
 import org.ramadda.util.Utils;
@@ -192,6 +194,99 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
 
     }
 
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Apr 3, '21
+     * @author         Enter your name here...
+     */
+    public static class Write extends Processor {
+
+        /** _more_ */
+        private Row headerRow;
+
+	private String fileNameTemplate;
+
+	private  String contentTemplate;
+
+	private CsvUtil csvUtil;
+
+        /**
+         * ctor
+         */
+        public Write(CsvUtil csvUtil, String fileNameTemplate, String contentTemplate) {
+	    this.csvUtil = csvUtil;
+	    this.fileNameTemplate = fileNameTemplate;
+	    this.contentTemplate = contentTemplate;	    
+	}
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (headerRow == null) {
+                headerRow = row;
+                return row;
+            }
+	    String file = replaceMacros(fileNameTemplate, headerRow, row);
+	    String v = replaceMacros(contentTemplate, headerRow, row);	    
+	    file = file.replace("${row_index}",""+rowCnt);
+	    v = v.replace("${row_index}",""+rowCnt);
+	    rowCnt++;
+	    if(!IO.okToWriteTo(file)) {
+		throw new IllegalArgumentException("Cannot write to file:"
+						   + file);
+	    }
+
+	    OutputStream fos = csvUtil.makeOutputStream(file);
+	    IOUtil.write(fos,v);
+	    fos.close();
+	    System.err.println(file);
+            return row;
+        }
+
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param writer _more_
+         * @param row _more_
+         *
+         * @throws Exception _more_
+         */
+        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
+                throws Exception {
+            rowCnt++;
+            if (rowCnt > 1) {
+                writer.println(",");
+            }
+            List<String> attrs = new ArrayList<String>();
+            for (int i = 0; i < headerRow.size(); i++) {
+                String field = headerRow.getString(i);
+                String value = row.getString(i);
+                attrs.add(field);
+                attrs.add(value);
+            }
+            writer.print(JsonUtil.mapAndGuessType(attrs));
+        }
+
+    }
+    
 
 
 

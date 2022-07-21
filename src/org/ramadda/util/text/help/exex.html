@@ -1,0 +1,46 @@
+The -exec command allows one to integrate external programs into the processing flow.
+
+seesv:seesv  -exec &lt;id&gt; &lt;arguments&gt;
+
+The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
+<pre>
+seesv_exec_&lt;id&gt;=/path/to/executable
+</pre>
+
+Any command line arguments given up to but not including an argument that equals "-" are
+passed in to the executable. For every row the executable is called with the given arguments.
+Each of the arguments can contain any number of macros of the form:
+<pre>
+seesv  -exec &lt;id&gt; ${url}  ${name}
+</pre>
+The macros get replaced with the corresponding values in the given row.
+<p>
+  So for example, if you have a list of urls that you want to fetch using cURL for set the environment variable:
+
+<pre>
+export seesv_exec_curl=/usr/bin/curl    
+</pre>
+
+Then assuming you have the file:
+<pre>
+url
+url1.html
+url2.html
+</pre>
+
+Call the command
+
+<pre>
+seesv  -exec curl ${url}   -p
+</pre>
+
+This produces a new file:
+<pre>
+url,result
+url1.html,contents of url1
+url2.html,contents of url2
+</pre>
+
+
+
+

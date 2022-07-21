@@ -1466,6 +1466,90 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 13, '22
+     * @author         Enter your name here...    
+     */
+    public static class Exec extends Processor {
+
+	Row header;
+
+
+	List<String> commands;
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
+         * @param id _more_
+         * @param args _more_
+         */
+        public Exec(CsvUtil csvUtil, TextReader ctx, String id,
+                   List<String> args) {
+
+            String path = (String) csvUtil.getProperty("seesv_exec_" + id);
+            if (path == null) {
+		path = (String) csvUtil.getProperty("seesv_ext_" + id);
+	    }
+            if (path == null) {
+                fatal(ctx, "Could not find path property seesv_ext_" + id);
+            }
+            commands = new ArrayList<String>();
+            commands.add(path);
+            commands.addAll(args);
+        }
+
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    List<String> args = new ArrayList<String>(commands);
+            try {
+		if(header==null) {
+		    header = row;
+		    header.add("Result");
+		    return header;
+		}
+		for(int i=1;i<args.size();i++) {
+		    String v = replaceMacros(args.get(i),header,row);
+		    args.set(i,v);
+		}
+                ProcessBuilder pb = new ProcessBuilder(args);
+                Process process      = pb.start();
+                OutputStream outputStream = process.getOutputStream();
+                InputStream inputStream  = process.getInputStream();
+		String result = IO.readInputStream(inputStream);
+		row.add(result); 
+		inputStream.close();
+		process.destroy();
+		return row;
+            } catch (Exception exc) {
+                fatal(ctx, "Error creating external command:" + args, exc);
+		return null;
+            }
+	}
+
+
+    }
+
+    
+
 
 
     /**
