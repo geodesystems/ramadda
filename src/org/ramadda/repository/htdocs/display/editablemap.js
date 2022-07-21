@@ -1539,10 +1539,18 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	isFeatureSelected:function(feature) {
 	    return feature.selectDots!=null;
 	},
-	selectFeature:function(feature) {
+	selectFeature:function(feature,maxPoints,dontRedraw) {
+	    let pointCount = 0;
 	    if(feature.mapLayer && feature.mapLayer.features) {
-		feature.mapLayer.features.forEach(feature=>{
-		    this.selectFeature(feature);
+		if(feature.mapLayer.features.length>100) {
+		    maxPoints=1;
+		}
+		feature.mapLayer.features.every((feature,idx)=>{
+		    pointCount+=this.selectFeature(feature,maxPoints,true);
+		    if(pointCount>1000) {
+			return false;
+		    }
+		    return true;
 		});
 	    }	    
 
@@ -1558,8 +1566,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    feature.selectDots = [];
 	    let vertices  = feature.geometry.getVertices();
 	    let step = 0;
-	    if(vertices.length>20) {
-		step = Math.round(vertices.length/20);
+	    if(!Utils.isDefined(maxPoints)) maxPoints = 20;
+	    if(vertices.length>maxPoints) {
+		step = Math.round(vertices.length/maxPoints);
 	    }
 	    vertices.forEach((pt,idx)=>{
 		if(step>0) {
@@ -1571,9 +1580,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
                 pt = new OpenLayers.Geometry.Point(pt.x,pt.y);
 		let dot = new OpenLayers.Feature.Vector(pt,null,style);
 		feature.selectDots.push(dot);
+		pointCount++;
 	    });
 	    _this.selectionLayer.addFeatures(feature.selectDots);
-	    _this.selectionLayer.redraw();
+	    if(!dontRedraw) {
+		_this.selectionLayer.redraw();
+	    }
+	    return pointCount;
 	},
 	getSelected: function() {
 	    let selected=[];
