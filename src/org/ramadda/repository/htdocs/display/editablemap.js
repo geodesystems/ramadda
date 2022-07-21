@@ -131,6 +131,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    line.type = GLYPH_POLYLINE;
 	    this.display.jq(ID_MESSAGE2).html("Creating route...");
 	    let pts = this.display.getLatLonPoints(line.geometry);
+	    if(pts==null) return;
 	    let xys = [];
 	    pts.forEach(pt=>{
 		xys.push(Utils.trimDecimals(pt.y,6));
