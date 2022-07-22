@@ -1200,8 +1200,7 @@ public class IO {
             //Convert this to get of "..", etc
             parent = new File(parent.getCanonicalPath());
             child  = new File(child.getCanonicalPath());
-
-            return isADescendentInner(parent, child);
+            return isADescendentNonCanonical(parent, child);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -1214,7 +1213,7 @@ public class IO {
      * @param child _more_
      *  @return _more_
      */
-    private static boolean isADescendentInner(File parent, File child) {
+    public static boolean isADescendentNonCanonical(File parent, File child) {
         if ((parent == null) || (child == null)) {
             return false;
         }
@@ -1225,7 +1224,7 @@ public class IO {
         }
         File newParent = child.getParentFile();
 
-        return isADescendentInner(parent, newParent);
+        return isADescendentNonCanonical(parent, newParent);
     }
 
 
