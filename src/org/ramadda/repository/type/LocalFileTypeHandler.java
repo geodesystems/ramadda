@@ -5,19 +5,18 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
 
-
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
@@ -102,25 +101,38 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public File getFileFromId(String id, File baseFile) throws Exception {
-        //        System.err.println("getFileFromId:" + id +  " base:" + baseFile);
+        boolean debug = false;
+        if (debug) {
+            System.err.println("getFileFromId:" + id + " base:" + baseFile);
+        }
         if ((id == null) || (id.length() == 0)) {
-            //            System.err.println("returning baseFile");
+            if (debug) {
+                System.err.println("returning baseFile");
+            }
+
             return baseFile;
         }
-        //System.err.println("id:"+ id);
-
         String subPath = new String(Utils.decodeBase64(id));
-        //        System.err.println("subpath:" + subPath);
+        if (debug) {
+            System.err.println("subpath:" + subPath);
+        }
         File file = new File(IOUtil.joinDir(baseFile, subPath));
-
 
         if ( !file.exists()) {
             file = new File(IOUtil.joinDir(baseFile, id));
-            //            System.err.println("trying:" + file);
+            if (debug) {
+                System.err.println("trying:" + file);
+            }
         }
 
 
-        if ( !IO.isADescendent(baseFile, file)) {
+        if ( !IO.isADescendentNonCanonical(baseFile, file)) {
+            if (debug) {
+                System.err.println("File:" + file
+                                   + " is not a descendent of base dir:"
+                                   + baseFile);
+            }
+
             throw new IllegalArgumentException("Bad file path:" + subPath);
         }
 
@@ -136,6 +148,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
      * _more_
      *
      * @param request _more_
+     * @param select _more_
      * @param mainEntry _more_
      * @param parentEntry _more_
      * @param synthId _more_
@@ -145,19 +158,26 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
-                                    Entry parentEntry, String synthId)
+    public List<String> getSynthIds(Request request, SelectInfo select,
+                                    Entry mainEntry, Entry parentEntry,
+                                    String synthId)
             throws Exception {
 
-	boolean debug = false;
-	if(debug)
-	    System.err.println ("LocalFileTypeHandler.getSynthIds: entry:"+  mainEntry.getName() +" " +mainEntry.getId() +" synthid:" + synthId);
-	//	System.err.println (Utils.getStack(10));
+        boolean debug = false;
+        if (debug) {
+            System.err.println("LocalFileTypeHandler.getSynthIds: entry:"
+                               + mainEntry.getName() + " "
+                               + mainEntry.getId() + " synthid:" + synthId);
+        }
+        //      System.err.println (Utils.getStack(10));
 
         List<String>  ids           = new ArrayList<String>();
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(mainEntry);
         if ( !localFileInfo.isDefined()) {
-	    if(debug) System.err.println ("\tlocalFileInfo not defined");
+            if (debug) {
+                System.err.println("\tlocalFileInfo not defined");
+            }
+
             return ids;
         }
 
@@ -168,13 +188,19 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         String rootDirPath = localFileInfo.getRootDir().toString();
         File   childPath = getFileFromId(synthId, localFileInfo.getRootDir());
         //        System.err.println ("synthId:" + synthId);
-	if(debug) System.err.println ("\tchild path:" + childPath +" max:" +max +" skip:"+  skip);
+        if (debug) {
+            System.err.println("\tchild path:" + childPath + " max:" + max
+                               + " skip:" + skip);
+        }
 
         if ( !childPath.exists()) {
             getLogManager().logWarning(
                 "Server side files:  file does not exist:" + childPath);
 
-	    if(debug) System.err.println ("\tchild path does not exist");
+            if (debug) {
+                System.err.println("\tchild path does not exist");
+            }
+
             return new ArrayList<String>();
         }
 
@@ -184,7 +210,10 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 "Server side files:  got a null file listing for:"
                 + childPath);
 
-	    if(debug) System.err.println ("\tnull file listing");
+            if (debug) {
+                System.err.println("\tnull file listing");
+            }
+
             return new ArrayList<String>();
         }
         boolean descending = !select.getAscending();
@@ -194,7 +223,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         } else if (by.equals(ORDERBY_SIZE)) {
             files = Utils.sortFilesOnSize(files, descending);
         } else if (by.equals(ORDERBY_NUMBER)) {
-            files = IO.sortFilesOnNumber(files, descending);	    
+            files = IO.sortFilesOnNumber(files, descending);
         } else if (by.equals(ORDERBY_MIXED)) {
             List<File> filesByDate = new ArrayList<File>();
             List<File> filesByName = new ArrayList<File>();
@@ -228,9 +257,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         long         age = (long) (1000 * (localFileInfo.getAgeLimit() * 60));
         long         now      = System.currentTimeMillis();
         int          start    = skip;
-        int cnt = 0;
-        for (int i =start;i<files.length;i++) {
-	    File childFile = files[i];
+        int          cnt      = 0;
+        for (int i = start; i < files.length; i++) {
+            File childFile = files[i];
             if (childFile.isHidden()) {
                 continue;
             }
@@ -599,7 +628,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         };
 
 
-
         for (String filename : entryNames) {
             nameHolder[0] = filename;
             File[] files = file.listFiles(fnf);
@@ -610,7 +638,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        if ( !IO.isADescendent(localFileInfo.getRootDir(), file)) {
+        if ( !IO.isADescendentNonCanonical(localFileInfo.getRootDir(), file)) {
             throw new IllegalArgumentException("Bad file path:" + entryNames);
         }
         String subId =
@@ -650,22 +678,44 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return new LocalFileInfo(getRepository(), entry);
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param formBuffer _more_
+     * @param column _more_
+     * @param values _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
-    public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
-	if(entry!=null && column.getName().equals("localfilepath")) {
-	    String path = column.getString(values);
-	    String error = null;
-	    if(Utils.stringDefined(path)) {
-		File f = new File(path);
-		if(!f.exists()) error = "Error: directory does not exist";
-		else if(!f.isDirectory()) error = "Error: file is not a directory";
-		else if(!getStorageManager().isLocalFileOk(new File(path)))
-		    error = "Error: directory is not under one of the allowable file system areas. Set this under the Admin-&gt;Access settings area";
-	    }
-	    if(error!=null)
-		formBuffer.append(formEntry(request, "", HU.span(error,HU.cssClass("ramadda-error"))));
-	}
-	super.addWidgetHelp(request, entry, formBuffer, column,values);
+    public void addWidgetHelp(Request request, Entry entry,
+                              Appendable formBuffer, Column column,
+                              Object[] values)
+            throws Exception {
+        if ((entry != null) && column.getName().equals("localfilepath")) {
+            String path  = column.getString(values);
+            String error = null;
+            if (Utils.stringDefined(path)) {
+                File f = new File(path);
+                if ( !f.exists()) {
+                    error = "Error: directory does not exist";
+                } else if ( !f.isDirectory()) {
+                    error = "Error: file is not a directory";
+                } else if ( !getStorageManager().isLocalFileOk(
+                        new File(path))) {
+                    error =
+                        "Error: directory is not under one of the allowable file system areas. Set this under the Admin-&gt;Access settings area";
+                }
+            }
+            if (error != null) {
+                formBuffer.append(
+                    formEntry(
+                        request, "",
+                        HU.span(error, HU.cssClass("ramadda-error"))));
+            }
+        }
+        super.addWidgetHelp(request, entry, formBuffer, column, values);
     }
 
 
