@@ -237,7 +237,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    return true;
 	},
         createMap: function() {
-            let _this = this;
+            this.map = this.getProperty("externalMap", null);
+	    if(this.map) return this.map;
+
+
+           let _this = this;
             var params = {
                 defaultMapLayer: this.getDefaultMapLayer(map_default_layer),
 		showLayerSwitcher: this.getShowLayerSwitcher(),
@@ -827,6 +831,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	removeFeatures: function() {
+	    this.removeFeatureLayer();
+	},
 	removeFeatureLayer: function() {
 	    if(this.myFeatureLayer) {
 		this.map.removeLayer(this.myFeatureLayer);
@@ -1268,7 +1275,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 					       .clonePoints(feature.points), null);
         },
         getContentsDiv: function() {
-            let html =  HU.div([ATTR_CLASS, "display-inner-contents", ID,
+	    let style="";
+	    if(!this.getProperty("showInnerContents",true)) {
+		style+="display:none;";
+	    }		
+
+            let html =  HU.div([STYLE,style,ATTR_CLASS, "display-inner-contents", ID,
 			   this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
@@ -1463,8 +1475,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.map) return;
             if (this.haveInitBounds) return;
             this.haveInitBounds = true;
-            this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
-							   north),true);
+	    if(this.getProperty("doInitCenter",true)) {
+		this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
+							       north),true);
+	    }
         },
 
         sourceToEntries: {},
@@ -2409,9 +2423,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //Set the shapes Fields here before filter data so we can accept non georeferenced data
 	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
-
 	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
-
             let records = this.records =  this.filterData();
 	    if(this.shapesTypeField && this.shapesField) {
 		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
@@ -2481,8 +2493,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    debug = debug || displayDebug.displayMapUpdateUI;
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
 	    this.haveCalledUpdateUI = true;
-
-
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
@@ -2536,13 +2546,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.getProperty("makeDisplay",true)) {
 		return;
 	    }
-
-
-
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
-
-
             let fields = pointData.getRecordFields();
             let showSegments = this.getProperty("showSegments", false);
 	    if(records.length!=0) {
@@ -2576,6 +2581,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3,t4], true);
 	    this.lastUpdateTime = new Date();
 	},
+	xcnt:0,
 	heatmapCnt:0,
 	animationApply: function(animation, skipUpdateUI) {
 //	    console.log("map.applyAnimation:" +this.heatmapVisible);
@@ -3054,8 +3060,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    radius = Math.min(radius, this.getMaxRadius());
 
-
-
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
             let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
@@ -3187,7 +3191,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 	    this.removeFeatureLayer();
-
             let didColorBy = false;
             let seen = {};
 	    let xnct =0;
