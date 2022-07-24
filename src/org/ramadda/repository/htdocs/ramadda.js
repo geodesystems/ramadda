@@ -9,6 +9,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     contents:{},
     currentRamaddaBase:null,
 
+    getEntryUrl:function(entryId) {
+	return ramaddaBaseUrl+"/entry/show?entryid=" + entryId;
+    },
+
     fileDrops:{
     },
     doSave: function(entryId,authtoken,args, success,errorFunc) {
