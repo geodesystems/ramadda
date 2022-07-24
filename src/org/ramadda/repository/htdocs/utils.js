@@ -881,6 +881,14 @@ var Utils =  {
         return lists;
     },
 
+    removeItem:function(array,item) {
+	for(var i = array.length - 1; i >= 0; i--) {
+            if(array[i] == item) {
+		array.splice(i,1);
+            }
+	}
+	return array;
+    },
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
