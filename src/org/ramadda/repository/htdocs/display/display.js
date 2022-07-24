@@ -5164,6 +5164,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    table+= HU.tr(["valign","top"],HU.td(['width',sideWidth],left) + HU.td(['width',centerWidth],contents) +HU.td(['width',sideWidth],right));
 	    if(this.getProperty('showDisplayBottom',true)) {
+		if(this.getProperty("bottomDiv")) {
+		    jqid(this.getProperty("bottomDiv")).html(bottom);
+		    bottom = "";
+		}
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],bottom) +HU.td(['width',sideWidth]));
 	    }
 	    table+=HU.close('table');
@@ -5223,7 +5227,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(expandedHeight)
 		style+=HU.css(HEIGHT,expandedHeight);
+	    if(!this.getProperty("showInnerContents",true)) {
+		style+="display:none;";
+	    }		
 	    let contentsAttrs =[ATTR_CLASS, this.getContentsClass(), STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
+
 	    if(this.getProperty("expandableHeight")) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
