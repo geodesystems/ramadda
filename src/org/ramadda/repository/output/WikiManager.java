@@ -1512,6 +1512,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
+    public Result processGetWiki(Request request) throws Exception {
+        Entry entry = getEntryManager().getEntry(request,
+						 request.getString(ARG_ENTRYID, ""));
+	StringBuilder wiki = new StringBuilder();
+	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry, wiki);
+        Result result = new Result("", wiki);
+        result.setShouldDecorate(false);
+        return result;
+    }
+
     /**
      * _more_
      *
