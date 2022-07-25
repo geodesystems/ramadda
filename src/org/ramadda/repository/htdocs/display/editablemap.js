@@ -1540,12 +1540,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		}
 		if(!style.fillColor) style.fillColor = "transparent";
 		let points=mapGlyph.points;
-		if(points.length>0) {
+		if(points && points.length>0) {
 		    let oldWay = Utils.isDefined(points[0].latitude);
-		    if(!oldWay) {
+		    if(oldWay) {
 			let tmp = [];
-			for(let i=0;i<points.length;i+=2) {
-			    tmp.push({latitude:points[i],longitude:points[i+1]});			    
+			for(let i=0;i<points.length;i++) {
+			    tmp.push(points[i].latitude,points[i].longitude);
 			}
 			points = tmp;
 		    }
