@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 25 11:22:19 MDT 2022";
+var build_date="RAMADDA build date: Mon Jul 25 11:31:50 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -39539,7 +39539,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    return  JSON.stringify(json);
 	},
 	loadAnnotationJson: function(mapJson,map,layer) {
-	    if(mapJson.list) {
+	    if(mapJson.list || Array.isArray(mapJson)) {
 		this.loadOldJson(mapJson,map);
 		return
 	    }
