@@ -504,7 +504,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         kmlLayerName: "",
         geojsonLayer: null,
         geojsonLayerName: "",
-        theMap: null
+        theMap: null,
+	layerVisible:true
+	
     });
 
 
@@ -811,6 +813,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.myFeatureLayer) {
 		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Features-2",false);		
 		this.myFeatureLayer = this.map.createFeatureLayer("Map Features",true);
+		if(!this.layerVisible) {
+//		    this.myFeatureLayer.setVisibility(false);
+//		    this.myFeatureLayerNoSelect.setVisibility(false);		    
+		}
 		if(this.getProperty("showMarkersToggle") && !this.getProperty("markersVisibility", true)) {
 		    this.applyToFeatureLayers(layer=>{layer.setVisibility(false);});
 		}
@@ -834,6 +840,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	removeFeatures: function() {
 	    this.removeFeatureLayer();
 	},
+
+
+	setVisible: function(visible) {
+	    this.layerVisible = visible;
+	    if(this.myFeatureLayer) {
+		this.myFeatureLayer.setVisibility(visible);
+	    }
+	    if(this.myFeatureLayerNoSelect) {
+		this.myFeatureLayerNoSelect.setVisibility(visible);
+	    }	    
+	    //TODO: have my own labelLayer
+	    if(this.map.labelLayer)
+		this.map.labelLayer.setVisibility(visible);
+
+	},
+
 	removeFeatureLayer: function() {
 	    if(this.myFeatureLayer) {
 		this.map.removeLayer(this.myFeatureLayer);
@@ -846,8 +868,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.labelFeatures = null;
 		this.jq("legendid").html("");
 	    }
+
 	    this.myFeatureLayer = null;
-	    this.myFeatureLayerNoSelect = null;
+            this.myFeatureLayerNoSelect = null;
 	    this.myFeatures= null;
 	},
 
@@ -2265,6 +2288,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
 	    this.setMessage(this.getNoDataMessage());
+
 	},
 	createFeature:function(polygon,record, textGetter, style){
 	    if(!style) {
@@ -2453,6 +2477,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.updateUIInner(args, pointData, records,debug);
 		    if(args.callback)args.callback(records);
 		    this.clearProgress();
+		    if(!this.layerVisible) {
+			setTimeout(()=>{
+			    this.setVisible(false);},50);
+		    }
 		} catch(exc) {
 		    console.log(exc)
 		    console.log(exc.stack);
