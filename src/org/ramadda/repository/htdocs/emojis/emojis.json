@@ -3,6 +3,7 @@
 {"name":"marker-gold","image":"/map/marker-gold.png","category":"Map"},
 {"name":"marker-green","image":"/map/marker-green.png","category":"Map"},
 {"name":"marker","image":"/map/marker.png","category":"Map"},
+{"name":"blank","image":"/icons/blank.gif","category":"Map"},
 {"name":"yellow-dot","image":"/map/yellow-dot.png","category":"Map"},
 {"name":"blue-dot","image":"/map/blue-dot.png","category":"Map"},
 {"name":"green-dot","image":"/map/green-dot.png","category":"Map"},
