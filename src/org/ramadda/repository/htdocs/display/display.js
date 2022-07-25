@@ -3467,6 +3467,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = newData;
 	    }
 
+
 	    if(debug)   console.log("filterData-2 #records:" + records.length);
 
             let stride = parseInt(this.getProperty("stride", -1));
@@ -3493,6 +3494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    records = this.filterDataPhase2(records);
 
+	    if(debug)   console.log("filterData-3 #records:" + records.length);
 	    let filterPaginate = this.getProperty("filterPaginate");
 	    if(filterPaginate) {
 		let skip = this.pageSkip||0;
@@ -3603,9 +3605,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = binned;
 	    }
 
+	    if(debug)   console.log("filterData-4 #records:" + records.length);
 	    if(this.requiresGeoLocation()) {
 		records = records.filter(r=>{return r.hasLocation();});
 	    }
+	    if(debug)   console.log("filterData-5 #records:" + records.length);
 	    let dataFilters = this.getDataFilters();
 	    if(dataFilters.length) {
 		records = records.filter((r,idx)=> {
@@ -3615,6 +3619,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 	    }
+	    if(debug)   console.log("filterData-6 #records:" + records.length);
 	    //	    var t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    records = this.sortRecords(records);
