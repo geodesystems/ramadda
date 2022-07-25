@@ -269,6 +269,11 @@ var Utils =  {
         var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
         return {x:nx, y:ny};
     },
+    splitFirst: function(s,delim) {
+	let idx = s.indexOf(delim);
+	if(idx<0) return [s];
+	return [s.substring(0,idx),s.substring(idx+1)];
+    },
     split: function(s,delim,trim,excludeEmpty,dflt) {
         if(!Utils.isDefined(s)) return dflt;
         let l = [];
@@ -5141,13 +5146,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,includeCopyJson);
     },
-    select: function(name, attrs,list, selected,maxWidth) {
+    select: function(name, attrs,list, selected,maxWidth,debug) {
         var select = this.openTag("select", attrs);
-        select+=HU.makeOptions(list,selected,maxWidth);
+        select+=HU.makeOptions(list,selected,maxWidth,debug);
         select+=this.closeTag("select");
         return select;
     },
-    makeOptions: function(list, selected,maxWidth) {
+    makeOptions: function(list, selected,maxWidth,debug) {
         let options = "";
         list.forEach(item=>{
             var label = item;
@@ -5163,7 +5168,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     extra=" selected ";
                 }
             } else {
-                if(selected === item) extra=" selected ";
+                if(selected == item) extra=" selected ";
             }
             options+="<option " + extra +" value='" + item +"'>" + label +"</option>";
         });
