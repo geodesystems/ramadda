@@ -1442,7 +1442,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    return  JSON.stringify(json);
 	},
 	loadAnnotationJson: function(mapJson,map,layer) {
-	    if(mapJson.list) {
+	    if(mapJson.list || Array.isArray(mapJson)) {
 		this.loadOldJson(mapJson,map);
 		return
 	    }
