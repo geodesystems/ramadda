@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 26 12:44:56 MDT 2022";
+var build_date="RAMADDA build date: Tue Jul 26 12:57:44 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -41237,7 +41237,7 @@ MapGlyph.prototype = {
 	}
 
 	if(forLegend) {
-	    let title = 'click to toggle visibility&#13;shift-click to select';
+	    let title = 'click to toggle visibility; shift-click to select';
 	    if(Utils.stringDefined(this.style.label))
 		title = this.style.label;
 	    label = HU.div(['glyphid',this.getId(),'title',title,'class',clazz],label);

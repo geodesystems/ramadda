@@ -3082,7 +3082,7 @@ MapGlyph.prototype = {
 	}
 
 	if(forLegend) {
-	    let title = 'click to toggle visibility&#13;shift-click to select';
+	    let title = 'click to toggle visibility; shift-click to select';
 	    if(Utils.stringDefined(this.style.label))
 		title = this.style.label;
 	    label = HU.div(['glyphid',this.getId(),'title',title,'class',clazz],label);
