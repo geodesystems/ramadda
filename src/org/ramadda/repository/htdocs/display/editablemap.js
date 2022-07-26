@@ -26,6 +26,7 @@ var GLYPH_IMAGE = "image";
 var GLYPH_ENTRY = "entry";
 var GLYPH_MAP = "map";
 var GLYPH_DATA = "data";
+var GLYPH_SHAPES = [GLYPH_MARKER,GLYPH_POINT,GLYPH_LABEL,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND]
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
@@ -237,6 +238,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_RESIZE = "resize";
     const ID_RESHAPE = "reshape";    
     const ID_ROTATE  = "rotate";
+    const ID_LEGEND = "legend";
 
     if(!Utils.isDefined(properties.showOpacitySlider)) properties.showOpacitySlider=true; 
 
@@ -259,6 +261,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	{p:"fontFamily",d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
 	{p:"imageOpacity",d:1},
 	{p:'showLegend',d:true},
+	{p:'showLegendShapes',d:false},	
+	{p:'showMapLegend',d:true},
+
     ];
     
     displayDefineMembers(this, myProps, {
@@ -280,8 +285,25 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    return this.map;
 	},
 
+	findGlyph:function(id) {
+	    let glyph;
+	    this.glyphs.every(mapGlyph=>{
+		if(mapGlyph.getId()==id) {
+		    glyph=mapGlyph;
+		    return false;
+		}
+		return true;
+	    });
+	    return glyph;
+	},
+		    
+
 	addGlyph:function(glyph) {
-	    this.glyphs.push(glyph);
+	    if(Array.isArray(glyph))
+		this.glyphs.push(...glyph);
+	    else
+		this.glyphs.push(glyph);
+	    this.makeLegend();
 	},
 
 	handleEvent:function(event,lonlat) {
@@ -405,9 +427,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    return msg;
 	},
 
-	getGlyphType:function(type) {
-	    return this.glyphTypeMap[type];
-	},
+
 	setCommand:function(command, args) {
 	    args = args ||{};
 	    this.clearCommands();
@@ -446,6 +466,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				tmpStyle.strokeColor="#ccc";
 				tmpStyle.fillColor = "transparent";
 			    }
+			    $.extend(tmpStyle.mapOptions,attrs);
 			    tmpStyle.mapOptions.entryId = entryId;
 			    tmpStyle.mapOptions.entryType = attrs.entryType;
 			    if(attrs.entryName) {
@@ -456,6 +477,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				let mapOptions = tmpStyle.mapOptions;
 				delete tmpStyle.mapOptions;
 				let mapLayer = this.createMapLayer(attrs,tmpStyle,true);
+				$.extend(mapOptions,attrs);
 				if(mapLayer) {
 				    let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 				    mapGlyph.setMapLayer(mapLayer);
@@ -601,8 +623,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		message = message||"";
 		if(glyphType && glyphType.isRoute()) {
 		    let html =  HU.formTable();
-		    if(ramaddaState.hereRoutingEnabled && ramaddaState.googleRoutingEnabled) {
-			html+=HU.formEntry("Provider:", HU.select("",['id',this.domId("routeprovider")],["google","here"],this.routeProvider));
+		    if(this.getProperty("hereRoutingEnabled") || this.getProperty("googleRoutingEnabled")) {
+			let providers = [];
+			if(this.getProperty("googleRoutingEnabled")) providers.push("google");
+			if(this.getProperty("hereRoutingEnabled")) providers.push("here");			
+			html+=HU.formEntry("Provider:", HU.select("",['id',this.domId("routeprovider")],providers,this.routeProvider));
 		    }
 		    html+=HU.formEntry("Route Type:" , HU.select("",['id',this.domId("routetype")],["car","bicycle","pedestrian"],this.routeType));
 		    html += HU.close(TAG_TABLE);
@@ -945,6 +970,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    this.myLayer.removeFeatures(features);
 	    this.featureChanged();	    
+	    this.makeLegend();
 	},
 	addControl:function(name,msg,control) {
 	    control.name = name;
@@ -974,12 +1000,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    mapGlyph.setMapLayer(layer);
 		}
 	    });
-	    this.glyphs.push(...newOnes);
+	    this.addGlyph(newOnes);
 	},
 	getFeaturePropertyApply:function() {
 	    return (mapGlyph, props)=>{
 		this.featureChanged();	    
 		let style = {};
+		mapGlyph.setName(this.jq("mapglyphname").val());
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		} else if(props) {
@@ -992,9 +1019,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			style[prop] = v;
 		    });
 		}
-
-
-
 
 		//If its a map then set the style on the map features
 		if(mapGlyph.getMapLayer()) {
@@ -1027,7 +1051,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		mapGlyph.setVisibleLevelRange(this.jq("minlevel").val().trim(),
 					      this.jq("maxlevel").val().trim());
 		this.redraw();
-		this.showLegend();
+		this.makeLegend();
+		this.showMapLegend();
 	    };
 	},
 	doEdit: function(mapGlyph) {
@@ -1191,16 +1216,22 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
 	    let html="";
 	    let props;
+	    if(mapGlyph) {
+		html += HU.formTable();
+		html+=HU.formEntry("Name:",HU.input("",mapGlyph.getName(),['id',this.domId('mapglyphname'),'size','40']));
+		html+="</table>"
+	    }
+
 	    if(mapGlyph && mapGlyph.isData()) {
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
 		for(a in displayAttrs) {
 		    attrs+=a+"="+ displayAttrs[a]+"\n";
 		}
-		html =  HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		html +=  HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 	    } else {
 		let r =  this.makeStyleForm(style,mapGlyph);
-		html = r.html
+		html += r.html
 		props = r.props;
 	    }
 	    if(mapGlyph) {
@@ -1265,7 +1296,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let id = $(this).attr('widget-id');
 		$("#"+ id).val(c);
 		$("#"+ id+'_display').css('background',c);
-
 	    });
 
 	    if(apply==null) {
@@ -1648,7 +1678,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 	showFileMenu: function(button) {
 	    let html ="";
-	    if(!Utils.isAnonymous()) {	    
+	    if(this.getProperty("canEdit")) {	    
 		html +=this.menuItem(this.domId(ID_SAVE),"Save",'S');
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
@@ -1696,8 +1726,24 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    this.setCommand(ID_EDIT);
 	},
-	showLegend: function() {
-	    if(!this.getShowLegend()) return;
+	getDecoration:function(style) {
+	    let color = style.strokeColor??"black";
+	    let line = "solid";
+	    if(style.strokeDashstyle) {
+		if(['dot','dashdot'].includes(style.strokeDashstyle)) {
+		    line = "dotted";
+		} else  if(style.strokeDashstyle.indexOf("dash")>=0) {
+		    line = "dashed";
+		}
+	    }
+	    let cssStyle = "";
+	    if(color) cssStyle= HU.css('border-bottom' , "3px " + line+ " " +color);
+	    return  HU.div(['style','margin-bottom:5px;margin-right:5px;display:inline-block;width:30px;height:6px;' + cssStyle]);
+	},
+
+
+	showMapLegend: function() {
+	    if(!this.getShowMapLegend()) return;
 	    let html = "";
 	    let map = {};
             this.getGlyphs().forEach((mapGlyph,idx)=>{
@@ -1705,21 +1751,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let feature = mapGlyph.getFeature();
 		if(!feature) return;
 		let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType(),true);
-		let color = feature.style.strokeColor??"black";
-		let line = "solid";
-		if(feature.style.strokeDashstyle) {
-		    if(['dot','dashdot'].includes(feature.style.strokeDashstyle)) {
-			line = "dotted";
-		    } else  if(feature.style.strokeDashstyle.indexOf("dash")>=0) {
-			line = "dashed";
-		    }
-		}
 		let id = HU.getUniqueId('feature_');
 		feature.legendId = id;
 		map[id] = mapGlyph;
-		let style = "";
-		if(color) style= HU.css('border-bottom' , "3px " + line+ " " +color);
-		let item = HU.div(['style','margin-bottom:5px;margin-right:5px;display:inline-block;width:30px;height:6px;' + style]) + msg;
+		let item = this.getDecoration(feature.style) + msg;
 		html+=HU.div(['class','ramadda-clickable','id',id],item);
 	    });
 	    if(html!="") {
@@ -1734,7 +1769,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 	featureChanged:function() {
 	    this.featureHasBeenChanged = true;
-	    this.showLegend();
+	    this.showMapLegend();
 	},
 	showNewMenu: function(button) {
 	    let html ="<table><tr valign=top>";
@@ -1844,10 +1879,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	isFeatureSelected:function(mapGlyph) {
 	    return mapGlyph.selectDots!=null;
 	},
+	toggleSelectGlyph:function(mapGlyph) {
+	    if(this.isFeatureSelected(mapGlyph)) {
+		this.unselectGlyph(mapGlyph);
+	    } else {
+		this.selectGlyph(mapGlyph);
+	    }
+	},
 	selectGlyph:function(mapGlyph,maxPoints,dontRedraw) {
 	    if(!Utils.isDefined(maxPoints)) maxPoints = 20;
 	    if(this.isFeatureSelected(mapGlyph)) {
-		console.log("is selected");
 		return;
 	    }
 	    mapGlyph.selectDots = [];
@@ -1989,7 +2030,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.setClipboard(this.getSelected().map(mapGlyph=>{return mapGlyph;}));
 	},
 	addGlyphType: function(glyph) {
-	    this.glyphTypes[glyph.getId()]= glyph;
+	    this.glyphTypes.push(glyph);
+	    this.glyphTypeMap[glyph.getType()]  = glyph;
+	},
+	getGlyphType:function(type) {
+	    return this.glyphTypeMap[type];
 	},
 	createMapGlyph: function(attrs,style,andZoom) {				
 	    style = style??{};
@@ -2094,7 +2139,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			}
 			this.loadAnnotationJson(json,_this.map,_this.myLayer);
 			this.featureHasBeenChanged = false;
-			this.showLegend();
+			this.showMapLegend();
 			this.checkVisible();
 
 		    } catch(err) {
@@ -2116,157 +2161,150 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	doMakeMapGlyphs:function() {
 	    let externalGraphic = this.getExternalGraphic();
 	    if(!externalGraphic.startsWith(ramaddaBaseUrl)) externalGraphic = ramaddaBaseUrl+externalGraphic;
-	    return [
-		new GlyphType(this,GLYPH_MARKER,"Marker",
-			     {strokeWidth:0, 
-			      fillColor:"transparent",
-			      externalGraphic: externalGraphic,
-			      pointRadius:this.getPointRadius(10)},
-			      OpenLayers.Handler.MyPoint,
-			      {icon:ramaddaBaseUrl+"/map/marker-blue.png"}),
-		new GlyphType(this,GLYPH_POINT,"Point",
-			     {strokeWidth:this.getProperty("strokeWidth",2), 
-			      strokeDashstyle:'solid',
-			      fillColor:"transparent",
-			      fillOpacity:1,
-			      strokeColor:this.getStrokeColor(),
-			      strokeOpacity:1,
-			      pointRadius:this.getPointRadius(4)},
-			      OpenLayers.Handler.MyPoint,
-			      {icon:ramaddaBaseUrl+"/icons/dot.png"}),
-		new GlyphType(this,GLYPH_LABEL,"Label",
-			     {label : "label",
-			      externalGraphic: externalGraphic,
-			      pointRadius:this.getPointRadius(10),
-			      fontColor: this.getProperty("labelFontColor","#000"),
-			      fontSize: this.getFontSize(),
-			      fontFamily: this.getFontFamily(),
-			      fontWeight: this.getFontWeight(),
-			      fontStyle: this.getFontStyle(),
-			      labelAlign: this.getProperty("labelAlign","lb"),
-			      labelXOffset: this.getProperty("labelXOffset","0"),
-			      labelYOffset: this.getProperty("labelYOffset","0"),
-			      labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-			      labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-//			      pointRadius:0,
-			      strokeWidth:0,
-			      fillColor:'transparent',
-			      labelSelect:true,
-			     }, OpenLayers.Handler.MyPoint,
-			      {icon:ramaddaBaseUrl+"/icons/text.png"}),
-		new GlyphType(this,GLYPH_LINE, "Line",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,
-			     },
-			      OpenLayers.Handler.MyPath,
-			      {maxVertices:2,
-			       icon:ramaddaBaseUrl+"/icons/line.png"}),		
-		new GlyphType(this,GLYPH_POLYLINE, "Polyline",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',			      
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			      OpenLayers.Handler.MyPath,
-			      {icon:ramaddaBaseUrl+"/icons/polyline.png"}),
-		new GlyphType(this,GLYPH_FREEHAND,"Freehand",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,     
-			     },
-			     OpenLayers.Handler.MyPath,
-			      {freehand:true,icon:ramaddaBaseUrl+"/icons/freehand.png"}),
-		ramaddaState.routingEnabled?
-		    new GlyphType(this,GLYPH_ROUTE, "Route",
-				  {
-				      strokeColor:this.getStrokeColor(),
-				      strokeWidth:this.getStrokeWidth(),
-				      strokeDashstyle:'solid',
-				      strokeOpacity:1,
-				  },
-				  OpenLayers.Handler.MyPath,{icon:ramaddaBaseUrl+"/icons/route.png"}):null,		
-		new GlyphType(this,GLYPH_IMAGE, "Image",
-			     {strokeColor:"#ccc",
-			      strokeWidth:1,
-			      imageOpacity:this.getImageOpacity(1),
-			      fillColor:"transparent"},
-			     OpenLayers.Handler.ImageHandler,
-			      {snapAngle:90,sides:4,irregular:true,isImage:true,
-			       icon:ramaddaBaseUrl+"/icons/imageicon.png"}
-			    ),
-		new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
-			     {
-				 externalGraphic: ramaddaBaseUrl +"/icons/video.png",
-				 pointRadius:12},
-			      OpenLayers.Handler.MyEntryPoint,
-			      {isEntry:true,
-			       icon:ramaddaBaseUrl+"/icons/entry.png"}),
-		new GlyphType(this,GLYPH_MAP,"Map",
-			      {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',			      
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			      OpenLayers.Handler.MyEntryPoint,
-			      {isMap:true,
-			       icon:ramaddaBaseUrl+"/icons/map.png"}),		
-		new GlyphType(this,GLYPH_DATA,"Map Data",
-			      {},
-			      OpenLayers.Handler.MyEntryPoint,
-			      {isData:true,
-			       icon:ramaddaBaseUrl+"/icons/chart.png"}),		
+	    new GlyphType(this,GLYPH_MARKER,"Marker",
+			  {strokeWidth:0, 
+			   fillColor:"transparent",
+			   externalGraphic: externalGraphic,
+			   pointRadius:this.getPointRadius(10)},
+			  OpenLayers.Handler.MyPoint,
+			  {icon:ramaddaBaseUrl+"/map/marker-blue.png"});
+	    new GlyphType(this,GLYPH_POINT,"Point",
+			  {strokeWidth:this.getProperty("strokeWidth",2), 
+			   strokeDashstyle:'solid',
+			   fillColor:"transparent",
+			   fillOpacity:1,
+			   strokeColor:this.getStrokeColor(),
+			   strokeOpacity:1,
+			   pointRadius:this.getPointRadius(4)},
+			  OpenLayers.Handler.MyPoint,
+			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
+	    new GlyphType(this,GLYPH_LABEL,"Label",
+			  {label : "label",
+			   externalGraphic: externalGraphic,
+			   pointRadius:this.getPointRadius(10),
+			   fontColor: this.getProperty("labelFontColor","#000"),
+			   fontSize: this.getFontSize(),
+			   fontFamily: this.getFontFamily(),
+			   fontWeight: this.getFontWeight(),
+			   fontStyle: this.getFontStyle(),
+			   labelAlign: this.getProperty("labelAlign","lb"),
+			   labelXOffset: this.getProperty("labelXOffset","0"),
+			   labelYOffset: this.getProperty("labelYOffset","0"),
+			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+			   //			      pointRadius:0,
+			   strokeWidth:0,
+			   fillColor:'transparent',
+			   labelSelect:true,
+			  }, OpenLayers.Handler.MyPoint,
+			  {icon:ramaddaBaseUrl+"/icons/text.png"});
+	    new GlyphType(this,GLYPH_LINE, "Line",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',
+			   strokeOpacity:1,
+			  },
+			  OpenLayers.Handler.MyPath,
+			  {maxVertices:2,
+			   icon:ramaddaBaseUrl+"/icons/line.png"});		
+	    new GlyphType(this,GLYPH_POLYLINE, "Polyline",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',			      
+			   strokeOpacity:1,
+			   fillColor:"transparent",
+			   fillOpacity:1.0},
+			  OpenLayers.Handler.MyPath,
+			  {icon:ramaddaBaseUrl+"/icons/polyline.png"});
+	    new GlyphType(this,GLYPH_FREEHAND,"Freehand",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',
+			   strokeOpacity:1,     
+			  },
+			  OpenLayers.Handler.MyPath,
+			  {freehand:true,icon:ramaddaBaseUrl+"/icons/freehand.png"});
+	    if(this.getProperty("hereRoutingEnabled")||this.getProperty("googleRoutingEnabled")) {
+		new GlyphType(this,GLYPH_ROUTE, "Route", {
+		    strokeColor:this.getStrokeColor(),
+		    strokeWidth:this.getStrokeWidth(),
+		    strokeDashstyle:'solid',
+		    strokeOpacity:1,
+		},
+			      OpenLayers.Handler.MyPath,{icon:ramaddaBaseUrl+"/icons/route.png"});
+	    }
+	    new GlyphType(this,GLYPH_IMAGE, "Image",
+			  {strokeColor:"#ccc",
+			   strokeWidth:1,
+			   imageOpacity:this.getImageOpacity(1),
+			   fillColor:"transparent"},
+			  OpenLayers.Handler.ImageHandler,
+			  {snapAngle:90,sides:4,irregular:true,isImage:true,
+			   icon:ramaddaBaseUrl+"/icons/imageicon.png"}
+			 );
+	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
+			  {
+			      externalGraphic: ramaddaBaseUrl +"/icons/video.png",
+			      pointRadius:12},
+			  OpenLayers.Handler.MyEntryPoint,
+			  {isEntry:true,
+			   icon:ramaddaBaseUrl+"/icons/entry.png"});
+	    new GlyphType(this,GLYPH_MAP,"Map",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',			      
+			   strokeOpacity:1,
+			   fillColor:"transparent",
+			   fillOpacity:1.0},
+			  OpenLayers.Handler.MyEntryPoint,
+			  {isMap:true,
+			   icon:ramaddaBaseUrl+"/icons/map.png"});	
+	    new GlyphType(this,GLYPH_DATA,"Map Data",
+			  {},
+			  OpenLayers.Handler.MyEntryPoint,
+			  {isData:true,
+			   icon:ramaddaBaseUrl+"/icons/chart.png"});		
 
-		new GlyphType(this,GLYPH_BOX, "Box",
-			      {strokeColor:this.getStrokeColor(),
-			       strokeWidth:this.getStrokeWidth(),
-			       strokeDashstyle:'solid',
-			       strokeOpacity:1,
-			       fillColor:"transparent",
-			       fillOpacity:1.0},
-			     OpenLayers.Handler.MyRegularPolygon,
-			      {snapAngle:90,sides:4,irregular:true,
-			       icon:ramaddaBaseUrl+"/icons/rectangle.png"}
-			    ),
-		new GlyphType(this,GLYPH_CIRCLE, "Circle",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			     OpenLayers.Handler.MyRegularPolygon,
-			      {snapAngle:45,sides:40,icon:ramaddaBaseUrl+"/icons/ellipse.png"}
-			    ),
+	    new GlyphType(this,GLYPH_BOX, "Box",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',
+			   strokeOpacity:1,
+			   fillColor:"transparent",
+			   fillOpacity:1.0},
+			  OpenLayers.Handler.MyRegularPolygon,
+			  {snapAngle:90,sides:4,irregular:true,
+			   icon:ramaddaBaseUrl+"/icons/rectangle.png"});
+	    new GlyphType(this,GLYPH_CIRCLE, "Circle",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',
+			   strokeOpacity:1,
+			   fillColor:"transparent",
+			   fillOpacity:1.0},
+			  OpenLayers.Handler.MyRegularPolygon,
+			  {snapAngle:45,sides:40,icon:ramaddaBaseUrl+"/icons/ellipse.png"});
 
-		new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			     OpenLayers.Handler.MyRegularPolygon,
-			      {snapAngle:10,sides:3,
-			       icon:ramaddaBaseUrl+"/icons/triangle.png"}
-			    ),				
-		new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
-			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth(),
-			      strokeDashstyle:'solid',
-			      strokeOpacity:1,
-			      fillColor:"transparent",
-			      fillOpacity:1.0},
-			     OpenLayers.Handler.MyRegularPolygon,
-			      {snapAngle:90,sides:6,
-			       icon:ramaddaBaseUrl+"/icons/hexagon.png"}
-			    ),		
-
-	    ];
+	    new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',
+			   strokeOpacity:1,
+			   fillColor:"transparent",
+			   fillOpacity:1.0},
+			  OpenLayers.Handler.MyRegularPolygon,
+			  {snapAngle:10,sides:3,
+			   icon:ramaddaBaseUrl+"/icons/triangle.png"});				
+	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
+			  {strokeColor:this.getStrokeColor(),
+			   strokeWidth:this.getStrokeWidth(),
+			   strokeDashstyle:'solid',
+			   strokeOpacity:1,
+			   fillColor:"transparent",
+			   fillOpacity:1.0},
+			  OpenLayers.Handler.MyRegularPolygon,
+			  {snapAngle:90,sides:6,
+			   icon:ramaddaBaseUrl+"/icons/hexagon.png"});		
 	},
 	showCommandMessage:function(msg)  {
 	    this.jq(ID_MESSAGE).html(msg);
@@ -2291,10 +2329,66 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	initMap: function(map) {
 	    SUPER.initMap.call(this)
 	},
+	makeLegend: function() {
+	    if(!this.getShowLegend()) return;
+	    let showShapes = this.getShowLegendShapes();
+	    let html = "";
+	    this.glyphs.forEach(mapGlyph=>{
+		if(!showShapes) {
+		    if(mapGlyph.isShape()) {
+			return;
+		    }
+		}
+		html+= mapGlyph.getLabel(true,true);
+	    });
+	    if(html!="") {
+		html  = HU.div(['class','ramadda-display-editablemap-legend'],html);
+	    }
+	    this.jq(ID_LEGEND).html(html);
+	    let _this = this;
+	    this.jq(ID_LEGEND).find('.ramadda-display-editablemap-legend-item-edit').click(function(event) {
+		event.stopPropagation();
+		let id = $(this).attr('glyphid');
+		let mapGlyph = _this.findGlyph(id);
+		if(!mapGlyph) return;
+		_this.editFeatureProperties(mapGlyph);
+	    });
+
+	    this.jq(ID_LEGEND).find('.ramadda-display-editablemap-legend-item-view').click(function(event) {
+		event.stopPropagation();
+		let id = $(this).attr('glyphid');
+		let mapGlyph = _this.findGlyph(id);
+		if(!mapGlyph) return;
+		mapGlyph.zoomTo();
+	    });
+	    
+
+	    this.jq(ID_LEGEND).find('.ramadda-display-editablemap-legend-item').click(function(event) {
+		let id = $(this).attr('glyphid');
+		let mapGlyph = _this.findGlyph(id);
+		if(!mapGlyph) return;
+		if(event.shiftKey) {
+		    _this.toggleSelectGlyph(mapGlyph);
+		    return
+		}
+		if(event.altKey || event.metaKey) {
+		    mapGlyph.zoomTo();
+		    return;
+		}
+		mapGlyph.setVisible(!mapGlyph.getVisible(),true);
+		if(mapGlyph.getVisible()) 
+		    $(this).removeClass('ramadda-display-editablemap-legend-item-invisible');
+		else
+		    $(this).addClass('ramadda-display-editablemap-legend-item-invisible');			    
+	    });
+	},
         initDisplay: function(embedded) {
 	    if(!embedded) {
 		SUPER.initDisplay.call(this)
 	    }
+	    let legend = HU.div(['id',this.domId(ID_LEGEND)]);
+	    this.jq(ID_LEFT).html(legend);
+	    
 	    let _this = this;
 	    this.myLayer = this.map.createFeatureLayer("Annotation Features",false,null,{rendererOptions: {zIndexing: true}});
 	    this.selectionLayer = this.map.createFeatureLayer("Selection",false,null,{rendererOptions: {zIndexing: true}});	    
@@ -2304,14 +2398,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    this.myLayer.ramaddaLayerIndex = 1001;
 	    this.icon = "/icons/map/marker-blue.png";
-	    this.glyphTypes = this.doMakeMapGlyphs().map(glyph=>{
-		if(glyph) return glyph;
-		return null;
-	    });
+	    this.glyphTypes=[];
 	    this.glyphTypeMap = {};
-	    this.glyphTypes.forEach(g=>{
-		this.glyphTypeMap[g.type]  = g;
-	    });
+	    this.doMakeMapGlyphs();
 	    if(embedded) {
 		return;
 	    }
@@ -2406,19 +2495,17 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    };
 
 	    let control;
-//	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
 	    this.getMap().xxxfeatureOverHandler = e=>{
 		e.feature.style.old_strokeColor=e.feature.style.strokeColor;
 		e.feature.style.strokeColor="green";		
 		e.feature.layer.redraw(e.feature);
 	    };
-//	    this.getMap().doMouseOver=true;
 	    this.getMap().xxxfeatureOutHandler = e=>{
 		e.feature.style.strokeColor=e.feature.style.old_strokeColor;
 		e.feature.layer.redraw(e.feature);
 	    };	    
 
-	    if(!Utils.isAnonymous()) {
+	    if(this.getProperty("canEdit")) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
 		control = new OpenLayers.Control();
@@ -2613,8 +2700,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    }
 		});
 
-
-
 		let resizer = new MyMover(this.myLayer,{
 		    theDisplay:this,
 		    onDrag: function(feature, pixel) {
@@ -2644,7 +2729,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-editablemap-message2"],"");
 		this.jq(ID_MAP_CONTAINER).append(message2);
 		let message3 = HU.div([ID,this.domId(ID_MESSAGE3),CLASS,"ramadda-editablemap-message3"],"");		
-		if(this.getShowLegend()) {
+		if(this.getShowMapLegend()) {
 		    this.jq(ID_MAP_CONTAINER).append(message3);
 		}
 
@@ -2664,8 +2749,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    _this.showEditMenu($(this));
 		});
 
-		$(window).bind('beforeunload', function(){
-		    if(!Utils.isAnonymous() && _this.featureHasBeenChanged) {
+		$(window).bind('beforeunload', ()=>{
+		    if(this.getProperty("canEdit") && this.featureHasBeenChanged) {
 			return 'Changes have been made. Are you sure you want to leave?';
 		    }
 		});
@@ -2696,6 +2781,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				  },
 				  "image.*");
 
+
+
 	    if(this.getProperty("thisEntryType")=="geo_editable_json") {
 		this.loadMap();
 	    }
@@ -2705,23 +2792,20 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
 
+var MapObject = function(display, glyphType,feature) {
+    this.id = HU.getUniqueId("");
+    feature.objectId = this.id;
+    this.display = display;
+    this.feature = feature;
+}
+
+MapObject.prototype = {
+    getId:function() {
+	return this.id;
+    }
+}
+
 var GlyphType = function(display,type,label,style,handler,options) {
-    const MapObject = function(display, glyphType,feature) {
-	this.id = HU.getUniqueId("");
-	feature.objectId = this.id;
-	this.display = display;
-	this.feature = feature;
-	this.display.addGlyphType(this);
-    }
-
-
-    MapObject.prototype = {
-	getId:function() {
-	    return this.id;
-	}
-    }
-
-
     this.display = display;
     this.label = label;
     this.type = type;
@@ -2731,108 +2815,111 @@ var GlyphType = function(display,type,label,style,handler,options) {
     this.options.glyphType = type;
     this.options.display = display;
     this.options.mapGlyph = this;
-    $.extend(this,{
-	getIcon:function() {
-	    return this.options.icon;
-	},
-	getStyle:function() {
-	    return this.glyphStyle;
-	},
-	getType:  function() {
-	    return this.type;
-	},
-	isLabel:  function() {
-	    return this.getStyle().label!=null;
-	},
-	isImage:  function() {
-	    return this.options.isImage;
-	},
-	isEntry:  function() {
-	    return this.options.isEntry;
-	},
-	isData:  function() {
-	    return this.options.isData;
-	},	
-	isMap:  function() {
-	    return this.options.isMap;
-	},			
-	isRoute: function() {
-	    return this.type == GLYPH_ROUTE;
-	},
-	isIcon:  function() {
-	    return this.getStyle().externalGraphic!=null;
-	},	
-	applyStyle: function(style,forAll) {
-	    this.display.featureChanged();
-	    for(a in style) {
-		if(forAll && this.type ==GLYPH_LABEL) {
-//		    if(a=="pointRadius") continue;
-		    if(a=="strokeColor") continue;
-		    if(a=="fillColor") continue;		    
-		}
-		if(this.getStyle()[a]) this.getStyle()[a] = style[a];
-	    }
-	},
-	newFeature: function(feature) {
-	    let glyph = new MapObject(this.display,this.type, feature);
-	},
-	createDrawer:function() {
-	    let _this = this;
-	    let layer = this.display.myLayer;
-	    let Drawer = OpenLayers.Class(OpenLayers.Control.DrawFeature, {
-		initialize: function(layer, options) {
-		    let defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
-		    defaultStyle={};
-		    $.extend(defaultStyle, _this.getStyle());		    
-		    let styleMap = new OpenLayers.StyleMap({"default":defaultStyle});
-		    options = {
-			handlerOptions:{
-			    style: defaultStyle,
-			    layerOptions:{
-				styleMap:styleMap
-			    }
-			}
-		    };
-		    $.extend(options.handlerOptions, _this.options);
-		    OpenLayers.Control.DrawFeature.prototype.initialize.apply(
-			this, [layer, _this.handler||OpenLayers.Handler.Point, options]
-		    );
-		},
-		drawFeature: function(geometry) {
-		    OpenLayers.Control.DrawFeature.prototype.drawFeature.apply(this, arguments);
-		    let feature =this.layer.features[this.layer.features.length-1];
-		    if(this.handler.theImage) {
-			feature.image = this.handler.theImage;
-		    }
-		    feature.type = _this.type;
-  
-		    let newStyle;
-		    if(this.handler.style) {
-			newStyle=this.handler.style;
-		    }
-		    if(newStyle) {
-			for(a in _this.getStyle()) {
-			    if(!Utils.isDefined(newStyle[a])) {
-				newStyle[a] = _this.getStyle()[s];
-			    }
-			}
-			if(feature.style && feature.style.label)
-			    newStyle.label = feature.style.label;
-			let tmp = {};
-			$.extend(tmp, newStyle);
-			feature.style=tmp;
-		    }
-		    this.layer.redraw();
-		    _this.newFeature(feature);
-		}
-	    });
-	    this.drawer = new Drawer(layer);
-	    this.display.addControl(this.type,"",this.drawer);
-	    return this.drawer;
-	},
-    });	
+    display.addGlyphType(this);
+};
 
-}
+GlyphType.prototype = {
+    getIcon:function() {
+	return this.options.icon;
+    },
+    getStyle:function() {
+	return this.glyphStyle;
+    },
+    getType:  function() {
+	return this.type;
+    },
+    isLabel:  function() {
+	return this.getStyle().label!=null;
+    },
+    isImage:  function() {
+	return this.options.isImage;
+    },
+    isEntry:  function() {
+	return this.options.isEntry;
+    },
+    isData:  function() {
+	return this.options.isData;
+    },	
+    isMap:  function() {
+	return this.options.isMap;
+    },			
+    isRoute: function() {
+	return this.type == GLYPH_ROUTE;
+    },
+    isIcon:  function() {
+	return this.getStyle().externalGraphic!=null;
+    },	
+    applyStyle: function(style,forAll) {
+	this.display.featureChanged();
+	for(a in style) {
+	    if(forAll && this.type ==GLYPH_LABEL) {
+		//		    if(a=="pointRadius") continue;
+		if(a=="strokeColor") continue;
+		if(a=="fillColor") continue;		    
+	    }
+	    if(this.getStyle()[a]) this.getStyle()[a] = style[a];
+	}
+    },
+    newFeature: function(feature) {
+	let glyph = new MapObject(this.display,this.type, feature);
+    },
+    createDrawer:function() {
+	let _this = this;
+	let layer = this.display.myLayer;
+	let Drawer = OpenLayers.Class(OpenLayers.Control.DrawFeature, {
+	    initialize: function(layer, options) {
+		let defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
+		defaultStyle={};
+		$.extend(defaultStyle, _this.getStyle());		    
+		let styleMap = new OpenLayers.StyleMap({"default":defaultStyle});
+		options = {
+		    handlerOptions:{
+			style: defaultStyle,
+			layerOptions:{
+			    styleMap:styleMap
+			}
+		    }
+		};
+		$.extend(options.handlerOptions, _this.options);
+		OpenLayers.Control.DrawFeature.prototype.initialize.apply(
+		    this, [layer, _this.handler||OpenLayers.Handler.Point, options]
+		);
+	    },
+	    drawFeature: function(geometry) {
+		OpenLayers.Control.DrawFeature.prototype.drawFeature.apply(this, arguments);
+		let feature =this.layer.features[this.layer.features.length-1];
+		if(this.handler.theImage) {
+		    feature.image = this.handler.theImage;
+		}
+		feature.type = _this.type;
+		
+		let newStyle;
+		if(this.handler.style) {
+		    newStyle=this.handler.style;
+		}
+		if(newStyle) {
+		    for(a in _this.getStyle()) {
+			if(!Utils.isDefined(newStyle[a])) {
+			    newStyle[a] = _this.getStyle()[s];
+			}
+		    }
+		    if(feature.style && feature.style.label)
+			newStyle.label = feature.style.label;
+		    let tmp = {};
+		    $.extend(tmp, newStyle);
+		    feature.style=tmp;
+		}
+		this.layer.redraw();
+		_this.newFeature(feature);
+	    }
+	});
+	this.drawer = new Drawer(layer);
+	this.display.addControl(this.type,"",this.drawer);
+	return this.drawer;
+    },
+};
+
+
 
 
 function MapGlyph(display,type,attrs,feature,style) {
@@ -2841,6 +2928,7 @@ function MapGlyph(display,type,attrs,feature,style) {
     this.features = [];
     this.attrs = attrs;
     this.style = style;
+    this.id = HU.getUniqueId("glyph_");
     if(feature) this.addFeature(feature);
     
 }
@@ -2860,6 +2948,9 @@ MapGlyph.prototype = {
 	this.display.addFeatures(features);
 	return cloned;
     },
+    getId:function() {
+	return this.id;
+    },
     addFeature: function(feature) {
 	this.features.push(feature);
 	feature.mapGlyph = this;
@@ -2867,9 +2958,33 @@ MapGlyph.prototype = {
     getStyle: function() {
 	return this.style;
     },
+    zoomTo: function() {
+	if(this.features.length) {
+	    this.display.getMap().centerOnFeatures(this.features);
+	    return;
+	}
+	if(this.getMapLayer()) {
+	    this.display.getMap().zoomToLayer(this.getMapLayer());
+	    return
+	}
+	if(this.displayInfo?.display) {
+	    if(this.displayInfo.display.pointBounds) {
+		this.display.getMap().zoomToExtent(this.display.getMap().transformLLBounds(this.displayInfo.display.pointBounds));
+		return;
+	    }
+	    if(this.displayInfo.display.myFeatureLayer) {
+		this.display.getMap().zoomToLayer(this.displayInfo.display.myFeatureLayer);
+		return
+	    }
+	}
+
+    },
     getGeometry: function() {
 	if(this.features.length>0) return this.features[0].geometry;
 	else return null;
+    },
+    setName: function(name) {
+	this.attrs.name = name;
     },
     getName: function() {
 	return this.attrs.name;
@@ -2897,22 +3012,69 @@ MapGlyph.prototype = {
     getEntryId: function() {
 	return this.attrs.entryId;
     },
-    getLabel:function() {
+    getLabel:function(forLegend,addDecorator) {
 	let name = this.getName();
 	let label;
 	if(Utils.stringDefined(name)) {
-	    label= this.getType()+": "+name;
+	    if(!forLegend)
+		label= this.getType()+": "+name;
+	    else
+		label = name;
 	} else {
 	    label =  this.getType();
 	}
+	let url = null;
 	if(this.attrs.entryId) {
-	    label = HU.href(RamaddaUtils.getEntryUrl(this.attrs.entryId), label,['target','_entry','title','View Entry']);
+	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
+	    if(!forLegend)
+		label = HU.href(url, label,['target','_entry','title','View Entry']);
 	}
 	let glyphType = this.display.getGlyphType(this.getType());
+	let clazz = 'ramadda-clickable ramadda-display-editablemap-legend-item';
+	if(!this.getVisible()) 
+	    clazz+=' ramadda-display-editablemap-legend-item-invisible ';
+//	label = HU.span(,label);
+	let right = "";
+	if(addDecorator) {
+	    if(glyphType.getType()==GLYPH_ROUTE ||
+	       glyphType.getType()==GLYPH_MAP ||	       
+	       glyphType.getType()==GLYPH_FREEHAND) {
+		right+=this.display.getDecoration(this.style);
+	    }
+	}
+
+
 	if(glyphType) {
-	    let icon = HU.image(glyphType.getIcon());
+	    let icon = HU.image(this.attrs.icon??glyphType.getIcon());
+	    if(url && forLegend)
+		icon = HU.href(url,icon,['target','_entry']);
+	    if(forLegend) {
+		right+=SPACE+
+		    HU.span([CLASS,"ramadda-clickable ramadda-display-editablemap-legend-item-view",
+			     'glyphid',this.getId(),
+			     TITLE,"Zoom to",],
+			    HU.getIconImage("fas fa-map-location"));
+	    }
+
+	    if(forLegend && this.display.getProperty("canEdit")) {
+		icon = icon +" " +
+		    HU.span([CLASS,"ramadda-clickable ramadda-display-editablemap-legend-item-edit",
+			     'glyphid',this.getId(),
+			     TITLE,"Edit",],
+			    HU.getIconImage("fas fa-cog"));
+	    }	
 	    label = icon +" " + label;
 	}
+	if(forLegend) {
+	    label = HU.span(['style',HU.css('margin-right','5px','max-width','200px','overflow-x','hidden','white-space','nowrap','display','inline-block')], label);
+	}
+	if(right!="") {
+	    right= HU.span(['style',HU.css('white-space','nowrap')], right);
+	    label=HU.leftRightTable(label,right);
+	}
+
+	if(forLegend)
+	    label = HU.div(['glyphid',this.getId(),'title','click to toggle visibility&#13;shift-click to select','class',clazz],label);
 	return label;
     },
     getAttributes: function() {
@@ -3057,6 +3219,9 @@ MapGlyph.prototype = {
 	}
 	this.display.myLayer.redraw();
     },    
+    isShape:function() {
+	return GLYPH_SHAPES.includes(this.getType());
+    },
     isData:function() {
 	return this.type == GLYPH_DATA;
     },
@@ -3106,7 +3271,7 @@ MapGlyph.prototype = {
 	    jqid(this.displayInfo.divId).remove();
 	    jqid(this.displayInfo.bottomDivId).remove();			
 	    if(this.displayInfo.display) {
-		this.displayInfo.display.removeFeatures();
+		this.displayInfo.display.deleteDisplay();
 	    }
 	}
     }

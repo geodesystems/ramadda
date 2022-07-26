@@ -2,6 +2,7 @@
    Copyright 2008-2021 Geode Systems LLC
 */
 
+
 const DISPLAY_MAP = "map";
 const DISPLAY_MAPGRID = "mapgrid";
 const DISPLAY_MAPCHART = "mapchart";
@@ -811,7 +812,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	addFeatures:function(features,noSelect) {
 	    if(!this.myFeatureLayer) {
-		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Map Features (no select)",false);		
+		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Map Features NS",false);		
 		this.myFeatureLayer = this.map.createFeatureLayer("Map Features",true);
 		if(!this.layerVisible) {
 //		    this.myFeatureLayer.setVisibility(false);
@@ -829,6 +830,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.myFeatures.push(feature);
 	    });
 	},
+
 	removeFeature: function(feature) {
 	    if(feature) {
 		this.applyToFeatureLayers(layer=>{
@@ -841,7 +843,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
  	    if(this.heatmapLayers) {
 		try {
 		    this.heatmapLayers.every(layer=>{
-			this.map.removeLayer(layer);
+			layer.destroy();
+			this.map.removeLayer(layer,true);
 			return true;
 		    });
 		} catch(exc) {
@@ -849,6 +852,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		this.heatmapLayers = null;
 	    }
+	},
+
+	toString: function() {
+	    return "displaymap";
+	},
+	deleteDisplay: function() {
+	    this.removeFeatures();
+	    this.displayDeleted = true;
+            this.map.getMap().events.unregister("updatesize", this,this.updatesizeFunc);
+            this.map.getMap().events.unregister("moveend", this,this.moveendFunc);
+            this.map.getMap().events.unregister("zoomend", this,this.zoomendFunc);	    	    
 	},
 
 	removeFeatures: function() {
@@ -884,10 +898,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	removeFeatureLayer: function() {
 	    if(this.myFeatureLayer) {
-		this.map.removeLayer(this.myFeatureLayer);
+		this.myFeatureLayer.destroy();
+		this.map.removeLayer(this.myFeatureLayer,true);
 	    }
 	    if(this.myFeatureLayerNoSelect) {
-		this.map.removeLayer(this.myFeatureLayerNoSelect);
+		this.myFeatureLayerNoSelect.destroy();
+		this.map.removeLayer(this.myFeatureLayerNoSelect,true);
 	    }	    
 	    if(this.labelFeatures) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
@@ -1006,14 +1022,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addClickHandler(this.domId(ID_LONFIELD), this
 				     .domId(ID_LATFIELD), null, this);
 
-            this.map.getMap().events.register("updatesize", "", ()=>{
+            this.map.getMap().events.register("updatesize", this, this.updatesizeFunc=()=>{
 		if(!this.callingUpdateSize) {
 		    _this.updateHtmlLayers();
 		}
             });
 
-
-            this.map.getMap().events.register("zoomend", "", ()=>{
+            this.map.getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
                 _this.mapBoundsChanged();
 		_this.checkHeatmapReload();
 		_this.updateHtmlLayers();
@@ -1036,7 +1051,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
             });
 	    this.createTime = new Date();
-            this.map.getMap().events.register("moveend", "", ()=> {
+
+            this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
 		if(_this.map.doingPopup) return;
                 _this.mapBoundsChanged();
 		_this.checkHeatmapReload();

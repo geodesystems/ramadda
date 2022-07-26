@@ -2869,6 +2869,22 @@ table.dataTable tfoot td {
 }
 
 
+.ramadda-display-editablemap-legend {
+    min-width:200px;
+  
+}
+
+.ramadda-display-editablemap-legend-item {
+    border-bottom:1px solid #eee;
+    padding:2px;
+}
+
+.ramadda-display-editablemap-legend-item-invisible {
+    background:#efefef;
+    border-bottom:1px solid #ccc;
+}
+
+
 .ramadda-editablemap-message2 {
     display:none;
     min-width:200px;
