@@ -1196,6 +1196,10 @@ a.ramadda-menubar-button:hover {
 
 }
 
+.dataLayersDiv, .baseLayersDiv {
+    max-height:100px !important;
+}
+
 .olPopupContent {
     font-size:8pt;
     padding:0px !important;
