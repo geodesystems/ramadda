@@ -876,15 +876,15 @@ RepositoryMap.prototype = {
             _this.getMap().events.register("changebaselayer", "", function() {
                 _this.baseLayerChanged();
             });
-            _this.getMap().events.register("zoomend", "", function() {
+            _this.getMap().events.register("zoomend", "ramaddamap", function() {
 		_this.zoomChanged();
                 _this.locationChanged();
 		_this.setNoPointerEvents();
             });
-            _this.getMap().events.register("moveend", "", function() {
+            _this.getMap().events.register("moveend", "ramaddamap", function() {
                 _this.locationChanged();
             });
-	    _this.getMap().events.register("move", "", function() {
+	    _this.getMap().events.register("move", "ramaddamap", function() {
                 _this.locationChanged();
             });
         };
@@ -2004,7 +2004,7 @@ RepositoryMap.prototype = {
     removeKMLLayer:  function(layer) {
 	this.removeLayer(layer);
     },
-    removeLayer:  function(layer) {
+    removeLayer:  function(layer,skipMapRemoval) {
 	this.externalLayers = OpenLayers.Util.removeItem(this.externalLayers, layer);
 	this.allLayers = OpenLayers.Util.removeItem(this.allLayers, layer);
 	if(this.nonSelectLayers)
@@ -2015,7 +2015,8 @@ RepositoryMap.prototype = {
 	if(this.imageLayersList) {
 	    this.imageLayersList = OpenLayers.Util.removeItem(this.imageLayersList, layer);
 	}
-        this.getMap().removeLayer(layer);
+	if(!skipMapRemoval)
+            this.getMap().removeLayer(layer);
     },
 
     setDefaultCanSelect:  function(canSelect) {
@@ -4650,7 +4651,13 @@ RepositoryMap.prototype = {
 	features.forEach(feature=>{
 	    bounds.extend(feature.geometry.getBounds());
 	});
-	//var center = bounds.getCenterLonLat(); <-- you don't really need this if you want to zoom. But it will give you the center lat long coords.
+	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
+	    bounds = this.transformProjBounds(bounds);
+	    var center = bounds.getCenterLonLat();
+	    this.setCenter(center);
+	    return;
+	}
+
 	this.zoomToExtent(bounds);
     },
     getHighlightLinesLayer: function() {
