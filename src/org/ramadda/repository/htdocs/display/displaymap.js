@@ -811,7 +811,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	addFeatures:function(features,noSelect) {
 	    if(!this.myFeatureLayer) {
-		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Features-2",false);		
+		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Map Features (no select)",false);		
 		this.myFeatureLayer = this.map.createFeatureLayer("Map Features",true);
 		if(!this.layerVisible) {
 //		    this.myFeatureLayer.setVisibility(false);
@@ -837,22 +837,48 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	removeHeatmapLayers: function() {
+ 	    if(this.heatmapLayers) {
+		try {
+		    this.heatmapLayers.every(layer=>{
+			this.map.removeLayer(layer);
+			return true;
+		    });
+		} catch(exc) {
+		    console.log(exc);
+		}
+		this.heatmapLayers = null;
+	    }
+	},
+
 	removeFeatures: function() {
 	    this.removeFeatureLayer();
+	    this.removeHeatmapLayers();
 	},
 
 
 	setVisible: function(visible) {
 	    this.layerVisible = visible;
-	    if(this.myFeatureLayer) {
-		this.myFeatureLayer.setVisibility(visible);
+	    let show = true;
+	    if(this.jq("showMarkersToggle").length>0) {
+		show = this.jq("showMarkersToggle").is(":checked");
 	    }
-	    if(this.myFeatureLayerNoSelect) {
-		this.myFeatureLayerNoSelect.setVisibility(visible);
-	    }	    
+	    if(show) {
+		if(this.myFeatureLayer) {
+		    this.myFeatureLayer.setVisibility(visible);
+		}
+		if(this.myFeatureLayerNoSelect) {
+		    this.myFeatureLayerNoSelect.setVisibility(visible);
+		}
+	    }
 	    //TODO: have my own labelLayer
 	    if(this.map.labelLayer)
 		this.map.labelLayer.setVisibility(visible);
+ 	    if(this.heatmapLayers) {
+		this.heatmapLayers.forEach(layer=>{
+		    layer.setVisibility(visible);
+		});
+	    }
 
 	},
 
@@ -2580,11 +2606,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let showSegments = this.getProperty("showSegments", false);
 	    if(records.length!=0) {
 		if (!isNaN(pointBounds.north)) {
+		    this.pointBounds = pointBounds;
 		    this.initBounds = pointBounds;
 		    if(!showSegments && !this.hadInitialPosition && !args.dontSetBounds) {
 			if(!args.dataFilterChanged || this.getCenterOnFilterChange(true)) {
-			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south,
-						  pointBounds.east);
+			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south, pointBounds.east);
 			}
 		    }
 		}
@@ -2716,6 +2742,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	createHeatmap(records, fields, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
+//	    debug = true;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hmColorBy","colorBy",""]);
 	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hmAngleBy","angleBy",""]);
@@ -2730,6 +2757,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let mapBounds = this.map.getBounds();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
 	    bounds = RecordUtil.convertBounds(mapBounds);
+	    if(this.pointBounds) bounds = this.pointBounds;
+	    if(debug) {
+		console.dir(bounds.north,bounds.west,bounds.south,bounds.east);
+	    }
+
 
  	    if(this.heatmapLayers) {
 		try {
@@ -2741,6 +2773,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log(exc);
 		}
 	    }
+
 	    this.heatmapLayers = [];
 	    if(records.length==0) {
 		this.errorMessage = this.getNoDataMessage();
@@ -2806,7 +2839,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
-		this.map.getMap().setLayerIndex(layer, 1000);
+		//For now don't set the layer index since it places this layer too high
+		//		this.map.getMap().setLayerIndex(layer, 1000);
 		layer.heatmapLabel = label;
 		if(groupByDate) {
 		    if(value.getTime)
@@ -2851,17 +2885,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.setMapLabel(labels[0]);
 	    }
 	    this.showColorTable(colorBy);
-	    if(this.getHmShowToggle() || this.getHmShowReload()) {
+	    if(this.getHmShowToggle(this.getProperty("hm.showToggle")) || this.getHmShowReload()) {
 		let cbx = this.jq(ID_HEATMAP_TOGGLE);
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.domId("heatmapreload")])+SPACE2;
 		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
 
 		this.writeHeader(ID_HEADER2_PREFIX,
 				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible) +SPACE +
-				 this.getHmToggleLabel("Toggle Heatmap") +SPACE2);
+				 this.getHmToggleLabel(this.getProperty("hm.toggleLabel","Toggle Heatmap")) +SPACE2);
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
 		    this.reloadHeatmap = true;
+		    this.removeHeatmapLayers();
 		    this.haveCalledUpdateUI = false;
 		    this.updateUI();
 		});
@@ -3021,10 +3056,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds,debug) {
 	    if(this.getDoGridPoints()|| this.getDoHeatmap(false)) {
+		let showMarkers = this.showMarkers;
 		if(this.getHmShowPoints() || this.getShowPoints()) {
-		    this.createPoints(records, fields, points, bounds,debug);
-		    if(this.getHmShowToggle(false) && this.map.circles) {
-			this.map.setPointsVisibility(false);
+		    let show = true;
+		    if(this.jq("showMarkersToggle").length>0) {
+			show = this.jq("showMarkersToggle").is(":checked");
+		    }
+		    if(show) {
+			this.createPoints(records, fields, points, bounds,debug);
+			if(this.getHmShowToggle(false) && this.map.circles) {
+			    this.map.setPointsVisibility(false);
+			}
 		    }
 		}
 

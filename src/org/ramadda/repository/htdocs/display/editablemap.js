@@ -511,18 +511,60 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			let entryType = glyphType.isImage()?'type_image':glyphType.isMap()?'type_map,geo_gpx,geo_shapefile':'';
 			selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),entryType,null,props);
 			return
+		    } else if(glyphType.getType() == GLYPH_MARKER) {
+			let html =  "";
+			let icon = this.lastIcon || tmpStyle.externalGraphic;
+			let icons = HU.image(icon,['id',this.domId("externalGraphic_image")]) +
+			    HU.hidden("",icon,['id',this.domId("externalGraphic")]);
+			html += icons;
+			html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
+				     HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
+			
+			html+=HU.b("Select Icon");
+			html+=HU.div(['id',this.domId('emojis')]);
+
+			html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
+			let dialog = HU.makeDialog({content:html,title:'Select Marker',header:true,my:"left top",at:"left bottom",draggable:true,anchor:this.jq(ID_MENU_NEW)});
+
+			this.addEmojis(this.jq('emojis'));
+			let cancel = ()=>{
+			    dialog.remove();
+			}
+			let ok = ()=>{
+			    this.lastIcon = this.jq('externalGraphic').val();
+			    tmpStyle.externalGraphic = this.lastIcon;
+			    dialog.remove();
+			    cmd.handler.style = tmpStyle;
+			    cmd.handler.layerOptions.styleMap=styleMap;
+			    this.showCommandMessage("New Marker");
+			    cmd.activate();
+			}
+			this.jq(ID_OK).button().click(ok);
+			this.jq(ID_CANCEL).button().click(()=>{
+			    dialog.remove();
+			});
+
+
+			return
 		    } else if(glyphType.isLabel()) {
 			let input =  HU.textarea("",this.lastText??"",[ID,this.domId('labeltext'),"rows",3,"cols", 40]);
 			let html =  HU.formTable();
 			html += HU.formEntryTop("Text:",input);
-			html += HU.formEntry("",HU.checkbox(this.domId("includeicon"),[],this.lastIncludeIcon,"Include Icon"));
+			let icon = this.lastIcon || tmpStyle.externalGraphic;
+			let icons = HU.image(icon,['id',this.domId("externalGraphic_image")]) +
+			    HU.hidden("",icon,['id',this.domId("externalGraphic")]);
+			html += HU.formEntry("",HU.checkbox(this.domId("includeicon"),[],this.lastIncludeIcon,"Include Icon")+" " + icons);
 			html+="</table>";
-			html+=HU.center(HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
+			html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 				     HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
 			
+			html+=HU.b("Select Icon");
+			html+=HU.div(['id',this.domId('emojis')]);
+
 			html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
 			let dialog = HU.makeDialog({content:html,title:'Text',header:true,my:"left top",at:"left bottom",draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
+			this.addEmojis(this.jq('emojis'));
 			let cancel = ()=>{
 			    dialog.remove();
 			}
@@ -531,6 +573,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    if(!doIcon) {
 				tmpStyle.externalGraphic=icon_blank;
 			    } else {
+				this.lastIcon = this.jq('externalGraphic').val();
+				tmpStyle.externalGraphic = this.lastIcon;
 				tmpStyle.labelAlign='mb';
 				tmpStyle.labelYOffset="10";
 			    }
@@ -710,21 +754,31 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	createMapData:function(mapOptions) {
 	    let displayAttrs = {};
 	    let callback = text=>{
-		text = text.replace(/\"data\" *: *new *PointData[^\)]+?\)/g,"");
 		let regexp = /createDisplay *\( *\"map\" *(.*?)}\);/;
-		regexp = /createDisplay\s*\(\s*\"map\"\s*,\s*({[\s\S^\)]+?\}).*\)/;		
-
+		regexp = /createDisplay\s*\(\s*\"map\"\s*,\s*({[\s\S]+?\})\);/;				
 		let match = text.match(regexp);
 		let attrs = {};
 		let inner;
+		let pointDataUrl = null;
 		if(match) {
 		    inner = match[1];
+		    inner = inner.replace(/\n/g," ");
+		    let dr=/\"data\" *: *new *PointData[^\)]+?\)/g;
+		    dr=/\"data\"\s*:\s*new\s*PointData\s*\((.*?)\)/g;
+		    match  = inner.match(dr);
+		    if(match) {
+			let re = new RegExp("\"(" + ramaddaBaseUrl+"[^\"]+)\"");
+			match = match[0].match(re);
+			if(match) 
+			    pointDataUrl = match[1];
+		    }
+		    inner = inner.replace(dr,"");
 		    inner = inner.replace(/,\s*\}/,"}");
 		    try {
 			attrs = JSON.parse(inner);
 		    } catch(err) {
-			console.log(err);
-			console.log(inner);
+			console.error(err);
+			console.error(inner);
 		    }
 		}
 		let skip = ['title','bounds','zoomLevel','mapCenter','width','height','user','entryIcon','entryId','thisEntryType','fileUrl','popupWidth','popupHeight','divid'];
@@ -735,17 +789,20 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    userInput+=key+"=" + value+"\n";
 		}
 		let widget =  HU.textarea("",userInput,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
 		let buttons  =HU.center(HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 					HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
-		widget = HU.div(['style',HU.css('margin','4px')], widget+buttons);
+		
+		widget = HU.div(['style',HU.css('margin','4px')], widget+"<br>"+andZoom + buttons);
 		
 		let dialog =  HU.makeDialog({content:widget,anchor:this.jq(ID_MENU_FILE),title:"Map Display Attributes",header:true,draggable:true,remove:false});
 
 		
 		this.jq(ID_OK).button().click(()=>{
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
+		    displayAttrs.pointDataUrl = pointDataUrl;
 		    let mapGlyph = this.handleNewFeature(null,null,mapOptions);
-		    mapGlyph.addMapData(displayAttrs,true);
+		    mapGlyph.addMapData(displayAttrs,this.jq("andzoom").is(":checked"));
 		    dialog.remove();
 		});
 		this.jq(ID_CANCEL).button().click(()=>{
@@ -1177,70 +1234,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true});
 	    let icons =dialog.find("#" + this.domId("externalGraphic_icons"));
 	    if(icons.length>0) {
-		HU.getEmojis(emojis=>{
-		    let html = "";
-		    emojis.forEach(cat=>{
-			if(html!="") html+="</div>";
-			html+=HU.open('div',['class','ramadda-editablemap-image-category']);
-			html+=HU.div(['class','ramadda-editablemap-image-category-label'],HU.b(cat.name));
-			cat.images.forEach(image=>{
-			    html+=HU.image(image.image,['class','ramadda-clickable ramadda-editablemap-image','width','24px','loading','lazy','title',image.name]);
-			});
-		    });
-		    html+="</div>";
-		    html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		    html = HU.input("","",['id',this.domId('externalGraphic_search'),'placeholder','Search','size','30']) +"<br>"+
-			html;
-		    icons.html(html);
-		    let _this = this;
-		    let images = icons.find('.ramadda-editablemap-image');
-		    images.click(function() {
-			let src = $(this).attr('src');
-			jqid(_this.domId("externalGraphic_image")).attr('src',src);
-			jqid(_this.domId("externalGraphic")).val(src);			
-		    });
-		    let cats = icons.find('.ramadda-editablemap-image-category');
-		    let search = (value) =>{
-			images.each(function() {
-			    let textOk = true;		
-			    if(value) {
-				textOk = false;
-				let html = $(this).attr('title').toLowerCase();
-				if(html.indexOf(value)>=0) {
-				    textOk=true;
-				}
-			    }
-			    $(this).attr('imagevisible',textOk);
-			    if(!textOk) {
-				$(this).fadeOut();
-			    } else {
-				$(this).show();
-			    }
-			});
-			cats.each(function() {
-			    let anyVisible = false;
-			    $(this).find('.ramadda-editablemap-image').each(function() {
-				if($(this).attr('imagevisible')=='true') {
-				    anyVisible = true;
-				}
-			    });
-
-			    let label = $(this).find('.ramadda-editablemap-image-category-label');
-			    if(!anyVisible) {
-				label.fadeOut();
-			    } else {
-				label.show();
-			    }
-			    
-			});
-
-		    };
-		    jqid(this.domId('externalGraphic_search')).keyup(function() {
-			search($(this).val());
-		    });
-		});
+		this.addEmojis(icons);
 	    }
-		
+
 
 
 	    dialog.find('.ramadda-slider').each(function() {
@@ -1315,6 +1311,72 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 
 	},
+	addEmojis:function(icons) {
+	    let _this = this;
+	    HU.getEmojis(emojis=>{
+		let html = "";
+		emojis.forEach(cat=>{
+		    if(html!="") html+="</div>";
+		    html+=HU.open('div',['class','ramadda-editablemap-image-category']);
+		    html+=HU.div(['class','ramadda-editablemap-image-category-label'],HU.b(cat.name));
+		    cat.images.forEach(image=>{
+			html+=HU.image(image.image,['class','ramadda-clickable ramadda-editablemap-image','width','24px','loading','lazy','title',image.name]);
+		    });
+		});
+		html+="</div>";
+		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
+		html = HU.input("","",['id',this.domId('externalGraphic_search'),'placeholder','Search','size','30']) +"<br>"+
+		    html;
+		icons.html(html);
+		let _this = this;
+		let images = icons.find('.ramadda-editablemap-image');
+		images.click(function() {
+		    let src = $(this).attr('src');
+		    jqid(_this.domId("externalGraphic_image")).attr('src',src);
+		    jqid(_this.domId("externalGraphic")).val(src);			
+		});
+		let cats = icons.find('.ramadda-editablemap-image-category');
+		let search = (value) =>{
+		    images.each(function() {
+			let textOk = true;		
+			if(value) {
+			    textOk = false;
+			    let html = $(this).attr('title').toLowerCase();
+			    if(html.indexOf(value)>=0) {
+				textOk=true;
+			    }
+			}
+			$(this).attr('imagevisible',textOk);
+			if(!textOk) {
+			    $(this).fadeOut();
+			} else {
+			    $(this).show();
+			}
+		    });
+		    cats.each(function() {
+			let anyVisible = false;
+			$(this).find('.ramadda-editablemap-image').each(function() {
+			    if($(this).attr('imagevisible')=='true') {
+				anyVisible = true;
+			    }
+			});
+
+			let label = $(this).find('.ramadda-editablemap-image-category-label');
+			if(!anyVisible) {
+			    label.fadeOut();
+			} else {
+			    label.show();
+			}
+			
+		    });
+
+		};
+		jqid(this.domId('externalGraphic_search')).keyup(function() {
+		    search($(this).val());
+		});
+	    });
+	},	    
+
 	doSaveAs: function() {
 	    let name = prompt("New entry name:");
 	    if(!name) return;
@@ -1464,9 +1526,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		let style = $.extend({},glyphType.getStyle());
 		if(mapGlyph.style) $.extend(style,mapGlyph.style);
 		style = $.extend({},style);
-		if(style.label) {
-		    style.pointRadius=0
-		}
 		if(Utils.stringDefined(style.popupText)) {
 		    style.cursor = 'pointer';
 		} else {
@@ -2243,6 +2302,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("layerIndex")) {
 		this.myLayer.ramaddaLayerIndex = +this.getProperty("layerIndex");
 	    }
+	    this.myLayer.ramaddaLayerIndex = 1001;
 	    this.icon = "/icons/map/marker-blue.png";
 	    this.glyphTypes = this.doMakeMapGlyphs().map(glyph=>{
 		if(glyph) return glyph;
@@ -2678,6 +2738,9 @@ var GlyphType = function(display,type,label,style,handler,options) {
 	getStyle:function() {
 	    return this.glyphStyle;
 	},
+	getType:  function() {
+	    return this.type;
+	},
 	isLabel:  function() {
 	    return this.getStyle().label!=null;
 	},
@@ -3001,8 +3064,9 @@ MapGlyph.prototype = {
 	displayAttrs.doInitCenter = andZoom??false;
 	this.attrs.displayAttrs = displayAttrs;
 	let entryId = this.getEntryId();
+	let pointDataUrl = displayAttrs.pointDataUrl ||ramaddaBaseUrl+"/entry/data?max=50000&entryid=" + entryId;
 	let pointData = new PointData(this.attrs.name,  null,null,
-				      ramaddaBaseUrl+"/entry/data?max=50000&entryid=" + entryId,
+				      pointDataUrl,
 				      {entryId:entryId});
 	    
 	let divId   = HU.getUniqueId("display_");
