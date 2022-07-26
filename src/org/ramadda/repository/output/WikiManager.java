@@ -54,7 +54,10 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.auth.DataPolicy;
 import org.ramadda.repository.util.SelectInfo;
 
+
+
 import org.ramadda.util.geo.Bounds;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -7472,6 +7475,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         this.addDisplayImports(request, sb, isMap);
 
+
 	if(isNotebook) {
 	    initWikiEditor(request,  sb);
 	}
@@ -7646,9 +7650,25 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-        if ( !request.isAnonymous()) {
+        if (!request.isAnonymous()) {
             props.put("user", request.getUser().getId());
         }
+
+        if (getAccessManager().canDoEdit(request, entry)) {
+            props.put("canEdit", "true");
+	    String hereKey = GeoUtils.getHereKey();
+	    String googleKey = GeoUtils.getGoogleKey();	
+	    if(hereKey!=null) {
+		props.put("hereRoutingEnabled","true");
+	    }
+	    if(googleKey!=null) {
+		props.put("googleRoutingEnabled","true");
+	    }	    
+	}
+
+        if (!request.isAnonymous()) {
+            props.put("user", request.getUser().getId());
+        }	
 
         String colors = getProperty(wikiUtil, props, ATTR_COLORS);
         if (colors != null) {
