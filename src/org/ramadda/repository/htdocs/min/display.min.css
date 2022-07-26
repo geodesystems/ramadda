@@ -2871,6 +2871,8 @@ table.dataTable tfoot td {
 
 .ramadda-display-editablemap-legend {
     min-width:200px;
+    max-height:400px;
+    overflow-y:auto;
   
 }
 

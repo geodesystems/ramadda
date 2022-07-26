@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 26 12:23:47 MDT 2022";
+var build_date="RAMADDA build date: Tue Jul 26 12:44:56 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38181,7 +38181,7 @@ var GLYPH_IMAGE = "image";
 var GLYPH_ENTRY = "entry";
 var GLYPH_MAP = "map";
 var GLYPH_DATA = "data";
-var GLYPH_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND]
+var GLYPH_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND];
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
@@ -40518,7 +40518,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    
 
-	    this.jq(ID_LEGEND).find('.ramadda-display-editablemap-legend-item').click(function(event) {
+	    let items = this.jq(ID_LEGEND).find('.ramadda-display-editablemap-legend-item');
+	    items.tooltip({
+		show: {
+		    delay: 1000,
+		}
+	    }	    );
+	    items.click(function(event) {
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
@@ -41200,7 +41206,9 @@ MapGlyph.prototype = {
 
 
 	if(glyphType) {
-	    let icon = HU.image(this.attrs.icon??glyphType.getIcon());
+	    let icon = this.attrs.icon??this.style.externalGraphic??glyphType.getIcon();
+	    if(icon==icon_blank) icon = glyphType.getIcon();
+	    icon = HU.image(icon,['width','18px']);
 	    if(url && forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
 	    if(forLegend) {
@@ -41228,8 +41236,12 @@ MapGlyph.prototype = {
 	    label=HU.leftRightTable(label,right);
 	}
 
-	if(forLegend)
-	    label = HU.div(['glyphid',this.getId(),'title','click to toggle visibility&#13;shift-click to select','class',clazz],label);
+	if(forLegend) {
+	    let title = 'click to toggle visibility&#13;shift-click to select';
+	    if(Utils.stringDefined(this.style.label))
+		title = this.style.label;
+	    label = HU.div(['glyphid',this.getId(),'title',title,'class',clazz],label);
+	}
 	return label;
     },
     getAttributes: function() {
@@ -41375,6 +41387,11 @@ MapGlyph.prototype = {
 	this.display.myLayer.redraw();
     },    
     isShape:function() {
+	if(this.getType()==GLYPH_LABEL) {
+	    if(!Utils.stringDefined(this.style.externalGraphic)) return true;
+	    if(this.style.externalGraphic == icon_blank) return true;
+	    if(this.style.pointRadius==0) return true;
+	}
 	return GLYPH_SHAPES.includes(this.getType());
     },
     isData:function() {
