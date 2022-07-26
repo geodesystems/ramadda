@@ -2933,7 +2933,7 @@ function MapGlyph(display,type,attrs,feature,style) {
     this.type = type;
     this.features = [];
     this.attrs = attrs;
-    this.style = style;
+    this.style = style??{};
     this.id = HU.getUniqueId("glyph_");
     if(feature) this.addFeature(feature);
     
