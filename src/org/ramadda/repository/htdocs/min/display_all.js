@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 26 12:09:05 MDT 2022";
+var build_date="RAMADDA build date: Tue Jul 26 12:20:49 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38181,7 +38181,7 @@ var GLYPH_IMAGE = "image";
 var GLYPH_ENTRY = "entry";
 var GLYPH_MAP = "map";
 var GLYPH_DATA = "data";
-var GLYPH_SHAPES = [GLYPH_MARKER,GLYPH_POINT,GLYPH_LABEL,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND]
+var GLYPH_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND]
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
