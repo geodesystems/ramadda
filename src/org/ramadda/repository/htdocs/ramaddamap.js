@@ -1342,34 +1342,53 @@ RepositoryMap.prototype = {
     },    
     checkLayerOrder: function() {
 	let base = this.numberOfBaseLayers;
-	this.nonSelectLayers.every(layer=>{
+	var debug = false;
+	if(debug)
+	    console.log("layer order");
+	this.nonSelectLayers.forEach(layer=>{
+	    if(debug)
+		console.log("\tnonselect:" + layer.name +" " + base);
 	    this.getMap().setLayerIndex(layer, base++);		
-	    return true;
 	});
-	this.loadedLayers.every(layer=>{
+	this.loadedLayers.forEach(layer=>{
+	    if(debug)
+		console.log("\tloaded:" + layer.name +" " + base);
 	    this.getMap().setLayerIndex(layer, base++);		
-	    return true;
 	});
 	this.externalLayers.forEach(layer=>{
 	    if(layer.ramaddaLayerIndex) {
+		if(debug)
+		    console.log("\texternal:" + layer.name +" " + layer.ramaddaLayerIndex);
 		this.getMap().setLayerIndex(layer, layer.ramaddaLayerIndex);
 	    } else {
+		if(debug)
+		    console.log("\texternal:" + layer.name +" " + base);
 		this.getMap().setLayerIndex(layer, base++);
 	    }
 	});
 	if (this.boxes) {
+	    if(debug)
+		console.log("\tboxes");
             this.getMap().setLayerIndex(this.boxes, base++);
 	}
 	if (this.lines) {
+	    if(debug)
+		console.log("\tlines");
             this.getMap().setLayerIndex(this.lines, base++);
 	}
         if (this.circles) {
+	    if(debug)
+		console.log("\tcircles");
             this.getMap().setLayerIndex(this.circles, base++);
 	}
 	if (this.markers) {
+	    if(debug)
+		console.log("\tmarkers");
             this.getMap().setLayerIndex(this.markers, base++);
 	}
 	if (this.labelLayer) {
+	    if(debug)
+		console.log("\tlabel");
 	    this.getMap().setLayerIndex(this.labelLayer, base++);
 	}
 	//            this.getMap().resetLayersZIndex();
