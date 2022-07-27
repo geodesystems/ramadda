@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 27 10:02:40 MDT 2022";
+var build_date="RAMADDA build date: Wed Jul 27 14:09:10 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38291,6 +38291,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
     OpenLayers.Handler.MyPath = OpenLayers.Class(OpenLayers.Handler.Path, {
 	finalize: function(cancel) {
+	    if(this.makingRoute) return;
 	    OpenLayers.Handler.Path.prototype.finalize.apply(this,arguments);
 	    if(cancel) return;
 	    if(this.finishedWithRoute) return;
@@ -38301,7 +38302,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    line.type = GLYPH_POLYLINE;
-	    this.display.jq(ID_MESSAGE2).html("Creating route...");
+
 	    let pts = this.display.getLatLonPoints(line.geometry);
 	    if(pts==null) return;
 	    let xys = [];
@@ -38315,20 +38316,29 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    };
 	    if(this.display.routeProvider)
 		args.provider = this.display.routeProvider;
-	    let url = ramaddaBaseUrl+"/map/getroute";
-	    this.finishedWithRoute = true;
 
+
+	    let reset=  ()=>{
+		this.makingRoute = false;
+		this.finishedWithRoute = false;
+		this.display.jq(ID_MESSAGE2).hide(0);
+		this.display.getMap().clearAllProgress();
+		this.display.setCommandCursor();
+	    };
+
+	    let url = ramaddaBaseUrl+"/map/getroute?entryid="+this.display.getProperty("entryId");
+	    this.finishedWithRoute = true;
+	    this.display.showProgress("Creating route...");
+	    this.makingRoute = true;
 	    $.post(url, args,data=>{
+		reset();
 		this.display.myLayer.removeFeatures([line]);
 		if(data.error) {
-		    alert("Error:" + data.error);
-		    this.finishedWithRoute = false;
-		    this.display.jq(ID_MESSAGE2).hide();
+		    this.display.handleError(data.error);
 		    return;
 		}
 		if(!data.routes || data.routes.length==0) {
 		    alert("No routes found");
-		    this.finishedWithRoute = false;
 		    this.display.jq(ID_MESSAGE2).hide();
 		    return;
 		}
@@ -38354,15 +38364,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		route.type=GLYPH_ROUTE;
 		this.display.addFeatures([route]);
 		this.display.handleNewFeature(route);
-		this.display.clearCommands();
 		this.display.showDistances(route.geometry,GLYPH_ROUTE,true);
 	    }).fail(err=>{
+		reset();
 		this.display.myLayer.removeFeatures([line]);
 		this.display.clearCommands();
-		alert("Error:" + err);
+		this.display.handleError(err);
 	    });
 	},
 	move: function(evt) {
+	    if(this.makingRoute) return;
 	    OpenLayers.Handler.Path.prototype.move.apply(this,arguments);
 	    this.display.showDistances(this.line.geometry,this.glyphType);
 	}
@@ -38612,6 +38623,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 
 
+	setCommandCursor: function(cursor) {
+	    this.getMap().setCursor(cursor??'pointer');
+	},
+
+
 	setCommand:function(command, args) {
 	    args = args ||{};
 	    this.clearCommands();
@@ -38630,6 +38646,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    return true;
 		}
 		if(glyphType) {
+		    this.setCommandCursor();
 		    let styleMap = new OpenLayers.StyleMap({"default":{}});
 		    let tmpStyle = {};
 		    $.extend(tmpStyle,glyphType.getStyle());
@@ -38672,6 +38689,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				let mapOptions = tmpStyle.mapOptions;
 				$.extend(mapOptions,attrs);
 				delete tmpStyle.mapOptions;
+				this.clearCommands();
 				this.createMapData(mapOptions);
 				return;
 			    }
@@ -38840,6 +38858,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	clearCommands:function() {
+	    this.jq(ID_MESSAGE2).hide(0);
+	    this.getMap().clearAllProgress();
 //	    this.unselectAll();
 	    HtmlUtils.hidePopupObject();
 	    this.showCommandMessage("");
@@ -40265,6 +40285,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	showProgress:function(msg) {
+	    this.jq(ID_MESSAGE2).hide();
+	    this.getMap().setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
+	    this.getMap().showLoadingImage();
+	},
 	loadMap: function(entryId) {
 	    //Pass in true=skipParent
 	    let url = this.getProperty("fileUrl",null,false,true);
@@ -40272,8 +40297,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
 	    if(!url) return;
 	    let _this = this;
-	    this.getMap().setProgress(HU.div([ATTR_CLASS, "display-map-message"], "Loading map..."));
-	    this.getMap().showLoadingImage();
+	    this.showProgress("Loading map...");
 	    let finish = ()=>{
 		this.getMap().clearAllProgress();
 	    }
@@ -40341,16 +40365,32 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
                 }
             }).fail(err=>{
 		finish();
-		if(err.responseText) {
-		    let match = err.responseText.match(/<div\s+class\s*=\s*"ramadda-message-inner">(.*?)<\/div>/);
-		    if(match) err = match[1];
-		}
-		this.showMessage("Failed to load map:<br>" + err);
-		console.dir("Error:",err);
+		this.handleError(err);
 	    });
-
-
-
+	},
+	handleError:function(err) {
+	    
+	    let message;
+	    if(err.responseText) {
+		let match = err.responseText.match(/<div\s+class\s*=\s*"ramadda-message-inner">(.*?)<\/div>/);
+		if(match) message = match[1];
+		if(!message) {
+		    if(err.responseText.startsWith("{")) {
+			match = err.responseText.match(/error:'(.*)'/);
+			if(match)   message = match[1];
+		    }
+		}
+	    }
+	    if(message ==null && (typeof err) =="object") {
+		if(err.error) message= err.error;
+		else {
+		    if(err.responseText) {
+			message= Utils.stripTags(err.responseText);
+		    }
+		}
+	    }
+	    err = message??err;
+	    this.showMessage(err);
 	},
 	doMakeMapGlyphs:function() {
 	    let externalGraphic = this.getExternalGraphic();
