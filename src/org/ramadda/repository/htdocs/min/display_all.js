@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 27 00:35:13 MDT 2022";
+var build_date="RAMADDA build date: Wed Jul 27 08:30:40 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -32888,7 +32888,7 @@ let displayMapCurrentMarker = -1;
 let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
-
+var debugit = false;
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
@@ -32957,7 +32957,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         theMap: null
     });
 
-    this.myName = "map " + (ycnt++);
+    this.myycnt = ++ycnt;
+    this.myName = "map " + (this.myycnt);
     const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
     RamaddaUtil.inherit(this,SUPER);
     this.defineSizeByProperties();
@@ -33690,6 +33691,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let madeNewOne = false;
 	    let layer = noSelect?this.myFeatureLayerNoSelect:this.myFeatureLayer;
 	    if(!layer) {
+		if(debugit && ycnt!=this.myycnt) {
+		    console.trace("addFeatures",this.myName);
+		}
 		if(noSelect) 
 		    layer = this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Map Features NS",false);		
 		else
@@ -33736,7 +33740,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    return "displaymap";
 	},
 	deleteDisplay: function() {
-//	    console.log("delete:" + this.myName);
+	    if(debugit)
+	       console.log("delete:" + this.myName);
 	    this.getDisplayManager().removeDisplay(this);
 	    this.removeFeatures();
 	    this.displayDeleted = true;
@@ -35358,6 +35363,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},	    
 
         updateUI: function(args) {
+	    if(debugit && ycnt!=this.myycnt)
+		console.trace("updateUI",this.myName);
+
 	    if(!args) args={};
 	    let debug = false;
 	    this.lastUpdateTime = null;
