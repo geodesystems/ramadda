@@ -531,7 +531,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    tmpStyle.mapOptions.name = attrs.name;			    
 			    cmd.handler.style = tmpStyle;
 			    cmd.handler.layerOptions.styleMap=styleMap;
-			    this.showCommandMessage(glyphType.isImage()?"New Image":"New Entry Marker");
+			    this.showCommandMessage(glyphType.isImage()?"Click and drag to create image":"New Entry Marker");
 			    cmd.activate();
 			    selectCancel(true);
 			};
