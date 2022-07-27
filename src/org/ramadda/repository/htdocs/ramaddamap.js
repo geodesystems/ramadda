@@ -949,14 +949,18 @@ RepositoryMap.prototype = {
 	}
 	
 
+	setTimeout(()=>{
+	    let observer = new ResizeObserver(Utils.throttle(()=>{
+		if(this.getMap()) {
+		    this.getMap().updateSize();
+		}
+	    },1000));
+	    observer.observe(document.querySelector("#"+this.mapDivId+"_themap"));
+	},1000);
+
+
 
     },
-    setProgress: function(msg) {
-	$("#" + this.mapDivId+"_progress").html(msg);
-    },
-    setLabel: function(msg) {
-	$("#" + this.mapDivId+"_label").html(msg);
-    },	
     getBounds: function() {
 	return  this.transformProjBounds(this.getMap().getExtent());
     },
@@ -3976,6 +3980,21 @@ RepositoryMap.prototype = {
         this.showMarkerPopup(mymarker);
     },
 
+
+    clearAllProgress: function() {
+	this.clearProgress();
+	this.hideLoadingImage();	
+    },
+    clearProgress: function(msg) {
+	$("#" + this.mapDivId+"_progress").hide();
+    },
+    setProgress: function(msg) {
+	$("#" + this.mapDivId+"_progress").html(msg);
+	$("#" + this.mapDivId+"_progress").show();
+    },
+    setLabel: function(msg) {
+	$("#" + this.mapDivId+"_label").html(msg);
+    },	
 
     hideLoadingImage:  function() {
         if (this.loadingImage) {
