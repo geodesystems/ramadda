@@ -2081,7 +2081,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	},
 
-
 	loadMap: function(entryId) {
 	    //Pass in true=skipParent
 	    let url = this.getProperty("fileUrl",null,false,true);
@@ -2089,10 +2088,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
 	    if(!url) return;
 	    let _this = this;
+	    this.getMap().setProgress(HU.div([ATTR_CLASS, "display-map-message"], "Loading map..."));
+	    this.getMap().showLoadingImage();
+	    let finish = ()=>{
+		this.getMap().clearAllProgress();
+	    }
             $.ajax({
                 url: url,
                 dataType: 'text',
                 success: (data) => {
+		    finish();
 		    if(data=="") data="[]";
 		    try {
 			let json = JSON.parse(data);
@@ -2151,8 +2156,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
                 }
             }).fail(err=>{
-		this.showMessage("Failed to load map:" + err);
-		console.log("error:" + JSON.stringify(err));
+		finish();
+		if(err.responseText) {
+		    let match = err.responseText.match(/<div\s+class\s*=\s*"ramadda-message-inner">(.*?)<\/div>/);
+		    if(match) err = match[1];
+		}
+		this.showMessage("Failed to load map:<br>" + err);
+		console.dir("Error:",err);
 	    });
 
 
