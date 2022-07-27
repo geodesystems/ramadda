@@ -2434,7 +2434,6 @@ RepositoryMap.prototype = {
                 })
 	    })});
 
-
 	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
 	return layer;
     },
