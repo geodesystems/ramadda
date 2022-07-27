@@ -4881,6 +4881,11 @@ a.wiki-link-noexist {
     border: none;
 }
 
+.ui-slider-handle {
+    width:0.5em !important;
+    margin-left: -.2em !important;
+
+}
 .ui-slider.ui-widget  {
     background: rgb(238,238,238);
     border: var(--basic-border);
