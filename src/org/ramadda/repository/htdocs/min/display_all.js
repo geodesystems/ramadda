@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jul 26 13:23:15 MDT 2022";
+var build_date="RAMADDA build date: Wed Jul 27 00:35:13 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -7900,8 +7900,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.properties.theData.lat = this.getProperty("latitude");
                 this.properties.theData.lon = this.getProperty("longitude", "-105");
             }
-
-
             if (this.properties.theData.hasData()) {
                 this.addData(this.properties.theData);
                 return;
@@ -10801,10 +10799,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         removeDisplay: function(display) {
-            let index = this.displays.indexOf(display);
-            if (index >= 0) {
-                this.displays.splice(index, 1);
-            }
+	    Utils.removeItem(this.displays,display);
             this.doLayout();
         },
         doLayout: function() {
@@ -11710,8 +11705,8 @@ function DisplayManager(argId, argProperties) {
         },
         addDisplay: function(display) {
             display.setDisplayManager(this);
-            display.loadInitialData();
             this.getLayoutManager().addDisplay(display);
+            display.loadInitialData();
         },
 	getDisplays: function() {
 	    return this.getLayoutManager().getDisplays();
@@ -12245,6 +12240,17 @@ function PointData(name, recordFields, records, url, properties) {
 	    }
 	    return cacheObject;
 	},
+
+	removeFromCache:function(object) {
+            let cacheObject = this.getCacheObject();
+            if(cacheObject) {
+		let displays = cacheObject.displays;
+		if(displays) {
+		    Utils.removeItem(displays,object);
+		}
+	    }
+	},
+
 
 	propagateEventDataChanged:function(source) {
             let cacheObject = this.getCacheObject();
@@ -32943,13 +32949,15 @@ function MapFeature(source, points) {
 
 var ID_MAP = "map";
 var ID_MAP_CONTAINER = "mapcontainer";
+var xcnt = 1;
+var ycnt = 1;
 
 function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     $.extend(this, {
         theMap: null
     });
 
-
+    this.myName = "map " + (ycnt++);
     const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
     RamaddaUtil.inherit(this,SUPER);
     this.defineSizeByProperties();
@@ -33468,6 +33476,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:"Map Lines"},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
+	{p:'segmentWidth',d:'1',tt:'Segment line width'},	
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
@@ -33678,19 +33687,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatureLayerNoSelect) func(this.myFeatureLayerNoSelect);
 	},
 	addFeatures:function(features,noSelect) {
-	    if(!this.myFeatureLayer) {
-		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Map Features NS",false);		
-		this.myFeatureLayer = this.map.createFeatureLayer("Map Features",true);
-		if(!this.layerVisible) {
-//		    this.myFeatureLayer.setVisibility(false);
-//		    this.myFeatureLayerNoSelect.setVisibility(false);		    
+	    let madeNewOne = false;
+	    let layer = noSelect?this.myFeatureLayerNoSelect:this.myFeatureLayer;
+	    if(!layer) {
+		if(noSelect) 
+		    layer = this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Map Features NS",false);		
+		else
+		    layer = this.myFeatureLayer = this.map.createFeatureLayer("Map Features",true);
+		if(Utils.isDefined(this.layerVisible)) {
+		    layer.setVisibility(this.layerVisible);
 		}
 		if(this.getProperty("showMarkersToggle") && !this.getProperty("markersVisibility", true)) {
 		    this.applyToFeatureLayers(layer=>{layer.setVisibility(false);});
 		}
 		this.myFeatures= [];
 	    }
-	    let layer = noSelect?this.myFeatureLayerNoSelect:this.myFeatureLayer;
 	    layer.addFeatures(features);
 	    features.forEach(feature=>{
 		feature.layer = layer;
@@ -33725,11 +33736,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    return "displaymap";
 	},
 	deleteDisplay: function() {
+//	    console.log("delete:" + this.myName);
+	    this.getDisplayManager().removeDisplay(this);
 	    this.removeFeatures();
 	    this.displayDeleted = true;
             this.map.getMap().events.unregister("updatesize", this,this.updatesizeFunc);
             this.map.getMap().events.unregister("moveend", this,this.moveendFunc);
             this.map.getMap().events.unregister("zoomend", this,this.zoomendFunc);	    	    
+            let pointData = this.getPointData();
+	    if(pointData) {
+		pointData.removeFromCache(this);
+	    }
 	},
 
 	removeFeatures: function() {
@@ -33747,6 +33764,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(show) {
 		if(this.myFeatureLayer) {
 		    this.myFeatureLayer.setVisibility(visible);
+//		    console.log("setvisible:" + visible+" "+ this.myFeatureLayer.getVisibility());
 		}
 		if(this.myFeatureLayerNoSelect) {
 		    this.myFeatureLayerNoSelect.setVisibility(visible);
@@ -33767,19 +33785,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatureLayer) {
 		this.myFeatureLayer.destroy();
 		this.map.removeLayer(this.myFeatureLayer,true);
+		this.myFeatureLayer = null;
 	    }
 	    if(this.myFeatureLayerNoSelect) {
 		this.myFeatureLayerNoSelect.destroy();
 		this.map.removeLayer(this.myFeatureLayerNoSelect,true);
+		this.myFeatureLayerNoSelect = null;
 	    }	    
 	    if(this.labelFeatures) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
 		this.labelFeatures = null;
 		this.jq("legendid").html("");
 	    }
-
-	    this.myFeatureLayer = null;
-            this.myFeatureLayerNoSelect = null;
 	    this.myFeatures= null;
 	},
 
@@ -34036,6 +34053,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
         },
         cloneLayer: function(layer) {
+	    console.log("CLONE LAYER:"  + layer.name);
             let _this = this;
             this.map.hideLoadingImage();
             layer = layer.clone();
@@ -35046,7 +35064,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				    this.getProperty("showMarkersToggleLabel","Show Markers")) +SPACE2;
 	    }
 
-
 	    if(this.getShowBaseLayersSelect()) {
 		if(this.map.baseLayers) {
 		    let items = [];
@@ -35486,7 +35503,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
             let fields = pointData.getRecordFields();
-            let showSegments = this.getProperty("showSegments", false);
+            let showSegments = this.getShowSegments(false);
 	    if(records.length!=0) {
 		if (!isNaN(pointBounds.north)) {
 		    this.pointBounds = pointBounds;
@@ -36045,7 +36062,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let showEndPoints = this.getProperty("showEndPoints", false);
             let endPointSize = parseInt(this.getProperty("endPointSize", "4"));
             let dfltEndPointSize = endPointSize;
-            let segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
+            let segmentWidth = parseInt(this.getSegmentWidth(1));
             let dfltSegmentWidth = segmentWidth;
 	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer"));
             let showPoints = this.getProperty("showPoints", !haveLayer);
@@ -36163,7 +36180,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		groups =  RecordUtil.groupBy(records, this, false, groupByField);
 	    
 
-	    let showSegments = this.getProperty("showSegments", false);
+	    let showSegments = this.getShowSegments(false);
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
 	    let highlightTemplate = this.getProperty("highlightTemplate");
@@ -38153,6 +38170,10 @@ function CollisionInfo(display,numRecords, roundPoint) {
     }
 }
 
+
+
+
+
 /**
    Copyright 2008-2021 Geode Systems LLC
 */
@@ -38467,7 +38488,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	handleNewFeature:function(feature,style,mapOptions) {
 	    style = style || feature?.style;
 	    mapOptions = mapOptions??feature?.mapOptions ?? style?.mapOptions;
-	    console.log("new:" +mapOptions.type);
+//	    console.log("new:" +mapOptions.type);
 	    if(feature && feature.style && feature.style.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
@@ -39390,15 +39411,15 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		props = r.props;
 	    }
 	    if(mapGlyph) {
-		let level = mapGlyph.getVisibleLevelRange();
+		let level = mapGlyph.getVisibleLevelRange()??{};
 		html+="<hr>";
 		html+=HU.b("Visible: ") + HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible()) +"<br>"
 		let levels = [["","None"],[4,"4 - Most zoomed out"],5,6,7,8,
 			      9,10,11,12,13,14,15,16,17,18,19,[20,"20 - Most zoomed in"]];
 		let t = HU.b("Visible between levels: ") + "<br>" +
-		    HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level?.max)?level.max:"",null,true) +
+		    HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level.min)?level.min:"",null,true) +
 		    " &lt;= level &lt;= " +
-		    HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level?.min)?level.min:"")+ " " +		    
+		    HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level.max)?level.max:"")+ " " +		    
 		    "<br>Current level: " + this.getCurrentLevel();
 		html+=t;
 		html+="<p>";
@@ -40569,8 +40590,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		this.getMap().getMap().events.register("zoomend", "", () =>{
 		    this.checkVisible();
-		});
-	    },1000);
+		},true);
+	    },500);
 	    this.getMap().featureClickHandler = e=>{
 		let feature = e.feature;
 		if(!feature) return;
@@ -41129,13 +41150,16 @@ MapGlyph.prototype = {
 	    return
 	}
 	if(this.displayInfo?.display) {
+	    if(this.displayInfo.display.myFeatureLayer && (
+		!Utils.isDefined(this.displayInfo.display.layerVisible) ||
+		    this.displayInfo.display.layerVisible)) {
+		    
+		this.display.getMap().zoomToLayer(this.displayInfo.display.myFeatureLayer);
+		return
+	    }
 	    if(this.displayInfo.display.pointBounds) {
 		this.display.getMap().zoomToExtent(this.display.getMap().transformLLBounds(this.displayInfo.display.pointBounds));
 		return;
-	    }
-	    if(this.displayInfo.display.myFeatureLayer) {
-		this.display.getMap().zoomToLayer(this.displayInfo.display.myFeatureLayer);
-		return
 	    }
 	}
 
@@ -41319,7 +41343,7 @@ MapGlyph.prototype = {
     },
     applyDisplayAttrs: function(attrs) {
 	if(this.displayInfo && this.displayInfo.display) {
-	    this.displayInfo.display.removeFeatures();
+	    this.displayInfo.display.deleteDisplay();
 	    this.displayInfo.display = null;
 	    jqid(this.displayInfo.divId).remove();
 	    jqid(this.displayInfo.bottomDivId).remove();			
@@ -41358,7 +41382,7 @@ MapGlyph.prototype = {
 	let min = Utils.isDefined(range.min)?+range.min:-1;
 	let max = Utils.isDefined(range.max)?+range.max:10000;
 	visible =  this.getVisible() && (level>=min && level<=max);
-//	console.log("level:" +level,min,max,visible);
+//	console.log("current level:" +level,"min:" + min,max,visible);
 	this.features.forEach(feature=>{
 	    if(!feature.style) feature.style = {};
 	    if(visible) {
