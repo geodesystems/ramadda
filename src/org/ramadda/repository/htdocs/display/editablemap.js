@@ -137,7 +137,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let reset=  ()=>{
 		this.makingRoute = false;
 		this.finishedWithRoute = false;
-		this.display.jq(ID_MESSAGE2).hide(0);
+		this.display.clearMessage2();
 		this.display.getMap().clearAllProgress();
 		this.display.setCommandCursor();
 	    };
@@ -155,7 +155,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		}
 		if(!data.routes || data.routes.length==0) {
 		    alert("No routes found");
-		    this.display.jq(ID_MESSAGE2).hide();
+		    this.display.clearMessage2();
 		    return;
 		}
 		let points = [];
@@ -329,7 +329,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 	    this.addGlyph(mapGlyph);
 	    this.featureChanged();	    
-	    this.jq(ID_MESSAGE2).hide(1000);
+	    this.clearMessage2(1000);
 	    return mapGlyph;
 	},
 
@@ -339,14 +339,24 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	getNewFeature: function() {
 	    return this.myLayer.features[this.myLayer.features.length-1];
 	},
-	showDistances:function(geometry, glyphType,fadeOut) {
-	    let msg = this.getDistances(geometry,glyphType);
-	    this.jq(ID_MESSAGE2).html(msg);
-	    this.jq(ID_MESSAGE2).show();
+	clearMessage2:function(time) {
+	    this.jq(ID_MESSAGE2).hide(time);
+	},
+	showMessage2:function(msg,fadeOut) {
+	    if(Utils.stringDefined(msg)) {
+		this.jq(ID_MESSAGE2).html(msg);
+		this.jq(ID_MESSAGE2).show();
+	    }
 	    if(fadeOut) {
 		setTimeout(()=>{
-		    this.jq(ID_MESSAGE2).hide(1000);
+		    this.clearMessage2(1000);
 		},2000);
+	    }
+	},
+	showDistances:function(geometry, glyphType,fadeOut) {
+	    let msg = this.getDistances(geometry,glyphType);
+	    if(Utils.stringDefined(msg)) {
+		this.showMessage2(msg,fadeOut);
 	    }
 	},
 
@@ -674,7 +684,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	clearCommands:function() {
-	    this.jq(ID_MESSAGE2).hide(0);
+	    this.clearMessage2();
 	    this.getMap().clearAllProgress();
 //	    this.unselectAll();
 	    HtmlUtils.hidePopupObject();
@@ -2102,7 +2112,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 
 	showProgress:function(msg) {
-	    this.jq(ID_MESSAGE2).hide();
+	    this.clearMessage2();
 	    this.getMap().setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
 	    this.getMap().showLoadingImage();
 	},
@@ -2706,7 +2716,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    dragComplete: function() {
 			OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
 			this.theDisplay.featureChanged();	    
-			this.theDisplay.jq(ID_MESSAGE2).hide(1000);
+			this.theDisplay.clearMessage2(1000);
 		    },
 		    dragVertex: function(vertex, pixel) {
 			this.theDisplay.checkSelected(this.feature.mapGlyph);
