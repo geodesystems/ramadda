@@ -929,7 +929,7 @@ RepositoryMap.prototype = {
 	if(this.params.showOpacitySlider) {
 	    //Do this later for when this map is being shown for a display_map
 	    let makeSlider = () =>{
-	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","200px")],"");
+	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","100px")],"");
 	    $("#" + this.mapDivId+"_header").append("Image Opacity:&nbsp;" + slider+"");
 	    $("#"+ this.mapDivId +"_filter_range").slider({
 		min: 0,
