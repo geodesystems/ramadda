@@ -154,7 +154,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                               "_COMMA_");
         String  by         = request.getString(ARG_ORDERBY, (String) null);
         boolean descending = !request.get(ARG_ASCENDING, false);
-        idString += "by:" + by + " desc:" + descending;
+	//TODO:This doesn't work
+	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
@@ -168,13 +169,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 lines.add(line);
             }
             idString = StringUtil.join(",", lines);
-
             List<Entry> entries = getWikiManager().getEntries(request, null,
                                       mainEntry, mainEntry, idString, null,
                                       false, "");
-
-
-
 
             if (by == null) {
                 Metadata sortMetadata =
