@@ -1192,12 +1192,16 @@ a.ramadda-menubar-button:hover {
     border-radius:var(--default-radius);
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
     max-height:400px;
-  
-
 }
 
 .dataLayersDiv, .baseLayersDiv {
     max-height:100px !important;
+}
+
+//TODO
+.dataLayersDiv {
+    max-height:200px !important;
+    height:200px !important;    
 }
 
 .olPopupContent {

@@ -312,7 +312,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	handleNewFeature:function(feature,style,mapOptions) {
 	    style = style || feature?.style;
 	    mapOptions = mapOptions??feature?.mapOptions ?? style?.mapOptions;
-	    console.log("new:" +mapOptions.type);
+//	    console.log("new:" +mapOptions.type);
 	    if(feature && feature.style && feature.style.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
@@ -1235,15 +1235,15 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		props = r.props;
 	    }
 	    if(mapGlyph) {
-		let level = mapGlyph.getVisibleLevelRange();
+		let level = mapGlyph.getVisibleLevelRange()??{};
 		html+="<hr>";
 		html+=HU.b("Visible: ") + HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible()) +"<br>"
 		let levels = [["","None"],[4,"4 - Most zoomed out"],5,6,7,8,
 			      9,10,11,12,13,14,15,16,17,18,19,[20,"20 - Most zoomed in"]];
 		let t = HU.b("Visible between levels: ") + "<br>" +
-		    HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level?.max)?level.max:"",null,true) +
+		    HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level.min)?level.min:"",null,true) +
 		    " &lt;= level &lt;= " +
-		    HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level?.min)?level.min:"")+ " " +		    
+		    HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level.max)?level.max:"")+ " " +		    
 		    "<br>Current level: " + this.getCurrentLevel();
 		html+=t;
 		html+="<p>";
@@ -2414,8 +2414,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		this.getMap().getMap().events.register("zoomend", "", () =>{
 		    this.checkVisible();
-		});
-	    },1000);
+		},true);
+	    },500);
 	    this.getMap().featureClickHandler = e=>{
 		let feature = e.feature;
 		if(!feature) return;
@@ -2974,13 +2974,16 @@ MapGlyph.prototype = {
 	    return
 	}
 	if(this.displayInfo?.display) {
+	    if(this.displayInfo.display.myFeatureLayer && (
+		!Utils.isDefined(this.displayInfo.display.layerVisible) ||
+		    this.displayInfo.display.layerVisible)) {
+		    
+		this.display.getMap().zoomToLayer(this.displayInfo.display.myFeatureLayer);
+		return
+	    }
 	    if(this.displayInfo.display.pointBounds) {
 		this.display.getMap().zoomToExtent(this.display.getMap().transformLLBounds(this.displayInfo.display.pointBounds));
 		return;
-	    }
-	    if(this.displayInfo.display.myFeatureLayer) {
-		this.display.getMap().zoomToLayer(this.displayInfo.display.myFeatureLayer);
-		return
 	    }
 	}
 
@@ -3164,7 +3167,7 @@ MapGlyph.prototype = {
     },
     applyDisplayAttrs: function(attrs) {
 	if(this.displayInfo && this.displayInfo.display) {
-	    this.displayInfo.display.removeFeatures();
+	    this.displayInfo.display.deleteDisplay();
 	    this.displayInfo.display = null;
 	    jqid(this.displayInfo.divId).remove();
 	    jqid(this.displayInfo.bottomDivId).remove();			
@@ -3203,7 +3206,7 @@ MapGlyph.prototype = {
 	let min = Utils.isDefined(range.min)?+range.min:-1;
 	let max = Utils.isDefined(range.max)?+range.max:10000;
 	visible =  this.getVisible() && (level>=min && level<=max);
-//	console.log("level:" +level,min,max,visible);
+//	console.log("current level:" +level,"min:" + min,max,visible);
 	this.features.forEach(feature=>{
 	    if(!feature.style) feature.style = {};
 	    if(visible) {

@@ -504,8 +504,8 @@ function DisplayManager(argId, argProperties) {
         },
         addDisplay: function(display) {
             display.setDisplayManager(this);
-            display.loadInitialData();
             this.getLayoutManager().addDisplay(display);
+            display.loadInitialData();
         },
 	getDisplays: function() {
 	    return this.getLayoutManager().getDisplays();

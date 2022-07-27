@@ -894,6 +894,24 @@ var Utils =  {
 	}
 	return array;
     },
+    getStack:function(cnt) {
+	if(!Utils.isDefined(cnt)) cnt=100;
+	let s = "";
+	let err = new Error();
+	if(!err.stack) {
+	    return "no stack available";
+	}
+	let lines = Utils.split(err.stack,"\n",true,true);
+	for(let i=1;i<cnt&& i<lines.length;i++) {
+	    let line = lines[i];
+//	    s+=line+"\n";
+//	    continue;
+	    line= Utils.split(line,"@");
+	    let match = line[1].match(/\/([^/]+)$/);
+	    s = s+"  "+line[0]+":" + match[1].replace(/:[^:]+$/,"")+"\n";
+	}
+	return s;
+    },
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";

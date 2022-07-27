@@ -4863,8 +4863,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.properties.theData.lat = this.getProperty("latitude");
                 this.properties.theData.lon = this.getProperty("longitude", "-105");
             }
-
-
             if (this.properties.theData.hasData()) {
                 this.addData(this.properties.theData);
                 return;
@@ -7764,10 +7762,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         removeDisplay: function(display) {
-            let index = this.displays.indexOf(display);
-            if (index >= 0) {
-                this.displays.splice(index, 1);
-            }
+	    Utils.removeItem(this.displays,display);
             this.doLayout();
         },
         doLayout: function() {

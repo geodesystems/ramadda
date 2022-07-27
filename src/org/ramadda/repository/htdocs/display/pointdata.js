@@ -325,6 +325,17 @@ function PointData(name, recordFields, records, url, properties) {
 	    return cacheObject;
 	},
 
+	removeFromCache:function(object) {
+            let cacheObject = this.getCacheObject();
+            if(cacheObject) {
+		let displays = cacheObject.displays;
+		if(displays) {
+		    Utils.removeItem(displays,object);
+		}
+	    }
+	},
+
+
 	propagateEventDataChanged:function(source) {
             let cacheObject = this.getCacheObject();
             if(cacheObject) {

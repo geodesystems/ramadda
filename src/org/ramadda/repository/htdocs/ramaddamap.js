@@ -811,6 +811,14 @@ RepositoryMap.prototype = {
 	if(debugBounds) {
 	    console.log("zoomToExtent:"  + bounds);
 	}
+	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
+	    bounds = this.transformProjBounds(bounds);
+	    var center = bounds.getCenterLonLat();
+	    this.setCenter(center);
+	    return;
+	}
+
+
 	this.getMap().zoomToExtent(bounds,flag);
     },
     centerToMarkers: function() {
@@ -2534,12 +2542,9 @@ RepositoryMap.prototype = {
 		map_esri_darkgray,
 		map_esri_terrain,
 		map_shaded_relief,
-
 		map_esri_aeronautical,
-
 		map_publiclands,
 		map_historic,
-
                 map_osm_toner,
                 map_osm_toner_lite,
                 map_watercolor,
@@ -4934,6 +4939,7 @@ RepositoryMap.prototype = {
 	opts = opts||{};
 	opts.style = base_style;
         let layer =  new OpenLayers.Layer.Vector(name||"Markers", opts);
+
 	this.externalLayers.push(layer);
         this.addVectorLayer(layer,canSelect);
 	return layer;
