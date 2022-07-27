@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 27 14:45:59 MDT 2022";
+var build_date="RAMADDA build date: Wed Jul 27 15:08:33 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38715,7 +38715,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    tmpStyle.mapOptions.name = attrs.name;			    
 			    cmd.handler.style = tmpStyle;
 			    cmd.handler.layerOptions.styleMap=styleMap;
-			    this.showCommandMessage(glyphType.isImage()?"New Image":"New Entry Marker");
+			    this.showCommandMessage(glyphType.isImage()?"Click and drag to create image":"New Entry Marker");
 			    cmd.activate();
 			    selectCancel(true);
 			};
