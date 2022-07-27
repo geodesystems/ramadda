@@ -66,6 +66,13 @@ var Utils =  {
 	    window[id] = what;
 	}
     },
+    throttle:function(f, delay) {
+	let timer = 0;
+	return function(...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => f.apply(this, args), delay);
+	}
+    },
     addLoadFunction: function(f) {
         Utils.loadFunctions.push(f);
     },
@@ -4007,6 +4014,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $("#" + id).dialog("open");
         });
     },
+
+
     join: function(items, separator) {
         if(!items.forEach) {
             items=[items];
