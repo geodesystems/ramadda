@@ -3994,16 +3994,22 @@ RepositoryMap.prototype = {
     setLabel: function(msg) {
 	$("#" + this.mapDivId+"_label").html(msg);
     },	
-
+    setCursor:  function(cursor) {
+	jqid(this.mapDivId+"_themap").css('cursor',cursor??'default');
+    },
     hideLoadingImage:  function() {
+	this.setCursor();
+	jqid(this.mapDivId+"_themap").css('cursor','default');
         if (this.loadingImage) {
             this.loadingImage.style.visibility = "hidden";
         }
     },
 
+
     showLoadingImage:  function() {
+	this.setCursor('progress');
         if (this.loadingImage) {
-            this.loadingImage.style.visibility = "inline";
+            this.loadingImage.style.visibility = "visible";
             return;
         }
         let sz = new OpenLayers.Size();

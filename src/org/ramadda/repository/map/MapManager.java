@@ -599,7 +599,21 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     }
 
     public Result processGetRoute(Request request) throws Exception {
-        if (request.isAnonymous()) {
+	boolean ok = false;
+	if(request.exists(ARG_ENTRYID)) {
+	    Entry entry =
+		(Entry) getEntryManager().getEntry(request,
+						   request.getString(ARG_ENTRYID));
+	    if(entry!=null) {
+		ok = getAccessManager().canDoEdit(request, entry);
+	    }
+	}
+
+	if(!ok) {
+	    ok = !request.isAnonymous();
+
+	}
+	if(!ok) {
 	    return new Result("{error:'Routing not available to non logged in users'}", Result.TYPE_JSON);
 	}
 	String hereKey = GeoUtils.getHereKey();
