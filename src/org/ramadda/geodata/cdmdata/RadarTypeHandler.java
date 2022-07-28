@@ -8,6 +8,7 @@ package org.ramadda.geodata.cdmdata;
 
 import org.ramadda.data.util.CdmUtil;
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.OutputHandler;
 
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -85,9 +86,10 @@ public class RadarTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+    @Override
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state,List<Link> links)
             throws Exception {
-        super.getEntryLinks(request, entry, links);
+        super.getEntryLinks(request, entry, state, links);
         /*
         if (entry.getValues() == null) {
             return;

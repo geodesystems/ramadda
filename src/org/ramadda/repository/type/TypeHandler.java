@@ -2797,7 +2797,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
             throws Exception {
 
         if ( !request.getUser().getAnonymous()) {
@@ -2808,10 +2808,8 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
         if (parent != null) {
-            parent.getEntryLinks(request, entry, links);
-
+            parent.getEntryLinks(request, entry, state, links);
             return;
         }
 
@@ -2839,7 +2837,18 @@ public class TypeHandler extends RepositoryManager {
                     ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
                         OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
             links.add(makeHRLink(OutputType.TYPE_FILE));
-
+            List<String> pastTypes =
+                (List<String>) getSessionManager().getSessionProperty(
+                    request, ARG_TYPE);
+            HashSet seen   = new HashSet();
+            boolean didone = addTypes(request, entry, links, childTypes,
+                                      seen);
+            didone |= addTypes(request, entry, links, pastTypes, seen);
+            didone |= addTypesFromEntries(request, entry, links,
+                                          state.getAllEntries(), seen);
+            if (didone) {
+                links.add(makeHRLink(OutputType.TYPE_FILE));
+            }
         }
 
 
@@ -2902,7 +2911,6 @@ public class TypeHandler extends RepositoryManager {
                                    "All Actions", OutputType.TYPE_FILE));
 
         links.add(makeHRLink(OutputType.TYPE_FILE));
-
 
         if ( !canDoNew && isGroup
                 && getAccessManager().canDoUpload(request, entry)) {

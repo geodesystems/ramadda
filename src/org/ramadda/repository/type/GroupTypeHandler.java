@@ -7,6 +7,7 @@ package org.ramadda.repository.type;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -92,11 +93,10 @@ public class GroupTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+    @Override
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
             throws Exception {
-        super.getEntryLinks(request, entry, links);
-
-
+        super.getEntryLinks(request, entry, state, links);
         if ( !entry.getIsLocalFile()) {
             /*
             links.add(

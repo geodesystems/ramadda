@@ -634,9 +634,10 @@ public class GpxTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+    @Override
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
             throws Exception {
-        super.getEntryLinks(request, entry, links);
+        super.getEntryLinks(request, entry, state, links);
         links.add(new Link(request.entryUrl(getRepository().URL_ENTRY_ACCESS,
                                             entry, "type", "kml"), ICON_KML,
                                                 "Convert GPX to KML",
