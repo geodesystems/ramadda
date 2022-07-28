@@ -1030,10 +1030,10 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.tag("hr",
                    HU.style("padding:0px;margin:0px;margin-bottom:0px;"));
 
-        boolean addExtra = false;
+        boolean firstCall = false;
         //If we have a localeid that means this is the first call
         if (localeId != null) {
-            addExtra = true;
+            firstCall = true;
             Entry localeEntry = getEntryManager().getEntry(request, localeId);
             if (localeEntry != null) {
                 if (target.endsWith("_fieldname")) {
@@ -1047,7 +1047,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
                 if (localeEntry != null) {
                     sb.append(HU.open("div",
-                                      HU.cssClass("ramadda-select-inner")));
+                                      HU.cssClass("ramadda-select-block ramadda-select-inner")));
                     Entry grandParent = getEntryManager().getParent(request,
                                             localeEntry);
                     String indent = "";
@@ -1066,14 +1066,13 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (request.get("firstclick", false)) {
-            addExtra = true;
+            firstCall = true;
         }
 
-        if (addExtra) {
+        if (firstCall) {
             List<Entry> recents =
                 getEntryManager().getSessionEntries(request);
             if (recents.size() > 0) {
-                HU.open(sb, "div", HU.cssClass("ramadda-select-inner"));
                 List    favoriteLinks = new ArrayList();
                 boolean didOne        = false;
                 for (Entry recent : getSelectEntries(request, recents)) {
@@ -1087,15 +1086,17 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
                     if ( !didOne) {
                         sb.append(HU.center(HU.b(msg("Recent"))));
+			HU.open(sb, "div", HU.cssClass("ramadda-select-block  ramadda-select-inner"));
                     }
                     didOne = true;
                     sb.append(link);
                 }
-                HU.close(sb, "div");
+
                 if (didOne) {
+		    HU.close(sb, "div");
                     sb.append(sectionDivider);
                 }
-            }
+	    }
             HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
             String searchId = HU.getUniqueId("search");
             HU.div(sb, "", HU.attrs("id", searchId));
@@ -1107,7 +1108,7 @@ public class HtmlOutputHandler extends OutputHandler {
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
             if (favoritesList.size() > 0) {
-                HU.open(sb, "div", HU.cssClass("ramadda-select-inner"));
+                HU.open(sb, "div", HU.cssClass("ramadda-select-block"));
                 List    favoriteLinks = new ArrayList();
                 boolean didOne        = false;
                 for (FavoriteEntry favorite : favoritesList) {
@@ -1135,8 +1136,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (parent != null) {
             sb.append(getSelectLink(request, parent, seen, target, "../"));
         }
-
-        HU.open(sb, "div", HU.clazz("ramadda-select-inner"));
+        HU.open(sb, "div", HU.clazz(firstCall?"ramadda-select-block":"ramadda-select-inner"));
         for (Entry subGroup : children) {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
@@ -1150,9 +1150,7 @@ public class HtmlOutputHandler extends OutputHandler {
         HU.close(sb, "div");
         HU.close(sb, "div");
         String s = sb.toString();
-        s = HtmlUtils.div(
-            s, HtmlUtils.style(
-                "padding-left:5px;padding-right:5px;padding-bottom:5px;"));
+        s = HU.div(s, HU.cssClass("ramadda-select-popup"));
 
         return makeAjaxResult(request, getRepository().translate(request, s));
     }

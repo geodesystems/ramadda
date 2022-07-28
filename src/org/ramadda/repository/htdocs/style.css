@@ -1198,7 +1198,6 @@ a.ramadda-menubar-button:hover {
     max-height:100px !important;
 }
 
-//TODO
 .dataLayersDiv {
     max-height:200px !important;
     height:200px !important;    
@@ -2369,13 +2368,6 @@ td.entry-table-block {
     margin-right:6px;
 }
 
-.ramadda-folder-block {
-    margin-right:0px;
-    padding:0px;
-    padding-left:12px;
-    max-height:200px;
-    overflow-y:auto;
-}
 
 .entry-arrow {
     padding-left: 0px;    
@@ -2528,7 +2520,6 @@ pre {
 .metadata-row-odd {
     margin-left: 20px;
     margin-bottom:2px;
-//    background-color:#f4f4f4;
     background-color:#f8f8f8;    
 }
 
@@ -2909,10 +2900,20 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
-.ramadda-select-inner {
-    padding-right:10px;
+.ramadda-folder-block {
+    margin-right:0px;
+    padding:0px;
+    padding-left:12px;
+}
+
+
+.ramadda-select-block {
     max-height:150px;
     overflow-y:auto;
+}
+
+.ramadda-select-inner {
+    padding-right:10px;
 }
 
 
@@ -3264,7 +3265,6 @@ td .ramadda-role {
 
 
 .ramadda-access-summary td {
-    //padding: 5px;
     border: 1px #efefef solid;
     font-size:9pt;
 }
@@ -3966,6 +3966,15 @@ wiki {
     background-color:white;
 }
 
+
+
+
+.ramadda-select-popup {
+    padding-top:2px;
+    padding-bottom:2px;
+    padding-left:8px;
+    padding-right:8px;
+}
 
 .ramadda-select-search {
     margin-top:8px;
