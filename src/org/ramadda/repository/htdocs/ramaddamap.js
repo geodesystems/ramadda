@@ -434,12 +434,12 @@ function RepositoryMap(mapId, params) {
                 }
 		let time =  new Date().getTime();
 		//We get multiple click events if we have multiple features on the same point
-		if(Utils.isDefined(this.lastClickTime)) {
-		    if(time-this.lastClickTime <500) {
+		if(Utils.isDefined(_this.lastClickTime)) {
+		    if(time-_this.lastClickTime <500) {
 			return;
 		    }
 		}
-		this.lastClickTime  = time;
+		_this.lastClickTime  = time;
 		_this.handleFeatureclick(e.layer, e.feature,false,e);
             }
         }
@@ -1200,6 +1200,15 @@ RepositoryMap.prototype = {
         return layer.canSelect;
     },
     handleNofeatureclick: function(layer) {
+	//We get multiple click events if we have multiple features on the same point
+	if(Utils.isDefined(this.lastClickTime)) {
+	    let time =  new Date().getTime();
+	    if(time-this.lastClickTime <2000) {
+		return;
+	    }
+	}
+
+
 	this.closePopup();
         HtmlUtils.hidePopupObject();
         if (layer.canSelect === false) return;
@@ -3845,7 +3854,9 @@ RepositoryMap.prototype = {
 	}
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
-            this.currentPopup.destroy();
+	    try {
+		this.currentPopup.destroy();
+	    } catch(exc) {}
             this.currentPopup = null;
             this.hiliteBox('');
             if (this.selectedFeature) {
@@ -4746,7 +4757,6 @@ RepositoryMap.prototype = {
 	    }
 	}
 
-
         let id = marker.ramaddaId;
         if (!id)
             id = marker.id;
@@ -4880,8 +4890,11 @@ RepositoryMap.prototype = {
         }
 
 
+
         marker.popupText = popup;
         popup.marker = marker;
+
+
         this.getMap().addPopup(popup);
         this.currentPopup = popup;
 
