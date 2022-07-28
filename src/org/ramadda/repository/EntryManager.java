@@ -4252,6 +4252,8 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+        addSessionEntry(request, entry);
+
         if ( !entry.getResource().isUrl()) {
             if ( !getAccessManager().canDownload(request, entry)) {
                 fatalError(request, "Cannot download file");
