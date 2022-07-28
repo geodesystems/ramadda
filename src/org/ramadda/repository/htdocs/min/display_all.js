@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 27 18:13:30 MDT 2022";
+var build_date="RAMADDA build date: Wed Jul 27 20:09:06 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -39430,6 +39430,20 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
 	    let html="";
 	    let props;
+	    let buttons = "";
+	    buttons+="<center>";
+	    buttons +=HU.div([CLASS,"display-button","command",ID_APPLY], "Apply");
+	    buttons += SPACE2;
+	    buttons +=HU.div([CLASS,"display-button","command",ID_OK], "Ok");
+	    buttons += SPACE2;
+	    if(mapGlyph) {
+		buttons +=HU.div([CLASS,"display-button","command",ID_DELETE], "Delete");
+		buttons += SPACE2;
+	    }
+	    buttons +=HU.div([CLASS,"display-button","command",ID_CANCEL], "Cancel");	   
+	    buttons+="</center>";
+
+	    html+=buttons;
 	    if(mapGlyph) {
 		html += HU.formTable();
 		html+=HU.formEntry("Name:",HU.input("",mapGlyph.getName(),['id',this.domId('mapglyphname'),'size','40']));
@@ -39463,18 +39477,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		html+="<p>";
 	    }
 
-	    html+="<center>";
-	    html +=HU.div([ID,this.domId(ID_APPLY), CLASS,"display-button"], "Apply");
-	    html += SPACE2;
-	    html +=HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "Ok");
-	    html += SPACE2;
-	    if(mapGlyph) {
-		html +=HU.div([ID,this.domId(ID_DELETE), CLASS,"display-button"], "Delete");
-		html += SPACE2;
-	    }
-	    html +=HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel");	    
+	    html+=buttons;
 	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
-	    html+="</center>";
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true});
 	    let icons =dialog.find("#" + this.domId("externalGraphic_icons"));
@@ -39534,26 +39538,30 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		dialog.hide();
 		dialog.remove();
 	    }
-	    if(mapGlyph) {
-		this.jq(ID_DELETE).button().click(()=>{
-		    this.removeMapGlyphs([mapGlyph]);
-		    this.addFeatureList();
-		    close();
-		});
-	    }
-	    this.jq(ID_OK).button().click(()=>{
-		apply(mapGlyph,props);
-		this.addFeatureList();
-		close();
-	    });
-	    this.jq(ID_APPLY).button().click(()=>{
-		apply(mapGlyph,props);
-		this.addFeatureList();
-	    });
-	    this.jq(ID_CANCEL).button().click(()=>{
-		close();
-	    });
 
+
+	    dialog.find('.display-button').button().click(function() {
+		let command = $(this).attr("command");
+		switch(command) {
+		case ID_OK: 
+		    apply(mapGlyph,props);
+		    _this.addFeatureList();
+		    close();
+		    break;
+		case ID_APPLY:
+		    apply(mapGlyph,props);
+		    _this.addFeatureList();
+		    break;
+		case ID_CANCEL:
+		    close();
+		    break;
+		case ID_DELETE:
+		    _this.removeMapGlyphs([mapGlyph]);
+		    _this.addFeatureList();
+		    close();
+		    break;
+		}
+	    });
 	},
 	addEmojis:function(icons) {
 	    let _this = this;
