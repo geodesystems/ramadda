@@ -425,10 +425,10 @@ function RepositoryMap(mapId, params) {
             },
             featureclick: function(e) {
 		if(_this.featureClickHandler) {
-		    if(!_this.featureClickHandler(e)) 
+		    if(!_this.featureClickHandler(e))  {
 			return;
+		    }
 		}
-
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
@@ -929,7 +929,7 @@ RepositoryMap.prototype = {
 	if(this.params.showOpacitySlider) {
 	    //Do this later for when this map is being shown for a display_map
 	    let makeSlider = () =>{
-	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","100px")],"");
+	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","150px")],"");
 	    $("#" + this.mapDivId+"_header").append("Image Opacity:&nbsp;" + slider+"");
 	    $("#"+ this.mapDivId +"_filter_range").slider({
 		min: 0,
@@ -950,12 +950,14 @@ RepositoryMap.prototype = {
 	
 
 	setTimeout(()=>{
+	    let mapDiv = document.querySelector("#"+this.mapDivId+"_themap");
+	    if(!mapDiv) return;
 	    let observer = new ResizeObserver(Utils.throttle(()=>{
 		if(this.getMap()) {
 		    this.getMap().updateSize();
 		}
 	    },1000));
-	    observer.observe(document.querySelector("#"+this.mapDivId+"_themap"));
+	    observer.observe(mapDiv);
 	},1000);
 
 
@@ -1198,6 +1200,8 @@ RepositoryMap.prototype = {
         return layer.canSelect;
     },
     handleNofeatureclick: function(layer) {
+	this.closePopup();
+        HtmlUtils.hidePopupObject();
         if (layer.canSelect === false) return;
         if (layer && layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
@@ -1344,11 +1348,11 @@ RepositoryMap.prototype = {
             this.initialLayers.push(layer);
         }
     },
-    toFront: function(layer) {
+    toFrontLayer: function(layer) {
 	Utils.toFront(this.nonSelectLayers, layer);
 	this.checkLayerOrder();
     },
-    toBack: function(layer) {
+    toBackLayer: function(layer) {
 	Utils.toBack(this.nonSelectLayers, layer);
 	this.checkLayerOrder();
     },    
@@ -1420,6 +1424,7 @@ RepositoryMap.prototype = {
         if (north > 88) north = 88;
         if (south < -88) south = -88;
         let latLonBounds = MapUtils.createBounds(west, south, east, north);
+
         let imageBounds = this.transformLLBounds(latLonBounds);
         let image = new OpenLayers.Layer.Image(
             name, url,
