@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 28 22:29:58 MDT 2022";
+var build_date="RAMADDA build date: Thu Jul 28 23:10:57 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38794,7 +38794,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 				     initCallback:initCallback,
 				     callback:callback,
 				     'eventSourceId':this.domId(ID_MENU_NEW)};
-			let entryType = glyphType.isImage()?'type_image':glyphType.isMap()?'type_map,geo_gpx,geo_shapefile':'';
+			let entryType = glyphType.isImage()?'type_image':glyphType.isMap()?'type_map,geo_geojson,geo_gpx,geo_shapefile':'';
 			selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),entryType,null,props);
 			return
 		    } else if(glyphType.getType() == GLYPH_MARKER) {
@@ -39731,7 +39731,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
             this.getGlyphs().forEach(mapGlyph=>{
 		let attrs=mapGlyph.getAttributes();
 		let obj = {
-		    mapOptions:attrs
+		    mapOptions:attrs,
+		    id:mapGlyph.getId()
 		};
 		let style = mapGlyph.getStyle();
 		if(mapGlyph.getMapLayer()) {
@@ -39791,22 +39792,23 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		return
 	    }
 	    let glyphs = mapJson.glyphs||[];
-	    glyphs.forEach(mapGlyph=>{
-		let mapOptions = mapGlyph.mapOptions;
+	    glyphs.forEach(jsonObject=>{
+		let mapOptions = jsonObject.mapOptions;
 		if(!mapOptions) {
 		    mapOptions = {
-			type:mapGlyph.type
+			type:jsonObject.type
 		    }
 		}
 
-		let type = mapGlyph.type||mapOptions.type;
+		mapOptions.id = jsonObject.id;
+		let type = jsonObject.type||mapOptions.type;
 		let glyphType = this.getGlyphType(type);
 		if(!glyphType) {
 		    console.log("no type:" + type);
 		    return;
 		}
 		let style = $.extend({},glyphType.getStyle());
-		if(mapGlyph.style) $.extend(style,mapGlyph.style);
+		if(jsonObject.style) $.extend(style,jsonObject.style);
 		style = $.extend({},style);
 		if(Utils.stringDefined(style.popupText)) {
 		    style.cursor = 'pointer';
@@ -39836,13 +39838,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    this.addGlyph(mapGlyph);
 		    return
 		}  
-		let points=mapGlyph.points;
+		let points=jsonObject.points;
 		if(!points || points.length==0) {
 		    console.log("Unknown glyph:" + mapOptions.type);
 		    return;
 		}
 
-		let feature = this.makeFeature(map,mapGlyph.geometryType, style, points);
+		let feature = this.makeFeature(map,jsonObject.geometryType, style, points);
 		if(feature) {
 		    feature.style = style;
 		    this.addFeatures([feature]);
@@ -40320,7 +40322,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
 		break;
 	    case 'geo_geojson': 
-		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallbackl,andZoom);
+		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
 		break;		
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
@@ -41274,7 +41276,6 @@ GlyphType.prototype = {
 
 
 
-
 function MapGlyph(display,type,attrs,feature,style) {
     let glyphType = display.getGlyphType(type);
     this.name = glyphType?.getLabel()??type;
@@ -41283,9 +41284,8 @@ function MapGlyph(display,type,attrs,feature,style) {
     this.features = [];
     this.attrs = attrs;
     this.style = style??{};
-    this.id = HU.getUniqueId("glyph_");
+    this.id = attrs.id ?? HU.getUniqueId("glyph_");
     if(feature) this.addFeature(feature);
-    
 }
 
 MapGlyph.prototype = {
