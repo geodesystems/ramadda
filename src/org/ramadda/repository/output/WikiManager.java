@@ -7467,7 +7467,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         boolean isNotebook =   displayType.equals("notebook");	
 
 
-        boolean isMap = displayType.equals("map") || displayType.equals("editablemap") || displayType.equals("entrylist") || isNotebook;
+        boolean isMap = displayType.equals("map") ||
+	    displayType.equals("editablemap") ||
+	    displayType.equals("imdv") ||
+	    displayType.equals("entrylist") || isNotebook;
 	//	System.err.println("type:" + displayType +" map:" + isMap);
 	if(displayType.equals("editablemap")) {
 	    HU.importJS(sb, getPageHandler().getCdnPath("/lib/here.js"));
