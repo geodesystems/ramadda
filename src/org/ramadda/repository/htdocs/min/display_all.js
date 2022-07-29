@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 28 22:20:19 MDT 2022";
+var build_date="RAMADDA build date: Thu Jul 28 22:29:58 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -41418,7 +41418,7 @@ MapGlyph.prototype = {
 
 	if(glyphType) {
 	    let icon = this.attrs.icon??this.style.externalGraphic??glyphType.getIcon();
-	    if(icon==icon_blank) icon = glyphType.getIcon();
+	    if(icon && icon.endsWith("blank.gif")) icon = glyphType.getIcon();
 	    icon = HU.image(icon,['width','18px']);
 	    if(url && forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
@@ -41618,7 +41618,7 @@ MapGlyph.prototype = {
     isShape:function() {
 	if(this.getType()==GLYPH_LABEL) {
 	    if(!Utils.stringDefined(this.style.externalGraphic)) return true;
-	    if(this.style.externalGraphic == icon_blank) return true;
+	    if(this.style.externalGraphicb && this.style.externalGraphic.endsWith("blank.gif")) return true;
 	    if(this.style.pointRadius==0) return true;
 	}
 	return GLYPH_SHAPES.includes(this.getType());
