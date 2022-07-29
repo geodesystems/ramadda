@@ -103,6 +103,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
+	{p:'showOpacitySlider',ex:'false',d:false},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
 	{p:'showLayerSwitcher',d:true,ex:'false'},
@@ -225,7 +226,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
-	    if(this.getProperty("showOpacitySlider")) {
+	    if(this.getShowOpacitySlider()) {
 		params.showOpacitySlider=true;
 	    }
 	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity"].forEach(p=>{

@@ -289,7 +289,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_ROTATE  = "rotate";
     const ID_LEGEND = "legend";
 
-    if(!Utils.isDefined(properties.showOpacitySlider)) properties.showOpacitySlider=true; 
+    if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
+	properties.showOpacitySlider=true; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -309,6 +310,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:"fontFamily",d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
 	{p:"imageOpacity",d:1},
 	{p:'showLegend',d:true},
+	{p:'showMenuBar',d:true},
 	{p:'showLegendShapes',d:true},	
 	{p:'showMapLegend',d:false},
 
@@ -2905,7 +2907,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['xwidth','50%'],menuBar) +
 							 HU.td(['width','50%'], message) +
 						 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
-		this.jq(ID_TOP_LEFT).append(menuBar);
+		if(this.getShowMenuBar()) {
+		    this.jq(ID_TOP_LEFT).append(menuBar);
+		}
 		this.jq(ID_MENU_NEW).click(function() {
 		    _this.showNewMenu($(this));
 		});
