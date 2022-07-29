@@ -7472,7 +7472,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    displayType.equals("imdv") ||
 	    displayType.equals("entrylist") || isNotebook;
 	//	System.err.println("type:" + displayType +" map:" + isMap);
-	if(displayType.equals("editablemap")) {
+	if(displayType.equals("editablemap")||displayType.equals("imdv")) {
 	    HU.importJS(sb, getPageHandler().getCdnPath("/lib/here.js"));
 	}
 
