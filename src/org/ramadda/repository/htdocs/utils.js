@@ -329,19 +329,25 @@ var Utils =  {
         });
         return accum;
     },
-    toFront: function(list,element) {
-        const index = list.indexOf(element);
+    toFront: function(list,element,isList) {
+        const index = list.indexOf(isList?element[0]:element);
         if (index > -1) {
             list.splice(index, 1);
-            list.push(element);
+	    if(isList)
+		list.push(...element);
+	    else
+		list.push(element);
         }
         return list;
     },
-    toBack: function(list,element) {
-        const index = list.indexOf(element);
+    toBack: function(list,element,isList) {
+        const index = list.indexOf(isList?element[0]:element);
         if (index > -1) {
             list.splice(index, 1);
-            list.unshift(element);                      
+	    if(isList)
+		list.unshift(...element);
+	    else
+	    	list.unshift(element);                      
         }
         return list;
     },
