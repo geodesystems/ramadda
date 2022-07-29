@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 28 23:10:57 MDT 2022";
+var build_date="RAMADDA build date: Thu Jul 28 23:55:03 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -33854,9 +33854,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
+		console.log("FS1");
 		let didSomething= false;
 		if(feature.collisionInfo)  {
 		    feature.collisionInfo.dotSelected(feature);
+		    console.log("FS2");
 		    return;
 		}
 		if(feature.record) {
@@ -33876,8 +33878,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    didSomething= true;
 		}
+		console.log("FS-" + didSomething);
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
+		else
+		    return true;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
@@ -40307,8 +40312,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 	createMapLayer:function(opts,style,andZoom) {
 	    let url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
-	    let selectCallback = layer=>{
-	    };
+	    let selectCallback = null;
 	    let unSelectCallback = null;	    
 	    let loadCallback = layer=>{
 	    }
@@ -40759,6 +40763,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if(!mapGlyph) {
 		    return true;
 		}
+		if(mapGlyph.isMap()) {
+		    return true;
+		}
 		if(this.command==ID_EDIT) {
 		    this.doEdit(feature.layer.mapGlyph);
 		    return false;
@@ -40768,6 +40775,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    return false;
 		}
 		let showPopup = (html,props)=>{
+		    this.getMap().lastClickTime  = new Date().getTime();
 		    let id = HU.getUniqueId("div");
 		    let div = HU.div(['id',id]);
 		    let location = e.feature.geometry.getBounds().getCenterLonLat();
@@ -40796,8 +40804,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    //Run through any script tags and load them
 		    //once done show the popup
 		    let cb = ()=>{
-			if(js[0]==null) {
+			if(js.length==0 && js[0]==null) {
 			    showPopup(html,props);
+
 			    return;
 			}
 			let url = js[0];
@@ -40827,6 +40836,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			   wikiCallback).fail(wikiError);
 		    return false;
 		}
+
 
 		if(!Utils.stringDefined(text)) return false;
 		text = text.replace(/\n/g,"<br>");
@@ -41469,6 +41479,9 @@ MapGlyph.prototype = {
 	    label = HU.div(['glyphid',this.getId(),'title',title,'class',clazz],label);
 	}
 	return label;
+    },
+    isMap:function() {
+	return this.getType()==GLYPH_MAP;
     },
     isMultiEntry:function() {
 	return this.getType()==GLYPH_MULTIENTRY;
