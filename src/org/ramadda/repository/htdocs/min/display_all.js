@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul 29 07:41:45 MDT 2022";
+var build_date="RAMADDA build date: Fri Jul 29 14:27:03 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38202,6 +38202,7 @@ addGlobalDisplayType({
 });
 
 
+var GLYPH_FIXED = "fixed";
 var GLYPH_MARKER = "marker";
 var GLYPH_POINT = "point";
 var GLYPH_LABEL = "label";
@@ -38713,6 +38714,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    tmpStyle.mapOptions = {
 			type:glyphType.type
 		    }
+		    if(glyphType.isFixed()) {
+			let text = prompt("Text:");
+			if(!text) return
+			let mapOptions = tmpStyle.mapOptions;
+			delete tmpStyle.mapOptions;
+			tmpStyle.text = text;
+			this.clearCommands();
+			let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,tmpStyle);
+			mapGlyph.addFixed();
+			this.addGlyph(mapGlyph);
+			this.featureChanged();	    
+			this.clearMessage2(1000);
+			return;
+		    }
+
+
 		    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
 			let callback = (entryId,imageUrlOrEntryAttrs) =>{
 			    let attrs = {};
@@ -39252,13 +39269,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		} else if(props) {
 		    props.forEach(prop=>{
+			let id = "glyphedit_" + prop;
+			if(prop=="externalGraphic") id ="externalGraphic";
 			if(prop=="labelSelect") return;
-			let v = this.jq(prop).val();
+			let v = this.jq(id).val();
 			if(prop=="label") {
 			    v = v.replace(/\\n/g,"\n");
 			}
 			if(prop=="showLabels") {
-			    v = this.jq(prop).is(":checked");
+			    v = this.jq(id).is(":checked");
 			}
 			style[prop] = v;
 		    });
@@ -39361,10 +39380,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    
 	    if(props.includes("entryId") && !props.includes("wikiText")) props.push("wikiText");
-	    if(!props.includes("wikiText") && !props.includes("popupText")) props.push("popupText");
+	    if(!props.includes("wikiText") && !props.includes("text") && !props.includes("popupText")) {
+		props.push("popupText");
+	    }
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
 
 	    props.forEach(prop=>{
+		let id = "glyphedit_" + prop;
 		if(notProps.includes(prop)) return;
 		let label =  Utils.makeLabel(prop);		
 		if(prop=="pointRadius") label = "Size";
@@ -39375,7 +39397,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let graphic = values[prop];
 		    if(!Utils.isDefined(graphic))
 			graphic = this.getExternalGraphic();
-		    widget = HU.hidden("",graphic,['id',this.domId("externalGraphic")]) +
+		    widget = HU.hidden("",graphic,['id','externalGraphic']) +
 			"<table><tr valign=top><td width=1%>" +
 			HU.image(graphic,['width','24px','id',this.domId("externalGraphic_image")]) +
 			"</td><td>" +
@@ -39393,29 +39415,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let size = "20";
 		    if(prop=="label") {
 			size="80"
-			widget =  HU.textarea("",v,[ID,this.domId(prop),"rows",5,"cols", 60]);
-		    } else if(prop=="popupText" || prop=="wikiText") {
+			widget =  HU.textarea("",v,[ID,this.domId(id),"rows",5,"cols", 60]);
+		    } else if(prop=="popupText" || prop=="wikiText"|| prop=="text") {
 			size="80"
-			widget =  HU.textarea("",v||"",[ID,this.domId(prop),"rows",5,"cols", 60]);
+			widget =  HU.textarea("",v||"",[ID,this.domId(id),"rows",5,"cols", 60]);
 		    } else if(prop=="strokeDashstyle") {
-			widget = HU.select("",['id',this.domId(prop)],['solid','dot','dash','dashdot','longdash','longdashdot'],v);
+			widget = HU.select("",['id',this.domId(id)],['solid','dot','dash','dashdot','longdash','longdashdot'],v);
 		    } else if(prop=="fontWeight") {
-			widget = HU.select("",['id',this.domId(prop)],["normal","bold","lighter","bolder","100","200","300","400","500","600","700","800","900"],v);
+			widget = HU.select("",['id',this.domId(id)],["normal","bold","lighter","bolder","100","200","300","400","500","600","700","800","900"],v);
  		    } else if(prop=="fontStyle") {
-			widget = HU.select("",['id',this.domId(prop)],["normal","italic"],v);			
+			widget = HU.select("",['id',this.domId(id)],["normal","italic"],v);			
 		    } else {
 			if(props == "pointRadius") label="Size";
 			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop=="imageUrl") size="80";		    
 			if(prop.indexOf("Color")>=0) {
-			    let id = this.domId(prop);
-			    let colors = Utils.split("transparent,red,orange,yellow,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
+			    let domId = this.domId(id);
+			    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
 
 			    let bar = "";
 			    let cnt = 0;
 			    colors.forEach(color=>{
-				bar += HU.div(['title',color,'color',color,'widget-id',id,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
+				bar += HU.div(['title',color,'color',color,'widget-id',domId,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
 				cnt++;
 				if(cnt>=10) {
 				    cnt = 0;
@@ -39423,8 +39445,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				}
 			    });
 			    bar = HU.div(['style','max-height:66px;overflow-y:auto;border:1px solid #ccc;'],bar);
-			    widget =  HU.input("",v,['class','ramadda-editablemap-color',ID,id,"size",8]);
-			    widget =  HU.div(['id',id+'_display','class','ramadda-dot', 'style',HU.css('background',v)]) +
+			    widget =  HU.input("",v,['class','ramadda-editablemap-color',ID,domId,"size",8]);
+			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',v)]) +
 				HU.space(2)+widget;
 			    widget  = HU.table([],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
 			} else if(prop=="labelAlign") {
@@ -39432,24 +39454,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    let items = [["lt","Left Top"],["ct","Center Top"],["rt","Right Top"],
 					 ["lm","Left Middle"],["cm","Center Middle"],["rm","Right Middle"],
 					 ["lb","Left Bottom"],["cb","Center Bottom"],["rb","Right Bottom"]];
-			    widget =  HU.select("",['id',this.domId(prop)],items,v);			
+			    widget =  HU.select("",['id',this.domId(id)],items,v);			
 			} else if(prop=="showLabels") {
-			    widget = HU.checkbox(this.domId(prop),[],v);
+			    widget = HU.checkbox(this.domId(id),[],v);
 			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Offset")>=0) {
-			    let id = this.domId(prop);
+			    let domId = this.domId(id);
 			    if(!Utils.isDefined(v)) v=1;
 			    else if(v==="") v=1;
 			    let min  = prop.indexOf("Offset")>=0?0:0;
-			    widget =  HU.input("",v,[ID,this.domId(prop),"size",4])+HU.space(4) +
-				HU.div(['slider-min',min,'slider-max',50,'slider-step',1,'slider-value',v,'slider-id',id,ID,id+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
+			    widget =  HU.input("",v,[ID,this.domId(id),"size",4])+HU.space(4) +
+				HU.div(['slider-min',min,'slider-max',50,'slider-step',1,'slider-value',v,'slider-id',domId,ID,id+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
 
 			} else if(prop.indexOf("Opacity")>=0) {
-			    let id = this.domId(prop);
+			    let id = this.domId(id);
 			    if(!v || v=="") v= 1;
-			    widget =  HU.input("",v,[ID,this.domId(prop),"size",4])+HU.space(4) +
+			    widget =  HU.input("",v,[ID,this.domId(id),"size",4])+HU.space(4) +
 				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',id,ID,id+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
 			} else {
-			    widget =  HU.input("",v,[ID,this.domId(prop),"size",size]);
+			    widget =  HU.input("",v,[ID,this.domId(id),"size",size]);
 			}
 		    }
 		}
@@ -39546,7 +39568,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let c = $(this).val();
 		let id = $(this).attr('id');
 		$("#"+ id+'_display').css('background',c);
-		asdsa
 	    });
 	    dialog.find('.ramadda-color-select').click(function(){
 		let c = $(this).attr('color');
@@ -39838,6 +39859,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.addEntries();
 		    return
 		}  
+		if(glyphType.isFixed()) {
+		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
+		    this.addGlyph(mapGlyph);
+		    mapGlyph.addFixed();
+		    return
+
+		}
 
 		if(!style.fillColor) style.fillColor = "transparent";
 
@@ -40648,7 +40676,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {},
 			  OpenLayers.Handler.MyEntryPoint,
 			  {isData:true, tooltip:'Select a map data entry to display',
-			   icon:ramaddaBaseUrl+"/icons/chart.png"});		
+			   icon:ramaddaBaseUrl+"/icons/chart.png"});
+
+	    new GlyphType(this,GLYPH_FIXED,"Fixed Text",
+			  {
+			      text:"",
+			      right:"50%",
+			      bottom:'5px',
+			      left:'',
+			      top:'',
+			      borderWidth:1,
+			      borderColor:"#ccc",
+			      fillColor:"#fffeec",
+			      fontColor:"#000",
+			      fontSize:"12pt"			      
+			      
+			  },
+			  OpenLayers.Handler.MyEntryPoint,
+			  {isFixed:true, tooltip:'Add fixed text',
+			   icon:ramaddaBaseUrl+"/icons/sticky-note-text.png"});			    
 
 	},
 	showCommandMessage:function(msg)  {
@@ -41215,7 +41261,10 @@ GlyphType.prototype = {
     },    
     isData:  function() {
 	return this.options.isData;
-    },	
+    },
+    isFixed:  function() {
+	return this.options.isFixed;
+    },	    
     isMap:  function() {
 	return this.options.isMap;
     },			
@@ -41521,6 +41570,10 @@ MapGlyph.prototype = {
 		$.extend(feature.style,style);
 	    }
 	});	    
+	if(this.isFixed()) {
+	    this.addFixed();
+	}
+
     },
     move:function(dx,dy) {
 	this.features.forEach(feature=>{
@@ -41650,6 +41703,41 @@ MapGlyph.prototype = {
     isData:function() {
 	return this.type == GLYPH_DATA;
     },
+    isFixed:function() {
+	return this.type == GLYPH_FIXED;
+    },    
+    addFixed: function() {
+	if(this.fixedComponent) this.fixedComponent.remove();
+	let style = this.style;
+	let line = "solid";
+	if(style.strokeDashstyle) {
+	    if(['dot','dashdot'].includes(style.strokeDashstyle)) {
+		line = "dotted";
+	    } else  if(style.strokeDashstyle.indexOf("dash")>=0) {
+		line = "dashed";
+	    }
+	}
+	let css = HU.css('padding','5px');
+	let color = Utils.stringDefined(style.borderColor)?style.borderColor:"#ccc";
+	css+= HU.css('border' , style.borderWidth+"px" + " " + line+ " " +color);
+	if(Utils.stringDefined(style.fillColor)) {
+	    css+=HU.css("background",style.fillColor);
+	}
+	css+=HU.css('color',style.fontColor);
+	if(Utils.stringDefined(style.fontSize)) {
+	    css+=HU.css('font-size',style.fontSize);
+	}
+
+	['right','left','bottom','top'].forEach(d=>{
+	    if(Utils.stringDefined(style[d])) css+=HU.css(d,style[d]);
+	});
+	jqid(this.getId()).remove();
+	let text = this.style.text??"";
+	text = text.replace(/\n/g,"<br>");
+	let html = HU.div(['id',this.getId(),CLASS,"ramadda-imdv-fixed",'style',css],text);
+	this.display.jq(ID_MAP_CONTAINER).append(html);
+    },
+
     addMapData:function(displayAttrs,andZoom) {
 	displayAttrs.doInitCenter = andZoom??false;
 	this.attrs.displayAttrs = displayAttrs;
@@ -41802,6 +41890,9 @@ MapGlyph.prototype = {
 
     },
     doRemove:function() {
+	if(this.isFixed()) {
+	    jqid(this.getId()).remove();
+	}
 	if(this.features) {
 	    this.display.removeFeatures(this.features);
 	}

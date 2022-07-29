@@ -2887,6 +2887,11 @@ table.dataTable tfoot td {
 }
 
 
+.ramadda-imdv-fixed {
+    border-radius: 4px;
+    position: absolute;
+}
+
 .ramadda-editablemap-message2 {
     display:none;
     min-width:200px;
