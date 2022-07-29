@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 28 23:55:03 MDT 2022";
+var build_date="RAMADDA build date: Fri Jul 29 00:51:18 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38191,12 +38191,13 @@ function CollisionInfo(display,numRecords, roundPoint) {
    Copyright 2008-2021 Geode Systems LLC
 */
 var xcnt=0;
+const DISPLAY_IMDV = "imdv";
 const DISPLAY_EDITABLEMAP = "editablemap";
 addGlobalDisplayType({
-    type: DISPLAY_EDITABLEMAP,
-    label: "Editable Map",
+    type: DISPLAY_IMDV,
+    label: "Integrated Map Data",
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Editable map"),        
+    tooltip: makeDisplayTooltip("Integrated Map Data"),        
 });
 
 
@@ -38222,7 +38223,7 @@ var GLYPH_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXA
 var GLYPH_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 
 
-function RamaddaEditablemapDisplay(displayManager, id, properties) {
+function RamaddaImdvDisplay(displayManager, id, properties) {
     let _this = this;
     OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	initialize: function(control, callbacks, options) {
@@ -38478,8 +38479,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_LEGEND = "legend";
 
     if(!Utils.isDefined(properties.showOpacitySlider)) properties.showOpacitySlider=true; 
-
-    const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_EDITABLEMAP,  properties);
+    const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
@@ -39695,7 +39695,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 	doSave: function() {
 	    let _this = this;
-	    if(this.getProperty("thisEntryType")!="geo_editable_json") {
+	    if(this.getProperty("thisEntryType")!="geo_editable_json" && this.getProperty("thisEntryType")!="geo_imdv") {
 		this.showMessage("Entry is not the correct type");
 		return;
 	    }
@@ -41139,7 +41139,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
 
-	    if(this.getProperty("thisEntryType")=="geo_editable_json") {
+	    if(this.getProperty("thisEntryType")=="geo_editable_json" || this.getProperty("thisEntryType")=="geo_imdv") {
 		this.loadMap();
 	    }
         },
@@ -41819,6 +41819,12 @@ MapGlyph.prototype = {
 
 }
 
+
+
+function RamaddaEditablemapDisplay(displayManager, id, properties) {
+    const SUPER = new RamaddaImdvDisplay(displayManager,  id,  properties);
+    RamaddaUtil.inherit(this,SUPER);
+}
 /*
   Copyright 2008-2021 Geode Systems LLC
 */
