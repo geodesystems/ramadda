@@ -981,9 +981,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
+		console.log("FS1");
 		let didSomething= false;
 		if(feature.collisionInfo)  {
 		    feature.collisionInfo.dotSelected(feature);
+		    console.log("FS2");
 		    return;
 		}
 		if(feature.record) {
@@ -1003,8 +1005,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    didSomething= true;
 		}
+		console.log("FS-" + didSomething);
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
+		else
+		    return true;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{

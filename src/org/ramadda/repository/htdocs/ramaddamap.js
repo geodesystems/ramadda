@@ -424,10 +424,8 @@ function RepositoryMap(mapId, params) {
                 _this.handleNofeatureclick(e.layer);
             },
             featureclick: function(e) {
-		if(_this.featureClickHandler) {
-		    if(!_this.featureClickHandler(e))  {
-			return;
-		    }
+		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
+		    return;
 		}
                 if(e.feature && e.feature.noSelect) {
                     return;
@@ -1208,7 +1206,6 @@ RepositoryMap.prototype = {
 	    }
 	}
 
-
 	this.closePopup();
         HtmlUtils.hidePopupObject();
         if (layer.canSelect === false) return;
@@ -1275,8 +1272,6 @@ RepositoryMap.prototype = {
 	//layer.drawFeature(layer.selectedFeature, "select");
 	layer.drawFeature(layer.selectedFeature, style);
 
-
-
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
             if (feature.originalStyle) {
@@ -1286,6 +1281,7 @@ RepositoryMap.prototype = {
         } else {
             this.showMarkerPopup(feature, true);
         }
+	
 
         if (center) {
             var geometry = feature.geometry;
@@ -1926,17 +1922,22 @@ RepositoryMap.prototype = {
     },
     getFeatureText: function(layer, feature) {
 	if(feature.textGetter) {
-	    return  feature.textGetter(feature);
+	    let text =  feature.textGetter(feature);
+	    if(text) return text;
 	}
 	if(this.textGetter) {
-	    return this.textGetter(layer,feature);
+	    let text= this.textGetter(layer,feature);
+	    if(text) return text;
 	}
 
         let style = feature.style || feature.originalStyle || layer.style;
         let p = feature.attributes;
         let out = feature.popupText;
+
+
         if (!out) {
             if (style && style["balloonStyle"]) {
+		console.dir("BS");
                 out = style["balloonStyle"];
                 for (let attr in p) {
                     //$[styleid/attr]
@@ -1987,7 +1988,6 @@ RepositoryMap.prototype = {
         return out;
     },
     onFeatureSelect: function(layer,event) {
-
 	let _this = this;
         if (this.onSelect) {
             func = window[this.onSelect];
@@ -1995,11 +1995,11 @@ RepositoryMap.prototype = {
             return;
         }
         let feature = layer.feature;
-	if(this.featureSelectHandler) {
-	    if(this.featureSelectHandler(feature)) {
-		return;
-	    }
+	if(this.featureSelectHandler && !this.featureSelectHandler(feature)) {
+	    return;
 	}
+
+
 
 	if(!this.params.doPopup) return;
         let out = this.getFeatureText(layer, feature);
@@ -2078,11 +2078,11 @@ RepositoryMap.prototype = {
                 */
             if (selectCallback == null || !Utils.isDefined(selectCallback))
                 selectCallback = function(layer,event) {
-                    _this.onFeatureSelect(layer,event)
+                    return _this.onFeatureSelect(layer,event)
                 };
             if (unselectCallback == null || !Utils.isDefined(unselectCallback))
                 unselectCallback = function(layer,event) {
-                    _this.onFeatureUnselect(layer,event)
+                    return _this.onFeatureUnselect(layer,event)
                 };
             layer.selectCallback = selectCallback;
             layer.unselectCallback = selectCallback;
@@ -3835,6 +3835,7 @@ RepositoryMap.prototype = {
         _this.map.addControl(_this.panControl);
     },
 
+
     closePopup:  function(evt) {
         if (this.currentPopup) {
 	    this.getMap().removePopup(this.currentPopup);
@@ -4739,7 +4740,6 @@ RepositoryMap.prototype = {
     },
 
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
-
         if (this.entryClickHandler && window[this.entryClickHandler]) {
             if (!window[this.entryClickHandler](this, marker)) {
                 return;
@@ -4751,10 +4751,8 @@ RepositoryMap.prototype = {
             this.currentPopup.destroy();
         }
 
-	if(this.featureSelectHandler) {
-	    if(this.featureSelectHandler(marker)) {
-		return;
-	    }
+	if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
+	    return;
 	}
 
         let id = marker.ramaddaId;
@@ -4786,6 +4784,7 @@ RepositoryMap.prototype = {
 	if(!markerText) {
 	    markerText =marker.text;
 	}
+
 	if(!markerText) return;
 	if(this.params.displayDiv) {
 	    $("#" + this.params.displayDiv).html(markerText);
