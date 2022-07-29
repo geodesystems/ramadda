@@ -243,10 +243,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	},
         createMap: function() {
             this.map = this.getProperty("externalMap", null);
-	    if(this.map) return this.map;
+	    if(this.map) {
+		return this.map;
+	    }
 
-
-           let _this = this;
+            let _this = this;
             var params = {
                 defaultMapLayer: this.getDefaultMapLayer(map_default_layer),
 		showLayerSwitcher: this.getShowLayerSwitcher(),
@@ -307,7 +308,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    }
 		}
 		this.initMapParams(params);
-
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
 		//Set this so there is no popup on the off feature
 		this.map.textGetter = (layer,feature) =>{

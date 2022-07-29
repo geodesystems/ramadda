@@ -35,7 +35,6 @@ var GLYPH_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_
 
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
-    let _this = this;
     OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	initialize: function(control, callbacks, options) {
 	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
@@ -63,9 +62,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!this.checkingImageSize) {
 		this.checkingImageSize = true;
 		const img = new Image();
-		let _this = this;
-		img.onload = function() {
-		    _this.imageBounds={width:this.width,height:this.height};
+		img.onload = ()=> {
+		    this.imageBounds={width:this.width,height:this.height};
 		}
 		img.src = this.style.imageUrl;		
 	    }
@@ -103,6 +101,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     });
 
 
+
     OpenLayers.Handler.MyEntryPoint = OpenLayers.Class(OpenLayers.Handler.Point, {
 	finalize: function(cancel) {
 	    OpenLayers.Handler.Point.prototype.finalize.apply(this,arguments);
@@ -111,22 +110,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
     });
     
-
-    OpenLayers.Handler.MyPath = OpenLayers.Class(OpenLayers.Handler.Path, {
-	finalize: function(cancel) {
-	    OpenLayers.Handler.Path.prototype.finalize.apply(this,arguments);
-	    if(cancel) return;
-	    let line =  this.display.getNewFeature();
-	    if(!line || !line.geometry) {
-		return;
-	    }
-	    this.display.handleNewFeature(line);
-	},
-	move: function(evt) {
-	    OpenLayers.Handler.Path.prototype.move.apply(this,arguments);
-	    this.display.showDistances(this.line.geometry,this.glyphType);
-	}
-    });
 
     OpenLayers.Handler.MyPolygon = OpenLayers.Class(OpenLayers.Handler.Polygon, {
 	finalize: function(cancel) {
@@ -145,6 +128,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     });
 
 
+
+
+    OpenLayers.Handler.MyPath = OpenLayers.Class(OpenLayers.Handler.Path, {
+	finalize: function(cancel) {
+	    OpenLayers.Handler.Path.prototype.finalize.apply(this,arguments);
+	    if(cancel) return;
+	    let line =  this.display.getNewFeature();
+	    if(!line || !line.geometry) {
+		return;
+	    }
+	    this.display.handleNewFeature(line);
+	},
+	move: function(evt) {
+	    OpenLayers.Handler.Path.prototype.move.apply(this,arguments);
+	    this.display.showDistances(this.line.geometry,this.glyphType);
+	}
+    });
+
     OpenLayers.Handler.MyRoute = OpenLayers.Class(OpenLayers.Handler.Path, {
 	finalize: function(cancel) {
 	    if(this.makingRoute) return;
@@ -157,7 +158,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 //		this.display.handleNewFeature(line);
 		return;
 	    }
-	    line.type = GLYPH_POLYLINE;
 	    let pts = this.display.getLatLonPoints(line.geometry);
 	    if(pts==null) return;
 	    let xys = [];
@@ -409,7 +409,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(components[0].components) components = components[0].components;
 	    }
 	    let pts = components.map(pt=>{
-		return  this.map.transformProjPoint(pt)
+		return  this.getMap().transformProjPoint(pt)
 	    });
 	    return pts;
 	},
@@ -813,7 +813,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.makeGlyphButtons(mapGlyph,true);
  	    line += HU.td(["nowrap","",STYLE,HU.css("padding","5px")], title);
 	    let col = mapGlyph.getDecoration();
-
 	    let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType());
 	    if(msg) {
 		col+="" + msg.replace(/<br>/g," ");
@@ -910,6 +909,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return displayAttrs;
 	},
 
+	
 	addFeatureList:function() {
 	    let features="<table width=100%>";
 	    this.glyphListMap = {};
@@ -983,8 +983,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
 	    let dialog = this.listDialog  = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Features",header:true,draggable:true,remove:false});
 	    this.addFeatureList();
+	    let _this  = this;
 	    this.jq(ID_LIST_DELETE).button().click(()=>{
-		let _this  = this;
 		let cut  = [];
 		this.jq(ID_LIST).find(".ramadda-display-editablemap-feature-selected").each(function() {
 		    let id  = $(this).attr("glyphid");
@@ -1271,6 +1271,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	    
 	doProperties: function(style, apply,mapGlyph) {
+	    let _this = this;
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
 	    let html="";
 	    let props;
@@ -1545,6 +1546,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    Utils.makeDownloadFile("map.json",json);
 	},
 	makeJson: function() {
+	    let _this = this;
 	    let list =[];
             this.getGlyphs().forEach(mapGlyph=>{
 		let attrs=mapGlyph.getAttributes();
@@ -1743,7 +1745,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		for(let i=0;i<points.length;i+=2) {
 		    latLons.push(new OpenLayers.Geometry.Point(points[i+1],points[i]));
 		}
-		if(true||geometryType=="OpenLayers.Geometry.Polygon") {
+		if(geometryType=="OpenLayers.Geometry.Polygon") {
 		    map.transformPoints(latLons);
 		    let linearRing = new OpenLayers.Geometry.LinearRing(latLons);
 		    let geom = new OpenLayers.Geometry.Polygon(linearRing);
@@ -1756,6 +1758,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return  map.createPoint("",point,style);
 	},
 	showFileMenu: function(button) {
+	    let _this = this;
 	    let html ="";
 	    if(this.getProperty("canEdit")) {	    
 		html +=this.menuItem(this.domId(ID_SAVE),"Save",'S');
@@ -1766,7 +1769,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
-	    let _this = this;
 
 	    this.jq(ID_NAVIGATE).click(function() {
 		HtmlUtils.hidePopupObject();
@@ -1823,6 +1825,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	showMapLegend: function() {
+	    let _this = this;
 	    if(!this.getShowMapLegend()) return;
 	    let html = "";
 	    let map = {};
@@ -1841,7 +1844,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html = HU.div(['style','padding:5px;border : var(--basic-border);  background-color : var(--color-mellow-yellow);'], html);
 	    }
 	    this.jq(ID_MESSAGE3).html(html);
-	    let _this = this;
 	    this.jq(ID_MESSAGE3).find('.ramadda-clickable').click(function() {
 		let id = $(this).attr('id');
 		_this.selectGlyph(map[id]);
@@ -1853,6 +1855,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.makeLegend();
 	},
 	showNewMenu: function(button) {
+	    let _this = this;
 	    let html ="<table><tr valign=top>";
 	    let tmp = Utils.splitList(this.glyphTypes,this.glyphTypes.length/3);
 	    tmp.forEach(glyphTypes=>{
@@ -1870,7 +1873,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+="</tr></table>";
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
-	    let _this = this;
 	    this.glyphTypes.forEach(g=>{
 		this.jq("menunew_" + g.type).click(function(){
 		    HtmlUtils.hidePopupObject();
@@ -1882,7 +1884,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	showEditMenu: function(button) {
-
 	    let html = [[ID_CUT,"Cut",'X'],[ID_COPY,"Copy",'C'],[ID_PASTE,"Paste",'V'],null,
 			[ID_SELECTOR,"Select"],
 			[ID_SELECT_ALL,"Select All",'A'],			
@@ -1902,40 +1903,39 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	     },"");
 	    
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
-	    let _this = this;
-	    this.jq(ID_CUT).click(function(){
+	    this.jq(ID_CUT).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.doCut();
+		this.doCut();
 	    });
-	    this.jq(ID_SELECT_ALL).click(function(){
+	    this.jq(ID_SELECT_ALL).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.selectAll();
+		this.selectAll();
 	    });
 	    
-	    this.jq(ID_COPY).click(function(){
+	    this.jq(ID_COPY).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.doCopy();
+		this.doCopy();
 	    });	    
-	    this.jq(ID_PASTE).click(function(){
+	    this.jq(ID_PASTE).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.doPaste();
+		this.doPaste();
 	    });
-	    this.jq(ID_TOFRONT).click(function(){
+	    this.jq(ID_TOFRONT).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.changeOrder(true);
+		this.changeOrder(true);
 	    });
-	    this.jq(ID_TOBACK).click(function(){
+	    this.jq(ID_TOBACK).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.changeOrder(false);
+		this.changeOrder(false);
 	    });
-	    this.jq(ID_EDIT).click(function(){
+	    this.jq(ID_EDIT).click(()=>{
 		HtmlUtils.hidePopupObject();
-		_this.handleEditEvent();
+		this.handleEditEvent();
 	    });	    
 	    [ID_SELECTOR,ID_MOVER,ID_RESHAPE,ID_RESIZE,ID_ROTATE].forEach(command=>{
-		this.jq(command).click(function(){
+		this.jq(command).click(()=>{
 		    HtmlUtils.hidePopupObject();
-		    _this.setCommand(command);
+		    this.setCommand(command);
 		});
 	    });
 	},
@@ -2127,6 +2127,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
 	    let selectCallback = null;
 	    let unSelectCallback = null;	    
+	    let errorCallback = (url,err)=>{
+		this.handleError(err,url);
+	    };
+
 	    let loadCallback = layer=>{
 	    }
 	    switch(opts.entryType) {
@@ -2136,10 +2140,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return this.getMap().addImageLayer(opts.entryId, opts.name,"",url,true,
 						   opts.north, opts.west,opts.south,opts.east, w,h);
 	    case 'geo_gpx': 
-		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
+		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom,errorCallback);
 		break;
 	    case 'geo_geojson': 
-		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
+		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom,errorCallback);
 		break;		
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
@@ -2150,7 +2154,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(layer.features) {layer.features.forEach(f=>{f.style = style;});}
 		    layer.redraw();
 		};
-		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom);
+		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom,errorCallback);
 
 		return layer;
 	    default:
@@ -2165,12 +2169,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().showLoadingImage();
 	},
 	loadMap: function(entryId) {
+	    let _this = this;
 	    //Pass in true=skipParent
 	    let url = this.getProperty("fileUrl",null,false,true);
 	    if(!url && entryId)
 		url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
 	    if(!url) return;
-	    let _this = this;
 	    this.showProgress("Loading map...");
 	    let finish = ()=>{
 		this.getMap().clearAllProgress();
@@ -2224,12 +2228,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(bounds) {
 			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
 			}
-			this.loadAnnotationJson(json,_this.map,_this.myLayer);
+			try {
+			    this.loadAnnotationJson(json,_this.map,_this.myLayer);
+			} catch(err) {
+			    this.handleError(err);
+			}
 			this.featureHasBeenChanged = false;
 			this.makeLegend();
 			this.showMapLegend();
 			this.checkVisible();
-
 		    } catch(err) {
 			this.showMessage("Failed to load map:" + err);
 			console.log("error:" + err);
@@ -2243,15 +2250,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.handleError(err);
 	    });
 	},
-	handleError:function(err) {
-	    
+	handleError:function(err,url) {
 	    let message;
-	    if(err.responseText) {
-		let match = err.responseText.match(/<div\s+class\s*=\s*"ramadda-message-inner">(.*?)<\/div>/);
+	    let responseText = err.responseText??err?.priv?.responseText;
+	    if(responseText) {
+		let match = responseText.match(/<div\s+class\s*=\s*"ramadda-message-inner">(.*?)<\/div>/);
 		if(match) message = match[1];
 		if(!message) {
-		    if(err.responseText.startsWith("{")) {
-			match = err.responseText.match(/error:'(.*)'/);
+		    if(responseText.startsWith("{")) {
+			match = responseText.match(/error:'(.*)'/);
 			if(match)   message = match[1];
 		    }
 		}
@@ -2260,11 +2267,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(err.error) message= err.error;
 		else {
 		    if(err.responseText) {
-			message= Utils.stripTags(err.responseText);
+			message= Utils.stripTags(responseText);
 		    }
 		}
 	    }
 	    err = message??err;
+	    if(url) err="Error loading URL:" + url+"<br>"+err;
 	    this.showMessage(err);
 	},
 	doMakeMapGlyphs:function() {
@@ -2477,6 +2485,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    SUPER.initMap.call(this)
 	},
 	makeLegend: function() {
+	    let _this = this;
 	    if(!this.getShowLegend()) return;
 	    let showShapes = this.getShowLegendShapes();
 	    let html = "";
@@ -2491,7 +2500,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html  = HU.div(['class','ramadda-display-editablemap-legend'],html);
 	    }
 	    this.jq(ID_LEGEND).html(html);
-	    let _this = this;
 	    this.jq(ID_LEGEND).find('.ramadda-display-editablemap-legend-item-edit').click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
@@ -2540,13 +2548,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
         initDisplay: function(embedded) {
-	    if(!embedded) {
-		SUPER.initDisplay.call(this)
-	    }
+	    let _this = this;
+	    SUPER.initDisplay.call(this)
 	    let legend = HU.div(['id',this.domId(ID_LEGEND)]);
 	    this.jq(ID_LEFT).html(legend);
 	    
-	    let _this = this;
 	    this.myLayer = this.map.createFeatureLayer("Annotation Features",false,null,{rendererOptions: {zIndexing: true}});
 	    this.selectionLayer = this.map.createFeatureLayer("Selection",false,null,{rendererOptions: {zIndexing: true}});	    
 	    this.selectionLayer.setZIndex(1000)

@@ -2358,7 +2358,7 @@ RepositoryMap.prototype = {
     },
 
 
-    initMapVectorLayer:  function(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent) {
+    initMapVectorLayer:  function(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent,errorCallback) {
         let _this = this;
         this.showLoadingImage();
         layer.isMapLayer = true;
@@ -2368,7 +2368,12 @@ RepositoryMap.prototype = {
             "loadend": function(e) {
                 _this.hideLoadingImage();
                 if (e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
-                    console.log("An error occurred loading the map:" + url+"\n" + JSON.stringify(e.response, null, 2));
+		    if(errorCallback) {
+			errorCallback(url,e.response);
+		    } else {
+
+			console.log("An error occurred loading the map:" + url+"\n" + JSON.stringify(e.response, null, 2));
+		    }
                     return;
                 }
                 if (zoomToExtent) {
@@ -2404,7 +2409,7 @@ RepositoryMap.prototype = {
 	let v = this.getProperty(prop  +"_"+id, this.getProperty(prop+idx,this.getProperty(prop, dflt)));
 	return v;
     },
-    addMapFileLayer:  function(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+    addMapFileLayer:  function(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 
 	let idx  = this.loadedLayers.length+1;
 	let opts =  {
@@ -2430,12 +2435,12 @@ RepositoryMap.prototype = {
 	$.extend(opts, args);
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
 	this.checkLayerToggle(name,layer,idx,opts);
-        this.initMapVectorLayer(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
+        this.initMapVectorLayer(layer, url, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent,errorCallback);
         return layer;
     },
 
     addGpxLayer: function(name, url,
-			  canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+			  canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 	let layer = new OpenLayers.Layer.Vector(name, {
             strategies: [new OpenLayers.Strategy.Fixed()],
             projection: this.displayProjection,
@@ -2448,7 +2453,7 @@ RepositoryMap.prototype = {
                 })
 	    })});
 
-	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },
 
@@ -2461,7 +2466,7 @@ RepositoryMap.prototype = {
     },
 
 
-    addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+    addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
         let layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -2471,12 +2476,12 @@ RepositoryMap.prototype = {
             }),
         });
 
-	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },
 
 
-    addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+    addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 	if(url.match(".kmz")) {
 	    let div = $("<div  class=ramadda-map-message>Note: KMZ files are not supported</div>")[0];
             this.getMap().viewPortDiv.appendChild(div);
@@ -2495,7 +2500,7 @@ RepositoryMap.prototype = {
                 })
             }),
         });
-	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
         return layer;
     },
 
