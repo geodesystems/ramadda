@@ -215,7 +215,7 @@ mapVar="gpxMap${entryid}" }}
 </wiki>
    </type>
 
-<type name="geo_editable_json"  description="Editable Map File"  isgroup="true">
+<type name="geo_imdv"  description="Integrated Map Data"  isgroup="true">
    <property name="defaultFilename" value="map.json"/>
    <property name="convertidsinfile" value="true"/>
    <property name="icon" value="/icons/map.png"/>
@@ -223,12 +223,15 @@ mapVar="gpxMap${entryid}" }}
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-{{display_editablemap height=90vh  showBounds=false  
+{{display_imdv height=90vh  showBounds=false  
 }}
 -section
 ]]>
 </wiki>
-   </type>
+</type>
+
+<type name="geo_editable_json"  description="Editable Map File"  isgroup="true" foruser="false">
+</type>
    
 
 </types>
