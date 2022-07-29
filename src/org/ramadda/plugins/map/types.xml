@@ -230,7 +230,7 @@ mapVar="gpxMap${entryid}" }}
 </wiki>
 </type>
 
-<type name="geo_editable_json"  description="Editable Map File"  isgroup="true" foruser="false">
+<type name="geo_editable_json" super="geo_imdv"  description="Editable Map File"  isgroup="true" foruser="false">
 </type>
    
 
