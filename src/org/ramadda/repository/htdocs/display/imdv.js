@@ -3026,7 +3026,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['xwidth','50%'],menuBar) +
 							 HU.td(['width','50%'], message) +
 						 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
-		if(this.getShowMenuBar()||this.canEdit()) {
+		let showMenuBar = this.getShowMenuBar(null);
+		if(!Utils.isDefined(showMenuBar))
+		    showMenuBar = this.canEdit();
+
+		if(showMenuBar) {
 		    this.jq(ID_TOP_LEFT).append(menuBar);
 		}
 		this.jq(ID_MENU_NEW).click(function() {
