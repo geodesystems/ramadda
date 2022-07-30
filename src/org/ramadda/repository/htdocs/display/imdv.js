@@ -1615,6 +1615,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let latlon = this.getMap().getBounds();
 	    let tbounds =  _this.getMap().transformLLBounds(latlon);
 	    let json  = {
+		mapProperties:this.mapProperties||{},
 		glyphs:list,
 		zoomLevel:this.getCurrentLevel(),
 		bounds:{
@@ -1790,13 +1791,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doMapProperties:function() {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let html = HU.formTable();
-	    html+=HU.formEntry("Show Legend:",HU.checkbox(this.domId("showlegend"),[],this.mapProperties.showLegend||this.getShowLegend()));
+	    html+=HU.formEntry("",HU.checkbox(this.domId("showlegend"),[],
+					      Utils.isDefined(this.mapProperties.showLegend)?this.mapProperties.showLegend:this.getShowLegend(),'Show Legend'));
 	    html+="</table>"
 	    html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 			 HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
 	    html  = HU.div(['style','margin:5px;'],html);
 	    let anchor = this.jq(ID_MENU_FILE);
-	    let dialog = HU.makeDialog({content:html,title:'Map Properties',header:true,
+	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
 					my:"left top",at:"left bottom",draggable:true,anchor:anchor});
 
 	    let close=()=>{
@@ -1804,6 +1806,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 	    this.jq(ID_OK).button().click(()=>{
+		this.mapProperties.showLegend = this.jq("showlegend").is(':checked');
+		this.makeLegend();
 		close();
 	    });
 	    this.jq(ID_CANCEL).button().click(()=>{
@@ -1819,8 +1823,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html +=this.menuItem(this.domId(ID_SAVE),"Save",'S');
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
-	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Properties");
-	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features",'L');
+	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
+	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...",'L');
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
 	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");	    
 	    html  = this.makeMenu(html);
@@ -2281,6 +2285,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				});
 			    }				     
 			}
+			this.mapProperties = json.mapProperties||this.mapProperties||{};
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
 			    _this.getMap().getMap().zoomTo(zoomLevel);
 			}
@@ -2563,6 +2568,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	makeLegend: function() {
 	    let _this = this;
+	    if(Utils.isDefined(this?.mapProperties?.showLegend) &&
+	       !this.mapProperties.showLegend) {
+		this.jq(ID_LEGEND).hide();
+		return;
+	    }
 	    if(!this.getShowLegend()) {
 		this.jq(ID_LEGEND).hide();
 		return;
@@ -2636,6 +2646,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		entryid:entryId??this.getProperty("entryId"),
 		text:wiki},
 		   wikiCallback).fail(wikiError);
+	},
+
+	canEdit: function() {
+	    return this.getProperty("canEdit") || this.getShowMenuBar(false);
 	},
 
         initDisplay: function(embedded) {
@@ -2773,7 +2787,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		e.feature.layer.redraw(e.feature);
 	    };	    
 
-	    if(this.getProperty("canEdit")) {
+	    if(this.canEdit()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
 		control = new OpenLayers.Control();
@@ -3012,7 +3026,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['xwidth','50%'],menuBar) +
 							 HU.td(['width','50%'], message) +
 						 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
-		if(this.getShowMenuBar()) {
+		if(this.getShowMenuBar()||this.canEdit()) {
 		    this.jq(ID_TOP_LEFT).append(menuBar);
 		}
 		this.jq(ID_MENU_NEW).click(function() {
