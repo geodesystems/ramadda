@@ -982,11 +982,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
-		console.log("FS1");
 		let didSomething= false;
 		if(feature.collisionInfo)  {
 		    feature.collisionInfo.dotSelected(feature);
-		    console.log("FS2");
 		    return;
 		}
 		if(feature.record) {
@@ -1006,7 +1004,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    didSomething= true;
 		}
-		console.log("FS-" + didSomething);
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
 		else
@@ -3176,22 +3173,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
+		let tpoints = points.map(p=>{
+		    return $.extend({},p);
+		});
                 let attrs = {
-                    strokeWidth: 2,
-                    strokeColor: "blue",
+                    strokeWidth: this.getProperty("strokeWidth",2),
+                    strokeColor: this.getPathColor(this.getStrokeColor("blue")),
 		    fillColor:this.getProperty("fillColor","transparent")
                 }
-		if(points.length==1) {
-		    featuresToAdd.push(this.map.createPoint(ID,  points[0], attrs, null));
+		if(tpoints.length==1) {
+		    featuresToAdd.push(this.map.createPoint(ID,  tpoints[0], attrs, null));
 		} else {
 		    if(this.getShowPathEndPoint()) {
-			featuresToAdd.push(this.map.createMarker("startpoint", points[0],ramaddaCdn+"/icons/map/marker-green.png"));
-			featuresToAdd.push(this.map.createMarker("endpoint", points[points.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
+			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],ramaddaCdn+"/icons/map/marker-green.png"));
+			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
 		    }
-                    featuresToAdd.push(this.map.createPolygon(ID, "", points, attrs, null));
+                    featuresToAdd.push(this.map.createPolygon(ID, "", tpoints, attrs, null));
 		}
-		this.addFeatures(featuresToAdd);
-                return;
+		if(!this.getProperty("showPoints")) {
+		    this.addFeatures(featuresToAdd);
+                    return;
+		}
             }
 
             let latField1 = this.getFieldById(fields, this.getProperty("latField1"));
