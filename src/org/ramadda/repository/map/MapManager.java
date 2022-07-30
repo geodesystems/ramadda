@@ -1662,6 +1662,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             forceBounds = false;
         }
 
+        boolean showExtra = Utils.getProperty(props,"showExtra",true);
         boolean hidden = Misc.equals(props.get("mapHidden"), "true");
         MapInfo map = createMap(request, mainEntry, width, height, false,
                                 hidden, null);
@@ -1876,7 +1877,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if ((mapHtml.length() == 0) && (catMap.size() == 0)) {
             listentries = false;
         }
-        String extra = map.getExtraNav();
+        String extra = showExtra?map.getExtraNav():"";
         layoutMap(request, sb, map, listentries, numEntries, listwidth,
                   height, categories, catMap, mapHtml, navTop, extra);
 
