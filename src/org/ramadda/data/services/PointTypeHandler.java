@@ -903,6 +903,33 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
 
+    @Override
+    public String getSimpleDisplay(Request request, Hashtable props,
+                                   Entry entry)
+	throws Exception {
+	String wikiText = getWikiText(request, entry,"simple");
+	if(wikiText!=null) {
+	    return null;
+	}
+	String chartType = getTypeProperty("map.chart.type", "linechart");
+	String chartArgs = getTypeProperty("map.chart.args", "");
+	if ( !Utils.stringDefined(chartType)
+	     || chartType.equals("none")) {
+	    return super.getSimpleDisplay(request,props,entry);
+	}
+	String chartField = getTypeProperty("map.chart.field", "");
+	String minSizeX   = getTypeProperty("map.chart.minSizeX", "600");
+	String minSizeY   = getTypeProperty("map.chart.minSizeY", "200");
+	String fields = getTypeProperty("map.chart.fields",
+					chartField);
+	StringBuilder sb   = new StringBuilder();
+
+	sb.append("{{display_" +chartType +" fields=\"" + fields+"\" width=" + minSizeX +" height=" + minSizeY +" " + chartArgs+"}}\n");
+	String wiki= getWikiManager().wikifyEntry(request,entry,sb.toString());
+	return wiki;
+    }
+
+
     /**
      * _more_
      *
