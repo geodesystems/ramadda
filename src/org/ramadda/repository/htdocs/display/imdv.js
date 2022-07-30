@@ -31,8 +31,9 @@ var GLYPH_ENTRY = "entry";
 var GLYPH_MULTIENTRY = "multientry";
 var GLYPH_MAP = "map";
 var GLYPH_DATA = "data";
-var GLYPH_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
-var GLYPH_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
+var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
+var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
+var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
@@ -719,7 +720,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    cmd.handler.style = tmpStyle;
 		    cmd.handler.layerOptions.styleMap=styleMap;
 		}
-		let message = glyphType?"New " + glyphType.label:cmd.message;
+		let message = glyphType?"New " + glyphType.getName():cmd.message;
 		message = message||"";
 		if(glyphType && glyphType.isRoute()) {
 		    let html =  HU.formTable();
@@ -1175,7 +1176,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let isImage = style.imageUrl;
 		for(a in style) {
 		    if(isImage) {
-			if(a!="imageUrl" && a!="imageOpacity") continue;
+			if(a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
 		    }
 		    props.push(a);
 		    values[a] = style[a];
@@ -1294,6 +1295,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	    
 	doProperties: function(style, apply,mapGlyph) {
+
 	    let _this = this;
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
 	    let html="";
@@ -1918,12 +1920,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    tmp.forEach(glyphTypes=>{
 		html+="<td>&nbsp;</td>";
 		html+="<td>";
-		glyphTypes.forEach(g=>{
-		    let icon = g.options.icon||ramaddaBaseUrl+"/map/marker-blue.png";
-		    let label = HU.image(icon,['width','16']) +SPACE1 + g.label;
-		    if(g.getTooltip())
-			label = HU.span(['title',g.getTooltip()],label);
-		    html+= this.menuItem(this.domId("menunew_" + g.type),label+SPACE2);
+		glyphTypes.forEach(glyphType=>{
+		    let icon = glyphType.options.icon||ramaddaBaseUrl+"/map/marker-blue.png";
+		    let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
+		    if(glyphType.getTooltip())
+			label = HU.span(['title',glyphType.getTooltip()],label);
+		    html+= this.menuItem(this.domId("menunew_" + glyphType.type),label+SPACE2);
 		});
 		html+="</td>";
 	    });
@@ -2655,21 +2657,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		},true);
 	    },500);
 	    this.getMap().featureClickHandler = e=>{
+		let debug = false;
 		let feature = e.feature;
+		if(debug)
+		    console.log("featureClick:" + feature);
 		if(!feature) return;
 		let mapGlyph = feature.mapGlyph || (feature.layer?feature.layer.mapGlyph:null);
 		if(!mapGlyph) {
+ 		    if(debug)console.log("\tno mapGlyph");
 		    return true;
 		}
 		if(mapGlyph.isMap()) {
+ 		    if(debug)console.log("\tis map");
 		    return true;
 		}
 		if(this.command==ID_EDIT) {
+ 		    if(debug)console.log("\tdoing edit");
 		    this.doEdit(feature.layer.mapGlyph);
 		    return false;
 		}
 
 		if(this.command!=null) {
+ 		    if(debug)console.log("\tdoing command:" + this.command);
 		    return false;
 		}
 		let showPopup = (html,props)=>{
@@ -2680,6 +2689,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(this.getMap().currentPopup) {
 			this.getMap().onPopupClose();
 		    }
+		    if(e.event && e.event.xy)
+			location = this.getMap().getMap().getLonLatFromViewPortPx(e.event.xy);
 		    let popup =this.getMap().makePopup(location,div,props);
 		    this.getMap().currentPopup = popup;
 		    this.getMap().getMap().addPopup(popup);
@@ -2687,6 +2698,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		let doPopup = (html,props)=>{
+ 		    if(debug)console.log("\tdoPopup:"+ html)
 		    let js =[];
 		    //Parse out any script tags 
 		    let regexp = /<script *src=("|')?([^ "']+)("|')?.*?<\/script>/g;
@@ -2703,6 +2715,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    //once done show the popup
 		    let cb = ()=>{
 			if(js.length==0 && js[0]==null) {
+ 			    if(debug)console.log("\tshowPopup:"+ html)
 			    showPopup(html,props);
 
 			    return;
@@ -2714,7 +2727,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    cb();
 		};
 		let text= mapGlyph.getPopupText();
-		if(mapGlyph.getEntryId()) {
+		if(text)text = mapGlyph.convertPopupText(text);
+		if(mapGlyph.isEntry()) {
+ 		    if(debug)console.log("\tis entry marker")
 		    let wiki = mapGlyph.getWikiText();
 		    if(!Utils.stringDefined(wiki))
 			wiki = "+section title={{name}}\n{{simple}}\n-section";
@@ -2736,8 +2751,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 
-		if(!Utils.stringDefined(text)) return false;
-		text = text.replace(/\n/g,"<br>");
+		if(!Utils.stringDefined(text)) {
+ 		    if(debug)console.log("\tno text")
+		    return false;
+		}
 		doPopup(text);
 		return false;
 	    };
@@ -3061,9 +3078,9 @@ MapObject.prototype = {
     }
 }
 
-var GlyphType = function(display,type,label,style,handler,options) {
+var GlyphType = function(display,type,name,style,handler,options) {
     this.display = display;
-    this.label = label;
+    this.name = name;
     this.type = type;
     this.glyphStyle = style;
     this.handler = handler;
@@ -3075,6 +3092,9 @@ var GlyphType = function(display,type,label,style,handler,options) {
 };
 
 GlyphType.prototype = {
+    getName: function() {
+	return this.name;
+    },
     getTooltip: function() {
 	return this.options.tooltip;
     },
@@ -3083,9 +3103,6 @@ GlyphType.prototype = {
     },
     getStyle:function() {
 	return this.glyphStyle;
-    },
-    getLabel:function() {
-	return this.label;
     },
     getType:  function() {
 	return this.type;
@@ -3125,7 +3142,7 @@ GlyphType.prototype = {
 		if(a=="strokeColor") continue;
 		if(a=="fillColor") continue;		    
 	    }
-	    if(this.getStyle()[a]) this.getStyle()[a] = style[a];
+	    if(Utils.isDefined(this.getStyle()[a])) this.getStyle()[a] = style[a];
 	}
     },
     newFeature: function(feature) {
@@ -3191,9 +3208,10 @@ GlyphType.prototype = {
 
 function MapGlyph(display,type,attrs,feature,style) {
     let glyphType = display.getGlyphType(type);
-    this.name = "";
     if(attrs.routeProvider)
 	this.name = "Route: " + attrs.routeProvider +" - " + attrs.routeType;
+    else 
+	this.name = attrs.name || glyphType.getName() || type;
     this.display = display;
     this.type = type;
     this.features = [];
@@ -3328,7 +3346,7 @@ MapGlyph.prototype = {
 	let right = "";
 	if(addDecorator) {
 	    right+=this.getDecoration(true);
-	    if(GLYPH_LINES.includes(this.getType())) {
+	    if(GLYPH_TYPES_LINES.includes(this.getType())) {
 //		right+=this.display.getDecoration(this.style);
 	    }
 	}
@@ -3391,6 +3409,18 @@ MapGlyph.prototype = {
 	}
 	return label;
     },
+    convertPopupText:function(text) {
+	text = text.replace(/\n/g,"<br>");
+	if(this.getImage()) {
+	    text = text.replace(/\${image}/g,HU.image(this.style.imageUrl,['width','200px']));
+	}
+	return text;
+    },
+		    
+	
+    isEntry:function() {
+	return this.getType() ==GLYPH_ENTRY;
+    },
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
@@ -3413,8 +3443,8 @@ MapGlyph.prototype = {
     setImage:function(image) {
 	this.image = image;
 	this.image.mapGlyph = this;
-    },    
-    applyStyle:function(style) {
+    },     
+   applyStyle:function(style) {
 	this.style = style;
 	this.features.forEach(feature=>{
 	    if(feature.style) {
@@ -3556,7 +3586,7 @@ MapGlyph.prototype = {
 	    if(this.style.externalGraphicb && this.style.externalGraphic.endsWith("blank.gif")) return true;
 	    if(this.style.pointRadius==0) return true;
 	}
-	return GLYPH_SHAPES.includes(this.getType());
+	return GLYPH_TYPES_SHAPES.includes(this.getType());
     },
     isData:function() {
 	return this.type == GLYPH_DATA;
@@ -3632,12 +3662,11 @@ MapGlyph.prototype = {
     getDecoration:function(small) {
 	let type = this.getType();
 	let style = this.style??{};
-	let col = "";
 	let css= ['display','inline-block'];
 	let dim = small?'12px':'25px';
 	css.push('width',small?'20px':'50px');
+	let line = "solid";
 	if(style.strokeWidth>0) {
-	    let line = "solid";
 	    if(style.strokeDashstyle) {
 		if(['dot','dashdot'].includes(style.strokeDashstyle)) {
 		    line = "dotted";
@@ -3648,22 +3677,21 @@ MapGlyph.prototype = {
 	    css.push('border',(small?Math.min(+style.strokeWidth,2):style.strokeWidth)+"px " + line +" " + style.strokeColor);
 	}
 
-
 	if(style.imageUrl) {
 	    if(!small) 
-		col += HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,["width","200px"]));
+		return HU.toggleBlock(style.imageUrl, HU.image(style.imageUrl,["width","200px"]));
 	} else if(type==GLYPH_LABEL) {
 	    if(!small)
-		col +=style.label.replace(/\n/g,"<br>");
+		return style.label.replace(/\n/g,"<br>");
 	} else if(type==GLYPH_MARKER) {
 	    if(!small)
-		col +=HU.image(style.externalGraphic,['width','16px']);
+		return HU.image(style.externalGraphic,['width','16px']);
 	} else if(type==GLYPH_BOX) {
 	    if(Utils.stringDefined(style.fillColor)) {
 		css.push('background',style.fillColor);
 	    }
 	    css.push('height',dim);
-	    col +=HU.div(['style',HU.css(css)]);
+	    return HU.div(['style',HU.css(css)]);
 	} else if(type==GLYPH_HEXAGON) {
 	    css=[];
 	    if(Utils.stringDefined(style.fillColor)) {
@@ -3673,19 +3701,18 @@ MapGlyph.prototype = {
 		css.push('color',style.strokeColor);
 	    }		
 	    css.push('font-size',small?'16px':'32px','vertical-align','center');
-	    col += HU.span(['style',HU.css(css)],"&#x2B22;");
+	    return HU.span(['style',HU.css(css)],"&#x2B22;");
 	} else if(type==GLYPH_CIRCLE || type==GLYPH_POINT) {
 	    if(Utils.stringDefined(style.fillColor)) {
 		css.push('background',style.fillColor);
 	    }
-	    
 	    if(type==GLYPH_POINT) {
 		css.push('margin-top','10px','height','10px','width','10px');
 	    } else {
 		css.push('height',dim);
 		css.push('width',dim);
 	    }		    
-	    col +=HU.div(['class','ramadda-dot', 'style',HU.css(css)]);
+	    return HU.div(['class','ramadda-dot', 'style',HU.css(css)]);
 	} else if(type==GLYPH_LINE ||
 		  type==GLYPH_POLYLINE ||
 		  type==GLYPH_POLYGON ||
@@ -3693,11 +3720,21 @@ MapGlyph.prototype = {
 		  type==GLYPH_MAP
 		  || type==GLYPH_ROUTE
 		  ||  type==GLYPH_FREEHAND) {
-	    css.push('height',style.strokeWidth+'px');
-	    css.push('margin-top','10px','margin-bottom','10px');
-	    col +=HU.div(['style',HU.css(css)]);
+	    if(this.isClosed()) {
+		if(type==GLYPH_FREEHAND_CLOSED)
+		    css.push('border-radius','10px');
+		css.push('height','10px');
+//		css.push('margin-top','10px','margin-bottom','10px');
+		css.push('background',style.fillColor);
+	    } else {
+		css.push('margin-bottom','4px','border-bottom', style.borderWidth+"px" + " " + line+ " " +style.strokeColor);
+	    }
+	    return HU.div(['style',HU.css(css)]);
 	}
-	return col;
+	return "";
+    },
+    isClosed: function() {
+	return GLYPH_TYPES_CLOSED.includes(this.type);
     },
     addEntries: function() {
 	let entryId = this.getEntryId();
