@@ -7234,6 +7234,9 @@ public class TypeHandler extends RepositoryManager {
     public String getSimpleDisplay(Request request, Hashtable props,
                                    Entry entry)
             throws Exception {
+        if (getParent() != null) {
+	    return getParent().getSimpleDisplay(request, props, entry);
+	}
         return null;
     }
 
