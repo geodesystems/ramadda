@@ -2628,6 +2628,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    $(this).addClass('ramadda-display-editablemap-legend-item-invisible');			    
 	    });
 	},
+	wikify:function(wiki,entryId,wikiCallback,wikiError) {
+	    wikiError = wikiError || (error=>{this.handleError(error);});
+	    let url = ramaddaBaseUrl + "/wikify";
+	    $.post(url,{
+		doImports:"false",
+		entryid:entryId??this.getProperty("entryId"),
+		text:wiki},
+		   wikiCallback).fail(wikiError);
+	},
+
         initDisplay: function(embedded) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
@@ -2726,27 +2736,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    };
 		    cb();
 		};
-		let text= mapGlyph.getPopupText();
-		if(text)text = mapGlyph.convertPopupText(text);
-		if(mapGlyph.isEntry()) {
- 		    if(debug)console.log("\tis entry marker")
-		    let wiki = mapGlyph.getWikiText();
+		let text= mapGlyph.getPopupText()??'';
+		if(mapGlyph.isEntry() || text.startsWith("<wiki>")) {
+ 		    if(debug)console.log("\twikifying")
+		    let wiki = text.startsWith("<wiki>")?text:mapGlyph.getWikiText();
 		    if(!Utils.stringDefined(wiki))
 			wiki = "+section title={{name}}\n{{simple}}\n-section";
 
-		    let url = ramaddaBaseUrl + "/wikify";
 		    let wikiCallback = html=>{
+			html = mapGlyph.convertPopupText(html);
+			html = HU.div(['style','max-height:300px;overflow-y:auto;'],html);
 			doPopup(html,{width:"600",height:"400"});
 		    };
-		    let wikiError = error=>{
-			console.error(error.responseText);
-			alert("Error:" + error.responseText);
-		    };		    
-		    $.post(url,{
-			doImports:"false",
-			entryid:feature.entryId ?? mapGlyph.getEntryId(),
-			text:wiki},
-			   wikiCallback).fail(wikiError);
+		    this.wikify(wiki,feature.entryId ?? mapGlyph.getEntryId(),wikiCallback);
 		    return false;
 		}
 
@@ -2755,6 +2757,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
  		    if(debug)console.log("\tno text")
 		    return false;
 		}
+		text = mapGlyph.convertPopupText(text).replace(/\n/g,"<br>");
 		doPopup(text);
 		return false;
 	    };
@@ -3410,7 +3413,6 @@ MapGlyph.prototype = {
 	return label;
     },
     convertPopupText:function(text) {
-	text = text.replace(/\n/g,"<br>");
 	if(this.getImage()) {
 	    text = text.replace(/\${image}/g,HU.image(this.style.imageUrl,['width','200px']));
 	}
@@ -3621,9 +3623,28 @@ MapGlyph.prototype = {
 	});
 	jqid(this.getId()).remove();
 	let text = this.style.text??"";
-	text = text.replace(/\n/g,"<br>");
-	let html = HU.div(['id',this.getId(),CLASS,"ramadda-imdv-fixed",'style',css],text);
+	let html = HU.div(['id',this.getId(),CLASS,"ramadda-imdv-fixed",'style',css],"");
 	this.display.jq(ID_MAP_CONTAINER).append(html);
+	let toggleLabel = null;
+	if(text.startsWith("toggle:")) {
+	    let match = text.match(/toggle:(.*)\n/);
+	    if(match) {
+		toggleLabel=match[1];
+		text = text.replace(/toggle:(.*)\n/,"").trim();
+	    }
+	}
+	if(text.startsWith("<wiki>")) {
+	    this.display.wikify(text,null,wiki=>{
+		if(toggleLabel)
+		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
+		wiki = HU.div(['style','max-height:300px;overflow-y:auto;'],wiki);
+		jqid(this.getId()).html(wiki)});
+	} else {
+	    text = text.replace(/\n/g,"<br>");
+	    if(toggleLabel)
+		text = HU.toggleBlock(toggleLabel+SPACE2, text,false);
+	    jqid(this.getId()).html(text);
+	}
     },
 
     addMapData:function(displayAttrs,andZoom) {
