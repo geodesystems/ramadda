@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 30 15:04:01 MDT 2022";
+var build_date="RAMADDA build date: Sat Jul 30 16:07:30 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38770,7 +38770,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				delete tmpStyle.mapOptions;
 				this.clearCommands();
 				let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
-				mapGlyph.addEntries();
+				mapGlyph.addEntries(true);
 				return
 			    }
 
@@ -40941,7 +40941,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    cb();
 		};
 		let text= mapGlyph.getPopupText()??'';
-		if(mapGlyph.isEntry() || text.startsWith("<wiki>")) {
+		if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith("<wiki>")) {
  		    if(debug)console.log("\twikifying")
 		    let wiki = text.startsWith("<wiki>")?text:mapGlyph.getWikiText();
 		    if(!Utils.stringDefined(wiki))
@@ -40955,7 +40955,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.wikify(wiki,feature.entryId ?? mapGlyph.getEntryId(),wikiCallback);
 		    return false;
 		}
-
 
 		if(!Utils.stringDefined(text)) {
  		    if(debug)console.log("\tno text")
@@ -41965,7 +41964,7 @@ MapGlyph.prototype = {
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);
     },
-    addEntries: function() {
+    addEntries: function(andZoom) {
 	let entryId = this.getEntryId();
         let entry =  new Entry({
             id: entryId,
@@ -42001,6 +42000,7 @@ MapGlyph.prototype = {
 		bg.noSelect = true;
 //		bg.mapGlyph=this;
 //		bg.entryId = e.getId();
+
 		marker.mapGlyph = this;
 		marker.entryId = e.getId();
 		this.features.push(bg);
@@ -42008,6 +42008,9 @@ MapGlyph.prototype = {
 
 	    });
 	    this.display.addFeatures(this.features);
+	    if(andZoom)
+		this.zoomTo();
+	    
 	};
 	entry.getChildrenEntries(callback);
 	
