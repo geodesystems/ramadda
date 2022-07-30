@@ -8130,7 +8130,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					    "/display/displaymanager.js",
 					    "/display/displayentry.js",
 					    "/display/displaymap.js",
-					    "/display/editablemap.js",
+					    "/display/imdv.js",
 					    "/display/displayimages.js",
 					    "/display/displaymisc.js",
 					    "/display/displaychart.js",
