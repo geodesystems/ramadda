@@ -1090,6 +1090,24 @@ var Utils =  {
 
         return date.getUTCFullYear() + "-" + month + "-" + d+" " + hhmm;
     },
+    formatDateYYYYMMDDHHMMSS: function(date, options, args) {
+        if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
+        var month = (date.getUTCMonth() + 1);
+        if(month<10) month = "0" + month;
+        var d = date.getUTCDate();
+        if(d<10) d = "0" +d;
+        var h = date.getHours()+1;
+        if(h<10) h = "0" + h;
+        var minute = date.getMinutes();
+        if(minute<10) minute = "0" + minute;
+        var seconds = date.getSeconds();
+        if(seconds<10) seconds = "0" + seconds;	
+        let hhmmss=  h+":" +minute+":"+seconds;
+
+        return date.getUTCFullYear() + "-" + month + "-" + d+" " + hhmmss;
+    },
+
+
     formatDateYYYYMMDDHH: function(date, options, args) {
         if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
         var m = (date.getUTCMonth() + 1);
@@ -1144,6 +1162,8 @@ var Utils =  {
             return Utils.formatDateYYYYMMDDHH(date);
         } else if (_fmt == "yyyymmddhhmm") { 
             return Utils.formatDateYYYYMMDDHHMM(date);
+        } else if (_fmt == "yyyymmddhhmmss") { 
+            return Utils.formatDateYYYYMMDDHHMMSS(date);	    
         } else if (_fmt == "yyyymm") {
             return Utils.formatDateYYYYMM(date);
         } else if (_fmt == "yearmonth") {
