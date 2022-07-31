@@ -24,6 +24,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.WrapperException;
 
 import java.io.*;
+
 import java.nio.*;
 import java.nio.channels.*;
 
@@ -269,7 +270,8 @@ public class TextRecord extends DataRecord {
 
 
 
-    static boolean nio  =false;
+    /**  */
+    static boolean nio = false;
 
     /**
      * _more_
@@ -283,17 +285,17 @@ public class TextRecord extends DataRecord {
     public String readNextLine(RecordIO recordIO) throws Exception {
         boolean debug = false;
         if (textReader == null) {
-	    nio=!nio;
-	    nio = false;
+            nio        = !nio;
+            nio        = false;
             textReader = new TextReader();
-	    //	    System.err.println("making text reader:" +(nio?"new way":"old way"));
-	    InputStream fis = recordIO.getInputStream();
-	    if(nio) {
-		ReadableByteChannel in = Channels.newChannel(fis);
-		textReader.setInputChannel(new NamedChannel("",in));
-	    } else {
-		textReader.setReader(recordIO.getBufferedReader());
-	    }
+            //      System.err.println("making text reader:" +(nio?"new way":"old way"));
+            InputStream fis = recordIO.getInputStream();
+            if (nio) {
+                ReadableByteChannel in = Channels.newChannel(fis);
+                textReader.setInputChannel(new NamedChannel("", in));
+            } else {
+                textReader.setReader(recordIO.getBufferedReader());
+            }
         }
         while (true) {
             if (firstDataLine != null) {
@@ -309,9 +311,10 @@ public class TextRecord extends DataRecord {
                 if (debug) {
                     System.err.println("TextRecord: currentLine is null");
                 }
+
                 return null;
             }
-            if (!lineOk(currentLine)) {
+            if ( !lineOk(currentLine)) {
                 if (debug) {
                     System.err.println("TextRecord: currentLine not ok:"
                                        + currentLine);
@@ -353,9 +356,11 @@ public class TextRecord extends DataRecord {
      */
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
+
         String line = null;
         if ((tokens != null) && (tokens.length == 0)) {
             System.err.println("TextRecord.read zero length tokens array");
+
             return ReadStatus.EOF;
         }
 
@@ -421,12 +426,12 @@ public class TextRecord extends DataRecord {
                                           + getRecordFile() + "\n"
                                           + "Bad token count: expected: "
                                           + tokens.length + " got: "
-                                          + toks.size()+"\n");
+                                          + toks.size() + "\n");
                     if (line.length() > 1000) {
                         line = line.substring(0, 999) + "...";
                     }
-                    msg.append("Line:" + line+"\n");
-		    /*
+                    msg.append("Line:" + line + "\n");
+                    /*
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
                         RecordField field = fields.get(i);
@@ -447,21 +452,23 @@ public class TextRecord extends DataRecord {
                             break;
                         }
                     }
-		    */
-		    msg.append("Fields:\n");
-		    int max = Math.max(fields.size(),toks.size());
+                    */
+                    msg.append("Fields:\n");
+                    int max = Math.max(fields.size(), toks.size());
                     for (int i = 0; i < max; i++) {
-			if(i<fields.size())
-			    msg.append(fields.get(i).getName());
-			else
-			    msg.append("MISSING");
-			msg.append(":");
-			if(i<toks.size())
-			    msg.append(toks.get(i));
-			else
-			    msg.append("MISSING");
-			msg.append("\n");			
-		    }
+                        if (i < fields.size()) {
+                            msg.append(fields.get(i).getName());
+                        } else {
+                            msg.append("MISSING");
+                        }
+                        msg.append(":");
+                        if (i < toks.size()) {
+                            msg.append(toks.get(i));
+                        } else {
+                            msg.append("MISSING");
+                        }
+                        msg.append("\n");
+                    }
 
                     throw new IllegalArgumentException(msg.toString());
                 }
@@ -520,8 +527,6 @@ public class TextRecord extends DataRecord {
                     continue;
                 }
 
-
-
                 if (field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
                     Date date = parseDate(field, tok);
@@ -545,12 +550,14 @@ public class TextRecord extends DataRecord {
                     if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
                         dValue = Utils.decodeLatLon(tok);
                     } else {
-			try {
-			    dValue = textFile.parseValue(this, field, tok);
-			} catch(Exception exc) {
-			    System.err.println("Error:" + tok +" line:" + line);
-			    throw exc;
-			}
+                        try {
+                            dValue = textFile.parseValue(this, field, tok);
+                        } catch (Exception exc) {
+                            System.err.println("Error:" + tok + " line:"
+                                    + line);
+
+                            throw exc;
+                        }
                     }
 
 
@@ -578,6 +585,7 @@ public class TextRecord extends DataRecord {
         } catch (Exception exc) {
             throw new WrapperException("Error line:" + line, exc);
         }
+
     }
 
 
@@ -607,18 +615,34 @@ public class TextRecord extends DataRecord {
                 return new Date();
             }
         }
+        String unit = field.getUnit();
         String sfmt = field.getSDateFormat();
+        if ( !Utils.stringDefined(sfmt) && (unit != null)
+                && unit.equals("s since 1970-01-01 00:00:00.000 UTC")) {
+            sfmt = "sss";
+        }
+
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
-                long l = Long.parseLong(tok);
-                Date d = new Date(l);
+                if (tok.indexOf("E") >= 0) {
+                    long l = ((long) Double.parseDouble(tok)) * 1000;
 
-                return d;
+                    return new Date(l);
+                } else {
+                    long l = Long.parseLong(tok);
+
+                    return new Date(l);
+                }
             } else if (sfmt.equals("sss")) {
-                long l = Long.parseLong(tok) * 1000;
-                Date d = new Date(l);
+                if (tok.indexOf("E") >= 0) {
+                    double l = Double.parseDouble(tok) * 1000;
 
-                return d;
+                    return new Date((long) l);
+                } else {
+                    long l = Long.parseLong(tok) * 1000;
+
+                    return new Date(l);
+                }
             } else if (sfmt.equals("yyyy")) {
                 //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
@@ -629,8 +653,6 @@ public class TextRecord extends DataRecord {
         Date date   = null;
         int  offset = field.getUtcOffset();
         try {
-
-
             date = getDateFormat(field).parse(tok);
         } catch (java.text.ParseException ignore) {
             //Try to guess
