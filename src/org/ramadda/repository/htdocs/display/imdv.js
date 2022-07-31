@@ -566,12 +566,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(glyphType.isMap()) {
 				let mapOptions = tmpStyle.mapOptions;
 				delete tmpStyle.mapOptions;
-				let mapLayer = this.createMapLayer(attrs,tmpStyle,true);
 				$.extend(mapOptions,attrs);
-				if(mapLayer) {
-				    let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
-				    mapGlyph.setMapLayer(mapLayer);
-				}
+				let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
+				mapGlyph.checkMapLayer();
 				return;
 			    }
 			    if(glyphType.isMultiEntry()) {
@@ -1065,9 +1062,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    newOnes.forEach(mapGlyph=>{
 		mapGlyph.move(delta,-delta);
 //		this.checkImage(feature);
-		if(mapGlyph.getType() == ID_MAP) {
-		    let layer =  this.createMapLayer(mapGlyph.attrs,mapGlyph.style);
-		    mapGlyph.setMapLayer(layer);
+		if(mapGlyph.isMap()) {
+		    mapGlyph.checkMapLayer();
 		}
 	    });
 	    this.addGlyph(newOnes);
@@ -1097,19 +1093,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 
-		//If its a map then set the style on the map features
-		if(mapGlyph.getMapLayer()) {
-		    let mapLayer = mapGlyph.getMapLayer();
-		    mapLayer.styleMap = this.getMap().getVectorLayerStyleMap(mapLayer, style);
-		    mapLayer.style = style;
-		    if(mapLayer.features) {
-			mapLayer.features.forEach((f,idx)=>{
-			    f.style = $.extend({},style);
-			    f.originalStyle = $.extend({},style);			    
-			});
-		    }
-		    mapLayer.redraw();
-		} else if(mapGlyph.isData()) {
+		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    mapGlyph.applyDisplayAttrs(displayAttrs);
 		} else if(mapGlyph.isMultiEntry()) {
@@ -1683,9 +1667,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 		if(glyphType.isMap()) {
-		    let mapLayer = this.createMapLayer(mapOptions,style)
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapLayer(mapLayer);
+		    mapGlyph.checkMapLayer();
 		    this.addGlyph(mapGlyph);
 		    return
 		}  
@@ -1753,9 +1736,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		if(mapOptions.type==GLYPH_MAP) {
-		    let mapLayer = this.createMapLayer(mapOptions,style)
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapLayer(mapLayer);
+		    mapGlyph.checkMapLayer();
 		    this.addGlyph(mapGlyph);
 		    return
 		}  
@@ -2011,16 +1993,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	unselectGlyph:function(mapGlyph) {
 	    if(!mapGlyph) return;
-	    if(mapGlyph.selectDots) {
-		this.selectionLayer.removeFeatures(mapGlyph.selectDots);
-		mapGlyph.selectDots= null;
-	    }
-	    if(mapGlyph.getMapLayer()) {
-		mapGlyph.getMapLayer().features.forEach(f=>{
-		    f.style = f.originalStyle;
-		});
-		mapGlyph.getMapLayer().redraw();
-	    }
+	    mapGlyph.unselect();
 	},
 	isFeatureSelected:function(mapGlyph) {
 	    return mapGlyph.selectDots!=null;
@@ -3155,6 +3128,19 @@ GlyphType.prototype = {
 	return this.getStyle().externalGraphic!=null;
     },	
     applyStyle: function(style,forAll) {
+	//If its a map then set the style on the map features
+	if(this.mapLayer) {
+	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style);
+	    this.mapLayer.style = style;
+	    if(this.mapLayer.features) {
+		this.mapLayer.features.forEach((f,idx)=>{
+		    f.style = $.extend({},style);
+		    f.originalStyle = $.extend({},style);			    
+		});
+	    }
+	    this.mapLayer.redraw();
+	}
+
 	this.display.featureChanged();
 	for(a in style) {
 	    if(forAll && this.type ==GLYPH_LABEL) {
@@ -3286,8 +3272,8 @@ MapGlyph.prototype = {
 	    this.display.getMap().centerOnFeatures(this.features);
 	    return;
 	}
-	if(this.getMapLayer()) {
-	    this.display.getMap().zoomToLayer(this.getMapLayer());
+	if(this.mapLayer) {
+	    this.display.getMap().zoomToLayer(this.mapLayer);
 	    return
 	}
 	if(this.displayInfo?.display) {
@@ -3456,6 +3442,14 @@ MapGlyph.prototype = {
     getMapLayer: function() {
 	return this.mapLayer;
     },
+    checkMapLayer:function() {
+	//Only create the map if we're visible
+	if(!this.isMap() || !this.isVisible()) return;
+	if(this.mapLayer==null) {
+	    this.mapLayer = this.display.createMapLayer(this.attrs,this.style,true);
+	}
+    },
+
     getImage:function() {
 	return this.image;
     },
@@ -3541,6 +3535,7 @@ MapGlyph.prototype = {
 	this.attrs.visible = visible;
 	if(callCheck)
 	    this.checkVisible();
+	this.checkMapLayer();
     },
     getVisible:function() {
 	if(!Utils.isDefined(this.attrs.visible)) this.attrs.visible = true;
@@ -3826,6 +3821,19 @@ MapGlyph.prototype = {
 	
 
     },
+    unselect:function() {
+	if(this.selectDots) {
+	    this.display.selectionLayer.removeFeatures(this.selectDots);
+	    this.selectDots= null;
+	}
+	if(this.mapLayer) {
+	    this.mapLayer.features.forEach(f=>{
+		f.style = f.originalStyle;
+	    });
+	    this.mapLayer.redraw();
+	}
+    },
+	
     doRemove:function() {
 	if(this.isFixed()) {
 	    jqid(this.getId()).remove();
