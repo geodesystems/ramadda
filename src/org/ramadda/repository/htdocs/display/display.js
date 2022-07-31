@@ -931,11 +931,12 @@ function DisplayThing(argId, argProperties) {
 			continue;
 		    }
 		    if(field.isRecordDate()) {
-			if(!showDate) {
+			if(!showDate || hadDate) {
 			    continue;
 			}
 			hadDate = true;
 		    }
+		    if(field.isFieldDate()) hadDate = true;
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
                             continue;
@@ -1494,8 +1495,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'alphaTargetMax',ex:1},
 	{label:'Animation'},
 	{p:'doAnimation',ex:true},
+	{p:'animationMode',ex:'sliding|frame|cumulative'},
 	{p:'animationHighlightRecord',ex:true},
 	{p:'animationHighlightRecordList',ex:true},
+	{p:'animationPropagateRecordSelection',ex:true,tt:'If the animation is in frame mode then propagate the date'},
+	{p:'animationAcceptRecordSelection',ex:true,tt:'change the animation date on record select'},
 	{p:'acceptEventAnimationChange',ex:false},
 	{p:'acceptDateRangeChange',ex:true},
 	{p:'animationDateFormat',ex:'yyyy'},
@@ -1503,7 +1507,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationStyle'},				
 	{p:'animationTooltipShow',ex:'true'},
 	{p:'animationTooltipDateFormat',ex:'yyyymmddhhmm'},		
-	{p:'animationMode',ex:'sliding|frame|cumulative'},
 	{p:'animationWindow',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
 	{p:'animationStep',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
 	{p:'animationSpeed',ex:500},
@@ -2253,6 +2256,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.haveCalledUpdateUI = false;
 		    this.callUpdateUI();
 		}
+		if(this.getAnimationEnabled() && source!=this.getAnimation()) {
+		    if(this.getProperty("animationAcceptRecordSelection",false)) {
+			let date = this.selectedRecord.getDate();
+			if(date) 
+			    this.getAnimation().setDateRange(date,date);
+		    }
+		}
+
 	    }
             if (!source.getEntries) {
                 return;
@@ -6456,7 +6467,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, _this, {highlight:true,record: record});
 		    }
 		    if(tooltip=="" || tooltip=="none") return null;
-		    let style = _this.getProperty("tooltipStyle");
+		    let style = _this.getProperty("tooltipStyle","font-size:10pt;");
 		    let tt =  _this.getRecordHtml(record,null,tooltip);
 		    if(style) tt=HU.div([STYLE,style],tt);
 		    return tt;

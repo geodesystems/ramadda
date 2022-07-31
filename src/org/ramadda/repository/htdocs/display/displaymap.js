@@ -3188,7 +3188,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],ramaddaCdn+"/icons/map/marker-green.png"));
 			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
 		    }
-                    featuresToAdd.push(this.map.createPolygon(ID, "", tpoints, attrs, null));
+		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null);
+		    poly.noSelect = true;
+		    featuresToAdd.push(poly);
 		}
 		if(!this.getProperty("showPoints")) {
 		    this.addFeatures(featuresToAdd);

@@ -288,10 +288,14 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(!this.dateMin) return;
 	    this.dates=[];
 	    let seen = {};
+	    this.dateToRecordMap = {};
 	    records.every(r=>{
-		if(!seen[r.getDate()]) {
-		    seen[r.getDate()] = true;
-		    this.dates.push(r.getDate());
+		let date = r.getDate();
+		if(!r) return;
+		if(!seen[date]) {
+		    seen[date] = true;
+		    this.dates.push(date);
+		    this.dateToRecordMap[date] = r;
 		}
 		return true;
 	    });
@@ -832,6 +836,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		begin:this.begin,
 		end: this.end
 	    });
+	    let record = this.dateToRecordMap[this.begin];
+	    if(record && this.display.getProperty("animationPropagateRecordSelection",false)) {
+		this.display.getDisplayManager().notifyEvent(DisplayEvent.recordSelection, this, {record:record});
+	    }
 	},
 	applyAnimation: function(skipSlider) {
 	    this.display.animationApply(this);
@@ -895,7 +903,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(this.highlightRecords[record.getId()]) {
 		    clazz+=" display-animation-tick-highlight-base ";
 		}
-		ticks+=HtmlUtils.div([TITLE,"",ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css("height",this.tickHeight,'left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
+		ticks+=HtmlUtils.div([ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css("height",this.tickHeight,'left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
 	    }
 	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);

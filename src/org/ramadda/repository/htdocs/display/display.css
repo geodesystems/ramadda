@@ -367,7 +367,7 @@ a.display-container {
     background:transparent;
     position:absolute;
     width:12px;
-    border: 0px solid #bbb;
+    border: 0px solid transparent;
     border-radius: 0;
     margin-left:-5px;
     margin-right:10px;

@@ -114,13 +114,16 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
     var ID_START = "start";
     var ID_STOP = "stop";
     var ID_TIME = "time";
+    var ID_STEP="step";
     let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_ANIMATION, properties);
-    let myProps =[];
+    let myProps =[
+	{label:"Animation Control"},
+	{p:"sleepTime",ex:'100',tt:'sleep in milliseconds'},
+	{p:'startIndex',d:0}
+    ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         running: false,
         timestamp: 0,
-        index: 0,
-        sleepTime: 500,
         iconStart: "fa-play",
         iconStop: "fa-stop",
         iconBack: "fa-step-backward",
@@ -200,7 +203,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         },
         faster: function() {
             this.sleepTime = this.sleepTime / 2;
-            if (this.sleepTime == 0) this.sleepTime = 100;
+            if (this.sleepTime == 0) this.sleepTime = 10;
         },
         slower: function() {
             this.sleepTime = this.sleepTime * 1.5;
@@ -228,18 +231,49 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             var get = this.getGet();
             var html = "";
 	    let c = "display-animation-button";
-            html += HU.onClick(get + ".setIndex(0);", HU.div([ATTR_TITLE, "beginning", ATTR_CLASS, c],HU.getIconImage(this.iconBegin)));
-            html += HU.onClick(get + ".deltaIndex(-1);", HU.div([ATTR_TITLE, "step back", ATTR_CLASS, c],HU.getIconImage(this.iconBack)));
-            html += HU.onClick(get + ".toggle();", HU.div([ATTR_ID, this.getDomId(ID_START),ATTR_TITLE, "play/stop",ATTR_CLASS, c], HU.getIconImage(this.iconStart)));
-            html += HU.onClick(get + ".deltaIndex(1);", HU.div([ATTR_TITLE, "step forward", ATTR_CLASS, c],HU.getIconImage(this.iconForward)));
-            html += HU.onClick(get + ".setIndex();", HU.div([ATTR_TITLE, "end", ATTR_CLASS, c],HU.getIconImage(this.iconEnd)));
-            html += HU.onClick(get + ".faster();", HU.div([ATTR_TITLE, "faster", ATTR_CLASS, c],HU.getIconImage(this.iconFaster)));
-            html += HU.onClick(get + ".slower();", HU.div([ATTR_TITLE, "slower", ATTR_CLASS, c],HU.getIconImage(this.iconSlower)));
+	    
+
+	    let btn = (data,title,icon,id)=>{
+		let attrs = ['style','margin-right:6px;','class','ramadda-clickable','title',title,'command',data];
+		if(id) attrs.push('id',this.domId(id));
+		html +=HU.span(attrs,HU.getIconImage(icon))
+	    }
+
+	    btn("start","Go to start",this.iconBegin);
+	    btn("-1","Step back; shift-click step back 10",this.iconBack);	    
+	    btn("play","Start/Stop",this.iconStart,ID_START);	    
+	    btn("1","Step Forward; shift-click step forward 10",this.iconForward);
+	    btn("end","Go to end",this.iconEnd);	    	    
+	    html+=SPACE2;
+	    btn("-","Slower",this.iconSlower);
+	    btn("+","Faster",this.iconFaster);	    	    	    
+    
             html += HU.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
+
+	    let _this = this;
+	    this.getContents().find("[command]").click(function(event) {
+		let cmd = $(this).attr("command");
+		let shift = event.shiftKey;
+		switch(cmd) {
+		case 'start': _this.setIndex(0);break;
+		case 'end': _this.setIndex();break;		    
+		case '-1': _this.deltaIndex(shift?-10:-1);break;
+		case '1': _this.deltaIndex(shift?10:1);break;		    
+		case 'play':_this.toggle();break;
+		case '+':_this.faster();break;
+		case '-':_this.slower();break;
+		}
+	    });
+	    
+
+
         },
     });
+
+    this.sleepTime = +this.getSleepTime(500);
+    this.index=+this.getStartIndex(0);
 }
 
 
