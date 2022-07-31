@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jul 30 16:47:51 MDT 2022";
+var build_date="RAMADDA build date: Sun Jul 31 10:18:40 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -290,10 +290,14 @@ function DisplayAnimation(display, enabled,attrs) {
 	    if(!this.dateMin) return;
 	    this.dates=[];
 	    let seen = {};
+	    this.dateToRecordMap = {};
 	    records.every(r=>{
-		if(!seen[r.getDate()]) {
-		    seen[r.getDate()] = true;
-		    this.dates.push(r.getDate());
+		let date = r.getDate();
+		if(!r) return;
+		if(!seen[date]) {
+		    seen[date] = true;
+		    this.dates.push(date);
+		    this.dateToRecordMap[date] = r;
 		}
 		return true;
 	    });
@@ -834,6 +838,10 @@ function DisplayAnimation(display, enabled,attrs) {
 		begin:this.begin,
 		end: this.end
 	    });
+	    let record = this.dateToRecordMap[this.begin];
+	    if(record && this.display.getProperty("animationPropagateRecordSelection",false)) {
+		this.display.getDisplayManager().notifyEvent(DisplayEvent.recordSelection, this, {record:record});
+	    }
 	},
 	applyAnimation: function(skipSlider) {
 	    this.display.animationApply(this);
@@ -897,7 +905,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(this.highlightRecords[record.getId()]) {
 		    clazz+=" display-animation-tick-highlight-base ";
 		}
-		ticks+=HtmlUtils.div([TITLE,"",ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css("height",this.tickHeight,'left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
+		ticks+=HtmlUtils.div([ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css("height",this.tickHeight,'left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
 	    }
 	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);
@@ -3968,11 +3976,12 @@ function DisplayThing(argId, argProperties) {
 			continue;
 		    }
 		    if(field.isRecordDate()) {
-			if(!showDate) {
+			if(!showDate || hadDate) {
 			    continue;
 			}
 			hadDate = true;
 		    }
+		    if(field.isFieldDate()) hadDate = true;
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
                             continue;
@@ -4531,8 +4540,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'alphaTargetMax',ex:1},
 	{label:'Animation'},
 	{p:'doAnimation',ex:true},
+	{p:'animationMode',ex:'sliding|frame|cumulative'},
 	{p:'animationHighlightRecord',ex:true},
 	{p:'animationHighlightRecordList',ex:true},
+	{p:'animationPropagateRecordSelection',ex:true,tt:'If the animation is in frame mode then propagate the date'},
+	{p:'animationAcceptRecordSelection',ex:true,tt:'change the animation date on record select'},
 	{p:'acceptEventAnimationChange',ex:false},
 	{p:'acceptDateRangeChange',ex:true},
 	{p:'animationDateFormat',ex:'yyyy'},
@@ -4540,7 +4552,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationStyle'},				
 	{p:'animationTooltipShow',ex:'true'},
 	{p:'animationTooltipDateFormat',ex:'yyyymmddhhmm'},		
-	{p:'animationMode',ex:'sliding|frame|cumulative'},
 	{p:'animationWindow',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
 	{p:'animationStep',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
 	{p:'animationSpeed',ex:500},
@@ -5290,6 +5301,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.haveCalledUpdateUI = false;
 		    this.callUpdateUI();
 		}
+		if(this.getAnimationEnabled() && source!=this.getAnimation()) {
+		    if(this.getProperty("animationAcceptRecordSelection",false)) {
+			let date = this.selectedRecord.getDate();
+			if(date) 
+			    this.getAnimation().setDateRange(date,date);
+		    }
+		}
+
 	    }
             if (!source.getEntries) {
                 return;
@@ -9493,7 +9512,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, _this, {highlight:true,record: record});
 		    }
 		    if(tooltip=="" || tooltip=="none") return null;
-		    let style = _this.getProperty("tooltipStyle");
+		    let style = _this.getProperty("tooltipStyle","font-size:10pt;");
 		    let tt =  _this.getRecordHtml(record,null,tooltip);
 		    if(style) tt=HU.div([STYLE,style],tt);
 		    return tt;
@@ -21589,13 +21608,16 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
     var ID_START = "start";
     var ID_STOP = "stop";
     var ID_TIME = "time";
+    var ID_STEP="step";
     let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_ANIMATION, properties);
-    let myProps =[];
+    let myProps =[
+	{label:"Animation Control"},
+	{p:"sleepTime",ex:'100',tt:'sleep in milliseconds'},
+	{p:'startIndex',d:0}
+    ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         running: false,
         timestamp: 0,
-        index: 0,
-        sleepTime: 500,
         iconStart: "fa-play",
         iconStop: "fa-stop",
         iconBack: "fa-step-backward",
@@ -21675,7 +21697,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         },
         faster: function() {
             this.sleepTime = this.sleepTime / 2;
-            if (this.sleepTime == 0) this.sleepTime = 100;
+            if (this.sleepTime == 0) this.sleepTime = 10;
         },
         slower: function() {
             this.sleepTime = this.sleepTime * 1.5;
@@ -21703,18 +21725,49 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             var get = this.getGet();
             var html = "";
 	    let c = "display-animation-button";
-            html += HU.onClick(get + ".setIndex(0);", HU.div([ATTR_TITLE, "beginning", ATTR_CLASS, c],HU.getIconImage(this.iconBegin)));
-            html += HU.onClick(get + ".deltaIndex(-1);", HU.div([ATTR_TITLE, "step back", ATTR_CLASS, c],HU.getIconImage(this.iconBack)));
-            html += HU.onClick(get + ".toggle();", HU.div([ATTR_ID, this.getDomId(ID_START),ATTR_TITLE, "play/stop",ATTR_CLASS, c], HU.getIconImage(this.iconStart)));
-            html += HU.onClick(get + ".deltaIndex(1);", HU.div([ATTR_TITLE, "step forward", ATTR_CLASS, c],HU.getIconImage(this.iconForward)));
-            html += HU.onClick(get + ".setIndex();", HU.div([ATTR_TITLE, "end", ATTR_CLASS, c],HU.getIconImage(this.iconEnd)));
-            html += HU.onClick(get + ".faster();", HU.div([ATTR_TITLE, "faster", ATTR_CLASS, c],HU.getIconImage(this.iconFaster)));
-            html += HU.onClick(get + ".slower();", HU.div([ATTR_TITLE, "slower", ATTR_CLASS, c],HU.getIconImage(this.iconSlower)));
+	    
+
+	    let btn = (data,title,icon,id)=>{
+		let attrs = ['style','margin-right:6px;','class','ramadda-clickable','title',title,'command',data];
+		if(id) attrs.push('id',this.domId(id));
+		html +=HU.span(attrs,HU.getIconImage(icon))
+	    }
+
+	    btn("start","Go to start",this.iconBegin);
+	    btn("-1","Step back; shift-click step back 10",this.iconBack);	    
+	    btn("play","Start/Stop",this.iconStart,ID_START);	    
+	    btn("1","Step Forward; shift-click step forward 10",this.iconForward);
+	    btn("end","Go to end",this.iconEnd);	    	    
+	    html+=SPACE2;
+	    btn("-","Slower",this.iconSlower);
+	    btn("+","Faster",this.iconFaster);	    	    	    
+    
             html += HU.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
+
+	    let _this = this;
+	    this.getContents().find("[command]").click(function(event) {
+		let cmd = $(this).attr("command");
+		let shift = event.shiftKey;
+		switch(cmd) {
+		case 'start': _this.setIndex(0);break;
+		case 'end': _this.setIndex();break;		    
+		case '-1': _this.deltaIndex(shift?-10:-1);break;
+		case '1': _this.deltaIndex(shift?10:1);break;		    
+		case 'play':_this.toggle();break;
+		case '+':_this.faster();break;
+		case '-':_this.slower();break;
+		}
+	    });
+	    
+
+
         },
     });
+
+    this.sleepTime = +this.getSleepTime(500);
+    this.index=+this.getStartIndex(0);
 }
 
 
@@ -36061,7 +36114,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			featuresToAdd.push(this.map.createMarker("startpoint", tpoints[0],ramaddaCdn+"/icons/map/marker-green.png"));
 			featuresToAdd.push(this.map.createMarker("endpoint", tpoints[tpoints.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
 		    }
-                    featuresToAdd.push(this.map.createPolygon(ID, "", tpoints, attrs, null));
+		    let poly = this.map.createPolygon(ID, "", tpoints, attrs, null);
+		    poly.noSelect = true;
+		    featuresToAdd.push(poly);
 		}
 		if(!this.getProperty("showPoints")) {
 		    this.addFeatures(featuresToAdd);
