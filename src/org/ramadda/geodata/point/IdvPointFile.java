@@ -5,36 +5,17 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
-
-
-
 import org.ramadda.data.record.*;
-
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
-
-import java.awt.*;
-import java.awt.image.*;
-
 import java.io.*;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.*;
 
 
 /**
- * Class description
- *
- *
- * @version        Enter version here..., Fri, May 21, '10
- * @author         Enter your name here...
  */
 public class IdvPointFile extends CsvFile {
 
@@ -69,8 +50,6 @@ public class IdvPointFile extends CsvFile {
     }
 
 
-
-
     /**
      * _more_
      *
@@ -85,7 +64,6 @@ public class IdvPointFile extends CsvFile {
         if (skipFromProperties != null) {
             return Integer.parseInt(skipFromProperties);
         }
-
         return 3;
     }
 
@@ -102,9 +80,6 @@ public class IdvPointFile extends CsvFile {
     public RecordIO readHeader(RecordIO recordIO) throws Exception {
         return recordIO;
     }
-
-
-
 
     /**
      * _more_
@@ -126,7 +101,6 @@ public class IdvPointFile extends CsvFile {
         }
         String fields = headerLines.get(1);
         putProperty(PROP_FIELDS, fields);
-
         return visitInfo;
     }
 
