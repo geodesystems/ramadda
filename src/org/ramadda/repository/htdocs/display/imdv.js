@@ -1669,7 +1669,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		if(glyphType.isMap()) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.checkMapLayer();
+		    mapGlyph.checkMapLayer(false);
 		    this.addGlyph(mapGlyph);
 		    return
 		}  
@@ -2290,6 +2290,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 	handleError:function(err,url) {
+	    if(err.stack) console.error(err.stack);
 	    let message;
 	    let responseText = err.responseText??err?.priv?.responseText;
 	    if(responseText) {
@@ -2560,7 +2561,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let label =  mapGlyph.getLabel(true,true);
-		let body = HU.div(['style','margin-left:20px;'],mapGlyph.getLegendBody());
+		let body = HU.div(['style','margin-left:10px;'],mapGlyph.getLegendBody());
 		let block = HU.toggleBlock("",body,false,{separate:true,headerStyle:'display:inline-block;'});		
 		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
 			       HU.tr([],
@@ -2588,6 +2589,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.zoomTo();
 	    });
 	    
+
+	    this.getGlyphs().forEach((mapGlyph,idx)=>{
+		mapGlyph.makeFeatureFilters();
+	    });
+
+
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-item');
 	    this.initGlyphButtons(this.jq(ID_LEGEND));
 	    items.each(function() {
@@ -3227,7 +3234,10 @@ function MapGlyph(display,type,attrs,feature,style) {
 
 MapGlyph.prototype = {
     domId:function(id) {
-	return this.display.domId(id);
+	return this.getId() +'_'+this.display.domId(id);
+    },
+    jq:function(id) {
+	return jqid(this.domId(id));
     },
     clone: function() {
 	let style = $.extend({},this.style);
@@ -3402,8 +3412,8 @@ MapGlyph.prototype = {
 	    body+=HU.center(colorMap.property)+HU.center(div);
 	}	
 
-	//Put the placehold here for map sliders
-	body+=HU.div(['id',this.domId('mapsliders'+this.getId())]);
+	//Put the placeholder here for map sliders
+	body+=HU.div(['id',this.domId('mapfilters')]);
 
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
@@ -3446,11 +3456,12 @@ MapGlyph.prototype = {
     getMapLayer: function() {
 	return this.mapLayer;
     },
-    checkMapLayer:function() {
+    checkMapLayer:function(andZoom) {
 	//Only create the map if we're visible
 	if(!this.isMap() || !this.isVisible()) return;
 	if(this.mapLayer==null) {
-	    this.setMapLayer(this.display.createMapLayer(this.attrs,this.style,true));
+	    if(!Utils.isDefined(andZoom)) andZoom = true;
+	    this.setMapLayer(this.display.createMapLayer(this.attrs,this.style,andZoom));
 	    this.applyMapStyle();
 	}
     },
@@ -3477,10 +3488,10 @@ MapGlyph.prototype = {
     applyPropertiesComponent: function() {
 	if(!this.canDoMapStyle()) return;
 	let colorBy = {
-	    property:this.display.jq('colorby_property').val(),
-	    min:this.display.jq('colorby_min').val(),
-	    max:this.display.jq('colorby_max').val(),
-	    colorTable:this.display.jq('colorby_colortable').val()};		
+	    property:this.jq('colorby_property').val(),
+	    min:this.jq('colorby_min').val(),
+	    max:this.jq('colorby_max').val(),
+	    colorTable:this.jq('colorby_colortable').val()};		
 	this.attrs.colorBy = colorBy;
 	let rules = [];
 	for(let i=0;i<20;i++) {
@@ -3510,51 +3521,79 @@ MapGlyph.prototype = {
 	let _this = this;
 	let colorMap = this.attrs.colorBy ??{};
 	let decorate = () =>{
-	    let div = this.getColorTableDisplay(this.display.jq('colorby_colortable').val());
-	    this.display.jq('colorby_colortable_label').html(div);
+	    let div = this.getColorTableDisplay(this.jq('colorby_colortable').val());
+	    this.jq('colorby_colortable_label').html(div);
 	};
 	decorate();
 	dialog.find(".ramadda-colortable-select").click(function() {
 	    let ct = $(this).attr("colortable");
-	    _this.display.jq('colorby_colortable').val(ct);
+	    _this.jq('colorby_colortable').val(ct);
 	    decorate();
 	});
 	Utils.displayAllColorTables(this.display.domId('colorby'));
+	dialog.find('#'+this.domId('colorby_property')).change(function() {
+	    let prop =  $(this).val();
+	    _this.featureInfo.every(info=>{
+		if(info.property==prop) {
+		    _this.jq('colorby_min').val(info.min);
+		    _this.jq('colorby_max').val(info.max);		    
+		    return false;
+		}
+		return true;
+	    });
+	});
+
+	dialog.find('[mapproperty_index]').change(function() {
+	    let info = _this.featureInfoMap[$(this).val()];
+	    if(!info) return;
+	    let idx  = $(this).attr('mapproperty_index');	    
+	    let tt = "";
+	    if(info.isNumeric)
+		tt=info.min +" - " + info.max;
+	    else if(info.samples.length)
+		tt = Utils.join(info.samples, ", ");
+	    jqid('mapvalue_' + idx).attr('title',tt);
+	});
+
+
     },
 
     getPropertiesComponent: function(content) {
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.mapLayer.features[0].attributes;
-	let keys  = Object.keys(attrs);
-	let properties = Utils.mergeLists([['','Select']],keys);
+	let featureInfo = this.featureInfo = this.getFeatureInfo();
+	let keys  = Object.keys(featureInfo);
 	let colorMap = this.attrs.colorBy ??{};
-	let colorBy=HU.b("Color map")+"<br>";
-	colorBy += HU.formTable();
-	colorBy += HU.formEntry("Property:", HU.select('',['id',this.domId('colorby_property')],properties,colorMap.property));
-	colorBy += HU.formEntry("Range:",HU.input("",colorMap.min??0, ['id',this.domId('colorby_min'),'size','6','title','min value']) +" -- "+
-				HU.input("",colorMap.max??100, ['id',this.domId('colorby_max'),'size','6','title','max value']));
-	colorBy += HU.hidden('',colorMap.colorTable||'blues',['id',this.domId('colorby_colortable')]);
-	colorBy+=HU.formEntry("Color table:", HU.hbox([HU.div(['style',HU.css(),'id',this.domId('colorby_colortable_label')]),
-						       Utils.getColorTablePopup(null,null,"Select")]));
-	colorBy+="</table>";
-
+	let numeric = featureInfo.filter(info=>{return info.isNumeric;});
+	let enums = featureInfo.filter(info=>{return info.isEnum;});
+	let colorBy = "";
+	if(numeric.length) {
+	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return info.property;}));
+	    colorBy=HU.b("Color map")+"<br>";
+	    colorBy += HU.formTable();
+	    colorBy += HU.formEntry("Property:", HU.select('',['id',this.domId('colorby_property')],numericProperties,colorMap.property));
+	    colorBy += HU.formEntry("Range:",HU.input("",colorMap.min??"", ['id',this.domId('colorby_min'),'size','6','title','min value']) +" -- "+
+				    HU.input("",colorMap.max??"", ['id',this.domId('colorby_max'),'size','6','title','max value']));
+	    colorBy += HU.hidden('',colorMap.colorTable||'blues',['id',this.domId('colorby_colortable')]);
+	    colorBy+=HU.formEntry("Color table:", HU.hbox([HU.div(['style',HU.css(),'id',this.domId('colorby_colortable_label')]),
+							   Utils.getColorTablePopup(null,null,"Select")]));
+	    colorBy+="</table>";
+	}
+	let properties=Utils.mergeLists([['','Select']],featureInfo.map(info=>{return info.property;}));
 	let ex = "";
-	keys.forEach(key=>{
+	featureInfo.forEach(info=>{
 	    let seen ={};
 	    let list =[];
-	    this.mapLayer.features.every((f,idx)=>{
-		let a = f.attributes;
-		if(!a) return true;
-		let v = a[key];
-		if(seen[v]) return true;
-		seen[v]=true;
-		list.push(v);
-		return list.length<20;
-	    });
-	    ex+=HU.b(key)+":" + Utils.join(list,", ")+"<br>";
+	    if(info.isNumeric) {
+		ex+=HU.b(info.property)+": " +  info.min +" - " + info.max+"<br>";
+	    } else if(info.isEnum) {
+		ex+=HU.b(info.property)+": " +  Utils.join(info.samples,", ") +"<br>";
+	    } else {
+		ex+=HU.b(info.property)+": " +  Utils.join(info.samples,", ") +"<br>";
+	    }
 	});
-	let c = OpenLayers.Filter.Comparison
-	let operators = [c.GREATER_EQUAL_TO,c.GREATER_NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null']];
+	let c = OpenLayers.Filter.Comparison;
+	let operators = [c.EQUAL_TO,c.NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null']];
 	let table = HU.b("Style Rules")+"<br>";
 	table+=HU.formTable();
 	let sample = "Samples&#013;";
@@ -3565,103 +3604,249 @@ MapGlyph.prototype = {
 	}
 	table+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules();
+	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
 	for(let i=0;i<20;i++) {
 	    let rule = i<rules.length?rules[i]:{};
 	    let v = rule.value??"";
-	    let propSelect =HU.select('',['id','mapproperty_' + i],properties,rule.property);
+	    let info = this.featureInfoMap[properties,rule.property];
+	    let title = sample;
+	    if(info) {
+		if(info.isNumeric)
+		    title=info.min +" - " + info.max;
+		else if(info.samples.length)
+		    title = Utils.join(info.samples, ", ");
+	    }
+	    let propSelect =HU.select('',['id','mapproperty_' + i,'mapproperty_index',i],properties,rule.property);
 	    let opSelect =HU.select('',['id','maptype_' + i],operators,rule.type);	    
-	    let valueInput = HU.input("",v,['id','mapvalue_' + i,'size','15','title',sample]);
+	    let valueInput = HU.input("",v,['id','mapvalue_' + i,'size','15','title',title]);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let title = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
-	    let styleInput = HU.textarea("",s,['id','mapstyle_' + i,'rows','3','columns','10','title',title]);
+	    let styleInput = HU.textarea("",s,['id','mapstyle_' + i,'rows','3','columns','10','title',styleTitle]);
 	    table+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	table += "</table>";
 	table = HU.div(['style','max-height:200px;overflow-y:auto;'], table);
 	content.push(["Map Style Rules",colorBy+table]);
 	content.push(["Sample Values",ex]);
-
     },
     getMapStyleRules: function() {
 	return this.attrs.mapStyleRules??[];
     },
-    applyMapStyle:function() {
+    getFeatureKeys:function() {
+	if(this.mapLayer.features.length==0) return [];
+	let attrs = this.mapLayer.features[0].attributes;
+	return  Object.keys(attrs).filter(key=>{
+	    if(key=="OBJECTID" || key=="objectid" || key=="ORIGINAL_OID") return false;
+	    return true;
+	});
+    },
+    getFeatureInfo:function() {
+	let keyInfo = [];
+	if(!this.mapLayer?.features) return keyInfo; 
+	let features= this.mapLayer.features;
+	let keys  = this.getFeatureKeys();
+	keys.forEach(key=>{
+	    keyInfo.push({
+		property:key,
+		min:Number.MAX_VALUE,
+		max:Number.MIN_VALUE,
+		isNumeric:false,
+		isInt:true,
+		isString:false,
+		isEnum:false,
+		seen:{},
+		samples:[]
+	    });		
+	});
+	features.forEach(f=>{
+	    keyInfo.forEach(info=>{
+		let v = f.attributes[info.property];
+		if(!Utils.isDefined(v)) return;
+		let sv = String(v);
+		if(sv.trim()=="") return;
+		if(isNaN(v) || info.samples.length>0) {
+		    if(info.samples.length<30) {
+			info.isEnum = true;
+			if(!info.seen[v]) {
+			    info.seen[v] = true;
+			    info.samples.push(v);
+			}
+		    } else {
+			info.isEnum = false;
+			info.isString = true;
+		    }
+		}
+		if(!isNaN(v)) {
+		    info.isNumeric=true;
+		    if(Math.round(v)!=v) {
+			info.isInt=false;
+		    }
+		    info.min = Math.min(info.min,v);
+		    info.max = Math.max(info.max,v);			
+		}
+	    });
+	});
+	this.featureInfo = keyInfo;
+	this.featureInfoMap = {};
+	keyInfo.forEach(info=>{
+	    this.featureInfoMap[info.property] = info;
+	});
+	return keyInfo;
+    },
+    makeFeatureFilters:function() {
+	let _this = this;
+	let featureInfo = this.getFeatureInfo();
+	let sliders = "";
+	let strings = "";
+	let enums = "";
+	let filters = this.attrs.featureFilters = this.attrs.featureFilters ??{};
+	featureInfo.forEach(info=>{
+	    let filter = filters[info.property] = filters[info.property]??{};
+	    let id = Utils.makeId(info.property);
+	    if(info.isString)  {
+		filter.type="string";
+		strings+=HU.b(info.property)+":<br>" +
+		    HU.input("",filter.stringValue??"",['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20]) +"<br>";
+		return
+	    } 
+	    if(info.samples.length)  {
+		filter.type="enum";
+		if(info.samples.length>1) 
+		    enums+=HU.b(info.property)+":<br>" +
+		    HU.select("",['filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple','multiple','rows',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
+		return;
+	    }
+
+
+	    if(info.isNumeric) {
+		filter.minValue = info.min;
+		filter.maxValue = info.max;		
+		filter.type="range";
+		sliders+=HU.b(info.property)+":<br>" +
+		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??info.min)),
+				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??info.max))) +
+		    HU.div(['slider-min',info.min,'slider-max',info.max,'slider-isint',info.isInt,
+			    'slider-value-min',filter.min??info.min,'slider-value-max',filter.max??info.max,
+			    'filter-property',info.property,'class','imdv-filter-slider',
+			    STYLE,HU.css("display","inline-block","width","100%")],"")+"<br>";			    
+	    }
+	});
+
+	if(sliders!="")
+	    sliders = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],sliders);
+	let widgets = enums+sliders+strings;
+	if(widgets!="") {
+	    let update = () =>{
+		this.display.featureHasBeenChanged = true;
+		this.applyMapStyle(true);
+	    };
+	    widgets = HU.center(HU.div(['id',this.domId('filters_clearall')],'Clear all')) + widgets;
+	    this.jq('mapfilters').html(HU.toggleBlock("Filters",widgets));
+	    this.jq('filters_clearall').button().click(()=>{
+		this.display.featureChanged();
+		this.attrs.featureFilters = {};
+		this.applyMapStyle();
+	    });
+	    this.jq('mapfilters').find('.imdv-filter-string').keypress(function(event) {
+		let keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode == 13) {
+		    let key = $(this).attr('filter-property');
+		    let filter = filters[key]??{};
+		    filter.type='string';
+		    filter.stringValue = ($(this).val()??"").trim();
+		    filter.property = key;
+		    update();
+		}
+	    });
+	    this.jq('mapfilters').find('.imdv-filter-enum').change(function(event) {
+		let key = $(this).attr('filter-property');
+		let filter = filters[key]??{};
+		    filter.property = key;
+		filter.type='enum';
+		filter.enumValues=$(this).val();
+		update();
+	    });
+
+	    this.jq('mapfilters').find('.imdv-filter-slider').each(function() {
+		let min = +$(this).attr('slider-min');
+		let max = +$(this).attr('slider-max');
+		let isInt = $(this).attr('slider-isint')=="true";
+		let step = 1;
+		let range = max-min;
+		if(!isInt) {
+		    step = range/100;
+		} else {
+		    if(range>10)
+			step = Math.max(1,Math.floor(range/100));		    
+		}
+		$(this).slider({		
+		    min: +min,
+		    max: +max,
+		    step:+step,
+		    values:[$(this).attr('slider-value-min'),$(this).attr('slider-value-max')],
+		    slide: function( event, ui ) {
+			let key = $(this).attr('filter-property');
+			let id = Utils.makeId(key);
+			let filter = filters[key]??{};
+			filter.min = +ui.values[0];
+			filter.max = +ui.values[1];			    
+			filter.property=key;
+			_this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
+			_this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
+
+			if(!_this.sliderThrottle) 
+			    _this.sliderThrottle=Utils.throttle(()=>{
+				update();
+			    },1000);
+			_this.sliderThrottle();
+		    }});
+	    });
+	}
+    },
+    applyMapStyle:function(skipLegendUI) {
+	let _this = this;
 	//If its a map then set the style on the map features
 	if(!this.mapLayer) return;
 	let features= this.mapLayer.features;
-	if(this.canDoMapStyle()) {
-	    let attrs = this.mapLayer.features[0].attributes;
-	    let keys  = Object.keys(attrs);
-	    let keyInfo = {};
-	    keys.forEach(key=>{
-		keyInfo[key] = {
-		    min:Number.MAX_VALUE,
-		    max:Number.MIN_VALUE};		
-	    });
-	    features.forEach(f=>{
-		keys.forEach(key=>{
-		    let v = f.attributes[key];
-		    if(!Utils.isDefined(v)) return;
-		    if(!isNaN(v)) {
-			keyInfo[key].min = Math.min(keyInfo[key].min,v);
-			keyInfo[key].max = Math.max(keyInfo[key].max,v);			
-		    }
-		});
-	    });
-	    
-	    let sliders = "";
-	    let ranges = this.attrs.visibleRanges =this.attrs.visibleRanges ??{};
-	    keys.forEach(key=>{
-		let info = keyInfo[key];
-		if(info.min !=Number.MAX_VALUE) {
-		    let range = ranges[key] = ranges[key]??{};
-		    sliders+=HU.b(key)+":<br>" +
-			HU.leftRightTable(HU.div(['style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(info.min)),
-					  HU.div(['style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(info.max))) +
-			HU.div(['slider-min',info.min,'slider-max',info.max,
-				'slider-value-min',range.min??info.min,'slider-value-max',range.min??info.max,
-				'slider-property',key,'class','imdv-property-slider',
-				STYLE,HU.css("display","inline-block","width","100%")],"")+"<br>";			    
-		}
-	    });
-
-	    if(sliders!="") {
-		sliders = HU.div(['style',HU.css('margin-left','10px','margin-right','10px')],sliders);
-		this.display.jq('mapsliders'+this.getId()).html(HU.toggleBlock("Visible Ranges",sliders));
-		this.display.jq('mapsliders'+this.getId()).find('.imdv-property-slider').each(function() {
-		    let min = $(this).attr('slider-min');
-		    let max = $(this).attr('slider-max');
-		    let step = $(this).attr('slider-step')??0.01;
-		    $(this).slider({		
-			min: +min,
-			max: +max,
-			step:+step,
-			values:[$(this).attr('slider-value-min'),$(this).attr('slider-value-max')],
-			slide: function( event, ui ) {
-			    let key = $(this).attr('slider-property');
-			    let range = ranges[key];
-			    range.min = +ui.values[0];
-			    range.max = +ui.values[1];			    
-			}});
-		});
-	    }
+	if(!skipLegendUI && this.canDoMapStyle()) {
+	    this.makeFeatureFilters();
 	}
-
-
 
 	let style = this.style;
 	let rules = this.getMapStyleRules();
-	//	    let rules = 'OWN_TYPE_NAME:~:.*Conservation.*:fillColor:red:strokeColor:black;OWN_TYPE_NAME:~:Joint:fillColor:blue';
 	if(rules) {
 	    rules = rules.filter(rule=>{
 		return Utils.stringDefined(rule.property);
 	    });
 	}
+
+	let featureFilters = this.attrs.featureFilters ??{};
+	let rangeFilters = [];
+	let stringFilters =[];
+	let enumFilters =[];	
+	for(a in featureFilters) {
+	    let filter= featureFilters[a];
+	    if(filter.type=="string") {
+		if(Utils.stringDefined(filter.stringValue)) stringFilters.push(filter);
+	    } else if(filter.type=="enum") {
+		if(filter.enumValues && filter.enumValues.length>0) enumFilters.push(filter);
+	    } else {
+		if(Utils.isDefined(filter.min) || Utils.isDefined(filter.max)) {
+		    if(filter.min!=filter.minValue || filter.max!=filter.maxValue) {
+			rangeFilters.push(filter);
+		    }
+		}
+	    }
+	}
+
+
+	
+	let attrs = features.length>0?features[0].attributes:{};
+	let keys  = Object.keys(attrs);
 	if(rules && rules.length>0) {
 	    this.mapLayer.style = null;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,rules);
 	    features.forEach((f,idx)=>{f.style = null;});
-	} else if(Utils.isDefined(this.attrs.colorBy?.property)) {
+	} else if(Utils.stringDefined(this.attrs.colorBy?.property)) {
 	    let prop =this.attrs.colorBy.property;
 	    let min =+this.attrs.colorBy.min;
 	    let max =+this.attrs.colorBy.max;
@@ -3677,7 +3862,6 @@ MapGlyph.prototype = {
 		let index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
 		f.style = $.extend({},style);
 		f.style.fillColor=ct[index];
-		//		    console.log(value,percent,index,ct[index])
 	    });
 	} else {
 	    this.mapLayer.style = style;
@@ -3686,6 +3870,40 @@ MapGlyph.prototype = {
 		f.originalStyle = $.extend({},style);			    
 	    });
 	}
+
+	features.forEach((f,idx)=>{
+	    let visible = true;
+	    rangeFilters.every(filter=>{
+		let v = f.attributes[filter.property];
+		if(Utils.isDefined(v)) {
+		    visible = v>=filter.min && v<=filter.max;
+		}
+		return visible;
+	    });
+	    if(visible) {
+		stringFilters.every(filter=>{
+		    let v = f.attributes[filter.property];
+		    if(Utils.isDefined(v)) {
+			v= String(v).toLowerCase();
+			visible = v.indexOf(filter.stringValue)>=0;
+		    }
+		    return visible;
+		});
+	    }
+	    if(visible) {
+		enumFilters.every(filter=>{
+		    let v = f.attributes[filter.property];
+		    visible =filter.enumValues.includes(v);
+		    return visible;
+		});
+	    }		
+
+
+	    if(!visible) {
+		if(!f.style) f.style={};
+		f.style.display='none';
+	    }
+	});
 	this.mapLayer.redraw();
     },
 

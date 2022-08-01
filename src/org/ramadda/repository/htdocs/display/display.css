@@ -2891,6 +2891,10 @@ table.dataTable tfoot td {
     border-bottom:1px solid #ccc;
 }
 
+.imdv-filter-enum {
+    max-width:180px;
+}
+
 .ramadda-imdv-fixed {
     border-radius: 4px;
     position: absolute;
