@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug  1 16:43:11 MDT 2022";
+var build_date="RAMADDA build date: Mon Aug  1 17:02:31 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -41792,13 +41792,22 @@ MapGlyph.prototype = {
 	dialog.find('[mapproperty_index]').change(function() {
 	    let info = _this.featureInfoMap[$(this).val()];
 	    if(!info) return;
-	    let idx  = $(this).attr('mapproperty_index');	    
+	    let index  = $(this).attr('mapproperty_index');	    
 	    let tt = "";
-	    if(info.isNumeric)
+	    let value = jqid('mapvalue_' + index).val();
+	    let wrapper = jqid('mapvaluewrapper_' + index);
+	    if(info.isNumeric) {
+		wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		tt=info.min +" - " + info.max;
-	    else if(info.samples.length)
+	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.samples, ", ");
-	    jqid('mapvalue_' + idx).attr('title',tt);
+		if(info.isEnum) {
+		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value));
+		} else {
+		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
+		}
+	    }
+	    jqid('mapvalue_' + index).attr('title',tt);
 	});
 
 
@@ -41851,22 +41860,28 @@ MapGlyph.prototype = {
 	table+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules();
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
-	for(let i=0;i<20;i++) {
-	    let rule = i<rules.length?rules[i]:{};
-	    let v = rule.value??"";
+	for(let index=0;index<20;index++) {
+	    let rule = index<rules.length?rules[index]:{};
+	    let value = rule.value??"";
 	    let info = this.featureInfoMap[properties,rule.property];
 	    let title = sample;
+	    let valueInput;
 	    if(info) {
 		if(info.isNumeric)
 		    title=info.min +" - " + info.max;
 		else if(info.samples.length)
 		    title = Utils.join(info.samples, ", ");
 	    }
-	    let propSelect =HU.select('',['id','mapproperty_' + i,'mapproperty_index',i],properties,rule.property);
-	    let opSelect =HU.select('',['id','maptype_' + i],operators,rule.type);	    
-	    let valueInput = HU.input("",v,['id','mapvalue_' + i,'size','15','title',title]);
+	    if(info?.isEnum) {
+		valueInput = HU.select("",['id','mapvalue_' + index],info.samples,value); 
+	    } else {
+		valueInput = HU.input("",value,['id','mapvalue_' + index,'size','15']);
+	    }
+	    let propSelect =HU.select('',['id','mapproperty_' + index,'mapproperty_index',index],properties,rule.property);
+	    let opSelect =HU.select('',['id','maptype_' + index],operators,rule.type);	    
+	    valueInput =HU.span(['id','mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let styleInput = HU.textarea("",s,['id','mapstyle_' + i,'rows','3','columns','10','title',styleTitle]);
+	    let styleInput = HU.textarea("",s,['id','mapstyle_' + index,'rows','3','columns','10','title',styleTitle]);
 	    table+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	table += "</table>";
