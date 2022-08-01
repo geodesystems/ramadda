@@ -1549,7 +1549,8 @@ RepositoryMap.prototype = {
         }
     },
 
-    getVectorLayerStyleMap: function(layer, args) {
+    getVectorLayerStyleMap: function(layer, args,ruleString) {
+//	ruleString = 'OWN_TYPE_NAME:~:.*Conservation.*:fillColor:red:strokeColor:black;OWN_TYPE_NAME:~:Joint:fillColor:blue';
         var props = {
             pointRadius: this.params.pointRadius,
             fillOpacity: this.params.fillOpacity,
@@ -1597,36 +1598,75 @@ RepositoryMap.prototype = {
             "select": selectStyle
         });
 
-	let ruleString =this.getProperty("rules");
-	if(Utils.stringDefined(ruleString)) {
-	    let rules = [];
-	    Utils.split(ruleString,";",true,true).forEach(line=>{
-		let toks = Utils.split(line,":");
-		//rules="OWN_TYPE_NAME:~:.*Conversation.*:fillColor:red"
-		if(toks.length<3) {
-		    console.log("bad rule:" + line);
-		    return;
-		}
-		let tmp = $.extend({},defaultStyle);
-		for(let i=3;i<toks.length;i+=2) {
-		    tmp[toks[i]] = toks[i+1];
-		}
-//		console.log("TOKS:" + toks[0] + ":" + toks[1] +":" + toks[2]+":"+OpenLayers.Filter.Comparison.LIKE);
-		var rule = new OpenLayers.Rule({
-		    filter: new OpenLayers.Filter.Comparison({
+	ruleString =ruleString||this.getProperty("rules");
+	let rules = [];
+	if(Utils.isDefined(ruleString)) {
+	    if(!Array.isArray(ruleString)) {
+		let tmp = [];
+		Utils.split(ruleString,";",true,true).forEach(line=>{
+		    let toks = Utils.split(line,":");
+		    //rules="OWN_TYPE_NAME:~:.*Conversation.*:fillColor:red"
+		    if(toks.length<3) {
+			console.log("bad rule:" + line);
+			return;
+		    }
+		    let rule = {
 			property: toks[0],
-			type: toks[1],
-			value: toks[2]
-		    }),
+			type:toks[1],
+			value: toks[2],
+			style: {}
+		    }
+		    for(let i=3;i<toks.length;i+=2) {
+			rule.style[toks[i]] = toks[i+1];
+		    }
+		    tmp.push(rule);
+		});
+		ruleString = tmp;
+	    }
+	    rules = ruleString;
+	}
+
+	if(rules.length>0) {
+	    let mapRules =[];
+	    rules.forEach(rule=>{
+		let tmp = $.extend({},defaultStyle);
+		let style = rule.style;
+		if(typeof style == "string") {
+		    let tmpStyle = {};
+		    Utils.split(style,"\n",true,true).forEach(line=>{
+			let toks = Utils.split(line,':',true,true);
+			if(toks.length==2)
+			    tmpStyle[toks[0]] = toks[1];
+		    });
+		    style = tmpStyle;
+		}		    
+		tmp = $.extend(tmp, style);
+		rule.value = String(rule.value??"");
+		console.log("\t",rule.property,rule.type,rule.value);
+		let numeric =rule.value.match(/^\d*\.?\d*$/); 
+		let string = rule.type=="~=" || rule.type=="NULL";
+		let props = {
+		    property: rule.property,
+		    type: rule.type,
+		    
+		};
+		if(rule.type==OpenLayers.Filter.Comparison.BETWEEN) {
+		    let toks = Utils.split(String(rule.value),":",true,true);
+		    if(toks.length==2) {
+			props.lowerBoundary= +toks[0];
+			props.upperBoundary= +toks[1];			
+		    }
+		} else {
+		    props.value= numeric?+rule.value:rule.value;
+		}		    
+		var rule = new OpenLayers.Rule({
+		    filter: new OpenLayers.Filter.Comparison(props),
 		    symbolizer: tmp
 		});
-		rules.push(rule);
+		mapRules.push(rule);
+//		mapRules.push(new OpenLayers.Rule({elseFilter: true}));
 	    });
-	    var elseRule = new OpenLayers.Rule({
-		elseFilter: true
-	    });
-	    rules.push(elseRule);
-	    map.styles.default.addRules(rules);
+	    map.styles.default.addRules(mapRules);
 	}
         return map;
     },
