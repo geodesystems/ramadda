@@ -70,7 +70,7 @@ var Utils =  {
 	let timer = 0;
 	return function(...args) {
             clearTimeout(timer);
-            timer = setTimeout(() => f.apply(this, args), delay);
+            timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
     addLoadFunction: function(f) {
