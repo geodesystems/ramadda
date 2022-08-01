@@ -1642,7 +1642,6 @@ RepositoryMap.prototype = {
 		}		    
 		tmp = $.extend(tmp, style);
 		rule.value = String(rule.value??"");
-		console.log("\t",rule.property,rule.type,rule.value);
 		let numeric =rule.value.match(/^\d*\.?\d*$/); 
 		let string = rule.type=="~=" || rule.type=="NULL";
 		let props = {
@@ -1664,7 +1663,7 @@ RepositoryMap.prototype = {
 		    symbolizer: tmp
 		});
 		mapRules.push(rule);
-//		mapRules.push(new OpenLayers.Rule({elseFilter: true}));
+		mapRules.push(new OpenLayers.Rule({elseFilter: true}));
 	    });
 	    map.styles.default.addRules(mapRules);
 	}
