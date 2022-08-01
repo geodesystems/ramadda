@@ -1317,10 +1317,11 @@ var Utils =  {
         });
         return ok;
     },
-    makeLabel: function(s) {
+    makeLabel: function(s,dontSplitOnCaps) {
         s  = String(s);
         s = s.trim();
-	s = s.replace(/([A-Z])/g," $1");
+	if(!dontSplitOnCaps)
+	    s = s.replace(/([A-Z])/g," $1");
         s =  this.camelCase(s.replace(/_/g," "));
 	s = s.replace(/  +/g," ");
 	return s;
@@ -2751,7 +2752,7 @@ var Utils =  {
             cnt++;
         }
     },
-    getColorTablePopup: function(wikiEditor, itemize) {
+    getColorTablePopup: function(wikiEditor, itemize,label) {
         let popup = "<div class=wiki-editor-popup-items>"
         let items = [];
         let item;
@@ -2777,7 +2778,7 @@ var Utils =  {
             }
         }
         popup+="</div>";
-        popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),popup);
+        popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], label??"Color Table"),popup);
         if(itemize) return items;
         return popup;
     },
@@ -2828,9 +2829,9 @@ var Utils =  {
         min = parseFloat(min);
         max = parseFloat(max);
         let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
-        if(!isNaN(options.width)) {
+        if(Utils.isDefined(options.width)) {
             divargs.push(STYLE);
-            divargs.push(HU.css(WIDTH, HU.getDimension(options.width)));
+            divargs.push(HU.css(WIDTH, HU.getDimension(String(options.width))));
         }
         
         let html = HtmlUtils.open(DIV, divargs);
@@ -4114,9 +4115,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     hbox: function(args) {
         var row = HtmlUtils.openTag("tr", ["valign", "top"]);
-        row += "<td>";
-        row += HtmlUtils.join(args, "</td><td>");
-        row += "</td></tr>";
+        row += Utils.wrap(args, "<td>","<td>");
+        row += "</tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
                         row);
     },
@@ -4526,6 +4526,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.tag("td", attrs, inner);
     },
     tds: function(attrs, cols) {
+	if(!cols) return "";
+	if(!Array.isArray(cols)) cols = [cols];
         var html = "";
         for (var i = 0; i < cols.length; i++) {
             html += this.td(attrs, cols[i]);
@@ -5389,6 +5391,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let style = (visible ? "display:block;visibility:visible" : "display:none;");
         let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
                                  contents);
+	if(opts.separate)
+	    return {header:header,body:body};
         return header + body;
     }
 }
