@@ -2869,30 +2869,38 @@ table.dataTable tfoot td {
 }
 
 
-.ramadda-display-editablemap-legend {
+.imdv-legend {
     min-width:200px;
     max-height:400px;
     overflow-y:auto;
 }
 
-.ramadda-display-editablemap-legend-item {
+.imdv-legend-item {
+    width:100%;
     border-bottom:1px solid #eee;
-    padding:2px;
+    padding:4px;
     padding-right:6px;    
 }
 
-.ramadda-display-editablemap-legend-item-invisible {
+.imdv-legend-item-invisible {
     background:#efefef;
     border-bottom:1px solid #ccc;
 }
 
+.imdv-legend-body-item {
+    border-bottom:1px solid #ccc;
+}
+
+.imdv-filter-enum {
+    max-width:180px;
+}
 
 .ramadda-imdv-fixed {
     border-radius: 4px;
     position: absolute;
 }
 
-.ramadda-editablemap-message2 {
+.ramadda-imdv-message2 {
     display:none;
     min-width:200px;
     max-width:200px;    
@@ -2905,7 +2913,7 @@ table.dataTable tfoot td {
     top:5px;
 }
 
-.ramadda-editablemap-message3 {
+.ramadda-imdv-message3 {
     min-width:200px;
     min-height:1.5em;
     padding:4px;
@@ -2915,25 +2923,25 @@ table.dataTable tfoot td {
 }
 
 
-.ramadda-display-editablemap-feature {
+.imdv-feature {
 }
 
 
-.ramadda-display-editablemap-feature-selected {
+.imdv-feature-selected {
     background:#efefef;
 }
 
-.ramadda-display-editablemap-commands {
+.imdv-commands {
     margin:5px;
     width:150px;
 }
 
-.ramadda-display-editablemap-command {
+.imdv-command {
     width:100%;
     margin-bottom:5px;
 }
 
-.ramadda-display-editablemap-command-active, .ramadda-display-editablemap-command-active:hover {
+.imdv-command-active, .ramadda-display-editablemapitem-command-active:hover {
     border:1px solid #000;
     background:#ccc;
 }
