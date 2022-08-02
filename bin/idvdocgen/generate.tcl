@@ -136,6 +136,12 @@ proc ht::doImage {img centered {caption ""} {extra ""}} {
 
 
 
+proc ht::screenshot {img {caption ""}} {
+    set extra  " style=width:60%; "
+    return "<center><span style='display:inline-block'>[ht::cimg $img $caption $extra]</span></center>"
+}
+
+
 proc ht::cimg {img {caption ""} {extra ""}} {
     if {$::doXml} {
 	   set ex " width=\"\" ";
@@ -163,6 +169,7 @@ proc ht::cimg {img {caption ""} {extra ""}} {
 	}
 	return  "<p>&nbsp;<center><img src=\"$img\" alt=\"$img\"></center>&nbsp;<p>"
     }
+
     ht::doImage $img 1 $caption $extra
 }
 
