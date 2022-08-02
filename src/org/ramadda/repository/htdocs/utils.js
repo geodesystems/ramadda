@@ -5374,6 +5374,28 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         style = (style||"");// + HU.css('color','#000');
         return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
     },
+    toggleBlockListeners:{},
+    toggleBlockVisibility:function(id, imgid, showimg, hideimg) {
+	let visible = true;
+	if (toggleVisibility(id, 'block')) {
+            if(HU.isFontAwesome(showimg)) {
+		$("#" + imgid).html(HU.makeToggleImage(showimg));
+            } else {
+		$("#" + imgid).attr('src', showimg);
+            }
+	} else {
+	    visible = false;
+            if(HU.isFontAwesome(showimg)) {
+		$("#" + imgid).html(HU.makeToggleImage(hideimg));
+            } else {
+		$("#" + imgid).attr('src', hideimg);
+            }
+	}
+	Utils.ramaddaUpdateMaps();
+	if(HtmlUtils.toggleBlockListeners[id]) {
+	    HtmlUtils.toggleBlockListeners[id](id,visible);
+	}
+    },
     toggleBlock: function(label, contents, visible, args) {
         let opts = {
             headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable",
@@ -5385,16 +5407,56 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let img1 = "fas fa-caret-down";
         let img2 = "fas fa-caret-right";        
         let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
-        let click = "toggleBlockVisibility(" + clickArgs + ");";
+        let click = "HtmlUtils.toggleBlockVisibility(" + clickArgs + ");";
         let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
         let header = HtmlUtils.div([STYLE,opts.headerStyle,"class", opts.headerClass, "onClick", click],  img +  " " + label);
         let style = (visible ? "display:block;visibility:visible" : "display:none;");
         let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
                                  contents);
 	if(opts.separate)
-	    return {header:header,body:body};
+	    return {header:header,body:body,id:id};
         return header + body;
+    },
+    toggleBlockNew: function(label, contents, visible, args) {
+	if(!Utils.isDefined(visible))  visible=false;
+        let opts = {
+            headerClass:"ramadda-noselect ramadda-toggleblock-label ramadda-clickable",
+            headerStyle:""
+        };
+        if(args) $.extend(opts, args);
+        let id = Utils.getUniqueId("block_");
+        let imgid = id + "_img";
+        let img1 = "fas fa-caret-down";
+        let img2 = "fas fa-caret-right";        
+        let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
+	let attrs = ['toggle-block-id',id,'toggle-block-visible',visible,STYLE,opts.headerStyle,"class", opts.headerClass];
+	if(opts.extraAttributes) {
+	    attrs = Utils.mergeLists(attrs,opts.extraAttributes);
+	}
+        let header = HtmlUtils.div(attrs,  img +  " " + label);
+        let style = (visible ? "display:block;visibility:visible" : "display:none;");
+        let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
+                                 contents);
+	if(opts.separate)
+	    return {header:header,body:body,id:id};
+        return header + body;
+    },
+    initToggleBlock:function(dom,callback) {
+	dom.find('[toggle-block-id]').click(function() {
+	    let id = $(this).attr('toggle-block-id');
+            let imgid = id + "_img";
+            let img1 = "fas fa-caret-down";
+            let img2 = "fas fa-caret-right";        
+	    let visible = $(this).attr('toggle-block-visible')==='true';
+	    visible=!visible;
+	    $(this).attr('toggle-block-visible',''+visible);
+	    $('#'+imgid).html(HU.makeToggleImage(visible?img1:img2));
+	    if(visible) $('#'+id).show();
+	    else $('#'+id).hide();	    
+	    if(callback) callback(id,visible,$(this));
+	});
     }
+    
 }
 
 
