@@ -2879,11 +2879,11 @@ table.dataTable tfoot td {
     width:100%;
     padding:4px;
     padding-right:6px;    
-    border-top:1px solid #ddd;
+    border-bottom:1px solid #ddd;
 }
 
 .imdv-legend-item-first {
-    /*border-top:1px solid transparent;*/
+    border-top:1px solid #ddd;
 }
 
 .imdv-legend-item-invisible {
