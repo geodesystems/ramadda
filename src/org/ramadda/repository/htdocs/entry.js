@@ -929,6 +929,8 @@ function Entry(props) {
             return url;
         },
         getIconImage: function(attrs) {
+	    if(this.iconRelative)
+		return HtmlUtils.image(this.iconRelative, attrs);
             return HtmlUtils.image(this.getIconUrl(), attrs);
         },
         getColumns: function() {
@@ -1059,7 +1061,6 @@ function Entry(props) {
         },
         getLink: function(label, includeIcon, attrs) {
             if (!label) label = this.getName();
-	    label = label.replace(/\s/g,"&nbsp;");
 	    attrs = attrs ||[];
 	    attrs.push("href", this.getEntryUrl());
 	    if(includeIcon)
