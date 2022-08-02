@@ -219,7 +219,7 @@ mapVar="gpxMap${entryid}" }}
    <property name="form.description.iswiki" value="true"/>
    <property name="defaultFilename" value="map.json"/>
    <property name="convertidsinfile" value="true"/>
-   <property name="icon" value="/icons/map.png"/>
+   <property name="icon" value="/icons/globe-solid.png"/>
 <wiki>
 <![CDATA[
 +section title={{name}}
