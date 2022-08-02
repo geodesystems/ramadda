@@ -216,6 +216,7 @@ mapVar="gpxMap${entryid}" }}
    </type>
 
 <type name="geo_imdv"  description="Integrated Map Data"  isgroup="true">
+   <property name="form.description.iswiki" value="true"/>
    <property name="defaultFilename" value="map.json"/>
    <property name="convertidsinfile" value="true"/>
    <property name="icon" value="/icons/map.png"/>

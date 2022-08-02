@@ -1184,7 +1184,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		props.push("popupText");
 	    }
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
-
 	    props.forEach(prop=>{
 		let id = "glyphedit_" + prop;
 		let domId = this.domId(id);
@@ -1217,7 +1216,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(prop=="label") {
 			size="80"
 			widget =  HU.textarea("",v,[ID,domId,"rows",5,"cols", 60]);
-		    } else if(prop=="popupText" || prop=="wikiText"|| prop=="text") {
+		    } else if(prop=="popupText") {
+			//skip this
+		    } else if(prop=="wikiText"|| prop=="text") {
 			size="80"
 			widget =  HU.textarea("",v||"",[ID,domId,"rows",5,"cols", 60]);
 		    } else if(prop=="strokeDashstyle") {
@@ -1312,6 +1313,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				   HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level.max)?level.max:""));
 		html+=HU.formEntry("Current level:" , this.getCurrentLevel());
 		html+="</table>";
+		let domId = this.domId("glyphedit_" + 'popupText');
+		html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 60]);
 		content.push(["Properties",html]);
 	    }
 	    if(mapGlyph&&mapGlyph.isData()) {
@@ -3442,8 +3445,13 @@ MapGlyph.prototype = {
 	    item(this.style.text.replace(/\"/g,"\\"));
 	}
 	item(this.display.getDistances(this.getGeometry(),this.getType()));
-	if(this.getPopupText()) 
-	    item(this.getPopupText().replace(/\n/g,"<br>"));
+	if(this.getPopupText())  {
+	    let text = this.getPopupText();
+	    if(text.startsWith("<wiki>")) {
+	    } else {
+		item(text.replace(/\n/g,"<br>"));
+	    }
+	}
 	if(Utils.stringDefined(this.style.imageUrl)) {
 	    item("<img style='border:1px solid #ccc;' width='150px' src='" +this.style.imageUrl+"'>");
 	}
