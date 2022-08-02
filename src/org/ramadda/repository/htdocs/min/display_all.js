@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug  1 17:02:31 MDT 2022";
+var build_date="RAMADDA build date: Mon Aug  1 18:40:52 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3092,6 +3092,7 @@ const ID_COLORTABLE = "colortable";
 const ID_LEGEND = "legend";
 const ID_FIELDS = "fields";
 const ID_HEADER = "header";
+const ID_HEADER0 = "header0";
 const ID_HEADER1 = "header1";
 const ID_HEADER2 = "header2";
 const ID_HEADER2_PREFIX = "header2prefix";
@@ -8216,7 +8217,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let contents = this.getContentsDiv();
 	    //display table
 	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
-            let table =   HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
+
+	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
+            let table =   h0+HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],top) +HU.td(['width',sideWidth]));
 	    }
@@ -38499,6 +38502,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
     const LIST_ROW_CLASS  = "imdv-feature-row";
     const LIST_SELECTED_CLASS  = "imdv-feature-selected";
+    const ID_TOPWIKI = "topwiki";
     const ID_EDIT_NAME  ="editname";
     const ID_MESSAGE  ="message";
     const ID_MESSAGE2  ="message2";    
@@ -40025,6 +40029,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+="</table>"
 	    html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 			 HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
+	    html+=HU.b("Top Wiki Text:") +"<br>" +
+		HU.textarea("",this.mapProperties.topWikiText??"",['id',this.domId('topwikitext_input'),'rows','6','cols','80']);
+
+
 	    html  = HU.div(['style','margin:5px;'],html);
 	    let anchor = this.jq(ID_MENU_FILE);
 	    let dialog = HU.makeDialog({content:html,title:'Properties',header:true,
@@ -40036,6 +40044,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_OK).button().click(()=>{
 		this.mapProperties.showLegend = this.jq("showlegend").is(':checked');
+		this.mapProperties.topWikiText = this.jq("topwikitext_input").val();
+		this.checkTopWiki();
 		this.makeLegend();
 		close();
 	    });
@@ -40519,6 +40529,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    this.handleError(err);
 			}
 			this.featureHasBeenChanged = false;
+			this.checkTopWiki();
 			this.makeLegend();
 			this.showMapLegend();
 			this.checkVisible();
@@ -40886,6 +40897,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		   wikiCallback).fail(wikiError);
 	},
 
+	checkTopWiki:function() {
+	    if(!Utils.isDefined(this.mapProperties?.topWikiText)) return;
+	    if(!Utils.stringDefined(this.mapProperties.topWikiText)) {
+		this.jq("topwikitext").html('');
+	    } else {
+		this.wikify(this.mapProperties.topWikiText,null,wiki=>{
+		    this.jq("topwikitext").html(wiki);
+		});
+	    }
+	},
 	canEdit: function() {
 	    return this.getProperty("canEdit") || this.getShowMenuBar(false);
 	},
@@ -41266,6 +41287,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let showMenuBar = this.getShowMenuBar(null);
 		if(!Utils.isDefined(showMenuBar))
 		    showMenuBar = this.canEdit();
+
+		this.jq(ID_HEADER0).append(HU.div([ID,this.domId("topwikitext")]));
 
 		if(showMenuBar) {
 		    this.jq(ID_TOP_LEFT).append(menuBar);
@@ -41881,7 +41904,7 @@ MapGlyph.prototype = {
 	    let opSelect =HU.select('',['id','maptype_' + index],operators,rule.type);	    
 	    valueInput =HU.span(['id','mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let styleInput = HU.textarea("",s,['id','mapstyle_' + index,'rows','3','columns','10','title',styleTitle]);
+	    let styleInput = HU.textarea("",s,['id','mapstyle_' + index,'rows','3','cols','10','title',styleTitle]);
 	    table+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
 	table += "</table>";

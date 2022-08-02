@@ -47,6 +47,7 @@ const ID_COLORTABLE = "colortable";
 const ID_LEGEND = "legend";
 const ID_FIELDS = "fields";
 const ID_HEADER = "header";
+const ID_HEADER0 = "header0";
 const ID_HEADER1 = "header1";
 const ID_HEADER2 = "header2";
 const ID_HEADER2_PREFIX = "header2prefix";
@@ -5171,7 +5172,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let contents = this.getContentsDiv();
 	    //display table
 	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
-            let table =   HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
+
+	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
+            let table =   h0+HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],top) +HU.td(['width',sideWidth]));
 	    }
