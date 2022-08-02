@@ -1059,6 +1059,7 @@ function Entry(props) {
         },
         getLink: function(label, includeIcon, attrs) {
             if (!label) label = this.getName();
+	    label = label.replace(/\s/g,"&nbsp;");
 	    attrs = attrs ||[];
 	    attrs.push("href", this.getEntryUrl());
 	    if(includeIcon)

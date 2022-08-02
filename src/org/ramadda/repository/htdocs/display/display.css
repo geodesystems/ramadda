@@ -2877,18 +2877,20 @@ table.dataTable tfoot td {
 
 .imdv-legend-item {
     width:100%;
-    border-bottom:1px solid #eee;
     padding:4px;
     padding-right:6px;    
+    border-top:1px solid #ddd;
+}
+
+.imdv-legend-item-first {
+    /*border-top:1px solid transparent;*/
 }
 
 .imdv-legend-item-invisible {
-    background:#efefef;
-    border-bottom:1px solid #ccc;
+    background:#f8f8f8;
 }
 
 .imdv-legend-body-item {
-    border-bottom:1px solid #ccc;
 }
 
 .imdv-filter-enum {
