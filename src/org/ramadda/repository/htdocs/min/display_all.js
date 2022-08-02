@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Aug  1 21:35:05 MDT 2022";
+var build_date="RAMADDA build date: Mon Aug  1 22:22:10 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -40068,7 +40068,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...",'L');
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
-	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");	    
+	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");
+	    html+= HU.href(ramaddaBaseUrl+'/userguide/imdv.html','Help',['target','_help']);
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 
@@ -41525,6 +41526,18 @@ MapGlyph.prototype = {
 	this.display.addFeatures(features);
 	return cloned;
     },
+    isMultiEntry:  function() {
+	return this.type == GLYPH_MULTIENTRY;
+    },
+    showMultiEntries:function() {
+	if(!this.entries) return;
+	let html = "";
+	this.entries.forEach(entry=>{
+	    html+=entry.getLink(null,true,['target','_entry']) +"<br>";
+	});
+	html = HU.div(['style','max-height:200px;overflow-y:auto;'], html);
+	this.jq('multientry').html(HU.b("Entries")+html);
+    },
     changeOrder:function(toFront) {
 	if(this.getImage()) {
 	    if(toFront)
@@ -41701,6 +41714,13 @@ MapGlyph.prototype = {
 		item(text.replace(/\n/g,"<br>"));
 	    }
 	}
+	if(this.isMultiEntry()) {
+	    item(HU.div(['id',this.domId('multientry')]));
+	    if(this.entries) {
+		this.showMultiEntries();
+	    }
+	}
+
 	if(Utils.stringDefined(this.style.imageUrl)) {
 	    item("<img style='border:1px solid #ccc;' width='150px' src='" +this.style.imageUrl+"'>");
 	}
@@ -42524,6 +42544,7 @@ MapGlyph.prototype = {
 	    this.display.removeFeatures(this.features);
 	this.features =[];
         let callback = (entries)=>{
+	    this.entries = entries;
 	    entries.forEach(e=>{
 		if(!e.hasLocation()) return;
 		let  pt = new OpenLayers.Geometry.Point(e.getLongitude(),e.getLatitude());
@@ -42561,11 +42582,9 @@ MapGlyph.prototype = {
 	    this.display.addFeatures(this.features);
 	    if(andZoom)
 		this.zoomTo();
-	    
+	    this.showMultiEntries();
 	};
 	entry.getChildrenEntries(callback);
-	
-
     },
     unselect:function() {
 	if(this.selectDots) {
