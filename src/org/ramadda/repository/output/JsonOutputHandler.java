@@ -549,6 +549,9 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.attr(items, "type", JsonUtil.quote(type.getType()));
         JsonUtil.attr(items, "typeName", JsonUtil.quote(type.getLabel()));
         //
+	if(entry.getTypeHandler().isType("type_point")) {
+            JsonUtil.attr(items, "isPoint", "true");
+	}
         if (entry.isGroup()) {
             JsonUtil.attr(items, "isGroup", "true");
             /*
