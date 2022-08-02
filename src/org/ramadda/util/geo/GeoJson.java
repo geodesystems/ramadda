@@ -439,7 +439,11 @@ public class GeoJson extends JsonUtil {
     public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds,
                                           List<List<Point>> pts)
             throws Exception {
-        JSONArray coords1 = readArray(feature, "geometry.coordinates");
+        JSONArray coords1;
+	//Catch and ignore null coordinates
+	try {
+	    coords1 = readArray(feature, "geometry.coordinates");
+	} catch(Exception ignore) {return bounds;}
         String    type    = readValue(feature, "geometry.type", "NULL");
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
