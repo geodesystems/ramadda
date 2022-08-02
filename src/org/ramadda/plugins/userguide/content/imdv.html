@@ -1,9 +1,151 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-   <title>Integrated Map Data Viewer</title>
+   <title>Integrated Map Data Viewer (IMDV)</title>
 </head>
 <body>
-TBD
+:navtop
+  
+RAMADDA provides an Integrated Map Data Viewer (IMDV) entry type that supports the creation
+of rich interactive maps.
+There are lots of examples on <a href=https://ramadda.org/repository/a/making_maps>ramadda.org</a>.
+
+:br
+:heading Create a New Map
+
+From the entry menu choose "Pick a Type...". Under GIS Data select "Integrated Map Data":
+
+[ht::screenshot images/imdv/new.png {New Entry}]
+
+Enter a name for your map. You can ignore the file. Enter some description.
+Note: the description is wiki text.
+[ht::screenshot images/imdv/newform.png {New Map Form}]
+
+Once created you will have the initial display below. The File menu allows you to save
+changes to your map. The Edit menu 
+
+[ht::screenshot images/imdv/imdv1.png {Initial Display}]
+
+:br
+:heading Basic Editing
+
+Select the New menu to see the different map glyph types that can be added. 
+There are basic shapes - Marker, Label, Lines, Box, etc. 
+[ht::screenshot images/imdv/newmenu.png {New Menu}]
+
+Selecting a shape click and/or click-drag in the map to create the shape.
+Once something is created in the map a legend is shown on the left.
+[ht::screenshot images/imdv/imdv2.png]
+
+Clicking on the toggle arrow (<i class="fas fa-caret-down" style=""></i>)
+shows more details for the glyph. The <i class="fas fa-cog"></i> link
+takes brings up an edit window for that glyph. This allows you to specify
+the drawing style and other properties. 
+[ht::screenshot images/imdv/edit1.png]
+
+The Edit Menu allows you to select glyphs, cut/copy/paste, etc.
+[ht::screenshot images/imdv/editmenu.png]
+
+:br
+:heading Adding a Map
+The IMDV supports adding a number of map files - GeoJson, GPX and Shapefile.
+First upload the file to RAMADDA as a regular file entry.
+Then from the IMDV New menu, select "Map". The Map Entry selector will be shown:
+Navigated through your RAMADDA entry hierarchy and select the map file.
+[ht::screenshot images/imdv/newmap.png]
+
+Once added the IMDV will zoom to the map area. If there are properties defined in your map file
+then a Filters area  will shown. These allow you to toggle on/off the map features. You can save
+this state (through the File/Save menu). 
+[ht::screenshot images/imdv/maplegend.png]
+
+Editing this map glyph (with the <i class="fas fa-cog"></i> link) allows you
+to define a set of style rules based on the feature properties.
+If there is numeric features you can specify a color table to provide fill color for the features.
+Here we've defined a set of styles for the OWN_TYPE_NAME property-
+[ht::screenshot images/imdv/mapstyle.png]
+
+:br
+:heading Adding an Image
+You can add a georeferenced image to your IMDV.
+You can either upload an image to RAMADDA beforehand or have an image URL.
+From the New menu select Image. Paste the image URL in the field or select
+the image from RAMADDA.
+:br
+Here we're going to add in a aerial photo taken in 1937 of the Boulder Colorado area.
+First upload the image to RAMADDA. Then in the IMDV navigate to the area of interest.
+Then do New-&gt;Image and choose the  image:
+[ht::screenshot images/imdv/newimage.png]
+
+Click and drag out a region. The IMDV will maintain the aspect ratio of the image.
+Pressing the shift key while dragging will set the image region to the drag rectangle.
+Once added you can change the opacity of the image with the Image Opacity slider or from the
+image edit settings. This allows you to see what is underneath the image. From
+the Edit menu choose Reshape and click on the image. This lets you change the area and shape
+of the image. Note: not all imagery will be in the projection of the underlying map so
+georeferencing  the image can be inexact.
+
+[ht::screenshot images/imdv/image.png]
+
+
+
+
+:br
+:heading Adding a Route
+If your RAMADDA is <a href=/repository/userguide/keys.html#otherapis>enabled</a>
+then a Route glyph type will be shown in the New menu.
+Select the desired provider (here.com or google) and the route type:
+[ht::screenshot images/imdv/newroute.png]
+
+Click and draw a multi-segment line. Double clicking to end.
+The route will be shown. The legend shows the calculated distance:
+[ht::screenshot images/imdv/route.png]
+
+
+:br
+:heading Entry Markers 
+The Entry Marker and the Multi Entry allow you to add markers
+for RAMADDA entries. Clicking on the marker will show some content
+from that entry.
+For example, RAMADDA supports 3D Models as an entry type. 
+Choosing New-&gt;Entry Marker and adding it to the map will add a marker. Clicking on that marker
+will show a 3D view of the model:
+[ht::screenshot images/imdv/entrymarker.png]
+
+
+The Multi Entry allows you to select some Folder in RAMADDA. All of the geolocated children entries
+in that folder will be shown in the map. For example, if you had a Folder of a number of map files
+add the folder as a Multi Entry. This adds markers for each map file. Clicking on a marker shows
+the view of the entry (like above). In the legend clicking on the <i class="fas fa-plus"></i> link
+will add that entry as a map into the main map.
+[ht::screenshot images/imdv/multientry.png]
+
+
+:br
+:heading Adding Data Displays
+RAMADDA provides very rich capabilities to show data in maps, e.g.
+on <a href=https://ramadda.org/repository/a/maps>ramadda.org</a>.
+These displays are accomplished through RAMADDA's <a href=wiki.html>wiki</a>
+facility. You can import one or more map data  displays into an IMDV.
+:p
+First, upload your data to RAMADDA and create a map display for that data
+using RAMADDA's <a href=wiki.html>wiki</a> facility.
+Next, from the IMDV New menu select Data and select the data you uploaded.
+The IMDV will extract from you data's wiki the arguments for a map display.
+These will be shown and can be edited if needed. Here we've selected some aircraft
+track data:
+[ht::screenshot images/imdv/newdata.png]
+
+With the result map:
+[ht::screenshot images/imdv/data1.png]
+
+The map display properties can be edited through the Edit form.
+Other  data displays can be added and overlaid on the IMDV map.
+
+
+
+
+
+
 
 </body>
 </html>
