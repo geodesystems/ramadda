@@ -486,6 +486,9 @@ function DisplayThing(argId, argProperties) {
             else this.initDialog();
         },
         getShowMenu: function() {
+	    if(this.getProperty('isContained',false)) {
+		return false;
+	    }
             if (Utils.isDefined(this.showMenu)) {
 		return this.showMenu;
 	    }
@@ -5088,6 +5091,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 console.log("error: no div defined for display:" + this.getType());
             }
         },
+	getMenuButton:function() {
+            let get = this.getGet();
+            let button = HU.onClick(get + ".showDialog();",
+				    HU.image(ramaddaCdn + "/icons/downdart.png",
+					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
+	    button+=" ";
+	    return button;
+	},
+
         /*
           This creates the default layout for a display
           Its a table:
@@ -5104,12 +5116,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHtml: function() {
             let get = this.getGet();
             let button = "";
-
             if (this.getShowMenu()) {
-                button = HU.onClick(get + ".showDialog();",
-				    HU.image(ramaddaCdn + "/icons/downdart.png",
-					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
-		button+=" ";
+                button = this.getMenuButton();
             }
 	    if(this.getShowProgress(false)) {
 		//		button += HU.image(icon_progress,[ID,this.getDomId(ID_DISPLAY_PROGRESS)]);
