@@ -923,13 +923,17 @@ RepositoryMap.prototype = {
             this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
         }
 	Utils.addDisplay(this);
+	//Do this later for when this map is being shown for a display_map
+	let makeSlider = () =>{
+	    let slider = "Image Opacity:&nbsp;" + 
+		HU.div([ID,this.mapDivId +"_opacity_slider_div",STYLE,HU.css("display",
+										  "inline-block","width","150px")],"");
 
-	if(this.params.showOpacitySlider) {
-	    //Do this later for when this map is being shown for a display_map
-	    let makeSlider = () =>{
-	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","150px")],"");
-	    $("#" + this.mapDivId+"_header").append("Image Opacity:&nbsp;" + slider+"");
-	    $("#"+ this.mapDivId +"_filter_range").slider({
+	    slider = HU.span(['id',this.mapDivId+'_opacity_slider','style',
+			      (this.params.showOpacitySlider)?'display:inline':'display:none'], slider);	    
+
+	    $("#" + this.mapDivId+"_header").append(slider);
+	    $("#"+ this.mapDivId +"_opacity_slider_div").slider({
 		min: 0,
 		max: 1,
 		step:0.05,
@@ -942,9 +946,9 @@ RepositoryMap.prototype = {
 		    });
 		},
 	    });
-	    }
-	    setTimeout(makeSlider,200);
-	}
+	};
+	setTimeout(makeSlider,200);
+	
 	
 
 	setTimeout(()=>{
@@ -957,9 +961,13 @@ RepositoryMap.prototype = {
 	    },1000));
 	    observer.observe(mapDiv);
 	},1000);
-
-
-
+    },
+    showOpacitySlider:function(visible) {
+	this.params.showOpacitySlider = visible;
+	if(visible)
+	    $('#'+this.mapDivId+'_opacity_slider').css('display','inline');
+	else
+	    $('#'+this.mapDivId+'_opacity_slider').css('display','none');	
     },
     getBounds: function() {
 	return  this.transformProjBounds(this.getMap().getExtent());

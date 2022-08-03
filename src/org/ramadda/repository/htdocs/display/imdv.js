@@ -263,6 +263,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LIST_OK  ="listok";
     const ID_LIST_CANCEL = "listcancel";
     const ID_DELETE  ="delete";
+    const ID_SELECT  ="select";
     const ID_OK  ="ok";
     const ID_APPLY  ="apply";
     const ID_CANCEL = "cancel";
@@ -802,25 +803,36 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else if(command=="tofront") _this.changeOrder(true,mapGlyph);		
 		else if(command=="edit") {
 		    _this.editFeatureProperties(mapGlyph);
+		} else if(command==ID_SELECT) {
+		    _this.selectGlyph(mapGlyph);
+		} else if(command==ID_DELETE) {
+		    if(confirm("Are you sure you want to delete the glyph?")) {
+			_this.removeMapGlyphs([mapGlyph]);
+		    }
+		    
 		}
 	    });
 	},
 	    
+
 	makeGlyphButtons:function(mapGlyph,includeEdit) {
-	    let buttons = "";
+	    if(!this.canEdit()) return "";
+	    let buttons = [];
 	    if(includeEdit) {
-		buttons+=HU.span([CLASS,"ramadda-clickable",TITLE,"Edit","glyphid",mapGlyph.getId(),"buttoncommand","edit"],
-				 HU.getIconImage("fas fa-cog")) +"&nbsp;";
+		buttons.push(HU.span([CLASS,"ramadda-clickable",TITLE,"Edit","glyphid",mapGlyph.getId(),"buttoncommand","edit"],
+				     HU.getIconImage("fas fa-cog")));
 	    }
-	    buttons+=
+	    buttons.push(
 		HU.span([CLASS,"ramadda-clickable",TITLE,"To back","glyphid",mapGlyph.getId(),"buttoncommand","toback"],
-			HU.image(Utils.getIcon("shape_move_back.png"))) + "&nbsp;" +
+			HU.image(Utils.getIcon("shape_move_back.png"))),
 		HU.span([CLASS,"ramadda-clickable",TITLE,"To front","glyphid",mapGlyph.getId(),"buttoncommand","tofront"],
-			HU.image(Utils.getIcon("shape_move_front.png"))) + "&nbsp;";
-//	    if(mapGlyph.isData() && mapGlyph.displayInfo?.display) {
-//		buttons+=mapGlyph.displayInfo.display.getMenuButton();
-//	    }
-	    return buttons;
+			HU.image(Utils.getIcon("shape_move_front.png"))),
+		HU.span([CLASS,"ramadda-clickable",TITLE,"Select","glyphid",mapGlyph.getId(),"buttoncommand",ID_SELECT],
+			HU.getIconImage("fas fa-hand-pointer")),
+		HU.span([CLASS,"ramadda-clickable",TITLE,"Delete","glyphid",mapGlyph.getId(),"buttoncommand",ID_DELETE],
+			HU.getIconImage("fas fa-trash-can"))
+);
+	    return Utils.wrap(buttons,"<span style='margin-right:8px;'>","</span>");
 	},
 	makeListItem:function(mapGlyph,idx) {
 	    let style  = mapGlyph.getStyle()||{};
@@ -854,6 +866,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let attrs = {};
 		let inner;
 		let pointDataUrl = null;
+		let msg = "";
+		if(!match) {
+		    msg = "There doesn't seem to be any map displays defined for this entry<br>";
+		}
 		if(match) {
 		    inner = match[1];
 		    inner = inner.replace(/\n/g," ");
@@ -883,7 +899,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let value  = attrs[key];
 		    userInput+=key+"=" + value+"\n";
 		}
-		let widget =  HU.textarea("",userInput,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		let widget =  msg+HU.textarea("",userInput,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
 		let buttons  =HU.center(HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 					HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
@@ -1781,8 +1797,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doMapProperties:function() {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let html = HU.formTable();
-	    html+=HU.formEntry("",HU.checkbox(this.domId("showlegend"),[],
+	    html+=HU.formEntry("",HU.checkbox(this.domId('showlegend'),[],
 					      Utils.isDefined(this.mapProperties.showLegend)?this.mapProperties.showLegend:this.getShowLegend(),'Show Legend'));
+
+	    html+=HU.formEntry("",HU.checkbox(this.domId('showopacityslider'),[],
+					      Utils.isDefined(this.mapProperties.showOpacitySlider)?this.mapProperties.showOpacitySlider:this.getShowOpacitySlider(),'Show Opacity Slider'));
 	    html+="</table>"
 	    html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 			 HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
@@ -1801,7 +1820,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_OK).button().click(()=>{
 		this.mapProperties.showLegend = this.jq("showlegend").is(':checked');
+		this.mapProperties.showOpacitySlider = this.jq("showopacityslider").is(':checked');
 		this.mapProperties.topWikiText = this.jq("topwikitext_input").val();
+		this.checkOpacitySlider();
 		this.checkTopWiki();
 		this.makeLegend();
 		close();
@@ -1812,6 +1833,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 
+	checkOpacitySlider:function() {
+	    let visible;
+	    if(Utils.isDefined(this?.mapProperties.showOpacitySlider))
+		visible = this.mapProperties.showOpacitySlider;
+	    else
+		visible = this.getShowOpacitySlider(true);
+	    this.getMap().showOpacitySlider(visible);
+
+	},
 	showFileMenu: function(button) {
 	    let _this = this;
 	    let html ="";
@@ -2287,6 +2317,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    this.handleError(err);
 			}
 			this.featureHasBeenChanged = false;
+			this.checkOpacitySlider();
 			this.checkTopWiki();
 			this.makeLegend();
 			this.showMapLegend();
@@ -2678,8 +2709,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 	    }
 	},
+	shouldShowMenuBar:function() {
+	    let showMenuBar = this.getShowMenuBar(null);
+	    if(!Utils.isDefined(showMenuBar))
+		showMenuBar = this.canEdit();
+	},
 	canEdit: function() {
-	    return this.getProperty("canEdit") || this.getShowMenuBar(false);
+	    return this.getProperty("canEdit") || this.shouldShowMenuBar();
 	},
 
         initDisplay: function(embedded) {
