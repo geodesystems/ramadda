@@ -108,7 +108,6 @@ var Utils =  {
     },
     initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText) {
 	target.attr('contenteditable',true);
-        let origCss=null;
         target.on('dragover', (event) => {
             event.stopPropagation();
             event.preventDefault();
