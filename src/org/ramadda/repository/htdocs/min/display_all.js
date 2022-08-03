@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug  3 13:55:29 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug  3 14:05:17 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -41117,8 +41117,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let menuBar=  "";
 	    [[ID_MENU_FILE,"File"],[ID_MENU_EDIT,"Edit"],[ID_MENU_NEW,"New"]].forEach(t=>{
 		menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,"ramadda-menubar-button"],t[1])});
-	    menuBar = HU.div(['style', !this.canEdit()?'display:none;':'',
-			      CLASS,"ramadda-menubar",'id',this.domId(ID_MAP_MENUBAR)], menuBar);
+	    menuBar = HU.div([CLASS,"ramadda-menubar"], menuBar);
 	    let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-imdv-message2"],"");
 	    this.jq(ID_MAP_CONTAINER).append(message2);
 	    let message3 = HU.div([ID,this.domId(ID_MESSAGE3),CLASS,"ramadda-imdv-message3"],"");		
@@ -41127,8 +41126,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css("display","inline-block","white-space","nowrap","margin-left","10px")],"");
-	    let mapHeader = HU.div([STYLE,HU.css("margin-left","10px","xdisplay","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
-	    menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td([],menuBar) +
+	    let mapHeader = HU.div([STYLE,HU.css("margin-left","10px"), ID,this.domId(ID_MAP)+"_header"]);
+	    menuBar= HU.table(['style', !this.canEdit()?'display:none;':'','id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(["valign","bottom"],HU.td([],menuBar) +
 						     HU.td(['width','50%'], message) +
 						     HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
 	    
