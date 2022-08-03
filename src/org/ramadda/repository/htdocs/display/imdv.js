@@ -1125,7 +1125,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(Utils.stringDefined(style.popupText)) {
 		    style.cursor = 'pointer';
 		} else {
-		    style.cursor = 'auto';
+		    style.cursor = 'pointer';
 		}
 		if(mapGlyph.getImage()) {
 		    mapGlyph.getImage().setOpacity(style.imageOpacity);
@@ -1667,7 +1667,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(Utils.stringDefined(style.popupText)) {
 		    style.cursor = 'pointer';
 		} else {
-		    style.cursor = 'auto';
+		    style.cursor = 'pointer';
 		}
 		if(glyphType.isData()) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions);
@@ -3131,16 +3131,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		$(this).focus();
 	    });
 	    
-	    Utils.initDragAndDrop(this.jq(ID_MAP),
-				  event=>{},
-				  event=>{},
-				  (event,item,result) =>{
-				      let entryId = this.getProperty("entryId") || this.entryId;
-				      Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
-					  this.setCommand('image',{url:data.geturl});
-				      });
-				  },
-				  "image.*");
+	    if(this.canEdit()) {
+		Utils.initDragAndDrop(this.jq(ID_MAP),
+				      event=>{},
+				      event=>{},
+				      (event,item,result) =>{
+					  let entryId = this.getProperty("entryId") || this.entryId;
+					  Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
+					      this.setCommand('image',{url:data.geturl});
+					  });
+				      },
+				      "image.*");
+	    }
 
 
 
