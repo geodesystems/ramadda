@@ -107,6 +107,7 @@ var Utils =  {
 	return url.search(/(\.png|\.jpg|\.jpeg|\.gif|\.webp|\.heic)/i) >= 0;
     },
     initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText) {
+	target.attr('contenteditable',true);
         let origCss=null;
         target.on('dragover', (event) => {
             event.stopPropagation();
