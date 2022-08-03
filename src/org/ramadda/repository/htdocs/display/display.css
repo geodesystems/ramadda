@@ -2890,14 +2890,13 @@ table.dataTable tfoot td {
     width:100%;
     padding:4px;
     padding-right:6px;    
+    user-select:none;
 
 }
 
 .imdv-legend-label-invisible {
-    background:#f8f8f8;
+    background:#ecf8fc;
 }
-
-
 
 .imdv-filter-enum {
     max-width:180px;

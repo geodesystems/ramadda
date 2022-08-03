@@ -2614,13 +2614,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					      {separate:true,headerStyle:'display:inline-block;',
 					       extraAttributes:['map-glyph-id',mapGlyph.getId()]});		
 		idToGlyph[mapGlyph.getId()] = mapGlyph;
-		html+=HU.open('div',['class','imdv-legend-item '+(idx==glyphs.length-1?'imdv-legend-item-last':'')]);
+		let clazz = "";
+		if(!mapGlyph.getVisible()) clazz+=' imdv-legend-label-invisible ';
+		html+=HU.open('div',['class','imdv-legend-item '+(idx==glyphs.length-1?'imdv-legend-item-last':'')+clazz]);
 
 		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
 			       HU.tr([],
 				     HU.td(['width','5%','style','padding-right:1px;'],block.header) +
 				     HU.td([],label)));				     
-		html+=block.body;
+		html+=HU.div(['style','background:#fff;'],block.body);
 		html+=HU.close('div');
 	    });
 	    if(html!="") {
@@ -2683,10 +2685,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		mapGlyph.setVisible(!mapGlyph.getVisible(),true);
+		let parent = $(this).closest('.imdv-legend-item');
 		if(mapGlyph.getVisible()) 
-		    $(this).removeClass('imdv-legend-label-invisible');
+		    parent.removeClass('imdv-legend-label-invisible');
 		else
-		    $(this).addClass('imdv-legend-label-invisible');			    
+		    parent.addClass('imdv-legend-label-invisible');			    
 	    });
 	},
 	wikify:function(wiki,entryId,wikiCallback,wikiError) {
@@ -3536,10 +3539,9 @@ MapGlyph.prototype = {
 	    label=HU.leftRightTable(label,right);
 	}
 	if(forLegend) {
-	    let clazz = 'ramadda-clickable imdv-legend-label';
+	    let clazz = 'imdv-legend-label';
 	    if(extraClass) clazz+=' ' + extraClass;
-	    if(!this.getVisible()) 
-		clazz+=' imdv-legend-label-invisible ';
+//	    if(!this.getVisible()) clazz+=' imdv-legend-label-invisible ';
 	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId()],label);
 	}
 	return label;
