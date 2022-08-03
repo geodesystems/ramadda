@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug  3 13:02:30 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug  3 13:55:29 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38511,6 +38511,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
     const LIST_ROW_CLASS  = "imdv-feature-row";
     const LIST_SELECTED_CLASS  = "imdv-feature-selected";
+    const ID_MAP_MENUBAR = "mapmenubar";
     const ID_TOPWIKI = "topwiki";
     const ID_EDIT_NAME  ="editname";
     const ID_MESSAGE  ="message";
@@ -38573,7 +38574,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:"fontFamily",d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
 	{p:"imageOpacity",d:1},
 	{p:'showLegend',d:true},
-	{p:'showMenuBar',d:true},
+	{p:'userCanEdit',tt:'Set to false to not show menubar, etc for all users'},
 	{p:'showLegendShapes',d:true},	
 	{p:'showMapLegend',d:false},
 
@@ -40054,6 +40055,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doMapProperties:function() {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let html = HU.formTable();
+	    html+=HU.formEntry("",HU.checkbox(this.domId('usercanedit'),[],
+					      Utils.isDefined(this.mapProperties.userCanEdit)?this.mapProperties.userCanEdit:false,'User Can Edit'));
+
+
 	    html+=HU.formEntry("",HU.checkbox(this.domId('showlegend'),[],
 					      Utils.isDefined(this.mapProperties.showLegend)?this.mapProperties.showLegend:this.getShowLegend(),'Show Legend'));
 
@@ -40076,6 +40081,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 	    this.jq(ID_OK).button().click(()=>{
+		this.mapProperties.userCanEdit = this.jq("usercanedit").is(':checked');
 		this.mapProperties.showLegend = this.jq("showlegend").is(':checked');
 		this.mapProperties.showOpacitySlider = this.jq("showopacityslider").is(':checked');
 		this.mapProperties.topWikiText = this.jq("topwikitext_input").val();
@@ -40576,6 +40582,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			this.featureHasBeenChanged = false;
 			this.checkOpacitySlider();
 			this.checkTopWiki();
+			
 			this.makeLegend();
 			this.showMapLegend();
 			this.checkVisible();
@@ -40960,6 +40967,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	checkTopWiki:function() {
+	    if(this.canEdit())
+		this.jq(ID_MAP_MENUBAR).show();
+	    else
+		this.jq(ID_MAP_MENUBAR).hide();	    
 	    if(!Utils.isDefined(this.mapProperties?.topWikiText)) return;
 	    if(!Utils.stringDefined(this.mapProperties.topWikiText)) {
 		this.jq("topwikitext").html('');
@@ -40969,13 +40980,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 	    }
 	},
-	shouldShowMenuBar:function() {
-	    let showMenuBar = this.getShowMenuBar(null);
-	    if(!Utils.isDefined(showMenuBar))
-		showMenuBar = this.canEdit();
-	},
 	canEdit: function() {
-	    return this.getProperty("canEdit") || this.shouldShowMenuBar();
+	    //Is it set in the wiki tag?
+	    let userCanEdit = this.getUserCanEdit(null);
+	    if(Utils.isDefined(userCanEdit))
+		return userCanEdit;
+	    //Is logged in user
+	    if(this.getProperty("canEdit")) return true;
+	    return this.mapProperties?.userCanEdit;
 	},
 
         initDisplay: function(embedded) {
@@ -41101,315 +41113,305 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return false;
 	    };
 
-	    let control;
-	    this.getMap().xxxfeatureOverHandler = e=>{
-		e.feature.style.old_strokeColor=e.feature.style.strokeColor;
-		e.feature.style.strokeColor="green";		
-		e.feature.layer.redraw(e.feature);
-	    };
-	    this.getMap().xxxfeatureOutHandler = e=>{
-		e.feature.style.strokeColor=e.feature.style.old_strokeColor;
-		e.feature.layer.redraw(e.feature);
-	    };	    
-
-	    if(this.canEdit()) {
-//		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"imdv-commands"]));
-		var keyboardControl = new OpenLayers.Control();
-		control = new OpenLayers.Control();
-		let callbacks = {
-		    keydown: function(event) {
-			HtmlUtils.hidePopupObject();
-			if(event.key=='Escape') {
-			    _this.clearCommands();
-			    _this.unselectAll();
-			    return;
-			}
-			if(event.key=='Backspace') {
-			    _this.doCut();
-			    return;
-			}			
-			if(!event.ctrlKey) return;
-			switch(event.key) {
-			case 'a': 
-			    _this.selectAll();
-			    break;
-			case 'p':
-			    _this.handleEditEvent();
-			    break;
-			case 'x': 
-			    _this.doCut();
-			    break;
-			case 'v': 
-			    if(!_this.clipboard ||  _this.clipboard.length==0) {
-				return;
-			    }
-			    _this.doPaste(event);
-			    break;
-			case 'c': 
-			    _this.doCopy();
-			    break;
-			case 'f': 
-			    _this.changeOrder(true);
-			    break;
-			case 'b': 
-			    _this.changeOrder(false);
-			    break;			    			    
-			case 'm':
-			    _this.setCommand(ID_MOVER);
-			    break;
-			case 'l':
-			    _this.listFeatures();
-			    break;
-			case 's': 
-			    _this.doSave();
-			    break;			    
-			case 'e': 
-			    _this.doEdit();
-			    break;
-			default:
-			    return;
-			}
-			event.preventDefault();
-		    }};
-		let options = {};
-		let handler = new OpenLayers.Handler.Keyboard(control, callbacks, options);
-		handler.activate();
-		this.map.getMap().addControl(keyboardControl);
-		this.addControl(ID_SELECTOR,"Click-drag to select",this.featureSelector = new OpenLayers.Control.SelectFeature(this.myLayer, {
-		    select: function(feature) {
-			if(this.isShiftKey() && _this.isFeatureSelected(feature.mapGlyph)) {
-			    _this.unselectGlyph(feature.mapGlyph);
-			    return;
-			}
-			_this.selectGlyph(feature.mapGlyph);
-		    },
-		    selectBox: function(position) {
-			this.checkEvent();
-			OpenLayers.Control.SelectFeature.prototype.selectBox.apply(this,arguments);
-		    },
-		    isShiftKey:function() {
-			let event = this?.handlers?.feature?.evt;
-			if(!event) return false;
-			return event.shiftKey || event.metaKey;
-		    },
-		    checkEvent: function() {
-			if(!this.isShiftKey()) {
-			    _this.unselectAll();
-			}
-		    },
-		    selectStyle: {
-			pointRadius:this.getPointRadius(),
-			strokeWidth:2,
-			fillOpacity: 0.5,
-			fillColor: "blue",
-			cursor: "pointer"
-		    },
-		    clickout: true,
-		    toggle: true,
-		    multiple: true, 
-		    hover: false,
-		    toggleKey: "ctrlKey", // ctrl key removes from selection
-		    multipleKey: "shiftKey", // shift key adds to selection
-		    box: true
-		}));
-
-		this.addControl(ID_EDIT,"Click to edit properties",new OpenLayers.Control.SelectFeature(this.myLayer, {
-		    onSelect: function(feature) {
-			_this.doEdit(feature.mapGlyph);
-		    },
-		    clickout: true,
-		    toggle: true,
-		    multiple: false, 
-		    hover: false,
-		    toggleKey: "ctrlKey", // ctrl key removes from selection
-		    multipleKey: "shiftKey", // shift key adds to selection
-		    box: false
-		}));
-
-
-
-		let imageChecker = feature=>{
-		    if(feature.mapGlyph) {
-			feature.mapGlyph.checkImage(feature);
-		    }
-		    _this.featureChanged();
-		};
-		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
-		    moveFeature: function(pixel) {
-			let mapGlyph = this.feature.mapGlyph;
-			if(!mapGlyph) {
-			    console.log('no map glyph');
-			    return;
-			}
-			let selected = _this.getSelected();
-			if(selected.length==0) {
-			    selected = [mapGlyph];
-			} else if(!selected.includes(mapGlyph)) {
-			    selected.push(mapGlyph);
-			}
-			let res = this.map.getResolution();
-			let dx = res * (pixel.x - this.lastPixel.x);
-			let dy = res * (this.lastPixel.y - pixel.y);
-			selected.forEach(mapGlyph=>{
-			    mapGlyph.move(dx,dy);
-			});
-			this.lastPixel = pixel;
-		    },
-		    onDrag: function(feature, pixel) {
-		    }
-		}));
-
-		let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
-		    dragComplete: function() {
-			OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
-			this.theDisplay.featureChanged();	    
-			this.theDisplay.clearMessage2(1000);
-		    },
-		    dragVertex: function(vertex, pixel) {
-			this.theDisplay.checkSelected(this.feature.mapGlyph);
-			this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
-			if(!this.feature.image && this.feature.type!=GLYPH_BOX) {
-			    OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
-			    return;
-			}
-			let v  = this.feature.geometry.getVertices();
-			let p  = vertex.geometry.getVertices()[0];
-			let index = -1;
-			v.every((v,idx)=>{
-			    if(v.x==p.x && v.y == p.y) {
-				index = idx;
-				return false;
-			    }
-			    return true
-			});
-			var pos = this.map.getLonLatFromViewPortPx(pixel);
-			var geom = vertex.geometry;
-			geom.move(pos.lon - geom.x, pos.lat - geom.y);
-			p  = vertex.geometry.getVertices()[0];
-			if(index==0) {
-			    //nw
-			    v[3].x = p.x;
-			    v[1].y = p.y;			    
-			} else 	if(index==1) {
-			    //ne
-			    v[2].x = p.x;
-			    v[0].y = p.y;
-			} else 	if(index==2) {
-			    //se
-			    v[1].x = p.x;
-			    v[3].y = p.y;			    
-			} else 	if(index==3) {
-			    //sw
-			    v[0].x = p.x;
-			    v[2].y = p.y;
-			}
-			this.feature.geometry.clearBounds();
-			this.layer.drawFeature(this.feature, this.standalone ? undefined :
-					       'select');
-			this.layer.drawFeature(vertex);
-			if(this.feature.mapGlyph) {
-			    imageChecker(this.feature);
-			}
-		    }
-		});
-
-		let resizer = new MyMover(this.myLayer,{
-		    theDisplay:this,
-		    onDrag: function(feature, pixel) {
-			imageChecker(feature);},
-		    mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
-
-		let reshaper = new MyMover(this.myLayer, {
-		    theDisplay:this,
-		    onDrag: function(feature, pixel) {
-			imageChecker(feature);},
-		    createVertices:false,
-		    mode:OpenLayers.Control.ModifyFeature.RESHAPE});
-		let rotator = new MyMover(this.myLayer, {
-		    theDisplay:this,
-		    onDrag: function(feature, pixel) {
-			imageChecker(feature);},
-		    createVertices:false,
-		    mode:OpenLayers.Control.ModifyFeature.ROTATE});		
-		this.addControl(ID_RESIZE,"Click to resize",resizer);
-		this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
-		this.addControl(ID_ROTATE,"Click to rotate",rotator);		
-
-		let menuBar=  "";
-		[[ID_MENU_FILE,"File"],[ID_MENU_EDIT,"Edit"],[ID_MENU_NEW,"New"]].forEach(t=>{
-		    menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,"ramadda-menubar-button"],t[1])});
-	    	menuBar = HU.div([CLASS,"ramadda-menubar"], menuBar);
-		let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-imdv-message2"],"");
-		this.jq(ID_MAP_CONTAINER).append(message2);
-		let message3 = HU.div([ID,this.domId(ID_MESSAGE3),CLASS,"ramadda-imdv-message3"],"");		
-		if(this.getShowMapLegend()) {
-		    this.jq(ID_MAP_CONTAINER).append(message3);
-		}
-
-		let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css("display","inline-block","white-space","nowrap","margin-left","10px")],"");
-		let mapHeader = HU.div([STYLE,HU.css("margin-left","10px","xdisplay","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
-		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['xwidth','50%'],menuBar) +
-							 HU.td(['width','50%'], message) +
-						 HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
-		let showMenuBar = this.getShowMenuBar(null);
-		if(!Utils.isDefined(showMenuBar))
-		    showMenuBar = this.canEdit();
-
-		this.jq(ID_HEADER0).append(HU.div([ID,this.domId("topwikitext")]));
-
-		if(showMenuBar) {
-		    this.jq(ID_TOP_LEFT).append(menuBar);
-		}
-		this.jq(ID_MENU_NEW).click(function() {
-		    _this.showNewMenu($(this));
-		});
-		this.jq(ID_MENU_FILE).click(function() {
-		    _this.showFileMenu($(this));
-		});
-		this.jq(ID_MENU_EDIT).click(function() {
-		    _this.showEditMenu($(this));
-		});
-
-		$(window).bind('beforeunload', ()=>{
-		    if(this.getProperty("canEdit") && this.featureHasBeenChanged) {
-			return 'Changes have been made. Are you sure you want to leave?';
-		    }
-		});
-	    } else {
-		let menuBar=HU.div([STYLE,HU.css("display","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
-		this.jq(ID_TOP_LEFT).append(HU.center(menuBar));
+	    this.jq(ID_HEADER0).append(HU.div([ID,this.domId("topwikitext")]));
+	    let menuBar=  "";
+	    [[ID_MENU_FILE,"File"],[ID_MENU_EDIT,"Edit"],[ID_MENU_NEW,"New"]].forEach(t=>{
+		menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,"ramadda-menubar-button"],t[1])});
+	    menuBar = HU.div(['style', !this.canEdit()?'display:none;':'',
+			      CLASS,"ramadda-menubar",'id',this.domId(ID_MAP_MENUBAR)], menuBar);
+	    let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-imdv-message2"],"");
+	    this.jq(ID_MAP_CONTAINER).append(message2);
+	    let message3 = HU.div([ID,this.domId(ID_MESSAGE3),CLASS,"ramadda-imdv-message3"],"");		
+	    if(this.getShowMapLegend()) {
+		this.jq(ID_MAP_CONTAINER).append(message3);
 	    }
 
+	    let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css("display","inline-block","white-space","nowrap","margin-left","10px")],"");
+	    let mapHeader = HU.div([STYLE,HU.css("margin-left","10px","xdisplay","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
+	    menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td([],menuBar) +
+						     HU.td(['width','50%'], message) +
+						     HU.td(['align','right','style','padding-right:10px;','width','50%'],mapHeader)));
+	    
+	    this.jq(ID_TOP_LEFT).append(menuBar);
+	    this.jq(ID_MENU_NEW).click(function() {
+		_this.showNewMenu($(this));
+	    });
+	    this.jq(ID_MENU_FILE).click(function() {
+		_this.showFileMenu($(this));
+	    });
+	    this.jq(ID_MENU_EDIT).click(function() {
+		_this.showEditMenu($(this));
+	    });
+
+
+	    this.makeControls();	    
+
+	    $(window).bind('beforeunload', ()=>{
+		if(this.getProperty("canEdit") && this.featureHasBeenChanged) {
+		    return 'Changes have been made. Are you sure you want to leave?';
+		}
+	    });
+
+//	    let menuBar=HU.div([STYLE,HU.css("display","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
+//	    this.jq(ID_TOP_LEFT).append(HU.center(menuBar));
+
 	    let cmds = "";
+	    this.jq(ID_COMMANDS).html(cmds);
+	    this.jq(ID_MAP).mouseover(function(){
+		$(this).focus();
+	    });
+
+	    if(this.getProperty("thisEntryType")=="geo_editable_json" || this.getProperty("thisEntryType")=="geo_imdv") {
+		this.loadMap();
+	    }
+	},
+
+	makeControls:function() {
+	    if(!this.canEdit()) return;
+	    let control;
+	    Utils.initDragAndDrop(this.jq(ID_MAP),
+				  event=>{},
+				  event=>{},
+				  (event,item,result) =>{
+				      let entryId = this.getProperty("entryId") || this.entryId;
+				      Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
+					  this.setCommand('image',{url:data.geturl});
+				      });
+				  },
+				  "image.*");
+
+
+
+
+	    //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"imdv-commands"]));
+	    var keyboardControl = new OpenLayers.Control();
+	    control = new OpenLayers.Control();
+	    let callbacks = {
+		keydown: function(event) {
+		    HtmlUtils.hidePopupObject();
+		    if(event.key=='Escape') {
+			_this.clearCommands();
+			_this.unselectAll();
+			return;
+		    }
+		    if(event.key=='Backspace') {
+			_this.doCut();
+			return;
+		    }			
+		    if(!event.ctrlKey) return;
+		    switch(event.key) {
+		    case 'a': 
+			_this.selectAll();
+			break;
+		    case 'p':
+			_this.handleEditEvent();
+			break;
+		    case 'x': 
+			_this.doCut();
+			break;
+		    case 'v': 
+			if(!_this.clipboard ||  _this.clipboard.length==0) {
+			    return;
+			}
+			_this.doPaste(event);
+			break;
+		    case 'c': 
+			_this.doCopy();
+			break;
+		    case 'f': 
+			_this.changeOrder(true);
+			break;
+		    case 'b': 
+			_this.changeOrder(false);
+			break;			    			    
+		    case 'm':
+			_this.setCommand(ID_MOVER);
+			break;
+		    case 'l':
+			_this.listFeatures();
+			break;
+		    case 's': 
+			_this.doSave();
+			break;			    
+		    case 'e': 
+			_this.doEdit();
+			break;
+		    default:
+			return;
+		    }
+		    event.preventDefault();
+		}};
+	    let options = {};
+	    let handler = new OpenLayers.Handler.Keyboard(control, callbacks, options);
+	    handler.activate();
+	    this.map.getMap().addControl(keyboardControl);
+	    this.addControl(ID_SELECTOR,"Click-drag to select",this.featureSelector = new OpenLayers.Control.SelectFeature(this.myLayer, {
+		select: function(feature) {
+		    if(this.isShiftKey() && _this.isFeatureSelected(feature.mapGlyph)) {
+			_this.unselectGlyph(feature.mapGlyph);
+			return;
+		    }
+		    _this.selectGlyph(feature.mapGlyph);
+		},
+		selectBox: function(position) {
+		    this.checkEvent();
+		    OpenLayers.Control.SelectFeature.prototype.selectBox.apply(this,arguments);
+		},
+		isShiftKey:function() {
+		    let event = this?.handlers?.feature?.evt;
+		    if(!event) return false;
+		    return event.shiftKey || event.metaKey;
+		},
+		checkEvent: function() {
+		    if(!this.isShiftKey()) {
+			_this.unselectAll();
+		    }
+		},
+		selectStyle: {
+		    pointRadius:this.getPointRadius(),
+		    strokeWidth:2,
+		    fillOpacity: 0.5,
+		    fillColor: "blue",
+		    cursor: "pointer"
+		},
+		clickout: true,
+		toggle: true,
+		multiple: true, 
+		hover: false,
+		toggleKey: "ctrlKey", // ctrl key removes from selection
+		multipleKey: "shiftKey", // shift key adds to selection
+		box: true
+	    }));
+
+	    this.addControl(ID_EDIT,"Click to edit properties",new OpenLayers.Control.SelectFeature(this.myLayer, {
+		onSelect: function(feature) {
+		    _this.doEdit(feature.mapGlyph);
+		},
+		clickout: true,
+		toggle: true,
+		multiple: false, 
+		hover: false,
+		toggleKey: "ctrlKey", // ctrl key removes from selection
+		multipleKey: "shiftKey", // shift key adds to selection
+		box: false
+	    }));
+
+
+
+	    let imageChecker = feature=>{
+		if(feature.mapGlyph) {
+		    feature.mapGlyph.checkImage(feature);
+		}
+		_this.featureChanged();
+	    };
+	    let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+		moveFeature: function(pixel) {
+		    let mapGlyph = this.feature.mapGlyph;
+		    if(!mapGlyph) {
+			console.log('no map glyph');
+			return;
+		    }
+		    let selected = _this.getSelected();
+		    if(selected.length==0) {
+			selected = [mapGlyph];
+		    } else if(!selected.includes(mapGlyph)) {
+			selected.push(mapGlyph);
+		    }
+		    let res = this.map.getResolution();
+		    let dx = res * (pixel.x - this.lastPixel.x);
+		    let dy = res * (this.lastPixel.y - pixel.y);
+		    selected.forEach(mapGlyph=>{
+			mapGlyph.move(dx,dy);
+		    });
+		    this.lastPixel = pixel;
+		},
+		onDrag: function(feature, pixel) {
+		}
+	    }));
+
+	    let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
+		dragComplete: function() {
+		    OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
+		    this.theDisplay.featureChanged();	    
+		    this.theDisplay.clearMessage2(1000);
+		},
+		dragVertex: function(vertex, pixel) {
+		    this.theDisplay.checkSelected(this.feature.mapGlyph);
+		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
+		    if(!this.feature.image && this.feature.type!=GLYPH_BOX) {
+			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
+			return;
+		    }
+		    let v  = this.feature.geometry.getVertices();
+		    let p  = vertex.geometry.getVertices()[0];
+		    let index = -1;
+		    v.every((v,idx)=>{
+			if(v.x==p.x && v.y == p.y) {
+			    index = idx;
+			    return false;
+			}
+			return true
+		    });
+		    var pos = this.map.getLonLatFromViewPortPx(pixel);
+		    var geom = vertex.geometry;
+		    geom.move(pos.lon - geom.x, pos.lat - geom.y);
+		    p  = vertex.geometry.getVertices()[0];
+		    if(index==0) {
+			//nw
+			v[3].x = p.x;
+			v[1].y = p.y;			    
+		    } else 	if(index==1) {
+			//ne
+			v[2].x = p.x;
+			v[0].y = p.y;
+		    } else 	if(index==2) {
+			//se
+			v[1].x = p.x;
+			v[3].y = p.y;			    
+		    } else 	if(index==3) {
+			//sw
+			v[0].x = p.x;
+			v[2].y = p.y;
+		    }
+		    this.feature.geometry.clearBounds();
+		    this.layer.drawFeature(this.feature, this.standalone ? undefined :
+					   'select');
+		    this.layer.drawFeature(vertex);
+		    if(this.feature.mapGlyph) {
+			imageChecker(this.feature);
+		    }
+		}
+	    });
+
+	    let resizer = new MyMover(this.myLayer,{
+		theDisplay:this,
+		onDrag: function(feature, pixel) {
+		    imageChecker(feature);},
+		mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
+
+	    let reshaper = new MyMover(this.myLayer, {
+		theDisplay:this,
+		onDrag: function(feature, pixel) {
+		    imageChecker(feature);},
+		createVertices:false,
+		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
+	    let rotator = new MyMover(this.myLayer, {
+		theDisplay:this,
+		onDrag: function(feature, pixel) {
+		    imageChecker(feature);},
+		createVertices:false,
+		mode:OpenLayers.Control.ModifyFeature.ROTATE});		
+	    this.addControl(ID_RESIZE,"Click to resize",resizer);
+	    this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
+	    this.addControl(ID_ROTATE,"Click to rotate",rotator);		
+
 	    this.glyphTypes.forEach(g=>{
 		this.glyphTypeMap[g.type]  = g;
 		g.createDrawer();
 	    });
 
-	    this.jq(ID_COMMANDS).html(cmds);
-	    this.jq(ID_MAP).mouseover(function(){
-		$(this).focus();
-	    });
 	    
-	    if(this.canEdit()) {
-		Utils.initDragAndDrop(this.jq(ID_MAP),
-				      event=>{},
-				      event=>{},
-				      (event,item,result) =>{
-					  let entryId = this.getProperty("entryId") || this.entryId;
-					  Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
-					      this.setCommand('image',{url:data.geturl});
-					  });
-				      },
-				      "image.*");
-	    }
-
-
-
-	    if(this.getProperty("thisEntryType")=="geo_editable_json" || this.getProperty("thisEntryType")=="geo_imdv") {
-		this.loadMap();
-	    }
-        },
+	}
     });
 }
 
