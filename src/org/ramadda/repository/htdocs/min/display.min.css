@@ -2876,22 +2876,28 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-item {
-    width:100%;
-    padding:4px;
-    padding-right:6px;    
-    border-bottom:1px solid #ddd;
-}
-
-.imdv-legend-item-first {
     border-top:1px solid #ddd;
 }
 
-.imdv-legend-item-invisible {
+.imdv-legend-item-last {
+    border-bottom:1px solid #ddd;
+}
+
+
+
+
+.imdv-legend-label {
+    width:100%;
+    padding:4px;
+    padding-right:6px;    
+
+}
+
+.imdv-legend-label-invisible {
     background:#f8f8f8;
 }
 
-.imdv-legend-body-item {
-}
+
 
 .imdv-filter-enum {
     max-width:180px;

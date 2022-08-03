@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug  2 16:32:29 MDT 2022";
+var build_date="RAMADDA build date: Tue Aug  2 21:27:51 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3531,6 +3531,9 @@ function DisplayThing(argId, argProperties) {
             else this.initDialog();
         },
         getShowMenu: function() {
+	    if(this.getProperty('isContained',false)) {
+		return false;
+	    }
             if (Utils.isDefined(this.showMenu)) {
 		return this.showMenu;
 	    }
@@ -8133,6 +8136,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 console.log("error: no div defined for display:" + this.getType());
             }
         },
+	getMenuButton:function() {
+            let get = this.getGet();
+            let button = HU.onClick(get + ".showDialog();",
+				    HU.image(ramaddaCdn + "/icons/downdart.png",
+					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
+	    button+=" ";
+	    return button;
+	},
+
         /*
           This creates the default layout for a display
           Its a table:
@@ -8149,12 +8161,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHtml: function() {
             let get = this.getGet();
             let button = "";
-
             if (this.getShowMenu()) {
-                button = HU.onClick(get + ".showDialog();",
-				    HU.image(ramaddaCdn + "/icons/downdart.png",
-					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
-		button+=" ";
+                button = this.getMenuButton();
             }
 	    if(this.getShowProgress(false)) {
 		//		button += HU.image(icon_progress,[ID,this.getDomId(ID_DISPLAY_PROGRESS)]);
@@ -39066,6 +39074,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			HU.image(Utils.getIcon("shape_move_back.png"))) + "&nbsp;" +
 		HU.span([CLASS,"ramadda-clickable",TITLE,"To front","glyphid",mapGlyph.getId(),"buttoncommand","tofront"],
 			HU.image(Utils.getIcon("shape_move_front.png"))) + "&nbsp;";
+//	    if(mapGlyph.isData() && mapGlyph.displayInfo?.display) {
+//		buttons+=mapGlyph.displayInfo.display.getMenuButton();
+//	    }
 	    return buttons;
 	},
 	makeListItem:function(mapGlyph,idx) {
@@ -40818,21 +40829,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let showShapes = this.getShowLegendShapes();
 	    let html = "";
 	    let idToGlyph={};
-	    this.getGlyphs().forEach((mapGlyph,idx)=>{
+	    let glyphs = this.getGlyphs();
+	    glyphs.forEach((mapGlyph,idx)=>{
 		if(!showShapes && mapGlyph.isShape()) {
 		    return;
 		}
-		let label =  mapGlyph.getLabel(true,true,idx==0?'imdv-legend-item-first':'');
+		let label =  mapGlyph.getLabel(true,true);
 		let body = HU.div(['style','margin-left:10px;'],mapGlyph.getLegendBody());
 		let block = HU.toggleBlockNew("",body,mapGlyph.getLegendVisible(),
 					      {separate:true,headerStyle:'display:inline-block;',
 					       extraAttributes:['map-glyph-id',mapGlyph.getId()]});		
 		idToGlyph[mapGlyph.getId()] = mapGlyph;
+		html+=HU.open('div',['class','imdv-legend-item '+(idx==glyphs.length-1?'imdv-legend-item-last':'')]);
+
 		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
 			       HU.tr([],
 				     HU.td(['width','5%','style','padding-right:1px;'],block.header) +
 				     HU.td([],label)));				     
 		html+=block.body;
+		html+=HU.close('div');
 	    });
 	    if(html!="") {
 		html  = HU.div(['class','imdv-legend'],html);
@@ -40865,7 +40880,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 
-	    let items = this.jq(ID_LEGEND).find('.imdv-legend-item');
+	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    this.initGlyphButtons(this.jq(ID_LEGEND));
 	    items.each(function() {
 		$(this).attr('title','Click to toggle visibility');
@@ -40895,9 +40910,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		mapGlyph.setVisible(!mapGlyph.getVisible(),true);
 		if(mapGlyph.getVisible()) 
-		    $(this).removeClass('imdv-legend-item-invisible');
+		    $(this).removeClass('imdv-legend-label-invisible');
 		else
-		    $(this).addClass('imdv-legend-item-invisible');			    
+		    $(this).addClass('imdv-legend-label-invisible');			    
 	    });
 	},
 	wikify:function(wiki,entryId,wikiCallback,wikiError) {
@@ -41608,6 +41623,26 @@ MapGlyph.prototype = {
 	return this.style;
     },
     zoomTo: function() {
+	if(this.isMultiEntry() && this.entries) {
+	    let bounds = null;
+	    this.entries.forEach(entry=>{
+		let b = null;
+		if(entry.hasBounds()) {
+		    b =   MapUtils.createBounds(entry.getWest(),entry.getSouth(),entry.getEast(), entry.getNorth());
+		} else if(entry.hasLocation()) {
+		    b =   MapUtils.createBounds(entry.getLongitude(),entry.getLatitude(),
+						entry.getLongitude(),entry.getLatitude());
+		} 
+		if(b) {
+		    if(!bounds) bounds = b;
+		    else bounds.extend(b);
+		}
+	    });
+	    if(bounds) {
+		this.display.getMap().zoomToExtent(this.display.getMap().transformLLBounds(bounds));
+	    }
+	}
+
 	if(this.features.length) {
 	    this.display.getMap().centerOnFeatures(this.features);
 	    return;
@@ -41720,10 +41755,10 @@ MapGlyph.prototype = {
 	    label=HU.leftRightTable(label,right);
 	}
 	if(forLegend) {
-	    let clazz = 'ramadda-clickable imdv-legend-item';
+	    let clazz = 'ramadda-clickable imdv-legend-label';
 	    if(extraClass) clazz+=' ' + extraClass;
 	    if(!this.getVisible()) 
-		clazz+=' imdv-legend-item-invisible ';
+		clazz+=' imdv-legend-label-invisible ';
 	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId()],label);
 	}
 	return label;
@@ -41795,7 +41830,6 @@ MapGlyph.prototype = {
 	return text;
     },
 		    
-	
     isEntry:function() {
 	return this.getType() ==GLYPH_ENTRY;
     },
@@ -42084,9 +42118,11 @@ MapGlyph.prototype = {
 	    } 
 	    if(info.samples.length)  {
 		filter.type="enum";
-		if(info.samples.length>1) 
+		if(info.samples.length>1) {
 		    enums+=HU.b(info.property)+":<br>" +
-		    HU.select("",['filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple','multiple','rows',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
+			HU.select("",['style','width:100%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
+
+		}
 		return;
 	    }
 
@@ -42115,7 +42151,8 @@ MapGlyph.prototype = {
 	    };
 	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-trash-can',null,LEGEND_IMAGE_ATTRS));
 	    
-	    let toggle = HU.toggleBlockNew("Filters",widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
+	    widgets = HU.div(['style','max-height:200px;overflow-y:auto;'], widgets);
+	    let toggle = HU.toggleBlockNew('Filters',widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
 	    this.jq('mapfilters').html(HU.div(['style','margin-right:10px;'],HU.leftRightTable(toggle.header,clearAll))+toggle.body);
 	    HU.initToggleBlock(this.jq('mapfilters'),(id,visible)=>{this.setFiltersVisible(visible);});
 	    this.jq('filters_clearall').click(()=>{
@@ -42491,6 +42528,7 @@ MapGlyph.prototype = {
     },
 
     addMapData:function(displayAttrs,andZoom) {
+	displayAttrs = displayAttrs??{};
 	displayAttrs.doInitCenter = andZoom??false;
 	this.attrs.displayAttrs = displayAttrs;
 	let entryId = this.getEntryId();
@@ -42504,6 +42542,7 @@ MapGlyph.prototype = {
 	this.display.jq(ID_HEADER1).append(HU.div([ID,divId]));
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
+		     "isContained":true,
 		     "showInnerContents":false,
 		     "entryIcon":this.attrs.icon,
 		     "title":this.attrs.name,
@@ -42514,7 +42553,6 @@ MapGlyph.prototype = {
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
 		     "fileUrl":ramaddaBaseUrl+"/entry/get?entryid=" + entryId+"&fileinline=true"};
-	if(!Utils.isDefined(displayAttrs))  displayAttrs={};
 	$.extend(attrs,displayAttrs);
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	this.displayInfo =   {
@@ -42626,7 +42664,12 @@ MapGlyph.prototype = {
 		    let label  =e.getName();
 		    let toks = Utils.split(label," ",true,true);
 		    if(toks.length>1) {
-			label = Utils.join(toks,"\n");
+			label = "";
+			Utils.splitList(toks,3).forEach(l=>{
+			    label += Utils.join(l," ");
+			    label+="\n";
+			})
+			label = label.trim();
 		    }
 		    style.label=label;
 		} else {
