@@ -8,54 +8,80 @@ var getMapDebug = false;
 //This gets set by Java
 var ramaddaMapRegions = null;
 
-/* base maps to add */
-var map_esri_topo = "esri.topo";
-var map_esri_street = "esri.street";
-var map_esri_worldimagery = "esri.worldimagery";
-var map_esri_terrain = "esri.terrain";
-var map_shaded_relief = "shadedrelief";
-var map_historic = "historic";
-var map_esri_shaded = "esri.shaded";
-var map_esri_lightgray = "esri.lightgray";
-var map_esri_darkgray = "esri.darkgray";
-var map_esri_physical = "esri.physical";
-var map_esri_aeronautical = "esri.aeronautical";
-var map_opentopo = "opentopo";
-var map_usgs_topo = "usgs.topo";
-var map_usgs_imagery = "usgs.imagery";
-var map_usgs_relief = "usgs.relief";
-var map_watercolor = "watercolor";
-var map_lightblue = "lightblue";
-var map_white = "white";
-var map_blue = "blue";
-var map_black = "black";
-var map_gray = "gray";
-var map_forestservice = "usfs";
-var map_naip = "naip";
-var map_publiclands = "publiclands";
-var map_osm = "osm";
-var map_osm_toner = "osm.toner";
-var map_osm_toner_lite = "osm.toner.lite";
-var map_ol_openstreetmap = "ol.openstreetmap";
 
 
-// Microsoft maps - only work for -180 to 180
-var map_ms_shaded = "ms.shaded";
-var map_ms_hybrid = "ms.hybrid";
-var map_ms_aerial = "ms.aerial";
+var RAMADDA_MAP_LAYERS= [];
+var RAMADDA_MAP_LAYERS_MAP= {};
+function MapLayer(id,name,url,opts) {
+    this.opts = opts??{};
+    if(!Utils.stringDefined(id)) id  =Utils.makeID(name);
+    this.id =id;
+    if(!Utils.stringDefined(name)) name = Utils.makeLabel(id);
+    this.name = name;
+    this.url = url;
+    RAMADDA_MAP_LAYERS.push(this);
+    RAMADDA_MAP_LAYERS_MAP[id] = this;    
+}
 
-var map_default_layer = map_osm;
 
-var map_google_roads = "google.roads";
-var map_google_terrain = "google.terrain";
-var map_google_satellite = "google.satellite";
-var map_google_hybrid = "google.hybrid";
+MapLayer.prototype = {
+    isForMap:function() {
+	if(Utils.isDefined(this.opts.isForMap))  return this.opts.isForMap;
+	return true;
+    },
+    createMapLayer:function(map) {
+	if(this.opts.creator) {
+	    return  this.opts.creator(this,map);
+	}
 
+	if(this.opts.type=='simple') {
+	    return map.makeSimpleWms(this.id);
+	}
+	if(this.opts.type=='wms') {
+            return map.addWMSLayer(this.name,this.url,this.opts.layer, Utils.isDefined(this.opts.isOverlay)?!this.opts.isOverlay:true);
+	}
+	return map.createXYZLayer(this.name,this.url,this.opts.attribution,this.opts.isOverlay);
+    }
+}
+
+
+var map_default_layer = 'naip';
+
+new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+			  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+			  '//c.tile.openstreetmap.org/${z}/${x}/${y}.png']);
+new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',{isForMap:true});
+new MapLayer('google.roads','Google Maps - Roads','https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}');
+new MapLayer('google.hybrid','Google Maps - Hybrid','https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}');
+new MapLayer('esri.street','ESRI Streets','https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}');
+new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png}');
+new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
+new MapLayer('usgs.topo','USGS Topo','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',{attribution:'USGS - The National Map'});
+new MapLayer('google.terrain','Google Maps - Terrain','http://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}');
+new MapLayer('google.satellite','Google Maps - Satellite','http://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}');
+new MapLayer('naip','NAIP Imagery','https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
+new MapLayer('usgs.imagery','USGS Imagery','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+new MapLayer('esri.shaded','ESRI Shaded Relief','https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}');
+new MapLayer('esri.lightgray','ESRI Light Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}');
+new MapLayer('esri.darkgray','ESRI Dark Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}');
+new MapLayer('esri.terrain','ESRI Terrain','https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}');
+new MapLayer('shadedrelief','Shaded Relief','https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
+new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
+new MapLayer('historic','Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
+new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec'});
+new MapLayer('osm.toner','OSM-Toner','http://a.tile.stamen.com/toner/${z}/${x}/${y}.png');
+new MapLayer('osm.toner.lite','OSM-Toner Lite','http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png');
+new MapLayer('watercolor','Watercolor','http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg');
+new MapLayer('lightblue','','',{type:'simple'});
+new MapLayer('blue','','',{type:'simple'});
+new MapLayer('white','','',{type:'simple'});
+new MapLayer('black','','',{type:'simple'});
+new MapLayer('gray','','',{type:'simple'});
 
 
 /*
-Define new symbols
-To make a new shape see errata.js 
+  Define new symbols
+  To make a new shape see errata.js 
 */
 
 OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 0];
@@ -65,7 +91,6 @@ OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
 OpenLayers.Renderer.symbol.arrow = [0,0,5,10,10,0];
 OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0];
 OpenLayers.Renderer.symbol.arrow = [4,0,-2,10,12,10,6,0,4,0,-2,10,12,10,6,0];
-
 
 
 var MapUtils =  {
@@ -123,7 +148,7 @@ var MapUtils =  {
 	    area = area * 6378137 * 6378137 / 2;
 	    if(area<0) area = -area;
 	    area = MapUtils.squareMetersToSquareFeet(area);
-//	    console.log(pts.length +" " + area);
+	    //	    console.log(pts.length +" " + area);
 	    return area;
 	}
 	return -1;
@@ -787,7 +812,7 @@ RepositoryMap.prototype = {
 	if(debugBounds)
 	    console.log("setCenter");
 	this.getMap().panTo(this.transformLLPoint(to));
-//        this.getMap().setCenter(this.transformLLPoint(to));
+	//        this.getMap().setCenter(this.transformLLPoint(to));
     },
     getZoom: function() {
 	return this.getMap().getZoom();
@@ -861,7 +886,7 @@ RepositoryMap.prototype = {
 	let theMap = HtmlUtils.div([CLASS, "ramadda-map-inner", "style","width:100%;height:100%;position:relative;","id",getId("themap")]);
 	html+=HU.tr([STYLE,HU.css("height","100%")],HU.td([WIDTH,"100%"],theMap));
 	html+="</table>";
-//	$("#" + this.mapDivId).html(html);
+	//	$("#" + this.mapDivId).html(html);
 	$("#" + this.mapDivId).html(theMap);
 
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
@@ -902,7 +927,6 @@ RepositoryMap.prototype = {
             this.getMap().size = new OpenLayers.Size(1, 1);
         }
 
-        this.addBaseLayers();
 	try {
 	    if(window["initExtraMap"]) {
 		initExtraMap(this);
@@ -913,6 +937,7 @@ RepositoryMap.prototype = {
 	    console.log("Error calling initExtraMap:" + err);
 	}
 
+        this.addBaseLayers();
 
         if (this.kmlLayer) {
             var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
@@ -927,7 +952,7 @@ RepositoryMap.prototype = {
 	let makeSlider = () =>{
 	    let slider = "Image Opacity:&nbsp;" + 
 		HU.div([ID,this.mapDivId +"_opacity_slider_div",STYLE,HU.css("display",
-										  "inline-block","width","150px")],"");
+									     "inline-block","width","150px")],"");
 
 	    slider = HU.span(['id',this.mapDivId+'_opacity_slider','style',
 			      (this.params.showOpacitySlider)?'display:inline':'display:none'], slider);	    
@@ -941,6 +966,10 @@ RepositoryMap.prototype = {
 		slide: function( event, ui ) {
 		    _this.params.imageOpacity = ui.value;
 		    if(!_this.imageLayersList) return;
+		    _this.allLayers.forEach(layer=>{
+			if(Utils.isDefined(layer.canTakeOpacity))
+			    layer.setOpacity(_this.params.imageOpacity);
+		    });
 		    _this.imageLayersList.forEach(image=>{
 			image.setOpacity(_this.params.imageOpacity);
 		    });
@@ -1071,7 +1100,7 @@ RepositoryMap.prototype = {
                     fill: false,
 		};
 		point = _this.addPoint(id, new OpenLayers.LonLat($(this).data('longitude'), $(this).data('latitude')),
-				      attrs);
+				       attrs);
 		markerMap[id] = point;
             });
 	$(selector).mouseleave(
@@ -1151,7 +1180,7 @@ RepositoryMap.prototype = {
 	    if(!Utils.isDefined(highlightStyle.fillOpacity)) {
 		highlightStyle.fillOpacity = 0.3;
 	    }
-//	    console.log(feature.geometry.CLASS_NAME +" draw:" + JSON.stringify(highlightStyle));
+	    //	    console.log(feature.geometry.CLASS_NAME +" draw:" + JSON.stringify(highlightStyle));
             layer.drawFeature(feature, highlightStyle);
             if (this.params.displayDiv) {
                 this.displayedFeature = feature;
@@ -1517,7 +1546,7 @@ RepositoryMap.prototype = {
             layer.visibility = false;
         } else {
             layer.isBaseLayer = false;
-            layer.visibility = true;
+            layer.visibility = false;
         }
 
         //If we have this here we get this error: 
@@ -1558,7 +1587,7 @@ RepositoryMap.prototype = {
     },
 
     getVectorLayerStyleMap: function(layer, args,ruleString) {
-//	ruleString = 'OWN_TYPE_NAME:~:.*Conservation.*:fillColor:red:strokeColor:black;OWN_TYPE_NAME:~:Joint:fillColor:blue';
+	//	ruleString = 'OWN_TYPE_NAME:~:.*Conservation.*:fillColor:red:strokeColor:black;OWN_TYPE_NAME:~:Joint:fillColor:blue';
         var props = {
             pointRadius: this.params.pointRadius,
             fillOpacity: this.params.fillOpacity,
@@ -1571,7 +1600,7 @@ RepositoryMap.prototype = {
             select_strokeColor: "#666",
             select_strokeWidth: 1
         };
-       if (args) RamaddaUtil.inherit(props, args);
+	if (args) RamaddaUtil.inherit(props, args);
 
         var temporaryStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["temporary"]);
         $.extend(temporaryStyle, {
@@ -1791,7 +1820,7 @@ RepositoryMap.prototype = {
                 let checkAll = false;
                 let allMatched = true;
                 let someMatched = false;
-//                if (tok.not) checkAll = true;
+		//                if (tok.not) checkAll = true;
                 for (let v in toks) {
                     let tok = toks[v];
                     for (let attr in p) {
@@ -2587,50 +2616,19 @@ RepositoryMap.prototype = {
     },
 
     addBaseLayers:  function() {
-        if (!this.mapLayers) {
-            this.mapLayers = [
-                map_osm,
-		map_google_roads,
-		map_google_hybrid,		
-                map_esri_street,
-
-                map_opentopo,
-                map_esri_topo,
-                map_forestservice,
-                map_usgs_topo,
-		map_google_terrain,
-
-
-
-		map_google_satellite,
-		map_naip,
-                map_usgs_imagery,
-
-		map_esri_shaded,
-		map_esri_lightgray,
-		map_esri_darkgray,
-		map_esri_terrain,
-		map_shaded_relief,
-		map_esri_aeronautical,
-		map_publiclands,
-		map_historic,
-                map_osm_toner,
-                map_osm_toner_lite,
-                map_watercolor,
-
-                map_white,
-		map_lightblue,
-                map_gray,
-                map_blue,
-                map_black,
-            ];
-        }
-        let dflt = this.params.defaultMapLayer || map_osm;
+	this.mapLayers = Utils.mergeLists([], RAMADDA_MAP_LAYERS);
+        let dflt = this.params.defaultMapLayer || "osm";
         if (!this.haveAddedDefaultLayer && dflt) {
-            let index = this.mapLayers.indexOf(dflt);
+	    let index = -1;
+	    let dfltLayer = this.mapLayers.find((layer,idx)=>{
+		if(layer.id==dflt) {
+		    index= idx;
+		    return true;
+		}
+	    });
             if (index >= 0) {
                 this.mapLayers.splice(index, 1);
-                this.mapLayers.splice(0, 0, dflt);
+                this.mapLayers.splice(0, 0, dfltLayer);
             }
         }
 
@@ -2644,172 +2642,28 @@ RepositoryMap.prototype = {
 	let l = "";
         for (let i = 0; i < this.mapLayers.length; i++) {
             let mapLayer = this.mapLayers[i];
-            if (mapLayer == null) {
-                continue;
-            }
-            let newLayer = null;
-            if (mapLayer == map_osm) {
-                let urls = [
-                    '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
-                    '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
-                    '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
-                ];
-                newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});
-
-
-
-
-            } else if (mapLayer == map_osm_toner) {
-                let urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
-                newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});
-
-            } else if (mapLayer == map_google_roads) {
-		let urls = ['https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}'];
-                newLayer = new OpenLayers.Layer.OSM("Google Maps - Roads", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});
-            } else if (mapLayer == map_google_hybrid) {
-		let urls = ['https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}'];
-                newLayer = new OpenLayers.Layer.OSM("Google Maps - Hybrid", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});		
-            } else if (mapLayer == map_google_terrain) {
-		let urls = ['http://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}'];
-                newLayer = new OpenLayers.Layer.OSM("Google Maps - Terrain", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});
-            } else if (mapLayer == map_google_satellite) {
-		let urls = ['http://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}'];
-                newLayer = new OpenLayers.Layer.OSM("Google Maps - Satellite", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});				
-            } else if (mapLayer == map_osm_toner_lite) {
-                let urls = ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"];
-                newLayer = new OpenLayers.Layer.OSM("OSM-Toner Lite", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});
-            } else if (mapLayer == map_watercolor) {
-                let urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
-                newLayer = new OpenLayers.Layer.OSM("Watercolor", urls,{
-                    numZoomLevels: MapUtils.defaults.zoomLevels,
-		});
-            } else if (mapLayer == map_opentopo) {
-                newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
-	    } else if (mapLayer == map_forestservice) {
-		newLayer = this.createXYZLayer("Forest Service", "https://caltopo.com/tile/f16a/${z}/${x}/${y}.png","Map from Caltopo");
-	    } else if (mapLayer == map_naip) {
-		newLayer = this.createXYZLayer("NAIP Imagery", "https://caltopo.com/tile/n/${z}/${x}/${y}.png","Map from Caltopo");
-	    } else if(mapLayer == map_publiclands) {
-		this.addLayer(this.createXYZLayer("Public Lands","https://caltopo.com/tile/sma/${z}/${x}/${y}.png","Map from Caltopo",true));
-		continue;
-	    } else if(mapLayer == map_shaded_relief) {
-		newLayer = this.createXYZLayer("Shaded Relief", "https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png","Map from Caltopo");
-	    } else if(mapLayer == map_historic) {
-		
-		newLayer = this.createXYZLayer("Historic", "https://caltopo.com/tile/1900/${z}/${x}/${y}.png","Map from Caltopo",true);		
-            } else if (mapLayer == map_white || mapLayer== map_lightblue || mapLayer == map_gray || mapLayer == map_blue || mapLayer == map_black || mapLayer == map_gray) {
-		this.makeSimpleWms(mapLayer);
-		continue;
-            } else if (mapLayer == map_usgs_topo) {
-                newLayer = this.createXYZLayer("USGS Topo",
-					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}",
-					       'USGS - The National Map');
-            } else if (mapLayer == map_usgs_imagery) {
-                newLayer = this.createXYZLayer("USGS Imagery",
-					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}",
-					       "USGS - The National Map");
-            } else if (mapLayer == map_usgs_relief) {
-                newLayer = this.createXYZLayer("USGS Shaded Relief",
-					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}",
-					       'USGS - The National Map');
-            } else if (mapLayer == map_esri_worldimagery) {
-                //Not working
-                newLayer = this.createXYZLayer("ESRI World Imagery",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
-
-            } else if (mapLayer == map_esri_topo) {
-                newLayer = this.createXYZLayer("ESRI Topo",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
-	    } else if(mapLayer==map_esri_aeronautical) {
-                newLayer = this.addWMSLayer("ESRI Aeronautical","https://wms.chartbundle.com/mp/service","sec", true);
-            } else if (mapLayer == map_esri_darkgray) {
-		newLayer = this.createXYZLayer("ESRI Dark Gray",
-					       "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}");
-	    } else if (mapLayer == map_esri_lightgray) {
-		newLayer = this.createXYZLayer("ESRI Light Gray",
-					       "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}");
-            } else if (mapLayer == map_esri_terrain) {
-		newLayer = this.createXYZLayer("ESRI Terrain",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}");
-            } else if (mapLayer == map_esri_shaded) {
-		newLayer = this.createXYZLayer("ESRI Shaded Relief",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}");
-            } else if (mapLayer == map_esri_physical) {
-		newLayer = this.createXYZLayer("ESRI Physical",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}");
-            } else if (mapLayer == map_esri_street) {
-                newLayer = this.createXYZLayer("ESRI Streets",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}");
-            } else if (/\/tile\//.exec(mapLayer)) {
-                let layerURL = mapLayer;
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "ESRI China Map", layerURL, {
-                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
-                        numZoomLevels: MapUtils.defaults.zoomLevels,
-                        wrapDateLine: MapUtils.defaults.wrapDateline
-                    });
-            } else if (mapLayer == map_ms_shaded) {
-                newLayer = new OpenLayers.Layer.VirtualEarth(
-                    "Virtual Earth - Shaded", {
-                        'type': VEMapStyle.Shaded,
-                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
-                        wrapDateLine: MapUtils.defaults.wrapDateline,
-                        numZoomLevels: MapUtils.defaults.zoomLevels
-                    });
-            } else if (mapLayer == map_ms_hybrid) {
-                newLayer = new OpenLayers.Layer.VirtualEarth(
-                    "Virtual Earth - Hybrid", {
-                        'type': VEMapStyle.Hybrid,
-                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
-                        numZoomLevels: MapUtils.defaults.zoomLevels,
-                        wrapDateLine: MapUtils.defaults.wrapDateline
-                    });
-            } else if (mapLayer == map_ms_aerial) {
-                newLayer = new OpenLayers.Layer.VirtualEarth(
-                    "Virtual Earth - Aerial", {
-                        'type': VEMapStyle.Aerial,
-                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
-                        numZoomLevels: MapUtils.defaults.zoomLevels,
-                        wrapDateLine: MapUtils.defaults.wrapDateline
-                    });
-            } else {
-                let match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
-                if (!match) {
-                    alert("no match for map layer:" + mapLayer);
-                    continue;
-                }
-                this.addWMSLayer(match[1], match[2], match[3], true);
-            }
-
+	    if(!mapLayer.isForMap()) continue;
+            let newLayer = this.makeMapLayer(mapLayer);
             if (this.firstLayer == null) {
                 this.firstLayer = newLayer;
             }
             if (newLayer != null) {
 		if(l!="") l+=",";
-		l+=mapLayer+":" + newLayer.name;
-		this.baseLayers[mapLayer] = newLayer;
-                newLayer.ramaddaId = mapLayer;
-                if (mapLayer == this.params.defaultMapLayer) {
-                    this.defaultOLMapLayer = newLayer;
-                }
-		this.addBaseLayer(newLayer);
+		l+=mapLayer.id+":" + newLayer.name;
+                newLayer.ramaddaId = mapLayer.id;
+		if(!newLayer.isBaseLayer) {
+		    this.addLayer(newLayer);
+		} else {
+		    this.baseLayers[mapLayer.id] = newLayer;
+                    if (mapLayer.id == this.params.defaultMapLayer) {
+			this.defaultOLMapLayer = newLayer;
+                    }
+		    this.addBaseLayer(newLayer);
+		}
             }
 	}
-//	console.log(l);
+	//	console.log(l);
+
 
         this.graticule = new OpenLayers.Control.Graticule({
             layerName: "Lat/Lon Lines",
@@ -2821,6 +2675,55 @@ RepositoryMap.prototype = {
         this.getMap().addControl(this.graticule);
     },
 
+    makeMapLayer:function(mapLayer) {
+	let layer;
+	if(typeof mapLayer =="string") 
+	    layer = RAMADDA_MAP_LAYERS_MAP[mapLayer];
+	else
+	    layer = mapLayer;
+	if(layer) {
+	    let l= layer.createMapLayer(this);
+	    if(layer.opts.alias) this.baseLayers[layer.opts.alias] = l;		    
+	    if(layer.opts.refresh) {
+		let redrawFunc = () =>{
+		    if(l.getVisibility()) {
+			l.redraw(true);
+		    }
+		    setTimeout(redrawFunc,1000*layer.opts.refresh);
+		};
+		setTimeout(redrawFunc,1000*layer.opts.refresh);
+	    }
+	    return l;
+	}
+	if (/\/tile\//.exec(mapLayer)) {
+            let layerURL = mapLayer;
+            return new OpenLayers.Layer.XYZ(
+                "ESRI China Map", layerURL, {
+                    sphericalMercator: MapUtils.defaults.doSphericalMercator,
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+                    wrapDateLine: MapUtils.defaults.wrapDateline
+                });
+        } else {
+            let match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
+            if (!match) {
+                console.log("no match for map layer:" + mapLayer);
+		return null;
+            }
+            return this.addWMSLayer(match[1], match[2], match[3], true);
+        }
+	return null;
+    },
+    setGraticulesVisible:function(visible) {
+	if(this.graticule) {
+	    this.graticule.gratLayer.visibility = visible;
+	    if(!visible)
+		this.graticule.deactivate();
+	    else
+		this.graticule.activate();	    
+	    this.graticule.gratLayer.redraw();
+
+	}
+    },
     addBaseLayer: function(layer) {
         this.addLayer(layer);
 	this.numberOfBaseLayers++;
@@ -2831,7 +2734,7 @@ RepositoryMap.prototype = {
     },
     makeSimpleWms:  function(mapLayer) {
 	let url = "/repository/wms?version=1.1.1&request=GetMap&layers=" + mapLayer +"&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=-180.0,-80.0,180.0,80.0&width=400&height=400"
-	this.addWMSLayer(Utils.makeLabel(mapLayer) +" background", url, mapLayer, true);
+	return this.addWMSLayer(Utils.makeLabel(mapLayer) +" background", url, mapLayer, true);
     },
 
 
@@ -2965,7 +2868,7 @@ RepositoryMap.prototype = {
 		event.preventDefault();
 	    };
 	}
-	    
+	
 
         /*this.getMap().addControl(new OpenLayers.Control.TouchNavigation({
           dragPanOptions: {
@@ -2984,7 +2887,7 @@ RepositoryMap.prototype = {
         if (this.params.showScaleLine) {
             this.getMap().addControl(new OpenLayers.Control.ScaleLine());
         }
-//	this.getMap().addControl(new OpenLayers.Control.OverviewMap());
+	//	this.getMap().addControl(new OpenLayers.Control.OverviewMap());
 
         let keyboardControl = new OpenLayers.Control();
         let control = new OpenLayers.Control();
@@ -3158,15 +3061,15 @@ RepositoryMap.prototype = {
 		//a hack for zoomed in boxes
 		zoom = this.map.getZoomForExtent(extent)+2;
 		/*
-		[0.05,0.1,0.2,0.3,0.5,0.8,1.2].every((v,idx)=>{
-		    return false;
-		    if(width<v) {
-			zoom = 14-idx;			
-			return false
-		    }
-		    return true;
-		});
-		console.log(width +" " + zoom);
+		  [0.05,0.1,0.2,0.3,0.5,0.8,1.2].every((v,idx)=>{
+		  return false;
+		  if(width<v) {
+		  zoom = 14-idx;			
+		  return false
+		  }
+		  return true;
+		  });
+		  console.log(width +" " + zoom);
 		*/
 		this.params.initialZoom = zoom;
 	    }
@@ -3516,7 +3419,7 @@ RepositoryMap.prototype = {
         if (north == "" || west == "" || south == "" || east == "")
             return;
         let bounds = MapUtils.createBounds(west, Math.max(south,
-						 -MapUtils.defaults.maxLatValue), east, Math.min(north, MapUtils.defaults.maxLatValue));
+							  -MapUtils.defaults.maxLatValue), east, Math.min(north, MapUtils.defaults.maxLatValue));
         if (!this.selectorBox) {
             let args = {
                 "color": "red",
@@ -3697,7 +3600,7 @@ RepositoryMap.prototype = {
         newLeft = Math.max(newLeft, extentBounds.left);
         newRight = Math.min(newRight, extentBounds.right);
         newBounds = MapUtils.createBounds(newLeft, bounds.bottom, newRight,
-				 bounds.top);
+					  bounds.top);
         return newBounds;
     },
 
@@ -3774,7 +3677,7 @@ RepositoryMap.prototype = {
                 ll = _this.transformProjPoint(ll);
                 ur = _this.transformProjPoint(ur);
                 bounds = MapUtils.createBounds(ll.lon, ll.lat, ur.lon,
-					  ur.lat);
+					       ur.lat);
                 bounds = _this.normalizeBounds(bounds);
                 _this.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
                 _this.findSelectionFields();
@@ -4234,13 +4137,13 @@ RepositoryMap.prototype = {
         let marker = new OpenLayers.Marker(projPoint, icon);
 	let pt = new OpenLayers.Geometry.Point(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
 	let style = {
-                externalGraphic: iconUrl,
-//                graphicHeight: size,
-                graphicWidth: size,
-                graphicXOffset: xoffset + (-size / 2),
-                graphicYOffset: -size / 2,
-		labelYOffset:-size,
-		label:attrs.label
+            externalGraphic: iconUrl,
+	    //                graphicHeight: size,
+            graphicWidth: size,
+            graphicXOffset: xoffset + (-size / 2),
+            graphicYOffset: -size / 2,
+	    labelYOffset:-size,
+	    label:attrs.label
         };
 	if(Utils.isDefined(attrs.rotation)) {
 	    style.rotation = attrs.rotation;
@@ -4337,7 +4240,7 @@ RepositoryMap.prototype = {
     },
 
 
-   addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
+    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;
 	if(!justCreate) {
@@ -4382,7 +4285,7 @@ RepositoryMap.prototype = {
 	    p.push(new OpenLayers.Geometry.Point(lon2,lat2));
 	}
 	let polys = [];
-//	console.log("p:" + p);
+	//	console.log("p:" + p);
 
 	if(p.length>0)
 	    polys.push(this.createPolygon("polygon", "",p,polygonProps,text));
@@ -4457,7 +4360,7 @@ RepositoryMap.prototype = {
         }
 	if(!args.color) args.color = this.params.boxColor || "blue";
         let bounds = MapUtils.createBounds(west, Math.max(south, -MapUtils.defaults.maxLatValue),
-				  east, Math.min(north, MapUtils.defaults.maxLatValue));
+					   east, Math.min(north, MapUtils.defaults.maxLatValue));
         let projBounds = this.transformLLBounds(bounds);
         box = new OpenLayers.Marker.Box(projBounds);
         box.sticky = args.sticky;
@@ -4662,7 +4565,7 @@ RepositoryMap.prototype = {
 
 	if (!attrs.strokeColor)
 	    attrs.strokeColor = this.params.strokeColor;
-	    
+	
 
         let points = [];
         for (let i = 0; i < values.length; i += 2) {
@@ -4698,7 +4601,7 @@ RepositoryMap.prototype = {
                 style[key] = attrs[key];
             }
         }
-//	points.push(points[0]);
+	//	points.push(points[0]);
 
 	//for now create a polygon not a linestring
 	let geom;
@@ -5039,4 +4942,6 @@ RepositoryMap.prototype = {
     },
 
 }
+
+
 

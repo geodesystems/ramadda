@@ -1,7 +1,23 @@
 /**
    Copyright 2008-2021 Geode Systems LLC
 */
-var xcnt=0;
+
+/*
+7-Day eMODIS VegDRI index
+https://dmsdata.cr.usgs.gov/geoserver/quickdri_vegdri_conus_week_data/vegdri_conus_week_data/ows
+vegdri_conus_week_data
+
+7-Day eMODIS QuickDRI index
+https://dmsdata.cr.usgs.gov/geoserver/quickdri_quickdri_conus_week_data/quickdri_conus_week_data/ows
+quickdri_conus_week_data
+
+https://wms.chartbundle.com/mp/service
+sec
+
+
+*/
+
+
 const DISPLAY_IMDV = "imdv";
 const DISPLAY_EDITABLEMAP = "editablemap";
 addGlobalDisplayType({
@@ -30,6 +46,8 @@ var GLYPH_IMAGE = "image";
 var GLYPH_ENTRY = "entry";
 var GLYPH_MULTIENTRY = "multientry";
 var GLYPH_MAP = "map";
+var GLYPH_MAPSERVER = "mapserver"
+
 var GLYPH_DATA = "data";
 var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
@@ -545,6 +563,66 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			return;
 		    }
 
+		    if(glyphType.isMapServer()) {
+			let html = "";
+			let form = (label,name,size)=>{
+			    if(name=="predefined") {
+				let ids =Utils.mergeLists([""],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
+				html+=HU.formEntry(label+':',HU.select("",['id',this.domId(name)],ids,this.cache[name]));
+			    } else {
+				html+=HU.formEntry(label+':',HU.input("",this.cache[name]??"",['id',this.domId(name),'size',size??'60']));
+			    }
+			}
+			let args = [
+			    ["Name","servername"],
+			    ["Server URL","serverurl"],
+			    ["WMS Layer","wmslayer","20"],
+			    ["Legend URL","maplegend"],
+			    ["Or Predefined","predefined"]
+			];
+			html+= "Enter either a TMS server URL or a WMS server URL with a layer name<br>";
+			this.cache = this.cache??{};
+			html +=  HU.formTable();
+			args.forEach(a=>{
+			    form(a[0],a[1],a[2]);
+			});
+			html+="</table>";
+			html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
+				     HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
+			html=HU.div(['style','margin:10px;'], html);
+			let dialog = HU.makeDialog({content:html,title:'Map Server',header:true,my:"left top",at:"left bottom",draggable:true,anchor:this.jq(ID_MENU_NEW)});
+			let cancel = ()=>{
+			    dialog.remove();
+			}
+			let ok = ()=>{
+			    args.forEach(a=>{
+				this.cache[a[1]] =  this.jq(a[1]).val().trim();
+			    });
+			    let predefined = this.jq('predefined').val().trim();
+			    let url = this.jq('serverurl').val().trim();
+			    if(!Utils.stringDefined(url) && !Utils.stringDefined(predefined)) {
+				alert('Please enter a map server');
+				return;
+			    }
+			    let mapOptions = tmpStyle.mapOptions;
+			    mapOptions.name = this.jq('servername').val().trim();
+			    delete tmpStyle.mapOptions;
+			    this.clearCommands();
+			    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,tmpStyle);
+			    mapGlyph.setMapServerUrl(url,this.jq('wmslayer').val().trim(),this.jq('maplegend').val().trim(),predefined);
+			    mapGlyph.checkMapServer();
+			    this.addGlyph(mapGlyph);
+			    this.featureChanged();	    
+			    this.clearMessage2(1000);
+			    dialog.remove();
+			}
+			this.jq(ID_OK).button().click(ok);
+			this.jq(ID_CANCEL).button().click(()=>{
+			    dialog.remove();
+			});
+			return;
+		    }
+
 
 		    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
 			let callback = (entryId,imageUrlOrEntryAttrs) =>{
@@ -684,7 +762,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			
 			html+=HU.b("Select Icon");
 			html+=HU.div(['id',this.domId('emojis')]);
-
 			html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
 			let dialog = HU.makeDialog({content:html,title:'Text',header:true,my:"left top",at:"left bottom",draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
@@ -1086,6 +1163,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 //		this.checkImage(feature);
 		if(mapGlyph.isMap()) {
 		    mapGlyph.checkMapLayer();
+		} else if(mapGlyph.isMapServer()) {
+		    mapGlyph.checkMapServer();
 		}
 	    });
 	    this.addGlyph(newOnes);
@@ -1252,7 +1331,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			if(props == "pointRadius") label="Size";
 			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
 			else if(prop=="fontFamily") size="60";
-			else if(prop=="imageUrl") size="80";		    
+			else if(prop.toLowerCase().indexOf('url')>=0) size="80";
 			if(prop.indexOf("Color")>=0) {
 			    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
 
@@ -1286,7 +1365,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
 				HU.div(['slider-min',min,'slider-max',50,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
 
-			} else if(prop.indexOf("Opacity")>=0) {
+			} else if(prop.toLowerCase().indexOf("opacity")>=0) {
 			    if(!v || v=="") v= 1;
 			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
 				HU.div(['slider-min',0,'slider-max',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
@@ -1696,7 +1775,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.checkMapLayer(false);
 		    this.addGlyph(mapGlyph);
 		    return
-		}  
+		}
+		if(glyphType.isMapServer()) {
+		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
+		    mapGlyph.checkMapServer(false);
+		    this.addGlyph(mapGlyph);
+		    return
+		}  		
 		let points=jsonObject.points;
 		if(!points || points.length==0) {
 		    console.log("Unknown glyph:" + mapOptions.type);
@@ -1807,6 +1892,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    html+=HU.formEntry("",HU.checkbox(this.domId('showopacityslider'),[],
 					      Utils.isDefined(this.mapProperties.showOpacitySlider)?this.mapProperties.showOpacitySlider:this.getShowOpacitySlider(),'Show Opacity Slider'));
+	    html+=HU.formEntry("",HU.checkbox(this.domId('showgraticules'),[],
+					      Utils.isDefined(this.mapProperties.showGraticules)?this.mapProperties.showGraticules:false,'Show Lat/Lon Lines'));	    
 	    html+="</table>"
 	    html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px')], HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "OK") + SPACE2 +
 			 HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel"));
@@ -1827,9 +1914,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.mapProperties.userCanEdit = this.jq("usercanedit").is(':checked');
 		this.mapProperties.showLegend = this.jq("showlegend").is(':checked');
 		this.mapProperties.showOpacitySlider = this.jq("showopacityslider").is(':checked');
+		this.mapProperties.showGraticules = this.jq("showgraticules").is(':checked');		
 		this.mapProperties.topWikiText = this.jq("topwikitext_input").val();
-		this.checkOpacitySlider();
-		this.checkTopWiki();
+		this.checkMapProperties();
 		this.makeLegend();
 		close();
 	    });
@@ -1838,6 +1925,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 	},
+
+	checkMapProperties: function() {
+	    this.mapProperties=this.mapProperties??{};
+	    this.checkOpacitySlider();
+	    this.checkTopWiki();
+	    if(this.getMap()) {
+		this.getMap().setGraticulesVisible(this.mapProperties.showGraticules);
+	    }
+	},
+	    
 
 	checkOpacitySlider:function() {
 	    let visible;
@@ -2323,9 +2420,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    this.handleError(err);
 			}
 			this.featureHasBeenChanged = false;
-			this.checkOpacitySlider();
-			this.checkTopWiki();
-			
+			this.checkMapProperties();
 			this.makeLegend();
 			this.showMapLegend();
 			this.checkVisible();
@@ -2511,7 +2606,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:ramaddaBaseUrl+"/icons/hexagon.png"});		
 
 
-	    new GlyphType(this,GLYPH_MAP,"Map",
+	    new GlyphType(this,GLYPH_MAP,"Map File",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
 			   strokeDashstyle:'solid',			      
@@ -2521,7 +2616,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  OpenLayers.Handler.MyEntryPoint,
 			  {isMap:true,
 			   tooltip:"Select a gpx, geojson or  shapefile map",
+			   icon:ramaddaBaseUrl+"/icons/document-globe.png"});	
+
+
+	    new GlyphType(this,GLYPH_MAPSERVER,"Map Server",
+			  {
+			      opacity:1.0,
+			      legendUrl:""
+			  },
+			  OpenLayers.Handler.MyEntryPoint,
+			  {isMapServer:true,
+			   tooltip:"Provide a Web Map Service URL",
 			   icon:ramaddaBaseUrl+"/icons/map.png"});	
+
 
 	    if(this.getProperty("hereRoutingEnabled")||this.getProperty("googleRoutingEnabled")) {
 		new GlyphType(this,GLYPH_ROUTE, "Route", {
@@ -2909,6 +3016,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeControls:function() {
+	    let _this = this;
 	    if(!this.canEdit()) return;
 	    let control;
 	    Utils.initDragAndDrop(this.jq(ID_MAP),
@@ -3221,7 +3329,10 @@ GlyphType.prototype = {
     },	    
     isMap:  function() {
 	return this.options.isMap;
-    },			
+    },
+    isMapServer:  function() {
+	return this.options.isMapServer;
+    },			    
     isRoute: function() {
 	return this.type == GLYPH_ROUTE;
     },
@@ -3605,6 +3716,9 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(this.style.imageUrl)) {
 	    item("<img style='border:1px solid #ccc;' width='150px' src='" +this.style.imageUrl+"'>");
 	}
+	if(Utils.stringDefined(this.style.legendUrl)) {
+	    item("<center><img style='border:1px solid #ccc;' width='150px' src='" +this.style.legendUrl+"'></center>");
+	}
 	return body;
     },
     convertPopupText:function(text) {
@@ -3620,19 +3734,62 @@ MapGlyph.prototype = {
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
+    isMapServer:function() {
+	return this.getType()==GLYPH_MAPSERVER;
+    },    
     isMultiEntry:function() {
 	return this.getType()==GLYPH_MULTIENTRY;
+    },
+    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined) {
+	this.style.legendUrl = legendUrl;
+
+	if(Utils.stringDefined(predefined)) {
+	    if(!Utils.stringDefined(this.attrs.name)) {
+		let mapLayer = RAMADDA_MAP_LAYERS_MAP[predefined];
+		if(mapLayer) this.attrs.name = mapLayer.name;
+	    }
+	} else {
+	    if(!Utils.stringDefined(wmsLayer)) {
+		if(url.match('&request=GetMap')) {
+		    try {
+			let _url = new URL(url);
+			url = _url.protocol+'//' + _url.host +_url.pathname;
+			wmsLayer = _url.searchParams.get('layers');
+		    } catch(err) {
+			console.log(err);
+		    }
+		}
+	    }
+	    if(!Utils.stringDefined(this.attrs.name)) {
+		let _url = new URL(url);
+		this.attrs.name = _url.hostname;
+	    }
+	}
+
+
+	this.attrs.mapServerUrl = url;
+	this.attrs.wmsLayer = wmsLayer;
+	this.attrs.predefinedLayer = predefined;
     },
     getAttributes: function() {
 	return this.attrs;
     },
     setMapLayer:function(mapLayer) {
 	this.mapLayer = mapLayer;
-	mapLayer.mapGlyph = this;
+	if(mapLayer)
+	    mapLayer.mapGlyph = this;
     },
     getMapLayer: function() {
 	return this.mapLayer;
     },
+    setMapServerLayer:function(mapLayer) {
+	this.mapServerLayer = mapLayer;
+	if(mapLayer)
+	    mapLayer.mapGlyph = this;
+    },
+    getMapServerLayer: function() {
+	return this.mapServerLayer;
+    },    
     checkMapLayer:function(andZoom) {
 	//Only create the map if we're visible
 	if(!this.isMap() || !this.isVisible()) return;
@@ -3640,6 +3797,50 @@ MapGlyph.prototype = {
 	    if(!Utils.isDefined(andZoom)) andZoom = true;
 	    this.setMapLayer(this.display.createMapLayer(this.attrs,this.style,andZoom));
 	    this.applyMapStyle();
+	}
+    },
+    checkMapServer:function(andZoom) {
+	if(!this.isMapServer()) return;
+	if(this.mapServerLayer==null) {
+	    let url=this.attrs.mapServerUrl;
+	    let wmsLayer=this.attrs.wmsLayer;
+	    if(Utils.stringDefined(wmsLayer)) {
+		this.mapServerLayer = new OpenLayers.Layer.WMS(this.getName(), url, {
+		    layers: wmsLayer,
+		    format: "image/png",
+		    isBaseLayer: false,
+		    srs: "epse:4326",
+		    transparent: true
+		}, {
+		    opacity:1.0
+		});
+	    } else if(Utils.stringDefined(url)) {
+		//Convert malformed TMS url
+		url = url.replace(/\/{/g,"/${");
+		this.mapServerLayer =  this.display.getMap().createXYZLayer(this.getName(), url);
+		console.log(url)
+	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
+		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
+		if(mapLayer) {
+		    this.mapServerLayer = this.display.getMap().makeMapLayer(this.attrs.predefinedLayer);
+		} else {
+		    console.error("Unknown map layer:" +this.attrs.predefinedLayer);
+		}
+	    } else {
+		console.error("No map server url defined");
+		return;
+	    }
+
+	    if(!Utils.isDefined(andZoom)) andZoom = true;
+	    if(Utils.isDefined(this.style.opacity)) {
+		this.mapServerLayer.opacity = +this.style.opacity;
+	    }
+
+	    this.mapServerLayer.setVisibility(this.isVisible());
+	    this.mapServerLayer.isBaseLayer = false;
+	    this.mapServerLayer.visibility = this.isVisible();
+	    this.display.getMap().addLayer(this.mapServerLayer);
+	    this.mapServerLayer.canTakeOpacity = true;
 	}
     },
 
@@ -4109,6 +4310,15 @@ MapGlyph.prototype = {
        this.style = style;
        this.applyMapStyle();
 
+       if(this.getMapServerLayer()) {
+	   if(Utils.isDefined(style.opacity)) {
+	       this.getMapServerLayer().opacity = +style.opacity;
+	       this.getMapServerLayer().setVisibility(false);
+	       this.getMapServerLayer().setVisibility(true);
+	       this.getMapServerLayer().redraw();
+	   }
+       }
+
 	this.features.forEach(feature=>{
 	    if(feature.style) {
 		$.extend(feature.style,style);
@@ -4232,6 +4442,11 @@ MapGlyph.prototype = {
 	if(this.getMapLayer()) {
 	    this.getMapLayer().setVisibility(visible);
 	}
+	if(this.getMapServerLayer()) {
+	    this.getMapServerLayer().setVisibility(visible);
+	}	
+
+
 	if(this.selectDots) {
 	    this.selectDots.forEach(dot=>{
 		dot.style.display = visible?'inline':'none';
@@ -4510,6 +4725,11 @@ MapGlyph.prototype = {
 
 	if(this.getMapLayer()) {
 	    this.display.getMap().removeLayer(this.getMapLayer());
+	    this.setMapLayer(null);
+	}
+	if(this.getMapServerLayer()) {
+	    this.display.getMap().removeLayer(this.getMapServerLayer());
+	    this.setMapServerLayer(null);
 	}
 	if(this.displayInfo) {
 	    jqid(this.displayInfo.divId).remove();

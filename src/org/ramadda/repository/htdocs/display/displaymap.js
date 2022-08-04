@@ -100,7 +100,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
-	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
+//	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 	{p:'showOpacitySlider',ex:'false',d:false},
@@ -270,10 +270,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (!this.getShowLocationSearch(true)) {
                 params.showLocationSearch = false;
             }
-            var mapLayers = this.getMapLayers(null);
-            if (mapLayers) {
-                params.mapLayers = [mapLayers];
-            }
+//            var mapLayers = this.getMapLayers(null);
+//            if (mapLayers) {
+//                params.mapLayers = [mapLayers];
+//            }
 
 	    params.linked = this.getLinked(false);
 	    params.linkGroup = this.getLinkGroup(null);
@@ -545,7 +545,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
-	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
+//	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 
