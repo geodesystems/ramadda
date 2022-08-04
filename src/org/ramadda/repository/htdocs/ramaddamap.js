@@ -56,6 +56,8 @@ new MapLayer('google.hybrid','Google Maps - Hybrid','https://mt0.google.com/vt/l
 new MapLayer('esri.street','ESRI Streets','https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}');
 new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png}');
 new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
+new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/tile/mbt/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
+
 new MapLayer('usgs.topo','USGS Topo','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',{attribution:'USGS - The National Map'});
 new MapLayer('google.terrain','Google Maps - Terrain','http://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}');
 new MapLayer('google.satellite','Google Maps - Satellite','http://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}');
