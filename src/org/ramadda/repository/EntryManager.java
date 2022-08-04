@@ -4252,6 +4252,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+        request.setCORSHeaderOnResponse();
         addSessionEntry(request, entry);
 
         if ( !entry.getResource().isUrl()) {
