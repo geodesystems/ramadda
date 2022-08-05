@@ -458,18 +458,24 @@ public class Request implements Constants, Cloneable {
         setReturnFilename(filename, true);
     }
 
+    /**
+      * @return _more_
+     */
     public boolean isNormalRequest() {
-	return httpServletResponse!=null;
+        return httpServletResponse != null;
     }
+
     /**
      *
      * @param filename _more_
      * @param inline _more_
      */
     public void setReturnFilename(String filename, boolean inline) {
-	if(!isNormalRequest()) return;
-        filename = filename.replaceAll(" ", "_").replaceAll(",","_");
-	//	System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
+        if ( !isNormalRequest()) {
+            return;
+        }
+        filename = filename.replaceAll(" ", "_").replaceAll(",", "_");
+        //      System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
         if (inline) {
             httpServletResponse.setHeader("Content-disposition",
                                           "filename=" + filename);
@@ -1280,9 +1286,15 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     *
+     * @param key _more_
+     * @param value _more_
+     */
     public void putIfNull(Object key, Object value) {
-	if(parameters.get(key)==null)
-	    put(key,value);
+        if (parameters.get(key) == null) {
+            put(key, value);
+        }
     }
 
 
@@ -1536,7 +1548,7 @@ public class Request implements Constants, Cloneable {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean getCloned() {
         return cloned;
@@ -1617,44 +1629,53 @@ public class Request implements Constants, Cloneable {
      * _more_
      */
     public void ensureAuthToken() {
-	boolean debug = false;
-        String authToken    = getString(ARG_AUTHTOKEN, (String) null);
-        String mySessionId  = getSessionId();
-        String argSessionId = getString(ARG_SESSIONID, (String) null);
+        boolean debug        = false;
+        String  authToken    = getString(ARG_AUTHTOKEN, (String) null);
+        String  mySessionId  = getSessionId();
+        String  argSessionId = getString(ARG_SESSIONID, (String) null);
         if (mySessionId == null) {
             mySessionId = argSessionId;
         }
 
-	if(debug) {
-	    System.err.println("ensureAuthToken");
-	    System.err.println("\tauthToken:" + authToken);
-	    System.err.println("\targ session:"+ argSessionId);
-	    System.err.println("\tmySessionId:"+ mySessionId);	    
-	    /*
-	    for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {System.err.println("\tkey:" + keys.nextElement());	    }
-	    */
-	}
-	//	debug = false;
+        if (debug) {
+            System.err.println("ensureAuthToken");
+            System.err.println("\tauthToken:" + authToken);
+            System.err.println("\targ session:" + argSessionId);
+            System.err.println("\tmySessionId:" + mySessionId);
+            /*
+            for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {System.err.println("\tkey:" + keys.nextElement());        }
+            */
+        }
+        //      debug = false;
 
-       if (authToken == null && argSessionId != null) {
+        if ((authToken == null) && (argSessionId != null)) {
             if (argSessionId.equals(mySessionId)) {
-		if(debug) 
-		    System.err.println("\tensureAuthToken arg session id == session id");
+                if (debug) {
+                    System.err.println(
+                        "\tensureAuthToken arg session id == session id");
+                }
+
                 return;
             }
-	    if(debug) 
-		System.err.println("\tensureAuthToken arg session id != session id");
+            if (debug) {
+                System.err.println(
+                    "\tensureAuthToken arg session id != session id");
+            }
         }
 
-        if (authToken != null && mySessionId != null) {
-	    if(debug) 
-		System.err.println("\tchecking auth token");
+        if ((authToken != null) && (mySessionId != null)) {
+            if (debug) {
+                System.err.println("\tchecking auth token");
+            }
             String sessionAuth = RepositoryUtil.hashString(mySessionId);
-	    if(debug)
-		System.err.println ("\thashed sessionId:" +  sessionAuth);
+            if (debug) {
+                System.err.println("\thashed sessionId:" + sessionAuth);
+            }
             if (authToken.trim().equals(sessionAuth)) {
-		if(debug) 
-		    System.err.println ("\tok");
+                if (debug) {
+                    System.err.println("\tok");
+                }
+
                 return;
             }
             getRepository().getLogManager().logError(
@@ -1669,13 +1690,14 @@ public class Request implements Constants, Cloneable {
         }
 
 
-	if(debug) 
-	    System.err.println("Bad");
+        if (debug) {
+            System.err.println("Bad");
+        }
         getRepository().getLogManager().logError(
             "Request.ensureAuthToken: something null:" + "\n\tsession:"
             + mySessionId + "\n\tauth token:" + authToken, null);
 
-	throw new IllegalArgumentException("Bad authentication token");
+        throw new IllegalArgumentException("Bad authentication token");
     }
 
 
@@ -1771,7 +1793,7 @@ public class Request implements Constants, Cloneable {
      *
      * @param key _more_
      * @param dflt _more_
-      * @return _more_
+     *  @return _more_
      */
     public String getBase64String(String key, String dflt) {
         String raw = getUnsafeString(key, null);
@@ -2145,7 +2167,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        return  Long.parseLong(result);
+        return Long.parseLong(result);
     }
 
     /**
@@ -2522,12 +2544,16 @@ public class Request implements Constants, Cloneable {
         return sessionId;
     }
 
+    /**
+      * @return _more_
+     */
     public String getAuthToken() {
-	String sessionId = getSessionId();	
-	if(sessionId!=null) {
-	    return  RepositoryUtil.hashString(sessionId);
-	}	
-	return "";
+        String sessionId = getSessionId();
+        if (sessionId != null) {
+            return RepositoryUtil.hashString(sessionId);
+        }
+
+        return "";
     }
 
 
@@ -2668,14 +2694,13 @@ public class Request implements Constants, Cloneable {
             return false;
         }
 
-        return (
-		//(userAgent.indexOf("googlebot") >= 0)
-		userAgent.indexOf("yandex.com/bots")>=0
-		|| userAgent.indexOf("mj12bot")>=0
-		|| userAgent.indexOf("webmeup-crawler")>=0
-                || (userAgent.indexOf("bot") >= 0)
-                || (userAgent.indexOf("slurp") >= 0)
-                || (userAgent.indexOf("spider") >= 0));
+        return ((
+        //(userAgent.indexOf("googlebot") >= 0)
+        userAgent.indexOf("yandex.com/bots") >= 0) || (userAgent.indexOf(
+            "mj12bot") >= 0) || (userAgent.indexOf("webmeup-crawler") >= 0)
+                             || (userAgent.indexOf("bot") >= 0)
+                             || (userAgent.indexOf("slurp") >= 0)
+                             || (userAgent.indexOf("spider") >= 0));
 
     }
 
@@ -3188,24 +3213,43 @@ public class Request implements Constants, Cloneable {
         getHttpServletResponse().setContentType(mimeType);
         setReturnFilename(filename, true);
         Result result = new Result(filename, (byte[]) null, mimeType);
-	getRepository().handleRequestCookie(this, result);
+        getRepository().handleRequestCookie(this, result);
         result.setNeedToWrite(false);
+
         return result;
     }
 
-    boolean cookieWasAdded=false;
+    /**  */
+    boolean cookieWasAdded = false;
 
 
+    /**
+      * @return _more_
+     */
     public boolean getCookieWasAdded() {
-	return cookieWasAdded;
+        return cookieWasAdded;
     }
 
+    /**
+     *
+     * @param name _more_
+     * @param value _more_
+     */
     public void addCookie(String name, String value) {
-	//	System.err.println("\taddCookie:"+ value.substring(0,10));
-	cookieWasAdded= true;
-	httpServletResponse.setHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
+        //      System.err.println("\taddCookie:"+ value.substring(0,10));
+        cookieWasAdded = true;
+        httpServletResponse.setHeader(HtmlUtils.HTTP_SET_COOKIE,
+                                      name + "=" + value);
     }
 
+    /**
+     *
+     * @param name _more_
+     * @param value _more_
+     */
+    public void setHeader(String name, String value) {
+        httpServletResponse.setHeader(name, value);
+    }
 
     /**
      * Set the MakeAbsoluteUrls property.
