@@ -1946,20 +1946,23 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                         Entry mapEntry =
                             (Entry) getEntryManager().getEntry(request,
 							       metadata.getAttr1());
-                        if ((mapEntry != null)
-			    && (mapEntry.getTypeHandler()
-				.isType("geo_shapefile") || mapEntry
-				.getTypeHandler()
-				.isType("geo_geojson"))) {
-                            String kmlUrl =
-                                request.entryUrl(getRepository()
-						 .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
-						 ShapefileOutputHandler.OUTPUT_KML
-						 .toString(), "formap", "true");
-                            map.addKmlUrl(
-					  mapEntry.getName(), kmlUrl, true,
-					  ShapefileOutputHandler.makeMapStyle(
-									      request, mapEntry));
+                        if (mapEntry != null) {
+			    if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
+				String url =
+				    request.entryUrl(getRepository()
+						     .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
+						     ShapefileOutputHandler.OUTPUT_GEOJSON
+						     .toString(), "formap", "true");
+				map.addGeoJsonUrl(mapEntry.getName(), url, true,
+					      ShapefileOutputHandler.makeMapStyle(request, mapEntry));
+
+			    } else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
+				String url =
+				    request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
+				map.addGeoJsonUrl(
+						  mapEntry.getName(), url, true,"");
+				
+			    }
                         }
                     }
                 }
