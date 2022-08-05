@@ -5996,10 +5996,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 //            System.err.println("pattern:" + pattern);
                 if (url.matches(pattern)) {
                     ok = true;
-
                     break;
                 }
             }
+            if ( !ok) {
+		if(url.startsWith("https://ramadda.org")) ok = true;
+	    }
+
             if ( !ok) {
                 throw new IllegalArgumentException("URL not in whitelist:"
                         + url);
@@ -6028,11 +6031,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throw new IllegalArgumentException("No URL");
         }
 
-        //        System.out.println("proxy: " + url);
         URLConnection connection = new URL(url).openConnection();
+	//Pass through some of the headers
+	for(String hdr:new String[]{"Content-disposition","Content-Type"}) {
+	    String v = connection.getHeaderField(hdr);
+	    if(v!=null)
+		request.setHeader(hdr,v);
+	}
+
         InputStream   is         = connection.getInputStream();
-
-
         if (request.get("xmltojson", false)) {
             String contents = IOUtil.readInputStream(is);
             contents = contents.trim();
