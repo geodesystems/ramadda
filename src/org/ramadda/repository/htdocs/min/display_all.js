@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug  5 01:10:55 MDT 2022";
+var build_date="RAMADDA build date: Fri Aug  5 07:34:13 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -33294,6 +33294,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 	    
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
+		console.log(tuple);
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
@@ -33338,7 +33339,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    let url = toks[2];
 		    let layer=toks[3];
 		    let opacity = toks[4];
-                    this.map.addWMSLayer(name,url,layer, false,true,{opacity:opacity});
+                    this.map.addWMSLayer(name,url,layer, false,true,{visible:true,opacity:opacity});
 		  //  "wms:ESRI Aeronautical,https://wms.chartbundle.com/mp/service,sec",
 		} else {
 		    console.log("Unknown map type:" + type)
@@ -41326,7 +41327,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  },
 				  "image.*");
 
-
+	    this.jq(ID_MAP).css('caret-color','transparent');
 
 
 	    //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"imdv-commands"]));
@@ -42854,6 +42855,7 @@ MapGlyph.prototype = {
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
 		     "isContained":true,
+		     "showRecordSelection":false,
 		     "showInnerContents":false,
 		     "entryIcon":this.attrs.icon,
 		     "title":this.attrs.name,
