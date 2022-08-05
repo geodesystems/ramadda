@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Aug  4 01:35:11 MDT 2022";
+var build_date="RAMADDA build date: Fri Aug  5 01:10:55 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38271,12 +38271,11 @@ quickdri_conus_week_data
 https://wms.chartbundle.com/mp/service
 sec
 
-
 */
 
 
-const DISPLAY_IMDV = "imdv";
-const DISPLAY_EDITABLEMAP = "editablemap";
+var DISPLAY_IMDV = "imdv";
+var DISPLAY_EDITABLEMAP = "editablemap";
 addGlobalDisplayType({
     type: DISPLAY_IMDV,
     label: "Integrated Map Data",
@@ -38284,7 +38283,8 @@ addGlobalDisplayType({
     tooltip: makeDisplayTooltip("Integrated Map Data"),        
 });
 
-
+var MAP_RESOURCES;
+var MAP_RESOURCES_MAP; 
 var GLYPH_FIXED = "fixed";
 var GLYPH_MARKER = "marker";
 var GLYPH_POINT = "point";
@@ -38313,6 +38313,15 @@ var MAP_TYPES = ['type_map','geo_geojson','geo_gpx','geo_shapefile'];
 var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:10pt;'];
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
+    if(!MAP_RESOURCES) {
+        $.getJSON(ramaddaBaseUrl+"/mapresources.json", data=>{
+	    MAP_RESOURCES_MAP={};
+	    MAP_RESOURCES = data;
+	    MAP_RESOURCES.forEach((r,idx)=>{MAP_RESOURCES_MAP[idx] = r;});
+	}).fail(err=>{
+	    console.error("Failed loading mapresources.json:" + err);
+	});
+    }
     OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	initialize: function(control, callbacks, options) {
 	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
@@ -38780,6 +38789,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 
+	wrapDialog:function(html) {
+	    return HU.div(['style','margin:5px;'],html);
+	},
+
 	setCommand:function(command, args) {
 	    args = args ||{};
 	    this.clearCommands();
@@ -38882,7 +38895,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 		    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
-			let callback = (entryId,imageUrlOrEntryAttrs) =>{
+			let callback = (entryId,imageUrlOrEntryAttrs,resourceId) =>{
 			    let attrs = {};
 			    let imageUrl;
 			    if(typeof imageUrlOrEntryAttrs == "string") {
@@ -38903,6 +38916,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				delete attrs.entryName;
 			    }
 			    if(glyphType.isMap()) {
+				if(resourceId) {
+				    let resource  =MAP_RESOURCES_MAP[resourceId];
+				    attrs.name = resource.name;
+				    attrs.entryType = resource.type;
+				    attrs.resourceUrl = resource.url;
+				    if(resource.style) $.extend(tmpStyle,resource.style);
+				}
 				let mapOptions = tmpStyle.mapOptions;
 				delete tmpStyle.mapOptions;
 				$.extend(mapOptions,attrs);
@@ -38952,18 +38972,32 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 			//Do this a bit later because the dialog doesn't get popped up
 			let initCallback = ()=>{
+			    this.jq('mapresource').change(()=>{
+				callback("",{},this.jq('mapresource').val());
+				selectCancel();
+			    });
 			    this.jq('imageurl').keypress(function(e){
 				if(e.keyCode == 13) {
 				    callback("",$(this).val());
 				}
 			    });
 			};
-			let extra = HU.div(['style','margin:5px;'],
-					   HU.b("Enter Image URL: ") + HU.input("",this.lastImageUrl??"",['id',this.getDomId('imageurl'),'size','40']) +
-					   "<br>Or select entry:");
+			let extra = null;
+			if(glyphType.isImage()) {
+			    extra = HU.b("Enter Image URL: ") + HU.input("",this.lastImageUrl??"",['id',this.getDomId('imageurl'),'size','40']);
+			} else if(glyphType.isMap() && MAP_RESOURCES) {
+			    let ids = MAP_RESOURCES.map((r,idx)=>{
+				return [idx,r.name];
+			    });
+			    ids = Utils.mergeLists([['','Select Resource']],ids);
+			    extra = HU.b("Load Map: ") + HU.select("",['id',this.domId('mapresource')],ids);
+			}			    
+			if(extra!=null) {
+			    extra = this.wrapDialog(extra + "<br>Or select entry:");
+			}
 			let props = {title:glyphType.isImage()?'Select Image':
 				     (glyphType.isEntry()||glyphType.isMultiEntry()?'Select Entry':glyphType.isData()?'Select Data':'Select Map'),
-				     extra:glyphType.isImage()?extra:null,
+				     extra:extra,
 				     initCallback:initCallback,
 				     callback:callback,
 				     'eventSourceId':this.domId(ID_MENU_NEW)};
@@ -40565,7 +40599,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return layer;
 	},
 	createMapLayer:function(opts,style,andZoom) {
-	    let url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
+	    let url;
+	    if(opts.resourceUrl) {
+		//For now proxy the request through our ramadda
+		url =   ramaddaBaseUrl+'/proxy?url=' + encodeURIComponent(opts.resourceUrl);
+	    } else {
+		url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
+	    }
 	    let selectCallback = null;
 	    let unSelectCallback = null;	    
 	    let errorCallback = (url,err)=>{
@@ -40597,7 +40637,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    layer.redraw();
 		};
 		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unSelectCallback,style,loadCallback,andZoom,errorCallback);
-
 		return layer;
 	    default:
 		this.handleError('Unknown map type:' + opts.entryType);
@@ -42096,8 +42135,9 @@ MapGlyph.prototype = {
 	    this.mapServerLayer.setVisibility(this.isVisible());
 	    this.mapServerLayer.isBaseLayer = false;
 	    this.mapServerLayer.visibility = this.isVisible();
-	    this.display.getMap().addLayer(this.mapServerLayer);
 	    this.mapServerLayer.canTakeOpacity = true;
+	    this.display.getMap().addLayer(this.mapServerLayer,true);
+
 	}
     },
 
@@ -42289,6 +42329,20 @@ MapGlyph.prototype = {
 	    return true;
 	});
     },
+    
+    numre : /^[\d,\.]+$/,
+    cleanupFeatureValue:function(v) {
+	if(v===null) return null;
+	if(v.value) {
+	    v = v.value;
+	}
+	let sv = String(v);
+	if(sv.trim()=="") return "";
+	if(sv.match(this.numre)) {
+	    sv = sv.replace(/,/g,'').replace(/^0+/,"");
+	}
+	return sv;
+    },
     getFeatureInfo:function() {
 	let keyInfo = [];
 	if(!this.mapLayer?.features) return keyInfo; 
@@ -42307,13 +42361,13 @@ MapGlyph.prototype = {
 		samples:[]
 	    });		
 	});
-	features.forEach(f=>{
+	features.forEach((f,fidx)=>{
 	    keyInfo.forEach(info=>{
 		let v = f.attributes[info.property];
 		if(!Utils.isDefined(v)) return;
-		let sv = String(v);
-		if(sv.trim()=="") return;
+		v = this.cleanupFeatureValue(v);
 		if(isNaN(v) || info.samples.length>0) {
+		    if(info.property=="awater") console.log("NAN:" +v);
 		    if(info.samples.length<30) {
 			info.isEnum = true;
 			if(!info.seen[v]) {
@@ -42510,6 +42564,7 @@ MapGlyph.prototype = {
 	    let ct =Utils.getColorTable(this.attrs.colorBy.colorTable,true);
 	    features.forEach((f,idx)=>{
 		let value = f.attributes[prop];
+		value = this.cleanupFeatureValue(value);
 		if(!Utils.isDefined(value)) {
 		    return;
 		}
