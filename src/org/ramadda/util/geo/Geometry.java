@@ -261,7 +261,7 @@ public class Geometry {
                         //coordStr.append(Misc.format(coord[j][i]));
                         coordStr.append(coord[j][i]);
                         if (j < numvals - 1) {
-                            coordStr.append(", ");
+                            coordStr.append(",");
                         }
                     }
                     coordStr.append("]");
@@ -277,12 +277,7 @@ public class Geometry {
                     for (String point : points) {
                         buf.append(point);
                         if (num < points.size() - 1) {
-                            buf.append(", ");
-                        }
-                        // put a newline in every fifth point or so
-                        if ((num > 0) && (num % 4 == 0)
-                                && (num < points.size() - 1)) {
-                            buf.append("\n");
+                            buf.append(",");
                         }
                         num++;
                     }
@@ -301,7 +296,7 @@ public class Geometry {
         for (String coordStr : allCoords) {
             sb.append(coordStr);
             if ((allCoords.size() > 1) && (idx < allCoords.size() - 1)) {
-                sb.append(", \n");
+                sb.append(",");
             }
             idx++;
         }
@@ -310,9 +305,7 @@ public class Geometry {
                 || geometryType.equals(TYPE_MULTIPOLYGON)) {
             StringBuilder buf = new StringBuilder();
             buf.append(JsonUtil.listOpen());
-            buf.append("\n");
             buf.append(sb.toString());
-            buf.append("\n");
             buf.append(JsonUtil.listClose());
 
             return buf.toString();
