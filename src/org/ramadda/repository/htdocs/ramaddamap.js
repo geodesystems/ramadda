@@ -543,8 +543,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 	if(this.theMap.selectorMarker) {
             this.theMap.removeMarker(this.theMap.selectorMarker);
 	}
-	this.theMap.selectorMarker = this.theMap.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
-
+//	this.theMap.selectorMarker = this.theMap.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
 
         if (this.clickListener != null) {
             this.clickListener.handleClick(this, e, lonlat.lon, lonlat.lat);
@@ -1300,17 +1299,9 @@ RepositoryMap.prototype = {
 		    style.graphicWidth*=1.5;
 		    style.graphicXOffset = -style.graphicWidth/ 2;
 		}
-
-	    } else {
-		//		    if(Utils.isDefined(feature.style.pointRadius)) {
-		//			style.pointRadius = feature.style.pointRadius;
-		//		    }
 	    }
-	    
 	}
-	//layer.drawFeature(layer.selectedFeature, "select");
 	layer.drawFeature(layer.selectedFeature, style);
-
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
             if (feature.originalStyle) {
@@ -2015,7 +2006,6 @@ RepositoryMap.prototype = {
 
         if (!out) {
             if (style && style["balloonStyle"]) {
-		console.dir("BS");
                 out = style["balloonStyle"];
                 for (let attr in p) {
                     //$[styleid/attr]
@@ -2449,7 +2439,6 @@ RepositoryMap.prototype = {
 		    if(errorCallback) {
 			errorCallback(url,e.response);
 		    } else {
-
 			console.log("An error occurred loading the map:" + url+"\n" + JSON.stringify(e.response, null, 2));
 		    }
                     return;
@@ -2545,15 +2534,14 @@ RepositoryMap.prototype = {
 
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
-        let layer = new OpenLayers.Layer.Vector(name, {
-            projection: this.displayProjection,
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.HTTP({
+	let layer = new OpenLayers.Layer.Vector(name, {
+	    projection: this.displayProjection,
+	    strategies: [new OpenLayers.Strategy.Fixed()],
+	    protocol: new OpenLayers.Protocol.HTTP({
                 url: url,
                 format: new OpenLayers.Format.GeoJSON({})
-            }),
+	    }),
         });
-
 	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },
