@@ -1187,11 +1187,11 @@ a.ramadda-menubar-button:hover {
 
 .olPopup {
     padding:5px;
-    padding-right:5px;    
-    border:1px solid #888 !important;
+    border:1px solid #aaa !important;
     border-radius:var(--default-radius);
-    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
     max-height:400px;
+    box-shadow:  8px 8px 10px 0px rgba(136,136,136, 0.75);
+    box-shadow:  6px 6px 20px 0px rgba(136,136,136, 0.75);     
 }
 
 .dataLayersDiv, .baseLayersDiv {
@@ -1210,6 +1210,11 @@ a.ramadda-menubar-button:hover {
     padding-bottom:8px !important;        
     z-index:var(--ol-popup-z-index)  !important;
     overflow-y:auto;
+}
+
+.olPopupCloseBox {
+    background: url("icons/close.gif") no-repeat !important;
+    right:0px !important;
 }
 
 .olPopupContent h3 {
