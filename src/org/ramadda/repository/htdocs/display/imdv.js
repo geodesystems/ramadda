@@ -3069,7 +3069,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  },
 				  "image.*");
 
-
+	    this.jq(ID_MAP).css('caret-color','transparent');
 
 
 	    //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"imdv-commands"]));
@@ -4597,6 +4597,7 @@ MapGlyph.prototype = {
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
 		     "isContained":true,
+		     "showRecordSelection":false,
 		     "showInnerContents":false,
 		     "entryIcon":this.attrs.icon,
 		     "title":this.attrs.name,
