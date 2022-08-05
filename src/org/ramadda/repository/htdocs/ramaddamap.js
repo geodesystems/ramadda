@@ -1539,7 +1539,7 @@ RepositoryMap.prototype = {
             layer.visibility = false;
         } else {
             layer.isBaseLayer = false;
-            layer.visibility = false;
+            layer.visibility = args.visible;
         }
 
         //If we have this here we get this error: 

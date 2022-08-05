@@ -358,6 +358,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 	    
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
+		console.log(tuple);
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
@@ -402,7 +403,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    let url = toks[2];
 		    let layer=toks[3];
 		    let opacity = toks[4];
-                    this.map.addWMSLayer(name,url,layer, false,true,{opacity:opacity});
+                    this.map.addWMSLayer(name,url,layer, false,true,{visible:true,opacity:opacity});
 		  //  "wms:ESRI Aeronautical,https://wms.chartbundle.com/mp/service,sec",
 		} else {
 		    console.log("Unknown map type:" + type)
