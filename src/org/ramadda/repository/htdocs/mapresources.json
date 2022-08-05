@@ -1,0 +1,31 @@
+[{"name":"Countries",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/get/countries.geojson?entryid=world_countries",
+  "description":"Some description",
+  "style": {
+      "strokeWidth":"1",
+      "strokeColor":"blue"
+  }
+},
+ {"name":"US States",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/US+States?entryid=us_states&output=geojson.geojson"},
+
+ {"name":"US Counties",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/US+Counties?entryid=us_counties&output=geojson.geojson"},
+ {"name":"US Congressional Districts",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/2019+Congressional+Districts?entryid=us_congress&output=geojson.geojson"},
+ {"name":"US Census Urban Areas",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/2019+Congressional+Districts?entryid=us_census_urban_areas&output=geojson.geojson"}, 
+ {"name":"EU Countries",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/get/european-union-countries.geojson?entryid=map_eu_countries"},
+
+ {"name":"American Indian Area Geography",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/2019+Congressional+Districts?entryid=american_indian_area_geography&output=geojson.geojson"}
+ 
+]
