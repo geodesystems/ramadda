@@ -496,12 +496,15 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         Element      root = toKml(fc, forMap, bounds, fieldValues);
         long         t2   = System.currentTimeMillis();
         StringBuffer sb   = new StringBuffer(XmlUtil.XML_HEADER);
-        String       xml  = XmlUtil.toString(root, false);
-        sb.append(xml);
-        IOUtil.writeFile(file, xml);
+	FileOutputStream fos = new FileOutputStream(file);
+	OutputStreamWriter osw = new OutputStreamWriter(fos);
+        XmlUtil.toString(root, osw);
+	osw.flush();
+	osw.close();
+	fos.close();
         long t3 = System.currentTimeMillis();
         //        Utils.printTimes("OutputKml time:", t1,t2,t3); 
-        Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
+        Result result = new Result(new FileInputStream(file), KmlOutputHandler.MIME_KML);
         result.setReturnFilename(returnFile);
 
         return result;
