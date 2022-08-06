@@ -2774,6 +2774,7 @@ var Utils =  {
                 popup+=item;
                 items.push(item);
             } else {
+                items.push(ct);
                 popup+=ct;
             }
         }
