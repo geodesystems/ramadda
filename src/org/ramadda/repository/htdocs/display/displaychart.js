@@ -1565,7 +1565,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 tooltip: {
                     isHtml: true,
 //		    ignoreBounds: true, 
-		    trigger: 'both' 
+		    //changed this to focus from both as when both then the tooltip
+		    //that is shown on a click stays around when the mouse over tooltip
+		    //is shown
+		    trigger: 'focus' 
                 },
             };
 
@@ -2018,6 +2021,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
             google.visualization.events.addListener(chart, 'select', function(event) {
                 _this.mapCharts(chart=>{
+//		    chart.setSelection([]);
 		    if (chart.getSelection) {
 			let selected = chart.getSelection();
 			if (selected && selected.length > 0) {
