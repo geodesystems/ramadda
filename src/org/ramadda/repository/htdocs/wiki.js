@@ -215,7 +215,6 @@ class  WikiEditor {
 		  formId:formId,
 		  hidden:hidden});
 	this.myDiv =  $("#"+this.getId());
-
 	HU.addWikiEditor(this);
 	Utils.initDragAndDrop(this.getDiv(),
 			      event=>{
@@ -721,12 +720,6 @@ class  WikiEditor {
 	if(!tagInfo) {
 	    return null;
 	}
-	let blocks = [];
-	let block = null;
-	let addBlock = (title)=> {
-	    let items = [];
-	    blocks.push(block={title:title,items:items});
-	};
 
 	let { attrs, title, display }  = this.getDisplayAttributes(tagInfo);
 	let callback =a => {
@@ -739,57 +732,12 @@ class  WikiEditor {
 	if(wikiAttrs) {
 	    attrs = Utils.mergeLists(attrs, wikiAttrs);
 	}
-
-	let itemClass = "ramadda-menu-item " + (forPopup?" ramadda-hoverable ramadda-highlightable ":"")
-	let processAttr =(tag)=>{
-	    if(tag.inline|| tag.inlineLabel) {
-		addBlock(tag.inline || tag.inlineLabel);
-		return;
-	    }
-	    if(tag.label && !tag.p) {
-		addBlock(tag.label);
-		return;
-	    }
-	    if(tag.info) {
-		block.items.push(HU.div([CLASS, itemClass], "<i>"+tag.info+"</i>"));
-		return;
-	    }
-	    if(!tag.p)  {
-		console.log("Unknown arg:" + JSON.stringify(tag));
-		return;
-	    }
-	    let label = tag.label||tag.p;
-	    let attr = "";
-	    if(Utils.isDefined(tag.ex))
-		attr=String(tag.ex);
-	    else if(Utils.isDefined(tag.d))
-		attr=String(tag.d);
-	    else
-		attr="";
-	    attr = attr.trim();
-	    if(attr.indexOf(" ")>=0) {
-		attr = '"' + attr +'"';
-	    } else if(attr =="") {
-		attr = '"' + attr +'"';
-	    }
-	    attr=" " +tag.p+"=" + attr +" ";
-	    attr  =attr.replace(/\"/g,"&quot;");
-	    if(block)
-		block.items.push(HU.div([CLASS,itemClass,TITLE,tag.tt||""], HtmlUtils.onClick("insertText('" + this.getId() +"','"+attr+"')",label)));
-	    else
-		console.log("no attribute block");
-	};
-	
 	if(!attrs) return null;
-	attrs.forEach(attr=>{
-	    processAttr(attr);
-	});
-
-
-	if(display) {
+	let blocks  = getWikiEditorMenuBlocks(attrs,forPopup,this.getId());
+//	if(display) {
 	    let ctItems =  Utils.getColorTablePopup(this, true);
 	    blocks.push({title:"Color table",items:ctItems});
-	}
+//	}
 
 
 	if(!title) {
@@ -849,7 +797,6 @@ class  WikiEditor {
 	}	
 
 
-
 	Utils.splitList(blocks,5).forEach(blocks=>{
 	    menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
 	    blocks.forEach(block=>{
@@ -886,9 +833,6 @@ class  WikiEditor {
 	if(!position) return;
 	let tagInfo = this.getTagInfo(position);
 	if(!tagInfo) return;
-
-
-
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,false, r=>{
 		this.handleMouseUp(e,r);
@@ -900,28 +844,12 @@ class  WikiEditor {
 	let display = result.display;
 //	let attrs = Utils.parseAttributes(tagInfo.attrs||"");
 	let contents = tagInfo.attrs;
-	let menu  = "";
+
 	let prefix = tagInfo.type|| tagInfo.tag;
-	blocks.forEach((block,idx)=>{
-	    if(typeof block=="string") {
-		console.log(block);
-		//TODO: this is the color tables
-		//		menu+=block;
-		return;
-	    }
-	    let title = block.title;
-	    //remove the display name from the title of the menu 
-	    if(title.toLowerCase().startsWith(prefix)) {
-		let tmp = Utils.makeLabel(title.substring(prefix.length).trim());
-		if(tmp!="") title = tmp;
-	    }
-	    if(block.items.length==0) return
-	    let sub = Utils.wrap(block.items,"<li>","");
-	    menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
-	});
 	let id = this.domId(this.ID_WIKI_MENUBAR);
-	var menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
-			     HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu));
+	let menubar = getWikiEditorMenuBar(blocks,id, prefix);
+
+
 	let width =$(window).width()-100;
 	let html = HU.div([ID,this.domId("wiki-editor-popup"),CLASS,"wiki-editor-editor"],
 			  menubar +
@@ -1488,3 +1416,84 @@ class  WikiEditor {
 
 
 
+function getWikiEditorMenuBlocks(attrs,forPopup,id) {
+    let blocks = [];
+    let block = null;
+    let addBlock = (title)=> {
+	let items = [];
+	blocks.push(block={title:title,items:items});
+    };
+    let itemClass = "ramadda-menu-item " + (forPopup?" ramadda-hoverable ramadda-highlightable ":"")
+    let processAttr =(tag)=>{
+	if(tag.inline|| tag.inlineLabel) {
+	    addBlock(tag.inline || tag.inlineLabel);
+	    return;
+	}
+	if(tag.label && !tag.p) {
+	    addBlock(tag.label);
+	    return;
+	}
+	if(tag.info) {
+	    block.items.push(HU.div([CLASS, itemClass], "<i>"+tag.info+"</i>"));
+	    return;
+	}
+	if(!tag.p)  {
+	    console.log("Unknown arg:" + JSON.stringify(tag));
+	    return;
+	}
+	let label = tag.label||tag.p;
+	let attr = "";
+	if(Utils.isDefined(tag.ex))
+	    attr=String(tag.ex);
+	else if(Utils.isDefined(tag.d))
+	    attr=String(tag.d);
+	else
+	    attr="";
+	attr = attr.trim();
+	if(attr.indexOf(" ")>=0) {
+	    attr = '"' + attr +'"';
+	} else if(attr =="") {
+	    attr = '"' + attr +'"';
+	}
+	attr=" " +tag.p+"=" + attr +" ";
+	attr  =attr.replace(/\"/g,"&quot;");
+	if(block) {
+	    if(id)
+		label = HtmlUtils.onClick("insertText('" + id +"','"+attr+"')",label);
+	    block.items.push(HU.div([CLASS,itemClass,TITLE,tag.tt||"",'data-attribute',attr], label));
+	} else {
+	    console.log("no attribute block");
+	}
+    };
+    attrs.forEach(attr=>{
+	processAttr(attr);
+    });
+
+
+
+    return blocks;
+}
+    
+function getWikiEditorMenuBar(blocks,id, prefix) {
+    let menu  = "";
+    blocks.forEach((block,idx)=>{
+	if(typeof block=="string") {
+//	    console.log(block);
+	    //TODO: this is the color tables
+	    //		menu+=block;
+	    return;
+	}
+	let title = block.title;
+	//remove the display name from the title of the menu 
+	if(prefix && title.toLowerCase().startsWith(prefix)) {
+	    let tmp = Utils.makeLabel(title.substring(prefix.length).trim());
+	    if(tmp!="") title = tmp;
+	}
+	if(block.items.length==0) return
+	let sub = Utils.wrap(block.items,"<li>","");
+	menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
+    });
+    let menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
+			 HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu));
+    return menubar;
+}
