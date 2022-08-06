@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug  5 07:34:13 MDT 2022";
+var build_date="RAMADDA build date: Sat Aug  6 09:45:58 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -17804,7 +17804,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 tooltip: {
                     isHtml: true,
 //		    ignoreBounds: true, 
-		    trigger: 'both' 
+		    //changed this to focus from both as when both then the tooltip
+		    //that is shown on a click stays around when the mouse over tooltip
+		    //is shown
+		    trigger: 'focus' 
                 },
             };
 
@@ -18257,6 +18260,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
             google.visualization.events.addListener(chart, 'select', function(event) {
                 _this.mapCharts(chart=>{
+//		    chart.setSelection([]);
 		    if (chart.getSelection) {
 			let selected = chart.getSelection();
 			if (selected && selected.length > 0) {
@@ -33111,6 +33115,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
         },
 	setErrorMessage: function(msg) {
+	    if(this.errorMessageHandler) {
+		this.errorMessageHandler(this,msg);
+		return
+	    }
 	    if(this.map)
 		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
 	    else
@@ -33294,7 +33302,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 	    
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
-		console.log(tuple);
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
@@ -38257,21 +38264,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 
 
 /**
-   Copyright 2008-2021 Geode Systems LLC
-*/
-
-/*
-7-Day eMODIS VegDRI index
-https://dmsdata.cr.usgs.gov/geoserver/quickdri_vegdri_conus_week_data/vegdri_conus_week_data/ows
-vegdri_conus_week_data
-
-7-Day eMODIS QuickDRI index
-https://dmsdata.cr.usgs.gov/geoserver/quickdri_quickdri_conus_week_data/quickdri_conus_week_data/ows
-quickdri_conus_week_data
-
-https://wms.chartbundle.com/mp/service
-sec
-
+   Copyright 2008-2022 Geode Systems LLC
 */
 
 
@@ -38946,7 +38939,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				$.extend(mapOptions,attrs);
 				delete tmpStyle.mapOptions;
 				this.clearCommands();
-				this.createMapData(mapOptions);
+				this.createData(mapOptions);
 				return;
 			    }
 
@@ -39225,7 +39218,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return line;
 	},	    
 
-	createMapData:function(mapOptions) {
+	createData:function(mapOptions) {
 	    let displayAttrs = {};
 	    let callback = text=>{
 //		console.log(text);
@@ -39283,7 +39276,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
 		    displayAttrs.pointDataUrl = pointDataUrl;
 		    let mapGlyph = this.handleNewFeature(null,null,mapOptions);
-		    mapGlyph.addMapData(displayAttrs,this.jq("andzoom").is(":checked"));
+		    mapGlyph.addData(displayAttrs,this.jq("andzoom").is(":checked"));
 		    dialog.remove();
 		});
 		this.jq(ID_CANCEL).button().click(()=>{
@@ -39713,7 +39706,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
 		for(a in displayAttrs) {
-		    attrs+=a+"="+ displayAttrs[a]+"\n";
+		    if(Utils.isDefined(displayAttrs[a])) {
+			attrs+=a+"="+ displayAttrs[a]+"\n";
+		    }
 		}
 		content.push(["Display Properties", HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60])]);
 	    } else {
@@ -40043,7 +40038,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		if(glyphType.isData()) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions);
-		    mapGlyph.addMapData(mapOptions.displayAttrs,false);
+		    mapGlyph.addData(mapOptions.displayAttrs,false);
 		    this.addGlyph(mapGlyph,true);
 		    return
 		}
@@ -40644,12 +40639,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return null;
 	    }
 	},
-
-	showProgress:function(msg) {
-	    this.clearMessage2();
-	    this.getMap().setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	    this.getMap().showLoadingImage();
-	},
 	loadMap: function(entryId) {
 	    let _this = this;
 	    //Pass in true=skipParent
@@ -40980,13 +40969,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	},
-	showMessage:function(msg)  {
+	showMessage:function(msg,clearTime)  {
 	    this.setMessage(msg)
 	    if(this.messageErase) clearTimeout(this.messageErase);
 	    this.messageErase = setTimeout(()=>{
 //		this.jq(ID_MESSAGE).hide();
 		this.setMessage("");
-	    },3000);
+	    },clearTime??3000);
+	},
+	showProgress:function(msg) {
+	    this.clearMessage2();
+	    this.getMap().setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
+	    this.getMap().showLoadingImage();
+	},
+	//Override base class method
+	setErrorMessage: function(msg) {
+	    this.showMessage(msg);
 	},
 	getCurrentLevel: function() {
 	    return this.getMap().getMap().getZoom();
@@ -41783,7 +41781,7 @@ MapGlyph.prototype = {
 		let mapGlyph = _this.display.handleNewFeature(null,style,mapOptions);
 		mapGlyph.checkMapLayer();
 	    } else if(command==GLYPH_DATA) {
-		_this.display.createMapData(mapOptions);
+		_this.display.createData(mapOptions);
 	    } else if(command==GLYPH_MULTIENTRY) {
 		let mapGlyph = _this.display.handleNewFeature(null,style,mapOptions);
 		mapGlyph.addEntries(true);
@@ -42698,7 +42696,7 @@ MapGlyph.prototype = {
 	    jqid(this.displayInfo.divId).remove();
 	    jqid(this.displayInfo.bottomDivId).remove();			
 	}
-	this.addMapData(attrs,false);
+	this.addData(attrs,false);
     },
     isVisible: function() {
 	return this.attrs.visible??true;
@@ -42839,7 +42837,7 @@ MapGlyph.prototype = {
 	}
     },
 
-    addMapData:function(displayAttrs,andZoom) {
+    addData:function(displayAttrs,andZoom) {
 	displayAttrs = displayAttrs??{};
 	displayAttrs.doInitCenter = andZoom??false;
 	this.attrs.displayAttrs = displayAttrs;
@@ -42855,7 +42853,7 @@ MapGlyph.prototype = {
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
 		     "isContained":true,
-		     "showRecordSelection":false,
+		     "showRecordSelection":true,
 		     "showInnerContents":false,
 		     "entryIcon":this.attrs.icon,
 		     "title":this.attrs.name,
@@ -42868,6 +42866,9 @@ MapGlyph.prototype = {
 		     "fileUrl":ramaddaBaseUrl+"/entry/get?entryid=" + entryId+"&fileinline=true"};
 	$.extend(attrs,displayAttrs);
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+	display.errorMessageHandler = (display,msg) =>{
+	    this.display.setErrorMessage(msg,5000);
+	};
 	this.displayInfo =   {
 	    display:display,
 	    divId:divId,
