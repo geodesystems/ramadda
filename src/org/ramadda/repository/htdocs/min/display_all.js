@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Aug  6 09:45:58 MDT 2022";
+var build_date="RAMADDA build date: Sat Aug  6 12:40:17 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38307,6 +38307,7 @@ var MAP_TYPES = ['type_map','geo_geojson','geo_gpx','geo_shapefile'];
 var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:10pt;'];
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
+    Utils.importJS(ramaddaBaseHtdocs+"/wiki.js");
     if(!MAP_RESOURCES) {
         $.getJSON(ramaddaBaseUrl+"/mapresources.json", data=>{
 	    MAP_RESOURCES_MAP={};
@@ -39667,7 +39668,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	    
 	doProperties: function(style, apply,mapGlyph) {
-
 	    let _this = this;
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
 	    let html="";
@@ -39702,7 +39702,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 60]);
 		content.push(["Properties",html]);
 	    }
+	    let blocks;
 	    if(mapGlyph&&mapGlyph.isData()) {
+		let menuAttrs  = mapGlyph?.displayInfo?.display?mapGlyph.displayInfo.display.getWikiEditorTags():null;
+		let menuBar = "";
+		if(menuAttrs) {
+		    blocks = getWikiEditorMenuBlocks(menuAttrs,true);
+		    let ctItems =  Utils.getColorTablePopup(null, true);
+		    blocks.push({title:"Color table",items:ctItems});
+//		    menuBar =getWikiEditorMenuBar(blocks,this.domId("displayattrsmenubar"));
+		    let cnt = 0
+		    let items = [];
+		    let seen = {};
+		    blocks.forEach((block,idx)=>{
+			if(typeof block=="string") {
+			    return;
+			}
+			if(block.items.length==0) return
+			if(seen[block.title]) return;
+			seen[block.title] = true;
+			items.push(HU.div(['class','ramadda-clickable','blockidx',idx], block.title));
+		    });
+		    menuBar = HU.div([],HU.b("Add:"))+HU.div(['id',this.domId('displayattrsmenubar'),'style',HU.css('margin-left','5px','max-height','200px','overflow-y','auto')], Utils.join(items,""));
+		}
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
 		for(a in displayAttrs) {
@@ -39710,7 +39732,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			attrs+=a+"="+ displayAttrs[a]+"\n";
 		    }
 		}
-		content.push(["Display Properties", HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60])]);
+		let textarea = HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		content.push(["Display Properties",     HU.hbox([textarea, menuBar])]);
+
+
 	    } else {
 		let r =  this.makeStyleForm(style,mapGlyph);
 		content.push(["Style",r.html]);
@@ -39727,6 +39752,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html  = HU.div(['style','min-width:600px',CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true});
+	    this.jq('displayattrsmenubar').find('.ramadda-clickable').click(function() {
+		let block = blocks[$(this).attr('blockidx')];
+		let sub = Utils.join(block.items,"");
+		sub = HU.div(['style','max-height:200px;overflow-y:auto;'], sub);
+		let dialog = HU.makeDialog({content:sub,anchor:$(this)});
+		let insert = line=>{
+		    if(!line) return
+		    line = line.trim()+"\n";
+		    let v = _this.jq('displayattrs').val().trim();
+		    if(v!="") v  +="\n";
+		    v =v+line;
+		    _this.jq('displayattrs').val(v);
+		};
+		dialog.find('[colortable]').click(function() {
+		    insert("colorTable="+$(this).attr('colortable'));
+		    dialog.remove();
+		});
+		dialog.find('.ramadda-menu-item').click(function() {
+		    insert($(this).attr('data-attribute'));
+		    dialog.remove();
+		});
+	    });
+
+
 	    if(mapGlyph) {
 		mapGlyph.initPropertiesComponent(dialog);
 		this.initGlyphButtons(dialog);
