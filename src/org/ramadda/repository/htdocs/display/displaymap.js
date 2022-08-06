@@ -175,6 +175,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
         },
 	setErrorMessage: function(msg) {
+	    if(this.errorMessageHandler) {
+		this.errorMessageHandler(this,msg);
+		return
+	    }
 	    if(this.map)
 		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
 	    else
@@ -358,7 +362,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 	    
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
-		console.log(tuple);
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
