@@ -3232,7 +3232,12 @@ public class TypeHandler extends RepositoryManager {
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
-        String   path     = resource.getPath();
+	String path;
+	if(entry.isFile()) {
+	    path =  getStorageManager().getEntryFile(entry).toString();
+	} else {
+	    path = entry.getResource().getPath();
+	}
         if ( !Utils.stringDefined(path)) {
             path = getTypeProperty("fixed_url", (String) null);
         }
