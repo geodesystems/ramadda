@@ -6,9 +6,12 @@
 
 var xcnt=0;
 
+var DISPLAY_COUNT=0;
+
 const displayDebug = {
     getProperty:false,
     notifyEvent:false,
+    notifyEventAll:false,
     handleEventPropertyChanged:false,
     getSelectedFields:false,
     filterData:false,
@@ -23,7 +26,8 @@ const displayDebug = {
     loadPointJson:false,
     groupBy:false,
     gridPoints:false,
-    setEntry:false
+    setEntry:false,
+    initMap:false
 
 }
 
@@ -1652,14 +1656,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         notifyEvent: function(event, source, data) { 
 	    let func = this.getEventHandler(event);
             if (func==null) {
-		if(displayDebug.notifyEvent)
+		if(displayDebug.notifyEventAll)
 		    console.log(this.type+".notifyEvent no event handler function:" + event.name  +" " + event.handler);
                 return;
             }
 	    if(displayDebug.notifyEvent)
-		console.log(this.type+".notifyEvent calling function:" + func.name);
+		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
             func.apply(this, [source, data]);
         },
+	myDisplayCount:DISPLAY_COUNT++,
+	logMsg:function(msg, time) {
+	    let label = this.getLogLabel();
+	    if(time) {
+		let dt = new Date();
+		label += dt.getMinutes()+":" + dt.getSeconds()+":"+ dt.getMilliseconds();
+	    }
+	    label+=": ";
+	    console.log(label+msg);
+	},
+	getLogLabel: function() {
+	    let label = this.type + ("#"+this.myDisplayCount);
+	    let name = this.getProperty("name");
+	    if(name) label+="[" + name+"]";
+	    return label;
+	},
 	getColorTableHorizontal: function() {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
@@ -6720,7 +6740,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         handleLog: function(message) {
 	    if(!window.location.hash  || window.location.hash!="#fortest") {
-		console.log(message);
+		this.logMsg(message);
 	    }
 	},
         handleError: function(message, exc) {
