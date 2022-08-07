@@ -15,6 +15,7 @@ package gov.noaa.esrl.psd.repository.data.model;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.util.FileInfo;
+import org.ramadda.util.FileWrapper;
 import org.ramadda.repository.harvester.HarvesterFile;
 import org.ramadda.repository.harvester.PatternHarvester;
 import org.ramadda.repository.type.TypeHandler;
@@ -105,7 +106,7 @@ public class CMIP5ModelFileHarvester extends PatternHarvester {
      * @return The entry
      */
     @Override
-    public Entry initializeNewEntry(HarvesterFile fileInfo, File originalFile,
+    public Entry initializeNewEntry(HarvesterFile fileInfo, FileWrapper originalFile,
                                     Entry entry) {
         try {
             if (entry.getTypeHandler() instanceof CMIP5ModelFileTypeHandler) {
@@ -134,7 +135,7 @@ public class CMIP5ModelFileHarvester extends PatternHarvester {
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
+    public Entry harvestFile(HarvesterFile fileInfo, FileWrapper f, Matcher matcher,Hashtable<String,Entry> entriesMap)
             throws Exception {
         if ( !f.toString().endsWith(".nc")) {
             return null;

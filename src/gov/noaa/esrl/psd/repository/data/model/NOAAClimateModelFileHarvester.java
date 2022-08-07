@@ -10,6 +10,7 @@ package gov.noaa.esrl.psd.repository.data.model;
 import java.io.File;
 import java.util.regex.Matcher;
 
+import org.ramadda.util.FileWrapper;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.harvester.HarvesterFile;
@@ -95,7 +96,7 @@ public class NOAAClimateModelFileHarvester extends PatternHarvester {
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
+    public Entry harvestFile(HarvesterFile fileInfo, FileWrapper f, Matcher matcher,Hashtable<String,Entry> entriesMap)
             throws Exception {
         if ( !f.toString().endsWith(".nc")) {
             return null;
