@@ -16,6 +16,8 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.S3File;
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.IO;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
@@ -55,6 +57,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.zip.*;
 
+import java.security.MessageDigest;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -2215,6 +2218,35 @@ public class StorageManager extends RepositoryManager implements PointFile
                 "The specified file is not under one of the allowable file system directories<br>These need to be set by the site administrator",
                 null);
         }
+    }
+
+
+    public File getEntryFile(Entry entry) throws Exception {
+	if(entry.getResource().isS3()) {
+	    //s3://noaa-cdr-cloud-properties-isccp-pds/documentation/
+	    String bucket = entry.getResource().getPath();
+	    bucket.replace("s3:/","");
+	    //	    System.err.println("BUCKET:" + bucket);
+	    MessageDigest md5 = MessageDigest.getInstance("MD5");
+	    md5.update(bucket.getBytes());
+	    String fileName = Utils.encodeMD(md5.digest());
+	    File cachedFile =     getCacheFile("s3cache",fileName);
+	    if(!cachedFile.exists()) {
+		System.err.println("from bucket:" + bucket);
+		S3File.copyFileTo(bucket,cachedFile);
+	    } else {
+		System.err.println("cached:" + fileName);
+	    }
+	    return cachedFile;
+	} else {
+	    return entry.getFile();
+	}
+
+    }
+
+
+    public boolean isLocalFileOk(FileWrapper file) {
+	return isLocalFileOk(file.getFile());
     }
 
 

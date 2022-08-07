@@ -27,6 +27,8 @@ public class Resource {
     /** _more_ */
     public static final String TYPE_FILE = "file";
 
+    public static final String TYPE_S3 = "s3";
+
     /** _more_ */
     public static final String TYPE_LOCAL_DIRECTORY = "localdirectory";
 
@@ -119,6 +121,10 @@ public class Resource {
      */
     public Resource(String path, String type) {
         this(path, type, null, -1);
+    }
+
+    public Resource(String path, String type,long fileSize) {
+	this(path,type,null,fileSize);
     }
 
 
@@ -246,6 +252,10 @@ public class Resource {
     }
 
 
+    public boolean isS3() {
+	return type.equals(TYPE_S3);
+    }
+
     /**
      * _more_
      *
@@ -261,6 +271,10 @@ public class Resource {
                 || type.equals(TYPE_REMOTE_FILE)) {
             return getTheFile().exists();
         }
+
+	if(isS3()) {
+	    return true;
+	}
 
         return false;
     }

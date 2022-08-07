@@ -4278,12 +4278,11 @@ public class EntryManager extends RepositoryManager {
                 ImageUtils.waitOnImage(image);
                 ImageUtils.writeImageToFile(image, thumb);
             }
-
             return new Result(BLANK,
                               getStorageManager().getFileInputStream(thumb),
                               mimeType);
         } else {
-            File file   = entry.getFile();
+            File file   = getStorageManager().getEntryFile(entry);
             long length = file.length();
             if (request.isHeadRequest()) {
                 Result result = new Result("", new StringBuilder());
@@ -4318,7 +4317,6 @@ public class EntryManager extends RepositoryManager {
                     byteEnd = Long.decode(toks.get(1)).longValue();
                 }
             }
-
 
             if (byteStart > 0) {
                 inputStream.skip(byteStart);
@@ -8987,6 +8985,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getTemplateEntry(File file,Hashtable<String,Entry> entriesMap) throws Exception {
         try {
+	    if(file==null) return null;
             Entry entry = getTemplateEntryInner(file, entriesMap);
 
             return entry;
