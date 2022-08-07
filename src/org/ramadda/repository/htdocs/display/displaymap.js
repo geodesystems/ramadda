@@ -793,7 +793,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    item.addClass("display-map-toc-item-on");
 	    try {
 		record.setLocation(points[0].y, points[0].x);
-		let loc =  new OpenLayers.LonLat(points[0].x, points[0].y);
+		let loc =  MapUtils.createLonLat(points[0].x, points[0].y);
 		loc = this.map.transformLLPoint(loc);
 		if(feature)
 		    feature.move(loc);
@@ -1140,7 +1140,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    entry.getChildrenEntries(entries=>{
 			entries.forEach(entry=>{
 			    if(!entry.hasLocation()) return;
-			    let lonlat = new MapUtils.createLonLat(entry.getWest(), entry.getNorth());
+			    let lonlat = MapUtils.createLonLat(entry.getWest(), entry.getNorth());
 			    let html = "<b>" + entry.getName()+"</b>";
 			    if(entry.isImage()) {
 				html+="<br>" + HU.image(entry.getImageUrl(),["width","200px"]);
@@ -1397,7 +1397,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.map) return;
 	    this.removeHighlight();
 	    if(highlight) {
-		var point = new OpenLayers.LonLat(lon,lat);
+		var point = MapUtils.createLonLat(lon,lat);
                 var attrs = {
                     pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
                     stroke: true,
@@ -1411,8 +1411,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.highlightMarker = this.map.createMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
-                    points.push(new OpenLayers.Geometry.Point(lon,0));
-		    points.push(new OpenLayers.Geometry.Point(lon,80));
+                    points.push(MapUtils.createPoint(lon,0));
+		    points.push(MapUtils.createPoint(lon,80));
                     this.highlightMarker = this.map.createPolygon(id, "highlight", points, attrs, null);
 		} else {
 		    attrs.graphicName = this.getProperty("recordHighlightShape");
@@ -1484,7 +1484,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		let loc = lat+"," + lon;
 		if(Utils.isAnonymous()) {
-                    let point= this.map.addPoint("", new OpenLayers.LonLat(lon, lat));
+                    let point= this.map.addPoint("", MapUtils.createLonLat(lon, lat));
 		    Utils.copyToClipboard(loc+"\n");
 		    console.log(loc);
 		} else  {
@@ -1494,7 +1494,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    console.log(loc+",,,,,");
 			} else {
 			    let comp = data[0];
-			    let point= this.map.addPoint("", new OpenLayers.LonLat(lon, lat),null,comp.address);
+			    let point= this.map.addPoint("", MapUtils.createLonLat(lon, lat),null,comp.address);
 			    console.log(loc+"," + comp.address+"," + comp.city +"," + comp.state +"," + comp.zip +"," + comp.country); 
 			}
 		    }).fail(err=>{
@@ -1582,7 +1582,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.lastUpdateTime = new Date();
             this.haveInitBounds = true;
 	    if(this.getProperty("doInitCenter",true)) {
-		this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
+		this.map.centerOnMarkers(MapUtils.createBounds(west, south, east,
 							       north),true);
 	    }
         },
@@ -1609,8 +1609,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             this.sourceToEntries[source.getId()] = entries;
 
-            var markers = new OpenLayers.Layer.Markers("Markers");
-            var lines = new OpenLayers.Layer.Vector("Lines", {});
+            var markers = MapUtils.creatLayerMarkers("Markers");
+            var lines =  MapUtils.createLayerVector("Lines", {});
             var north = -90,
                 west = 180,
                 south = 90,
@@ -1708,7 +1708,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
                         return;
                     }
-                    var point = new OpenLayers.LonLat(longitude, latitude);
+                    var point = MapUtils.createLonLat(longitude, latitude);
 
                     if (dflt.doCircle) {
                         attrs = {
@@ -1727,7 +1727,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (entry.polygon) {
                         var points = []
                         for (var i = 0; i < entry.polygon.length; i += 2) {
-                            points.push(new OpenLayers.Geometry.Point(entry.polygon[i + 1], entry.polygon[i]));
+                            points.push(MapUtils.createPoint(entry.polygon[i + 1], entry.polygon[i]));
                         }
                         var attrs = {
                             strokeColor: dfltPolygon.lineColor,
@@ -1881,7 +1881,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    matchedFeature.featureMatched = true;
 		    if (matchedFeature.geometry) {
 			if (maxExtent === null) {
-			    maxExtent = new OpenLayers.Bounds();
+			    maxExtent = MapUtils.createBounds();
 			}
 			maxExtent.extend(matchedFeature.geometry.getBounds());
 		    } else {
@@ -2067,7 +2067,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             matchedFeature = feature;
 			    if (feature.geometry) {
 				if (info.maxExtent === null) {
-				    info.maxExtent = new OpenLayers.Bounds();
+				    info.maxExtent = MapUtils.createBounds();
 				}
 				info.maxExtent.extend(feature.geometry.getBounds());
 			    }
@@ -2085,7 +2085,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 if (geometry.containsPoint(center)) {
 		    if (info.maxExtent === null) {
-			info.maxExtent = new OpenLayers.Bounds();
+			info.maxExtent = MapUtils.createBounds();
 		    }
 		    info.maxExtent.extend(geometry.getBounds());
                     matchedFeature = feature;
@@ -2375,7 +2375,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	createFeature:function(polygon,record, textGetter, style){
 	    if(!style) {
 		if(this.baseStyle) {
-		    this.baseStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+		    this.baseStyle = $.extend({}, MapUtils.getVectorStyle('default'));
 		    $.extend(this.baseStyle,{
 			strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
 			fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
@@ -2390,13 +2390,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let sitePoints = [];
 	    polygon.forEach(pair=>{
-		let point = new OpenLayers.Geometry.Point(pair[0],pair[1]);
+		let point = MapUtils.createPoint(pair[0],pair[1]);
 		let projPoint = this.map.transformLLPoint(point);
 		sitePoints.push(projPoint);
 	    });
-	    let linearRing = new OpenLayers.Geometry.LinearRing(sitePoints);
-	    let geometry = new OpenLayers.Geometry.Polygon([linearRing]);
-	    let polygonFeature = new OpenLayers.Feature.Vector(geometry, null, style);
+	    let linearRing = MapUtils.createLinearRing(sitePoints);
+	    let geometry = MapUtils.createPolygon([linearRing]);
+	    let polygonFeature = MapUtils.createVector(geometry, null, style);
 	    this.map.getHighlightLinesLayer().addFeatures([polygonFeature]);
 	    polygonFeature.record = record;
 	    polygonFeature.textGetter = textGetter;
@@ -2452,7 +2452,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(url!="")
 		    $.getJSON(url, data=>{this.loadTrack(record, data)}).fail(err=>{console.log("url failed:" + url +"\n" + err)});
 	    }
-	    this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+	    this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 	},
 	makeToc:function(records) {
 	    let labelField = this.getFieldById(null,this.getProperty("labelField","name"));
@@ -2487,7 +2487,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let record = records[idx];
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
-		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		    _this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 		    _this.map.setZoom(10);
 		    if(record.trackData) {
 			setTimeout(()=>{
@@ -2508,7 +2508,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    return;
 			}
 		    } 
-		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		    _this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
 		});
 	    }
 	},	    
@@ -2592,7 +2592,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.clipToView || clipRecords) {
 		    let viewbounds = this.map.getMap().calculateBounds().transform(this.map.sourceProjection, this.map.displayProjection);
 		    let tmpRecords =records.filter(r=>{
-			return viewbounds.containsLonLat(new OpenLayers.LonLat(r.getLongitude(),r.getLatitude()));
+			return viewbounds.containsLonLat(MapUtils.createLonLat(r.getLongitude(),r.getLatitude()));
 		    });
 //		    console.log("clipped records:" + tmpRecords.length);
 		    records = tmpRecords;
@@ -3040,7 +3040,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    data.push(r.getValue(htmlLayerField.getIndex()));
 		});
 		let record = recordsAtTime[0];
-		let px = this.map.getMap().getPixelFromLonLat(this.map.transformLLPoint(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude())));
+		let px = this.map.getMap().getPixelFromLonLat(this.map.transformLLPoint(MapUtils.createLonLat(record.getLongitude(),record.getLatitude())));
 		let id = this.getId() +"_sl"+ idx;
 		let hid = id +"_hover";
 		let html = 
@@ -3359,7 +3359,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let highlightHeight = this.getProperty("highlightHeight",-1);
 	    let highlightSize = null;
 	    if(highlightHeight>0) {
-	    	highlightSize = new OpenLayers.Size(highlightWidth,highlightHeight);
+	    	highlightSize = MapUtils.createSize(highlightWidth,highlightHeight);
 	    }
 
 
@@ -3399,8 +3399,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		//TODO: labels
 		let doLabels = this.getProperty("collisionLabels",false);
 		if(doLabels &!this.map.collisionLabelsLayer) {
-		    this.map.collisionLabelsLayer = new OpenLayers.Layer.Vector("Collision Labels", {
-			styleMap: new OpenLayers.StyleMap({'default':{
+		    this.map.collisionLabelsLayer = MapUtils.createLayerVector("Collision Labels", {
+			styleMap: MapUtils.createStyleMap({'default':{
                             label : "${label}"
 			}}),
                     });
@@ -3447,7 +3447,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let getPoint = (p=>{
 		    let lat = rnd(p.y);
 		    let lon = rnd(p.x);
-		    return new OpenLayers.Geometry.Point(lon,lat);
+		    return MapUtils.createPoint(lon,lat);
 		});
 		let recordInfo = {};
 		records.forEach(record=>{
@@ -3576,7 +3576,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!recordLayout) return;
 		let point  = recordLayout;
 		if(!point) {
-                    point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
+                    point = MapUtils.createPoint(record.getLongitude(), record.getLatitude());
 		} else {
 		    if(!Utils.isDefined(point.x) || !Utils.isDefined(point.y)) return;
 		}
@@ -3737,8 +3737,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         pointProps.strokeColor = attrs.strokeColor;
                         pointProps.pointRadius = dfltEndPointSize;
                         pointProps.pointRadius = endPointSize;
-                        let p1 = new OpenLayers.LonLat(lon1, lat1);
-                        let p2 = new OpenLayers.LonLat(lon2, lat2);
+                        let p1 = MapUtils.createLonLat(lon1, lat1);
+                        let p2 = MapUtils.createLonLat(lon2, lat2);
                         if (!Utils.isDefined(seen[p1])) {
                             seen[p1] = true;
 			    let pt1 =this.map.createPoint("endpt-" + i, p1, pointProps);
@@ -3758,9 +3758,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     }
 		}
-
-
-
                 //We do this because openlayers gets really slow when there are lots of features at one point
 		let key = point.x*10000 + point.y;
 		if (!seen[key]) {
@@ -3978,8 +3975,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
 	    if(!this.map.labelLayer) {
-		this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
-		    styleMap: new OpenLayers.StyleMap({'default':{
+		this.map.labelLayer = MapUtils.createLayerVector("Labels", {
+		    styleMap: MapUtils.createStyleMap({'default':{
                         label : labelTemplate,
                         fontColor: this.getProperty("labelFontColor","#000"),
                         fontSize: this.getProperty("labelFontSize","10pt"),
@@ -4029,9 +4026,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    grid[key] = true;
 		}
 		point = {x:record.getLongitude(),y:record.getLatitude()};
-                var center = new OpenLayers.Geometry.Point(point.x, point.y);
+                var center = MapUtils.createPoint(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
-                var pointFeature = new OpenLayers.Feature.Vector(center);
+                var pointFeature = MapUtils.createVector(center);
                 pointFeature.noSelect = true;
                 pointFeature.attributes = {
                 };
@@ -4136,7 +4133,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var latitude = record.getLatitude();
                 var longitude = record.getLongitude();
                 if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
-                var point = new OpenLayers.LonLat(longitude, latitude);
+                var point = MapUtils.createLonLat(longitude, latitude);
                 var marker = this.myMarkers[source];
                 if (marker != null) {
                     this.map.removeMarker(marker);

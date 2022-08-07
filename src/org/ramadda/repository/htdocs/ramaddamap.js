@@ -9,6 +9,218 @@ var getMapDebug = false;
 var ramaddaMapRegions = null;
 
 
+let RamaddaToFloat = v=>{
+    if(v!=null) v=parseFloat(v);
+    return v;
+};
+
+
+var MapUtils =  {
+    me:"MapUtils",
+    POSITIONMARKERID: "location",
+    stopEvent:function(e) {
+	OpenLayers.Event.stop(e);
+    },
+	
+    createGraticule:function(attrs) {
+	return  new OpenLayers.Control.Graticule(attrs);
+    },
+    createLinearRing:function(pts) {
+	return new OpenLayers.Geometry.LinearRing(pts);
+    },
+    createLineString:function(pts) {
+	return  new OpenLayers.Geometry.LineString(pts);
+    },
+    createPolygon:function(pts){
+	return new OpenLayers.Geometry.Polygon(pts);
+    },
+    createVector:function(geom,attrs,style) {
+        return  new OpenLayers.Feature.Vector(geom,attrs,style);
+    },
+    formatLocationValue:function(value) {
+	return number_format(value, 4);
+    },
+    getVectorStyle:function(style) {
+	return OpenLayers.Feature.Vector.style[style];
+    },
+    createStyleMap:function(attrs) {
+	return new OpenLayers.StyleMap(attrs);
+    },
+    createLonLat: function(lon, lat) {
+	return new OpenLayers.LonLat(RamaddaToFloat(lon), RamaddaToFloat(lat));
+    },
+    createPoint: function(lon, lat) {
+	return new OpenLayers.Geometry.Point(RamaddaToFloat(lon), RamaddaToFloat(lat));
+    },    
+    createBounds:function (v1, v2, v3, v4) {
+	return new OpenLayers.Bounds(RamaddaToFloat(v1), RamaddaToFloat(v2), RamaddaToFloat(v3), RamaddaToFloat(v4));
+    },
+    createPixel:function(x,y) {
+	return new OpenLayers.Pixel(x,y);
+    },
+    createSize:function(w,h) {
+	return new OpenLayers.Size(w,h);
+    },
+    createMarker:function(point,icon) {
+	return new OpenLayers.Marker(point, icon);
+    },
+    createBox:function(bounds) {
+	return new OpenLayers.Marker.Box(bounds);
+    },
+    createIcon:function(url, size, offset, calculateOffset) {
+	return new OpenLayers.Icon(url,size,offset, calculateOffset);
+    },
+    createImage:function(name,pos,size,url) {
+        return  OpenLayers.Util.createImage(name,pos,size,url);
+    },
+    createLayerGeoJson:function(map,name,url) {
+	return  MapUtils.createLayerVector(name, {
+	    projection: map.displayProjection,
+	    strategies: [new OpenLayers.Strategy.Fixed()],
+	    protocol: new OpenLayers.Protocol.HTTP({
+                url: url,
+                format: new OpenLayers.Format.GeoJSON({})
+	    }),
+        });
+    },	
+    createLayerKML:function(map,name,url) {
+	return MapUtils.createLayerVector(name, {
+            projection: map.displayProjection,
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: url,
+                format: new OpenLayers.Format.KML({
+                    extractStyles: true,
+                    extractAttributes: true,
+                    maxDepth: 2
+                })
+            }),
+        });
+    },
+    createLayerGPX:function(map,name,url) {
+	return  MapUtils.createLayerVector(name, {
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            projection: map.displayProjection,
+            protocol: new OpenLayers.Protocol.HTTP({
+                url:url,
+                format: new OpenLayers.Format.GPX({
+                    extractStyles: true,
+                    extractAttributes: true,
+                    maxDepth: 2
+                })
+	    })});
+    },
+
+    createLayerImage:function(name, url,
+			      imageBounds,
+			      size,attrs) {
+        return  new OpenLayers.Layer.Image(
+            name, url,
+            imageBounds,
+	    size,attrs);
+    },
+    createLayerWMS:function(name,url,attrs) {
+        return new OpenLayers.Layer.WMS(name, url, attrs);
+    },
+    createLayerXYZ:function(name,url,attrs) {
+        return new OpenLayers.Layer.XYZ(name, url, attrs);
+    },    
+    createLayerMarkers:function(name,attrs) {
+	return new OpenLayers.Layer.Markers(name,attrs);
+    },
+    createLayerBoxes:function(name,attrs) {
+	return new OpenLayers.Layer.Boxes(name,attrs);
+    },    
+    createLayerVector:function(name,attrs) {
+	return new OpenLayers.Layer.Vector(name,attrs);
+    },    
+    createProjection: function(name) {
+
+	return new OpenLayers.Projection(name);
+    },
+    distance: function(lat1,lon1,lat2,lon2) {
+	//From: https://www.movable-type.co.uk/scripts/latlong.html
+	const R = 6371e3; // metres
+	const o1 = lat1 * Math.PI/180; // o, l in radians
+	const o2 = lat2 * Math.PI/180;
+	const deo = (lat2-lat1) * Math.PI/180;
+	const dl = (lon2-lon1) * Math.PI/180;
+	const a = Math.sin(deo/2) * Math.sin(deo/2) +
+              Math.cos(o1) * Math.cos(o2) *
+              Math.sin(dl/2) * Math.sin(dl/2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	const d = R * c; // in metres
+	return MapUtils.metersToFeet(d);
+    },
+    metersToFeet:function(m) {
+	return 3.28084*m;
+    },
+    squareMetersToSquareFeet:function(m) {
+	return 10.7639*m;
+    } ,
+    calculateArea: function(pts) {
+	let area = 0;
+	let ConvertToRadian = (input)=>{
+	    return input * Math.PI / 180;
+	};
+	if (pts.length > 2)   {
+	    for (let i = 0; i < pts.length; i++)    {
+		let p1 = pts[i];
+		let p2 = i<pts.length-1?pts[i + 1]:pts[0];
+		area += ConvertToRadian(p2.x - p1.x) * (2 + Math.sin(ConvertToRadian(p1.y)) + Math.sin(ConvertToRadian(p2.y)));
+	    }
+	    area = area * 6378137 * 6378137 / 2;
+	    if(area<0) area = -area;
+	    area = MapUtils.squareMetersToSquareFeet(area);
+	    //	    console.log(pts.length +" " + area);
+	    return area;
+	}
+	return -1;
+    },
+    squareFeetInASquareMile: 27878400,
+    symbols:{
+	lightning : [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 0],
+	rectangle : [0, 0, 4, 0, 4, 10, 0, 10, 0, 0],
+	church: [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0],
+	_x: [0, 0, 6,6,3,3,6,0,0,6,3,3],
+	arrow: [0,0,5,10,10,0],
+	plane: [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0],
+	arrow: [4,0,-2,10,12,10,6,0,4,0,-2,10,12,10,6,0]
+    },
+    /*
+      Define new symbols
+      To make a new shape see errata.js 
+    */
+    initSymbols:function() {
+	for(a in this.symbols)  {
+	    OpenLayers.Renderer.symbol[a] = this.symbols[a];
+	}
+    }
+}
+
+MapUtils.defaults = {
+    maxLatValue: 85,
+    zoomLevels: 40,
+    defaultZoomLevel: -1,
+    maxExtent: MapUtils.createBounds(-20037508, -20037508, 20037508, 20037508),
+    sourceProjection: MapUtils.createProjection("EPSG:900913"),
+    displayProjection: MapUtils.createProjection("EPSG:4326"),
+    units: "m",
+    doSphericalMercator: true,
+    wrapDateline: true,
+    location: MapUtils.createLonLat(0, 0)
+}
+
+MapUtils.circleHiliteAttrs =  {
+    strokeColor: 'black',
+    strokeWidth: 1,
+    fill: true,
+    fillOpacity: 0.5,
+    fillColor: 'red'
+}
+
+
+
 
 var RAMADDA_MAP_LAYERS= [];
 var RAMADDA_MAP_LAYERS_MAP= {};
@@ -81,105 +293,8 @@ new MapLayer('black','','',{type:'simple'});
 new MapLayer('gray','','',{type:'simple'});
 
 
-/*
-  Define new symbols
-  To make a new shape see errata.js 
-*/
 
-OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 0];
-OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
-OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
-OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
-OpenLayers.Renderer.symbol.arrow = [0,0,5,10,10,0];
-OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0];
-OpenLayers.Renderer.symbol.arrow = [4,0,-2,10,12,10,6,0,4,0,-2,10,12,10,6,0];
-
-
-var MapUtils =  {
-    me:"MapUtils",
-    POSITIONMARKERID: "location",
-    formatLocationValue:function(value) {
-	return number_format(value, 4);
-    },
-    createLonLat: function(lon, lat) {
-	lon = parseFloat(lon);
-	lat = parseFloat(lat);
-	return new OpenLayers.LonLat(lon, lat);
-    },
-    createBounds:function (v1, v2, v3, v4) {
-	v1 = parseFloat(v1);
-	v2 = parseFloat(v2);
-	v3 = parseFloat(v3);
-	v4 = parseFloat(v4);
-	return new OpenLayers.Bounds(v1, v2, v3, v4);
-    },
-    createProjection: function(name) {
-	return new OpenLayers.Projection(name);
-    },
-    distance: function(lat1,lon1,lat2,lon2) {
-	//From: https://www.movable-type.co.uk/scripts/latlong.html
-	const R = 6371e3; // metres
-	const o1 = lat1 * Math.PI/180; // o, l in radians
-	const o2 = lat2 * Math.PI/180;
-	const deo = (lat2-lat1) * Math.PI/180;
-	const dl = (lon2-lon1) * Math.PI/180;
-	const a = Math.sin(deo/2) * Math.sin(deo/2) +
-              Math.cos(o1) * Math.cos(o2) *
-              Math.sin(dl/2) * Math.sin(dl/2);
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-	const d = R * c; // in metres
-	return MapUtils.metersToFeet(d);
-    },
-    metersToFeet:function(m) {
-	return 3.28084*m;
-    },
-    squareMetersToSquareFeet:function(m) {
-	return 10.7639*m;
-    } ,
-    calculateArea: function(pts) {
-	let area = 0;
-	let ConvertToRadian = (input)=>{
-	    return input * Math.PI / 180;
-	};
-	if (pts.length > 2)   {
-	    for (let i = 0; i < pts.length; i++)    {
-		let p1 = pts[i];
-		let p2 = i<pts.length-1?pts[i + 1]:pts[0];
-		area += ConvertToRadian(p2.x - p1.x) * (2 + Math.sin(ConvertToRadian(p1.y)) + Math.sin(ConvertToRadian(p2.y)));
-	    }
-	    area = area * 6378137 * 6378137 / 2;
-	    if(area<0) area = -area;
-	    area = MapUtils.squareMetersToSquareFeet(area);
-	    //	    console.log(pts.length +" " + area);
-	    return area;
-	}
-	return -1;
-    },
-    squareFeetInASquareMile: 27878400,
-
-
-}
-
-MapUtils.defaults = {
-    maxLatValue: 85,
-    zoomLevels: 40,
-    defaultZoomLevel: -1,
-    maxExtent: MapUtils.createBounds(-20037508, -20037508, 20037508, 20037508),
-    sourceProjection: MapUtils.createProjection("EPSG:900913"),
-    displayProjection: MapUtils.createProjection("EPSG:4326"),
-    units: "m",
-    doSphericalMercator: true,
-    wrapDateline: true,
-    location: MapUtils.createLonLat(0, 0)
-}
-
-MapUtils.circleHiliteAttrs =  {
-    strokeColor: 'black',
-    strokeWidth: 1,
-    fill: true,
-    fillOpacity: 0.5,
-    fillColor: 'red'
-}
+MapUtils.initSymbols();
 
 
 
@@ -499,8 +614,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     initialize: function(options) {
-        this.handlerOptions = OpenLayers.Util.extend({},
-						     this.defaultHandlerOptions);
+        this.handlerOptions = $.extend({}, this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
         this.handler = new OpenLayers.Handler.Click(this, {
             'click': this.trigger
@@ -835,14 +949,20 @@ RepositoryMap.prototype = {
 	if(debugBounds) {
 	    console.log("zoomToExtent:"  + bounds);
 	}
+	if(isNaN(bounds.left) ||
+	   isNaN(bounds.right) ||
+	   isNaN(bounds.top) ||
+	   isNaN(bounds.bottom)) {
+	    console.error("zoomToExtent: bounds are bad:" + bounds);
+	    return
+	}
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
+	    console.log("centered:"  + bounds);
 	    var center = bounds.getCenterLonLat();
 	    this.setCenter(center);
 	    return;
 	}
-
-
 	this.getMap().zoomToExtent(bounds,flag);
     },
     centerToMarkers: function() {
@@ -893,14 +1013,8 @@ RepositoryMap.prototype = {
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("label"), "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("toolbar"), "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
-	if(this.params.showBookmarks || true) {
-	    //		$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("bookmarks"), "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
-	}
-
-
 
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
-
 
         //register the location listeners later since the map triggers a number of
         //events at the start
@@ -925,7 +1039,7 @@ RepositoryMap.prototype = {
 
         if (this.mapHidden) {
             //A hack when we are hidden
-            this.getMap().size = new OpenLayers.Size(1, 1);
+            this.getMap().size = MapUtils.createSize(1, 1);
         }
 
 	try {
@@ -1066,7 +1180,7 @@ RepositoryMap.prototype = {
     },
     makePopup: function(projPoint, text, props) {
 	props = props||{};
-	let size  =  new OpenLayers.Size(props.width|| this.params.popupWidth||200, props.height || this.params.popupHeight||200);
+	let size  =  MapUtils.createSize(props.width|| this.params.popupWidth||200, props.height || this.params.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
 				     projPoint,
 				     size,
@@ -1100,7 +1214,7 @@ RepositoryMap.prototype = {
                     strokeWidth: 2,
                     fill: false,
 		};
-		point = _this.addPoint(id, new OpenLayers.LonLat($(this).data('longitude'), $(this).data('latitude')),
+		point = _this.addPoint(id, MapUtils.createLonLat($(this).data('longitude'), $(this).data('latitude')),
 				       attrs);
 		markerMap[id] = point;
             });
@@ -1453,7 +1567,7 @@ RepositoryMap.prototype = {
             isBaseLayer: false,
         };
         if (args)
-            OpenLayers.Util.extend(theArgs, args);
+            $.extend(theArgs, args);
 
         //Things go blooeey with lat up to 90
         if (north > 88) north = 88;
@@ -1461,10 +1575,10 @@ RepositoryMap.prototype = {
         let latLonBounds = MapUtils.createBounds(west, south, east, north);
 
         let imageBounds = this.transformLLBounds(latLonBounds);
-        let image = new OpenLayers.Layer.Image(
+        let image = MapUtils.createLayerImage(
             name, url,
             imageBounds,
-            new OpenLayers.Size(width, height), {
+            MapUtils.createSize(width, height), {
                 numZoomLevels: 3,
                 isBaseLayer: theArgs.isBaseLayer,
                 resolutions: this.getMap().layers[0] ? this.getMap().layers[0].resolutions : null,
@@ -1477,7 +1591,7 @@ RepositoryMap.prototype = {
         if (theArgs.forSelect) {
             this.selectImage = image;
         }
-        let lonlat = new MapUtils.createLonLat(west, north);
+        let lonlat = MapUtils.createLonLat(west, north);
         image.lonlat = this.transformLLPoint(lonlat);
         image.setVisibility(visible);
         image.id = layerId;
@@ -1527,7 +1641,7 @@ RepositoryMap.prototype = {
             wrapDateLine: MapUtils.defaults.wrapDateline,
         };
 	if(args.opacity) attrs.opacity=args.opacity;
-        var layer = new OpenLayers.Layer.WMS(name, url, {
+        var layer = MapUtils.createLayerWMS(name, url, {
             layers: layer,
             format: "image/png",
             isBaseLayer: false,
@@ -1551,14 +1665,14 @@ RepositoryMap.prototype = {
     addMapLayer: function(name, url, layer, isBaseLayer, isDefault) {
         var layer;
         if (/\/tile\//.exec(url)) {
-            layer = new OpenLayers.Layer.XYZ(
+            layer = MapUtils.createLayerXYZ(
                 name, url, {
                     sphericalMercator: MapUtils.defaults.doSphericalMercator,
                     numZoomLevels: MapUtils.defaults.zoomLevels,
                     wrapDateLine: MapUtils.defaults.wrapDateline
                 });
         } else {
-            layer = new OpenLayers.Layer.WMS(name, url, {
+            layer = MapUtils.createLayerWMS(name, url, {
                 layers: layer,
                 format: "image/png"
             }, {
@@ -1595,14 +1709,14 @@ RepositoryMap.prototype = {
         };
 	if (args) RamaddaUtil.inherit(props, args);
 
-        var temporaryStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["temporary"]);
+        var temporaryStyle = $.extend({}, MapUtils.getVectorStyle("temporary"));
         $.extend(temporaryStyle, {
             pointRadius: props.pointRadius,
             fillOpacity: props.fillOpacity,
             strokeWidth: props.strokeWidth,
             strokeColor: props.strokeColor,
         });
-        var selectStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["select"]);
+        var selectStyle = $.extend({}, MapUtils.getVectorStyle("select"));
         $.extend(selectStyle, {
             pointRadius: 3,
             fillOpacity: props.select_fillOpacity,
@@ -1611,7 +1725,7 @@ RepositoryMap.prototype = {
             strokeWidth: props.select_strokeWidth
         });
 
-        var defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
+        var defaultStyle = $.extend({}, MapUtils.getVectorStyle("default"));
         $.extend(defaultStyle, {
             pointRadius: props.pointRadius,
             fillOpacity: props.fillOpacity,
@@ -1622,7 +1736,7 @@ RepositoryMap.prototype = {
         });
 
 
-        let map = new OpenLayers.StyleMap({
+        let map = MapUtils.createStyleMap({
             "temporary": temporaryStyle,
             "default": defaultStyle,
             "select": selectStyle
@@ -2099,15 +2213,15 @@ RepositoryMap.prototype = {
 	this.removeLayer(layer);
     },
     removeLayer:  function(layer,skipMapRemoval) {
-	this.externalLayers = OpenLayers.Util.removeItem(this.externalLayers, layer);
-	this.allLayers = OpenLayers.Util.removeItem(this.allLayers, layer);
+	this.externalLayers = Utils.removeItem(this.externalLayers, layer);
+	this.allLayers = Utils.removeItem(this.allLayers, layer);
 	if(this.nonSelectLayers)
-	    this.nonSelectLayers = OpenLayers.Util.removeItem(this.nonSelectLayers, layer);
+	    this.nonSelectLayers = Utils.removeItem(this.nonSelectLayers, layer);
 	if(this.loadedLayers) {
-	    this.loadedLayers = OpenLayers.Util.removeItem(this.loadedLayers, layer);
+	    this.loadedLayers = Utils.removeItem(this.loadedLayers, layer);
 	}
 	if(this.imageLayersList) {
-	    this.imageLayersList = OpenLayers.Util.removeItem(this.imageLayersList, layer);
+	    this.imageLayersList = Utils.removeItem(this.imageLayersList, layer);
 	}
 	if(!skipMapRemoval)
             this.getMap().removeLayer(layer);
@@ -2127,23 +2241,6 @@ RepositoryMap.prototype = {
     addSelectCallback:  function(layer, canSelect, selectCallback, unselectCallback) {
         let _this = this;
         if (this.getCanSelect(canSelect)) {
-            /** don't add listeners here. We do it up at the main map level
-                select = new OpenLayers.Control.SelectFeature(layer, {
-                multiple: false, 
-                hover: this.selectOnHover,
-                //highlightOnly: true,
-                renderIntent: "select",
-                });
-                if (this.highlightOnHover) {
-                highlight = new OpenLayers.Control.SelectFeature(layer, {
-                multiple: false, 
-                hover: true,
-                highlightOnly: true,
-                renderIntent: "temporary"
-                });
-                }
-                //                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
-                */
             if (selectCallback == null || !Utils.isDefined(selectCallback))
                 selectCallback = function(layer,event) {
                     return _this.onFeatureSelect(layer,event)
@@ -2508,18 +2605,7 @@ RepositoryMap.prototype = {
 
     addGpxLayer: function(name, url,
 			  canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
-	let layer = new OpenLayers.Layer.Vector(name, {
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            projection: this.displayProjection,
-            protocol: new OpenLayers.Protocol.HTTP({
-                url:url,
-                format: new OpenLayers.Format.GPX({
-                    extractStyles: true,
-                    extractAttributes: true,
-                    maxDepth: 2
-                })
-	    })});
-
+	let layer = MapUtils.createLayerGPX(this,name,url);
 	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },
@@ -2532,16 +2618,8 @@ RepositoryMap.prototype = {
 	});
     },
 
-
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
-	let layer = new OpenLayers.Layer.Vector(name, {
-	    projection: this.displayProjection,
-	    strategies: [new OpenLayers.Strategy.Fixed()],
-	    protocol: new OpenLayers.Protocol.HTTP({
-                url: url,
-                format: new OpenLayers.Format.GeoJSON({})
-	    }),
-        });
+	let layer = MapUtils.createLayerGeoJson(this,name,url);
 	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },
@@ -2554,18 +2632,7 @@ RepositoryMap.prototype = {
 	    return;
 	}
 
-        let layer = new OpenLayers.Layer.Vector(name, {
-            projection: this.displayProjection,
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: url,
-                format: new OpenLayers.Format.KML({
-                    extractStyles: true,
-                    extractAttributes: true,
-                    maxDepth: 2
-                })
-            }),
-        });
+        let layer = MapUtils.createLayerKML(this,name, url);
 	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
         return layer;
     },
@@ -2602,7 +2669,7 @@ RepositoryMap.prototype = {
         };
         if (attribution)
             options.attribution = attribution;
-        return new OpenLayers.Layer.XYZ(name, url, options);
+        return MapUtils.createLayerXYZ(name, url, options);
     },
 
     addBaseLayers:  function() {
@@ -2655,13 +2722,14 @@ RepositoryMap.prototype = {
 	//	console.log(l);
 
 
-        this.graticule = new OpenLayers.Control.Graticule({
+	this.graticule = MapUtils.createGraticule({
             layerName: "Lat/Lon Lines",
 	    xautoActivate:false,
             numPoints: 2,
             labelled: true,
             visible: this.params.showLatLonLines===true
         });
+
         this.getMap().addControl(this.graticule);
     },
 
@@ -2687,7 +2755,7 @@ RepositoryMap.prototype = {
 	}
 	if (/\/tile\//.exec(mapLayer)) {
             let layerURL = mapLayer;
-            return new OpenLayers.Layer.XYZ(
+            return MapUtils.createLayerXYZ(
                 "ESRI China Map", layerURL, {
                     sphericalMercator: MapUtils.defaults.doSphericalMercator,
                     numZoomLevels: MapUtils.defaults.zoomLevels,
@@ -2745,7 +2813,7 @@ RepositoryMap.prototype = {
         let all = text == "";
         let cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
         cbxall.prop('checked', all);
-        let bounds = new OpenLayers.Bounds();
+        let bounds = MapUtils.createBounds();
         let cnt = 0;
         if (this.markers) {
             let list = this.getMarkers();
@@ -2858,20 +2926,11 @@ RepositoryMap.prototype = {
 		event.preventDefault();
 	    };
 	}
-	
-
-        /*this.getMap().addControl(new OpenLayers.Control.TouchNavigation({
-          dragPanOptions: {
-          enableKinetic: true
-          }
-          }));*/
-
 
         if (this.params.showZoomPanControl && !this.params.showZoomOnlyControl) {
             this.getMap().addControl(new OpenLayers.Control.PanZoom());
         }
         if (this.params.showZoomOnlyControl && !this.params.showZoomPanControl) {
-
             this.getMap().addControl(new OpenLayers.Control.Zoom());
         }
         if (this.params.showScaleLine) {
@@ -3099,7 +3158,7 @@ RepositoryMap.prototype = {
         let east, west, north, south;
         for (let i = 0; i < this.locationSearchResults.length; i++) {
             let result = this.locationSearchResults[i];
-            let lonlat = new MapUtils.createLonLat(result.longitude, result.latitude);
+            let lonlat = MapUtils.createLonLat(result.longitude, result.latitude);
             let icon = result.icon;
             if (!icon)
                 icon = ramaddaCdn + "/icons/green-dot.png";
@@ -3193,7 +3252,7 @@ RepositoryMap.prototype = {
                     let icon = $(this).attr("icon");
                     let offset = 0.05;
                     let bounds = _this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                    let lonlat = new MapUtils.createLonLat(lon, lat);
+                    let lonlat = MapUtils.createLonLat(lon, lat);
                     _this.removeSearchMarkers();
                     _this.searchMarkerList = [];
                     _this.searchMarkerList.push(_this.addMarker("search", lonlat, icon, "", name, 20, 20));
@@ -3224,29 +3283,8 @@ RepositoryMap.prototype = {
                         _this.showMarkerPopup(feature, true);
                     }
                 });
-                /*
-                  if (this.highlightOnHover) {
-                  this.getMap().highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
-                  multiple: false, 
-                  hover: true,
-                  highlightOnly: true,
-                  renderIntent: "temporary"
-                  });
-                  this.getMap().addControl(this.getMap().highlightSelect);
-                  this.getMap().highlightSelect.activate();   
-                  }*/
-
-                //for now
-                //this.getMap().addControl(this.getMap().featureSelect);
-                //                this.getMap().featureSelect.activate();
             } else {
 		this.getMap().featureSelect.layers.push(layer);
-		//		this.getMap().featureSelect.layers = Utils.mergeLists(tmp,this.getMap().featureSelect.layers);
-                /*
-                  if(this.getMap().highlightSelect) {
-                  this.getMap().highlightSelect.setLayer(this.vectorLayers);
-                  }
-                */
             }
         }
         this.checkLayerOrder();
@@ -3263,12 +3301,11 @@ RepositoryMap.prototype = {
     initForDrawing:  function() {
 	let _this = this;
         if (!_this.drawingLayer) {
-            this.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
+            this.drawingLayer = MapUtils.createLayerVector("Drawing");
             this.addLayer(_this.drawingLayer);
         }
         this.drawControl = new OpenLayers.Control.DrawFeature(
             _this.drawingLayer, OpenLayers.Handler.Point);
-        // _this.drawControl.activate();
         this.getMap().addControl(_this.drawControl);
     },
 
@@ -3467,7 +3504,7 @@ RepositoryMap.prototype = {
 
 
 
-        let lonlat = new MapUtils.createLonLat(lon, lat);
+        let lonlat = MapUtils.createLonLat(lon, lat);
         if (this.selectorMarker == null) {
             this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
         } else {
@@ -3522,7 +3559,7 @@ RepositoryMap.prototype = {
     ensureLonLat:function(points) {
 	if(points.length>0 && !points[0].transform) {
 	    points = points.map(point=>{
-                point = new OpenLayers.Geometry.Point(point.x,point.y);
+                point = MapUtils.createPoint(point.x,point.y);
 		return point;
 	    });
 	}
@@ -3653,16 +3690,15 @@ RepositoryMap.prototype = {
                     "done": this.notice
                 }, {
                     keyMask: OpenLayers.Handler.MOD_SHIFT,
-                    xxxboxDivClassName: "map-drag-box"
                 });
 		if(!forZoom)
                     this.box.activate();
             },
 
             notice: function(bounds) {
-                let ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                let ll = _this.getMap().getLonLatFromPixel(MapUtils.createPixel(
                     bounds.left, bounds.bottom));
-                let ur = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                let ur = _this.getMap().getLonLatFromPixel(MapUtils.createPixel(
                     bounds.right, bounds.top));
                 ll = _this.transformProjPoint(ll);
                 ur = _this.transformProjPoint(ur);
@@ -3698,7 +3734,7 @@ RepositoryMap.prototype = {
             },
 
             down: function(pt) {
-                this.firstPoint = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                this.firstPoint = _this.getMap().getLonLatFromPixel(MapUtils.createPixel(
                     pt.x, pt.y));
                 this.firstPoint = _this.transformProjPoint(this.firstPoint);
                 _this.findSelectionFields();
@@ -3747,7 +3783,7 @@ RepositoryMap.prototype = {
                 }
             },
             move: function(pt) {
-                let ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
+                let ll = _this.getMap().getLonLatFromPixel(MapUtils.createPixel(pt.x, pt.y));
                 ll = _this.transformProjPoint(ll);
                 dx = ll.lon - this.firstPoint.lon;
                 dy = ll.lat - this.firstPoint.lat;
@@ -3974,13 +4010,11 @@ RepositoryMap.prototype = {
             this.loadingImage.style.visibility = "visible";
             return;
         }
-        let sz = new OpenLayers.Size();
-        sz.h = 120;
-        sz.w = 120;
+        let sz = MapUtils.createSize(120,120);
         let width = this.getMap().viewPortDiv.offsetWidth;
         let height = this.getMap().viewPortDiv.offsetHeight;
-        let position = new OpenLayers.Pixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
-        this.loadingImage = OpenLayers.Util.createImage("loadingimage",
+        let position = MapUtils.createPixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
+        this.loadingImage = MapUtils.createImage("loadingimage",
 							position,
 							sz,
 							ramaddaCdn + '/icons/mapprogress.gif');
@@ -4010,7 +4044,7 @@ RepositoryMap.prototype = {
                 geometry = features[i].geometry;
                 if (geometry) {
                     if (maxExtent === null) {
-                        maxExtent = new OpenLayers.Bounds();
+                        maxExtent = MapUtils.createBounds();
                     }
                     maxExtent.extend(geometry.getBounds());
                 }
@@ -4108,7 +4142,7 @@ RepositoryMap.prototype = {
         if (xoffset == null) xoffset = 0;
         if (yoffset == null) yoffset = 0;
         if (!this.markers) {
-            this.markers = new OpenLayers.Layer.Vector("Markers");
+            this.markers = MapUtils.createLayerVector("Markers");
             this.addVectorLayer(this.markers, canSelect);
         }
         if (!iconUrl) {
@@ -4116,16 +4150,16 @@ RepositoryMap.prototype = {
         }
 
 
-        let sz = new OpenLayers.Size(width,height);
+        let sz = MapUtils.createSize(width,height);
         let calculateOffset = function(width) {
-            let offset = new OpenLayers.Pixel(-(size.w / 2)-xoffset, -(size.h / 2) - yoffset);
+            let offset = MapUtils.createPixel(-(size.w / 2)-xoffset, -(size.h / 2) - yoffset);
 	    return offset;
         };
 
-        let icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
+        let icon = MapUtils.createIcon(iconUrl, sz, null, calculateOffset);
         let projPoint = this.transformLLPoint(location);
-        let marker = new OpenLayers.Marker(projPoint, icon);
-	let pt = new OpenLayers.Geometry.Point(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
+        let marker = MapUtils.createMarker(projPoint, icon);
+	let pt = MapUtils.createPoint(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
 	let style = {
             externalGraphic: iconUrl,
 	    //                graphicHeight: size,
@@ -4138,12 +4172,7 @@ RepositoryMap.prototype = {
 	if(Utils.isDefined(attrs.rotation)) {
 	    style.rotation = attrs.rotation;
 	}
-        let feature = new OpenLayers.Feature.Vector(
-            pt,
-	    {
-                description: ''
-            }, style);
-
+        let feature = MapUtils.createVector(pt, {description: ''}, style);
         feature.ramaddaId = id;
         feature.parentId = parentId;
         feature.text = this.getPopupText(text, feature);
@@ -4171,7 +4200,7 @@ RepositoryMap.prototype = {
             if (marker.ramaddaClickHandler != null) {
                 marker.ramaddaClickHandler.call(null, marker);
             }
-            OpenLayers.Event.stop(evt);
+            MapUtils.stopEvent(evt);
         };
 
         marker.events.register('click', marker, clickFunc);
@@ -4195,7 +4224,7 @@ RepositoryMap.prototype = {
 	    let [lat,lon,text] = marker.split(",");
 	    props.lat = lat;props.lon = lon; props.text = text;
 	}
-	let point = new OpenLayers.LonLat(parseFloat(props.lon), parseFloat(props.lat));
+	let point = MapUtils.createLonLat(parseFloat(props.lon), parseFloat(props.lat));
 	if(props.size==null || props.size=="") props.size=16;
 	let type = props.type || "icon"
 	let attrs = props;
@@ -4271,8 +4300,8 @@ RepositoryMap.prototype = {
 		lat2=lon2;
 		lon2=tmp;
 	    }
-	    p.push(new OpenLayers.Geometry.Point(lon1,lat1));
-	    p.push(new OpenLayers.Geometry.Point(lon2,lat2));
+	    p.push(MapUtils.createPoint(lon1,lat1));
+	    p.push(MapUtils.createPoint(lon2,lat2));
 	}
 	let polys = [];
 	//	console.log("p:" + p);
@@ -4290,7 +4319,7 @@ RepositoryMap.prototype = {
 
     addMarkers:  function(markers) {
         if (!this.markers) {
-            this.markers = new OpenLayers.Layer.Vector("Markers");
+            this.markers = MapUtils.createLayerVector("Markers");
             this.addVectorLayer(this.markers, true);
         }
         this.markers.addFeatures(markers);
@@ -4305,10 +4334,6 @@ RepositoryMap.prototype = {
         theBoxes.getFeatureFromEvent = function(evt) {
             return null;
         };
-	//Don't do this as the box select hides the marker select
-	//        let sf = new OpenLayers.Control.SelectFeature(theBoxes);
-	//        this.getMap().addControl(sf);
-	//        sf.activate();
     },
 
     removeBox:  function(box) {
@@ -4320,7 +4345,7 @@ RepositoryMap.prototype = {
 
     addBox:  function(box) {
         if (!this.boxes) {
-            this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
+            this.boxes = MapUtils.createLayerBoxes("Boxes", {
                 wrapDateLine: MapUtils.defaults.wrapDateline,
             });
             if (!this.getMap()) {
@@ -4352,18 +4377,18 @@ RepositoryMap.prototype = {
         let bounds = MapUtils.createBounds(west, Math.max(south, -MapUtils.defaults.maxLatValue),
 					   east, Math.min(north, MapUtils.defaults.maxLatValue));
         let projBounds = this.transformLLBounds(bounds);
-        box = new OpenLayers.Marker.Box(projBounds);
+        box = MapUtils.createBox(projBounds);
         box.sticky = args.sticky;
         let _this = this;
 
         if (args["selectable"]) {
             box.events.register("click", box, function(e) {
                 _this.showMarkerPopup(box, true);
-                OpenLayers.Event.stop(e);
+		MapUtils.stopEvent(e);
             });
         }
 
-        let lonlat = new MapUtils.createLonLat(west, north);
+        let lonlat = MapUtils.createLonLat(west, north);
         box.lonlat = this.transformLLPoint(lonlat);
         box.text = this.getPopupText(text);
         box.name = name;
@@ -4447,13 +4472,13 @@ RepositoryMap.prototype = {
         //Check if we have a LonLat instead of a Point
         let location = point;
         if (typeof point.x === 'undefined') {
-            point = new OpenLayers.Geometry.Point(point.lon, point.lat);
+            point = MapUtils.createPoint(point.lon, point.lat);
         } else {
             location = MapUtils.createLonLat(point.x, point.y);
         }
 
 	if(!this.basePointStyle) {
-	    this.basePointStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+	    this.basePointStyle = $.extend({}, MapUtils.getVectorStyle('default'));
             $.extend(this.basePointStyle, {
 		pointRadius: 5,
 		stroke: true,
@@ -4480,11 +4505,11 @@ RepositoryMap.prototype = {
 
 
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
-        let center = new OpenLayers.Geometry.Point(point.x, point.y);
+        let center = MapUtils.createPoint(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
 
 
-        let feature = new OpenLayers.Feature.Vector(center, null, cstyle);
+        let feature = MapUtils.createVector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;
 	if(text)
@@ -4507,7 +4532,7 @@ RepositoryMap.prototype = {
     },
     getMarkersLayer:  function() {
         if (this.circles == null) {
-            this.circles = new OpenLayers.Layer.Vector("Shapes");
+            this.circles = MapUtils.createLayerVector("Shapes");
 	    this.circles.layerName = "circles";
             this.circles.setZIndex(1);
             this.addVectorLayer(this.circles);
@@ -4523,27 +4548,27 @@ RepositoryMap.prototype = {
 
 
     addRectangle:  function(id, north, west, south, east, attrs, info) {
-        let points = [new OpenLayers.Geometry.Point(west, north),
-		      new OpenLayers.Geometry.Point(west, south),
-		      new OpenLayers.Geometry.Point(east, south),
-		      new OpenLayers.Geometry.Point(east, north),
-		      new OpenLayers.Geometry.Point(west, north)
+        let points = [MapUtils.createPoint(west, north),
+		      MapUtils.createPoint(west, south),
+		      MapUtils.createPoint(east, south),
+		      MapUtils.createPoint(east, north),
+		      MapUtils.createPoint(west, north)
 		     ];
         return this.addPolygon(id, "", points, attrs, info);
     },
 
 
     createLine:  function(id, name, lat1, lon1, lat2, lon2, attrs, info) {
-        let points = [new OpenLayers.Geometry.Point(lon1, lat1),
-		      new OpenLayers.Geometry.Point(lon2, lat2)
+        let points = [MapUtils.createPoint(lon1, lat1),
+		      MapUtils.createPoint(lon2, lat2)
 		     ];
         return this.createPolygon(id, name, points, attrs, info);
     },
 
 
     addLine:  function(id, name, lat1, lon1, lat2, lon2, attrs, info,justCreate) {
-        let points = [new OpenLayers.Geometry.Point(lon1, lat1),
-		      new OpenLayers.Geometry.Point(lon2, lat2)
+        let points = [MapUtils.createPoint(lon1, lat1),
+		      MapUtils.createPoint(lon2, lat2)
 		     ];
         return this.addPolygon(id, name, points, attrs, info,justCreate);
     },
@@ -4559,7 +4584,7 @@ RepositoryMap.prototype = {
 
         let points = [];
         for (let i = 0; i < values.length; i += 2) {
-            points.push(new OpenLayers.Geometry.Point(values[i + 1], values[i]));
+            points.push(MapUtils.createPoint(values[i + 1], values[i]));
         }
         return this.addPolygon(id, name, points, attrs, info,false,true);
     },
@@ -4576,16 +4601,15 @@ RepositoryMap.prototype = {
         let _this = this;
         let location;
         if (points.length > 1) {
-            location = new OpenLayers.LonLat(points[0].x + (points[1].x - points[0].x) / 2,
+            location = MapUtils.createLonLat(points[0].x + (points[1].x - points[0].x) / 2,
 					     points[0].y + (points[1].y - points[0].y) / 2);
         } else if(points.length>0) {
-            location = new OpenLayers.LonLat(points[0].x, points[0].y);
+            location = MapUtils.createLonLat(points[0].x, points[0].y);
         }
 
 	points = this.transformPoints(points);
-        let base_style = OpenLayers.Util.extend({},
-						OpenLayers.Feature.Vector.style['default']);
-        let style = OpenLayers.Util.extend({}, base_style);
+        let base_style = $.extend({}, MapUtils.getVectorStyle('default'));
+        let style = $.extend({}, base_style);
         if (attrs) {
             for (let key in attrs) {
                 style[key] = attrs[key];
@@ -4596,14 +4620,13 @@ RepositoryMap.prototype = {
 	//for now create a polygon not a linestring
 	let geom;
 	if(makeLineString) {
-	    geom = new OpenLayers.Geometry.LineString(points);
+	    geom = MapUtils.createLineString(points);
 	} else {
-            let linearRing = new OpenLayers.Geometry.LinearRing(points);
-	    geom = new OpenLayers.Geometry.Polygon(linearRing);
+	    geom = MapUtils.createPolygon(MapUtils.createLinearRing(points));
 	}
 
 
-        let line = new OpenLayers.Feature.Vector(geom,null,style);
+        let line = MapUtils.createVector(geom,null,style);
 	if(!marker) marker = name;
         line.text = marker;
         line.ramaddaId = id;
@@ -4627,9 +4650,8 @@ RepositoryMap.prototype = {
 
     getLinesLayer: function() {
         if (!this.lines) {
-            let base_style = OpenLayers.Util.extend({},
-						    OpenLayers.Feature.Vector.style['default']);
-            this.lines = new OpenLayers.Layer.Vector("Lines", {
+            let base_style = $.extend({}, MapUtils.getVectorStyle('default'));
+            this.lines = MapUtils.createLayerVector("Lines", {
                 style: base_style
             });
             this.addVectorLayer(this.lines);
@@ -4638,9 +4660,10 @@ RepositoryMap.prototype = {
 	return this.lines;
     },
     centerOnFeatures: function(features) {
-	let bounds = new OpenLayers.Bounds();
+	let bounds = MapUtils.createBounds();
 	features.forEach(feature=>{
-	    bounds.extend(feature.geometry.getBounds());
+	    let fb = feature.geometry.getBounds();
+	    bounds.extend(fb);
 	});
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
@@ -4653,9 +4676,8 @@ RepositoryMap.prototype = {
     },
     getHighlightLinesLayer: function() {
         if (!this.highlightlines) {
-            let base_style = OpenLayers.Util.extend({},
-						    OpenLayers.Feature.Vector.style['default']);
-            this.highlightlines = new OpenLayers.Layer.Vector("Highlight Lines", {
+            let base_style = $.extend({},  MapUtils.getVectorStyle('default'));
+            this.highlightlines = MapUtils.createLayerVector("Highlight Lines", {
                 style: base_style
             });
             this.addVectorLayer(this.highlightlines);
@@ -4830,7 +4852,7 @@ RepositoryMap.prototype = {
 	}
         let popup = this.makePopup( projPoint,markerText,props);
         if (inputProps.minSizeX) {
-            popup.minSize = new OpenLayers.Size(inputProps.minSizeX, inputProps.minSizeY);
+            popup.minSize = MapUtils.createSize(inputProps.minSizeX, inputProps.minSizeY);
         }
 
 
@@ -4918,13 +4940,12 @@ RepositoryMap.prototype = {
         }
     },    
     createFeatureLayer: function(name, canSelect,style,opts) {
-        let base_style = OpenLayers.Util.extend({},
-						OpenLayers.Feature.Vector.style['default']);
+        let base_style = $.extend({},MapUtils.getVectorStyle('default'));
 	if(style)
 	    $.extend(base_style,style);
 	opts = opts||{};
 	opts.style = base_style;
-        let layer =  new OpenLayers.Layer.Vector(name||"Markers", opts);
+        let layer =  MapUtils.createLayerVector(name||"Markers", opts);
 
 	this.externalLayers.push(layer);
         this.addVectorLayer(layer,canSelect);
