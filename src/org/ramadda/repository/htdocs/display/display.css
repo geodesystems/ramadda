@@ -2870,7 +2870,9 @@ table.dataTable tfoot td {
 
 
 .imdv-legend {
+    xwidth:200px;
     min-width:200px;
+    max-width:200px;    
     max-height:400px;
     overflow-y:auto;
 }

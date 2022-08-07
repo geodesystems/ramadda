@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Aug  6 12:40:17 MDT 2022";
+var build_date="RAMADDA build date: Sat Aug  6 23:24:39 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3051,9 +3051,12 @@ Glyph.prototype = {
 
 var xcnt=0;
 
+var DISPLAY_COUNT=0;
+
 const displayDebug = {
     getProperty:false,
     notifyEvent:false,
+    notifyEventAll:false,
     handleEventPropertyChanged:false,
     getSelectedFields:false,
     filterData:false,
@@ -3068,7 +3071,8 @@ const displayDebug = {
     loadPointJson:false,
     groupBy:false,
     gridPoints:false,
-    setEntry:false
+    setEntry:false,
+    initMap:false
 
 }
 
@@ -4697,14 +4701,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         notifyEvent: function(event, source, data) { 
 	    let func = this.getEventHandler(event);
             if (func==null) {
-		if(displayDebug.notifyEvent)
+		if(displayDebug.notifyEventAll)
 		    console.log(this.type+".notifyEvent no event handler function:" + event.name  +" " + event.handler);
                 return;
             }
 	    if(displayDebug.notifyEvent)
-		console.log(this.type+".notifyEvent calling function:" + func.name);
+		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
             func.apply(this, [source, data]);
         },
+	myDisplayCount:DISPLAY_COUNT++,
+	logMsg:function(msg, time) {
+	    let label = this.getLogLabel();
+	    if(time) {
+		let dt = new Date();
+		label += dt.getMinutes()+":" + dt.getSeconds()+":"+ dt.getMilliseconds();
+	    }
+	    label+=": ";
+	    console.log(label+msg);
+	},
+	getLogLabel: function() {
+	    let label = this.type + ("#"+this.myDisplayCount);
+	    let name = this.getProperty("name");
+	    if(name) label+="[" + name+"]";
+	    return label;
+	},
 	getColorTableHorizontal: function() {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
@@ -9765,7 +9785,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         handleLog: function(message) {
 	    if(!window.location.hash  || window.location.hash!="#fortest") {
-		console.log(message);
+		this.logMsg(message);
 	    }
 	},
         handleError: function(message, exc) {
@@ -12488,7 +12508,7 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-	    display.handleLog("display:" + display.type+" data:" + url);
+	    display.handleLog("data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
@@ -33071,6 +33091,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     displayDefineMembers(this, myProps, {
         mapBoundsSet: false,
         initDisplay: function() {
+//	    if(displayDebug.initMap) console.log(this.getLogLabel()+".initDisplay");
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
 		$( document ).ready(()=> {
@@ -33108,10 +33129,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.map.setMapDiv(this.domId(ID_MAP));
             }
             if (!this.haveCalledUpdateUI) {
+//		if(displayDebug.initMap)  console.log(this.getLogLabel()+" have not calledUpdateUI. setting up callback");
                 var callback = function() {
+		    _this.updateUICallback = null;
                     _this.updateUI();
                 }
-                setTimeout(callback, 1);
+                this.updateUICallback = setTimeout(callback, 1);
             }
         },
 	setErrorMessage: function(msg) {
@@ -33992,33 +34015,46 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
 
             this.map.getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
-                _this.mapBoundsChanged();
-		_this.checkHeatmapReload();
-		_this.updateHtmlLayers();
-		if(!this.haveAddPoints) return;
+		if(this.callingUpdateUI) return;
+		if(this.lastUpdateTime) {
+		    let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
+		    if(diff<2000) {
+			return
+		    }
+		}
+//		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
+                this.mapBoundsChanged();
+		this.checkHeatmapReload();
+		this.updateHtmlLayers();
+		if(!this.haveAddPoints) {
+		    return;
+		}
+
 		if(this.getHandleCollisions()) {
 		    if(this.lastZoom == this.map.getZoom()) {
 			return;
 		    }
-
 		    //Wait a bit
 		    if(this.lastCollisionTimeout) {
 			clearTimeout(this.lastCollisionTimeout);
 		    }
 
+//		    console.log(this.getLogLabel()+" setting up collision timeout");
 		    this.lastTimeout = setTimeout(()=>{
 			this.haveCalledUpdateUI = false;
+//			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
 			this.updateUI();
 			this.lastCollisionTimeout = null;
 		    },1000);
 		}
+//		console.log(this.getLogLabel()+" finished zoomend");
             });
 	    this.createTime = new Date();
 
             this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
-		if(_this.map.doingPopup) return;
-                _this.mapBoundsChanged();
-		_this.checkHeatmapReload();
+		if(this.map.doingPopup) return;
+                this.mapBoundsChanged();
+		this.checkHeatmapReload();
             });
 
 	    
@@ -34503,6 +34539,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         setInitMapBounds: function(north, west, south, east) {
             if (!this.map) return;
             if (this.haveInitBounds) return;
+	    this.lastUpdateTime = new Date();
             this.haveInitBounds = true;
 	    if(this.getProperty("doInitCenter",true)) {
 		this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
@@ -35437,9 +35474,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},	    
 
         updateUI: function(args) {
-	    if(debugit && ycnt!=this.myycnt)
-		console.trace("updateUI",this.myName);
-
 	    if(!args) args={};
 	    let debug = false;
 	    this.lastUpdateTime = null;
@@ -35449,6 +35483,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug) console.log("map.updateUI have called:" + this.haveCalledUI +" ready:" + this.getDisplayReady() +" has data:" + this.hasData() +" showData:" +this.getProperty("showData", true));
                 return;
             }
+	    if(this.updateUICallback) {
+		clearTimeout(this.updateUICallback);
+		this.updateUICallback = null;
+	    }
             let pointData = this.getPointData();
 	    this.lastZoom = this.map?this.map.getZoom():null;
 
@@ -35480,25 +35518,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.updatingFromClip = false;
 
-	    setTimeout(()=>{
+//	    setTimeout(()=>{
 		try {
+		    if(displayDebug.initMap) this.logMsg("calling updateUIInner",true);
+		    this.callingUpdateUI = true;
 		    this.updateUIInner(args, pointData, records,debug);
+		    this.callingUpdateUI = false;
+		    if(displayDebug.initMap) this.logMsg("done calling updateUIInner",true);
 		    if(args.callback)args.callback(records);
 		    this.clearProgress();
 		    if(!this.layerVisible) {
-			setTimeout(()=>{
-			    this.setVisible(false);},50);
+			setTimeout(()=>{this.setVisible(false);},50);
 		    }
 		} catch(exc) {
+		    this.callingUpdateUI = false;
 		    console.log(exc)
 		    console.log(exc.stack);
 		    this.setMessage("Error:" + exc);
 		}
 		this.setIsFinished();
-	    });
-
-
-
+//	    });
 	},
 	filterDataPhase2:function(records) {
 	    records = SUPER.filterDataPhase2.call(this,records);
@@ -39751,7 +39790,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=buttons;
 	    html  = HU.div(['style','min-width:600px',CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
-	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true});
+	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true});
 	    this.jq('displayattrsmenubar').find('.ramadda-clickable').click(function() {
 		let block = blocks[$(this).attr('blockidx')];
 		let sub = Utils.join(block.items,"");
@@ -39837,18 +39876,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 
-
+	    let applying =false;
+	    let myApply = (andClose)=>{
+		if(applying) return;
+		applying = true;
+		console.log("apply-1");
+		apply(mapGlyph,props);
+		_this.addFeatureList();
+		console.log("apply-3");
+		if(andClose)  close();
+		applying = false;
+	    };
 	    dialog.find('.display-button').button().click(function() {
 		let command = $(this).attr("command");
 		switch(command) {
 		case ID_OK: 
-		    apply(mapGlyph,props);
-		    _this.addFeatureList();
-		    close();
+		    myApply(true);
 		    break;
 		case ID_APPLY:
-		    apply(mapGlyph,props);
-		    _this.addFeatureList();
+		    myApply();
 		    break;
 		case ID_CANCEL:
 		    close();
@@ -41075,11 +41121,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let clazz = "";
 		if(!mapGlyph.getVisible()) clazz+=' imdv-legend-label-invisible ';
 		html+=HU.open('div',['class','imdv-legend-item '+(idx==glyphs.length-1?'imdv-legend-item-last':'')+clazz]);
-
 		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
 			       HU.tr([],
-				     HU.td(['width','5%','style','padding-right:1px;'],block.header) +
-				     HU.td([],label)));				     
+				     HU.td(['width','10px','style','xpadding-right:1px;'],block.header) +
+				     HU.td([],label[0]) +
+				     HU.td(['width','20px'],label[1])
+));				     
+//		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
+//			       HU.tr([],
+//				     HU.td(['width','10px','style','xpadding-right:1px;'],block.header) +
+//				     HU.td([],label)));				     
 		html+=HU.div(['style','background:#fff;'],block.body);
 		html+=HU.close('div');
 	    });
@@ -41117,7 +41168,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    this.initGlyphButtons(this.jq(ID_LEGEND));
 	    items.each(function() {
-		$(this).attr('title','Click to toggle visibility');
+//		$(this).attr('title','Click to toggle visibility');
 	    });
 
 	    items.tooltip({
@@ -41939,20 +41990,22 @@ MapGlyph.prototype = {
     getEntryId: function() {
 	return this.attrs.entryId;
     },
-    getLabel:function(forLegend,addDecorator,extraClass) {
+    getLabel:function(forLegend,addDecorator) {
 	let name = this.getName();
 	let label;
+	let theLabel;
 	if(Utils.stringDefined(name)) {
 	    if(!forLegend)
-		label= this.getType()+": "+name;
+		theLabel= this.getType()+": "+name;
 	    else
-		label = name;
+		theLabel = name;
 	} else if(this.isFixed()) {
-	    label = this.style.text;
-	    if(label && label.length>15) label = label.substring(0,14)+"..."
+	    theLabel = this.style.text;
+	    if(theLabel && theLabel.length>15) theLabel = theLabel.substring(0,14)+"..."
 	} else {
-	    label =  this.getType();
+	    theLabel =  this.getType();
 	}
+	label = theLabel;
 	let url = null;
 	if(this.attrs.entryId) {
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
@@ -41960,14 +42013,9 @@ MapGlyph.prototype = {
 		label = HU.href(url, label,['target','_entry','title','View Entry']);
 	}
 	let glyphType = this.display.getGlyphType(this.getType());
-
-//	label = HU.span(,label);
 	let right = "";
 	if(addDecorator) {
 	    right+=this.getDecoration(true);
-	    if(GLYPH_TYPES_LINES.includes(this.getType())) {
-//		right+=this.display.getDecoration(this.style);
-	    }
 	}
 
 	if(glyphType) {
@@ -41984,21 +42032,19 @@ MapGlyph.prototype = {
 
 			    HU.getIconImage("fas fa-binoculars",[],LEGEND_IMAGE_ATTRS));
 	    }
-
-	    label = icon +" " + label;
+	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
 	}
 	if(forLegend) {
-	    label = HU.div(['style',HU.css('margin-right','5px','max-width','200px','overflow-x','hidden','white-space','nowrap')], label);
+	    label = HU.div(['title',HU.b(theLabel)+'<br>Click to toggle visibility','style',HU.css('margin-right','0px','max-width','150px','overflow-x','hidden','white-space','nowrap')], label);	    
 	}
 	if(right!="") {
 	    right= HU.span(['style',HU.css('white-space','nowrap')], right);
-	    label=HU.leftRightTable(label,right);
+//	    label=HU.leftRightTable(label,right);
 	}
 	if(forLegend) {
 	    let clazz = 'imdv-legend-label';
-	    if(extraClass) clazz+=' ' + extraClass;
-//	    if(!this.getVisible()) clazz+=' imdv-legend-label-invisible ';
 	    label = HU.div(['class','ramadda-clickable ' + clazz,'glyphid',this.getId()],label);
+	    return [label,right];
 	}
 	return label;
     },
@@ -42914,7 +42960,10 @@ MapGlyph.prototype = {
 		     "data":pointData,
 		     "fileUrl":ramaddaBaseUrl+"/entry/get?entryid=" + entryId+"&fileinline=true"};
 	$.extend(attrs,displayAttrs);
+	attrs = $.extend({},attrs);
+	attrs.name=this.getName();
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+
 	display.errorMessageHandler = (display,msg) =>{
 	    this.display.setErrorMessage(msg,5000);
 	};
