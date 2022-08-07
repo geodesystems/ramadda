@@ -7,6 +7,7 @@ package org.ramadda.repository.harvester;
 
 
 import org.ramadda.util.FileInfo;
+import org.ramadda.util.FileWrapper;
 
 
 import org.ramadda.util.HtmlUtils;
@@ -33,7 +34,7 @@ import java.util.regex.*;
 public class HarvesterFile extends FileInfo {
 
     /** _more_ */
-    private File rootDir;
+    private FileWrapper rootDir;
 
 
     /** _more_ */
@@ -44,10 +45,22 @@ public class HarvesterFile extends FileInfo {
      *
      * @param f the file
      */
-    public HarvesterFile(File f) {
+    public HarvesterFile(FileWrapper f) {
         super(f);
 
     }
+
+    /**
+     
+     *
+     * @param f _more_
+     * @param rootDir _more_
+     * @param isDir _more_
+     */
+    public HarvesterFile(File f, File rootDir, boolean isDir) {
+        this(new FileWrapper.File(f), new FileWrapper.File(rootDir), isDir);
+    }
+
 
     /**
      * ctor
@@ -56,7 +69,7 @@ public class HarvesterFile extends FileInfo {
      * @param rootDir _more_
      * @param isDir is file a directory
      */
-    public HarvesterFile(File f, File rootDir, boolean isDir) {
+    public HarvesterFile(FileWrapper f, FileWrapper rootDir, boolean isDir) {
         super(f, isDir);
         this.rootDir = rootDir;
     }
@@ -115,10 +128,11 @@ public class HarvesterFile extends FileInfo {
      *
      * @throws Exception _more_
      */
-    public static boolean okToRecurse(File dir, Harvester harvester)
+    public static boolean okToRecurse(FileWrapper dir, Harvester harvester)
             throws Exception {
         //check for a ramadda.properties file. 
-        File propFile = new File(IOUtil.joinDir(dir, "ramadda.properties"));
+        File propFile = new File(IOUtil.joinDir(dir.toString(),
+                            "ramadda.properties"));
         if (propFile.exists()) {
             harvester.logHarvesterInfo("Checking properties file:"
                                        + propFile);
@@ -144,7 +158,7 @@ public class HarvesterFile extends FileInfo {
      *
      * @return _more_
      */
-    public File getRootDir() {
+    public FileWrapper getRootDir() {
         return rootDir;
     }
 
@@ -156,17 +170,18 @@ public class HarvesterFile extends FileInfo {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        File rootDir = new File(".");
+        FileWrapper.File rootDir = new FileWrapper.File(".");
         if ( !rootDir.exists()) {
-            rootDir = new File("");
+            rootDir = new FileWrapper.File("");
         }
         if (args.length > 0) {
-            rootDir = new File(args[0]);
+            rootDir = new FileWrapper.File(args[0]);
         }
-        final List<FileInfo> dirs       = new ArrayList();
-        final int[]          cnt        = { 0 };
-        IOUtil.FileViewer    fileViewer = new IOUtil.FileViewer() {
-            public int viewFile(File f) throws Exception {
+        final List<FileInfo>   dirs       = new ArrayList();
+        final int[]            cnt        = { 0 };
+        FileWrapper.FileViewer fileViewer = new FileWrapper.FileViewer() {
+            @Override
+            public int viewFile(int level, FileWrapper f) throws Exception {
                 cnt[0]++;
                 if (cnt[0] % 1000 == 0) {
                     System.err.print(".");
@@ -181,7 +196,7 @@ public class HarvesterFile extends FileInfo {
         };
 
         long tt1 = System.currentTimeMillis();
-        IOUtil.walkDirectory(rootDir, fileViewer);
+        FileWrapper.walkDirectory(rootDir, fileViewer);
         long tt2 = System.currentTimeMillis();
         //        System.err.println("found:" + dirs.size() + " in:" + (tt2 - tt1)
         //                           + " looked at:" + cnt[0]);
@@ -192,7 +207,7 @@ public class HarvesterFile extends FileInfo {
                 long oldTime = fileInfo.getTime();
                 if (fileInfo.hasChanged()) {
                     //                    System.err.println("Changed:" + fileInfo);
-                    File[] files = fileInfo.getFile().listFiles();
+                    FileWrapper[] files = fileInfo.getFile().listFiles();
                     for (int i = 0; i < files.length; i++) {
                         if (files[i].lastModified() > oldTime) {
                             //                            System.err.println("    " + files[i].getName());

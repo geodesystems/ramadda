@@ -29,6 +29,7 @@ import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.ChunkedAppendable;
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.FileInfo;
 
 import org.ramadda.util.HtmlUtils;
@@ -1141,7 +1142,7 @@ public class CommandHarvester extends Harvester {
         Result result = null;
         if (files.size() > 0) {
             for (FileInfo file : files) {
-                sendFile(request, entry, file.getFile(),
+                sendFile(request, entry, file.getFile().getFile(),
                          getChannelId(request), file.getTitle(),
                          file.getDescription());
             }

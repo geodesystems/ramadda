@@ -11,6 +11,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -187,7 +188,7 @@ public abstract class Harvester extends RepositoryManager {
     protected List<Harvester> children;
 
     /** _more_ */
-    private List<File> rootDirs = new ArrayList<File>();
+    private List<FileWrapper> rootDirs = new ArrayList<FileWrapper>();
 
     /** _more_ */
     private String name = "";
@@ -458,11 +459,11 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     protected void init(Element element) throws Exception {
-        rootDirs = new ArrayList<File>();
+        rootDirs = new ArrayList<FileWrapper>();
         for (String dir :
                 Utils.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""),
                             ROOTDIR_DELIM, true, true)) {
-            rootDirs.add(new File(dir));
+            rootDirs.add(FileWrapper.createFileWrapper(dir));
         }
 
         this.typeHandler =
@@ -562,11 +563,12 @@ public abstract class Harvester extends RepositoryManager {
     public void applyEditForm(Request request) throws Exception {
         this.request = null;
         getEntryManager().clearSeenResources();
-        rootDirs = new ArrayList<File>();
+        rootDirs = new ArrayList<FileWrapper>();
         for (String dir :
                 Utils.split(request.getUnsafeString(ATTR_ROOTDIR, ""), "\n",
                             true, true)) {
-            rootDirs.add(new File(dir));
+	    FileWrapper fw = FileWrapper.createFileWrapper(dir);
+            rootDirs.add(fw);
         }
 
         name = request.getString(ARG_NAME, name);
@@ -881,7 +883,7 @@ public abstract class Harvester extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<File> getRootDirs() {
+    public List<FileWrapper> getRootDirs() {
         return rootDirs;
     }
 

@@ -8,6 +8,7 @@ package org.ramadda.repository.harvester;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -135,11 +136,11 @@ public class DirectoryHarvester extends Harvester {
 
 
 
-        List<File>   rootDirs   = getRootDirs();
+        List<FileWrapper>   rootDirs   = getRootDirs();
 
         String       extraLabel = "";
         StringBuffer inputText  = new StringBuffer();
-        for (File rootDir : rootDirs) {
+        for (FileWrapper rootDir : rootDirs) {
             String path = rootDir.toString();
             path = path.replace("\\", "/");
             inputText.append(path);
@@ -180,7 +181,7 @@ public class DirectoryHarvester extends Harvester {
             baseGroup = getEntryManager().getRootEntry();
         }
         Hashtable<String, Entry> entriesMap = new Hashtable<String, Entry>();
-        for (File rootDir : getRootDirs()) {
+        for (FileWrapper rootDir : getRootDirs()) {
             walkTree(rootDir, baseGroup, entriesMap);
         }
     }
@@ -195,13 +196,13 @@ public class DirectoryHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    protected void walkTree(File dir, Entry parentGroup,
+    protected void walkTree(FileWrapper dir, Entry parentGroup,
                             Hashtable<String, Entry> entriesMap)
             throws Exception {
         String name = dir.getName();
-        File xmlFile = new File(IOUtil.joinDir(dir.getParentFile(),
+        File xmlFile = new File(IOUtil.joinDir(dir.getParentFile().toString(),
                            "." + name + ".ramadda"));
-        Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir,
+        Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir.getFile(),
                                   entriesMap);
         Entry group = getEntryManager().findGroupFromName(getRequest(),
                           parentGroup.getFullName() + "/" + name, getUser(),
@@ -210,7 +211,7 @@ public class DirectoryHarvester extends Harvester {
             group = getEntryManager().makeNewGroup(parentGroup, name,
                     getUser(), fileInfoEntry);
         }
-        File[] files = dir.listFiles();
+        FileWrapper[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
                 walkTree(files[i], group, entriesMap);

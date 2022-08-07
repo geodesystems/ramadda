@@ -12,6 +12,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.Clause;
@@ -295,8 +296,8 @@ public class HarvesterManager extends RepositoryManager {
 
 
         for (Harvester harvester : harvesters) {
-            for (File rootDir : harvester.getRootDirs()) {
-                getStorageManager().addOkToReadFromDirectory(rootDir);
+            for (FileWrapper rootDir : harvester.getRootDirs()) {
+                getStorageManager().addOkToReadFromDirectory(rootDir.getFile());
             }
             if ( !okToStart) {
                 harvester.setActive(false);
