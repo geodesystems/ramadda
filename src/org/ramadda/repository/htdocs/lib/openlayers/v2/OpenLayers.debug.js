@@ -28686,6 +28686,7 @@ OpenLayers.Map = OpenLayers.Class({
                 for (var i=0, len=this.popups.length; i<len; i++) {
                     this.popups[i].updatePosition();
                 }
+		console.log(Utils.getStack(12));
                 this.events.triggerEvent("zoomend");
             }
         }
