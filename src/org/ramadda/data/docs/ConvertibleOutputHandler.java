@@ -669,7 +669,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
 
         try {
             List<String> files = new ArrayList<String>();
-            files.add(entry.getResource().getPath());
+	    String path;
+	    if(entry.isFile()) {
+		path =  getStorageManager().getEntryFile(entry).toString();
+	    } else {
+		path = entry.getResource().getPath();
+	    }
+            files.add(path);
             File f = getStorageManager().makeTmpFile(
                          runDir,
                          IOUtil.stripExtension(

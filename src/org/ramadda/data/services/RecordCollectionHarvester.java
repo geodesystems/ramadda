@@ -13,6 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
@@ -214,7 +215,7 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,
+    public Entry harvestFile(HarvesterFile fileInfo, FileWrapper f, Matcher matcher,
                              Hashtable<String, Entry> entriesMap)
             throws Exception {
         if (f.toString().endsWith(".properties")) {
@@ -238,14 +239,14 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
      */
     @Override
     public Entry initializeNewEntry(HarvesterFile fileInfo,
-                                    File originalFile, Entry entry) {
+                                    FileWrapper originalFile, Entry entry) {
         try {
             getRepository().getLogManager().logInfo(
                 "RecordCollectonHarvester:initializeNewEntry:"
                 + entry.getResource());
             if (entry.getTypeHandler() instanceof RecordTypeHandler) {
                 ((RecordTypeHandler) entry.getTypeHandler())
-                    .initializeRecordEntry(entry, originalFile, false);
+                    .initializeRecordEntry(entry, originalFile.getFile(), false);
             }
             getRepository().getLogManager().logInfo(
                 "RecordCollectonHarvester:initializeNewEntry done");
