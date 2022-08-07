@@ -759,6 +759,11 @@ public class GeoUtils {
         address = address.trim();
         String _address = address.toLowerCase();
 
+        GeoResource resource = null;
+	GeoResource resource2 = null;
+
+
+
         if (_address.startsWith("from:")) {
             address  = address.substring(5);
             _address = _address.substring(5);
@@ -780,6 +785,7 @@ public class GeoUtils {
         }
 
         boolean doZip = false;
+        boolean doZcta = false;
         if (_address.startsWith("zip:")) {
             address  = address.substring("zip:".length()).trim();
             _address = _address.substring("zip:".length()).trim();
@@ -788,6 +794,21 @@ public class GeoUtils {
             }
             doZip = true;
         }
+        if (_address.startsWith("zcta:")) {
+            address  = address.substring("zcta:".length()).trim();
+            _address = _address.substring("zcta:".length()).trim();
+            if (address.length() > 5) {
+                address = address.substring(0, 5);
+            }
+            doZcta = true;
+        }
+        if (_address.startsWith("congress:")) {
+            address  = address.substring("congress:".length()).trim();
+            _address = _address.substring("congress:".length()).trim();
+            resource = GeoResource.RESOURCE_CONGRESS;
+        }
+
+
         boolean doCounty = false;
         if (_address.startsWith("county:")) {
             address  = address.substring("county:".length()).trim();
@@ -816,11 +837,14 @@ public class GeoUtils {
             System.err.println("address:" + address);
         }
 
-        GeoResource resource = null;
         Place       place    = null;
 
         if (doZip) {
             resource = GeoResource.RESOURCE_ZIPCODES;
+            resource2 = GeoResource.RESOURCE_ZCTA;
+        } else  if (doZcta) {
+            resource = GeoResource.RESOURCE_ZCTA;
+            resource2 = GeoResource.RESOURCE_ZIPCODES;
         }
 
         if (doCity) {
@@ -976,12 +1000,20 @@ public class GeoUtils {
 
         if (resource != null) {
             place = resource.getPlace(address);
+	    //	    System.err.println("PLACE:" + place);
+	    if(place==null && resource2!=null) {
+		place = resource2.getPlace(address);		
+	    }
             if (place == null) {
                 if ( !noPlaceSet.contains(address)) {
                     noPlaceSet.add(address);
-                    //                    System.err.println("no place:" + address);
+		    System.out.println("no place:" + address);
                 }
-            }
+	    }
+	    //If we get here and there is no place then for now lets return null
+	    //since some resource collection was selected
+	    if(true)
+		return place;
             if (place != null) {
                 return place;
             }

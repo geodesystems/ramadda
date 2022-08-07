@@ -79,10 +79,22 @@ public class GeoResource {
         3, 1, 1, 12, 13, -1, 0
     }, "");
 
+    //name,id,fips,lat,lon,opt state index,suffix
+    /** _more_ */
+    public static final GeoResource RESOURCE_CONGRESS =
+        new GeoResource(RESOURCE_ROOT + "/uscongress.txt", new int[] { 1,
+								    1, 1, 6, 7,0 }, "congress:");
+
+
     /** _more_ */
     public static final GeoResource RESOURCE_ZIPCODES =
         new GeoResource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0,
             0, 0, 3, 4 }, "zip:");
+
+
+    public static final GeoResource RESOURCE_ZCTA =
+        new GeoResource(RESOURCE_ROOT + "/zcta.txt", new int[] { 0,
+            0, 0, 5, 6 }, "zcta:");    
 
     /** _more_ */
     public static final GeoResource RESOURCE_ALLLOCATIONS =
