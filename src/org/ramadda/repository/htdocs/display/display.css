@@ -2870,9 +2870,9 @@ table.dataTable tfoot td {
 
 
 .imdv-legend {
-    xwidth:200px;
     min-width:200px;
     max-width:200px;    
+    width:200px;
     max-height:400px;
     overflow-y:auto;
 }
@@ -2885,15 +2885,8 @@ table.dataTable tfoot td {
     border-bottom:1px solid #ddd;
 }
 
-
-
-
 .imdv-legend-label {
-    width:100%;
-    padding:4px;
-    padding-right:6px;    
     user-select:none;
-
 }
 
 .imdv-legend-label-invisible {
