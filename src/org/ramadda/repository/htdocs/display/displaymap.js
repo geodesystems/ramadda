@@ -131,6 +131,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     displayDefineMembers(this, myProps, {
         mapBoundsSet: false,
         initDisplay: function() {
+//	    if(displayDebug.initMap) console.log(this.getLogLabel()+".initDisplay");
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
 		$( document ).ready(()=> {
@@ -168,10 +169,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.map.setMapDiv(this.domId(ID_MAP));
             }
             if (!this.haveCalledUpdateUI) {
+//		if(displayDebug.initMap)  console.log(this.getLogLabel()+" have not calledUpdateUI. setting up callback");
                 var callback = function() {
+		    _this.updateUICallback = null;
                     _this.updateUI();
                 }
-                setTimeout(callback, 1);
+                this.updateUICallback = setTimeout(callback, 1);
             }
         },
 	setErrorMessage: function(msg) {
@@ -1052,33 +1055,46 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
 
             this.map.getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
-                _this.mapBoundsChanged();
-		_this.checkHeatmapReload();
-		_this.updateHtmlLayers();
-		if(!this.haveAddPoints) return;
+		if(this.callingUpdateUI) return;
+		if(this.lastUpdateTime) {
+		    let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
+		    if(diff<2000) {
+			return
+		    }
+		}
+//		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
+                this.mapBoundsChanged();
+		this.checkHeatmapReload();
+		this.updateHtmlLayers();
+		if(!this.haveAddPoints) {
+		    return;
+		}
+
 		if(this.getHandleCollisions()) {
 		    if(this.lastZoom == this.map.getZoom()) {
 			return;
 		    }
-
 		    //Wait a bit
 		    if(this.lastCollisionTimeout) {
 			clearTimeout(this.lastCollisionTimeout);
 		    }
 
+//		    console.log(this.getLogLabel()+" setting up collision timeout");
 		    this.lastTimeout = setTimeout(()=>{
 			this.haveCalledUpdateUI = false;
+//			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
 			this.updateUI();
 			this.lastCollisionTimeout = null;
 		    },1000);
 		}
+//		console.log(this.getLogLabel()+" finished zoomend");
             });
 	    this.createTime = new Date();
 
             this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
-		if(_this.map.doingPopup) return;
-                _this.mapBoundsChanged();
-		_this.checkHeatmapReload();
+		if(this.map.doingPopup) return;
+                this.mapBoundsChanged();
+		this.checkHeatmapReload();
             });
 
 	    
@@ -1563,6 +1579,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         setInitMapBounds: function(north, west, south, east) {
             if (!this.map) return;
             if (this.haveInitBounds) return;
+	    this.lastUpdateTime = new Date();
             this.haveInitBounds = true;
 	    if(this.getProperty("doInitCenter",true)) {
 		this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
@@ -2497,9 +2514,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},	    
 
         updateUI: function(args) {
-	    if(debugit && ycnt!=this.myycnt)
-		console.trace("updateUI",this.myName);
-
 	    if(!args) args={};
 	    let debug = false;
 	    this.lastUpdateTime = null;
@@ -2509,6 +2523,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug) console.log("map.updateUI have called:" + this.haveCalledUI +" ready:" + this.getDisplayReady() +" has data:" + this.hasData() +" showData:" +this.getProperty("showData", true));
                 return;
             }
+	    if(this.updateUICallback) {
+		clearTimeout(this.updateUICallback);
+		this.updateUICallback = null;
+	    }
             let pointData = this.getPointData();
 	    this.lastZoom = this.map?this.map.getZoom():null;
 
@@ -2540,25 +2558,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.updatingFromClip = false;
 
-	    setTimeout(()=>{
+//	    setTimeout(()=>{
 		try {
+		    if(displayDebug.initMap) this.logMsg("calling updateUIInner",true);
+		    this.callingUpdateUI = true;
 		    this.updateUIInner(args, pointData, records,debug);
+		    this.callingUpdateUI = false;
+		    if(displayDebug.initMap) this.logMsg("done calling updateUIInner",true);
 		    if(args.callback)args.callback(records);
 		    this.clearProgress();
 		    if(!this.layerVisible) {
-			setTimeout(()=>{
-			    this.setVisible(false);},50);
+			setTimeout(()=>{this.setVisible(false);},50);
 		    }
 		} catch(exc) {
+		    this.callingUpdateUI = false;
 		    console.log(exc)
 		    console.log(exc.stack);
 		    this.setMessage("Error:" + exc);
 		}
 		this.setIsFinished();
-	    });
-
-
-
+//	    });
 	},
 	filterDataPhase2:function(records) {
 	    records = SUPER.filterDataPhase2.call(this,records);
