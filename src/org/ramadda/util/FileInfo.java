@@ -21,7 +21,7 @@ public class FileInfo {
     private boolean hasInitialized = false;
 
     /** The file */
-    private File file;
+    private FileWrapper file;
 
     /** _more_ */
     private String title;
@@ -42,12 +42,17 @@ public class FileInfo {
     private boolean isDir;
 
 
+    public FileInfo(File f) {
+	this(new FileWrapper.File(f));
+    }
+
+
     /**
      * ctor
      *
      * @param f the file
      */
-    public FileInfo(File f) {
+    public FileInfo(FileWrapper f) {
         this(f, f.isDirectory());
 
     }
@@ -58,7 +63,7 @@ public class FileInfo {
      * @param f the file
      * @param isDir is file a directory
      */
-    public FileInfo(File f, boolean isDir) {
+    public FileInfo(FileWrapper f, boolean isDir) {
         this.isDir = isDir;
         file       = f;
     }
@@ -71,10 +76,10 @@ public class FileInfo {
         if ( !isDir) {
             size = file.length();
         } else {
-            File[] files = file.listFiles();
+            FileWrapper[] files = file.listFiles();
             if (files != null) {
                 fileCount = files.length;
-                for (File child : files) {
+                for (FileWrapper child : files) {
                     size += child.length();
                 }
             }
@@ -127,10 +132,10 @@ public class FileInfo {
         int  newFileCount = 0;
 
         if (isDir) {
-            File[] files = this.file.listFiles();
+            FileWrapper[] files = this.file.listFiles();
             if (files != null) {
                 newFileCount = files.length;
-                for (File child : files) {
+                for (FileWrapper child : files) {
                     newSize += child.length();
                 }
             }
@@ -161,7 +166,7 @@ public class FileInfo {
      *
      * @return _more_
      */
-    public File getFile() {
+    public FileWrapper getFile() {
         return file;
     }
 
