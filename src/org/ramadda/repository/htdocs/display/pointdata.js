@@ -543,7 +543,7 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-	    display.handleLog("display:" + display.type+" data:" + url);
+	    display.handleLog("data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
