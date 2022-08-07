@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug  7 01:37:41 MDT 2022";
+var build_date="RAMADDA build date: Sun Aug  7 16:44:01 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -39874,10 +39874,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let myApply = (andClose)=>{
 		if(applying) return;
 		applying = true;
-		console.log("apply-1");
 		apply(mapGlyph,props);
 		_this.addFeatureList();
-		console.log("apply-3");
 		if(andClose)  close();
 		applying = false;
 	    };
@@ -41115,16 +41113,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let clazz = "";
 		if(!mapGlyph.getVisible()) clazz+=' imdv-legend-label-invisible ';
 		html+=HU.open('div',['class','imdv-legend-item '+(idx==glyphs.length-1?'imdv-legend-item-last':'')+clazz]);
-		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
+		html+="\n";
+		let xhtml=HU.table(['border',1,'width','100%','cellpadding','1','cellspacing','1'],
 			       HU.tr([],
-				     HU.td(['width','10px','style','xpadding-right:1px;'],block.header) +
-				     HU.td([],label[0]) +
-				     HU.td(['width','20px'],label[1])
+				     "\n"+HU.td(['width','10'],block.header) +
+				     "\n"+HU.td(['style','background:red;width:150px;max-width:150px;','width','150'],label[0]) +
+				     "\n"+HU.td(['align','right','style','padding-right:40px;'],label[1])
 				    ));				     
-		//		html+=HU.table(['width','100%','cellpadding','0','cellspacing','0'],
-		//			       HU.tr([],
-		//				     HU.td(['width','10px','style','xpadding-right:1px;'],block.header) +
-		//				     HU.td([],label)));				     
+		html+="<div style='display: grid; grid-template-columns: 18px 145px 30px;'>" +
+		    HU.div([],block.header) +
+		    HU.div([],label[0]) +
+		    HU.div(['style','margin-left:4px;'],label[1])
+		    +"</div>";
+
 		html+=HU.div(['style','background:#fff;'],block.body);
 		html+=HU.close('div');
 	    });
@@ -41883,6 +41884,14 @@ MapGlyph.prototype = {
 	});
     },
     changeOrder:function(toFront) {
+	if(this.mapServerLayer) {
+	    if(toFront)
+		this.display.getMap().toFrontLayer(this.mapServerLayer);
+	    else
+		this.display.getMap().toBackLayer(this.mapServerLayer);		    
+	    return;		
+	}
+
 	if(this.getImage()) {
 	    if(toFront)
 		this.display.getMap().toFrontLayer(this.getImage());
@@ -42029,7 +42038,7 @@ MapGlyph.prototype = {
 	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
 	}
 	if(forLegend) {
-	    label = HU.div(['title',HU.b(theLabel)+'<br>Click to toggle visibility','style',HU.css('margin-right','0px','max-width','150px','overflow-x','hidden','white-space','nowrap')], label);	    
+	    label = HU.div(['title',theLabel+'<br>Click to toggle visibility','style',HU.css('xmax-width','150px','overflow-x','hidden','white-space','nowrap')], label);	    
 	}
 	if(right!="") {
 	    right= HU.span(['style',HU.css('white-space','nowrap')], right);
@@ -42046,6 +42055,23 @@ MapGlyph.prototype = {
 	if(this.isMultiEntry() && this.entries) {
 	    this.showMultiEntries();
 	}
+	let _this = this;
+	this.jq('image_opacity_slider').slider({		
+	    min: 0,
+	    max: 1,
+	    step:0.01,
+	    value:this.jq('image_opacity_slider').attr('slider-value'),
+	    stop: function( event, ui ) {
+		if(_this.isMapServer())
+		    _this.style.opacity = ui.value;
+		else if(_this.image) {
+		    _this.style.imageOpacity = ui.value;
+		    _this.image.setOpacity(_this.style.imageOpacity);
+		}
+		_this.applyStyle(_this.style);
+	    }});
+
+
 	this.makeFeatureFilters();
     },
 
@@ -42064,6 +42090,14 @@ MapGlyph.prototype = {
     getLegendBody:function() {
 	let body = '';
 	body+=HU.center(this.display.makeGlyphButtons(this,true));
+	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl)) {
+	    let v = this.isImage()?this.style.imageOpacity:this.style.opacity;
+	    body += 
+		HU.center(
+		    HU.div(['title','Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
+			ID,this.domId('image_opacity_slider'),'class','ramadda-slider',STYLE,HU.css("display","inline-block","width","80%")],""));
+	}
+
 	let item = i=>{
 	    if(Utils.stringDefined(i)) {
 		body+=HU.div(['class','imdv-legend-body-item'], i);
@@ -42115,6 +42149,9 @@ MapGlyph.prototype = {
     isEntry:function() {
 	return this.getType() ==GLYPH_ENTRY;
     },
+    isImage:function() {
+	return this.getType() ==GLYPH_IMAGE;
+    },    
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
@@ -42971,8 +43008,8 @@ MapGlyph.prototype = {
 	let type = this.getType();
 	let style = this.style??{};
 	let css= ['display','inline-block'];
-	let dim = small?'12px':'25px';
-	css.push('width',small?'20px':'50px');
+	let dim = small?'10px':'25px';
+	css.push('width',small?'10px':'50px');
 	let line = "solid";
 	if(style.strokeWidth>0) {
 	    if(style.strokeDashstyle) {
@@ -42982,7 +43019,7 @@ MapGlyph.prototype = {
 		    line = "dashed";
 		}
 	    }
-	    css.push('border',(small?Math.min(+style.strokeWidth,2):style.strokeWidth)+"px " + line +" " + style.strokeColor);
+	    css.push('border',(small?Math.min(+style.strokeWidth,1):style.strokeWidth)+"px " + line +" " + style.strokeColor);
 	}
 
 	if(style.imageUrl) {
@@ -43039,7 +43076,7 @@ MapGlyph.prototype = {
 	    }
 	    return HU.div(['style',HU.css(css)]);
 	}
-	return "";
+	return HU.div(['style',HU.css('display','inline-block','border','1px solid transparent','width',small?'10px':'50px')]);
     },
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);
