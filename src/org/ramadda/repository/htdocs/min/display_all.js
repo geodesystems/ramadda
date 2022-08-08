@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug  7 16:44:01 MDT 2022";
+var build_date="RAMADDA build date: Mon Aug  8 16:04:37 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38499,7 +38499,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.finishedWithRoute = true;
 	    this.display.showProgress("Creating route...");
 	    this.makingRoute = true;
+	    console.log("A");
 	    $.post(url, args,data=>{
+	    console.log("B");
 		reset();
 		this.display.myLayer.removeFeatures([line]);
 		if(data.error) {
@@ -41120,12 +41122,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				     "\n"+HU.td(['style','background:red;width:150px;max-width:150px;','width','150'],label[0]) +
 				     "\n"+HU.td(['align','right','style','padding-right:40px;'],label[1])
 				    ));				     
-		html+="<div style='display: grid; grid-template-columns: 18px 145px 30px;'>" +
+		html+="<div style='display: grid; grid-template-columns: 18px 150px 30px;'>" +
 		    HU.div([],block.header) +
 		    HU.div([],label[0]) +
-		    HU.div(['style','margin-left:4px;'],label[1])
+		    HU.div(['style','margin-left:2px;'],label[1])
 		    +"</div>";
-
 		html+=HU.div(['style','background:#fff;'],block.body);
 		html+=HU.close('div');
 	    });
@@ -41847,18 +41848,23 @@ MapGlyph.prototype = {
 	this.entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,['target','_entry']);
-	    link = HU.div(['style','white-space:nowrap;max-width:200px;overflow-x:hidden;','title',entry.getName()], link);
+	    link = HU.div(['style','white-space:nowrap;max-width:180px;overflow-x:hidden;','title',entry.getName()], link);
+	    let add = "";
 	    if(MAP_TYPES.includes(entry.getType().getId())) {
-		link = HU.leftRightTable(link,HU.span(['class','ramadda-clickable','title','add map','entryid',entry.getId(),'command',GLYPH_MAP],HU.getIconImage('fas fa-plus')));
+		add = HU.span(['class','ramadda-clickable','title','add map','entryid',entry.getId(),'command',GLYPH_MAP],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isPoint) {
-		link = HU.leftRightTable(link,HU.span(['class','ramadda-clickable','title','add data','entryid',entry.getId(),'command',GLYPH_DATA],HU.getIconImage('fas fa-plus')));
+		add = HU.span(['class','ramadda-clickable','title','add data','entryid',entry.getId(),'command',GLYPH_DATA],HU.getIconImage('fas fa-plus'));
 	    } else if(entry.isGroup) {
-		link = HU.leftRightTable(link,HU.span(['class','ramadda-clickable','title','add multi entry','entryid',entry.getId(),'command',GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus')));
+		add = HU.span(['class','ramadda-clickable','title','add multi entry','entryid',entry.getId(),'command',GLYPH_MULTIENTRY],HU.getIconImage('fas fa-plus'));
 	    } else {
 	    }		
-	    html+=HU.div([],link);
+	    if(add!="")
+		link = "<div style='display: grid; grid-template-columns: 170px 30px;'>" +
+		HU.div([],link)+
+		HU.div(['style','margin-left:5px;'],add);
+	    html+=HU.div(['style',HU.css('white-space','nowrap')],link);
 	});
-	html = HU.div(['style','auto;max-height:200px;overflow-y:auto;'], HU.div(['style','margin-right:10px;'],html));
+	html = HU.div(['class','ramadda-cleanscroll', 'style','max-height:200px;overflow-y:auto;'], HU.div(['style','margin-right:10px;'],html));
 	this.jq('multientry').html(HU.b("Entries")+html);
 	this.jq('multientry').find('[command]').click(function(){
 	    let command = $(this).attr('command');
@@ -42873,8 +42879,6 @@ MapGlyph.prototype = {
 		jqid(this.getId()).show();
 	    else
 		jqid(this.getId()).hide();
-	    
-
 	}
 	if(this.getMapLayer()) {
 	    this.getMapLayer().setVisibility(visible);
@@ -43128,9 +43132,9 @@ MapGlyph.prototype = {
 		marker.entryId = e.getId();
 		this.features.push(bg);
 		this.features.push(marker);
-
 	    });
 	    this.display.addFeatures(this.features);
+	    this.checkVisible();
 	    if(andZoom)
 		this.zoomTo();
 	    this.showMultiEntries();
