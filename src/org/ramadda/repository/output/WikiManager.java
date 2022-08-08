@@ -918,8 +918,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         //Ugghh - I really have to unify the EntryManager find entry methods
         //Look for file path based entry id
         if ((theEntry == null) && entryId.startsWith("/")) {
-            theEntry = getEntryManager().findEntryFromName(request, entryId,
-							   request.getUser(), false);
+            theEntry = getEntryManager().findEntryFromName(request, null, entryId);
         }
 
         //Look for relative to the current entry

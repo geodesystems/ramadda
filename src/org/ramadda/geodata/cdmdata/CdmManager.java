@@ -1531,8 +1531,7 @@ public class CdmManager extends RepositoryManager {
         } else {
             entry = getEntryManager().getEntry(request, path.substring(1));
             if (entry == null) {
-                entry = getEntryManager().findEntryFromName(request, path,
-                        request.getUser(), false);
+                entry = getEntryManager().findEntryFromName(request, null, path);
             }
         }
 

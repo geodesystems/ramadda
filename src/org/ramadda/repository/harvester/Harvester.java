@@ -412,17 +412,16 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getBaseGroup() throws Exception {
-        if ((baseGroupId == null) || (baseGroupId.length() == 0)) {
+        if (!Utils.stringDefined(baseGroupId)) {
             return null;
         }
         Request request = new Request(getRepository(), getUser());
-        Entry   g = getEntryManager().findGroup(getRequest(), baseGroupId);
-        if (g != null) {
-            return g;
+        Entry   baseGroup = getEntryManager().getEntry(getRequest(), baseGroupId);
+        if (baseGroup != null) {
+            return baseGroup;
         }
-
-        return getEntryManager().findGroupFromName(getRequest(), baseGroupId,
-                getUser(), false);
+	//	System.err.println("Harvester:" + getName() +" " + getId() +"  unable to find base group: "+ baseGroupId);
+	return null;
     }
 
 
@@ -539,7 +538,7 @@ public abstract class Harvester extends RepositoryManager {
                         .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_STOP,
                             ARG_HARVESTER_ID, getId(),
                             ARG_HARVESTER_REDIRECTTOEDIT,
-                            "" + redirectToEdit), msg("Stop"));
+			     "" + redirectToEdit), msg("Stop"),HU.cssClass("ramadda-button"));
         } else {
             return HtmlUtils
                 .href(request
@@ -547,7 +546,7 @@ public abstract class Harvester extends RepositoryManager {
                         .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_START,
                             ARG_HARVESTER_ID, getId(),
                             ARG_HARVESTER_REDIRECTTOEDIT,
-                            "" + redirectToEdit), msg("Start"));
+			     "" + redirectToEdit), msg("Start"),HU.cssClass("ramadda-button"));
         }
     }
 

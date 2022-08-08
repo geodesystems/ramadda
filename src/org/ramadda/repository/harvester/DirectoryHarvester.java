@@ -204,9 +204,8 @@ public class DirectoryHarvester extends Harvester {
                            "." + name + ".ramadda"));
         Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir.getFile(),
                                   entriesMap);
-        Entry group = getEntryManager().findGroupFromName(getRequest(),
-                          parentGroup.getFullName() + "/" + name, getUser(),
-                          false);
+        Entry group = getEntryManager().findEntryFromName(getRequest(), null,
+							  parentGroup.getFullName() + "/" + name);
         if (group == null) {
             group = getEntryManager().makeNewGroup(parentGroup, name,
                     getUser(), fileInfoEntry);

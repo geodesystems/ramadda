@@ -618,8 +618,8 @@ public class WebHarvester extends Harvester {
         Entry group = ((baseGroup != null)
                        ? getEntryManager().findGroupUnder(getRequest(),
                            baseGroup, groupName, getUser())
-                       : getEntryManager().findGroupFromName(getRequest(),
-                           groupName, getUser(), true));
+                       : getEntryManager().findEntryFromName(getRequest(),null,
+							     groupName,  true,null,null,null));
         //        System.err.println("Group:" + group.getFullName());
         Entry entry = getTypeHandler().createEntry(repository.getGUID());
         Resource resource = new Resource(newFile.toString(),

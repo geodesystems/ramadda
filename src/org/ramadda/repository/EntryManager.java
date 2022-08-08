@@ -78,8 +78,6 @@ import java.text.SimpleDateFormat;
 
 import java.util.function.BiConsumer;
 
-import javax.xml.bind.DatatypeConverter;
-
 import java.util.zip.*;
 
 import java.util.ArrayList;
@@ -711,8 +709,7 @@ public class EntryManager extends RepositoryManager {
             if (path.length() > prefix.length()) {
                 String suffix = path.substring(prefix.length());
                 suffix = java.net.URLDecoder.decode(suffix, "UTF-8");
-                entry = findEntryFromName(request, suffix, request.getUser(),
-                                          false);
+                entry = findEntryFromName(request, null, suffix);
                 if (entry == null) {
 		    if(nullOk) return null;
                     fatalError(request, "Could not find entry:" + suffix);
@@ -4558,8 +4555,7 @@ public class EntryManager extends RepositoryManager {
         if (toId != null) {
             toEntry = getEntry(request, toId);
         } else if (toName != null) {
-            toEntry = findGroupFromName(request, toName, request.getUser(),
-                                        false);
+            toEntry = findEntryFromName(request, null,toName);
         }
         if ( !request.exists(ARG_CONFIRM) || (toEntry == null)) {
             StringBuilder sb = new StringBuilder();
@@ -5440,9 +5436,7 @@ public class EntryManager extends RepositoryManager {
         if (request.exists(ARG_GROUP)) {
             parent = getEntryFromArg(request, ARG_GROUP);
             if (parent == null) {
-                parent = findEntryFromName(request,
-                                           request.getString(ARG_GROUP, ""),
-                                           request.getUser(), false);
+                parent = findEntryFromName(request,null, request.getString(ARG_GROUP, ""));
             }
 
             if (parent == null) {
@@ -5837,8 +5831,7 @@ public class EntryManager extends RepositoryManager {
             parentEntry = (Entry) getEntry(request, parentId);
         }
         if (parentEntry == null) {
-            parentEntry = (Entry) findEntryFromName(request, parentId,
-						    request.getUser(), false);
+            parentEntry = (Entry) findEntryFromName(request, null, parentId);
         }
         if (parentEntry == null) {
             // Lets not check for now. Some entry xml doesn't have a parent
@@ -6970,8 +6963,7 @@ public class EntryManager extends RepositoryManager {
         }
         Entry entry = getEntry(request, entryId);
         if (entry == null) {
-            entry = findEntryFromName(request, entryId, request.getUser(),
-                                      false);
+            entry = findEntryFromName(request, null, entryId);
         }
 
         if (entry == null) {
@@ -9173,11 +9165,9 @@ public class EntryManager extends RepositoryManager {
                 if (subset.size() == 0) {
                     break;
                 }
-
                 return currentEntry.getTypeHandler().makeSynthEntry(request,
 								    currentEntry, subset);
             }
-
 
             String name       = toks.get(i);
             Entry  childEntry = findEntryWithName(request, currentEntry,
@@ -9353,74 +9343,6 @@ public class EntryManager extends RepositoryManager {
         return ids;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param user _more_
-     * @param createIfNeeded _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Entry findGroupFromName(Request request, String name, User user,
-                                   boolean createIfNeeded)
-	throws Exception {
-        return findGroupFromName(request, name, user, createIfNeeded,
-                                 TypeHandler.TYPE_GROUP);
-    }
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param user _more_
-     * @param createIfNeeded _more_
-     * @param lastGroupType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Entry findGroupFromName(Request request, String name, User user,
-                                   boolean createIfNeeded,
-                                   String lastGroupType)
-	throws Exception {
-        Entry entry = findEntryFromName(request, name, user, createIfNeeded,
-                                        lastGroupType);
-        if ((entry != null) && (entry.isGroup())) {
-            return (Entry) entry;
-        }
-
-        return null;
-    }
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param user _more_
-     * @param createIfNeeded _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Entry findEntryFromName(Request request, String name, User user,
-                                   boolean createIfNeeded)
-	throws Exception {
-        return findEntryFromName(request, name, user, createIfNeeded, null);
-    }
-
-
 
     /**
      * _more_
@@ -9481,50 +9403,19 @@ public class EntryManager extends RepositoryManager {
 
 
     /**
-     * _more_
-     *
      *
      * @param request _more_
      * @param name _more_
      * @param user _more_
      * @param createIfNeeded _more_
-     * @param lastGroupType _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Entry findEntryFromName(Request request, String name, User user,
-                                   boolean createIfNeeded,
-                                   String lastGroupType)
+    public Entry findEntryFromName(Request request, Entry baseEntry, String name)
 	throws Exception {
-        return findEntryFromName(request, name, user, createIfNeeded,
-                                 lastGroupType, null);
-    }
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param user _more_
-     * @param createIfNeeded _more_
-     * @param lastGroupType _more_
-     * @param initializer _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Entry findEntryFromName(Request request, String name, User user,
-                                   boolean createIfNeeded,
-                                   String lastGroupType,
-                                   EntryInitializer initializer)
-	throws Exception {
-        return findEntryFromName(request, name, user, createIfNeeded,
-                                 lastGroupType, null, initializer);
+        return findEntryFromName(request, baseEntry, name, false, null,null,null);
     }
 
 
@@ -9533,7 +9424,6 @@ public class EntryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param name _more_
-     * @param user _more_
      * @param createIfNeeded _more_
      * @param lastGroupType _more_
      * @param templateEntry _more_
@@ -9543,11 +9433,15 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry findEntryFromName(Request request, String name, User user,
+    public Entry findEntryFromName(Request request, Entry baseEntry, String name, 
                                    boolean createIfNeeded,
                                    String lastGroupType, Entry templateEntry,
                                    EntryInitializer initializer)
 	throws Exception {
+	boolean debug = false;
+	if(debug)
+	    System.err.println("Find entry: " + "base entry:" + baseEntry +" name:" + name);	
+
         if (name == null) {
             return null;
         }
@@ -9555,23 +9449,35 @@ public class EntryManager extends RepositoryManager {
         if (name.startsWith(Entry.PATHDELIMITER)) {
             name = name.substring(1);
         }
-        Entry  rootEntry    = request.getRootEntry();
-        String topEntryName = rootEntry.getName();
-        if (name.equals(topEntryName)) {
-            return rootEntry;
+	boolean haveBase = baseEntry!=null;
+	if(!haveBase) {
+	    baseEntry    = request.getRootEntry();
+	}
+
+        String topEntryName = baseEntry.getName();
+        if (name.equals("") || name.equals(topEntryName)) {
+            return baseEntry;
         }
         //Tack on the top group name if its not there
-        if ( !name.startsWith(topEntryName + Entry.PATHDELIMITER)) {
-            name = topEntryName + Entry.PATHDELIMITER + name;
-        }
+	//        if ( !name.startsWith(topEntryName + Entry.PATHDELIMITER)) {
+	//            name = topEntryName + Entry.PATHDELIMITER + name;
+	//        }
+
         //split the list
         List<String> toks = (List<String>) Utils.split(name,
 						       Entry.PATHDELIMITER, true, true);
-        //Now remove the top group
+	if(debug)
+	    System.err.println("\tname:" + name);
+	if(debug)
+	    System.err.println("\ttoks:" + toks);
+        //Now remove the top group if we didn't have a root entry passed in
+	if(!haveBase) {
+	    toks.remove(0);
+	    if(debug)
+		System.err.println("\tremoving first tok:" + toks);
+	}
 
-        toks.remove(0);
-
-        Entry currentEntry = rootEntry;
+        Entry currentEntry = baseEntry;
 
         if (lastGroupType == null) {
             lastGroupType = TypeHandler.TYPE_GROUP;
@@ -9596,8 +9502,7 @@ public class EntryManager extends RepositoryManager {
                 if ( !createIfNeeded) {
                     return null;
                 }
-
-                currentEntry = makeNewGroup(currentEntry, childName, user,
+                currentEntry = makeNewGroup(currentEntry, childName, request.getUser(),
                                             null, (lastOne
 						   ? lastGroupType
 						   : groupType), initializer);
@@ -10509,9 +10414,7 @@ public class EntryManager extends RepositoryManager {
                 parent = getEntryFromArg(request, ARG_GROUP);
             }
             if (parent == null) {
-                parent = findEntryFromName(request,
-                                           request.getString(ARG_GROUP, ""),
-                                           request.getUser(), false);
+                parent = findEntryFromName(request,null, request.getString(ARG_GROUP, ""));
             }
         }
 

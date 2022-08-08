@@ -1629,8 +1629,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	//Call this so it gets instantiated
 	getMonitorManager();
-
+	//	testLocal();
     }
+
+
+    private void testLocal() throws Exception {
+	Request request = getAdminRequest();
+	Entry rootEntry = getEntryManager().getRootEntry();
+	System.err.println("***** TESTING ******");
+	System.err.println("\tshould be Top:" +  getEntryManager().findEntryFromName(request, null, "/Top"));
+	System.err.println("\tshould be Top:" +  getEntryManager().findEntryFromName(request, null, "Top"));
+	System.err.println("\tshould be Top:" +  getEntryManager().findEntryFromName(request, null, ""));	
+	System.err.println("\tshould be test:" +  getEntryManager().findEntryFromName(request, null, "/Top/RAMADDA/test"));
+	System.err.println("\tshould be test:" +  getEntryManager().findEntryFromName(request, null, "Top/RAMADDA/test"));
+	System.err.println("\tshould be test:" +  getEntryManager().findEntryFromName(request, rootEntry, "RAMADDA/test"));
+	System.err.println("\tshould be test:" +  getEntryManager().findEntryFromName(request, rootEntry, "/RAMADDA/test"));
+	System.err.println("\tshould be null:" +   getEntryManager().findEntryFromName(request, rootEntry, "/Top/RAMADDA/test"));
+    }
+    
 
 
     /**
@@ -4464,12 +4480,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String       childPath = null;
                 List<String> toks      = Utils.splitUpTo(alias, "/", 2);
                 if (toks.size() > 0) {
+		    alias = toks.get(0);
 		    List<Entry> entries =  getEntryManager().getEntriesFromAlias(request,
-										 toks.get(0));
+										 alias);
 		    if(entries.size()>1) {
 			StringBuilder sb = new StringBuilder();
 			getPageHandler().sectionOpen(request, sb, "Entries", false);
-			sb.append(getPageHandler().showDialogNote("Multiple entries have the alias: " + toks.get(0)));
+			sb.append(getPageHandler().showDialogNote("Multiple entries have the alias: " +alias));
 			sb.append("<ul>");
 			for (Entry entry : entries) {
 			    sb.append("<li> ");
@@ -4481,11 +4498,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			return new Result("", sb);
 		    }
                     Entry entry =(entries.size()>0?entries.get(0):null);
-
                     if ((toks.size() == 2) && (entry != null)) {
-                        entry = getEntryManager().findEntryFromName(request,
-                                entry.getFullName() + Entry.PATHDELIMITER
-                                + toks.get(1), request.getUser(), false);
+			//we have a child entry path under the alias
+			System.err.println("Alias:"+alias +" rest:" + toks.get(1));
+                        entry = getEntryManager().findEntryFromName(request, entry, toks.get(1));
                     }
                     if (entry == null) {
                         if ( !tryingOnePathAsAlias) {
