@@ -5,13 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
-import ucar.unidata.util.Misc;
-
 import java.io.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +21,8 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class S3File extends FileWrapper {
+
+    public static boolean debug = false;
 
     private static String awsPath = "aws";
     
@@ -93,11 +90,18 @@ public class S3File extends FileWrapper {
         int            result  = process.waitFor();
         InputStream    is      = process.getInputStream();
         InputStream    es      = process.getErrorStream();	
+	if(debug)
+	    System.err.println("S3File.run:" + commands);
         String error = IO.readInputStream(es);
 	if(error.trim().length()>0) {
+	if(debug)
+	    System.err.println("Got error:" + error);
 	    throw new RuntimeException("Error executing:" + commands+"\nError:" + error);
 	}
-        return IO.readInputStream(is);
+        String results =  IO.readInputStream(is);
+	if(debug)
+	    System.err.println("Got results:" + results);
+	return results;
     }
 
     /**
@@ -109,14 +113,14 @@ public class S3File extends FileWrapper {
 	    if(!isDirectory()) {
 		return null;
 	    }
-	    String b = bucket;
-	    if(!b.endsWith("/")) b = b+"/";
+	    String theBucket = bucket;
+	    if(!theBucket.endsWith("/")) theBucket = theBucket+"/";
             List<String> commands = (List<String>) Utils.makeList(awsPath,
                                         "s3", "ls", "--no-sign-request",
-                                        bucket);
+                                        theBucket);
             String            result = run(commands);
-	    System.err.println(commands);
-	    System.err.println(result);
+	    //	    System.err.println(commands);
+	    //System.err.println(result);
             List<FileWrapper> files  = new ArrayList<FileWrapper>();
             for (String line : Utils.split(result, "\n", true, true)) {
                 if (line.startsWith("PRE ")) {
