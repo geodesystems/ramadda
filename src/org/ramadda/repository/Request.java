@@ -459,7 +459,7 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean isNormalRequest() {
         return httpServletResponse != null;
@@ -2545,7 +2545,7 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public String getAuthToken() {
         String sessionId = getSessionId();
@@ -3173,6 +3173,25 @@ public class Request implements Constants, Cloneable {
 
 
     /**
+     *
+     * @param filename _more_
+     * @param mimeType _more_
+     * @param is _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result returnStream(String filename, String mimeType,
+                               InputStream is)
+            throws Exception {
+        getHttpServletResponse().setContentType(mimeType);
+        setReturnFilename(filename, true);
+
+        return returnStream(is);
+    }
+
+
+    /**
      * _more_
      *
      * @param is _more_
@@ -3224,7 +3243,7 @@ public class Request implements Constants, Cloneable {
 
 
     /**
-      * @return _more_
+     *  @return _more_
      */
     public boolean getCookieWasAdded() {
         return cookieWasAdded;
