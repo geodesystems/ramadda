@@ -115,6 +115,8 @@ public class S3File extends FileWrapper {
                                         "s3", "ls", "--no-sign-request",
                                         bucket);
             String            result = run(commands);
+	    System.err.println(commands);
+	    System.err.println(result);
             List<FileWrapper> files  = new ArrayList<FileWrapper>();
             for (String line : Utils.split(result, "\n", true, true)) {
                 if (line.startsWith("PRE ")) {
