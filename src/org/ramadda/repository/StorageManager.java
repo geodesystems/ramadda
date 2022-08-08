@@ -2221,12 +2221,14 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 
+    public boolean isS3(String path) {
+	return path.startsWith("s3:");
+    }
+
     public File getEntryFile(Entry entry) throws Exception {
 	if(entry.getResource().isS3()) {
-	    //s3://noaa-cdr-cloud-properties-isccp-pds/documentation/
 	    String bucket = entry.getResource().getPath();
 	    bucket.replace("s3:/","");
-	    //	    System.err.println("BUCKET:" + bucket);
 	    MessageDigest md5 = MessageDigest.getInstance("MD5");
 	    md5.update(bucket.getBytes());
 	    String fileName = Utils.encodeMD(md5.digest());
