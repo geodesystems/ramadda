@@ -3,11 +3,13 @@
   <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler">
      <property name="icon" value="/aws/aws.png"/>
      <property name="form.resource.show" value="false"/>
-     <column name="root_id" type="string"  label="Main S3 Bucket ID"/>
+     <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
   </type>
 
-  <type name="type_s3_bucket"  description="AWS S3 Bucket"   handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" foruser="false">
+  <type name="type_s3_bucket"  isgroup="true"
+	description="AWS S3 Bucket"   handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" foruser="false">
      <property name="icon" value="/aws/aws.png"/>
+     <property name="form.file.show" value="false"/>
   </type>
 
 

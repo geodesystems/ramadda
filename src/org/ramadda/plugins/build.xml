@@ -17,6 +17,7 @@
 
     <target name="plugins" depends="init">
       <echo message="Building core plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/aws/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/apis/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/atlassian/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/datapolicy/build.xml" inheritAll="false"/>      
@@ -63,7 +64,6 @@
 
 
 <!--
-      <ant antfile="${src_dir}/org/ramadda/plugins/aws/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/worldbank/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/dropbox/build.xml" inheritAll="false"/>
