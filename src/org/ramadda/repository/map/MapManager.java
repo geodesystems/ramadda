@@ -638,6 +638,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 				"origin",points.get(0) +","+   points.get(1),
 				"destination",
 				points.get(points.size()-2) + "," +  points.get(points.size()-1),
+				//				"return","polyline,actions,instructions,summary,travelSummary","apikey",  hereKey);
 				"return","polyline","apikey",  hereKey);
 	    
 	    if(points.size()>2) {
@@ -645,10 +646,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		    url +="&via=" + points.get(i) +"," + points.get(i+1);
 		}
 	    }
+	    return request.returnStream("route.json",JsonUtil.MIMETYPE, IO.getInputStream(url));
 	    //	System.err.println(url);
-	    String json = IO.readUrl(url);
-	    //	System.err.println(json);
-	    return new Result(json, Result.TYPE_JSON);
+	    //	    String json = IO.readUrl(url);
+	    //	    System.out.println(json);
+	    //	    return new Result(json, Result.TYPE_JSON);
 	}
 
 
@@ -675,9 +677,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    }
 
 	    //	    System.err.println(url);
-	    String json = IO.readUrl(url);
+	    return request.returnStream("route.json",JsonUtil.MIMETYPE, IO.getInputStream(url));
+	    //	    String json = IO.readUrl(url);
 	    //	    System.err.println(json);
-	    return new Result(json, Result.TYPE_JSON);
+	    //	    return new Result(json, Result.TYPE_JSON);
 	}
 
 	return new Result("{error:'No routing service available'}", Result.TYPE_JSON);
