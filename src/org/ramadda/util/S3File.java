@@ -27,6 +27,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class S3File extends FileWrapper {
 
+    private static String awsPath = "aws";
+    
     /**  */
     private static final SimpleDateFormat sdf;
     static {
@@ -55,6 +57,10 @@ public class S3File extends FileWrapper {
 	setBucket(bucket);
         Date d = new Date();
         init(bucket, new File(this.bucket).getName(), isDirectory, 0, d.getTime());
+    }
+
+    public static void setAwsPath(String path) {
+	awsPath  =path;
     }
 
     private void setBucket(String bucket) {
@@ -86,6 +92,11 @@ public class S3File extends FileWrapper {
         Process        process = pb.start();
         int            result  = process.waitFor();
         InputStream    is      = process.getInputStream();
+        InputStream    es      = process.getErrorStream();	
+        String error = IO.readInputStream(es);
+	if(error.trim().length()>0) {
+	    throw new RuntimeException("Error executing:" + commands+"\nError:" + error);
+	}
         return IO.readInputStream(is);
     }
 
@@ -100,7 +111,7 @@ public class S3File extends FileWrapper {
 	    }
 	    String b = bucket;
 	    if(!b.endsWith("/")) b = b+"/";
-            List<String> commands = (List<String>) Utils.makeList("aws",
+            List<String> commands = (List<String>) Utils.makeList(awsPath,
                                         "s3", "ls", "--no-sign-request",
                                         bucket);
             String            result = run(commands);
@@ -192,7 +203,7 @@ public class S3File extends FileWrapper {
     }
 
     public static void copyFileTo(String bucket, java.io.File file) throws Exception {
-	List<String> commands = (List<String>) Utils.makeList("aws",
+	List<String> commands = (List<String>) Utils.makeList(awsPath,
 							      "s3", "cp", "--no-sign-request",
 							      bucket,file.toString());
 	String            result = run(commands);
