@@ -53,10 +53,9 @@ public class OpendapLinkTypeHandler extends GridTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         Resource resource = entry.getResource();
-
         return resource.getPath() + ".html";
     }
 

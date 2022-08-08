@@ -73,7 +73,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new DaymetRecordFile(getRepository(), entry,
-                                    getPathForEntry(request, entry));
+                                    getPathForEntry(request, entry,true));
     }
 
 
@@ -92,7 +92,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String url = URL_TEMPLATE;
         url = url.replace("${lat}", "" + entry.getLatitude());

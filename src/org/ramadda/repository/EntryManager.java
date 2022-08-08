@@ -6499,7 +6499,7 @@ public class EntryManager extends RepositoryManager {
         if (entry.getResource().isUrl()) {
             try {
                 imgUrl = entry.getTypeHandler().getPathForEntry(request,
-								entry);
+								entry,false);
                 imgText.append(msg("Click to view URL"));
             } catch (Exception exc) {
                 imgUrl = "bad image";
@@ -8380,7 +8380,7 @@ public class EntryManager extends RepositoryManager {
 
         if (entry.getResource().isUrl()) {
             try {
-                return entry.getTypeHandler().getPathForEntry(request, entry);
+                return entry.getTypeHandler().getPathForEntry(request, entry,false);
             } catch (Exception exc) {
                 return "Error:" + exc;
             }

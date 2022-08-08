@@ -144,7 +144,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String url = URL_TEMPLATE;
         url = url.replace("${station_id}",

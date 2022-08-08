@@ -2233,6 +2233,7 @@ public class StorageManager extends RepositoryManager implements PointFile
 	    File cachedFile =     getCacheFile("s3cache",fileName);
 	    if(!cachedFile.exists()) {
 		System.err.println("from bucket:" + bucket);
+		System.err.println(Utils.getStack(10));
 		S3File.copyFileTo(bucket,cachedFile);
 	    } else {
 		System.err.println("cached:" + fileName);

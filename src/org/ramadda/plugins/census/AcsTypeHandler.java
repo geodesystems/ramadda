@@ -224,7 +224,7 @@ public class AcsTypeHandler extends PointTypeHandler {
                 pattern = metadataList.get(0).getAttr1();
             }
         }
-        AcsFile file = new AcsFile(getPathForEntry(request, entry),
+        AcsFile file = new AcsFile(getPathForEntry(request, entry,true),
                                    StringUtil.split(header, "\n", true,
                                        true), includeSpecial, pattern);
 
@@ -359,10 +359,10 @@ public class AcsTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         if (entry.isFile()) {
-            return super.getPathForEntry(request, entry);
+            return super.getPathForEntry(request, entry, forRead);
         }
         String getArgValue = StringUtil.join(",", getIndicatorIds(entry));
 
@@ -458,7 +458,7 @@ public class AcsTypeHandler extends PointTypeHandler {
     private void setAcsEntryName(Request request, Entry entry, boolean force)
             throws Exception {
         if ( !entry.isFile()) {
-            entry.setValue(IDX_SOURCE_URL, getPathForEntry(request, entry));
+            entry.setValue(IDX_SOURCE_URL, getPathForEntry(request, entry,false));
         }
 
 

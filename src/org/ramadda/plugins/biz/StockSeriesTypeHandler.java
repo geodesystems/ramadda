@@ -70,7 +70,7 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
                                  String tag, Hashtable props)
             throws Exception {
         if (tag.equals("stockurl")) {
-            return getPathForEntry(request, entry);
+            return getPathForEntry(request, entry,false);
         }
 
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
@@ -118,7 +118,7 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String apikey = getRepository().getProperty("alphavantage.api",
                             (String) null);

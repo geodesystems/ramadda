@@ -142,7 +142,7 @@ public class EiaSeriesTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String id = entry.getValue(IDX_SERIES_ID, (String) null);
         if (id == null) {

@@ -414,7 +414,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new PurpleAirRecordFile(getRepository(), entry,
-                                       getPathForEntry(request, entry));
+                                       getPathForEntry(request, entry,true));
     }
 
 

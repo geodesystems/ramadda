@@ -528,7 +528,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String getPathForRecordEntry(Entry entry,
                                         Hashtable requestProperties)
             throws Exception {
-        String path = getPathForEntry(null, entry);
+        String path = getPathForEntry(null, entry,true);
         if (debug) {
             System.err.println(
                 "RecordTypeHandler.getPathForRecordEntry entry:" + entry

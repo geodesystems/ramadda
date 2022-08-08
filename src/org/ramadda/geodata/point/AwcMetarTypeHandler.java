@@ -104,10 +104,10 @@ public class AwcMetarTypeHandler extends PointTypeHandler {
      * @throws Exception On badnes
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         if (entry.isFile()) {
-            return super.getPathForEntry(request, entry);
+            return super.getPathForEntry(request, entry,forRead);
         }
         String siteId = entry.getValue(IDX_SITE_ID, "");
         int    offset = (int) entry.getValue(IDX_TIME_OFFSET, 24);

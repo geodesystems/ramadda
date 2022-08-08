@@ -1220,9 +1220,9 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forReading)
             throws Exception {
-        String path = super.getPathForEntry(request, entry);
+        String path = super.getPathForEntry(request, entry, forReading);
         if (path == null) {
             return path;
         }

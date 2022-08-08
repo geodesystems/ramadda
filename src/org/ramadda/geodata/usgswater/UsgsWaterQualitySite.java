@@ -63,7 +63,7 @@ public class UsgsWaterQualitySite extends PointTypeHandler {
      * @throws Exception On badnes
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String siteId = entry.getValue(IDX_SITE_ID, "");
         String param  = entry.getValue(IDX_PARAMETER, "");

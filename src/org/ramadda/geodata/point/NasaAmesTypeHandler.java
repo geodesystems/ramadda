@@ -116,7 +116,7 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new NasaAmesRecordFile(getPathForEntry(request, entry));
+        return new NasaAmesRecordFile(getPathForEntry(request, entry,true));
     }
 
     /**

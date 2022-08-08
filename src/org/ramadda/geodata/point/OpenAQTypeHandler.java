@@ -108,7 +108,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new OpenAQRecordFile(getPathForEntry(request, entry));
+        return new OpenAQRecordFile(getPathForEntry(request, entry,true));
     }
 
 
@@ -123,7 +123,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String location = entry.getValue(IDX_LOCATION, (String) null);
         if ( !Utils.stringDefined(location)) {

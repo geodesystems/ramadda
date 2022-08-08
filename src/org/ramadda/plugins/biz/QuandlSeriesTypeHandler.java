@@ -70,7 +70,7 @@ public class QuandlSeriesTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         String sourceCode = entry.getValue(IDX_SOURCE_CODE, (String) null);
         if (sourceCode == null) {

@@ -1505,7 +1505,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         String url = entry.getResource().getPath();
         if (entry.getResource().isUrl()) {
-            return entry.getTypeHandler().getPathForEntry(request, entry);
+            return entry.getTypeHandler().getPathForEntry(request, entry,false);
         }
         if (url != null) {
             if (url.startsWith("ftp:") || url.startsWith("http:")) {

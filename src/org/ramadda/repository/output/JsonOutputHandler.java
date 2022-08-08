@@ -611,7 +611,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (entry.getResource().isUrl()) {
             JsonUtil.quoteAttr(
                 items, "url",
-                entry.getTypeHandler().getPathForEntry(request, entry));
+                entry.getTypeHandler().getPathForEntry(request, entry,false));
         }
 
 

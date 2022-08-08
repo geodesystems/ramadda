@@ -100,7 +100,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         //wget -O test.html --post-data="permalinkURL=&selectedSeriesIds=CES0000000001&startYear=2004&endYear=2018&dv-submit=Update" "https://beta.bls.gov/dataViewer/view/timeseries/CES0000000001"
         //permalinkURL=&selectedSeriesIds=CES0000000001&startYear=2004&endYear=2018&dv-submit=Update
@@ -134,7 +134,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
         return new BlsRecordFile(getRepository(),
-                                 getPathForEntry(request, entry), entry);
+                                 getPathForEntry(request, entry,true), entry);
     }
 
 

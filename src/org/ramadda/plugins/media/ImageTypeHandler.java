@@ -68,7 +68,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         Resource resource = entry.getResource();
         String   path     = Utils.normalizeTemplateUrl(resource.getPath());

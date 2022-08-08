@@ -3229,11 +3229,11 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry,boolean forReading)
             throws Exception {
         Resource resource = entry.getResource();
 	String path;
-	if(entry.isFile()) {
+	if(forReading && entry.isFile()) {
 	    path =  getStorageManager().getEntryFile(entry).toString();
 	} else {
 	    path = entry.getResource().getPath();
@@ -3440,7 +3440,7 @@ public class TypeHandler extends RepositoryManager {
                     img    = HtmlUtils.img(imgUrl, "", "width=" + width);
                 } else if (entry.getResource().isUrl()) {
                     try {
-                        imgUrl = typeHandler.getPathForEntry(request, entry);
+                        imgUrl = typeHandler.getPathForEntry(request, entry,false);
                         img    = HtmlUtils.img(imgUrl, "", "width=" + width);
                     } catch (Exception exc) {
                         sb.append("Error getting path:" + entry.getResource()
@@ -3476,7 +3476,7 @@ public class TypeHandler extends RepositoryManager {
                 if (entry.getResource().isUrl()) {
                     try {
                         resourceLink = typeHandler.getPathForEntry(request,
-                                entry);
+								   entry,false);
                         resourceLink = HtmlUtils.href(resourceLink,
                                 resourceLink);
                     } catch (Exception exc) {
@@ -7132,7 +7132,7 @@ public class TypeHandler extends RepositoryManager {
             }
             String path = "";
             try {
-                path = getPathForEntry(request, entry);
+                path = getPathForEntry(request, entry,false);
             } catch (Exception exc) {
                 return "Error:" + exc;
             }

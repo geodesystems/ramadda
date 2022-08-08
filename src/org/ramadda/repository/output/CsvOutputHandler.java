@@ -325,7 +325,7 @@ public class CsvOutputHandler extends OutputHandler {
                     if (entry.getResource().isUrl()) {
                         sb.append(
                             entry.getTypeHandler().getPathForEntry(
-                                request, entry));
+								   request, entry,false));
                     } else if (entry.getResource().isFile()) {
                         String url =
                             entry.getTypeHandler().getEntryResourceUrl(

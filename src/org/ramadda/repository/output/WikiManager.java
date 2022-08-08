@@ -1972,7 +1972,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             String label;
             if ( !entry.getResource().isDefined()) {
                 url   = entry.getTypeHandler().getPathForEntry(request,
-							       entry);
+							       entry,false);
                 label = getProperty(wikiUtil, props, ATTR_TITLE, url);
             } else if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request, entry,inline);

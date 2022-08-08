@@ -140,7 +140,7 @@ public class GsdTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry)
+    public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         return getPathForRecordEntry(entry, request.getDefinedProperties());
     }
