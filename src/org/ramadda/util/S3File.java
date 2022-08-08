@@ -22,6 +22,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class S3File extends FileWrapper {
 
+    public static final String S3PREFIX = "s3:";
+
     public static boolean debug = false;
 
     private static String awsPath = "aws";
@@ -53,7 +55,7 @@ public class S3File extends FileWrapper {
     public S3File(String bucket, boolean isDirectory) {
 	setBucket(bucket);
         Date d = new Date();
-        init(bucket, new File(this.bucket).getName(), isDirectory, 0, d.getTime());
+        init(this.bucket, new File(this.bucket).getName(), isDirectory, 0, d.getTime());
     }
 
     public static void setAwsPath(String path) {
@@ -61,8 +63,7 @@ public class S3File extends FileWrapper {
     }
 
     private void setBucket(String bucket) {
-	if(bucket!=null) bucket = bucket.trim();
-	this.bucket = bucket;
+	this.bucket  = cleanupBucket(bucket);
     }
 
     /**
@@ -110,35 +111,8 @@ public class S3File extends FileWrapper {
     @Override
     public FileWrapper[] doListFiles() {
         try {
-	    if(!isDirectory()) {
-		return null;
-	    }
-	    String theBucket = bucket;
-	    if(!theBucket.endsWith("/")) theBucket = theBucket+"/";
-            List<String> commands = (List<String>) Utils.makeList(awsPath,
-                                        "s3", "ls", "--no-sign-request",
-                                        theBucket);
-            String            result = run(commands);
-	    //	    System.err.println(commands);
-	    //System.err.println(result);
-            List<FileWrapper> files  = new ArrayList<FileWrapper>();
-            for (String line : Utils.split(result, "\n", true, true)) {
-                if (line.startsWith("PRE ")) {
-                    String sub = line.substring(4).trim();
-                    files.add(new S3File(bucket + sub, true));
-                } else {
-                    //2020-10-06 10:42:25    5908731 FSF_Flood_Model_Technical_Documentation.pdf
-                    List<String> toks = Utils.splitUpTo(line, " ", 4);
-                    if (toks.size() != 4) {
-                        continue;
-                    }
-                    String date = toks.get(0) + " " + toks.get(1);
-                    Date   dttm = sdf.parse(date);
-                    long   size = Long.parseLong(toks.get(2).trim());
-                    String name = toks.get(3).trim();
-                    files.add(new S3File(bucket + name, name, size, dttm));
-                }
-            }
+	    List<S3File> files = doList(false);
+	    if(files==null) return null;
             FileWrapper[] fws = new FileWrapper[files.size()];
             for (int i = 0; i < files.size(); i++) {
                 fws[i] = files.get(i);
@@ -149,6 +123,81 @@ public class S3File extends FileWrapper {
             throw new RuntimeException(exc);
         }
     }
+
+    public static String cleanupBucket(String bucket) {
+	if(bucket==null) return null;
+	bucket = bucket.trim();
+	if(!bucket.startsWith(S3PREFIX)) {
+	    if(!bucket.startsWith("/")) bucket = "/"+bucket;
+	    if(!bucket.startsWith("//")) bucket = "/"+bucket;		
+	    bucket = S3PREFIX+bucket;
+	}
+	//	if(!bucket.endsWith("/")) bucket = bucket+"/";
+	return bucket;
+    }
+
+    public static S3File createFile(String bucket) throws Exception {
+	S3File tmp = new S3File(bucket);
+	List<S3File> files = tmp.doList(true);
+	if(files!=null && files.size()>0) return files.get(0);
+	return null;
+    }
+
+    private S3File createFileFromLine(String parent, String line, boolean self) throws Exception {
+	if (line.startsWith("PRE ")) {
+	    String sub = line.substring(4).trim();
+	    String path;
+	    if(self)
+		path = parent;
+	    else  {
+		path = parent;
+		if(!path.endsWith("/")) path +="/";
+		path += sub;		
+	    }
+	    return new S3File(path, true);
+	} else {
+	    //2020-10-06 10:42:25    5908731 FSF_Flood_Model_Technical_Documentation.pdf
+	    List<String> toks = Utils.splitUpTo(line, " ", 4);
+	    if (toks.size() != 4) {
+		return null;
+	    }
+	    String date = toks.get(0) + " " + toks.get(1);
+	    Date   dttm = sdf.parse(date);
+	    long   size = Long.parseLong(toks.get(2).trim());
+	    String name = toks.get(3).trim();
+	    String path = self?parent:parent + name;
+	    return new S3File(path, name, size, dttm);
+	}
+    }	
+
+
+    public List<S3File> doList() throws Exception {
+	return doList(false);
+    }
+
+
+    public List<S3File> doList(boolean self) throws Exception {
+	if(!self && !isDirectory()) {
+	    return null;
+	}
+	String theBucket = bucket;
+	if(!self && isDirectory()) {
+	    if(!theBucket.endsWith("/")) theBucket = theBucket+"/";
+	}
+
+	List<String> commands = (List<String>) Utils.makeList(awsPath,
+							      "s3", "ls", "--no-sign-request",
+							      theBucket);
+	String            result = run(commands);
+	List<S3File> files  = new ArrayList<S3File>();
+	for (String line : Utils.split(result, "\n", true, true)) {
+	    S3File file = createFileFromLine(bucket,line,self);
+	    if(file!=null) files.add(file);
+	}
+	return files;
+    }
+
+
 
     /**
      *
@@ -216,7 +265,6 @@ public class S3File extends FileWrapper {
     }    
 
 
-
     public void copyFileTo(java.io.File file) throws Exception {
 	copyFileTo(bucket,file);
     }    
@@ -226,8 +274,14 @@ public class S3File extends FileWrapper {
      * @param args _more_
      */
     public static void main(String[] args) throws Exception {
-        FileWrapper.FileViewer         fileViewer = new FileWrapper.FileViewer() {
+	String dflt = "s3://noaa-nexrad-level2";
+	if(args.length==0) args=new String[]{dflt};
+	final int[] cnt = {0};
+
+        FileWrapper.FileViewer  fileViewer = new FileWrapper.FileViewer() {
 		public int viewFile(int level,FileWrapper f) throws Exception {
+		    if(cnt[0]++>200)
+			return DO_DONTRECURSE;
 		    for(int i=0;i<level;i++)
 			System.err.print("  ");
 		    System.err.print(f.getName());
@@ -242,21 +296,45 @@ public class S3File extends FileWrapper {
             }
         };
 
-
+	boolean doSelf  = false;
+	boolean doRecurse = false;
         for (String path : args) {
+	    if(path.equals("default")) path = dflt;
+	    if(path.equals("-debug")) {
+		debug = true;
+		continue;
+	    }
+	    if(path.equals("-self")) {
+		doSelf = true;
+		continue;
+	    }
+	    if(path.equals("-recurse")) {
+		doRecurse = true;
+		continue;
+	    }	    
+	    if(doSelf) {
+		S3File file = createFile(path);
+		if(file!=null) 
+		    System.err.println("Got:" + file.toStringVerbose());
+		else
+		    System.err.println("Failed:" + path);
+		continue;
+	    }
             FileWrapper        f     = FileWrapper.createFileWrapper(path);
-	    FileWrapper.walkDirectory(f, fileViewer);
-	    if(true) continue;
-
+	    if(doRecurse) {
+		FileWrapper.walkDirectory(f, fileViewer);
+		continue;
+	    }
 
             FileWrapper[] files = f.listFiles();
             if (files == null) {
-                System.err.println("No files");
+                System.err.println("Null files");
             } else {
+		if(files.length==0) {
+		    System.err.println("No files");
+		}
                 for (FileWrapper fw : files) {
-                    System.err.println("F:" + fw.getName() + " size:"
-                                       + fw.length() + " d:"
-                                       + new Date(fw.lastModified()));
+                    System.err.println(fw.toStringVerbose());
                 }
             }
         }

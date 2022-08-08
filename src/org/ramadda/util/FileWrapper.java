@@ -9,6 +9,7 @@ package org.ramadda.util;
 import ucar.unidata.util.Misc;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -71,7 +72,7 @@ public abstract class FileWrapper {
     }    
 
     public static FileWrapper createFileWrapper(String path) {
-	if(path.startsWith("s3:")) {
+	if(path.startsWith(S3File.S3PREFIX)) {
 	    return new S3File(path);
 	}
 	return new FileWrapper.File(path);
@@ -100,6 +101,12 @@ public abstract class FileWrapper {
     public String toString() {
         return path;
     }
+
+
+    public String toStringVerbose() {
+	return this +" size:" + this.length() +" date:" + new Date(this.lastModified());
+    }
+
 
     /**
       * @return _more_
