@@ -64,6 +64,7 @@ import org.ramadda.service.Service;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+import org.ramadda.util.S3File;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TTLCache;
@@ -1622,6 +1623,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setGeocodeioKey(getProperty("geocodeio.key", (String) null));
             GeoUtils.setHereKey(getProperty("here.key", (String) null));	    
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
+            S3File.setAwsPath(getProperty("aws.path", "aws"));
         }
 
 
