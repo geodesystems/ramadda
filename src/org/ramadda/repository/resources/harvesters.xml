@@ -2,12 +2,6 @@
 
 <!--
 
-  <harvester    name="Test Generator"
-                active="false"
-		class="org.ramadda.repository.harvester.TestGenerator"
-                monitor="false"
-		sleep="3"/>
-
 
   <harvester    name="Source Files"
 		grouptemplate = "${dirgroup}"
