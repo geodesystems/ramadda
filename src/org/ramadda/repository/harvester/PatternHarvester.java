@@ -1387,13 +1387,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         if ((typeHandlerToUse == null)
                 && typeHandler.getType().equals(TypeHandler.TYPE_FINDMATCH)) {
-            for (TypeHandler otherTypeHandler :
-                    getRepository().getTypeHandlers()) {
-                if (otherTypeHandler.canHandleResource(filePath, fileName)) {
-                    typeHandlerToUse = otherTypeHandler;
-                    break;
-                }
-            }
+	    typeHandlerToUse = getEntryManager().findDefaultTypeHandler(filePath);
         }
 
         if (typeHandlerToUse == null) {
