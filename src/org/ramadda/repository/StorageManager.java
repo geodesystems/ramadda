@@ -2232,11 +2232,11 @@ public class StorageManager extends RepositoryManager implements PointFile
 	    String fileName = Utils.encodeMD(md5.digest());
 	    File cachedFile =     getCacheFile("s3cache",fileName);
 	    if(!cachedFile.exists()) {
-		System.err.println("from bucket:" + bucket);
-		System.err.println(Utils.getStack(10));
-		S3File.copyFileTo(bucket,cachedFile);
+		//		System.err.println("Copying S3 file from bucket:" + bucket);
+		S3File.copyFileTo(bucket,new File(cachedFile+".part"));
+		moveFile(new File(cachedFile.toString()+".part"), cachedFile);
 	    } else {
-		System.err.println("cached:" + fileName);
+		//		System.err.println("S3 file was cached:" + fileName);
 	    }
 	    return cachedFile;
 	} else {
