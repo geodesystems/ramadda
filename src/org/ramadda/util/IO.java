@@ -21,6 +21,7 @@ import java.net.*;
 
 import java.nio.*;
 import java.nio.channels.*;
+import java.nio.charset.StandardCharsets;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -205,7 +206,8 @@ public class IO {
      * @throws IOException _more_
      */
     public static String readInputStream(InputStream is) throws IOException {
-        return IOUtil.readContents(is);
+	return org.apache.commons.io.IOUtils.toString(is,StandardCharsets.UTF_8);
+	//        return IOUtil.readContents(is);
     }
 
 
