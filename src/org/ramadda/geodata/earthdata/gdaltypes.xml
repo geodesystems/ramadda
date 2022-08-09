@@ -6,12 +6,24 @@
   </type>
 
   <type name="geo_gdal_raster" super="geo_gdal" description="GDAL Raster" foruser="true" xhandler="org.ramadda.geodata.earthdata.GdalTypeHandler" >
+<!--
      <service link="gdal_makethumb"  target="attachment"/>
+-->
      <service link="gdal_info"/>
   </type>
 
   <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal_raster"   pattern="(.*\.tif|.*\.tiff)" >
      <property name="icon" value="/icons/image.gif"/>
+    <wiki_inner><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{information showTitle="false" details="true"}}
++center
+<img width=50% src="{{root}}/entry/action?action=geotiff.makeimage&entryid={{entryid}}">
+-center
+-section
+]]>
+</wiki_inner>
   </type>
 
  <type name="type_nitf"  description="NITF File"   pattern="(.*\.ntf|.*\.NTF)" super="geo_gdal_raster">

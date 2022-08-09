@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.earthdata;
-
+import org.ramadda.repository.auth.AccessException;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.Metadata;
@@ -14,6 +14,7 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceOutput;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -39,6 +40,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class GdalTypeHandler extends GenericTypeHandler {
 
     /**
@@ -70,7 +72,6 @@ public class GdalTypeHandler extends GenericTypeHandler {
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
             throws Exception {
-
         super.handleServiceResults(request, entry, service, output);
         List<Entry> entries = output.getEntries();
         if (entries.size() != 0) {
@@ -170,6 +171,34 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 
         return new double[] { decodeLatLon(toks.get(0)),
                               decodeLatLon(toks.get(1)) };
+    }
+
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+	String action = request.getString("action","");
+	if(!action.equals("geotiff.makeimage")) 
+	    return super.processEntryAction(request, entry);
+	if ( !getAccessManager().canAccessFile(request, entry)) {
+            throw new AccessException("No access to file", request);
+        }
+        request.setCORSHeaderOnResponse();
+	String convert = getRepository().getProperty("ramadda.convert","");
+	if(!Utils.stringDefined(convert))
+	    return new Result(BLANK,
+			      Utils.getInputStream("/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png", GdalTypeHandler.class),
+			      "image/png");
+	File   cachedFile = getStorageManager().getCacheFile("geotiffs", Utils.makeID(entry.getId())+".png");
+	if(!cachedFile.exists()) {
+	    //	    System.err.println("making image:" + cachedFile);
+	    List<String> commands = (List<String>) Utils.makeList(convert,entry.getResource().getPath(),cachedFile.toString());
+	    ProcessBuilder pb      = new ProcessBuilder(commands);
+	    Process        process = pb.start();
+	    int            result  = process.waitFor();
+	}
+	return new Result(BLANK,
+			  getStorageManager().getFileInputStream(cachedFile.toString()),
+			  "image/png");	
+
     }
 
     /**
