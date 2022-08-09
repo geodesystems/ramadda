@@ -27,16 +27,17 @@ import java.util.List;
  */
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
+    public static final int MAX_FILES = 10000;
 
     /**  */
     private TTLCache<String, List<String>> synthIdCache =
         new TTLCache<String, List<String>>(5 * 60 * 1000);
 
-    /**  */
-    private TTLCache<String, Entry> entryCache;
 
     /** _more_ */
     public static final int IDX_ROOT = 0;
+
+    public static final int IDX_EXCLUDE_PATTERNS = 1;
 
 
     /**
@@ -75,9 +76,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         String cacheKey = parentEntry.getId() + "_" + synthId + "_"
                           + rootEntry.getChangeDate();
         List<String> ids = synthIdCache.get(cacheKey);
-        //        List<String> ids = parentEntry.getChildIds();
         if (ids != null) {
-            //      System.err.println("From cache: "+ cacheKey);
             return ids;
         }
 
@@ -95,6 +94,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !Utils.stringDefined(rootId)) {
             return ids;
         }
+	List<String> excludes = null;
+        String exclude = (String) rootEntry.getValue(IDX_EXCLUDE_PATTERNS);
+
+        if (Utils.stringDefined(exclude)) {
+	    excludes  = Utils.split(exclude,"\n",true,true);
+	}
 
         if ( !Utils.stringDefined(synthId)) {
             synthId = rootId;
@@ -109,12 +114,24 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
         //      S3File.debug = true;
         List<S3File> files = doLs(new S3File(synthId), null);
-        System.err.println("S3 Fetching:" + synthId + " GOT:" + files.size());
-
         List<String> children = new ArrayList<String>();
         for (S3File file : files) {
             Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
                                     file);
+	    boolean ok = true;
+	    if(excludes!=null && excludes.size()>0) {
+		for(String pattern: excludes) {
+		    if(file.toString().matches(pattern)) {
+			ok = false;
+			break;
+		    }
+		}
+	    }
+	    if(!ok) {
+		if(debug)
+		    System.err.println("Skipping:" + file);
+		continue;
+	    }
             if (bucketEntry == null) {
                 continue;
             }
@@ -122,6 +139,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             ids.add(bucketEntry.getId());
         }
         parentEntry.setChildIds(ids);
+        System.err.println("S3 Fetching:" + synthId + " GOT:" + ids.size());
+	
         if (debug) {
             System.err.println("CACHING:" + cacheKey);
         }
@@ -192,7 +211,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         //TODO: roll up the path creating the parent entries up to the root
         System.err.println("S3 creating:" + id);
-
         return createBucketEntry(rootEntry, rootEntry, S3File.createFile(id));
     }
 
@@ -239,8 +257,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     public static List<S3File> doLs(S3File base, String path)
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
-
-        return newFile.doList();
+        return newFile.doList(MAX_FILES);
     }
 
 
