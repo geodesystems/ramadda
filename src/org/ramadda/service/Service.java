@@ -1114,7 +1114,7 @@ public class Service extends RepositoryManager {
                 values = new ArrayList<String>();
                 for (Entry entry : entries) {
                     currentEntry = entry;
-                    String filePath = currentEntry.getResource().getPath();
+                    String filePath = getStorageManager().getEntryResourcePath(currentEntry);
                     if (arg.getCopy()) {
                         File newFile =
                             new File(
@@ -2689,7 +2689,7 @@ public class Service extends RepositoryManager {
                               Hashtable<String, List<Entry>> entryMap,
                               Hashtable<String, String> valuesSoFar,
                               File workDir, String value, boolean forDisplay,
-                              Hashtable<String, String> extraMap) {
+                              Hashtable<String, String> extraMap) throws Exception {
 
         if (value == null) {
             return null;
@@ -2749,7 +2749,7 @@ public class Service extends RepositoryManager {
      * @return _more_
      */
     private String applyMacros(Entry entry, String id, String value,
-                               boolean forDisplay) {
+                               boolean forDisplay) throws Exception {
         List<Column> columns = entry.getTypeHandler().getColumns();
         if (columns != null) {
             for (Column column : columns) {
@@ -2771,8 +2771,8 @@ public class Service extends RepositoryManager {
         String fileTail = getStorageManager().getFileTail(entry);
         value = value.replace("${" + id + ".id}", entry.getId());
         value = value.replace("${" + id + ".file}", forDisplay
-                ? getStorageManager().getFileTail(entry)
-                : entry.getResource().getPath());
+			      ? getStorageManager().getFileTail(entry)
+			      : getStorageManager().getEntryResourcePath(entry));
         //? not sure what the macros should be
         //            value = value.replace(macro("entry.file.base"),
         //                                  IOUtil.stripExtension(entry.getName()));
