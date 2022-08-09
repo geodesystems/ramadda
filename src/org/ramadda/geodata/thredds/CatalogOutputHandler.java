@@ -66,6 +66,7 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class CatalogOutputHandler extends OutputHandler {
 
+    /**  */
     private static boolean includeIcon = false;
 
     /** _more_ */
@@ -93,8 +94,7 @@ public class CatalogOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG =
         new OutputType("THREDDS Catalog", "thredds.catalog",
-                       OutputType.TYPE_FEEDS, "",
-                       ICON_CATALOG);
+                       OutputType.TYPE_FEEDS, "", ICON_CATALOG);
 
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG_EMBED =
@@ -247,16 +247,17 @@ public class CatalogOutputHandler extends OutputHandler {
                 link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
             } else {
                 link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
-		if(includeIcon) {
-		    String url = getRepository().getUrlBase() + "/thredds/"
-			+ state.getEntry().getFullName(true) + ".xml";
-		    OutputType outputType = OUTPUT_CATALOG;
-		    link = new Link(url, (outputType.getIcon() == null)
-				    ? null
-				    : getIconUrl(outputType
-						 .getIcon()), outputType.getLabel(),
-				    outputType);
-		}
+                if (includeIcon) {
+                    String url = getRepository().getUrlBase() + "/thredds/"
+                                 + state.getEntry().getFullName(true)
+                                 + ".xml";
+                    OutputType outputType = OUTPUT_CATALOG;
+                    link = new Link(url, (outputType.getIcon() == null)
+                                         ? null
+                                         : getIconUrl(outputType
+                                             .getIcon()), outputType
+                                                 .getLabel(), outputType);
+                }
             }
             links.add(link);
         }
@@ -316,6 +317,7 @@ public class CatalogOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
+     * @param children _more_
      *
      * @return _more_
      *
@@ -327,13 +329,13 @@ public class CatalogOutputHandler extends OutputHandler {
             throws Exception {
 
 
-        boolean justOneEntry = group.isDummy() && (children.size() == 1);
-        int      depth = Math.min(5, request.get(ARG_DEPTH, 1));
+        boolean  justOneEntry = group.isDummy() && (children.size() == 1);
+        int      depth        = Math.min(5, request.get(ARG_DEPTH, 1));
 
-        String   title = (justOneEntry
-                          ? children.get(0).getName()
-                          : group.getName());
-        Document doc   = XmlUtil.makeDocument();
+        String   title        = (justOneEntry
+                                 ? children.get(0).getName()
+                                 : group.getName());
+        Document doc          = XmlUtil.makeDocument();
         Element root = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
                                       new String[] {
             "xmlns",
@@ -381,8 +383,7 @@ public class CatalogOutputHandler extends OutputHandler {
             //            int max  = request.get(ARG_MAX, DB_MAX_ROWS);
             int max  = request.get(ARG_MAX, DB_VIEW_ROWS);
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
-            toCatalogInner(request, group, children, catalogInfo,
-                           topDataset, depth);
+            toCatalogInner(request, group, children, catalogInfo, topDataset, depth);
             if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
                 if (cnt >= max) {
                     String skipArg = request.getString(ARG_SKIP, null);
@@ -403,10 +404,10 @@ public class CatalogOutputHandler extends OutputHandler {
                         request.put(ARG_SKIP, skipArg);
                     }
                 }
-            }
+	    }
 
-            toCatalogInner(request, group, children, catalogInfo, topDataset,
-                           0);
+	    //            toCatalogInner(request, group, children, catalogInfo, topDataset,  0);
+
             if ( !group.isDummy()
                     && (catalogInfo.serviceMap.get(SERVICE_OPENDAP)
                         != null)) {
@@ -424,14 +425,14 @@ public class CatalogOutputHandler extends OutputHandler {
                                             new String[] {
                                                 CatalogUtil.ATTR_NAME,
                         "Latest " + group.getName() });
-		if(includeIcon) {
-		    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
-				   latestDataset,
-				   new String[] { CatalogUtil.ATTR_NAME,
-				       "icon", CatalogUtil.ATTR_VALUE,
-				       request.getAbsoluteUrl(
-							      getRepository().getIconUrl(ICON_OPENDAP)) });
-		}
+                if (includeIcon) {
+                    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                                   latestDataset,
+                                   new String[] { CatalogUtil.ATTR_NAME,
+                            "icon", CatalogUtil.ATTR_VALUE,
+                            request.getAbsoluteUrl(
+                                getRepository().getIconUrl(ICON_OPENDAP)) });
+                }
 
                 topDataset.insertBefore(latestDataset, firstChild);
                 Element service = XmlUtil.create(catalogInfo.doc,
@@ -680,14 +681,13 @@ public class CatalogOutputHandler extends OutputHandler {
                                           url });
 
             if ((icon != null) && (icon.length() > 0)) {
-		if(includeIcon) {
-		    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
-                               subDataset,
-                               new String[] { CatalogUtil.ATTR_NAME,
-                        "icon", CatalogUtil.ATTR_VALUE, icon });
-		}
+                if (includeIcon) {
+                    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                                   subDataset,
+                                   new String[] { CatalogUtil.ATTR_NAME,
+                            "icon", CatalogUtil.ATTR_VALUE, icon });
+                }
             }
-
         }
 
         if (entry.getTypeHandler().canDownload(request, entry)) {
@@ -710,13 +710,14 @@ public class CatalogOutputHandler extends OutputHandler {
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
                     SERVICE_HTTP, CatalogUtil.ATTR_URLPATH, urlPath });
-	    if(includeIcon) {
-		XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
-			       subDataset, new String[] { CatalogUtil.ATTR_NAME,
-				   "icon", CatalogUtil.ATTR_VALUE,
-				   request.getAbsoluteUrl(
-							  getRepository().getIconUrl(ICON_FILE)) });
-	    }
+            if (includeIcon) {
+                XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                               subDataset,
+                               new String[] { CatalogUtil.ATTR_NAME,
+                        "icon", CatalogUtil.ATTR_VALUE,
+                        request.getAbsoluteUrl(
+                            getRepository().getIconUrl(ICON_FILE)) });
+            }
 
         }
 
@@ -816,12 +817,11 @@ public class CatalogOutputHandler extends OutputHandler {
         String getIconUrl =
             request.getAbsoluteUrl(getPageHandler().getIconUrl(request,
                 entry));
-	if(includeIcon) {
-	    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
-			   new String[] { CatalogUtil.ATTR_NAME,
-			       "icon", CatalogUtil.ATTR_VALUE,
-			       getIconUrl });
-	}
+        if (includeIcon) {
+            XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+                           dataset, new String[] { CatalogUtil.ATTR_NAME,
+                    "icon", CatalogUtil.ATTR_VALUE, getIconUrl });
+        }
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
