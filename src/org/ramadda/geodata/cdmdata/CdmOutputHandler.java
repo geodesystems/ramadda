@@ -317,7 +317,9 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
      * @throws Exception problem getting the path
      */
     public String getPath(Request request, Entry entry) throws Exception {
-        return getCdmManager().getPath(request, entry);
+        String path  = getCdmManager().getPath(request, entry);
+	//	System.err.println("P:" +  path);
+	return path;
     }
 
 
