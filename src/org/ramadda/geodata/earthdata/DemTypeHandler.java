@@ -1,0 +1,277 @@
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
+
+package org.ramadda.geodata.earthdata;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.type.*;
+
+
+
+import org.ramadda.service.Service;
+import org.ramadda.service.ServiceOutput;
+import org.ramadda.util.IO;
+import org.ramadda.util.Utils;
+
+
+
+import org.w3c.dom.*;
+
+import ucar.nc2.units.DateUnit;
+
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
+import ucar.unidata.xml.XmlUtil;
+
+import java.io.File;
+
+
+import java.util.Date;
+import java.util.List;
+
+
+/**
+ *
+ *
+ * @author Jeff McWhirter
+ */
+@SuppressWarnings("unchecked")
+public class DemTypeHandler extends GenericTypeHandler {
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param node _more_
+     * @throws Exception On badness
+     */
+    public DemTypeHandler(Repository repository, Element node)
+            throws Exception {
+        super(repository, node);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param service _more_
+     * @param output _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void handleServiceResults(Request request, Entry entry,
+                                     Service service, ServiceOutput output)
+            throws Exception {
+        super.handleServiceResults(request, entry, service, output);
+        List<Entry> entries = output.getEntries();
+        if (entries.size() != 0) {
+            return;
+        }
+        String results = output.getResults();
+        //      System.err.println("results:" + results);
+        /*
+Upper Left  (  -28493.167, 4255884.544) (117d38'27.05"W, 33d56'37.74"N)
+Lower Left  (  -28493.167, 4224973.143) (117d38'27.05"W, 33d39'53.81"N)
+Upper Right (    2358.212, 4255884.544) (117d18'28.38"W, 33d56'37.74"N)
+Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
+        */
+
+        double north = Double.NaN;
+        double south = Double.NaN;
+        double east  = Double.NaN;
+        double west  = Double.NaN;
+        for (String line : StringUtil.split(results, "\n", true, true)) {
+            double[] latlon;
+            if (line.indexOf("Upper Left") >= 0) {
+                latlon = getLatLon(line);
+                if (latlon != null) {
+                    north = ((north != north)
+                             ? latlon[1]
+                             : Math.max(north, latlon[1]));
+                    west  = ((west != west)
+                             ? latlon[0]
+                             : Math.min(west, latlon[0]));
+                }
+            } else if (line.indexOf("Lower Right") >= 0) {
+                latlon = getLatLon(line);
+                if (latlon != null) {
+                    south = ((south != south)
+                             ? latlon[1]
+                             : Math.min(south, latlon[1]));
+                    east  = ((east != east)
+                             ? latlon[0]
+                             : Math.max(east, latlon[0]));
+                }
+            } else if (line.indexOf("Upper Right") >= 0) {
+                latlon = getLatLon(line);
+                if (latlon != null) {
+                    north = ((north != north)
+                             ? latlon[1]
+                             : Math.max(north, latlon[1]));
+                    east  = ((east != east)
+                             ? latlon[0]
+                             : Math.max(east, latlon[0]));
+                }
+            } else if (line.indexOf("Lower Left") >= 0) {
+                latlon = getLatLon(line);
+                if (latlon != null) {
+                    south = ((south != south)
+                             ? latlon[1]
+                             : Math.min(south, latlon[1]));
+                    west  = ((west != west)
+                             ? latlon[0]
+                             : Math.min(west, latlon[0]));
+                }
+
+            } else {}
+        }
+        if ( !Double.isNaN(north)) {
+            entry.setNorth(north);
+        }
+        if ( !Double.isNaN(south)) {
+            entry.setSouth(south);
+        }
+        if ( !Double.isNaN(east)) {
+            entry.setEast(east);
+        }
+        if ( !Double.isNaN(west)) {
+            entry.setWest(west);
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param line _more_
+     *
+     * @return _more_
+     */
+    private static double[] getLatLon(String line) {
+        line = line.trim();
+        line = StringUtil.findPattern(line, ".*\\(([^\\)]+)\\.*");
+        //        System.err.println("TOK: " + line);
+        if (line == null) {
+            return null;
+        }
+
+        List<String> toks = StringUtil.split(line, ",", true, true);
+        if (toks.size() != 2) {
+            return null;
+        }
+
+        return new double[] { decodeLatLon(toks.get(0)),
+                              decodeLatLon(toks.get(1)) };
+    }
+
+    /**
+     *
+     * @param request _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result returnNA(Request request) throws Exception {
+        return new Result(
+            BLANK,
+            Utils.getInputStream(
+                "/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png",
+                DemTypeHandler.class), "image/png");
+    }
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+        if ( !action.equals("dem.makehillshade")) {
+            return super.processEntryAction(request, entry);
+        }
+        if ( !getAccessManager().canAccessFile(request, entry)) {
+            throw new AccessException("No access to file", request);
+        }
+        request.setCORSHeaderOnResponse();
+        String convert = getRepository().getProperty("service.gdal.gdaldem", "");
+        if ( !Utils.stringDefined(convert)) {
+            return returnNA(request);
+        }
+        String fileName = Utils.makeMD5(entry.getId()) + ".png";
+        File cachedFile = getStorageManager().getCacheFile("hillshades",
+                              fileName);
+        if ( !cachedFile.exists()) {
+            try {
+                List<String> commands =
+                    (List<String>) Utils.makeList(convert,
+						  "hillshade",
+						  getStorageManager().getEntryResourcePath(entry),
+						  cachedFile.toString());
+                String[] results = Utils.runCommands(commands);
+                if (Utils.stringDefined(results[0])) {
+                    if (results[0].toLowerCase().indexOf("error") >= 0) {
+                        System.err.println("Results running commands:"
+                                           + commands + "\nError:"
+                                           + results[0]);
+
+                        return returnNA(request);
+                    }
+                }
+            } catch (Exception exc) {
+                System.err.println("Error:" + exc);
+                exc.printStackTrace();
+
+                return returnNA(request);
+            }
+        }
+
+        return new Result(
+            BLANK,
+            getStorageManager().getFileInputStream(cachedFile.toString()),
+            "image/png");
+
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    private static double decodeLatLon(String s) {
+        s = s.replace("d", ":");
+        s = s.replace("'", ":");
+        s = s.replace("\"", "");
+
+        return Misc.decodeLatLon(s);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        String t =
+            "Upper Left  (-180.0000000,  90.0000000) (180d 0' 0.00\"W, 90d 0' 0.00\"N)";
+        getLatLon(t);
+    }
+}

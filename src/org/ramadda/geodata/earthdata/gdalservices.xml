@@ -23,7 +23,7 @@
   </service>
   
 
-  <service label="Create thumbnail image gdal" id="gdal_makethumb" command="${service.gdal.gdal_translate}" outputToStderr="true">
+  <service label="Create thumbnail image" id="gdal_makethumb" command="${service.gdal.gdal_translate}" outputToStderr="true">
     <description>
       Run gdal_translate to make an image from a geotiff
     </description>
@@ -44,6 +44,17 @@
     <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_gdal_raster" xentryPattern="(.*\.tif|.*\.tiff|.*\.ntf)"></arg>
     <output showResults="true" stdout="true"/>
   </service>
+
+  <service label="Create hillshade image" id="gdal_makehillshade" command="${service.gdal.gdaldem}" outputToStderr="true">
+    <description>
+      Run gdaldem to make a hillshade image
+    </description>
+    <arg value="hillshade"/>
+    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_dem" ></arg>
+    <arg value="${file}" file="${entry.file.base}.png"></arg>
+    <output pattern=".*\.png" type="type_image"/>
+  </service>
+
 
 
 </services>
