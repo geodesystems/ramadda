@@ -3108,7 +3108,7 @@ public class EntryManager extends RepositoryManager {
 		for(Metadata metadata: metadataList) {
 		    String type = metadata.getAttr1();
 		    for(String pattern: Utils.split(metadata.getAttr2(),"\n",true, true)) {
-			if(_theResource.matches(pattern)) {
+			if(theResource.matches(pattern)) {
 			    TypeHandler typeHandler =
 				getRepository().getTypeHandler(type);
 			    if(typeHandler!=null) return typeHandler;
