@@ -563,7 +563,7 @@ function RepositoryMap(mapId, params) {
                 _this.handleFeatureout(e.feature);
             },
             nofeatureclick: function(e) {
-                _this.handleNofeatureclick(e.layer);
+                _this.handleNofeatureclick(e,e.layer);
             },
             featureclick: function(e) {
 		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
@@ -654,10 +654,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (zoomFld) {
             zoomFld.obj.value = this.theMap.getMap().getZoom();
         }
+
 	if(this.theMap.selectorMarker) {
             this.theMap.removeMarker(this.theMap.selectorMarker);
+	    this.theMap.selectorMarker = this.theMap.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
 	}
-//	this.theMap.selectorMarker = this.theMap.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
+
 
         if (this.clickListener != null) {
             this.clickListener.handleClick(this, e, lonlat.lon, lonlat.lat);
@@ -1349,7 +1351,7 @@ RepositoryMap.prototype = {
         if (!layer) return false;
         return layer.canSelect;
     },
-    handleNofeatureclick: function(layer) {
+    handleNofeatureclick: function(event,layer) {
 	//We get multiple click events if we have multiple features on the same point
 	if(Utils.isDefined(this.lastClickTime)) {
 	    let time =  new Date().getTime();
@@ -1360,6 +1362,9 @@ RepositoryMap.prototype = {
 
 	this.closePopup();
         HtmlUtils.hidePopupObject();
+
+
+
         if (layer.canSelect === false) return;
         if (layer && layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
@@ -1898,7 +1903,7 @@ RepositoryMap.prototype = {
         for (let a in this.loadedLayers) {
             let layer = this.loadedLayers[a];
             if (layer.selectedFeature) {
-                this.handleNofeatureclick(layer);
+                this.handleNofeatureclick(null, layer);
             }
             for (let f in layer.features) {
                 let feature = layer.features[f];
@@ -3318,6 +3323,7 @@ RepositoryMap.prototype = {
     },
 
     addClickHandler:  function(lonfld, latfld, zoomfld, object) {
+	this.handleClickSelection = true;
         this.lonFldId = lonfld;
         this.latFldId = latfld;
 
@@ -3326,6 +3332,9 @@ RepositoryMap.prototype = {
         if (!this.map) {
             return;
 	}
+
+
+
         this.clickHandler = new OpenLayers.Control.Click();
         this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object);
         this.clickHandler.setTheMap(this);
@@ -3373,9 +3382,8 @@ RepositoryMap.prototype = {
         if (this.fldLat == null)
             this.fldLat = GuiUtils.getDomObject(this.mapId + "_latitude");
 
-
         this.fldLon = GuiUtils.getDomObject(this.argBase + "_longitude");
-        if (!this.fldLon)
+        if (this.fldLon == null)
             this.fldLon = GuiUtils.getDomObject(this.argBase + ".longitude");
         if (this.fldLon == null)
             this.fldLon = GuiUtils.getDomObject(this.mapId + "_longitude");
@@ -3505,7 +3513,6 @@ RepositoryMap.prototype = {
             $("#" + this.lonFldId).val(MapUtils.formatLocationValue(lon));
             $("#" + this.latFldId).val(MapUtils.formatLocationValue(lat));
         }
-
 
 
         let lonlat = MapUtils.createLonLat(lon, lat);
