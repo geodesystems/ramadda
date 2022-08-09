@@ -3056,8 +3056,14 @@ public class EntryManager extends RepositoryManager {
      */
     public TypeHandler findDefaultTypeHandler(String theResource)
 	throws Exception {
+	return findDefaultTypeHandler(null,  theResource);
+    }
+
+    public TypeHandler findDefaultTypeHandler(Entry locale, String theResource)
+	throws Exception {	
         File   newFile   = new File(theResource);
         String shortName = newFile.getName();
+	String _theResource= theResource.toLowerCase();
 	//Sort them so we get the longest pattern first
 	if(sortedTypeHandlers==null) {
 	    List<TypeHandler> tmp = new ArrayList<TypeHandler>();
@@ -3088,11 +3094,33 @@ public class EntryManager extends RepositoryManager {
 
         //now try any case
         for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
-            if (otherTypeHandler.canHandleResource(theResource.toLowerCase(),
+            if (otherTypeHandler.canHandleResource(_theResource,
 						   shortName.toLowerCase())) {
                 return otherTypeHandler;
             }
         }
+
+	if(locale!=null) {
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(getRepository().getAdminRequest(), locale,
+						  new String[]{"entry_type_patterns"}, true);
+	    if(metadataList!=null) {
+		for(Metadata metadata: metadataList) {
+		    String type = metadata.getAttr1();
+		    for(String pattern: Utils.split(metadata.getAttr2(),"\n",true, true)) {
+			if(_theResource.matches(pattern)) {
+			    TypeHandler typeHandler =
+				getRepository().getTypeHandler(type);
+			    if(typeHandler!=null) return typeHandler;
+			}
+
+		    }
+		}
+	    }
+
+	}
+
+
 
         return null;
     }

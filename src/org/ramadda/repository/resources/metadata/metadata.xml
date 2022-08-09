@@ -373,6 +373,13 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
       <element name="Text"/>
     </type>
 
+    <type
+       name="Entry Type Patterns"
+       id="entry_type_patterns">
+      <element name="Entry Type"  suffix="The entry type to use"/>
+      <element name="patterns"  rows="10" suffix="Patterns to match. One per line."/>
+    </type>
+
 
     <type
        name="Wiki Notebook"
@@ -387,7 +394,6 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
        id="csv_commands">
       <element name="Name"/>
       <element name="Commands" 	 rows="10"/>
-
     </type>
     
 
