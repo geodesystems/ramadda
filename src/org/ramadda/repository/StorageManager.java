@@ -894,6 +894,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
     }
 
+    public void clearCacheGroup(String group) {
+	clearCacheGroup(getCacheDir(), group);
+    }
+
+
     /**
      * _more_
      *
