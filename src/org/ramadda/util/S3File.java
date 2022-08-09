@@ -132,6 +132,11 @@ public class S3File extends FileWrapper {
 	    if(!bucket.startsWith("//")) bucket = "/"+bucket;		
 	    bucket = S3PREFIX+bucket;
 	}
+	//check for s3:/...
+	if(bucket.startsWith(S3PREFIX+"/") &&
+	   !bucket.startsWith(S3PREFIX+"//")) {
+	    bucket = bucket.replace(S3PREFIX+"/",S3PREFIX+"//");
+	}
 	//	if(!bucket.endsWith("/")) bucket = bucket+"/";
 	return bucket;
     }
