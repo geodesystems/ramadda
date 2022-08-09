@@ -3483,14 +3483,13 @@ public class TypeHandler extends RepositoryManager {
                         sb.append("Error:" + exc);
                     }
                 } else if (entry.getResource().isFile()) {
-		    System.err.println("FILE:" + entry);
                     resourceLink =
                         getStorageManager().getFileTail(resourceLink);
                     //Not sure why we were doing this but it screws up chinese characters
                     //                    resourceLink =
                     //                        HtmlUtils.urlEncodeExceptSpace(resourceLink);
                     resourceLabel = msgLabel("File");
-                    if (getAccessManager().canDownload(request, entry,true)) {
+                    if (getAccessManager().canDownload(request, entry)) {
 			System.err.println("\tcan download");
                         resourceLink =
                             resourceLink + HtmlUtils.space(2)
@@ -3501,7 +3500,6 @@ public class TypeHandler extends RepositoryManager {
                                     msg("Download"), ""));
 
                     } else {
-			System.err.println("\tcannot download");
                         resourceLink = resourceLink + HtmlUtils.space(2)
                                        + "(" + msg("restricted") + ")";
                     }
