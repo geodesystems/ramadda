@@ -66,6 +66,8 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class CatalogOutputHandler extends OutputHandler {
 
+    private static boolean includeIcon = false;
+
     /** _more_ */
     public static final String ICON_OPENDAP = "/cdmdata/opendap.gif";
 
@@ -245,15 +247,16 @@ public class CatalogOutputHandler extends OutputHandler {
                 link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
             } else {
                 link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
-                /*                String url = getRepository().getUrlBase() + "/thredds/"
-                             + state.getEntry().getFullName(true) + ".xml";
-                OutputType outputType = OUTPUT_CATALOG;
-                link = new Link(url, (outputType.getIcon() == null)
-                                     ? null
-                                     : getIconUrl(outputType
-                                         .getIcon()), outputType.getLabel(),
-                                             outputType);
-                */
+		if(includeIcon) {
+		    String url = getRepository().getUrlBase() + "/thredds/"
+			+ state.getEntry().getFullName(true) + ".xml";
+		    OutputType outputType = OUTPUT_CATALOG;
+		    link = new Link(url, (outputType.getIcon() == null)
+				    ? null
+				    : getIconUrl(outputType
+						 .getIcon()), outputType.getLabel(),
+				    outputType);
+		}
             }
             links.add(link);
         }
@@ -421,13 +424,14 @@ public class CatalogOutputHandler extends OutputHandler {
                                             new String[] {
                                                 CatalogUtil.ATTR_NAME,
                         "Latest " + group.getName() });
-                XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
-                               latestDataset,
-                               new String[] { CatalogUtil.ATTR_NAME,
-                        "icon", CatalogUtil.ATTR_VALUE,
-                        request.getAbsoluteUrl(
-                            getRepository().getIconUrl(ICON_OPENDAP)) });
-
+		if(includeIcon) {
+		    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+				   latestDataset,
+				   new String[] { CatalogUtil.ATTR_NAME,
+				       "icon", CatalogUtil.ATTR_VALUE,
+				       request.getAbsoluteUrl(
+							      getRepository().getIconUrl(ICON_OPENDAP)) });
+		}
 
                 topDataset.insertBefore(latestDataset, firstChild);
                 Element service = XmlUtil.create(catalogInfo.doc,
@@ -676,10 +680,12 @@ public class CatalogOutputHandler extends OutputHandler {
                                           url });
 
             if ((icon != null) && (icon.length() > 0)) {
-                XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+		if(includeIcon) {
+		    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                subDataset,
                                new String[] { CatalogUtil.ATTR_NAME,
                         "icon", CatalogUtil.ATTR_VALUE, icon });
+		}
             }
 
         }
@@ -704,11 +710,13 @@ public class CatalogOutputHandler extends OutputHandler {
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
                     SERVICE_HTTP, CatalogUtil.ATTR_URLPATH, urlPath });
-            XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
-                           subDataset, new String[] { CatalogUtil.ATTR_NAME,
-                    "icon", CatalogUtil.ATTR_VALUE,
-                    request.getAbsoluteUrl(
-                        getRepository().getIconUrl(ICON_FILE)) });
+	    if(includeIcon) {
+		XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
+			       subDataset, new String[] { CatalogUtil.ATTR_NAME,
+				   "icon", CatalogUtil.ATTR_VALUE,
+				   request.getAbsoluteUrl(
+							  getRepository().getIconUrl(ICON_FILE)) });
+	    }
 
         }
 
@@ -808,12 +816,12 @@ public class CatalogOutputHandler extends OutputHandler {
         String getIconUrl =
             request.getAbsoluteUrl(getPageHandler().getIconUrl(request,
                 entry));
-
-        XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
-                       new String[] { CatalogUtil.ATTR_NAME,
-                                      "icon", CatalogUtil.ATTR_VALUE,
-                                      getIconUrl });
-
+	if(includeIcon) {
+	    XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
+			   new String[] { CatalogUtil.ATTR_NAME,
+			       "icon", CatalogUtil.ATTR_VALUE,
+			       getIconUrl });
+	}
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
