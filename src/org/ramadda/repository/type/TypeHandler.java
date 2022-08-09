@@ -3490,7 +3490,6 @@ public class TypeHandler extends RepositoryManager {
                     //                        HtmlUtils.urlEncodeExceptSpace(resourceLink);
                     resourceLabel = msgLabel("File");
                     if (getAccessManager().canDownload(request, entry)) {
-			System.err.println("\tcan download");
                         resourceLink =
                             resourceLink + HtmlUtils.space(2)
                             + HtmlUtils.href(
