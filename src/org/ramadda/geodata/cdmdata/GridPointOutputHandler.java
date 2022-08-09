@@ -742,7 +742,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
 
 
-        sb.append(HtmlUtils.submit("Get Point", ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Get Data", ARG_SUBMIT));
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GRIDASPOINT));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -771,6 +771,11 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         addTimeWidget(request, dates, sb);
 
         List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
+        formats.add(
+            new TwoFacedObject(
+                "Comma Separated Values (CSV)",
+                SupportedFormat.CSV_STREAM.getFormatName()));
+
         formats.add(new TwoFacedObject("JSON", FORMAT_JSON));
         formats.add(
             new TwoFacedObject(
@@ -784,10 +789,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             }
         } catch (UnsatisfiedLinkError e) {}
         */
-        formats.add(
-            new TwoFacedObject(
-                "Comma Separated Values (CSV)",
-                SupportedFormat.CSV_STREAM.getFormatName()));
         formats.add(
             new TwoFacedObject(
                 "XML", SupportedFormat.XML_STREAM.getFormatName()));
@@ -810,7 +811,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                 HtmlUtils.ATTR_CELLSPACING, "0")), 0, 30, 0,
                                     0));
 
-        sb.append(HtmlUtils.submit("Get Point"));
+        sb.append(HtmlUtils.submit("Get Data"));
         //sb.append(submitExtra);
         addUrlShowingForm(sb, formId, "[\".*OpenLayers_Control.*\"]");
         sb.append(HtmlUtils.formClose());
@@ -1013,6 +1014,9 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         String       path   = getPath(request, entry);
 
         GridDataset  gds    = getCdmManager().getGridDataset(entry, path);
+	if(gds==null) {
+	    throw new IllegalStateException("Unable to open the file as a grid");
+	}
         OutputType   output = request.getOutput();
         try {
             if (output.equals(OUTPUT_GRIDASPOINT)) {

@@ -697,6 +697,7 @@ public class CdmManager extends RepositoryManager {
      */
     public boolean canLoadAsCdm(Entry entry) {
 
+	if(isCdmGrid(entry)) return true;
         if (entry.getTypeHandler().isType(
                 OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             return true;
@@ -1008,26 +1009,37 @@ public class CdmManager extends RepositoryManager {
      * @return true if grid is supported
      */
     public boolean canLoadAsGrid(Entry entry) {
+	boolean debug = false;
+        if (isCdmGrid(entry)) {
+	    return true;
+	}
+	if(debug) System.err.println("canLoadAsGrid:" +entry);
         if (isAggregation(entry)) {
+	    if(debug) System.err.println("\tisAgg");
             return true;
         }
         if (isGrads(entry)) {
+	    if(debug) System.err.println("\tisGrads");
             return true;
         }
         String type = entry.getTypeHandler().getType();
         if ((type.indexOf("trajectory") >= 0) || (type.indexOf("point") >= 0)
                 || (type.indexOf("track") >= 0)) {
+	    if(debug) System.err.println("\tisTrack");
             return false;
         }
 
 
         if (excludedByPattern(entry, TYPE_GRID)) {
+	    if(debug) System.err.println("\texcluded by grid");
             return false;
         }
         if (includedByPattern(entry, TYPE_GRID)) {
+	    if(debug) System.err.println("\tincluded by grid");
             return true;
         }
         if ( !canLoadAsCdm(entry)) {
+	    if(debug) System.err.println("\tcan't load as cdm");
             return false;
         }
 
@@ -1061,13 +1073,18 @@ public class CdmManager extends RepositoryManager {
      * @return true if grid is supported
      */
     public boolean canLoadAsCdmGrid(Entry entry) {
+	boolean debug = false;
+	if(debug) System.err.println("canLoadAsCdmGrid:" + entry);
         if (isCdmGrid(entry)) {
+	    if(debug) System.err.println("\tisCdmGrid");
             return true;
         }
         if (isAggregation(entry)) {
+	    if(debug) System.err.println("\tisAgg");
             return true;
         }
         if (isGrads(entry)) {
+	    if(debug) System.err.println("\tisGrads");
             return true;
         }
         if (excludedByPattern(entry, TYPE_CDM_GRID)) {
@@ -1165,7 +1182,6 @@ public class CdmManager extends RepositoryManager {
         //        }
         if (doGridPool) {
             GridDataset dataset = gridPool.get(path);
-
             return dataset;
             //            String location = dataset
         } else {

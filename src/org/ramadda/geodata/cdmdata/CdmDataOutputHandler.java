@@ -315,6 +315,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         Entry entry = state.entry;
 
+
         if ((state.group != null)
                 && getCdmManager().isAggregation(state.group)) {
             entry = state.group;
@@ -327,6 +328,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
+	    System.err.println("can't access file");
             return;
         }
 
@@ -343,9 +345,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             return;
         }
 
-        //        System.err.println("cdm.getlinks-can load as grid:" + getCdmManager().canLoadAsGrid(entry) + " " + getCdmManager().canLoadAsCdmGrid(entry));
-        if (getCdmManager().canLoadAsGrid(entry)
-                || getCdmManager().canLoadAsCdmGrid(entry)) {
+	//	System.err.println("cdm.getlinks-can load as grid:" + getCdmManager().canLoadAsGrid(entry) + " " + getCdmManager().canLoadAsCdmGrid(entry));
+        if (getCdmManager().canLoadAsCdmGrid(entry) ||getCdmManager().canLoadAsGrid(entry)) {
             addOutputLink(request, entry, links, OUTPUT_GRIDSUBSET_FORM);
             addOutputLink(request, entry, links,
                           GridPointOutputHandler.OUTPUT_GRIDASPOINT_FORM);
