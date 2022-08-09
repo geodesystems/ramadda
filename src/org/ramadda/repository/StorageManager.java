@@ -2182,28 +2182,45 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public boolean canDownload(Request request, Entry entry)
             throws Exception {
+	return canDownload(request, entry, false);
+    }
+
+    public boolean canDownload(Request request, Entry entry, boolean debug)
+	throws Exception {	
         Resource resource = entry.getResource();
+	if(debug) System.err.println("StorageManager.can download");
+
         if ( !resource.isFile()) {
+	    if(debug) System.err.println("\tnot a file");
             return false;
         }
         File file = resource.getTheFile();
 
+        if (entry.getResource().isS3()) {
+	    if(debug) System.err.println("\tis S3");
+	    return true;
+	}
+
         //This is for the ftptypehandler where it caches the file
         if (resource.isRemoteFile()) {
+	    if(debug) System.err.println("\tis remote");
             return true;
         }
 
         //Check if its in the storage dir or under of the harvester dirs
         if (isInDownloadArea(file)) {
+	    if(debug) System.err.println("\tis in download area");
             return true;
         }
 
         //Check if its under one of the local file dirs defined by the admin
         if (isLocalFileOk(file)) {
+	    if(debug) System.err.println("\tis local file");
             return true;
         }
 
 
+	if(debug) System.err.println("\treturning false");
         return false;
     }
 

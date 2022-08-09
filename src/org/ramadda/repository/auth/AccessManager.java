@@ -907,30 +907,24 @@ public class AccessManager extends RepositoryManager {
     public boolean canDownload(Request request, Entry entry,boolean debug)
 	throws Exception {	
         if ( !getRepository().getDownloadOk()) {
-	    if(debug) System.err.println("\tcan download-1");
             return false;
         }
         entry = filterEntry(request, entry);
         if (entry == null) {
-	    if(debug) System.err.println("\tcan download-2");
             return false;
         }
 
 
         //        System.err.println ("type: " + entry.getTypeHandler().getClass().getName());
         if ( !entry.getTypeHandler().canDownload(request, entry)) {
-	    if(debug) System.err.println("\tcan download-3");
             return false;
         }
 
         if ( !canDoAction(request, entry, Permission.ACTION_FILE)) {
-	    if(debug) System.err.println("\tcan download-4");
             return false;
         }
 
-        boolean can =  getStorageManager().canDownload(request, entry);
-	if(debug) System.err.println("\tcan download-5:" + can);
-
+        boolean can =  getStorageManager().canDownload(request, entry,debug);
 	return can;
     }
 
