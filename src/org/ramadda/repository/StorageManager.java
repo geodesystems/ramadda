@@ -2349,10 +2349,8 @@ public class StorageManager extends RepositoryManager implements PointFile
         if (entry.getResource().isS3()) {
             String        bucket = entry.getResource().getPath();
             String        ext = IOUtil.getFileExtension(bucket).toLowerCase();
-            MessageDigest md5    = MessageDigest.getInstance("MD5");
-            md5.update(bucket.getBytes());
             String tail       = IOUtil.getFileTail(bucket);
-            String fileName   = Utils.encodeMD(md5.digest()) + tail;
+            String fileName   = Utils.makeMD5(bucket) + tail;
             File   cachedFile = getLongTermCacheFile("s3cache", fileName);
             //      System.err.println("Cache file:" + cachedFile);
             if ( !cachedFile.exists()) {
