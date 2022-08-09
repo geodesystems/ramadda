@@ -3085,6 +3085,15 @@ label {
 .ramadda-logo-image {
 }
 
+.ramadda-image-loading {
+  background: url('icons/progressbig.gif') no-repeat;
+  background-size: 100px 100px;
+  background-position: center; 
+  min-height:100px;
+  min-width:100px;
+}
+
+
 .ramadda-header-label {
     font-size:120%;
     vertical-align: bottom;
