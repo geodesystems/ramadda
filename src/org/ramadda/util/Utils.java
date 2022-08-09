@@ -1601,6 +1601,12 @@ public class Utils extends IO {
         return sb.toString();
     }
 
+    public static String makeMD5(String s) throws Exception {
+	MessageDigest md5    = MessageDigest.getInstance("MD5");
+	md5.update(s.getBytes());
+	return Utils.encodeMD(md5.digest());
+    }
+
 
 
     /**
@@ -2058,6 +2064,27 @@ public class Utils extends IO {
     }
 
 
+
+    /**
+       Run the external commands.
+       Returns a 2-array:
+       array[0] = error results; null if there was no error
+       array[1] = results; null if there was an error
+     */
+    public static String[] runCommands(List<String>commands) throws Exception {
+        ProcessBuilder pb      = new ProcessBuilder(commands);
+        Process        process = pb.start();
+        int            result  = process.waitFor();
+        InputStream    is      = process.getInputStream();
+        InputStream    es      = process.getErrorStream();	
+        String error = IO.readInputStream(es);
+	String results = null;
+	if(error.trim().length()==0) {
+	    results =  IO.readInputStream(is);
+	    error = null;
+	}
+	return new String[]{error,results};
+    }
 
 
     /**
