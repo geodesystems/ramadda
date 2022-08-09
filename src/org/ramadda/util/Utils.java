@@ -2074,7 +2074,6 @@ public class Utils extends IO {
     public static String[] runCommands(List<String>commands) throws Exception {
         ProcessBuilder pb      = new ProcessBuilder(commands);
         Process        process = pb.start();
-        int            result  = process.waitFor();
         InputStream    is      = process.getInputStream();
         InputStream    es      = process.getErrorStream();	
 	String results =  IO.readInputStream(is);
