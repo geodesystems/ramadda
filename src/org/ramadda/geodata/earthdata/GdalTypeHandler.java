@@ -4,9 +4,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.earthdata;
-import org.ramadda.repository.auth.AccessException;
+
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.*;
 
@@ -173,40 +174,74 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                               decodeLatLon(toks.get(1)) };
     }
 
+    /**
+     *
+     * @param request _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result returnNA(Request request) throws Exception {
+        return new Result(
+            BLANK,
+            Utils.getInputStream(
+                "/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png",
+                GdalTypeHandler.class), "image/png");
+    }
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
-	String action = request.getString("action","");
-	if(!action.equals("geotiff.makeimage")) 
-	    return super.processEntryAction(request, entry);
-	if ( !getAccessManager().canAccessFile(request, entry)) {
+        String action = request.getString("action", "");
+        if ( !action.equals("geotiff.makeimage")) {
+            return super.processEntryAction(request, entry);
+        }
+        if ( !getAccessManager().canAccessFile(request, entry)) {
             throw new AccessException("No access to file", request);
         }
         request.setCORSHeaderOnResponse();
-	String convert = getRepository().getProperty("ramadda.convert","");
-	if(!Utils.stringDefined(convert))
-	    return new Result(BLANK,
-			      Utils.getInputStream("/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png", GdalTypeHandler.class),
-			      "image/png");
-	String fileName   = Utils.makeMD5(entry.getId()) + ".png";
-	File   cachedFile = getStorageManager().getCacheFile("geotiffs", fileName);
-	if(!cachedFile.exists()) {
-	    List<String> commands = (List<String>) Utils.makeList(convert,getStorageManager().getEntryResourcePath(entry),
-								  cachedFile.toString());
-	    //	    System.err.println("making image:" + cachedFile);
-	    //	    System.err.println("commands:" + commands);
-	    String[]results = Utils.runCommands(commands);
-	    if(Utils.stringDefined(results[0])) {
-		System.err.println("Results running commands:" + commands+"\nError:" + results[0]);
-		if(results[0].toLowerCase().indexOf("error")>=0) {
-		    return new Result(BLANK,
-				      Utils.getInputStream("/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png", GdalTypeHandler.class),
-				      "image/png");
-		}
-	    }
-	}
-	return new Result(BLANK,
-			  getStorageManager().getFileInputStream(cachedFile.toString()),
-			  "image/png");	
+        String convert = getRepository().getProperty("ramadda.convert", "");
+        if ( !Utils.stringDefined(convert)) {
+            return returnNA(request);
+        }
+        String fileName = Utils.makeMD5(entry.getId()) + ".png";
+        File cachedFile = getStorageManager().getCacheFile("geotiffs",
+                              fileName);
+        if ( !cachedFile.exists()) {
+            try {
+                List<String> commands =
+                    (List<String>) Utils.makeList(convert,
+                        getStorageManager().getEntryResourcePath(entry),
+                        cachedFile.toString());
+                String[] results = Utils.runCommands(commands);
+                if (Utils.stringDefined(results[0])) {
+                    if (results[0].toLowerCase().indexOf("error") >= 0) {
+                        System.err.println("Results running commands:"
+                                           + commands + "\nError:"
+                                           + results[0]);
+
+                        return returnNA(request);
+                    }
+                }
+            } catch (Exception exc) {
+                System.err.println("Error:" + exc);
+                exc.printStackTrace();
+
+                return returnNA(request);
+            }
+        }
+
+        return new Result(
+            BLANK,
+            getStorageManager().getFileInputStream(cachedFile.toString()),
+            "image/png");
 
     }
 
