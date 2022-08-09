@@ -190,7 +190,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 	String fileName   = Utils.makeMD5(entry.getId()) + ".png";
 	File   cachedFile = getStorageManager().getCacheFile("geotiffs", fileName);
 	if(!cachedFile.exists()) {
-	    List<String> commands = (List<String>) Utils.makeList(convert,entry.getResource().getPath(),cachedFile.toString());
+	    List<String> commands = (List<String>) Utils.makeList(convert,getStorageManager().getEntryResourcePath(entry),
+								  cachedFile.toString());
 	    //	    System.err.println("making image:" + cachedFile);
 	    //	    System.err.println("commands:" + commands);
 	    String[]results = Utils.runCommands(commands);
