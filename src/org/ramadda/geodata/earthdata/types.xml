@@ -1,19 +1,5 @@
 <types  supercategory="Geoscience" category="GIS Data">
 
-  <type name="geo_dem" description="DEM File" foruser="true" handler="org.ramadda.geodata.earthdata.DemTypeHandler" >
-     <service link="gdal_makehillshade"  target="attachment"/>
-    <wiki_inner><![CDATA[
-+section # title="{{name}}"
-{{description wikify="true"}}
-{{information showTitle="false" details="true"}}
-+center
-<img width=50% src="{{root}}/entry/action?action=dem.makehillshade&entryid={{entryid}}">
--center
--section
-]]>
-</wiki_inner>
-
-  </type>
 
 
 </types>

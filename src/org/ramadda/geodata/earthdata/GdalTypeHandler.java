@@ -181,7 +181,7 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
      *
      * @throws Exception _more_
      */
-    private Result returnNA(Request request) throws Exception {
+    public Result returnNA(Request request) throws Exception {
         return new Result(
             BLANK,
             Utils.getInputStream(

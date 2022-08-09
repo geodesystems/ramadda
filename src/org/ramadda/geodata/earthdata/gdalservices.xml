@@ -50,7 +50,7 @@
       Run gdaldem to make a hillshade image
     </description>
     <arg value="hillshade"/>
-    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_dem" ></arg>
+    <arg value="${entry.file}"   type="entry" primary="true" entryType="type_geo_dem" ></arg>
     <arg value="${file}" file="${entry.file.base}.png"></arg>
     <output pattern=".*\.png" type="type_image"/>
   </service>
