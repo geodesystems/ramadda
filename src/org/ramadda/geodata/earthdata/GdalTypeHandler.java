@@ -191,18 +191,17 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 	File   cachedFile = getStorageManager().getCacheFile("geotiffs", fileName);
 	if(!cachedFile.exists()) {
 	    List<String> commands = (List<String>) Utils.makeList(convert,entry.getResource().getPath(),cachedFile.toString());
-	    System.err.println("making image:" + cachedFile);
-	    System.err.println("commands:" + commands);
+	    //	    System.err.println("making image:" + cachedFile);
+	    //	    System.err.println("commands:" + commands);
 	    String[]results = Utils.runCommands(commands);
-	    if(results[0]!=null) {
-		System.err.println("Error running commands:" + commands+"\nError:" + results[0]);
-		return new Result(BLANK,
-				  Utils.getInputStream("/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png", GdalTypeHandler.class),
-				  "image/png");
+	    if(Utils.stringDefined(results[0])) {
+		System.err.println("Results running commands:" + commands+"\nError:" + results[0]);
+		if(results[0].toLowerCase().indexOf("error")>=0) {
+		    return new Result(BLANK,
+				      Utils.getInputStream("/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png", GdalTypeHandler.class),
+				      "image/png");
+		}
 	    }
-	    ProcessBuilder pb      = new ProcessBuilder(commands);
-	    Process        process = pb.start();
-	    int            result  = process.waitFor();
 	}
 	return new Result(BLANK,
 			  getStorageManager().getFileInputStream(cachedFile.toString()),
