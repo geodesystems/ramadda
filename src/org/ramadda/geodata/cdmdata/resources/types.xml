@@ -25,7 +25,7 @@
 
   <type name="cdm_grid"  description="Gridded Data File" foruser="true" category="Geoscience Data" 
         handler="org.ramadda.geodata.cdmdata.GridTypeHandler"
-        pattern=".\.grb.*">
+        pattern=".*\.(grb|grib|grib2|grb2)$">
      <property name="icon" value="/cdmdata/grid.gif"/>
   </type>
 
