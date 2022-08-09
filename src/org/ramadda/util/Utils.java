@@ -2077,8 +2077,8 @@ public class Utils extends IO {
         int            result  = process.waitFor();
         InputStream    is      = process.getInputStream();
         InputStream    es      = process.getErrorStream();	
-        String error = IO.readInputStream(es);
 	String results =  IO.readInputStream(is);
+        String error = IO.readInputStream(es);
 	return new String[]{error,results};
     }
 
