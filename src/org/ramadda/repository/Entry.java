@@ -1786,6 +1786,15 @@ public class Entry implements Cloneable {
     }
 
     /**
+      * @return _more_
+     */
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+
+    /**
      * _more_
      *
      * @param that _more_
