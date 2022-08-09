@@ -133,7 +133,7 @@ public class EntryManager extends RepositoryManager {
     public static final int ENTRY_CACHE_LIMIT = 2000;
 
     /** _more_ */
-    public static final int SYNTHENTRY_CACHE_LIMIT = 4000;
+    public static final int SYNTHENTRY_CACHE_LIMIT = 10000;
 
     /** _more_ */
     public static final int ENTRY_CACHE_TTL_MINUTES = 60;
@@ -171,8 +171,6 @@ public class EntryManager extends RepositoryManager {
 
     /** _more_ */
     private TTLCache<String, Entry> synthEntryCache;
-
-
 
 
     /**
@@ -517,13 +515,10 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     private TTLCache<String, Entry> getSynthEntryCache() {
-        //Get a local copy because another thread could clear the cache while we're in the middle of this
         TTLCache<String, Entry> theCache = synthEntryCache;
         if (theCache == null) {
             synthEntryCache = theCache = new TTLCache<String,
 		Entry>(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000,SYNTHENTRY_CACHE_LIMIT,"Synthetic Entry Cache");
-        } else if (theCache.size() > SYNTHENTRY_CACHE_LIMIT) {
-	    theCache.clearCache();
         }
         return theCache;
     }
@@ -552,10 +547,6 @@ public class EntryManager extends RepositoryManager {
      */
     public void cacheSynthEntry(Entry entry) {
         synchronized (MUTEX_ENTRY) {
-            //Check if we are caching
-            if ( !getRepository().doCache()) {
-                return;
-            }
             getSynthEntryCache().put(entry.getId(), entry);
         }
     }
@@ -604,7 +595,6 @@ public class EntryManager extends RepositoryManager {
             if (entry == null) {
                 entry = getSynthEntryCache().get(entryId);
             }
-
             return entry;
         }
     }
@@ -7184,7 +7174,6 @@ public class EntryManager extends RepositoryManager {
                                            abbreviated);
                 }
 
-
                 if (parentEntry == null) {
                     return null;
                 }
@@ -7192,9 +7181,7 @@ public class EntryManager extends RepositoryManager {
                     typeHandler = parentEntry.getTypeHandler();
                 }
 
-
-                entry = typeHandler.makeSynthEntry(request, parentEntry,
-						   syntheticPart);
+		entry = makeSynthEntry(request, typeHandler, parentEntry, entryId, syntheticPart);
                 if (entry == null) {
                     return null;
                 }
@@ -7226,6 +7213,22 @@ public class EntryManager extends RepositoryManager {
         //    }
 
     }
+
+    private Entry makeSynthEntry(Request request, TypeHandler typeHandler,
+				 Entry parentEntry, String id, String syntheticPart)
+	throws Exception {
+	Entry entry;
+
+	entry = getSynthEntryCache().get(id);
+	if(entry!=null)
+	    System.err.println("From cache:" + entry);
+	else {
+	    System.err.println("not in cache:" + id);
+	    entry = typeHandler.makeSynthEntry(request, parentEntry, syntheticPart);
+	}
+	return entry;
+    }
+
 
 
     /**
@@ -10067,23 +10070,6 @@ public class EntryManager extends RepositoryManager {
 
         return processFileTypeHandler;
     }
-
-
-    /*
-      public TypeHandler getSynthEntryTypeHandler(String id)
-      throws Exception {
-      TypeHandler typeHandler = synthEntryHandlers.get(id);
-      if (processFileTypeHandler == null) {
-      ProcessFileTypeHandler tmp =
-      new ProcessFileTypeHandler(getRepository(), null);
-      tmp.setType("type_process");
-      processFileTypeHandler = tmp;
-      }
-
-      return processFileTypeHandler;
-      }
-    */
-
 
     /**
      * _more_
