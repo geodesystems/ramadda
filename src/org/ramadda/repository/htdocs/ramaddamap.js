@@ -1421,7 +1421,7 @@ RepositoryMap.prototype = {
             if (feature.originalStyle) {
                 feature.style = feature.originalStyle;
             }
-            layer.selectCallback(layer,event);
+	    layer.selectCallback(layer,event);
         } else {
             this.showMarkerPopup(feature, true);
         }
@@ -2182,10 +2182,13 @@ RepositoryMap.prototype = {
 	}
 
 
-
-	if(!this.params.doPopup) return;
+	if(!this.params.doPopup) {
+	    return;
+	}
         let out = this.getFeatureText(layer, feature);
-	if(!out) return;
+	if(!out) {
+	    return;
+	}	    
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -2243,6 +2246,7 @@ RepositoryMap.prototype = {
         if (this.getCanSelect(canSelect)) {
             if (selectCallback == null || !Utils.isDefined(selectCallback))
                 selectCallback = function(layer,event) {
+
                     return _this.onFeatureSelect(layer,event)
                 };
             if (unselectCallback == null || !Utils.isDefined(unselectCallback))
