@@ -620,6 +620,7 @@ public class Entry implements Cloneable {
      * @return The resource
      */
     public Resource getResource() {
+	//	if(getName().endsWith(".tif"))   System.err.println("***\n"+Utils.getStack(5));
         return resource;
     }
 
