@@ -2339,6 +2339,16 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
     /**
+       If the entry is a file then return the file path from getEntryFile
+       Else return the resource path
+    */
+    public String getEntryResourcePath(Entry entry) throws Exception  {
+	if(entry.isFile()) return getEntryFile(entry).toString();
+	return entry.getResource().getPath();
+    }
+
+
+    /**
      *
      * @param entry _more_
       * @return _more_
