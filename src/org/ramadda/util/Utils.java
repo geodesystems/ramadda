@@ -2068,8 +2068,8 @@ public class Utils extends IO {
     /**
        Run the external commands.
        Returns a 2-array:
-       array[0] = error results; null if there was no error
-       array[1] = results; null if there was an error
+       array[0] = error results; 
+       array[1] = results; 
      */
     public static String[] runCommands(List<String>commands) throws Exception {
         ProcessBuilder pb      = new ProcessBuilder(commands);
@@ -2078,11 +2078,7 @@ public class Utils extends IO {
         InputStream    is      = process.getInputStream();
         InputStream    es      = process.getErrorStream();	
         String error = IO.readInputStream(es);
-	String results = null;
-	if(error.trim().length()==0) {
-	    results =  IO.readInputStream(is);
-	    error = null;
-	}
+	String results =  IO.readInputStream(is);
 	return new String[]{error,results};
     }
 
