@@ -1529,6 +1529,7 @@ public class CdmManager extends RepositoryManager {
         if (request.exists(ARG_ENTRYID)) {
             entry = getEntryManager().getEntry(request);
         } else {
+	    System.err.println("PATH:" + path.substring(1));
             entry = getEntryManager().getEntry(request, path.substring(1));
             if (entry == null) {
                 entry = getEntryManager().findEntryFromName(request, null, path);
