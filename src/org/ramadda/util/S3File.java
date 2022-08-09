@@ -104,33 +104,19 @@ public class S3File extends FileWrapper {
         if (debug) {
             System.err.println("S3File.run:" + commands);
         }
-        ProcessBuilder pb      = new ProcessBuilder(commands);
-        Process        process = pb.start();
-
-        //      System.err.println("before waitfor");
-        //      int            result  = process.waitFor();
-        //      System.err.println("after waitfor");
-
-        InputStream is      = process.getInputStream();
-        InputStream es      = process.getErrorStream();
-        String      results = IO.readInputStream(is);
-        String      error   = IO.readInputStream(es);
-        if (error.trim().length() > 0) {
+	String[] results  = Utils.runCommands(commands);
+        if (Utils.stringDefined(results[0])) {
             if (debug) {
-                System.err.println("Got error:" + error);
+                System.err.println("Got error:" + results[0]);
             }
 
             throw new RuntimeException("Error executing:" + commands
-                                       + "\nError:" + error);
+                                       + "\nError:" + results[0]);
         }
         if (debug) {
-            System.err.println("Got results:" + results);
+            System.err.println("Got results:" + results[1]);
         }
-        if (debug) {
-            System.err.println("Read:" + results);
-        }
-
-        return results;
+        return results[1];
     }
 
     /**
@@ -139,7 +125,7 @@ public class S3File extends FileWrapper {
     @Override
     public FileWrapper[] doListFiles() {
         try {
-            List<S3File> files = doList(false);
+            List<S3File> files = doList(false,-1);
             if (files == null) {
                 return null;
             }
@@ -251,9 +237,16 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public List<S3File> doList() throws Exception {
-        return doList(false);
+        return doList(false,-1);
     }
 
+    public List<S3File> doList(boolean self) throws Exception {
+	return doList(self, -1);
+    }
+
+    public List<S3File> doList(int max) throws Exception {
+	return doList(false, max);
+    }
 
     /**
      *
@@ -262,7 +255,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public List<S3File> doList(boolean self) throws Exception {
+    public List<S3File> doList(boolean self, int max) throws Exception {
         if ( !self && !isDirectory()) {
             return null;
         }
@@ -281,6 +274,7 @@ public class S3File extends FileWrapper {
             S3File file = createFileFromLine(bucket, line, self);
             if (file != null) {
                 files.add(file);
+		if(max>0 && files.size()>=max) break;
             }
         }
 
