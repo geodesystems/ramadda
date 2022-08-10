@@ -75,4 +75,6 @@ public interface WikiPageHandler extends SystemContext {
     public boolean titleOk(WikiUtil wikiUtil);
 
 
+    public boolean ifBlockOk(WikiUtil wikiUtil, String attrs, StringBuilder ifBuffer);
+
 }

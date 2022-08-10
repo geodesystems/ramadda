@@ -6919,6 +6919,31 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
     }
 
+    /**
+       Implements from WikiPageHandler interface
+       Checks for hasChildrenOfType=<some entry type>
+    */
+    public boolean ifBlockOk(WikiUtil wikiUtil, String attrs, StringBuilder ifBuffer)  {
+	try {
+	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+	    if(entry==null) return true;
+	    Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
+	    Hashtable props = HU.parseHtmlProperties(attrs);
+	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
+	    if(ofType!=null) {
+		for(Entry child: getEntryManager().getChildren(request, entry)) {
+		    if(child.getTypeHandler().isType(ofType)) {
+			return true;
+		    }
+		}
+		return false;
+	    }
+	    return true;
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
     public boolean titleOk(WikiUtil wikiUtil) {
 	if(Misc.equals(wikiUtil.getProperty(PROP_SHOW_TITLE),"false")) {
 	    return false;

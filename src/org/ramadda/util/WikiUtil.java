@@ -795,7 +795,9 @@ public class WikiUtil {
 	
 	List<NamedList<String>> repeatList = null;
         StringBuilder    repeatBuffer = null;
-        StringBuilder    splashBuffer = null;	
+        StringBuilder    splashBuffer = null;
+        StringBuilder    ifBuffer = null;		
+	String ifAttrs = null;
 
         boolean          inScroll          = false;
         String           slidesId           = null;
@@ -935,6 +937,7 @@ public class WikiUtil {
             String text = chunk.buff.toString();
             text = applyPatterns(handler, headings, text);
 	    boolean skipping = false;
+	    
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -961,6 +964,8 @@ public class WikiUtil {
 
                 String tline = line.trim();
 
+
+
                 if (tline.equals("+skip")) {
 		    skipping =true;
 		    continue;
@@ -974,6 +979,33 @@ public class WikiUtil {
 
 
 		if(skipping) {
+		    continue;
+		}
+
+                if (tline.startsWith("+if")) {
+		    ifBuffer = new StringBuilder();
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    ifAttrs = toks.size()>1?toks.get(1):"";
+		    continue;
+		}
+
+                if (tline.startsWith("-if")) {
+		    if(ifBuffer==null) {
+			buff.append("Error: no opening +if<br>");
+			continue;
+		    }
+		    if(handler.ifBlockOk(this, ifAttrs,ifBuffer)) {
+			String s = wikify(ifBuffer.toString(), handler);
+			buff.append(s);
+		    } else {
+		    }
+		    ifBuffer = null;
+		    continue;
+		}		
+		    
+		if(ifBuffer!=null) {
+		    ifBuffer.append(line);
+		    ifBuffer.append("\n");
 		    continue;
 		}
 
@@ -1007,6 +1039,7 @@ public class WikiUtil {
                     buff.append("\n");
                     continue;
                 }
+
 
 
 
