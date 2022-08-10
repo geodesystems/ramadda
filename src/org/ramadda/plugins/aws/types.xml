@@ -2,10 +2,19 @@
 
   <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler">
      <property name="icon" value="/aws/aws.png"/>
+     <property name="form.description.iswiki" value="true"/>
      <property name="form.resource.show" value="false"/>
      <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
      <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
 	     suffix="Patterns to exclude. One per line."/>     
+    <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{tabletree}}
+]]>
+</wiki>
+
+
   </type>
 
   <type name="type_s3_bucket"  isgroup="true"
