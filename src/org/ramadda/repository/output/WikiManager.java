@@ -6931,9 +6931,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    Hashtable props = HU.parseHtmlProperties(attrs);
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
+		List<String> types = Utils.split(ofType,",",true,true);
 		for(Entry child: getEntryManager().getChildren(request, entry)) {
-		    if(child.getTypeHandler().isType(ofType)) {
-			return true;
+		    for(String t: types) {
+			if(child.getTypeHandler().isType(t)) {
+			    return true;
+			}
 		    }
 		}
 		return false;
