@@ -9,6 +9,9 @@
 	     suffix="Patterns to exclude. One per line."/>     
     <wiki><![CDATA[
 +section # title="{{name}}"
++center
+{{field name=root_id}}
+-center
 {{description wikify="true"}}
 {{tabletree}}
 ]]>

@@ -783,7 +783,8 @@ public class CdmManager extends RepositoryManager {
      */
     private boolean isCdmGrid(Entry e) {
         return e.getTypeHandler().isType(TYPE_CDM_GRID)
-               || e.getTypeHandler().isType(TYPE_CLIMATE_MODEL_GRANULE);
+	    || e.getTypeHandler().isType(TYPE_CLIMATE_MODEL_GRANULE) ||
+	    e.getTypeHandler().isType("earth_satellite_modis_aqua");
     }
 
     /**

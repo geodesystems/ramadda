@@ -536,6 +536,7 @@ public class S3File extends FileWrapper {
             }
             if (path.equals("-recurse")) {
                 doRecurse = true;
+		verbose =true;
                 continue;
             }
             if (path.startsWith("-")) {

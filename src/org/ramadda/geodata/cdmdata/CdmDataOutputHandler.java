@@ -144,7 +144,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
-        new OutputType("File Metadata", "data.cdl", OutputType.TYPE_OTHER,
+        new OutputType("File Metadata", "data.cdl",
+		       OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT,
                        OutputType.SUFFIX_NONE,
                        "/cdmdata/page_white_text.png", GROUP_DATA);
 
@@ -562,7 +563,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                              ? "x" + zdim.getLength()
                              : ""));
                 sb.append("</td>");
-                sb.append(HtmlUtils.td("" + tdim.getLength()));
+		if(tdim!=null)
+		    sb.append(HtmlUtils.td("" + tdim.getLength()));
                 sb.append("</tr>");
             }
             sb.append("</tbody></table>");
