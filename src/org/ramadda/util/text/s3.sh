@@ -5,5 +5,5 @@ if [ -z "$JAVA" ]; then
     JAVA=java
 fi
 
-${JAVA} -jar  ${mydir}/lib/seesv.jar "$@"
+${JAVA} -jar  ${mydir}/lib/seesv.jar -s3 "$@"
 

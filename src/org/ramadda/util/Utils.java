@@ -2076,8 +2076,11 @@ public class Utils extends IO {
         Process        process = pb.start();
         InputStream    is      = process.getInputStream();
         InputStream    es      = process.getErrorStream();	
+	//	System.err.println("Read is");
 	String results =  IO.readInputStream(is);
+	//	System.err.println("Read error");
         String error = IO.readInputStream(es);
+	//	System.err.println("Done");
 	return new String[]{error,results};
     }
 

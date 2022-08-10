@@ -171,7 +171,8 @@ public abstract class FileWrapper {
     /**
      * FileViewer  is used to walk dir trees
      */
-    public static interface FileViewer {
+    public static abstract class FileViewer {
+	protected List<FileWrapper> stack = new ArrayList<FileWrapper>();
 
         /** return action */
         public static int DO_CONTINUE = 1;
@@ -191,7 +192,19 @@ public abstract class FileWrapper {
          *
          * @throws Exception on badness
          */
-        public int viewFile(int level, FileWrapper f) throws Exception;
+        public abstract int viewFile(int level, FileWrapper f) throws Exception;
+
+	public void push(FileWrapper f) {
+	    stack.add(f);
+	}
+	public FileWrapper  pop() {
+	    if(stack.size()>0) {
+		FileWrapper f = stack.get(stack.size()-1);
+		stack.remove(stack.size()-1);
+		return f;
+	    }
+	    return null;
+	}	
     }
 
     /**
@@ -220,8 +233,20 @@ public abstract class FileWrapper {
      * @throws Exception on badness_
      */
     public static boolean walkDirectory(FileWrapper dir,
-                                        FileViewer fileViewer, int level)
+                                        FileViewer fileViewer, 
+					int level)
             throws Exception {
+	fileViewer.push(dir);
+	boolean r = walkDirectoryInner(dir,fileViewer, level);
+	fileViewer.pop();
+	return r;
+    }
+
+    private static boolean walkDirectoryInner(FileWrapper dir,
+						  FileViewer fileViewer, 
+						  int level)
+            throws Exception {	
+
         FileWrapper[] children = dir.listFiles();
         if (children == null) {
             return true;
@@ -233,7 +258,7 @@ public abstract class FileWrapper {
                 return false;
             }
             if (what == FileViewer.DO_CONTINUE) {
-                if ( !walkDirectory(children[i], fileViewer, level + 1)) {
+                if ( !walkDirectory(children[i], fileViewer,  level + 1)) {
                     return false;
                 }
             }

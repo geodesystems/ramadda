@@ -18,6 +18,7 @@ package org.ramadda.util.text;
 
 import org.json.*;
 
+import org.ramadda.util.S3File;
 import org.ramadda.util.IO;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
@@ -594,6 +595,7 @@ public class CsvUtil {
 	    }
 	}
 
+
 	//	System.err.println("args:" + args);
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
@@ -718,12 +720,12 @@ public class CsvUtil {
 	    return;
 	}
 
-
-
         if ( !parseArgs(extra, myTextReader, files)) {
             currentArg = null;
             return;
         }
+
+
         currentArg = null;
         if (printArgs) {
             for (String f : files) {
@@ -5022,6 +5024,12 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	if(args.length>0 && args[0].equals("-s3")) {
+	    S3File.main(args);
+	    return;
+	}
+
+
 	/*
 	System.out.println("a,b,c,d,e");
 	for(int i=0;i<100000;i++) {

@@ -5,11 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import java.io.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -350,6 +347,9 @@ public class S3File extends FileWrapper {
         return true;
     }
 
+    static long ms = 0;
+    static int cnt = 0;
+
     /**
      *
      * @param bucket _more_
@@ -358,11 +358,30 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public static void copyFileTo(String bucket, java.io.File file)
-            throws Exception {
+	throws Exception {
+	java.io.File tmp = new java.io.File(file.toString()+".part");
+	bucket = bucket.replace(S3PREFIX+"//","");
+	List<String> toks = Utils.splitUpTo(bucket,"/",2);
+	String host = toks.get(0);
+	String path =toks.get(1);
+	/*
         List<String> commands = (List<String>) Utils.makeList(awsPath, "s3",
                                     "cp", "--no-sign-request", bucket,
-                                    file.toString());
+                                    tmp.toString());
+	*/
+        List<String> commands = (List<String>) Utils.makeList(awsPath, "s3api", "get-object",
+							      "--no-sign-request",
+							      "--bucket",host,
+							      "--key",path,
+							     tmp.toString());
+	//	System.err.println(commands);
+	long t1 = System.currentTimeMillis();
         String result = run(commands);
+	long t2 = System.currentTimeMillis();
+	tmp.renameTo(file);
+	cnt++;
+	ms+=(t2-t1);
+	//	System.err.println("#: " +bucket +" " + cnt +" " +(ms/cnt));
     }
 
 
@@ -375,6 +394,85 @@ public class S3File extends FileWrapper {
     public void copyFileTo(java.io.File file) throws Exception {
         copyFileTo(bucket, file);
     }
+
+    public static void usage(String msg) {
+	System.err.println(msg);
+	System.err.println("Usage:\nS3File <-download  download the files>  <-makedirs make a tree when downloading files> <-overwrite overwrite the files when downloading> <-recurse  recurse down the tree when listing> <-self print out the details about the bucket> ... one or more buckets");
+	System.exit(0);
+    }
+
+    static class MyFileViewer extends FileWrapper.FileViewer {
+	boolean download;
+	boolean makeDirs;
+	boolean verbose;
+	boolean overWrite;	
+	List<String> excludes;
+
+	public MyFileViewer(boolean download, boolean makeDirs,boolean overWrite, boolean verbose,List<String> excludes) {
+	    this.download = download;
+	    this.makeDirs = makeDirs;
+	    this.overWrite = overWrite;
+	    this.verbose= verbose;
+	    this.excludes = excludes;
+	}
+	private void print(String msg) {
+	    if(verbose) System.err.print(msg);
+	}
+	public int viewFile(int level, FileWrapper f) throws Exception {
+	    for(String exclude: excludes) {
+		if(f.toString().matches(exclude))
+		    return DO_DONTRECURSE;
+		}
+	    //                if (cnt[0]++ > 200) {
+	    //                    return DO_DONTRECURSE;
+	    //                }
+	    for (int i = 0; i < level; i++) {
+		print("  ");
+	    }
+	    if ( !f.isDirectory()) {
+		print("FILE:" + f.getName() +" " + f.length());
+		if(download) {
+		    String path = f.toString();
+		    print(" downloading... ");
+		    java.io.File dir  = new java.io.File(".");
+		    if(makeDirs) {
+			for(FileWrapper fv: stack) {
+			    dir = new java.io.File(dir,fv.getName());
+			    if(!dir.exists()) {
+				print(" dir:" +dir +" ");
+				dir.mkdirs();
+			    }
+			}
+		    }
+
+		    java.io.File dest;
+		    if(makeDirs) {
+			dest =  new java.io.File(dir,f.getName());
+		    } else {
+			dest = new java.io.File(f.getName());
+		    }
+
+		    if(dest.exists() && !overWrite) {
+			print(" exists");
+		    } else {
+			//			print(" copying file:" +dest);
+			f.copyFileTo(dest);
+		    }
+		}
+	    }  else {
+		print(f.getName());
+	    }
+	    print("\n");
+	    if (f.isDirectory()) {
+		return DO_CONTINUE;
+	    } else {
+		return DO_DONTRECURSE;
+	    }
+	}
+    }
+
+
+
 
     /**
      *
@@ -389,31 +487,19 @@ public class S3File extends FileWrapper {
             args = new String[] { dflt };
         }
         final int[]            cnt        = { 0 };
-
-        FileWrapper.FileViewer fileViewer = new FileWrapper.FileViewer() {
-            public int viewFile(int level, FileWrapper f) throws Exception {
-                if (cnt[0]++ > 200) {
-                    return DO_DONTRECURSE;
-                }
-                for (int i = 0; i < level; i++) {
-                    System.err.print("  ");
-                }
-                System.err.print(f.getName());
-                if ( !f.isDirectory()) {
-                    System.err.print(" " + f.length());
-                }
-                System.err.println("");
-                if (f.isDirectory()) {
-                    return DO_CONTINUE;
-                } else {
-                    return DO_DONTRECURSE;
-                }
-            }
-        };
-
+        List<String> excludes = new ArrayList<String>();
+        boolean doDownload =false;
+        boolean makeDirs= false;
+	boolean overWrite= false;
         boolean doSelf    = false;
         boolean doRecurse = false;
-        for (String path : args) {
+        boolean verbose= false;	
+	for (int i=0;i<args.length;i++) {
+	    String path =args[i];
+	    
+            if (path.equals("-s3")) {
+		continue;
+	    }
             if (path.equals("default")) {
                 path = dflt;
             }
@@ -421,6 +507,29 @@ public class S3File extends FileWrapper {
                 debug = true;
                 continue;
             }
+	    if(path.equals("-overwrite")) {
+		overWrite = true;
+		continue;
+	    }
+	    if(path.equals("-verbose")) {
+		verbose= true;	
+		continue;
+	    }
+            if (path.equals("-exclude")) {
+		if(i==args.length-1) {
+		    usage("Bad exclude arg");
+		}
+		excludes.add(args[++i]);
+                continue;
+	    }
+            if (path.equals("-makedirs")) {
+                makeDirs= true;
+                continue;
+	    }
+            if (path.equals("-download")) {
+                doDownload= true;
+                continue;
+            }	    
             if (path.equals("-self")) {
                 doSelf = true;
                 continue;
@@ -429,31 +538,44 @@ public class S3File extends FileWrapper {
                 doRecurse = true;
                 continue;
             }
+            if (path.startsWith("-")) {
+		usage("Unknown arg:" + path);
+	    }
             if (doSelf) {
                 S3File file = createFile(path);
                 if (file != null) {
-                    System.out.println("Got:" + file.toStringVerbose());
+		    System.out.println("Got:" + file.toStringVerbose());
                 } else {
                     System.out.println("Failed:" + path);
                 }
                 continue;
             }
             FileWrapper f = FileWrapper.createFileWrapper(path);
-            if (doRecurse) {
-                FileWrapper.walkDirectory(f, fileViewer);
+	    if (doRecurse) {
+                FileWrapper.walkDirectory(f, new MyFileViewer(doDownload, makeDirs,overWrite,verbose,excludes),0);
                 continue;
             }
 
+	    if(doDownload) {
+		java.io.File dest = new java.io.File(f.getName());
+		System.err.println("Downloading:" + f);
+		f.copyFileTo(dest);
+		continue;
+	    }
 
             FileWrapper[] files = f.listFiles();
             if (files == null) {
-                System.out.println("Null files");
+                System.out.println("No files");
             } else {
                 if (files.length == 0) {
                     System.out.println("No files");
                 }
                 for (FileWrapper fw : files) {
-                    System.out.println(fw.toStringVerbose());
+		    if(fw.isDirectory()) {
+			System.out.println("dir:" +fw.getName());
+		    } else {
+			System.out.println("file:"+fw.toStringVerbose());
+		    }
                 }
             }
         }
