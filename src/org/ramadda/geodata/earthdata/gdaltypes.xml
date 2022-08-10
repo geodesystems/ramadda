@@ -34,6 +34,7 @@
 
 
   <type name="type_geo_dem" super="geo_gdal_raster" description="DEM File" foruser="true" handler="org.ramadda.geodata.earthdata.DemTypeHandler" >
+     <property name="icon" value="/earthdata/dem.png"/>
      <service link="gdal_makehillshade"  target="attachment"/>
     <wiki_inner><![CDATA[
 +section # title="{{name}}"
