@@ -477,6 +477,8 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(buttons);
         sb.append(HtmlUtils.space(2));
         sb.append(xmlLink);
+        sb.append(HtmlUtils.space(2));
+	sb.append(harvester.getRunLink(request,false));
         StringBuffer formSB = new StringBuffer();
         formSB.append(HtmlUtils.formTable());
         harvester.createEditForm(request, formSB);
@@ -684,10 +686,13 @@ public class HarvesterManager extends RepositoryManager {
             if (harvester.getIsEditable()) {
                 String icon =
                     edit =
-                    HtmlUtils.href(request.makeUrl(URL_HARVESTERS_FORM,
-                        ARG_HARVESTER_ID,
-                        harvester.getId()), getIconImage(ICON_EDIT, "title",
-                            msg("Edit")));
+		    HU.div(HtmlUtils.href(request.makeUrl(URL_HARVESTERS_FORM,
+							  ARG_HARVESTER_ID,
+							  harvester.getId()),"Edit",
+					  HU.cssClass("ramadda-clickable")),									
+			 
+			   HU.cssClass("ramadda-button")); 
+					  //getIconImage(ICON_EDIT, "title", msg("Edit")));
             }
             cnt++;
             String rowAttributes = HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
