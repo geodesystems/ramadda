@@ -101,6 +101,7 @@ public class ExtEditor extends RepositoryManager {
 
     /** _more_ */
     public static final String ARG_EXTEDIT_TEMPORAL = "extedit.temporal";
+    public static final String ARG_EXTEDIT_METADATA = "extedit.metadata";    
 
     /** _more_ */
     public static final String ARG_EXTEDIT_MD5 = "extedit.md5";
@@ -202,8 +203,8 @@ public class ExtEditor extends RepositoryManager {
             final boolean doMd5     = request.get(ARG_EXTEDIT_MD5, false);
             final boolean doSpatial = request.get(ARG_EXTEDIT_SPATIAL, false);
             final boolean doThumbnail = request.get(ARG_EXTEDIT_THUMBNAIL, false);
-            final boolean doTemporal = request.get(ARG_EXTEDIT_TEMPORAL,
-                                           false);
+            final boolean doTemporal = request.get(ARG_EXTEDIT_TEMPORAL, false);
+	    final boolean doMetadata = request.get(ARG_EXTEDIT_METADATA, false);
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(Object actionId) throws Exception {
                     EntryVisitor walker = new EntryVisitor(request,
@@ -225,6 +226,18 @@ public class ExtEditor extends RepositoryManager {
 				    }
 				}
 			    }
+
+			    if(doMetadata) {
+				List<Entry> entries = new ArrayList<Entry>();
+				entries.add(entry);
+				List<Entry> changedEntries = getEntryManager().addInitialMetadata(request,
+								     entries,
+								     false,false);
+				entry.getTypeHandler().addInitialMetadata(request, entry);
+				changed = true;
+			    }
+
+
 
                             if (doSpatial) {
                                 Rectangle2D.Double rect = getEntryUtil().getBounds(children);
@@ -626,13 +639,17 @@ public class ExtEditor extends RepositoryManager {
 	    if(form.equals(ARG_EXTEDIT_EDIT)) {
 		opener.accept("Spatial and Temporal Metadata");
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_SPATIAL, "true",
-						    false, "Set spatial metadata"));
+					     request.get(ARG_EXTEDIT_SPATIAL,false), "Set spatial metadata"));
 		sb.append(HU.br());
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_TEMPORAL, "true",
-						    false, "Set temporal metadata"));
+					     request.get(ARG_EXTEDIT_TEMPORAL,false), "Set temporal metadata"));
+		sb.append(HU.br());
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_METADATA, "true",
+					     request.get(ARG_EXTEDIT_METADATA,false), "Set other metadata"));		
+
 		sb.append(HU.br());
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
-						    false, "Add image thumbnails"));	
+					     request.get(ARG_EXTEDIT_THUMBNAIL,false), "Add image thumbnails"));	
 		sb.append(HU.br());
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
 						    true, "Recurse"));
