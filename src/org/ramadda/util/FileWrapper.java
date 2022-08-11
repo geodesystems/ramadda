@@ -192,7 +192,7 @@ public abstract class FileWrapper {
          *
          * @throws Exception on badness
          */
-        public abstract int viewFile(int level, FileWrapper f) throws Exception;
+        public abstract int viewFile(int level, FileWrapper f,FileWrapper[] children) throws Exception;
 
 	public void push(FileWrapper f) {
 	    stack.add(f);
@@ -245,15 +245,14 @@ public abstract class FileWrapper {
     private static boolean walkDirectoryInner(FileWrapper dir,
 						  FileViewer fileViewer, 
 						  int level)
-            throws Exception {	
-
+	throws Exception {	
         FileWrapper[] children = dir.listFiles();
         if (children == null) {
             return true;
         }
         children = sortFilesOnName(children);
         for (int i = 0; i < children.length; i++) {
-            int what = fileViewer.viewFile(level, children[i]);
+            int what = fileViewer.viewFile(level, children[i], children);
             if (what == FileViewer.DO_STOP) {
                 return false;
             }

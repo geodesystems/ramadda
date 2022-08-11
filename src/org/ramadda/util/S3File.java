@@ -6,11 +6,13 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 import java.io.*;
+import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 
 /**
  * Class description
@@ -179,7 +181,6 @@ public class S3File extends FileWrapper {
         if ((files != null) && (files.size() > 0)) {
             return files.get(0);
         }
-
         return null;
     }
 
@@ -253,6 +254,11 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public List<S3File> doList(boolean self, int max) throws Exception {
+	return doList(self, max,-1);
+    }
+
+    public List<S3File> doList(boolean self, int max,double percent) throws Exception {	
+	System.err.println("S3.doList"+ percent);
         if ( !self && !isDirectory()) {
             return null;
         }
@@ -267,8 +273,16 @@ public class S3File extends FileWrapper {
                                     "ls", "--no-sign-request", theBucket);
         String       result = run(commands);
         List<S3File> files  = new ArrayList<S3File>();
-        for (String line : Utils.split(result, "\n", true, true)) {
-            S3File file = createFileFromLine(bucket, line, self);
+	List<String> lines = Utils.split(result, "\n", true, true) ;
+	System.err.println("percent:" + percent);
+	for (String line : lines) {
+	    if(percent>0 && lines.size()>100) {
+		if(Math.random()>percent) {
+		    System.err.println("SKIPPING");
+		    continue;
+		}		    
+	    }
+	    S3File file = createFileFromLine(bucket, line, self);
             if (file != null) {
                 files.add(file);
 		if(max>0 && files.size()>=max) break;
@@ -359,11 +373,44 @@ public class S3File extends FileWrapper {
      */
     public static void copyFileTo(String bucket, java.io.File file)
 	throws Exception {
+	//This can give the presigned URL
+
 	java.io.File tmp = new java.io.File(file.toString()+".part");
 	bucket = bucket.replace(S3PREFIX+"//","");
 	List<String> toks = Utils.splitUpTo(bucket,"/",2);
 	String host = toks.get(0);
 	String path =toks.get(1);
+	/*
+	String surl  = "https://" + host +".s3.amazonaws.com/" + HtmlUtils.urlEncodeSpace(path);
+	List<String> presign = (List<String>) Utils.makeList(awsPath,"s3","presign",bucket);
+	String presignUrl = run(presign);
+	surl = presignUrl;
+	int pause= 500;
+	for(int tries=0;tries<10;tries++) {
+	    URL url = new URL(surl);
+	    URLConnection connection = url.openConnection();
+	    HttpURLConnection huc      = (HttpURLConnection) connection;
+	    try {
+		FileOutputStream fos = new FileOutputStream(tmp);
+		IOUtil.writeTo(huc.getInputStream(), fos);
+		fos.close();
+		tmp.renameTo(file);
+	    } catch(Exception exc) {
+		//Check for the slow down
+		int               response = huc.getResponseCode();
+		if(response==503) {
+		    System.err.println("****** Had a pause request ******");
+		    Misc.sleep(pause);
+		    pause+=500;
+		    continue;
+		}
+		throw exc;
+	    }
+	}
+	if(true)
+	    return;
+	*/
+
 	/*
         List<String> commands = (List<String>) Utils.makeList(awsPath, "s3",
                                     "cp", "--no-sign-request", bucket,
@@ -397,7 +444,7 @@ public class S3File extends FileWrapper {
 
     public static void usage(String msg) {
 	System.err.println(msg);
-	System.err.println("Usage:\nS3File <-download  download the files>  <-makedirs make a tree when downloading files> <-overwrite overwrite the files when downloading> <-recurse  recurse down the tree when listing> <-self print out the details about the bucket> ... one or more buckets");
+	System.err.println("Usage:\nS3File \n\t<-download  download the files>  \n\t<-makedirs make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recurse  recurse down the tree when listing> \n\t<-self print out the details about the bucket> ... one or more buckets");
 	System.exit(0);
     }
 
@@ -406,32 +453,45 @@ public class S3File extends FileWrapper {
 	boolean makeDirs;
 	boolean verbose;
 	boolean overWrite;	
+	int sizeLimit = -1;
+	double percent = -1;
 	List<String> excludes;
 
-	public MyFileViewer(boolean download, boolean makeDirs,boolean overWrite, boolean verbose,List<String> excludes) {
+	public MyFileViewer(boolean download, boolean makeDirs,boolean overWrite, int sizeLimit, double percent, boolean verbose,List<String> excludes) {
 	    this.download = download;
 	    this.makeDirs = makeDirs;
 	    this.overWrite = overWrite;
+	    this.sizeLimit = sizeLimit;
+	    this.percent = percent;
 	    this.verbose= verbose;
 	    this.excludes = excludes;
 	}
 	private void print(String msg) {
-	    if(verbose) System.err.print(msg);
+	    if(verbose) 
+		System.out.print(msg);
 	}
-	public int viewFile(int level, FileWrapper f) throws Exception {
+	private boolean downloadOk(FileWrapper f, FileWrapper[] children) {
+	    //only check this when there are logs of siblings
+	    if(percent>0 && children!=null && children.length>100) {
+		if(Math.random()>percent) {
+		    //		    System.err.println("skipping:" + f.getName());
+		    return false;
+		}
+	    }
+	    if(sizeLimit<=0) return true;
+	    return f.length()<(sizeLimit*1000000);
+	}
+	public int viewFile(int level, FileWrapper f, FileWrapper[] children) throws Exception {
 	    for(String exclude: excludes) {
 		if(f.toString().matches(exclude))
 		    return DO_DONTRECURSE;
-		}
-	    //                if (cnt[0]++ > 200) {
-	    //                    return DO_DONTRECURSE;
-	    //                }
+	    }
 	    for (int i = 0; i < level; i++) {
 		print("  ");
 	    }
 	    if ( !f.isDirectory()) {
-		print("FILE:" + f.getName() +" " + f.length());
-		if(download) {
+		if(download && downloadOk(f,children)) {
+		    print("file:" + f.getName() +" " + Utils.formatFileLength(f.length()));
 		    String path = f.toString();
 		    print(" downloading... ");
 		    java.io.File dir  = new java.io.File(".");
@@ -458,11 +518,12 @@ public class S3File extends FileWrapper {
 			//			print(" copying file:" +dest);
 			f.copyFileTo(dest);
 		    }
+		    print("\n");
+		    return DO_DONTRECURSE;
 		}
 	    }  else {
 		print(f.getName());
 	    }
-	    print("\n");
 	    if (f.isDirectory()) {
 		return DO_CONTINUE;
 	    } else {
@@ -494,6 +555,8 @@ public class S3File extends FileWrapper {
         boolean doSelf    = false;
         boolean doRecurse = false;
         boolean verbose= false;	
+	double percent = -1;
+	int sizeLimit = -1;
 	for (int i=0;i<args.length;i++) {
 	    String path =args[i];
 	    
@@ -522,6 +585,21 @@ public class S3File extends FileWrapper {
 		excludes.add(args[++i]);
                 continue;
 	    }
+            if (path.equals("-sizelimit")) {
+		if(i==args.length-1) {
+		    usage("Bad limit arg");
+		}
+		sizeLimit = Integer.parseInt(args[++i]);
+                continue;
+	    }
+            if (path.equals("-percent")) {
+		if(i==args.length-1) {
+		    usage("Bad percent arg");
+		}
+		percent = Double.parseDouble(args[++i]);
+                continue;
+	    }	    
+
             if (path.equals("-makedirs")) {
                 makeDirs= true;
                 continue;
@@ -553,14 +631,16 @@ public class S3File extends FileWrapper {
             }
             FileWrapper f = FileWrapper.createFileWrapper(path);
 	    if (doRecurse) {
-                FileWrapper.walkDirectory(f, new MyFileViewer(doDownload, makeDirs,overWrite,verbose,excludes),0);
+                FileWrapper.walkDirectory(f, new MyFileViewer(doDownload, makeDirs,overWrite,sizeLimit,percent,verbose,excludes),0);
                 continue;
             }
 
 	    if(doDownload) {
 		java.io.File dest = new java.io.File(f.getName());
 		System.err.println("Downloading:" + f);
-		f.copyFileTo(dest);
+		//		for(int x=0;x<10;x++) {
+		    f.copyFileTo(dest);
+		    //		}
 		continue;
 	    }
 
