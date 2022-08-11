@@ -916,7 +916,7 @@ public class Entry implements Cloneable {
      *
      * @return  a String representation of the indexed value
      */
-    public String getValue(int index, String dflt) {
+    public String getStringValue(int index, String dflt) {
         if ((values == null) || (index < 0) || (index >= values.length)
                 || (values[index] == null)) {
             return dflt;
@@ -933,8 +933,8 @@ public class Entry implements Cloneable {
      *
      * @return  the double value (or dflt)
      */
-    public double getValue(int index, double dflt) {
-        String sValue = getValue(index, "");
+    public double getDoubleValue(int index, double dflt) {
+        String sValue = getStringValue(index, "");
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -956,8 +956,8 @@ public class Entry implements Cloneable {
      *
      * @return _more_
      */
-    public int getValue(int index, int dflt) {
-        String sValue = getValue(index, "");
+    public int getIntValue(int index, int dflt) {
+        String sValue = getStringValue(index, "");
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -979,8 +979,8 @@ public class Entry implements Cloneable {
      *
      * @return  the boolean value (or dflt)
      */
-    public boolean getValue(int index, boolean dflt) {
-        String sValue = getValue(index, "");
+    public boolean getBooleanValue(int index, boolean dflt) {
+        String sValue = getStringValue(index, "");
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -992,6 +992,14 @@ public class Entry implements Cloneable {
         }
 
         return retval;
+    }
+
+    public void setValue(String col, Object v) {
+	Column column = getTypeHandler().findColumn(col);
+	if(column == null) {
+	    throw new IllegalArgumentException("Bad column:" +col);
+	}
+	setValue(column.getOffset(),v);
     }
 
     /**
