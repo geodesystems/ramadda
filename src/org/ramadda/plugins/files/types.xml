@@ -15,17 +15,25 @@
   </type>
 
 
-  <type name="type_file"  description="Text File" pattern="(.*\.xml)"  category="Documents">
-     <property name="icon" value="/icons/xml.png"/>
-     <wiki><![CDATA[
+<type name="type_file_text"  description="Text File" pattern="(.*\.txt)"  category="Documents">
+<property name="icon" value="/icons/text.png"/>
+<wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-{{embed as=file   maxheight="600"  }}
+{{embed as=file   maxheight="600" maxSize="10000" }}
 -section
 ]]>
 </wiki>
-  </type>
+</type>
   
+<!--
+<type name="type_file"  description="Text File" pattern="(.*\.txt)"  category="Documents">
+-->
+
+<type name="type_file_readme"  super="type_file_text" description="README" pattern=".*(readme|README)(.txt)?"  category="Documents">
+    <property name="icon" value="/icons/book-open.png"/>
+</type>
+
 
 <type name="type_file_javascript"  description="Javascript File" pattern=".*\.js"  category="Documents">
     <property name="icon" value="/icons/js.png"/>
