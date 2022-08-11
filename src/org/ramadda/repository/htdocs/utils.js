@@ -3567,6 +3567,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    initToggleAll:function(cbx,selector) {
+	jqid(cbx).change(function(){
+	    let on = $(this).is(':checked');
+	    console.log($(selector).length);
+	    $(selector).prop('checked',on);
+	});
+    },
     getEmojis: function(cb) {
 	if(this.emojis) {
 	    cb(this.emojis);
