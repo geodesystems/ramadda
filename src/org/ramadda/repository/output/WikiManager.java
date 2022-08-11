@@ -2144,12 +2144,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             boolean doUrl = getProperty(wikiUtil, props, "dourl",   false);
-
-
 	    if(doUrl) {
 	    } else {
 		if ( !entry.isFile()
-		     || ( !isTextFile(entry.getResource().getPath())
+		     || ( !isTextFile(entry, entry.getResource().getPath())
 			  && !getProperty(wikiUtil, props, ATTR_FORCE,
 					  false))) {
 		    return "Entry isn't a text file";
@@ -2160,8 +2158,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(doUrl) {
 		fis = getStorageManager().getInputStream(entry.getResource().getPath());
 	    } else {
-		fis = getStorageManager().getFileInputStream(
-							     entry.getResource().getPath());
+		fis = getStorageManager().getFileInputStream(getStorageManager().getEntryResourcePath(entry));
 	    }
             BufferedReader br =
                 new BufferedReader(new InputStreamReader(fis));
@@ -2177,12 +2174,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             int    lineNumber = 0;
             int    cnt        = 0;
             String line;
+	    int maxSize = Utils.getProperty(props,"maxSize",-1);
+	    int size = 0;
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 if (skipLines > 0) {
                     skipLines--;
                     continue;
                 }
+		size+=line.length();
+		if(maxSize>=0 && size>maxSize) break;
                 cnt++;
 		if(!embedWikify && !raw) {
 		    line = line.replaceAll("<", "&lt;");
