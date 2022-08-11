@@ -527,6 +527,7 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+
     /**
      * _more_
      *
@@ -1017,6 +1018,12 @@ public class RepositoryManager implements RepositorySource, Constants,
 
     /** _more_ */
     private HashSet<String> textSuffixes;
+
+    public boolean isTextFile(Entry entry, String file) {
+	if(entry.getTypeHandler().isType("type_file_text")) return true;
+	return isTextFile(file);
+    }
+
 
     /**
      * _more_
