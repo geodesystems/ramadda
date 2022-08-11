@@ -90,6 +90,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
 
+    public static final int COPY_LIMIT = 5000;
+
     /** _more_ */
     static int xcnt;
 
@@ -334,6 +336,7 @@ public class TypeHandler extends RepositoryManager {
 
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
+    private boolean isSynthType = false;    
 
     /**  */
     private boolean adminOnly = false;
@@ -562,6 +565,8 @@ public class TypeHandler extends RepositoryManager {
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
                         forUser));
+            isSynthType = Utils.getAttributeOrTag(node, "issynth",
+						  XmlUtil.getAttributeFromTree(node, "issynth",false));
             adminOnly = Utils.getAttributeOrTag(node, "adminonly",
                     XmlUtil.getAttributeFromTree(node, "adminonly", false));
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
@@ -1123,6 +1128,16 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
+	if(isSynthType()) {
+	    if(entry.getTypeHandler().isSynthType()) {
+		if(entry.isGroup()) {
+		    return getRepository().getGroupTypeHandler();
+		} else {
+		    return getRepository().getFileTypeHandler();
+		}
+	    }
+	    return entry.getTypeHandler();
+	}
         return this;
     }
 
@@ -1150,7 +1165,7 @@ public class TypeHandler extends RepositoryManager {
                     request, oldEntry.getTypeHandler().getResourceInputStream(
                         oldEntry), getRepository().getGUID() + "_"
                                    + newFileName).toString();
-            newResource.setPath(newFile);
+	    newResource = new Resource(newFile, Resource.TYPE_STOREDFILE);
         }
 
         return newResource;
@@ -1569,12 +1584,35 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean isSynthType() {
+	if(isSynthType)  return true;
         if (parent != null) {
             return parent.isSynthType();
         }
-
         return false;
     }
+
+    public List<Entry> getSynthEntryTreeForCopy(Request request, Entry entry) throws Exception {
+	List<Entry> entries = new ArrayList<Entry>();
+	SelectInfo info = new SelectInfo(request, entry);
+	getSynthEntryTreeForCopy(request, info, entries, entry,entry);
+	return entries;
+    }
+
+    public void getSynthEntryTreeForCopy(Request request, SelectInfo info,List<Entry> entries,
+					 Entry rootEntry, Entry entry) throws Exception {
+	if(entries.size()>COPY_LIMIT) {
+	    return;
+	}
+	List<Entry> children = getEntryManager().getChildren(request, entry);
+	entries.addAll(children);
+	for(Entry child: children) {
+	    if(entries.size()>COPY_LIMIT) {
+		break;
+	    }
+	    getSynthEntryTreeForCopy(request, info, entries, entry,child);
+	}
+    }
+
 
     /**
      * _more_
@@ -3265,8 +3303,12 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public File getFileForEntry(Entry entry) {
-        return entry.getResource().getTheFile();
+    public File getFileForEntry(Entry entry)  {
+	try {
+	    return getStorageManager().getEntryFile(entry);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 
