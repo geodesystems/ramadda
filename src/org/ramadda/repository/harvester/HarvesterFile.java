@@ -181,7 +181,7 @@ public class HarvesterFile extends FileInfo {
         final int[]            cnt        = { 0 };
         FileWrapper.FileViewer fileViewer = new FileWrapper.FileViewer() {
             @Override
-            public int viewFile(int level, FileWrapper f) throws Exception {
+            public int viewFile(int level, FileWrapper f, FileWrapper[]siblings) throws Exception {
                 cnt[0]++;
                 if (cnt[0] % 1000 == 0) {
                     System.err.print(".");

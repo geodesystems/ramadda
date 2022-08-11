@@ -763,7 +763,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         final List<HarvesterFile> dirs       = new ArrayList();
         FileWrapper.FileViewer    fileViewer = new FileWrapper.FileViewer() {
             @Override
-            public int viewFile(int level, FileWrapper f) throws Exception {
+            public int viewFile(int level, FileWrapper f,FileWrapper[] children) throws Exception {
                 if ( !canContinueRunning(timestamp)) {
                     return DO_STOP;
                 }

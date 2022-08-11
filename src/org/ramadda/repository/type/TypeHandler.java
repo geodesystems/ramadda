@@ -7680,7 +7680,7 @@ public class TypeHandler extends RepositoryManager {
         String   timezone = null;
         if (entry != null) {
             if (index >= 0) {
-                timezone = entry.getValue(index, "");
+                timezone = entry.getStringValue(index, "");
             }
             if ( !Utils.stringDefined(timezone)) {
                 timezone = getEntryUtil().getTimezone(entry);

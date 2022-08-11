@@ -1262,7 +1262,7 @@ public class MapInfo {
     private int getValue(Entry entry, String prop, int dflt) {
         TypeHandler th = entry.getTypeHandler();
 
-        return (int) entry.getValue(
+        return (int) entry.getIntValue(
             entry.getColumnIndex(th.getTypeProperty(prop + ".field", null)),
             th.getTypeProperty(prop, dflt));
     }
@@ -1279,7 +1279,7 @@ public class MapInfo {
     private String getValue(Entry entry, String prop, String dflt) {
         TypeHandler th = entry.getTypeHandler();
 
-        return (String) entry.getValue(
+        return (String) entry.getStringValue(
             entry.getColumnIndex(th.getTypeProperty(prop + ".field", null)),
             th.getTypeProperty(prop, dflt));
     }
@@ -1300,7 +1300,7 @@ public class MapInfo {
         int strokeWidth      = getValue(entry, "map.circle.stroke.width", 0);
         String fillColor = getValue(entry, "map.circle.fill.color", "orange");
         String strokeColor = getValue(entry, "map.circle.stroke.color",
-                                      "orange");
+					    "orange");
 
         addCircle(entry.getId(), Math.max(-80, Math.min(80, location[0])),
                   location[1], radius, strokeWidth, strokeColor, fillColor,

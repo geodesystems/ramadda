@@ -7195,7 +7195,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         String  content;
         boolean wikify = getProperty(wikiUtil, props, ATTR_WIKIFY, false);
         if (entry.getTypeHandler().isType(TYPE_WIKIPAGE)) {
-            content = entry.getValue(0, entry.getDescription());
+            content = entry.getStringValue(0, entry.getDescription());
             wikify  = true;
         } else {
             content = entry.getDescription();
