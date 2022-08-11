@@ -71,6 +71,7 @@ import javax.xml.xpath.XPathFactory;
  * @author IDV development team
  */
 
+@SuppressWarnings("unchecked")
 public abstract class MyXmlUtil {
 
     /** The header to use when writing out xml */
