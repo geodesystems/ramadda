@@ -318,7 +318,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             //            sb.append(" " + msg("unknown"));
         }
         StringBuilder forDisplay =
-            new StringBuilder("<b>For wiki displays:</b><br>fields=\"");
+            new StringBuilder("fields=\"");
         sb.append("<div style=max-height:300px;overflow-y:auto;>\n");
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
@@ -329,7 +329,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         int cnt = 0;
         for (RecordField field : fields) {
             if (cnt++ > 0) {
-                forDisplay.append(",");
+                forDisplay.append(", ");
             }
             forDisplay.append(field.getName());
             String type = field.getRawType();
@@ -353,8 +353,10 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         sb.append(HtmlUtils.formTableClose());
         sb.append("</div>");
         forDisplay.append("\"");
+	String wikiArgs = HU.b("For wiki displays:") + HU.div(forDisplay.toString(),
+							      HU.style("white-space:none;width:100%;max-width:100%;overflow-x:auto;max-height:2em; overflow-y:auto;"));
         sb.append("<br>");
-        sb.append(forDisplay);
+        sb.append(wikiArgs);
 
         StringBuffer info = new StringBuffer();
         recordEntry.getRecordFile().getInfo(info);
