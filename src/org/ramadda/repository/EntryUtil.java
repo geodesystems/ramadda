@@ -1063,5 +1063,57 @@ public class EntryUtil extends RepositoryManager {
     public static void main(String[] args) throws Exception {}
 
 
+    public static class Excluder {
+	List<String> patterns;
+	long sizeLimit;
+	HashSet<String> excludedEntries = new HashSet<String>();
 
+	public  Excluder(List<String> patterns, long sizeLimit) {
+	    this.patterns = patterns;
+	    this.sizeLimit = sizeLimit;
+	}
+
+	public boolean isEntryOk(Entry entry) {
+	    if(!isEntryOkInner(entry)) {
+		excludedEntries.add(entry.getId());
+		return false;
+	    }
+	    return true;
+	}
+
+	private boolean isEntryOkInner(Entry entry) {	    
+	    if(excludedEntries.size()>0) {
+		Entry parent = entry.getParentEntry();
+		while(parent!=null) {
+		    if(excludedEntries.contains(parent.getId()))  {
+			//			System.err.println("Parent excluded:" + entry);
+			return false;
+		    }
+		    parent = parent.getParentEntry();
+		}
+	    }
+
+
+	    if(sizeLimit>=0 && entry.isFile()) {
+		if(entry.getResource().getFileSize()>sizeLimit) {
+		    //		    System.err.println("Size Exclude:" + entry +" size:" + entry.getResource().getFileSize());
+		    return false;
+		}
+	    }
+
+
+	    if(patterns!=null) {
+		for(String exclude: patterns) {
+		    String name = entry.getName();
+		    if(name!=null && (name.matches(exclude) || name.indexOf(exclude)>=0)) {
+			//			System.err.println("Pattern Exclude:" + name);
+			return false;
+		    }
+		}
+	    }
+
+	    return true;
+	}
+    }
+	
 }
