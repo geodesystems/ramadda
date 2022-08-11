@@ -5081,14 +5081,14 @@ public class CsvUtil {
 	    csvUtil.run(null);
 	} catch(MessageException cexc) {
 	    System.err.println(cexc.getMessage());
-	    System.exit(1);
+	    Utils.exitTest(1);
 	} catch(Exception exc) {
 	    Throwable inner = LogUtil.getInnerException(exc);
 	    System.err.println(exc.getMessage());
 	    inner.printStackTrace();
-	    System.exit(1);
+	    Utils.exitTest(1);
 	}
-	System.exit(0);
+	Utils.exitTest(0);
     }
 
     public static class Dater {

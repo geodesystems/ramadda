@@ -203,7 +203,7 @@ public class Point2Netcdf extends RecordTool {
         System.err.println("Error:" + message);
         System.err.println(
             "usage: point2csv\n\t-latlonalt (output lat/lon/alt)\n\t-lonlatalt (output lon/lat/alt)\n\t-header (include the header)\n\t-prefix [arbitrary text to include in the output, e.g., \"X,Y,Z\"]\n\t-randomized [probablity between 0.0 - 1.0]\n\t-skip [integer skip factor, e.g. -skip 1 skips every other point]\n\t-bounds <north> <west> <south> <east>\n\t-out <output file>\n\t<input_file>");
-        System.exit(1);
+        org.ramadda.util.Utils.exitTest(1);
     }
 
 

@@ -362,7 +362,7 @@ public class GeoResource {
             ucar.unidata.util.Misc.sleepSeconds(1);
             //            System.err.println("#:" + Place.cnt + " mem:" + (mem2 - mem1));
         }
-        System.exit(0);
+        Utils.exitTest(0);
         System.err.println(Place.search("boulder", 50, null, false));
     }
 

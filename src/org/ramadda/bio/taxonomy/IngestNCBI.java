@@ -159,7 +159,7 @@ public class IngestNCBI {
                 xml.flush();
                 //                System.out.println(xml);
                 System.err.println("Exiting");
-                System.exit(1);
+                org.ramadda.util.Utils.exitTest(1);
             }
             if (true) {
                 continue;

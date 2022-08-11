@@ -95,7 +95,7 @@ public class PointPrinter extends RecordTool {
         }
         System.err.println(
             "usage: PointPrinter\n\t[-records <number of records to print]  <one or more Point files>");
-        System.exit(1);
+        org.ramadda.util.Utils.exitTest(1);
     }
 
 

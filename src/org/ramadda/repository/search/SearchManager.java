@@ -729,12 +729,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
 	    }
 	}
-	//	} catch(Exception exc) {
-	//	    exc.printStackTrace();
-	//	    System.exit(0);
-	//	}
-
-
 
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CREATED, entry.getCreateDate()));	
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CHANGED, entry.getChangeDate()));

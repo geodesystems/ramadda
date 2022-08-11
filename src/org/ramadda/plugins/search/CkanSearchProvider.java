@@ -70,7 +70,7 @@ public class CkanSearchProvider extends SearchProvider {
                 System.err.println("bad json:"+ url);
                 if(json.length()>500) json = json.substring(0,499);
                 System.err.println(json);
-                System.exit(0);
+                org.ramadda.util.Utils.exitTest(0);
             } else {
                 String name = getLabel();
                 List<String> toks = StringUtil.splitUpTo(getLabel(),"-",2);

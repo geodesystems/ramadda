@@ -100,7 +100,7 @@ public class PointBounds extends RecordTool {
         }
         System.err.println(
             "usage: PointBounds\n\t-class <class path of point file reader (see README)>\n\t[-polygon] [-kml <kmlfile>] <one or more data files>");
-        System.exit(1);
+        org.ramadda.util.Utils.exitTest(1);
     }
 
 

@@ -554,7 +554,7 @@ public class GeoJson extends JsonUtil {
     public static void main(String[] args) throws Exception {
         getFeatures(args[0]);
         //      System.err.println(getFeatures(args[0]));
-        System.exit(0);
+	Utils.exitTest(0);
 
 
         geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);

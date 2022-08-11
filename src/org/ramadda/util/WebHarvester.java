@@ -393,7 +393,7 @@ public class WebHarvester {
                             "href=\"/repository/entry/show?entryid="
                             + child.id + "\"");
                     //              System.out.println(page.body);
-                    //              System.exit(0);
+                    //              Utils.exitTest(0);
                 } else {
 
                     String l = childLink.getLink().replace("\\", "\\\\");
@@ -800,7 +800,7 @@ public class WebHarvester {
             "\t-imagereplace <url pattern> <with> (convert image links)");
         System.err.println("\t-entries (generate the RAMADDA entry xml)");
         System.err.println("\t<url> (url to start)");
-        System.exit(0);
+        Utils.exitTest(0);
     }
 
     /**

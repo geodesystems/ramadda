@@ -4705,8 +4705,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     if ( !bbox) {
                         //Check if the lat/lon is defined
                         if ( !theColumn.hasLatLon(values)) {
-                            //                      for(int i=0;i<values.length;i++) System.err.println(i +" " + values[i]);
-                            //                      System.exit(0);
                             continue;
                         }
                         double[] ll = theColumn.getLatLon(values);

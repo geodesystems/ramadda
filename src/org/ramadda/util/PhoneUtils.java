@@ -308,7 +308,7 @@ public class PhoneUtils {
         }
         System.err.println(
             "usage: PhoneUtils -campaign testcampaign -numbers numbers.txt -message \"\" <or -message file:message.txt>");
-        System.exit(1);
+        Utils.exitTest(1);
     }
 
     /**
@@ -366,7 +366,7 @@ public class PhoneUtils {
                 break;
             }
         }
-        System.exit(0);
+        Utils.exitTest(0);
     }
 
 

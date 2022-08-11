@@ -5809,6 +5809,11 @@ public class Utils extends IO {
     }
 
 
+    public static void exitTest(int v) {
+	System.exit(v);
+    }
+
+
     /**
      * _more_
      *
@@ -5826,7 +5831,7 @@ public class Utils extends IO {
             for (String s : args) {
 		System.err.println(s +" " + toInt(split(s,",",true,true)));
             }
-            System.exit(0);
+            exitTest(0);
         }
         if (true) {
             for (Provider provider : Security.getProviders()) {
@@ -5843,21 +5848,16 @@ public class Utils extends IO {
         InputStream fis = new FileInputStream(args[0]);
         byte[]      b   = decodeBase64(IOUtil.readBytes(fis));
         IOUtil.writeBytes(new File("out.pdf"), b);
-        System.exit(0);
+        exitTest(0);
 
         System.err.println(getStack(10, null, true));
         System.err.println(getStack(10, null, false));
-        System.exit(0);
+        exitTest(0);
 
 
         Date d = new Date();
         System.err.println(formatIso(d));
-
-
-        System.exit(0);
-
-
-
+        exitTest(0);
         String s = "hello there hello";
         System.err.println(s.replace("hello", "xxx"));
         if (true) {
@@ -5871,7 +5871,7 @@ public class Utils extends IO {
             Date date = parseDate(dateString);
             System.err.println("date:" + dateString + " date:" + date);
         }
-        System.exit(0);
+        exitTest(0);
     }
 
 

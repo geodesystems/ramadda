@@ -1526,9 +1526,6 @@ public abstract class DataProvider extends CsvOperator {
                 //              System.err.println("REMAINDER:" + s);
                 for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
                     String chunk = m1.group(i1).trim();
-                    //              System.err.println("CHUNK[" + i1 +"]=" + chunk+"\n**********");
-                    //              System.err.println("CHUNK:");
-                    //              System.exit(0);
                     int cnt = 1;
                     while (true) {
                         Matcher m2 = p2.matcher(chunk);

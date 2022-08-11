@@ -142,7 +142,7 @@ public class RecordTool {
      */
     public void usage(String message) {
         System.err.println("Error:" + message);
-        System.exit(1);
+        org.ramadda.util.Utils.exitTest(1);
     }
 
     /**

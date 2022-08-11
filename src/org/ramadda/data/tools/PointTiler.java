@@ -180,7 +180,7 @@ public class PointTiler extends RecordTool {
 
         System.err.println(
             "e.g., -bounds 90 -180 -90 180 -width 12 -height 6 -destination tiles -suffix .dat -prefix TILED <input files>");
-        System.exit(1);
+        org.ramadda.util.Utils.exitTest(1);
     }
 
 

@@ -1296,10 +1296,7 @@ public class IO {
         while (running[0]) {
             ucar.unidata.util.Misc.sleepSeconds(10);
         }
-        System.exit(0);
-
-
-
+        Utils.exitTest(0);
 
         if (true) {
             String url =

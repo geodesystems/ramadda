@@ -109,7 +109,7 @@ public class LdmListener {
         System.err.println(msg);
         System.err.println(
             "usage: LdmListener -pattern <product pattern> -template <file template> -debug -type <repository type>");
-        System.exit(1);
+        Utils.exitTest(1);
     }
 
     /**
@@ -139,7 +139,6 @@ public class LdmListener {
             }
         });
         processIncoming();
-        System.exit(0);
     }
 
 
@@ -370,7 +369,7 @@ public class LdmListener {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{ 
         LdmListener listener = new LdmListener(args);
     }
 

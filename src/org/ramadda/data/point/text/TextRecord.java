@@ -675,10 +675,7 @@ public class TextRecord extends DataRecord {
         if (offset != 0) {
             long millis = date.getTime();
             millis += (-offset * 1000 * 3600);
-            //            System.err.println ("date1:" + date);
             date = new Date(millis);
-            //            System.err.println ("date2:" + date);
-            //            System.exit(0);
         }
 
         return date;

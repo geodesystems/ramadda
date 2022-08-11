@@ -2113,8 +2113,7 @@ public class TextReader implements Cloneable {
         }
 
 
-
-        System.exit(0);
+        Utils.exitTest(0);
     }
 
 

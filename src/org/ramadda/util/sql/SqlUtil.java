@@ -2821,7 +2821,7 @@ public class SqlUtil {
         if (args.length != 4) {
             System.err.println(
                 "Usage: SqlUtil <jdbc url> <user> <password> <sql file>");
-            System.exit(1);
+            Utils.exitTest(1);
         }
         String     user            = args[1];
         String     password        = args[2];
@@ -2842,7 +2842,7 @@ public class SqlUtil {
         statement.close();
         connection.close();
 
-        System.exit(0);
+        Utils.exitTest(0);
     }
 
 
