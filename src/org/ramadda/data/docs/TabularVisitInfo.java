@@ -61,7 +61,7 @@ public class TabularVisitInfo {
             searchFields = new ArrayList<TabularSearchField>();
             for (String line :
                     StringUtil.split(
-                        entry.getValue(
+                        entry.getStringValue(
                             TabularTypeHandler.IDX_SEARCHINFO, ""), "\n",
                                 true, true)) {
 

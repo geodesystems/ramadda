@@ -194,8 +194,8 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
     public String getSimpleDisplay(Request request, Hashtable requestProps,
                                    Entry entry)
             throws Exception {
-        boolean showTable = entry.getValue(IDX_SHOWTABLE, true);
-        boolean showChart = entry.getValue(IDX_SHOWCHART, true);
+        boolean showTable = entry.getBooleanValue(IDX_SHOWTABLE, true);
+        boolean showChart = entry.getBooleanValue(IDX_SHOWCHART, true);
 
 
         if ( !showTable && !showChart) {
@@ -250,7 +250,7 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
      * @return _more_
      */
     public String getSheets(Entry entry) {
-        return entry.getValue(TabularTypeHandler.IDX_SHEETS, "");
+        return entry.getStringValue(TabularTypeHandler.IDX_SHEETS, "");
     }
 
     /**
@@ -261,7 +261,7 @@ public class TabularTypeHandler extends ConvertibleTypeHandler {
      * @return _more_
      */
     public int getSkipRows(Entry entry) {
-        return (int) entry.getValue(TabularTypeHandler.IDX_SKIPROWS, 0);
+        return (int) entry.getIntValue(TabularTypeHandler.IDX_SKIPROWS, 0);
     }
 
     /**

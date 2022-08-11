@@ -886,34 +886,34 @@ public class TabularOutputHandler extends OutputHandler {
 
 
 
-        boolean showTable = entry.getValue(TabularTypeHandler.IDX_SHOWTABLE,
+        boolean showTable = entry.getBooleanValue(TabularTypeHandler.IDX_SHOWTABLE,
                                            true);
-        boolean showChart = entry.getValue(TabularTypeHandler.IDX_SHOWCHART,
+        boolean showChart = entry.getBooleanValue(TabularTypeHandler.IDX_SHOWCHART,
                                            true);
 
 
         boolean useFirstRowAsHeader =
             Misc.equals("true",
-                        entry.getValue(TabularTypeHandler.IDX_USEFIRSTROW,
+                        entry.getStringValue(TabularTypeHandler.IDX_USEFIRSTROW,
                                        "true"));
 
 
         boolean colHeader =
             Misc.equals("true",
-                        entry.getValue(TabularTypeHandler.IDX_COLHEADER,
+                        entry.getStringValue(TabularTypeHandler.IDX_COLHEADER,
                                        "false"));
         boolean rowHeader =
             Misc.equals("true",
-                        entry.getValue(TabularTypeHandler.IDX_ROWHEADER,
+                        entry.getStringValue(TabularTypeHandler.IDX_ROWHEADER,
                                        "false"));
         List<String> widths =
-            StringUtil.split(entry.getValue(TabularTypeHandler.IDX_WIDTHS,
+            StringUtil.split(entry.getStringValue(TabularTypeHandler.IDX_WIDTHS,
                                             ""), ",", true, true);
 
 
 
         List<String> sheetsStr =
-            StringUtil.split(entry.getValue(TabularTypeHandler.IDX_SHEETS,
+            StringUtil.split(entry.getStringValue(TabularTypeHandler.IDX_SHEETS,
                                             ""), ",", true, true);
 
 
@@ -932,13 +932,13 @@ public class TabularOutputHandler extends OutputHandler {
         propsList.add("" + rowHeader);
 
         propsList.add("skipRows");
-        propsList.add(entry.getValue(TabularTypeHandler.IDX_SKIPROWS, "0"));
+        propsList.add(entry.getStringValue(TabularTypeHandler.IDX_SKIPROWS, "0"));
         propsList.add("skipColumns");
-        propsList.add(entry.getValue(TabularTypeHandler.IDX_SKIPCOLUMNS,
+        propsList.add(entry.getStringValue(TabularTypeHandler.IDX_SKIPCOLUMNS,
                                      "0"));
 
         List<String> header =
-            StringUtil.split(entry.getValue(TabularTypeHandler.IDX_HEADER,
+            StringUtil.split(entry.getStringValue(TabularTypeHandler.IDX_HEADER,
                                             ""), ",", true, true);
         if (header.size() > 0) {
             propsList.add("colHeaders");
@@ -962,7 +962,7 @@ public class TabularOutputHandler extends OutputHandler {
         List<String> charts = new ArrayList<String>();
         for (String line :
                 StringUtil.split(
-                    entry.getValue(TabularTypeHandler.IDX_CHARTS, ""), "\n",
+                    entry.getStringValue(TabularTypeHandler.IDX_CHARTS, ""), "\n",
                     true, true)) {
 
             List<String>              chart = new ArrayList<String>();
