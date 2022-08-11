@@ -3563,10 +3563,22 @@ var SPACE3 = "&nbsp;&nbsp;&nbsp;";
 var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
+
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    initRadioToggle(radios,values) {
+	$(radios).find('input[type=radio]').change(function() {
+	    for(a in values) {
+		if(a==$(this).attr('value'))
+		    $( values[a]).show();
+		else
+		    $( values[a]).hide();
+	    }
+	});
+    },
+
     initToggleAll:function(cbx,selector) {
 	jqid(cbx).change(function(){
 	    let on = $(this).is(':checked');
