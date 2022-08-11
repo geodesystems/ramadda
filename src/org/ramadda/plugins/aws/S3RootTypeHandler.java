@@ -10,8 +10,6 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
 
-
-
 import org.ramadda.util.S3File;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -27,17 +25,20 @@ import java.util.List;
  */
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
-    public static final int MAX_FILES = 10000;
-
     /**  */
     private TTLCache<String, List<String>> synthIdCache =
         new TTLCache<String, List<String>>(5 * 60 * 1000);
 
 
+    private static int IDX=0;
     /** _more_ */
-    public static final int IDX_ROOT = 0;
+    public static final int IDX_ROOT = IDX++;
 
-    public static final int IDX_EXCLUDE_PATTERNS = 1;
+    public static final int IDX_EXCLUDE_PATTERNS = IDX++;
+
+    public static final int IDX_MAX  = IDX++;
+
+    public static final int IDX_PERCENT  = IDX++;
 
 
     /**
@@ -96,6 +97,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
 	List<String> excludes = null;
         String exclude = (String) rootEntry.getValue(IDX_EXCLUDE_PATTERNS);
+        int max = rootEntry.getIntValue(IDX_MAX,1000);
+        double percent = rootEntry.getDoubleValue(IDX_PERCENT,(double)-100.0);
+	Object[] values = rootEntry.getValues();
+	System.err.println("my percent:" + percent);
+	for(int i=0;i<values.length;i++)
+	    System.err.println("i:" + i +" v:" +values[i] +" IDX:" + IDX_PERCENT);
 
         if (Utils.stringDefined(exclude)) {
 	    excludes  = Utils.split(exclude,"\n",true,true);
@@ -113,7 +120,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         //      S3File.debug = true;
-        List<S3File> files = doLs(new S3File(synthId), null);
+        List<S3File> files = doLs(new S3File(synthId), null,max,percent);
         List<String> children = new ArrayList<String>();
         for (S3File file : files) {
             Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
@@ -171,10 +178,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
         String id = getEntryManager().createSynthId(rootEntry,
                         file.toString());
-
+	boolean isBucket = false;
         TypeHandler bucketTypeHandler =
             getEntryManager().findDefaultTypeHandler(rootEntry, file.toString());
         if (bucketTypeHandler == null) {
+	    isBucket = true;
             bucketTypeHandler =
                 getRepository().getTypeHandler("type_s3_bucket");
         }
@@ -189,6 +197,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                               dttm.getTime(), dttm.getTime(), dttm.getTime(),
                               dttm.getTime(), values);
 
+	if(isBucket) bucketEntry.setValue("bucket_id", file.toString());
         bucketEntry.setMasterTypeHandler(this);
 
         return bucketEntry;
@@ -254,10 +263,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public static List<S3File> doLs(S3File base, String path)
+    public static List<S3File> doLs(S3File base, String path,int max, double percent)
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
-        return newFile.doList(MAX_FILES);
+	System.err.println("PRECENT1:"+ percent);
+        return newFile.doList(false, max,percent);
     }
 
 
@@ -269,7 +279,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.err.print(doLs(new S3File("s3://noaa-nexrad-level2"), null));
+        System.err.print(doLs(new S3File("s3://noaa-nexrad-level2"), null, 1000, -1));
     }
 
 

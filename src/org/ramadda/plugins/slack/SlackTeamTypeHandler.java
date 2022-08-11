@@ -218,7 +218,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
                 return ids;
             }
             String channelId =
-                parentEntry.getValue(SlackChannelTypeHandler.IDX_CHANNEL_ID,
+                parentEntry.getStringValue(SlackChannelTypeHandler.IDX_CHANNEL_ID,
                                      "");
             JSONObject  messages       = result.getJSONObject("messages");
             JSONArray   matches        = messages.getJSONArray("matches");
@@ -299,7 +299,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         //        https://geodesystems.slack.com/messages/general/
 
         String desc       = "";
-        String teamDomain = (String) teamEntry.getValue(IDX_TEAM_DOMAIN, "");
+        String teamDomain = (String) teamEntry.getStringValue(IDX_TEAM_DOMAIN, "");
         Resource resource =
             new Resource(new Resource(Slack.getChannelUrl(teamDomain, name)));
         Object[] values = channelTypeHandler.makeEntryValues(null);

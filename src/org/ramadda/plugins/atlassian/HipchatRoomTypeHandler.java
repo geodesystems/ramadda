@@ -130,12 +130,12 @@ public class HipchatRoomTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String entryUrl = getEntryManager().getEntryURL(request, message);
             String userId =
-                message.getValue(HipchatMessageTypeHandler.IDX_FROM, "");
+                message.getStringValue(HipchatMessageTypeHandler.IDX_FROM, "");
             String roomId =
-                message.getValue(HipchatMessageTypeHandler.IDX_ROOM_ID, "");
+                message.getStringValue(HipchatMessageTypeHandler.IDX_ROOM_ID, "");
 
             String color =
-                message.getValue(HipchatMessageTypeHandler.IDX_COLOR, "");
+                message.getStringValue(HipchatMessageTypeHandler.IDX_COLOR, "");
 
             String icon = HtmlUtils.href(
                               entryUrl,

@@ -183,7 +183,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
             if ( !file.exists()) {
                 ByteArrayOutputStream bos    = new ByteArrayOutputStream();
                 FileOutputStream      fos    = new FileOutputStream(file);
-                int                   stride = entry.getValue(IDX_STRIDE, 7);
+                int                   stride = entry.getIntValue(IDX_STRIDE, 7);
                 String[]              args   = new String[] {
                     "-skip", "8", "-decimate", "0", "" + stride, "-change",
                     "0", "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",

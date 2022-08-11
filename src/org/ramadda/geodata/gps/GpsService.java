@@ -61,9 +61,9 @@ public class GpsService extends Service {
             return;
         }
         Entry entry = entries.get(0);
-        String antenna = entry.getValue(GpsOutputHandler.IDX_ANTENNA_TYPE,
+        String antenna = entry.getStringValue(GpsOutputHandler.IDX_ANTENNA_TYPE,
                                         (String) null);
-        double height = entry.getValue(GpsOutputHandler.IDX_ANTENNA_HEIGHT,
+        double height = entry.getDoubleValue(GpsOutputHandler.IDX_ANTENNA_HEIGHT,
                                        0.0);
 
         System.err.println("ant:" + antenna + " h:" + height);

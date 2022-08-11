@@ -161,7 +161,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      * @return  true if should ingest
      */
     private boolean getIngest(Entry entry) {
-        return Misc.equals(entry.getValue(INDEX_INGEST, ""), "true");
+        return Misc.equals(entry.getStringValue(INDEX_INGEST, ""), "true");
     }
 
     /**
@@ -173,7 +173,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      */
     private boolean getRecurse(Entry entry) {
         //Object[] values = entry.getValues();
-        return Misc.equals(entry.getValue(INDEX_RECURSE, ""), "true");
+        return Misc.equals(entry.getStringValue(INDEX_RECURSE, ""), "true");
     }
 
     /**
@@ -184,7 +184,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      * @return  the list of variables
      */
     private List<String> getFields(Entry entry) {
-        String       fieldString = entry.getValue(INDEX_FIELDS, "");
+        String       fieldString = entry.getStringValue(INDEX_FIELDS, "");
         List<String> fields      = new ArrayList<String>();
         List<String> lines = StringUtil.split(fieldString, "/", true, true);
         for (String line : lines) {
@@ -218,18 +218,18 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         }
         StringBuilder sb = new StringBuilder();
 
-        NcmlUtil ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
+        NcmlUtil ncmlUtil = new NcmlUtil(entry.getStringValue(INDEX_TYPE,
                                 NcmlUtil.AGG_JOINEXISTING));
-        String timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
-        String       files   = entry.getValue(INDEX_FILES, "").trim();
-        String       pattern = entry.getValue(INDEX_PATTERN, "").trim();
+        String timeCoordinate = entry.getStringValue(INDEX_COORDINATE, "time");
+        String       files   = entry.getStringValue(INDEX_FILES, "").trim();
+        String       pattern = entry.getStringValue(INDEX_PATTERN, "").trim();
         boolean      ingest  = getIngest(entry);
         boolean      recurse = getRecurse(entry);
         List<String> fields  = getFields(entry);
         final boolean harvestMetadata =
-            Misc.equals(entry.getValue(INDEX_ADDSHORTMETADATA, ""), "true");
+            Misc.equals(entry.getStringValue(INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
-            Misc.equals(entry.getValue(INDEX_ADDFULLMETADATA, ""), "true");
+            Misc.equals(entry.getStringValue(INDEX_ADDFULLMETADATA, ""), "true");
 
 
 

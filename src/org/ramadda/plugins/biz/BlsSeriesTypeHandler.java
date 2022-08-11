@@ -105,7 +105,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
         //wget -O test.html --post-data="permalinkURL=&selectedSeriesIds=CES0000000001&startYear=2004&endYear=2018&dv-submit=Update" "https://beta.bls.gov/dataViewer/view/timeseries/CES0000000001"
         //permalinkURL=&selectedSeriesIds=CES0000000001&startYear=2004&endYear=2018&dv-submit=Update
 
-        String seriesId = entry.getValue(IDX_SERIESID, (String) null);
+        String seriesId = entry.getStringValue(IDX_SERIESID, (String) null);
         if (seriesId == null) {
             return null;
         }
@@ -188,7 +188,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
             File file = repository.getEntryManager().getCacheFile(entry,
                             "bls.csv");
             if ( !file.exists()) {
-                String seriesId = entry.getValue(IDX_SERIESID, (String) null);
+                String seriesId = entry.getStringValue(IDX_SERIESID, (String) null);
                 GregorianCalendar cal =
                     new GregorianCalendar(DateUtil.TIMEZONE_GMT);
                 String start;
@@ -303,7 +303,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
             putProperty(PROP_SKIPLINES, "1");
             putProperty(PROP_HEADER_STANDARD, "true");
             super.prepareToVisit(visitInfo);
-            String valueLabel = entry.getValue(IDX_MEASURE, entry.getName());
+            String valueLabel = entry.getStringValue(IDX_MEASURE, entry.getName());
             putFields(new String[] {
                 makeField(FIELD_DATE, attrType("date"), attrLabel("Date"),
                           attrFormat("MMM yyyy")),

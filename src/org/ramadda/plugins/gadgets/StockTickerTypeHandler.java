@@ -62,10 +62,10 @@ public class StockTickerTypeHandler extends GenericTypeHandler {
         sb.append(entry.getDescription());
         sb.append(HtmlUtils.p());
         StringBuffer js       = new StringBuffer();
-        String       symbols  = entry.getValue(0, "");
-        String       width    = entry.getValue(1, "400");
-        String       height   = entry.getValue(2, "400");
-        String       interval = entry.getValue(3, "60");
+        String       symbols  = entry.getStringValue(0, "");
+        String       width    = entry.getStringValue(1, "400");
+        String       height   = entry.getStringValue(2, "400");
+        String       interval = entry.getStringValue(3, "60");
         if ( !Utils.stringDefined(width)) {
             width = "400";
         }

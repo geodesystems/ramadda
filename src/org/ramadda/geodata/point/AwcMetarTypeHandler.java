@@ -80,7 +80,7 @@ public class AwcMetarTypeHandler extends PointTypeHandler {
         if (fromImport) {                                                                           
             return;                                                                                 
         }
-        String id = (String) entry.getValue(IDX_SITE_ID, "");
+        String id = (String) entry.getStringValue(IDX_SITE_ID, "");
 	if(!Utils.stringDefined(id)) return;
 	JSONObject station = getStation(id);
 	if(station==null) return;
@@ -109,8 +109,8 @@ public class AwcMetarTypeHandler extends PointTypeHandler {
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry,forRead);
         }
-        String siteId = entry.getValue(IDX_SITE_ID, "");
-        int    offset = (int) entry.getValue(IDX_TIME_OFFSET, 24);
+        String siteId = entry.getStringValue(IDX_SITE_ID, "");
+        int    offset = (int) entry.getIntValue(IDX_TIME_OFFSET, 24);
         String url = URL.replace("{station}", siteId).replace("{offset}",
                                  "" + offset);
 

@@ -83,7 +83,7 @@ public class NcssTypeHandler extends PointTypeHandler {
     @Override
     public String preProcessWikiText(Request request, Entry entry,
                                      String wikiText) {
-        String fields = entry.getValue(IDX_DEFAULT_FIELDS, "");
+        String fields = entry.getStringValue(IDX_DEFAULT_FIELDS, "");
         String chart =
             "{{display type=\"linechart\" showTitle=\"false\" layoutHere=\"false\" #fields=\"tmax,tmin\" }}";
         if ( !Utils.stringDefined(fields)) {
@@ -354,7 +354,7 @@ public class NcssTypeHandler extends PointTypeHandler {
         String url = entry.getResource().getPath();
         //subst the times
         url = url.replace("${endTimeOffset}",
-                          (String) entry.getValue(IDX_END_TIME_OFFSET,
+                          (String) entry.getStringValue(IDX_END_TIME_OFFSET,
                               "+10 days"));
         url = Utils.normalizeTemplateUrl(url);
         //subst the location

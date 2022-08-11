@@ -125,14 +125,14 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        String location = entry.getValue(IDX_LOCATION, (String) null);
+        String location = entry.getStringValue(IDX_LOCATION, (String) null);
         if ( !Utils.stringDefined(location)) {
             System.err.println("no location");
 
             return null;
         }
         Date now = new Date();
-        Integer hoursOffset = (Integer) entry.getValue(IDX_HOURS_OFFSET,
+        Integer hoursOffset = (Integer) entry.getIntValue(IDX_HOURS_OFFSET,
                                   Integer.valueOf(24));
 
         GregorianCalendar cal = new GregorianCalendar();

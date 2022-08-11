@@ -138,8 +138,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
                               Appendable sb)
             throws Exception {
         String url    = entry.getResource().getPath();
-        String width  = entry.getValue(IDX_WIDTH, "640");
-        String height = entry.getValue(IDX_HEIGHT, "390");
+        String width  = entry.getStringValue(IDX_WIDTH, "640");
+        String height = entry.getStringValue(IDX_HEIGHT, "390");
         if (width.equals("0")) {
             width = "640";
         }
@@ -165,7 +165,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
      */
     public String getWidth(Request request, Entry entry, Hashtable props) {
         String width = Utils.getProperty(props, "width",
-                                         entry.getValue(IDX_WIDTH, "640"));
+                                         entry.getStringValue(IDX_WIDTH, "640"));
         if (!Utils.stringDefined(width) || width.equals("0")) {
             width = "640";
         }
@@ -182,7 +182,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
      */
     public String getHeight(Request request, Entry entry, Hashtable props) {
         String height = Utils.getProperty(props, "height",
-                                          entry.getValue(IDX_HEIGHT, "360"));
+                                          entry.getStringValue(IDX_HEIGHT, "360"));
         if (!Utils.stringDefined(height) || height.equals("0")) {
             height = "360";
         }

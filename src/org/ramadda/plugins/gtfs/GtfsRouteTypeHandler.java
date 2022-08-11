@@ -208,7 +208,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         sb.append(HtmlUtils.formEntry(msgLabel("Route ID"),
-                                      entry.getValue(IDX_ID, "")));
+                                      entry.getStringValue(IDX_ID, "")));
         sb.append(HtmlUtils.formEntry(msgLabel("Route Type"),
                                       getFieldHtml(request, entry,new Hashtable(),
                                           "route_type", true)));
@@ -216,13 +216,13 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Color"),
-                getSwatch(Gtfs.getColor(entry.getValue(IDX_COLOR, "")))));
+                getSwatch(Gtfs.getColor(entry.getStringValue(IDX_COLOR, "")))));
 
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Text Color"),
                 getSwatch(
-                    Gtfs.getColor(entry.getValue(IDX_TEXT_COLOR, "")))));
+                    Gtfs.getColor(entry.getStringValue(IDX_TEXT_COLOR, "")))));
         */
     }
 
@@ -274,7 +274,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public void initMapAttrs(Entry entry, MapInfo mapInfo, StringBuilder sb) {
         super.initMapAttrs(entry, mapInfo, sb);
-        String color = Gtfs.getColor(entry.getValue(IDX_COLOR, ""));
+        String color = Gtfs.getColor(entry.getStringValue(IDX_COLOR, ""));
         sb.append("'strokeColor':'" + color + "','strokeWidth':4");
     }
 
@@ -297,7 +297,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         super.addToMap(request, entry, map);
         Entry  agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
-        String s      = entry.getValue(IDX_POINTS, "");
+        String s      = entry.getStringValue(IDX_POINTS, "");
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();
@@ -388,10 +388,10 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
                           List<String> attrs)
             throws Exception {
         super.addToJson(request, entry, items, attrs);
-        String color = Gtfs.getColor(entry.getValue(IDX_COLOR, ""));
+        String color = Gtfs.getColor(entry.getStringValue(IDX_COLOR, ""));
         items.add("lineColor");
         items.add(JsonUtil.quote(color));
-        String s = entry.getValue(IDX_POINTS, "");
+        String s = entry.getStringValue(IDX_POINTS, "");
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();

@@ -223,7 +223,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
 	//Import the loaders
 	for(Entry entry: entries) {
-	    String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
+	    String modelFile = (String) entry.getStringValue(IDX_MODEL_FILE, null);
 	    String  file;
 	    if (!Utils.stringDefined(modelFile)) {
 		file = entry.getResource().getPath();
@@ -245,7 +245,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	int cnt = 0;
 	for(Entry entry: entries) {
 	    String url;
-	    String modelFile = (String) entry.getValue(IDX_MODEL_FILE, null);
+	    String modelFile = (String) entry.getStringValue(IDX_MODEL_FILE, null);
 	    String  file;
 
 	    if (!Utils.stringDefined(modelFile)) {

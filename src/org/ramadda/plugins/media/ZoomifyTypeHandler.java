@@ -150,11 +150,11 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
         } else if (Utils.stringDefined("" + entry.getValue(IDX_TILES_URL))) {
 	    String        width  = Utils.getProperty(props, "width", "800px");
 	    String        height = Utils.getProperty(props, "height", "600px");
-            if (entry.getValue(IDX_IMAGE_WIDTH, 0) != 0) {
-                width = "" + entry.getValue(IDX_IMAGE_WIDTH, 0);
+            if (entry.getIntValue(IDX_IMAGE_WIDTH, 0) != 0) {
+                width = "" + entry.getIntValue(IDX_IMAGE_WIDTH, 0);
             }
-            if (entry.getValue(IDX_IMAGE_HEIGHT, 0) != 0) {
-                height = "" + entry.getValue(IDX_IMAGE_HEIGHT, 0);
+            if (entry.getIntValue(IDX_IMAGE_HEIGHT, 0) != 0) {
+                height = "" + entry.getIntValue(IDX_IMAGE_HEIGHT, 0);
             }
             Utils.add(tiles, "type", JsonUtil.quote("zoomifytileservice"),
                       "tilesUrl", JsonUtil.quote(entry.getValue(2)));

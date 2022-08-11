@@ -178,9 +178,9 @@ public class GithubTypeHandler extends PointTypeHandler {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	    sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
 	    Hashtable props = Utils.makeHashtable(
-						  "user",entry.getValue(IDX_USER, (String) null),
-						  "owner",entry.getValue(IDX_OWNER, (String) null),
-						  "repository",	entry.getValue(IDX_REPOSITORY, (String) null));		
+						  "user",entry.getStringValue(IDX_USER, (String) null),
+						  "owner",entry.getStringValue(IDX_OWNER, (String) null),
+						  "repository",	entry.getStringValue(IDX_REPOSITORY, (String) null));		
 	    List<Github.Item> items = Github.fetch(repository.getWikiManager(), props);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("date,login,name,user_url,avatar_url,item_url,message\n");

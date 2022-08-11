@@ -118,7 +118,7 @@ public class TripOutputHandler extends OutputHandler {
             throws Exception {
 
         TimeZone         utcTimeZone = TimeZone.getTimeZone("UTC");
-        TimeZone timeZone = TimeZone.getTimeZone(group.getValue(0, "UTC"));
+        TimeZone timeZone = TimeZone.getTimeZone(group.getStringValue(0, "UTC"));
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE MMMMM d, yyyy");
         sdf.setTimeZone(timeZone);
         SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm Z");
@@ -177,7 +177,7 @@ public class TripOutputHandler extends OutputHandler {
             StringBuffer desc = new StringBuffer(entry.getDescription());
             String       type = entry.getTypeHandler().getType();
             desc.append(HtmlUtils.formTable());
-            String entryTimezone = entry.getValue(0, null);
+            String entryTimezone = entry.getStringValue(0, null);
             if (type.equals(TripTypeHandler.TYPE_FLIGHT)
                     || type.equals(TripTypeHandler.TYPE_TRAIN)) {
                 SimpleDateFormat sdfToUse = timeSdf;
@@ -199,10 +199,10 @@ public class TripOutputHandler extends OutputHandler {
             }
 
             if (type.equals(TripTypeHandler.TYPE_HOTEL)) {
-                String address      = entry.getValue(1, "");
-                String phone        = entry.getValue(2, null);
-                String email        = entry.getValue(3, null);
-                String confirmation = entry.getValue(4, null);
+                String address      = entry.getStringValue(1, "");
+                String phone        = entry.getStringValue(2, null);
+                String email        = entry.getStringValue(3, null);
+                String confirmation = entry.getStringValue(4, null);
 
                 String mapUrl =
                     "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="
@@ -227,9 +227,9 @@ public class TripOutputHandler extends OutputHandler {
 
 
             if (type.equals(TripTypeHandler.TYPE_EVENT)) {
-                String address = entry.getValue(1, "");
-                String phone   = entry.getValue(2, null);
-                String email   = entry.getValue(3, null);
+                String address = entry.getStringValue(1, "");
+                String phone   = entry.getStringValue(2, null);
+                String email   = entry.getStringValue(3, null);
                 String mapUrl =
                     "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="
                     + address.replaceAll("\n", " ");

@@ -92,7 +92,7 @@ public class EnigmaTableTypeHandler extends PointTypeHandler {
         if (apiKey == null) {
             return;
         }
-        String tableId = (String) entry.getValue(IDX_TABLE_ID, null);
+        String tableId = (String) entry.getStringValue(IDX_TABLE_ID, null);
         if (tableId == null) {
             return;
         }
@@ -166,7 +166,7 @@ public class EnigmaTableTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        String tableId = entry.getValue(IDX_TABLE_ID, (String) null);
+        String tableId = entry.getStringValue(IDX_TABLE_ID, (String) null);
         //        System.err.println("getPathForEntry:"+ tableId);
         if (tableId == null) {
             return null;

@@ -102,7 +102,7 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Result getHtmlDisplay(Request request, Entry entry, Entries children)
             throws Exception {
-        String style = entry.getValue(IDX_STYLE, "none");
+        String style = entry.getStringValue(IDX_STYLE, "none");
         if (style.equals("none")) {
             return null;
         }

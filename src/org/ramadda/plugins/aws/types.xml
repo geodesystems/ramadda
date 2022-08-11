@@ -1,30 +1,43 @@
 <types supercategory="Miscellaneous" category="Integration">
 
   <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler">
-     <property name="icon" value="/aws/aws.png"/>
-     <property name="form.description.iswiki" value="true"/>
-     <property name="form.resource.show" value="false"/>
-     <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
-     <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
-	     suffix="Patterns to exclude. One per line."/>     
+    <property name="icon" value="/aws/aws.png"/>
+    <property name="form.description.iswiki" value="true"/>
+    <property name="form.resource.show" value="false"/>
+    <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
+    <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
+	    suffix="Patterns to exclude. One per line."/>
+    <column name="maxcount" type="int" default="1000"  label="Max per bucket" />
+    <column name="percent" type="double" default="-1"  label="Percentage Filter"
+	    suffix="0-1: for buckets with lots (100+) of children this is a probability that any one of them will be returned. It allows you to take a sample"/>          
+
     <wiki><![CDATA[
 +section # title="{{name}}"
 +center
-{{field name=root_id}}
+<b>AWS/S3 Bucket:</b> {{field name=root_id}}
 -center
 {{description wikify="true"}}
 {{tabletree}}
 ]]>
 </wiki>
 
-
   </type>
 
   <type name="type_s3_bucket"  isgroup="true"
 	description="AWS S3 Bucket"   handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" foruser="false">
-     <property name="icon" value="/aws/aws.png"/>
-     <property name="form.file.show" value="false"/>
-  </type>
+    <property name="icon" value="/aws/aws.png"/>
+    <property name="form.file.show" value="false"/>
+    <column name="bucket_id" type="string"  label="Bucket ID" columns="80" size="1000"/>
+    <wiki><![CDATA[
++section # title="{{name}}"
++center
+<b>AWS/S3 Bucket:</b> {{field name=bucket_id}}
+-center
+{{description wikify="true"}}
+{{tabletree message=""}}
+]]>
+</wiki>
+</type>
 
 
 </types>

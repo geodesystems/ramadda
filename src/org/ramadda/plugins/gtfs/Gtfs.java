@@ -155,7 +155,7 @@ public class Gtfs implements Constants {
      * @return _more_
      */
     public static String formatStartTime(Entry entry) {
-        return formatTime(entry.getValue(GtfsTripTypeHandler.IDX_STARTTIME,
+        return formatTime(entry.getStringValue(GtfsTripTypeHandler.IDX_STARTTIME,
                                          ""));
     }
 
@@ -168,7 +168,7 @@ public class Gtfs implements Constants {
      * @return _more_
      */
     public static String formatEndTime(Entry entry) {
-        return formatTime(entry.getValue(GtfsTripTypeHandler.IDX_ENDTIME,
+        return formatTime(entry.getStringValue(GtfsTripTypeHandler.IDX_ENDTIME,
                                          ""));
     }
 
@@ -263,7 +263,7 @@ public class Gtfs implements Constants {
      * @return _more_
      */
     public static String getRouteId(Entry entry) {
-        return entry.getValue(GtfsRouteTypeHandler.IDX_ID, "");
+        return entry.getStringValue(GtfsRouteTypeHandler.IDX_ID, "");
     }
 
     /**
@@ -284,7 +284,7 @@ public class Gtfs implements Constants {
         SimpleDateFormat sdf    = new SimpleDateFormat("EEEE, MMMM d HH:mm");
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
         if (agency != null) {
-            String tz = agency.getValue(3, "");
+            String tz = agency.getStringValue(3, "");
             if (Utils.stringDefined(tz)) {
                 TimeZone timeZone = TimeZone.getTimeZone(tz);
                 sdf.setTimeZone(timeZone);
@@ -336,7 +336,7 @@ public class Gtfs implements Constants {
             throws Exception {
 
         String stopId = ((stopEntry != null)
-                         ? stopEntry.getValue(
+                         ? stopEntry.getStringValue(
                              GtfsStopTypeHandler.IDX_STOP_ID, null)
                          : null);
         Hashtable<String, Entry> stopMap = new Hashtable<String, Entry>();
@@ -376,7 +376,7 @@ public class Gtfs implements Constants {
                               ? tripEntry.getAncestor("type_gtfs_route")
                               : null;
             String dir =
-                tripEntry.getValue(GtfsTripTypeHandler.IDX_DIRECTION, "0");
+                tripEntry.getStringValue(GtfsTripTypeHandler.IDX_DIRECTION, "0");
 
             boolean inService = true;
             if ((now.getTime() < tripEntry.getStartDate())
@@ -390,20 +390,20 @@ public class Gtfs implements Constants {
                 anyActive = true;
             }
             String key =
-                tripEntry.getValue(GtfsTripTypeHandler.IDX_SERVICE_ID, "")
+                tripEntry.getStringValue(GtfsTripTypeHandler.IDX_SERVICE_ID, "")
                 + "-" + dir;
             if (route != null) {
                 key += "-" + route.getId();
             }
 
             String serviceName =
-                tripEntry.getValue(GtfsTripTypeHandler.IDX_SERVICE_NAME, "");
+                tripEntry.getStringValue(GtfsTripTypeHandler.IDX_SERVICE_NAME, "");
             if ( !Utils.stringDefined(serviceName)) {
                 serviceName = tripInfo.getWeekString();
             }
 
             String headsign =
-                tripEntry.getValue(GtfsTripTypeHandler.IDX_HEADSIGN, "");
+                tripEntry.getStringValue(GtfsTripTypeHandler.IDX_HEADSIGN, "");
 
             if (Utils.stringDefined(headsign)) {
                 serviceName += " " + headsign;
@@ -671,7 +671,7 @@ public class Gtfs implements Constants {
         if ((stopEntry == null) && (currentTrips.size() > 0)) {
             for (TripInfo tripInfo : currentTrips) {
                 StringBuffer tmp = new StringBuffer();
-                String headsign = (String) tripInfo.entry.getValue(
+                String headsign = (String) tripInfo.entry.getStringValue(
                                       GtfsTripTypeHandler.IDX_HEADSIGN,
                                       (String) null);
                 String label = (Utils.stringDefined(headsign)
@@ -1101,7 +1101,7 @@ public class Gtfs implements Constants {
         int dow        = -1;
         int nowSeconds = -1;
         if (agency != null) {
-            String tz = agency.getValue(3, "");
+            String tz = agency.getStringValue(3, "");
             if (Utils.stringDefined(tz)) {
                 TimeZone         timeZone = TimeZone.getTimeZone(tz);
                 SimpleDateFormat dsdf     = new SimpleDateFormat("u");
@@ -1128,32 +1128,32 @@ public class Gtfs implements Constants {
         for (Object tuple : array) {
             Entry child = (Entry) ((Object[]) tuple)[2];
             int start = Utils.hhmmssToSeconds(
-                            child.getValue(
+                            child.getStringValue(
                                 GtfsTripTypeHandler.IDX_STARTTIME, ""));
             int stop = Utils.hhmmssToSeconds(
-                           child.getValue(
+                           child.getStringValue(
                                GtfsTripTypeHandler.IDX_ENDTIME, ""));
             Entry firstStop = null;
             Entry lastStop  = null;
             if (Utils.stringDefined(
-                    child.getValue(
+                    child.getStringValue(
                         GtfsTripTypeHandler.IDX_FIRST_STOP, (String) null))) {
                 firstStop =
                     request.getRepository().getEntryManager().getEntry(
                         request,
-                        child.getValue(
+                        child.getStringValue(
                             GtfsTripTypeHandler.IDX_FIRST_STOP, ""));
             }
             if (Utils.stringDefined(
-                    child.getValue(
+                    child.getStringValue(
                         GtfsTripTypeHandler.IDX_LAST_STOP, (String) null))) {
                 lastStop = request.getRepository().getEntryManager().getEntry(
                     request,
-                    child.getValue(GtfsTripTypeHandler.IDX_LAST_STOP, ""));
+                    child.getStringValue(GtfsTripTypeHandler.IDX_LAST_STOP, ""));
             }
 
             boolean[] week = (boolean[]) request.getRepository().decodeObject(
-                                 child.getValue(
+                                 child.getStringValue(
                                      GtfsTripTypeHandler.IDX_WEEK, ""));
 
             boolean scheduleOk = true;
@@ -1435,12 +1435,12 @@ public class Gtfs implements Constants {
     public static String getRouteTitle(Request request, Entry entry,
                                        boolean doLink, boolean full)
             throws Exception {
-        String bg = getColor(entry.getValue(GtfsRouteTypeHandler.IDX_COLOR,
+        String bg = getColor(entry.getStringValue(GtfsRouteTypeHandler.IDX_COLOR,
                                             "#ccc"));
         String fg =
-            getColor(entry.getValue(GtfsRouteTypeHandler.IDX_TEXT_COLOR,
+            getColor(entry.getStringValue(GtfsRouteTypeHandler.IDX_TEXT_COLOR,
                                     "#000"));
-        String routeId = entry.getValue(GtfsRouteTypeHandler.IDX_ID, "");
+        String routeId = entry.getStringValue(GtfsRouteTypeHandler.IDX_ID, "");
         String routeTag =
             HtmlUtils.span(routeId,
                            HtmlUtils.cssClass("gtfs-route-badge")
@@ -1581,7 +1581,7 @@ public class Gtfs implements Constants {
         Request searchRequest = new Request(request.getRepository(),
                                             request.getUser());
         searchRequest.put(GtfsRouteTypeHandler.ARG_GROUP, stopsEntry.getId());
-        String s = entry.getValue(GtfsTripTypeHandler.IDX_STOPS, "");
+        String s = entry.getStringValue(GtfsTripTypeHandler.IDX_STOPS, "");
         List<String[]> tuples =
             (List<String[]>) request.getRepository().decodeObject(
                 Utils.uncompress(s));
@@ -1792,7 +1792,7 @@ public class Gtfs implements Constants {
         List<Entry> vehicles      = getVehicles(request, agencyEntry);
         List<Entry> routeVehicles = new ArrayList<Entry>();
         String routeId =
-            (String) routeEntry.getValue(GtfsRouteTypeHandler.IDX_ID,
+            (String) routeEntry.getStringValue(GtfsRouteTypeHandler.IDX_ID,
                                          (String) null);
         for (Entry vehicle : vehicles) {
             if (routeId.equals(
@@ -1822,7 +1822,7 @@ public class Gtfs implements Constants {
         List<Entry> vehicles     = getVehicles(request, agencyEntry);
         List<Entry> stopVehicles = new ArrayList<Entry>();
         String stopId =
-            (String) stopEntry.getValue(GtfsStopTypeHandler.IDX_STOP_ID,
+            (String) stopEntry.getStringValue(GtfsStopTypeHandler.IDX_STOP_ID,
                                         (String) null);
         for (Entry vehicle : vehicles) {
             if (stopId.equals(
@@ -1853,7 +1853,7 @@ public class Gtfs implements Constants {
         List<Entry> vehicles     = getVehicles(request, agencyEntry);
         List<Entry> tripVehicles = new ArrayList<Entry>();
         String tripId =
-            (String) tripEntry.getValue(GtfsTripTypeHandler.IDX_TRIP_ID,
+            (String) tripEntry.getStringValue(GtfsTripTypeHandler.IDX_TRIP_ID,
                                         (String) null);
         for (Entry vehicle : vehicles) {
             if (tripId.equals(
@@ -1881,7 +1881,7 @@ public class Gtfs implements Constants {
             throws Exception {
 
         URLConnection urlConnection = null;
-        String agencyId = (String) agencyEntry.getValue(
+        String agencyId = (String) agencyEntry.getStringValue(
                               GtfsAgencyTypeHandler.IDX_AGENCY_ID, null);
         String      cacheKey = agencyEntry.getId();
         List<Entry> vehicles = vehicleCache.get(cacheKey);
@@ -1890,7 +1890,7 @@ public class Gtfs implements Constants {
         }
         vehicles = new ArrayList<Entry>();
         String rtUrl =
-            (String) agencyEntry.getValue(GtfsAgencyTypeHandler.IDX_RT_URL,
+            (String) agencyEntry.getStringValue(GtfsAgencyTypeHandler.IDX_RT_URL,
                                           null);
         Repository repository = agencyEntry.getTypeHandler().getRepository();
         if ( !Utils.stringDefined(rtUrl)) {
@@ -1903,13 +1903,13 @@ public class Gtfs implements Constants {
         }
 
         String rtId =
-            (String) agencyEntry.getValue(GtfsAgencyTypeHandler.IDX_RT_ID,
+            (String) agencyEntry.getStringValue(GtfsAgencyTypeHandler.IDX_RT_ID,
                                           null);
         if ( !Utils.stringDefined(rtId)) {
             rtId = repository.getProperty(agencyId + ".rt.id", (String) null);
         }
 
-        String rtPassword = (String) agencyEntry.getValue(
+        String rtPassword = (String) agencyEntry.getStringValue(
                                 GtfsAgencyTypeHandler.IDX_RT_PASSWORD, null);
         if ( !Utils.stringDefined(rtPassword)) {
             rtPassword = repository.getProperty(agencyId + ".rt.password",
@@ -2049,11 +2049,11 @@ public class Gtfs implements Constants {
         StringBuilder q = new StringBuilder();
         q.append("[");
         if (agency != null) {
-            q.append(agency.getValue(GtfsAgencyTypeHandler.IDX_AGENCY_ID,
+            q.append(agency.getStringValue(GtfsAgencyTypeHandler.IDX_AGENCY_ID,
                                      ""));
         }
         q.append("-");
-        q.append(entry.getValue(GtfsStopTypeHandler.IDX_STOP_ID, ""));
+        q.append(entry.getStringValue(GtfsStopTypeHandler.IDX_STOP_ID, ""));
         q.append("]");
         searchRequest.put("search.type_gtfs_trip.stop_ids", q);
         trips = request.getRepository().getEntryManager().getEntriesFromDb(searchRequest);
@@ -2087,7 +2087,7 @@ public class Gtfs implements Constants {
 
         for (String id :
                 StringUtil.split(
-                    entry.getValue(GtfsStopTypeHandler.IDX_ROUTES, ""), ",",
+                    entry.getStringValue(GtfsStopTypeHandler.IDX_ROUTES, ""), ",",
                     true, true)) {
             routes.add(
                 request.getRepository().getEntryManager().getEntry(

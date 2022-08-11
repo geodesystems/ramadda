@@ -128,9 +128,9 @@ public class SlackChannelTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                      HtmlUtils.cssClass("slack_message")));
             String userId =
-                message.getValue(SlackMessageTypeHandler.IDX_USER_ID, "");
+                message.getStringValue(SlackMessageTypeHandler.IDX_USER_ID, "");
             String userName =
-                message.getValue(SlackMessageTypeHandler.IDX_USER_NAME, "");
+                message.getStringValue(SlackMessageTypeHandler.IDX_USER_NAME, "");
 
             String icon = HtmlUtils.href(
                               entryUrl,

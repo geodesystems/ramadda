@@ -260,7 +260,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
             //do message listing
 
             String roomId =
-                parentEntry.getValue(HipchatRoomTypeHandler.IDX_ROOM_ID, "");
+                parentEntry.getStringValue(HipchatRoomTypeHandler.IDX_ROOM_ID, "");
 
             String url =
                 getUrl(groupEntry,

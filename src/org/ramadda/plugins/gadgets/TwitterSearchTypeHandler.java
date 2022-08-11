@@ -71,10 +71,10 @@ public class TwitterSearchTypeHandler extends GenericTypeHandler {
 
         String template = getRepository().getResource(
                               "/org/ramadda/plugins/gadgets/template.html");
-        String string      = entry.getValue(0, "");
-        String width       = entry.getValue(1, "350");
-        String height      = entry.getValue(2, "300");
-        String orientation = entry.getValue(3, "vertical");
+        String string      = entry.getStringValue(0, "");
+        String width       = entry.getStringValue(1, "350");
+        String height      = entry.getStringValue(2, "300");
+        String orientation = entry.getStringValue(3, "vertical");
 
         String html        = template;
 

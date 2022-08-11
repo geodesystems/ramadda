@@ -168,7 +168,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
             return;
         }
-        int points = entry.getValue(IDX_RECORD_COUNT, 0);
+        int points = entry.getIntValue(IDX_RECORD_COUNT, 0);
         if (points == 0) {
             //If its the first record
             entry.setStartDate(sensor.date.getTime());
@@ -226,7 +226,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         if (fromImport) {
             return;
         }
-        String id = (String) entry.getValue(IDX_SENSOR_ID, "");
+        String id = (String) entry.getStringValue(IDX_SENSOR_ID, "");
         File newFile = getStorageManager().getTmpFile(request,
                            id + "_purpleair.csv");
         IOUtil.writeTo(new ByteArrayInputStream(FILE_HEADER.getBytes()),
@@ -316,11 +316,11 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         if (apiKey == null) {
             return null;
         }
-        String id = (String) entry.getValue(IDX_SENSOR_ID, "");
+        String id = (String) entry.getStringValue(IDX_SENSOR_ID, "");
         if ( !Utils.stringDefined(id)) {
             return null;
         }
-        String privateKey = (String) entry.getValue(IDX_PRIVATE_KEY, "");
+        String privateKey = (String) entry.getStringValue(IDX_PRIVATE_KEY, "");
         String url = "https://api.purpleair.com/v1/sensors/" + id + "?"
                      + HU.arg("api_key", apiKey) + "&"
                      + HU.arg("fields", fields);

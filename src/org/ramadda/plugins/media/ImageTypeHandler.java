@@ -72,9 +72,9 @@ public class ImageTypeHandler extends GenericTypeHandler {
             throws Exception {
         Resource resource = entry.getResource();
         String   path     = Utils.normalizeTemplateUrl(resource.getPath());
-        boolean  useProxy = entry.getValue(0, false);
+        boolean  useProxy = entry.getBooleanValue(0, false);
         if (useProxy) {
-            String filename = entry.getValue(1, (String) null);
+            String filename = entry.getStringValue(1, (String) null);
             String tail     = IOUtil.getFileTail(path);
             if (Utils.stringDefined(filename)) {
                 tail = filename;
@@ -129,7 +129,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
                               + "'></a-text>\n");
                 }
             }
-            String rotation = (String) entry.getValue(IDX_LAST + 1, "");
+            String rotation = (String) entry.getStringValue(IDX_LAST + 1, "");
             sb.append("<a-sky src='" + imgUrl + "'");
             if ((rotation != null) && (rotation.trim().length() > 0)) {
                 sb.append(" rotation='" + rotation + "' ");

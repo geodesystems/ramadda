@@ -212,8 +212,8 @@ public class AcsTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        String               header  = entry.getValue(IDX_HEADER, "");
-        boolean includeSpecial = entry.getValue(IDX_INCLUDE_LOCALES, false);
+        String               header  = entry.getStringValue(IDX_HEADER, "");
+        boolean includeSpecial = entry.getBooleanValue(IDX_INCLUDE_LOCALES, false);
         List<CensusVariable> vars    = getVariables(entry);
         String               pattern = (String) entry.getValue(IDX_PATTERN);
         if ((pattern == null) || (pattern.trim().length() == 0)) {
@@ -311,7 +311,7 @@ public class AcsTypeHandler extends PointTypeHandler {
         if (entry == null) {
             return new ArrayList<String>();
         }
-        String       s      = entry.getValue(IDX_FIELDS, "").trim();
+        String       s      = entry.getStringValue(IDX_FIELDS, "").trim();
         List<String> fields = new ArrayList<String>();
         for (String line : StringUtil.split(s, "\n", true, true)) {
             if (line.startsWith("#")) {
@@ -366,16 +366,16 @@ public class AcsTypeHandler extends PointTypeHandler {
         }
         String getArgValue = StringUtil.join(",", getIndicatorIds(entry));
 
-        String forType     = entry.getValue(IDX_FOR_TYPE, "us");
-        String forValue    = entry.getValue(IDX_FOR_VALUE, "");
+        String forType     = entry.getStringValue(IDX_FOR_TYPE, "us");
+        String forValue    = entry.getStringValue(IDX_FOR_VALUE, "");
         String forArgValue = forType + ":" + (Utils.stringDefined(forValue)
                 ? forValue
                 : "*");
 
-        String inType1     = entry.getValue(IDX_IN_TYPE1, "");
-        String inValue1    = entry.getValue(IDX_IN_VALUE1, "");
-        String inType2     = entry.getValue(IDX_IN_TYPE2, "");
-        String inValue2    = entry.getValue(IDX_IN_VALUE2, "");
+        String inType1     = entry.getStringValue(IDX_IN_TYPE1, "");
+        String inValue1    = entry.getStringValue(IDX_IN_VALUE1, "");
+        String inType2     = entry.getStringValue(IDX_IN_TYPE2, "");
+        String inValue2    = entry.getStringValue(IDX_IN_VALUE2, "");
         String key = getRepository().getProperty("census.api.key",
                          (String) null);
         //        "http://api.census.gov/data/2013/acs5?get=NAME,B01001_001E&for=county+subdivision:*&in=state:04";
@@ -462,10 +462,10 @@ public class AcsTypeHandler extends PointTypeHandler {
         }
 
 
-        String inValue  = entry.getValue(IDX_IN_VALUE1, "");
-        String inType   = entry.getValue(IDX_IN_TYPE1, "");
-        String forValue = entry.getValue(IDX_FOR_VALUE, "");
-        String forType  = entry.getValue(IDX_FOR_TYPE, "");
+        String inValue  = entry.getStringValue(IDX_IN_VALUE1, "");
+        String inType   = entry.getStringValue(IDX_IN_TYPE1, "");
+        String forValue = entry.getStringValue(IDX_FOR_VALUE, "");
+        String forType  = entry.getStringValue(IDX_FOR_TYPE, "");
 
         if (Utils.stringDefined(inValue)) {
             Place place = Place.getPlace(inValue);

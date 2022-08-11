@@ -184,28 +184,28 @@ public class GpxTypeHandler extends PointTypeHandler {
         if (tag.equals("gpx.stats")) {
             //            initializeNewEntry(request, entry,false);
             //            getEntryManager().updateEntry(request, entry);
-            double distance = (Double) entry.getValue(IDX_DISTANCE,
+            double distance = (Double) entry.getDoubleValue(IDX_DISTANCE,
                                   Double.valueOf(0));
-            double totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
+            double totalTime = (Double) entry.getDoubleValue(IDX_TOTAL_TIME,
                                    Double.valueOf(0));
-            double movingTime = (Double) entry.getValue(IDX_MOVING_TIME,
+            double movingTime = (Double) entry.getDoubleValue(IDX_MOVING_TIME,
                                     Double.valueOf(0));
-            double speed = (Double) entry.getValue(IDX_SPEED, Double.valueOf(0));
-            double gain  = (Double) entry.getValue(IDX_GAIN, Double.valueOf(0));
-            double loss  = (Double) entry.getValue(IDX_LOSS, Double.valueOf(0));
+            double speed = (Double) entry.getDoubleValue(IDX_SPEED, Double.valueOf(0));
+            double gain  = (Double) entry.getDoubleValue(IDX_GAIN, Double.valueOf(0));
+            double loss  = (Double) entry.getDoubleValue(IDX_LOSS, Double.valueOf(0));
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
             if (Double.isNaN(distance) || (distance == -1)
                     || (totalTime == -1)) {
                 initializeNewEntry(request, entry, false);
-                distance = (Double) entry.getValue(IDX_DISTANCE,
+                distance = (Double) entry.getDoubleValue(IDX_DISTANCE,
                         Double.valueOf(0));
-                totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
+                totalTime = (Double) entry.getDoubleValue(IDX_TOTAL_TIME,
                         Double.valueOf(0));
-                movingTime = (Double) entry.getValue(IDX_MOVING_TIME,
+                movingTime = (Double) entry.getDoubleValue(IDX_MOVING_TIME,
                         Double.valueOf(0));
-                speed = (Double) entry.getValue(IDX_SPEED, Double.valueOf(0));
-                gain  = (Double) entry.getValue(IDX_GAIN, Double.valueOf(0));
-                loss  = (Double) entry.getValue(IDX_LOSS, Double.valueOf(0));
+                speed = (Double) entry.getDoubleValue(IDX_SPEED, Double.valueOf(0));
+                gain  = (Double) entry.getDoubleValue(IDX_GAIN, Double.valueOf(0));
+                loss  = (Double) entry.getDoubleValue(IDX_LOSS, Double.valueOf(0));
                 if (distance != -1) {
                     try {
                         getEntryManager().updateEntry(request, entry);

@@ -217,8 +217,8 @@ public class MailTypeHandler extends GenericTypeHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, entry, sb, null);
-        String from = entry.getValue(0, "");
-        String to   = entry.getValue(1, "");
+        String from = entry.getStringValue(0, "");
+        String to   = entry.getStringValue(1, "");
         sb.append(HtmlUtils.formTable());
         from = from.replace("<", "&lt;");
         from = from.replace(">", "&gt;");

@@ -65,8 +65,8 @@ public class CountdownTypeHandler extends GenericTypeHandler {
             countdownHtml = getRepository().getResource(
                 "/org/ramadda/plugins/gadgets/countdown.html");
         }
-        String orient  = entry.getValue(0, "");
-        String howMany = entry.getValue(1, "");
+        String orient  = entry.getStringValue(0, "");
+        String howMany = entry.getStringValue(1, "");
         if (howMany.length() == 0) {
             howMany = "4";
         }

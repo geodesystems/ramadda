@@ -100,13 +100,13 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
             String id = HU.getUniqueId("image");
             boolean showControls =
                 "true".equals(Utils.getString(props.get("showControls"),
-                    entry.getValue(IDX_SHOWCONTROLS, "true")));
+                    entry.getStringValue(IDX_SHOWCONTROLS, "true")));
             boolean autoplay =
                 "true".equals(Utils.getString(props.get("autoplay"),
-                    entry.getValue(IDX_AUTOPLAY, "true")));
+                    entry.getStringValue(IDX_AUTOPLAY, "true")));
             boolean addButtons =
                 "true".equals(Utils.getString(props.get("addButtons"),
-                    entry.getValue(IDX_ADDBUTTONS, "true")));
+                    entry.getStringValue(IDX_ADDBUTTONS, "true")));
             if (showControls) {
                 sb.append("<a href='javascript:;' onmousedown='" + id
                           + ".pause(); return false;'>"

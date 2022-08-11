@@ -58,7 +58,7 @@ public class RiseTypeHandler extends PointTypeHandler {
         if (fromImport) {
             return;
         }
-        String id = (String) entry.getValue(IDX_RISE_ID, "");
+        String id = (String) entry.getStringValue(IDX_RISE_ID, "");
         if ( !Utils.stringDefined(id)) {
             return;
         }

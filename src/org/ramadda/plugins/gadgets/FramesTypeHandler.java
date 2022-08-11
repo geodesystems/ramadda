@@ -68,10 +68,10 @@ public class FramesTypeHandler extends GenericTypeHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, entry, sb, null);
-        String       urls     = entry.getValue(0, "");
-        String       height   = entry.getValue(1, "300");
-        String       layout   = entry.getValue(2, LAYOUT_TABLE);
-        int          cols     = Integer.parseInt(entry.getValue(3, "1"));
+        String       urls     = entry.getStringValue(0, "");
+        String       height   = entry.getStringValue(1, "300");
+        String       layout   = entry.getStringValue(2, LAYOUT_TABLE);
+        int          cols     = Integer.parseInt(entry.getStringValue(3, "1"));
 
         List<String> labels   = new ArrayList<String>();
         List<String> contents = new ArrayList<String>();

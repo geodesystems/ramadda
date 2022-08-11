@@ -448,7 +448,7 @@ public class GtfsImportHandler extends ImportHandler {
                                     now.getTime(), values);
                     entry.setLocation(lat, lon, 0);
                     String agencyId =
-                        agencyEntry.getValue(
+                        agencyEntry.getStringValue(
                             GtfsAgencyTypeHandler.IDX_AGENCY_ID, "");
                     Gtfs.addAlias(request, entry,
                                   "gtfs." + agencyId + ".stop." + id);
@@ -831,7 +831,7 @@ public class GtfsImportHandler extends ImportHandler {
                     Entry routesEntry =
                         (Entry) agencyEntry.getProperty("routesEntry");
                     String agencyId =
-                        agencyEntry.getValue(
+                        agencyEntry.getStringValue(
                             GtfsAgencyTypeHandler.IDX_AGENCY_ID, "");
 
                     entry.initEntry(name, "", routesEntry, user, resource,
@@ -1301,7 +1301,7 @@ public class GtfsImportHandler extends ImportHandler {
                         lastStop = stop;
                         if (stop != null) {
                             String routes =
-                                (String) stop.getValue(
+                                (String) stop.getStringValue(
                                     GtfsStopTypeHandler.IDX_ROUTES, "");
                             if (routes.indexOf(route.getId()) < 0) {
                                 routes += route.getId();

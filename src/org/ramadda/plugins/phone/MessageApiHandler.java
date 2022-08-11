@@ -147,7 +147,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
             getRepository().getEntryManager().getEntriesFromDb(request);
         Date now = new Date();
         for (Entry entry : entries) {
-            if ( !entry.getValue(MTTFTypeHandler.IDX_ENABLED, false)) {
+            if ( !entry.getBooleanValue(MTTFTypeHandler.IDX_ENABLED, false)) {
                 //                System.err.println("\tnot enabled");
                 continue;
             }
@@ -167,7 +167,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 continue;
             }
             String originalStatus =
-                entry.getValue(MTTFTypeHandler.IDX_STATUS, "");
+                entry.getStringValue(MTTFTypeHandler.IDX_STATUS, "");
             boolean[] sent         = { false };
             boolean   inError      = false;
             boolean   needToUpdate = false;
@@ -182,9 +182,9 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
 
             if (sent[0]) {
                 String recurrence =
-                    entry.getValue(MTTFTypeHandler.IDX_RECURRENCE, "").trim();
+                    entry.getStringValue(MTTFTypeHandler.IDX_RECURRENCE, "").trim();
                 double value =
-                    entry.getValue(MTTFTypeHandler.IDX_RECURRENCE_VALUE, 0.0);
+                    entry.getDoubleValue(MTTFTypeHandler.IDX_RECURRENCE_VALUE, 0.0);
                 if (Misc.equals(recurrence, "days") && (value > 0)) {
                     GregorianCalendar cal = new GregorianCalendar();
                     cal.setTimeInMillis(now.getTime());
@@ -252,17 +252,17 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
     private String processMessage(Request request, TwilioApiHandler twilio,
                                   Entry entry, boolean[] sent)
             throws Exception {
-        String subject = entry.getValue(MTTFTypeHandler.IDX_SUBJECT,
+        String subject = entry.getStringValue(MTTFTypeHandler.IDX_SUBJECT,
                                         "").trim();
-        String fromEmail = entry.getValue(MTTFTypeHandler.IDX_FROM_EMAIL,
+        String fromEmail = entry.getStringValue(MTTFTypeHandler.IDX_FROM_EMAIL,
                                           "").trim();
         List<String> toEmail =
-            StringUtil.split(entry.getValue(MTTFTypeHandler.IDX_TO_EMAIL,
+            StringUtil.split(entry.getStringValue(MTTFTypeHandler.IDX_TO_EMAIL,
                                             ""), ",", true, true);
         List<String> toPhone =
-            StringUtil.split(entry.getValue(MTTFTypeHandler.IDX_TO_PHONE,
+            StringUtil.split(entry.getStringValue(MTTFTypeHandler.IDX_TO_PHONE,
                                             ""), ",", true, true);
-        String message = entry.getValue(MTTFTypeHandler.IDX_MESSAGE, "");
+        String message = entry.getStringValue(MTTFTypeHandler.IDX_MESSAGE, "");
 
 
         if (toPhone.size() > 0) {
