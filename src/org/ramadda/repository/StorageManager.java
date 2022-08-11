@@ -2328,6 +2328,15 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
     }
 
+    public long getEntryFileLength(Entry entry) throws Exception {
+        if(entry.getResource().isS3()) {
+	    return getEntryFile(entry).length();
+	}
+	
+	return entry.getFile().length();
+    }    
+
+
 
     /**
      *
@@ -2337,6 +2346,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     public boolean isS3(String path) {
         return path.startsWith("s3:");
     }
+
+
 
     /**
        If the entry is a file then return the file path from getEntryFile

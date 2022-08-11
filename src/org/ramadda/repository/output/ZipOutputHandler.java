@@ -420,16 +420,12 @@ public class ZipOutputHandler extends OutputHandler {
                     continue;
                 }
             }
-
-            //Not sure why I wasn't dealing with synthetic entries here
-            //if (getEntryManager().isSynthEntry(entry.getId())) {
-            //                continue;
-            //            }
             counter[0]++;
             //Don't get big files
+	    
             if (request.defined(ARG_MAXFILESIZE) && entry.isFile()) {
-                if (entry.getFile().length()
-                        >= request.get(ARG_MAXFILESIZE, 0)) {
+		long length = getStorageManager().getEntryFileLength(entry);
+                if (length   >= request.get(ARG_MAXFILESIZE, 0)) {
                     continue;
                 }
             }
@@ -463,7 +459,7 @@ public class ZipOutputHandler extends OutputHandler {
                 continue;
             }
 
-            String path = entry.getResource().getPath();
+	    String path = getStorageManager().getEntryResourcePath(entry);
             String name = getStorageManager().getFileTail(entry);
             int    cnt  = 1;
             if ( !forExport) {
@@ -483,7 +479,6 @@ public class ZipOutputHandler extends OutputHandler {
                 throw new IllegalArgumentException(
                     "Size of request has exceeded maximum size");
             }
-
 
             if (fileWriter != null) {
                 InputStream fis =
