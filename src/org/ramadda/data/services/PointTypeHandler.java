@@ -169,7 +169,13 @@ public class PointTypeHandler extends RecordTypeHandler {
         if (fromImport) {
             return;
         }
+	addInitialMetadata(request, entry);
 
+    }
+
+
+    @Override
+    public void addInitialMetadata(Request request, Entry entry) throws Exception {
         log("initialize new entry:" + entry.getResource());
         File file = entry.getFile();
         if ((file != null) && !file.exists()) {
@@ -219,7 +225,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
     }
-
 
     /**
      *
