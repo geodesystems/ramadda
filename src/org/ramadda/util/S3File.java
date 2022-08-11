@@ -24,6 +24,8 @@ import ucar.unidata.util.Misc;
 @SuppressWarnings("unchecked")
 public class S3File extends FileWrapper {
 
+    public static final int PERCENT_THRESHOLD = 1000;
+
     /**  */
     public static final String S3PREFIX = "s3:";
 
@@ -258,7 +260,6 @@ public class S3File extends FileWrapper {
     }
 
     public List<S3File> doList(boolean self, int max,double percent) throws Exception {	
-	System.err.println("S3.doList"+ percent);
         if ( !self && !isDirectory()) {
             return null;
         }
@@ -274,11 +275,10 @@ public class S3File extends FileWrapper {
         String       result = run(commands);
         List<S3File> files  = new ArrayList<S3File>();
 	List<String> lines = Utils.split(result, "\n", true, true) ;
-	System.err.println("percent:" + percent);
+	System.err.println("percent:" + percent +" #:" + lines.size());
 	for (String line : lines) {
-	    if(percent>0 && lines.size()>100) {
+	    if(percent>0 && lines.size()>PERCENT_THRESHOLD) {
 		if(Math.random()>percent) {
-		    System.err.println("SKIPPING");
 		    continue;
 		}		    
 	    }
@@ -472,7 +472,7 @@ public class S3File extends FileWrapper {
 	}
 	private boolean downloadOk(FileWrapper f, FileWrapper[] children) {
 	    //only check this when there are logs of siblings
-	    if(percent>0 && children!=null && children.length>100) {
+	    if(percent>0 && children!=null && children.length>PERCENT_THRESHOLD) {
 		if(Math.random()>percent) {
 		    //		    System.err.println("skipping:" + f.getName());
 		    return false;
