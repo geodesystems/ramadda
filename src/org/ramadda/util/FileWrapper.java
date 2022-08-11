@@ -72,7 +72,13 @@ public abstract class FileWrapper {
     }    
 
     public static FileWrapper createFileWrapper(String path) {
+	return createFileWrapper(path, false);
+    }
+
+    public static FileWrapper createFileWrapper(String path, boolean checkForDir) {	
+	path = path.trim();
 	if(path.startsWith(S3File.S3PREFIX)) {
+    if(checkForDir && !path.endsWith("/")) path +="/";
 	    return new S3File(path);
 	}
 	return new FileWrapper.File(path);
