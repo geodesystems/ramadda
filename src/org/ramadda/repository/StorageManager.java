@@ -2385,7 +2385,7 @@ public class StorageManager extends RepositoryManager implements PointFile
 
             return cachedFile;
         } else {
-            return entry.getFile();
+            return entry.getResource().getTheFile();
         }
 
     }
