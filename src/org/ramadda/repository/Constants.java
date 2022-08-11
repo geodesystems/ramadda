@@ -1613,6 +1613,12 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_MAP_EXTRA = "map.extra";
 
+    public static final String ARG_COPY_DEEP = "copydeep";
+    public static final String ARG_COPY_SIZE_LIMIT = "sizelimit";
+    public static final String ARG_EXCLUDES = "excludes";    
+
+
+
     /** _more_ */
     public static final String PROP_REGISTRY_DEFAULTSERVER =
         "ramadda.registry.defaultserver";
