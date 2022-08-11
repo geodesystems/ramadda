@@ -444,6 +444,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private GroupTypeHandler groupTypeHandler;
 
+    private TypeHandler fileTypeHandler;    
+
 
 
     /** _more_ */
@@ -5678,6 +5680,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return groupTypeHandler;
     }
 
+    public TypeHandler getFileTypeHandler() {
+        return fileTypeHandler;
+    }    
+
 
 
     /**
@@ -5713,7 +5719,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         groupTypeHandler.setHelp("A group of entries");
         TypeHandler typeHandler;
         addTypeHandler(TypeHandler.TYPE_FILE,
-                       typeHandler = new TypeHandler(this, "file", "File",
+                       fileTypeHandler =typeHandler = new TypeHandler(this, "file", "File",
                            "Documents"));
         typeHandler.setHelp(
             "The entry type is figured out by the file extension");
