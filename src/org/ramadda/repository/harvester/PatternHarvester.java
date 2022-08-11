@@ -12,6 +12,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FileWrapper;
+import org.ramadda.util.PatternHolder;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -76,6 +77,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** attribute id */
     public static final String ATTR_NOTFILEPATTERN = "notfilepattern";
 
+    public static final String ATTR_SIZELIMIT = "sizelimit";    
+
     /** attribute id */
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
 
@@ -109,7 +112,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private boolean noTree = false;
 
     /** _more_ */
-    private Pattern filePattern;
+    private List<PatternHolder> filePattern;
 
     /** _more_ */
     private Pattern topPattern;
@@ -119,8 +122,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
     /** _more_ */
-    private Pattern notfilePattern;
+    private List<PatternHolder> notfilePattern;
 
+
+    private double sizeLimit = -1;
 
     /** _more_ */
     private boolean moveToStorage = false;
@@ -231,10 +236,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         topPatternString = XmlUtil.getAttribute(element, ATTR_TOPPATTERN,
                 topPatternString);
-
-
+    
         notfilePatternString = XmlUtil.getAttribute(element,
                 ATTR_NOTFILEPATTERN, notfilePatternString);
+        sizeLimit = XmlUtil.getAttribute(element,
+					  ATTR_SIZELIMIT, sizeLimit);
 
 
         filePattern    = null;
@@ -272,8 +278,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
+        element.setAttribute(ATTR_SIZELIMIT, sizeLimit+"");
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
+
     }
 
 
@@ -305,6 +313,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
                 notfilePatternString).trim();
         notfilePattern = null;
+
+        sizeLimit = request.get(ATTR_SIZELIMIT, sizeLimit);
+
 
         sdf            = null;
         init();
@@ -368,7 +379,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         }
 
-        sb.append(HtmlUtils.colspan(msgHeader("Look for files"), 2));
+        sb.append(HtmlUtils.colspan(formHeader("Look for files"), 2));
 
         StringBuffer inputText = new StringBuffer();
         for (FileWrapper rootDir : rootDirs) {
@@ -391,15 +402,20 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                           topPatternString,
                                           HtmlUtils.SIZE_60)));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("File pattern"),
-                                      HtmlUtils.input(ATTR_FILEPATTERN,
-                                          filePatternString,
-                                          HtmlUtils.SIZE_60)));
+        sb.append(HtmlUtils.formEntryTop(msgLabel("File Patterns"),
+                                      HtmlUtils.textArea(ATTR_FILEPATTERN,
+							 filePatternString,
+							 3,60)));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Exclude files that match"),
-                                      HtmlUtils.input(ATTR_NOTFILEPATTERN,
-                                          notfilePatternString,
-                                          HtmlUtils.SIZE_60)));
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Exclude files that match"),
+                                      HtmlUtils.textArea(ATTR_NOTFILEPATTERN,
+							 notfilePatternString,
+							 3,60)));
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Size limit"),
+                                      HtmlUtils.input(ATTR_SIZELIMIT,
+						      sizeLimit+"",
+						      HtmlUtils.SIZE_5) +" (MB)"));
 
         sb.append(HtmlUtils.formEntry("",
                                       HtmlUtils.checkbox(ATTR_IGNORE_ERRORS,
@@ -408,7 +424,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         sb.append(
             HtmlUtils.colspan(
-                msgHeader("Then create an entry with") + HtmlUtils.space(2)
+                formHeader("Then create an entry with") + HtmlUtils.space(2)
                 + HtmlUtils.href(getPageHandler().makeHtdocsUrl("/help/harvesters.html"),
                     "(" + msg("Help") + ")", " target=_HELP"), 2));
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
@@ -526,7 +542,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private void init() {
 
         if ((notfilePattern == null) && (notfilePatternString.length() > 0)) {
-            notfilePattern = Pattern.compile(notfilePatternString);
+	    notfilePattern = PatternHolder.parseLines(notfilePatternString);
         }
 
         if ((topPattern == null) && (topPatternString.length() > 0)) {
@@ -538,16 +554,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
             patternNames = new ArrayList<String>();
             String pattern = Utils.extractPatternNames(filePatternString,
-                                 patternNames);
-            filePattern = Pattern.compile(pattern);
-            if (getTestMode()) {
-                getRepository().getLogManager().logInfo("orig pattern:"
-                        + "  " + filePatternString);
-                getRepository().getLogManager().logInfo("pattern:" + "  "
-                        + pattern);
-                getRepository().getLogManager().logInfo("pattern names:"
-                        + patternNames);
-            }
+						       patternNames);
+            filePattern = PatternHolder.parseLines(pattern);
         }
     }
 
@@ -1304,24 +1312,26 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         filePath = filePath.replace("\\", "/");
 
         Matcher matcher = null;
-        if (filePattern != null) {
-            matcher = filePattern.matcher(filePath);
-            if ( !matcher.find()) {
+        if (filePattern != null && filePattern.size()>0) {
+	    if(!PatternHolder.checkPatterns(filePattern,filePath)) {
                 debug("file:<i>" + filePath + "</i> does not match pattern");
-                logHarvesterInfo("file:" + filePath
-                                 + " does not match pattern");
-
+                logHarvesterInfo("file:" + filePath + " does not match pattern");
                 return null;
             }
         }
-        if (notfilePattern != null) {
-            Matcher matcher2 = notfilePattern.matcher(filePath);
-            if (matcher2.find()) {
-                logHarvesterInfo(
-                    "excluding file because it matches the NOT pattern:"
-                    + filePath);
+	if(sizeLimit>=0) {
+	    if(sizeLimit>f.length()) {
+		System.err.println("Over size limit:" + f.length());
+		return null;
+	    }
+	}
 
-                return null;
+
+        if (notfilePattern != null && notfilePattern.size()>0) {
+	    if(PatternHolder.checkPatterns(notfilePattern,filePath)) {
+		logHarvesterInfo("excluding file because it matches the NOT pattern:"
+				 + filePath);
+		return null;
             }
         }
 
@@ -1360,7 +1370,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                              Hashtable<String, Entry> entriesMap)
             throws Exception {
         Request request = getRequest();
-	final boolean debug = true;
+	final boolean debug = false;
         Entry  baseGroup = getBaseGroup();
 	String filePath      = fileWrapper.toString();
         filePath = filePath.replace("\\", "/");
