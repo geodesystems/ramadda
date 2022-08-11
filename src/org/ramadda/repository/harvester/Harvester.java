@@ -30,7 +30,9 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
+//Use myxmlutil as it fixes how attributes are encoded
+//import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.MyXmlUtil;
 
 import java.io.ByteArrayInputStream;
 
@@ -460,55 +462,55 @@ public abstract class Harvester extends RepositoryManager {
     protected void init(Element element) throws Exception {
         rootDirs = new ArrayList<FileWrapper>();
         for (String dir :
-                Utils.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""),
+                Utils.split(MyXmlUtil.getAttribute(element, ATTR_ROOTDIR, ""),
                             ROOTDIR_DELIM, true, true)) {
-            rootDirs.add(FileWrapper.createFileWrapper(dir));
+            rootDirs.add(FileWrapper.createFileWrapper(dir,true));
         }
 
         this.typeHandler =
-            repository.getTypeHandler(XmlUtil.getAttribute(element,
+            repository.getTypeHandler(MyXmlUtil.getAttribute(element,
                 ATTR_TYPE, TypeHandler.TYPE_ANY));
 
-        groupTemplate = XmlUtil.getAttribute(element, ATTR_GROUPTEMPLATE,
+        groupTemplate = MyXmlUtil.getAttribute(element, ATTR_GROUPTEMPLATE,
                                              groupTemplate);
-        this.baseGroupId = XmlUtil.getAttribute(element, ATTR_BASEGROUP, "");
+        this.baseGroupId = MyXmlUtil.getAttribute(element, ATTR_BASEGROUP, "");
 
         Entry baseGroup = getBaseGroup();
         if (baseGroup != null) {
             baseGroupId = baseGroup.getId();
         }
 
-        nameTemplate = XmlUtil.getAttribute(element, ATTR_NAMETEMPLATE,
+        nameTemplate = MyXmlUtil.getAttribute(element, ATTR_NAMETEMPLATE,
                                             nameTemplate);
-        descTemplate = XmlUtil.getAttribute(element, ATTR_DESCTEMPLATE, "");
-        tagTemplate = XmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
+        descTemplate = MyXmlUtil.getAttribute(element, ATTR_DESCTEMPLATE, "");
+        tagTemplate = MyXmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
                                            tagTemplate);
 
 
 
-        this.name     = XmlUtil.getAttribute(element, ATTR_NAME, "");
-        this.monitor = XmlUtil.getAttribute(element, ATTR_MONITOR, monitor);
+        this.name     = MyXmlUtil.getAttribute(element, ATTR_NAME, "");
+        this.monitor = MyXmlUtil.getAttribute(element, ATTR_MONITOR, monitor);
 
-        this.userName = XmlUtil.getAttribute(element, ATTR_USER, userName);
+        this.userName = MyXmlUtil.getAttribute(element, ATTR_USER, userName);
         this.user     = null;
 
-        this.addMetadata = XmlUtil.getAttribute(element, ATTR_ADDMETADATA,
+        this.addMetadata = MyXmlUtil.getAttribute(element, ATTR_ADDMETADATA,
                 addMetadata);
-        this.addShortMetadata = XmlUtil.getAttribute(element,
+        this.addShortMetadata = MyXmlUtil.getAttribute(element,
                 ATTR_ADDSHORTMETADATA, addShortMetadata);
-        this.activeOnStart = XmlUtil.getAttribute(element,
+        this.activeOnStart = MyXmlUtil.getAttribute(element,
                 ATTR_ACTIVEONSTART, getDefaultActiveOnStart());
 
-        this.generateMd5 = XmlUtil.getAttribute(element, ATTR_GENERATEMD5,
+        this.generateMd5 = MyXmlUtil.getAttribute(element, ATTR_GENERATEMD5,
                 generateMd5);
-        this.testCount = XmlUtil.getAttribute(element, ATTR_TESTCOUNT,
+        this.testCount = MyXmlUtil.getAttribute(element, ATTR_TESTCOUNT,
                 testCount);
-        this.testMode = XmlUtil.getAttribute(element, ATTR_TESTMODE,
+        this.testMode = MyXmlUtil.getAttribute(element, ATTR_TESTMODE,
                                              testMode);
-        this.sleepUnit = XmlUtil.getAttribute(element, ATTR_SLEEPUNIT,
+        this.sleepUnit = MyXmlUtil.getAttribute(element, ATTR_SLEEPUNIT,
                 sleepUnit);
 
-        this.sleepMinutes = XmlUtil.getAttribute(element, ATTR_SLEEP,
+        this.sleepMinutes = MyXmlUtil.getAttribute(element, ATTR_SLEEP,
                 sleepMinutes);
 
     }
@@ -779,11 +781,12 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getContent() throws Exception {
-        Document doc  = XmlUtil.makeDocument();
+        Document doc  = MyXmlUtil.makeDocument();
         Element  root = doc.createElement(TAG_HARVESTER);
         applyState(root);
-
-        return XmlUtil.toString(root);
+        String xml =  MyXmlUtil.toString(root);
+	System.err.println("getContent:" + xml);
+	return xml;
     }
 
     /**
@@ -803,7 +806,7 @@ public abstract class Harvester extends RepositoryManager {
         content = content.replace("${monthname}", "${from_monthname}");
         content = content.replace("${day}", "${from_day}");
         Element root =
-            XmlUtil.getRoot(new ByteArrayInputStream(content.getBytes()));
+            MyXmlUtil.getRoot(new ByteArrayInputStream(content.getBytes()));
         init(root);
     }
 
@@ -857,11 +860,11 @@ public abstract class Harvester extends RepositoryManager {
             Element root)
             throws Exception {
         List<Harvester> harvesters = new ArrayList<Harvester>();
-        List            children   = XmlUtil.findChildren(root,
+        List            children   = MyXmlUtil.findChildren(root,
                                          TAG_HARVESTER);
         for (int i = 0; i < children.size(); i++) {
             Element node = (Element) children.get(i);
-            Class c = Misc.findClass(XmlUtil.getAttribute(node, ATTR_CLASS));
+            Class c = Misc.findClass(MyXmlUtil.getAttribute(node, ATTR_CLASS));
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { Repository.class,
                     Element.class });
@@ -1258,11 +1261,11 @@ public abstract class Harvester extends RepositoryManager {
      * @return _more_
      */
     public List<String> split(Element element, String attr) {
-        if ( !XmlUtil.hasAttribute(element, attr)) {
+        if ( !MyXmlUtil.hasAttribute(element, attr)) {
             return new ArrayList<String>();
         }
 
-        return Utils.split(XmlUtil.getAttribute(element, attr), ",", true,
+        return Utils.split(MyXmlUtil.getAttribute(element, attr), ",", true,
                            true);
     }
 
