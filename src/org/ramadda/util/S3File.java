@@ -275,7 +275,6 @@ public class S3File extends FileWrapper {
         String       result = run(commands);
         List<S3File> files  = new ArrayList<S3File>();
 	List<String> lines = Utils.split(result, "\n", true, true) ;
-	System.err.println("percent:" + percent +" #:" + lines.size());
 	for (String line : lines) {
 	    if(percent>0 && lines.size()>PERCENT_THRESHOLD) {
 		if(Math.random()>percent) {
@@ -470,6 +469,11 @@ public class S3File extends FileWrapper {
 	    if(verbose) 
 		System.out.print(msg);
 	}
+	private void println() {
+	    if(verbose) 
+		System.out.println(Utils.ANSI_RESET);
+	}
+	
 	private boolean downloadOk(FileWrapper f, FileWrapper[] children) {
 	    //only check this when there are logs of siblings
 	    if(percent>0 && children!=null && children.length>PERCENT_THRESHOLD) {
@@ -481,17 +485,21 @@ public class S3File extends FileWrapper {
 	    if(sizeLimit<=0) return true;
 	    return f.length()<(sizeLimit*1000000);
 	}
+	public void printPrefix(int level) {
+	    for (int i = 0; i < level; i++) {
+		print("   ");
+	    }
+	}
 	public int viewFile(int level, FileWrapper f, FileWrapper[] children) throws Exception {
 	    for(String exclude: excludes) {
 		if(f.toString().matches(exclude))
 		    return DO_DONTRECURSE;
 	    }
-	    for (int i = 0; i < level; i++) {
-		print("  ");
-	    }
+
+	    printPrefix(level);
 	    if ( !f.isDirectory()) {
+		print(Utils.ANSI_RED +f.getName() +Utils.ANSI_RESET+ " " + Utils.formatFileLength(f.length()));
 		if(download && downloadOk(f,children)) {
-		    print("file:" + f.getName() +" " + Utils.formatFileLength(f.length()));
 		    String path = f.toString();
 		    print(" downloading... ");
 		    java.io.File dir  = new java.io.File(".");
@@ -518,16 +526,13 @@ public class S3File extends FileWrapper {
 			//			print(" copying file:" +dest);
 			f.copyFileTo(dest);
 		    }
-		    print("\n");
-		    return DO_DONTRECURSE;
 		}
-	    }  else {
-		print(f.getName());
-	    }
-	    if (f.isDirectory()) {
-		return DO_CONTINUE;
-	    } else {
+		println();
 		return DO_DONTRECURSE;
+	    }  else {
+		print(Utils.ANSI_GREEN+f.getName());
+		println();
+		return DO_CONTINUE;
 	    }
 	}
     }
