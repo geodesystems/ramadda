@@ -2624,8 +2624,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String labeledRadio(String name, String value,
                                       boolean checked, String label) {
-	String radio = tag(TAG_INPUT, attrs(  /*ATTR_CLASS, CLASS_RADIO,*/
-					    ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
+	String radio = tag(TAG_INPUT, attrs(ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
 					    value) + (checked
 						      ? " checked "
 						      : ""));
