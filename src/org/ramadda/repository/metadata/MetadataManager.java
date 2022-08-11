@@ -2107,6 +2107,8 @@ public class MetadataManager extends RepositoryManager {
                                          msg("Copy selected to clipboard"),
                                          ARG_METADATA_CLIPBOARD_COPY));
             sb.append(buttons);
+	    String allId = HU.getUniqueId("all_");
+	    HU.div(sb,HtmlUtils.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all"),"");
             sb.append("\n");
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
@@ -2132,7 +2134,9 @@ public class MetadataManager extends RepositoryManager {
                         + HtmlUtils.attr(
                             HtmlUtils.ATTR_TITLE,
                             msg(
-                            "Shift-click: select range; Control-click: toggle all")) + HtmlUtils.attr(
+                            "Shift-click: select range; Control-click: toggle all")) +
+			HU.cssClass("ramadda-metadata-select") +
+			HtmlUtils.attr(
                                 HtmlUtils.ATTR_ONCLICK,
                                 HtmlUtils.call(
                                     "HtmlUtils.checkboxClicked",
@@ -2161,8 +2165,10 @@ public class MetadataManager extends RepositoryManager {
             sb.append(buttons);
             HtmlUtils.comment(sb, "Metadata form end");
             formInfo.addToForm(sb);
+	    HU.script(sb,"HtmlUtils.initToggleAll('" + allId +"','.ramadda-metadata-select');\n");
             sb.append(HtmlUtils.formClose());
             sb.append("\n");
+	    
         }
 
         getPageHandler().entrySectionClose(request, entry, sb);
