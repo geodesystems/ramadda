@@ -179,8 +179,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             getEntryManager().findDefaultTypeHandler(rootEntry, file.toString());
         if (bucketTypeHandler == null) {
 	    isBucketType = true;
-            bucketTypeHandler =
-                getRepository().getTypeHandler("type_s3_bucket");
+            bucketTypeHandler = file.isDirectory()?
+                getRepository().getTypeHandler("type_s3_bucket"):
+                getRepository().getTypeHandler("type_s3_file");		
         }
         Entry  bucketEntry = new Entry(id, bucketTypeHandler);
         String desc        = "";
