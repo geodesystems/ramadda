@@ -3690,7 +3690,7 @@ public class EntryManager extends RepositoryManager {
         }
         entries = okEntries;
         List<Object[]> found = getDescendents(request, entries, connection,
-					      true, true, actionId);
+					      null, true, true, actionId);
         String query;
 
         query =
@@ -4604,15 +4604,18 @@ public class EntryManager extends RepositoryManager {
 	    StringBuilder left  = new StringBuilder();
 	    StringBuilder right  = new StringBuilder();
 	    StringBuilder middle = new StringBuilder();
+	    StringBuilder bottom  = new StringBuilder();
             if (force == null) {
                 left.append(
 			    HU.div(
 				   msg("What do you want to do?"),
 				   HU.cssClass("entry-confirm-header")));
+		String radiosId = HU.getUniqueId("buttons_");
+		String extraId = HU.getUniqueId("buttons_");		
                 left.append(
 			    HU.open(
 				    HU.TAG_DIV,
-				    HU.cssClass("entry-confirm-list")));
+				    HU.id(radiosId) + HU.cssClass("entry-confirm-list")));
                 left.append(HU.labeledRadio(ARG_ACTION, "move", isMove,
 					    msg("Move")));
                 left.append("&nbsp;&nbsp;");
@@ -4622,6 +4625,19 @@ public class EntryManager extends RepositoryManager {
                 left.append(HU.labeledRadio(ARG_ACTION, "link", isLink,
 					    msg("Link")));
                 left.append(HU.close(HU.TAG_DIV));
+		bottom.append("<div style='margin-left:20px;margin-bottom:20px;display:" + (isCopy?"block":"none")+";' id='" + extraId+"'>");
+		bottom.append(HU.formTable());
+		bottom.append(HU.formEntry("Size Limit:",
+					  HU.input(ARG_COPY_SIZE_LIMIT,
+						   request.getString(ARG_COPY_SIZE_LIMIT, ""), HU.SIZE_5)+" (MB)"));
+		bottom.append(HU.formEntry("",	
+					   HU.labeledCheckbox(ARG_COPY_DEEP,"true",
+							      request.get(ARG_COPY_DEEP, false), "Make deep copy (for synthetic entries)")));
+		bottom.append(HU.formEntryTop("Excludes:", 
+					      HU.textArea(ARG_EXCLUDES,request.getString(ARG_EXCLUDES),3,20) +" Patterns, one per line"));
+		bottom.append(HU.formTableClose());
+		bottom.append("</div>");
+		bottom.append(HU.script("HtmlUtils.initRadioToggle(" +HU.comma(HU.squote("#"+radiosId),"{'copy':" +HU.squote("#"+extraId))+"});\n"));
             }
 
 
@@ -4646,6 +4662,7 @@ public class EntryManager extends RepositoryManager {
             right.append(HU.close(HU.TAG_DIV));
 
 	    HU.hrow(sb, left.toString(), middle.toString(), right.toString());
+	    sb.append(bottom);
             sb.append(
 		      HU.div(
 			     msg("Are you sure?"),
@@ -4811,68 +4828,38 @@ public class EntryManager extends RepositoryManager {
 					       final List<Entry> entries, Object actionId,
 					       String link)
 	throws Exception {
-
+	boolean deepCopy  = request.get(ARG_COPY_DEEP,false);
+	EntryUtil.Excluder excluder = new EntryUtil.Excluder(Utils.split(request.getString(ARG_EXCLUDES,""),"\n",true,true),
+							     (int)(request.get(ARG_COPY_SIZE_LIMIT,(double)-1.0)*1000*1000));
         StringBuilder sb         = new StringBuilder();
         List<Entry>   newEntries = new ArrayList<Entry>();
         try {
             Connection connection = getDatabaseManager().getConnection();
             connection.setAutoCommit(false);
             List<Object[]> ids = getDescendents(request, entries, connection,
-						true, true, actionId);
+						excluder,
+						true, !deepCopy, actionId);
             getDatabaseManager().closeConnection(connection);
             Hashtable<String, Entry> oldIdToNewEntry = new Hashtable<String,
 		Entry>();
-
             for (int i = 0; i < ids.size(); i++) {
                 if ( !getActionManager().getActionOk(actionId)) {
                     return null;
                 }
-
-
                 Object[]    tuple          = ids.get(i);
                 String      id             = (String) tuple[0];
                 Entry       oldEntry       = getEntry(request, id);
-                String      newId          = getRepository().getGUID();
-                TypeHandler oldTypeHandler = oldEntry.getTypeHandler();
-                TypeHandler newTypeHandler =
-                    oldTypeHandler.getTypeHandlerForCopy(oldEntry);
-                Entry newEntry = newTypeHandler.createEntry(newId);
-                oldIdToNewEntry.put(oldEntry.getId(), newEntry);
-                //See if this new entry is somewhere down in the tree
-                Entry newParent =
-                    oldIdToNewEntry.get(oldEntry.getParentEntryId());
-                if (newParent == null) {
-                    newParent = toGroup;
-                }
-                Resource newResource =
-                    oldTypeHandler.getResourceForCopy(request, oldEntry,
-						      newEntry);
-                newEntry.initEntry(oldEntry.getName(),
-                                   oldEntry.getDescription(),
-                                   (Entry) newParent, request.getUser(),
-                                   newResource, oldEntry.getCategory(),
-				   oldEntry.getEntryOrder(),
-                                   oldEntry.getCreateDate(),
-                                   new Date().getTime(),
-                                   oldEntry.getStartDate(),
-                                   oldEntry.getEndDate(),
-                                   oldEntry.getValues());
+		if(!excluder.isEntryOk(oldEntry)) {
+		    System.err.println("Is excluded:" + oldEntry);
+		    continue;
+		}
 
-		newEntry.setParentEntry(getPathEntry(request,newParent,newEntry,pathTemplate));
-                newEntry.setLocation(oldEntry);
-                newTypeHandler.initializeCopiedEntry(newEntry, oldEntry);
-
-                List<Metadata> newMetadata = new ArrayList<Metadata>();
-                for (Metadata oldMetadata :
-			 getMetadataManager().getMetadata(oldEntry)) {
-                    newMetadata.add(
-				    getMetadataManager().copyMetadata(
-								      oldEntry, newEntry, oldMetadata));
-                }
-                newEntry.setMetadata(newMetadata);
-                newEntries.add(newEntry);
+		//		System.err.println("OK:" + oldEntry);
+		//		if(true) continue;
+		Entry newEntry =
+		    copyEntry(request, toGroup, pathTemplate,
+			      oldIdToNewEntry, newEntries, oldEntry);
             }
-
 
             int           count = 0;
             StringBuilder links = new StringBuilder();
@@ -4892,7 +4879,9 @@ public class EntryManager extends RepositoryManager {
 			     HU.href(
 				     request.entryUrl(
 						      getRepository().URL_ENTRY_SHOW,
-						      newEntry), newEntry.getName()));
+						      newEntry),
+				     HU.image(getPageHandler().getIconUrl(request, newEntry)) +" "+
+				     newEntry.getName()));
                 links.append("<br>");
             }
             if (newEntries.size() > 0) {
@@ -4908,15 +4897,56 @@ public class EntryManager extends RepositoryManager {
             getActionManager().setContinueHtml(actionId,
 					       "Error copying entries:" + exc);
             getLogManager().logError("Copying entries", exc);
-
             return null;
         }
-
         return newEntries;
-
-
     }
 
+    private Entry copyEntry(Request request,
+			    Entry parent, String pathTemplate,
+			    Hashtable<String, Entry> oldIdToNewEntry,
+			    List<Entry> newEntries,
+			    Entry oldEntry) throws Exception {
+	String      newId          = getRepository().getGUID();
+	TypeHandler oldTypeHandler =oldEntry.getMasterTypeHandler();
+	TypeHandler newTypeHandler =   oldTypeHandler.getTypeHandlerForCopy(oldEntry);
+	Entry newEntry = newTypeHandler.createEntry(newId);
+	oldIdToNewEntry.put(oldEntry.getId(), newEntry);
+	//See if this new entry is somewhere down in the tree
+	Entry newParent =
+	    oldIdToNewEntry.get(oldEntry.getParentEntryId());
+	if (newParent == null) {
+	    newParent = parent;
+	}
+	Resource newResource =
+	    oldTypeHandler.getResourceForCopy(request, oldEntry,
+					      newEntry);
+	newEntry.initEntry(oldEntry.getName(),
+			   oldEntry.getDescription(),
+			   (Entry) newParent, request.getUser(),
+			   newResource, oldEntry.getCategory(),
+			   oldEntry.getEntryOrder(),
+			   oldEntry.getCreateDate(),
+			   new Date().getTime(),
+			   oldEntry.getStartDate(),
+			   oldEntry.getEndDate(),
+			   oldEntry.getValues());
+
+	newEntry.setParentEntry(getPathEntry(request,newParent,newEntry,pathTemplate));
+	newEntry.setLocation(oldEntry);
+	newTypeHandler.initializeCopiedEntry(newEntry, oldEntry);
+
+	List<Metadata> newMetadata = new ArrayList<Metadata>();
+	for (Metadata oldMetadata :
+		 getMetadataManager().getMetadata(oldEntry)) {
+	    newMetadata.add(
+			    getMetadataManager().copyMetadata(
+							      oldEntry, newEntry, oldMetadata));
+	}
+	newEntry.setMetadata(newMetadata);
+	newEntries.add(newEntry);
+	return newEntry;
+    }
 
 
     /**
@@ -7220,10 +7250,7 @@ public class EntryManager extends RepositoryManager {
 	Entry entry;
 
 	entry = getSynthEntryCache().get(id);
-	if(entry!=null)
-	    System.err.println("From cache:" + entry);
-	else {
-	    System.err.println("not in cache:" + id);
+	if(entry==null) {
 	    entry = typeHandler.makeSynthEntry(request, parentEntry, syntheticPart);
 	}
 	return entry;
@@ -9927,6 +9954,7 @@ public class EntryManager extends RepositoryManager {
     protected List<Object[]> getDescendents(Request request,
                                             List<Entry> entries,
                                             Connection connection,
+					    EntryUtil.Excluder excluder,
                                             boolean firstCall,
                                             boolean ignoreSynth,
                                             Object actionId)
@@ -9956,7 +9984,7 @@ public class EntryManager extends RepositoryManager {
                 continue;
             }
 
-            if (entry.getTypeHandler().isSynthType()
+            if (entry.getMasterTypeHandler().isSynthType()
 		|| isSynthEntry(entry.getId())) {
                 if (ignoreSynth) {
                     continue;
@@ -9973,6 +10001,8 @@ public class EntryManager extends RepositoryManager {
                     if (childEntry == null) {
                         continue;
                     }
+		    if(excluder!=null && !excluder.isEntryOk(childEntry))
+			continue;
                     children.add(new Object[] {
 			    childId, childEntry.getType(),
 			    childEntry.getResource().getPath(),
@@ -9983,12 +10013,12 @@ public class EntryManager extends RepositoryManager {
                     if (childEntry.isGroup()) {
                         children.addAll(getDescendents(request,
 						       (List<Entry>) Misc.newList(childEntry),
-						       connection, false, ignoreSynth, actionId));
+						       connection,excluder, false, ignoreSynth, actionId));
                     }
                 }
 
                 return children;
-            }
+	    }
 
 
             Statement stmt = SqlUtil.select(connection,
@@ -10023,6 +10053,10 @@ public class EntryManager extends RepositoryManager {
                     continue;
                 }
 
+		if(excluder!=null && !excluder.isEntryOk(childEntry)) {
+		    continue;
+		}
+
                 children.add(new Object[] {
 			childId, childType, resource, resourceType,
 			childEntry.getTypeHandler().getEntryValues(childEntry),
@@ -10031,7 +10065,7 @@ public class EntryManager extends RepositoryManager {
 
                 children.addAll(getDescendents(request,
 					       (List<Entry>) Misc.newList(childEntry), connection,
-					       false, ignoreSynth, actionId));
+					       excluder, false, ignoreSynth, actionId));
             }
             getDatabaseManager().closeStatement(stmt);
         }
