@@ -2733,6 +2733,11 @@ RepositoryMap.prototype = {
 
 	this.graticule = MapUtils.createGraticule({
             layerName: "Lat/Lon Lines",
+	    lineSymbolizer: {
+		strokeColor: "#888",
+		strokeWidth: 1,
+		strokeOpacity: 0.2
+	    },
 	    xautoActivate:false,
             numPoints: 2,
             labelled: true,
@@ -4764,6 +4769,13 @@ RepositoryMap.prototype = {
 	}
 
 	if(!markerText) return;
+
+
+	let html = markerText;
+	let debug =false;
+
+
+
 	if(this.params.displayDiv) {
 	    $("#" + this.params.displayDiv).html(markerText);
 	    return;
@@ -4861,18 +4873,17 @@ RepositoryMap.prototype = {
         if (inputProps.chartType) {
 	    props.width=400;
 	}
-        let popup = this.makePopup( projPoint,markerText,props);
-        if (inputProps.minSizeX) {
-            popup.minSize = MapUtils.createSize(inputProps.minSizeX, inputProps.minSizeY);
-        }
 
 
-
+	let uid = HU.getUniqueId("div");
+	let div = HU.div(['style','width:100%;','id',uid]);
+	props.width = props.width??inputProps.minSizeX??600;
+	props.height = props.height??inputProps.minSizeY??400;	
+        let popup = this.makePopup( projPoint,div,props);
         marker.popupText = popup;
         popup.marker = marker;
-
-
         this.getMap().addPopup(popup);
+	jqid(uid).html(markerText);
         this.currentPopup = popup;
 
         if (inputProps.chartType) {
