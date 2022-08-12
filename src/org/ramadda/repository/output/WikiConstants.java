@@ -538,6 +538,9 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_NAME = "name";
 
+    public static final String WIKI_TAG_DISPLAY_IMPORTS = "displayImports";
+
+
     /** wiki import */
     public static final String WIKI_TAG_MAP = "map";
 

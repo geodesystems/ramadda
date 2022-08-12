@@ -2603,6 +2603,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         } else if (theTag.equals(WIKI_TAG_EARTH)) {
             return getPageHandler().showDialogWarning(
 						      "Google earth view is no longer available");
+        } else if (theTag.equals(WIKI_TAG_DISPLAY_IMPORTS)) {
+	    StringBuilder tmp = new StringBuilder();
+	    addDisplayImports(request, tmp,true);
+	    return tmp.toString();
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
             handleMapTag(request, wikiUtil, entry, originalEntry, theTag,
