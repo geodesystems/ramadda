@@ -1123,7 +1123,7 @@ public abstract class MyXmlUtil {
             throws Exception {
         Element child = create(doc, tag, parent);
         if (attrs != null) {
-            setAttributes(child, Misc.listToStringArray(attrs));
+            setAttributes(child, Utils.toStringArray(attrs));
         }
         return child;
     }
