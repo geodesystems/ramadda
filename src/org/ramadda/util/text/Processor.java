@@ -538,6 +538,84 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Apr 5, '20
+     * @author         Enter your name here...
+     */
+    public static class MathStats extends Processor {
+
+	List<Stat> stats = new ArrayList<Stat>();
+
+	Row header;
+
+        /**
+         * _more_
+         *
+         * @param flag _more_
+         * @param value _more_
+         */
+        public MathStats() {
+        }
+
+
+	public static class Stat {
+	    double min= Double.NaN;
+	    double max =Double.NaN;	    
+	    
+	    public void check(double v) {
+		if(Double.isNaN(min)) min = v;
+		else min = Math.min(min, v);
+		if(Double.isNaN(max)) max = v;
+		else max = Math.max(max, v);
+	    }
+
+	}
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    if(header == null) {
+		header = row;
+		for(int i=0;i<header.size();i++) {
+		    stats.add(new Stat());
+		}
+		return row;
+	    }
+	    for(int i=0;i<row.size();i++) {
+		try {
+		    stats.get(i).check(row.getDouble(i));
+		} catch(Exception exc) {}
+
+	    }
+            return row;
+        }
+
+
+	public void finish(TextReader ctx) throws Exception {
+	    for(int i=0;i<header.size();i++) {
+		Stat stat = stats.get(i);
+		if(!Double.isNaN(stat.min)) {
+		    System.out.println(header.get(i)+" min:" + stat.min +" max:"  + stat.max);
+		}
+	    }
+	}
+
+
+    }
+
 
 
 

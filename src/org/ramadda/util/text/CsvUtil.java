@@ -4631,6 +4631,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-mathstats",0,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.MathStats());
+		return i;
+	    });	
+
 	defineFunction("-doit",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Doit());
 		return i;
