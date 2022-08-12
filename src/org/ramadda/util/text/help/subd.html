@@ -1,0 +1,39 @@
+The -subd command takes the input and, based on the values of the specified columns,
+subdivides the input rows into one or more output files based on the values of the given columns.
+<p>
+The format is
+seesv:seesv  -subd col1,col2,...,colN "min1;max1;number1,min2;max2;number2,...,minN;maxN;numberN" "output_file_macro${ikey}.csv 
+<p>
+The min1;max1;number1 are the min/max range and the number of steps the range is divided by for each column value.
+<p>
+The output file is a template to use to create the destination output file.
+You can use "${ikey}" for the indices or ${vkey} for the values.
+<p>  
+For example, you can use this to do geographic tiling of a set of input data
+that contains latitude and longitude. If your input.csv file has latitude and longitude
+columns the below command:
+seesv:seesv  -subd latitude,longitude "-90;90;180,-180;180;360" "grid\${ikey}.csv" input.csv
+
+says to subdivide the latitude values between -90 and 90 with 180 steps - i.e. 1 degree spacing.
+The longitude is divided up between -180 and 180 with 360 steps - again, 1 degree spacing. 
+The index of a latitude value is the index between -90 and 90. Likewise the index
+of the longitude value is between -180 and 180. The ${ikey} for the filename
+is latitudeindex_longitudeindex. So the above command produces:
+<pre>
+grid116_102.csv
+grid116_103.csv
+grid119_84.csv
+grid119_85.csv
+grid119_86.csv
+...
+</pre>
+
+
+The grid${ikey}.csv is the output file name macro where ${ikey} is made up of the indices.
+Using grid${vkey}.csv would give the following file names based on the values of the ranges:
+<pre>
+grid30_31_-92_-91.csv
+grid39_40_-76_-75.csv
+grid38_39_-76_-75.csv
+...
+</pre>

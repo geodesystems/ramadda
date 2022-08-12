@@ -773,25 +773,31 @@ public class CsvUtil {
                 for (DataProvider provider : providers) {
 		    providerCnt++;
 		    if(newWay) {
+			int cnt=0;
 			for (NamedChannel input : getChannels(files)) {
 			    myTextReader.resetProcessors();
 			    TextReader clone = myTextReader.cloneMe(input,
 								    outputFile, outputStream);
-			    process(clone, provider);
+			    process(clone, provider,cnt++);
 			    myTextReader.setFirstRow(null);
 			    input.close();
 			    provider.finish();
 			}
 		    } else {
+			int cnt=0;
 			for (NamedInputStream input : getStreams(files)) {
+			    //			    System.err.println("FILE:" + input);
 			    myTextReader.resetProcessors();
 			    TextReader clone = myTextReader.cloneMe(input,
 								    outputFile, outputStream);
-			    process(clone, provider);
+			    process(clone, provider,cnt++);
 			    myTextReader.setFirstRow(null);
 			    input.close();
-			    provider.finish();
 			}
+			if (okToRun) {
+			    myTextReader.finishProcessing();
+			}
+			provider.finish();
 		    }
 		    myTextReader.flush();
 		    myTextReader.close();
@@ -809,7 +815,7 @@ public class CsvUtil {
     public void process(TextReader ctx) throws Exception {
         DataProvider.CsvDataProvider provider =
             new DataProvider.CsvDataProvider(ctx,0);
-        process(ctx, provider);
+        process(ctx, provider,0);
 	ctx.flush();
 	ctx.close();
     }
@@ -823,12 +829,12 @@ public class CsvUtil {
      *
      * @throws Exception On badness
      */
-    public void process(TextReader ctx, DataProvider provider)
+    public void process(TextReader ctx, DataProvider provider,int fileCnt)
 	throws Exception {
 	provider.initialize(this, ctx);
         try {
             errorDescription = null;
-            processInner(ctx, provider);
+            processInner(ctx, provider,fileCnt);
 	    ctx.flush();
         } catch (Exception exc) {
             CsvOperator op = (ctx == null)
@@ -851,21 +857,26 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    private void processInner(TextReader ctx, DataProvider provider)
+    private void processInner(TextReader ctx, DataProvider provider,int fileCnt)
 	throws Exception {
         int rowCnt   = 0;
         Row firstRow = ctx.getFirstRow();
         ctx.setFirstRow(null);
         if (firstRow != null) {
-            processRow(ctx, firstRow);
-            rowCnt++;
+	    if(fileCnt==0) {
+		processRow(ctx, firstRow);
+		rowCnt++;
+	    }
         }
 	long t1 = System.currentTimeMillis();
         Row row;
 	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
 	    if(row==null) break;
-            rowCnt++;
+	    if(rowCnt++==0 && fileCnt>0) {
+		continue;
+	    }
+
 	    if((rowCnt%100000)==0) {
 		//		Runtime.getRuntime().gc();
 		//		double mem2=Utils.getUsedMemory();
@@ -884,9 +895,9 @@ public class CsvUtil {
         }
 	long t2 = System.currentTimeMillis();
 	//	System.err.println("time:" + (t2-t1));
-        if (okToRun) {
-            ctx.finishProcessing();
-        }
+	//        if (okToRun) {
+	//            ctx.finishProcessing();
+	//        }
     }
 
     /**
@@ -2471,6 +2482,10 @@ public class CsvUtil {
 		new Arg("row_delimiter", "Output between rows",
 			"size", "40"),
 		new Arg("suffix", "", "size", "40")),
+        new Cmd("-subd", "Subdivide into different files",
+		new Arg("columns","database columns"),		
+		new Arg("ranges","Comma separated ranges min1;max1;step1,min2;max2;step2"),
+		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., grid${ikey}.csv")),		
         new Cmd("-addheader", "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
                         "rows", "6")),
@@ -4615,6 +4630,13 @@ public class CsvUtil {
 		return i;
 	    });	
 	
+
+
+	defineFunction("-subd",3,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),
+						   args.get(++i), args.get(++i)));
+		return i;
+	    });
 
 
 	defineFunction("-template",4,(ctx,args,i) -> {

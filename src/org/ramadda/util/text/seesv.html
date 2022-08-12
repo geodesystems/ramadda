@@ -51,7 +51,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 262 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 265 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -1946,10 +1946,12 @@ matches the string provided by the given columns.
 <li> <i>url column</i>:
 <br>
 </ul>
-</div><a name='-fetch'></a><div class=command> <i><a href='#-fetch'>-fetch</a></i>  &lt;name&gt;  &lt;url&gt; </div><div class=command-block>Fetch the URL and embed the contents<br>
+</div><a name='-fetch'></a><div class=command> <i><a href='#-fetch'>-fetch</a></i>  &lt;name&gt;  &lt;ignore_errors&gt;  &lt;url&gt; </div><div class=command-block>Fetch the URL and embed the contents<br>
 <ul>
 <li> <i>name</i>:
 Name of new column<br>
+<li> <i>ignore_errors</i>:
+Ignore Errors e.g., true or false<br>
 <li> <i>url</i>:
 URL template, e.g., https://foo.com/${column_name}<br>
 </ul>
@@ -2693,7 +2695,7 @@ Call:
 
 
 <p></div></ul><br><hr><a name='Misc.'></a><b style='font-size:120%;'>Misc.</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-expandcommands'><i>-expandcommands</i>: Apply the commands to each of the columns</a><li> <a href='#-sort'><i>-sort</i>: </a><li> <a href='#-descsort'><i>-descsort</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-maxrows'><i>-maxrows</i>: </a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-verify'><i>-verify</i>: Throw error if a row has a different number of columns</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-comment'><i>-comment</i>: </a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a></div><a name='-expandcommands'></a><div class=command> <i><a href='#-expandcommands'>-expandcommands</a></i>  &lt;columns&gt;  &lt;commands&gt; </div><div class=command-block>Apply the commands to each of the columns<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-expandcommands'><i>-expandcommands</i>: Apply the commands to each of the columns</a><li> <a href='#-sort'><i>-sort</i>: </a><li> <a href='#-descsort'><i>-descsort</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-maxrows'><i>-maxrows</i>: </a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-verify'><i>-verify</i>: Throw error if a row has a different number of columns</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-comment'><i>-comment</i>: </a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a><li> <a href='#-exec'><i>-exec</i>: Execute the external program for every line</a></div><a name='-expandcommands'></a><div class=command> <i><a href='#-expandcommands'>-expandcommands</a></i>  &lt;columns&gt;  &lt;commands&gt; </div><div class=command-block>Apply the commands to each of the columns<br>
 <ul>
 <li> <i>columns</i>:
 Columns to expand with<br>
@@ -2809,11 +2811,10 @@ The <i>id</i> is used to look up an environment variable (or RAMADDA runtime pro
 seesv_ext_&lt;id&gt;=/path/to/executable
 </pre>
 
-Any command line arguments given up to but not including an argument that begins with "-" are
+Any command line arguments given up to but not including an argument that equals "-" are
 passed in to the executable. The executable is called with the given arguments.
-Each row that is processed is converted into a CSV string which is passed to the external command.
-A CSV text string is then read from the external command.
-This line is then passed on in the processing flow.
+Each row that is processed is converted into a CSV string which is passed to the external command on the stdin.
+A CSV text string is then read from the external command. This line is then passed on in the processing flow.
 If you want to skip a line the return the string "_null_".
 
 
@@ -2821,8 +2822,59 @@ If you want to skip a line the return the string "_null_".
 
 
 
+<p></div><a name='-exec'></a><div class=command> <i><a href='#-exec'>-exec</a></i>  &lt;program_id&gt; </div><div class=command-block>Execute the external program for every line<br>
+<ul>
+<li> <i>program_id</i>:
+matches with seesv.ext.&lt;program_id&gt;=/path<br>
+</ul>
+The -exec command allows one to integrate external programs into the processing flow.
+
+<seesv>seesv  -exec &lt;id&gt; &lt;arguments&gt;</seesv>
+The <i>id</i> is used to look up an environment variable (or RAMADDA runtime property) of the form:
+<pre>
+seesv_exec_&lt;id&gt;=/path/to/executable
+</pre>
+
+Any command line arguments given up to but not including an argument that equals "-" are
+passed in to the executable. For every row the executable is called with the given arguments.
+Each of the arguments can contain any number of macros of the form:
+<pre>
+seesv  -exec &lt;id&gt; ${url}  ${name}
+</pre>
+The macros get replaced with the corresponding values in the given row.
+<p>
+  So for example, if you have a list of urls that you want to fetch using cURL for set the environment variable:
+
+<pre>
+export seesv_exec_curl=/usr/bin/curl    
+</pre>
+
+Then assuming you have the file:
+<pre>
+url
+url1.html
+url2.html
+</pre>
+
+Call the command
+
+<pre>
+seesv  -exec curl ${url}   - -p
+</pre>
+
+This produces a new file:
+<pre>
+url,result
+url1.html,contents of url1
+url2.html,contents of url2
+</pre>
+
+
+
+
+
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
 </div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
 <ul>
 <li> <i>delimiter</i>:
@@ -2912,6 +2964,43 @@ If you wanted to generated custom XML, for example, call:
 
 
 
+<p></div><a name='-subd'></a><div class=command> <i><a href='#-subd'>-subd</a></i>  &lt;columns&gt;  &lt;ranges&gt;  &lt;output_template&gt; </div><div class=command-block>Subdivide into different files<br>
+<ul>
+<li> <i>columns</i>:
+database columns<br>
+<li> <i>ranges</i>:
+Comma separated ranges min1;max1;step1,min2;max2;step2<br>
+<li> <i>output_template</i>:
+Output template<br>
+</ul>
+The -subd command takes the input and, based on the values of the specified columns,
+subdivides the input rows into one or more output files based on the values of the given columns.
+<p>
+The format is
+<seesv>seesv  -subd col1,col2,...,colN "min1;max1;number1,min2;max2;number2,...,minN;maxN;numberN" "output_file_macro${key}.csv</seesv><p>
+The min1;max1;number1 are the min/max range and the number of steps the range is divided by for each column value.
+<p>
+For example, you can use this to do geographic tiling of a set of input data
+that contains latitude and longitude. If your input.csv file has latitude and longitude
+columns the below command:
+<seesv>seesv  -subd latitude,longitude "-90;90;180,-180;180;360" "grid\${key}.csv" input.csv</seesv>
+says to subdivide the latitude values between -90 and 90 with 180 steps - i.e. 1 degree spacing.
+The longitude is divided up between -180 and 180 with 360 steps - again, 1 degree spacing. 
+The index of a latitude value is the index between -90 and 90. Likewise the index
+of the longitude value is between -180 and 180. The ${key} for the filename
+is latitudeindex_longitudeindex. So the above command produces:
+<pre>
+grid116_102.csv
+grid116_103.csv
+grid119_84.csv
+grid119_85.csv
+grid119_86.csv
+...
+</pre>
+
+
+The grid${key}.csv is the output file name macro where ${key} is made up of the indices. 
+
 <p></div><a name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br>
 <ul>
 <li> <i>properties</i>:
@@ -2995,6 +3084,13 @@ Name value pairs:
 <li> <i>id pattern</i>:
 <br>
 <li> <i>suffix pattern</i>:
+<br>
+</ul>
+</div><a name='-write'></a><div class=command> <i><a href='#-write'>-write</a></i>  &lt;file name template&gt;  &lt;contents template&gt; </div><div class=command-block>Write the contents of a row to a named file<br>
+<ul>
+<li> <i>file name template</i>:
+<br>
+<li> <i>contents template</i>:
 <br>
 </ul>
 </div><a name='-fields'></a><div class=command> <i><a href='#-fields'>-fields</a></i> </div><div class=command-block>Print the fields<br>

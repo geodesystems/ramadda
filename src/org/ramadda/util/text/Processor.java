@@ -1406,7 +1406,6 @@ public abstract class Processor extends CsvOperator {
                 outputStream = process.getOutputStream();
                 inputStream  = process.getInputStream();
                 pw           = new PrintWriter(outputStream);
-
                 InputStreamReader isr =
                     new InputStreamReader(
                         inputStream, java.nio.charset.StandardCharsets.UTF_8);
@@ -1681,7 +1680,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void handleHeaderRow(Appendable writer, Row header,
+        public void handleHeaderRow(Appendable writer, Row header,
                                      List exValues)
                 throws Exception {
             StringBuilder   sb     = new StringBuilder();
@@ -1733,8 +1732,13 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
+        public void handleRow(TextReader ctx, PrintWriter writer, Row row)
                 throws Exception {
+	    handleRow(ctx,writer,row,true);
+	}
+
+	public void handleRow(TextReader ctx, PrintWriter writer, Row row, boolean checkFirst)
+	    throws Exception {	    
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
             if (firstRow&&row.isFirstRowInData()) {
@@ -1754,7 +1758,7 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 	    //handle multiple data sources
-	    if(!firstRow && row.isFirstRowInData()) {
+	    if(checkFirst  && !firstRow && row.isFirstRowInData()) {
 		return;
 	    }
 
@@ -1873,6 +1877,158 @@ public abstract class Processor extends CsvOperator {
         }
 
     }
+
+
+
+
+    public static class Subd extends Printer {
+
+	private  List<Integer> indices;
+	private List<String> cols;
+
+        /**  */
+        private CsvUtil csvUtil;
+
+        /**  */
+        private String output;
+
+	private List<Range> ranges;
+
+	private  int[] rangeIndices;
+	private Row header;
+
+
+
+	private Hashtable<String,PrintWriter> writers = new Hashtable<String,PrintWriter>();
+
+	private List<PrintWriter> pws = new ArrayList<PrintWriter>();
+
+        /**
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
+         * @param cols _more_
+         * @param args _more_
+         */
+        public Subd(CsvUtil csvUtil,  List<String> cols, String rangeDef, String output) {
+	    super(false,false,",");
+	    this.cols =cols;
+            this.csvUtil = csvUtil;
+	    ranges = new ArrayList<Range>();
+	    this.output=  output;
+	    for(String tuple:Utils.split(rangeDef,",",true,true)) {
+		List<String> toks = Utils.splitUpTo(tuple,";",3);
+		if(toks.size()<2 || toks.size()>3) fatal(null,"Bad range specification for -subd:" + tuple);
+		ranges.add(new Range(Double.parseDouble(toks.get(0)),
+				    Double.parseDouble(toks.get(1)),
+				    toks.size()>2?Integer.parseInt(toks.get(2)):10));
+
+	    }
+	    if(ranges.size()!=cols.size()) {
+		fatal(null,"-subd requires the # of ranges = # columns");
+	    }
+        }
+
+	private static class Range {
+	    double min;
+	    double max;
+	    int steps;
+	    
+
+	    public Range(double min, double max, int steps) {
+		this.min = min;
+		this.max = max;
+		this.steps = steps;
+	    }
+	    //  [ ][   ][  ]
+	    public int getIndex(double d) {
+		if(d<=min) return 0;
+		if(d>=max) return steps-1;
+		return (int)Math.floor((d-min)/(max-min)*steps);
+	    }
+	    public double getMin(int index) {
+		return min+(max-min)/steps*index;
+	    }
+	    public double getMax(int index) {
+		return min+(max-min)/steps*(index+1);
+	    }	    
+	}
+
+        public void finish(TextReader ctx) throws Exception {
+	    for(PrintWriter pw:pws) {
+		pw.flush();
+		pw.close();
+
+	    }
+	}
+
+
+	private String fmt(double d) {
+	    if(d==(int)d) return ""+(int)d;
+	    return ""+d;
+
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		header = row;
+		return row;
+            }
+            try {
+		if(indices==null) {
+		    indices =getIndices(ctx, cols);
+		}
+		if(rangeIndices == null) {
+		    rangeIndices = new int[indices.size()];
+		}
+		for(int i=0;i<indices.size();i++) {
+		    int vidx = indices.get(i);
+		    //		    System.err.println("v:" + vidx +" row:" + row);
+		    double d = row.getDouble(vidx);
+		    int idx = ranges.get(i).getIndex(d);
+		    rangeIndices[i]  = idx;
+		}
+		StringBuilder key = null;
+		StringBuilder vkey = null;		
+		for(int i=0;i<rangeIndices.length;i++) {
+		    int idx= rangeIndices[i];
+		    Range range = ranges.get(i);
+		    if(vkey==null)
+			vkey= new StringBuilder();
+		    else
+			vkey.append("_");
+		    if(key==null)
+			key= new StringBuilder();
+		    else
+			key.append("_");
+		    key.append(idx);
+		    vkey.append(fmt(range.getMin(idx))+"_" + fmt(range.getMax(idx)));
+		}
+		PrintWriter pw = writers.get(key.toString());
+		if(pw == null) {
+		    String file = output.replace("${ikey}",key).replace("${vkey}",vkey);
+		    System.err.println(file);
+		    OutputStream fos = csvUtil.makeOutputStream(file);
+		    pw = new PrintWriter(fos);
+		    pws.add(pw);
+		    writers.put(key.toString(),pw);
+		    handleRow(ctx, pw, header,false);
+		}
+		handleRow(ctx, pw, row,false);
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+
 
 
 
