@@ -2099,7 +2099,7 @@ public abstract class Processor extends CsvOperator {
 		    pw = new PrintWriter(bw);
 		    pws.add(pw);
 		    writers.put(key.toString(),pw);
-		    if(exists) {
+		    if(!exists) {
 			handleRow(ctx, pw, header,false);
 		    }
 		}
