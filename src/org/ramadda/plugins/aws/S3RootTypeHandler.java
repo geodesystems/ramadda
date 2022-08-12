@@ -11,6 +11,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
 
 import org.ramadda.util.S3File;
+import org.ramadda.util.PatternHolder;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -39,6 +40,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     public static final int IDX_MAX  = IDX++;
 
     public static final int IDX_PERCENT  = IDX++;
+    public static final int IDX_SIZE_LIMIT  = IDX++;
 
 
     /**
@@ -95,13 +97,16 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !Utils.stringDefined(rootId)) {
             return ids;
         }
-	List<String> excludes = null;
+	List<PatternHolder> excludes = null;
         String exclude = (String) rootEntry.getValue(IDX_EXCLUDE_PATTERNS);
         int max = rootEntry.getIntValue(IDX_MAX,1000);
         double percent = rootEntry.getDoubleValue(IDX_PERCENT,(double)-100.0);
+        double tmp = rootEntry.getDoubleValue(IDX_SIZE_LIMIT,(double)-1.0);
+	if(Double.isNaN(tmp)) tmp = -1;
+	long maxSize = (long) (tmp==-1?-1:tmp*1000*1000);
 	Object[] values = rootEntry.getValues();
         if (Utils.stringDefined(exclude)) {
-	    excludes  = Utils.split(exclude,"\n",true,true);
+	    excludes  =PatternHolder.parseLines(exclude);
 	}
 
         if ( !Utils.stringDefined(synthId)) {
@@ -116,20 +121,18 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         //      S3File.debug = true;
-        List<S3File> files = doLs(new S3File(synthId), null,max,percent);
+        List<S3File> files = doLs(new S3File(synthId), null,max,percent,maxSize);
         List<String> children = new ArrayList<String>();
         for (S3File file : files) {
-            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
-                                    file);
 	    boolean ok = true;
 	    if(excludes!=null && excludes.size()>0) {
-		for(String pattern: excludes) {
-		    if(file.toString().matches(pattern)) {
-			ok = false;
-			break;
-		    }
+		if(PatternHolder.checkPatterns(excludes,file.toString())) {
+		    continue;
 		}
 	    }
+
+            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
+						  file);
 	    if(!ok) {
 		if(debug)
 		    System.err.println("Skipping:" + file);
@@ -261,10 +264,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public static List<S3File> doLs(S3File base, String path,int max, double percent)
+    public static List<S3File> doLs(S3File base, String path,int max, double percent, long maxSize)
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
-        return newFile.doList(false, max,percent);
+        return newFile.doList(false, max,percent,maxSize);
     }
 
 
@@ -276,7 +279,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.err.print(doLs(new S3File("s3://noaa-nexrad-level2"), null, 1000, -1));
+        System.err.print(doLs(new S3File("s3://noaa-nexrad-level2"), null, 1000, -1,-1));
     }
 
 

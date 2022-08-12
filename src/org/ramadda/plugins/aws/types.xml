@@ -10,6 +10,7 @@
     <column name="maxcount" type="int" default="1000"  label="Max per bucket" />
     <column name="percent" type="double" default="-1"  label="Percentage Filter"
 	    suffix="0-1: for buckets with lots (100+) of children this is a probability that any one of them will be returned. It allows you to take a sample"/>          
+    <column name="size_limit" type="double" default="-1"  label="Max file size"  suffix="(MB)"/>
 
     <wiki><![CDATA[
 +section # title="{{name}}"
