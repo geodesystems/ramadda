@@ -256,10 +256,10 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public List<S3File> doList(boolean self, int max) throws Exception {
-	return doList(self, max,-1);
+	return doList(self, max,-1,-1);
     }
 
-    public List<S3File> doList(boolean self, int max,double percent) throws Exception {	
+    public List<S3File> doList(boolean self, int max,double percent, long maxSize) throws Exception {	
         if ( !self && !isDirectory()) {
             return null;
         }
@@ -282,6 +282,12 @@ public class S3File extends FileWrapper {
 		}		    
 	    }
 	    S3File file = createFileFromLine(bucket, line, self);
+	    if(file==null) {
+		continue;
+	    }
+	    if(!file.isDirectory() && maxSize>=0 && file.length()>maxSize) {
+		continue;
+	    }
             if (file != null) {
                 files.add(file);
 		if(max>0 && files.size()>=max) break;
@@ -377,6 +383,10 @@ public class S3File extends FileWrapper {
 	java.io.File tmp = new java.io.File(file.toString()+".part");
 	bucket = bucket.replace(S3PREFIX+"//","");
 	List<String> toks = Utils.splitUpTo(bucket,"/",2);
+	if(toks.size()!=2) {
+	    System.err.println("Error: bad bucket path:" + bucket);
+	    return;
+	}
 	String host = toks.get(0);
 	String path =toks.get(1);
 	/*
