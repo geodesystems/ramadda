@@ -1,146 +1,146 @@
 <types supercategory="" category="Data">
   <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
-     <property name="icon" value="/point/sitemap_color.png"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.area.show" value="true"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.altitude.show" value="false"/>
+    <property name="icon" value="/point/sitemap_color.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.area.show" value="true"/>
+    <property name="form.datatype.show" value="false"/>
+    <property name="form.date.show" value="false"/>
+    <property name="form.altitude.show" value="false"/>
 
-<wiki>
-<![CDATA[
-+section title={{name}}
-{{description wikify=true}}
-+center
-{{display_menu 
-entryTypes=type_point
-doEntries=true
-setEntry.acceptGroup=month
-setEntry.shareGroup=file
-showArrows=true
-menuLabel="Select File:"
-noun=File
-template="${name}"
-}}
-{{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
--center
-<table width=100% border=0 cellpadding=10>
-<tr valign=top>
-<td width=1%>
-{{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
-width=185px height=65vh
-loadingMessage="" 
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-numericOnly=true asList=true
-showPopup=false decorate=true
-}}
-</td><td>
-{{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-height=60vh padRight=true chartLeft="80" chartRight="80"
-addTooltip=false useMultipleAxes=true
-}}
-</tr></td></table>
-----
-:heading Files
-{{tree}}
--section
-]]>
+    <wiki>
+      <![CDATA[
+	       +section title={{name}}
+	       {{description wikify=true}}
+	       +center
+	       {{display_menu 
+	       entryTypes=type_point
+	       doEntries=true
+	       setEntry.acceptGroup=month
+	       setEntry.shareGroup=file
+	       showArrows=true
+	       menuLabel="Select File:"
+	       noun=File
+	       template="${name}"
+	       }}
+	       {{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
+	       -center
+	       <table width=100% border=0 cellpadding=10>
+	       <tr valign=top>
+	       <td width=1%>
+	       {{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
+	       width=185px height=65vh
+	       loadingMessage="" 
+	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+	       numericOnly=true asList=true
+	       showPopup=false decorate=true
+	       }}
+	       </td><td>
+	       {{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
+	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+	       height=60vh padRight=true chartLeft="80" chartRight="80"
+	       addTooltip=false useMultipleAxes=true
+	       }}
+	       </tr></td></table>
+	       ----
+	       :heading Files
+	       {{tree}}
+	       -section
+      ]]>
 
-</wiki>
-</type>
+    </wiki>
+  </type>
 
 
   <type name="type_point_collection_collection"  description="Point Collection Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
-     <property name="icon" value="/point/sitemap_color.png"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.area.show" value="true"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.altitude.show" value="false"/>
+    <property name="icon" value="/point/sitemap_color.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.area.show" value="true"/>
+    <property name="form.datatype.show" value="false"/>
+    <property name="form.date.show" value="false"/>
+    <property name="form.altitude.show" value="false"/>
 
-<wiki>
-<![CDATA[
-+section title={{name}}
-{{description wikify=true}}
-+center
-{{display_menu doEntries=true
-setEntry.share=true
-setEntry.shareGroup=collection
-recordSelection.accept=false
-showArrows=true
-menuLabel="Select Collection:"
-noun=Collection
-template="${name}"
-}}
-{{display_menu 
-entryTypes=type_point
-entry=child:
-doEntries=true
-setEntry.acceptGroup=collection
-setEntry.shareGroup=file
-showArrows=true
-menuLabel="Select File:"
-noun=File
-template="${name}"
-}}
-{{display_entrytitle setEntry.acceptGroup=file entry=grandchild:type:type_point}}
--center
-<table width=100% border=0 cellpadding=10>
-<tr valign=top>
-<td width=1%>
-{{display_fieldslist setEntry.acceptGroup=file entry=grandchild:type:type_point
-width=185px height=65vh
-loadingMessage="" 
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-numericOnly=true asList=true
-showPopup=false decorate=true
-}}
-</td><td>
-{{display_linechart setEntry.acceptGroup=file entry=grandchild:type:type_point
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-height=75vh padRight=true chartLeft="80" chartRight="80"
-addTooltip=false useMultipleAxes=true
-}}
-</tr></td></table>
-----
-:heading Files
-{{tree}}
--section
-]]>
+    <wiki>
+      <![CDATA[
+	       +section title={{name}}
+	       {{description wikify=true}}
+	       +center
+	       {{display_menu doEntries=true
+	       setEntry.share=true
+	       setEntry.shareGroup=collection
+	       recordSelection.accept=false
+	       showArrows=true
+	       menuLabel="Select Collection:"
+	       noun=Collection
+	       template="${name}"
+	       }}
+	       {{display_menu 
+	       entryTypes=type_point
+	       entry=child:
+	       doEntries=true
+	       setEntry.acceptGroup=collection
+	       setEntry.shareGroup=file
+	       showArrows=true
+	       menuLabel="Select File:"
+	       noun=File
+	       template="${name}"
+	       }}
+	       {{display_entrytitle setEntry.acceptGroup=file entry=grandchild:type:type_point}}
+	       -center
+	       <table width=100% border=0 cellpadding=10>
+	       <tr valign=top>
+	       <td width=1%>
+	       {{display_fieldslist setEntry.acceptGroup=file entry=grandchild:type:type_point
+	       width=185px height=65vh
+	       loadingMessage="" 
+	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+	       numericOnly=true asList=true
+	       showPopup=false decorate=true
+	       }}
+	       </td><td>
+	       {{display_linechart setEntry.acceptGroup=file entry=grandchild:type:type_point
+	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+	       height=75vh padRight=true chartLeft="80" chartRight="80"
+	       addTooltip=false useMultipleAxes=true
+	       }}
+	       </tr></td></table>
+	       ----
+	       :heading Files
+	       {{tree}}
+	       -section
+      ]]>
 
-</wiki>
-</type>
+    </wiki>
+  </type>
 
 
 
   <type name="type_point"  description="Point Data" includeInSearch="true" handler="org.ramadda.data.services.PointTypeHandler"   foruser="false" priority="1">
-     <property name="icon" value="/icons/chart.png"/>
-     <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
-     <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"/>
+    <property name="icon" value="/icons/chart.png"/>
+    <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
+    <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"/>
   </type>
 
 
   <type name="point_text_csv"  description="CSV Data"  super="type_point" priority="1"
 	help="A structured CSV data file"> 
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
- <property name="record.properties">
-<![CDATA[
-firstLineDefinesFields=true
-commentLineStart=#
-]]>
-     </property>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="record.properties">
+      <![CDATA[
+	       firstLineDefinesFields=true
+	       commentLineStart=#
+      ]]>
+    </property>
   </type>
 
 
   <type name="point_text"  description="RAMADDA CSV Data"  super="type_point" priority="1"
 	help="RAMADDA's CSV format"> 
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
- <property name="record.properties">
-<![CDATA[
-isRAMADDAPointData=true
-]]>
-     </property>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="record.properties">
+      <![CDATA[
+	       isRAMADDAPointData=true
+      ]]>
+    </property>
   </type>
 
   
@@ -148,49 +148,46 @@ isRAMADDAPointData=true
   <type name="type_point_fetch"  description="Fetch Points" super="type_point" foruser="true" handler="org.ramadda.data.services.FetchPointTypeHandler"
 	priority="4"	
 	help="Downloads the given URL every once in a while"
->
-      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <column  name="source_url"  label="Source URL" type="url" />
-     <column  name="enabled"  label="Enabled" type="boolean" default="true"/>
-     <column  name="every_hours"  label="Every" type="double" default="24" suffix="hours"/>
-     <column  name="last_update_time"  label="Last Update" type="datetime" />
-     <column  name="add_date"  label="Add Date" type="boolean" default="true"/>
-<wiki>
-<![CDATA[
-+section  title="{{name}}"
-{{description}}
-----
-{{display_table}}
-]]>
+	>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <column  name="source_url"  label="Source URL" type="url" />
+    <column  name="enabled"  label="Enabled" type="boolean" default="true"/>
+    <column  name="every_hours"  label="Every" type="double" default="24" suffix="hours"/>
+    <column  name="last_update_time"  label="Last Update" type="datetime" />
+    <column  name="add_date"  label="Add Date" type="boolean" default="true"/>
+    <wiki>
+      <![CDATA[
+	       +section  title="{{name}}"
+	       {{description}}
+	       ----
+	       {{display_table}}
+      ]]>
 
-</wiki>
-     </type>
+    </wiki>
+  </type>
 
 
-     <type name="type_point_inline"  description="Inline Point File" super="type_point" foruser="true" handler="org.ramadda.data.services.types.InlinePointTypeHandler"
-priority="3"
+  <type name="type_point_inline"  description="Inline Point File" super="type_point" foruser="true" handler="org.ramadda.data.services.types.InlinePointTypeHandler"
+	priority="3"
 	help="Contains structured CSV data"
-	   >
-     <column  name="data"  label="Data" cansearch="false" size="50000" type="clob" rows="50" columns="80" showinhtml="false"/>
-</type>
+	>
+    <column  name="data"  label="Data" cansearch="false" size="50000" type="clob" rows="50" columns="80" showinhtml="false"/>
+  </type>
 
-<type name="type_point_text"  description="Record Text File" super="type_point" foruser="true" handler="org.ramadda.data.services.PointTypeHandler" priority="2"
+  <type name="type_point_text"  description="Record Text File" super="type_point" foruser="true" handler="org.ramadda.data.services.PointTypeHandler" priority="2"
 	help="A unstructured text data file"
-      >
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="false"/>
- <property name="record.properties">
-<![CDATA[
-delimiter=_none_
-fields=sentence[label="Sentence" type="string"]
-skiplines=0
-commentLineStart=#
-]]>
-     </property>
-</type>
-
-  
-
+	>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="false"/>
+    <property name="record.properties">
+      <![CDATA[
+	       delimiter=_none_
+	       fields=sentence[label="Sentence" type="string"]
+	       skiplines=0
+	       commentLineStart=#
+      ]]>
+    </property>
+  </type>
 
 </types>
