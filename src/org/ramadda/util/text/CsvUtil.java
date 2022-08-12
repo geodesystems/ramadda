@@ -1058,6 +1058,19 @@ public class CsvUtil {
     }
 
 
+
+    /*
+      Throw an error if we're not allows to write the file
+    */
+    public static void checkOkToWrite(String file) throws Exception {
+	if(!IO.okToWriteTo(file)) 
+	    throw new IllegalArgumentException("Cannot write file:"   + file);
+    }
+
+
+    /*
+      Throw an error if we're not allows to read the file
+    */
     public static void checkOkToRead(String file) {
 	if(!IO.okToReadFrom(file)) 
 	    throw new IllegalArgumentException("Cannot read file:"   + file);
