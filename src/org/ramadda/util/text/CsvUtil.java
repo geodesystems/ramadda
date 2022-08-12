@@ -2487,9 +2487,14 @@ public class CsvUtil {
 			"size", "40"),
 		new Arg("suffix", "", "size", "40")),
         new Cmd("-subd", "Subdivide into different files",
-		new Arg("columns","database columns"),		
+		new Arg("columns","columns to subdivide on","type","columns"),		
 		new Arg("ranges","Comma separated ranges min1;max1;step1,min2;max2;step2"),
 		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., grid${ikey}.csv")),		
+        new Cmd("-maptiles", "Tile the data on lat/lon",
+		new Arg("columns","lat/lon columns to subdivide on","type","columns"),		
+		new Arg("degrees","Degrees per tile. Defaults to 1"),
+		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., tile${vkey}.csv. Defaults to a tile${vket}.csv")),		
+
         new Cmd("-addheader", "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
                         "rows", "6")),
@@ -4655,6 +4660,17 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-maptiles",3,(ctx,args,i) -> {
+		List<String> cols = getCols(Utils.getDefinedString(args.get(++i),"latitude,longitude"));
+		double degrees  = Double.parseDouble(Utils.getDefinedString(args.get(++i),"1.0"));
+		String range = "-90;90;" +(int)(180/degrees)+ ",-180;180;" + (int)(360/degrees);
+		ctx.addProcessor(new Processor.Subd(this,cols,
+						    range,
+						    Utils.getDefinedString(args.get(++i), "tile${vkey}.csv")));
+		
+		return i;
+	    });	
+
 
 	defineFunction("-template",4,(ctx,args,i) -> {
 		try {
@@ -4801,7 +4817,8 @@ public class CsvUtil {
 	}
 
 	args = newArgs;
-	//	debugArgs = true;
+//	debugArgs = true;
+
 
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
