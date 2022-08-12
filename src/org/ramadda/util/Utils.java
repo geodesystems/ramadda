@@ -4932,6 +4932,16 @@ public class Utils extends IO {
         return null;
     }
 
+    public static String getDefinedString(Object... args) {
+        for (Object obj : args) {
+	    if(obj==null) continue;
+	    String s = obj.toString();
+	    if(stringDefined(s)) return s;
+        }
+
+        return null;
+    }    
+
     /**
      * _more_
      *
