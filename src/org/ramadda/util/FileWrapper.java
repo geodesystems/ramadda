@@ -294,16 +294,16 @@ public abstract class FileWrapper {
      * @return _more_
      */
     public static FileWrapper[] sortFilesOnName(FileWrapper[] files,
-            boolean descending) {
+						boolean descending) {
         List tuples = new ArrayList();
         for (int i = 0; i < files.length; i++) {
             tuples.add(new Object[] { files[i].getName().toLowerCase(),
                                       files[i] });
         }
-        tuples = Misc.sortTuples(tuples, descending);
+        tuples = Misc.sortTuples(tuples, !descending);
 
         files  = new FileWrapper[tuples.size()];
-        for (int i = 0; i < tuples.size(); i++) {
+	for (int i = 0; i < tuples.size(); i++) {
             Object[] tuple = (Object[]) tuples.get(i);
             files[i] = (FileWrapper) tuple[1];
         }
