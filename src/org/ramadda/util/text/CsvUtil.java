@@ -1808,6 +1808,10 @@ public class CsvUtil {
         new Cmd("-dups", "Pass through duplicate values", new Arg("columns","","type","columns")),
         new Cmd("-sample", "Pass through rows based on probablity",
                 new Arg("probablity", "0-1 probability of passing through a row")),
+
+        new Cmd("-minvalue",  "Pass through the row that has the min value in the group of columns defined by the key column",
+		new Arg("key column","","type","column"),
+                new Arg("value column","","type","column")),
         new Cmd("-maxvalue",  "Pass through the row that has the max value in the group of columns defined by the key column",
 		new Arg("key column","","type","column"),
                 new Arg("value column","","type","column")),
@@ -4468,7 +4472,15 @@ public class CsvUtil {
 
 		return i;
 	    });
+	defineFunction("-minvalue", 2,(ctx,args,i) -> {
+		String key   = args.get(++i);
+		String value = args.get(++i);
+		ctx.addProcessor(
+				 new RowCollector.MinValue(ctx, key, value));
 
+		return i;
+	    });
+	
 
 	defineFunction("-quit",0,(ctx,args,i) -> {
 		String last = args.get(args.size() - 1);

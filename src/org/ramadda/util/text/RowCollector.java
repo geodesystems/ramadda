@@ -614,7 +614,7 @@ public class RowCollector extends Processor {
                     continue;
                 }
                 List   values = row.getValues();
-                String v      = (String) row.get(keyIdx);
+                String v      = keyIdx<0?"":(String) row.get(keyIdx);
                 Row    maxRow = map.get(v);
                 if (maxRow == null) {
                     map.put(v, row);
@@ -622,6 +622,82 @@ public class RowCollector extends Processor {
                     continue;
                 }
                 String v1      = (String) maxRow.get(valueIdx);
+                String v2      = (String) row.get(valueIdx);
+                int    compare = v1.compareTo(v2);
+                if (compare > 0) {
+                    map.put(v, row);
+                }
+            }
+            for (Enumeration keys = map.keys(); keys.hasMoreElements(); ) {
+                String key = (String) keys.nextElement();
+                newRows.add(map.get(key));
+            }
+
+            return newRows;
+        }
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Oct 14, '19
+     * @author         Enter your name here...
+     */
+    public static class MinValue extends RowCollector {
+
+        /** _more_ */
+        String key;
+
+        /** _more_ */
+        String value;
+
+        /**
+         * _more_
+         *
+         *
+         * @param key _more_
+         * @param value _more_
+         */
+        public MinValue(TextReader ctx, String key, String value) {
+            this.key   = key;
+            this.value = value;
+        }
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+            Hashtable<String, Row> map      = new Hashtable<String, Row>();
+            int                    keyIdx   = getIndex(ctx, this.key);
+            int                    valueIdx = getIndex(ctx, this.value);
+            List<Row>              newRows  = new ArrayList<Row>();
+            int                    cnt      = 0;
+            for (Row row : getRows()) {
+                if (cnt++ == 0) {
+                    newRows.add(row);
+                    continue;
+                }
+                List   values = row.getValues();
+                String v      = keyIdx<0?"":(String) row.get(keyIdx);
+                Row    minRow = map.get(v);
+                if (minRow == null) {
+                    map.put(v, row);
+
+                    continue;
+                }
+                String v1      = (String) minRow.get(valueIdx);
                 String v2      = (String) row.get(valueIdx);
                 int    compare = v1.compareTo(v2);
                 if (compare < 0) {
@@ -638,7 +714,7 @@ public class RowCollector extends Processor {
 
     }
 
-
+    
 
 
     /**
