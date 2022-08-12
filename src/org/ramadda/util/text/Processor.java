@@ -2091,7 +2091,6 @@ public abstract class Processor extends CsvOperator {
 		PrintWriter pw = writers.get(key.toString());
 		if(pw == null) {
 		    String file = output.replace("${ikey}",key).replace("${vkey}",vkey);
-		    System.err.println(file);
 		    csvUtil.checkOkToWrite(file);
 		    //Open in append mode
 		    FileWriter fw = new FileWriter(file, true);
