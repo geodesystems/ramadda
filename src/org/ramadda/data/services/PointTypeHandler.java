@@ -949,6 +949,11 @@ public class PointTypeHandler extends RecordTypeHandler {
     public String getMapInfoBubble(Request request, Entry entry)
             throws Exception {
 
+	String fromMetadata =  getBubbleTemplate(request,  entry);
+	if(Utils.stringDefined(fromMetadata)) {
+	    return fromMetadata;
+	}
+
         //        String fromParent = super.getMapInfoBubble(request,  entry);
         //        if(fromParent!=null) return fromParent;
         try {
