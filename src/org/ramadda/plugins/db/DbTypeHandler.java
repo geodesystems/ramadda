@@ -2984,7 +2984,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
         DataProvider.CsvDataProvider provider =
             new DataProvider.CsvDataProvider(textReader,0);
-        csvUtil.process(textReader, provider);
+        csvUtil.process(textReader, provider,0);
 
         scnt[0] += valueList.size();
         doStore(entry, valueList, true);
