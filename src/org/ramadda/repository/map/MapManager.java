@@ -1364,15 +1364,13 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                            HtmlUtils.cssClass("col-md-3"));
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                            HtmlUtils.cssClass("ramadda-links"));
-            sb.append(
-		      HtmlUtils.open(
-				     HtmlUtils.TAG_DIV,
-				     HtmlUtils.cssClass(
-							CSS_CLASS_EARTH_ENTRIES + ((map == null)
-										   ? ""
-										   : " " + map.getVariableName())) + HtmlUtils.style(
-																     "max-height:" + height + "px; overflow-y: auto;")));
+	    HtmlUtils.open(sb,  HtmlUtils.TAG_DIV,
+			   HtmlUtils.cssClass(CSS_CLASS_EARTH_ENTRIES + ((map == null)
+									 ? ""
+									 : " " + map.getVariableName())) +
+			   HtmlUtils.style(HU.css("max-height", HU.makeDim(height, "px"),"overflow-y","auto")));
 
+	    System.err.println(sb);
             if ( !includeList) {
                 sb.append(extraNav);
             } else {
@@ -1454,13 +1452,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (fromEntry != null) {
             //If its not json then wikify it
             if ( !fromEntry.startsWith("{")) {
-                fromEntry = getWikiManager().wikifyEntry(request, entry,
+                fromEntry = getWikiManager().wikifyEntry(getRepository().getAdminRequest(), entry,
 							 fromEntry, false,  
 							 Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
 									   WikiConstants.WIKI_TAG_MAP));
                 fromEntry = getRepository().translate(request, fromEntry);
             }
-
             return fromEntry;
         }
         StringBuilder info    = new StringBuilder();
@@ -1559,10 +1556,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
         if (bubble != null) {
-            bubble = getWikiManager().wikifyEntry(request, entry, bubble,
+            bubble = getWikiManager().wikifyEntry(getRepository().getAdminRequest(), entry, bubble,
 						  false, 
 						  Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
 								    WikiConstants.WIKI_TAG_MAP));
+
 
             return getRepository().translate(request, bubble);
         }
