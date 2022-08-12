@@ -2092,13 +2092,14 @@ public abstract class Processor extends CsvOperator {
 		if(pw == null) {
 		    String file = output.replace("${ikey}",key).replace("${vkey}",vkey);
 		    csvUtil.checkOkToWrite(file);
+		    boolean exists = new File(file).exists();
 		    //Open in append mode
 		    FileWriter fw = new FileWriter(file, true);
 		    BufferedWriter bw = new BufferedWriter(fw);
 		    pw = new PrintWriter(bw);
 		    pws.add(pw);
 		    writers.put(key.toString(),pw);
-		    if(!new File(file).exists()) {
+		    if(exists) {
 			handleRow(ctx, pw, header,false);
 		    }
 		}
