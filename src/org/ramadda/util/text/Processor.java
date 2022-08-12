@@ -608,7 +608,7 @@ public abstract class Processor extends CsvOperator {
 	    for(int i=0;i<header.size();i++) {
 		Stat stat = stats.get(i);
 		if(!Double.isNaN(stat.min)) {
-		    System.out.println(header.get(i)+" min:" + stat.min +" max:"  + stat.max);
+		    System.out.println(header.get(i)+" min:" + Utils.formatComma(stat.min) +" max:"  + Utils.formatComma(stat.max));
 		}
 	    }
 	}
