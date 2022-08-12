@@ -51,7 +51,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 265 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 267 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -671,7 +671,7 @@ Number of lines to leave<br>
 *.csv<br>
 </ul>
 </div></ul><br><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-pattern'><i>-pattern</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notpattern'><i>-notpattern</i>: Pass through rows that don't match the pattern</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-latest'><i>-latest</i>: Pass through rows whose date is the latest in the group of rows defined by the key column</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skip'><i>-skip</i>: Skip number of processed rows.</a></div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-pattern'><i>-pattern</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notpattern'><i>-notpattern</i>: Pass through rows that don't match the pattern</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-minvalue'><i>-minvalue</i>: Pass through the row that has the min value in the group of columns defined by the key column</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-latest'><i>-latest</i>: Pass through rows whose date is the latest in the group of rows defined by the key column</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skip'><i>-skip</i>: Skip number of processed rows.</a></div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
 <ul>
 <li> <i>lines</i>:
 How many raw lines to skip<br>
@@ -811,7 +811,14 @@ Column indices. Can include ranges, e.g. 0-5<br>
 For example, if you only want 5% of the data sampled do:
 <seesv>seesv -sample 0.05 ...</seesv>
 
-<p></div><a name='-maxvalue'></a><div class=command> <i><a href='#-maxvalue'>-maxvalue</a></i>  &lt;key column&gt;  &lt;value column&gt; </div><div class=command-block>Pass through the row that has the max value in the group of columns defined by the key column<br>
+<p></div><a name='-minvalue'></a><div class=command> <i><a href='#-minvalue'>-minvalue</a></i>  &lt;key column&gt;  &lt;value column&gt; </div><div class=command-block>Pass through the row that has the min value in the group of columns defined by the key column<br>
+<ul>
+<li> <i>key column</i>:
+<br>
+<li> <i>value column</i>:
+<br>
+</ul>
+</div><a name='-maxvalue'></a><div class=command> <i><a href='#-maxvalue'>-maxvalue</a></i>  &lt;key column&gt;  &lt;value column&gt; </div><div class=command-block>Pass through the row that has the max value in the group of columns defined by the key column<br>
 <ul>
 <li> <i>key column</i>:
 <br>
@@ -2874,7 +2881,7 @@ url2.html,contents of url2
 
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
 </div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
 <ul>
 <li> <i>delimiter</i>:
@@ -2967,27 +2974,30 @@ If you wanted to generated custom XML, for example, call:
 <p></div><a name='-subd'></a><div class=command> <i><a href='#-subd'>-subd</a></i>  &lt;columns&gt;  &lt;ranges&gt;  &lt;output_template&gt; </div><div class=command-block>Subdivide into different files<br>
 <ul>
 <li> <i>columns</i>:
-database columns<br>
+columns to subdivide on<br>
 <li> <i>ranges</i>:
 Comma separated ranges min1;max1;step1,min2;max2;step2<br>
 <li> <i>output_template</i>:
-Output template<br>
+Output template - use ${ikey} or ${vkey}, e.g., grid${ikey}.csv<br>
 </ul>
 The -subd command takes the input and, based on the values of the specified columns,
 subdivides the input rows into one or more output files based on the values of the given columns.
 <p>
 The format is
-<seesv>seesv  -subd col1,col2,...,colN "min1;max1;number1,min2;max2;number2,...,minN;maxN;numberN" "output_file_macro${key}.csv</seesv><p>
+<seesv>seesv  -subd col1,col2,...,colN "min1;max1;number1,min2;max2;number2,...,minN;maxN;numberN" "output_file_macro${ikey}.csv</seesv><p>
 The min1;max1;number1 are the min/max range and the number of steps the range is divided by for each column value.
 <p>
+The output file is a template to use to create the destination output file.
+You can use "${ikey}" for the indices or ${vkey} for the values.
+<p>  
 For example, you can use this to do geographic tiling of a set of input data
 that contains latitude and longitude. If your input.csv file has latitude and longitude
 columns the below command:
-<seesv>seesv  -subd latitude,longitude "-90;90;180,-180;180;360" "grid\${key}.csv" input.csv</seesv>
+<seesv>seesv  -subd latitude,longitude "-90;90;180,-180;180;360" "grid\${ikey}.csv" input.csv</seesv>
 says to subdivide the latitude values between -90 and 90 with 180 steps - i.e. 1 degree spacing.
 The longitude is divided up between -180 and 180 with 360 steps - again, 1 degree spacing. 
 The index of a latitude value is the index between -90 and 90. Likewise the index
-of the longitude value is between -180 and 180. The ${key} for the filename
+of the longitude value is between -180 and 180. The ${ikey} for the filename
 is latitudeindex_longitudeindex. So the above command produces:
 <pre>
 grid116_102.csv
@@ -2999,7 +3009,25 @@ grid119_86.csv
 </pre>
 
 
-The grid${key}.csv is the output file name macro where ${key} is made up of the indices. 
+The grid${ikey}.csv is the output file name macro where ${ikey} is made up of the indices.
+Using grid${vkey}.csv would give the following file names based on the values of the ranges:
+<pre>
+grid30_31_-92_-91.csv
+grid39_40_-76_-75.csv
+grid38_39_-76_-75.csv
+...
+</pre>
+
+<p></div><a name='-maptiles'></a><div class=command> <i><a href='#-maptiles'>-maptiles</a></i>  &lt;columns&gt;  &lt;degrees&gt;  &lt;output_template&gt; </div><div class=command-block>Tile the data on lat/lon<br>
+<ul>
+<li> <i>columns</i>:
+lat/lon columns to subdivide on<br>
+<li> <i>degrees</i>:
+Degrees per tile. Defaults to 1<br>
+<li> <i>output_template</i>:
+Output template - use ${ikey} or ${vkey}, e.g., tile${vkey}.csv. Defaults to a tile${vket}.csv<br>
+</ul>
+Just a shortcut for the -sub command
 
 <p></div><a name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br>
 <ul>
