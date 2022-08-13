@@ -1034,7 +1034,7 @@ public class GeoUtils {
             if (place == null) {
                 if ( !noPlaceSet.contains(locale.address)) {
                     noPlaceSet.add(locale.address);
-		    System.out.println("no place:" + address);
+		    //		    System.out.println("no place:" + address);
                 }
 	    }
 	    //If we get here and there is no place then for now lets return null
