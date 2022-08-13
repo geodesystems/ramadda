@@ -1625,7 +1625,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setGeocodeioKey(getProperty("geocodeio.key", (String) null));
             GeoUtils.setHereKey(getProperty("here.key", (String) null));	    
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
-            S3File.setAwsPath(getProperty("aws.path", "aws"));
+            S3File.setAwsPath(getProperty("ramadda.aws.path", "aws"));
         }
 
 
