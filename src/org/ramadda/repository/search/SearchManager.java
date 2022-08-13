@@ -751,7 +751,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    //		System.err.println(commands);
 		    //System.err.println(result);		
 		    String imageText = IO.readContents(tmp.toString()+".txt", getClass());
-		    System.err.println(imageText);		
+		    System.err.println("Image:" + entry.getName());
+		    System.err.println("Corpus:" + imageText.replaceAll("\\n"," ").replaceAll("\\s\\s+"," "));		
 		    fileCorpus.append(imageText);
 		} catch(Exception exc) {
 		    getLogManager().logError("Error running tesseract for:" + entry.getName(), exc);
