@@ -48,6 +48,15 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public class GeoUtils {
 
+    public static final String PREFIX_ANY = "any:";
+    public static final String PREFIX_STATE = "state:";
+    public static final String PREFIX_COUNTRY = "country:";
+    public static final String PREFIX_COUNTY = "county:";
+    public static final String PREFIX_CITY = "city:";
+    public static final String PREFIX_ZIP = "zip:";
+    public static final String PREFIX_ZCTA="zcta:";
+    public static final String PREFIX_CONGRESS = "congress:";
+
     /**
      *  semimajor axis of Earth WGS 84 (m)
      */
@@ -739,6 +748,108 @@ public class GeoUtils {
     }
 
 
+    private static class Locale {
+        boolean doCountry = false;
+        boolean doState = false;
+        boolean doCounty = false;
+        boolean doCity = false;
+	boolean doAny  = false;
+	GeoResource resource;
+	GeoResource resource2;
+	String  address;
+	String  _address;	
+	String  __address;
+
+	Locale(String a) {
+	    address= a.trim().replaceAll("\\s\\s+"," ");
+	    if (address.startsWith(PREFIX_ANY)) {
+		doCountry = doState =  doCounty = doCity = true;
+		address   = address.substring(PREFIX_ANY.length()).trim();
+		doAny = true;
+	    }
+
+	    if (address.startsWith("from:")) {
+		address  = address.substring(5);
+	    } else if (address.startsWith("to:")) {
+		address  = address.substring(3);
+	    }
+
+	    if (address.startsWith(PREFIX_COUNTRY)) {
+		address   = address.substring(PREFIX_COUNTRY.length()).trim();
+		doCountry = true;
+	    }
+
+	    if (address.startsWith(PREFIX_STATE)) {
+		address  = address.substring(PREFIX_STATE.length()).trim();
+		doState  = true;
+	    }
+
+	    if (address.startsWith(PREFIX_ZIP)) {
+		address  = address.substring(PREFIX_ZIP.length()).trim();
+		if (address.length() > 5) {
+		    address = address.substring(0, 5);
+		}
+		resource = GeoResource.RESOURCE_ZIPCODES;
+		resource2 = GeoResource.RESOURCE_ZCTA;
+	    }
+	    if (address.startsWith(PREFIX_ZCTA)) {
+		address  = address.substring(PREFIX_ZCTA.length()).trim();
+		if (address.length() > 5) {
+		    address = address.substring(0, 5);
+		}
+		resource = GeoResource.RESOURCE_ZCTA;
+		resource2 = GeoResource.RESOURCE_ZIPCODES;
+	    }
+
+	    if (address.startsWith(PREFIX_CONGRESS)) {
+		address  = address.substring(PREFIX_CONGRESS.length()).trim();
+		resource = GeoResource.RESOURCE_CONGRESS;
+	    }
+
+	    if (address.startsWith(PREFIX_COUNTY)) {
+		address  = address.substring(PREFIX_COUNTY.length()).trim();
+		doCounty = true;
+	    }
+
+	    if (address.startsWith(PREFIX_CITY)) {
+		address  = address.substring(PREFIX_CITY.length()).trim();
+		doCity   = true;
+		//For when there is no city, just a state
+		if (address.startsWith(",")) {
+		    doState  = true;
+		    doCity   = false;
+		    address  = address.substring(1).trim();
+		}
+	    }
+	    _address=address.toLowerCase();
+	    __address=_address.replaceAll("[-_]+"," ").replaceAll("\\s\\s+"," ");
+	}
+
+	public Place match() {
+	    Place place = null;
+	    if(resource!=null)
+		place=match(resource);
+	    if(place==null && resource2!=null)
+		place=match(resource2);
+	    if(doAny) {
+		for(GeoResource r: GeoResource.RESOURCES) {
+		    place = match(r);
+		    if(place!=null) return place;
+		}
+	    }
+	    return place;
+	}
+
+	public Place match(GeoResource resource) {
+	    Place place = resource.getPlace(address);
+	    if(place==null)
+		place = resource.getPlace(_address);
+	    if(place==null)
+		place = resource.getPlace(__address);
+	    return place;
+	}
+    }
+
     /**
      *
      * @param address _more_
@@ -749,105 +860,23 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     private static Place getLocationFromAddressInner(String address,
-            Bounds bounds, boolean debug)
-            throws Exception {
+						     Bounds bounds, boolean debug)
+	throws Exception {
 
         //      debug = true;
         if ( !Utils.stringDefined(address)) {
             return null;
         }
-        address = address.trim();
-        String _address = address.toLowerCase();
+	
 
+        Place       place    = null;
         GeoResource resource = null;
 	GeoResource resource2 = null;
 
-
-
-        if (_address.startsWith("from:")) {
-            address  = address.substring(5);
-            _address = _address.substring(5);
-        } else if (_address.startsWith("to:")) {
-            address  = address.substring(3);
-            _address = _address.substring(3);
-        }
-        boolean doCountry = false;
-        if (_address.startsWith("country:")) {
-            address   = address.substring("country:".length()).trim();
-            _address  = _address.substring("country:".length()).trim();
-            doCountry = true;
-        }
-        boolean doState = false;
-        if (_address.startsWith("state:")) {
-            address  = address.substring("state:".length()).trim();
-            _address = _address.substring("state:".length()).trim();
-            doState  = true;
-        }
-
-        boolean doZip = false;
-        boolean doZcta = false;
-        if (_address.startsWith("zip:")) {
-            address  = address.substring("zip:".length()).trim();
-            _address = _address.substring("zip:".length()).trim();
-            if (address.length() > 5) {
-                address = address.substring(0, 5);
-            }
-            doZip = true;
-        }
-        if (_address.startsWith("zcta:")) {
-            address  = address.substring("zcta:".length()).trim();
-            _address = _address.substring("zcta:".length()).trim();
-            if (address.length() > 5) {
-                address = address.substring(0, 5);
-            }
-            doZcta = true;
-        }
-        if (_address.startsWith("congress:")) {
-            address  = address.substring("congress:".length()).trim();
-            _address = _address.substring("congress:".length()).trim();
-            resource = GeoResource.RESOURCE_CONGRESS;
-        }
-
-
-        boolean doCounty = false;
-        if (_address.startsWith("county:")) {
-            address  = address.substring("county:".length()).trim();
-            _address = _address.substring("county:".length()).trim();
-            doCounty = true;
-        }
-
-        boolean doCity = false;
-        if (_address.startsWith("city:")) {
-            address  = address.substring("city:".length()).trim();
-            _address = _address.substring("city:".length()).trim();
-            doCity   = true;
-            //For when there is no city, just a state
-            if (address.startsWith(",")) {
-                doState  = true;
-                doCity   = false;
-                address  = address.substring(1).trim();
-                _address = _address.substring(1).trim();
-            }
-        }
-        if (address.length() == 0) {
-            return null;
-        }
-
-        if (debug) {
-            System.err.println("address:" + address);
-        }
-
-        Place       place    = null;
-
-        if (doZip) {
-            resource = GeoResource.RESOURCE_ZIPCODES;
-            resource2 = GeoResource.RESOURCE_ZCTA;
-        } else  if (doZcta) {
-            resource = GeoResource.RESOURCE_ZCTA;
-            resource2 = GeoResource.RESOURCE_ZIPCODES;
-        }
-
-        if (doCity) {
+	Locale locale = new Locale(address);
+	place = locale.match();
+	if(place!=null) return place;
+        if (locale.doCity) {
             //abbrev to name
             getStatesMap();
             if (citiesMap == null) {
@@ -869,11 +898,12 @@ public class GeoUtils {
             }
 
             try {
-                List<String> toks  = StringUtil.splitUpTo(address, ",", 2);
+                List<String> toks  = StringUtil.splitUpTo(locale.address, ",", 2);
                 String       city  = toks.get(0).toLowerCase().trim();
                 String       state = ((toks.size() > 1)
                                       ? toks.get(1)
                                       : null);
+
                 //The resource file has certain cities with state=** for big cities
                 if (state == null) {
                     state = "**";
@@ -881,21 +911,19 @@ public class GeoUtils {
                 Place place2 = null;
                 if (state != null) {
                     List<String> cityToks = StringUtil.split(city, "-", true,
-                                                true);
+							     true);
                     cityToks.add(0, city);
                     state = state.toLowerCase();
-                    //              state = state.replace("metropolitan division","");
-                    //              state = state.replace("metropolitan division","");
                     state = state.replaceAll("\\.", "");
                     List<String> tmp = StringUtil.split(state, "-", true,
                                            true);
-                    //              state = tmp.get(0);
                     tmp.add((String) statesMap.get(state));
                     tmp.add("**");
                     for (String st : tmp) {
                         if (st == null) {
                             continue;
                         }
+
                         for (String cityTok : cityToks) {
                             place2 = citiesMap.get(cityTok + "," + st);
                             if (place2 != null) {
@@ -925,88 +953,84 @@ public class GeoUtils {
             }
 
             //If the city fails then do the county
-            doCounty = true;
+            locale.doCounty = true;
         }
 
-        if (doCounty) {
+
+	if (locale.doCounty) {
             resource = GeoResource.RESOURCE_COUNTIES;
-            int index = _address.indexOf(",");
+            int index = locale._address.indexOf(",");
             if (index < 0) {
-                return resource.getPlace(_address);
+                place =  locale.match(resource);
+		if(place!=null) return place;
             }
             getStatesMap();
-            List<String> toks   = StringUtil.split(_address, ",");
+            List<String> toks   = StringUtil.split(locale._address, ",");
             String       county = toks.get(0).trim();
-            String       state  = toks.get(1).trim();
-            if (place != null) {
-                return place;
-            }
+            String       state  = toks.size()<2?null:toks.get(1).trim();
             if (debug) {
                 System.out.println("trying:" + county + "," + state);
             }
-            place = resource.getPlace(county + "," + state);
-            if (place != null) {
-                return place;
+	    if(state!=null) {
+		place = resource.getPlace(county + "," + state);
+		if (place != null) {
+		    return place;
+		}
+		state = (String) statesMap.get(state);
+		if (debug) {
+		    System.out.println("state after:" + county + "," + state);
+		}
+		if (state != null) {
+		    if (debug) {
+			System.out.println("trying:" + county + "," + state);
+		    }
+		    place = resource.getPlace(county + "," + state);
+		    if (place != null) {
+			return place;
+		    }
+		    for (String suffix : countySuffixes) {
+			if (debug) {
+			    //System.out.println("suffix: " + county + " " + suffix + "," + state);
+			}
+			place = resource.getPlace(county + " " + suffix + ","
+						  + state);
+			if (place != null) {
+			    return place;
+			}
+		    }
+		}
             }
-            state = (String) statesMap.get(state);
-            if (debug) {
-                System.out.println("state after:" + county + "," + state);
-            }
-            if (state != null) {
-                if (debug) {
-                    System.out.println("trying:" + county + "," + state);
-                }
-                place = resource.getPlace(county + "," + state);
-                if (place != null) {
-                    return place;
-                }
-                if (debug) {
-                    //                    System.out.println("try 2:" + county + "," + state  + " place:" + place);
-                }
-                for (String suffix : countySuffixes) {
-                    if (debug) {
-                        //System.out.println("suffix: " + county + " " + suffix + "," + state);
-                    }
-                    place = resource.getPlace(county + " " + suffix + ","
-                            + state);
-                    if (place != null) {
-                        return place;
-                    }
-                }
-                //                return place;
-            }
-            doState = true;
+            locale.doState = true;
         }
 
 
-        if (doState) {
-            resource = GeoResource.RESOURCE_STATES;
-            place    = resource.getPlace(address);
+        if (locale.doState) {
+	    resource = GeoResource.RESOURCE_STATES;
+            place    = locale.match(resource);
             if (place != null) {
                 return place;
             }
-            doCountry = true;
+            locale.doCountry = true;
         }
 
 
-        if (doCountry) {
+        if (locale.doCountry) {
             resource = GeoResource.RESOURCE_COUNTRIES;
-            place    = resource.getPlace(address);
+            place    = locale.match(resource);
             if (place != null) {
                 return place;
             }
-            //            return place;
-        }
+	}
 
         if (resource != null) {
-            place = resource.getPlace(address);
+            place = locale.match(resource);
 	    //	    System.err.println("PLACE:" + place);
 	    if(place==null && resource2!=null) {
-		place = resource2.getPlace(address);		
+		place = locale.match(resource2);		
 	    }
             if (place == null) {
-                if ( !noPlaceSet.contains(address)) {
-                    noPlaceSet.add(address);
+                if ( !noPlaceSet.contains(locale.address)) {
+                    noPlaceSet.add(locale.address);
 		    System.out.println("no place:" + address);
                 }
 	    }
@@ -1024,6 +1048,9 @@ public class GeoUtils {
             return place;
         }
 
+	if(locale.doAny) {
+	    return null;
+	}
 
         initKeys();
         //geocodeioKey = null;
@@ -1521,7 +1548,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        if (true) {
+        if (false) {
             System.err.println(
                 getAddressFromLatLon(
                     Double.parseDouble(args[0]),
@@ -1568,9 +1595,10 @@ public class GeoUtils {
             }
         } catch (Exception exc) {
             System.out.println(exc);
+	    exc.printStackTrace();
         }
         if (true) {
-            return;
+	    Utils.exitTest(0);
         }
 
         double[][] xyz = {
