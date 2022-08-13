@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.plugins.aws.S3ApiHandler" id="aws">
+      <api request="/aws/s3/list"    method="processList" admin="false"/>
+</api>
