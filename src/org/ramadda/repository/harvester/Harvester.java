@@ -578,9 +578,9 @@ public abstract class Harvester extends RepositoryManager {
 
 
     public void addAliasesEditForm(Request request, Appendable sb) throws Exception {
-	sb.append(HU.formEntry(msgLabel("Clean name"),
-			       HtmlUtils.checkbox(ATTR_CLEANNAME, "true",
-						  cleanName) + HtmlUtils.space(1) + "Clean up name from filename, etc"));
+	HU.formEntry(sb, msgLabel("Clean name"),
+			       HtmlUtils.labeledCheckbox(ATTR_CLEANNAME, "true",
+							 cleanName, "Clean up name from filename, etc"));
 	sb.append(HU.formEntryTop(msgLabel("Aliases"),
 				  HU.hbox(HU.textArea(ATTR_ALIASES,
 						      aliases,

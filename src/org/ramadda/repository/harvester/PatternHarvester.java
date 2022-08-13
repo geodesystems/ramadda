@@ -1171,11 +1171,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		         boulder county
 		    */
 		    place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_STATE+name,null);
+		    //		    System.err.println("name:" + name +" p:" + place);
 		    if(place==null) {
 			//			System.err.println("Name:" + name +" parent:" +entry.getParentEntry());
 			if(name.toLowerCase().indexOf("county")>=0 && entry.getParentEntry()!=null) {
 			    String parentName  = entry.getParentEntry().getName();
 			    place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_COUNTY+name+","+parentName,null);
+			    //			    System.err.println("trying:" + GeoUtils.PREFIX_COUNTY+name+","+parentName+ " " + place);
 			}
 		    }
 		    //		System.err.println("initnewgroup:" + entry +" " + place);
@@ -1262,7 +1264,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                         groupType = template.getType();
                     }
                     final FileWrapper dirFile     = file;
+		    final PatternHarvester theHarvester = this;
                     EntryInitializer  initializer = new EntryInitializer() {
+			    @Override
+			    public void initEntry(Entry entry) {
+				theHarvester.initEntry(entry);
+			    }
+
 			    /**
 			     *  This returns the file for the metadata attachment for the entry
 			     *  Look for .<attachment file name>
@@ -1280,7 +1288,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     group = getEntryManager().makeNewGroup(parentGroup, name,
 							   getUser(), template, groupType, initializer);
 
-		    initEntry(group);
+
                     String originalId = null;
                     if (template != null) {
                         originalId =
