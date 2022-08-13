@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -88,6 +89,9 @@ public abstract class Harvester extends RepositoryManager {
 
     /** _more_ */
     public static final String ATTR_SLEEPUNIT = "sleepunit";
+
+    public static final String ATTR_ALIASES = "aliases";
+    public static final String ATTR_CLEANNAME = "cleanname";
 
     public static final String ATTR_TYPEPATTERNS = "typepatterns";
 
@@ -239,6 +243,14 @@ public abstract class Harvester extends RepositoryManager {
     private TypeHandler typeHandler;
 
     private String typePatterns="";
+
+    private String aliases = "";    
+
+    private boolean cleanName = false;    
+
+    private Hashtable<String,String> aliasMap;
+
+
 
 
     /** _more_ */
@@ -478,6 +490,9 @@ public abstract class Harvester extends RepositoryManager {
                 ATTR_TYPE, TypeHandler.TYPE_ANY));
 
 	this.typePatterns= MyXmlUtil.getAttribute(element,ATTR_TYPEPATTERNS, "");
+        aliases = MyXmlUtil.getAttribute(element, ATTR_ALIASES, aliases);
+        cleanName = MyXmlUtil.getAttribute(element, ATTR_CLEANNAME, cleanName);		
+	
         groupTemplate = MyXmlUtil.getAttribute(element, ATTR_GROUPTEMPLATE,
                                              groupTemplate);
         this.baseGroupId = MyXmlUtil.getAttribute(element, ATTR_BASEGROUP, "");
@@ -561,6 +576,43 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
+    public void addAliasesEditForm(Request request, Appendable sb) throws Exception {
+	sb.append(HU.formEntry(msgLabel("Clean name"),
+			       HtmlUtils.checkbox(ATTR_CLEANNAME, "true",
+						  cleanName) + HtmlUtils.space(1) + "Clean up name from filename, etc"));
+	sb.append(HU.formEntryTop(msgLabel("Aliases"),
+				  HU.hbox(HU.textArea(ATTR_ALIASES,
+						      aliases,
+						      10,60)," Format:<pre>name:Name to use\ne.g.:\nco:Colorado</pre>")));
+    }
+
+
+
+    public String getName(String name, boolean isDir) {
+	name = getAlias(name,name);
+	if(cleanName && isDir) {
+	    name =Utils.makeLabel(name);
+	}
+	return name;
+    }
+
+    public String getAlias(String n, String dflt) {
+	if(n==null) return dflt;
+	if(aliasMap==null) {
+	    aliasMap = new Hashtable<String,String>();
+	    for(String line: Utils.split(aliases,"\n",true,true)) {
+		List<String> toks = Utils.splitUpTo(line,":",2);
+		if(toks.size()==2) {
+		    aliasMap.put(toks.get(0),toks.get(1));
+		}
+	    }
+	}
+	n = aliasMap.get(n);
+	if(n==null) return dflt;
+	return n;
+    }
+
+
     /**
      * _more_
      *
@@ -584,6 +636,10 @@ public abstract class Harvester extends RepositoryManager {
         typeHandler = repository.getTypeHandler(request.getString(ATTR_TYPE,
                 ""));
 	typePatterns = request.getString(ATTR_TYPEPATTERNS,typePatterns);
+        aliases = request.getUnsafeString(ATTR_ALIASES,  aliases);
+	aliasMap = null;
+        cleanName = request.get(ATTR_CLEANNAME,  cleanName);		
+
         activeOnStart = request.get(ATTR_ACTIVEONSTART, false);
         generateMd5   = request.get(ATTR_GENERATEMD5, false);
         testCount     = request.get(ATTR_TESTCOUNT, testCount);
@@ -812,7 +868,8 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_ADDSHORTMETADATA, addShortMetadata + "");
         element.setAttribute(ATTR_TYPE, getTypeHandler().getType());
         element.setAttribute(ATTR_TYPEPATTERNS, typePatterns);
-
+        element.setAttribute(ATTR_ALIASES, aliases);
+        element.setAttribute(ATTR_CLEANNAME, ""+cleanName);		
         element.setAttribute(ATTR_SLEEP, sleepMinutes + "");
         element.setAttribute(ATTR_SLEEPUNIT, sleepUnit);
 

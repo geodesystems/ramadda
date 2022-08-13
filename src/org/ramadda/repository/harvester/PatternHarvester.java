@@ -61,6 +61,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** attribute id */
     public static final String ATTR_TYPE = "type";
 
+
     /** attribute id */
     public static final String ATTR_DATEFORMAT = "dateformat";
 
@@ -113,6 +114,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** _more_ */
     private boolean noTree = false;
+
 
     /** _more_ */
     private List<PatternHolder> filePattern;
@@ -241,6 +243,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         topPatternString = XmlUtil.getAttribute(element, ATTR_TOPPATTERN,
 						topPatternString);
+
     
         notfilePatternString = XmlUtil.getAttribute(element,
 						    ATTR_NOTFILEPATTERN, notfilePatternString);
@@ -312,6 +315,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         topPatternString = request.getUnsafeString(ATTR_TOPPATTERN,
 						   topPatternString);
         topPattern   = null;
+
 
         ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
         noTree       = request.get(ATTR_NOTREE, false);
@@ -488,6 +492,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					  ATTR_ADDSHORTMETADATA, "true",
 					  getAddShortMetadata(),
 					  "Just add spatial/temporal metadata"));
+
+	addAliasesEditForm(request, sb);
+
+
 
         sb.append(HU.formEntry(msgLabel("User"),
 			       HU.input(ATTR_USER,
@@ -1219,6 +1227,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if ( !Utils.stringDefined(name)) {
                 name = filename;
             }
+	    name = getName(name,true);
             if (makeGroup && (parentGroup != null)) {
                 Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,true,null,null,getGroupInitializer());
                 if ((group == null) && (name.indexOf("_") >= 0)) {
@@ -1573,6 +1582,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 							     groupName);
         }
 
+	name = getName(name,false);
+
 	if(debug)    System.err.println("\tgroup name:" + groupName);
 
         if (getTestMode()) {
@@ -1590,6 +1601,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         boolean                createIfNeeded = !getTestMode();
         final PatternHarvester theHarvester   = this;
         Entry                  group;
+	groupName = getName(groupName,true);
 	if(noTree) {
 	    group =  baseGroup;
 	    if(debug)    System.err.println("\tusing base group:" + group);
