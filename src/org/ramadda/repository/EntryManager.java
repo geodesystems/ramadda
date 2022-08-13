@@ -4635,6 +4635,14 @@ public class EntryManager extends RepositoryManager {
 							      request.get(ARG_COPY_DEEP, false), "Make deep copy (for synthetic entries)")));
 		bottom.append(HU.formEntryTop("Excludes:", 
 					      HU.textArea(ARG_EXCLUDES,request.getString(ARG_EXCLUDES),3,20) +" Patterns, one per line"));
+
+		bottom.append(HU.formEntry("",	
+					   HU.labeledCheckbox(ARG_COPY_DO_METADATA,
+							      "true",
+							      request.get(ARG_COPY_DO_METADATA, false), "Extract metadata")));
+
+
+
 		bottom.append(HU.formTableClose());
 		bottom.append("</div>");
 		bottom.append(HU.script("HtmlUtils.initRadioToggle(" +HU.comma(HU.squote("#"+radiosId),"{'copy':" +HU.squote("#"+extraId))+"});\n"));
@@ -4829,6 +4837,7 @@ public class EntryManager extends RepositoryManager {
 					       String link)
 	throws Exception {
 	boolean deepCopy  = request.get(ARG_COPY_DEEP,false);
+	boolean doMetadata= request.get(ARG_COPY_DO_METADATA,false);
 	EntryUtil.Excluder excluder = new EntryUtil.Excluder(Utils.split(request.getString(ARG_EXCLUDES,""),"\n",true,true),
 							     (int)(request.get(ARG_COPY_SIZE_LIMIT,(double)-1.0)*1000*1000));
         StringBuilder sb         = new StringBuilder();
@@ -4853,12 +4862,9 @@ public class EntryManager extends RepositoryManager {
 		    System.err.println("Is excluded:" + oldEntry);
 		    continue;
 		}
-
-		//		System.err.println("OK:" + oldEntry);
-		//		if(true) continue;
 		Entry newEntry =
 		    copyEntry(request, toGroup, pathTemplate,
-			      oldIdToNewEntry, newEntries, oldEntry);
+			      oldIdToNewEntry, newEntries, oldEntry,doMetadata);
             }
 
             int           count = 0;
@@ -4906,7 +4912,7 @@ public class EntryManager extends RepositoryManager {
 			    Entry parent, String pathTemplate,
 			    Hashtable<String, Entry> oldIdToNewEntry,
 			    List<Entry> newEntries,
-			    Entry oldEntry) throws Exception {
+			    Entry oldEntry,boolean doMetadata) throws Exception {
 	String      newId          = getRepository().getGUID();
 	TypeHandler oldTypeHandler =oldEntry.getMasterTypeHandler();
 	TypeHandler newTypeHandler =   oldTypeHandler.getTypeHandlerForCopy(oldEntry);
@@ -4944,6 +4950,13 @@ public class EntryManager extends RepositoryManager {
 							      oldEntry, newEntry, oldMetadata));
 	}
 	newEntry.setMetadata(newMetadata);
+	if(doMetadata) {
+	    List<Entry> entries = new ArrayList<Entry>();
+	    entries.add(newEntry);
+	    addInitialMetadata(request, entries, false,false);
+	}
+
+
 	newEntries.add(newEntry);
 	return newEntry;
     }
