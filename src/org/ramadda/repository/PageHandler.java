@@ -3368,7 +3368,7 @@ public class PageHandler extends RepositoryManager {
             return HU.select(ARG_TYPE, items, selected);
         }
 
-        return repository.makeTypeSelect(items, request, false, selected,
+        return repository.makeTypeSelect(items, request, ARG_TYPE,"",false, selected,
                                          false, null);
     }
 
