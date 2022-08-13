@@ -1135,22 +1135,27 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                       + " entries<br>");
     }
 
+
+
+
     /**
      * _more_
      *
      * @param entry _more_
      */
-    public void initNewGroup(Entry entry) {
+    public void initEntry(Entry entry) {
 	try {
 	    if (getAddMetadata() || getAddShortMetadata()) {
-		//see if the group name is a county, city, state, etc
-		Place place;
-		place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_STATE+entry.getName(),null);
-		if(place==null)
-		    place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_COUNTY+entry.getName(),null);
-		//		System.err.println("initnewgroup:" + entry +" " + place);
-		if(place!=null) {
-		    entry.setLocation(place.getLatitude(), place.getLongitude());
+		if(!entry.hasLocationDefined()) {
+		    //see if the group name is a county, city, state, etc
+		    Place place;
+		    place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_STATE+entry.getName(),null);
+		    if(place==null)
+			place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_COUNTY+entry.getName(),null);
+		    //		System.err.println("initnewgroup:" + entry +" " + place);
+		    if(place!=null) {
+			entry.setLocation(place.getLatitude(), place.getLongitude());
+		    }
 		}
 	    }
 
@@ -1169,7 +1174,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		@Override
 		public void initEntry(Entry entry) {
 		    //System.err.println("\tNEW GROUP:" + entry);
-		    theHarvester.initNewGroup(entry);
+		    theHarvester.initEntry(entry);
 		}
 	    };
 	return groupInitializer;
