@@ -118,7 +118,7 @@ public class GeoUtils {
     private static boolean haveInitedKeys = false;
 
     /** _more_ */
-    private static Hashtable statesMap;
+    private static Hashtable<String,String> statesMap;
 
     /** _more_ */
     private static Hashtable<String, Place> citiesMap;
@@ -727,7 +727,7 @@ public class GeoUtils {
      *
      * @throws Exception _more_
      */
-    public static Hashtable getStatesMap() throws Exception {
+    public static Hashtable<String,String> getStatesMap() throws Exception {
         if (statesMap == null) {
             InputStream inputStream =
                 IO.getInputStream("/org/ramadda/util/states.properties",
@@ -741,7 +741,7 @@ public class GeoUtils {
                 tmp2.put(key.toLowerCase(), tmp.get(key));
             }
             tmp.putAll(tmp2);
-            statesMap = tmp;
+            statesMap = (Hashtable<String,String>) tmp;
         }
 
         return statesMap;
