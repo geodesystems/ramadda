@@ -17,6 +17,8 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.geo.GeoUtils;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
@@ -242,7 +244,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sizeLimit = XmlUtil.getAttribute(element,
 					  ATTR_SIZELIMIT, sizeLimit);
 
-
         filePattern    = null;
         topPattern     = null;
         notfilePattern = null;
@@ -270,7 +271,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      * @param element _more_
      *
      * @throws Exception _more_
-     */
+    */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
@@ -344,7 +345,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         List<FileWrapper> rootDirs       = getRootDirs();
         for (FileWrapper rootDir : rootDirs) {
-            if ( !rootDir.exists()) {
+            if (!rootDir.exists() && !getStorageManager().isS3(rootDir.toString()) &&
+		!rootDir.toString().startsWith("#")) {
                 extraLabel = HtmlUtils.br()
                              + HtmlUtils.span(
                                  msg("Directory does not exist"),
@@ -444,10 +446,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                       HtmlUtils.input(ATTR_DESCTEMPLATE,
                                           descTemplate, HtmlUtils.SIZE_60)));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Entry type"),
+        sb.append(HtmlUtils.formEntry(msgLabel("Default Entry type"),
                                       makeEntryTypeSelector(request,
                                           getTypeHandler())));
 
+	makeTypePatternsInput(request, sb);
 
 
         sb.append(HtmlUtils.formEntry(msgLabel("Date format"),
@@ -507,6 +510,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return getPageHandler().makeFileTypeSelector(request, typeHandler,
                 false);
     }
+
 
 
     /**
@@ -1136,8 +1140,40 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @param entry _more_
      */
-    public void initEntry(Entry entry) {}
+    public void initNewGroup(Entry entry) {
+	try {
+	    if (getAddMetadata() || getAddShortMetadata()) {
+		//see if the group name is a county, city, state, etc
+		Place place;
+		place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_STATE+entry.getName(),null);
+		if(place==null)
+		    place = GeoUtils.getLocationFromAddress(GeoUtils.PREFIX_COUNTY+entry.getName(),null);
+		//		System.err.println("initnewgroup:" + entry +" " + place);
+		if(place!=null) {
+		    entry.setLocation(place.getLatitude(), place.getLongitude());
+		}
+	    }
 
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
+
+    private EntryInitializer groupInitializer;
+    private EntryInitializer getGroupInitializer() {
+	final PatternHarvester theHarvester = this;
+	if(groupInitializer==null)
+	    groupInitializer =
+	    new EntryInitializer() {
+		@Override
+		public void initEntry(Entry entry) {
+		    //System.err.println("\tNEW GROUP:" + entry);
+		    theHarvester.initNewGroup(entry);
+		}
+	    };
+	return groupInitializer;
+    }
 
     /**
      * _more_
@@ -1177,11 +1213,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 name = filename;
             }
             if (makeGroup && (parentGroup != null)) {
-                Entry group = getEntryManager().findEntryFromName(request,parentGroup, name);
-
+                Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,true,null,null,getGroupInitializer());
                 if ((group == null) && (name.indexOf("_") >= 0)) {
                     String blankName = name.replaceAll("_", " ");
-                    group = getEntryManager().findEntryFromName(request,parentGroup, blankName);
+                    group = getEntryManager().findEntryFromName(request,parentGroup, blankName,true,null,null,getGroupInitializer());
                     if (group != null) {
                         name = blankName;
                     }
@@ -1370,7 +1405,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                              Hashtable<String, Entry> entriesMap)
             throws Exception {
         Request request = getRequest();
-	final boolean debug = false;
+	final boolean debug = true;
         Entry  baseGroup = getBaseGroup();
 	String filePath      = fileWrapper.toString();
         filePath = filePath.replace("\\", "/");
@@ -1394,6 +1429,19 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if (templateEntry != null) {
             typeHandlerToUse = templateEntry.getTypeHandler();
         }
+
+        if (typeHandlerToUse == null) {
+	    System.err.println("file:" + filePath);
+	    for(PatternType pattern:getTypePatterns()) {
+		if(pattern.pattern.matches(filePath)) {
+		    typeHandlerToUse = pattern.type;
+		    System.err.println("match:" + typeHandlerToUse);
+		    break;
+		}
+	    }
+	}
+
+
 
         if ((typeHandlerToUse == null)
                 && typeHandler.getType().equals(TypeHandler.TYPE_FINDMATCH)) {
@@ -1544,14 +1592,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    group= getEntryManager().findEntryFromName(request,baseGroup,
 						       groupName, createIfNeeded, getLastGroupType(),
 						       dirTemplateEntry,
-						       new EntryInitializer() {
-							   @Override
-							   public void initEntry(Entry entry) {
-							       if(debug)
-								   System.err.println("\tNEW GROUP:" + entry);
-							       theHarvester.initEntry(entry);
-							   }
-						       });
+						       getGroupInitializer());
 	    if(debug)
 		System.err.println("\tgroup from findEntry:" + group);
 	}

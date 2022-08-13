@@ -13,6 +13,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.PatternHolder;
 import org.ramadda.util.Utils;
 
 
@@ -87,6 +88,8 @@ public abstract class Harvester extends RepositoryManager {
 
     /** _more_ */
     public static final String ATTR_SLEEPUNIT = "sleepunit";
+
+    public static final String ATTR_TYPEPATTERNS = "typepatterns";
 
     /** _more_ */
     public static final String UNIT_ABSOLUTE = "absolute";
@@ -234,6 +237,9 @@ public abstract class Harvester extends RepositoryManager {
 
     /** _more_ */
     private TypeHandler typeHandler;
+
+    private String typePatterns="";
+
 
     /** _more_ */
     private StringBuffer error;
@@ -471,6 +477,7 @@ public abstract class Harvester extends RepositoryManager {
             repository.getTypeHandler(MyXmlUtil.getAttribute(element,
                 ATTR_TYPE, TypeHandler.TYPE_ANY));
 
+	this.typePatterns= MyXmlUtil.getAttribute(element,ATTR_TYPEPATTERNS, "");
         groupTemplate = MyXmlUtil.getAttribute(element, ATTR_GROUPTEMPLATE,
                                              groupTemplate);
         this.baseGroupId = MyXmlUtil.getAttribute(element, ATTR_BASEGROUP, "");
@@ -576,6 +583,7 @@ public abstract class Harvester extends RepositoryManager {
 
         typeHandler = repository.getTypeHandler(request.getString(ATTR_TYPE,
                 ""));
+	typePatterns = request.getString(ATTR_TYPEPATTERNS,typePatterns);
         activeOnStart = request.get(ATTR_ACTIVEONSTART, false);
         generateMd5   = request.get(ATTR_GENERATEMD5, false);
         testCount     = request.get(ATTR_TESTCOUNT, testCount);
@@ -623,6 +631,52 @@ public abstract class Harvester extends RepositoryManager {
         makeRunSettings(request, sb);
 
     }
+
+
+    public static class PatternType {
+	PatternHolder pattern;
+	TypeHandler type;
+	public PatternType(PatternHolder pattern, TypeHandler type) {
+	    this.pattern = pattern;
+	    this.type =type;
+	}
+    }
+
+
+    public List<PatternType> getTypePatterns() throws Exception {
+	List<PatternType> p = new ArrayList<PatternType>();
+	if(Utils.stringDefined(typePatterns)) {
+	    for(String line:Utils.split(typePatterns,"\n",true,true)) {
+		List<String> toks = Utils.splitUpTo(line,":",2);
+		if(toks.size()!=2)  continue;
+		TypeHandler typeHandler = getRepository().getTypeHandler(toks.get(0));
+		if(typeHandler!=null) {
+		    p.add(new PatternType(new PatternHolder(toks.get(1)), typeHandler));
+		}
+	    }
+	}
+	return p;
+    }
+
+    public void makeTypePatternsInput(Request request, Appendable sb) 
+	throws Exception {
+	String uid = HU.getUniqueId("select_");
+	String textid = HU.getUniqueId("text_");	
+	String attrs =HU.style("max-width:200px;") + HU.id(uid);
+	List items = Utils.makeList(new TwoFacedObject("Add type",""));
+	String select = getRepository().makeTypeSelect(items, request,"noop",attrs,
+						       false,"",false,null);
+	String textArea = HtmlUtils.textArea(ATTR_TYPEPATTERNS, typePatterns, 
+					     5, 60,HU.id(textid));
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
+					 HU.hbox(
+						 textArea,
+						 select+
+						 "<br>Form:<pre>entry type:pattern</pre>")));
+	HU.importJS(sb,getRepository().getPageHandler().makeHtdocsUrl("/harvester.js"));
+        HU.script(sb, "HtmlUtils.initTypeMenu(" +HU.comma(HU.squote(uid),HU.squote(textid))+");\n");
+    }
+
 
 
     /**
@@ -757,6 +811,7 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_ADDMETADATA, addMetadata + "");
         element.setAttribute(ATTR_ADDSHORTMETADATA, addShortMetadata + "");
         element.setAttribute(ATTR_TYPE, getTypeHandler().getType());
+        element.setAttribute(ATTR_TYPEPATTERNS, typePatterns);
 
         element.setAttribute(ATTR_SLEEP, sleepMinutes + "");
         element.setAttribute(ATTR_SLEEPUNIT, sleepUnit);
@@ -785,7 +840,6 @@ public abstract class Harvester extends RepositoryManager {
         Element  root = doc.createElement(TAG_HARVESTER);
         applyState(root);
         String xml =  MyXmlUtil.toString(root);
-	System.err.println("getContent:" + xml);
 	return xml;
     }
 
