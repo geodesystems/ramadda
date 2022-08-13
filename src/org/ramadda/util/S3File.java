@@ -457,14 +457,21 @@ public class S3File extends FileWrapper {
 	Utils.exitTest(0);
     }
 
-    static class MyFileViewer extends FileWrapper.FileViewer {
-	boolean download;
-	boolean makeDirs;
-	boolean verbose;
-	boolean overWrite;	
+    public static class MyFileViewer extends FileWrapper.FileViewer {
+	boolean download = false;
+	boolean makeDirs = false;
+	boolean verbose = false;
+	boolean overWrite = false;	
 	int sizeLimit = -1;
 	double percent = -1;
 	List<String> excludes;
+	Appendable buffer;
+	int maxLevel=-1;
+
+	public MyFileViewer(Appendable buffer, int maxLevel) {
+	    this.buffer = buffer;
+	    this.maxLevel = maxLevel;
+	}
 
 	public MyFileViewer(boolean download, boolean makeDirs,boolean overWrite, int sizeLimit, double percent, boolean verbose,List<String> excludes) {
 	    this.download = download;
@@ -475,12 +482,15 @@ public class S3File extends FileWrapper {
 	    this.verbose= verbose;
 	    this.excludes = excludes;
 	}
-	private void print(String msg) {
-	    if(verbose) 
+	private void print(String msg) throws Exception {
+	    if(buffer!=null) buffer.append(msg);
+	    else if(verbose) 
 		System.out.print(msg);
 	}
-	private void println() {
-	    if(verbose) 
+
+	private void println() throws Exception {
+	    if(buffer!=null) buffer.append("\n");
+	    else if(verbose) 
 		System.out.println(Utils.ANSI_RESET);
 	}
 	
@@ -495,20 +505,32 @@ public class S3File extends FileWrapper {
 	    if(sizeLimit<=0) return true;
 	    return f.length()<(sizeLimit*1000000);
 	}
-	public void printPrefix(int level) {
+
+	public void printPrefix(int level) throws Exception {
 	    for (int i = 0; i < level; i++) {
 		print("   ");
 	    }
 	}
+	private String red(String s) {
+	    if(buffer!=null) return "<span style='color:firebrick;'>" + s +"</span>";
+	    return Utils.ANSI_RED +s +Utils.ANSI_RESET;
+	}
+	private String green(String s) {
+	    if(buffer!=null) return "<span style='color:green;'>" + s +"</span>";
+	    return Utils.ANSI_GREEN +s +Utils.ANSI_RESET;
+	}	
 	public int viewFile(int level, FileWrapper f, FileWrapper[] children) throws Exception {
-	    for(String exclude: excludes) {
-		if(f.toString().matches(exclude))
-		    return DO_DONTRECURSE;
+	    if(maxLevel>=0 && level>=maxLevel) return DO_DONTRECURSE;
+	    if(excludes!=null) {
+		for(String exclude: excludes) {
+		    if(f.toString().matches(exclude))
+			return DO_DONTRECURSE;
+		}
 	    }
 
 	    printPrefix(level);
 	    if ( !f.isDirectory()) {
-		print(Utils.ANSI_RED +f.getName() +Utils.ANSI_RESET+ " " + Utils.formatFileLength(f.length()));
+		print(red(f.getName())+ " " + Utils.formatFileLength(f.length()));
 		if(download && downloadOk(f,children)) {
 		    String path = f.toString();
 		    print(" downloading... ");
@@ -540,7 +562,7 @@ public class S3File extends FileWrapper {
 		println();
 		return DO_DONTRECURSE;
 	    }  else {
-		print(Utils.ANSI_GREEN+f.getName());
+		print(green(f.getName()));
 		println();
 		return DO_CONTINUE;
 	    }
