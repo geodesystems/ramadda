@@ -15,6 +15,7 @@ import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PatternHolder;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.*;
 
 
 import org.ramadda.util.sql.SqlUtil;
@@ -607,9 +608,16 @@ public abstract class Harvester extends RepositoryManager {
 		}
 	    }
 	}
-	n = aliasMap.get(n);
-	if(n==null) return dflt;
-	return n;
+	String alias = aliasMap.get(n);
+	if(alias == null) {
+	    if(Misc.equals(aliasMap.get("states"),"true")) {
+		Place place = GeoResource.RESOURCE_STATES.getPlace(n.toLowerCase());
+		if(place!=null) alias = place.getName();
+	    }
+
+	}
+	if(alias==null) return dflt;
+	return alias;
     }
 
 
