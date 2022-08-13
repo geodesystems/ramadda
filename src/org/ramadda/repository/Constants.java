@@ -1616,7 +1616,7 @@ public interface Constants {
     public static final String ARG_COPY_DEEP = "copydeep";
     public static final String ARG_COPY_SIZE_LIMIT = "sizelimit";
     public static final String ARG_EXCLUDES = "excludes";    
-
+    public static final String ARG_COPY_DO_METADATA = "dometadata";
 
 
     /** _more_ */
