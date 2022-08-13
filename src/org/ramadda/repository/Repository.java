@@ -6847,7 +6847,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                  HashSet<String> exclude)
             throws Exception {
         return makeTypeSelect(new ArrayList(), request, ARG_TYPE,"",includeAny, selected,
-                              checkAddOk, exclude);
+                              checkAddOk, exclude,false);
     }
 
     /**
@@ -6867,11 +6867,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String makeTypeSelect(List items, Request request,
 				 String arg, String attrs,
                                  boolean includeAny, String selected,
-                                 boolean checkAddOk, HashSet<String> exclude)
+                                 boolean checkAddOk, HashSet<String> exclude,boolean groupOnly)
             throws Exception {
 	if(items==null) items = new ArrayList();
 
         for (TypeHandler typeHandler : getTypeHandlers()) {
+	    if(groupOnly && !typeHandler.isGroup()) continue;
+
             if (typeHandler.isAnyHandler() && !includeAny) {
                 continue;
             }

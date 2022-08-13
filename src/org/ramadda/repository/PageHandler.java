@@ -3369,7 +3369,7 @@ public class PageHandler extends RepositoryManager {
         }
 
         return repository.makeTypeSelect(items, request, ARG_TYPE,"",false, selected,
-                                         false, null);
+                                         false, null,false);
     }
 
     /**

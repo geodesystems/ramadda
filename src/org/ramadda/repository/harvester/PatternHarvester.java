@@ -23,6 +23,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.StringUtil;
@@ -60,6 +61,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** attribute id */
     public static final String ATTR_TYPE = "type";
+
+    public static final String ATTR_LASTGROUPTYPE = "lastgrouptype";    
 
 
     /** attribute id */
@@ -108,6 +111,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** _more_ */
     private String topPatternString = "";
 
+
+    private String lastGroupType = "";
 
     /** _more_ */
     private boolean ignoreErrors = false;
@@ -243,6 +248,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         topPatternString = XmlUtil.getAttribute(element, ATTR_TOPPATTERN,
 						topPatternString);
+        lastGroupType = XmlUtil.getAttribute(element, ATTR_LASTGROUPTYPE,
+					     lastGroupType);	
 
     
         notfilePatternString = XmlUtil.getAttribute(element,
@@ -283,6 +290,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         super.applyState(element);
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
         element.setAttribute(ATTR_TOPPATTERN, topPatternString);
+        element.setAttribute(ATTR_LASTGROUPTYPE, lastGroupType);	
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
@@ -316,6 +324,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						   topPatternString);
         topPattern   = null;
 
+        lastGroupType = request.getString(ATTR_LASTGROUPTYPE,
+					  lastGroupType);
 
         ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
         noTree       = request.get(ATTR_NOTREE, false);
@@ -463,6 +473,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sb.append(HU.formEntry(msgLabel("Default Entry type"),
 			       makeEntryTypeSelector(request,
 						     getTypeHandler())));
+
+        sb.append(HU.formEntry(msgLabel("Last Group Type"),
+			       getRepository().makeTypeSelect(Utils.makeList(new TwoFacedObject("Default","")),
+							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
+							      false, null,true)));
+
 
 	makeTypePatternsInput(request, sb);
 
@@ -1229,25 +1245,26 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
 	    name = getName(name,true);
             if (makeGroup && (parentGroup != null)) {
-                Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,true,null,null,getGroupInitializer());
+                Entry group = getEntryManager().findEntryFromName(request,parentGroup, name,false,null,null,getGroupInitializer());
                 if ((group == null) && (name.indexOf("_") >= 0)) {
                     String blankName = name.replaceAll("_", " ");
-                    group = getEntryManager().findEntryFromName(request,parentGroup, blankName,true,null,null,getGroupInitializer());
+                    group = getEntryManager().findEntryFromName(request,parentGroup, blankName,false,null,null,getGroupInitializer());
                     if (group != null) {
                         name = blankName;
                     }
                 }
 
                 if (group == null) {
-                    String groupType = TypeHandler.TYPE_GROUP;
+		    boolean lastDir = i==dirToks.size()-1;
+                    String groupType = lastDir?getLastGroupType():TypeHandler.TYPE_GROUP;
+		    if(!Utils.stringDefined(groupType))groupType = TypeHandler.TYPE_GROUP;
                     if (template != null) {
                         groupType = template.getType();
                     }
                     final FileWrapper dirFile     = file;
                     EntryInitializer  initializer = new EntryInitializer() {
-
 			    /**
-			     *  This returns the file for the metadata attachment for the entr
+			     *  This returns the file for the metadata attachment for the entry
 			     *  Look for .<attachment file name>
 			     */
 			    @Override
@@ -1259,8 +1276,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 				return f;
 			    }
 			};
+
                     group = getEntryManager().makeNewGroup(parentGroup, name,
 							   getUser(), template, groupType, initializer);
+
+		    initEntry(group);
                     String originalId = null;
                     if (template != null) {
                         originalId =
@@ -1794,7 +1814,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      * @return _more_
      */
     public String getLastGroupType() {
-        return null;
+	return lastGroupType;
     }
 
 }

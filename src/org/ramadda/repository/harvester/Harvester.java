@@ -729,7 +729,7 @@ public abstract class Harvester extends RepositoryManager {
 	String attrs =HU.style("max-width:200px;") + HU.id(uid);
 	List items = Utils.makeList(new TwoFacedObject("Add type",""));
 	String select = getRepository().makeTypeSelect(items, request,"noop",attrs,
-						       false,"",false,null);
+						       false,"",false,null,false);
 	String textArea = HtmlUtils.textArea(ATTR_TYPEPATTERNS, typePatterns, 
 					     5, 60,HU.id(textid));
         sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
