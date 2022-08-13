@@ -31,8 +31,8 @@ pre {
 
 
 <a name="configuration"></a><p><div class="ramadda-help-heading">7.6.0 <a href="#configuration">Configuring your RAMADDA</a></div> 
-RAMADDA uses the AWS CLI. Once you have installed it on your maching
-define a property in repository.properties in your RAMADDA home directory:
+RAMADDA uses the AWS CLI. Once you have installed it on your machine
+define a property in <i>repository.properties</i> in your RAMADDA home directory:
 <pre>
 ramadda.aws.path=/path/to/aws
 e.g.:
@@ -40,15 +40,48 @@ ramadda.aws.path=/usr/local/bin/aws
 </pre>
 
 For now, RAMADDA uses the --no-sign-request  argument to AWS so it does not
-require a user configuration.
+require any credentials configuration.
 
 <a name="s3_harvesting"></a><p><div class="ramadda-help-heading">7.6.1 <a href="#s3_harvesting">S3 Harvesting</a></div> 
-TBD
+The RAMADDA file <a href="harversters.html">harvester</a>
+can also harvest a S3 bucket store.
 
 <a name="s3_entry"></a><p><div class="ramadda-help-heading">7.6.2 <a href="#s3_entry">S3 Bucket Entry</a></div> 
+A S3 Bucket entry type is provided. This allows you to have a "synthetic" set of entries
+in RAMADDA that represent the S3 bucket hierarchy. These entries do not exist
+in the RAMADDA database but can be viewed and accessed through the web interface.
+<p>
 TBD
 
 
+<a name="s3_cli"></a><p><div class="ramadda-help-heading">7.6.3 <a href="#s3_cli">S3 Tools</a></div> 
+As a convenience RAMADDA provides a S3 command line utility in the <a href="seesv.html">SeeSV</a>
+package.
+:p
+Download and unzip the <href="https://ramadda.org/repository/entry/show?entryid=synth:498644e1-20e4-426a-838b-65cffe8bd66f:L3NlZXN2LnppcA==">seesv.zip</a> and run the s3.sh to get a help listing:
+<pre>
+sh s3.sh -help
+Usage:
+S3File 
+	&lt;-download  download the files&gt;  
+	&lt;-makedirs make a tree when downloading files&gt; 
+	&lt;-overwrite overwrite the files when downloading&gt; 
+	&lt;-sizelimit size mb (don't download files larger than limit (mb)&gt; 
+	&lt;-percent 0-1  (for buckets with many (&gt;100) siblings apply this as percent probablity that the bucket will be downloaded)&gt; 
+	&lt;-recurse  recurse down the tree when listing&gt; 
+	&lt;-self print out the details about the bucket&gt; ... one or more buckets
+</pre>  
+
+Another utility is provided in the RAMADDA repository runtime at the
+/aws/s3/list entry point. This provides an interface to the above tool
+to do a recursive listing of a bucket store.
+Check it out on <a href="https://ramadda.org/repository/aws/s3/list">
+https://ramadda.org/repository/aws/s3/list</a>.
+
+Try this out with an example:
+<pre>
+s3://first-street-climate-risk-statistics-for-noncommercial-use/
+</pre>
 
 
 </div>
