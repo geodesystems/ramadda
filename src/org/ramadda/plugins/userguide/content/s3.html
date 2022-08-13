@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title>AWS S3 Integration</title>
+</head>
+
+
+<body>
+<%nochildlist%>
+
+
+<subhead intoc="false" id="configuration">Configuring your RAMADDA</subhead>
+RAMADDA uses the AWS CLI. Once you have installed it on your maching
+define a property in repository.properties in your RAMADDA home directory:
+<pre>
+ramadda.aws.path=/path/to/aws
+e.g.:
+ramadda.aws.path=/usr/local/bin/aws
+</pre>
+
+For now, RAMADDA uses the --no-sign-request  argument to AWS so it does not
+require a user configuration.
+
+<subhead intoc="false" id="s3_harvesting">S3 Harvesting</subhead>
+TBD
+
+<subhead intoc="false" id="s3_entry">S3 Bucket Entry</subhead>
+TBD
+
+
+<subhead intoc="false" id="s3_cli">S3 Tools</subhead>
+As a convenience RAMADDA provides a S3 command line utility in the <a href="seesv.html">SeeSV</a>
+package.
+:p
+Download and unzip the <href="https://ramadda.org/repository/entry/show?entryid=synth:498644e1-20e4-426a-838b-65cffe8bd66f:L3NlZXN2LnppcA==">seesv.zip</a> and run the s3.sh to get a help listing:
+<pre>
+sh s3.sh -help
+Usage:
+S3File 
+	&lt;-download  download the files&gt;  
+	&lt;-makedirs make a tree when downloading files&gt; 
+	&lt;-overwrite overwrite the files when downloading&gt; 
+	&lt;-sizelimit size mb (don't download files larger than limit (mb)&gt; 
+	&lt;-percent 0-1  (for buckets with many (&gt;100) siblings apply this as percent probablity that the bucket will be downloaded)&gt; 
+	&lt;-recurse  recurse down the tree when listing&gt; 
+	&lt;-self print out the details about the bucket&gt; ... one or more buckets
+</pre>  
+
+Another utility is provided in the RAMADDA repository runtime. 
+
+</body>

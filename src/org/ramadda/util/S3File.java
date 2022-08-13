@@ -452,7 +452,8 @@ public class S3File extends FileWrapper {
     }
 
     public static void usage(String msg) {
-	System.err.println(msg);
+	if(msg!=null)
+	    System.err.println(msg);
 	System.err.println("Usage:\nS3File \n\t<-download  download the files>  \n\t<-makedirs make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recurse  recurse down the tree when listing> \n\t<-self print out the details about the bucket> ... one or more buckets");
 	Utils.exitTest(0);
     }
@@ -597,6 +598,9 @@ public class S3File extends FileWrapper {
 	for (int i=0;i<args.length;i++) {
 	    String path =args[i];
 	    
+            if (path.equals("-help")) {
+		usage(null);
+	    }
             if (path.equals("-s3")) {
 		continue;
 	    }
