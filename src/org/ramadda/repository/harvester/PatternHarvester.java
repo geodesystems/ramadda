@@ -79,7 +79,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** attribute id */
     public static final String ATTR_NOTFILEPATTERN = "notfilepattern";
 
-    public static final String ATTR_SIZELIMIT = "sizelimit";    
+    public static final String ATTR_SIZELIMIT = "sizelimit";
+    public static final String ATTR_MAXLEVEL = "maxlevel";    
 
     /** attribute id */
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
@@ -128,6 +129,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
     private double sizeLimit = -1;
+
+    private int maxLevel = -1;
 
     /** _more_ */
     private boolean moveToStorage = false;
@@ -243,6 +246,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						    ATTR_NOTFILEPATTERN, notfilePatternString);
         sizeLimit = XmlUtil.getAttribute(element,
 					 ATTR_SIZELIMIT, sizeLimit);
+	maxLevel = XmlUtil.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
 
         filePattern    = null;
         topPattern     = null;
@@ -280,6 +284,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_SIZELIMIT, sizeLimit+"");
+        element.setAttribute(ATTR_MAXLEVEL, maxLevel+"");	
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
 
@@ -316,6 +321,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         notfilePattern = null;
 
         sizeLimit = request.get(ATTR_SIZELIMIT, sizeLimit);
+	maxLevel = request.get(ATTR_MAXLEVEL, maxLevel);	
 
 
         sdf            = null;
@@ -418,6 +424,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       HU.input(ATTR_SIZELIMIT,
 					sizeLimit+"",
 					HU.SIZE_5) +" (MB)"));
+        sb.append(HU.formEntry(msgLabel("Max level"),
+			       HU.input(ATTR_MAXLEVEL,
+					maxLevel+"",
+					HU.SIZE_5) +" How far down the hierarchy does the harvester go"));	
 
         sb.append(HU.formEntry("",
 			       HU.checkbox(ATTR_IGNORE_ERRORS,
@@ -644,7 +654,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         HarvesterFile fileInfo = new HarvesterFile(dir, rootDir, true);
         dirs.add(fileInfo);
         dirMap.add(dir);
-
         return fileInfo;
     }
 
@@ -766,10 +775,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                            final Pattern topDirPattern,
                                            final int timestamp)
 	throws Exception {
+	final PatternHarvester thisHarvester = this;
         final List<HarvesterFile> dirs       = new ArrayList();
         FileWrapper.FileViewer    fileViewer = new FileWrapper.FileViewer() {
 		@Override
-		public int viewFile(int level, FileWrapper f,FileWrapper[] children) throws Exception {
+		public int viewFile(int level, FileWrapper f,FileWrapper[] siblings) throws Exception {
+		    if(level>=thisHarvester.maxLevel-1)  
+			return DO_DONTRECURSE;
 		    if ( !canContinueRunning(timestamp)) {
 			return DO_STOP;
 		    }
@@ -793,12 +805,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					     + " dirs");
 			}
 		    }
-
 		    return DO_CONTINUE;
 		}
 	    };
         FileWrapper.walkDirectory(rootDir, fileViewer);
-
         return dirs;
     }
 
@@ -874,38 +884,33 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         for (int fileIdx = 0; fileIdx < tmpDirs.size(); fileIdx++) {
             printTab = "\t";
             HarvesterFile dirInfo = tmpDirs.get(fileIdx);
-            if ( !dirInfo.exists()) {
-                logHarvesterInfo("Directory:" + dirInfo.getFile()
-                                 + " * does not exist *");
+            if (!dirInfo.exists()) {
+                logHarvesterInfo("Directory:" + dirInfo.getFile()   + " * does not exist *");
                 removeDir(dirInfo);
-
                 continue;
             }
             boolean directoryChanged = dirInfo.hasChanged();
             if (checkIfDirHasChanged && !firstTime && !directoryChanged) {
-                /*
-                  logHarvesterInfo("Directory:" + dirInfo.getFile()
-                  + "  * no change *");
-                */
                 continue;
             }
 
             FileWrapper[] files = dirInfo.getFile().listFiles();
             dirInfo.clearAddedFiles();
             if ((files == null) || (files.length == 0)) {
-                logHarvesterInfo("Directory:" + dirInfo.getFile()
-                                 + " * no files *");
-
+                logHarvesterInfo("Directory:" + dirInfo.getFile() + " * no files *");
                 continue;
             }
 
-            logHarvesterInfo("Directory:" + dirInfo.getFile() + "  found "
-                             + files.length + " files");
+            logHarvesterInfo("Directory:" + dirInfo.getFile() + "  found " + files.length + " files");
             printTab = "\t\t";
             files    = FileWrapper.sortFilesOnName(files);
-
-
             for (FileWrapper f : files) {
+		//		System.err.println("FILE:" +f.getName() +" level:" + f.getLevel());
+		if(maxLevel>0 && f.getLevel()>this.maxLevel)   {
+		    //		    System.err.println("TOO DEEP:" + f.getName());
+		    continue;
+		}
+
                 if (f.isDirectory()) {
                     //If this is a directory then check if we already have it 
                     //in the list. If not then add it to the main list and the local list
@@ -915,25 +920,18 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             tmpDirs.add(addDir(f, dirInfo.getRootDir()));
                         }
                     }
-
                     continue;
                 }
                 long fileTime = f.lastModified();
                 //time diff threshold = 1 minute
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
+		    System.err.println("too soon:" + f);
                     logHarvesterInfo("Skipping recently modified file:" + f
                                      + " milliseconds since modified:"
                                      + (now - fileTime));
-                    /*
-		      System.err.println("skipping file:" + f + " last modified:"
-		      + new Date(fileTime) + " " + fileTime
-		      + " now:" + new Date(now) + " " + now);
-                    */
-
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
-
                     continue;
                 }
                 Entry entry = null;
@@ -945,8 +943,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     if ( !ignoreErrors) {
                         throw (Exception) LogUtil.getInnerException(exc);
                     }
-                    appendError(
-				"Error: " + exc
+                    appendError("Error: " + exc
 				+ HU.makeShowHideBlock(
 						       "Stack",
 						       LogUtil.getStackTrace(
@@ -1441,11 +1438,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         if (typeHandlerToUse == null) {
-	    System.err.println("file:" + filePath);
 	    for(PatternType pattern:getTypePatterns()) {
 		if(pattern.pattern.matches(filePath)) {
 		    typeHandlerToUse = pattern.type;
-		    System.err.println("match:" + typeHandlerToUse);
 		    break;
 		}
 	    }

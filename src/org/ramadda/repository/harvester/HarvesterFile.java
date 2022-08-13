@@ -40,6 +40,7 @@ public class HarvesterFile extends FileInfo {
     /** _more_ */
     private List addedFiles;
 
+
     /**
      * ctor
      *
@@ -47,7 +48,6 @@ public class HarvesterFile extends FileInfo {
      */
     public HarvesterFile(FileWrapper f) {
         super(f);
-
     }
 
     /**
