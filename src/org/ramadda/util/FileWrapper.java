@@ -41,6 +41,8 @@ public abstract class FileWrapper {
     /**  */
     private     long date;
 
+    private int level = 0;
+
     /**  */
     private FileWrapper[] files;
 
@@ -77,11 +79,14 @@ public abstract class FileWrapper {
 
     public static FileWrapper createFileWrapper(String path, boolean checkForDir) {	
 	path = path.trim();
+	FileWrapper newFile;
 	if(path.startsWith(S3File.S3PREFIX)) {
-    if(checkForDir && !path.endsWith("/")) path +="/";
-	    return new S3File(path);
+	    if(checkForDir && !path.endsWith("/")) path +="/";
+	    newFile =  new S3File(path);
+	} else {
+	    newFile = new FileWrapper.File(path);
 	}
-	return new FileWrapper.File(path);
+	return newFile;
     }
 
     /**
@@ -157,6 +162,10 @@ public abstract class FileWrapper {
         return lastModified;
     }
 
+    public int getLevel() {
+	return level;
+    }
+
     /**
       * @return _more_
      */
@@ -168,50 +177,16 @@ public abstract class FileWrapper {
     public FileWrapper[] listFiles() {
         if (files == null) {
             files = doListFiles();
+	    if(files!=null) {
+		for(FileWrapper child: files)
+		    child.level = this.level+1;
+	    }
         }
 
         return files;
     }
 
 
-    /**
-     * FileViewer  is used to walk dir trees
-     */
-    public static abstract class FileViewer {
-	protected List<FileWrapper> stack = new ArrayList<FileWrapper>();
-
-        /** return action */
-        public static int DO_CONTINUE = 1;
-
-        /** return action */
-        public static int DO_DONTRECURSE = 2;
-
-        /** return action */
-        public static int DO_STOP = 3;
-
-        /**
-         * View this file.
-         *
-         * @param f file
-         *
-         * @return One of the return actions
-         *
-         * @throws Exception on badness
-         */
-        public abstract int viewFile(int level, FileWrapper f,FileWrapper[] children) throws Exception;
-
-	public void push(FileWrapper f) {
-	    stack.add(f);
-	}
-	public FileWrapper  pop() {
-	    if(stack.size()>0) {
-		FileWrapper f = stack.get(stack.size()-1);
-		stack.remove(stack.size()-1);
-		return f;
-	    }
-	    return null;
-	}	
-    }
 
     /**
      *
@@ -238,21 +213,21 @@ public abstract class FileWrapper {
      *
      * @throws Exception on badness_
      */
-    public static boolean walkDirectory(FileWrapper dir,
+    public static boolean walkDirectory(FileWrapper parent,
                                         FileViewer fileViewer, 
 					int level)
             throws Exception {
-	fileViewer.push(dir);
-	boolean r = walkDirectoryInner(dir,fileViewer, level);
+	fileViewer.push(parent);
+	boolean r = walkDirectoryInner(parent,fileViewer, level);
 	fileViewer.pop();
 	return r;
     }
 
-    private static boolean walkDirectoryInner(FileWrapper dir,
-						  FileViewer fileViewer, 
-						  int level)
+    private static boolean walkDirectoryInner(FileWrapper parent,
+					      FileViewer fileViewer, 
+					      int level)
 	throws Exception {	
-        FileWrapper[] children = dir.listFiles();
+        FileWrapper[] children = parent.listFiles();
         if (children == null) {
             return true;
         }
@@ -407,5 +382,47 @@ public abstract class FileWrapper {
             return theFile.exists();
         }
     }
+
+
+    /**
+     * FileViewer  is used to walk dir trees
+     */
+    public static abstract class FileViewer {
+	protected List<FileWrapper> stack = new ArrayList<FileWrapper>();
+
+        /** return action */
+        public static int DO_CONTINUE = 1;
+
+        /** return action */
+        public static int DO_DONTRECURSE = 2;
+
+        /** return action */
+        public static int DO_STOP = 3;
+
+        /**
+         * View this file.
+         *
+         * @param f file
+         *
+         * @return One of the return actions
+         *
+         * @throws Exception on badness
+         */
+        public abstract int viewFile(int level, FileWrapper f,FileWrapper[] children) throws Exception;
+
+	public void push(FileWrapper f) {
+	    stack.add(f);
+	}
+	public FileWrapper  pop() {
+	    if(stack.size()>0) {
+		FileWrapper f = stack.get(stack.size()-1);
+		stack.remove(stack.size()-1);
+		return f;
+	    }
+	    return null;
+	}	
+    }
+    
+
 
 }

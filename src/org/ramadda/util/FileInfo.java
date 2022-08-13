@@ -68,6 +68,10 @@ public class FileInfo {
         file       = f;
     }
 
+    public int getLevel() {
+	return file.getLevel();
+    }
+
     /**
      * _more_
      */
