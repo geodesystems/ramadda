@@ -6846,7 +6846,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                  String selected, boolean checkAddOk,
                                  HashSet<String> exclude)
             throws Exception {
-        return makeTypeSelect(new ArrayList(), request, includeAny, selected,
+        return makeTypeSelect(new ArrayList(), request, ARG_TYPE,"",includeAny, selected,
                               checkAddOk, exclude);
     }
 
@@ -6865,9 +6865,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public String makeTypeSelect(List items, Request request,
+				 String arg, String attrs,
                                  boolean includeAny, String selected,
                                  boolean checkAddOk, HashSet<String> exclude)
             throws Exception {
+	if(items==null) items = new ArrayList();
 
         for (TypeHandler typeHandler : getTypeHandlers()) {
             if (typeHandler.isAnyHandler() && !includeAny) {
@@ -6890,7 +6892,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                          typeHandler.getType()));
         }
 
-        return HtmlUtils.select(ARG_TYPE, items, selected);
+        return HtmlUtils.select(arg, items, selected,attrs);
     }
 
 
