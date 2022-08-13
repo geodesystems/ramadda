@@ -747,6 +747,9 @@ public class GeoUtils {
         return statesMap;
     }
 
+    private static String cleanAddress(String s) {
+	return s.toLowerCase().replaceAll("[-_]+"," ").replaceAll("\\s\\s+"," ");
+    }
 
     private static class Locale {
         boolean doCountry = false;
@@ -758,7 +761,7 @@ public class GeoUtils {
 	GeoResource resource2;
 	String  address;
 	String  _address;	
-	String  __address;
+	String  cleanAddress;
 
 	Locale(String a) {
 	    address= a.trim().replaceAll("\\s\\s+"," ");
@@ -822,7 +825,7 @@ public class GeoUtils {
 		}
 	    }
 	    _address=address.toLowerCase();
-	    __address=_address.replaceAll("[-_]+"," ").replaceAll("\\s\\s+"," ");
+	    cleanAddress=cleanAddress(_address);
 	}
 
 	public Place match() {
@@ -845,7 +848,7 @@ public class GeoUtils {
 	    if(place==null)
 		place = resource.getPlace(_address);
 	    if(place==null)
-		place = resource.getPlace(__address);
+		place = resource.getPlace(cleanAddress);
 	    return place;
 	}
     }
@@ -959,13 +962,13 @@ public class GeoUtils {
 
 	if (locale.doCounty) {
             resource = GeoResource.RESOURCE_COUNTIES;
-            int index = locale._address.indexOf(",");
+            int index = locale.cleanAddress.indexOf(",");
             if (index < 0) {
                 place =  locale.match(resource);
 		if(place!=null) return place;
             }
             getStatesMap();
-            List<String> toks   = StringUtil.split(locale._address, ",");
+            List<String> toks   = StringUtil.split(locale.cleanAddress, ",");
             String       county = toks.get(0).trim();
             String       state  = toks.size()<2?null:toks.get(1).trim();
             if (debug) {
