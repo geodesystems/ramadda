@@ -2605,9 +2605,9 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-
     public static String makeLabel(String label) {
-        label = label.replaceAll("_", " ");
+	label = label.replaceAll("\\."," ").replaceAll("_", " ").replaceAll("-"," ");
+	label = label.replaceAll("\\s\\s+"," ");
         StringBuilder tmpSB             = new StringBuilder();
         StringBuilder sb                = new StringBuilder();
         boolean       lastCharUpperCase = false;
@@ -2626,9 +2626,6 @@ public class Utils extends IO {
         }
 
         label = sb.toString();
-        label = label.replaceAll("__+", "_");
-
-
         for (String tok : Utils.split(label, " ", true, true)) {
             tok = tok.substring(0, 1).toUpperCase()
                   + tok.substring(1, tok.length()).toLowerCase();
