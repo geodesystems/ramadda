@@ -265,9 +265,9 @@ public class IO {
         try {
             InputStream is = Utils.getInputStream(file, Utils.class);
             if (is != null) {
-                byte[] bytes = IOUtil.readBytes(is);
-
-                return ImageIO.read(new ByteArrayInputStream(bytes));
+		//                byte[] bytes = IOUtil.readBytes(is);
+		//                return ImageIO.read(new ByteArrayInputStream(bytes));
+		return ImageIO.read(is);
             }
             System.err.println("Could not read image:" + file);
         } catch (Exception exc) {
