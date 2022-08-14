@@ -7404,6 +7404,7 @@ public class EntryManager extends RepositoryManager {
 
     public List<Entry> getEntryRootTree(Request request) throws Exception {
 	if(request.defined(ARG_ANCESTOR)) {
+	    System.err.println("getEntryRootTree");
 	    String entryRoot = request.getString(ARG_ANCESTOR,"");
 	    Entry root = getEntry(request,entryRoot);
 	    if(root!=null) {
@@ -7442,24 +7443,6 @@ public class EntryManager extends RepositoryManager {
     private List<Entry> getEntries(Request request, List<Clause> clauses,
 				  TypeHandler typeHandler,boolean luceneOk)
 	throws Exception {	
-	List<Entry> entryTree = getEntryRootTree(request);
-	if(entryTree!=null) {
-	    List<Clause> ors = new ArrayList<Clause>();
-	    for(Entry e:entryTree) {
-		ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,e.getId()));
-	    }
-	    Clause tree  =Clause.or(ors);
-	    if(clauses.size()==1) {
-		Clause c = clauses.get(0);
-		clauses = new ArrayList<Clause>();
-		clauses.add(Clause.and(c,tree));
-	    } else {	
-		clauses.add(tree);
-	    }
-	}
-
-
-
         List<Entry> allEntries    = new ArrayList<Entry>();
 	boolean didSearch = false;
 
@@ -7472,6 +7455,23 @@ public class EntryManager extends RepositoryManager {
 
 
 	if(!didSearch) {
+	    List<Entry> entryTree = getEntryRootTree(request);
+	    if(entryTree!=null) {
+		List<Clause> ors = new ArrayList<Clause>();
+		for(Entry e:entryTree) {
+		    ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,e.getId()));
+		}
+		Clause tree  =Clause.or(ors);
+		if(clauses.size()==1) {
+		    Clause c = clauses.get(0);
+		    clauses = new ArrayList<Clause>();
+		    clauses.add(Clause.and(c,tree));
+		} else {	
+		    clauses.add(tree);
+		}
+	    }
+
+
 	    //	    System.err.println("NOT LUCENE");
 	    int skipCnt = request.get(ARG_SKIP, 0);
 	    SqlUtil.debug = false;
