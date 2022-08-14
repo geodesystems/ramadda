@@ -3100,9 +3100,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             BodyContentHandler handler =    new BodyContentHandler(LUCENE_MAX_LENGTH/*100000000*/);
             parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
             String contents = handler.toString();
-	    System.out.println("contents: " + contents.replace("\n"," ").replaceAll("\\s\\s+"," "));
+	    //	    System.out.println("contents: " + contents.replace("\n"," ").replaceAll("\\s\\s+"," "));
 	    long t2 = System.currentTimeMillis();
-	    System.err.println("Time:" + (t2-t1));
+	    System.err.println("file:" + f+ " time:" + (t2-t1));
         }
     }
 
