@@ -70,7 +70,7 @@
    </target>
 
 
-    <target name="release" depends="init,clean">
+    <target name="release" depends="init">
         <!-- ramadda.zip depends on ramadda.jar so it's redundant
         <antcall target="ramadda.jar"/>
         -->
@@ -157,7 +157,7 @@
     </target>
 
 
-    <target name="installer" depends="init,clean">
+    <target name="installer" depends="init">
         <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
         <mkdir dir="${installer_dir}"/>
         <copy overwrite="true" file="${release_dir}/installer/lib.sh" todir="${installer_dir}"/>
