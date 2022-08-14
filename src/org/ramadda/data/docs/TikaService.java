@@ -18,6 +18,7 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.ramadda.repository.*;
 import org.ramadda.service.*;
 import org.ramadda.util.Utils;
+import org.ramadda.util.TikaUtil;
 
 import org.w3c.dom.*;
 
@@ -115,8 +116,7 @@ public class TikaService extends Service {
 
         //      System.out.println("TikaService.extractText:" + entry.getFile());
         Parser parser =
-            new AutoDetectParser(
-                getRepository().getSearchManager().getTikaConfig());
+            new AutoDetectParser(TikaUtil.getConfig());
         //Set the max char length to be 5 meg
         BodyContentHandler handler = new BodyContentHandler(5 * 1000 * 1000);
         Metadata           metadata    = new Metadata();

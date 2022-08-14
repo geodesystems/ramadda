@@ -33,7 +33,7 @@ import java.util.concurrent.*;
  * @version $Revision: 1.3 $
  */
 @SuppressWarnings("unchecked")
-public class Tika {
+public class TikaUtil {
 
     /**  */
     public static final int LUCENE_MAX_LENGTH = 25000000;
@@ -55,7 +55,7 @@ public class Tika {
 
     public static TikaConfig getConfigNoImage() throws Exception {
 	if(tikaConfigNoImage == null) {
-	    tikaConfigNoImage = new TikaConfig(Tika.class.getResourceAsStream("/org/ramadda/util/resources/tika-config-no-image.xml"));
+	    tikaConfigNoImage = new TikaConfig(TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config-no-image.xml"));
 	}
 	return tikaConfigNoImage;
     }
@@ -64,7 +64,7 @@ public class Tika {
 	if(tikaConfig == null) {
 	    tikaConfig =
 		new TikaConfig(
-			       Tika.class.getResourceAsStream(
+			       TikaUtil.class.getResourceAsStream(
 							      "/org/ramadda/util/resources/tika-config.xml"));
 	}
 	return tikaConfig;

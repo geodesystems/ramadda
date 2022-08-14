@@ -8879,7 +8879,7 @@ public class EntryManager extends RepositoryManager {
                 getMetadataManager().addInitialMetadata(request, theEntry,
 							extra, shortForm);
 	    long t2= System.currentTimeMillis();
-	    System.err.println("addMetadata:" + theEntry+" time:" + (t2-t1));
+	    //	    System.err.println("addMetadata:" + theEntry+" time:" + (t2-t1));
             if ( !theEntry.hasAreaDefined()
 		 && (extra.get(ARG_MINLAT) != null)) {
                 theEntry.setSouth(Misc.getProperty(extra, ARG_MINLAT, 0.0));
@@ -9943,14 +9943,6 @@ public class EntryManager extends RepositoryManager {
         throw new RepositoryUtil.MissingEntryException(
 						       "Could not find folder:" + groupNameOrId);
     }
-
-
-
-
-
-
-
-
 
 
     /**

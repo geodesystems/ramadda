@@ -32,9 +32,11 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.CategoryList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FileWrapper;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.TikaUtil;
 
 import org.ramadda.util.OpenSearchUtil;
 
@@ -253,6 +255,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String tesseractPath;
 
+    private boolean indexImages = true;
 
     /** _more_ */
     private SearchProvider thisSearchProvider;
@@ -274,10 +277,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private List<SearchProvider> pluginSearchProviders =
         new ArrayList<SearchProvider>();
 
-
-    private TikaConfig tikaConfig;
-    private TikaConfig tikaConfigNoImage;    
-    
     private Object luceneMutex = new Object();
 
     private Hashtable<String,List<String>> synonyms;
@@ -302,15 +301,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         super.initAttributes();
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
 	tesseractPath = getRepository().getProperty("ramadda.tesseract");
-        isLuceneEnabled =
-            getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
-	try {
-	    tikaConfig = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
-	    tikaConfigNoImage = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config-no-image.xml"));	    
-	} catch(Exception exc) {
-	    System.err.println("Error calling TikaConfig:" + exc);
-	}
+	indexImages = getRepository().getProperty("ramadda.indeximages",true);
+        isLuceneEnabled = getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
     }
+
 
 
     public List<String> getSynonyms(String word) throws Exception {
@@ -889,21 +883,25 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
 
-    boolean doTesseract = true;
+
+
+
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) return null;
 	//	if(Utils.isImage(f.toString())) return null;
 	if(f.length()==0) return null;
-
-	File corpusFile = new File(f.getParentFile(),"." + f.getName()+".corpus.txt");
+	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
-	    String c = IO.readContents(corpusFile.toString(), SearchManager.class);
-	    return c;
+	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
+	}
+	boolean isImage = Utils.isImage(f.getName());
+
+	if(isImage && !indexImages) {
+	    return null;
 	}
 
-	doTesseract = !doTesseract;
-	if(doTesseract && tesseractPath!=null && Utils.isImage(f.getName())) {
+	if(isImage && tesseractPath!=null) {
 	    try {
 		long t1= System.currentTimeMillis();
 		File tmp  =getStorageManager().getUniqueScratchFile("output");
@@ -929,10 +927,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
 	    metadataList.add(metadata);
-	    Parser parser = new AutoDetectParser(tikaConfig);
-            BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);
+	    System.err.println(indexImages);
+	    Parser parser = new AutoDetectParser(indexImages?TikaUtil.getConfig():TikaUtil.getConfigNoImage());
+            BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
+	    long t1 = System.currentTimeMillis();
             parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
-           return  handler.toString();
+	    long t2= System.currentTimeMillis();
+	    String corpus = handler.toString();
+	    System.err.println("corpus:" + f.getName() +" time:" + (t2-t1));
+	    return  corpus;
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
 	    exc.printStackTrace();
@@ -965,7 +968,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t1 = System.currentTimeMillis();
 	    String contents = readContents(f,metadata);
 	    long t2= System.currentTimeMillis();
-	    System.err.println("readContents:" + entry +" " + f.getName() +" time:" + (t2-t1));
+	    //	    System.err.println("readContents:" + entry +" " + f.getName() +" time:" + (t2-t1));
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
 		corpus.append(contents);
@@ -3082,32 +3085,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return links;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        for (String f : args) {
-	    long t1 = System.currentTimeMillis();
-            InputStream stream = new FileInputStream(f);
-            org.apache.tika.metadata.Metadata metadata =
-                new org.apache.tika.metadata.Metadata();
-	    TikaConfig  tikaConfig = new TikaConfig(SearchManager.class.getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
-            AutoDetectParser parser =      new AutoDetectParser(tikaConfig);
-            BodyContentHandler handler =    new BodyContentHandler(LUCENE_MAX_LENGTH/*100000000*/);
-            parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
-            String contents = handler.toString();
-	    //	    System.out.println("contents: " + contents.replace("\n"," ").replaceAll("\\s\\s+"," "));
-	    long t2 = System.currentTimeMillis();
-	    System.err.println("file:" + f+ " time:" + (t2-t1));
-        }
-    }
 
-    public TikaConfig getTikaConfig() {
-	return tikaConfig;
-    }
+
+
 
 }

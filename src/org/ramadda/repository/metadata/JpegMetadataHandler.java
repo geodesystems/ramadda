@@ -173,13 +173,15 @@ public class JpegMetadataHandler extends MetadataHandler {
         String path = entry.getResource().getPath();
 	com.drew.metadata.Metadata []mtd ={null};
         try {
-	    long t1= System.currentTimeMillis();
-            Metadata thumbnailMetadata = getThumbnail(request, entry,mtd);
-	    long t2= System.currentTimeMillis();
-	    System.err.println("getThumbnail:" + (t2-t1));
-            if (thumbnailMetadata != null) {
-                metadataList.add(thumbnailMetadata);
-            }
+	    if(request.get(ATTR_MAKETHUMBNAILS,true)) {
+		long t1= System.currentTimeMillis();
+		Metadata thumbnailMetadata = getThumbnail(request, entry,mtd);
+		long t2= System.currentTimeMillis();
+		System.err.println("getThumbnail:" + (t2-t1));
+		if (thumbnailMetadata != null) {
+		    metadataList.add(thumbnailMetadata);
+		}
+	    }
         } catch (Exception exc) {
             getLogManager().logError("JpgeMetadataHandler", exc);
             return;

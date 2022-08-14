@@ -188,6 +188,13 @@ public abstract class FileWrapper {
 
 
 
+    public static boolean walkDirectory(java.io.File dir,
+                                        FileViewer fileViewer)
+            throws Exception {
+	return walkDirectory(new File(dir), fileViewer);
+    }
+
+
     /**
      *
      * @param dir _more_

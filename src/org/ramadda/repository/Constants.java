@@ -379,6 +379,8 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_ADDSHORTMETADATA = "addshortmetadata";
 
+    public static final String ATTR_MAKETHUMBNAILS = "makethumbnails";
+
     /** _more_ */
     public static final String ATTR_ATTR = "attr";
 
