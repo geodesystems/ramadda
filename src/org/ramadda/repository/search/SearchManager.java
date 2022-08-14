@@ -16,6 +16,8 @@
 
 package org.ramadda.repository.search;
 
+
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 
@@ -111,6 +113,7 @@ import java.util.concurrent.*;
 import org.ramadda.repository.job.JobManager;
 
 
+import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
@@ -273,6 +276,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private TikaConfig tikaConfig;
+    private TikaConfig tikaConfigNoImage;    
     
     private Object luceneMutex = new Object();
 
@@ -302,6 +306,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
 	try {
 	    tikaConfig = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
+	    tikaConfigNoImage = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config-no-image.xml"));	    
 	} catch(Exception exc) {
 	    System.err.println("Error calling TikaConfig:" + exc);
 	}
@@ -360,11 +365,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public boolean isLuceneEnabled() {
         return isLuceneEnabled;
-    }
-
-
-    public TikaConfig getTikaConfig() {
-	return tikaConfig;
     }
 
 
@@ -592,7 +592,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    IndexWriter writer = getLuceneWriter();
 	    try {
 		for (Entry entry : entries) {
+		    long t1= System.currentTimeMillis();
 		    indexEntry(writer, entry, request,isNew);
+		    long t2= System.currentTimeMillis();
+		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
 		}
 		//        writer.optimize();
 		writer.commit();
@@ -716,8 +719,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 		File f = element.getFile(entry, metadata, element);
 		if(f!=null && f.exists()) {
-		    //		    System.err.println("\tindexing:" + f);
-		    addContentField(entry, doc, FIELD_ATTACHMENT, f, corpus);
+		    addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
 		}
 	    }
 	    
@@ -734,31 +736,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CHANGED, entry.getChangeDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_START, entry.getStartDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
-
         if (entry.isFile()) {
 	    StringBuilder fileCorpus = new StringBuilder();
-            addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), fileCorpus);
-	    if(tesseractPath!=null && entry.isImage()) {
-		try {
-		    File tmp  =getStorageManager().getUniqueScratchFile("output");
-		    List<String> commands = new ArrayList<String>();
-		    Utils.add(commands, tesseractPath,entry.getResource().getPath(), tmp.toString());
-		    ProcessBuilder pb = new ProcessBuilder(commands);
-		    pb.redirectErrorStream(true);
-		    Process     process = pb.start();
-		    InputStream is      = process.getInputStream();
-		    String      result  = new String(IOUtil.readBytes(is));
-		    //		System.err.println(commands);
-		    //System.err.println(result);		
-		    String imageText = IO.readContents(tmp.toString()+".txt", getClass());
-		    //		    System.err.println("Image:" + entry.getName());
-		    //		    System.err.println("Corpus:" + imageText.replaceAll("\\n"," ").replaceAll("\\s\\s+"," "));		
-		    fileCorpus.append(imageText);
-		} catch(Exception exc) {
-		    getLogManager().logError("Error running tesseract for:" + entry.getName(), exc);
-		}
-	    }
-
+            addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	    corpus.append(fileCorpus);
 	    if(/*isNew && */request!=null && request.get(ARG_EXTRACT_TAGS,false)) {
 		List<String> keywords = getKeywords(request, entry, fileCorpus);
@@ -909,23 +889,50 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
 
-
+    boolean doTesseract = true;
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
-	//Don't do really big files or images
+	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) return null;
-	if(Utils.isImage(f.toString())) return null;
+	//	if(Utils.isImage(f.toString())) return null;
 	if(f.length()==0) return null;
+
+	File corpusFile = new File(f.getParentFile(),"." + f.getName()+".corpus.txt");
+	if(corpusFile.exists()) {
+	    String c = IO.readContents(corpusFile.toString(), SearchManager.class);
+	    return c;
+	}
+
+	doTesseract = !doTesseract;
+	if(doTesseract && tesseractPath!=null && Utils.isImage(f.getName())) {
+	    try {
+		long t1= System.currentTimeMillis();
+		File tmp  =getStorageManager().getUniqueScratchFile("output");
+		List<String> commands = new ArrayList<String>();
+		Utils.add(commands, tesseractPath,f.toString(), tmp.toString());
+		ProcessBuilder pb = new ProcessBuilder(commands);
+		pb.redirectErrorStream(true);
+		Process     process = pb.start();
+		InputStream is      = process.getInputStream();
+		String      result  = new String(IOUtil.readBytes(is));
+		String imageText = IO.readContents(tmp.toString()+".txt", getClass());
+		long t2= System.currentTimeMillis();
+		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
+		return imageText;
+	    } catch(Exception exc) {
+		getLogManager().logError("Error running tesseract for:" + f.getName(), exc);
+		return null;
+	    }
+	}
+
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
-	    //	    System.err.println("SearchManager.readContents:" + f.getName());
+	    BufferedInputStream bis = new BufferedInputStream(stream);
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
 	    metadataList.add(metadata);
-	    Parser parser = new org.apache.tika.parser.AutoDetectParser(tikaConfig);
-            org.apache.tika.sax.BodyContentHandler handler =
-                new org.apache.tika.sax.BodyContentHandler(LUCENE_MAX_LENGTH);
-            parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
-	    //	    System.err.println("done");
-            return  handler.toString();
+	    Parser parser = new AutoDetectParser(tikaConfig);
+            BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);
+            parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+           return  handler.toString();
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
 	    exc.printStackTrace();
@@ -934,6 +941,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }	
 
 
+    
     /**
      * _more_
      *
@@ -946,12 +954,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private void addContentField(Entry entry,
                                  org.apache.lucene.document.Document doc,
 				 String field,
-                                 File f, StringBuilder corpus)
+                                 File f, boolean mainEntryFile,
+				 StringBuilder corpus)
 	throws Exception {
         try {
+	    //If it is a metadata attachment and an image then don't try to process it
+	    if(!mainEntryFile && Utils.isImage(f.toString())) return;
+
 	    List<org.apache.tika.metadata.Metadata> metadata = new ArrayList<org.apache.tika.metadata.Metadata>();
+	    long t1 = System.currentTimeMillis();
 	    String contents = readContents(f,metadata);
-	    //	    System.out.println(f+"\n" + contents);
+	    long t2= System.currentTimeMillis();
+	    System.err.println("readContents:" + entry +" " + f.getName() +" time:" + (t2-t1));
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
 		corpus.append(contents);
@@ -1479,7 +1493,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         try {
             indexEntries(entries, request, true);
-
         } catch (Exception exc) {
             logError("Error indexing entries", exc);
         }
@@ -3078,20 +3091,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public static void main(String[] args) throws Exception {
         for (String f : args) {
+	    long t1 = System.currentTimeMillis();
             InputStream stream = new FileInputStream(f);
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
-            org.apache.tika.parser.AutoDetectParser parser =
-                new org.apache.tika.parser.AutoDetectParser();
-            org.apache.tika.sax.BodyContentHandler handler =
-                new org.apache.tika.sax.BodyContentHandler(100000000);
-            parser.parse(stream, handler, metadata);
+	    TikaConfig  tikaConfig = new TikaConfig(SearchManager.class.getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
+            AutoDetectParser parser =      new AutoDetectParser(tikaConfig);
+            BodyContentHandler handler =    new BodyContentHandler(LUCENE_MAX_LENGTH/*100000000*/);
+            parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
             String contents = handler.toString();
-	    System.out.println("contents: " + contents);
-	    
+	    System.out.println("contents: " + contents.replace("\n"," ").replaceAll("\\s\\s+"," "));
+	    long t2 = System.currentTimeMillis();
+	    System.err.println("Time:" + (t2-t1));
         }
     }
 
-
+    public TikaConfig getTikaConfig() {
+	return tikaConfig;
+    }
 
 }

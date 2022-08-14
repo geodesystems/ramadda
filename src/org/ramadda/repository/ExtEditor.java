@@ -219,7 +219,7 @@ public class ExtEditor extends RepositoryManager {
 				getMetadataManager().getThumbnailUrls(request, entry, urls);
 				//Only add a thumbnail if there isn't one
 				if(urls.size()==0 && entry.isImage()) {
-				    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry);
+				    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry,null);
 				    if(thumbnailMetadata!=null) {
 					getMetadataManager().addMetadata(entry,thumbnailMetadata);
                                         changed = true;

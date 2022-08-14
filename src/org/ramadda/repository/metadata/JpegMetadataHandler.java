@@ -17,6 +17,7 @@ import org.ramadda.repository.*;
 
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.IO;
 
 import ucar.unidata.ui.ImageUtils;
 
@@ -25,6 +26,7 @@ import ucar.unidata.util.Misc;
 
 import java.awt.Image;
 import java.awt.image.*;
+import javax.imageio.*;
 
 import java.io.File;
 
@@ -66,27 +68,31 @@ public class JpegMetadataHandler extends MetadataHandler {
      *
      * @throws Exception _more_
      */
-    public Metadata getThumbnail(Request request, Entry entry)
+    public Metadata getThumbnail(Request request, Entry entry,com.drew.metadata.Metadata[]mtd)
             throws Exception {
         if ( !entry.getResource().isImage()) {
             return null;
         }
 
+	long t1= System.currentTimeMillis();
         String path  = entry.getResource().getPath();
-        Image  image = Utils.readImage(path);
+        Image  image = IO.readImage(path);
+	long t2= System.currentTimeMillis();
         if (image == null) {
             System.err.print("JpegMetadataHandler: image is null:"
                              + entry.getResource());
-
             return null;
         }
 
 
+	com.drew.metadata.Metadata metadata = null;
         if (path.toLowerCase().endsWith(".jpg")
                 || path.toLowerCase().endsWith(".jpeg")) {
             File jpegFile = new File(path);
-            com.drew.metadata.Metadata metadata =
+            metadata =
                 JpegMetadataReader.readMetadata(jpegFile);
+	    if(mtd!=null)
+		mtd[0] = metadata;
             if (metadata != null) {
                 ExifIFD0Directory exifIFD0 =
                     metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
@@ -111,23 +117,30 @@ public class JpegMetadataHandler extends MetadataHandler {
             }
         }
 
-        Image newImage = image.getScaledInstance(300, -1, Image.SCALE_FAST);
-        ImageUtils.waitOnImage(newImage);
-        newImage = ImageUtils.toBufferedImage(newImage,
-                BufferedImage.TYPE_INT_RGB);
+	long t3= System.currentTimeMillis();
+	int newWidth = 300;
+        Image scaledImage = image.getScaledInstance(newWidth, -1, Image.SCALE_FAST);
+ 	long t4= System.currentTimeMillis();
+        ImageUtils.waitOnImage(scaledImage);
+        RenderedImage finalImage = ImageUtils.toBufferedImage(scaledImage,
+							      BufferedImage.TYPE_INT_RGB);
 
+	long t5= System.currentTimeMillis();
         String thumbFile = IOUtil.stripExtension(entry.getName()) + "_thumb.";
+	String format;
         if (path.toLowerCase().endsWith("gif")) {
-            thumbFile += "gif";
+	    format = "gif";
         } else {
-            thumbFile += "jpg";
+	    format =  "jpg";
         }
-
-
+	thumbFile += format;
         File f = getStorageManager().getTmpFile(request, thumbFile);
-        ImageUtils.writeImageToFile(newImage, f);
-        String fileName = getStorageManager().copyToEntryDir(entry,
+        ImageIO.write(finalImage,format, f);
+        String fileName = getStorageManager().moveToEntryDir(entry,
                               f).getName();
+
+	long t6= System.currentTimeMillis();
+	//	Utils.printTimes("thumb",t1,t2,t3,t4,t5,t6);
 
         return new Metadata(getRepository().getGUID(), entry.getId(),
                             ContentMetadataHandler.TYPE_THUMBNAIL, false,
@@ -157,17 +170,18 @@ public class JpegMetadataHandler extends MetadataHandler {
             return;
         }
 
-
-
         String path = entry.getResource().getPath();
+	com.drew.metadata.Metadata []mtd ={null};
         try {
-            Metadata thumbnailMetadata = getThumbnail(request, entry);
+	    long t1= System.currentTimeMillis();
+            Metadata thumbnailMetadata = getThumbnail(request, entry,mtd);
+	    long t2= System.currentTimeMillis();
+	    System.err.println("getThumbnail:" + (t2-t1));
             if (thumbnailMetadata != null) {
                 metadataList.add(thumbnailMetadata);
             }
         } catch (Exception exc) {
             getLogManager().logError("JpgeMetadataHandler", exc);
-
             return;
         }
 
@@ -177,9 +191,11 @@ public class JpegMetadataHandler extends MetadataHandler {
             return;
         }
         try {
-            File jpegFile = new File(path);
-            com.drew.metadata.Metadata metadata =
-                JpegMetadataReader.readMetadata(jpegFile);
+	    long t1= System.currentTimeMillis();
+            com.drew.metadata.Metadata metadata =mtd[0];
+	    if(metadata==null) {
+                metadata = JpegMetadataReader.readMetadata(new File(path));
+	    }
             com.drew.metadata.Directory exifDir =
                 metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
             com.drew.metadata.Directory gpsDir =
@@ -271,6 +287,8 @@ public class JpegMetadataHandler extends MetadataHandler {
                 }
             }
 
+	    long t2= System.currentTimeMillis();
+	    //	    System.err.println("getTags:" + (t2-t1));	    
             //This tells ramadda that something was added
             extra.put("1", "");
         } catch (Throwable thr) {

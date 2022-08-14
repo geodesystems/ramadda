@@ -1134,8 +1134,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 List<Entry> tmpList = new ArrayList<Entry>();
                 tmpList.add(entry);
                 count++;
+		long t1= System.currentTimeMillis();
                 getEntryManager().addInitialMetadata(null, tmpList, true,
 						     getAddShortMetadata());
+		long t2= System.currentTimeMillis();
+		System.err.println("addInitialMetadata:" + entry +" time:" + (t2-t1));
                 currentStatus = "Added metadata for " + count + " entries. "
 		    + (entriesToAdd.size() - count)
 		    + " more entries to process";
