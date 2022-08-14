@@ -41,12 +41,12 @@
 
     <target name="initcore" if="core">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar ramaddatika.jar "/>
+       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar s3lib.jar ramaddatika.jar "/>
     </target>
 
     <target name="initfull">
-       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/ramaddatika.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  ramaddatika.jar  " />
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/s3lib.jar:${lib_dir}/ramaddatika.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
+       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  s3lib.jar ramaddatika.jar  " />
     </target>
 
 
@@ -298,6 +298,7 @@
         <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_target_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/${unidata_jar}" todir="${release_target_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_target_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/s3lib.jar" todir="${release_target_dir}/lib" overwrite="true" />	
         <copy  file="${lib_dir}/ramaddatika.jar" todir="${release_target_dir}/lib" overwrite="true" />
         <copy  todir="${release_target_dir}" overwrite="true">
           <fileset dir="${release_dir}/standalone">
@@ -335,7 +336,8 @@
           <lib file="${lib_dir}/ramaddalib.jar"/>
           <lib file="${lib_dir}/ramaddatds.jar"/>
           <lib file="${lib_dir}/${unidata_jar}"/>
-          <lib file="${lib_dir}/ramaddatika.jar"/>
+          <lib file="${lib_dir}/s3lib.jar"/>
+          <lib file="${lib_dir}/ramaddatika.jar"/>	  
       </war>
     </target>
 

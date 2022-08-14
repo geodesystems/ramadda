@@ -506,6 +506,9 @@
 
 
 
+
+
+
     <target name="ramaddalib" depends="init">
         <mkdir dir="${tmpjar_dir}"/>
         <delete includeemptydirs="true">
@@ -552,9 +555,8 @@
 
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpmime-4.5.13.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/httpcore-4.4.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
-
         <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
@@ -584,6 +586,40 @@
         </jar>
         <delete dir="${tmpjar_dir}"/>
     </target>
+
+
+    <target name="s3lib" depends="init">
+        <mkdir dir="${tmpjar_dir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${tmpjar_dir}" includes="**/*"/>
+        </delete>
+	<unjar src="${lib_dir}/aws-java-sdk-core-1.12.281.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/aws-java-sdk-kms-1.12.281.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/aws-java-sdk-s3-1.12.281.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/commons-codec-1.15.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/commons-logging-1.1.3.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/httpclient-4.5.13.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/httpcore-4.4.13.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/ion-java-1.0.2.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/jackson-annotations-2.12.6.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/jackson-core-2.12.6.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/jackson-databind-2.12.6.1.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/jackson-dataformat-cbor-2.12.6.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/jmespath-java-1.12.281.jar" dest="${tmpjar_dir}"/>
+	<unjar src="${lib_dir}/joda-time-2.8.1.jar" dest="${tmpjar_dir}"/>
+        <echo message="jarring ${lib_dir}/s3lib.jar"/>
+        <delete file="${lib_dir}/s3lib.jar"/>	
+        <jar 
+            basedir="${tmpjar_dir}"
+            update="false"
+            compress="true"
+            jarfile="${lib_dir}/s3lib.jar">
+              <include name="**"/>
+        </jar>
+        <delete dir="${tmpjar_dir}"/>
+    </target>
+
+
 
 
 
