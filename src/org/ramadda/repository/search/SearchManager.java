@@ -926,14 +926,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
 	    metadataList.add(metadata);
-	    System.err.println(indexImages);
 	    Parser parser = new AutoDetectParser(indexImages?TikaUtil.getConfig():TikaUtil.getConfigNoImage());
             BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    long t1 = System.currentTimeMillis();
             parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    long t2= System.currentTimeMillis();
 	    String corpus = handler.toString();
-	    System.err.println("corpus:" + f.getName() +" time:" + (t2-t1));
+	    //	    System.err.println("corpus:" + f.getName() +" time:" + (t2-t1));
 	    return  corpus;
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);

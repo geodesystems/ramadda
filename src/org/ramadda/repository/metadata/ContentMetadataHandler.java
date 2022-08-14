@@ -7,6 +7,7 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 
@@ -165,6 +166,28 @@ public class ContentMetadataHandler extends MetadataHandler {
      */
     @Override
     public String getEnumerationValues(MetadataElement element) {
+        if (element.getName().equals("entrytype")) {
+	    try {
+		StringBuffer sb = new StringBuffer("values:");
+		List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(false);
+		//Do the file types first
+		for(int i=0;i<2;i++) {
+		    for(TypeHandler typeHandler: typeHandlers) {
+			if(i==0 && typeHandler.isGroup()) continue;
+			if(i==1 && !typeHandler.isGroup()) continue;			
+			sb.append(typeHandler.getType());
+			sb.append(":");
+			sb.append(typeHandler.getDescription());
+			sb.append(",");
+		    }
+		}
+		return sb.toString();
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+
+	    }
+	}
+
         if (element.getName().equals("template")) {
             StringBuffer sb = new StringBuffer();
             for (HtmlTemplate htmlTemplate :

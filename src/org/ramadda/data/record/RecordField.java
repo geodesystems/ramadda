@@ -106,6 +106,7 @@ public class RecordField {
 
     /** _more_ */
     private boolean isTypeString = false;
+    private boolean isTypeEnumeration = false;
 
     /** _more_ */
     private boolean isTypeDate = false;
@@ -1139,6 +1140,8 @@ public class RecordField {
                        || value.equals(TYPE_MOVIE)
                        || value.equals(TYPE_MULTIENUMERATION)
                        || value.equals(TYPE_ENUMERATION);
+        isTypeEnumeration =  value.equals(TYPE_MULTIENUMERATION)
+	    || value.equals(TYPE_ENUMERATION);	
         isTypeDate = value.equals(TYPE_DATE);
         //      System.err.println("set type:" + type + " is:" +isTypeNumeric +" " + isTypeString +" " + isTypeDate);
     }
@@ -1178,6 +1181,10 @@ public class RecordField {
     public boolean isTypeNumeric() {
         return isTypeNumeric;
     }
+
+    public boolean isTypeEnumeration() {
+        return isTypeEnumeration;
+    }    
 
     /**
      * _more_

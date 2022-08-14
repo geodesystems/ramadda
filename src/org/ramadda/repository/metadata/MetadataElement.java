@@ -234,6 +234,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 tmpValues = (List<String>) Utils.split(tagValues, "\n", true,
                         true);
             } else {
+		if(values.startsWith("values:")) values = values.substring("values:".length());
                 tmpValues = (List<String>) Utils.split(values, ",", true,
                         true);
             }

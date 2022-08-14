@@ -55,6 +55,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -195,7 +196,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         RecordFile pointFile = pointEntry.getRecordFile();
         if (pointFile == null) {
             System.err.println("PointTypeHandler.init: point file is null");
-
             return;
         }
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
@@ -607,6 +607,11 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
+
+
+
+
+
         //We need to do the polygon thing here so we have the geo bounds to make the grid
 
         /**
@@ -733,6 +738,42 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
 
+	List<Column> columns = getColumns();
+	if (columns != null) {
+	    for (Column c : columns) {
+		String fieldId = c.getProperty("record_field",null);
+		if(fieldId!=null) {
+		    HashSet<String> samples = metadata.getSamples(fieldId);
+		    if(samples!=null) {
+			if(samples.size()==1) {
+			    String[] svalues = samples.toArray(new String[samples.size()]);
+			    Object[] v = getEntryValues(entry);
+			    c.setValue(entry, v, svalues[0]);
+			}
+		    }
+		}
+	    }
+
+	    //Check if the name was the default
+	    if(entry.getTransientProperty("noname")!=null) {
+		for (Column c : columns) {
+		    String isDefaultName = c.getProperty("is_default_entry_name",null);
+		    if(isDefaultName!=null && isDefaultName.equals("true")) {
+			String name = (String) entry.getValue(c.getOffset());
+			if(Utils.stringDefined(name)) {
+			    entry.setName(name);
+			}
+		    }
+		}
+	    }
+	    
+
+
+	}
+
+
+
+
         String header = pointEntry.getRecordFile().getTextHeader();
         if ((header != null) && (header.length() > 0)
                 && getTypeProperty("point.initialize", true)) {
@@ -775,7 +816,6 @@ public class PointTypeHandler extends RecordTypeHandler {
                             //                      System.err.println("date:" + date);
                             entry.setStartAndEndDate(date.getTime());
                         } else {
-                            List<Column> columns = getColumns();
                             if (columns != null) {
                                 for (Column c : columns) {
                                     if (c.getName().equals(field)) {
@@ -790,6 +830,8 @@ public class PointTypeHandler extends RecordTypeHandler {
 
             }
         }
+
+
 
     }
 

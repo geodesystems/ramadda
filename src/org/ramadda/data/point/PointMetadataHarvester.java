@@ -12,6 +12,9 @@ import org.ramadda.util.grid.LatLonGrid;
 import java.io.*;
 
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.HashSet;
+
 import java.util.List;
 import java.util.Properties;
 
@@ -67,6 +70,8 @@ public class PointMetadataHarvester extends RecordVisitor {
     /** _more_ */
     List<RecordField> fields;
 
+    Hashtable<String,HashSet<String>> enumSamples = new Hashtable<String,HashSet<String>>();
+
     /**
      * _more_
      */
@@ -82,6 +87,10 @@ public class PointMetadataHarvester extends RecordVisitor {
         this.llg = llg;
     }
 
+
+    public HashSet<String> getSamples(String field) {
+	return enumSamples.get(field);
+    }
 
     /**
      *  @return _more_
@@ -174,9 +183,31 @@ public class PointMetadataHarvester extends RecordVisitor {
 
         for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
+	    if(field.isTypeEnumeration() || field.isTypeString()) {
+               ValueGetter valueGetter = field.getValueGetter();
+                if (valueGetter == null) {
+                    continue;
+                }
+		HashSet<String> samples = enumSamples.get(field.getName());
+		if(samples==null)  {
+		    samples = new HashSet<String>();
+		    enumSamples.put(field.getName(),samples);
+		}
+		if(samples.size()<50) {
+		    String  value = valueGetter.getStringValue(pointRecord, field,
+							       visitInfo);
+		    if(value!=null) {
+			if(!samples.contains(value)) {
+			    //			    System.err.println("Field:" +field +" VALUE:" + value);
+			    samples.add(value);
+			}
+		    }
+		}
+
+	    }
 
             if (field.isTypeNumeric()) {
-                ValueGetter valueGetter = field.getValueGetter();
+               ValueGetter valueGetter = field.getValueGetter();
                 if (valueGetter == null) {
                     continue;
                 }
@@ -200,7 +231,7 @@ public class PointMetadataHarvester extends RecordVisitor {
                     }
                 }
             }
-        }
+	}
         cnt++;
         if (llg != null) {
             llg.incrementCount(lat, lon);

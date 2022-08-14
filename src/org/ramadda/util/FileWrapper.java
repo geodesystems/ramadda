@@ -224,9 +224,12 @@ public abstract class FileWrapper {
                                         FileViewer fileViewer, 
 					int level)
             throws Exception {
-	fileViewer.push(parent);
+	//Don't push the first file
+	if(level>0)
+	   fileViewer.push(parent);
 	boolean r = walkDirectoryInner(parent,fileViewer, level);
-	fileViewer.pop();
+	if(level>0)
+	    fileViewer.pop();
 	return r;
     }
 

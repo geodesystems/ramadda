@@ -2594,9 +2594,11 @@ public class EntryManager extends RepositoryManager {
                                : request.getAnonymousEncodedString(ARG_NAME,
 								   BLANK));
 
+		boolean noName = false;
                 if (name.indexOf("${") >= 0) {}
                 if ((name.trim().length() == 0)
 		    && typeHandler.okToSetNewNameDefault()) {
+		    noName =true;
                     String nameTemplate =
                         typeHandler.getTypeProperty("nameTemplate",
 						    (String) null);
@@ -2700,6 +2702,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
+
+		if(noName)
+		    entry.putTransientProperty("noname","true");
+		    
                 entry.initEntry(name, description, info.parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 category, entryOrder,
@@ -3075,26 +3081,13 @@ public class EntryManager extends RepositoryManager {
 	    sortedTypeHandlers = (List<TypeHandler>) Misc.toList(array);
 	}
 
-        //Handle case sensitive first
-        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
-            if (otherTypeHandler.canHandleResource(theResource, shortName)) {
-                return otherTypeHandler;
-            }
-        }
-
-        //now try any case
-        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
-            if (otherTypeHandler.canHandleResource(_theResource,
-						   shortName.toLowerCase())) {
-                return otherTypeHandler;
-            }
-        }
 
 	if(locale!=null) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(getRepository().getAdminRequest(), locale,
 						  new String[]{"entry_type_patterns"}, true);
 	    if(metadataList!=null) {
+		
 		for(Metadata metadata: metadataList) {
 		    String type = metadata.getAttr1();
 		    for(String pattern: Utils.split(metadata.getAttr2(),"\n",true, true)) {
@@ -3109,6 +3102,21 @@ public class EntryManager extends RepositoryManager {
 	    }
 
 	}
+
+        //Handle case sensitive first
+        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
+            if (otherTypeHandler.canHandleResource(theResource, shortName)) {
+                return otherTypeHandler;
+            }
+        }
+
+        //now try any case
+        for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
+            if (otherTypeHandler.canHandleResource(_theResource,
+						   shortName.toLowerCase())) {
+                return otherTypeHandler;
+            }
+        }
 
 
 

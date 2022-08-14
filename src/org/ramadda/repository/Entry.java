@@ -904,7 +904,6 @@ public class Entry implements Cloneable {
      */
     public Object getValue(String column) {
         int index = getTypeHandler().getValueIndex(column);
-
         return getValue(index);
     }
 
@@ -1769,7 +1768,7 @@ public class Entry implements Cloneable {
      */
     public void init(String name, String description, Entry parentEntry,
                      User user, long createDate, long changeDate) {
-        setName(name);
+	setName(name);
         setDescription(description);
         this.parentEntry = parentEntry;
         this.user        = user;
