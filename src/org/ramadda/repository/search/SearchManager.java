@@ -647,7 +647,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-
         String path = entry.getResource().getPath();
         if ((path != null) && (path.length() > 0)) {
 	    if(entry.getResource().isFile()) {
@@ -1041,6 +1040,39 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }    
 
 
+    public Result processEntryList(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	Entry entry = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID));
+	if(entry==null) {
+	    sb.append("No entry for id:" + request.getString(ARG_ENTRYID));
+	    return new Result("Entry List", sb);
+	}
+	getPageHandler().entrySectionOpen(request,  entry, sb, "Lucene Document Listing");
+	Query idQuery = new TermQuery(new Term(FIELD_ENTRYID,entry.getId()));
+	IndexSearcher searcher = getLuceneSearcher();
+	TopDocs       hits     = searcher.search(idQuery, 1);
+        ScoreDoc[]    docs     = hits.scoreDocs;
+	if(docs.length==0) {
+	    sb.append("No entry");
+	    getPageHandler().entrySectionClose(request,  entry, sb);
+	    return new Result("Entry List", sb);
+	}
+	org.apache.lucene.document.Document doc =
+	    searcher.doc(docs[0].doc);
+
+	sb.append(HtmlUtils.formTable());
+	for(IndexableField field: doc.getFields()) {
+	    String[]values  = doc.getValues(field.name());
+	    for(String v: values) {
+		HU.formEntry(sb, Utils.makeLabel(field.name())+":",v);
+	    }
+	}
+	sb.append(HU.formTableClose());
+					       
+	getPageHandler().entrySectionClose(request,  entry, sb);
+	return new Result("Entry List", sb);
+    }
+
     /**
      * _more_
      *
@@ -1129,6 +1161,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	    queries.add(builder.build());
 	}
+
+
+
 
 	for (DateArgument arg : DateArgument.SEARCH_ARGS) {
 	    long min = Long.MIN_VALUE;
@@ -1453,6 +1488,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	//	System.err.println("sort:" + sort);
 	//	System.err.println("m:" + (max+skip));
+
+
         IndexSearcher searcher = getLuceneSearcher();
 	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max+skip,sort);

@@ -100,6 +100,7 @@
       <api request="/search/info"            method="processSearchInfo"/>
       <api request="/search/providers"       method="processSearchProviders"/>
       <api request="/search/wadl"            method="processSearchWadl"/>
+      <api request="/search/entrylist"       method="processEntryList"/>
       <api request="/search/type/*"          method="processSearchType"/>
       <api request="/search/remote/do"       method="processRemoteSearch"            name="Remote Search" />
       <api request="/search/opensearch.xml"  method="processOpenSearch"              name="Open Search Descriptor"/>
