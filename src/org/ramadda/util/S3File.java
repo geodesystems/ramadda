@@ -105,14 +105,19 @@ public class S3File extends FileWrapper {
         if (debug) {
             System.err.println("S3File.run:" + commands);
         }
-	String[] results  = Utils.runCommands(commands);
-        if (Utils.stringDefined(results[0])) {
-            if (debug) {
-                System.err.println("Got error:" + results[0]);
-            }
-
-            throw new RuntimeException("Error executing:" + commands
-                                       + "\nError:" + results[0]);
+	String[] results;
+	try {
+	    results  = Utils.runCommands(commands);
+	} catch(Exception exc) {
+	    System.err.println("Error executing AWS commands:" + exc +" commands:" +commands);
+	    throw new RuntimeException(exc);
+	}
+	if (Utils.stringDefined(results[0])) {
+	    if (debug) {
+		System.err.println("Got error:" + results[0]);
+	    }
+	    throw new RuntimeException("Error executing:" + commands
+				       + "\nError:" + results[0]);
         }
         if (debug) {
             System.err.println("Got results:" + results[1]);
@@ -454,7 +459,7 @@ public class S3File extends FileWrapper {
     public static void usage(String msg) {
 	if(msg!=null)
 	    System.err.println(msg);
-	System.err.println("Usage:\nS3File \n\t<-download  download the files>  \n\t<-makedirs make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recurse  recurse down the tree when listing> \n\t<-self print out the details about the bucket> ... one or more buckets");
+	System.err.println("Usage:\nS3File \n\t<-download  download the files>  \n\t<-makedirs make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing> \n\t<-self print out the details about the bucket> ... one or more buckets");
 	Utils.exitTest(0);
     }
 
@@ -591,13 +596,16 @@ public class S3File extends FileWrapper {
         boolean makeDirs= false;
 	boolean overWrite= false;
         boolean doSelf    = false;
-        boolean doRecurse = false;
+        boolean doRecursive = false;
         boolean verbose= false;	
 	double percent = -1;
 	int sizeLimit = -1;
 	for (int i=0;i<args.length;i++) {
 	    String path =args[i];
-	    
+            if (path.startsWith("--")) {
+		path = path.substring(1);
+	    }
+
             if (path.equals("-help")) {
 		usage(null);
 	    }
@@ -653,8 +661,8 @@ public class S3File extends FileWrapper {
                 doSelf = true;
                 continue;
             }
-            if (path.equals("-recurse")) {
-                doRecurse = true;
+            if (path.equals("-recursive")) {
+                doRecursive = true;
 		verbose =true;
                 continue;
             }
@@ -671,7 +679,7 @@ public class S3File extends FileWrapper {
                 continue;
             }
             FileWrapper f = FileWrapper.createFileWrapper(path);
-	    if (doRecurse) {
+	    if (doRecursive) {
                 FileWrapper.walkDirectory(f, new MyFileViewer(doDownload, makeDirs,overWrite,sizeLimit,percent,verbose,excludes),0);
                 continue;
             }
