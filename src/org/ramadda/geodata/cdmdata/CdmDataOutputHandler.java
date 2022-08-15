@@ -337,12 +337,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         boolean canLoadAsCdm = getCdmManager().canLoadAsCdm(entry);
 
         if ( !canLoadAsCdm) {
-            long t2 = System.currentTimeMillis();
-            if ((t2 - t1) > 1) {
-                //                System.err.println("CdmDataOutputHandler (cdm) getEntryLinks  "
-                //                                   + entry.getName() + " time:" + (t2 - t1));
-            }
-
             return;
         }
 

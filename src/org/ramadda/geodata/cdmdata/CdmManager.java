@@ -656,6 +656,7 @@ public class CdmManager extends RepositoryManager {
      */
     private boolean canLoadEntry(Entry entry) {
         String url = entry.getResource().getPath();
+
         if (url == null) {
             return false;
         }
@@ -674,7 +675,7 @@ public class CdmManager extends RepositoryManager {
         }
 
         if (entry.getResource().isFileType()) {
-            return entry.getFile().exists();
+            return entry.getFile().exists() || entry.getResource().isS3();
         }
         if ( !entry.getResource().isUrl()) {
             return false;
@@ -697,7 +698,9 @@ public class CdmManager extends RepositoryManager {
      */
     public boolean canLoadAsCdm(Entry entry) {
 
-	if(isCdmGrid(entry)) return true;
+	if(isCdmGrid(entry)) {
+	    return true;
+	}
         if (entry.getTypeHandler().isType(
                 OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             return true;
