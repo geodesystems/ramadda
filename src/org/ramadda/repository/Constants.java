@@ -994,6 +994,10 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_MAX = "max";
 
+    public static final String ARG_MARKER = "marker";
+    public static final String ARG_PREVMARKERS = "prevmarkers";
+
+
     /** _more_ */
     public static final String ARG_LAST = "last";
 
