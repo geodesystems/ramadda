@@ -2273,6 +2273,60 @@ table.dataTable tbody td {
     max-width:150px;
 }
 
+.ramadda-next-previous-block   {
+    display:inline-block;
+}
+
+.ramadda-next-previous {
+    display:inline-block;
+    padding:4px;
+    border-radius: var(--default-radius);
+    min-width:80px;
+    text-align:center;
+    margin-bottom:2px;
+}
+
+
+.ramadda-next-previous:hover {
+    background:var(--highlight-background);
+}
+
+a.ramadda-next-previous {
+    text-decoration:none;
+}
+
+.ramadda-next {
+    border  :var(--basic-border);
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.ramadda-previous {
+    border  :var(--basic-border);
+    border-radius: var(--default-radius);
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.ramadda-next:first-child {
+    border-top-left-radius: var(--default-radius);
+    border-bottom-left-radius: var(--default-radius);
+}
+
+.ramadda-next:last-child {
+    border-left:0px solid transparent;
+}
+
+.ramadda-next:first-child {
+    border  :var(--basic-border);
+}
+
+.ramadda-previous:last-child {
+    border-top-left-radius: var(--default-radius);
+    border-bottom-left-radius: var(--default-radius);
+}
+
+
 .entry-table-page   {
     font-size: 90%;
     font-style:italic;
@@ -3084,6 +3138,8 @@ label {
 }
 .ramadda-logo-image {
 }
+
+
 
 .ramadda-image-loading {
   background: url('icons/progressbig.gif') no-repeat;

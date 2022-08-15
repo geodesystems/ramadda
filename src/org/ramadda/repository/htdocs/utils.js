@@ -3568,6 +3568,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    initLoadingImage:function(img) {
+	setTimeout(()=>{
+	    $(img).removeClass('ramadda-image-loading');
+	},2000);
+    },
     initRadioToggle(radios,values) {
 	$(radios).find('input[type=radio]').change(function() {
 	    for(a in values) {
