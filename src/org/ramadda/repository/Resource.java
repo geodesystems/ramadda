@@ -307,7 +307,7 @@ public class Resource {
      * @return _more_
      */
     public boolean isFileType() {
-        if (type.equals(TYPE_FILE) || type.equals(TYPE_STOREDFILE)
+        if (isS3() || type.equals(TYPE_FILE) || type.equals(TYPE_STOREDFILE)
                 || type.equals(TYPE_LOCAL_FILE)) {
             return true;
         }
