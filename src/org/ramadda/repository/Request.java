@@ -1843,6 +1843,18 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
+    
+    public static String cleanXSS(String s) {
+	String onPattern = "(?i)[\\s\\|\"'/]+(onactivate|onafterprint|onanimationcancel|onanimationend|onanimationiteration|onanimationstart|onauxclick|onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforepaste|onbeforeprint|onbeforeunload|onbegin|onblur|onbounce|oncanplay|oncanplaythrough|onchange|onclick|oncontextmenu|oncopy|oncut|ondblclick|ondeactivate|ondrag|ondragend|ondragenter|ondragleave|ondragover|ondragstart|ondrop|onend|onended|onerror|onfilterchange|onfinish|onfocus|onfocusin|onfocusout|onhashchange|onhelp|oninput|oninvalid|onkeydown|onkeypress|onkeyup|onload|onloadeddata|onloadedmetadata|onloadend|onloadstart|onlypossibleinopera|onmessage|onmousedown|onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onorientationchange|onpageshow|onpaste|onpause|onplay|onplaying|onpopstate|onreadystatechange|onrepeat|onreset|onresize|onscroll|onsearch|onseeked|onseeking|onselect|onshow|onstart|onsubmit|ontimeupdate|ontoggle|ontouchcancel|ontouchend|ontouchmove|ontouchstart|ontransitioncancel|ontransitionend|ontransitionrun|onunhandledrejection|onunload|onvolumechange|onwaiting|onwheel)";
+	s = s.replaceAll(onPattern,"_NA_");
+	String scriptPattern = "(?i)script";
+	s = s.replaceAll(scriptPattern,"_NA_");
+	return s;
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -2885,7 +2897,6 @@ public class Request implements Constants, Cloneable {
             return;
         }
 
-
         StringBuilder head0 = (StringBuilder) getExtraProperty("head0");
         if (head0 == null) {
             head0 = new StringBuilder();
@@ -2988,6 +2999,14 @@ public class Request implements Constants, Cloneable {
     public Object getExtraProperty(Object key) {
         return extraProperties.get(key);
     }
+
+    public String getPropertyOrArg(String key) {
+	String s = (String) getExtraProperty(key);
+	if(!Utils.stringDefined(s)) s = getString(key,null);
+	return s;
+    }
+
+
 
     /**
      * Get the Protocol property.
