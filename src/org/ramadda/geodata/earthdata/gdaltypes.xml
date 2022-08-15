@@ -19,7 +19,7 @@
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
 +center
-<img class="ramadda-image-loading" width=50% src="{{root}}/entry/action?action=geotiff.makeimage&entryid={{entryid}}">
+<img onload="HtmlUtils.initLoadingImage(this)" class="ramadda-image-loading" width=50% src="{{root}}/entry/action?action=geotiff.makeimage&entryid={{entryid}}">
 -center
 -section
 ]]>
@@ -41,7 +41,7 @@
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
 +center
-<img class="ramadda-image-loading" width=50% src="{{root}}/entry/action?action=dem.makehillshade&entryid={{entryid}}">
+<img onload="HtmlUtils.initLoadingImage(this)" class="ramadda-image-loading" width=50% src="{{root}}/entry/action?action=dem.makehillshade&entryid={{entryid}}">
 -center
 -section
 ]]>

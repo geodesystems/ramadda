@@ -208,7 +208,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         }
         request.setCORSHeaderOnResponse();
         String convert = getRepository().getProperty("ramadda.convert", "");
-        if ( !Utils.stringDefined(convert)) {
+	String translate = getRepository().getProperty("service.gdal.gdal_translate","");
+        if ( !Utils.stringDefined(convert) && !Utils.stringDefined(translate)) {
             return returnNA(request);
         }
         String fileName = Utils.makeMD5(entry.getId()) + ".png";
@@ -216,10 +217,17 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                               fileName);
         if ( !cachedFile.exists()) {
             try {
-                List<String> commands =
-                    (List<String>) Utils.makeList(convert,
-                        getStorageManager().getEntryResourcePath(entry),
-                        cachedFile.toString());
+                List<String> commands;
+		if(Utils.stringDefined(translate))
+                    commands = (List<String>) Utils.makeList(translate,"-of","PNG",
+							     getStorageManager().getEntryResourcePath(entry),
+							     cachedFile.toString());
+		else 		    
+		    commands =
+			(List<String>) Utils.makeList(convert,
+						      getStorageManager().getEntryResourcePath(entry),
+						      cachedFile.toString());
+		//		System.err.println("geotiff-4:" + Utils.join(commands," "));
                 String[] results = Utils.runCommands(commands);
                 if (Utils.stringDefined(results[0])) {
                     if (results[0].toLowerCase().indexOf("error") >= 0) {
@@ -233,11 +241,11 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
             } catch (Exception exc) {
                 System.err.println("Error:" + exc);
                 exc.printStackTrace();
-
                 return returnNA(request);
             }
         }
 
+	//	System.err.println("geotiff-done:" + cachedFile);
         return new Result(
             BLANK,
             getStorageManager().getFileInputStream(cachedFile.toString()),
