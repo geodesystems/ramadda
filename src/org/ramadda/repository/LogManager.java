@@ -332,7 +332,7 @@ public class LogManager extends RepositoryManager {
             }
             long t2 = System.currentTimeMillis();
             if (t2 - t1 > 1000) {
-                Utils.printTimes("log:", t1, t2);
+                Utils.printTimes("log initialization time:", t1, t2);
             }
         } catch (Exception exc) {
             LOGGER_OK = false;

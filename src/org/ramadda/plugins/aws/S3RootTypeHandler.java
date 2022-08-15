@@ -227,6 +227,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return createBucketEntry(rootEntry, rootEntry, S3File.createFile(id));
     }
 
+    @Override
+    public String getFoo() {
+	return "this is the s3root type";
+    }
+
 
     /**
      * _more_

@@ -1655,11 +1655,17 @@ public class TypeHandler extends RepositoryManager {
             return parent.makeSynthEntry(request, parentEntry, id);
         }
 
+	System.err.println("NO SYNTH ENTRY");
         throw new IllegalArgumentException(
-            "makeSynthEntry  not implemented: type=" + getType() + " class:"
-            + getClass().getName());
+            "makeSynthEntry  not implemented: type=" + getType() + "\nclass:"
+            + getClass().getName() +"\n" +
+	    getFoo());
     }
 
+
+    public String getFoo() {
+	return "foo";
+    }
 
     /**
      * _more_
