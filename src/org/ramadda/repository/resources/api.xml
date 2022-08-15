@@ -123,6 +123,7 @@
       <api request="/proxy/*"                method="processProxy"/>
       <api request="/blank"                  method="processBlank"/>
       <api request="/gettmpfile"             method="processGetTmpFile"/>
+      <api request="/xss"                     method="processXss"/>
   </group>
 
   <group handler="accessmanager">
