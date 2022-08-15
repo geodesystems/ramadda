@@ -34,6 +34,18 @@
     <property name="icon" value="/icons/book-open.png"/>
 </type>
 
+<type name="type_file_markdown"  super="type_file_text" description="Markdown File" pattern=".*\.md"  category="Documents">
+    <property name="icon" value="/files/markdown.png"/>
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+{{embed as=markdown  wikify=true  maxheight="600" maxSize="10000" }}
+-section
+]]>
+</wiki>
+
+</type>
+
 
 <type name="type_file_javascript"  description="Javascript File" pattern=".*\.js"  category="Documents">
     <property name="icon" value="/icons/js.png"/>
