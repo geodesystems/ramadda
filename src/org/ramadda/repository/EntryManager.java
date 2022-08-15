@@ -10208,7 +10208,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             //Don't show the bad files for regular folk
-            if (request.isAnonymous()) {
+            if (request!=null && request.isAnonymous()) {
                 return null;
             }
         }

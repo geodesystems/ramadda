@@ -2421,7 +2421,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         initSelectors();
         List<PointDataMetadata> metadata  = getMetadata(getTableName(entry));
-        String                  timezone  = getEntryUtil().getTimezone(entry);
+        String                  timezone  = getEntryUtil().getTimezone(request, entry);
         String                  tableName = getTableName(entry);
 
 

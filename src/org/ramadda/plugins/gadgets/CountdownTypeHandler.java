@@ -73,7 +73,7 @@ public class CountdownTypeHandler extends GenericTypeHandler {
         StringBuffer sb = new StringBuffer(countdownHtml);
         sb.append("<table><tr><td><center>");
         sb.append(getDateHandler().formatDate(request, entry.getStartDate(),
-                getEntryUtil().getTimezone(entry)));
+					      getEntryUtil().getTimezone(request, entry)));
         Date   to = new Date(entry.getStartDate());
         String id = "countdownid_" + (countdownCnt++);
         //        sb.append(HtmlUtils.cssBlock(".countdown-clock {font-size: 150%;}\n.countdown-number {color:#A94DEA;\n.countdown-label {color:#000;}\n"));

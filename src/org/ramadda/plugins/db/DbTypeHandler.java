@@ -3575,7 +3575,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         DbInfo           dbInfo       = getDbInfo();
         List<Column>     columnsToUse = getColumnsToUse(request, true);
-        SimpleDateFormat sdf          = getDateFormat(entry);
+        SimpleDateFormat sdf          = getDateFormat(request, entry);
         Hashtable        entryProps   = getProperties(entry);
         StringBuilder    hb           = new StringBuilder();
         if (doForm) {
@@ -4642,7 +4642,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	//        String           icon          = getMapIcon(request, entry);
         String           icon          = getDbIconUrl("/db/icons/blue-dot.png");
-        SimpleDateFormat sdf           = getDateFormat(entry);
+        SimpleDateFormat sdf           = getDateFormat(request, entry);
         Column           polygonColumn = getDbInfo().getPolygonColumn();
         //      int rowCnt = 0;
         int entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 30);
@@ -4937,8 +4937,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public SimpleDateFormat getDateFormat(Entry entry) {
-        return getDateFormat(entry, getDefaultDateFormatString());
+    public SimpleDateFormat getDateFormat(Request request, Entry entry) {
+        return getDateFormat(request,entry, getDefaultDateFormatString());
     }
 
     /**
@@ -4949,9 +4949,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public SimpleDateFormat getDateFormat(Entry entry, String format) {
+    public SimpleDateFormat getDateFormat(Request request, Entry entry, String format) {
         SimpleDateFormat sdf      = new SimpleDateFormat(format);
-        String           timezone = getEntryUtil().getTimezone(entry);
+        String           timezone = getEntryUtil().getTimezone(request,entry);
         if (timezone != null) {
             sdf.setTimeZone(TimeZone.getTimeZone(timezone));
         }
@@ -5420,7 +5420,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (dbInfo.getDateColumn() == null) {
             throw new IllegalStateException("No date data found");
         }
-        SimpleDateFormat sdf = getDateFormat(entry);
+        SimpleDateFormat sdf = getDateFormat(request,entry);
         for (Object[] values : valueList) {
             String dbid = (String) values[IDX_DBID];
             Date   date = (Date) values[dbInfo.getDateColumn().getOffset()];
@@ -6372,7 +6372,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             sb.append(HtmlUtils.formTable());
         }
 
-        SimpleDateFormat sdf = getDateFormat(entry);
+        SimpleDateFormat sdf = getDateFormat(request,entry);
         for (Column column : getColumns(true)) {
             if ( !isDataColumn(column)) {
                 continue;

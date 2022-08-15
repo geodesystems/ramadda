@@ -4699,7 +4699,7 @@ public class TypeHandler extends RepositoryManager {
 
         String  timezone  = ((entry == null)
                              ? null
-                             : getEntryUtil().getTimezone(entry));
+                             : getEntryUtil().getTimezone(request, entry));
 
         Date[]  dateRange = getDefaultDateRange(request, entry);
         Date    fromDate  = dateRange[0];
@@ -7733,7 +7733,7 @@ public class TypeHandler extends RepositoryManager {
                 timezone = entry.getStringValue(index, "");
             }
             if ( !Utils.stringDefined(timezone)) {
-                timezone = getEntryUtil().getTimezone(entry);
+                timezone = getEntryUtil().getTimezone(request, entry);
             }
         }
         if (Utils.stringDefined(timezone)) {

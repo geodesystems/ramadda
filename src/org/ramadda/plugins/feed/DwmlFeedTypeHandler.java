@@ -347,7 +347,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         String           timezone   = entry.getStringValue(0, "");
         if ( !Utils.stringDefined(timezone)) {
-            timezone = getEntryUtil().getTimezone(entry);
+            timezone = getEntryUtil().getTimezone(request,entry);
         }
         if (Utils.stringDefined(timezone)) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));

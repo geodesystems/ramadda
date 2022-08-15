@@ -625,7 +625,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String formatDate(Request request, Date d, Entry entry) {
         return getDateHandler().formatDate(request, d,
-                                           getEntryUtil().getTimezone(entry));
+                                           getEntryUtil().getTimezone(request,entry));
     }
 
 

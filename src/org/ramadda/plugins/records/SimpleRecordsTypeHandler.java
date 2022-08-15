@@ -238,7 +238,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 } else if (Misc.equals(field.getType(), "date")) {
                     widget = getDateHandler().makeDateInput(request,
                             field.getName(), "flexiform", new Date(),
-                            getEntryUtil().getTimezone(entry), showTime);
+							    getEntryUtil().getTimezone(request, entry), showTime);
                 } else {
                     widget = HtmlUtils.input(field.getName(), dflt, extra);
                 }
@@ -309,7 +309,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                         try {
                             widget = getDateHandler().makeDateInput(request,
                                     arg, "flexiform", Utils.parseDate(col),
-                                    getEntryUtil().getTimezone(entry),
+								    getEntryUtil().getTimezone(request, entry),
                                     showTime);
                         } catch (Exception exc) {
                             widget = "Bad date: "
@@ -594,7 +594,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                         field.setDateFormat(
                             getDateHandler().getSDF(
                                 "yyyy-MM-dd'T'HH:mm:ss Z",
-                                getEntryUtil().getTimezone(entry)));
+                                getEntryUtil().getTimezone(repository.getTmpRequest(), entry)));
                     }
 
                     if (type.equals("date") || field.isTypeNumeric()) {

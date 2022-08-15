@@ -6620,8 +6620,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public Request getTmpRequest() throws Exception {
-        return getTmpRequest(UserManager.USER_ANONYMOUS);
+    public Request getTmpRequest()  {
+	try {
+	    return getTmpRequest(UserManager.USER_ANONYMOUS);
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
     /**

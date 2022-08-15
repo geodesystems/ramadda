@@ -2280,7 +2280,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 date = new Date(entry.getChangeDate());
             }
 
-            return getDateHandler().formatDate(entry, date,
+            return getDateHandler().formatDate(request, entry, date,
 					       getProperty(wikiUtil, props, ATTR_FORMAT, null));
         } else if (theTag.equals(WIKI_TAG_DATERANGE)) {
             String format = getProperty(wikiUtil, props, ATTR_FORMAT,
@@ -2288,7 +2288,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             Date date1 = new Date(entry.getStartDate());
             Date date2 = new Date(entry.getEndDate());
             SimpleDateFormat dateFormat =
-                getDateHandler().getDateFormat(entry, format);
+                getDateHandler().getDateFormat(request, entry, format);
             String separator = getProperty(wikiUtil, props, ATTR_SEPARATOR,
                                            " -- ");
 
@@ -7741,7 +7741,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
-        String timezone = getEntryUtil().getTimezone(entry);
+        String timezone = getEntryUtil().getTimezone(request, entry);
         if (timezone != null) {
             propList.add("timezone");
             TimeZone tz = TimeZone.getTimeZone(timezone);

@@ -142,7 +142,7 @@ public abstract class ValueIterator implements DbConstants {
         this.db      = db;
         this.entry   = entry;
         dbInfo       = db.getDbInfo();
-        sdf          = db.getDateFormat(entry);
+        sdf          = db.getDateFormat(request,entry);
         forPrint     = request.get(ARG_FOR_PRINT, false);
 	canEdit = db.getAccessManager().canDoEdit(request, entry);
 	embedded = request.isEmbedded();

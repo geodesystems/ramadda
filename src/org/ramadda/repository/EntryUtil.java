@@ -887,10 +887,10 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getTimezone(Entry entry) {
+    public String getTimezone(Request request, Entry entry) {
         try {
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(null, entry,
+                getMetadataManager().findMetadata(request, entry,
                     new String[] { ContentMetadataHandler.TYPE_TIMEZONE },
                     true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
@@ -900,6 +900,7 @@ public class EntryUtil extends RepositoryManager {
             }
         } catch (Exception exc) {
             logError("getting timezone", exc);
+	    exc.printStackTrace();
         }
 
         return null;
@@ -916,7 +917,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public String formatDate(Request request, Entry entry) {
         return getDateHandler().formatDate(request, entry.getStartDate(),
-                                           getTimezone(entry));
+                                           getTimezone(request,entry));
     }
 
 

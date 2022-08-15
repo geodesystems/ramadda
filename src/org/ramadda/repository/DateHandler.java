@@ -400,12 +400,12 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      *
      */
-    public SimpleDateFormat getDateFormat(Entry entry, String format) {
+    public SimpleDateFormat getDateFormat(Request request, Entry entry, String format) {
         try {
             if (format == null) {
                 format = getDefaultDisplayDateFormat();
             }
-            String tz = getEntryUtil().getTimezone(entry);
+            String tz = getEntryUtil().getTimezone(request,entry);
 
             return getSDF(format, tz);
         } catch (Exception exc) {
@@ -425,8 +425,8 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      *
      */
-    public String formatDate(Entry entry, Date date, String format) {
-        return doFormat(date, getDateFormat(entry, format));
+    public String formatDate(Request request, Entry entry, Date date, String format) {
+        return doFormat(date, getDateFormat(request,entry, format));
     }
 
     /**
@@ -452,7 +452,7 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      */
     public String formatDate(Request request, Entry entry, Date d) {
-        return formatDate(entry, d, null);
+        return formatDate(request,entry, d, null);
     }
 
 
@@ -643,7 +643,7 @@ public class DateHandler extends RepositoryManager {
      */
     public String formatDateShort(Request request, Entry entry, Date date) {
         return formatDateShort(request, date,
-                               getEntryUtil().getTimezone(entry));
+                               getEntryUtil().getTimezone(request, entry));
     }
 
     /**
