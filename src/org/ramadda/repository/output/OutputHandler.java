@@ -340,8 +340,16 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                          String... message)
             throws Exception {
         int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
-        showNext(request, cnt, max, null, sb, message);
+        showNext(request, cnt, max,  sb, message);
     }
+
+
+    public boolean shouldShowPaging(Request request, int cnt, int max) {
+	return Utils.stringDefined((String)request.getPropertyOrArg(ARG_MARKER)) ||
+	    Utils.stringDefined((String)request.getPropertyOrArg(ARG_PREVMARKERS)) ||
+	    max>0;
+    }
+
 
     /**
      *
@@ -353,59 +361,65 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      *
      * @throws Exception _more_
      */
-    public void showNext(Request request, int cnt, int max, String marker,Appendable sb,
+    public void showNext(Request request, int cnt, int max, Appendable sb,
                          String... message)
             throws Exception {
+	if(!shouldShowPaging(request, cnt, max)) {
+	    System.err.println("No show paging:" + request);
+	    return;
+	}
+
         //      Misc.printStack("Show next", 10);
-	System.err.println("SHOW NEXT:" + cnt +" " + max);
+	List<String> toks = new ArrayList<String>();
+	String marker = (String)request.getPropertyOrArg(ARG_MARKER);
+	String prevMarkers = (String)request.getPropertyOrArg(ARG_PREVMARKERS);	
+	if(Utils.stringDefined(marker) || Utils.stringDefined(prevMarkers)) {
+	    System.err.println("marker:" + marker +" prev:" + prevMarkers);
+	    List<String> prevList = Utils.stringDefined(prevMarkers)?Utils.split(prevMarkers,",",true,true):new ArrayList<String>();
+	    if(prevList.size()>0) {
+		String prevMarker  = prevList.remove(prevList.size()-1);
+		toks.add(HU.div(HtmlUtils.href(request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "="
+					       + prevMarker, "Previous"),HU.cssClass("ramadda-next-previous ramadda-previous")));
+	    }
+	    if(marker!=null) {
+		String prev = Utils.join(prevList,",");
+		toks.add(HU.div(HU.href(request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "=" + marker+"&" + ARG_PREVMARKERS+"="+prev,
+					"Next"),
+				HU.cssClass("ramadda-next-previous ramadda-next")));
+	    }
+
+	    HU.div(sb, Utils.join(toks,""),
+		   HU.cssClass("ramadda-next-previous-block"));
+	    return;
+	}
+
         boolean haveSkip = request.defined(ARG_SKIP);
         boolean haveMax  = request.defined(ARG_MAX);
         boolean show     = ((cnt > 0) && (cnt == max)) || haveSkip || haveMax;
-	if(marker!=null) show = true;
         int     skip     = Math.max(0, request.get(ARG_SKIP, 0));
         if (show) {
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
-                                     "entry-table-page"));
+	    String label;
             if ((message != null) && (message.length > 0)
                     && (message[0] != null)) {
-                sb.append(message[0]);
-            } else if(marker==null) {
-                sb.append(msgLabel("Showing") + (skip + 1) + "-"
-                          + (skip + cnt));
+                label =message[0];
+            } else {
+                label = "Showing: "  + (skip + 1) + "-"  + (skip + cnt);
             }
-            sb.append(HtmlUtils.space(2));
-            List<String> toks = new ArrayList<String>();
-	    if(marker!=null) {
-		/*
-                toks.add(
-                    HtmlUtils.href(
-                        request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "="
-                        + marker, HtmlUtils.faIcon(
-                            "fa-caret-left", "title", "View previous")));
-		*/
-	    } else  {
-		if (skip > 0) {
-		    toks.add(
-			     HtmlUtils.href(
-					    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
-					    + (skip - max), HtmlUtils.faIcon(
-									     "fa-caret-left", "title", "View previous")));
-		}
-	    }
-            //      if (cnt >= max) {
-	    if(marker!=null) {
-                toks.add(
-                    HtmlUtils.href(
-                        request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "="
-                        + marker, HtmlUtils.faIcon(
-                            "fa-caret-right", "title", "View next")));
-	    } else {
-		toks.add(
-			 HtmlUtils.href(
+	    if (skip > 0) {
+		toks.add(HtmlUtils.href(
 					request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
-					+ (skip + max), HtmlUtils.faIcon(
-									 "fa-caret-right", "title", "View next")));
+					+ (skip - max), "Previous",
+					HU.cssClass("ramadda-next-previous ramadda-previous")					
+					//HtmlUtils.faIcon("fa-caret-left", "title", "View previous")
+					));
 	    }
+	
+            //      if (cnt >= max) {
+	    toks.add(HtmlUtils.href(
+				    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
+				    + (skip + max), "Next",
+				    HU.cssClass("ramadda-next-previous ramadda-next")));
+	    //HtmlUtils.faIcon("fa-caret-right", "title", "View next")));
             //            }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -416,22 +430,23 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                 lessMax = 1;
             }
             request = request.cloneMe();
-            request.put(ARG_MAX, "" + moreMax);
-            //      if (cnt >= max) {
-            toks.add(HtmlUtils.href(request.getUrl(),
-                                    HtmlUtils.faIcon("fa-plus", "title",
-                                        "View more")));
-
+	    toks.add(HU.SPACE2);
             request.put(ARG_MAX, "" + lessMax);
             toks.add(HtmlUtils.href(request.getUrl(),
                                     HtmlUtils.faIcon("fa-minus", "title",
                                         "View less")));
-            //          }
-            if (toks.size() > 0) {
-                sb.append(StringUtil.join(" ", toks));
+	    toks.add(HU.SPACE);
+            request.put(ARG_MAX, "" + moreMax);
+            toks.add(HtmlUtils.href(request.getUrl(),
+                                    HtmlUtils.faIcon("fa-plus", "title",
+                                        "View more")));
 
+            if (toks.size() > 0) {
+		label = HU.div(label,HU.style("margin-right:5px;"));
+		sb.append(HU.leftRightBottom(HU.div(Utils.join(toks,""),
+						    HU.cssClass("ramadda-next-previous-block")),
+					     label,""));
             }
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             request.put(ARG_MAX, "" + max);
         }
 

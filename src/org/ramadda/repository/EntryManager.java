@@ -688,7 +688,6 @@ public class EntryManager extends RepositoryManager {
                     logInfo("Cannot access entry:" + entryId + "  IP:"
                             + request.getIp());
                     logInfo("Request:" + request);
-
                     throw new IllegalArgumentException(
 						       "You do not have access to this entry");
                 }
@@ -7174,7 +7173,6 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-
     public Entry getEntry(Request request, String entryId, boolean andFilter,
                           boolean abbreviated)
 	throws Exception {
@@ -7215,14 +7213,16 @@ public class EntryManager extends RepositoryManager {
                 if (typeHandler != null) {
                     parentEntry = typeHandler.getSynthTopLevelEntry();
                 }
+
                 if (syntheticPart == null) {
-                    return parentEntry;
+		    return parentEntry;
                 }
 
                 if (parentEntry == null) {
                     parentEntry = getEntry(request, parentEntryId, andFilter,
                                            abbreviated);
                 }
+
 
                 if (parentEntry == null) {
                     return null;
@@ -7232,6 +7232,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
 		entry = makeSynthEntry(request, typeHandler, parentEntry, entryId, syntheticPart);
+		System.err.println("Make synth:" + entry);
                 if (entry == null) {
                     return null;
                 }
@@ -7254,7 +7255,6 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (andFilter && (entry != null)) {
-
             entry = getAccessManager().filterEntry(request, entry);
             debug("getEntry: after filter 2:" + entry);
         }

@@ -1535,6 +1535,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
      */
     public Result processWikify(Request request) throws Exception {
         String wiki = request.getUnsafeString("text", "");
+	wiki = Request.cleanXSS(wiki);
         if (request.defined(ARG_ENTRYID)) {
             if ( !request.get("doImports", true)) {
                 request.putExtraProperty("initchart", "added");
@@ -4089,14 +4090,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	if(wikiUtil==null)  wikiUtil = new WikiUtil();
 	if(props==null) props = new Hashtable();
 	StringBuilder sb = new StringBuilder();
-	String marker = (String)request.getExtraProperty(ARG_MARKER);
         int max = request.get(ARG_MAX, -1);
         if (max == -1) {
             max = getProperty(wikiUtil, props, ATTR_MAX, -1);
         }
-	if(marker !=null || max>0)
-	    getRepository().getHtmlOutputHandler().showNext(request,
-							    children.size(), max,marker,sb);
+	getRepository().getHtmlOutputHandler().showNext(request,
+							    children.size(), max,sb);
 
 
 	String guid = Utils.getGuid().replaceAll("-","_");

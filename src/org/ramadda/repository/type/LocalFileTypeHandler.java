@@ -256,7 +256,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> excludes = localFileInfo.getExcludes();
         long         age = (long) (1000 * (localFileInfo.getAgeLimit() * 60));
         long         now      = System.currentTimeMillis();
-        int          start    = skip;
+        int          start    = Math.max(0,skip);
         int          cnt      = 0;
         for (int i = start; i < files.length; i++) {
             File childFile = files[i];

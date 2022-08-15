@@ -1146,7 +1146,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             int max = getMax(request);
             if ((numValues == max) || request.defined(ARG_SKIP)) {
                 getRepository().getHtmlOutputHandler().showNext(request,
-								numValues, max, null,sb);
+								numValues, max, sb);
             } else {
                 sb.append(numValues + ((numValues == 1)
                                        ? " result"

@@ -124,10 +124,19 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         //      S3File.debug = true;
         S3File.S3ListResults results = doLs(request, new S3File(synthId), null,max,percent,maxSize);
 	if(results.getMarker()!=null) {
+	    String prevMarker = request.getString(ARG_MARKER,null);
+	    String prevMarkers = request.getString(ARG_PREVMARKERS,null);
+	    if(Utils.stringDefined(prevMarker)|| Utils.stringDefined(prevMarkers)) {
+		List<String> markers = new ArrayList<String>();
+		if(prevMarkers != null) markers.addAll(Utils.split(prevMarkers,",",true,true));
+		if(Utils.stringDefined(prevMarker)) markers.add(prevMarker);
+		request.putExtraProperty(ARG_PREVMARKERS, Utils.join(markers,","));
+	    }
 	    request.putExtraProperty(ARG_MARKER, results.getMarker());
 	}
 	List<S3File> files = results.getFiles();
         List<String> children = new ArrayList<String>();
+	int cnt = 0;
         for (S3File file : files) {
 	    boolean ok = true;
 	    if(excludes!=null && excludes.size()>0) {
@@ -135,9 +144,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 		    continue;
 		}
 	    }
+	    //https://localhost:8430/repository/entry/show?entryid=synth%3A3fd5c55d-db3d-4b42-b7ac-5489793f7d5e%3As3%3A%2F%2Fnoaa-gsod-pds%2F1974&marker=1974/10658099999.csv&prevmarkers=
 
-            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
-						  file);
+	    if(cnt++<10)
+		System.err.println("FILE:" + file);
+            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry, file);
 	    if(!ok) {
 		if(debug)
 		    System.err.println("Skipping:" + file);
@@ -222,14 +233,25 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Entry makeSynthEntry(Request request, Entry rootEntry, String id)
             throws Exception {
-        //TODO: roll up the path creating the parent entries up to the root
-        System.err.println("S3 creating:" + id);
-        return createBucketEntry(rootEntry, rootEntry, S3File.createFile(id));
+        String rootId = (String) rootEntry.getValue(IDX_ROOT);
+        if ( !Utils.stringDefined(rootId)) {
+	    return null;
+	}
+	//TODO: roll up the path creating the parent entries up to the root
+	//s3://noaa-gsod-pds/1988
+	Entry parent = rootEntry;
+	String key = id.replace(rootId,"");
+	List<String> keys = Utils.split(key,"/",true,true);
+        System.err.println("S3 creating:" + id+" key:" + key +" keys:" + keys);
+	if(keys.size()>1) {
+	}
+        return createBucketEntry(rootEntry, parent, S3File.createFile(id));
     }
 
     @Override
-    public String getFoo() {
-	return "this is the s3root type";
+    public Entry makeSynthEntry(Request request, Entry parentEntry,
+                                List<String> entryNames)    throws Exception {
+	return makeSynthEntry(request, parentEntry, Utils.join(entryNames,"/"));
     }
 
 
