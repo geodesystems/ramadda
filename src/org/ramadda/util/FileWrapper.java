@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2022 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -241,7 +241,8 @@ public abstract class FileWrapper {
         if (children == null) {
             return true;
         }
-        children = sortFilesOnName(children);
+	//For now don't sort
+        //children = sortFilesOnName(children);
         for (int i = 0; i < children.length; i++) {
             int what = fileViewer.viewFile(level, children[i], children);
             if (what == FileViewer.DO_STOP) {
