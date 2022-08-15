@@ -75,9 +75,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                     String synthId)
             throws Exception {
 
+	//	System.err.println("getSynthIds:" + request);
         boolean debug = false;
         String cacheKey = parentEntry.getId() + "_" + synthId + "_"
-                          + rootEntry.getChangeDate();
+	    + rootEntry.getChangeDate()+"_" + request.getString(ARG_MARKER,"");
         List<String> ids = synthIdCache.get(cacheKey);
         if (ids != null) {
             return ids;
@@ -121,7 +122,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         //      S3File.debug = true;
-        List<S3File> files = doLs(new S3File(synthId), null,max,percent,maxSize);
+        S3File.S3ListResults results = doLs(request, new S3File(synthId), null,max,percent,maxSize);
+	if(results.getMarker()!=null) {
+	    request.putExtraProperty(ARG_MARKER, results.getMarker());
+	}
+	List<S3File> files = results.getFiles();
         List<String> children = new ArrayList<String>();
         for (S3File file : files) {
 	    boolean ok = true;
@@ -145,8 +150,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             ids.add(bucketEntry.getId());
         }
         parentEntry.setChildIds(ids);
-        System.err.println("S3 Fetching:" + synthId + " GOT:" + ids.size());
-	
         if (debug) {
             System.err.println("CACHING:" + cacheKey);
         }
@@ -264,23 +267,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public static List<S3File> doLs(S3File base, String path,int max, double percent, long maxSize)
+    public S3File.S3ListResults doLs(Request request, S3File base, String path, int max, double percent, long maxSize)
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
-        return newFile.doList(false, max,percent,maxSize);
+        return newFile.doList(false, max,percent,maxSize,request.getString(ARG_MARKER,null));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        System.err.print(doLs(new S3File("s3://noaa-nexrad-level2"), null, 1000, -1,-1));
-    }
 
 
 }
