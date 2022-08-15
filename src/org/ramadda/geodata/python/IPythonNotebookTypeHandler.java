@@ -136,7 +136,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
         commands.add("--to");
         commands.add("html");
         commands.add("--stdout");
-        commands.add(entry.getFile().toString());
+        commands.add(getStorageManager().getEntryFile(entry).toString());
         ProcessBuilder pb = new ProcessBuilder(commands);
         pb.redirectErrorStream(true);
         Process     process = pb.start();
