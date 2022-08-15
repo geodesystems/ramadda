@@ -3064,7 +3064,6 @@ public class EntryManager extends RepositoryManager {
 	if(sortedTypeHandlers==null) {
 	    List<TypeHandler> tmp = new ArrayList<TypeHandler>();
 	    tmp.addAll(getRepository().getTypeHandlers());
-	    sortedTypeHandlers = tmp;
 	    Comparator comp = new Comparator() {
 		    public int compare(Object o1, Object o2) {
 			TypeHandler t1 = (TypeHandler)o1;
