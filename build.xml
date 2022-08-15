@@ -291,6 +291,7 @@
 	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/README"  todir="${seesv_destdir}"/>	
 	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/seesv.html"  todir="${seesv_destdir}"/>	
 	<copy overwrite="true" file="${lib_dir}/tabula.jar"  todir="${seesv_destdir}/lib"/>
+	<copy overwrite="true" file="${lib_dir}/s3lib.jar"  todir="${seesv_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/unidatautil.jar"  todir="${seesv_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${seesv_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/rhino-1.7.13.jar"  todir="${seesv_destdir}/lib"/>
