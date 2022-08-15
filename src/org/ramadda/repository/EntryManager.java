@@ -3070,8 +3070,8 @@ public class EntryManager extends RepositoryManager {
 			TypeHandler t2 = (TypeHandler)o2;			
 			String p1 = t1.getFilePattern();
 			String p2 = t2.getFilePattern();			
-			if(p1==null) return -1;
-			if(p2==null) return 1;			
+			if(p1==null) p1="";
+			if(p2==null) p2="";
 			return p2.length()-p1.length();
 		    }
 		};
