@@ -340,7 +340,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                          String... message)
             throws Exception {
         int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
-        showNext(request, cnt, max, sb, message);
+        showNext(request, cnt, max, null, sb, message);
     }
 
     /**
@@ -353,13 +353,15 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      *
      * @throws Exception _more_
      */
-    public void showNext(Request request, int cnt, int max, Appendable sb,
+    public void showNext(Request request, int cnt, int max, String marker,Appendable sb,
                          String... message)
             throws Exception {
         //      Misc.printStack("Show next", 10);
+	System.err.println("SHOW NEXT:" + cnt +" " + max);
         boolean haveSkip = request.defined(ARG_SKIP);
         boolean haveMax  = request.defined(ARG_MAX);
         boolean show     = ((cnt > 0) && (cnt == max)) || haveSkip || haveMax;
+	if(marker!=null) show = true;
         int     skip     = Math.max(0, request.get(ARG_SKIP, 0));
         if (show) {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
@@ -367,25 +369,43 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             if ((message != null) && (message.length > 0)
                     && (message[0] != null)) {
                 sb.append(message[0]);
-            } else {
+            } else if(marker==null) {
                 sb.append(msgLabel("Showing") + (skip + 1) + "-"
                           + (skip + cnt));
             }
             sb.append(HtmlUtils.space(2));
             List<String> toks = new ArrayList<String>();
-            if (skip > 0) {
+	    if(marker!=null) {
+		/*
                 toks.add(
                     HtmlUtils.href(
-                        request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
-                        + (skip - max), HtmlUtils.faIcon(
+                        request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "="
+                        + marker, HtmlUtils.faIcon(
                             "fa-caret-left", "title", "View previous")));
-            }
+		*/
+	    } else  {
+		if (skip > 0) {
+		    toks.add(
+			     HtmlUtils.href(
+					    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
+					    + (skip - max), HtmlUtils.faIcon(
+									     "fa-caret-left", "title", "View previous")));
+		}
+	    }
             //      if (cnt >= max) {
-            toks.add(
-                HtmlUtils.href(
-                    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
-                    + (skip + max), HtmlUtils.faIcon(
-                        "fa-caret-right", "title", "View next")));
+	    if(marker!=null) {
+                toks.add(
+                    HtmlUtils.href(
+                        request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "="
+                        + marker, HtmlUtils.faIcon(
+                            "fa-caret-right", "title", "View next")));
+	    } else {
+		toks.add(
+			 HtmlUtils.href(
+					request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
+					+ (skip + max), HtmlUtils.faIcon(
+									 "fa-caret-right", "title", "View next")));
+	    }
             //            }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {

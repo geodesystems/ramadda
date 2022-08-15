@@ -4089,13 +4089,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	if(wikiUtil==null)  wikiUtil = new WikiUtil();
 	if(props==null) props = new Hashtable();
 	StringBuilder sb = new StringBuilder();
+	String marker = (String)request.getExtraProperty(ARG_MARKER);
         int max = request.get(ARG_MAX, -1);
         if (max == -1) {
             max = getProperty(wikiUtil, props, ATTR_MAX, -1);
         }
-	if(max>0)
+	if(marker !=null || max>0)
 	    getRepository().getHtmlOutputHandler().showNext(request,
-							    children.size(), max,sb);
+							    children.size(), max,marker,sb);
+
 
 	String guid = Utils.getGuid().replaceAll("-","_");
 	StringBuilder js = new StringBuilder();
