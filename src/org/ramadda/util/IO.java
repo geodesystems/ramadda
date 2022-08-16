@@ -183,16 +183,14 @@ public class IO {
         checkFile(filename);
         File f = new File(filename);
         if (f.exists()) {
-            return new FileInputStream(f);
+            return convertInputStream(filename, new FileInputStream(f));
         }
 
         try {
             URL url = new URL(filename);
-
-            return getInputStream(url);
+            convertInputStream(filename, getInputStream(url));
         } catch (java.net.MalformedURLException exc) {}
-
-        return IOUtil.getInputStream(filename, origin);
+        return convertInputStream(filename,IOUtil.getInputStream(filename, origin));
     }
 
 
@@ -384,8 +382,34 @@ public class IO {
 
                 throw new IOException(msg);
             }
+	}
+
+	try {
+	    is = convertInputStream(filename, is);
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+
+
+
+        if ( !buffered) {
+            //            System.err.println("not buffered");
+            //            return is;
+            //            size = 8*3;
         }
 
+        if (buffered) {
+            size = 1000000;
+        }
+
+        //        System.err.println("buffer size:" + size);
+        return new BufferedInputStream(is, size);
+
+    }
+
+
+
+    public static InputStream convertInputStream(String filename, InputStream is) throws Exception {
         if (filename.toLowerCase().endsWith(".gz")) {
             is = new GZIPInputStream(is);
         }
@@ -409,24 +433,8 @@ public class IO {
             is = zin;
         }
 
-
-        if ( !buffered) {
-            //            System.err.println("not buffered");
-            //            return is;
-            //            size = 8*3;
-        }
-
-        if (buffered) {
-            size = 1000000;
-        }
-
-        //        System.err.println("buffer size:" + size);
-        return new BufferedInputStream(is, size);
-
-    }
-
-
-
+	return is;
+	}
     /**
      * _more_
      *
