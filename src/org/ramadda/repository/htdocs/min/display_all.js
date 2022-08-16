@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 16 02:29:43 MDT 2022";
+var build_date="RAMADDA build date: Tue Aug 16 10:16:16 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -6412,6 +6412,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(args)
 		$.extend(opts,args);
 	    let debug =  displayDebug.filterData;
+	    if(debug) this.logMsg("filterData");
 
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
@@ -6459,7 +6460,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let pointData = this.getData();
             if (!records) {
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    if(debug) this.logMsg("\tno data");
+		    
+		    return null;
+		}
                 records = pointData.getRecords();
             }
             if (!fields) {
@@ -6469,7 +6474,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
-	    if(debug)   console.log("fitler #records:" + records.length);
+	    if(debug)   this.logMsg("filter #records:" + records.length);
 	    if(this.getProperty("filterLatest")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
 		let max = {};
@@ -7951,6 +7956,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getData: function() {
             if (!this.hasData()) {
 		//Inline data
+		if (this.properties.theData) {
+		    return this.properties.theData;
+		} 
 		if(this.properties.dataSrc) {
 		    this.addData(makeInlineData(this,this.properties.dataSrc));
 		} else {
@@ -20866,6 +20874,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(!imageField) {
 		    return false;
 		}
+
+
 		return true;
 		let image = record.getValue(imageField.getIndex());
 		if(!Utils.stringDefined(image) && !includeBlanks) {
@@ -30427,8 +30437,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
-		let ancestor = HU.getUrlArgument(ID_ANCESTOR);
-		let name = HU.getUrlArgument(ID_ANCESTOR_NAME);		
+		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
+		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
+		console.log(ancestor,name);
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
@@ -31078,7 +31089,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.mapId = null;
 	    if(this.myDisplays) {
 		this.myDisplays.forEach(info=>{
-		    removeRamaddaDisplay(info.display.getId());
+		    if(info.display)
+			removeRamaddaDisplay(info.display.getId());
 		});
 	    }
 	    this.myDisplays = [];
