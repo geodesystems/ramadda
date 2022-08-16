@@ -2476,6 +2476,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 }
 	    }
 
+            String tooltip = getProperty(wikiUtil, props, "tooltip",
+					 null);
+	    if(tooltip!=null) {
+		tooltip = tooltip.replace("${entryid}",entry.getId()).replace("${entryname}",entry.getName());
+		tooltip = tooltip.replace("${mainentryid}",originalEntry.getId()).replace("${mainentryname}",originalEntry.getName());		
+		props.put("tooltip",tooltip);
+	    }
+
 
             String jsonUrl = null;
 	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
