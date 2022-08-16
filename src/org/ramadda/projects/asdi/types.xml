@@ -71,6 +71,7 @@ csvcommands1=-json,,,-print
 {{display_map xjustOneMarker=true}}
 -col
 -row
+-section
 ]]>
 </wiki>
 </type>
