@@ -15,6 +15,7 @@ let RamaddaToFloat = v=>{
 };
 
 
+
 var MapUtils =  {
     me:"MapUtils",
     POSITIONMARKERID: "location",
@@ -198,6 +199,7 @@ var MapUtils =  {
     }
 }
 
+
 MapUtils.defaults = {
     maxLatValue: 85,
     zoomLevels: 40,
@@ -257,7 +259,7 @@ MapLayer.prototype = {
 }
 
 
-var map_default_layer = 'naip';
+var map_default_layer = 'osm';
 
 new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
@@ -839,6 +841,7 @@ RepositoryMap.prototype = {
 	if(debugBounds)
 	    console.log("calling setViewToBounds: " + bounds);
         this.setViewToBounds(bounds);
+
     },
     initRegionSelector:function(selectId,div,forSelection) {
 	this.regionSelector = $('#' + selectId);

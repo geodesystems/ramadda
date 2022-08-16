@@ -566,6 +566,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'regionSelectorLabel'},	
 	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
+	{p:'centerOnMarkersAfterUpdate',ex:true,tt:'Always center on the markers'},	
 	{p:'doInitCenter',tt:'Center the maps on initialization'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
@@ -579,6 +580,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
 	{p:'clipToBounds',ex:'true',tt:'Clip to bounds'},	
 	{p:'showMarkers',ex:'false',tt: 'Hide the markers'},
+	{p:'acceptEntryMarkers',ex:'true',d:false,tt:'If other maps can add entry markers and boxes'},
 
 	{label:'Map Highlight'},
 	{p:'showRecordSelection',ex:'false'},
@@ -1609,8 +1611,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             this.sourceToEntries[source.getId()] = entries;
-
-            var markers = MapUtils.creatLayerMarkers("Markers");
+            let markers = MapUtils.createLayerMarkers("Markers",{});
             var lines =  MapUtils.createLayerVector("Lines", {});
             var north = -90,
                 west = 180,
@@ -1661,6 +1662,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
         addOrRemoveEntryMarker: function(id, entry, add, args) {
+	    if(!this.getAcceptEntryMarkers()) {
+		return
+	    }
             if (!args) {
                 args = {};
             }
@@ -2569,6 +2573,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.callingUpdateUI = true;
 		    this.updateUIInner(args, pointData, records,debug);
 		    this.callingUpdateUI = false;
+		    if(this.getCenterOnMarkersAfterUpdate()) {
+			this.map.centerOnMarkers();
+		    }
 		    if(displayDebug.initMap) this.logMsg("done calling updateUIInner",true);
 		    if(args.callback)args.callback(records);
 		    this.clearProgress();
