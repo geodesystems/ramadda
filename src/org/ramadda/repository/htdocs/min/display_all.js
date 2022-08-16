@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 16 14:08:40 MDT 2022";
+var build_date="RAMADDA build date: Tue Aug 16 17:08:58 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -8705,6 +8705,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+            if (!this.hasData()) {
+		return
+	    }
+
+
+
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -33514,6 +33520,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
+	{p:"strokeOpacity",d:1},
 	{p:"fillColor",d:"blue"},
 	{p:"fillOpacity",d:0.5},
 	{p:'radius',d:5,tt:"Size of the map points"},
@@ -36335,8 +36342,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };
 
 
-	    let fillColor = this.getPropertyFillColor();
-	    let fillOpacity =  this.getPropertyFillOpacity();
+	    let fillColor = this.getFillColor();
+	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getProperty("isPath", false);
 	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
 	    let groups;
@@ -36603,6 +36610,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                 let values = record.getData();
                 let props = {
+		    strokeOpacity:this.getStrokeOpacity(),
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
