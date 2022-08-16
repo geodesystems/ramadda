@@ -83,11 +83,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public static final String ATTR_NOTFILEPATTERN = "notfilepattern";
 
     public static final String ATTR_SIZELIMIT = "sizelimit";
-    public static final String ATTR_MAXLEVEL = "maxlevel";    
+    public static final String ATTR_MAXLEVEL = "maxlevel";
 
     /** attribute id */
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
 
+
+    public static final String ATTR_PUSHGEO = "pushgeo";    
 
     /** _more_ */
     private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 30 * 1000;
@@ -137,6 +139,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     private double sizeLimit = -1;
 
     private int maxLevel = -1;
+
+    private boolean pushGeo = false;
 
     /** _more_ */
     private boolean moveToStorage = false;
@@ -255,6 +259,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						    ATTR_NOTFILEPATTERN, notfilePatternString);
         sizeLimit = XmlUtil.getAttribute(element,
 					 ATTR_SIZELIMIT, sizeLimit);
+        pushGeo = XmlUtil.getAttribute(element,
+					 ATTR_PUSHGEO, pushGeo);	
 	maxLevel = XmlUtil.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
 
         filePattern    = null;
@@ -294,6 +300,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_SIZELIMIT, sizeLimit+"");
+        element.setAttribute(ATTR_PUSHGEO, pushGeo+"");	
         element.setAttribute(ATTR_MAXLEVEL, maxLevel+"");	
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
@@ -335,6 +342,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         sizeLimit = request.get(ATTR_SIZELIMIT, sizeLimit);
 	maxLevel = request.get(ATTR_MAXLEVEL, maxLevel);	
+        pushGeo = request.get(ATTR_PUSHGEO, pushGeo);
 
 
         sdf            = null;
@@ -497,16 +505,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			       + moveNote));
 
 
-	HU.formEntry(sb,
-		     msgLabel("Metadata"),
-		     HU.labeledCheckbox(
-					ATTR_ADDMETADATA, "true",
-					getAddMetadata(),"Add full metadata")
-		     + HU.space(4)
-		     + HU.labeledCheckbox(
-					  ATTR_ADDSHORTMETADATA, "true",
-					  getAddShortMetadata(),
-					  "Just add spatial/temporal metadata"));
+	List<String> mtds = new ArrayList<String>();
+	mtds.add(HU.labeledCheckbox(ATTR_ADDMETADATA, "true",getAddMetadata(),"Add full"));
+	mtds.add(HU.labeledCheckbox(ATTR_ADDSHORTMETADATA, "true", getAddShortMetadata(), "Just spatial/temporal"));
+	mtds.add(HU.labeledCheckbox(ATTR_PUSHGEO, "true", pushGeo, "Set geo from parent"));
+	HU.formEntry(sb, msgLabel("Metadata"),  Utils.join(mtds, HU.space(4)));
+
 
 	addAliasesEditForm(request, sb);
 
@@ -1133,10 +1137,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 tmpList.add(entry);
                 count++;
 		long t1= System.currentTimeMillis();
-                getEntryManager().addInitialMetadata(null, tmpList, true,
+                getEntryManager().addInitialMetadata(getRequest(), tmpList, true,
 						     getAddShortMetadata());
 		long t2= System.currentTimeMillis();
-		System.err.println("addInitialMetadata:" + entry +" time:" + (t2-t1));
+		//		System.err.println("addInitialMetadata:" + entry +" time:" + (t2-t1));
                 currentStatus = "Added metadata for " + count + " entries. "
 		    + (entriesToAdd.size() - count)
 		    + " more entries to process";
@@ -1726,8 +1730,22 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             Entry.DEFAULT_ORDER, createTime,
                             changeDate.getTime(), fromDate.getTime(),
                             toDate.getTime(), values);
+
         }
 
+	if(pushGeo && !entry.isGeoreferenced()) {
+	    Entry ancestor = group;
+	    while(ancestor!=null) {
+		if(ancestor.isGeoreferenced()) break;
+		ancestor = ancestor.getParentEntry();
+	    }
+	    if(ancestor!=null) {
+		entry.setNorth(ancestor.getNorth());
+		entry.setWest(ancestor.getWest());		
+		entry.setSouth(ancestor.getSouth());
+		entry.setEast(ancestor.getEast());		
+	    }
+	}
 
 
         entry.setParentEntry(group);
