@@ -559,7 +559,7 @@ public abstract class TextFile extends PointFile {
                     attrs.append(attrLabel(name));
                     boolean isDate =
                         id.matches(
-                            "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter|time)$");
+                            "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter)$");
                     //                    System.err.println("id:" + id +" isDate:" + isDate);
                     if ( !isDate) {
                         isDate = Utils.isDate(sample);
