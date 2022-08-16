@@ -345,6 +345,9 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public boolean stringDefined(String s) {
+	return Utils.stringDefined(s);
+    }
 
     /**
      * _more_
