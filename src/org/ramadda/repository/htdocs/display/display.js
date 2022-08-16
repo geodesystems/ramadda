@@ -3417,11 +3417,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!records) {
                 if (pointData == null) {
 		    if(debug) this.logMsg("\tno data");
-		    
 		    return null;
 		}
                 records = pointData.getRecords();
             }
+            if (!records) {
+		return null;
+	    }
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -6306,25 +6309,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
-	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
-            if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
-		let animation = this.getAnimation();
-		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
-//		    console.log("dateMin:" + dateMin.toUTCString());
-		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
-		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
-			if(this.getProperty("animationFilter", true)) {
-			    this.setDateRange(animation.begin, animation.end);
+	    if(filteredRecords) {
+		let dateInfo = this.getDateInfo(filteredRecords);
+		if(debug) console.log("checkSearchBar-11");
+		if (dateInfo.dateMax) {
+		    if(debug) console.log("checkSearchBar-getAnimation");
+		    let animation = this.getAnimation();
+		    if(animation.getEnabled()) {
+			if(debug) console.log("checkSearchBar-calling animation.init");
+			//		    console.log("dateMin:" + dateMin.toUTCString());
+			animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+			if(debug) console.log("checkSearchBar-done calling animation.init");
+			if(!this.minDateObj) {
+			    if(debug) console.log("checkSearchBar-calling setDateRange");
+			    if(this.getProperty("animationFilter", true)) {
+				this.setDateRange(animation.begin, animation.end);
+			    }
+			    if(debug) console.log("checkSearchBar-done calling setDateRange");
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
-            }
+	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
 	getDateInfo:function(records) {

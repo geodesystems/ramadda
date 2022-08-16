@@ -4,6 +4,7 @@
 
 var debugBounds = false;
 var getMapDebug = false;
+var debugPopup = false;
 
 //This gets set by Java
 var ramaddaMapRegions = null;
@@ -1386,6 +1387,8 @@ RepositoryMap.prototype = {
             this.unselectFeature(layer.selectedFeature);
         }
 
+
+
 	if(!this.params.doSelect) {
 	    return;
 	}
@@ -1423,6 +1426,8 @@ RepositoryMap.prototype = {
 		}
 	    }
 	}
+
+
 	layer.drawFeature(layer.selectedFeature, style);
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
@@ -4726,8 +4731,11 @@ RepositoryMap.prototype = {
     },
 
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
+	if(debugPopup) console.log("showMarkerPopup");
+
         if (this.entryClickHandler && window[this.entryClickHandler]) {
             if (!window[this.entryClickHandler](this, marker)) {
+		if(debugPopup) console.log("\twindowClickHandler");
                 return;
             }
         }
@@ -4738,6 +4746,7 @@ RepositoryMap.prototype = {
         }
 
 	if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
+	    if(debugPopup) console.log("\tfeatureSelectHandler returned true");
 	    return;
 	}
 
@@ -4750,6 +4759,7 @@ RepositoryMap.prototype = {
 
 
 	if(!this.params.doPopup) {
+	    if(debugPopup) console.log("\tparams.doPopup=false");
 	    return;
 	}
 
@@ -4771,16 +4781,16 @@ RepositoryMap.prototype = {
 	    markerText =marker.text;
 	}
 
-	if(!markerText) return;
+	if(!markerText) {
+	    if(debugPopup) console.log("\tno marker text");
+	    return;
+	}
 
 
 	let html = markerText;
-	let debug =false;
-
-
-
 	if(this.params.displayDiv) {
 	    $("#" + this.params.displayDiv).html(markerText);
+	    if(debugPopup) console.log("\thad displayDiv");
 	    return;
 	}
 
@@ -4839,9 +4849,9 @@ RepositoryMap.prototype = {
 
 	if(projPoint==null) {
 	    console.log("No location for feature popup");
+	    if(debugPopup) console.log("\tno projPoint");
 	    return;
 	}
-
 
 
 	if(this.params.doPopupSlider) {
@@ -4880,13 +4890,15 @@ RepositoryMap.prototype = {
 
 	let uid = HU.getUniqueId("div");
 	let div = HU.div(['style','width:100%;','id',uid]);
-	props.width = props.width??inputProps.minSizeX??600;
-	props.height = props.height??inputProps.minSizeY??400;	
+	props.width = props.width??inputProps.minSizeX??this.params.popupWidth;
+	props.height = props.height??inputProps.minSizeY??this.params.popupHeight;	
         let popup = this.makePopup( projPoint,div,props);
         marker.popupText = popup;
         popup.marker = marker;
         this.getMap().addPopup(popup);
 	jqid(uid).html(markerText);
+	if(debugPopup) console.log("\tmade popup");
+
         this.currentPopup = popup;
 
         if (inputProps.chartType) {

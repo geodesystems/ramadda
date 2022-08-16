@@ -266,7 +266,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		highlightColor: this.getHighlightColor(),
 		highlightFillColor: this.getHighlightFillColor("transparent"),		
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
-		showLatLonLines:this.getProperty("showLatLonLines")
+		showLatLonLines:this.getProperty("showLatLonLines"),
+		popupWidth: this.getProperty("popupWidth",300),
+		popupHeight: this.getProperty("popupHeight",200),		
+
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -1008,6 +1011,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
 		    didSomething= true;
 		}
+
 		if(feature.record && this.getProperty("shareSelected")) {
 		    let idField = this.getFieldById(null,"id");
 		    if(idField) {
@@ -1017,7 +1021,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return true;
+		return false;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
