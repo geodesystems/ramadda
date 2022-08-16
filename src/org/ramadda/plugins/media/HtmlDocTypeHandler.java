@@ -10,7 +10,9 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.IO;
 
 
@@ -101,11 +103,17 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
      */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry, Entries children)
-            throws Exception {
-        String style = entry.getStringValue(IDX_STYLE, "none");
+	throws Exception {
+        Column c = getColumn("embed_type");
+        String style = entry.getStringValue(IDX_STYLE, c.getDflt());
         if (style.equals("none")) {
             return null;
         }
+
+
+	StringBuffer sb = new StringBuffer();
+	//	sb.append("<br>");
+	getPageHandler().entrySectionOpen(request,  entry,sb, "");
         if (style.equals("frame")) {
             String url = null;
             if (entry.getResource().isUrl()) {
@@ -116,21 +124,22 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
             } else {
                 return null;
             }
-            StringBuffer sb = new StringBuffer();
-            sb.append(
-                HtmlUtils.tag(
-                    HtmlUtils.TAG_IFRAME,
-                    HtmlUtils.attr(HtmlUtils.ATTR_SRC, url)
-                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
-                    + HtmlUtils.attr(
-                        HtmlUtils.ATTR_HEIGHT, "800px"), "Need frames"));
 
-            return new Result("", sb);
+	    HU.div(sb, HU.tag(
+			      HU.TAG_IFRAME,
+			      HU.attr(HU.ATTR_SRC, url)
+			      + HU.attr(HU.ATTR_WIDTH, "100%")
+			      + HU.attr(HU.ATTR_HEIGHT, "800px"), "Need frames"),
+		   HU.style("margin:10px;margin-top:0px;border:1px solid #ccc;padding:5px;"));
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return  new Result("Embedded HTML Page", sb);
         }
+
 
         if (entry.getResource().isUrl()) {
             return null;
         }
+
 
         if (style.equals("embed") || style.equals("full")) {
             String content = getContent(request, entry);
@@ -139,7 +148,6 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String head = StringUtil.findPattern(content,
                               "(?s)<head>(.*?)</head>");
-            //      System.err.println("head:" + head);
             if (head != null) {
                 content = content.replaceAll("(?s)<head>(.*?)</head>", "");
                 head    = head.replaceAll("(?s)<title>(.*?)</title>", "");
@@ -155,12 +163,10 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
             content = content.replaceAll(
                 "(?s)<div *class *= *\"ramadda-page-title\"[^>]*>(.*?)</div>",
                 "<div class=\"ramadda-page-title\">" + title + "</div>");
-            if (true) {
-                return new Result("", new StringBuilder(content));
-            }
-
+	    sb.append(content);
+	    getPageHandler().entrySectionClose(request,  entry, sb);
             return getEntryManager().addHeaderToAncillaryPage(request,
-                    new Result(BLANK, new StringBuilder(content)));
+							      new Result(BLANK, sb));
         }
 
         return null;
