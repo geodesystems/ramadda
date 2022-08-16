@@ -1003,11 +1003,18 @@ public class JsonUtil {
      */
     public static String format(String json, boolean forHtml)
             throws Exception {
-        JSONObject obj = new JSONObject(json.toString());
-        //        String     s    = forHtml?obj.toString().replaceAll("\n"," "):obj.toString(3);
-        String s = forHtml
-                   ? obj.toString(1)
-                   : obj.toString(3);
+	String s;
+	try {
+	    JSONObject obj = new JSONObject(json.toString());
+	    s = forHtml
+		? obj.toString(1)
+		: obj.toString(3);
+	} catch(Exception exc) {
+	    JSONArray obj = new JSONArray(json.toString());
+	    s = forHtml
+		? obj.toString(1)
+		: obj.toString(3);
+	}
         if (forHtml) {
             s = s.replaceAll("\t", "  ").replaceAll("<",
                              "&lt;").replaceAll(">", "&gt;");
