@@ -893,8 +893,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(f.length()==0) return null;
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
+	    System.err.println("has corpus:" + corpusFile);
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	} 
+	System.err.println("no corpus:" + corpusFile);
 
 	boolean isImage = Utils.isImage(f.getName());
 
