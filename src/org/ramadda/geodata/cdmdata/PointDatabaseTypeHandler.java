@@ -2883,7 +2883,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     @Override
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry entry, FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler)
+                                      TypeHandler sourceTypeHandler, boolean firstCall)
             throws Exception {
         //noop
     }

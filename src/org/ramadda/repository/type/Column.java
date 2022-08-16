@@ -313,6 +313,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean showEmpty = true;
 
+    private boolean showInFormFirst = false;
+
     /** _more_ */
     private boolean addNot = false;
 
@@ -576,6 +578,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
+	showInFormFirst  = getAttributeOrTag(element, "showinformfirst", showInFormFirst);
+
         addNot     = getAttributeOrTag(element, "addnot", addNot);
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
                                             addFileToSearch);
@@ -856,6 +860,10 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public boolean isType(String t) {
         return type.equals(t);
+    }
+
+    public boolean getShowInFormFirst() {
+	return showInFormFirst;
     }
 
     /**

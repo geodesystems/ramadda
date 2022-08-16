@@ -4,7 +4,7 @@
     <property name="icon" value="/aws/aws.png"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
-    <column name="root_id" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
+    <column name="root_id" showinformfirst="true" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
     <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
 	    suffix="Patterns to exclude. One per line."/>
     <column name="maxcount" type="int" default="1000"  label="Max per bucket" />

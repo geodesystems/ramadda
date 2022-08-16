@@ -116,8 +116,9 @@ public class PollTypeHandler extends BlobTypeHandler {
     @Override
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry entry, FormInfo formInfo,
-                                      TypeHandler baseTypeHandler) {
+                                      TypeHandler baseTypeHandler, boolean firstCall) {
         try {
+	    if(firstCall) return;
             Hashtable    props   = getProperties(entry);
             List<String> choices = (List<String>) props.get(ATTR_CHOICES);
             if (choices == null) {

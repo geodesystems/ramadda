@@ -60,10 +60,11 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
     public void addSpecialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler baseTypeHandler)
+                                      TypeHandler baseTypeHandler, boolean firstCall)
             throws Exception {
         super.addSpecialToEntryForm(request, sb, parentEntry, entry,
-                                    formInfo, baseTypeHandler);
+                                    formInfo, baseTypeHandler, firstCall);
+	if(!firstCall) return;
         //Only on a new entry
         if (entry != null) {
             return;

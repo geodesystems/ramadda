@@ -1299,12 +1299,12 @@ public class GenericTypeHandler extends TypeHandler {
     public void addSpecialToEntryForm(Request request, Appendable formBuffer,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler)
+                                      TypeHandler sourceTypeHandler,boolean firstCall)
             throws Exception {
         super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry,
-                                    formInfo, sourceTypeHandler);
+                                    formInfo, sourceTypeHandler,firstCall);
         addColumnsToEntryForm(request, formBuffer, entry, formInfo,
-                              sourceTypeHandler);
+                              sourceTypeHandler, firstCall);
     }
 
 
@@ -1321,11 +1321,11 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry entry, FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler)
+                                      TypeHandler sourceTypeHandler, boolean first)
             throws Exception {
         addColumnsToEntryForm(request, formBuffer, entry, ((entry == null)
                 ? null
-                : getEntryValues(entry)), formInfo, sourceTypeHandler);
+							   : getEntryValues(entry)), formInfo, sourceTypeHandler,first);
     }
 
 
@@ -1346,10 +1346,12 @@ public class GenericTypeHandler extends TypeHandler {
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry entry, Object[] values,
                                       FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler)
+                                      TypeHandler sourceTypeHandler, boolean firstCall)
             throws Exception {
         Hashtable state = new Hashtable();
         for (Column column : getMyColumns()) {
+	    if(!firstCall && column.getShowInFormFirst()) continue;
+	    if(firstCall && !column.getShowInFormFirst()) continue;	    
             addColumnToEntryForm(request, column, formBuffer, entry, values,
                                  state, formInfo, sourceTypeHandler);
 

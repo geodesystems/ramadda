@@ -4415,16 +4415,13 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         try {
-            sb.append(
-                HtmlUtils.formEntry(
-                    "", getWikiManager().wikifyEntry(request, (entry != null)
-                    ? entry
-                    : parentEntry, editHelp)));
 
+            addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
+                                  this,true);
             addBasicToEntryForm(request, sb, parentEntry, entry, formInfo,
                                 this);
             addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
-                                  this);
+                                  this, false);
 
             sb.append(formEntry(request, msgLabel("Order"),
                                 HtmlUtils.input(ARG_ENTRYORDER,
@@ -4523,11 +4520,11 @@ public class TypeHandler extends RepositoryManager {
     public void addSpecialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler sourceTypeHandler)
+                                      TypeHandler sourceTypeHandler,boolean first)
             throws Exception {
         if (parent != null) {
             parent.addSpecialToEntryForm(request, sb, parentEntry, entry,
-                                         formInfo, sourceTypeHandler);
+                                         formInfo, sourceTypeHandler, first);
 
             return;
         }

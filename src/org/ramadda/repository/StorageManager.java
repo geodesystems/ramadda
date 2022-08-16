@@ -2624,6 +2624,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         return IOUtil.readContents(url.toString(), getClass());
     }
 
+    public String readEntry(Entry entry) throws Exception {
+	return readFile(getEntryFile(entry).toString());
+    }
+
+
     /**
      * _more_
      *
@@ -2635,7 +2640,6 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public String readFile(String file) throws Exception {
         checkPath(file);
-
         return IOUtil.readContents(file, getClass());
     }
 

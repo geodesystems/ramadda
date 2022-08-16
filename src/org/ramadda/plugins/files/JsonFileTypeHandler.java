@@ -68,12 +68,13 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
     public void addSpecialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
-                                      TypeHandler baseTypeHandler)
+                                      TypeHandler baseTypeHandler, boolean firstCall)
             throws Exception {
         super.addSpecialToEntryForm(request, sb, parentEntry, entry,
-                                    formInfo, baseTypeHandler);
-        sb.append(formEntryTop(request, msgLabel("Json text"),
-                               HtmlUtils.textArea(ARG_TEXT, "", 50, 60)));
+                                    formInfo, baseTypeHandler, firstCall);
+	if(!firstCall)
+	    sb.append(formEntryTop(request, msgLabel("Json text"),
+				   HtmlUtils.textArea(ARG_TEXT, "", 50, 60)));
     }
 
     /**
@@ -140,10 +141,11 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
         }
         StringBuilder sb = new StringBuilder();
         HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
+	String json=null;
         try {
             String id = Utils.getGuid();
-            String json =
-                getStorageManager().readFile(entry.getResource().getPath());
+            json =
+                getStorageManager().readEntry(entry);
             String formatted = JsonUtil.format(json, true);
             HtmlUtils.open(sb, "div", "id", id);
             HtmlUtils.pre(sb, formatted);
@@ -151,6 +153,7 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
             sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
         } catch (Exception exc) {
             sb.append("Error formatting JSON: " + exc);
+	    System.err.println("Error formatting JSON:"  + exc +"\n" +json);
             exc.printStackTrace();
         }
 
