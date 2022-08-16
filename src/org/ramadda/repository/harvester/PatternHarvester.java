@@ -26,7 +26,6 @@ import org.w3c.dom.*;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
@@ -622,8 +621,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 }
                 StringBuffer dirBlock = new StringBuffer();
 
-                dirBlock.append(HU.insetDiv(StringUtil.join("<br>",
-							    dirsToUse), 0, 10, 0, 0));
+                dirBlock.append(HU.insetDiv(Utils.join(dirsToUse,"<br>"), 0, 10, 0, 0));
                 dirBlock.append(suffix);
                 dirMsg = HU.makeShowHideBlock(dirMsg,
 					      dirBlock.toString(), false);
@@ -652,7 +650,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
         List<FileWrapper> rootDirs = getRootDirs();
 
-        return "Directory:" + StringUtil.join("<br>", rootDirs) + "<br>"
+        return "Directory:" + Utils.join( rootDirs,"<br>") + "<br>"
 	    + dirMsg + entryMsg + status + "<br>" + currentStatus;
     }
 
@@ -1315,7 +1313,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             parentFile = file;
         }
 
-        return StringUtil.join(Entry.PATHDELIMITER, names);
+        return Utils.join(names,Entry.PATHDELIMITER);
     }
 
 
@@ -1352,8 +1350,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      * @param args _more_
      */
     public static void main(String[] args) {
-        StringUtil.replaceDate("hello ${fromdate:yyyy-mm-dd}", "fromdate",
-                               new Date());
+
     }
 
     /**
