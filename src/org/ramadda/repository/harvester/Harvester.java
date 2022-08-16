@@ -1159,6 +1159,7 @@ public abstract class Harvester extends RepositoryManager {
         while (canContinueRunning(timestamp)) {
             try {
                 runHarvester();
+
                 if ( !canContinueRunning(timestamp)) {
                     break;
                 }

@@ -142,6 +142,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     private boolean pushGeo = false;
 
+    private boolean makeThumbnails = true;
+
     /** _more_ */
     private boolean moveToStorage = false;
 
@@ -160,8 +162,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** _more_ */
     private int entryCnt = 0;
 
+    private int nonUniqueCnt = 0;    
+
     /** _more_ */
     private int newEntryCnt = 0;
+
+    private int totalAddedEntries = 0;    
 
 
     /** _more_ */
@@ -260,7 +266,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sizeLimit = XmlUtil.getAttribute(element,
 					 ATTR_SIZELIMIT, sizeLimit);
         pushGeo = XmlUtil.getAttribute(element,
-					 ATTR_PUSHGEO, pushGeo);	
+					 ATTR_PUSHGEO, pushGeo);
+        makeThumbnails = XmlUtil.getAttribute(element,
+					 ATTR_MAKETHUMBNAILS, makeThumbnails);		
 	maxLevel = XmlUtil.getAttribute(element,ATTR_MAXLEVEL, maxLevel);	
 
         filePattern    = null;
@@ -300,7 +308,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_SIZELIMIT, sizeLimit+"");
-        element.setAttribute(ATTR_PUSHGEO, pushGeo+"");	
+        element.setAttribute(ATTR_PUSHGEO, pushGeo+"");
+        element.setAttribute(ATTR_MAKETHUMBNAILS, makeThumbnails+"");		
         element.setAttribute(ATTR_MAXLEVEL, maxLevel+"");	
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
@@ -342,7 +351,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         sizeLimit = request.get(ATTR_SIZELIMIT, sizeLimit);
 	maxLevel = request.get(ATTR_MAXLEVEL, maxLevel);	
-        pushGeo = request.get(ATTR_PUSHGEO, pushGeo);
+        pushGeo = request.get(ATTR_PUSHGEO, false);
+        makeThumbnails = request.get(ATTR_MAKETHUMBNAILS, false);	
 
 
         sdf            = null;
@@ -508,7 +518,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	List<String> mtds = new ArrayList<String>();
 	mtds.add(HU.labeledCheckbox(ATTR_ADDMETADATA, "true",getAddMetadata(),"Add full"));
 	mtds.add(HU.labeledCheckbox(ATTR_ADDSHORTMETADATA, "true", getAddShortMetadata(), "Just spatial/temporal"));
-	mtds.add(HU.labeledCheckbox(ATTR_PUSHGEO, "true", pushGeo, "Set geo from parent"));
+	mtds.add(HU.labeledCheckbox(ATTR_MAKETHUMBNAILS, "true", makeThumbnails, "Make thumbnails"));
+	mtds.add(HU.labeledCheckbox(ATTR_PUSHGEO, "true", pushGeo, "Set geo from parent"));	
 	HU.formEntry(sb, msgLabel("Metadata"),  Utils.join(mtds, HU.space(4)));
 
 
@@ -612,7 +623,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 dirMsg = "No directories found<br>";
             } else {
                 List<HarvesterFile> dirsToUse = dirs;
-                dirMsg = "Scanning:" + dirsToUse.size() + " directories";
+                dirMsg = dirsToUse.size() + " directories";
                 String suffix = "";
                 if (dirsToUse.size() > 50) {
                     ArrayList<HarvesterFile> subset =
@@ -624,15 +635,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     suffix = "<b>... and " + (dirs.size() - 50) + " more</b>";
                 }
                 StringBuffer dirBlock = new StringBuffer();
-
-                dirBlock.append(HU.insetDiv(Utils.join(dirsToUse,"<br>"), 0, 10, 0, 0));
+                dirBlock.append(HU.insetDiv(Utils.wrap(dirsToUse,"<div>","</div>"), 0, 20, 0, 0));
                 dirBlock.append(suffix);
                 dirMsg = HU.makeShowHideBlock(dirMsg,
 					      dirBlock.toString(), false);
             }
         }
 
-        StringBuffer entryMsg = new StringBuffer();
+	List<String> entryMsg = new ArrayList<String>();
         if (entryCnt > 0) {
             long   dt      = ((getActive()
                                ? System.currentTimeMillis()
@@ -647,15 +657,36 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 timeMsg = ((int) (100 * dt / 60.0)) / 100.0 + " minutes "
 		    + ePerM + " entries/minute";
             }
-            entryMsg.append("Found " + entryCnt + " file" + ((entryCnt == 1)
-							     ? ""
-							     : "s") + " (" + newEntryCnt + " new)"  /* + " in " + timeMsg*/
-			    + "<br>");
+            entryMsg.add("Found " + entryCnt + " file" + ((entryCnt == 1)
+							  ? ""
+							  : "s") + " (" + newEntryCnt + " new)");
         }
+	if(nonUniqueCnt>0) {
+	    entryMsg.add("Found " + nonUniqueCnt +" files already added");
+	}
+
+
+	if(totalAddedEntries>0) {
+	    entryMsg.add("Created " + totalAddedEntries +" new entries");
+	}
         List<FileWrapper> rootDirs = getRootDirs();
 
+
+	String cs = "";
+	if(getActive()) {
+	    cs = currentStatus;
+	    if(cs.length()>0) {
+		cs = HU.b("Current status:") + HU.div(cs,HU.style("margin-left:10px;"));
+	    }
+	} else {
+	    if(dirMsg.length()>0 && nonUniqueCnt == 0 && entryCnt==0 && status.length()==0 && entryMsg.size()==0) {
+		cs = "No new files found";
+	    }
+	}
+
+
         return "Directory:" + Utils.join( rootDirs,"<br>") + "<br>"
-	    + dirMsg + entryMsg + status + "<br>" + currentStatus;
+	    + dirMsg + Utils.join(entryMsg,"<br>") + HU.div(status.toString()) + cs;
     }
 
     /**
@@ -708,12 +739,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         logHarvesterInfo("******************* Starting ****************");
         if ( !canContinueRunning(timestamp)) {
             logHarvesterInfo("stopping in runInner");
-
             return;
         }
 
         entryCnt    = 0;
+	nonUniqueCnt  = 0;
         newEntryCnt = 0;
+	totalAddedEntries=0;
+	dirMap = new HashSet<FileWrapper>();
         status = new StringBuffer("Looking for initial directory listing");
         long tt1 = System.currentTimeMillis();
         dirs = new ArrayList<HarvesterFile>();
@@ -736,6 +769,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 return;
             }
         }
+
 
         logHarvesterInfo("Found " + dirs.size()
                          + " directories under top-level dir");
@@ -763,20 +797,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             cnt++;
             //            System.err.println("found:" + entries.size() + " files in:"
             //                               + (t2 - t1) + "ms");
-            String logLink = HU.href(
-				     getAdmin().URL_ADMIN_LOG
-				     + "?log=harvester.log", msg(
-								 "Harvest details")) + "<br>";
             if ( !getMonitor()) {
-                status.append(logLink);
                 logHarvesterInfo("Ran one time only. Exiting loop");
-
                 break;
             }
 
             status.append("Done... sleeping for " + getSleepMinutes()
                           + " minutes<br>");
-            status.append(logLink);
             logHarvesterInfo("Sleeping for " + getSleepMinutes()
                              + " minutes");
             doPause();
@@ -784,6 +811,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
         logHarvesterInfo("***********  Done running **************");
     }
+
+
+	
 
 
     /**
@@ -806,8 +836,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         FileWrapper.FileViewer    fileViewer = new FileWrapper.FileViewer() {
 		@Override
 		public int viewFile(int level, FileWrapper f,FileWrapper[] siblings) throws Exception {
-		    if(level>=thisHarvester.maxLevel-1)  
+		    if(thisHarvester.maxLevel>=0 && level>=thisHarvester.maxLevel-1)   {
 			return DO_DONTRECURSE;
+		    }
 		    if ( !canContinueRunning(timestamp)) {
 			return DO_STOP;
 		    }
@@ -893,7 +924,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         List<Entry>         needToAdd = new ArrayList<Entry>();
         List<HarvesterFile> tmpDirs   = new ArrayList<HarvesterFile>(dirs);
         entryCnt    = 0;
+	nonUniqueCnt = 0;
         newEntryCnt = 0;
+	totalAddedEntries = 0;
 
         boolean checkIfDirHasChanged = true;
 
@@ -910,6 +943,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         for (int fileIdx = 0; fileIdx < tmpDirs.size(); fileIdx++) {
             printTab = "\t";
             HarvesterFile dirInfo = tmpDirs.get(fileIdx);
+
             if (!dirInfo.exists()) {
                 logHarvesterInfo("Directory:" + dirInfo.getFile()   + " * does not exist *");
                 removeDir(dirInfo);
@@ -952,7 +986,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 //time diff threshold = 1 minute
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
-		    System.err.println("too soon:" + f);
+
                     logHarvesterInfo("Skipping recently modified file:" + f
                                      + " milliseconds since modified:"
                                      + (now - fileTime));
@@ -997,7 +1031,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 List<Entry> uniqueEntries =
                     getEntryManager().getUniqueEntries(
 						       new Utils.TypedList<Entry>(entry), nonUnique);
-                //              System.err.println("non unique:" + nonUnique+"\nunique:" +  uniqueEntries);
+		nonUniqueCnt+= nonUnique.size();
                 for (Entry found : nonUnique) {
                     String existingId = (String) found.getTransientProperty(
 									    "existingEntryId");
@@ -1031,7 +1065,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     logHarvesterInfo("New entry:" + newEntry.getResource());
                     dirInfo.addFile(newEntry.getResource().getPath());
                 }
-                if (needToAdd.size() > 1000) {
+                if (needToAdd.size() > 3) {
                     addEntries(needToAdd, timestamp, entriesMap);
                     needToAdd = new ArrayList<Entry>();
                 }
@@ -1121,7 +1155,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 entriesMap.put(originalId, newEntry);
             }
 
-
             idList.add(new String[] { newEntry.getId(), originalId });
             entriesToAdd.add(newEntry);
             cnt++;
@@ -1137,22 +1170,28 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 tmpList.add(entry);
                 count++;
 		long t1= System.currentTimeMillis();
-                getEntryManager().addInitialMetadata(getRequest(), tmpList, true,
+		Request myRequest = getRequest();
+		myRequest.put(ATTR_MAKETHUMBNAILS,""+makeThumbnails);
+                getEntryManager().addInitialMetadata(myRequest, tmpList, getAddMetadata(),
 						     getAddShortMetadata());
 		long t2= System.currentTimeMillis();
 		//		System.err.println("addInitialMetadata:" + entry +" time:" + (t2-t1));
                 currentStatus = "Added metadata for " + count + " entries. "
 		    + (entriesToAdd.size() - count)
 		    + " more entries to process";
+		if ( !canContinueRunning(timestamp)) {
+		    return;
+		}
             }
-        }
+	}
         currentStatus = "";
         status        = new StringBuffer();
         logHarvesterInfo("Inserting " + entriesToAdd.size() + " new entries");
-        status.append("Inserting entries<br>");
+        currentStatus="Inserting entries";
         getEntryManager().addNewEntries(getRequest(), entriesToAdd);
-        status.append("Done inserting " + entriesToAdd.size()
-                      + " entries<br>");
+	totalAddedEntries+=entriesToAdd.size();
+        currentStatus = "Done inserting " + entriesToAdd.size()
+                      + " entries";
     }
 
 

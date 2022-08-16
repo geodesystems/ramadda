@@ -8,8 +8,7 @@ package org.ramadda.repository.harvester;
 
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FileWrapper;
-
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
@@ -107,9 +106,8 @@ public class HarvesterFile extends FileInfo {
             if (tmp.size() > 50) {
                 return s + " Added " + tmp.size() + " files";
             }
-            fileBlock = HtmlUtils.insetDiv("Files:<br>"
-                                           + StringUtil.join("<br>", tmp), 0,
-                                               10, 0, 0);
+            fileBlock = HtmlUtils.insetDiv(Utils.join(tmp,"<br>"), 0,
+					   10, 0, 0);
 
             return HtmlUtils.makeShowHideBlock(s, fileBlock, false);
         }
