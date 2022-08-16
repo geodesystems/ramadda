@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 16 10:16:16 MDT 2022";
+var build_date="RAMADDA build date: Tue Aug 16 14:08:40 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -6462,11 +6462,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!records) {
                 if (pointData == null) {
 		    if(debug) this.logMsg("\tno data");
-		    
 		    return null;
 		}
                 records = pointData.getRecords();
             }
+            if (!records) {
+		return null;
+	    }
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -9351,25 +9354,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
-	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
-            if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
-		let animation = this.getAnimation();
-		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
-//		    console.log("dateMin:" + dateMin.toUTCString());
-		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
-		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
-			if(this.getProperty("animationFilter", true)) {
-			    this.setDateRange(animation.begin, animation.end);
+	    if(filteredRecords) {
+		let dateInfo = this.getDateInfo(filteredRecords);
+		if(debug) console.log("checkSearchBar-11");
+		if (dateInfo.dateMax) {
+		    if(debug) console.log("checkSearchBar-getAnimation");
+		    let animation = this.getAnimation();
+		    if(animation.getEnabled()) {
+			if(debug) console.log("checkSearchBar-calling animation.init");
+			//		    console.log("dateMin:" + dateMin.toUTCString());
+			animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+			if(debug) console.log("checkSearchBar-done calling animation.init");
+			if(!this.minDateObj) {
+			    if(debug) console.log("checkSearchBar-calling setDateRange");
+			    if(this.getProperty("animationFilter", true)) {
+				this.setDateRange(animation.begin, animation.end);
+			    }
+			    if(debug) console.log("checkSearchBar-done calling setDateRange");
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
-            }
+	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
 	getDateInfo:function(records) {
@@ -33241,7 +33246,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		highlightColor: this.getHighlightColor(),
 		highlightFillColor: this.getHighlightFillColor("transparent"),		
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
-		showLatLonLines:this.getProperty("showLatLonLines")
+		showLatLonLines:this.getProperty("showLatLonLines"),
+		popupWidth: this.getProperty("popupWidth",300),
+		popupHeight: this.getProperty("popupHeight",200),		
+
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -33983,6 +33991,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
 		    didSomething= true;
 		}
+
 		if(feature.record && this.getProperty("shareSelected")) {
 		    let idField = this.getFieldById(null,"id");
 		    if(idField) {
@@ -33992,7 +34001,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return true;
+		return false;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
