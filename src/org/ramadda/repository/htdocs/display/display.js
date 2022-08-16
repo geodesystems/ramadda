@@ -5660,6 +5660,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+            if (!this.hasData()) {
+		return
+	    }
+
+
+
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";

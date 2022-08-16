@@ -534,6 +534,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
+	{p:"strokeOpacity",d:1},
 	{p:"fillColor",d:"blue"},
 	{p:"fillOpacity",d:0.5},
 	{p:'radius',d:5,tt:"Size of the map points"},
@@ -3355,8 +3356,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };
 
 
-	    let fillColor = this.getPropertyFillColor();
-	    let fillOpacity =  this.getPropertyFillOpacity();
+	    let fillColor = this.getFillColor();
+	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getProperty("isPath", false);
 	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
 	    let groups;
@@ -3623,6 +3624,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                 let values = record.getData();
                 let props = {
+		    strokeOpacity:this.getStrokeOpacity(),
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
