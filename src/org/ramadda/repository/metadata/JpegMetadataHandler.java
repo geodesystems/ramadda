@@ -177,7 +177,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 		long t1= System.currentTimeMillis();
 		Metadata thumbnailMetadata = getThumbnail(request, entry,mtd);
 		long t2= System.currentTimeMillis();
-		System.err.println("getThumbnail:" + (t2-t1));
+		//		System.err.println("getThumbnail:" + (t2-t1));
 		if (thumbnailMetadata != null) {
 		    metadataList.add(thumbnailMetadata);
 		}

@@ -589,7 +589,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    long t1= System.currentTimeMillis();
 		    indexEntry(writer, entry, request,isNew);
 		    long t2= System.currentTimeMillis();
-		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
+		    //		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
 		}
 		//        writer.optimize();
 		writer.commit();
@@ -913,7 +913,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		String      result  = new String(IOUtil.readBytes(is));
 		String imageText = IO.readContents(tmp.toString()+".txt", getClass());
 		long t2= System.currentTimeMillis();
-		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
+		//		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
 		return imageText;
 	    } catch(Exception exc) {
 		getLogManager().logError("Error running tesseract for:" + f.getName(), exc);
