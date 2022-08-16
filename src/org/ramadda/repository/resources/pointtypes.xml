@@ -190,4 +190,26 @@
     </property>
   </type>
 
+  <type name="type_point_json"  super="type_point" description="JSON Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/icons/json.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+ <property name="record.properties">
+csvcommands1=-json,,
+  </property>
+<wiki>
+<![CDATA[
++section  title={{name}}
+{{description wikify=true}}
++row
++col-md-12
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display_htmltable showTitle="false" layoutHere="false"}}
+-col
+-row
+]]>
+</wiki>
+</type>
+
+
+
 </types>
