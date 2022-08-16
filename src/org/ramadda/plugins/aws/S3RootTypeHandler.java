@@ -7,6 +7,7 @@ package org.ramadda.plugins.aws;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.PatternHolder;
@@ -352,6 +353,16 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                               request.getString(ARG_MARKER, null));
     }
 
+    public static final String ACTION_SEARCH = "search";
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
+            throws Exception {
+	super.getEntryLinks(request, entry, state, links);
+	links.add(new Link(getEntryActionUrl(request, entry,
+					     ACTION_SEARCH), ICON_SEARCH, "Search S3 Objects",
+			   OutputType.TYPE_FILE));
+    }
+
+
     /**
      *
      * @param request _more_
@@ -363,11 +374,20 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
         String action = request.getString(ARG_ACTION, "");
-        if ( !action.equals("s3list")) {
+        if ( !action.equals(ACTION_SEARCH)) {
             return super.processEntryAction(request, entry);
         }
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb, "S3 List");
+        getPageHandler().entrySectionOpen(request, entry, sb, "S3 Search");
+        sb.append(HU.form(getEntryActionUrl(request, entry, ACTION_SEARCH).toString()));
+	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	sb.append(HU.hidden(ARG_ACTION,ACTION_SEARCH));
+	sb.append(HU.input("text",request.getString("text",""),HU.SIZE_30+HU.attrs("placeholder","Search text")));
+	sb.append(HU.SPACE2);
+        sb.append(HU.submit("Search"));
+        sb.append(HU.formClose());
+
+
         String rootId = (String) entry.getValue(IDX_ROOT);
         if (rootId == null) {
             rootId = "";
@@ -375,35 +395,36 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         rootId = rootId.trim();
         S3File       file  = new S3File(rootId);
         String       text  = request.getString("text", "");
-        List<String> found = file.doFind(text);
-        if ((found == null) || (found.size() == 0)) {
-            sb.append(
-                getPageHandler().showDialogWarning(
-                    "Could not find object:" + text));
+	if(stringDefined(text)) {
+	    List<String> found = file.doFind(text);
+	    if ((found == null) || (found.size() == 0)) {
+		sb.append(
+			  getPageHandler().showDialogWarning(
+							     "Could not find object:" + text));
 
-            return new Result("S3 List", sb);
-        }
-        sb.append(HU.b("Searching for: ") + text);
-        sb.append("<ul>");
-        System.err.println("root:" + rootId + ":");
-        for (String f : found) {
-            f = f.trim();
-            if ( !rootId.endsWith("/")) {
-                if ( !f.startsWith("/")) {
-                    f = "/" + f;
-                }
-            }
-            //synth:2c838cd0-b59d-4719-913b-3170c23f0c20:s3://afsis/2009-2013/Dry_Chemistry/ICRAF/Bruker_Alpha_KBr/icr012088.0
-            //synth:2c838cd0-b59d-4719-913b-3170c23f0c20:s3://afsis/2009-2013/Dry_Chemistry/ICRAF/Bruker_Alpha_KBr/icr005928.0
+		return new Result("S3 List", sb);
+	    }
+	    sb.append(HU.b("Searching for: ") + text);
+	    sb.append("<ul>");
+	    System.err.println("root:" + rootId + ":");
+	    for (String f : found) {
+		f = f.trim();
+		if ( !rootId.endsWith("/")) {
+		    if ( !f.startsWith("/")) {
+			f = "/" + f;
+		    }
+		}
+		String id = getEntryManager().createSynthId(entry, rootId + f);
+		System.err.println(rootId + f);
+		sb.append("<li> ");
+		String url = HU.url(getRepository().URL_ENTRY_SHOW.toString(),
+				    ARG_ENTRYID, id);
+		sb.append(HU.href(url, f));
+	    }
+	    sb.append("</ul>");
+	}
 
-            String id = getEntryManager().createSynthId(entry, rootId + f);
-            System.err.println(rootId + f);
-            sb.append("<li> ");
-            String url = HU.url(getRepository().URL_ENTRY_SHOW.toString(),
-                                ARG_ENTRYID, id);
-            sb.append(HU.href(url, f));
-        }
-        sb.append("</ul>");
+
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return new Result("S3 List", sb);
