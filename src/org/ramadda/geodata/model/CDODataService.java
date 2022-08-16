@@ -750,12 +750,12 @@ public abstract class CDODataService extends Service {
                 stats.add(new TwoFacedObject("Accumulation",
                                              CDOOutputHandler.STAT_SUM));
             }
-            if ( !isMonthly) {  // try this out
+            //if ( !isMonthly) {  // try this out
                 stats.add(new TwoFacedObject("Maximum",
                                              CDOOutputHandler.STAT_MAX));
                 stats.add(new TwoFacedObject("Minimum",
                                              CDOOutputHandler.STAT_MIN));
-            }
+            //}
             if (haveClimo) {
                 stats.add(new TwoFacedObject("Anomaly",
                                              CDOOutputHandler.STAT_ANOM));
@@ -847,6 +847,10 @@ public abstract class CDODataService extends Service {
                         + CDOOutputHandler.STAT_MEAN
                         + "\" || $(this).val() == \""
                         + CDOOutputHandler.STAT_STD
+                        + "\" || $(this).val() == \""
+                        + CDOOutputHandler.STAT_MAX
+                        + "\" || $(this).val() == \""
+                        + CDOOutputHandler.STAT_MIN
                         + "\" || $(this).val() == \""
                         + CDOOutputHandler.STAT_NONE + "\" ));\n"
                         + "}).change();\n"));

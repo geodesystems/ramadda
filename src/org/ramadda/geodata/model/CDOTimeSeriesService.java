@@ -301,7 +301,12 @@ public class CDOTimeSeriesService extends CDODataService {
         //String maskType   = request.getString(NCLTimeSeriesPlotDataService.ARG_NCL_MASKTYPE, "none");
 
         if ( !doMonthsSpanYearEnd(request, sample)) {
-            commands.add("-yearmean");
+            String statyear = "-yearmean";
+            if (stat.equals(CDOOutputHandler.STAT_MAX)
+               || stat.equals(CDOOutputHandler.STAT_MIN)) {
+        	    statyear = "-year"+stat;
+            }
+            commands.add(statyear);
         }
         // Select order (left to right) - operations go right to left:
         //   - stats
@@ -336,8 +341,13 @@ public class CDOTimeSeriesService extends CDODataService {
             getOutputHandler().addStatServices(newRequest, sample, commands);
             */
 
-            // month average
-            commands.add("-timselmean," + totalMonths);
+            // month average, max or min
+            String timesel = "-timselmean";
+            if (stat.equals(CDOOutputHandler.STAT_MAX)
+               || stat.equals(CDOOutputHandler.STAT_MIN)) {
+        	    timesel = "-timsel"+stat;
+            }
+            commands.add(timesel + "," + totalMonths);
 
             // date select to cover end of year
             int startYear = timeRequest.get(

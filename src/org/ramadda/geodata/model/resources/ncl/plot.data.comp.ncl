@@ -819,6 +819,12 @@ begin
   if (opts@stattype .eq. "sum") then
     vartitle = vartitle + " Accumulation"
   end if
+  if (opts@stattype .eq. "max") then
+    vartitle = "Maximum " + vartitle
+  end if
+  if (opts@stattype .eq. "min") then
+    vartitle = "Minimum " + vartitle
+  end if
   if (.not. (opts@level .eq. "")) then
     vartitle = vartitle + " (" + level +" "+levelunit+ ")"
   end if
@@ -881,7 +887,7 @@ begin
   numfiles = ListCount(files)
   ;print(numfiles)
   data = files[0]
-  printVarSummary(data)
+  ;printVarSummary(data)
   plots = new(numfiles,graphic)
   outtype = opts@outtype
   dodiff = outtype .eq. "diff" .and. numfiles .eq. 2
@@ -1191,8 +1197,6 @@ begin
     end if
     if (numfiles .gt. 1) then
       do i = 1,numfiles-1
-        ;newdata = readdata(files(i),opts)
-        ;;newdata = files(i,:,:)
         newdata = files[i]
         data = subData(data,newdata)
         if (numtitles .ge. i .and. \
@@ -1204,7 +1208,6 @@ begin
       end do
     end if
     rescf@tiMainString        = plottitle
-    ;mydata = data(0,:,:)
     mydata = data
     ;mydata = mask_data(data,masktype,maskdata)
     rescf@gsnLeftString = setvartitle(mydata, opts, addAnom, level, levelunit)
@@ -1223,14 +1226,10 @@ begin
       plots(0) = gsn_csm_contour_map(wks,mydata,res2)
     end if
     addAnnotation2(wks,opts@annotation, plots(0), opts)
-    ;if (.not. doGoogle) then
-    ;    addAnnotation(wks,opts@annotation, opts@imageformat)
-    ;end if
     delete(mydata)
   else 
     if (.not. doGoogle) then
       do i = 0,numfiles-1
-        ;;mydata = files(i,:,:)
         mydata = files[i]
         ;mydata = mask_data(mydata,masktype,maskdata)
         if (isatt(opts,"longnames")) then
@@ -1286,9 +1285,6 @@ begin
 
       ;; Make the first plot to get the labelbar
       mydata = data;
-      ;mydata = mask_data(data,masktype,maskdata)
-;;      ;; make title for labelbar
-;;      vartitle = setvartitle(mydata, opts, addAnom, level, levelunit)
 
       name="Plot 1"
       if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
@@ -1348,7 +1344,6 @@ begin
           gsn_define_colormap(wks, opts@colormap)
         
           ;; handle precip
-          ;;if (data@units .eq. "mm/day") then
           if (opts@invert_cmap) then
             if (.not. isanom .and. .not. dodiff) then
               rescf@gsnSpreadColorEnd = -2
@@ -1357,11 +1352,7 @@ begin
             end if
             gsn_reverse_colormap(wks)
           end if
-          ;;mydata = files(i,:,:)
-          ;mydata = files[i]
-          ;mydata = mask_data(mydata,masktype,maskdata)
           gplot = gsn_csm_contour_map_ce(wks,mydata,rescf)
-          ;if (isanom .and. cint .eq. 0) then
           if (isanom .or. \
             (isdefined(rescf@cnMinLevelValF) .and. isdefined(rescf@cnMaxLevelValF) \ 
             .and. (rescf@cnMinLevelValF .eq. (-1*rescf@cnMaxLevelValF)))) then 
@@ -1601,12 +1592,7 @@ begin
   if (numplots .gt. 1 .and. opts@ensavg) then
      numplots = numplots+1
   end if
-  ;;print("numplots = " +numplots)
-  ;;if (numplots .gt. 2) then
-     newtitles = new(numfiles,string)
-  ;;else
-  ;;   newtitles = new(1,string)
-  ;;end if
+  newtitles = new(numfiles,string)
   firstnc = 1-csvidx
   if (opts@outtype .eq. "regression") then
      typeLabel = "Regression"
@@ -1649,11 +1635,7 @@ begin
     ;printMinMax(corr,True)
     if (.not. isdefined("cdata")) then
       shape = dimsizes(corr)
-      ;;if (numfiles .eq. 2) then
-      ;;   cdata = new((/1,shape(0),shape(1)/),float)
-      ;;else
-         cdata = new((/numplots,shape(0),shape(1)/),float)
-      ;;end if
+      cdata = new((/numplots,shape(0),shape(1)/),float)
     end if
     ;; name the dimension to avoid warning message
     cdata!0 = "filenum"
@@ -1662,7 +1644,6 @@ begin
     ncidx = ncidx + 1
     delete(corr)
   end do
-  ;;if (numfiles .gt. 2) then
   if (numplots .ge. 2 .and. opts@ensavg) then
     cdata(numplots-1,:,:) = dim_avg_n_Wrap(cdata(0:numplots-2,:,:),0)
     newtitles(numplots-1) = "Average "+typeLabel
@@ -2112,6 +2093,13 @@ begin
       alldata = newAlldata
       delete(newAlldata)
     end if
+    ; remove missing values
+    ;printVarSummary(alldata)
+    onedalldata = ndtooned(alldata)
+    delete(alldata)
+    igood = ind(.not.ismissing(onedalldata))
+    alldata = onedalldata(igood)
+    ;printVarSummary(alldata)
     pdffile = opts@models(pdf) + "_" + opts@exps(pdf) + "_" + opts@dates(pdf)
     pdffile = str_sub_str(pdffile," ","_")
     outfile = opts@product_dir+"/"+pdffile+"_pdfvalues.txt"
@@ -2119,7 +2107,11 @@ begin
     pdffiles(pdf) = outfile
     delete(ncfiles)
     delete(alldata)
-    delete(opts@meanIndex)
+    delete(onedalldata)
+    delete(igood)
+    if (isatt(opts,"meanIndex")) then
+      delete(opts@meanIndex)
+    end if
   end do
   if (numpdfs .gt. 1) then
     if (opts@dates(0) .ne. opts@dates(1)) then
@@ -2171,14 +2163,26 @@ begin
   numfiles = dimsizes(files)
   data = readdata(files(0), opts)
   if (dimsizes(getvardims(data)) .gt. 2) then
+     doneOne = False
      if (opts@stattype .eq. "sum") then
        atmpdata = dim_sum_n_Wrap(data, 0);
-     else
+       doneOne = True
+     end if
+     if (opts@stattype .eq. "max") then
+       atmpdata = dim_max_n_Wrap(data, 0);
+       doneOne = True
+     end if
+     if (opts@stattype .eq. "min") then
+       atmpdata = dim_min_n_Wrap(data, 0);
+       doneOne = True
+     end if
+     if (.not.doneOne) then
        atmpdata = dim_avg_n_Wrap(data, 0);
      end if
      delete(data)
      onetime = atmpdata
      delete(atmpdata)
+     delete(doneOne)
   else
      onetime = data(0,:,:)
   end if
@@ -2188,8 +2192,6 @@ begin
   if (numfiles .gt. 1 .and. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. opts@ensavg)) then
     numdatas = numfiles +1
   end if
-  ;;alldata = new((/numdatas,xys(0),xys(1)/),float)
-  ;;alldata(0,:,:) = onetime
   alldata = NewList("fifo")
   ListAppend(alldata,onetime)
   if (numfiles .gt. 2 .or. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. numfiles .gt. 1)) then
@@ -2215,20 +2217,29 @@ begin
     tmpdata := readdata(files(i), opts)
     ;printVarSummary(tmpdata)
     if (dimsizes(getvardims(tmpdata)) .gt. 2) then
+       doneOne = False
        if (opts@stattype .eq. "sum") then
          ListAppend(alldata,dim_sum_n_Wrap(tmpdata, 0));
-       else
-         ListAppend(alldata,dim_avg_n_Wrap(tmpdata, 0));
+         doneOne = True
        end if
-       ;;atmpdata = dim_avg_n_Wrap(tmpdata, 0);
-       ;;delete(tmpdata)
-       ;;tmpdata = atmpdata
-       ;;delete(atmpdata)
+       if (opts@stattype .eq. "max") then
+         ListAppend(alldata,dim_max_n_Wrap(tmpdata, 0));
+         doneOne = True
+         ;print("using max")
+       end if
+       if (opts@stattype .eq. "min") then
+         ListAppend(alldata,dim_min_n_Wrap(tmpdata, 0));
+         ;print("using min")
+         doneOne = True
+       end if
+       if (.not. doneOne) then
+         ListAppend(alldata,dim_avg_n_Wrap(tmpdata, 0));
+         ;print("using mean")
+       end if
+       delete(doneOne)
     else
      ListAppend(alldata,replicate_var(tmpdata))
     end if
-    ;;alldata(i,:,:) = tmpdata
-    ;;ListAppend(alldata,tmpdata)
     if (numfiles .gt. 2 .or. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. numfiles .gt. 1)) then
       if (outtype .eq. "enscomp") then
         newtitles(i) = opts@ens(i)
@@ -2243,10 +2254,8 @@ begin
       end if
       newtitles(i) = opts@titles(i)
     end if
-    ;;delete(tmpdata)
   end do
   if (numfiles .gt. 1 .and. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. opts@ensavg)) then
-    ;;alldata(numdatas-1,:,:) = dim_avg_n_Wrap(alldata(0:numfiles-1,:,:),0)
     numgrids = ListCount(alldata)
     avgdata = new((/numgrids,xys(0),xys(1)/),float)
     do i = 1,numgrids-1

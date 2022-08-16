@@ -861,11 +861,15 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("anomtype", anomType);
 
             String stat = "mean";
-            if (request.getString(
+            String reqstat = request.getString(
                     CDOOutputHandler.ARG_CDO_STAT,
-                    CDOOutputHandler.STAT_MEAN).equals(
-                        CDOOutputHandler.STAT_SUM)) {
+                    CDOOutputHandler.STAT_MEAN);
+            if (reqstat.equals(CDOOutputHandler.STAT_SUM)) {
                 stat = "sum";
+            } else if (reqstat.equals(CDOOutputHandler.STAT_MAX)) {
+                stat = "max";
+            } else if (reqstat.equals(CDOOutputHandler.STAT_MIN)) {
+                stat = "min";
             }
             envMap.put("stat", stat);
 
@@ -1198,6 +1202,19 @@ public class NCLModelPlotDataService extends NCLDataService {
         }
         envMap.put("anomtype", anomType);
 
+        String stat = "mean";
+        String reqstat = request.getString(
+                CDOOutputHandler.ARG_CDO_STAT,
+                CDOOutputHandler.STAT_MEAN);
+        if (reqstat.equals(CDOOutputHandler.STAT_SUM)) {
+            stat = "sum";
+        } else if (reqstat.equals(CDOOutputHandler.STAT_MAX)) {
+            stat = "max";
+        } else if (reqstat.equals(CDOOutputHandler.STAT_MIN)) {
+            stat = "min";
+        }
+        envMap.put("stat", stat);
+        
         String climstartYear =
             request.getString(
                 CDOOutputHandler.ARG_CDO_CLIM_STARTYEAR,
