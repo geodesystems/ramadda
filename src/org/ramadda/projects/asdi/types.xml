@@ -68,7 +68,7 @@ csvcommands1=-json,,,-print
 {{display_table showTitle="false" layoutHere="false" height=60vh}}
 -col
 +col-3
-{{display_map xjustOneMarker=true}}
+{{display_map justOneMarker=true}}
 -col
 -row
 -section
