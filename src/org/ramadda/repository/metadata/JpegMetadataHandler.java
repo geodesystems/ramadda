@@ -161,11 +161,7 @@ public class JpegMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
-        //      System.err.println("JpegMetadataHandler.getInitialMetadata shortForm:"  + shortForm +" isImage:" +entry.getResource().isImage());
-        if (shortForm) {
-            return;
-        }
-
+	//	System.err.println("JpegMetadataHandler.getInitialMetadata shortForm:"  + shortForm +" isImage:" +entry.getResource().isImage());
         if ( !entry.getResource().isImage()) {
             return;
         }
@@ -186,6 +182,12 @@ public class JpegMetadataHandler extends MetadataHandler {
             getLogManager().logError("JpgeMetadataHandler", exc);
             return;
         }
+
+
+        if (shortForm) {
+            return;
+        }
+
 
 
         if ( !(path.toLowerCase().endsWith(".jpg")
