@@ -16,17 +16,11 @@ import java.util.List;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.*;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.*;
 
 
 
@@ -247,13 +241,12 @@ public class S3File extends FileWrapper {
         }
         List<S3File> files  = new ArrayList<S3File>();
 	String[] pair = getBucketAndPrefix(theBucket);
-	ListObjectsRequest request = new ListObjectsRequest().withBucketName(pair[0]).withDelimiter("/");
+	ListObjectsV2Request request = new ListObjectsV2Request().withBucketName(pair[0]).withDelimiter("/");
 	if(marker!=null)
-	    request.setMarker(marker);
+	    request.setContinuationToken(marker);
 	if(pair[1]!=null) request = request.withPrefix(pair[1]);
 	String key  =pair[1]!=null?pair[1]:"";
-	//	System.err.println("BUCKET:" + theBucket +" pair:" + pair[0] +" :" + pair[1]);
-	ObjectListing listing = getS3().listObjects(request);
+	ListObjectsV2Result listing = getS3().listObjectsV2(request);
 	List<String> commonPrefixes = listing.getCommonPrefixes();
 
 	int cnt = 0;
@@ -277,8 +270,7 @@ public class S3File extends FileWrapper {
             S3File file =  new S3File(path, name, objectSummary.getSize(), objectSummary.getLastModified());
 	    files.add(file);
 	}
-	System.err.println("S3File.doList: " + theBucket +" marker:" + marker +" cnt:" + files.size());
-	return new S3ListResults(listing.getNextMarker(), files);
+	return new S3ListResults(listing.getNextContinuationToken(), files);
     }
 
 
@@ -365,11 +357,14 @@ public class S3File extends FileWrapper {
 	String host = pair[0];
 	String path =pair[1];
 
-	ListObjectsRequest request = new ListObjectsRequest().withBucketName(pair[0]).withDelimiter("/");
+	ListObjectsV2Request request = new ListObjectsV2Request().withBucketName(pair[0]).withDelimiter("/");
 	if(pair[1]!=null) request = request.withPrefix(pair[1]);
 	String key  =pair[1]!=null?pair[1]:"";
-	ObjectListing listing = getS3().listObjects(request);
+	ListObjectsV2Result listing = getS3().listObjectsV2(request);
 	List<S3ObjectSummary> 	summaries = listing.getObjectSummaries();
+	if(summaries.size()==0) {
+	    throw new IllegalArgumentException("Unable to list the S3 bucket:" + bucket);
+	}
 	S3ObjectSummary objectSummary   = summaries.get(0);
 	ObjectMetadata object = getS3().getObject(new GetObjectRequest(objectSummary.getBucketName(), objectSummary.getKey()), file);
     }
@@ -384,6 +379,45 @@ public class S3File extends FileWrapper {
     public void copyFileTo(java.io.File file) throws Exception {
         copyFileTo(bucket, file);
     }
+
+    public List<String> doFind(String find) throws Exception {
+	List<String> found = new ArrayList<String>();
+	String[] pair = getBucketAndPrefix(this.toString());
+	ListObjectsV2Request request = new ListObjectsV2Request().withBucketName(pair[0]);
+	if(pair[1]!=null) request = request.withPrefix(pair[1]);
+	String key  =pair[1]!=null?pair[1]:"";
+	int cnt = 0;
+	String marker = null;
+	while(true) {
+	    if(cnt>50000) break;
+	    if(marker!=null)
+		request.setContinuationToken(marker);
+	    ListObjectsV2Result listing = getS3().listObjectsV2(request);
+	    for (S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
+		cnt++;
+		if(found.size()>100) break;
+		try {
+		    if(objectSummary.getKey().matches(find)) {
+			found.add(objectSummary.getKey());
+			continue;
+		    }
+		} catch(Exception ignore){}
+		if(objectSummary.getKey().indexOf(find)>=0) {
+		    found.add(objectSummary.getKey());
+		}
+	    }
+
+	    marker = listing.getNextContinuationToken();
+	    if(marker==null) {
+		System.err.println("no marker");
+		break;
+	    }
+	}
+	return found;
+    }
+
+
+
 
     public static class MyFileViewer extends FileWrapper.FileViewer {
 	boolean download = false;
@@ -411,6 +445,7 @@ public class S3File extends FileWrapper {
 	    //	    this.verbose = false;
 	    this.excludes = excludes;
 	}
+
 	private void print(String msg) throws Exception {
 	    if(buffer!=null) buffer.append(msg);
 	    else if(verbose) 
@@ -523,6 +558,7 @@ public class S3File extends FileWrapper {
         //      debug = true;
         final int[]            cnt        = { 0 };
         List<String> excludes = new ArrayList<String>();
+        String find = null;
         boolean doDownload =false;
         boolean makeDirs= true;
 	boolean overWrite= false;
@@ -571,6 +607,13 @@ public class S3File extends FileWrapper {
 		sizeLimit = Integer.parseInt(args[++i]);
                 continue;
 	    }
+            if (path.equals("-find")) {
+		if(i==args.length-1) {
+		    usage("Bad find arg");
+		}
+		find = args[++i];
+                continue;
+	    }	    
             if (path.equals("-percent")) {
 		if(i==args.length-1) {
 		    usage("Bad percent arg");
@@ -612,6 +655,13 @@ public class S3File extends FileWrapper {
                 }
                 continue;
             }
+	    if(find!=null) {
+                S3File file = new S3File(path);
+		System.err.println(file.doFind(find));
+		continue;
+	    }
+
+
             FileWrapper f = FileWrapper.createFileWrapper(path);
 	    if (doRecursive) {
                 FileWrapper.walkDirectory(f, new MyFileViewer(doDownload, makeDirs,overWrite,sizeLimit,percent,verbose,excludes),0);
