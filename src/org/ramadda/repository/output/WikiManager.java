@@ -2466,6 +2466,17 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(entry==null) {
 		return "{{"+ theTag+" " +"No entry" +"}}";
 	    }
+            String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR,
+                                           null);
+	    if(stringDefined(ancestor)) {
+                Entry ancestorEntry = findEntryFromId(request, entry, wikiUtil, props,
+                                             ancestor);
+                if (ancestorEntry != null) {
+                    props.put("ancestorName",ancestorEntry.getName());
+                }
+	    }
+
+
             String jsonUrl = null;
 	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",
