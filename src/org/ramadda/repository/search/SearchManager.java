@@ -322,7 +322,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //https://www.kaggle.com/duketemon/wordnet-synonyms
 	    String resource = getStorageManager().readSystemResource("/org/ramadda/repository/resources/synonyms.csv");
 	    //big,adjective,large
-	    System.err.println("sysnon");
 	    for(String line: Utils.split(resource,"\n",true,true)) {
 		List<String> toks = Utils.splitUpTo(line,",",3);
 		String word  = toks.get(0);
@@ -712,7 +711,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 		File f = element.getFile(entry, metadata, element);
 		if(f!=null && f.exists()) {
-		    addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
+		    if(!Utils.isImage(f.toString())) {
+			addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
+		    }
 		}
 	    }
 	    
@@ -893,7 +894,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
-	}
+	} 
+
 	boolean isImage = Utils.isImage(f.getName());
 
 	if(isImage && !indexImages) {
