@@ -895,7 +895,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(corpusFile.exists()) {
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
 	} 
-	System.err.println("no corpus:" + corpusFile);
+	System.err.println("no corpus for file:" + f);
 
 	boolean isImage = Utils.isImage(f.getName());
 
