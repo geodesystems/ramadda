@@ -1065,7 +1065,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     logHarvesterInfo("New entry:" + newEntry.getResource());
                     dirInfo.addFile(newEntry.getResource().getPath());
                 }
-                if (needToAdd.size() > 3) {
+                if (needToAdd.size() > 999) {
                     addEntries(needToAdd, timestamp, entriesMap);
                     needToAdd = new ArrayList<Entry>();
                 }
