@@ -686,6 +686,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return _more_
      */
     public File getTmpDirFile(TempDir tmpDir, String file, boolean andTouch) {
+	file = IO.cleanFileName(file);
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
         if (andTouch) {
             dirTouched(tmpDir, f);
@@ -2640,7 +2641,8 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public String readFile(String file) throws Exception {
         checkPath(file);
-        return IOUtil.readContents(file, getClass());
+	InputStream is = IO.getInputStream(file);
+        return IO.readInputStream(is);
     }
 
 
