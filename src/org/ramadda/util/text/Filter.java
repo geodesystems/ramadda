@@ -487,6 +487,67 @@ public class Filter extends Processor {
     }
 
 
+    public static class Has extends Filter {
+	List<String> cols;
+
+	boolean has = false;
+
+        /**
+         * _more_
+         *
+         * @param in _more_
+         * @param column1 _more_
+         * @param file _more_
+         * @param column2 _more_
+         *
+         * @param ctx _more_
+         * @param greater _more_
+         * @param cols _more_
+         * @param length _more_
+         */
+        public Has(TextReader ctx,  List<String> cols) {
+	    this.cols  = cols;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+		has  = true;
+		for(String my: cols) {
+		    HashSet<String> myCols = new HashSet<String>();
+		    myCols.add(my);
+		    myCols.add(makeID(my));
+		    boolean ok = false;
+		    for(Object c: row.getValues())  {
+			String s = c.toString();
+			if(myCols.contains(s)) {
+			    ok = true;
+			} else if(myCols.contains(makeID(s))) {
+			    ok = true;
+			}
+		    }
+		    if(!ok) {
+			has = false;
+			break;
+		    }
+		}
+                return has;
+            }
+	    return has;
+	}
+
+    }
+
+    
 
     /**
      * Class description

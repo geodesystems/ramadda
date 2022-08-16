@@ -1794,6 +1794,8 @@ public class CsvUtil {
 		"-numcolumns",
 		"Remove or add values so each row has the number of columns",
 		new Arg("number", "", "type", "number")),
+        new Cmd("-has", "Only pass through anything if the data has the given columns",
+                new Arg("columns", "", "type", "columns")),
         new Cmd("-pattern", "Pass through rows that the columns each match the pattern",
                 new Arg("columns", "", "type", "columns"),
 		new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", "type", "pattern")),
@@ -4437,6 +4439,13 @@ public class CsvUtil {
 						     Double.parseDouble(args.get(++i))));
 		return i;
 	    });
+
+	defineFunction("-has", 1,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.Has(ctx,
+					     getCols(args.get(++i))));
+		return i;
+	    });	
 
 
 	defineFunction("-betweenstring", 3,(ctx,args,i) -> {
