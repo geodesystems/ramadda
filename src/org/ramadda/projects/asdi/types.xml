@@ -52,5 +52,27 @@ fields="station, date, name, temp, dewp, slp, stp, visib, wdsp,  mxspd, gust, ma
 </wiki>
 </type>
 
+<type name="type_asdi_sondehub_json"  super="type_point" description="SondeHub JSON Data"  handler="org.ramadda.data.services.PointTypeHandler">
+<property name="icon" value="/icons/json.png"/>
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="record.properties">
+csvcommands1=-json,,,-print
+</property>
+<wiki>
+<![CDATA[
++section  title={{name}}
+{{description wikify=true}}
++row
++col-md-9
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display_table showTitle="false" layoutHere="false" height=60vh}}
+-col
++col-3
+{{display_map xjustOneMarker=true}}
+-col
+-row
+]]>
+</wiki>
+</type>
 
 </types>
