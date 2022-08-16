@@ -467,6 +467,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(!imageField) {
 		    return false;
 		}
+
+
 		return true;
 		let image = record.getValue(imageField.getIndex());
 		if(!Utils.stringDefined(image) && !includeBlanks) {

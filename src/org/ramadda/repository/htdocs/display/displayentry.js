@@ -1120,8 +1120,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
-		let ancestor = HU.getUrlArgument(ID_ANCESTOR);
-		let name = HU.getUrlArgument(ID_ANCESTOR_NAME);		
+		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
+		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
+		console.log(ancestor,name);
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
@@ -1771,7 +1772,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.mapId = null;
 	    if(this.myDisplays) {
 		this.myDisplays.forEach(info=>{
-		    removeRamaddaDisplay(info.display.getId());
+		    if(info.display)
+			removeRamaddaDisplay(info.display.getId());
 		});
 	    }
 	    this.myDisplays = [];

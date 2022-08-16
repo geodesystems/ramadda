@@ -3367,6 +3367,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(args)
 		$.extend(opts,args);
 	    let debug =  displayDebug.filterData;
+	    if(debug) this.logMsg("filterData");
 
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
@@ -3414,7 +3415,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let pointData = this.getData();
             if (!records) {
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    if(debug) this.logMsg("\tno data");
+		    
+		    return null;
+		}
                 records = pointData.getRecords();
             }
             if (!fields) {
@@ -3424,7 +3429,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
-	    if(debug)   console.log("fitler #records:" + records.length);
+	    if(debug)   this.logMsg("filter #records:" + records.length);
 	    if(this.getProperty("filterLatest")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
 		let max = {};
@@ -4906,6 +4911,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getData: function() {
             if (!this.hasData()) {
 		//Inline data
+		if (this.properties.theData) {
+		    return this.properties.theData;
+		} 
 		if(this.properties.dataSrc) {
 		    this.addData(makeInlineData(this,this.properties.dataSrc));
 		} else {
