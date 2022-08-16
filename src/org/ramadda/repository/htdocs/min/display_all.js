@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 16 00:44:26 MDT 2022";
+var build_date="RAMADDA build date: Tue Aug 16 02:29:43 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -30279,7 +30279,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
-            let searchButton = HU.div([ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "display-search-button ramadda-clickable"], buttonLabel);
+	    buttonLabel = "Search";
+            let searchButton = HU.div(['style','xmargin-left:4px;xmargin-right:4px;margin-bottom:4px;width:80%;','class','ramadda-button',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
             let settings = this.getSearchSettings();
 	    let addWidget = (label, widget)=>{
@@ -30407,13 +30408,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let topContents = "";	    
 	    if(topItems.length>0) {
 		if (horizontal) {
-                    form += "<table><tr valign=top><td>" + searchButton + "</td><td>" + topItems[0] + "</td></tr></table>";
+		    form+=HU.center(searchButton);
+//		    form += "<table><tr valign=top><td>" + searchButton + "</td><td>" + topItems[0] + "</td></tr></table>";
+		    form += "<table><tr valign=top><td>" + topItems[0] + "</td></tr></table>";
 		    topContents +=  HU.join(topItems.slice(1), "");
 		} else {
 //                    form += "<table width=100%><tr valign=top><td width=1>" + searchButton + "</td><td>" + topItems[0] + "</td></tr></table>";
-		    topItems = Utils.mergeLists([searchButton], topItems);
+//		    topItems = Utils.mergeLists([searchButton], topItems);
 		    topItems = topItems.map(item=>{return HU.div([STYLE,HU.css("margin-right","8px")], item);});
-
+		    form+=searchButton;
 		    form+=   HU.hrow(...topItems);
 		}
 	    }
@@ -31247,9 +31250,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			});
 		    };
 		    let tooltip = this.getProperty("tooltip");
-		    let props = {dialogListener: dialogListener,highlightColor:"#436EEE",blockStyle:this.getProperty("blockStyle",""),doPopup:this.getProperty("doPopup",true),tooltip:tooltip, tooltipClick:tooltip,descriptionField:"description",imageWidth:"140px",blockWidth:"150px",numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",showBottomLabel:false,bottomLabelTemplate:"", topLabelTemplate:"${name}", textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
+		    let props = {centerOnMarkersAfterUpdate:true,dialogListener: dialogListener,highlightColor:"#436EEE",blockStyle:this.getProperty("blockStyle",""),doPopup:this.getProperty("doPopup",true),tooltip:tooltip, tooltipClick:tooltip,descriptionField:"description",imageWidth:"140px",blockWidth:"150px",numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",showBottomLabel:false,bottomLabelTemplate:"", topLabelTemplate:"${name}", textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
-		})
+		});
 	    }
 
 	    if(this.mapId && this.areaEntries && this.areaEntries.length>0) {
@@ -33526,6 +33529,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'regionSelectorLabel'},	
 	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
+	{p:'centerOnMarkersAfterUpdate',ex:true,tt:'Always center on the markers'},	
 	{p:'doInitCenter',tt:'Center the maps on initialization'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
@@ -33539,6 +33543,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
 	{p:'clipToBounds',ex:'true',tt:'Clip to bounds'},	
 	{p:'showMarkers',ex:'false',tt: 'Hide the markers'},
+	{p:'acceptEntryMarkers',ex:'true',d:false,tt:'If other maps can add entry markers and boxes'},
 
 	{label:'Map Highlight'},
 	{p:'showRecordSelection',ex:'false'},
@@ -34569,8 +34574,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             this.sourceToEntries[source.getId()] = entries;
-
-            var markers = MapUtils.creatLayerMarkers("Markers");
+            let markers = MapUtils.createLayerMarkers("Markers",{});
             var lines =  MapUtils.createLayerVector("Lines", {});
             var north = -90,
                 west = 180,
@@ -34621,6 +34625,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
         addOrRemoveEntryMarker: function(id, entry, add, args) {
+	    if(!this.getAcceptEntryMarkers()) {
+		return
+	    }
             if (!args) {
                 args = {};
             }
@@ -35529,6 +35536,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.callingUpdateUI = true;
 		    this.updateUIInner(args, pointData, records,debug);
 		    this.callingUpdateUI = false;
+		    if(this.getCenterOnMarkersAfterUpdate()) {
+			this.map.centerOnMarkers();
+		    }
 		    if(displayDebug.initMap) this.logMsg("done calling updateUIInner",true);
 		    if(args.callback)args.callback(records);
 		    this.clearProgress();
