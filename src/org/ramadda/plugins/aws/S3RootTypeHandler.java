@@ -396,7 +396,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         S3File       file  = new S3File(rootId);
         String       text  = request.getString("text", "");
 	if(stringDefined(text)) {
-	    List<String> found = file.doFind(text);
+	    List<String> found = file.doSearch(text);
 	    if ((found == null) || (found.size() == 0)) {
 		sb.append(
 			  getPageHandler().showDialogWarning(
