@@ -228,6 +228,15 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     border-radius:var(--default-radius);
 }
 
+
+.ramadda-map-button {
+    padding:2px;
+    padding-left:4px;
+    padding-right:4px;    
+    font-size:80%;
+
+}
+
 .ramadda-menu-divider {
     margin-top:4px;
     margin-bottom:4px;    
