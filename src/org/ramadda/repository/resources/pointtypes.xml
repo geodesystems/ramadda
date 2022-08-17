@@ -121,16 +121,6 @@
   </type>
 
 
-  <type name="point_text_csv"  description="CSV Data"  super="type_point" priority="1"
-	help="A structured CSV data file"> 
-    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-    <property name="record.properties">
-      <![CDATA[
-	       firstLineDefinesFields=true
-	       commentLineStart=#
-      ]]>
-    </property>
-  </type>
 
 
   <type name="point_text"  description="RAMADDA CSV Data"  super="type_point" priority="1"
