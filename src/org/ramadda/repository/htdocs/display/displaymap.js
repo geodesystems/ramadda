@@ -950,7 +950,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         initMapParams: function(params) {
 	    SUPER.initMapParams.call(this,params);
-	    if(this.getDoPopupSlider()) {
+	    if(this.getDoPopupSlider() || this.getPopupSliderRight()) {
 		params.doPopupSlider = true;
 		if(this.getPopupSliderRight()) {
 		    params.popupSliderRight = true;
