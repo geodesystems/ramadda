@@ -106,7 +106,7 @@ fields=station[type=enumeration label="Station" ],date[type=date label="Date"  f
 
 -col
 +col-md-4
-{{map zoomLevel=3}}
+{{display_map justOneMarker=true xzoomLevel=3}}
 -col
 -row
 -section
