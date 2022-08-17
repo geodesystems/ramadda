@@ -5215,29 +5215,7 @@ public abstract class Converter extends Processor {
                 if (s == null) {
                     return row;
                 }
-                if (action.equals("lower")) {
-                    s = s.toLowerCase();
-                } else if (action.equals("upper")) {
-                    s = s.toUpperCase();
-                } else if (action.equals("proper")) {
-                    s = Utils.nameCase(s);
-                } else if (action.equals("camel")) {
-                    s = Utils.upperCaseFirst(s);
-                } else if (action.equals("capitalize")) {
-                    if (s.length() == 1) {
-                        s = s.toUpperCase();
-                    } else if (s.length() > 1) {
-                        s = s.substring(0, 1).toUpperCase()
-                            + s.substring(1).toLowerCase();
-                    }
-                } else {
-                    throw new IllegalArgumentException(
-                        "Unknown case:" + action
-                        + ". Needs to be one of lower, upper, camel, capitalize");
-                }
-                //              s = s.replaceAll("  +"," ");
-                //              os = os.replaceAll("  +"," ");
-                //              if(!s.trim().equals(os.trim())) System.out.println(os +":" + s+":");
+		s= Utils.applyCase(action, s);
                 row.getValues().set(index, s);
             }
 
