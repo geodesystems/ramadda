@@ -90,7 +90,7 @@ public class ConvertibleFile extends CsvFile {
         List<String> files = null;
         if (entry.getResource().hasResource()) {
             files = new ArrayList<String>();
-            files.add(entry.getResource().getPath());
+            files.add(entry.getTypeHandler().getStorageManager().getEntryFile(entry).toString());
         }
         csvUtil.run(files);
     }
