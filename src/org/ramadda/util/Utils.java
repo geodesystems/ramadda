@@ -1354,6 +1354,36 @@ public class Utils extends IO {
         return attrValue;
     }
 
+    public static String getAttributeOrTagUpTree(Node node, String attrOrTag,
+						 String dflt)
+            throws Exception {
+        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+                               (String) null);
+        if (attrValue == null) {
+            Node child = XmlUtil.findChild(node, attrOrTag);
+            if (child != null) {
+                attrValue = XmlUtil.getChildText(child);
+                if (attrValue != null) {
+                    if (XmlUtil.getAttribute(child, "encoded", false)) {
+                        attrValue = new String(Utils.decodeBase64(attrValue));
+                    }
+                }
+            }
+        }
+	if(attrValue==null) {
+	    Node parent = node.getParentNode();
+	    if(parent!=null) return getAttributeOrTagUpTree(parent,  attrOrTag,
+							    dflt);
+
+	}
+
+        if (attrValue == null) {
+            attrValue = dflt;
+        }
+
+        return attrValue;
+    }
+
 
 
 
