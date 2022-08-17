@@ -7232,7 +7232,6 @@ public class EntryManager extends RepositoryManager {
                 }
 
 		entry = makeSynthEntry(request, typeHandler, parentEntry, entryId, syntheticPart);
-		System.err.println("Make synth:" + entry);
                 if (entry == null) {
                     return null;
                 }
