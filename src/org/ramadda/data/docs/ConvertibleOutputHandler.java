@@ -351,13 +351,12 @@ public class ConvertibleOutputHandler extends OutputHandler {
             getSessionManager().putSessionProperty(request,
                     "csv.lastinput." + entry.getId(), lastInput);
             if (getAccessManager().canDoEdit(request, entry)
-                    && entry.getTypeHandler().isType("type_convertible")) {
-                entry.setValue(ConvertibleTypeHandler.IDX_COMMANDS,
+		&& (entry.getTypeHandler().isType("type_convertible"))) {
+                entry.setValue("convert_commands",
                                lastInput);
                 getEntryManager().updateEntry(request, entry);
             }
         }
-
 
 
         List    currentArgs = null;
@@ -371,32 +370,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             String       commandString = request.getString("commands", "");
             //A hack because the Request changes any incoming "script" to "_script_"
             commandString = commandString.replaceAll("_script_", "script");
-            List<StringBuilder> toks =
-                CsvUtil.tokenizeCommands(commandString);
-
-            //      System.err.println("TOKS:" + toks);
-            List<List<String>> llines  = new ArrayList<List<String>>();
-            List<String>       current = null;
-            for (StringBuilder sb : toks) {
-                String s = sb.toString();
-                //If we are doing the full process then keep the line separation
-                if (s.equals(Utils.MULTILINE_END)) {
-                    if (process) {
-                        current = null;
-                    }
-
-                    continue;
-                }
-                if (current == null) {
-                    current = new ArrayList<String>();
-                    llines.add(current);
-                }
-                current.add(s);
-            }
-            if (llines.size() == 0) {
-                List<String> l = new ArrayList<String>();
-                llines.add(l);
-            }
+	    List<List<String>> llines  =  CsvUtil.tokenizeCommands(commandString,process);
             if (request.defined("csvoutput")) {
                 String       output   = request.getString("csvoutput");
                 List<String> lastLine = llines.get(llines.size() - 1);
