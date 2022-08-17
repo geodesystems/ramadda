@@ -3188,6 +3188,7 @@ label {
     font-size: 80% !important;
 }
 
+
 .breadcrumbs-separator {
     margin-left:2px;
     margin-right:2px;
@@ -3246,8 +3247,15 @@ label {
 }
 
 .ramadda-breadcrumbs-list {
-   margin-left:4px;
+    margin-left:4px;
+    max-width:60vw;
+    max-width:60vw;    
+    overflow-x:hidden;
+
 }
+
+
+
 
 .ramadda-breadcrumbs-menu {
     padding-right: 5px;
