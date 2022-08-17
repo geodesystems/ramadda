@@ -2268,7 +2268,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!label) {
 		label = Utils.makeLabel(url.replace(/^.*[\\\/]/, '').replace(/\.[^\.]+$/,"").replace("_"," "));
 	    }
-	    html += HU.div([CLASS,"ramadda-menu-button ramadda-clickable bold",ID,this.domId("location_" + idx)],"View " + (label)) +SPACE;
+	    html += HU.div([CLASS,"ramadda-menu-button ramadda-clickable ramadda-map-button bold",ID,this.domId("location_" + idx)],"View " + (label)) +SPACE;
 	    this.map.appendToolbar(html);
 //	    this.jq("locations").append(html);
 	    let _this = this;
@@ -2358,7 +2358,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = ramaddaCdn + "/resources/" +url;			
 		}
-		let success = (data) =>{data=JSON.parse(data);this.addLocationMenu(url, data);};
+		let success = (data) =>{
+		    data=JSON.parse(data);
+		    this.addLocationMenu(url, data);
+		};
 		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
 		Utils.doFetch(url, success,fail,null);	    
 	    });
