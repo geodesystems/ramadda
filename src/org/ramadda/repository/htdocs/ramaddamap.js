@@ -2784,7 +2784,10 @@ RepositoryMap.prototype = {
 	    layer = mapLayer;
 	if(layer) {
 	    let l= layer.createMapLayer(this);
-	    if(layer.opts.alias) this.baseLayers[layer.opts.alias] = l;		    
+
+	    if(layer.opts.alias) {
+		this.baseLayers[layer.opts.alias] = l;
+	    }
 	    if(layer.opts.refresh) {
 		let redrawFunc = () =>{
 		    if(l.getVisibility()) {

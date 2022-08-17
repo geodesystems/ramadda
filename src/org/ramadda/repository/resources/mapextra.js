@@ -52,7 +52,8 @@ wlayers.forEach(l=>{
 		  refresh:300,
 		  minZoom:l.minZoom,
 		  maxZoom:l.maxZoom,
-		  creator:ctor
+		  creator:ctor,
+		  alias:l.alias
 		 });
 });
 

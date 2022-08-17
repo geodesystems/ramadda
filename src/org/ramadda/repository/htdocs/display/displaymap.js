@@ -368,6 +368,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.editableMap.loadMap(this.getProperty("annotationLayer"));
 	    }
 	    
+//extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
