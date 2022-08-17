@@ -355,7 +355,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                               request.getString(ARG_MARKER, null));
     }
 
-    public static final String ACTION_SEARCH = "search";
+    public static final String ACTION_SEARCH = "s3search";
     public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
             throws Exception {
 	super.getEntryLinks(request, entry, state, links);
