@@ -493,12 +493,12 @@ public class S3File extends FileWrapper {
 
     /**
      *
-     * @param find _more_
+     * @param search _more_
       * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<String> doFind(String find) throws Exception {
+    public List<String> doSearch(String search) throws Exception {
         List<String> found = new ArrayList<String>();
         String[]     pair  = getBucketAndPrefix(this.toString());
         ListObjectsV2Request request =
@@ -512,9 +512,10 @@ public class S3File extends FileWrapper {
         int    cnt    = 0;
         String marker = null;
         while (true) {
-            if (cnt > 50000) {
+            if (cnt > 10000) {
                 break;
             }
+	    System.err.println("#" +cnt +" found:" + found.size());
             if (marker != null) {
                 request.setContinuationToken(marker);
             }
@@ -526,12 +527,12 @@ public class S3File extends FileWrapper {
                     break;
                 }
                 try {
-                    if (objectSummary.getKey().matches(find)) {
+                    if (objectSummary.getKey().matches(search)) {
                         found.add(objectSummary.getKey());
                         continue;
                     }
                 } catch (Exception ignore) {}
-                if (objectSummary.getKey().indexOf(find) >= 0) {
+                if (objectSummary.getKey().indexOf(search) >= 0) {
                     found.add(objectSummary.getKey());
                 }
             }
@@ -786,7 +787,7 @@ public class S3File extends FileWrapper {
             System.err.println(msg);
         }
         System.err.println(
-            "Usage:\nS3File \n\t<-download  download the files>  \n\t<-nomakedirs don't make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing> \n\t<-self print out the details about the bucket> ... one or more buckets");
+            "Usage:\nS3File \n\t<-download  download the files>  \n\t<-nomakedirs don't make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing>\n\t<-search search_term>\n\t<-self print out the details about the bucket> ... one or more buckets");
         Utils.exitTest(0);
     }
 
@@ -807,7 +808,7 @@ public class S3File extends FileWrapper {
         //      debug = true;
         final int[]  cnt         = { 0 };
         List<String> excludes    = new ArrayList<String>();
-        String       find        = null;
+        String       search        = null;
         boolean      doDownload  = false;
         boolean      makeDirs    = true;
         boolean      overWrite   = false;
@@ -856,11 +857,11 @@ public class S3File extends FileWrapper {
                 sizeLimit = Integer.parseInt(args[++i]);
                 continue;
             }
-            if (path.equals("-find")) {
+            if (path.equals("-search")) {
                 if (i == args.length - 1) {
-                    usage("Bad find arg");
+                    usage("Bad search arg");
                 }
-                find = args[++i];
+                search = args[++i];
                 continue;
             }
             if (path.equals("-percent")) {
@@ -904,9 +905,9 @@ public class S3File extends FileWrapper {
                 }
                 continue;
             }
-            if (find != null) {
+            if (search != null) {
                 S3File file = new S3File(path);
-                System.err.println(file.doFind(find));
+                System.err.println(file.doSearch(search));
                 continue;
             }
 
