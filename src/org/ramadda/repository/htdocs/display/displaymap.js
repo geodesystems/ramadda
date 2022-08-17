@@ -159,7 +159,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	    let mapContainer = HU.div([CLASS,"ramadda-map-container",ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
-				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
+				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;xxxmax-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
     
@@ -267,7 +267,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		highlightFillColor: this.getHighlightFillColor("transparent"),		
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
 		showLatLonLines:this.getProperty("showLatLonLines"),
-		popupWidth: this.getProperty("popupWidth",300),
+		popupWidth: this.getProperty("popupWidth",400),
 		popupHeight: this.getProperty("popupHeight",200),		
 
             };
@@ -590,6 +590,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showRecordSelection',ex:'false'},
 	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
 	{p:'displayDiv',tt:'Div id to show highlights in'},
+	{p:'showRecordHighlight',d:true},
 	{p:'recordHighlightShape',ex:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
@@ -1000,7 +1001,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let didSomething= false;
 		if(feature.collisionInfo)  {
 		    feature.collisionInfo.dotSelected(feature);
-		    return;
+		    return false;
 		}
 		if(feature.record) {
 		    this.propagateEventRecordSelection({record:feature.record});
@@ -1022,7 +1023,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return false;
+		return true;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
@@ -1049,9 +1050,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fff");
 	    if(this.getProperty("addEntryMarkers")) {
-		this.map.doPopup = true;
+		this.map.setDoPopup(true);
 	    } else {
-		this.map.doPopup = this.getProperty("doPopup",true);
+		this.map.setDoPopup(this.getProperty("doPopup",true));
 	    }
             this.map.addClickHandler(this.domId(ID_LONFIELD), this
 				     .domId(ID_LATFIELD), null, this);
@@ -1252,6 +1253,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
         },
         handleLayerSelect: function(layer) {
+	    if(debugPopup) this.logMsg("handleLayerSelect");
             var args = this.layerSelectArgs;
             if (!this.layerSelectPath) {
                 if (!args) {
@@ -1336,6 +1338,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 
                 var selectCallback = function(layer) {
+		    if(debugPopup) this.logMsg("selectCallback");
                     _this.handleLayerSelect(layer);
                 }
                 var unselectCallback = function(layer) {
@@ -1404,6 +1407,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	highlightPoint: function(lat,lon,highlight,andCenter) {
 	    if(!this.map) return;
 	    this.removeHighlight();
+	    if(!this.getShowRecordHighlight()) return;
 	    if(highlight) {
 		var point = MapUtils.createLonLat(lon,lat);
                 var attrs = {
@@ -3383,6 +3387,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let addedPoints = [];
 	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
+		    if(!Utils.stringDefined(tooltip)) {
+			return null;
+		    }
 		    let text =   this.getRecordHtml(f.record, fields, tooltip);
 		    if(text=="") return "BLANK";
 		    return text;

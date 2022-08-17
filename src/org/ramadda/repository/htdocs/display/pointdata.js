@@ -781,7 +781,12 @@ function RecordField(props, source) {
             return "";
         },
 
-        getLabel: function() {
+        getLabel: function(display) {
+	    if(display) {
+		let label = display.getProperty(this.getId() +".label");
+		if(label) return label;
+	    }
+
             if (this.label == null || this.label.length == 0) return this.id;
             return this.label;
         },

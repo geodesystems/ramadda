@@ -666,7 +666,7 @@ function DisplayThing(argId, argProperties) {
 	    macros.tokens.forEach(t=>{
 		if(!t.attrs) return;
 		if(t.tag=="default") {
-		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}");
+		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}",t.attrs);
 		} else 	if(t.attrs["type"]=="list" && t.attrs["fields"]) {
 		    let html = "<table class=display-table>";
 		    t.attrs.fields.split(",").forEach(fieldName=>{
@@ -841,7 +841,8 @@ function DisplayThing(argId, argProperties) {
 	    });
 	    return fields;
 	},
-        getRecordHtml: function(record, fields, template, debug) {
+        getRecordHtml: function(record, fields, template, props, debug) {
+	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
             let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
@@ -889,7 +890,7 @@ function DisplayThing(argId, argProperties) {
 		let title="";
 		if(titleTemplate) {
 		    if(!titleTemplate.startsWith("${default")) {
-			title = this.getRecordHtml(record, fields, titleTemplate, debug);
+			title = this.getRecordHtml(record, fields, titleTemplate, {},debug);
 		    }
 		} else {
 		    title = record.getValue(titleField.getIndex());
@@ -923,11 +924,20 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
 	    fields= this.getSortedFields(fields);
-
+	    let excludes = props.excludes?props.excludes.split(","):[];
 	    let group = null;
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
+		    let ok = true;
+		    excludes.every(ex=>{
+			[field.getLabel(), field.getId()].every(v=>{
+			    if(v.toLowerCase().match(ex)) ok  = false;
+			    return ok;
+			});
+			return ok;
+		    });
+		    if(!ok) continue;
 		    if(tooltipNots[field.getId()]) continue;
 		    if(attrs[field.getId()+".hide"]) {
 			continue;
@@ -1001,7 +1011,9 @@ function DisplayThing(argId, argProperties) {
 		    } 
 		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
-		    row += HU.td(labelColAttrs,HU.div([CLASS,"display-record-table-label"], label));
+		    let labelAttrs = [CLASS,"display-record-table-label"]
+		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
+		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
 		    row += HU.close(TR);
 		    rows.push(row);
@@ -5775,7 +5787,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let enums = [];
 		this.colorByFields.forEach(field=>{
 		    if(field.isFieldGeo()) return;
-		    enums.push([field.getId(),field.getLabel()]);
+		    enums.push([field.getId(),field.getLabel(this)]);
 		});
 		let selected = colorBy?colorBy.getId():"";
 		header2 += HU.span([CLASS,filterClass],
