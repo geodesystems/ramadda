@@ -4689,6 +4689,26 @@ public class Utils extends IO {
 	return macros;
     }
 
+    public static String applyCase(String caseType, String s) {
+	if (caseType.equals("lower")) {
+	    return s.toLowerCase();
+	} else if (caseType.equals("upper")) {
+	    return s.toUpperCase();
+	} else if (caseType.equals("proper")) {
+	    return  Utils.nameCase(s);
+	} else if (caseType.equals("camel")) {
+	    return  Utils.upperCaseFirst(s);
+	} else if (caseType.equals("capitalize")) {
+	    if (s.length() == 1) {
+		return s.toUpperCase();
+	    } else if (s.length() > 1) {
+		return  s.substring(0, 1).toUpperCase()
+		    + s.substring(1).toLowerCase();
+	    }
+	}
+	return s;
+    }
+
     public static class Macro {
 	private boolean isText;
 	private String macro;
