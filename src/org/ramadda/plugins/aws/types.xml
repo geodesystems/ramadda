@@ -1,6 +1,6 @@
-<types supercategory="Miscellaneous" category="Integration">
+<types supercategory="Miscellaneous" category="Integration" >
 
-  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler">
+  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler" metadata="entry_type_patterns">
     <property name="icon" value="/aws/aws.png"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
