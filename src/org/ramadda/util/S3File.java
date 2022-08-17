@@ -129,7 +129,9 @@ public class S3File extends FileWrapper {
     @Override
     public FileWrapper[] doListFiles() {
         try {
-            List<S3File> files = doList(false, -1).files;
+	    S3ListResults results = doList(false, -1);
+	    if(results==null) return new FileWrapper[]{};
+            List<S3File> files = results.files;
             if (files == null) {
                 return null;
             }
