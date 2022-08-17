@@ -2361,11 +2361,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
-                wikiUtil.appendJavascript("addGlobalDisplayProperty('" + key
-                                          + "','" + value + "');\n");
-
+		value = value.replaceAll("\n"," ");
+                wikiUtil.appendJavascript(HU.call("addGlobalDisplayProperty",HU.squote(key),HU.squote(value)));
             }
-
             return "";
 
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
