@@ -11,6 +11,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.PatternHolder;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.util.S3File;
 import org.ramadda.util.TTLCache;
@@ -20,6 +21,7 @@ import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -379,13 +381,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "S3 Search");
-        sb.append(HU.form(getEntryActionUrl(request, entry, ACTION_SEARCH).toString()));
-	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
-	sb.append(HU.hidden(ARG_ACTION,ACTION_SEARCH));
-	sb.append(HU.input("text",request.getString("text",""),HU.SIZE_30+HU.attrs("placeholder","Search text")));
-	sb.append(HU.SPACE2);
-        sb.append(HU.submit("Search"));
-        sb.append(HU.formClose());
+
+	getS3SearchForm(request, entry, sb);
+
 
 
         String rootId = (String) entry.getValue(IDX_ROOT);
@@ -431,6 +429,31 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    private void getS3SearchForm(Request request, Entry entry, StringBuilder sb) throws Exception {
+        sb.append(HU.form(getEntryActionUrl(request, entry, ACTION_SEARCH).toString()));
+	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	sb.append(HU.hidden(ARG_ACTION,ACTION_SEARCH));
+	sb.append(HU.input("text",request.getString("text",""),HU.SIZE_30+HU.attrs("placeholder","Search text")));
+	sb.append(HU.SPACE2);
+        sb.append(HU.submit("Search"));
+        sb.append(HU.formClose());
+    }
+
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+	throws Exception {
+
+        if ( !tag.equals("s3search")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+        StringBuilder sb     = new StringBuilder();
+	getS3SearchForm(request, entry, sb);
+        return sb.toString();
+    }
 
 
 }

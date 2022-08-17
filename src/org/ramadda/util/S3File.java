@@ -491,6 +491,19 @@ public class S3File extends FileWrapper {
         copyFileTo(bucket, file);
     }
 
+    private boolean searchMatch(String pattern, String key) {
+	try {
+	    if (key.matches(pattern)) {
+		return true;
+	    }
+	} catch (Exception ignore) {}
+	if (key.indexOf(pattern) >= 0) {
+	    return true;
+	}
+	return false;
+    }
+
+
     /**
      *
      * @param search _more_
@@ -499,6 +512,11 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public List<String> doSearch(String search) throws Exception {
+	return doSearch(search, 10, false);
+    }
+
+    public List<String> doSearch(String search,int maxCalls,boolean verbose) throws Exception {	
+
         List<String> found = new ArrayList<String>();
         String[]     pair  = getBucketAndPrefix(this.toString());
         ListObjectsV2Request request =
@@ -510,32 +528,48 @@ public class S3File extends FileWrapper {
                         ? pair[1]
                         : "";
         int    cnt    = 0;
+	int numCalls = 0;
         String marker = null;
         while (true) {
-            if (cnt > 10000) {
-                break;
-            }
-	    System.err.println("#" +cnt +" found:" + found.size());
             if (marker != null) {
                 request.setContinuationToken(marker);
             }
             ListObjectsV2Result listing = getS3().listObjectsV2(request);
+	    /* we don't get this since there isn't a delimiter in the request
+	    List<String>        commonPrefixes = listing.getCommonPrefixes();
+	    for (String s : commonPrefixes) {
+                if (found.size() > 100) {
+                    break;
+                }
+		if(searchMatch(search,s)) {
+		    found.add(s);
+		    continue;
+                }
+	    }
+	    */
+
             for (S3ObjectSummary objectSummary :
                     listing.getObjectSummaries()) {
                 cnt++;
                 if (found.size() > 100) {
                     break;
                 }
-                try {
-                    if (objectSummary.getKey().matches(search)) {
-                        found.add(objectSummary.getKey());
-                        continue;
-                    }
-                } catch (Exception ignore) {}
-                if (objectSummary.getKey().indexOf(search) >= 0) {
-                    found.add(objectSummary.getKey());
+		if(searchMatch(search,objectSummary.getKey())) {
+		    found.add(objectSummary.getKey());
+		    continue;
                 }
             }
+
+
+	    if(verbose)
+		System.err.println("#" +cnt +" found:" + found.size());
+
+            if (++numCalls >= maxCalls) {
+                break;
+            }
+	    if (found.size() > 100) {
+		break;
+	    }
 
             marker = listing.getNextContinuationToken();
             if (marker == null) {
@@ -815,6 +849,7 @@ public class S3File extends FileWrapper {
         boolean      doSelf      = false;
         boolean      doRecursive = false;
         boolean      verbose     = false;
+	int maxCalls = 10;
         double       percent     = -1;
         int          sizeLimit   = -1;
         for (int i = 0; i < args.length; i++) {
@@ -848,6 +883,13 @@ public class S3File extends FileWrapper {
                     usage("Bad exclude arg");
                 }
                 excludes.add(args[++i]);
+                continue;
+            }
+            if (path.equals("-maxcalls")) {
+                if (i == args.length - 1) {
+                    usage("Bad maxcals arg");
+                }
+                maxCalls = Integer.parseInt(args[++i]);
                 continue;
             }
             if (path.equals("-sizelimit")) {
@@ -907,7 +949,11 @@ public class S3File extends FileWrapper {
             }
             if (search != null) {
                 S3File file = new S3File(path);
-                System.err.println(file.doSearch(search));
+		List<String> results = file.doSearch(search,maxCalls,verbose);
+		if(results.size()==0)
+		    System.err.println("Nothing found");
+		else
+		    System.out.print(Utils.wrap(results,"","\n"));
                 continue;
             }
 
