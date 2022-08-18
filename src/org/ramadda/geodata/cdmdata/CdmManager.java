@@ -699,14 +699,23 @@ public class CdmManager extends RepositoryManager {
      * @return Can the given entry be served by the tds
      */
     public boolean canLoadAsCdm(Entry entry) {
+	boolean debug = false;
+	if(debug) System.err.println("canLoadAsCdm:" + entry);
 
 	if(isCdmGrid(entry)) {
+	    if(debug) System.err.println("\tisCdmGrid");
 	    return true;
 	}
         if (entry.getTypeHandler().isType(
                 OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
+	    if(debug) System.err.println("\tis opendap link");
             return true;
         }
+	if(entry.getTypeHandler().isType("cdm_radar_level2")) {
+	    if(debug) System.err.println("\tis level2 radar");
+            return true;
+	}
+
 
         if (entry.getTypeHandler().isType(TYPE_CLIMATE_MODEL_GRANULE)) {
             return true;
@@ -720,9 +729,11 @@ public class CdmManager extends RepositoryManager {
             return true;
         }
         if ( !entry.isFile()) {
+	    if(debug) System.err.println("\tnot file");
             return false;
         }
         if (excludedByPattern(entry, TYPE_CDM)) {
+	    if(debug) System.err.println("\texcluded by type_cdm");
             return false;
         }
 
@@ -732,6 +743,7 @@ public class CdmManager extends RepositoryManager {
         };
         for (int i = 0; i < types.length; i++) {
             if (includedByPattern(entry, types[i])) {
+		if(debug) System.err.println("\tincluded by:" + types[i]);
                 return true;
             }
         }
@@ -739,6 +751,7 @@ public class CdmManager extends RepositoryManager {
         if (entry.getResource().isRemoteFile()) {
             String path = entry.getResource().getPath();
             if (path.endsWith(".nc")) {
+		if(debug) System.err.println("\tisRemoteFile:"+ path);
                 return true;
             }
         }
@@ -746,16 +759,18 @@ public class CdmManager extends RepositoryManager {
         Boolean b = (Boolean) cdmEntries.get(entry.getId());
         if (b == null) {
             boolean ok = false;
-
             if (canLoadEntry(entry)) {
+		if(debug) System.err.println("\tcanLoadEntry");
                 try {
                     String path = entry.getResource().getPath();
                     //Exclude zip files becase canOpen tries to unzip them (?)
                     if ( !(path.endsWith(".zip"))) {
                         //                        System.err.println  ("checking file:" + path);
                         ok = NetcdfDataset.canOpen(path);
+			if(debug) System.err.println("\tNetcdfDataset.canOpen:" + ok);
                     }
                 } catch (Exception ignoreThis) {
+		    if(debug) System.err.println("\terror from NetcdfDataset.canOpen:" + ignoreThis);
                     //                    System.err.println("   error:" + ignoreThis);
                     //                    System.err.println("error:" + ignoreThis);
                 }
@@ -809,6 +824,11 @@ public class CdmManager extends RepositoryManager {
         if ( !canLoadAsCdm(entry)) {
             return false;
         }
+	//a hack
+	if(entry.getTypeHandler().isType("cdm_radar_level2")) {
+	    return false;
+	}
+
 
         Boolean b = (Boolean) pointEntries.get(entry.getId());
         if (b == null) {
@@ -1049,6 +1069,10 @@ public class CdmManager extends RepositoryManager {
             return false;
         }
 
+	//a hack
+	if(entry.getTypeHandler().isType("cdm_radar_level2")) {
+	    return false;
+	}
 
         Boolean b = (Boolean) gridEntries.get(entry.getId());
         if (b == null) {
@@ -1102,6 +1126,11 @@ public class CdmManager extends RepositoryManager {
         if ( !canLoadAsCdm(entry)) {
             return false;
         }
+
+	//a hack
+	if(entry.getTypeHandler().isType("cdm_radar_level2")) {
+	    return false;
+	}
 
 
         Boolean b = (Boolean) gridEntries.get(entry.getId());
