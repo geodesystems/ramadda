@@ -571,7 +571,15 @@ public class JsonOutputHandler extends OutputHandler {
         JsonUtil.quoteAttr(items, "iconRelative",
                            getPageHandler().getIconUrl(request, entry));
 
-        JsonUtil.quoteAttr(items, "parent", entry.getParentEntryId());
+	Entry parent = entry.getParentEntry();
+	if(parent!=null) {
+	    JsonUtil.quoteAttr(items, "parent", parent.getId());
+	    JsonUtil.quoteAttr(items, "parentName", parent.getName());
+	    JsonUtil.quoteAttr(
+			       items, "parentIcon",
+			       request.getAbsoluteUrl(
+						      getPageHandler().getIconUrl(request, parent)));
+	}
         if (entry.getIsRemoteEntry()) {
             JsonUtil.attr(items, "isRemote", "true");
             ServerInfo server = entry.getRemoteServer();
