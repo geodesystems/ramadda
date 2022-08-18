@@ -2360,6 +2360,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 
+    int xxcnt=0;
+
     /**
      *
      * @param entry _more_
@@ -2377,6 +2379,9 @@ public class StorageManager extends RepositoryManager implements PointFile
             //      System.err.println("Cache file:" + cachedFile);
             if ( !cachedFile.exists()) {
                 System.err.println("Copying S3 file from bucket:" + bucket);
+		if(xxcnt++<10) {
+		    System.err.println(Utils.getStack(10));
+		}
                 new S3File(bucket).copyFileTo(cachedFile);
             } else {
                 System.err.println("S3 file was cached:" + fileName);
