@@ -3051,10 +3051,10 @@ public class EntryManager extends RepositoryManager {
      */
     public TypeHandler findDefaultTypeHandler(String theResource)
 	throws Exception {
-	return findDefaultTypeHandler(null,  theResource);
+	return findDefaultTypeHandler(null,  theResource, false);
     }
 
-    public TypeHandler findDefaultTypeHandler(Entry locale, String theResource)
+    public TypeHandler findDefaultTypeHandler(Entry locale, String theResource, boolean isFile)
 	throws Exception {	
         File   newFile   = new File(theResource);
         String shortName = newFile.getName();
@@ -3089,6 +3089,16 @@ public class EntryManager extends RepositoryManager {
 		for(Metadata metadata: metadataList) {
 		    String type = metadata.getAttr1();
 		    for(String pattern: Utils.split(metadata.getAttr2(),"\n",true, true)) {
+			if(pattern.startsWith("file:")) {
+			    if(!isFile)continue;
+			    pattern = pattern.substring("file:".length()).trim();
+			    if(pattern.length()==0) {
+				TypeHandler typeHandler =
+				    getRepository().getTypeHandler(type);
+				if(typeHandler!=null) return typeHandler;
+			    }
+			}
+
 			if(theResource.matches(pattern)) {
 			    TypeHandler typeHandler =
 				getRepository().getTypeHandler(type);
