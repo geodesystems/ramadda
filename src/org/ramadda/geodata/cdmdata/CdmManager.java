@@ -675,7 +675,9 @@ public class CdmManager extends RepositoryManager {
         }
 
         if (entry.getResource().isFileType()) {
-            return entry.getFile().exists() || entry.getResource().isS3();
+	    //Make sure we have the check for S3 before we check the getFile
+	    //as the getFile would trigger a S3 file copy
+            return entry.getResource().isS3() || entry.getFile().exists();
         }
         if ( !entry.getResource().isUrl()) {
             return false;
