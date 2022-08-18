@@ -3031,6 +3031,7 @@ public class TypeHandler extends RepositoryManager {
                 for (String metadataType : metadataTypes) {
                     MetadataType type =
                         getMetadataManager().findType(metadataType);
+		    if(type==null) continue;
                     links.add(
                         new Link(
                             request.entryUrl(
