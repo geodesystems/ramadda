@@ -332,9 +332,8 @@ public class S3File extends FileWrapper {
         ListObjectsV2Result listing        = getS3().listObjectsV2(request);
         List<String>        commonPrefixes = listing.getCommonPrefixes();
 
-        int                 cnt            = 0;
+
         for (String s : commonPrefixes) {
-            cnt++;
             String name = getObjectName(s).trim();
             if (name.length() == 0) {
                 continue;
@@ -351,7 +350,10 @@ public class S3File extends FileWrapper {
                     && key.endsWith(objectSummary.getKey())) {
                 continue;
             }
-            cnt++;
+	    if(maxSize>0 && objectSummary.getSize()>maxSize) {
+		continue;
+	    }
+
             String name = getObjectName(objectSummary.getKey());
             String path = self
                           ? theBucket
