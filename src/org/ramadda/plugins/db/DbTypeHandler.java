@@ -2081,16 +2081,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HtmlUtils.formClose());
 
 
-        sb.append("<br>");
-        sb.append(HU.b("Links"));
-        //        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
-        //      HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
-        OutputHandler.addUrlShowingForm(sb, entry, formId,
-                                        "[\".*OpenLayers_Control.*\"]",
-                                        request.isAnonymous()
-                                        ? null
-                                        : "DB.addUrlShowingForm",false);
-        //      HU.close(sb,"div");
+	if(request.get("showLinks",true)) {
+	    sb.append("<br>");
+	    sb.append(HU.b("Links"));
+	    //        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
+	    //      HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
+	    OutputHandler.addUrlShowingForm(sb, entry, formId,
+					    "[\".*OpenLayers_Control.*\"]",
+					    request.isAnonymous()
+					    ? null
+					    : "DB.addUrlShowingForm",false);
+	}
 
         return sb;
     }
