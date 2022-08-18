@@ -307,7 +307,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
 
     /** month numbers */
     public static final int[] DAYS_PER_MONTH = {
-        31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
     };
 
     /** month list */
