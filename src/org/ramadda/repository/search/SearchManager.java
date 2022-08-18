@@ -322,7 +322,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //https://www.kaggle.com/duketemon/wordnet-synonyms
 	    String resource = getStorageManager().readSystemResource("/org/ramadda/repository/resources/synonyms.csv");
 	    //big,adjective,large
-	    System.err.println("sysnon");
 	    for(String line: Utils.split(resource,"\n",true,true)) {
 		List<String> toks = Utils.splitUpTo(line,",",3);
 		String word  = toks.get(0);
@@ -589,7 +588,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    long t1= System.currentTimeMillis();
 		    indexEntry(writer, entry, request,isNew);
 		    long t2= System.currentTimeMillis();
-		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
+		    //		    System.err.println("indexEntry:" + entry +" time:" + (t2-t1));
 		}
 		//        writer.optimize();
 		writer.commit();
@@ -712,7 +711,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 		File f = element.getFile(entry, metadata, element);
 		if(f!=null && f.exists()) {
-		    addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
+		    if(!Utils.isImage(f.toString())) {
+			addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
+		    }
 		}
 	    }
 	    
@@ -893,7 +894,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
 	if(corpusFile.exists()) {
 	    return  IO.readContents(corpusFile.toString(), SearchManager.class);
-	}
+	} 
+	System.err.println("no corpus for file:" + f);
+
 	boolean isImage = Utils.isImage(f.getName());
 
 	if(isImage && !indexImages) {
@@ -913,7 +916,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		String      result  = new String(IOUtil.readBytes(is));
 		String imageText = IO.readContents(tmp.toString()+".txt", getClass());
 		long t2= System.currentTimeMillis();
-		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
+		//		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
 		return imageText;
 	    } catch(Exception exc) {
 		getLogManager().logError("Error running tesseract for:" + f.getName(), exc);

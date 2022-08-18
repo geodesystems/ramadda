@@ -30,28 +30,30 @@ pre {
 
 
 
-<a name="configuration"></a><p><div class="ramadda-help-heading">7.6.0 <a href="#configuration">Configuring your RAMADDA</a></div> 
-RAMADDA uses the AWS CLI. Once you have installed it on your machine
-define a property in <i>repository.properties</i> in your RAMADDA home directory:
-<pre>
-ramadda.aws.path=/path/to/aws
-e.g.:
-ramadda.aws.path=/usr/local/bin/aws
-</pre>
 
-For now, RAMADDA uses the --no-sign-request  argument to AWS so it does not
-require any credentials configuration.
-
-<a name="s3_harvesting"></a><p><div class="ramadda-help-heading">7.6.1 <a href="#s3_harvesting">S3 Harvesting</a></div> 
+<a name="s3_harvesting"></a><p><div class="ramadda-help-heading">7.6.0 <a href="#s3_harvesting">S3 Harvesting</a></div> 
 The RAMADDA file <a href="harversters.html">harvester</a>
 can also harvest a S3 bucket store.
 
-<a name="s3_entry"></a><p><div class="ramadda-help-heading">7.6.2 <a href="#s3_entry">S3 Bucket Entry</a></div> 
+<a name="s3_entry"></a><p><div class="ramadda-help-heading">7.6.1 <a href="#s3_entry">S3 Bucket Entry</a></div> 
 A S3 Bucket entry type is provided. This allows you to have a "synthetic" set of entries
 in RAMADDA that represent the S3 bucket hierarchy. These entries do not exist
 in the RAMADDA database but can be viewed and accessed through the web interface.
 <p>
 TBD
+
+
+<a name="s3_entrytypes"></a><p><div class="ramadda-help-heading">7.6.2 <a href="#s3_entrytypes">Specifying Entry Types</a></div> 
+By default when an entry is creating representing a file in S3 RAMADDA will try to figure out
+its entry type based on the file name or it will use the basic S3 Bucket entry type. For example,
+if you had a number of .zip shapefiles RAMADDA would default to the Zip file entry type.
+You can override this by adding one or more Entry Type Pattern properties to the S3 Root
+entry. 
+
+Go to the Add Properties of the root entry and, under Miscellaneous, select Entry Type Pattern.
+Select the appropriate entry type (e.g., Shapefile) and specify one or more patterns to match with.
+Note: the patterns are regular expression not glob style patterns.
+<center><span style='display:inline-block'><center><div><a href="images/s3/entrytypes.png"><img  src="images/s3/entrytypes.png"  style=width:60%;  alt="images/s3/entrytypes.png" ></a></div></center></span></center>
 
 
 <a name="s3_cli"></a><p><div class="ramadda-help-heading">7.6.3 <a href="#s3_cli">S3 Tools</a></div> 

@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 16 02:29:43 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 17 22:27:00 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3711,7 +3711,7 @@ function DisplayThing(argId, argProperties) {
 	    macros.tokens.forEach(t=>{
 		if(!t.attrs) return;
 		if(t.tag=="default") {
-		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}");
+		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}",t.attrs);
 		} else 	if(t.attrs["type"]=="list" && t.attrs["fields"]) {
 		    let html = "<table class=display-table>";
 		    t.attrs.fields.split(",").forEach(fieldName=>{
@@ -3886,7 +3886,8 @@ function DisplayThing(argId, argProperties) {
 	    });
 	    return fields;
 	},
-        getRecordHtml: function(record, fields, template, debug) {
+        getRecordHtml: function(record, fields, template, props, debug) {
+	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
             let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
@@ -3934,7 +3935,7 @@ function DisplayThing(argId, argProperties) {
 		let title="";
 		if(titleTemplate) {
 		    if(!titleTemplate.startsWith("${default")) {
-			title = this.getRecordHtml(record, fields, titleTemplate, debug);
+			title = this.getRecordHtml(record, fields, titleTemplate, {},debug);
 		    }
 		} else {
 		    title = record.getValue(titleField.getIndex());
@@ -3968,11 +3969,20 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
 	    fields= this.getSortedFields(fields);
-
+	    let excludes = props.excludes?props.excludes.split(","):[];
 	    let group = null;
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
+		    let ok = true;
+		    excludes.every(ex=>{
+			[field.getLabel(), field.getId()].every(v=>{
+			    if(v.toLowerCase().match(ex)) ok  = false;
+			    return ok;
+			});
+			return ok;
+		    });
+		    if(!ok) continue;
 		    if(tooltipNots[field.getId()]) continue;
 		    if(attrs[field.getId()+".hide"]) {
 			continue;
@@ -4046,7 +4056,9 @@ function DisplayThing(argId, argProperties) {
 		    } 
 		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
-		    row += HU.td(labelColAttrs,HU.div([CLASS,"display-record-table-label"], label));
+		    let labelAttrs = [CLASS,"display-record-table-label"]
+		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
+		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
 		    row += HU.close(TR);
 		    rows.push(row);
@@ -6412,6 +6424,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(args)
 		$.extend(opts,args);
 	    let debug =  displayDebug.filterData;
+	    if(debug) this.logMsg("filterData");
 
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
@@ -6459,9 +6472,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let pointData = this.getData();
             if (!records) {
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    if(debug) this.logMsg("\tno data");
+		    return null;
+		}
                 records = pointData.getRecords();
             }
+            if (!records) {
+		return null;
+	    }
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -6469,7 +6489,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
-	    if(debug)   console.log("fitler #records:" + records.length);
+	    if(debug)   this.logMsg("filter #records:" + records.length);
 	    if(this.getProperty("filterLatest")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
 		let max = {};
@@ -7951,6 +7971,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getData: function() {
             if (!this.hasData()) {
 		//Inline data
+		if (this.properties.theData) {
+		    return this.properties.theData;
+		} 
 		if(this.properties.dataSrc) {
 		    this.addData(makeInlineData(this,this.properties.dataSrc));
 		} else {
@@ -8694,6 +8717,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+            if (!this.hasData()) {
+		return
+	    }
+
+
+
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -8803,7 +8832,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let enums = [];
 		this.colorByFields.forEach(field=>{
 		    if(field.isFieldGeo()) return;
-		    enums.push([field.getId(),field.getLabel()]);
+		    enums.push([field.getId(),field.getLabel(this)]);
 		});
 		let selected = colorBy?colorBy.getId():"";
 		header2 += HU.span([CLASS,filterClass],
@@ -9343,25 +9372,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
-	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
-            if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
-		let animation = this.getAnimation();
-		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
-//		    console.log("dateMin:" + dateMin.toUTCString());
-		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
-		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
-			if(this.getProperty("animationFilter", true)) {
-			    this.setDateRange(animation.begin, animation.end);
+	    if(filteredRecords) {
+		let dateInfo = this.getDateInfo(filteredRecords);
+		if(debug) console.log("checkSearchBar-11");
+		if (dateInfo.dateMax) {
+		    if(debug) console.log("checkSearchBar-getAnimation");
+		    let animation = this.getAnimation();
+		    if(animation.getEnabled()) {
+			if(debug) console.log("checkSearchBar-calling animation.init");
+			//		    console.log("dateMin:" + dateMin.toUTCString());
+			animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+			if(debug) console.log("checkSearchBar-done calling animation.init");
+			if(!this.minDateObj) {
+			    if(debug) console.log("checkSearchBar-calling setDateRange");
+			    if(this.getProperty("animationFilter", true)) {
+				this.setDateRange(animation.begin, animation.end);
+			    }
+			    if(debug) console.log("checkSearchBar-done calling setDateRange");
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
-            }
+	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
 	getDateInfo:function(records) {
@@ -12746,7 +12777,12 @@ function RecordField(props, source) {
             return "";
         },
 
-        getLabel: function() {
+        getLabel: function(display) {
+	    if(display) {
+		let label = display.getProperty(this.getId() +".label");
+		if(label) return label;
+	    }
+
             if (this.label == null || this.label.length == 0) return this.id;
             return this.label;
         },
@@ -20866,6 +20902,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(!imageField) {
 		    return false;
 		}
+
+
 		return true;
 		let image = record.getValue(imageField.getIndex());
 		if(!Utils.stringDefined(image) && !includeBlanks) {
@@ -27254,7 +27292,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	dataFilterChanged: function() {
-	    if(this.getPropertyOnlyShowSelected() && this.selectedRecord ) {
+	    if(this.getOnlyShowSelected() && this.selectedRecord ) {
 		this.selectedRecord = null;
 		this.selectedRecords = null;		
 		this.setContents("");
@@ -27266,14 +27304,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
-	    if(this.getPropertyOnlyShowSelected()) {
+	    if(this.getOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    if(this.getShowFirst(true)) {
 			this.selectedRecord = records[0];
 		    }
 		}
 		if(!this.selectedRecord && !this.selectedRecords) {
-		    this.setContents("<br>");
+		    this.setContents(this.getEmptyMessage("<br>"));
 		    return;
 		}
 		records = this.selectedRecords|| [this.selectedRecord];
@@ -27455,7 +27493,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    var contents = "";
 	    if(selected.length==0) {
-		contents = this.getProperty("emptyMessage","Nothing found");
+		contents = this.getEmptyMessage("Nothing found");
 	    }
 
             var colorBy = this.getColorByInfo(selected);
@@ -27721,7 +27759,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecords = args.records;
 	    this.selectedRecord = args.record;
-	    if(this.getProperty("onlyShowSelected")) {
+	    if(this.getOnlyShowSelected()) {
 		this.updateUI();
 	    } else {
 		args.highlight = true;
@@ -30427,8 +30465,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
-		let ancestor = HU.getUrlArgument(ID_ANCESTOR);
-		let name = HU.getUrlArgument(ID_ANCESTOR_NAME);		
+		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
+		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
+		console.log(ancestor,name);
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
@@ -31078,7 +31117,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.mapId = null;
 	    if(this.myDisplays) {
 		this.myDisplays.forEach(info=>{
-		    removeRamaddaDisplay(info.display.getId());
+		    if(info.display)
+			removeRamaddaDisplay(info.display.getId());
 		});
 	    }
 	    this.myDisplays = [];
@@ -31301,6 +31341,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
+        {p:'showParent',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
@@ -31668,12 +31709,19 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let inner = "";
 	    let map = {};
+	    let showParent = this.getProperty("showParent");
 	    entries.forEach((entry,idx) =>{
 		map[entry.getId()] = entry;
 		let thumb = entry.getThumbnail();
 		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry","entryid",entry.getId()];
 		if(thumb) attrs.push("thumbnail",thumb);
-		inner+=HU.div(attrs, HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+		let link = HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName());
+		if(showParent && entry.getParentName()) {
+		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
+		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
+		    link = HU.hbox([plink,HU.span(['style','margin-right:2px;margin-left:2px;'],"&raquo;"), link]);
+		}
+		inner+=HU.div(attrs, link);
 	    });
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
@@ -32979,6 +33027,7 @@ let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
 var debugit = false;
+var debugFeatureLinking = false;
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
@@ -33065,6 +33114,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
 //	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
+	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
+	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
+
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 	{p:'showOpacitySlider',ex:'false',d:false},
 	{p:'showLocationSearch',ex:'true'},
@@ -33122,7 +33174,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	    let mapContainer = HU.div([CLASS,"ramadda-map-container",ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
-				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
+				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;xxxmax-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
     
@@ -33229,7 +33281,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		highlightColor: this.getHighlightColor(),
 		highlightFillColor: this.getHighlightFillColor("transparent"),		
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
-		showLatLonLines:this.getProperty("showLatLonLines")
+		showLatLonLines:this.getProperty("showLatLonLines"),
+		popupWidth: this.getProperty("popupWidth",400),
+		popupHeight: this.getProperty("popupHeight",200),		
+
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -33328,6 +33383,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.editableMap.loadMap(this.getProperty("annotationLayer"));
 	    }
 	    
+//extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
@@ -33494,6 +33550,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
+	{p:"strokeOpacity",d:1},
 	{p:"fillColor",d:"blue"},
 	{p:"fillOpacity",d:0.5},
 	{p:'radius',d:5,tt:"Size of the map points"},
@@ -33549,6 +33606,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showRecordSelection',ex:'false'},
 	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
 	{p:'displayDiv',tt:'Div id to show highlights in'},
+	{p:'showRecordHighlight',d:true},
 	{p:'recordHighlightShape',ex:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
@@ -33909,7 +33967,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         initMapParams: function(params) {
 	    SUPER.initMapParams.call(this,params);
-	    if(this.getDoPopupSlider()) {
+	    if(this.getDoPopupSlider() || this.getPopupSliderRight()) {
 		params.doPopupSlider = true;
 		if(this.getPopupSliderRight()) {
 		    params.popupSliderRight = true;
@@ -33958,19 +34016,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.addFeatureSelectHandler(feature=>{
 		let didSomething= false;
 		if(feature.collisionInfo)  {
+		    if(debugPopup) console.log("has collisioninfo");
 		    feature.collisionInfo.dotSelected(feature);
-		    return;
+		    return false;
 		}
 		if(feature.record) {
 		    this.propagateEventRecordSelection({record:feature.record});
 		    this.propagateFilterFields(feature.record);
-		    didSomething= true;
+//		    didSomething= true;
 		}
 
 		if(feature.record && !this.map.doPopup && this.getProperty("showRecordSelection", true)) {
+		    if(debugPopup) console.log("highlighting point");
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
-		    didSomething= true;
+//		    didSomething= true;
 		}
+
 		if(feature.record && this.getProperty("shareSelected")) {
 		    let idField = this.getFieldById(null,"id");
 		    if(idField) {
@@ -33980,7 +34041,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return true;
+		return didSomething;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
@@ -34007,9 +34068,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fff");
 	    if(this.getProperty("addEntryMarkers")) {
-		this.map.doPopup = true;
+		this.map.setDoPopup(true);
 	    } else {
-		this.map.doPopup = this.getProperty("doPopup",true);
+		this.map.setDoPopup(this.getProperty("doPopup",true));
 	    }
             this.map.addClickHandler(this.domId(ID_LONFIELD), this
 				     .domId(ID_LATFIELD), null, this);
@@ -34210,6 +34271,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
         },
         handleLayerSelect: function(layer) {
+	    if(debugPopup) this.logMsg("handleLayerSelect");
             var args = this.layerSelectArgs;
             if (!this.layerSelectPath) {
                 if (!args) {
@@ -34294,6 +34356,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 
                 var selectCallback = function(layer) {
+		    if(debugPopup) this.logMsg("selectCallback");
                     _this.handleLayerSelect(layer);
                 }
                 var unselectCallback = function(layer) {
@@ -34362,6 +34425,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	highlightPoint: function(lat,lon,highlight,andCenter) {
 	    if(!this.map) return;
 	    this.removeHighlight();
+	    if(!this.getShowRecordHighlight()) return;
 	    if(highlight) {
 		var point = MapUtils.createLonLat(lon,lat);
                 var attrs = {
@@ -34775,39 +34839,44 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			recordMap[value] = record;
 		    }
 		});
+		if(debugFeatureLinking)
+		    console.log("Map data/feature linking: data field:" + linkField.getId() +" looking for map feature:" + linkFeature);
 
+		let errorCnt = 0;
 		features.forEach((feature,idx)=>{
 		    let attrs = feature.attributes;
 		    let ok = false;
+		    let debug = false;
 		    for (let attr in attrs) {
 			let _attr = String(attr).toLowerCase();
 			if(linkFeature==_attr) {
+			    if(debugFeatureLinking && idx<3)
+				console.log("\tFound map attribute");
 			    ok  = true;
 			    let value = this.map.getAttrValue(attrs, attr);
-			    let debug = false;
 			    if(value) {
-				if(debug)
-				    console.log("\tbefore");
 				value = value.toString().trim();
 				feature.linkValue = value;
 				record = recordMap[value];
 				if(record) {
-				    if(debug)
-					console.log("\tAdding:" + value+": " + record.getId());
+				    if(debugFeatureLinking&& idx<10)
+					console.log("\tfound record:" + value+": " + record.getId());
 				    recordToFeature[record.getId()] = feature;
 				} else {
-				    if(debug)
-					console.log("\tCould not find record:" + value.replace(/ /g,"X") +":");
+				    if(debugFeatureLinking) {
+					if(errorCnt++<20) {
+					    console.log("\tCould not find record with map value:" + value.replace(/ /g,"X") +":");
+					    console.dir(attrs);
+					}
+				    }
 				}
-				if(debug)
-				    console.log("\tAFter");
 			    } else {
-				console.log("no attr value");
+				console.log("\tno map feature attribute value");
 			    }
 			    
 			}
 		    }
-		    if(!ok) console.log("No ATTR found");
+		    if(!ok) console.log("No map feature found:" + linkFeature);
 		});
 	    }
 
@@ -35221,7 +35290,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!label) {
 		label = Utils.makeLabel(url.replace(/^.*[\\\/]/, '').replace(/\.[^\.]+$/,"").replace("_"," "));
 	    }
-	    html += HU.div([CLASS,"ramadda-menu-button ramadda-clickable bold",ID,this.domId("location_" + idx)],"View " + (label)) +SPACE;
+	    html += HU.div([CLASS,"ramadda-menu-button ramadda-clickable ramadda-map-button bold",ID,this.domId("location_" + idx)],"View " + (label)) +SPACE;
 	    this.map.appendToolbar(html);
 //	    this.jq("locations").append(html);
 	    let _this = this;
@@ -35311,7 +35380,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = ramaddaCdn + "/resources/" +url;			
 		}
-		let success = (data) =>{data=JSON.parse(data);this.addLocationMenu(url, data);};
+		let success = (data) =>{
+		    data=JSON.parse(data);
+		    this.addLocationMenu(url, data);
+		};
 		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
 		Utils.doFetch(url, success,fail,null);	    
 	    });
@@ -36314,8 +36386,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };
 
 
-	    let fillColor = this.getPropertyFillColor();
-	    let fillOpacity =  this.getPropertyFillOpacity();
+	    let fillColor = this.getFillColor();
+	    let fillOpacity =  this.getFillOpacity();
 	    let isPath = this.getProperty("isPath", false);
 	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
 	    let groups;
@@ -36341,10 +36413,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let addedPoints = [];
 	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
+		    if(!Utils.stringDefined(tooltip)) {
+			if(debugPopup) console.log("No tooltip");
+			return null;
+		    }
 		    let text =   this.getRecordHtml(f.record, fields, tooltip);
+		    if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);
 		    if(text=="") return "BLANK";
 		    return text;
 		}
+		if(debugPopup) console.log("textGetter: no record");
 		return null;
 	    };
 	    let highlightGetter = f=>{
@@ -36582,6 +36660,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                 let values = record.getData();
                 let props = {
+		    strokeOpacity:this.getStrokeOpacity(),
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
@@ -36774,6 +36853,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			if(rotateField) attrs.rotation = record.getValue(rotateField.getIndex());
 			mapPoint = this.map.createMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,iconSize,null,null,attrs);
+			mapPoint.textGetter= textGetter;
 			pointsToAdd.push(mapPoint);
 			mapPoint.isMarker = true;
 			mapPoints.push(mapPoint);

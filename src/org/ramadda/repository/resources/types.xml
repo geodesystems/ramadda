@@ -124,10 +124,27 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
      <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false" showinform="false"/>
 
-     <column name="convert_commands" type="string"  size="10000" rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
+ <!-- IMPORTANT: this name has to be the same as in type_point -->
+    <column name="convert_commands" type="string"  size="10000" rows="5" columns="60" label="Convert Text"  showinhtml="false" group="Convert"/>
  </type>
 
-  <type name="type_document_tabular"  description="Tabular File" foruser="false"  super="type_convertible"  >
+
+
+  <type name="point_text_csv"  description="CSV Data"  super="type_convertible" priority="1"
+	handler="org.ramadda.data.docs.ConvertibleTypeHandler" 
+	help="A structured CSV data file"> 
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="record.properties">
+      <![CDATA[
+	       firstLineDefinesFields=true
+	       commentLineStart=#
+      ]]>
+    </property>
+  </type>
+
+
+
+ <type name="type_document_tabular"  description="Tabular File" foruser="false"  super="type_convertible"  >
      <property name="icon" value="/icons/document-excel-csv.png"/>
      <column name="showtable" type="boolean" label="Show table"  default="true" showinhtml="false"/>
      <column name="showchart" type="boolean" label="Show chart"  default="true" showinhtml="false"/>

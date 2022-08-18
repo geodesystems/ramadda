@@ -1065,7 +1065,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         CacheManager.setDoCache(false);
-        //      IO.debugStderr();
+	//	IO.debugStderr();
 
         initProperties(properties);
 

@@ -2330,14 +2330,40 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
             return "";
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTIES)) {
+	    String entryId = Utils.getProperty(props, ARG_ENTRYID,(String)null);
+	    if(entryId!=null) {
+		Entry propEntry = getEntryManager().getEntry(request,entryId);
+		if(propEntry!=null) {
+		    String keySuffix = Utils.getProperty(props, "keySuffix","");
+		    String keyPrefix = Utils.getProperty(props, "keyPrefix","");
+		    String caseType = Utils.getProperty(props, "case","");		    		    
+		    int lengthLimit = Utils.getProperty(props,"lengthLimit",1000);
+		    String contents = getStorageManager().readFile(getStorageManager().getEntryResourcePath(propEntry));
+		    List<String> lines = Utils.split(contents,"\n",true,true);
+		    for(int i=1;i<lines.size();i++) {
+			List<String> toks = Utils.split(lines.get(i),",");
+			if(toks.size()<2) continue;
+			String key = toks.get(0);
+			String label = Utils.applyCase(caseType,toks.get(1));
+			key = key.replaceAll("['\"]+","");
+			label = label.replaceAll("['\"]+","");			
+			if(label.length()>lengthLimit) {
+			    label = label.substring(0,lengthLimit-1)+"...";
+			}
+			wikiUtil.appendJavascript("addGlobalDisplayProperty(" + HU.squote(keyPrefix+key+keySuffix)
+						  + "," + HU.squote(label) + ");\n");
+			
+		    }
+		}
+		return "";
+	    }
+
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
-                wikiUtil.appendJavascript("addGlobalDisplayProperty('" + key
-                                          + "','" + value + "');\n");
-
+		value = value.replaceAll("\n"," ");
+                wikiUtil.appendJavascript(HU.call("addGlobalDisplayProperty",HU.squote(key),HU.squote(value)));
             }
-
             return "";
 
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
@@ -2466,6 +2492,25 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(entry==null) {
 		return "{{"+ theTag+" " +"No entry" +"}}";
 	    }
+            String ancestor = getProperty(wikiUtil, props, ARG_ANCESTOR,
+                                           null);
+	    if(stringDefined(ancestor)) {
+                Entry ancestorEntry = findEntryFromId(request, entry, wikiUtil, props,
+                                             ancestor);
+                if (ancestorEntry != null) {
+                    props.put("ancestorName",ancestorEntry.getName());
+                }
+	    }
+
+            String tooltip = getProperty(wikiUtil, props, "tooltip",
+					 null);
+	    if(tooltip!=null) {
+		tooltip = tooltip.replace("${entryid}",entry.getId()).replace("${entryname}",entry.getName());
+		tooltip = tooltip.replace("${mainentryid}",originalEntry.getId()).replace("${mainentryname}",originalEntry.getName());		
+		props.put("tooltip",tooltip);
+	    }
+
+
             String jsonUrl = null;
 	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",
@@ -5400,7 +5445,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (excludeEntries != null) {
             HashSet seen = new HashSet();
-            for (String id : Utils.split(excludeEntries, ",")) {
+            for (String id : Utils.split(excludeEntries, ",",true,true)) {
                 if (id.equals(ID_THIS)) {
                     seen.add(originalEntry.getId());
                 } else {
@@ -5465,7 +5510,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 map.put(child.getId(), child);
                 map.put(child.getName(), child);
             }
-            List<String> ids = Utils.split(firstEntries, ",");
+            List<String> ids = Utils.split(firstEntries, ",",true,true);
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id         = ids.get(i);
                 Entry  firstEntry = map.get(id);
@@ -5499,7 +5544,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 map.put(child.getId(), child);
                 map.put(child.getName(), child);
             }
-            List<String> ids = Utils.split(lastEntries, ",");
+            List<String> ids = Utils.split(lastEntries, ",",true,true);
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id        = ids.get(i);
                 Entry  lastEntry = map.get(id);

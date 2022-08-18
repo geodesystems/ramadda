@@ -739,9 +739,23 @@ public class CsvOperator {
                 String tok = toks.get(0);
                 if (isLastIndex(tok)) {
                     indices.add(getLastIndex(tok, header.size() - 1));
-
                     return;
                 }
+
+		//check for regexp
+                if (tok.indexOf("*")>=0 || tok.indexOf("+")>=0) {
+                    for (int i = 0; i < header.size(); i++) {
+                        if ( !colsSeen.contains(i)) {
+			    String v = header.get(i).toString();
+			    String _v = v.toLowerCase();
+			    if(v.matches(tok) || _v.matches(tok)) {
+				colsSeen.add(i);
+				indices.add(i);
+			    }
+                        }
+                    }
+		    return;
+		}
 
                 if (tok.equals("*")) {
                     for (int i = 0; i < header.size(); i++) {

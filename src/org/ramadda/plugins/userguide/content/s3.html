@@ -8,17 +8,6 @@
 <%nochildlist%>
 
 
-<subhead intoc="false" id="configuration">Configuring your RAMADDA</subhead>
-RAMADDA uses the AWS CLI. Once you have installed it on your machine
-define a property in <i>repository.properties</i> in your RAMADDA home directory:
-<pre>
-ramadda.aws.path=/path/to/aws
-e.g.:
-ramadda.aws.path=/usr/local/bin/aws
-</pre>
-
-For now, RAMADDA uses the --no-sign-request  argument to AWS so it does not
-require any credentials configuration.
 
 <subhead intoc="false" id="s3_harvesting">S3 Harvesting</subhead>
 The RAMADDA file <a href="harversters.html">harvester</a>
@@ -30,6 +19,19 @@ in RAMADDA that represent the S3 bucket hierarchy. These entries do not exist
 in the RAMADDA database but can be viewed and accessed through the web interface.
 <p>
 TBD
+
+
+<subhead intoc="false" id="s3_entrytypes">Specifying Entry Types</subhead>
+By default when an entry is creating representing a file in S3 RAMADDA will try to figure out
+its entry type based on the file name or it will use the basic S3 Bucket entry type. For example,
+if you had a number of .zip shapefiles RAMADDA would default to the Zip file entry type.
+You can override this by adding one or more Entry Type Pattern properties to the S3 Root
+entry. 
+
+Go to the Add Properties of the root entry and, under Miscellaneous, select Entry Type Pattern.
+Select the appropriate entry type (e.g., Shapefile) and specify one or more patterns to match with.
+Note: the patterns are regular expression not glob style patterns.
+[ht::screenshot images/s3/entrytypes.png]
 
 
 <subhead intoc="false" id="s3_cli">S3 Tools</subhead>

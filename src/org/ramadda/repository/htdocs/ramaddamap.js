@@ -4,6 +4,7 @@
 
 var debugBounds = false;
 var getMapDebug = false;
+var debugPopup = false;
 
 //This gets set by Java
 var ramaddaMapRegions = null;
@@ -1184,6 +1185,8 @@ RepositoryMap.prototype = {
         this.centerOnMarkers(this.dfltBounds);
     },
     makePopup: function(projPoint, text, props) {
+	if(debugPopup)
+	    console.log("makePopup");
 	props = props||{};
 	let size  =  MapUtils.createSize(props.width|| this.params.popupWidth||200, props.height || this.params.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
@@ -1378,15 +1381,19 @@ RepositoryMap.prototype = {
         if (!layer)
             layer = feature.layer;
 
+	if(debugPopup) console.log("handleFeatureClick");
         this.dateFeatureSelect(feature);
         if (layer.canSelect === false) {
+	    if(debugPopup) console.log("\tlayer no select");
 	    return;
 	}
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
         }
 
+
 	if(!this.params.doSelect) {
+	    if(debugPopup) console.log("\tparams no select");
 	    return;
 	}
         this.selectedFeature = feature;
@@ -1423,14 +1430,18 @@ RepositoryMap.prototype = {
 		}
 	    }
 	}
+
+
 	layer.drawFeature(layer.selectedFeature, style);
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
             if (feature.originalStyle) {
                 feature.style = feature.originalStyle;
             }
+	    if(debugPopup) console.log("\thave a selectCallback");
 	    layer.selectCallback(layer,event);
         } else {
+	    if(debugPopup) console.log("\tcalling showMarkerPopup");
             this.showMarkerPopup(feature, true);
         }
 	
@@ -2114,11 +2125,17 @@ RepositoryMap.prototype = {
     getFeatureText: function(layer, feature) {
 	if(feature.textGetter) {
 	    let text =  feature.textGetter(feature);
-	    if(text) return text;
+	    if(text) {
+		if(debugPopup) console.log("getFeatureText-feature has textGetter:");
+		return text;
+	    }
 	}
 	if(this.textGetter) {
 	    let text= this.textGetter(layer,feature);
-	    if(text) return text;
+	    if(text) {
+		if(debugPopup) console.log("getFeatureText-map has textGetter:" + this.textGetter);
+		return text;
+	    }
 	}
 
         let style = feature.style || feature.originalStyle || layer.style;
@@ -2142,6 +2159,7 @@ RepositoryMap.prototype = {
                     out = out.replace("${" + style.id + "/" + attr + "}", value);
                 }
             } else {
+		if(debugPopup) console.log("getFeatureText-using feature attributes");
                 out = "<table>";
                 for (let attr in p) {
                     let label = attr;
@@ -2178,25 +2196,30 @@ RepositoryMap.prototype = {
         return out;
     },
     onFeatureSelect: function(layer,event) {
+	if(debugPopup) console.log("\tonFeatureSelect");
 	let _this = this;
         if (this.onSelect) {
             func = window[this.onSelect];
             func(this, layer);
+	    if(debugPopup) console.log("\thas onSelect");
             return;
         }
         let feature = layer.feature;
 	if(this.featureSelectHandler && !this.featureSelectHandler(feature)) {
+	    if(debugPopup) console.log("\thas featureSelectHandler");
 	    return;
 	}
 
 
-	if(!this.params.doPopup) {
+	if(!this.getDoPopup()) {
 	    return;
 	}
         let out = this.getFeatureText(layer, feature);
 	if(!out) {
+	    if(debugPopup) console.log("\tno feature text");
 	    return;
 	}	    
+	if(debugPopup) console.log("\thas feature text");
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -2209,6 +2232,10 @@ RepositoryMap.prototype = {
 	if(location==null) {
 	    location = feature.geometry.getBounds().getCenterLonLat();
 	}
+	if(this.showPopupSlider(location, out)) {
+	    return
+	}
+
         let popup = this.makePopup(location,out);
         feature.popup = popup;
         popup.feature = feature;
@@ -2254,7 +2281,6 @@ RepositoryMap.prototype = {
         if (this.getCanSelect(canSelect)) {
             if (selectCallback == null || !Utils.isDefined(selectCallback))
                 selectCallback = function(layer,event) {
-
                     return _this.onFeatureSelect(layer,event)
                 };
             if (unselectCallback == null || !Utils.isDefined(unselectCallback))
@@ -2758,7 +2784,10 @@ RepositoryMap.prototype = {
 	    layer = mapLayer;
 	if(layer) {
 	    let l= layer.createMapLayer(this);
-	    if(layer.opts.alias) this.baseLayers[layer.opts.alias] = l;		    
+
+	    if(layer.opts.alias) {
+		this.baseLayers[layer.opts.alias] = l;
+	    }
 	    if(layer.opts.refresh) {
 		let redrawFunc = () =>{
 		    if(l.getVisibility()) {
@@ -4274,10 +4303,17 @@ RepositoryMap.prototype = {
 	    if(attrs.graphicName!="circle") 
 		this.addPoint("", point, {pointRadius:attrs.pointRadius, strokeColor:"transparent", fillColor:"transparent"},props.description);
 	}
-	this.doPopup=true;
+	this.setDoPopup(true);
     },
 
+    setDoPopup:function(doPopup) {
+	this.params.doPopup=  doPopup;
+    },
 
+    getDoPopup:function(doPopup) {
+	return this.params.doPopup;
+    },
+    
     addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;
@@ -4725,9 +4761,45 @@ RepositoryMap.prototype = {
         }
     },
 
+    showPopupSlider:function(location, markerText) {
+	if(this.params.doPopupSlider || this.params.popupSliderRight) {
+	    //Set location then do the popup later to allow map to repaint
+	    this.doingPopup = true;
+	    //For some reason if we do this here then the browser hangs
+//	    if(location)this.setCenter(location);
+	    setTimeout(()=> {
+		let slider = $("#" +this.mapDivId+"_slider");
+		if(this.params.popupSliderRight) {
+		    slider.css("right","0px");
+		} else {
+		    slider.css("left","0px");
+		}
+		slider.hide();
+		let width = HU.getDimension(this.params.popupWidth);
+		let contents = HU.div([STYLE,HU.css('width',width,"padding","5px")], HU.div([ID,this.mapDivId+"_sliderclose",CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
+		slider.html(contents);
+		slider.slideDown(800);
+		$("#" +this.mapDivId+"_sliderclose").click(()=>{
+		    slider.slideUp();
+		});
+		//Wait a bit so the above setCenter can happen
+		setTimeout(()=>{
+		    this.doingPopup = false;
+		},10);
+
+	    },1000);
+	    return true;
+	}
+	return false;
+    },
+
+
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
+	if(debugPopup) console.log("showMarkerPopup");
+
         if (this.entryClickHandler && window[this.entryClickHandler]) {
             if (!window[this.entryClickHandler](this, marker)) {
+		if(debugPopup) console.log("\twindowClickHandler");
                 return;
             }
         }
@@ -4738,6 +4810,7 @@ RepositoryMap.prototype = {
         }
 
 	if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
+	    if(debugPopup) console.log("\tfeatureSelectHandler returned true");
 	    return;
 	}
 
@@ -4749,7 +4822,8 @@ RepositoryMap.prototype = {
 	}
 
 
-	if(!this.params.doPopup) {
+	if(!this.getDoPopup()) {
+	    if(debugPopup) console.log("\tparams.doPopup=false");
 	    return;
 	}
 
@@ -4764,6 +4838,7 @@ RepositoryMap.prototype = {
 
 	if(marker.textGetter) {
 	    markerText =marker.textGetter(marker);
+	    if(debugPopup) console.log("\thas textGetter:" + markerText);
 	} else if(this.textGetter) {
 	    markerText = this.textGetter(marker.layer, marker);
 	}
@@ -4771,16 +4846,16 @@ RepositoryMap.prototype = {
 	    markerText =marker.text;
 	}
 
-	if(!markerText) return;
+	if(!markerText) {
+	    if(debugPopup) console.log("\tno marker text");
+	    return;
+	}
 
 
 	let html = markerText;
-	let debug =false;
-
-
-
 	if(this.params.displayDiv) {
 	    $("#" + this.params.displayDiv).html(markerText);
+	    if(debugPopup) console.log("\thad displayDiv");
 	    return;
 	}
 
@@ -4839,36 +4914,12 @@ RepositoryMap.prototype = {
 
 	if(projPoint==null) {
 	    console.log("No location for feature popup");
+	    if(debugPopup) console.log("\tno projPoint");
 	    return;
 	}
 
 
-
-	if(this.params.doPopupSlider) {
-	    //Set location then do the popup later to allow map to repaint
-	    this.doingPopup = true;
-	    if(marker.location)
-		this.setCenter(marker.location);
-	    setTimeout(()=> {
-		let slider = $("#" +this.mapDivId+"_slider");
-		if(this.params.popupSliderRight) {
-		    slider.css("right","0px");
-		} else {
-		    slider.css("left","0px");
-		}
-		slider.hide();
-		let contents = HU.div([STYLE,HU.css("padding","5px")], HU.div([ID,this.mapDivId+"_sliderclose",CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
-		slider.html(contents);
-		slider.slideDown(800);
-		$("#" +this.mapDivId+"_sliderclose").click(()=>{
-		    slider.slideUp();
-		});
-		//Wait a bit so the above setCenter can happen
-		setTimeout(()=>{
-		    this.doingPopup = false;
-		},1000);
-
-	    },10);
+	if(this.showPopupSlider(marker.location, markerText)) {
 	    return
 	}
 
@@ -4880,13 +4931,15 @@ RepositoryMap.prototype = {
 
 	let uid = HU.getUniqueId("div");
 	let div = HU.div(['style','width:100%;','id',uid]);
-	props.width = props.width??inputProps.minSizeX??600;
-	props.height = props.height??inputProps.minSizeY??400;	
+	props.width = props.width??inputProps.minSizeX??this.params.popupWidth;
+	props.height = props.height??inputProps.minSizeY??this.params.popupHeight;	
         let popup = this.makePopup( projPoint,div,props);
         marker.popupText = popup;
         popup.marker = marker;
         this.getMap().addPopup(popup);
 	jqid(uid).html(markerText);
+	if(debugPopup) console.log("\tmade popup");
+
         this.currentPopup = popup;
 
         if (inputProps.chartType) {

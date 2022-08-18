@@ -5083,6 +5083,35 @@ public class CsvUtil {
 
 
 
+    public static List<List<String>> tokenizeCommands(String commandString, boolean keepLineSeparation) {
+
+	List<StringBuilder> toks =
+	    CsvUtil.tokenizeCommands(commandString);
+
+	//      System.err.println("TOKS:" + toks);
+	List<List<String>> llines  = new ArrayList<List<String>>();
+	List<String>       current = null;
+	for (StringBuilder sb : toks) {
+	    String s = sb.toString();
+	    if (s.equals(Utils.MULTILINE_END)) {
+		if (keepLineSeparation) {
+                        current = null;
+		}
+		continue;
+	    }
+	    if (current == null) {
+		current = new ArrayList<String>();
+		llines.add(current);
+	    }
+	    current.add(s);
+	}
+	if (llines.size() == 0) {
+	    List<String> l = new ArrayList<String>();
+	    llines.add(l);
+	}
+	return llines;
+    }
+
     /**
      * _more_
      *

@@ -645,10 +645,18 @@ public class HarvesterManager extends RepositoryManager {
                 getPageHandler().showDialogNote(
                     request.getString(ARG_MESSAGE, "")));
         }
+	sb.append(HU.center(getLogLink()));
         makeHarvestersList(request, harvesters, sb);
         sb.append(HtmlUtils.sectionClose());
 
         return getAdmin().makeResult(request, msg("Harvesters"), sb);
+    }
+
+    public String getLogLink() {
+	return  HU.href(
+			getAdmin().URL_ADMIN_LOG
+			+ "?log=harvester.log", msg(
+						    "Harvest Log"));
     }
 
 

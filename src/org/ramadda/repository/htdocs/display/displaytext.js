@@ -533,7 +533,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	dataFilterChanged: function() {
-	    if(this.getPropertyOnlyShowSelected() && this.selectedRecord ) {
+	    if(this.getOnlyShowSelected() && this.selectedRecord ) {
 		this.selectedRecord = null;
 		this.selectedRecords = null;		
 		this.setContents("");
@@ -545,14 +545,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
-	    if(this.getPropertyOnlyShowSelected()) {
+	    if(this.getOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    if(this.getShowFirst(true)) {
 			this.selectedRecord = records[0];
 		    }
 		}
 		if(!this.selectedRecord && !this.selectedRecords) {
-		    this.setContents("<br>");
+		    this.setContents(this.getEmptyMessage("<br>"));
 		    return;
 		}
 		records = this.selectedRecords|| [this.selectedRecord];
@@ -734,7 +734,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    var contents = "";
 	    if(selected.length==0) {
-		contents = this.getProperty("emptyMessage","Nothing found");
+		contents = this.getEmptyMessage("Nothing found");
 	    }
 
             var colorBy = this.getColorByInfo(selected);
@@ -1000,7 +1000,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecords = args.records;
 	    this.selectedRecord = args.record;
-	    if(this.getProperty("onlyShowSelected")) {
+	    if(this.getOnlyShowSelected()) {
 		this.updateUI();
 	    } else {
 		args.highlight = true;

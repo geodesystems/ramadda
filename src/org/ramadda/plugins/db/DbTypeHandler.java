@@ -770,7 +770,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                  request.getString(ARG_VIEW, VIEW_TABLE));
     }
 
-
+    public boolean isEmbedded(Request request) {
+	if(!request.isEmbedded()) return false;
+	if(request.get("showForm",false)) return false;
+	return true;
+    }
 
 
 
@@ -809,6 +813,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return handleForm(request, entry, null, true, doAnonForm);
         }
+
 
 
         boolean      canEdit = getAccessManager().canDoEdit(request,
@@ -873,7 +878,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        if (request.exists(ARG_DB_SEARCH) || request.isEmbedded()) {
+
+        if (request.exists(ARG_DB_SEARCH) || isEmbedded(request) ) {
             return handleSearch(request, entry);
         }
 
@@ -937,7 +943,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        if ( !request.isEmbedded()) {
+        if ( !isEmbedded(request)) {
             getPageHandler().entrySectionClose(request, entry, sb);
         }
     }
@@ -989,12 +995,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         addStyleSheet(request,sb);
-        boolean embedded = request.isEmbedded();
+        boolean embedded = isEmbedded(request);
         if (embedded) {
             return;
         }
 
-        if ( !request.isEmbedded()) {
+        if ( !isEmbedded(request)) {
             getPageHandler().entrySectionOpen(request, entry, sb, "", true);
         }
 
@@ -1336,7 +1342,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 && request.defined(ARG_DB_ITERATE_VALUES)) {
             StringBuilder sb = new StringBuilder();
             addViewHeader(request, entry, sb, VIEW_TABLE, null);
-            if ( !request.isEmbedded()) {
+            if ( !isEmbedded(request)) {
                 sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
                         getSearchForm(request, entry).toString(), false));
             }
@@ -2075,16 +2081,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HtmlUtils.formClose());
 
 
-        sb.append("<br>");
-        sb.append(HU.b("Links"));
-        //        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
-        //      HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
-        OutputHandler.addUrlShowingForm(sb, entry, formId,
-                                        "[\".*OpenLayers_Control.*\"]",
-                                        request.isAnonymous()
-                                        ? null
-                                        : "DB.addUrlShowingForm",false);
-        //      HU.close(sb,"div");
+	if(request.get("showLinks",true)) {
+	    sb.append("<br>");
+	    sb.append(HU.b("Links"));
+	    //        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
+	    //      HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
+	    OutputHandler.addUrlShowingForm(sb, entry, formId,
+					    "[\".*OpenLayers_Control.*\"]",
+					    request.isAnonymous()
+					    ? null
+					    : "DB.addUrlShowingForm",false);
+	}
 
         return sb;
     }
@@ -3484,7 +3491,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                   boolean showHeaderLinks, Appendable sb)
             throws Exception {
         List<String> links    = new ArrayList<String>();
-        boolean      embedded = request.isEmbedded();
+        boolean      embedded = isEmbedded(request);
         //      System.err.println("#values: "+ valueList.size());
         //      for(Object o: valueList.get(0)) {
         //          System.err.println("\tvalue: "+ o);
@@ -3499,11 +3506,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (doGroupBy) {
             makeGroupByTable(request, entry, valueList, sb,
                              showHeaderLinks
-                             && !request.isEmbedded());
+                             && !isEmbedded(request));
         } else {
             makeTable(request, entry, valueList, fromSearch, sb,
                       !request.isAnonymous(),
-                      showHeaderLinks && !request.isEmbedded());
+                      showHeaderLinks && !isEmbedded(request));
         }
 
         if ( !embedded) {
@@ -3628,7 +3635,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
-            if ( !request.isEmbedded() && (actions.size() > 0)) {
+            if ( !isEmbedded(request) && (actions.size() > 0)) {
                 if (doForm) {
                     hb.append(HtmlUtils.submit(msgLabel("Do"), ARG_DB_DO));
                     hb.append(HtmlUtils.select(ARG_DB_ACTION, actions));
@@ -4540,7 +4547,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                msg("Google Earth KML"));
         links = "";
         String formId = null;
-        if ( !request.isEmbedded()) {
+        if ( !isEmbedded(request)) {
             formId = addViewHeader(request, entry, sb, VIEW_MAP,
                                    valueList.size(), fromSearch, links);
         }
@@ -4883,7 +4890,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
-        if ( !request.isEmbedded() && !forPrint) {
+        if ( !isEmbedded(request) && !forPrint) {
             addViewFooter(request, entry, sb);
         }
 

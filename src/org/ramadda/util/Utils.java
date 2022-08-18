@@ -81,6 +81,9 @@ public class Utils extends IO {
         "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
     };
 
+    public static final String[] MONTHS_LONG = {"January","February","March","April","May","June","July","August","September","October","November","December"};
+
+
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -179,6 +182,11 @@ public class Utils extends IO {
     }
 
 
+
+    public static String getMonthName(int month) {
+	if(month<0 || month>11) throw new IllegalArgumentException("Bad month:" + month);
+	return MONTHS_LONG[month];
+    }
 
     /**
      * _more_
@@ -1347,6 +1355,36 @@ public class Utils extends IO {
                 }
             }
         }
+        if (attrValue == null) {
+            attrValue = dflt;
+        }
+
+        return attrValue;
+    }
+
+    public static String getAttributeOrTagUpTree(Node node, String attrOrTag,
+						 String dflt)
+            throws Exception {
+        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+                               (String) null);
+        if (attrValue == null) {
+            Node child = XmlUtil.findChild(node, attrOrTag);
+            if (child != null) {
+                attrValue = XmlUtil.getChildText(child);
+                if (attrValue != null) {
+                    if (XmlUtil.getAttribute(child, "encoded", false)) {
+                        attrValue = new String(Utils.decodeBase64(attrValue));
+                    }
+                }
+            }
+        }
+	if(attrValue==null) {
+	    Node parent = node.getParentNode();
+	    if(parent!=null) return getAttributeOrTagUpTree(parent,  attrOrTag,
+							    dflt);
+
+	}
+
         if (attrValue == null) {
             attrValue = dflt;
         }
@@ -4657,6 +4695,26 @@ public class Utils extends IO {
 	    macros.add(new Macro(i / 2.0 == (int) i / 2,toks.get(i)));
 	}
 	return macros;
+    }
+
+    public static String applyCase(String caseType, String s) {
+	if (caseType.equals("lower")) {
+	    return s.toLowerCase();
+	} else if (caseType.equals("upper")) {
+	    return s.toUpperCase();
+	} else if (caseType.equals("proper")) {
+	    return  Utils.nameCase(s);
+	} else if (caseType.equals("camel")) {
+	    return  Utils.upperCaseFirst(s);
+	} else if (caseType.equals("capitalize")) {
+	    if (s.length() == 1) {
+		return s.toUpperCase();
+	    } else if (s.length() > 1) {
+		return  s.substring(0, 1).toUpperCase()
+		    + s.substring(1).toLowerCase();
+	    }
+	}
+	return s;
     }
 
     public static class Macro {

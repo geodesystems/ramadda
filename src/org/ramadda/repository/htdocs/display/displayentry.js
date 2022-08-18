@@ -1120,8 +1120,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
-		let ancestor = HU.getUrlArgument(ID_ANCESTOR);
-		let name = HU.getUrlArgument(ID_ANCESTOR_NAME);		
+		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
+		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
+		console.log(ancestor,name);
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
@@ -1771,7 +1772,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.mapId = null;
 	    if(this.myDisplays) {
 		this.myDisplays.forEach(info=>{
-		    removeRamaddaDisplay(info.display.getId());
+		    if(info.display)
+			removeRamaddaDisplay(info.display.getId());
 		});
 	    }
 	    this.myDisplays = [];
@@ -1994,6 +1996,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
+        {p:'showParent',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
@@ -2361,12 +2364,19 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let inner = "";
 	    let map = {};
+	    let showParent = this.getProperty("showParent");
 	    entries.forEach((entry,idx) =>{
 		map[entry.getId()] = entry;
 		let thumb = entry.getThumbnail();
 		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry","entryid",entry.getId()];
 		if(thumb) attrs.push("thumbnail",thumb);
-		inner+=HU.div(attrs, HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+		let link = HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName());
+		if(showParent && entry.getParentName()) {
+		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
+		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
+		    link = HU.hbox([plink,HU.span(['style','margin-right:2px;margin-left:2px;'],"&raquo;"), link]);
+		}
+		inner+=HU.div(attrs, link);
 	    });
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);

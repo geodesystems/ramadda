@@ -542,11 +542,14 @@ public class TypeHandler extends RepositoryManager {
                 services.add(new Service(getRepository(), serviceNode));
             }
 
-            metadataTypes = Utils.split(Utils.getAttributeOrTag(node,
-                    ATTR_METADATA,
-                    EnumeratedMetadataHandler.TYPE_TAG + ","
-                    + ContentMetadataHandler.TYPE_THUMBNAIL + ","
-                    + ContentMetadataHandler.TYPE_ALIAS), ",", true, true);
+	    metadataTypes = Utils.split(EnumeratedMetadataHandler.TYPE_TAG + ","
+					+ ContentMetadataHandler.TYPE_THUMBNAIL + ","
+					+ ContentMetadataHandler.TYPE_ALIAS,",");
+
+	    for(String mtd: Utils.split(Utils.getAttributeOrTag(node,ATTR_METADATA,""),",",true,true)) {
+		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
+	    }
+
 
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
                     ATTR_CHILDTYPES, ""));
@@ -3028,6 +3031,7 @@ public class TypeHandler extends RepositoryManager {
                 for (String metadataType : metadataTypes) {
                     MetadataType type =
                         getMetadataManager().findType(metadataType);
+		    if(type==null) continue;
                     links.add(
                         new Link(
                             request.entryUrl(

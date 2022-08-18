@@ -666,7 +666,7 @@ function DisplayThing(argId, argProperties) {
 	    macros.tokens.forEach(t=>{
 		if(!t.attrs) return;
 		if(t.tag=="default") {
-		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}");
+		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}",t.attrs);
 		} else 	if(t.attrs["type"]=="list" && t.attrs["fields"]) {
 		    let html = "<table class=display-table>";
 		    t.attrs.fields.split(",").forEach(fieldName=>{
@@ -841,7 +841,8 @@ function DisplayThing(argId, argProperties) {
 	    });
 	    return fields;
 	},
-        getRecordHtml: function(record, fields, template, debug) {
+        getRecordHtml: function(record, fields, template, props, debug) {
+	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
             let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
@@ -889,7 +890,7 @@ function DisplayThing(argId, argProperties) {
 		let title="";
 		if(titleTemplate) {
 		    if(!titleTemplate.startsWith("${default")) {
-			title = this.getRecordHtml(record, fields, titleTemplate, debug);
+			title = this.getRecordHtml(record, fields, titleTemplate, {},debug);
 		    }
 		} else {
 		    title = record.getValue(titleField.getIndex());
@@ -923,11 +924,20 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
 	    fields= this.getSortedFields(fields);
-
+	    let excludes = props.excludes?props.excludes.split(","):[];
 	    let group = null;
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
+		    let ok = true;
+		    excludes.every(ex=>{
+			[field.getLabel(), field.getId()].every(v=>{
+			    if(v.toLowerCase().match(ex)) ok  = false;
+			    return ok;
+			});
+			return ok;
+		    });
+		    if(!ok) continue;
 		    if(tooltipNots[field.getId()]) continue;
 		    if(attrs[field.getId()+".hide"]) {
 			continue;
@@ -1001,7 +1011,9 @@ function DisplayThing(argId, argProperties) {
 		    } 
 		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
-		    row += HU.td(labelColAttrs,HU.div([CLASS,"display-record-table-label"], label));
+		    let labelAttrs = [CLASS,"display-record-table-label"]
+		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
+		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
 		    row += HU.close(TR);
 		    rows.push(row);
@@ -3367,6 +3379,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(args)
 		$.extend(opts,args);
 	    let debug =  displayDebug.filterData;
+	    if(debug) this.logMsg("filterData");
 
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
@@ -3414,9 +3427,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let pointData = this.getData();
             if (!records) {
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    if(debug) this.logMsg("\tno data");
+		    return null;
+		}
                 records = pointData.getRecords();
             }
+            if (!records) {
+		return null;
+	    }
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -3424,7 +3444,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
-	    if(debug)   console.log("fitler #records:" + records.length);
+	    if(debug)   this.logMsg("filter #records:" + records.length);
 	    if(this.getProperty("filterLatest")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
 		let max = {};
@@ -4906,6 +4926,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getData: function() {
             if (!this.hasData()) {
 		//Inline data
+		if (this.properties.theData) {
+		    return this.properties.theData;
+		} 
 		if(this.properties.dataSrc) {
 		    this.addData(makeInlineData(this,this.properties.dataSrc));
 		} else {
@@ -5649,6 +5672,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+            if (!this.hasData()) {
+		return
+	    }
+
+
+
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
@@ -5758,7 +5787,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let enums = [];
 		this.colorByFields.forEach(field=>{
 		    if(field.isFieldGeo()) return;
-		    enums.push([field.getId(),field.getLabel()]);
+		    enums.push([field.getId(),field.getLabel(this)]);
 		});
 		let selected = colorBy?colorBy.getId():"";
 		header2 += HU.span([CLASS,filterClass],
@@ -6298,25 +6327,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
-	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
-            if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
-		let animation = this.getAnimation();
-		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
-//		    console.log("dateMin:" + dateMin.toUTCString());
-		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
-		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
-			if(this.getProperty("animationFilter", true)) {
-			    this.setDateRange(animation.begin, animation.end);
+	    if(filteredRecords) {
+		let dateInfo = this.getDateInfo(filteredRecords);
+		if(debug) console.log("checkSearchBar-11");
+		if (dateInfo.dateMax) {
+		    if(debug) console.log("checkSearchBar-getAnimation");
+		    let animation = this.getAnimation();
+		    if(animation.getEnabled()) {
+			if(debug) console.log("checkSearchBar-calling animation.init");
+			//		    console.log("dateMin:" + dateMin.toUTCString());
+			animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+			if(debug) console.log("checkSearchBar-done calling animation.init");
+			if(!this.minDateObj) {
+			    if(debug) console.log("checkSearchBar-calling setDateRange");
+			    if(this.getProperty("animationFilter", true)) {
+				this.setDateRange(animation.begin, animation.end);
+			    }
+			    if(debug) console.log("checkSearchBar-done calling setDateRange");
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
-            }
+	    }
 	    if(debug) console.log("checkSearchBar-done");
         },
 	getDateInfo:function(records) {

@@ -1,32 +1,32 @@
 /**
-   Copyright (c) 2008-2021 Geode Systems LLC
-   SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
 
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.AnonymousAWSCredentials;
 
-import java.io.*;
-import java.net.*;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.amazonaws.services.s3.*;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.*;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.auth.AnonymousAWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.GetObjectRequest;
+
+
+import java.io.*;
+
+import java.net.*;
+
+import java.text.SimpleDateFormat;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 
@@ -37,9 +37,10 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
  * @version        $version$, Sun, Aug 7, '22
  * @author         Enter your name here...
  */
-@SuppressWarnings({"unchecked","deprecation"})
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class S3File extends FileWrapper {
 
+    /**  */
     public static final int PERCENT_THRESHOLD = 1000;
 
     /**  */
@@ -51,6 +52,7 @@ public class S3File extends FileWrapper {
     /**  */
     private String bucket;
 
+    /**  */
     private AmazonS3 s3;
 
 
@@ -89,12 +91,17 @@ public class S3File extends FileWrapper {
     }
 
 
-    private  AmazonS3 getS3()  {
-	if(s3==null) {
-	    AnonymousAWSCredentials credentials = new AnonymousAWSCredentials();
-	    s3 = new AmazonS3Client(credentials);
-	}
-	return s3;
+    /**
+      * @return _more_
+     */
+    private AmazonS3 getS3() {
+        if (s3 == null) {
+            AnonymousAWSCredentials credentials =
+                new AnonymousAWSCredentials();
+            s3 = new AmazonS3Client(credentials);
+        }
+
+        return s3;
     }
 
     /**
@@ -122,7 +129,9 @@ public class S3File extends FileWrapper {
     @Override
     public FileWrapper[] doListFiles() {
         try {
-            List<S3File> files = doList(false,-1).files;
+	    S3ListResults results = doList(false, -1);
+	    if(results==null) return new FileWrapper[]{};
+            List<S3File> files = results.files;
             if (files == null) {
                 return null;
             }
@@ -158,7 +167,7 @@ public class S3File extends FileWrapper {
         }
         //check for s3:/...
         if (bucket.startsWith(S3PREFIX + "/")
-	    && !bucket.startsWith(S3PREFIX + "//")) {
+                && !bucket.startsWith(S3PREFIX + "//")) {
             bucket = bucket.replace(S3PREFIX + "/", S3PREFIX + "//");
         }
 
@@ -179,6 +188,7 @@ public class S3File extends FileWrapper {
         if ((files != null) && (files.size() > 0)) {
             return files.get(0);
         }
+
         return null;
     }
 
@@ -189,53 +199,110 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public S3ListResults doList() throws Exception {
-        return doList(false,-1);
-    }
-
-    public S3ListResults doList(boolean self) throws Exception {
-	return doList(self, -1);
-    }
-
-    public S3ListResults doList(int max) throws Exception {
-	return doList(false, max);
+        return doList(false, -1);
     }
 
     /**
      *
      * @param self _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public S3ListResults doList(boolean self) throws Exception {
+        return doList(self, -1);
+    }
+
+    /**
+     *
+     * @param max _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public S3ListResults doList(int max) throws Exception {
+        return doList(false, max);
+    }
+
+    /**
+     *
+     * @param self _more_
+     * @param max _more_
      * @return _more_
      *
      * @throws Exception _more_
      */
     public S3ListResults doList(boolean self, int max) throws Exception {
-	return doList(self, max,-1,-1,null);
+        return doList(self, max, -1, -1, null);
     }
 
+    /**
+     *
+     * @param key _more_
+      * @return _more_
+     */
     private static String getObjectName(String key) {
-	return new java.io.File(key).getName();
+        return new java.io.File(key).getName();
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Aug 16, '22
+     * @author         Enter your name here...    
+     */
     public static class S3ListResults {
-	String marker;
-	List<S3File> files;
 
-	public S3ListResults(String marker,	List<S3File> files) {
-	    this.marker =  marker;
-	    this.files = files;
-	}
+        /**  */
+        String marker;
 
-	public String getMarker() {
-	    return marker;
-	}
+        /**  */
+        List<S3File> files;
 
-	public List<S3File> getFiles() {
-	    return files;
-	}
+        /**
+         
+         *
+         * @param marker _more_
+         * @param files _more_
+         */
+        public S3ListResults(String marker, List<S3File> files) {
+            this.marker = marker;
+            this.files  = files;
+        }
+
+        /**
+          * @return _more_
+         */
+        public String getMarker() {
+            return marker;
+        }
+
+        /**
+          * @return _more_
+         */
+        public List<S3File> getFiles() {
+            return files;
+        }
 
     }
 
 
-    public S3ListResults doList(boolean self, int max,double percent, long maxSize, String marker) throws Exception {	
+    /**
+     *
+     * @param self _more_
+     * @param max _more_
+     * @param percent _more_
+     * @param maxSize _more_
+     * @param marker _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public S3ListResults doList(boolean self, int max, double percent,
+                                long maxSize, String marker)
+            throws Exception {
+        boolean debug = false;
         if ( !self && !isDirectory()) {
             return null;
         }
@@ -245,40 +312,60 @@ public class S3File extends FileWrapper {
                 theBucket = theBucket + "/";
             }
         }
-        List<S3File> files  = new ArrayList<S3File>();
-	String[] pair = getBucketAndPrefix(theBucket);
-	ListObjectsRequest request = new ListObjectsRequest().withBucketName(pair[0]).withDelimiter("/");
-	if(marker!=null)
-	    request.setMarker(marker);
-	if(pair[1]!=null) request = request.withPrefix(pair[1]);
-	String key  =pair[1]!=null?pair[1]:"";
-	//	System.err.println("BUCKET:" + theBucket +" pair:" + pair[0] +" :" + pair[1]);
-	ObjectListing listing = getS3().listObjects(request);
-	List<String> commonPrefixes = listing.getCommonPrefixes();
+        List<S3File> files = new ArrayList<S3File>();
+        String[]     pair  = getBucketAndPrefix(theBucket);
+        if (debug) {
+            System.err.println("list:" + pair[0] + " key:" + pair[1]);
+        }
+        ListObjectsV2Request request =
+            new ListObjectsV2Request().withBucketName(pair[0]).withDelimiter(
+                "/");
+        if (marker != null) {
+            request.setContinuationToken(marker);
+        }
+        if (pair[1] != null) {
+            request = request.withPrefix(pair[1]);
+        }
+        String              key            = (pair[1] != null)
+                                             ? pair[1]
+                                             : "";
+        ListObjectsV2Result listing        = getS3().listObjectsV2(request);
+        List<String>        commonPrefixes = listing.getCommonPrefixes();
 
-	int cnt = 0;
-	for(String s:commonPrefixes) {
-	    cnt++;
-	    String name = getObjectName(s);
-	    //	    System.err.println("\tNEW DIR:" + " PREFIX:" + s +" NAME:" + name);
-            S3File dir  = new S3File(theBucket+name, true);
-	    files.add(dir);
-	}
 
-	for (S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
-   	    if(objectSummary.getSize()==0 && key.endsWith(objectSummary.getKey())) continue;
-	    cnt++;
+        for (String s : commonPrefixes) {
+            String name = getObjectName(s).trim();
+            if (name.length() == 0) {
+                continue;
+            }
+            if (debug) {
+                System.err.println("\tPREFIX:" + name);
+            }
+            S3File dir = new S3File(theBucket + name, true);
+            files.add(dir);
+        }
+
+        for (S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
+            if ((objectSummary.getSize() == 0)
+                    && key.endsWith(objectSummary.getKey())) {
+                continue;
+            }
+	    if(maxSize>0 && objectSummary.getSize()>maxSize) {
+		continue;
+	    }
+
             String name = getObjectName(objectSummary.getKey());
             String path = self
-		? theBucket
-		: theBucket + name;
+                          ? theBucket
+                          : theBucket + name;
 
-	    //	    System.err.println("\tNEW FILE:" + path);
-            S3File file =  new S3File(path, name, objectSummary.getSize(), objectSummary.getLastModified());
-	    files.add(file);
-	}
-	System.err.println("S3File.doList: " + theBucket +" marker:" + marker +" cnt:" + files.size());
-	return new S3ListResults(listing.getNextMarker(), files);
+            //      System.err.println("\tNEW FILE:" + path);
+            S3File file = new S3File(path, name, objectSummary.getSize(),
+                                     objectSummary.getLastModified());
+            files.add(file);
+        }
+
+        return new S3ListResults(listing.getNextContinuationToken(), files);
     }
 
 
@@ -303,9 +390,9 @@ public class S3File extends FileWrapper {
     @Override
     public FileWrapper getParentFile() {
         /*
-	  String parent = bucket;
-	  if(parent.endsWith("/")) parent = parent.substring(0,parent.length()-1);
-	  String parent = bucket.replace("/[^/]+/?$");
+          String parent = bucket;
+          if(parent.endsWith("/")) parent = parent.substring(0,parent.length()-1);
+          String parent = bucket.replace("/[^/]+/?$");
         */
         String p = bucket.replaceAll("(.*)/[^/]+/?$", "$1/");
         if (p.equals("s3://")) {
@@ -338,13 +425,22 @@ public class S3File extends FileWrapper {
         if ( !Utils.stringDefined(bucket) || bucket.equals("s3://")) {
             return false;
         }
+
         return true;
     }
 
+    /**
+     *
+     * @param path _more_
+      * @return _more_
+     */
     public static String[] getBucketAndPrefix(String path) {
-	path =  path.replace(S3PREFIX+"//","");
-	List<String> toks = Utils.splitUpTo(path,"/",2);
-	return new String[]{toks.get(0),toks.size()>1?toks.get(1):null};
+        path = path.replace(S3PREFIX + "//", "");
+        List<String> toks = Utils.splitUpTo(path, "/", 2);
+
+        return new String[] { toks.get(0), (toks.size() > 1)
+                                           ? toks.get(1)
+                                           : null };
     }
 
 
@@ -355,23 +451,37 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public  void copyFileTo(String bucket, java.io.File file)
-	throws Exception {
-	String[] pair = getBucketAndPrefix(bucket);
-	if(pair[1]==null) {
-	    System.err.println("Error: bad bucket path:" + bucket);
-	    return;
-	}
-	String host = pair[0];
-	String path =pair[1];
+    public void copyFileTo(String bucket, java.io.File file)
+            throws Exception {
+        String[] pair = getBucketAndPrefix(bucket);
+        if (pair[1] == null) {
+            System.err.println("Error: bad bucket path:" + bucket);
 
-	ListObjectsRequest request = new ListObjectsRequest().withBucketName(pair[0]).withDelimiter("/");
-	if(pair[1]!=null) request = request.withPrefix(pair[1]);
-	String key  =pair[1]!=null?pair[1]:"";
-	ObjectListing listing = getS3().listObjects(request);
-	List<S3ObjectSummary> 	summaries = listing.getObjectSummaries();
-	S3ObjectSummary objectSummary   = summaries.get(0);
-	ObjectMetadata object = getS3().getObject(new GetObjectRequest(objectSummary.getBucketName(), objectSummary.getKey()), file);
+            return;
+        }
+        String host = pair[0];
+        String path = pair[1];
+
+        ListObjectsV2Request request =
+            new ListObjectsV2Request().withBucketName(pair[0]).withDelimiter(
+                "/");
+        if (pair[1] != null) {
+            request = request.withPrefix(pair[1]);
+        }
+        String                key       = (pair[1] != null)
+                                          ? pair[1]
+                                          : "";
+        ListObjectsV2Result   listing   = getS3().listObjectsV2(request);
+        List<S3ObjectSummary> summaries = listing.getObjectSummaries();
+        if (summaries.size() == 0) {
+            throw new IllegalArgumentException(
+                "Unable to list the S3 bucket:" + bucket);
+        }
+        S3ObjectSummary objectSummary = summaries.get(0);
+        ObjectMetadata object = getS3().getObject(
+                                    new GetObjectRequest(
+                                        objectSummary.getBucketName(),
+                                        objectSummary.getKey()), file);
     }
 
 
@@ -385,127 +495,338 @@ public class S3File extends FileWrapper {
         copyFileTo(bucket, file);
     }
 
-    public static class MyFileViewer extends FileWrapper.FileViewer {
-	boolean download = false;
-	boolean makeDirs = false;
-	boolean verbose = false;
-	boolean overWrite = false;	
-	int sizeLimit = -1;
-	double percent = -1;
-	List<String> excludes;
-	Appendable buffer;
-	int maxLevel=-1;
-
-	public MyFileViewer(Appendable buffer, int maxLevel) {
-	    this.buffer = buffer;
-	    this.maxLevel = maxLevel;
-	}
-
-	public MyFileViewer(boolean download, boolean makeDirs,boolean overWrite, int sizeLimit, double percent, boolean verbose,List<String> excludes) {
-	    this.download = download;
-	    this.makeDirs = makeDirs;
-	    this.overWrite = overWrite;
-	    this.sizeLimit = sizeLimit;
-	    this.percent = percent;
-	    this.verbose= verbose;
-	    //	    this.verbose = false;
-	    this.excludes = excludes;
-	}
-	private void print(String msg) throws Exception {
-	    if(buffer!=null) buffer.append(msg);
-	    else if(verbose) 
-		System.out.print(msg);
-	}
-
-	private void println() throws Exception {
-	    if(buffer!=null) buffer.append("\n");
-	    else if(verbose) 
-		System.out.println(Utils.ANSI_RESET);
-	}
-	
-	private boolean downloadOk(FileWrapper f, FileWrapper[] children) {
-	    //only check this when there are logs of siblings
-	    if(percent>0 && children!=null && children.length>PERCENT_THRESHOLD) {
-		if(Math.random()>percent) {
-		    //		    System.err.println("skipping:" + f.getName());
-		    return false;
-		}
+    private boolean searchMatch(String pattern, String key) {
+	try {
+	    if (key.matches(pattern)) {
+		return true;
 	    }
-	    if(sizeLimit<=0) return true;
-	    return f.length()<(sizeLimit*1000000);
+	} catch (Exception ignore) {}
+	if (key.indexOf(pattern) >= 0) {
+	    return true;
 	}
+	return false;
+    }
 
-	public void printPrefix(int level) throws Exception {
-	    for (int i = 0; i < level; i++) {
-		print("   ");
+
+    /**
+     *
+     * @param search _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<String> doSearch(String search) throws Exception {
+	return doSearch(search, 10, false);
+    }
+
+    public List<String> doSearch(String search,int maxCalls,boolean verbose) throws Exception {	
+
+        List<String> found = new ArrayList<String>();
+        String[]     pair  = getBucketAndPrefix(this.toString());
+        ListObjectsV2Request request =
+            new ListObjectsV2Request().withBucketName(pair[0]);
+        if (pair[1] != null) {
+            request = request.withPrefix(pair[1]);
+        }
+        String key    = (pair[1] != null)
+                        ? pair[1]
+                        : "";
+        int    cnt    = 0;
+	int numCalls = 0;
+        String marker = null;
+        while (true) {
+            if (marker != null) {
+                request.setContinuationToken(marker);
+            }
+            ListObjectsV2Result listing = getS3().listObjectsV2(request);
+	    /* we don't get this since there isn't a delimiter in the request
+	    List<String>        commonPrefixes = listing.getCommonPrefixes();
+	    for (String s : commonPrefixes) {
+                if (found.size() > 100) {
+                    break;
+                }
+		if(searchMatch(search,s)) {
+		    found.add(s);
+		    continue;
+                }
 	    }
-	}
-	private String red(String s) {
-	    if(buffer!=null) return "<span style='color:firebrick;'>" + s +"</span>";
-	    return Utils.ANSI_RED +s +Utils.ANSI_RESET;
-	}
-	private String green(String s) {
-	    if(buffer!=null) return "<span style='color:green;'>" + s +"</span>";
-	    return Utils.ANSI_GREEN +s +Utils.ANSI_RESET;
-	}	
-	public int viewFile(int level, FileWrapper file, FileWrapper[] children) throws Exception {
-	    if(maxLevel>=0 && level>=maxLevel) return DO_DONTRECURSE;
-	    if(excludes!=null) {
-		for(String exclude: excludes) {
-		    if(file.toString().matches(exclude))
-			return DO_DONTRECURSE;
-		}
+	    */
+
+            for (S3ObjectSummary objectSummary :
+                    listing.getObjectSummaries()) {
+                cnt++;
+                if (found.size() > 100) {
+                    break;
+                }
+		if(searchMatch(search,objectSummary.getKey())) {
+		    found.add(objectSummary.getKey());
+		    continue;
+                }
+            }
+
+
+	    if(verbose)
+		System.err.println("#" +cnt +" found:" + found.size());
+
+            if (++numCalls >= maxCalls) {
+                break;
+            }
+	    if (found.size() > 100) {
+		break;
 	    }
 
-	    printPrefix(level);
-	    if (!file.isDirectory()) {
-		print(red(file.getName())+ " " + Utils.formatFileLength(file.length()));
-		if(download && downloadOk(file,children)) {
-		    String path = file.toString();
-		    print(" downloading... ");
-		    java.io.File dir  = new java.io.File(".");
-		    if(makeDirs) {
-			for(FileWrapper fv: stack) {
-			    dir = new java.io.File(dir,fv.getName());
-			    if(!dir.exists()) {
-				print(" mkdir:" +dir +" ");
-				dir.mkdirs();
-			    }
-			}
-		    }
+            marker = listing.getNextContinuationToken();
+            if (marker == null) {
+                System.err.println("no marker");
 
-		    java.io.File dest;
-		    if(makeDirs) {
-			//			System.err.println("DIR:" + dir +" NAME:" + file.getName());
-			dest =  new java.io.File(dir,file.getName());
-		    } else {
-			//			System.err.println("NOMAKEDIRS");
-			dest = new java.io.File(file.getName());
-		    }
+                break;
+            }
+        }
 
-		    if(dest.exists() && !overWrite) {
-			print(" exists");
-		    } else {
-			file.copyFileTo(dest);
-		    }
-		}
-		println();
-		return DO_DONTRECURSE;
-	    }  else {
-		print(green(file.getName()));
-		println();
-		return DO_CONTINUE;
-	    }
-	}
+        return found;
     }
 
 
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Aug 16, '22
+     * @author         Enter your name here...    
+     */
+    public static class MyFileViewer extends FileWrapper.FileViewer {
+
+        /**  */
+        boolean download = false;
+
+        /**  */
+        boolean makeDirs = false;
+
+        /**  */
+        boolean verbose = false;
+
+        /**  */
+        boolean overWrite = false;
+
+        /**  */
+        int sizeLimit = -1;
+
+        /**  */
+        double percent = -1;
+
+        /**  */
+        List<String> excludes;
+
+        /**  */
+        Appendable buffer;
+
+        /**  */
+        int maxLevel = -1;
+
+        /**
+         
+         *
+         * @param buffer _more_
+         * @param maxLevel _more_
+         */
+        public MyFileViewer(Appendable buffer, int maxLevel) {
+            this.buffer   = buffer;
+            this.maxLevel = maxLevel;
+        }
+
+        /**
+         
+         *
+         * @param download _more_
+         * @param makeDirs _more_
+         * @param overWrite _more_
+         * @param sizeLimit _more_
+         * @param percent _more_
+         * @param verbose _more_
+         * @param excludes _more_
+         */
+        public MyFileViewer(boolean download, boolean makeDirs,
+                            boolean overWrite, int sizeLimit, double percent,
+                            boolean verbose, List<String> excludes) {
+            this.download  = download;
+            this.makeDirs  = makeDirs;
+            this.overWrite = overWrite;
+            this.sizeLimit = sizeLimit;
+            this.percent   = percent;
+            this.verbose   = verbose;
+            //      this.verbose = false;
+            this.excludes = excludes;
+        }
+
+        /**
+         *
+         * @param msg _more_
+         *
+         * @throws Exception _more_
+         */
+        private void print(String msg) throws Exception {
+            if (buffer != null) {
+                buffer.append(msg);
+            } else if (verbose) {
+                System.out.print(msg);
+            }
+        }
+
+        /**
+         *
+         * @throws Exception _more_
+         */
+        private void println() throws Exception {
+            if (buffer != null) {
+                buffer.append("\n");
+            } else if (verbose) {
+                System.out.println(Utils.ANSI_RESET);
+            }
+        }
+
+        /**
+         *
+         * @param f _more_
+         * @param children _more_
+          * @return _more_
+         */
+        private boolean downloadOk(FileWrapper f, FileWrapper[] children) {
+            //only check this when there are logs of siblings
+            if ((percent > 0) && (children != null)
+                    && (children.length > PERCENT_THRESHOLD)) {
+                if (Math.random() > percent) {
+                    //              System.err.println("skipping:" + f.getName());
+                    return false;
+                }
+            }
+            if (sizeLimit <= 0) {
+                return true;
+            }
+
+            return f.length() < (sizeLimit * 1000000);
+        }
+
+        /**
+         *
+         * @param level _more_
+         *
+         * @throws Exception _more_
+         */
+        public void printPrefix(int level) throws Exception {
+            for (int i = 0; i < level; i++) {
+                print("   ");
+            }
+        }
+
+        /**
+         *
+         * @param s _more_
+          * @return _more_
+         */
+        private String red(String s) {
+            if (buffer != null) {
+                return "<span style='color:firebrick;'>" + s + "</span>";
+            }
+
+            return Utils.ANSI_RED + s + Utils.ANSI_RESET;
+        }
+
+        /**
+         *
+         * @param s _more_
+          * @return _more_
+         */
+        private String green(String s) {
+            if (buffer != null) {
+                return "<span style='color:green;'>" + s + "</span>";
+            }
+
+            return Utils.ANSI_GREEN + s + Utils.ANSI_RESET;
+        }
+
+        /**
+         *
+         * @param level _more_
+         * @param file _more_
+         * @param children _more_
+          * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public int viewFile(int level, FileWrapper file,
+                            FileWrapper[] children)
+                throws Exception {
+            if ((maxLevel >= 0) && (level >= maxLevel)) {
+                return DO_DONTRECURSE;
+            }
+            if (excludes != null) {
+                for (String exclude : excludes) {
+                    if (file.toString().matches(exclude)) {
+                        return DO_DONTRECURSE;
+                    }
+                }
+            }
+
+            printPrefix(level);
+            if ( !file.isDirectory()) {
+                print(red(file.getName()) + " "
+                      + Utils.formatFileLength(file.length()));
+                if (download && downloadOk(file, children)) {
+                    String path = file.toString();
+                    print(" downloading... ");
+                    java.io.File dir = new java.io.File(".");
+                    if (makeDirs) {
+                        for (FileWrapper fv : stack) {
+                            dir = new java.io.File(dir, fv.getName());
+                            if ( !dir.exists()) {
+                                print(" mkdir:" + dir + " ");
+                                dir.mkdirs();
+                            }
+                        }
+                    }
+
+                    java.io.File dest;
+                    if (makeDirs) {
+                        //                      System.err.println("DIR:" + dir +" NAME:" + file.getName());
+                        dest = new java.io.File(dir, file.getName());
+                    } else {
+                        //                      System.err.println("NOMAKEDIRS");
+                        dest = new java.io.File(file.getName());
+                    }
+
+                    if (dest.exists() && !overWrite) {
+                        print(" exists");
+                    } else {
+                        file.copyFileTo(dest);
+                    }
+                }
+                println();
+
+                return DO_DONTRECURSE;
+            } else {
+                print(green(file.getName()));
+                println();
+
+                return DO_CONTINUE;
+            }
+        }
+    }
+
+
+
+    /**
+     *
+     * @param msg _more_
+     */
     public static void usage(String msg) {
-	if(msg!=null)
-	    System.err.println(msg);
-	System.err.println("Usage:\nS3File \n\t<-download  download the files>  \n\t<-nomakedirs don't make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing> \n\t<-self print out the details about the bucket> ... one or more buckets");
-	Utils.exitTest(0);
+        if (msg != null) {
+            System.err.println(msg);
+        }
+        System.err.println(
+            "Usage:\nS3File \n\t<-download  download the files>  \n\t<-nomakedirs don't make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing>\n\t<-search search_term>\n\t<-self print out the details about the bucket> ... one or more buckets");
+        Utils.exitTest(0);
     }
 
 
@@ -518,30 +839,34 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String dflt = "s3://first-street-climate-risk-statistics-for-noncommercial-use/";
-	dflt = "s3://noaa-gsod-pds/1985";
+
+        String dflt =
+            "s3://first-street-climate-risk-statistics-for-noncommercial-use/";
+        dflt = "s3://noaa-gsod-pds/1985";
         //      debug = true;
-        final int[]            cnt        = { 0 };
-        List<String> excludes = new ArrayList<String>();
-        boolean doDownload =false;
-        boolean makeDirs= true;
-	boolean overWrite= false;
-        boolean doSelf    = false;
-        boolean doRecursive = false;
-        boolean verbose= false;	
-	double percent = -1;
-	int sizeLimit = -1;
-	for (int i=0;i<args.length;i++) {
-	    String path =args[i];
+        final int[]  cnt         = { 0 };
+        List<String> excludes    = new ArrayList<String>();
+        String       search        = null;
+        boolean      doDownload  = false;
+        boolean      makeDirs    = true;
+        boolean      overWrite   = false;
+        boolean      doSelf      = false;
+        boolean      doRecursive = false;
+        boolean      verbose     = false;
+	int maxCalls = 10;
+        double       percent     = -1;
+        int          sizeLimit   = -1;
+        for (int i = 0; i < args.length; i++) {
+            String path = args[i];
             if (path.startsWith("--")) {
-		path = path.substring(1);
-	    }
+                path = path.substring(1);
+            }
             if (path.equals("-help")) {
-		usage(null);
-	    }
+                usage(null);
+            }
             if (path.equals("-s3")) {
-		continue;
-	    }
+                continue;
+            }
             if (path.equals("default")) {
                 path = dflt;
             }
@@ -549,81 +874,108 @@ public class S3File extends FileWrapper {
                 debug = true;
                 continue;
             }
-	    if(path.equals("-overwrite")) {
-		overWrite = true;
-		continue;
-	    }
-	    if(path.equals("-verbose")) {
-		verbose= true;	
-		continue;
-	    }
+            if (path.equals("-overwrite")) {
+                overWrite = true;
+                continue;
+            }
+            if (path.equals("-verbose")) {
+                verbose = true;
+                continue;
+            }
             if (path.equals("-exclude")) {
-		if(i==args.length-1) {
-		    usage("Bad exclude arg");
-		}
-		excludes.add(args[++i]);
+                if (i == args.length - 1) {
+                    usage("Bad exclude arg");
+                }
+                excludes.add(args[++i]);
                 continue;
-	    }
+            }
+            if (path.equals("-maxcalls")) {
+                if (i == args.length - 1) {
+                    usage("Bad maxcals arg");
+                }
+                maxCalls = Integer.parseInt(args[++i]);
+                continue;
+            }
             if (path.equals("-sizelimit")) {
-		if(i==args.length-1) {
-		    usage("Bad limit arg");
-		}
-		sizeLimit = Integer.parseInt(args[++i]);
+                if (i == args.length - 1) {
+                    usage("Bad limit arg");
+                }
+                sizeLimit = Integer.parseInt(args[++i]);
                 continue;
-	    }
+            }
+            if (path.equals("-search")) {
+                if (i == args.length - 1) {
+                    usage("Bad search arg");
+                }
+                search = args[++i];
+                continue;
+            }
             if (path.equals("-percent")) {
-		if(i==args.length-1) {
-		    usage("Bad percent arg");
-		}
-		percent = Double.parseDouble(args[++i]);
+                if (i == args.length - 1) {
+                    usage("Bad percent arg");
+                }
+                percent = Double.parseDouble(args[++i]);
                 continue;
-	    }	    
+            }
             if (path.equals("-nomakedirs")) {
-                makeDirs= false;
+                makeDirs = false;
                 continue;
-	    }
+            }
             if (path.equals("-makedirs")) {
-                makeDirs= true;
+                makeDirs = true;
                 continue;
-	    }
+            }
             if (path.equals("-download")) {
-                doDownload= true;
+                doDownload = true;
                 continue;
-            }	    
+            }
             if (path.equals("-self")) {
                 doSelf = true;
                 continue;
             }
             if (path.equals("-recursive")) {
                 doRecursive = true;
-		verbose =true;
+                verbose     = true;
                 continue;
             }
             if (path.startsWith("-")) {
-		usage("Unknown arg:" + path);
-	    }
+                usage("Unknown arg:" + path);
+            }
 
             if (doSelf) {
                 S3File file = createFile(path);
                 if (file != null) {
-		    System.out.println("Got:" + file.toStringVerbose());
+                    System.out.println("Got:" + file.toStringVerbose());
                 } else {
                     System.out.println("Failed:" + path);
                 }
                 continue;
             }
-            FileWrapper f = FileWrapper.createFileWrapper(path);
-	    if (doRecursive) {
-                FileWrapper.walkDirectory(f, new MyFileViewer(doDownload, makeDirs,overWrite,sizeLimit,percent,verbose,excludes),0);
+            if (search != null) {
+                S3File file = new S3File(path);
+		List<String> results = file.doSearch(search,maxCalls,verbose);
+		if(results.size()==0)
+		    System.err.println("Nothing found");
+		else
+		    System.out.print(Utils.wrap(results,"","\n"));
                 continue;
             }
 
-	    if(doDownload) {
-		java.io.File dest = new java.io.File(f.getName());
-		System.err.println("Downloading:" + f);
-		f.copyFileTo(dest);
-		continue;
-	    }
+
+            FileWrapper f = FileWrapper.createFileWrapper(path);
+            if (doRecursive) {
+                FileWrapper.walkDirectory(f, new MyFileViewer(doDownload,
+                        makeDirs, overWrite, sizeLimit, percent, verbose,
+                        excludes), 0);
+                continue;
+            }
+
+            if (doDownload) {
+                java.io.File dest = new java.io.File(f.getName());
+                System.err.println("Downloading:" + f);
+                f.copyFileTo(dest);
+                continue;
+            }
 
             FileWrapper[] files = f.listFiles();
             if (files == null) {
@@ -633,13 +985,14 @@ public class S3File extends FileWrapper {
                     System.out.println("No files");
                 }
                 for (FileWrapper fw : files) {
-		    if(fw.isDirectory()) {
-			//			System.out.println("dir:" +fw.getName());
-		    } else {
-			//			System.out.println("file:"+fw.toStringVerbose());
-		    }
+                    if (fw.isDirectory()) {
+                        //                      System.out.println("dir:" +fw.getName());
+                    } else {
+                        //                      System.out.println("file:"+fw.toStringVerbose());
+                    }
                 }
             }
         }
+
     }
 }

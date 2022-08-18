@@ -152,6 +152,11 @@ public class ZipFileOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void outputZipFile(Entry entry, Appendable sb) throws Exception {
+	if(entry.getResource().isS3()) {
+	    sb.append("No zip file listing for S3 files");
+	    return;
+	}
+
         ZipFile zipFile = new ZipFile(entry.getResource().getPath());
         //        ZipInputStream zin     = new ZipInputStream(fis);
         //        InputStream fis = getStorageManager().getFileInputStream(entry.getResource().getPath());

@@ -1370,7 +1370,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 									 : " " + map.getVariableName())) +
 			   HtmlUtils.style(HU.css("max-height", HU.makeDim(height, "px"),"overflow-y","auto")));
 
-	    System.err.println(sb);
             if ( !includeList) {
                 sb.append(extraNav);
             } else {

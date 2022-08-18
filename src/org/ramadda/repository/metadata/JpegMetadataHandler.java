@@ -161,11 +161,7 @@ public class JpegMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
-        //      System.err.println("JpegMetadataHandler.getInitialMetadata shortForm:"  + shortForm +" isImage:" +entry.getResource().isImage());
-        if (shortForm) {
-            return;
-        }
-
+	//	System.err.println("JpegMetadataHandler.getInitialMetadata shortForm:"  + shortForm +" isImage:" +entry.getResource().isImage());
         if ( !entry.getResource().isImage()) {
             return;
         }
@@ -177,7 +173,7 @@ public class JpegMetadataHandler extends MetadataHandler {
 		long t1= System.currentTimeMillis();
 		Metadata thumbnailMetadata = getThumbnail(request, entry,mtd);
 		long t2= System.currentTimeMillis();
-		System.err.println("getThumbnail:" + (t2-t1));
+		//		System.err.println("getThumbnail:" + (t2-t1));
 		if (thumbnailMetadata != null) {
 		    metadataList.add(thumbnailMetadata);
 		}
@@ -186,6 +182,12 @@ public class JpegMetadataHandler extends MetadataHandler {
             getLogManager().logError("JpgeMetadataHandler", exc);
             return;
         }
+
+
+        if (shortForm) {
+            return;
+        }
+
 
 
         if ( !(path.toLowerCase().endsWith(".jpg")

@@ -7,11 +7,14 @@ package org.ramadda.plugins.aws;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
+import org.ramadda.util.PatternHolder;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.util.S3File;
-import org.ramadda.util.PatternHolder;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -19,28 +22,42 @@ import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
 
 /**
  */
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
+
+    private SimpleDateFormat yearFormat  =RepositoryUtil.makeDateFormat("yyyy");
+    private SimpleDateFormat yearMonthFormat  =RepositoryUtil.makeDateFormat("yyyy-MM");
+    private SimpleDateFormat yearMonthDayFormat  =RepositoryUtil.makeDateFormat("yyyy-MM-dd");        
+
 
     /**  */
     private TTLCache<String, List<String>> synthIdCache =
         new TTLCache<String, List<String>>(5 * 60 * 1000);
 
 
-    private static int IDX=0;
+    /**  */
+    private static int IDX = 0;
+
     /** _more_ */
     public static final int IDX_ROOT = IDX++;
 
+    /**  */
     public static final int IDX_EXCLUDE_PATTERNS = IDX++;
 
-    public static final int IDX_MAX  = IDX++;
+    /**  */
+    public static final int IDX_MAX = IDX++;
 
-    public static final int IDX_PERCENT  = IDX++;
-    public static final int IDX_SIZE_LIMIT  = IDX++;
+    /**  */
+    public static final int IDX_PERCENT = IDX++;
+
+    /**  */
+    public static final int IDX_SIZE_LIMIT = IDX++;
 
 
     /**
@@ -75,10 +92,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                     String synthId)
             throws Exception {
 
-	//	System.err.println("getSynthIds:" + request);
+        //      System.err.println("getSynthIds:" + request);
         boolean debug = false;
         String cacheKey = parentEntry.getId() + "_" + synthId + "_"
-	    + rootEntry.getChangeDate()+"_" + request.getString(ARG_MARKER,"");
+                          + rootEntry.getChangeDate() + "_"
+                          + request.getString(ARG_MARKER, "");
         List<String> ids = synthIdCache.get(cacheKey);
         if (ids != null) {
             return ids;
@@ -94,21 +112,26 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         ids = new ArrayList<String>();
 
         //Always have to have a root
-        String rootId = (String) rootEntry.getValue(IDX_ROOT);
+	String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return ids;
         }
-	List<PatternHolder> excludes = null;
+        List<PatternHolder> excludes = null;
         String exclude = (String) rootEntry.getValue(IDX_EXCLUDE_PATTERNS);
-        int max = rootEntry.getIntValue(IDX_MAX,1000);
-        double percent = rootEntry.getDoubleValue(IDX_PERCENT,(double)-100.0);
-        double tmp = rootEntry.getDoubleValue(IDX_SIZE_LIMIT,(double)-1.0);
-	if(Double.isNaN(tmp)) tmp = -1;
-	long maxSize = (long) (tmp==-1?-1:tmp*1000*1000);
-	Object[] values = rootEntry.getValues();
+        int                 max      = rootEntry.getIntValue(IDX_MAX, 1000);
+        double percent = rootEntry.getDoubleValue(IDX_PERCENT,
+                             (double) -100.0);
+        double tmp = rootEntry.getDoubleValue(IDX_SIZE_LIMIT, (double) -1.0);
+        if (Double.isNaN(tmp)) {
+            tmp = -1;
+        }
+        long     maxSize = (long) ((tmp == -1)
+                                   ? -1
+                                   : tmp * 1000 * 1000);
+        Object[] values  = rootEntry.getValues();
         if (Utils.stringDefined(exclude)) {
-	    excludes  =PatternHolder.parseLines(exclude);
-	}
+            excludes = PatternHolder.parseLines(exclude);
+        }
 
         if ( !Utils.stringDefined(synthId)) {
             synthId = rootId;
@@ -122,42 +145,46 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         //      S3File.debug = true;
-        S3File.S3ListResults results = doLs(request, new S3File(synthId), null,max,percent,maxSize);
-	if(results.getMarker()!=null) {
-	    String prevMarker = request.getString(ARG_MARKER,null);
-	    String prevMarkers = request.getString(ARG_PREVMARKERS,null);
-	    if(Utils.stringDefined(prevMarker)|| Utils.stringDefined(prevMarkers)) {
-		List<String> markers = new ArrayList<String>();
-		if(prevMarkers != null) markers.addAll(Utils.split(prevMarkers,",",true,true));
-		if(Utils.stringDefined(prevMarker)) markers.add(prevMarker);
-		request.putExtraProperty(ARG_PREVMARKERS, Utils.join(markers,","));
-	    }
-	    request.putExtraProperty(ARG_MARKER, results.getMarker());
-	}
-	List<S3File> files = results.getFiles();
+        S3File.S3ListResults results = doLs(request, new S3File(synthId),
+                                            null, max, percent, maxSize);
+        if (results.getMarker() != null) {
+            String prevMarker  = request.getString(ARG_MARKER, null);
+            String prevMarkers = request.getString(ARG_PREVMARKERS, null);
+            if (Utils.stringDefined(prevMarker)
+                    || Utils.stringDefined(prevMarkers)) {
+                List<String> markers = new ArrayList<String>();
+                if (prevMarkers != null) {
+                    markers.addAll(Utils.split(prevMarkers, ",", true, true));
+                }
+                if (Utils.stringDefined(prevMarker)) {
+                    markers.add(prevMarker);
+                }
+                request.putExtraProperty(ARG_PREVMARKERS,
+                                         Utils.join(markers, ","));
+            }
+            request.putExtraProperty(ARG_MARKER, results.getMarker());
+        }
+        List<S3File> files    = results.getFiles();
         List<String> children = new ArrayList<String>();
-	int cnt = 0;
+        int          cnt      = 0;
         for (S3File file : files) {
-	    boolean ok = true;
-	    if(excludes!=null && excludes.size()>0) {
-		if(PatternHolder.checkPatterns(excludes,file.toString())) {
-		    continue;
-		}
-	    }
-	    //https://localhost:8430/repository/entry/show?entryid=synth%3A3fd5c55d-db3d-4b42-b7ac-5489793f7d5e%3As3%3A%2F%2Fnoaa-gsod-pds%2F1974&marker=1974/10658099999.csv&prevmarkers=
-
-	    if(cnt++<10)
-		System.err.println("FILE:" + file);
-            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry, file);
-	    if(!ok) {
-		if(debug)
-		    System.err.println("Skipping:" + file);
-		continue;
-	    }
+            boolean ok = true;
+            if ((excludes != null) && (excludes.size() > 0)) {
+                if (PatternHolder.checkPatterns(excludes, file.toString())) {
+                    continue;
+                }
+            }
+            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
+                                    file);
+            if ( !ok) {
+                if (debug) {
+                    System.err.println("Skipping:" + file);
+                }
+                continue;
+            }
             if (bucketEntry == null) {
                 continue;
             }
-            getEntryManager().cacheSynthEntry(bucketEntry);
             ids.add(bucketEntry.getId());
         }
         parentEntry.setChildIds(ids);
@@ -184,38 +211,103 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     private Entry createBucketEntry(Entry rootEntry, Entry parentEntry,
                                     S3File file)
             throws Exception {
+	String dateFlag = null;
+	Date dataDate= null;
         String name = file.getName();
-        Date   dttm = new Date(file.lastModified());
-        if (dttm == null) {
-            dttm = new Date();
-        }
+	int year = getYear(name);
+	if(year>0) {
+	    dataDate = yearFormat.parse(""+year);
+	    dateFlag = "year";
+	}
+
+	String parent = parentEntry.getName();
+	//Assume month names
+	year = getYear(parent);
+	if(year>0) {
+	    if(name.matches("(0|1)[0-9]")) {
+		int month  = Integer.parseInt(name);
+		if(month>=1 && month<=12) {
+		    name= Utils.getMonthName(month-1);
+		    dataDate = yearMonthFormat.parse(""+year+"-"+ month);
+		    dateFlag = "yearmonth";
+		}
+	    }
+	}
+
+	//If no dataDate then check if the parent's date was set as  yearmonth
+	if(dataDate==null) {
+	    String parentDateFlag  = (String) parentEntry.getTransientProperty("dateFlag");
+	    if(parentDateFlag!=null) {
+		if(parentDateFlag.equals("yearmonth")) {
+		    //Does the name match a possible day
+		    if(name.matches("(0|1|2|3)[0-9]")) {
+			int day = Integer.parseInt(name);
+			if(day>=1 && day<=31) {
+			    String yyyymm=yearMonthFormat.format(new Date(parentEntry.getStartDate()));
+			    dataDate = yearMonthDayFormat.parse(yyyymm+"-" + name);
+			}
+		    }
+		}
+	    }
+	}
+
+        Date   createDate = new Date(file.lastModified());
+	if(dataDate==null) dataDate = createDate;
         String id = getEntryManager().createSynthId(rootEntry,
                         file.toString());
-	boolean isBucketType = false;
+        boolean isBucketType = false;
         TypeHandler bucketTypeHandler =
-            getEntryManager().findDefaultTypeHandler(rootEntry, file.toString());
+            getEntryManager().findDefaultTypeHandler(rootEntry,
+						     file.toString(), !file.isDirectory());
         if (bucketTypeHandler == null) {
-	    isBucketType = true;
-            bucketTypeHandler = file.isDirectory()?
-                getRepository().getTypeHandler("type_s3_bucket"):
-                getRepository().getTypeHandler("type_s3_file");		
+            isBucketType      = true;
+            bucketTypeHandler = file.isDirectory()
+                                ? getRepository().getTypeHandler(
+                                    "type_s3_bucket")
+                                : getRepository().getTypeHandler(
+                                    "type_s3_file");
         }
         Entry  bucketEntry = new Entry(id, bucketTypeHandler);
         String desc        = "";
-	if(!isBucketType) desc = HU.b("AWS/S3 Bucket:") +" " +file.toString();
+        if ( !isBucketType) {
+            desc = HU.b("AWS/S3 Bucket:") + " " + file.toString();
+        }
         Resource resource = new Resource(file.toString(), Resource.TYPE_S3,
                                          file.length());
         //      System.err.println("Resource:" +file.toString());
         Object[] values = bucketTypeHandler.makeEntryValues(null);
         bucketEntry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
                               resource, "", Entry.DEFAULT_ORDER,
-                              dttm.getTime(), dttm.getTime(), dttm.getTime(),
-                              dttm.getTime(), values);
+                              createDate.getTime(), createDate.getTime(),
+			      dataDate.getTime(),  dataDate.getTime(), values);
 
-	if(isBucketType) bucketEntry.setValue("bucket_id", file.toString());
+	if(dateFlag !=null) bucketEntry.putTransientProperty("dateFlag", dateFlag);
+        if (isBucketType) {
+            bucketEntry.setValue("bucket_id", file.toString());
+        }
         bucketEntry.setMasterTypeHandler(this);
+	getEntryManager().cacheSynthEntry(bucketEntry);
+
 
         return bucketEntry;
+    }
+
+    private String getRootId(Entry entry) {
+        String id = (String) entry.getValue(IDX_ROOT);
+	if(id!=null) id = id.trim();
+	return id;
+    }
+
+
+    private int getYear(String s) {
+	if(s.matches("^(1|2)[0-9]+$")) {
+	    int year  = Integer.parseInt(s);
+	    //Assume this is a valid year range
+	    if(year>=1900 && year < 2030) {
+		return year;
+	    }
+	}
+	return -1;
     }
 
 
@@ -233,25 +325,47 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Entry makeSynthEntry(Request request, Entry rootEntry, String id)
             throws Exception {
-        String rootId = (String) rootEntry.getValue(IDX_ROOT);
+        String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
-	    return null;
+            return null;
+        }
+	//s3://first-street-climate-risk-statistics-for-noncommercial-use/02_HOW_TO_USE_DATA/Example_Maps.pdf 
+        //s3://noaa-gsod-pds/1988
+        //roll up the path creating the parent entries up to the root
+        Entry        parent = rootEntry;
+        String       key    = id.replace(rootId, "");
+        List<String> keys   = Utils.split(key, "/", true, true);
+	StringBuilder path = new StringBuilder(rootId);
+	//	System.err.println("id:" + id + ":\nrootId:" + rootId+":\nkey:"+ key);
+	//	System.err.println("keys:" + keys);
+	for(int i=0;i<keys.size();i++) {
+	    String ancestorKey = keys.get(i);
+	    path.append(ancestorKey);
+	    if(i<keys.size()-1)
+		path.append("/");
+	    //	    System.err.println("createBucket:" + path);
+	    parent = createBucketEntry(rootEntry, parent,new S3File(path.toString()));
 	}
-	//TODO: roll up the path creating the parent entries up to the root
-	//s3://noaa-gsod-pds/1988
-	Entry parent = rootEntry;
-	String key = id.replace(rootId,"");
-	List<String> keys = Utils.split(key,"/",true,true);
-        System.err.println("S3 creating:" + id+" key:" + key +" keys:" + keys);
-	if(keys.size()>1) {
-	}
-        return createBucketEntry(rootEntry, parent, S3File.createFile(id));
+
+        //System.err.println("S3 creating:" + id + " key:" + key + " keys:" + keys);
+	return parent;
     }
 
+    /**
+     *
+     * @param request _more_
+     * @param parentEntry _more_
+     * @param entryNames _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public Entry makeSynthEntry(Request request, Entry parentEntry,
-                                List<String> entryNames)    throws Exception {
-	return makeSynthEntry(request, parentEntry, Utils.join(entryNames,"/"));
+                                List<String> entryNames)
+            throws Exception {
+        return makeSynthEntry(request, parentEntry,
+                              Utils.join(entryNames, "/"));
     }
 
 
@@ -267,7 +381,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
     /**
      * _more_
-
+     *
      * @param base _more_
      * @param path _more_
      *
@@ -288,18 +402,131 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param bucket _more_
      *
+     * @param request _more_
+     * @param path _more_
+     * @param max _more_
+     * @param percent _more_
+     * @param maxSize _more_
+     *
      * @param base _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public S3File.S3ListResults doLs(Request request, S3File base, String path, int max, double percent, long maxSize)
+    public S3File.S3ListResults doLs(Request request, S3File base,
+                                     String path, int max, double percent,
+                                     long maxSize)
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
-        return newFile.doList(false, max,percent,maxSize,request.getString(ARG_MARKER,null));
+
+        return newFile.doList(false, max, percent, maxSize,
+                              request.getString(ARG_MARKER, null));
     }
 
+    public static final String ACTION_SEARCH = "s3search";
+    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
+            throws Exception {
+	super.getEntryLinks(request, entry, state, links);
+	links.add(new Link(getEntryActionUrl(request, entry,
+					     ACTION_SEARCH), ICON_SEARCH, "Search S3 Objects",
+			   OutputType.TYPE_FILE));
+    }
+
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString(ARG_ACTION, "");
+        if ( !action.equals(ACTION_SEARCH)) {
+            return super.processEntryAction(request, entry);
+        }
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb, "S3 Search");
+
+	getS3SearchForm(request, entry, sb);
+
+	String rootId = getRootId(entry);
+        S3File       file  = new S3File(rootId);
+        String       text  = request.getString("text", "");
+	if(stringDefined(text)) {
+	    List<String> found = file.doSearch(text);
+	    if ((found == null) || (found.size() == 0)) {
+		sb.append(
+			  getPageHandler().showDialogWarning(
+							     "Could not find object:" + text));
+
+		return new Result("S3 List", sb);
+	    }
+	    sb.append(HU.b("Searching for: ") + text);
+	    sb.append("<ul>");
+	    System.err.println("root:" + rootId + ":");
+	    for (String f : found) {
+		f = f.trim();
+		if ( !rootId.endsWith("/")) {
+		    if ( !f.startsWith("/")) {
+			f = "/" + f;
+		    }
+		}
+		String id = getEntryManager().createSynthId(entry, rootId + f);
+		System.err.println(rootId + f);
+		sb.append("<li> ");
+		String url = HU.url(getRepository().URL_ENTRY_SHOW.toString(),
+				    ARG_ENTRYID, id);
+		sb.append(HU.href(url, f));
+	    }
+	    sb.append("</ul>");
+	}
+
+
+        getPageHandler().entrySectionClose(request, entry, sb);
+
+        return new Result("S3 List", sb);
+    }
+
+
+    private void getS3SearchForm(Request request, Entry entry, StringBuilder sb) throws Exception {
+        sb.append(HU.form(getEntryActionUrl(request, entry, ACTION_SEARCH).toString()));
+	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	sb.append(HU.hidden(ARG_ACTION,ACTION_SEARCH));
+	sb.append(HU.input("text",request.getString("text",""),HU.SIZE_30+HU.attrs("placeholder","Search text")));
+	sb.append(HU.SPACE2);
+        sb.append(HU.submit("Search"));
+        sb.append(HU.formClose());
+    }
+
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+	throws Exception {
+
+        if ( !tag.equals("s3search")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+        StringBuilder sb     = new StringBuilder();
+	getS3SearchForm(request, entry, sb);
+        return sb.toString();
+    }
+
+
+    public static void main(String[]args) {
+	for(String parent: new String[]{"hello","1989","1776"}) {
+	    for(String name: new String[]{"xxx","01","02","12","13"}) {
+		System.err.println("Parent:" + parent +" name:" + name);
+	    }
+	}
+
+    }
 
 
 }
