@@ -167,11 +167,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     continue;
                 }
             }
-            //https://localhost:8430/repository/entry/show?entryid=synth%3A3fd5c55d-db3d-4b42-b7ac-5489793f7d5e%3As3%3A%2F%2Fnoaa-gsod-pds%2F1974&marker=1974/10658099999.csv&prevmarkers=
-
-            if (cnt++ < 10) {
-                System.err.println("FILE:" + file);
-            }
             Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
                                     file);
             if ( !ok) {
@@ -183,7 +178,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             if (bucketEntry == null) {
                 continue;
             }
-            getEntryManager().cacheSynthEntry(bucketEntry);
             ids.add(bucketEntry.getId());
         }
         parentEntry.setChildIds(ids);
@@ -211,6 +205,18 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                     S3File file)
             throws Exception {
         String name = file.getName();
+	String parent = parentEntry.getName();
+	//Assume month names
+	if(parent.matches("^(1|2)[0-9]+$") && name.matches("(0|1)[0-9]")) {
+	    int year  = Integer.parseInt(parent);
+	    if(year>=1900 && year < 2030) {
+		int month  = Integer.parseInt(name);
+		if(month>=1 && month<=12) {
+		    name= Utils.getMonthName(month-1);
+		}
+	    }
+	}
+
         Date   dttm = new Date(file.lastModified());
         if (dttm == null) {
             dttm = new Date();
@@ -247,6 +253,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             bucketEntry.setValue("bucket_id", file.toString());
         }
         bucketEntry.setMasterTypeHandler(this);
+	getEntryManager().cacheSynthEntry(bucketEntry);
+
 
         return bucketEntry;
     }
@@ -270,16 +278,24 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !Utils.stringDefined(rootId)) {
             return null;
         }
-        //TODO: roll up the path creating the parent entries up to the root
+	//s3://first-street-climate-risk-statistics-for-noncommercial-use/02_HOW_TO_USE_DATA/Example_Maps.pdf 
         //s3://noaa-gsod-pds/1988
+        //roll up the path creating the parent entries up to the root
         Entry        parent = rootEntry;
         String       key    = id.replace(rootId, "");
         List<String> keys   = Utils.split(key, "/", true, true);
-        System.err.println("S3 creating:" + id + " key:" + key + " keys:"
-                           + keys);
-        if (keys.size() > 1) {}
+	StringBuilder path = new StringBuilder(rootId);
+	for(int i=0;i<keys.size();i++) {
+	    String ancestorKey = keys.get(i);
+	    path.append(ancestorKey);
+	    if(i<keys.size()-1)
+		path.append("/");
+	    parent = createBucketEntry(rootEntry, parent,new S3File(path.toString()));
+	}
 
-        return createBucketEntry(rootEntry, parent, S3File.createFile(id));
+        //System.err.println("S3 creating:" + id + " key:" + key + " keys:" + keys);
+	System.err.println("Created:" + parent);
+	return parent;
     }
 
     /**
@@ -453,6 +469,16 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuilder sb     = new StringBuilder();
 	getS3SearchForm(request, entry, sb);
         return sb.toString();
+    }
+
+
+    public static void main(String[]args) {
+	for(String parent: new String[]{"hello","1989","1776"}) {
+	    for(String name: new String[]{"xxx","01","02","12","13"}) {
+		System.err.println("Parent:" + parent +" name:" + name);
+	    }
+	}
+
     }
 
 
