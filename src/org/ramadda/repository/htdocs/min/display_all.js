@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 17 21:45:21 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 17 22:27:00 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -34016,18 +34016,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.addFeatureSelectHandler(feature=>{
 		let didSomething= false;
 		if(feature.collisionInfo)  {
+		    if(debugPopup) console.log("has collisioninfo");
 		    feature.collisionInfo.dotSelected(feature);
 		    return false;
 		}
 		if(feature.record) {
 		    this.propagateEventRecordSelection({record:feature.record});
 		    this.propagateFilterFields(feature.record);
-		    didSomething= true;
+//		    didSomething= true;
 		}
 
 		if(feature.record && !this.map.doPopup && this.getProperty("showRecordSelection", true)) {
+		    if(debugPopup) console.log("highlighting point");
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
-		    didSomething= true;
+//		    didSomething= true;
 		}
 
 		if(feature.record && this.getProperty("shareSelected")) {
@@ -34039,7 +34041,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return true;
+		return didSomething;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
@@ -36412,12 +36414,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
 		    if(!Utils.stringDefined(tooltip)) {
+			if(debugPopup) console.log("No tooltip");
 			return null;
 		    }
 		    let text =   this.getRecordHtml(f.record, fields, tooltip);
+		    if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);
 		    if(text=="") return "BLANK";
 		    return text;
 		}
+		if(debugPopup) console.log("textGetter: no record");
 		return null;
 	    };
 	    let highlightGetter = f=>{
@@ -36848,6 +36853,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			if(rotateField) attrs.rotation = record.getValue(rotateField.getIndex());
 			mapPoint = this.map.createMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,iconSize,null,null,attrs);
+			mapPoint.textGetter= textGetter;
 			pointsToAdd.push(mapPoint);
 			mapPoint.isMarker = true;
 			mapPoints.push(mapPoint);
