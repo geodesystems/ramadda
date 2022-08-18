@@ -5510,7 +5510,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 map.put(child.getId(), child);
                 map.put(child.getName(), child);
             }
-            List<String> ids = Utils.split(firstEntries, ",");
+            List<String> ids = Utils.split(firstEntries, ",",true,true);
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id         = ids.get(i);
                 Entry  firstEntry = map.get(id);
@@ -5544,7 +5544,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 map.put(child.getId(), child);
                 map.put(child.getName(), child);
             }
-            List<String> ids = Utils.split(lastEntries, ",");
+            List<String> ids = Utils.split(lastEntries, ",",true,true);
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id        = ids.get(i);
                 Entry  lastEntry = map.get(id);
