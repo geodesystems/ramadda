@@ -749,7 +749,7 @@ public class CdmManager extends RepositoryManager {
 
             if (canLoadEntry(entry)) {
                 try {
-                    String path = entry.getFile().toString();
+                    String path = entry.getResource().getPath();
                     //Exclude zip files becase canOpen tries to unzip them (?)
                     if ( !(path.endsWith(".zip"))) {
                         //                        System.err.println  ("checking file:" + path);
