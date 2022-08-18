@@ -105,7 +105,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         ids = new ArrayList<String>();
 
         //Always have to have a root
-        String rootId = (String) rootEntry.getValue(IDX_ROOT);
+	String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return ids;
         }
@@ -259,6 +259,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return bucketEntry;
     }
 
+    private String getRootId(Entry entry) {
+        String id = (String) entry.getValue(IDX_ROOT);
+	if(id!=null) id = id.trim();
+	return id;
+    }
+
 
     /**
      * _more_
@@ -274,7 +280,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Entry makeSynthEntry(Request request, Entry rootEntry, String id)
             throws Exception {
-        String rootId = (String) rootEntry.getValue(IDX_ROOT);
+        String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return null;
         }
@@ -285,11 +291,14 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         String       key    = id.replace(rootId, "");
         List<String> keys   = Utils.split(key, "/", true, true);
 	StringBuilder path = new StringBuilder(rootId);
+	//	System.err.println("id:" + id + ":\nrootId:" + rootId+":\nkey:"+ key);
+	//	System.err.println("keys:" + keys);
 	for(int i=0;i<keys.size();i++) {
 	    String ancestorKey = keys.get(i);
 	    path.append(ancestorKey);
 	    if(i<keys.size()-1)
 		path.append("/");
+	    //	    System.err.println("createBucket:" + path);
 	    parent = createBucketEntry(rootEntry, parent,new S3File(path.toString()));
 	}
 
@@ -400,13 +409,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
 	getS3SearchForm(request, entry, sb);
 
-
-
-        String rootId = (String) entry.getValue(IDX_ROOT);
-        if (rootId == null) {
-            rootId = "";
-        }
-        rootId = rootId.trim();
+	String rootId = getRootId(entry);
         S3File       file  = new S3File(rootId);
         String       text  = request.getString("text", "");
 	if(stringDefined(text)) {

@@ -2378,13 +2378,13 @@ public class StorageManager extends RepositoryManager implements PointFile
             File   cachedFile = getLongTermCacheFile("s3cache", fileName);
             //      System.err.println("Cache file:" + cachedFile);
             if ( !cachedFile.exists()) {
-                System.err.println("Copying S3 file from bucket:" + bucket);
-		if(xxcnt++<10) {
-		    System.err.println(Utils.getStack(10));
-		}
+		//                System.err.println("Copying S3 file from bucket:" + bucket);
+		//		if(xxcnt++<10) {
+		//		    System.err.println(Utils.getStack(10));
+		//}
                 new S3File(bucket).copyFileTo(cachedFile);
             } else {
-                System.err.println("S3 file was cached:" + fileName);
+	    //                System.err.println("S3 file was cached:" + fileName);
             }
 
             return cachedFile;
