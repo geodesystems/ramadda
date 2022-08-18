@@ -785,6 +785,9 @@ function Entry(props) {
             children.map(func);
             Utils.call(finish);
         },
+        getParentName: function() {
+	    return this.parentName;
+	},
         getParentEntry: async function(callback, extraArgs) {
             if (!this.parent) {
                 //                    console.log("\tgetParent: no parent");
