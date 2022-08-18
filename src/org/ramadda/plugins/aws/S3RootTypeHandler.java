@@ -7,6 +7,7 @@ package org.ramadda.plugins.aws;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
@@ -24,10 +25,16 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
 
 /**
  */
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
+
+    private SimpleDateFormat yearFormat  =RepositoryUtil.makeDateFormat("yyyy");
+    private SimpleDateFormat yearMonthFormat  =RepositoryUtil.makeDateFormat("yyyy-MM");
+    private SimpleDateFormat yearMonthDayFormat  =RepositoryUtil.makeDateFormat("yyyy-MM-dd");        
+
 
     /**  */
     private TTLCache<String, List<String>> synthIdCache =
@@ -204,29 +211,54 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     private Entry createBucketEntry(Entry rootEntry, Entry parentEntry,
                                     S3File file)
             throws Exception {
+	String dateFlag = null;
+	Date dataDate= null;
         String name = file.getName();
+	int year = getYear(name);
+	if(year>0) {
+	    dataDate = yearFormat.parse(""+year);
+	    dateFlag = "year";
+	}
+
 	String parent = parentEntry.getName();
 	//Assume month names
-	if(parent.matches("^(1|2)[0-9]+$") && name.matches("(0|1)[0-9]")) {
-	    int year  = Integer.parseInt(parent);
-	    if(year>=1900 && year < 2030) {
+	year = getYear(parent);
+	if(year>0) {
+	    if(name.matches("(0|1)[0-9]")) {
 		int month  = Integer.parseInt(name);
 		if(month>=1 && month<=12) {
 		    name= Utils.getMonthName(month-1);
+		    dataDate = yearMonthFormat.parse(""+year+"-"+ month);
+		    dateFlag = "yearmonth";
 		}
 	    }
 	}
 
-        Date   dttm = new Date(file.lastModified());
-        if (dttm == null) {
-            dttm = new Date();
-        }
+	//If no dataDate then check if the parent's date was set as  yearmonth
+	if(dataDate==null) {
+	    String parentDateFlag  = (String) parentEntry.getTransientProperty("dateFlag");
+	    if(parentDateFlag!=null) {
+		if(parentDateFlag.equals("yearmonth")) {
+		    //Does the name match a possible day
+		    if(name.matches("(0|1|2|3)[0-9]")) {
+			int day = Integer.parseInt(name);
+			if(day>=1 && day<=31) {
+			    String yyyymm=yearMonthFormat.format(new Date(parentEntry.getStartDate()));
+			    dataDate = yearMonthDayFormat.parse(yyyymm+"-" + name);
+			}
+		    }
+		}
+	    }
+	}
+
+        Date   createDate = new Date(file.lastModified());
+	if(dataDate==null) dataDate = createDate;
         String id = getEntryManager().createSynthId(rootEntry,
                         file.toString());
         boolean isBucketType = false;
         TypeHandler bucketTypeHandler =
             getEntryManager().findDefaultTypeHandler(rootEntry,
-                file.toString());
+						     file.toString(), !file.isDirectory());
         if (bucketTypeHandler == null) {
             isBucketType      = true;
             bucketTypeHandler = file.isDirectory()
@@ -246,9 +278,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         Object[] values = bucketTypeHandler.makeEntryValues(null);
         bucketEntry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
                               resource, "", Entry.DEFAULT_ORDER,
-                              dttm.getTime(), dttm.getTime(), dttm.getTime(),
-                              dttm.getTime(), values);
+                              createDate.getTime(), createDate.getTime(),
+			      dataDate.getTime(),  dataDate.getTime(), values);
 
+	if(dateFlag !=null) bucketEntry.putTransientProperty("dateFlag", dateFlag);
         if (isBucketType) {
             bucketEntry.setValue("bucket_id", file.toString());
         }
@@ -263,6 +296,18 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         String id = (String) entry.getValue(IDX_ROOT);
 	if(id!=null) id = id.trim();
 	return id;
+    }
+
+
+    private int getYear(String s) {
+	if(s.matches("^(1|2)[0-9]+$")) {
+	    int year  = Integer.parseInt(s);
+	    //Assume this is a valid year range
+	    if(year>=1900 && year < 2030) {
+		return year;
+	    }
+	}
+	return -1;
     }
 
 
@@ -303,7 +348,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 
         //System.err.println("S3 creating:" + id + " key:" + key + " keys:" + keys);
-	System.err.println("Created:" + parent);
 	return parent;
     }
 
