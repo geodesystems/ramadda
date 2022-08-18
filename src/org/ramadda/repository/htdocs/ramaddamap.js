@@ -4838,6 +4838,7 @@ RepositoryMap.prototype = {
 
 	if(marker.textGetter) {
 	    markerText =marker.textGetter(marker);
+	    if(debugPopup) console.log("\thas textGetter:" + markerText);
 	} else if(this.textGetter) {
 	    markerText = this.textGetter(marker.layer, marker);
 	}
