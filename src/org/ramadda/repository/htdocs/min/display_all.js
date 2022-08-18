@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 17 16:06:54 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 17 21:45:21 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -31341,6 +31341,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
+        {p:'showParent',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
@@ -31708,12 +31709,19 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let inner = "";
 	    let map = {};
+	    let showParent = this.getProperty("showParent");
 	    entries.forEach((entry,idx) =>{
 		map[entry.getId()] = entry;
 		let thumb = entry.getThumbnail();
 		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry","entryid",entry.getId()];
 		if(thumb) attrs.push("thumbnail",thumb);
-		inner+=HU.div(attrs, HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+		let link = HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName());
+		if(showParent && entry.getParentName()) {
+		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
+		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
+		    link = HU.hbox([plink,HU.span(['style','margin-right:2px;margin-left:2px;'],"&raquo;"), link]);
+		}
+		inner+=HU.div(attrs, link);
 	    });
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
@@ -33019,6 +33027,7 @@ let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
 var debugit = false;
+var debugFeatureLinking = false;
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
@@ -33105,6 +33114,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'defaultMapLayer',ex:'osm|google.roads|esri.street|opentopo|esri.topo|usfs|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|esri.aeronautical|historic|osm.toner|osm.toner.lite|watercolor'},
 //	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
+	{p:'linkField',tt:'The field in the data to match with the map field, e.g., geoid'},
+	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
+
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 	{p:'showOpacitySlider',ex:'false',d:false},
 	{p:'showLocationSearch',ex:'true'},
@@ -34825,39 +34837,44 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			recordMap[value] = record;
 		    }
 		});
+		if(debugFeatureLinking)
+		    console.log("Map data/feature linking: data field:" + linkField.getId() +" looking for map feature:" + linkFeature);
 
+		let errorCnt = 0;
 		features.forEach((feature,idx)=>{
 		    let attrs = feature.attributes;
 		    let ok = false;
+		    let debug = false;
 		    for (let attr in attrs) {
 			let _attr = String(attr).toLowerCase();
 			if(linkFeature==_attr) {
+			    if(debugFeatureLinking && idx<3)
+				console.log("\tFound map attribute");
 			    ok  = true;
 			    let value = this.map.getAttrValue(attrs, attr);
-			    let debug = false;
 			    if(value) {
-				if(debug)
-				    console.log("\tbefore");
 				value = value.toString().trim();
 				feature.linkValue = value;
 				record = recordMap[value];
 				if(record) {
-				    if(debug)
-					console.log("\tAdding:" + value+": " + record.getId());
+				    if(debugFeatureLinking&& idx<10)
+					console.log("\tfound record:" + value+": " + record.getId());
 				    recordToFeature[record.getId()] = feature;
 				} else {
-				    if(debug)
-					console.log("\tCould not find record:" + value.replace(/ /g,"X") +":");
+				    if(debugFeatureLinking) {
+					if(errorCnt++<20) {
+					    console.log("\tCould not find record with map value:" + value.replace(/ /g,"X") +":");
+					    console.dir(attrs);
+					}
+				    }
 				}
-				if(debug)
-				    console.log("\tAFter");
 			    } else {
-				console.log("no attr value");
+				console.log("\tno map feature attribute value");
 			    }
 			    
 			}
 		    }
-		    if(!ok) console.log("No ATTR found");
+		    if(!ok) console.log("No map feature found:" + linkFeature);
 		});
 	    }
 
