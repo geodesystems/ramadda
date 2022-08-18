@@ -5445,7 +5445,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         if (excludeEntries != null) {
             HashSet seen = new HashSet();
-            for (String id : Utils.split(excludeEntries, ",")) {
+            for (String id : Utils.split(excludeEntries, ",",true,true)) {
                 if (id.equals(ID_THIS)) {
                     seen.add(originalEntry.getId());
                 } else {
