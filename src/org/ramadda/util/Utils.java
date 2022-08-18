@@ -81,6 +81,9 @@ public class Utils extends IO {
         "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
     };
 
+    public static final String[] MONTHS_LONG = {"January","February","March","April","May","June","July","August","September","October","November","December"};
+
+
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -179,6 +182,11 @@ public class Utils extends IO {
     }
 
 
+
+    public static String getMonthName(int month) {
+	if(month<0 || month>11) throw new IllegalArgumentException("Bad month:" + month);
+	return MONTHS_LONG[month];
+    }
 
     /**
      * _more_
