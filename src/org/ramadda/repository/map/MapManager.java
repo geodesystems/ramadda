@@ -1823,7 +1823,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             String getIconUrl = getPageHandler().getIconUrl(request, entry);
 
             String navUrl = "javascript:" + map.getVariableName()
-		+ ".hiliteMarker(" + sqt(entry.getId()) + ");";
+		+ ".hiliteMarker(" + sqt(Utils.makeID(entry.getId())) + ");";
 
             if (cbx) {
                 String cbxId = "visible_" + suffix;

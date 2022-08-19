@@ -1240,7 +1240,7 @@ public class MapInfo {
             props += "}";
         }
 
-        getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(id) + ","
+        getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(Utils.makeID(id)) + ","
                        + llp(location[0], location[1]) + ","
                        + HU.squote(icon) + ","
                        + HU.squote(entry.getName().replaceAll("'", "\\\\'"))
@@ -1462,7 +1462,7 @@ public class MapInfo {
      */
     public String getHiliteHref(String id, String label) {
         return "<a href=\"javascript:" + getVariableName() + ".hiliteMarker("
-               + HU.squote(id) + ");\">" + label + "</a>";
+	    + HU.squote(Utils.makeID(id)) + ");\">" + label + "</a>";
     }
 
     /**
