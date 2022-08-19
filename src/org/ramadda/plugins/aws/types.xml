@@ -1,6 +1,6 @@
 <types supercategory="Miscellaneous" category="Integration" >
 
-  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler" metadata="entry_type_patterns,georeference_file">
+  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler" metadata="entry_type_patterns,convert_file">
     <property name="icon" value="/aws/aws.png"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
@@ -32,14 +32,21 @@
     <property name="form.file.show" value="false"/>
     <column name="bucket_id" type="string"  label="Bucket ID" columns="80" size="1000"/>
     <wiki><![CDATA[
-+section # title="{{name}}"
-+center
-<b>AWS/S3 Bucket:</b> {{field name=bucket_id}}
--center
-{{description wikify="true"}}
-+div style="max-height:500px;overflow-y:auto;"                                                                          
-{{tabletree message=""}}
--div
++row
++col-md-9 class="entry-page-main"
+:title {{name}}
+${innercontent}
+-col
++col-md-3
+{{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
+<p>
+{{mapentry message="" width="250" height="250"  box.maxheight="300" xblock.show="true" xblock.title="Location" block.open="true"}}
+<p>
+{{properties block.show="true" block.title="Properties" block.open="false"  message="" box.maxheight="300" box.class="entry-sidebox" display="small"}}
+<p>
+</div>
+-col
+-row
 ]]>
 </wiki>
 </type>

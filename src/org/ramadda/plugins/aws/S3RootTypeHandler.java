@@ -12,24 +12,30 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.PatternHolder;
+import org.ramadda.util.Propper;
 
+import org.ramadda.util.IO;
 import org.ramadda.util.S3File;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
+import ucar.unidata.util.IOUtil;
 import org.w3c.dom.Element;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
+
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
+import java.util.Properties;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
     /**  */
@@ -45,6 +51,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         RepositoryUtil.makeDateFormat("yyyy-MM-dd");
 
     private static Object DATE_MUTEX  = new Object();
+
+    private static TTLCache<String,Propper> propertiesCache = new TTLCache<String,Propper>(1000*60*60);
 
 
     /**  */
@@ -184,7 +192,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     continue;
                 }
             }
-            Entry bucketEntry = createBucketEntry(rootEntry, parentEntry,
+            Entry bucketEntry = createBucketEntry(request, rootEntry, parentEntry,
                                     file);
             if ( !ok) {
                 if (debug) {
@@ -206,6 +214,46 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return ids;
     }
 
+    private Propper getConvertProperties(Request request, Entry entry, String type) throws Exception {
+        String cacheKey = entry.getId() + "_" + type+"_"+entry.getChangeDate();
+	Propper props = propertiesCache.get(cacheKey);
+	if(props!=null) {
+	    return props;
+	}
+
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, entry,
+					      new String[] {
+						  "convert_file"}, true);
+
+	if(metadataList!=null) {
+	    for(Metadata metadata: metadataList) {
+		if(metadata.getAttr1().equals(type)) {
+		    File f = getMetadataManager().getFile(request, entry, metadata,3);
+		    boolean exact = metadata.getAttr2().equals("exact");
+		    if(f.exists()) {
+			if(f.getName().endsWith(".properties")) {
+			    Properties properties = new Properties();
+			    properties.load(getStorageManager().getInputStream(f.toString()));
+			    props = new Propper(exact,properties);
+			} else {
+			    props = new Propper(exact);
+			    for(String line: Utils.split(IOUtil.readContents(getStorageManager().getInputStream(f.toString())),
+							 "\n",true,true)) {
+				List<String> cols = Utils.tokenizeColumns(line,",");
+				String key = cols.get(0);
+				cols.remove(0);
+				props.add(key,cols);
+			    }				
+			}
+		    }
+		}
+	    }
+	}
+	if(props == null) props = new Propper();
+	propertiesCache.put(cacheKey,props);
+	return props;
+    }
 
 
     /**
@@ -218,12 +266,13 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Entry createBucketEntry(Entry rootEntry, Entry parentEntry,
+    private Entry createBucketEntry(Request request,Entry rootEntry, Entry parentEntry,
                                     S3File file)
             throws Exception {
         String dateFlag = null;
         Date   dataDate = null;
         String name     = file.getName();
+	String originalName = name;
         int    year     = getYear(name);
         if (year > 0) {
 	    synchronized(DATE_MUTEX) {
@@ -270,6 +319,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
 
+	Propper props = getConvertProperties(request,  rootEntry, "alias");
+	String alias = (String)props.get(name);
+	if(alias!=null) name = alias;
+
+
         Date createDate = new Date(file.lastModified());
         if (dataDate == null) {
             dataDate = createDate;
@@ -299,15 +353,29 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         String desc        = "";
         if ( !isBucketType) {
             desc = HU.b("AWS/S3 Bucket:") + " " + file.toString();
-        }
-        Resource resource = new Resource(file.toString(), Resource.TYPE_S3,
+        } else {
+	    Propper templateProps = getConvertProperties(request,  rootEntry, "template");
+	    String template = (String) templateProps.get(/*originalName,*/ name,file.isDirectory()?"directory":"file");
+	    if(template!=null) {
+		//		System.err.println(name + " " +template);
+		template = template.replace("\\n","\n");
+		desc= "<wiki>\n"+template;
+	    }
+	}
+        Resource resource = file.isDirectory()?new Resource():new Resource(file.toString(), Resource.TYPE_S3,
                                          file.length());
-        //      System.err.println("Resource:" +file.toString());
         Object[] values = bucketTypeHandler.makeEntryValues(null);
         bucketEntry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
                               resource, "", Entry.DEFAULT_ORDER,
                               createDate.getTime(), createDate.getTime(),
                               dataDate.getTime(), dataDate.getTime(), values);
+
+	Propper locProps = getConvertProperties(request,  rootEntry, "location");
+	List<String> cols = (List<String>)locProps.get(originalName, name);
+	if(cols!=null && cols.size()>=2) {
+	    bucketEntry.setLocation(Double.parseDouble(cols.get(0)),Double.parseDouble(cols.get(1)));
+	}
+
 
         if (dateFlag != null) {
             bucketEntry.putTransientProperty("dateFlag", dateFlag);
@@ -413,7 +481,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     "S3RootTypeHandler: Unable to create s3file from:" + path
                     + "\nID:" + id);
             }
-            parent = createBucketEntry(rootEntry, parent, s3File);
+            parent = createBucketEntry(request, rootEntry, parent, s3File);
         }
 	long t2 = System.currentTimeMillis();
 	//	Utils.printTimes("s3",t1,t2);
