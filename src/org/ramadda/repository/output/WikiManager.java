@@ -144,6 +144,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					"includeChildren","false",
 					"addTags","false",
 					"showDisplayHeader","false",
+					"captionPrefix","",
+					"captionSuffix","",
 					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
 					"#weights","3,6,3",
                                         "showSnippet","false",
@@ -4747,6 +4749,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 String titleId = HU.getUniqueId("id");
                 String caption = " <a href='" + entryUrl + "'>"
 		    + entry.getName() + "</a> ";
+		caption = getProperty(wikiUtil, props, "captionPrefix", "") +
+		    caption +
+		    getProperty(wikiUtil, props, "captionSuffix", "");
                 String popupUrl = imageUrl;
                 if (popupResource) {
                     String path = entry.getResource().getPath().toLowerCase();
