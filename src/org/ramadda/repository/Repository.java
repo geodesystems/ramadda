@@ -4102,8 +4102,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Result result = null;
         try {
-	    String path = request.toString();
 	    /*
+	    String path = request.toString();
+	    boolean isOpendap = 	   path.indexOf("entry.das")>=0;
+	    long t1 = System.currentTimeMillis();
 	    if(path.indexOf("entry.das")>=0) {
 		javax.servlet.http.HttpServletRequest r = request.getHttpServletRequest();
 		dodsCnt++;
@@ -4114,6 +4116,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    }
 	    */
 	    result = (Result) apiMethod.invoke(request);
+	    /*
+	    if(isOpendap) {
+		long t2 = System.currentTimeMillis();
+		Utils.printTimes("Repository.opendap",t1,t2);
+	    }
+	    */
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {
