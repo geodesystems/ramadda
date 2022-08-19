@@ -2164,28 +2164,31 @@ var Utils =  {
         snippets.each(function() {
             let snippet = $(this);
 	    let snippetPopup;
+	    let timeOut;
             snippet.parent().hover(function() {
-                var parent = $(this);
-                var offset = parent.height();
-                //Check for max-height on element
-                if (offset > parent.parent().height()) {
-                    offset = parent.parent().height();
-                }
-                let popup = HtmlUtils.getTooltip();
-		snippetPopup = $(HU.div(['class','ramadda-snippet-popup'])).appendTo("body");
-                snippetPopup.html(HtmlUtils.div(["class", ""], snippet.html()));
-                snippetPopup.show();
-                snippetPopup.position({
-                    of: parent,
-                    my: "left top",
-                    at: "left top+" + (offset + 1),
-                    collision: "fit fit"
+		timeOut = setTimeout(()=>{
+                    var parent = $(this);
+                    var offset = parent.height();
+                    //Check for max-height on element
+                    if (offset > parent.parent().height()) {
+			offset = parent.parent().height();
+                    }
+                    let popup = HtmlUtils.getTooltip();
+		    snippetPopup = $(HU.div(['style','display:none;','class','ramadda-snippet-popup'])).appendTo("body");
+                    snippetPopup.html(HtmlUtils.div(["class", ""], snippet.html()));
+                    snippetPopup.position({
+			of: parent,
+			my: "left top",
+			at: "left top+" + (offset + 1),
+			collision: "fit fit"
+                    });
+                    snippetPopup.fadeIn(250);
+		},750)
+		}, function() {
+		    clearTimeout(timeOut);
+		    if(snippetPopup)
+			snippetPopup.hide();
                 });
-            },
-                                   function() {
-                                       snippetPopup.hide();
-                                   }
-                                  );
         });
 
         let pageTitle = $(parent+".ramadda-page-title");
