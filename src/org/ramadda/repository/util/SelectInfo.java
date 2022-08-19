@@ -46,6 +46,7 @@ public class SelectInfo implements Constants {
     /**  */
     Boolean ascending = null;
 
+    boolean hadOrderBy = false;
 
     /**
      * _more_
@@ -74,6 +75,7 @@ public class SelectInfo implements Constants {
         this.max       = max;
         this.orderBy   = orderBy;
         this.ascending = Boolean.valueOf(ascending);
+	hadOrderBy = orderBy!=null;
     }
 
 
@@ -108,7 +110,7 @@ public class SelectInfo implements Constants {
 
     /**
      */
-    private void init() {
+    public void init() {
         if (haveInited) {
             return;
         }
@@ -148,6 +150,9 @@ public class SelectInfo implements Constants {
                 }
             } catch (Exception ignore) {}
         }
+	//	System.err.println("Entry:" + entry +" ORDER:" + orderBy);
+
+	hadOrderBy = orderBy!=null;
 
         if (orderBy == null) {
             orderBy = Constants.ORDERBY_CREATEDATE;
@@ -158,6 +163,10 @@ public class SelectInfo implements Constants {
 
     }
 
+
+    public boolean getHadOrderBy () {
+	return hadOrderBy;
+    }
 
     /**
      * _more_
@@ -197,7 +206,6 @@ public class SelectInfo implements Constants {
      */
     public String getOrderBy() {
         init();
-
         return orderBy;
     }
 

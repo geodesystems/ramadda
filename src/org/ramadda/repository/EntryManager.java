@@ -8636,9 +8636,6 @@ public class EntryManager extends RepositoryManager {
         List<Entry>  entries      = new ArrayList<Entry>();
         List<String> ids          = getChildIds(request, parentEntry, select);
         boolean      doingOrderBy = request.exists(ARG_ORDERBY);
-
-
-
         for (String id : ids) {
             Entry entry = getEntry(request, id);
             if (entry == null) {
@@ -8655,6 +8652,18 @@ public class EntryManager extends RepositoryManager {
             }
         }
         children.addAll(entries);
+
+
+	//If it is a synth entry then it hasn't been sorted so check if there was a sort
+	boolean isSynthEntry = isSynthEntry(parentEntry.getId());
+	if (parentEntry.getTypeHandler().isSynthType() || isSynthEntry) {
+	    //init in case it hasn't
+	    select.init();
+	    if(select.getHadOrderBy()) {
+		children = EntryUtil.sortEntriesOn(children, select.getOrderBy(),!select.getAscending());
+	    }
+	}
+
 
         return parentEntry.getTypeHandler().postProcessEntries(request,
 							       children);
