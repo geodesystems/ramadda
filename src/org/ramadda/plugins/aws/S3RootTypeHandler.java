@@ -12,28 +12,37 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.util.PatternHolder;
-import org.ramadda.util.WikiUtil;
 
 import org.ramadda.util.S3File;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.Element;
+
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-import java.text.SimpleDateFormat;
 
 /**
  */
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
-    private SimpleDateFormat yearFormat  =RepositoryUtil.makeDateFormat("yyyy");
-    private SimpleDateFormat yearMonthFormat  =RepositoryUtil.makeDateFormat("yyyy-MM");
-    private SimpleDateFormat yearMonthDayFormat  =RepositoryUtil.makeDateFormat("yyyy-MM-dd");        
+    /**  */
+    private SimpleDateFormat yearFormat =
+        RepositoryUtil.makeDateFormat("yyyy");
+
+    /**  */
+    private SimpleDateFormat yearMonthFormat =
+        RepositoryUtil.makeDateFormat("yyyy-MM");
+
+    /**  */
+    private SimpleDateFormat yearMonthDayFormat =
+        RepositoryUtil.makeDateFormat("yyyy-MM-dd");
 
 
     /**  */
@@ -92,7 +101,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                     String synthId)
             throws Exception {
 
-        //      System.err.println("getSynthIds:" + request);
         boolean debug = false;
         String cacheKey = parentEntry.getId() + "_" + synthId + "_"
                           + rootEntry.getChangeDate() + "_"
@@ -112,7 +120,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         ids = new ArrayList<String>();
 
         //Always have to have a root
-	String rootId = getRootId(rootEntry);
+        String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return ids;
         }
@@ -211,54 +219,62 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     private Entry createBucketEntry(Entry rootEntry, Entry parentEntry,
                                     S3File file)
             throws Exception {
-	String dateFlag = null;
-	Date dataDate= null;
-        String name = file.getName();
-	int year = getYear(name);
-	if(year>0) {
-	    dataDate = yearFormat.parse(""+year);
-	    dateFlag = "year";
-	}
+        String dateFlag = null;
+        Date   dataDate = null;
+        String name     = file.getName();
+        int    year     = getYear(name);
+        if (year > 0) {
+            dataDate = yearFormat.parse("" + year);
+            dateFlag = "year";
+        }
 
-	String parent = parentEntry.getName();
-	//Assume month names
-	year = getYear(parent);
-	if(year>0) {
-	    if(name.matches("(0|1)[0-9]")) {
-		int month  = Integer.parseInt(name);
-		if(month>=1 && month<=12) {
-		    name= Utils.getMonthName(month-1);
-		    dataDate = yearMonthFormat.parse(""+year+"-"+ month);
-		    dateFlag = "yearmonth";
-		}
-	    }
-	}
+        String parent = parentEntry.getName();
+        //Assume month names
+        year = getYear(parent);
+        if (year > 0) {
+            if (name.matches("(0|1)[0-9]")) {
+                int month = Integer.parseInt(name);
+                if ((month >= 1) && (month <= 12)) {
+                    name     = Utils.getMonthName(month - 1);
+                    dataDate = yearMonthFormat.parse("" + year + "-" + month);
+                    dateFlag = "yearmonth";
+                }
+            }
+        }
 
-	//If no dataDate then check if the parent's date was set as  yearmonth
-	if(dataDate==null) {
-	    String parentDateFlag  = (String) parentEntry.getTransientProperty("dateFlag");
-	    if(parentDateFlag!=null) {
-		if(parentDateFlag.equals("yearmonth")) {
-		    //Does the name match a possible day
-		    if(name.matches("(0|1|2|3)[0-9]")) {
-			int day = Integer.parseInt(name);
-			if(day>=1 && day<=31) {
-			    String yyyymm=yearMonthFormat.format(new Date(parentEntry.getStartDate()));
-			    dataDate = yearMonthDayFormat.parse(yyyymm+"-" + name);
-			}
-		    }
-		}
-	    }
-	}
+        //If no dataDate then check if the parent's date was set as  yearmonth
+        if (dataDate == null) {
+            String parentDateFlag =
+                (String) parentEntry.getTransientProperty("dateFlag");
+            if (parentDateFlag != null) {
+                if (parentDateFlag.equals("yearmonth")) {
+                    //Does the name match a possible day
+                    if (name.matches("(0|1|2|3)[0-9]")) {
+                        int day = Integer.parseInt(name);
+                        if ((day >= 1) && (day <= 31)) {
+                            String yyyymm =
+                                yearMonthFormat.format(
+                                    new Date(parentEntry.getStartDate()));
+                            dataDate = yearMonthDayFormat.parse(yyyymm + "-"
+                                    + name);
+                        }
+                    }
+                }
+            }
+        }
 
-        Date   createDate = new Date(file.lastModified());
-	if(dataDate==null) dataDate = createDate;
+        Date createDate = new Date(file.lastModified());
+        if (dataDate == null) {
+            dataDate = createDate;
+        }
         String id = getEntryManager().createSynthId(rootEntry,
                         file.toString());
         boolean isBucketType = false;
         TypeHandler bucketTypeHandler =
             getEntryManager().findDefaultTypeHandler(rootEntry,
-						     file.toString(), !file.isDirectory());
+                file.toString(), !file.isDirectory());
+        //      System.err.println("rootEntry:" + rootEntry +" file:" + file +" "  +
+        //                         file.isDirectory() +" type:" + bucketTypeHandler); 
         if (bucketTypeHandler == null) {
             isBucketType      = true;
             bucketTypeHandler = file.isDirectory()
@@ -279,35 +295,51 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         bucketEntry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
                               resource, "", Entry.DEFAULT_ORDER,
                               createDate.getTime(), createDate.getTime(),
-			      dataDate.getTime(),  dataDate.getTime(), values);
+                              dataDate.getTime(), dataDate.getTime(), values);
 
-	if(dateFlag !=null) bucketEntry.putTransientProperty("dateFlag", dateFlag);
+        if (dateFlag != null) {
+            bucketEntry.putTransientProperty("dateFlag", dateFlag);
+        }
         if (isBucketType) {
             bucketEntry.setValue("bucket_id", file.toString());
         }
         bucketEntry.setMasterTypeHandler(this);
-	getEntryManager().cacheSynthEntry(bucketEntry);
+        getEntryManager().cacheSynthEntry(bucketEntry);
 
 
         return bucketEntry;
     }
 
+    /**
+     *
+     * @param entry _more_
+      * @return _more_
+     */
     private String getRootId(Entry entry) {
         String id = (String) entry.getValue(IDX_ROOT);
-	if(id!=null) id = id.trim();
-	return id;
+        if (id != null) {
+            id = id.trim();
+        }
+
+        return id;
     }
 
 
+    /**
+     *
+     * @param s _more_
+      * @return _more_
+     */
     private int getYear(String s) {
-	if(s.matches("^(1|2)[0-9]+$")) {
-	    int year  = Integer.parseInt(s);
-	    //Assume this is a valid year range
-	    if(year>=1900 && year < 2030) {
-		return year;
-	    }
-	}
-	return -1;
+        if (s.matches("^(1|2)[0-9]+$")) {
+            int year = Integer.parseInt(s);
+            //Assume this is a valid year range
+            if ((year >= 1900) && (year < 2030)) {
+                return year;
+            }
+        }
+
+        return -1;
     }
 
 
@@ -329,26 +361,31 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !Utils.stringDefined(rootId)) {
             return null;
         }
-	//s3://first-street-climate-risk-statistics-for-noncommercial-use/02_HOW_TO_USE_DATA/Example_Maps.pdf 
+        //s3://first-street-climate-risk-statistics-for-noncommercial-use/02_HOW_TO_USE_DATA/Example_Maps.pdf 
         //s3://noaa-gsod-pds/1988
         //roll up the path creating the parent entries up to the root
-        Entry        parent = rootEntry;
-        String       key    = id.replace(rootId, "");
-        List<String> keys   = Utils.split(key, "/", true, true);
-	StringBuilder path = new StringBuilder(rootId);
-	//	System.err.println("id:" + id + ":\nrootId:" + rootId+":\nkey:"+ key);
-	//	System.err.println("keys:" + keys);
-	for(int i=0;i<keys.size();i++) {
-	    String ancestorKey = keys.get(i);
-	    path.append(ancestorKey);
-	    if(i<keys.size()-1)
-		path.append("/");
-	    //	    System.err.println("createBucket:" + path);
-	    parent = createBucketEntry(rootEntry, parent,new S3File(path.toString()));
-	}
+        Entry         parent = rootEntry;
+        String        key    = id.replace(rootId, "");
+        List<String>  keys   = Utils.split(key, "/", true, true);
+        StringBuilder path   = new StringBuilder(rootId);
+        //      System.err.println("id:" + id + ":\nrootId:" + rootId+":\nkey:"+ key);
+        //      System.err.println("keys:" + keys);
+        for (int i = 0; i < keys.size(); i++) {
+            String ancestorKey = keys.get(i);
+            path.append(ancestorKey);
+            S3File s3File = null;
+            if (i < keys.size() - 1) {
+                path.append("/");
+                s3File = new S3File(path.toString());
+            } else {
+                //If it is the last one then it might be a file so call createFile which does a listing
+                s3File = S3File.createFile(path.toString());
+            }
+            parent = createBucketEntry(rootEntry, parent, s3File);
+        }
 
         //System.err.println("S3 creating:" + id + " key:" + key + " keys:" + keys);
-	return parent;
+        return parent;
     }
 
     /**
@@ -356,7 +393,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      * @param request _more_
      * @param parentEntry _more_
      * @param entryNames _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -424,13 +461,25 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                               request.getString(ARG_MARKER, null));
     }
 
+    /**  */
     public static final String ACTION_SEARCH = "s3search";
-    public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param state _more_
+     * @param links _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getEntryLinks(Request request, Entry entry,
+                              OutputHandler.State state, List<Link> links)
             throws Exception {
-	super.getEntryLinks(request, entry, state, links);
-	links.add(new Link(getEntryActionUrl(request, entry,
-					     ACTION_SEARCH), ICON_SEARCH, "Search S3 Objects",
-			   OutputType.TYPE_FILE));
+        super.getEntryLinks(request, entry, state, links);
+        links.add(new Link(getEntryActionUrl(request, entry, ACTION_SEARCH),
+                           ICON_SEARCH, "Search S3 Objects",
+                           OutputType.TYPE_FILE));
     }
 
 
@@ -438,7 +487,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -451,39 +500,39 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "S3 Search");
 
-	getS3SearchForm(request, entry, sb);
+        getS3SearchForm(request, entry, sb);
 
-	String rootId = getRootId(entry);
-        S3File       file  = new S3File(rootId);
-        String       text  = request.getString("text", "");
-	if(stringDefined(text)) {
-	    List<String> found = file.doSearch(text);
-	    if ((found == null) || (found.size() == 0)) {
-		sb.append(
-			  getPageHandler().showDialogWarning(
-							     "Could not find object:" + text));
+        String rootId = getRootId(entry);
+        S3File file   = new S3File(rootId);
+        String text   = request.getString("text", "");
+        if (stringDefined(text)) {
+            List<String> found = file.doSearch(text);
+            if ((found == null) || (found.size() == 0)) {
+                sb.append(
+                    getPageHandler().showDialogWarning(
+                        "Could not find object:" + text));
 
-		return new Result("S3 List", sb);
-	    }
-	    sb.append(HU.b("Searching for: ") + text);
-	    sb.append("<ul>");
-	    System.err.println("root:" + rootId + ":");
-	    for (String f : found) {
-		f = f.trim();
-		if ( !rootId.endsWith("/")) {
-		    if ( !f.startsWith("/")) {
-			f = "/" + f;
-		    }
-		}
-		String id = getEntryManager().createSynthId(entry, rootId + f);
-		System.err.println(rootId + f);
-		sb.append("<li> ");
-		String url = HU.url(getRepository().URL_ENTRY_SHOW.toString(),
-				    ARG_ENTRYID, id);
-		sb.append(HU.href(url, f));
-	    }
-	    sb.append("</ul>");
-	}
+                return new Result("S3 List", sb);
+            }
+            sb.append(HU.b("Searching for: ") + text);
+            sb.append("<ul>");
+            for (String f : found) {
+                f = f.trim();
+                if ( !rootId.endsWith("/")) {
+                    if ( !f.startsWith("/")) {
+                        f = "/" + f;
+                    }
+                }
+                String id = getEntryManager().createSynthId(entry,
+                                rootId + f);
+                sb.append("<li> ");
+                String url =
+                    HU.url(getRepository().URL_ENTRY_SHOW.toString(),
+                           ARG_ENTRYID, id);
+                sb.append(HU.href(url, f));
+            }
+            sb.append("</ul>");
+        }
 
 
         getPageHandler().entrySectionClose(request, entry, sb);
@@ -492,40 +541,56 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    private void getS3SearchForm(Request request, Entry entry, StringBuilder sb) throws Exception {
-        sb.append(HU.form(getEntryActionUrl(request, entry, ACTION_SEARCH).toString()));
-	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
-	sb.append(HU.hidden(ARG_ACTION,ACTION_SEARCH));
-	sb.append(HU.input("text",request.getString("text",""),HU.SIZE_30+HU.attrs("placeholder","Search text")));
-	sb.append(HU.SPACE2);
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    private void getS3SearchForm(Request request, Entry entry,
+                                 StringBuilder sb)
+            throws Exception {
+        sb.append(HU.form(getEntryActionUrl(request, entry,
+                                            ACTION_SEARCH).toString()));
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.hidden(ARG_ACTION, ACTION_SEARCH));
+        sb.append(HU.input("text", request.getString("text", ""),
+                           HU.SIZE_30
+                           + HU.attrs("placeholder", "Search text")));
+        sb.append(HU.SPACE2);
         sb.append(HU.submit("Search"));
         sb.append(HU.formClose());
     }
 
 
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-	throws Exception {
+            throws Exception {
 
         if ( !tag.equals("s3search")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-        StringBuilder sb     = new StringBuilder();
-	getS3SearchForm(request, entry, sb);
+        StringBuilder sb = new StringBuilder();
+        getS3SearchForm(request, entry, sb);
+
         return sb.toString();
-    }
-
-
-    public static void main(String[]args) {
-	for(String parent: new String[]{"hello","1989","1776"}) {
-	    for(String name: new String[]{"xxx","01","02","12","13"}) {
-		System.err.println("Parent:" + parent +" name:" + name);
-	    }
-	}
-
     }
 
 
