@@ -2163,6 +2163,7 @@ var Utils =  {
         var snippets = $(parent + ".ramadda-snippet-hover");
         snippets.each(function() {
             let snippet = $(this);
+	    let snippetPopup;
             snippet.parent().hover(function() {
                 var parent = $(this);
                 var offset = parent.height();
@@ -2171,9 +2172,10 @@ var Utils =  {
                     offset = parent.parent().height();
                 }
                 let popup = HtmlUtils.getTooltip();
-                popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], snippet.html()));
-                popup.show();
-                popup.position({
+		snippetPopup = $(HU.div(['class','ramadda-snippet-popup'])).appendTo("body");
+                snippetPopup.html(HtmlUtils.div(["class", ""], snippet.html()));
+                snippetPopup.show();
+                snippetPopup.position({
                     of: parent,
                     my: "left top",
                     at: "left top+" + (offset + 1),
@@ -2181,7 +2183,7 @@ var Utils =  {
                 });
             },
                                    function() {
-                                       HtmlUtils.getTooltip().hide();
+                                       snippetPopup.hide();
                                    }
                                   );
         });
