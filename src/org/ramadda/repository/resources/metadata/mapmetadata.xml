@@ -386,13 +386,6 @@ color_map
 
   </type>
 
-    <type
-       name="Georeference file"
-       id="georeference_file">
-      <element name="ID" />
-      <element name="CSV Georeference File" datatype="file" thumbnail="false"/>
-    </type>
-
 
 </handler>
 </metadata>
