@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug 19 12:35:05 MDT 2022";
+var build_date="RAMADDA build date: Fri Aug 19 13:02:04 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -31342,7 +31342,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
         {p:'showParent',tt:'Show parent entry in search results'},	
-	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
+	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
 
