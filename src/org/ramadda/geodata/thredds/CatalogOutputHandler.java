@@ -496,6 +496,8 @@ public class CatalogOutputHandler extends OutputHandler {
         });
 
 
+	//	System.err.println("Base:" + base +" attrs:" + attrs);
+	//	System.err.println(org.ramadda.util.Utils.getStack(5));
         Element serviceNode = XmlUtil.create(catalogInfo.doc,
                                              CatalogUtil.TAG_SERVICE,
                                              catalogInfo.root, attrs);
@@ -668,7 +670,7 @@ public class CatalogOutputHandler extends OutputHandler {
             Element subDataset = createDataset(catalogInfo, entry, dataset,
                                      name);
             addService(catalogInfo, type,
-                       "http://" + request.getServerName() + ":"
+                       request.getProtocol()+"//" + request.getServerName() + ":"
                        + request.getServerPort());
             Element serviceNode = XmlUtil.create(catalogInfo.doc,
                                       CatalogUtil.TAG_ACCESS, subDataset,
