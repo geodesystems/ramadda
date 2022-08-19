@@ -173,7 +173,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             window.location = url;
 	});
 
-	HU.initSelect($("#"+id+"_form_action"));
+
+	//Don't do this as it screws up the width of the menu sometimes
+	//	    HU.initSelect($("#"+id+"_form_action"));
+
+
 	Ramadda.initDragAndDropEntries(main.find('.ramadda-entry-target'),entryMap);
 
 	let formOpen = false;
@@ -208,7 +212,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let main = $('#'+ mainId);
 	let html = "";
 	let space = "";
-	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row';
+	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
+
 	entries.forEach(entry=>{
 	    let rowId = Utils.getUniqueId("row_");
 	    let row =  HU.open('div',['entryid',entry.getId(),'id',rowId]);

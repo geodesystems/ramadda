@@ -1997,7 +1997,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
         {p:'showParent',tt:'Show parent entry in search results'},	
-	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
+	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
 
