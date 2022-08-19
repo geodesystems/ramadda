@@ -12,6 +12,7 @@
 	    suffix="0-1: for buckets with lots (100+) of children this is a probability that any one of them will be returned. It allows you to take a sample"/>          
     <column name="size_limit" type="double" default="-1"  label="Max file size"  suffix="(MB)"/>
 
+    <column name="convert_dates" type="boolean" default="false"  label="Convert dates" suffix="Convert years and days if the file names match the patterns"/>
     <wiki><![CDATA[
 +section # title="{{name}}"
 +center
