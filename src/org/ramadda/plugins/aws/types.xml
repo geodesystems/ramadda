@@ -19,9 +19,7 @@
 <b>AWS/S3 Bucket:</b> {{field name=root_id}}
 -center
 {{description wikify="true"}}
-+div style="max-height:500px;overflow-y:auto;"
-{{tabletree}}
--div
+{{tabletree maxHeight=500px}}
 ]]>
 </wiki>
 
@@ -63,9 +61,7 @@ ${innercontent}
 <b>AWS/S3 Bucket:</b> {{field name=bucket_id}}
 -center
 {{description wikify="true"}}
-+div style="max-height:500px;overflow-y:auto;"                                                                          
-{{tabletree message=""}}
--div
+{{tabletree message="" maxHeight=500px}}
 ]]>
 </xwiki>
 </type>
