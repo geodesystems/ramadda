@@ -4103,13 +4103,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Result result = null;
         try {
 	    String path = request.toString();
-	    if(path.endsWith("entry.das.dods")) {
+	    /*
+	    if(path.indexOf("entry.das")>=0) {
+		javax.servlet.http.HttpServletRequest r = request.getHttpServletRequest();
 		dodsCnt++;
+		String u = path;
+		String q = r.getQueryString();
+		if(q!=null) u= u +"?"+HU.urlDecode(q);
+		System.err.println("#"+dodsCnt +" url:" + u);
 	    }
+	    */
 	    result = (Result) apiMethod.invoke(request);
-	    if(path.endsWith("entry.das.dods")) {
-		System.err.println("processed: #" + dodsCnt +" path:" + path);
-	    }
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {
