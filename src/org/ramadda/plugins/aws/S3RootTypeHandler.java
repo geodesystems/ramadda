@@ -313,7 +313,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     /**
      *
      * @param entry _more_
-      * @return _more_
+     *  @return _more_
      */
     private String getRootId(Entry entry) {
         String id = (String) entry.getValue(IDX_ROOT);
@@ -328,7 +328,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     /**
      *
      * @param s _more_
-      * @return _more_
+     *  @return _more_
      */
     private int getYear(String s) {
         if (s.matches("^(1|2)[0-9]+$")) {
@@ -361,8 +361,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !Utils.stringDefined(rootId)) {
             return null;
         }
-        //s3://first-street-climate-risk-statistics-for-noncommercial-use/02_HOW_TO_USE_DATA/Example_Maps.pdf 
-        //s3://noaa-gsod-pds/1988
+        id = S3File.normalizePath(id);
         //roll up the path creating the parent entries up to the root
         Entry         parent = rootEntry;
         String        key    = id.replace(rootId, "");
@@ -380,6 +379,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             } else {
                 //If it is the last one then it might be a file so call createFile which does a listing
                 s3File = S3File.createFile(path.toString());
+            }
+            if (s3File == null) {
+                System.err.println(
+                    "S3RootTypeHandler: Unable to create s3file from:" + path
+                    + "\nID:" + id);
             }
             parent = createBucketEntry(rootEntry, parent, s3File);
         }
@@ -573,7 +577,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      * @param entry _more_
      * @param tag _more_
      * @param props _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -592,6 +596,23 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
         return sb.toString();
     }
+
+    /**
+     *
+     * @param args _more_
+     */
+    public static void main(String[] args) {
+        String id =
+            "s3:/noaa-nexrad-level2/2021/02/02/KABR/KABR20210202_001341_V06";
+        //      if(id.matches("^s3:/[^/]+")) {
+        if (id.matches("^s3:/[^/]+.*")) {
+            id = id.replaceAll("^s3:/", "s3://");
+            System.err.println("MANGLED: " + id);
+        } else {
+            System.err.println("NOT MANGLED: " + id);
+        }
+    }
+
 
 
 }
