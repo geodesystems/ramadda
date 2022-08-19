@@ -1067,7 +1067,6 @@ public class MetadataManager extends RepositoryManager {
 
         metadataList = Metadata.sort(finalMetadataList);
         entry.setMetadata(metadataList);
-
         return getMetadata(metadataList, type);
     }
 
@@ -1722,7 +1721,7 @@ public class MetadataManager extends RepositoryManager {
                     insertMetadata(metadata);
                 }
             }
-            entry.setMetadata(null);
+	    getEntryManager().metadataHasChanged(entry);
             entry.getTypeHandler().metadataChanged(request, entry);
             getRepository().checkModifiedEntries(request,
                     Misc.newList(entry));
@@ -2208,7 +2207,7 @@ public class MetadataManager extends RepositoryManager {
                                      entry.getId(), copiedMetadata);
                     insertMetadata(newMetadata);
                 }
-                entry.setMetadata(null);
+		getEntryManager().metadataHasChanged(entry);
                 sb.append(
                     getPageHandler().showDialogNote(
                         "Metadata pasted from clipboard"));
@@ -2350,7 +2349,8 @@ public class MetadataManager extends RepositoryManager {
             for (Metadata metadata : newMetadata) {
                 insertMetadata(metadata);
             }
-            entry.setMetadata(null);
+
+	    getEntryManager().metadataHasChanged(entry);
             getRepository().checkModifiedEntries(request,
                     Misc.newList(entry));
 

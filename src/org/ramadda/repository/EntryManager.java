@@ -10296,6 +10296,19 @@ public class EntryManager extends RepositoryManager {
 
     }
 
+
+    public void  metadataHasChanged(Entry entry) throws Exception {
+	Date date = new Date();
+	getDatabaseManager().update(Tables.ENTRIES.NAME,
+				    Tables.ENTRIES.COL_ID, 
+				    entry.getId(),
+				    new String[] {Tables.ENTRIES.COL_CHANGEDATE},
+				    new Object[]{date});
+	entry.setChangeDate(date.getTime());
+	entry.setMetadata(null);
+    }
+
+
     /**
      * _more_
      *
