@@ -4046,6 +4046,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
+    int dodsCnt=0;
 
     /**
      * _more_
@@ -4057,7 +4058,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected Result getResult(Request request) throws Exception {
-	System.err.println(request);
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
 	    long t1 = System.currentTimeMillis();
@@ -4072,6 +4072,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    //	    System.err.println("time: " + (t2-t1) +"ms  " +path);
 	    return result;
         }
+
 
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
@@ -4101,7 +4102,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Result result = null;
         try {
-            result = (Result) apiMethod.invoke(request);
+	    String path = request.toString();
+	    if(path.endsWith("entry.das.dods")) {
+		dodsCnt++;
+	    }
+	    result = (Result) apiMethod.invoke(request);
+	    if(path.endsWith("entry.das.dods")) {
+		System.err.println("processed: #" + dodsCnt +" path:" + path);
+	    }
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {
