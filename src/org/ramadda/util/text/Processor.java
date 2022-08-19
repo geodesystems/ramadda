@@ -1819,8 +1819,8 @@ public abstract class Processor extends CsvOperator {
 	    throws Exception {	    
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
-            if (firstRow&&row.isFirstRowInData()) {
-                headerRow   = row;
+	    if(headerRow==null) headerRow =row;
+            if (firstRow && row.isFirstRowInData()) {
                 commentChar = ctx.getCommentChar();
                 if (prefix != null) {
                     writer.append(prefix);
