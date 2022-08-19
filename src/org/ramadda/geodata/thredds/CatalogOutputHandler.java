@@ -601,9 +601,6 @@ public class CatalogOutputHandler extends OutputHandler {
                             boolean doingLatest)
             throws Exception {
 
-        File   f    = entry.getFile();
-        String path = f.toString();
-        path = path.replace("\\", "/");
 
         int               cnt      = 0;
         List<ServiceInfo> services = new ArrayList<ServiceInfo>();
@@ -801,9 +798,9 @@ public class CatalogOutputHandler extends OutputHandler {
 
 
 
-        File   f    = entry.getFile();
-        String path = f.toString();
-        path = path.replace("\\", "/");
+
+	String path = entry.getResource().getPath();
+	path = path.replace("\\", "/");
         String entryName = entry.getName();
         if (doLatest) {
             entryName = "Latest " + entry.getParentEntry().getName();
@@ -857,9 +854,11 @@ public class CatalogOutputHandler extends OutputHandler {
 
         addMetadata(request, entry, catalogInfo, dataset);
 
-        if (f.exists()) {
+
+
+        if (entry.getResource().isFile()) {
             XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_DATASIZE,
-                           dataset, "" + f.length(),
+                           dataset, "" + entry.getResource().getFileSize(),
                            new String[] { CatalogUtil.ATTR_UNITS,
                                           "bytes" });
 
