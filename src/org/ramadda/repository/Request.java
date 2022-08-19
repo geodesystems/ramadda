@@ -894,6 +894,9 @@ public class Request implements Constants, Cloneable {
         if (port == 80) {
             return protocol + "://" + getServerName() + url;
         } else {
+	    if(protocol.equals("https") && port==443) {
+		return protocol + "://" + getServerName() + url;
+	    }
             return protocol + "://" + getServerName() + ":" + port + url;
         }
     }
