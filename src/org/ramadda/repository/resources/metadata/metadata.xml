@@ -384,7 +384,7 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     <type
        name="Convert file"
        id="convert_file">
-      <element name="for" label="For" datatype="enumeration" values="alias,location,template" default="aliases"/>
+      <element name="for" label="For" datatype="enumeration" values="alias,location,template" default="alias"/>
       <element name="type" label="Match Type" datatype="enumeration" values="exact,patttern" default="exact"/>      
       <element name="Convert file" datatype="file" thumbnail="false"/>
     </type>

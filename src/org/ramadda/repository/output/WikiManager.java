@@ -129,7 +129,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
-                            new WikiTag(WIKI_TAG_TABLETREE, null, "simple","false"),
+                            new WikiTag(WIKI_TAG_TABLETREE, null, "simple","false","#maxHeight","500px"),
                             new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
                             new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null),
@@ -4198,7 +4198,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    actions.add(JsonUtil.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
 	}
 
-	for(String prop: new String[]{"details","simple","showHeader","showDate","showCreateDate","showSize",
+	for(String prop: new String[]{"maxHeight","details","simple","showHeader","showDate","showCreateDate","showSize",
 				      "showType","showIcon","showThumbnails","showArrow","showForm","showCrumbs"}) {
 	    String v =getProperty(wikiUtil, props, prop, (String)null);
 	    if(v!=null) {

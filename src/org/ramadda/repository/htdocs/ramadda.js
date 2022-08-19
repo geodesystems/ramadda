@@ -118,7 +118,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let innerId = Utils.getUniqueId();
 	let tableId = Utils.getUniqueId();	
 	let classPrefix  = simple?'entry-list-simple':'entry-list';
-	html+=HU.open("div",['id',innerId,'class',classPrefix]);
+
+	let attrs = ['id',innerId,'class',classPrefix];
+	if(props.maxHeight) attrs.push('style',HU.css('max-height',props.maxHeight,'overflow-y','auto'));
+	html+=HU.open("div",attrs);
 	if(props.showForm) {
 	    html+=HU.open('form',['method','post','action',ramaddaBaseUrl+'/entry/getentries']);
 	    let form = HU.checkbox("",['style',HU.css('margin-left','3px'), 'title','Toggle all','id',id+'_form_cbx'],false);
