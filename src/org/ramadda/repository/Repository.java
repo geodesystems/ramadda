@@ -4057,8 +4057,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected Result getResult(Request request) throws Exception {
-
-	System.err.println("request:" + request);
+	System.err.println(request);
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
 	    long t1 = System.currentTimeMillis();
