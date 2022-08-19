@@ -119,7 +119,7 @@ public class S3File extends FileWrapper {
      * @param bucket _more_
      */
     private void setBucket(String bucket) {
-        this.bucket = cleanupBucket(bucket);
+        this.bucket = normalizePath(bucket);
     }
 
 
@@ -151,28 +151,27 @@ public class S3File extends FileWrapper {
      * @param bucket _more_
      * @return _more_
      */
-    public static String cleanupBucket(String bucket) {
-        if (bucket == null) {
+    public static String normalizePath(String path) {
+        if (path == null) {
             return null;
         }
-        bucket = bucket.trim();
-        if ( !bucket.startsWith(S3PREFIX)) {
-            if ( !bucket.startsWith("/")) {
-                bucket = "/" + bucket;
+        path = path.trim();
+        if (!path.startsWith(S3PREFIX)) {
+            if ( !path.startsWith("/")) {
+                path = "/" + path;
             }
-            if ( !bucket.startsWith("//")) {
-                bucket = "/" + bucket;
+            if ( !path.startsWith("//")) {
+                path = "/" + path;
             }
-            bucket = S3PREFIX + bucket;
+            path = S3PREFIX + path;
         }
         //check for s3:/...
-        if (bucket.startsWith(S3PREFIX + "/")
-                && !bucket.startsWith(S3PREFIX + "//")) {
-            bucket = bucket.replace(S3PREFIX + "/", S3PREFIX + "//");
+        if (path.startsWith(S3PREFIX + "/")
+                && !path.startsWith(S3PREFIX + "//")) {
+            path = path.replace(S3PREFIX + "/", S3PREFIX + "//");
         }
-
-        //      if(!bucket.endsWith("/")) bucket = bucket+"/";
-        return bucket;
+        //      if(!path.endsWith("/")) path = path+"/";
+        return path;
     }
 
     /**
