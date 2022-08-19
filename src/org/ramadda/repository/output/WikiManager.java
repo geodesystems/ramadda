@@ -4335,6 +4335,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                 String theTag, Hashtable props, Appendable sb)
 	throws Exception {
 
+        boolean hideIfNoLocations = getProperty(wikiUtil, props, "hideIfNoLocations",false);
+
         String  width      = getProperty(wikiUtil, props, ATTR_WIDTH, "");
         String  height     = getProperty(wikiUtil, props, ATTR_HEIGHT, "300");
         boolean justPoints = getProperty(wikiUtil, props, "justpoints",
@@ -4362,12 +4364,25 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
         }
 
-        if (children.size() == 0) {
+	
+	if(hideIfNoLocations) {
+	    boolean ok  = false;
+	    for(Entry child: children) {
+		ok = child.isGeoreferenced();
+		if(ok) break;
+	    }
+	    if(!ok) {
+		sb.append(getProperty(wikiUtil, props, ATTR_MESSAGE,""));
+		return  null;
+	    }
+	}
+
+
+        if (children == null || children.size() == 0) {
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                          (String) null);
             if (message != null) {
                 sb.append(message);
-
                 return null;
             }
         } else {
