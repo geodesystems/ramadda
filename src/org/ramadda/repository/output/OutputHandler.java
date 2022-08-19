@@ -365,7 +365,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                          String... message)
             throws Exception {
 	if(!shouldShowPaging(request, cnt, max)) {
-	    System.err.println("No show paging:" + request);
+	    //	    System.err.println("No show paging:" + request);
 	    return;
 	}
 
