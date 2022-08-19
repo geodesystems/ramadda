@@ -115,7 +115,7 @@ public abstract class FileWrapper {
 
 
     public String toStringVerbose() {
-	return this +" size:" + this.length() +" date:" + new Date(this.lastModified());
+	return (isDirectory()?"dir: ":"file: ") + this +" size:" + this.length() +" date:" + new Date(this.lastModified());
     }
 
 

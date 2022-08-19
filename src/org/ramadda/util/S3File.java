@@ -303,6 +303,7 @@ public class S3File extends FileWrapper {
                                 long maxSize, String marker)
             throws Exception {
         boolean debug = false;
+	//	debug = true;
         if ( !self && !isDirectory()) {
             return null;
         }
@@ -341,8 +342,17 @@ public class S3File extends FileWrapper {
             if (debug) {
                 System.err.println("\tPREFIX:" + name);
             }
-            S3File dir = new S3File(theBucket + name, true);
-            files.add(dir);
+	    //Check for a self listing
+	    if(self && theBucket.endsWith(name)) {
+		S3File dir = new S3File(theBucket, true);
+		files.add(dir);
+	    } else {
+		S3File dir = new S3File(theBucket + name, true);
+		files.add(dir);
+	    }
+	    //	    S3File dir = new S3File(theBucket + name, true);
+	    //	    System.err.println("ADDING:" + dir);
+	    //	    files.add(dir);
         }
 
         for (S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
@@ -364,6 +374,9 @@ public class S3File extends FileWrapper {
                                      objectSummary.getLastModified());
             files.add(file);
         }
+
+	if(debug)
+	    System.err.println("FILES:" + files);
 
         return new S3ListResults(listing.getNextContinuationToken(), files);
     }
