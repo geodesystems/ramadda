@@ -44,6 +44,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     private SimpleDateFormat yearMonthDayFormat =
         RepositoryUtil.makeDateFormat("yyyy-MM-dd");
 
+    private static Object DATE_MUTEX  = new Object();
+
 
     /**  */
     private TTLCache<String, List<String>> synthIdCache =
@@ -224,7 +226,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         String name     = file.getName();
         int    year     = getYear(name);
         if (year > 0) {
-            dataDate = yearFormat.parse("" + year);
+	    synchronized(DATE_MUTEX) {
+		dataDate = yearFormat.parse("" + year);
+	    }
             dateFlag = "year";
         }
 
@@ -236,7 +240,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                 int month = Integer.parseInt(name);
                 if ((month >= 1) && (month <= 12)) {
                     name     = Utils.getMonthName(month - 1);
-                    dataDate = yearMonthFormat.parse("" + year + "-" + month);
+		    synchronized(DATE_MUTEX) {
+			dataDate = yearMonthFormat.parse("" + year + "-" + month);
+		    }
                     dateFlag = "yearmonth";
                 }
             }
@@ -252,11 +258,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     if (name.matches("(0|1|2|3)[0-9]")) {
                         int day = Integer.parseInt(name);
                         if ((day >= 1) && (day <= 31)) {
-                            String yyyymm =
-                                yearMonthFormat.format(
-                                    new Date(parentEntry.getStartDate()));
-                            dataDate = yearMonthDayFormat.parse(yyyymm + "-"
-                                    + name);
+			    synchronized(DATE_MUTEX) {
+				String yyyymm = yearMonthFormat.format(
+								       new Date(parentEntry.getStartDate()));
+				dataDate = yearMonthDayFormat.parse(yyyymm + "-"
+								    + name);
+			    }
                         }
                     }
                 }
@@ -269,6 +276,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
         String id = getEntryManager().createSynthId(rootEntry,
                         file.toString());
+	Entry cached =   getEntryManager().getEntryFromCache(id);
+	if(cached!=null) {
+	    return cached;
+	}
+
         boolean isBucketType = false;
         TypeHandler bucketTypeHandler =
             getEntryManager().findDefaultTypeHandler(rootEntry,
@@ -305,8 +317,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
         bucketEntry.setMasterTypeHandler(this);
         getEntryManager().cacheSynthEntry(bucketEntry);
-
-
         return bucketEntry;
     }
 
@@ -357,6 +367,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Entry makeSynthEntry(Request request, Entry rootEntry, String id)
             throws Exception {
+	long t1 = System.currentTimeMillis();
         String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return null;
@@ -373,11 +384,28 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             String ancestorKey = keys.get(i);
             path.append(ancestorKey);
             S3File s3File = null;
-            if (i < keys.size() - 1) {
+	    if (i < keys.size() - 1) {
                 path.append("/");
+		String s3Path = path.toString();
+		String synthId = getEntryManager().createSynthId(rootEntry,
+							    s3Path);
+		Entry cached =   getEntryManager().getEntryFromCache(synthId);
+		if(cached!=null) {
+		    parent = cached;
+		    continue;
+		}
                 s3File = new S3File(path.toString());
             } else {
                 //If it is the last one then it might be a file so call createFile which does a listing
+		String s3Path = path.toString();
+		//Check the cache before we hit S3
+		String synthId = getEntryManager().createSynthId(rootEntry,
+							    s3Path);
+		Entry cached =   getEntryManager().getEntryFromCache(synthId);
+		if(cached!=null) {
+		    parent = cached;
+		    continue;
+		}
                 s3File = S3File.createFile(path.toString());
             }
             if (s3File == null) {
@@ -387,7 +415,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             }
             parent = createBucketEntry(rootEntry, parent, s3File);
         }
-
+	long t2 = System.currentTimeMillis();
+	//	Utils.printTimes("s3",t1,t2);
         //System.err.println("S3 creating:" + id + " key:" + key + " keys:" + keys);
         return parent;
     }
