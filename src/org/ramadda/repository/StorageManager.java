@@ -2345,7 +2345,7 @@ public class StorageManager extends RepositoryManager implements PointFile
       * @return _more_
      */
     public boolean isS3(String path) {
-        return path.startsWith("s3:");
+        return path.startsWith(S3File.S3PREFIX);
     }
 
 
@@ -2374,8 +2374,9 @@ public class StorageManager extends RepositoryManager implements PointFile
             String        bucket = entry.getResource().getPath();
             String        ext = IOUtil.getFileExtension(bucket).toLowerCase();
             String tail       = IOUtil.getFileTail(bucket);
-            String fileName   = Utils.makeMD5(bucket) + tail;
-            File   cachedFile = getLongTermCacheFile("s3cache", fileName);
+            String fileName   = Utils.makeMD5(bucket) + "_"+tail;
+	    String[]     pair  = S3File.getBucketAndPrefix(bucket);
+            File   cachedFile = getLongTermCacheFile("s3cache", pair[0]+"/"+fileName);
             //      System.err.println("Cache file:" + cachedFile);
             if ( !cachedFile.exists()) {
 		System.err.println("Copying S3 file from bucket:" + bucket);
