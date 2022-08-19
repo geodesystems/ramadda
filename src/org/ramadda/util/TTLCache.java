@@ -302,6 +302,7 @@ public class TTLCache<KEY, VALUE> {
             clearCache();
         }
         remove(key);
+	//	if(isDebug()) System.err.println("PUT:" + key);
         cache.put(key, new CacheEntry<VALUE>(value));
     }
 
@@ -311,6 +312,7 @@ public class TTLCache<KEY, VALUE> {
      * @param key _more_
      */
     public synchronized void remove(Object key) {
+	//	if(isDebug()) System.err.println("REMOVE:" + key);
         CacheEntry<VALUE> entry = cache.get(key);
         if (entry != null) {
             cacheRemove(entry.object);
@@ -318,6 +320,9 @@ public class TTLCache<KEY, VALUE> {
         cache.remove(key);
     }
 
+    public boolean isDebug() {
+	return false;
+    }
 
     /**
      * get the value
@@ -329,19 +334,21 @@ public class TTLCache<KEY, VALUE> {
     public synchronized VALUE get(Object key) {
         CacheEntry cacheEntry = cache.get(key);
         if (cacheEntry == null) {
+	    //if(isDebug())System.err.println("GET-null:" + key);
             return null;
         }
         Date now      = new Date();
         long timeDiff = now.getTime() - cacheEntry.time;
         if (timeDiff > timeThreshold) {
             cache.remove(key);
-
+	    //if(isDebug())System.err.println("GET-TIME:" + "now:" + now +" then:" + new Date(cacheEntry.time) +" thr:" + timeThreshold);
             return null;
         }
         if (updateTimeOnGet) {
             cacheEntry.resetTime();
         }
 
+	//	if(isDebug()) System.err.println("GET-OK:" + key);
         return (VALUE) cacheEntry.object;
     }
 
@@ -352,7 +359,7 @@ public class TTLCache<KEY, VALUE> {
      * Class description
      *
      *
-     * @author     Jeff McWhirter (jeffmc@unavco.org)
+     * @author     Jeff McWhirter
      *
      * @param <VALUE> Type of object
      */
