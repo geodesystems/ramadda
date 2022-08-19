@@ -893,24 +893,25 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-snippet-popup {
     max-width:400px;
-}
-
-
-.ramadda-snippet {
-    text-decoration:none !important;
-}
-
-.ramadda-entry-link .ramadda-snippet {
-    margin-left:20px;
+    position: absolute; 
+    z-index:1000;
+    border: var(--basic-border);
+    background:var(--color-mellow-yellow);
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    border-radius: var(--default-radius);
 }
 
 .ramadda-snippet-hover {
     display:none;
 }
 
+.ramadda-snippet {
+    text-decoration:none !important;
+    padding:5px;
+}
 
-.ramadda-snippet-popup {
-    margin:10px;
+.ramadda-entry-link .ramadda-snippet {
+    margin-left:20px;
 }
 
 .note,  .ramadda-note, .ramadda-blurb, .ramadda-box, .ramadda-blurb {
@@ -2817,10 +2818,19 @@ a.btn-primary:link, a.btn-primary  {
     font-size:var(--font-size);
 }
 
-.ramadda-popup, .ramadda-selectdiv {
+
+.ramadda-popup,.ramadda-selectdiv {
     position: absolute; 
-    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    border:1px solid #ccc;
+    border-radius: 4px;
+    z-index:1000;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
+
+.ramadda-popup, .ramadda-selectdiv {
+    background-color : #FFF;
+}
+
 
 .ramadda-popup-contents {
     display:none;
