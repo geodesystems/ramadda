@@ -1330,7 +1330,8 @@ var Utils =  {
         s  = String(s);
         s = s.replace(/[^\x00-\x7F]/g, "_");
         s = s.replace(/&/g,"_");
-        s = s.replace(/\./g, "_");      
+        s = s.replace(/\./g, "_");
+        s = s.replace(/[:\//]+/g, "_");      	
         s = s.trim().toLowerCase().replace(/ /g,"_");
         return s;
     },    
