@@ -5,6 +5,8 @@
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
     <column name="root_id" showinformfirst="true" type="string"  label="Main S3 Bucket ID" columns="80" size="1000"/>
+
+    <column name="do_cache" type="boolean" default="true"  label="Enable caching" suffix="Turn caching  off if you are working on configuring this entries. Cache is flushed after 90 seconds"/>
     <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
 	    suffix="Patterns to exclude. One per line."/>
     <column name="maxcount" type="int" default="1000"  label="Max per bucket" />
@@ -13,16 +15,20 @@
     <column name="size_limit" type="double" default="-1"  label="Max file size"  suffix="(MB)"/>
 
     <column name="convert_dates" type="boolean" default="false"  label="Convert dates" suffix="Convert years and days if the file names match the patterns"/>
+    <column name="date_patterns" type="string"  rows="5" size="5000" label="Date Patterns" columns="80"
+	    suffix="Patterns to extract the date from a bucket name&lt;br&gt;Format:&lt;pre&gt;pattern;template;date format&lt;br&gt;e.g.:&lt;br&gt;.%*(\d\d\d\d)_(\d\d)_(\d\d).*;${1}-${2}-${3};yyyy-MM-dd"/>    
     <wiki><![CDATA[
 +section # title="{{name}}"
 +center
 <b>AWS/S3 Bucket:</b> {{field name=root_id}}
 -center
 {{description wikify="true"}}
++center
+{{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder="Search Page"}}
+-center
 {{tabletree maxHeight=500px}}
 ]]>
 </wiki>
-
   </type>
 
   <type name="type_s3_bucket"  isgroup="true" issynth="true"
@@ -34,7 +40,11 @@
 +row
 +col-md-9 class="entry-page-main"
 :title {{name}}
-${innercontent}
+{{description suffix="<p>"}}
++center
+{{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder="Search Page"}}
+-center
+{{tabletree message="" maxHeight=500px}}
 -col
 +col-md-3
 {{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
@@ -55,15 +65,14 @@ ${innercontent}
     <property name="icon" value="/aws/aws.png"/>
     <property name="form.file.show" value="true"/>
     <column name="bucket_id" type="string"  label="Bucket ID" columns="80" size="1000"/>
-    <xwiki><![CDATA[
-+section # title="{{name}}"
+    <xwiki_inner><![CDATA[
 +center
 <b>AWS/S3 Bucket:</b> {{field name=bucket_id}}
 -center
 {{description wikify="true"}}
 {{tabletree message="" maxHeight=500px}}
 ]]>
-</xwiki>
+</xwiki_inner>
 </type>
 
 

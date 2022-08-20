@@ -27,6 +27,9 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -52,7 +55,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
     private static Object DATE_MUTEX  = new Object();
 
-    private static TTLCache<String,Propper> propertiesCache = new TTLCache<String,Propper>(1000*60*60);
+    private static TTLCache<String,List<Propper>> propertiesCache = new TTLCache<String,List<Propper>>(1000*60*60);
 
 
     /**  */
@@ -60,11 +63,14 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         new TTLCache<String, List<String>>(5 * 60 * 1000);
 
 
+
     /**  */
     private static int IDX = 0;
 
     /** _more_ */
     public static final int IDX_ROOT = IDX++;
+
+    public static final int IDX_DO_CACHE = IDX++;    
 
     /**  */
     public static final int IDX_EXCLUDE_PATTERNS = IDX++;
@@ -79,6 +85,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     public static final int IDX_SIZE_LIMIT = IDX++;
 
     public static final int IDX_CONVERT_DATES = IDX++;
+    public static final int IDX_DATE_PATTERNS = IDX++;
 
 
     /**
@@ -119,7 +126,19 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                           + request.getString(ARG_MARKER, "");
         List<String> ids = synthIdCache.get(cacheKey);
         if (ids != null) {
-            return ids;
+	    //Check if the children exist. If not then continue
+	    if(ids.size()>0) {
+		for(String id: ids) {
+		    if(getEntryManager().getEntryFromCache(id)==null) {
+			ids = null;
+			break;
+		    }
+		}
+	    }
+	    if(ids!=null) {
+		//		System.err.println("getSynthIds: cached:" + synthId);
+		return ids;
+	    }
         }
 
         if (debug) {
@@ -165,8 +184,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         //      S3File.debug = true;
+	long t1 = System.currentTimeMillis();
         S3File.S3ListResults results = doLs(request, new S3File(synthId),
                                             null, max, percent, maxSize);
+	long t2 = System.currentTimeMillis();
+	//	Utils.printTimes("ls:" + synthId,t1,t2);
+
         if (results.getMarker() != null) {
             String prevMarker  = request.getString(ARG_MARKER, null);
             String prevMarkers = request.getString(ARG_PREVMARKERS, null);
@@ -195,7 +218,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                 }
             }
             Entry bucketEntry = createBucketEntry(request, rootEntry, parentEntry,
-                                    file);
+						  file);
             if ( !ok) {
                 if (debug) {
                     System.err.println("Skipping:" + file);
@@ -216,9 +239,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return ids;
     }
 
-    private Propper getConvertProperties(Request request, Entry entry, String type) throws Exception {
+    private List<Propper> getConvertProperties(Request request, Entry entry, String type) throws Exception {
         String cacheKey = entry.getId() + "_" + type+"_"+new Date(entry.getChangeDate());
-	Propper props = propertiesCache.get(cacheKey);
+	List<Propper> props = propertiesCache.get(cacheKey);
 	if(props!=null) {
 	    return props;
 	}
@@ -226,32 +249,18 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 	    getMetadataManager().findMetadata(request, entry,
 					      new String[] {
 						  "convert_file"}, true);
-
+	props  = new ArrayList<Propper>();
 	if(metadataList!=null) {
 	    for(Metadata metadata: metadataList) {
 		if(metadata.getAttr1().equals(type)) {
 		    File f = getMetadataManager().getFile(request, entry, metadata,3);
-		    boolean exact = metadata.getAttr2().equals("exact");
 		    if(f.exists()) {
-			if(f.getName().endsWith(".properties")) {
-			    Properties properties = new Properties();
-			    properties.load(getStorageManager().getInputStream(f.toString()));
-			    props = new Propper(exact,properties);
-			} else {
-			    props = new Propper(exact);
-			    for(String line: Utils.split(IOUtil.readContents(getStorageManager().getInputStream(f.toString())),
-							 "\n",true,true)) {
-				List<String> cols = Utils.tokenizeColumns(line,",");
-				String key = cols.get(0);
-				cols.remove(0);
-				props.add(key,cols);
-			    }				
-			}
+			boolean exact = metadata.getAttr2().equals("exact");
+			props.add(Propper.create(exact, f.getName(),getStorageManager().getInputStream(f.toString())));
 		    }
 		}
 	    }
 	}
-	if(props == null) props = new Propper();
 	propertiesCache.put(cacheKey,props);
 	return props;
     }
@@ -270,10 +279,15 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     private Entry createBucketEntry(Request request,Entry rootEntry, Entry parentEntry,
                                     S3File file)
             throws Exception {
+        String id = getEntryManager().createSynthId(rootEntry,
+                        file.toString());
+
+	//	System.err.println("CREATE:" + file.getName());
         String dateFlag = null;
         Date   dataDate = null;
         String name     = file.getName();
         String parentName = parentEntry.getName();
+        String grandparentName = parentEntry.getParentEntry()!=null?parentEntry.getParentEntry().getName():"";
         String originalParentName = (String) parentEntry.getTransientProperty("originalname");
 	if(originalParentName==null) originalParentName = parentName;
 	String originalName = name;
@@ -324,21 +338,46 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 	    }
 	}
 
-	Propper props = getConvertProperties(request,  rootEntry, "alias");
-	String alias = (String)props.get(name,originalParentName+"/"+originalName,parentName+"/"+originalName);
-	if(alias!=null) name = alias;
+	for(Propper aliases:getConvertProperties(request,  rootEntry, "alias")) {
+	    String alias = (String)aliases.get(name,originalParentName+"/"+originalName,parentName+"/"+originalName);
+	    if(alias!=null) {
+		alias = alias.replace("${name}",name).replace("${parentname}",parentName).replace("${grandparentname}",grandparentName);
+		name = alias;
+		break;
+	    }
+	}
+
+	if(dataDate==null) {
+	    for(String line: Utils.split((String)rootEntry.getValue(IDX_DATE_PATTERNS),"\n",true,true)) {
+		List<String> toks  = Utils.split(line,";");
+		if(toks.size()!=3) continue;
+		Pattern pattern = Pattern.compile(toks.get(0));
+		Matcher matcher = pattern.matcher(name);
+		//		System.err.println(toks.get(0)+":"+name+":"+ matcher.find());
+		if (matcher.find()) {
+		    String dttm = toks.get(1);
+		    boolean debug = name.indexOf("KBGM20140505_000222_V06")>=0;
+		    debug = false;
+		    if(debug)
+			System.err.println("name:" + name);
+		    for (int i = 1; i <= matcher.groupCount(); i++) {
+			if(debug)
+			    System.err.println("\t#" + i +"=" +matcher.group(i));
+			dttm = dttm.replace("${" + (i)+"}", matcher.group(i));
+		    }
+		    SimpleDateFormat sdf = new SimpleDateFormat(toks.get(2));
+		    dataDate = sdf.parse(dttm);
+		    if(debug)
+			System.err.println("DTTM:" + dttm +" Date:" + dataDate);
+		}
+	    }		
+	}
 
 
         Date createDate = new Date(file.lastModified());
         if (dataDate == null) {
             dataDate = createDate;
         }
-        String id = getEntryManager().createSynthId(rootEntry,
-                        file.toString());
-	Entry cached =   getEntryManager().getEntryFromCache(id);
-	if(cached!=null) {
-	    return cached;
-	}
 
         boolean isBucketType = false;
         TypeHandler bucketTypeHandler =
@@ -359,20 +398,22 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !isBucketType) {
             desc = HU.b("AWS/S3 Bucket:") + " " + file.toString();
         } else {
-	    Propper templateProps = getConvertProperties(request,  rootEntry, "template");
-	    String template = (String) templateProps.get(/*originalName,*/
+	    for(Propper templates:getConvertProperties(request,  rootEntry, "template")) {
+		String template = (String) templates.get(/*originalName,*/
 							 originalParentName+"/"+originalName,parentName+"/"+originalName,
 							 name,
 							 file.isDirectory()?"directory":"file");
-	    if(template!=null) {
-		//		System.err.println(name + " " +template);
-		template = template.replace("\\n","\n");
-		desc= "<wiki>\n"+template;
+		if(template!=null) {
+		    template = template.replace("\\n","\n");
+		    desc= "<wiki>\n"+template;
+		    break;
+		}
 	    }
 	}
         Resource resource = file.isDirectory()?new Resource():new Resource(file.toString(), Resource.TYPE_S3,
                                          file.length());
         Object[] values = bucketTypeHandler.makeEntryValues(null);
+	name = name.trim();
         bucketEntry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
                               resource, "", Entry.DEFAULT_ORDER,
                               createDate.getTime(), createDate.getTime(),
@@ -380,12 +421,13 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 	bucketEntry.putTransientProperty("originalname",originalName);
-	Propper locProps = getConvertProperties(request,  rootEntry, "location");
-	List<String> cols = (List<String>)locProps.get(parentName+"/"+originalName,originalName, name);
-	if(cols!=null && cols.size()>=2) {
-	    bucketEntry.setLocation(Double.parseDouble(cols.get(0)),Double.parseDouble(cols.get(1)));
+	for(Propper locProps:getConvertProperties(request,  rootEntry, "location")) {
+	    List<String> cols = (List<String>)locProps.get(parentName+"/"+originalName,originalName, name);
+	    if(cols!=null && cols.size()>=2) {
+		bucketEntry.setLocation(Double.parseDouble(cols.get(0)),Double.parseDouble(cols.get(1)));
+		break;
+	    }
 	}
-
 
         if (dateFlag != null) {
             bucketEntry.putTransientProperty("dateFlag", dateFlag);
@@ -394,7 +436,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             bucketEntry.setValue("bucket_id", file.toString());
         }
         bucketEntry.setMasterTypeHandler(this);
-        getEntryManager().cacheSynthEntry(bucketEntry);
+	if(!rootEntry.getBooleanValue(IDX_DO_CACHE,true)) {
+	    long ttl  = new Date().getTime() +1000*90;
+	    bucketEntry.setCacheActiveLimit(ttl);
+	}
+	getEntryManager().cacheSynthEntry(bucketEntry);
         return bucketEntry;
     }
 
@@ -445,7 +491,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Entry makeSynthEntry(Request request, Entry rootEntry, String id)
             throws Exception {
-	long t1 = System.currentTimeMillis();
         String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return null;
@@ -484,7 +529,13 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 		    parent = cached;
 		    continue;
 		}
+		long t1 = System.currentTimeMillis();
                 s3File = S3File.createFile(path.toString());
+		long t2 = System.currentTimeMillis();
+		//		Utils.printTimes("createFile:"+ id,t1,t2);
+		if(s3File.getName().equals("KABR")) {
+		    System.err.println(Utils.getStack(10));
+		}
             }
             if (s3File == null) {
                 System.err.println(
