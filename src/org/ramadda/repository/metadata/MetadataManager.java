@@ -626,7 +626,7 @@ public class MetadataManager extends RepositoryManager {
                 }
             } else {
                 if (mine.length() > 0) {
-                    mine.append(HtmlUtils.br());
+                    mine.append(HU.br());
                 }
             }
 
@@ -1569,7 +1569,7 @@ public class MetadataManager extends RepositoryManager {
                 continue;
             }
             String link =
-                HtmlUtils
+                HU
                     .href(request
                         .makeUrl(getRepository().getMetadataManager()
                             .URL_METADATA_LIST, ARG_METADATA_TYPE,
@@ -1585,7 +1585,7 @@ public class MetadataManager extends RepositoryManager {
         }
         HU.centerBlock(sb, HU.hrow(cols));
 
-        //        HtmlUtils.makeAccordion(sb, titles, contents);
+        //        HU.makeAccordion(sb, titles, contents);
         return sb;
     }
 
@@ -1790,19 +1790,19 @@ public class MetadataManager extends RepositoryManager {
         String  header;
         if (doCloud) {
             request.put(ARG_TYPE, "list");
-            header = HtmlUtils.href(request.getUrl(), msg("List"))
-                     + HtmlUtils.span(
+            header = HU.href(request.getUrl(), msg("List"))
+                     + HU.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtils.cssClass(
-                             CSS_CLASS_SEPARATOR)) + HtmlUtils.b(
+                         HU.cssClass(
+                             CSS_CLASS_SEPARATOR)) + HU.b(
                                  msg("Cloud"));
         } else {
             request.put(ARG_TYPE, "cloud");
-            header = HtmlUtils.b(msg("List"))
-                     + HtmlUtils.span(
+            header = HU.b(msg("List"))
+                     + HU.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtils.cssClass(
-                             CSS_CLASS_SEPARATOR)) + HtmlUtils.href(
+                         HU.cssClass(
+                             CSS_CLASS_SEPARATOR)) + HU.href(
                                  request.getUrl(), msg("Cloud"));
         }
         //Don't do cloud
@@ -1813,8 +1813,8 @@ public class MetadataManager extends RepositoryManager {
 
         StringBuilder   sb      = new StringBuilder();
         if ( !request.responseAsJson()) {
-            sb.append(HtmlUtils.sectionOpen("Metadata: " + type.getLabel()));
-            sb.append(HtmlUtils.center(header));
+            sb.append(HU.sectionOpen("Metadata: " + type.getLabel()));
+            sb.append(HU.center(header));
         }
         doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0);
         if (request.responseAsJson()) {
@@ -1823,7 +1823,7 @@ public class MetadataManager extends RepositoryManager {
             return new Result("", sb, JsonUtil.MIMETYPE);
         }
 
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return getSearchManager().makeResult(request,
                                              msg(type.getLabel() + " Cloud"),
@@ -1932,7 +1932,7 @@ public class MetadataManager extends RepositoryManager {
                     row.append("<tr><td>");
                     row.append(tuple[0].toString());
                     row.append("</td><td>");
-                    row.append(HtmlUtils.href(handler.getSearchUrl(request,
+                    row.append(HU.href(handler.getSearchUrl(request,
                             type, value), label));
                     row.append("</td></tr>");
                     rows.add(row);
@@ -1973,7 +1973,7 @@ public class MetadataManager extends RepositoryManager {
                                              + ttValue, "title",
                                                  "Count:" + cnt[i] + " "
                                                  + ttValue);
-                sb.append(HtmlUtils.href(handler.getSearchUrl(request, type,
+                sb.append(HU.href(handler.getSearchUrl(request, type,
                         values[i]), value, extra));
                 sb.append("</span>");
                 sb.append(" &nbsp; ");
@@ -2096,17 +2096,17 @@ public class MetadataManager extends RepositoryManager {
                                             + HU.id(formId));
 
             sb.append("\n");
-            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
             sb.append("\n");
-            String buttons = HtmlUtils.buttons(
-                                 HtmlUtils.submit(msg("Change")),
-                                 HtmlUtils.submit(
+            String buttons = HU.buttons(
+                                 HU.submit(msg("Change")),
+                                 HU.submit(
                                      msg("Delete selected"),
-                                     ARG_METADATA_DELETE), HtmlUtils.submit(
+                                     ARG_METADATA_DELETE), HU.submit(
                                          msg("Copy selected to clipboard"),
                                          ARG_METADATA_CLIPBOARD_COPY));
 	    String allId = HU.getUniqueId("all_");
-	    String toggle  = HtmlUtils.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all");
+	    String toggle  = HU.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all");
             sb.append(HU.hbox(buttons,HU.SPACE2,toggle));
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
@@ -2125,46 +2125,46 @@ public class MetadataManager extends RepositoryManager {
 
                 String cbxId = "cbx_" + metadata.getId();
                 String cbx =
-                    HtmlUtils.labeledCheckbox(
+                    HU.labeledCheckbox(
                         ARG_METADATA_ID + SUFFIX_SELECT + metadata.getId(),
                         metadata.getId(), false,
-                        HtmlUtils.id(cbxId) + " "
-                        + HtmlUtils.attr(
-                            HtmlUtils.ATTR_TITLE,
+                        HU.id(cbxId) + " "
+                        + HU.attr(
+                            HU.ATTR_TITLE,
                             msg(
                             "Shift-click: select range; Control-click: toggle all")) +
 			HU.cssClass("ramadda-metadata-select") +
-			HtmlUtils.attr(
-                                HtmlUtils.ATTR_ONCLICK,
-                                HtmlUtils.call(
-                                    "HtmlUtils.checkboxClicked",
-                                    HtmlUtils.comma(
-                                        "event", HtmlUtils.squote("cbx_"),
-                                        HtmlUtils.squote(cbxId)))),"Select");
+			HU.attr(
+                                HU.ATTR_ONCLICK,
+                                HU.call(
+                                    "HU.checkboxClicked",
+                                    HU.comma(
+                                        "event", HU.squote("cbx_"),
+                                        HU.squote(cbxId)))),"Select");
 
                 StringBuilder metadataEntry = new StringBuilder();
-                HtmlUtils.comment(metadataEntry, "Metadata part begin");
-                metadataEntry.append(HtmlUtils.formTable());
-                metadataEntry.append(HtmlUtils.formEntry("",cbx));
+                HU.comment(metadataEntry, "Metadata part begin");
+                metadataEntry.append(HU.formTable());
+		//                metadataEntry.append(HU.formEntry("",cbx));
                 metadataEntry.append("\n");
                 metadataEntry.append(html[1]);
-                HtmlUtils.formTableClose(metadataEntry);
-                HtmlUtils.comment(metadataEntry, "Metadata part end");
-                titles.add(html[0]);
-                String content = HtmlUtils.div(
+                HU.formTableClose(metadataEntry);
+                HU.comment(metadataEntry, "Metadata part end");
+                titles.add(html[0] + HU.span(cbx.toString(),HU.cssClass("accordion-toolbar") +HU.style("float:right;")));
+                String content = HU.div(
                                      metadataEntry.toString(),
-                                     HtmlUtils.cssClass(
+                                     HU.cssClass(
                                          "ramadda-metadata-form"));
                 contents.add(content);
             }
-            sb.append(HtmlUtils.beginInset(10, 30, 10, 100));
-            HtmlUtils.makeAccordion(sb, titles, contents);
-            sb.append(HtmlUtils.endInset());
+            sb.append(HU.beginInset(10, 30, 10, 100));
+            HU.makeAccordion(sb, titles, contents);
+            sb.append(HU.endInset());
             sb.append(buttons);
-            HtmlUtils.comment(sb, "Metadata form end");
+            HU.comment(sb, "Metadata form end");
             formInfo.addToForm(sb);
-	    HU.script(sb,"HtmlUtils.initToggleAll('" + allId +"','.ramadda-metadata-select');\n");
-            sb.append(HtmlUtils.formClose());
+	    HU.script(sb,"HU.initToggleAll('" + allId +"','.ramadda-metadata-select');\n");
+            sb.append(HU.formClose());
             sb.append("\n");
 	    
         }
@@ -2212,7 +2212,7 @@ public class MetadataManager extends RepositoryManager {
                         "Metadata pasted from clipboard"));
             }
 
-            sb.append(HtmlUtils.sectionClose());
+            sb.append(HU.sectionClose());
 
             return processMetadataForm(request, entry, sb);
         }
@@ -2234,7 +2234,7 @@ public class MetadataManager extends RepositoryManager {
             }
         }
 
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return getEntryManager().makeEntryEditResult(request, entry,
                 msg("Add Property"), sb);
@@ -2271,13 +2271,13 @@ public class MetadataManager extends RepositoryManager {
             }
 
             request.uploadFormWithAuthToken(sb, URL_METADATA_ADDFORM);
-            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-            sb.append(HtmlUtils.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
-            sb.append(HtmlUtils.submit(msg("Copy from Clipboard")));
-            sb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.makeShowHideBlock("Clipboard",
+            sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HU.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
+            sb.append(HU.submit(msg("Copy from Clipboard")));
+            sb.append(HU.formClose());
+            sb.append(HU.makeShowHideBlock("Clipboard",
                     clipboardSB.toString(), false));
-            sb.append(HtmlUtils.p());
+            sb.append(HU.p());
         }
 
         for (MetadataType type : metadataTypes) {
@@ -2298,16 +2298,16 @@ public class MetadataManager extends RepositoryManager {
             }
             //            request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
             groupSB.append(request.form(URL_METADATA_ADDFORM));
-            groupSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-            groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
-            groupSB.append(HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
+            groupSB.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+            groupSB.append(HU.hidden(ARG_METADATA_TYPE, type.getId()));
+            groupSB.append(HU.submit(msg("Add") + HU.space(1)
                                             + type.getLabel()));
             if (Utils.stringDefined(type.getHelp())) {
-                groupSB.append(HtmlUtils.space(2));
+                groupSB.append(HU.space(2));
                 groupSB.append(type.getHelp());
             }
-            groupSB.append(HtmlUtils.formClose());
-            groupSB.append(HtmlUtils.p());
+            groupSB.append(HU.formClose());
+            groupSB.append(HU.p());
             groupSB.append(NEWLINE);
         }
 
@@ -2316,10 +2316,10 @@ public class MetadataManager extends RepositoryManager {
 
         for (String name : groups) {
             titles.add(name);
-            tabs.add(HtmlUtils.insetDiv(groupMap.get(name).toString(), 5, 10,
+            tabs.add(HU.insetDiv(groupMap.get(name).toString(), 5, 10,
                                         5, 10));
         }
-        HtmlUtils.makeAccordion(sb, titles, tabs);
+        HU.makeAccordion(sb, titles, tabs);
     }
 
 
