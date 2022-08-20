@@ -3843,7 +3843,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 ? ""
                 : "margin-bottom:" + bottom + "px;") + ((right == 0)
                 ? ""
-                : "margin-right:" + top + "px;")));
+                : "margin-right:" + right + "px;")));
     }
 
     /**
