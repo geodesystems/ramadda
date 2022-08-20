@@ -1,3 +1,4 @@
 {{description suffix="<p>"}}
-{{tree details="true" message=""}}
+{{tabletree message="" maxHeight=500px}}
+
 

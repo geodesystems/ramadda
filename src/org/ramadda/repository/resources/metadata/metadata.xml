@@ -378,7 +378,7 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
        class="org.ramadda.repository.metadata.ContentMetadataHandler" 
        id="entry_type_patterns">
       <element name="entrytype"  label="Entry Type" datatype="enumeration" suffix="The entry type to use"/>
-      <element name="patterns"  label="Patterns" rows="10" suffix="Patterns to match. One per line."/>
+      <element name="patterns"  label="Patterns" rows="10" suffix="Patterns to match. One per line. Use &quot;file:&quot; to match any file and &quot;folder:&quot; to match any non file "/>
     </type>
 
     <type
