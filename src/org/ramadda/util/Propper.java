@@ -9,7 +9,10 @@ package org.ramadda.util;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
+import ucar.unidata.util.IOUtil;
+import java.io.InputStream;
 
 /**
  *  A wrapper around either a hashtable for direct look ups or a list of key,values for
@@ -43,6 +46,47 @@ public class Propper {
     public Propper(boolean exact) {
         this.exact = exact;
     }
+
+    public Propper(boolean exact,String pattern, Object contents) {
+	this(exact);
+        if (!exact) {
+            values = new ArrayList<Value>();
+	    values.add(new Value(pattern, contents));
+        } else {
+	    props = new Hashtable();
+	    props.put(pattern,contents);
+	}
+
+    }    
+
+    public static Propper create(boolean exact, String  filename,InputStream is) throws Exception {
+	if(filename.endsWith(".properties")) {
+	    Properties properties = new Properties();
+	    properties.load(is);
+	    return  new Propper(exact,properties);
+	} else if(filename.endsWith(".txt")) {
+	    String contents = IOUtil.readContents(is);
+	    List<String> toks = Utils.split(contents,"\n");
+	    StringBuffer sb= new StringBuffer();
+	    for(int i=1;i<toks.size();i++) {
+		sb.append(toks.get(i));
+		sb.append("\n");
+	    }
+	    return  new Propper(exact, toks.get(0),sb.toString());
+	} else {
+	    Propper propper = new Propper(exact);
+	    for(String line: Utils.split(IOUtil.readContents(is),"\n",true,true)) {
+		List<String> cols = Utils.tokenizeColumns(line,",");
+		String key = cols.get(0);
+		cols.remove(0);
+		propper.add(key,cols);
+	    }
+	    return propper;
+	}
+    }
+
+	
+
 
     /**
      
