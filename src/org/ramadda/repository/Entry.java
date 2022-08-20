@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository;
@@ -116,6 +116,10 @@ public class Entry implements Cloneable {
 
     /** is this a stoopid entry */
     boolean isDummy = false;
+
+    boolean cacheOk = true;    
+
+    long cacheActiveLimit = -1;
 
     /** the associated values (columns) */
     Object[] values;
@@ -865,7 +869,7 @@ public class Entry implements Cloneable {
      */
     public Object getValue(int index) {
         if ((values == null) || (index >= values.length)
-                || (values[index] == null)) {
+	    || (values[index] == null)) {
             return null;
         }
 
@@ -917,7 +921,7 @@ public class Entry implements Cloneable {
      */
     public String getStringValue(int index, String dflt) {
         if ((values == null) || (index < 0) || (index >= values.length)
-                || (values[index] == null)) {
+	    || (values[index] == null)) {
             return dflt;
         }
 
@@ -1011,8 +1015,8 @@ public class Entry implements Cloneable {
         Object[] values = getTypeHandler().getEntryValues(this);
         if (idx >= values.length) {
             throw new IllegalArgumentException(
-                "Error in Entry.setValue: bad index: " + idx + " length is:"
-                + values.length);
+					       "Error in Entry.setValue: bad index: " + idx + " length is:"
+					       + values.length);
         }
         values[idx] = v;
     }
@@ -1076,9 +1080,9 @@ public class Entry implements Cloneable {
      */
     public boolean hasLocationDefined() {
         if ((south != NONGEO) && (east != NONGEO) && Utils.isReal(south)
-                && Utils.isReal(east) && !hasAreaDefined()) {
+	    && Utils.isReal(east) && !hasAreaDefined()) {
             if (Utils.between(east, -180, 180)
-                    && Utils.between(south, -90, 90)) {
+		&& Utils.between(south, -90, 90)) {
                 return true;
             }
         }
@@ -1121,7 +1125,7 @@ public class Entry implements Cloneable {
      */
     public double[] getCenter() {
         return new double[] { south + (north - south) / 2,
-                              east + (west - east) / 2 };
+	    east + (west - east) / 2 };
     }
 
     /**
@@ -1140,18 +1144,18 @@ public class Entry implements Cloneable {
      */
     public boolean hasAreaDefined() {
         if ( !Utils.isReal(south) || !Utils.isReal(east)
-                || !Utils.isReal(north) || !Utils.isReal(west)) {
+	     || !Utils.isReal(north) || !Utils.isReal(west)) {
             return false;
         }
         if ( !(Utils.between(east, -180, 180)
-                && Utils.between(south, -90, 90)
-                && Utils.between(west, -180, 180)
-                && Utils.between(north, -90, 90))) {
+	       && Utils.between(south, -90, 90)
+	       && Utils.between(west, -180, 180)
+	       && Utils.between(north, -90, 90))) {
             return false;
         }
 
         if ((south != NONGEO) && (east != NONGEO) && (north != NONGEO)
-                && (west != NONGEO)) {
+	    && (west != NONGEO)) {
             if ((south == north) && (east == west)) {
                 return false;
             }
@@ -1424,7 +1428,7 @@ public class Entry implements Cloneable {
      */
     public boolean hasAltitudeBottom() {
         return (altitudeBottom == altitudeBottom)
-               && (altitudeBottom != NONGEO);
+	    && (altitudeBottom != NONGEO);
     }
 
 
@@ -1435,7 +1439,7 @@ public class Entry implements Cloneable {
      */
     public boolean hasAltitude() {
         return hasAltitudeTop() && hasAltitudeBottom()
-               && (altitudeBottom == altitudeTop);
+	    && (altitudeBottom == altitudeTop);
     }
 
 
@@ -1794,7 +1798,7 @@ public class Entry implements Cloneable {
     }
 
     /**
-      * @return _more_
+     * @return _more_
      */
     @Override
     public int hashCode() {
@@ -2006,7 +2010,7 @@ public class Entry implements Cloneable {
         description = value;
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             description = description.substring(0,
-                    MAX_DESCRIPTION_LENGTH - 1);
+						MAX_DESCRIPTION_LENGTH - 1);
         }
     }
 
@@ -2312,6 +2316,42 @@ public class Entry implements Cloneable {
         return xmlNode;
     }
 
+    /**
+       Set the CacheOk property.
+
+       @param value The new value for CacheOk
+    **/
+    public void setCacheOk (boolean value) {
+	cacheOk = value;
+    }
+
+    /**
+       Get the CacheOk property.
+
+       @return The CacheOk
+    **/
+    public boolean getCacheOk () {
+	return cacheOk;
+    }
+
+
+    /**
+       Set the CacheActiveLimit property.
+
+       @param value The new value for CacheActiveLimit
+    **/
+    public void setCacheActiveLimit (long value) {
+	cacheActiveLimit = value;
+    }
+
+    /**
+       Get the CacheActiveLimit property.
+
+       @return The CacheActiveLimit
+    **/
+    public long getCacheActiveLimit () {
+	return cacheActiveLimit;
+    }
 
 
 }
