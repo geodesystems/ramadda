@@ -3593,8 +3593,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initToggleAll:function(cbx,selector) {
 	jqid(cbx).change(function(){
 	    let on = $(this).is(':checked');
-	    console.log($(selector).length);
 	    $(selector).prop('checked',on);
+	    $(selector).trigger('change');
 	});
     },
     getEmojis: function(cb) {
@@ -4137,11 +4137,26 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
             $.extend(ctorArgs, args);
             if(!ctorArgs.decorate) {
-                var accordion = $(id +" .ui-accordion-header");
-                accordion.css("padding","0em 0em 0em 0em");
+                var header = $(id +" .ui-accordion-header");
+                header.css("padding","0em 0em 0em 0em");
             }
             if(ctorArgs.active<0) ctorArgs.active='none';
-            $(id).accordion(ctorArgs);
+            let accordion = $(id).accordion(ctorArgs);
+	    //Handle any checkboxes in the header
+	    let f = function(ele,event) {
+		event.stopPropagation(); 
+		let header = ele.closest('.ui-accordion-header');
+		let cbx = header.find(':checkbox');
+		if(cbx.is(':checked')) header.css('background','#fffeec');
+		else  header.css('background','transparent');		
+	    }
+
+	    let ff = function(event){f($(this),event);}
+	    accordion.find(".accordion-toolbar").find(":checkbox").click(ff);
+	    accordion.find(".accordion-toolbar").find("label").click(ff);
+	    accordion.find(".accordion-toolbar").find(":checkbox").change(function(event) {
+		f($(this),event);
+	    });
         });
     },
     hbox: function(args) {
