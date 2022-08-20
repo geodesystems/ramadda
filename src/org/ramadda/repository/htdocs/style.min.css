@@ -1836,8 +1836,8 @@ thin_hr,.ramadda-thin-hr {
     background:#eee;
 
 }
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
-    background: transparent url("images/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x;
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default   {
+    background: transparent;
     -webkit-touch-callout: none; 
     -webkit-user-select: none; 
     -khtml-user-select: none; 
