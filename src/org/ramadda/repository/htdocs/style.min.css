@@ -3876,6 +3876,11 @@ snippet-hide {
     padding-left: 10px;
 }
 
+.ramadda-metadata-form .ramadda-pulldown {
+    min-width:200px;
+
+}
+
 .ramadda-metadata-html {
     padding-left: 10px;
 }
