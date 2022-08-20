@@ -2107,7 +2107,7 @@ public class MetadataManager extends RepositoryManager {
                                          ARG_METADATA_CLIPBOARD_COPY));
 	    String allId = HU.getUniqueId("all_");
 	    String toggle  = HU.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all");
-            sb.append(HU.hbox(buttons,HU.SPACE2,toggle));
+            sb.append(HU.leftRight(buttons,HU.inset(toggle,0,0,0,110)));
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
             for (Metadata metadata : metadataList) {

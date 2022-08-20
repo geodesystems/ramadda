@@ -759,16 +759,16 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 String html = getFileHtml(request, entry, metadata, element,
                                           forLink);
                 if (html != null) {
-                    sb.append(HtmlUtils.space(1));
+                    sb.append(HU.space(1));
                     sb.append(html);
-                    sb.append(HtmlUtils.space(1));
+                    sb.append(HU.space(1));
                 } else {
                     String value = metadata.getAttr(element.getIndex());
                     if ((value != null) && value.startsWith("http")) {
-                        sb.append(HtmlUtils.space(1));
-                        sb.append(HtmlUtils.img(value, "",
+                        sb.append(HU.space(1));
+                        sb.append(HU.img(value, "",
                                 HU.attr("loading", "lazy")));
-                        sb.append(HtmlUtils.space(1));
+                        sb.append(HU.space(1));
                     }
                 }
 
@@ -778,9 +778,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 String html = getFileHtml(request, entry, metadata, element,
                                           false);
                 if (html != null) {
-                    sb.append(HtmlUtils.space(1));
+                    sb.append(HU.space(1));
                     sb.append(html);
-                    sb.append(HtmlUtils.space(1));
+                    sb.append(HU.space(1));
                 }
             }
         }
@@ -1033,7 +1033,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
 
         try {
-            return HtmlUtils
+            return HU
                 .url(request
                     .makeUrl(handler.getRepository().getSearchManager()
                         .URL_ENTRY_SEARCH), args);
@@ -1147,7 +1147,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
 	    if(makeSearchLink) {
 		searchLink = handler.getSearchLink(request, metadata,"")
-		    + HtmlUtils.space(1);
+		    + HU.space(1);
 		content.append(searchLink);
 	    }
             content.append(html);
@@ -1155,7 +1155,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             int                   cnt      = 1;
             boolean               didOne   = false;
             List<MetadataElement> children = getChildren();
-            content.append(HtmlUtils.formTable());
+            content.append(HU.formTable());
 
 
             for (MetadataElement element : children) {
@@ -1174,10 +1174,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
-                            HtmlUtils.row(
-                                HtmlUtils.colspan(metadataHtml, 2)));
+                            HU.row(
+                                HU.colspan(metadataHtml, 2)));
                     } else {
-                        content.append(HtmlUtils.formEntry(formInfo.label,
+                        content.append(HU.formEntry(formInfo.label,
                                 metadataHtml));
                     }
                     didOne = true;
@@ -1185,7 +1185,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 cnt++;
                 content.append("\n");
             }
-            content.append(HtmlUtils.formTableClose());
+            content.append(HU.formTableClose());
             if ( !didOne) {
                 return null;
             }
@@ -1252,12 +1252,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         if (lbl == null) {
             lbl = msgLabel(getName());
         }
-        String submit = HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
+        String submit = HU.submit(msg("Add") + HU.space(1)
                                          + getName());
-        String        cancel = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
+        String        cancel = HU.submit(msg("Cancel"), ARG_CANCEL);
         StringBuilder sb     = new StringBuilder();
         if (Utils.stringDefined(help)) {
-            sb.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.note(help),
+            sb.append(HU.row(HU.colspan(HU.note(help),
                     3)));
             sb.append("\n");
         }
@@ -1279,7 +1279,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             if ((element.getGroup() != null)
                     && !Misc.equals(element.getGroup(), lastGroup)) {
                 lastGroup = element.getGroup();
-                sb.append(HtmlUtils.row(HtmlUtils.colspan(header(lastGroup),
+                sb.append(HU.row(HU.colspan(header(lastGroup),
                         2)));
             }
             String elementLbl = msgLabel(element.getLabel());
@@ -1293,30 +1293,28 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 if (suffixLabel == null) {
                     suffixLabel = "";
                 }
-                sb.append(HtmlUtils.formEntryTop(elementLbl, "\n" + widget,
+                sb.append(HU.formEntryTop(elementLbl, "\n" + widget,
                         suffixLabel));
             }
         }
 
         sb.append("\n");
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Inherited"),
-                HtmlUtils.checkbox(
-                    ARG_METADATA_INHERITED + suffix, "true",
-                    metadata.getInherited())));
+        sb.append( HU.formEntry("",
+				       HU.labeledCheckbox(
+								ARG_METADATA_INHERITED + suffix, "true",
+								metadata.getInherited(),"Inherited")));
 
 
 
         String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
-        sb.append(HtmlUtils.hidden(argtype, getId())
-                  + HtmlUtils.hidden(argid, metadata.getId()));
+        sb.append(HU.hidden(argtype, getId())
+                  + HU.hidden(argid, metadata.getId()));
 
         if ( !forEdit && (entry != null)) {
             sb.append("\n");
-            sb.append(HtmlUtils.formEntry("",
-                                          submit + HtmlUtils.buttonSpace()
+            sb.append(HU.formEntry("",
+                                          submit + HU.buttonSpace()
                                           + cancel));
         }
 
