@@ -139,6 +139,10 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
         if ( !entry.isFile()) {
             return "No Json file available";
         }
+	//Limit the size
+	if(entry.getResource().getSize()>1000*1000*5) {
+	    return "";
+	}
         StringBuilder sb = new StringBuilder();
         HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
 	String json=null;
