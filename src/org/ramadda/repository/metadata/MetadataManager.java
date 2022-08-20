@@ -2105,10 +2105,9 @@ public class MetadataManager extends RepositoryManager {
                                      ARG_METADATA_DELETE), HtmlUtils.submit(
                                          msg("Copy selected to clipboard"),
                                          ARG_METADATA_CLIPBOARD_COPY));
-            sb.append(buttons);
 	    String allId = HU.getUniqueId("all_");
-	    HU.div(sb,HtmlUtils.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all"),"");
-            sb.append("\n");
+	    String toggle  = HtmlUtils.labeledCheckbox("all","",false,HU.attrs("id",allId),"Toggle all");
+            sb.append(HU.hbox(buttons,HU.SPACE2,toggle));
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
             for (Metadata metadata : metadataList) {
@@ -2158,7 +2157,7 @@ public class MetadataManager extends RepositoryManager {
                                          "ramadda-metadata-form"));
                 contents.add(content);
             }
-            sb.append(HtmlUtils.beginInset(10, 10, 10, 10));
+            sb.append(HtmlUtils.beginInset(10, 30, 10, 100));
             HtmlUtils.makeAccordion(sb, titles, contents);
             sb.append(HtmlUtils.endInset());
             sb.append(buttons);
