@@ -50,9 +50,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
-
     /** _more_ */
-    public static final int THUMBNAIL_WIDTH = 400;
+    public static final int THUMBNAIL_WIDTH = 600;
 
     /** _more_ */
     public static final String ARG_THUMBNAIL_SCALEDOWN =
@@ -950,9 +949,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                             : "");
             if (image == null) {
                 image = "";
-            } else {
-                image = "<br>" + image;
-            }
+            } 
+
 
             String extra = "";
             if (getThumbnail()) {
@@ -969,13 +967,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
             StringBuilder sb      = new StringBuilder();
             String        inputId = formInfo.getId() + "_" + arg;
-            sb.append(
-                HtmlUtils.fileInput(
-                    arg, HtmlUtils.SIZE_70 + HtmlUtils.id(inputId)) + image
-                        + "<br>" + msgLabel("Or download URL")
-                        + HtmlUtils.space(1)
-                        + HtmlUtils.input(
-                            arg + "_url", "", HtmlUtils.SIZE_70) + extra);
+            sb.append(image);
+	    String space = HU.div("",HU.style("margin-bottom:0.5em;"));
+	    if(Utils.stringDefined(image)) sb.append(space);
+	    sb.append(HU.fileInput(arg, HU.SIZE_70 + HtmlUtils.id(inputId)) 
+		      +space +
+		      HU.input(arg + "_url", "", HU.attrs("style","width:430px;","placeholder","Or download URL")) + extra);
             HtmlUtils.script(sb,
                              "Ramadda.initFormUpload("
                              + HU.comma(HU.squote(inputId)) + ");");

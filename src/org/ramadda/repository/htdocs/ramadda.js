@@ -557,7 +557,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let input = $("#"+ fileInputId);
 	let form = input.closest('form');
 
-
+	console.log(jqid(fileInputId).attr('size'));
 	let custom = HU.div([TITLE,"Click to select a file", ID,fileInputId+"_filewrapper",CLASS, 'fileinput_wrapper'],HU.getIconImage("fas fa-cloud-upload-alt") +" " +HU.div([ID,fileInputId+"_filename",CLASS,"fileinput_label"]));
 	input.after(custom);
 	input.hide();
