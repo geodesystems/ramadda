@@ -24,10 +24,10 @@ import java.util.List;
  *
  *
  * @param <KEY>
- * @param <VALUE>
+ * @param <VALUE_TYPE>
  */
 @SuppressWarnings("unchecked")
-public class TTLCache<KEY, VALUE> {
+public class TTLCache<KEY, VALUE_TYPE> {
 
     /** _more_ */
     private static Object MUTEX = new Object();
@@ -48,8 +48,8 @@ public class TTLCache<KEY, VALUE> {
     public static long MS_IN_A_DAY = MS_IN_AN_HOUR * 24;
 
     /** the cache */
-    private Hashtable<KEY, CacheEntry<VALUE>> cache =
-        new Hashtable<KEY, CacheEntry<VALUE>>();
+    private Hashtable<KEY, CacheEntry<VALUE_TYPE>> cache =
+        new Hashtable<KEY, CacheEntry<VALUE_TYPE>>();
 
     /** how long should the objects be in the cache */
     private long timeThreshold;
@@ -172,6 +172,10 @@ public class TTLCache<KEY, VALUE> {
     }
 
 
+    public String getName() {
+	return name;
+    }
+
     /**
      */
     public static void clearCaches() {
@@ -252,7 +256,7 @@ public class TTLCache<KEY, VALUE> {
         for (Object o : toRemove) {
             remove(o);
         }
-        cache = new Hashtable<KEY, CacheEntry<VALUE>>();
+        cache = new Hashtable<KEY, CacheEntry<VALUE_TYPE>>();
     }
 
     /**
@@ -260,7 +264,7 @@ public class TTLCache<KEY, VALUE> {
      *
      * @param value _more_
      */
-    public void cacheRemove(VALUE value) {}
+    public void cacheRemove(VALUE_TYPE value) {}
 
     /**
      * _more_
@@ -297,13 +301,13 @@ public class TTLCache<KEY, VALUE> {
      * @param key key
      * @param value value
      */
-    public synchronized void put(KEY key, VALUE value) {
+    public synchronized void put(KEY key, VALUE_TYPE value) {
         if ((sizeLimit > 0) && (cache.size() > sizeLimit)) {
             clearCache();
         }
         remove(key);
 	//	if(isDebug()) System.err.println("PUT:" + key);
-        cache.put(key, new CacheEntry<VALUE>(value));
+        cache.put(key, new CacheEntry<VALUE_TYPE>(value));
     }
 
     /**
@@ -313,7 +317,7 @@ public class TTLCache<KEY, VALUE> {
      */
     public synchronized void remove(Object key) {
 	//	if(isDebug()) System.err.println("REMOVE:" + key);
-        CacheEntry<VALUE> entry = cache.get(key);
+        CacheEntry<VALUE_TYPE> entry = cache.get(key);
         if (entry != null) {
             cacheRemove(entry.object);
         }
@@ -331,12 +335,18 @@ public class TTLCache<KEY, VALUE> {
      *
      * @return value or null if not in cache or entry has expired
      */
-    public synchronized VALUE get(Object key) {
+    public synchronized VALUE_TYPE get(Object key) {
         CacheEntry cacheEntry = cache.get(key);
         if (cacheEntry == null) {
 	    //if(isDebug())System.err.println("GET-null:" + key);
             return null;
         }
+
+	if(!cacheValueOk((VALUE_TYPE)cacheEntry.object)) {
+            cache.remove(key);
+	    return null;
+	}
+
         Date now      = new Date();
         long timeDiff = now.getTime() - cacheEntry.time;
         if (timeDiff > timeThreshold) {
@@ -349,10 +359,13 @@ public class TTLCache<KEY, VALUE> {
         }
 
 	//	if(isDebug()) System.err.println("GET-OK:" + key);
-        return (VALUE) cacheEntry.object;
+        return (VALUE_TYPE) cacheEntry.object;
     }
 
 
+    public  boolean cacheValueOk(VALUE_TYPE v) {
+	return true;
+    }
 
 
     /**
@@ -361,22 +374,22 @@ public class TTLCache<KEY, VALUE> {
      *
      * @author     Jeff McWhirter
      *
-     * @param <VALUE> Type of object
+     * @param <VALUE_TYPE> Type of object
      */
-    private class CacheEntry<VALUE> {
+    private class CacheEntry<VALUE_TYPE> {
 
         /** time put in cache */
         long time;
 
         /** the object */
-        VALUE object;
+        VALUE_TYPE object;
 
         /**
          * ctor
          *
          * @param object the object
          */
-        public CacheEntry(VALUE object) {
+        public CacheEntry(VALUE_TYPE object) {
             this.object = object;
             resetTime();
         }
