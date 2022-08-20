@@ -503,8 +503,7 @@ public class EntryManager extends RepositoryManager {
                 getRepository().getProperty(PROP_CACHE_TTL,
                                             ENTRY_CACHE_TTL_MINUTES);
             //Convert to milliseconds
-            entryCache = theCache = new TTLCache<String,
-		Entry>(cacheTimeMinutes * 60 * 1000, ENTRY_CACHE_LIMIT,"Entry Cache");
+            entryCache = theCache = new EntryCache(cacheTimeMinutes * 60 * 1000, ENTRY_CACHE_LIMIT,"Entry Cache");
         }
         return theCache;
     }
@@ -517,12 +516,30 @@ public class EntryManager extends RepositoryManager {
     private TTLCache<String, Entry> getSynthEntryCache() {
         TTLCache<String, Entry> theCache = synthEntryCache;
         if (theCache == null) {
-            synthEntryCache = theCache = new TTLCache<String,
-		Entry>(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000,SYNTHENTRY_CACHE_LIMIT,"Synthetic Entry Cache");
+            synthEntryCache = theCache = new EntryCache(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000,SYNTHENTRY_CACHE_LIMIT,"Synthetic Entry Cache");
         }
         return theCache;
     }
 
+
+    private class EntryCache extends TTLCache<String,Entry> {
+	public EntryCache(long ttl,int limit,String name) {
+	    super(ttl,limit,name);
+	}
+
+	/**
+	 * override this to check if there was a limit set on the entry
+	 */
+	@Override
+	public  boolean cacheValueOk(Entry entry) {
+	    if(entry.getCacheActiveLimit()>0) {
+		if(new Date().getTime()>entry.getCacheActiveLimit()) {
+		    return false;
+		}
+	    }
+	    return true;
+	}
+    }
 
 
     /**
@@ -546,6 +563,7 @@ public class EntryManager extends RepositoryManager {
      * @param entry _more_
      */
     public void cacheSynthEntry(Entry entry) {
+	if(!entry.getCacheOk()) return;
         synchronized (MUTEX_ENTRY) {
             getSynthEntryCache().put(entry.getId(), entry);
         }
@@ -558,7 +576,9 @@ public class EntryManager extends RepositoryManager {
      * @param entry _more_
      */
     public void cacheEntry(Entry entry) {
+	if(!entry.getCacheOk()) return;
         synchronized (MUTEX_ENTRY) {
+	    //	    System.err.println("CACHING:" + entry);
             //Check if we are caching
             if ( !getRepository().doCache()) {
                 return;
@@ -3098,6 +3118,16 @@ public class EntryManager extends RepositoryManager {
 				if(typeHandler!=null) return typeHandler;
 			    }
 			}
+			if(pattern.startsWith("folder:")) {
+			    if(isFile)continue;
+			    pattern = pattern.substring("folder:".length()).trim();
+			    if(pattern.length()==0) {
+				TypeHandler typeHandler =
+				    getRepository().getTypeHandler(type);
+				if(typeHandler!=null) return typeHandler;
+			    }
+			}
+
 
 			if(theResource.matches(pattern)) {
 			    TypeHandler typeHandler =
