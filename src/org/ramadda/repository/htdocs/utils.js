@@ -5223,10 +5223,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         let input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
         let html = '<p>' +HtmlUtils.div(["class", "ramadda-form-url"], 
+					input+SPACE2+
 					(includeCopyArgs?
 					 HU.span(['id','argscopy','class','ramadda-clickable','title','Copy json for subset action'],
-						 HtmlUtils.getIconImage('fas fa-earth-americas')) +' ':'')+
-				 HtmlUtils.href(url, HtmlUtils.getIconImage('fas fa-link')) + " " + input);
+						 HtmlUtils.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
+					HU.span(['id','clipboard','class','ramadda-clickable','title','Copy URL to clipboard'],
+						HtmlUtils.getIconImage('fas fa-clipboard')) + SPACE2+
+					HtmlUtils.href(url, HtmlUtils.getIconImage('fas fa-link')));
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -5240,6 +5243,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    Utils.copyToClipboard(args);
 	    alert('args for subset are copied to clipboard');
 	});
+	jqid('clipboard').click(()=>{
+	    Utils.copyToClipboard(jqid('formurl').val());
+	    alert('URL copied to clipboard');
+	});	
     },
     makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,includeCopyJson) {
         $("#" + formId + " :input").change(function() {
