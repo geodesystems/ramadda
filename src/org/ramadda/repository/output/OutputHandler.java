@@ -374,18 +374,40 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	String marker = (String)request.getPropertyOrArg(ARG_MARKER);
 	String prevMarkers = (String)request.getPropertyOrArg(ARG_PREVMARKERS);	
 	if(Utils.stringDefined(marker) || Utils.stringDefined(prevMarkers)) {
-	    System.err.println("marker:" + marker +" prev:" + prevMarkers);
+	    HashSet<String> exclude = new HashSet<String>();
+	    exclude.add(ARG_MARKER);
+	    exclude.add(ARG_PREVMARKERS);		
 	    List<String> prevList = Utils.stringDefined(prevMarkers)?Utils.split(prevMarkers,",",true,true):new ArrayList<String>();
+	    String fullPrev = Utils.join(prevList,",");
+	    String tmp = Utils.join(Utils.Y(prevList),",");	    
 	    if(prevList.size()>0) {
-		String prevMarker  = prevList.remove(prevList.size()-1);
-		toks.add(HU.div(HtmlUtils.href(request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "="
-					       + prevMarker, "Previous"),HU.cssClass("ramadda-next-previous ramadda-previous")));
+		String lastMarker = prevList.remove(prevList.size()-1);
+		if(prevList.size()==0) lastMarker = "";
+		String formId = HU.getUniqueId("form_");
+		sb.append(HU.formPost(request.getRequestPath(),HU.id(formId)));
+		request.addFormHiddenArguments(sb, exclude);
+		System.err.println("FORM PREV:\n\tprev:"+
+				   Utils.join(Utils.Y(prevList),",") +"\n\tmarker:" +Utils.X(lastMarker));
+		
+		sb.append(HU.hidden(ARG_PREVMARKERS, Utils.join(prevList,",")));
+		sb.append(HU.hidden(ARG_MARKER, lastMarker));		
+		toks.add(HU.div("Previous",
+				HU.onMouseClick("$('#"  + formId +"').submit();") + HU.cssClass("ramadda-clickable ramadda-next-previous ramadda-previous")));
+		sb.append(HU.formClose());
 	    }
 	    if(marker!=null) {
-		String prev = Utils.join(prevList,",");
-		toks.add(HU.div(HU.href(request.getUrl(ARG_MARKER) + "&" + ARG_MARKER + "=" + marker+"&" + ARG_PREVMARKERS+"="+prev,
-					"Next"),
-				HU.cssClass("ramadda-next-previous ramadda-next")));
+		String formId = HU.getUniqueId("form_");
+		sb.append(HU.formPost(request.getRequestPath(),HU.id(formId)));
+		request.addFormHiddenArguments(sb, exclude);
+		System.err.println("FORM NEXT:\n\tprev:"+
+				   tmp +"\n\tmarker:" +Utils.X(marker));
+
+		
+		sb.append(HU.hidden(ARG_PREVMARKERS, fullPrev));
+		sb.append(HU.hidden(ARG_MARKER, marker));		
+		toks.add(HU.div("Next",
+				HU.onMouseClick("$('#"  + formId +"').submit();") + HU.cssClass("ramadda-clickable ramadda-next-previous ramadda-next")));
+		sb.append(HU.formClose());
 	    }
 
 	    HU.div(sb, Utils.join(toks,""),

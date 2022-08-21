@@ -119,11 +119,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                     Entry rootEntry, Entry parentEntry,
                                     String synthId)
             throws Exception {
-
         boolean debug = false;
         String cacheKey = parentEntry.getId() + "_" + synthId + "_"
-                          + rootEntry.getChangeDate() + "_"
-                          + request.getString(ARG_MARKER, "");
+	    + rootEntry.getChangeDate() + "_"
+	    + request.getString(ARG_MARKER, "");
         List<String> ids = synthIdCache.get(cacheKey);
         if (ids != null) {
 	    //Check if the children exist. If not then continue
@@ -135,8 +134,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 		    }
 		}
 	    }
+	    ids  = null;
 	    if(ids!=null) {
-		//		System.err.println("getSynthIds: cached:" + synthId);
+		System.err.println("getSynthIds: cached:" + synthId +" cachekey:" +cacheKey);
+		System.err.println("Marker:" + request.getString(ARG_MARKER, ""));
 		return ids;
 	    }
         }
@@ -190,23 +191,28 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 	long t2 = System.currentTimeMillis();
 	//	Utils.printTimes("ls:" + synthId,t1,t2);
 
-        if (results.getMarker() != null) {
-            String prevMarker  = request.getString(ARG_MARKER, null);
-            String prevMarkers = request.getString(ARG_PREVMARKERS, null);
-            if (Utils.stringDefined(prevMarker)
-                    || Utils.stringDefined(prevMarkers)) {
-                List<String> markers = new ArrayList<String>();
-                if (prevMarkers != null) {
-                    markers.addAll(Utils.split(prevMarkers, ",", true, true));
-                }
-                if (Utils.stringDefined(prevMarker)) {
-                    markers.add(prevMarker);
-                }
-                request.putExtraProperty(ARG_PREVMARKERS,
-                                         Utils.join(markers, ","));
-            }
-            request.putExtraProperty(ARG_MARKER, results.getMarker());
+	String currentMarker  = request.getString(ARG_MARKER, null);
+	String prevMarkers = request.getString(ARG_PREVMARKERS, null);
+	String nextMarker =results.getMarker(); 
+	if (Utils.stringDefined(currentMarker)
+	    || Utils.stringDefined(prevMarkers)) {
+	    List<String> markers = new ArrayList<String>();
+	    if (Utils.stringDefined(prevMarkers)) {
+		markers.addAll(Utils.split(prevMarkers, ",", true, true));
+	    }
+	    if (Utils.stringDefined(currentMarker)) {
+		markers.add(currentMarker);
+	    }
+	    request.putExtraProperty(ARG_PREVMARKERS,
+				     Utils.join(markers, ","));
+	    System.err.println("S3 prevMarkers:" +  Utils.join(Utils.Y(markers), ","));
+	}
+        if (nextMarker != null) {
+            request.remove(ARG_MARKER);
+            request.putExtraProperty(ARG_MARKER, nextMarker);
+	    System.err.println("S3 nextMarker:" + Utils.X(nextMarker));
         }
+
         List<S3File> files    = results.getFiles();
         List<String> children = new ArrayList<String>();
         int          cnt      = 0;
@@ -619,6 +625,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
 
+	System.err.println("doLs: marker="+Utils.X(request.getString(ARG_MARKER, null)));
         return newFile.doList(false, max, percent, maxSize,
                               request.getString(ARG_MARKER, null));
     }
