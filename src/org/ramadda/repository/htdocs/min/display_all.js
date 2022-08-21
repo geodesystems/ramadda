@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug 21 12:35:03 MDT 2022";
+var build_date="RAMADDA build date: Sun Aug 21 12:56:57 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -13402,7 +13402,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.getField().isFieldMultiEnumeration();
 	},
 	getFieldType: function() {
-	    return this.getField().getType();
+	    return this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
 	},
 	getFilterId: function(id) {
 	    return  this.display.getDomId("filterby_" + (id||this.getId()));
@@ -35242,11 +35242,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
 	    this.vectorMapApplied  = false;
-	    console.log("Filter changed");
 	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: (records)=>{
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
-		    console.log("centering");
 		    if (this.vectorLayer && this.showVectorLayer) {
 			if(this.getShowPoints()) {
 			    if(records && records.length)
