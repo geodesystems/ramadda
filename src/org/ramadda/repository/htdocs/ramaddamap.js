@@ -372,7 +372,7 @@ function RepositoryMap(mapId, params) {
     this.params = params;
     this.mapId = mapId || "map";
     if(params.mapCenter) {
-	[lat,lon] =  params.mapCenter.split(",");
+	[lat,lon] =  	params.mapCenter.replace("%2C",",").split(",")
 	params.initialLocation = {lon:lon,lat:lat};
     }
 
@@ -515,7 +515,6 @@ function RepositoryMap(mapId, params) {
 	fillColor:this.params.highlightFillColor,
 	fillOpacity:this.params.highlightFillOpacity
     }
-
 
     if (Utils.isDefined(params.onSelect)) {
         this.onSelect = params.onSelect;
@@ -1290,21 +1289,25 @@ RepositoryMap.prototype = {
 
         var _this = this;
         if (!feature.isSelected) {
+	    let fs = feature.style;
             feature.originalStyle = feature.style;
             feature.style = null;
-	    //"temporary"
-	    let highlightStyle = this.getLayerHighlightStyle(layer);
-	    if(highlightStyle.fillColor!="transparent" && feature.originalStyle) {
-		highlightStyle.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlightStyle.fillColor,0.4);
+	    let highlight = this.getLayerHighlightStyle(layer);
+	    if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
+		highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4);
 	    }
-	    if(!highlightStyle.fillColor) {
-		highlightStyle.fillColor = "blue";
+	    if(!Utils.isDefined(highlight.fillOpacity)) {
+		highlight.fillOpacity = 0.3;
 	    }
-	    if(!Utils.isDefined(highlightStyle.fillOpacity)) {
-		highlightStyle.fillOpacity = 0.3;
-	    }
-	    //	    console.log(feature.geometry.CLASS_NAME +" draw:" + JSON.stringify(highlightStyle));
-            layer.drawFeature(feature, highlightStyle);
+	    fs = fs ??{};
+	    //Check for 'match'
+	    ['fillColor','fillOpacity','strokeColor','strokeOpacity','strokeWidth'].forEach(a=>{
+		if(highlight[a]=="match") {
+		    highlight[a] = fs[a];
+		}
+
+	    });
+            layer.drawFeature(feature, highlight);
             if (this.params.displayDiv) {
                 this.displayedFeature = feature;
                 var callback = function() {
