@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug 21 08:27:54 MDT 2022";
+var build_date="RAMADDA build date: Sun Aug 21 12:35:03 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -33137,7 +33137,19 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'highlightStrokeWidth',ex:'2',
 	 tt:'Use "match" to match the features opacity'},			 
 	{p:"highlightStrokeColor",
+	 tt:'Use "match" to match the features opacity'},
+
+	{p:'selectFillColor',ex:'#ccc',
+	 tt:'Use "match" to match the features opacity'},		
+	{p:'selectFillOpacity',ex:'0.5',
+	 tt:'Use "match" to match the features opacity'},		
+	{p:'selectStrokeWidth',ex:'2',
 	 tt:'Use "match" to match the features opacity'},			 
+	{p:"selectStrokeColor",
+	 tt:'Use "match" to match the features opacity'},
+	{p:"selectStrokeOpacity",
+	 tt:'Use "match" to match the features opacity'},			 		
+	
         {p:"vectorLayerStrokeColor"},
 	{p:"vectorLayerFillColor"},
 	{p:"vectorLayerFillOpacity",ex:0.25},
@@ -33286,6 +33298,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		highlightFillColor: this.getHighlightFillColor("match"),
 		highlightFillOpacity: this.getHighlightFillOpacity(),				
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
+
+		selectFillColor: this.getSelectFillColor("match"),
+		selectFillOpacity: this.getSelectFillOpacity(),				
+		selectStrokeWidth: this.getSelectStrokeWidth(),
+		selectStrokeColor: this.getSelectStrokeColor(),		
+		selectStrokeOpacity: this.getSelectStrokeOpacity(),				
+
 		showLatLonLines:this.getProperty("showLatLonLines"),
 		popupWidth: this.getProperty("popupWidth",400),
 		popupHeight: this.getProperty("popupHeight",200),		
@@ -34044,11 +34063,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(idField) {
 			ramaddaDisplaySetSelectedEntry(record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays());
 		    }
-		    didSomething= true;
+		    if(debugPopup) console.log("\tdisplaymap: share selected");
+//		    didSomething= true;
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return !didSomething;
+		return false;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
@@ -34431,10 +34451,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.removeFeature(this.highlightMarker);
 	},
 	highlightPoint: function(lat,lon,highlight,andCenter) {
-	    if(!this.map) return;
+	    if(!this.getMap()) return;
 	    this.removeHighlight();
 	    if(!this.getShowRecordHighlight()) return;
-	    console.trace("HP");
 	    if(highlight) {
 		var point = MapUtils.createLonLat(lon,lat);
                 var attrs = {
@@ -34447,19 +34466,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    var size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
-		    this.highlightMarker = this.map.createMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
+		    this.highlightMarker = this.getMap().createMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
                     points.push(MapUtils.createPoint(lon,0));
 		    points.push(MapUtils.createPoint(lon,80));
-                    this.highlightMarker = this.map.createPolygon(id, "highlight", points, attrs, null);
+                    this.highlightMarker = this.getMap().createPolygon(id, "highlight", points, attrs, null);
 		} else {
 		    attrs.graphicName = this.getProperty("recordHighlightShape");
-		    this.highlightMarker =  this.map.createPoint("highlight", point, attrs);
+		    this.highlightMarker =  this.getMap().createPoint("highlight", point, attrs);
 		}
 		if(this.highlightMarker) this.addFeatures([this.highlightMarker]);
 		if(andCenter && this.getProperty("centerOnHighlight",false)) {
-		    this.map.setCenter(point);
+		    this.getMap().setCenter(point);
 		}
 	    }
 	},
