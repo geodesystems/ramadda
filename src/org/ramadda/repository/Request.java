@@ -894,9 +894,10 @@ public class Request implements Constants, Cloneable {
         if (port == 80) {
             return protocol + "://" + getServerName() + url;
         } else {
-	    if(protocol.equals("https") && port==443) {
-		return protocol + "://" + getServerName() + url;
-	    }
+            if (protocol.equals("https") && (port == 443)) {
+                return protocol + "://" + getServerName() + url;
+            }
+
             return protocol + "://" + getServerName() + ":" + port + url;
         }
     }
@@ -1053,6 +1054,60 @@ public class Request implements Constants, Cloneable {
         String s = sb.toString();
 
         return HtmlUtils.sanitizeString(s);
+    }
+
+
+
+    /**
+     *
+     * @param sb _more_
+     * @param exceptArgs _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addFormHiddenArguments(Appendable sb,
+                                       HashSet<String> exceptArgs)
+            throws Exception {
+        //Just in case, never want to let slip the passwords
+        exceptArgs.add(ARG_USER_PASSWORD);
+        exceptArgs.add(ARG_USER_PASSWORD1);
+        exceptArgs.add(ARG_USER_PASSWORD2);
+        int          cnt     = 0;
+        List<String> theKeys = new ArrayList<String>();
+        for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+            theKeys.add((String) keys.nextElement());
+        }
+        Collections.sort(theKeys);
+
+        for (String arg : theKeys) {
+            if ((exceptArgs != null) && (exceptArgs.contains(arg))) {
+                continue;
+            }
+
+            Object value = parameters.get(arg);
+            if (value instanceof List) {
+                List l = (List) value;
+                if (l.size() == 0) {
+                    continue;
+                }
+                for (int i = 0; i < l.size(); i++) {
+                    String svalue = (String) l.get(i);
+                    if ((svalue.length() == 0)
+                            || svalue.equals(TypeHandler.ALL)) {
+                        continue;
+                    }
+                    sb.append(HtmlUtils.hidden(arg, svalue));
+                    sb.append("\n");
+                }
+                continue;
+            }
+            String svalue = value.toString();
+            if ((svalue.length() == 0) || svalue.equals(TypeHandler.ALL)) {
+                continue;
+            }
+            sb.append(HtmlUtils.hidden(arg, svalue));
+            sb.append("\n");
+        }
     }
 
 
@@ -1846,13 +1901,20 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
-    
+
+    /**
+     *
+     * @param s _more_
+      * @return _more_
+     */
     public static String cleanXSS(String s) {
-	String onPattern = "(?i)[\\s\\|\"'/]+(onactivate|onafterprint|onanimationcancel|onanimationend|onanimationiteration|onanimationstart|onauxclick|onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforepaste|onbeforeprint|onbeforeunload|onbegin|onblur|onbounce|oncanplay|oncanplaythrough|onchange|onclick|oncontextmenu|oncopy|oncut|ondblclick|ondeactivate|ondrag|ondragend|ondragenter|ondragleave|ondragover|ondragstart|ondrop|onend|onended|onerror|onfilterchange|onfinish|onfocus|onfocusin|onfocusout|onhashchange|onhelp|oninput|oninvalid|onkeydown|onkeypress|onkeyup|onload|onloadeddata|onloadedmetadata|onloadend|onloadstart|onlypossibleinopera|onmessage|onmousedown|onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onorientationchange|onpageshow|onpaste|onpause|onplay|onplaying|onpopstate|onreadystatechange|onrepeat|onreset|onresize|onscroll|onsearch|onseeked|onseeking|onselect|onshow|onstart|onsubmit|ontimeupdate|ontoggle|ontouchcancel|ontouchend|ontouchmove|ontouchstart|ontransitioncancel|ontransitionend|ontransitionrun|onunhandledrejection|onunload|onvolumechange|onwaiting|onwheel)";
-	s = s.replaceAll(onPattern,"_NA_");
-	String scriptPattern = "(?i)script";
-	s = s.replaceAll(scriptPattern,"_NA_");
-	return s;
+        String onPattern =
+            "(?i)[\\s\\|\"'/]+(onactivate|onafterprint|onanimationcancel|onanimationend|onanimationiteration|onanimationstart|onauxclick|onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforepaste|onbeforeprint|onbeforeunload|onbegin|onblur|onbounce|oncanplay|oncanplaythrough|onchange|onclick|oncontextmenu|oncopy|oncut|ondblclick|ondeactivate|ondrag|ondragend|ondragenter|ondragleave|ondragover|ondragstart|ondrop|onend|onended|onerror|onfilterchange|onfinish|onfocus|onfocusin|onfocusout|onhashchange|onhelp|oninput|oninvalid|onkeydown|onkeypress|onkeyup|onload|onloadeddata|onloadedmetadata|onloadend|onloadstart|onlypossibleinopera|onmessage|onmousedown|onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onorientationchange|onpageshow|onpaste|onpause|onplay|onplaying|onpopstate|onreadystatechange|onrepeat|onreset|onresize|onscroll|onsearch|onseeked|onseeking|onselect|onshow|onstart|onsubmit|ontimeupdate|ontoggle|ontouchcancel|ontouchend|ontouchmove|ontouchstart|ontransitioncancel|ontransitionend|ontransitionrun|onunhandledrejection|onunload|onvolumechange|onwaiting|onwheel)";
+        s = s.replaceAll(onPattern, "_NA_");
+        String scriptPattern = "(?i)script";
+        s = s.replaceAll(scriptPattern, "_NA_");
+
+        return s;
     }
 
 
@@ -3003,10 +3065,18 @@ public class Request implements Constants, Cloneable {
         return extraProperties.get(key);
     }
 
+    /**
+     *
+     * @param key _more_
+      * @return _more_
+     */
     public String getPropertyOrArg(String key) {
-	String s = (String) getExtraProperty(key);
-	if(!Utils.stringDefined(s)) s = getString(key,null);
-	return s;
+        String s = (String) getExtraProperty(key);
+        if (s == null) {
+            s = getString(key, null);
+        }
+
+        return s;
     }
 
 
@@ -3199,7 +3269,7 @@ public class Request implements Constants, Cloneable {
      * @param filename _more_
      * @param mimeType _more_
      * @param is _more_
-      * @return _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
