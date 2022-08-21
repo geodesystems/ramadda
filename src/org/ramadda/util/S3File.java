@@ -320,7 +320,7 @@ public class S3File extends FileWrapper {
         ListObjectsV2Request request =
             new ListObjectsV2Request().withBucketName(pair[0]).withDelimiter(
                 "/");
-        if (marker != null) {
+        if (Utils.stringDefined(marker)) {
             request.setContinuationToken(marker);
         }
         if (pair[1] != null) {
@@ -329,7 +329,14 @@ public class S3File extends FileWrapper {
         String              key            = (pair[1] != null)
                                              ? pair[1]
                                              : "";
-        ListObjectsV2Result listing        = getS3().listObjectsV2(request);
+
+        ListObjectsV2Result listing;
+	try {
+	    listing        = getS3().listObjectsV2(request);
+	} catch(Exception exc) {
+	    System.err.println("error:"+ exc);
+	    return new S3ListResults(null, files);	  
+	}
         List<String>        commonPrefixes = listing.getCommonPrefixes();
 
 
@@ -377,7 +384,8 @@ public class S3File extends FileWrapper {
 	if(debug)
 	    System.err.println("FILES:" + files);
 
-        return new S3ListResults(listing.getNextContinuationToken(), files);
+	String token = listing.getNextContinuationToken();
+        return new S3ListResults(token, files);
     }
 
 
@@ -547,7 +555,7 @@ public class S3File extends FileWrapper {
 	int numCalls = 0;
         String marker = null;
         while (true) {
-            if (marker != null) {
+            if (Utils.stringDefined(marker)) {
                 request.setContinuationToken(marker);
             }
             ListObjectsV2Result listing = getS3().listObjectsV2(request);
@@ -589,8 +597,6 @@ public class S3File extends FileWrapper {
 
             marker = listing.getNextContinuationToken();
             if (marker == null) {
-                System.err.println("no marker");
-
                 break;
             }
         }
