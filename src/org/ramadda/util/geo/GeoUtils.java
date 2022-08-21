@@ -56,6 +56,7 @@ public class GeoUtils {
     public static final String PREFIX_ZIP = "zip:";
     public static final String PREFIX_ZCTA="zcta:";
     public static final String PREFIX_CONGRESS = "congress:";
+    public static final String PREFIX_TRACT = "tract:";
 
     /**
      *  semimajor axis of Earth WGS 84 (m)
@@ -755,6 +756,7 @@ public class GeoUtils {
         boolean doCountry = false;
         boolean doState = false;
         boolean doCounty = false;
+        boolean doTract = false;	
         boolean doCity = false;
 	boolean doAny  = false;
 	GeoResource resource;
@@ -809,6 +811,12 @@ public class GeoUtils {
 		resource = GeoResource.RESOURCE_CONGRESS;
 	    }
 
+	    if (address.startsWith(PREFIX_TRACT)) {
+		doTract = true;
+		address  = address.substring(PREFIX_TRACT.length()).trim();
+		resource = GeoResource.RESOURCE_TRACTS;
+	    }	    
+
 	    if (address.startsWith(PREFIX_COUNTY)) {
 		address  = address.substring(PREFIX_COUNTY.length()).trim();
 		doCounty = true;
@@ -830,6 +838,15 @@ public class GeoUtils {
 
 	public Place match() {
 	    Place place = null;
+
+	    if(doTract) {
+		doAny = true;
+		place = resource.getPlace(address);
+		return place;
+	    }
+
+
+
 	    if(resource!=null)
 		place=match(resource);
 	    if(place==null && resource2!=null)
