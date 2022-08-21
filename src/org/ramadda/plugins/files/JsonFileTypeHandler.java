@@ -140,7 +140,7 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
             return "No Json file available";
         }
 	//Limit the size
-	if(entry.getResource().getSize()>1000*1000*5) {
+	if(entry.getResource().getFileSize()>1000*1000*5) {
 	    return "";
 	}
         StringBuilder sb = new StringBuilder();
