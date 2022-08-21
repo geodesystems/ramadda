@@ -398,6 +398,7 @@ function RepositoryMap(mapId, params) {
 	highlightFillOpacity:0.1,
 
 	selectStrokeColor:null,
+	selectStrokeOpacity:null,
 	selectFillColor:null,
 	selectStrokeWidth:null,
 	selectFillOpacity:0.4,	
@@ -1251,6 +1252,13 @@ RepositoryMap.prototype = {
 	return highlightStyle;
     },
 
+    checkMatchStyle(fs,highlight) {
+	['fillColor','fillOpacity','strokeColor','strokeOpacity','strokeWidth'].forEach(a=>{
+	    if(highlight[a]=="match") {
+		highlight[a] = fs[a];
+	    }
+	});
+    },
     handleFeatureover: function(feature, skipText) {
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    var location = feature.location;
@@ -1300,13 +1308,7 @@ RepositoryMap.prototype = {
 		highlight.fillOpacity = 0.3;
 	    }
 	    fs = fs ??{};
-	    //Check for 'match'
-	    ['fillColor','fillOpacity','strokeColor','strokeOpacity','strokeWidth'].forEach(a=>{
-		if(highlight[a]=="match") {
-		    highlight[a] = fs[a];
-		}
-
-	    });
+	    this.checkMatchStyle(fs,highlight);
             layer.drawFeature(feature, highlight);
             if (this.params.displayDiv) {
                 this.displayedFeature = feature;
@@ -1402,6 +1404,7 @@ RepositoryMap.prototype = {
         this.selectedFeature = feature;
         layer.selectedFeature = feature;
         layer.selectedFeature.isSelected = true;
+	let fs = feature.style??{};
 	let style = $.extend({},feature.style);
 	let highlightStyle = this.getLayerHighlightStyle(layer);
 	$.extend(style, {
@@ -1419,6 +1422,8 @@ RepositoryMap.prototype = {
 	if(Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
 	}
+
+	this.checkMatchStyle(fs,style);
 
 	if(feature.style) {
 	    if(feature.style.externalGraphic) {
@@ -4790,7 +4795,7 @@ RepositoryMap.prototype = {
 		    this.doingPopup = false;
 		},10);
 
-	    },1000);
+	    },500);
 	    return true;
 	}
 	return false;
@@ -4952,10 +4957,8 @@ RepositoryMap.prototype = {
 	if(this.popupHandler) {
 	    this.popupHandler(marker,popup);
 	}
-	
-
-
     },
+
 
     popupChart:  function(props) {
         let displayManager = getOrCreateDisplayManager(props.divId, {}, true);
