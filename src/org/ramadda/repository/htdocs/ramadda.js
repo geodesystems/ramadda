@@ -120,7 +120,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let classPrefix  = simple?'entry-list-simple':'entry-list';
 
 	let attrs = ['id',innerId,'class',classPrefix];
-	if(props.maxHeight) attrs.push('style',HU.css('max-height',props.maxHeight,'overflow-y','auto'));
 	html+=HU.open("div",attrs);
 	if(props.showForm) {
 	    html+=HU.open('form',['method','post','action',ramaddaBaseUrl+'/entry/getentries']);
@@ -141,7 +140,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		form+=SPACE1+HU.span(['target-type','zip.export','title','Shift-drag-and-drop entries to export','class','ramadda-entry-target ramadda-clickable ramadda-hoverable',], HU.getIconImage('fas fa-file-export'));	    
 	    html+=HU.div(['class',classPrefix +'-row','id',id+'_form','style','display:none;width:100%'],form);
 	}
-	html+=HU.open('div',['id',tableId]);	
+
+	let tableAttrs=['id',tableId];
+	if(props.maxHeight) tableAttrs.push('style',HU.css('max-height',props.maxHeight,'overflow-y','auto'));
+	html+=HU.open('div',tableAttrs);
 	html+='</div>';
 	html+='</form>';
 	html+='</div>';
@@ -173,12 +175,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             window.location = url;
 	});
 
-
 	//Don't do this as it screws up the width of the menu sometimes
 	//	    HU.initSelect($("#"+id+"_form_action"));
-
-
-	Ramadda.initDragAndDropEntries(main.find('.ramadda-entry-target'),entryMap);
 
 	let formOpen = false;
 	$('#'+ id+'_form_cbx').click(function() {
@@ -384,7 +382,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    HU.makeDialog({content:HU.image(src),my:'left top',at:'left bottom',anchor:this,header:true,draggable:true});
 	});
 
-	let rows = $('#'+id).find('.'+ rowClass);
+	let rows = $('#'+id).find('.entry-list-row');
 	rows.bind ('contextmenu', function(event) {
 	    let entryRow = $(this);
 	    let entry = entryMap[$(this).attr('entryid')];
@@ -405,7 +403,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
 
-
 	Ramadda.initDragAndDropEntries(rows,entryMap,mainId);
 	initFunc(id);
 
@@ -415,6 +412,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     initDragAndDropEntries:function(rows, entryMap,mainId) {
 	rows.mousedown(function(event) {
+	    console.log("MD");
             if (!event.shiftKey || !entryMap) return;
 	    let entry = entryMap[$(this).attr('entryid')];
 	    if(!entry) return;
