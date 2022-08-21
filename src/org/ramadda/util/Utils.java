@@ -4195,6 +4195,18 @@ public class Utils extends IO {
     /** default decimal formatter */
     private static DecimalFormat formatter = new DecimalFormat();
 
+    
+    public static boolean isStandardMissingValue(String s) {
+        //I really shouldn't be doing this here
+	s  =s.toLowerCase();
+        return (s.length() == 0) || s.equals("---") || s.equals("n.v.")
+               || s.equals("null") || s.equals("nan")
+               || s.equals("na") || s.equals("n/a") 
+               || s.equals("ukn") || s.equals("e");
+    }
+
+
+
     /**
      *  copy and paste from the IDV Misc.java to have the formatter by synchronized
      *
@@ -5058,6 +5070,18 @@ public class Utils extends IO {
 	return s;
     }
 
+
+    public static String X(String c) {
+	if(c==null) return c;
+	if(c.length()>4) c = c.substring(0,3);
+	return c;
+    }
+
+    public static List<String> Y(List l) {
+	List<String> tmp = new ArrayList<String>();
+	for(Object o: l) tmp.add(X(o.toString()));
+	return tmp;
+    }
 
     /**
      * _more_
