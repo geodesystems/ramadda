@@ -1406,7 +1406,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.getField().isFieldMultiEnumeration();
 	},
 	getFieldType: function() {
-	    return this.getField().getType();
+	    return this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
 	},
 	getFilterId: function(id) {
 	    return  this.display.getDomId("filterby_" + (id||this.getId()));

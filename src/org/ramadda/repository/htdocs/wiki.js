@@ -776,14 +776,12 @@ class  WikiEditor {
 	    return;
 	}
 
-
-
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
 
 	if(blocks.length==0) return;
-	let menu =  HU.open('div',[CLASS,'wiki-editor-popup']);
+	let menu =  HU.open('div',[CLASS,'wiki-editor-popup','style','min-width:400px;']);
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
 	}
@@ -814,7 +812,13 @@ class  WikiEditor {
 	});
 	menu += "</div>";
 
-	//	HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:true});
+
+//	let dialog = HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:false});
+	let dialog = HU.makeDialog({content:menu,anchor:$(window),
+				    my: "left top",     at: "left+" +event.x +" top+" + (event.y),
+				    title:title,header:true,sticky:true,draggable:true,modal:false});	
+	HtmlUtils.setPopupObject(dialog);
+/*
 	let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	popup.html(menu);
 	popup.show();
@@ -824,6 +828,7 @@ class  WikiEditor {
             at: "left+" +event.x +" top+" + (event.y),
             collision: "fit fit"
 	});
+*/
     }
 
 

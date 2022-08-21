@@ -2231,11 +2231,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
 	    this.vectorMapApplied  = false;
-	    console.log("Filter changed");
 	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: (records)=>{
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
-		    console.log("centering");
 		    if (this.vectorLayer && this.showVectorLayer) {
 			if(this.getShowPoints()) {
 			    if(records && records.length)
