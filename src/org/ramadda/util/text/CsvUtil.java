@@ -2335,7 +2335,6 @@ public class CsvUtil {
 		new Arg("column columns", "The columns the values of which are used to make the new columns in the result","type","columns"),
 		new Arg("value column","The value column","type","column"),
 		new Arg("operator","The operator to apply -  count,sum,average,min,max")),
-
         new Cmd(
 		"-summary",
 		"count/sum/average/min/max values keying on key column value. If no value columns specified then do a count",
@@ -2366,8 +2365,9 @@ public class CsvUtil {
         new Cmd("-colum_nor", "Or values", new Arg("name","New column name"), new Arg("columns", "", "type", "columns")),
         new Cmd("-column_not", "Not value", new Arg("name","New column name"), new Arg("column", "", "type", "column")),		
 
-
-
+	new Cmd("-check", "Check that the values are numbers",
+		new Arg("columns", "", "type", "columns"),
+                new Arg("what", "How strict", "type", "enumeration","values","strict,ramadda")),
 
         /** * Geocode  * */
         new Cmd(true, "Geospatial"),
@@ -3488,8 +3488,11 @@ public class CsvUtil {
 	defineFunction("-column_not",2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Not(args.get(++i), args.get(++i)));
 		return i;
-	    });			
-
+	    });
+	defineFunction("-check",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Checker(getCols(args.get(++i)),args.get(++i)));
+		return i;
+	    });				
 
 
 	defineFunction("-sumrow",0,(ctx,args,i) -> {

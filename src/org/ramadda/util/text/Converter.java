@@ -2287,7 +2287,7 @@ public abstract class Converter extends Processor {
 
     }
 
-
+    
 
     /**
      * Class description
@@ -2384,7 +2384,62 @@ public abstract class Converter extends Processor {
 
 
 
+    
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class Checker extends Converter {
+
+	String strict;
+
+        /**
+         * @param what _more_
+         * @param cols _more_
+         * @param period _more_
+         * @param label _more_
+         */
+        public Checker(List<String> cols, String strict) {
+            super(cols);
+	    this.strict =strict;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+            if (rowCnt++ == 0) {
+		return row;
+            }
+	    boolean anyBad = false;
+            for (int i:indices) {
+		if(i<0 || i>= row.size()) continue;
+		String v = row.getString(i);
+		try {
+		    if(strict.equals("ramadda")) {
+			if(Utils.isStandardMissingValue(v)) {
+			    anyBad =true;
+			}
+			continue;
+		    }
+		    double d = Double.parseDouble(v);
+		} catch(Exception exc) {
+		    anyBad = true;
+		    row.set(i,"bad:" +v);
+		}
+	    }
+	    if(!anyBad) return null;
+	    return row;
+	}
+    }
 
 
 
