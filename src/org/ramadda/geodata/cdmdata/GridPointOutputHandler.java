@@ -804,8 +804,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the results to"));
         sb.append(HtmlUtils.formTableClose());
-        sb.append("<hr>");
-        sb.append(msgLabel("Select Variables"));
+        sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
         sb.append(HtmlUtils.insetDiv(HtmlUtils.table(varSB.toString(),
                 HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING, "5",
                                 HtmlUtils.ATTR_CELLSPACING, "0")), 0, 30, 0,
@@ -921,19 +920,18 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                 }
             }
 
-            sbToUse.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.checkbox(
-            //                            ARG_VARIABLE + "." + var.getShortName(),
-            ARG_VARIABLE,
-            /*HtmlUtils.VALUE_TRUE,*/
-            var.getShortName(), (grids.size() == 1),
-                                HtmlUtils.id(cbxId)
-                                + call) + HtmlUtils.space(1)
-                                        + var.getShortName()
-                                        + HtmlUtils.space(1)
-                                        + ((var.getUnitsString() != null)
-                                           ? "(" + var.getUnitsString() + ")"
-                                           : ""), "<i>"
-                                           + var.getDescription() + "</i>")));
+	    String label = var.getShortName()   + HU.SPACE
+		+ ((var.getUnitsString() != null)
+		   ? "(" + var.getUnitsString() + ")"
+		   : "");
+
+            sbToUse.append(HtmlUtils.row(HtmlUtils.cols(
+							HtmlUtils.labeledCheckbox(
+										  ARG_VARIABLE,
+										  var.getShortName(),
+										  (grids.size() == 1),
+										  HtmlUtils.id(cbxId)+ call,label),
+							"<i>"+ var.getDescription() + "</i>")));
 
         }
         if (varSB2D.length() > 0) {
@@ -1217,7 +1215,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         request.setCORSHeaderOnResponse();
         request.put(CdmConstants.ARG_FORMAT, FORMAT_JSON);
         request.put(ARG_OUTPUT, OUTPUT_GRIDASPOINT.getId());
-
         return outputGridAsPoint(request, entry);
     }
 

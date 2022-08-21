@@ -482,7 +482,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (request.get(ARG_METADATA_ADD, false)) {
             if (getRepository().getAccessManager().canDoEdit(request,
                     entry)) {
-                sb.append(HtmlUtils.p());
+                sb.append(HU.p());
                 List<Entry> entries = (List<Entry>) Misc.newList(entry);
                 getEntryManager().addInitialMetadata(request, entries, false,
                         request.get(ARG_SHORT, false));
@@ -507,29 +507,29 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         getPageHandler().entrySectionOpen(request, entry, sb, "");
         sb.append("<center>");
         if (getRepository().getAccessManager().canDoEdit(request, entry)) {
-            request.put(ARG_METADATA_ADD, HtmlUtils.VALUE_TRUE);
+            request.put(ARG_METADATA_ADD, HU.VALUE_TRUE);
             sb.append(
-                HtmlUtils.href(
+                HU.href(
                     request.getUrl() + "&"
-                    + HtmlUtils.arg(ARG_SHORT, HtmlUtils.VALUE_TRUE), msg(
+                    + HU.arg(ARG_SHORT, HU.VALUE_TRUE), msg(
                         "Add temporal and spatial properties")));
             sb.append(
-                HtmlUtils.span(
+                HU.span(
                     "&nbsp;|&nbsp;",
-                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
+                    HU.cssClass(CSS_CLASS_SEPARATOR)));
 
-            sb.append(HtmlUtils.href(request.getUrl(),
+            sb.append(HU.href(request.getUrl(),
                                      msg("Add full properties")));
             sb.append(
-                HtmlUtils.span(
+                HU.span(
                     "&nbsp;|&nbsp;",
-                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
+                    HU.cssClass(CSS_CLASS_SEPARATOR)));
         }
 
         String tail =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));
 
-        sb.append(HtmlUtils.href(HtmlUtils.url(getRepository().URL_ENTRY_SHOW
+        sb.append(HU.href(HU.url(getRepository().URL_ENTRY_SHOW
                 + "/" + tail + SUFFIX_NCML, new String[] {
             ARG_ENTRYID, entry.getId(), ARG_OUTPUT, OUTPUT_CDL.getId(),
             CdmConstants.ARG_FORMAT, FORMAT_NCML
@@ -549,8 +549,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 Dimension ydim = gdt.getYDimension();
                 Dimension zdim = gdt.getZDimension();
                 sb.append("<tr>");
-                sb.append(HtmlUtils.td(gdt.getShortName()));
-                sb.append(HtmlUtils.td(gdt.getUnitsString()));
+                sb.append(HU.td(gdt.getShortName()));
+                sb.append(HU.td(gdt.getUnitsString()));
                 sb.append("<td>");
                 sb.append(xdim.getLength() + "x" + ydim.getLength()
                           + ((zdim != null)
@@ -558,7 +558,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                              : ""));
                 sb.append("</td>");
 		if(tdim!=null)
-		    sb.append(HtmlUtils.td("" + tdim.getLength()));
+		    sb.append(HU.td("" + tdim.getLength()));
                 sb.append("</tr>");
             }
             sb.append("</tbody></table>");
@@ -818,11 +818,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
             String call =
-                HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                               HtmlUtils.call("HtmlUtils.checkboxClicked",
-                                   HtmlUtils.comma("event",
-                                       HtmlUtils.squote(ARG_VARIABLE),
-                                       HtmlUtils.squote(cbxId))));
+                HU.attr(HU.ATTR_ONCLICK,
+                               HU.call("HU.checkboxClicked",
+                                   HU.comma("event",
+                                       HU.squote(ARG_VARIABLE),
+                                       HU.squote(cbxId))));
             VariableEnhanced var     = grid.getVariable();
             StringBuffer     sbToUse = null;
             if (grid.getZDimension() == null) {
@@ -840,23 +840,22 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 }
             }
 
-            sbToUse.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.checkbox(
-            //ARG_VARIABLE + "." + var.getShortName(),
-            ARG_VARIABLE, var.getShortName() /*HtmlUtils.VALUE_TRUE*/,
-                          (grids.size() == 1),
-                          HtmlUtils.id(cbxId) + call) + HtmlUtils.space(1)
-                              + var.getShortName() + HtmlUtils.space(1)
-                              + ((var.getUnitsString() != null)
-                                 ? "(" + var.getUnitsString() + ")"
-                                 : ""), "<i>" + var.getDescription()
-                                        + "</i>")));
+	    String label = var.getShortName() + HU.SPACE
+		+ ((var.getUnitsString() != null)? 
+		   "(" + var.getUnitsString() + ")"
+		   : "");
+	    String desc = "<i>" + var.getDescription()	+ "</i>"; 
+            sbToUse.append(HU.row(HU.cols(HU.labeledCheckbox(ARG_VARIABLE, var.getShortName(),
+							     (grids.size() == 1),
+							     HU.id(cbxId) + call,label),desc)));
+
 
         }
         if (varSB2D.length() > 0) {
             if (varSB3D.length() > 0) {
                 varSB.append(
-                    HtmlUtils.row(
-                        HtmlUtils.headerCols(new Object[] { "2D Grids" })));
+                    HU.row(
+                        HU.headerCols(new Object[] { "2D Grids" })));
             }
             varSB.append(varSB2D);
         }
@@ -865,12 +864,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 String header = " 3D Grids";
                 if (withLevelSelector) {
                     if ( !haveOneVerticalCS && !onlyIfAllLevelsEqual) {
-                        header += HtmlUtils.space(3) + "Level:"
-                                  + HtmlUtils.space(1)
-                                  + HtmlUtils.input(ARG_LEVEL, "");
+                        header += HU.space(3) + "Level:"
+                                  + HU.space(1)
+                                  + HU.input(ARG_LEVEL, "");
                     } else if (haveOneVerticalCS) {
-                        header += HtmlUtils.space(3) + "Level:"
-                                  + HtmlUtils.space(1);
+                        header += HU.space(3) + "Level:"
+                                  + HU.space(1);
                         double[] zVals = compAxis.getCoordValues();
                         List<TwoFacedObject> selObjs =
                             new ArrayList<TwoFacedObject>(zVals.length);
@@ -886,14 +885,14 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                         String.valueOf(zVals[i]), i));
                             }
                         }
-                        header += HtmlUtils.select(ARG_LEVEL, selObjs)
-                                  + HtmlUtils.space(2) + "("
+                        header += HU.select(ARG_LEVEL, selObjs)
+                                  + HU.space(2) + "("
                                   + compAxis.getUnitsString() + ")";
                     }
                 }
                 varSB.append(
-                    HtmlUtils.row(
-                        HtmlUtils.headerCols(new Object[] { header })));
+                    HU.row(
+                        HU.headerCols(new Object[] { header })));
             }
             varSB.append(varSB3D);
         }
@@ -916,37 +915,46 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridSubsetForm(Request request, Entry entry)
             throws Exception {
 
+        StringBuffer sb      = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb, "Subset Grid");
+	makeGridSubsetForm(request,entry,sb);
+        getPageHandler().entrySectionClose(request, entry, sb);
+        return makeLinksResult(request, msg("Grid Subset"), sb,
+                               new State(entry));
+
+    }
+
+    public void makeGridSubsetForm(Request request, Entry entry,StringBuffer sb)
+	throws Exception {
 
         boolean canAdd = getRepository().getAccessManager().canDoNew(request,
                              entry.getParentEntry());
 
         String       path    = getPath(request, entry);
-        StringBuffer sb      = new StringBuffer();
         String       formUrl =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
                           + "_subset.nc";
 
-        String formId = HtmlUtils.getUniqueId("form_");
-
-        getPageHandler().entrySectionOpen(request, entry, sb, "Subset Grid");
-
-        sb.append(HtmlUtils.formPost(formUrl + "/" + fileName,
-                                     HtmlUtils.id(formId)));
-        sb.append(HtmlUtils.br());
-
-        sb.append(HtmlUtils.submit("Subset", ARG_SUBMIT));
-        sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GRIDSUBSET));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.formTable());
+        String formId = HU.getUniqueId("form_");
 
 
+        sb.append(HU.formPost(formUrl + "/" + fileName,
+                                     HU.id(formId)));
+        sb.append(HU.br());
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Horizontal Stride"),
-                                      HtmlUtils.input(ARG_HSTRIDE,
-                                          request.getString(ARG_HSTRIDE,
-                                              "1"), HtmlUtils.SIZE_3)));
+        sb.append(HU.submit("Subset Grid", ARG_SUBMIT));
+        sb.append(HU.br());
+        sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GRIDSUBSET));
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.div("Select Subset Parameters",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
+        sb.append(HU.formTable());
+	List<String> strides = new ArrayList<String>();
+ 	for(int i=1;i<=100;i++) strides.add(""+i);
+        sb.append(HU.formEntry(msgLabel("Horizontal Stride"),
+                                      HU.select(ARG_HSTRIDE,strides,
+						       request.getString(ARG_HSTRIDE,
+									 "1"))));
 
         GridDataset dataset      = getCdmManager().getGridDataset(entry,
                                        path);
@@ -965,23 +973,19 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                              "" + llr.getLonMax(), };
 
             for (int i = 0; i < points.length; i++) {
-                sb.append(HtmlUtils.hidden(SPATIALARGS[i] + ".original",
+                sb.append(HU.hidden(SPATIALARGS[i] + ".original",
                                            points[i]));
             }
             String llb = map.makeSelector(ARG_AREA, true, points);
-            sb.append(HtmlUtils.formEntryTop(msgLabel("Subset Spatially"),
+            sb.append(HU.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
         }
         addTimeWidget(request, dates, sb);
 
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Add Lat/Lon Variables"),
-                HtmlUtils.checkbox(
-                    ARG_ADDLATLON, HtmlUtils.VALUE_TRUE,
-                    request.get(
-                        ARG_ADDLATLON,
-                        true)) + " (if needed for CF compliance)"));
+	HU.formEntry(sb,"", HU.labeledCheckbox(ARG_ADDLATLON, HU.VALUE_TRUE,
+					    request.get(ARG_ADDLATLON, true),
+					    "Add Lat/Lon Variables")+HU.SPACE+
+		     "(if needed for CF compliance)");
 
         /*
         // TODO: check if we can use this.
@@ -993,34 +997,31 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         String format = request.getString(CdmConstants.ARG_FORMAT, SupportedFormat.NETCDF3.getFormatName());
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Format"),
-                                      HtmlUtils.select(CdmConstants.ARG_FORMAT, formats,
+        sb.append(HU.formEntry(msgLabel("Format"),
+                                      HU.select(CdmConstants.ARG_FORMAT, formats,
                                           format)));
         */
 
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the results to"));
-        sb.append(HtmlUtils.formTableClose());
-        sb.append("<hr>");
-        sb.append(msgLabel("Select Variables"));
+        sb.append(HU.formTableClose());
+        sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
         sb.append("<ul>");
         sb.append("<table>");
         sb.append(varSB);
         sb.append("</table>");
         sb.append("</ul>");
-        sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.submit(msg("Subset")));
+        sb.append(HU.br());
+        sb.append(HU.submit(msg("Subset Grid")));
         addUrlShowingForm(sb, null, formId,
                           "[\".*OpenLayers_Control.*\",\".*original.*\"]",
                           null, true);
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
 
-        getPageHandler().entrySectionClose(request, entry, sb);
+
 
         getCdmManager().returnGridDataset(path, dataset);
 
-        return makeLinksResult(request, msg("Grid Subset"), sb,
-                               new State(entry));
     }
 
 
@@ -1186,8 +1187,13 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 getPageHandler().showDialogWarning(
                     "From date is after to date"));
         } else if (varNames.size() == 0) {
+	    getPageHandler().entrySectionOpen(request, entry, sb, "Subset Grid");
             sb.append(
                 getPageHandler().showDialogWarning("No variables selected"));
+	    makeGridSubsetForm(request,entry,sb);
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return makeLinksResult(request, msg("Grid Subset"), sb,
+				   new State(entry));	    
         } else {
             boolean doingLocal = false;
             File    f          =
@@ -1349,6 +1355,291 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      *
      * @throws Exception _more_
      */
+    public Result outputGridCsv(final Request request, final Entry entry)
+            throws Exception {
+
+        final boolean debug = true;
+        String        path  = getPath(request, entry);
+        String gridField = request.getString("gridField", (String) null);
+        final GridDataset  gds   = getCdmManager().getGridDataset(entry,
+                                       path);
+        List<CalendarDate> dates = getGridDates(gds);
+        if ((gridField == null) || (gridField.length() == 0)) {
+            gridField = gds.getDataVariables().get(0).getShortName();
+        }
+        final String field = gridField;
+        GeoGrid      grid  = (GeoGrid) gds.findGridByName(field);
+        if (grid == null) {
+            throw new RuntimeException("Could not find grid field:" + field);
+        }
+        final String fieldLabel = grid.getDescription();
+        int          timeIndex  = -1;
+        Range        tRange     = null;
+        if (request.defined("gridTime")) {
+            timeIndex = request.get("gridTime", -1);
+            if (timeIndex >= 0) {
+                tRange = new Range(timeIndex, timeIndex);
+                CalendarDate date = dates.get(timeIndex);
+                dates = new ArrayList<CalendarDate>();
+                dates.add(date);
+            }
+        }
+
+
+
+        CoordinateAxis1D zAxis = grid.getCoordinateSystem().getVerticalAxis();
+        double[]         zVals = null;
+        if (zAxis != null) {
+            zVals = zAxis.getCoordValues();
+            if (debug && (zVals != null)) {
+                System.err.println("# Z levels:" + zVals.length + " v:"
+                                   + java.util.Arrays.toString(zVals));
+            }
+        }
+        Range zRange = null;
+        if (request.defined("gridLevel")) {
+            String gridLevel = request.getString("gridLevel", (String) null);
+            if (gridLevel != null) {
+                if (gridLevel.equals("last")) {
+                    if (zVals != null) {
+                        zRange = new Range(zVals.length - 1,
+                                           zVals.length - 1);
+                    }
+                } else if (gridLevel.equals("all") && (zVals != null)) {
+                    zRange = new Range(0, zVals.length - 1);
+                } else {
+                    int index = Integer.parseInt(gridLevel);
+                    if (index >= 0) {
+                        zRange = new Range(index, index);
+                    }
+                }
+            }
+        }
+
+
+        if (zRange == null) {
+            zRange = new Range(1, 1);
+        }
+
+        final int  max        = request.get("max", 200000);
+        final int  timeStride = request.get("timeStride", 1);
+        int        gridStride = request.get("gridStride", -1);
+
+        LatLonRect bounds     = null;
+        String     gridBounds = request.getString("gridBounds", null);
+        if (gridBounds != null) {
+            List<String> toks = StringUtil.split(gridBounds, ",");
+            if (toks.size() == 4) {
+                bounds = new LatLonRect(
+                    new LatLonPointImpl(
+                        Double.parseDouble(toks.get(0)), Double.parseDouble(
+                            toks.get(1))), new LatLonPointImpl(
+                                Double.parseDouble(
+                                    toks.get(2)), Double.parseDouble(
+                                    toks.get(3))));
+            }
+        }
+
+
+        Dimension timeDimension = grid.getTimeDimension();
+        int       numTimes      = timeDimension.getLength();
+        String    unit          = grid.getUnitsString();
+        if (debug) {
+            System.err.println("field:" + field + " unit:" + unit
+                               + " timeStride:" + timeStride + " gridStride:"
+                               + gridStride + " max:" + max + " bounds:"
+                               + bounds + " numTimes:" + numTimes
+                               + " zRange:" + zRange + " tRange:" + tRange);
+        }
+
+        //If a stride was not specified then keep subsetting until we're under the max # points
+        if (gridStride > 0) {
+            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,
+                               gridStride);
+            Dimension xDimension = grid.getXDimension();
+            Dimension yDimension = grid.getYDimension();
+            int numPoints = xDimension.getLength() * yDimension.getLength()
+                            * numTimes / timeStride;
+            if (debug) {
+                System.err.println(
+                    "\tnum points:" + numPoints + " per layer:"
+                    + (xDimension.getLength() * yDimension.getLength())
+                    + " grid stride:" + gridStride);
+            }
+        } else {
+            grid       = grid.subset(tRange, zRange, bounds, 1, 1, 1);
+            gridStride = 1;
+            int     gridStrideX = 1;
+            int     gridStrideY = 1;
+            boolean doX         = true;
+            while (true) {
+                Dimension xDimension = grid.getXDimension();
+                Dimension yDimension = grid.getYDimension();
+                int numPoints = xDimension.getLength()
+                                * yDimension.getLength() * zRange.length()
+                                * numTimes / timeStride;
+                if (debug) {
+                    System.err.println(
+                        "\tnum points:" + numPoints + " per layer:"
+                        + (xDimension.getLength() * yDimension.getLength())
+                        + " grid stride:" + gridStrideX);
+                }
+                if (numPoints < max) {
+                    break;
+                }
+                if (doX) {
+                    gridStrideX++;
+                } else {
+                    gridStrideY++;
+                }
+                grid = grid.subset(null, null, null, 1, gridStrideX,
+                                   gridStrideY);
+                doX = !doX;
+            }
+        }
+
+
+
+        GridCoordSystem         gcs    = grid.getCoordinateSystem();
+        int                     lats   = (int) gcs.getYHorizAxis().getSize();
+        int                     lons   = (int) gcs.getXHorizAxis().getSize();
+        final List<LatLonPoint> points = new ArrayList<LatLonPoint>();
+        for (int lat = 0; lat < lats; lat++) {
+            for (int lon = 0; lon < lons; lon++) {
+                points.add(gcs.getLatLon(lon, lat));
+            }
+        }
+
+        if (debug) {
+            System.err.println("\t# lat/lons:" + points.size() + " #dates:"
+                               + dates.size());
+        }
+        PipedInputStream         in          = new PipedInputStream();
+        final Range              finalZRange = zRange;
+        final PipedOutputStream  out         = new PipedOutputStream(in);
+        final List<CalendarDate> theDates    = dates;
+        final GeoGrid            theGrid     = grid;
+        Misc.run(new Runnable() {
+            public void run() {
+                PrintWriter writer = new PrintWriter(out);
+                try {
+                    runInner(writer);
+                } catch (Exception exc) {
+                    writer.println("Error:" + exc);
+                    System.err.println("Error:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+            public void runInner(PrintWriter writer) throws Exception {
+                writer.println("{\"name\":" + JsonUtil.quote(entry.getName())
+                               + ",");
+                writer.println("\"fields\":");
+                List<String> fields = new ArrayList<String>();
+                int          index  = 0;
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote(field), "label",
+                        JsonUtil.quote(fieldLabel), "index", "" + (index++),
+                        "type", JsonUtil.quote("double"), "chartable",
+                        "true", "unit", JsonUtil.quote(getUnit(unit)))));
+                //todo: check for times
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote("date"), "label",
+                        JsonUtil.quote("Date"), "index", "" + (index++),
+                        "type", JsonUtil.quote("date"))));
+                if (finalZRange.length() > 1) {
+                    fields.add(JsonUtil.map(Utils.makeList("id",
+                            JsonUtil.quote("level"), "label",
+                            JsonUtil.quote("Level"), "index", "" + (index++),
+                            "type", JsonUtil.quote("double"))));
+                }
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote("latitude"), "label",
+                        JsonUtil.quote("Latitude"), "index", "" + (index++),
+                        "type", JsonUtil.quote("double"))));
+                fields.add(JsonUtil.map(Utils.makeList("id",
+                        JsonUtil.quote("longitude"), "label",
+                        JsonUtil.quote("Longitude"), "index", "" + (index++),
+                        "type", JsonUtil.quote("double"))));
+                writer.println(JsonUtil.list(fields));
+                List<String> displayProps = new ArrayList<String>();
+                Hashtable    wikiProps    = new Hashtable();
+                for (Enumeration keys = request.keys();
+                        keys.hasMoreElements(); ) {
+                    String key = (String) keys.nextElement();
+                    wikiProps.put(key, request.getString(key, ""));
+                }
+                wikiProps.put("gridField", field);
+                getWikiTagAttrs(request, entry, "display", wikiProps,
+                                displayProps);
+                String colorTable = getProperty(field, "colortable", null);
+                if (colorTable != null) {
+                    displayProps.add("colorTable");
+                    displayProps.add(JsonUtil.quote(colorTable));
+                }
+                String colorTableMin = getProperty(field, "colortable.min",
+                                           null);
+                if (colorTableMin != null) {
+                    displayProps.add("colorByMin");
+                    displayProps.add(JsonUtil.quote(colorTableMin));
+                }
+                String colorTableMax = getProperty(field, "colortable.max",
+                                           null);
+                if (colorTableMax != null) {
+                    displayProps.add("colorByMax");
+                    displayProps.add(JsonUtil.quote(colorTableMax));
+                }
+
+                writer.println(",\"properties\":");
+                writer.println(JsonUtil.map(displayProps));
+                writer.println(",\"data\":[");
+                int                   cnt    = 0;
+                DoubleFunction<Float> scaler = getScaler(unit);
+                long                  t1     = System.currentTimeMillis();
+                for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
+                        tIdx += timeStride) {
+                    Array a;
+                    if (finalZRange.length() == 1) {
+                        a = theGrid.readYXData(tIdx, 0);
+                    } else {
+                        a = theGrid.readVolumeData(tIdx);
+                    }
+                    if (debug) {
+                        System.err.println("\treading time index:" + tIdx
+                                           + " size:" + a.getSize());
+                    }
+                    cnt += writeJson(
+                        writer, cnt, max, a,
+                        JsonUtil.quote(theDates.get(tIdx).toString()),
+                        points, finalZRange, scaler);
+                }
+                writer.println("]}");
+                writer.close();
+                System.err.println("time:"
+                                   + (System.currentTimeMillis() - t1));
+                getCdmManager().returnGridDataset(path, gds);
+            }
+        });
+
+        Result result = new Result(entry.getName() + ".json", in,
+                                   "application/json");
+        result.setReturnFilename(entry.getName() + ".json");
+
+        return result;
+
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
 
@@ -1421,8 +1712,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         final int  max        = request.get("max", 200000);
         final int  timeStride = request.get("timeStride", 1);
         int        gridStride = request.get("gridStride", -1);
-
-
 
         LatLonRect bounds     = null;
         String     gridBounds = request.getString("gridBounds", null);
@@ -1699,7 +1988,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             CalendarDate cd  = dates.get(0);
             Calendar     cal = cd.getCalendar();
             if (cal != null) {
-                sb.append(HtmlUtils.hidden(ARG_CALENDAR, cal.toString()));
+                sb.append(HU.hidden(ARG_CALENDAR, cal.toString()));
             }
             List formattedDates = new ArrayList();
             formattedDates.add(new TwoFacedObject("---", ""));
@@ -1710,11 +1999,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
             String toDate   = request.getUnsafeString(ARG_TODATE, "");
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Time Range"),
-                    HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HtmlUtils.img(getIconUrl(ICON_ARROW))
-                    + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
+                    HU.select(ARG_FROMDATE, formattedDates, fromDate)
+                    + HU.SPACE+HU.img(getIconUrl(ICON_ARROW))+HU.SPACE
+                    + HU.select(ARG_TODATE, formattedDates, toDate)));
         }
         //System.err.println("Times took "
         //                   + (System.currentTimeMillis() - millis) + " ms");
@@ -1878,7 +2167,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                         || (var.getDataType() == DataType.CHAR)) {
                     String value = structure.getScalarString(member);
                     columnData.add(var.getShortName() + ":"
-                                   + HtmlUtils.quote(value));
+                                   + HU.quote(value));
                     info.append("<b>" + var.getShortName() + ": </b>" + value
                                 + "</br>");
 
@@ -1902,13 +2191,13 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         List columnDefs  = new ArrayList();
         List columnNames = new ArrayList();
         for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
-            columnNames.add(HtmlUtils.quote(var.getShortName()));
+            columnNames.add(HU.quote(var.getShortName()));
             String label = var.getDescription();
             //            if(label.trim().length()==0)
             label = var.getShortName();
-            columnDefs.add("{key:" + HtmlUtils.quote(var.getShortName())
+            columnDefs.add("{key:" + HU.quote(var.getShortName())
                            + "," + "sortable:true," + "label:"
-                           + HtmlUtils.quote(label) + "}");
+                           + HU.quote(label) + "}");
         }
 
 
@@ -1920,10 +2209,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (total > max) {
             boolean didone = false;
             if (skip > 0) {
-                sb.append(HtmlUtils.space(2));
+                sb.append(HU.space(2));
                 sb.append(
-                    HtmlUtils.href(
-                        HtmlUtils.url(request.getRequestPath(), new String[] {
+                    HU.href(
+                        HU.url(request.getRequestPath(), new String[] {
                     ARG_OUTPUT, request.getOutput().toString(), ARG_ENTRYID,
                     entry.getId(), ARG_SKIP, "" + (skip - max), ARG_MAX,
                     "" + max
@@ -1931,10 +2220,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 didone = true;
             }
             if (total > (skip + cnt)) {
-                sb.append(HtmlUtils.space(2));
+                sb.append(HU.space(2));
                 sb.append(
-                    HtmlUtils.href(
-                        HtmlUtils.url(request.getRequestPath(), new String[] {
+                    HU.href(
+                        HU.url(request.getRequestPath(), new String[] {
                     ARG_OUTPUT, request.getOutput().toString(), ARG_ENTRYID,
                     entry.getId(), ARG_SKIP, "" + (skip + max), ARG_MAX,
                     "" + max
@@ -1943,10 +2232,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
             //Just come up with some max number
             if (didone && (total < 2000)) {
-                sb.append(HtmlUtils.space(2));
+                sb.append(HU.space(2));
                 sb.append(
-                    HtmlUtils.href(
-                        HtmlUtils.url(request.getRequestPath(), new String[] {
+                    HU.href(
+                        HU.url(request.getRequestPath(), new String[] {
                     ARG_OUTPUT, request.getOutput().toString(), ARG_ENTRYID,
                     entry.getId(), ARG_SKIP, "" + 0, ARG_MAX, "" + total
                 }), msg("All")));
@@ -2042,33 +2331,31 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         StringBuffer sb      = new StringBuffer();
         String       formUrl =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
-        sb.append(HtmlUtils.form(formUrl + suffix));
-        sb.append(HtmlUtils.submit("Subset Point Data", ARG_SUBMIT));
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+        sb.append(HU.form(formUrl + suffix));
+        sb.append(HU.submit("Subset Point Data", ARG_SUBMIT));
+        sb.append(HU.hidden(ARG_OUTPUT,
                                    request.getString(ARG_OUTPUT, "")));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.formTable());
         List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
         formats.add(new TwoFacedObject("CSV", FORMAT_CSV));
         formats.add(new TwoFacedObject("KML", FORMAT_KML));
         String format = request.getString(CdmConstants.ARG_FORMAT,
                                           FORMAT_CSV);
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Format"),
-                HtmlUtils.select(CdmConstants.ARG_FORMAT, formats, format)));
+                HU.select(CdmConstants.ARG_FORMAT, formats, format)));
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
         map.addBox(entry, new MapBoxProperties("blue", false, true));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));
-
-
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.submit("Subset Point Data", ARG_SUBMIT));
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formEntryTop(msgLabel("Location"), llb));
+        sb.append(HU.formTableClose());
+        sb.append(HU.submit("Subset Point Data", ARG_SUBMIT));
+        sb.append(HU.formClose());
 
         return new Result("", sb);
     }
@@ -2091,7 +2378,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         //Add the GridPoint service
         if (getCdmManager().canLoadAsCdmGrid(entry)) {
             String url = getRepository().getUrlBase() + "/grid/json?"
-                         + HtmlUtils.args(new String[] {
+                         + HU.args(new String[] {
                 ARG_ENTRYID, entry.getId(), ARG_LOCATION_LATITUDE,
                 "${latitude}", ARG_LOCATION_LONGITUDE, "${longitude}"
             }, false);
@@ -2191,25 +2478,25 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             StructureData structure = po.getData();
 
             if (cnt == 1) {
-                pw.print(HtmlUtils.quote("Time"));
+                pw.print(HU.quote("Time"));
                 pw.print(",");
-                pw.print(HtmlUtils.quote("Latitude"));
+                pw.print(HU.quote("Latitude"));
                 pw.print(",");
-                pw.print(HtmlUtils.quote("Longitude"));
+                pw.print(HU.quote("Longitude"));
                 for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                     pw.print(",");
                     String unit = var.getUnitsString();
                     if (unit != null) {
-                        pw.print(HtmlUtils.quote(var.getShortName() + " ("
+                        pw.print(HU.quote(var.getShortName() + " ("
                                 + unit + ")"));
                     } else {
-                        pw.print(HtmlUtils.quote(var.getShortName()));
+                        pw.print(HU.quote(var.getShortName()));
                     }
                 }
                 pw.print("\n");
             }
 
-            pw.print(HtmlUtils.quote("" + po.getNominalTimeAsCalendarDate()));
+            pw.print(HU.quote("" + po.getNominalTimeAsCalendarDate()));
             pw.print(",");
             pw.print(el.getLatitude());
             pw.print(",");
@@ -2222,7 +2509,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 if ((var.getDataType() == DataType.STRING)
                         || (var.getDataType() == DataType.CHAR)) {
                     pw.print(
-                        HtmlUtils.quote(structure.getScalarString(member)));
+                        HU.quote(structure.getScalarString(member)));
                 } else {
                     pw.print(structure.convertScalarFloat(member));
                 }
@@ -2392,7 +2679,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             //If its a head request then just return the content description
             if (request.isHeadRequest()) {
                 Result result = new Result("", new StringBuffer());
-                result.addHttpHeader(HtmlUtils.HTTP_CONTENT_DESCRIPTION,
+                result.addHttpHeader(HU.HTTP_CONTENT_DESCRIPTION,
                                      "dods-dds");
 
                 return result;
@@ -2439,14 +2726,14 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         for (VariableSimpleIF var : variables) {
             sb.append("&nbsp;");
             sb.append(
-                HtmlUtils.mouseClickHref(
-                    HtmlUtils.call(
+                HU.mouseClickHref(
+                    HU.call(
                         "selectClick",
-                        HtmlUtils.comma(
-                            HtmlUtils.squote(target),
-                            HtmlUtils.squote(entry.getId()),
-                            HtmlUtils.squote(var.getShortName()),
-                            HtmlUtils.squote(type))), var.getDescription()));
+                        HU.comma(
+                            HU.squote(target),
+                            HU.squote(entry.getId()),
+                            HU.squote(var.getShortName()),
+                            HU.squote(type))), var.getDescription()));
             sb.append("<br>");
         }
     }
