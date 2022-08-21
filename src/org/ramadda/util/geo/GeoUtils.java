@@ -838,10 +838,11 @@ public class GeoUtils {
 
 	public Place match() {
 	    Place place = null;
-
 	    if(doTract) {
-		doAny = true;
 		place = resource.getPlace(address);
+		//A hack, try prepending a "0"
+		if(place==null)
+		    place = resource.getPlace("0"+address);
 		return place;
 	    }
 
@@ -896,6 +897,8 @@ public class GeoUtils {
 	Locale locale = new Locale(address);
 	place = locale.match();
 	if(place!=null) return place;
+	if (locale.doTract) return null;
+
         if (locale.doCity) {
             //abbrev to name
             getStatesMap();
@@ -1099,6 +1102,7 @@ public class GeoUtils {
                 BufferedWriter bw = new BufferedWriter(fw);
                 cacheWriter = new PrintWriter(bw);
             }
+            addressToLocation = new Hashtable<String, Place>();
         }
 
         if (addressToLocation != null) {
@@ -1127,7 +1131,8 @@ public class GeoUtils {
             String result = null;
             try {
                 //https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
-                String url =
+
+		String url =
                     "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + encodedAddress + "&key=" + googleKey;
                 if (bounds != null) {
@@ -1149,6 +1154,7 @@ public class GeoUtils {
                 if ((latString != null) && (lonString != null)) {
                     place = new Place(name, latString, lonString);
                 }
+                System.err.println("address:" + address +" google:" + place);
                 if (place == null) {
                     JSONObject json = new JSONObject(result);
                     System.err.println("google error:"
@@ -1181,6 +1187,8 @@ public class GeoUtils {
                 place = new Place(name, latString, lonString);
             }
 
+	    System.err.println("address:" + address +" geocodeio:" + place);
+
             if (debug) {
                 System.err.println("geocodeio:" + place);
             }
@@ -1201,6 +1209,7 @@ public class GeoUtils {
             if ((latString != null) && (lonString != null)) {
                 place = new Place(name, latString, lonString);
             }
+	    System.err.println("address:" + address +" here:" + place);
             if (debug) {
                 System.err.println("here:" + place);
             }
