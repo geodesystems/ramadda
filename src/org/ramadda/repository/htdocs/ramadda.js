@@ -412,7 +412,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     initDragAndDropEntries:function(rows, entryMap,mainId) {
 	rows.mousedown(function(event) {
-	    console.log("MD");
             if (!event.shiftKey || !entryMap) return;
 	    let entry = entryMap[$(this).attr('entryid')];
 	    if(!entry) return;
