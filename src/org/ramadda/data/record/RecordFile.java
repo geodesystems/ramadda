@@ -1511,12 +1511,7 @@ public abstract class RecordFile {
      */
     public boolean isMissingValue(BaseRecord record, RecordField field,
                                   String s) {
-        //I really shouldn't be doing this here
-	s  =s.toLowerCase();
-        return (s.length() == 0) || s.equals("---") || s.equals("n.v.")
-               || s.equals("null") || s.equals("nan")
-               || s.equals("na") || s.equals("n/a") 
-               || s.equals("ukn") || s.equals("e");
+	return Utils.isStandardMissingValue(s);
     }
 
 
