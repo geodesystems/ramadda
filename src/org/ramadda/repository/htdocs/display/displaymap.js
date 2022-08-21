@@ -1008,6 +1008,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
+		if(debugPopup) console.log("\tdisplaymap: featureSelectHandler");
 		let didSomething= false;
 		let record = feature.record;
 		if(feature.collisionInfo)  {
@@ -1036,7 +1037,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return didSomething;
+		return !didSomething;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{

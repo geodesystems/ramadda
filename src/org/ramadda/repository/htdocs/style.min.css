@@ -1248,6 +1248,12 @@ a.ramadda-menubar-button:hover {
 }
 
 
+mapheader {
+    display:block;
+    text-align:center;
+    font-weight:bold;
+    font-size:130%;
+}
 .ramadda-map-header {
     text-align:center;
 }
@@ -1836,8 +1842,9 @@ thin_hr,.ramadda-thin-hr {
     background:#eee;
 
 }
+
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default   {
-    background: transparent;
+    /*background: transparent;*/
     -webkit-touch-callout: none; 
     -webkit-user-select: none; 
     -khtml-user-select: none; 
