@@ -420,6 +420,10 @@ public class ZipOutputHandler extends OutputHandler {
                     continue;
                 }
             }
+	    //Don't export synthetic entries beyond the top most level
+	    if(getEntryManager().isSynthEntry(entry.getId())) {
+		if(level>0) continue;
+	    }
             counter[0]++;
             //Don't get big files
 	    
