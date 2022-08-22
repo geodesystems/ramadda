@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 import ucar.unidata.util.IOUtil;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  *  A wrapper around either a hashtable for direct look ups or a list of key,values for
@@ -73,7 +73,7 @@ public class Propper {
 		sb.append("\n");
 	    }
 	    return  new Propper(exact, toks.get(0),sb.toString());
-	} else {
+	} else { //csv
 	    Propper propper = new Propper(exact);
 	    for(String line: Utils.split(IOUtil.readContents(is),"\n",true,true)) {
 		List<String> cols = Utils.tokenizeColumns(line,",");

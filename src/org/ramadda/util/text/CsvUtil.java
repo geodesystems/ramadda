@@ -4551,7 +4551,7 @@ public class CsvUtil {
 
 
 	defineFunction("-addheader",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.HeaderMaker(parseProps(args.get(++i))));
+		ctx.addProcessor(new Converter.HeaderMaker(this,parseProps(args.get(++i))));
 		return i;
 	    });
 

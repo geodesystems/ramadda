@@ -12,6 +12,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.PatternProps;
+import org.ramadda.util.Propper;
 import org.ramadda.util.Utils;
 
 
@@ -1650,10 +1651,12 @@ public abstract class Converter extends Processor {
         /** _more_ */
         Row firstRow;
 
+	org.ramadda.util.Propper  propper;
+
         /**
          * @param props _more_
          */
-        public HeaderMaker(Hashtable<String, String> props) {
+        public HeaderMaker(CsvUtil csvUtil, Hashtable<String, String> props) {
             this.props = new PatternProps(props);
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
@@ -1661,6 +1664,16 @@ public abstract class Converter extends Processor {
                     "type", null);
             defaultChartable = CsvUtil.getDbProp(props, "default",
                     "chartable", true);
+	    String namesFile = CsvUtil.getDbProp(props, null, "namesfile", null);
+	    try {
+		if(namesFile!=null) {
+		    String names = csvUtil.readFile(namesFile);
+		    propper = org.ramadda.util.Propper.create(true,namesFile,(InputStream)new ByteArrayInputStream(names.getBytes()));
+		}
+	    } catch(Exception exc) {
+		System.err.println("Could not read names file:" + namesFile);
+		throw new RuntimeException(exc);
+	    }
             makeLabel = CsvUtil.getDbProp(props, null, "makeLabel", true);
             toStdOut  = CsvUtil.getDbProp(props, null, "stdout", false);
         }
@@ -1754,6 +1767,10 @@ public abstract class Converter extends Processor {
                 id = CsvUtil.getDbProp(props, id, i, "id", id);
 
 
+		List<String> proppers = null;
+		if(propper!=null) {
+		    proppers = (List<String>)propper.get(col,id);
+		}
                 StringBuffer attrs = new StringBuffer();
                 String group = CsvUtil.getDbProp(props, id, i, "group",
                                    (String) null);
@@ -1765,10 +1782,17 @@ public abstract class Converter extends Processor {
                     label = CsvUtil.getDbProp(props, id, i, "label",
                             (String) null);
                 }
+		if(label==null && proppers!=null) label  = proppers.get(0);
+		if(desc==null && proppers!=null && proppers.size()>1) desc  = proppers.get(1);		
+		//		System.err.println(col+":" + label+":" + desc);
+
                 if (makeLabel && (label == null)) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
                             ""));
                 }
+		if(label!=null) label = label.replaceAll("[\"']+","");
+
+
                 String unit = StringUtil.findPattern(col,
                                   ".*?\\(([^\\)]+)\\).*");
                 if (label != null) {
@@ -1778,6 +1802,7 @@ public abstract class Converter extends Processor {
                                              " ");
                     attrs.append("label=\"" + label + "\" ");
                 }
+
                 if (desc != null) {
                     attrs.append(" description=\"" + desc + "\" ");
                 }
