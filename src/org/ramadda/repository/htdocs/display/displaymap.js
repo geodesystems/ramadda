@@ -1057,7 +1057,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return false;
+		return true;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
