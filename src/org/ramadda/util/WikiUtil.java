@@ -840,7 +840,7 @@ public class WikiUtil {
 				   : " style=\"border:0px;background:none;\" ")));
 	    buff.append("\n");
 	    buff.append("<a href=\"#\">");
-	    buff.append(title);
+	    buff.append(HU.span(title,"class=ramadda-clickable"));
 	    buff.append("</a></h3>");
 	    buff.append("\n");
 	    String contentsId = HU.getUniqueId("accordion_contents_");

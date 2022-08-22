@@ -4852,10 +4852,31 @@ a.wiki-link-noexist {
 }
 
 
+.ui-icon.iconOpen {
+    background:url('icons/caret-down-solid.png') no-repeat 0px;
+    background-size:20px;
+    width:20px;
+    height:20px;
+}
+.ui-icon.iconClosed {
+    background:url('icons/caret-right-solid.png') no-repeat 0px;
+    background-size:20px;
+    width:20px;
+    height:20px;
+}
+
 /* eventually delete these two where accordian is spelled with an a */
 .ramadda-accordian .ui-accordian-header, .ramadda-accordian .ui-state-default, .ramadda-accordian .ui-state-active {
     border: 0px #fff solid;
     background: none;
+}
+
+.ui-accordion .ui-state-default {
+    background:transparent;
+}
+
+.ui-accordion .ui-state-default:hover {
+    background:var(--highlight-background);
 }
 
 .ui-accordion .ui-accordion-content , .ramadda-accordian .ui-accordion-content {

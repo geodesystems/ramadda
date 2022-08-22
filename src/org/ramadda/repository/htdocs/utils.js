@@ -4122,6 +4122,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     makeAccordion: function(id, args) {
         if(args == null) args = {};
+	var icons = {
+            header: "iconClosed",    // custom icon class
+            activeHeader: "iconOpen" // custom icon class
+	};
         $(function() {
             //We initially hide the accordion contents
             //Show all contents
@@ -4129,6 +4133,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             contents.css("display", "block");
             var ctorArgs = {
                 animate:200,
+		icons:icons,
                 collapsible: true,
                 heightStyle: "content",
                 active: 0,
