@@ -1040,6 +1040,7 @@ public class AccessManager extends RepositoryManager {
      */
     public boolean canDoEdit(Request request, Entry entry) throws Exception {
         //        if(entry.getIsLocalFile()) return false;
+	if(getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_EDIT);
     }
 
@@ -1129,6 +1130,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDoNew(Request request, Entry entry) throws Exception {
+	if(getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_NEW);
     }
 
@@ -1155,6 +1157,7 @@ public class AccessManager extends RepositoryManager {
      */
     public boolean canDoDelete(Request request, Entry entry)
             throws Exception {
+	if(getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_DELETE);
     }
 
