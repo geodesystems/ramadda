@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug 21 22:10:44 MDT 2022";
+var build_date="RAMADDA build date: Sun Aug 21 23:11:36 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4050,7 +4050,7 @@ function DisplayThing(argId, argProperties) {
 		    let tt;
 		    if(!includeDesc) {
 			tt = field.getDescription();
-			if(tt) tt+="&#10;";
+			if(tt) tt+=HU.getTitleBr();
 		    }
 		    tt = tt??"";
 		    tt+=labelValue+"=" + initValue;
@@ -8658,6 +8658,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    jq.mousedown(function(){
 		let id = $(this).attr(ID);
 		//Do these like this in case we have a field that ends with _max
+		let type = $(this).attr('data-type');
 		if(id.endsWith("_min")) {
 		    id = id.replace(/_min$/,"");
 		} else if(id.endsWith("_max")) {
@@ -8670,7 +8671,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    max: parseFloat(max.attr("data-max"))};
 		let smin =  String(min.attr("data-min")).replace(/.*\./,"");
 		let smax =  String(max.attr("data-max")).replace(/.*\./,"");		
-		let numDecimals = Math.max(smin.length,smax.length);
+		let numDecimals = Math.max(2,Math.max(smin.length,smax.length));
 		let minValue = parseFloat(min.val());
 		let maxValue = parseFloat(max.val());
 		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
@@ -8688,7 +8689,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(isNaN(minValue)) minValue = range.min;	
 		if(isNaN(maxValue)) maxValue = range.max;
 		var step = 1;
-		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
+		if(type == "double" || parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
 		    step = (range.max-range.min)/100000;
 		$( "#filter-range" ).slider({
 		    range: true,
@@ -14026,9 +14027,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
 
-                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
+                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-type",this.getFieldType(),"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
 		widget += "-";
-                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",this.getId()]);
+                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-type",this.getFieldType(),"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",this.getId()]);
 	    } else if(this.getFieldType() == "date") {
                 widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",this.getId()]) +"-" +
 		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",this.getId()]);
@@ -14064,6 +14065,11 @@ function RecordFilter(display,filterFieldId, properties) {
             }
 	    if(!this.hideFilterWidget) {
 		let tt = widgetLabel;
+		if(Utils.stringDefined(this.getField().getDescription())) {
+		    tt = tt+HU.getTitleBr() +
+			this.getField().getDescription();
+		}
+		console.log("TT:" + tt +" " + 			this.getField().getDescription());
 		if(widgetLabel.length>50) widgetLabel = widgetLabel.substring(0,49)+"...";
 		if(!this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
 		    widgetLabel = "";
