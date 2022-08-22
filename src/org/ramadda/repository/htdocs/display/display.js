@@ -1005,7 +1005,7 @@ function DisplayThing(argId, argProperties) {
 		    let tt;
 		    if(!includeDesc) {
 			tt = field.getDescription();
-			if(tt) tt+="&#10;";
+			if(tt) tt+=HU.getTitleBr();
 		    }
 		    tt = tt??"";
 		    tt+=labelValue+"=" + initValue;
@@ -5613,6 +5613,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    jq.mousedown(function(){
 		let id = $(this).attr(ID);
 		//Do these like this in case we have a field that ends with _max
+		let type = $(this).attr('data-type');
 		if(id.endsWith("_min")) {
 		    id = id.replace(/_min$/,"");
 		} else if(id.endsWith("_max")) {
@@ -5625,7 +5626,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    max: parseFloat(max.attr("data-max"))};
 		let smin =  String(min.attr("data-min")).replace(/.*\./,"");
 		let smax =  String(max.attr("data-max")).replace(/.*\./,"");		
-		let numDecimals = Math.max(smin.length,smax.length);
+		let numDecimals = Math.max(2,Math.max(smin.length,smax.length));
 		let minValue = parseFloat(min.val());
 		let maxValue = parseFloat(max.val());
 		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
@@ -5643,7 +5644,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(isNaN(minValue)) minValue = range.min;	
 		if(isNaN(maxValue)) maxValue = range.max;
 		var step = 1;
-		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
+		if(type == "double" || parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
 		    step = (range.max-range.min)/100000;
 		$( "#filter-range" ).slider({
 		    range: true,

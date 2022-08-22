@@ -3574,6 +3574,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    getTitleBr:function() {
+	return "&#10;";
+    },
+
     initLoadingImage:function(img) {
 	setTimeout(()=>{
 	    $(img).removeClass('ramadda-image-loading');
