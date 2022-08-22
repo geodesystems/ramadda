@@ -190,6 +190,7 @@ public class CsvFile extends TextFile {
         }
 	if(debug)
 	    System.err.println("making CsvUtil:" + commands);
+	commands = preprocessCsvCommands(commands);
         CsvUtil csvUtil = new CsvUtil(commands,
                                       new BufferedOutputStream(fos), null);
 
@@ -305,6 +306,9 @@ public class CsvFile extends TextFile {
         csvUtil.run(null);
     }
 
+    public List<String>  preprocessCsvCommands(List<String>  commands) throws Exception {
+	return commands;
+    }
 
 
     /**

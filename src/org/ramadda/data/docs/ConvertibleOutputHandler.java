@@ -22,7 +22,7 @@ import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
+import ucar.unidata.util.StringUtil;
 import java.io.*;
 
 import java.net.*;
@@ -383,26 +383,14 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
                                                 "run");
+		args1 = getTypeHandler(entry).preprocessCsvCommands(request, args1);
                 List<String> args         = new ArrayList<String>();
                 for (int j = 0; j < args1.size(); j++) {
                     String arg = args1.get(j);
-                    if (arg.startsWith("entry:")) {
-                        Entry fileEntry =
-                            getEntryManager().getEntry(request,
-                                arg.substring("entry:".length()));
-                        if (fileEntry == null) {
-                            throw new IllegalArgumentException(
-                                "Could not find " + arg);
-                        }
-                        if (fileEntry.getFile() == null) {
-                            throw new IllegalArgumentException(
-                                "Entry not a file  " + arg);
-                        }
-                        arg = fileEntry.getFile().toString();
-                    } else if (arg.equals("-run")) {
-                        runDirPrefix = args1.get(++j);
-                        continue;
-                    }
+		    if (arg.equals("-run")) {
+			runDirPrefix = args1.get(++j);
+			continue;
+		    }			
                     args.add(arg);
                 }
                 boolean hasOutput = args.contains("-tojson")

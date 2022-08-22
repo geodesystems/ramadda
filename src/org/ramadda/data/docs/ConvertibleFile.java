@@ -37,6 +37,10 @@ public class ConvertibleFile extends CsvFile {
     /** _more_ */
     private List<String> commands;
 
+    private ConvertibleTypeHandler cth;
+
+    private Request request;
+
     /**
      * ctor
      */
@@ -56,10 +60,12 @@ public class ConvertibleFile extends CsvFile {
      *
      * @throws IOException on badness
      */
-    public ConvertibleFile(ConvertibleTypeHandler cth, Entry entry,
+    public ConvertibleFile(Request request,ConvertibleTypeHandler cth, Entry entry,
                            List<String> commands, String filename)
             throws IOException {
         super(filename, cth, null);
+	this.cth = cth;
+	this.request = request;
         this.entry    = entry;
         this.commands = commands;
     }
@@ -76,6 +82,11 @@ public class ConvertibleFile extends CsvFile {
         return commands;
     }
 
+    @Override
+    public List<String>  preprocessCsvCommands(List<String>  commands) throws Exception {
+	return  cth.preprocessCsvCommands(request, commands);
+    }
+
     /**
      * _more_
      *
@@ -87,7 +98,7 @@ public class ConvertibleFile extends CsvFile {
     @Override
     public void runCsvUtil(CsvUtil csvUtil, boolean buffered)
             throws Exception {
-        List<String> files = null;
+	List<String> files = null;
         if (entry.getResource().hasResource()) {
             files = new ArrayList<String>();
             files.add(entry.getTypeHandler().getStorageManager().getEntryFile(entry).toString());

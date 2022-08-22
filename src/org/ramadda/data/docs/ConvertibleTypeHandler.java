@@ -17,6 +17,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.text.CsvUtil;
 
+import ucar.unidata.util.StringUtil;
 import org.w3c.dom.*;
 
 import java.io.File;
@@ -129,13 +130,43 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
         }
         String          path = getPathForRecordEntry(entry,
                                    requestProperties);
-        ConvertibleFile file = new ConvertibleFile(this, entry, args, path);
+        ConvertibleFile file = new ConvertibleFile(request, this, entry, args, path);
 
         return file;
     }
 
 
+    public List<String> preprocessCsvCommands(Request request, List<String> args1) throws Exception {
+	List<String> args = new ArrayList<String>();
+	for (int j = 0; j < args1.size(); j++) {
+	    String arg = args1.get(j);
+	    String fileEntryId = null;
+	    if (arg.startsWith("entry:")) {
+		fileEntryId = arg.substring("entry:".length());
+	    } else {
+		if(arg.indexOf("entry:")>=0) {
+		    //			    fileEntryId = StringUtil.findPattern(arg,"entry:[^\\s\"']+[\\s\"']");
+		    fileEntryId = StringUtil.findPattern(arg,".*entry:([^\\s\"']+).*");
+		    System.err.println("FOUND:" + fileEntryId +" arg:"+ arg);
+		}			    
+	    }
+	    if(fileEntryId!=null) {
+		Entry fileEntry =
+		    getEntryManager().getEntry(request,fileEntryId);
+		if (fileEntry == null) {
+		    throw new IllegalArgumentException("Could not find " + arg);
+		}
+		File file = getStorageManager().getEntryFile(fileEntry);
+		if (!file.exists()) {
+		    throw new IllegalArgumentException("Entry not a file  " + arg);
+		}
+		arg = arg.replace("entry:" + fileEntryId,file.toString());
+	    }
+	    args.add(arg);
+	}
 
+	return args;
+    }
 
 
     /**
