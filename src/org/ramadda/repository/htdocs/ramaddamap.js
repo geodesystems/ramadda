@@ -2213,7 +2213,7 @@ RepositoryMap.prototype = {
             return;
         }
         let feature = layer.feature;
-	if(this.featureSelectHandler && !this.featureSelectHandler(feature)) {
+	if(this.featureSelectHandler && this.featureSelectHandler(feature)) {
 	    if(debugPopup) console.log("\thas featureSelectHandler");
 	    return;
 	}
@@ -4816,6 +4816,7 @@ RepositoryMap.prototype = {
             this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
         }
+
 
 	if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
 	    if(debugPopup) console.log("\tfeatureSelectHandler returned true");

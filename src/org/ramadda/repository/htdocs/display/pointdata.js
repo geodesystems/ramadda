@@ -2061,7 +2061,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    tt = tt+HU.getTitleBr() +
 			this.getField().getDescription();
 		}
-		console.log("TT:" + tt +" " + 			this.getField().getDescription());
 		if(widgetLabel.length>50) widgetLabel = widgetLabel.substring(0,49)+"...";
 		if(!this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
 		    widgetLabel = "";

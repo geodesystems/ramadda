@@ -1033,7 +1033,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature.collisionInfo)  {
 		    if(debugPopup) console.log("has collisioninfo");
 		    feature.collisionInfo.dotSelected(feature);
-		    return false;
+		    return true;
 		}
 		if(record) {
 		    this.propagateEventRecordSelection({record:record});
@@ -1057,7 +1057,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(didSomething)
 		    this.lastFeatureSelectTime = new Date();
-		return true;
+		return false;
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
