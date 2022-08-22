@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug 21 14:06:57 MDT 2022";
+var build_date="RAMADDA build date: Sun Aug 21 22:10:44 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3971,6 +3971,7 @@ function DisplayThing(argId, argProperties) {
 	    fields= this.getSortedFields(fields);
 	    let excludes = props.excludes?props.excludes.split(","):[];
 	    let group = null;
+	    let includeDesc = this.getProperty("includeFieldDescriptionInTooltip",true);
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -4046,7 +4047,14 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    let labelValue = field.getLabel();
 		    value = value + field.getUnitSuffix();
-		    let tt = labelValue+"=" + initValue;
+		    let tt;
+		    if(!includeDesc) {
+			tt = field.getDescription();
+			if(tt) tt+="&#10;";
+		    }
+		    tt = tt??"";
+		    tt+=labelValue+"=" + initValue;
+		    
 		    if(value.length>100) {
 			value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
 		    }
@@ -4060,7 +4068,9 @@ function DisplayThing(argId, argProperties) {
 		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
-		    row += HU.close(TR);
+		    if(includeDesc) {
+			row +=HU.td([],field.getDescription()??"");
+		    }
 		    rows.push(row);
                 }
             }
@@ -4375,6 +4385,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltip',doGetter:false,ex:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
+	{p:'includeFieldDescriptionInTooltip'},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'titleTemplate',doGetter:false,ex:'${field1}',tt:'Template for title in ${default} template display'},	
 	{p:'itemsPerColumn',ex:10,tt:'How many items to show in each column in a tooltip'},
@@ -12692,6 +12703,9 @@ function RecordField(props, source) {
 	},
 	toString: function() {
 	    return this.getId() +" type:" + this.getType() +" index:" + this.index;
+	},
+	getDescription: function() {
+	    return this.description;
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;
@@ -44314,6 +44328,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
 	{p:'includeRowIndex',ex:'true',d:false},	
+	{p:'includeFieldDescription'},
 	{p:'fancy',ex:'true',d:true},
 	{p:'maxLength',ex:'500',d:-1, tt:'If string is gt maxLength then scroll it'},
 	{p:'colorCells',ex:'field1,field2'},
@@ -44436,8 +44451,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		html+="</tr>\n";
 	    } 
 
-	    html+="<tr  valign=top>\n"
-	    if(includeIdx) html+=HU.th(HU.div([],""));
+	    let header1="<tr  valign=top>\n"
+	    let header2="<tr  valign=top>\n"	    
+	    if(includeIdx) header1+=HU.th(HU.div([],""));
+	    if(includeIdx) header2+=HU.th(HU.div([],""));	    
 	    let headerStyle = this.getTableHeaderStyle("")+"text-align:center;";
 	    let fieldMap = {}
 	    let sortFields = this.getProperty("sortFields");
@@ -44450,7 +44467,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    fields.forEach((f,idx)=>{
 		fieldMap[f.getId()] = f;
 		let sort = sortFields && sortFields[f.getId()];
-		let attrs = [TITLE,"Click to sort",CLASS,"ramadda-clickable display-table-header", "field-id",f.getId(),STYLE,headerStyle];
+		let title = f.getDescription();
+		if(title) title+="&#10;";
+		title=title??"";
+		title+="Click to sort";
+		let attrs = [TITLE,title,CLASS,"ramadda-clickable display-table-header", "field-id",f.getId(),STYLE,headerStyle];
 		let width = this.getProperty(f.getId()+".width");
 		if(width) attrs.push("width",width);
 
@@ -44461,16 +44482,25 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(fancy) {
 		    let label = this.getFieldLabel(f);
 		    if(sort) label = HU.getIconImage(sortAscending?"fas fa-arrow-down":"fas fa-arrow-up",null, [STYLE,HU.css('font-size','8pt !important')]) +" " + label;
-		    html+=HU.th(attrs,HU.div(headerAttrs,label));
+		    header1+=HU.th(attrs,HU.div(headerAttrs,label));
+		    header2+=HU.th(attrs,HU.div(headerAttrs,f.getDescription()??""));
+
 		}
 		else {
-		    html+=HU.th(attrs,HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		    header1+=HU.th(attrs,HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		    header2+=HU.th(attrs,HU.div(headerAttrs,f.getId() +"[" + f.getDescription()??""+"]"));
 		}
 		
 	    });
 
-	    if(includeGeo) html+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
-	    html+="</tr>\n";
+	    if(includeGeo) header1+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
+	    if(includeGeo) header2+=HU.th(HU.div(headerAttrs,"")) + HU.th([],HU.div(headerAttrs,""));	    
+	    header1+="</tr>\n";
+	    header2+="</tr>\n";	    
+	    html+=header1;
+	    if(this.getIncludeFieldDescription()) {
+		html+=header2;
+	    }
 	    html+="</thead><tbody>\n";	    
 	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
 	    let hadSavedState = false;
