@@ -6,13 +6,16 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
+import ucar.unidata.util.IOUtil;
+
+import java.io.*;
+
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-import ucar.unidata.util.IOUtil;
-import java.io.*;
 
 /**
  *  A wrapper around either a hashtable for direct look ups or a list of key,values for
@@ -25,6 +28,15 @@ public class Propper {
     public static boolean debug = false;
 
     /**  */
+    private boolean isProperties = false;
+
+    /**  */
+    private boolean isText = false;
+
+    /**  */
+    private boolean isCsv = false;
+
+    /**  */
     private boolean exact = true;
 
     /**  */
@@ -33,13 +45,16 @@ public class Propper {
     /**  */
     private List<Value> values;
 
+    /**  */
+    private List<String> header;
+
     /**
-     
+     *
      */
     public Propper() {}
 
     /**
-     
+     *
      *
      * @param exact _more_
      */
@@ -47,49 +62,78 @@ public class Propper {
         this.exact = exact;
     }
 
-    public Propper(boolean exact,String pattern, Object contents) {
-	this(exact);
-        if (!exact) {
+    /**
+     
+     *
+     * @param exact _more_
+     * @param pattern _more_
+     * @param contents _more_
+     */
+    public Propper(boolean exact, String pattern, Object contents) {
+        this(exact);
+        if ( !exact) {
             values = new ArrayList<Value>();
-	    values.add(new Value(pattern, contents));
+            values.add(new Value(pattern, contents));
         } else {
-	    props = new Hashtable();
-	    props.put(pattern,contents);
-	}
+            props = new Hashtable();
+            props.put(pattern, contents);
+        }
 
-    }    
-
-    public static Propper create(boolean exact, String  filename,InputStream is) throws Exception {
-	if(filename.endsWith(".properties")) {
-	    Properties properties = new Properties();
-	    properties.load(is);
-	    return  new Propper(exact,properties);
-	} else if(filename.endsWith(".txt")) {
-	    String contents = IOUtil.readContents(is);
-	    List<String> toks = Utils.split(contents,"\n");
-	    StringBuffer sb= new StringBuffer();
-	    for(int i=1;i<toks.size();i++) {
-		sb.append(toks.get(i));
-		sb.append("\n");
-	    }
-	    return  new Propper(exact, toks.get(0),sb.toString());
-	} else { //csv
-	    Propper propper = new Propper(exact);
-	    for(String line: Utils.split(IOUtil.readContents(is),"\n",true,true)) {
-		List<String> cols = Utils.tokenizeColumns(line,",");
-		String key = cols.get(0);
-		cols.remove(0);
-		propper.add(key,cols);
-	    }
-	    return propper;
-	}
     }
 
-	
+    /**
+     *
+     * @param exact _more_
+     * @param filename _more_
+     * @param is _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Propper create(boolean exact, String filename,
+                                 InputStream is)
+            throws Exception {
+        Propper propper;
+        if (filename.endsWith(".properties")) {
+            Properties properties = new Properties();
+            properties.load(is);
+            propper              = new Propper(exact, properties);
+            propper.isProperties = true;
+        } else if (filename.endsWith(".txt")) {
+            String       contents = IOUtil.readContents(is);
+            List<String> toks     = Utils.split(contents, "\n");
+            StringBuffer sb       = new StringBuffer();
+            for (int i = 1; i < toks.size(); i++) {
+                sb.append(toks.get(i));
+                sb.append("\n");
+            }
+            propper        = new Propper(exact, toks.get(0), sb.toString());
+            propper.isText = true;
+        } else {  //csv
+            propper       = new Propper(exact);
+            propper.isCsv = true;
+            for (String line :
+                    Utils.split(IOUtil.readContents(is), "\n", true, true)) {
+                List<String> cols = Utils.tokenizeColumns(line, ",");
+                if (propper.header == null) {
+                    cols.remove(0);
+                    propper.header = cols;
+                    continue;
+                }
+                String key = cols.get(0);
+                cols.remove(0);
+                propper.add(key, cols);
+            }
+        }
+
+        return propper;
+    }
+
+
 
 
     /**
-     
+     *
      *
      * @param exact _more_
      * @param props _more_
@@ -137,8 +181,55 @@ public class Propper {
 
     /**
      *
+     * @param names _more_
+     * @param o _more_
+      * @return _more_
+     */
+    public String getValue(String[] names, Object o) {
+        if (o instanceof String) {
+            return (String) o;
+        }
+        List<String> values = (List<String>) o;
+        for (int i = 0; i < header.size(); i++) {
+            String h = header.get(i);
+            for (String name : names) {
+                //              System.err.print("H:" + h + " name:" + name +" v:" + values);
+                if (h.equalsIgnoreCase(name)) {
+                    return values.get(i);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * @param names _more_
      * @param keys _more_
       * @return _more_
+     */
+    public String getNamedValue(String[] names, String... keys) {
+        Object o = get(keys);
+        if (o == null) {
+            return null;
+        }
+        if (o instanceof String) {
+            return (String) o;
+        }
+        List<String> l = (List<String>) o;
+        if (header == null) {
+            return null;
+        }
+
+        return getValue(names, l);
+    }
+
+
+    /**
+     *
+     * @param keys _more_
+     * @return _more_
      */
     public Object get(String... keys) {
         if (props != null) {
@@ -161,7 +252,6 @@ public class Propper {
                     if (key.toString().equals(v.key)) {
                         return v.values;
                     }
-
                 } else {
                     if (debug) {
                         System.err.println("V:" + key + " P:" + v.key + ":");
@@ -183,7 +273,7 @@ public class Propper {
      *
      *
      * @version        $version$, Fri, Aug 19, '22
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class Value {
 
@@ -194,7 +284,7 @@ public class Propper {
         Object values;
 
         /**
-         
+         *
          *
          * @param key _more_
          * @param values _more_
@@ -207,7 +297,7 @@ public class Propper {
         /**
          *
          * @param v _more_
-          * @return _more_
+         *  @return _more_
          */
         boolean matches(String v) {
             if (v.matches(key)) {
