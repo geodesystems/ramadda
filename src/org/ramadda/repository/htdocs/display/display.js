@@ -926,6 +926,7 @@ function DisplayThing(argId, argProperties) {
 	    fields= this.getSortedFields(fields);
 	    let excludes = props.excludes?props.excludes.split(","):[];
 	    let group = null;
+	    let includeDesc = this.getProperty("includeFieldDescriptionInTooltip",true);
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -1001,7 +1002,14 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    let labelValue = field.getLabel();
 		    value = value + field.getUnitSuffix();
-		    let tt = labelValue+"=" + initValue;
+		    let tt;
+		    if(!includeDesc) {
+			tt = field.getDescription();
+			if(tt) tt+="&#10;";
+		    }
+		    tt = tt??"";
+		    tt+=labelValue+"=" + initValue;
+		    
 		    if(value.length>100) {
 			value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
 		    }
@@ -1015,7 +1023,9 @@ function DisplayThing(argId, argProperties) {
 		    if(props.labelStyle) labelAttrs.push('style',props.labelStyle);
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
-		    row += HU.close(TR);
+		    if(includeDesc) {
+			row +=HU.td([],field.getDescription()??"");
+		    }
 		    rows.push(row);
                 }
             }
@@ -1330,6 +1340,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltip',doGetter:false,ex:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
+	{p:'includeFieldDescriptionInTooltip'},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'titleTemplate',doGetter:false,ex:'${field1}',tt:'Template for title in ${default} template display'},	
 	{p:'itemsPerColumn',ex:10,tt:'How many items to show in each column in a tooltip'},

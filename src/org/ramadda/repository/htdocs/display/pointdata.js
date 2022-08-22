@@ -697,6 +697,9 @@ function RecordField(props, source) {
 	toString: function() {
 	    return this.getId() +" type:" + this.getType() +" index:" + this.index;
 	},
+	getDescription: function() {
+	    return this.description;
+	},
 	getForDisplay: function() {
 	    return this.forDisplay;
 	},
