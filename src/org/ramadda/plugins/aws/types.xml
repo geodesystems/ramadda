@@ -9,7 +9,7 @@
     <column name="do_cache" type="boolean" default="true"  label="Enable caching" suffix="Turn caching  off if you are working on configuring this entries. Cache is flushed after 90 seconds"/>
     <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
 	    suffix="Patterns to exclude. One per line."/>
-    <column name="maxcount" type="int" default="1000"  label="Max per bucket" />
+    <column name="maxcount" type="int" default="1000"  label="Max per folder" />
     <column name="percent" type="double" default="-1"  label="Percentage Filter"
 	    suffix="0-1: for buckets with lots (100+) of children this is a probability that any one of them will be returned. It allows you to take a sample"/>          
     <column name="size_limit" type="double" default="-1"  label="Max file size"  suffix="(MB)"/>
