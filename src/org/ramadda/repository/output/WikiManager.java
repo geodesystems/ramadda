@@ -2597,9 +2597,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 
             //handle these entries
-	    System.err.println("J:" + jsonUrl);
-	    System.err.println(entry.getTypeHandler().isType(Constants.TYPE_FILE));
-	    System.err.println(entry.getResource().getPath());
             if ((jsonUrl == null)
 		&&
 		(entry.getTypeHandler().isType(Constants.TYPE_FILE) ||
