@@ -8,27 +8,66 @@
 <%nochildlist%>
 
 
-
-<subhead intoc="false" id="s3_harvesting">S3 Harvesting</subhead>
-The RAMADDA file <a href="harversters.html">harvester</a>
-can also harvest a S3 bucket store.
-
 <subhead intoc="false" id="s3_entry">S3 Bucket Entry</subhead>
 A S3 Bucket entry type is provided. This allows you to have a "synthetic" set of entries
 in RAMADDA that represent the S3 bucket hierarchy. These entries do not exist
 in the RAMADDA database but can be viewed and accessed through the web interface.
 <p>
-TBD
+To create a new S3 entry go to the File-&gt;Pick a Type menu and select "AWS S3".
+In the create form entry the S3 URL, a name and an optional description:
+[ht::screenshot images/s3/s3new.png]
+
+After adding the entry you can edit it to configure how the S3 buckets are displayed.
+[ht::screenshot images/s3/s3edit.png]
+
+<ul>
+<li> Enable caching: Turn this off if you are working on the settings as the entries are normally
+    cached and any changes you make might not take effect. Note: turn this back on once you are done.
+<li> Exclude patterns: Regular expression patterns, one per line, that are used to
+    exclude  certain S3 objects.
+<li>  Max per folder: Max number of folders or files listed per folder
+<li> Percentage filter: Used to sub-sample the number of folders/files shown per folder. Value is a probablility that a folder/file will be included with range from 0-1
+<li> Max file size: Max size of a file to include
+<li> Convert dates: If yes then RAMADDA will see if the name of a folder and file matches certain basic patterns for dates (e.g. yyyy for year, yyyy/mm for year then month, etc) 
+<li> Date patterns- a ";" seperated 3-tuple, one per line. Each 3-tuple has a:
+<pre>
+pattern;template;date format
+</pre>    
+and is used to match against a folder or file name. The pattern needs to contain "(...)" groups.
+If it matches then the matching groups are extracted and the template (the 2nd part of the 3-tuple)
+is used to create a date string. This date string is then parsed by the date format.
+</ul>  
+
+
+
+<subhead intoc="false" id="s3_convert_files">More conversions</subhead>
+You can also control the naming, specify latitude/longitude and description templates
+using a "Convert File" property.
+
+
+
+<subhead intoc="false" id="s3_harvesting">S3 Harvesting</subhead>
+The RAMADDA file <a href="harversters.html">harvester</a>
+can also harvest a S3 bucket store. Instead of a file path
+just enter the S3 URL, e.g.:
+[ht::screenshot images/s3/harvester.png]
+If you click on the
+"Move file to storage" then RAMADDA will copy the file from  S3
+over into its entry storage area. 
+All of the other harvester settings work like a regular 
+<a href="harversters.html">file harvester</a> except that the
+metadata harvesting will only work if the file has also been
+copied over.
 
 
 <subhead intoc="false" id="s3_entrytypes">Specifying Entry Types</subhead>
-By default when an entry is creating representing a file in S3 RAMADDA will try to figure out
+By default when an entry is created representing an S3 file  RAMADDA will try to figure out
 its entry type based on the file name or it will use the basic S3 Bucket entry type. For example,
 if you had a number of .zip shapefiles RAMADDA would default to the Zip file entry type.
 You can override this by adding one or more Entry Type Pattern properties to the S3 Root
 entry. 
 
-Go to the Add Properties of the root entry and, under Miscellaneous, select Entry Type Pattern.
+Go to the Add Properties menu of the root entry and select Entry Type Pattern.
 Select the appropriate entry type (e.g., Shapefile) and specify one or more patterns to match with.
 Note: the patterns are regular expression not glob style patterns.
 [ht::screenshot images/s3/entrytypes.png]
