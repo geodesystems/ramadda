@@ -40,6 +40,9 @@ import java.util.List;
 @SuppressWarnings({ "unchecked", "deprecation" })
 public class S3File extends FileWrapper {
 
+    public static final int SEARCH_MAX_CALLS = 30;
+    public static final int SEARCH_MAX_FOUND = 1000;
+
     /**  */
     public static final int PERCENT_THRESHOLD = 1000;
 
@@ -562,7 +565,7 @@ public class S3File extends FileWrapper {
      */
     public List<S3File> doSearch(String search, Searcher searcher)
             throws Exception {
-        return doSearch(search, searcher, 30, false);
+        return doSearch(search, searcher, SEARCH_MAX_CALLS, false);
     }
 
     /**
@@ -591,6 +594,7 @@ public class S3File extends FileWrapper {
         int    cnt      = 0;
         int    numCalls = 0;
         String marker   = null;
+
         while (true) {
             if (Utils.stringDefined(marker)) {
                 request.setContinuationToken(marker);
@@ -599,7 +603,7 @@ public class S3File extends FileWrapper {
             for (S3ObjectSummary objectSummary :
                     listing.getObjectSummaries()) {
                 cnt++;
-                if (found.size() > 1000) {
+                if (found.size() > SEARCH_MAX_FOUND) {
                     break;
                 }
                 if (searchMatch(search, objectSummary.getKey())) {
@@ -620,7 +624,7 @@ public class S3File extends FileWrapper {
             if (++numCalls >= maxCalls) {
                 break;
             }
-            if (found.size() > 1000) {
+            if (found.size() > SEARCH_MAX_FOUND) {
                 break;
             }
 
