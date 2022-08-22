@@ -538,10 +538,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 		long t1 = System.currentTimeMillis();
                 s3File = S3File.createFile(path.toString());
 		long t2 = System.currentTimeMillis();
-		//		Utils.printTimes("createFile:"+ id,t1,t2);
-		if(s3File.getName().equals("KABR")) {
-		    System.err.println(Utils.getStack(10));
-		}
+		if(s3File==null) System.err.println("Null s3File:" + path+":");
+//		Utils.printTimes("createFile:"+ id,t1,t2);
             }
             if (s3File == null) {
                 System.err.println(
