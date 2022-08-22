@@ -370,15 +370,10 @@ public class S3File extends FileWrapper {
 		continue;
 	    }
 
-            String name = getObjectName(objectSummary.getKey());
-            String path = self
-                          ? theBucket
-                          : theBucket + name;
-
-            //      System.err.println("\tNEW FILE:" + path);
-            S3File file = new S3File(path, name, objectSummary.getSize(),
-                                     objectSummary.getLastModified());
-            files.add(file);
+	    //	    String path = self
+	    //		? theBucket
+	    //		: theBucket + name;
+	    files.add(createS3File(objectSummary));
         }
 
 	if(debug)
@@ -388,6 +383,15 @@ public class S3File extends FileWrapper {
         return new S3ListResults(token, files);
     }
 
+
+    public static S3File createS3File(S3ObjectSummary objectSummary) {
+	String path = S3PREFIX +"//" + objectSummary.getBucketName() +"/"+objectSummary.getKey();
+	String name = getObjectName(objectSummary.getKey());
+	//      System.err.println("\tNEW FILE:" + path);
+	S3File file = new S3File(path, name, objectSummary.getSize(),
+				 objectSummary.getLastModified());
+	return file;
+    }
 
 
     /**
@@ -535,13 +539,13 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public List<String> doSearch(String search) throws Exception {
+    public List<S3File> doSearch(String search) throws Exception {
 	return doSearch(search, 10, false);
     }
 
-    public List<String> doSearch(String search,int maxCalls,boolean verbose) throws Exception {	
+    public List<S3File> doSearch(String search,int maxCalls,boolean verbose) throws Exception {	
 
-        List<String> found = new ArrayList<String>();
+        List<S3File> found = new ArrayList<S3File>();
         String[]     pair  = getBucketAndPrefix(this.toString());
         ListObjectsV2Request request =
             new ListObjectsV2Request().withBucketName(pair[0]);
@@ -579,7 +583,7 @@ public class S3File extends FileWrapper {
                     break;
                 }
 		if(searchMatch(search,objectSummary.getKey())) {
-		    found.add(objectSummary.getKey());
+		    found.add(createS3File(objectSummary));
 		    continue;
                 }
             }
@@ -971,7 +975,7 @@ public class S3File extends FileWrapper {
             }
             if (search != null) {
                 S3File file = new S3File(path);
-		List<String> results = file.doSearch(search,maxCalls,verbose);
+		List<S3File> results = file.doSearch(search,maxCalls,verbose);
 		if(results.size()==0)
 		    System.err.println("Nothing found");
 		else
