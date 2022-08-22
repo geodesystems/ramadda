@@ -593,6 +593,13 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Entry makeSynthEntry(Request request, Entry rootEntry, String id)
             throws Exception {
+	return makeSynthEntry(request, rootEntry, id,null);
+    }
+
+    public Entry makeSynthEntry(Request request, Entry rootEntry, String id,
+				Hashtable<String,S3File> cache)
+	throws Exception {	
+
         String rootId = getRootId(rootEntry);
         if ( !Utils.stringDefined(rootId)) {
             return null;
@@ -632,7 +639,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     continue;
                 }
                 long t1 = System.currentTimeMillis();
-                s3File = S3File.createFile(path.toString());
+		String spath = path.toString();
+		if(cache!=null) s3File = cache.get(spath);
+		if(s3File==null) {
+		    s3File = S3File.createFile(spath);
+		}
                 long t2 = System.currentTimeMillis();
                 if (s3File == null) {
                     System.err.println("Null s3File:" + path + ":");
@@ -771,7 +782,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
         String rootId = getRootId(entry);
         S3File file   = new S3File(rootId);
-        String text   = request.getString("text", "");
+        String text   = request.getString("searchtext", "");
         if (stringDefined(text)) {
             List<Entry> entries = new ArrayList<Entry>();
             final List<Propper> proppers = getConvertProperties(request,
@@ -808,13 +819,19 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
                 return new Result("S3 List", sb);
             }
+	    int cnt = 0;
+	    Hashtable<String,S3File> cache = new Hashtable<String,S3File>();
             for (S3File f : found) {
-                Entry child = makeSynthEntry(request, entry, f.toString());
-                //              Entry child =  createBucketEntry(request,entry,entry,f);
+		cache.put(f.toString(),f);
+	    }
+            for (S3File f : found) {
+		Entry child = makeSynthEntry(request, entry, f.toString(),cache);
                 entries.add(child);
             }
 
             if (entries.size() > 0) {
+		sb.append(getWikiManager().wikifyEntry(request, entry,"+center\n{{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder=\"Search Page\"}}\n-center\n"));
+
                 sb.append(getWikiManager().makeTableTree(request, null, null,
                         entries));
             }
@@ -843,7 +860,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                             ACTION_SEARCH).toString()));
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HU.hidden(ARG_ACTION, ACTION_SEARCH));
-        sb.append(HU.input("text", request.getString("text", ""),
+        sb.append(HU.input("searchtext", request.getString("searchtext", ""),
                            HU.SIZE_30
                            + HU.attrs("placeholder", "Search text")));
         sb.append(HU.SPACE2);
