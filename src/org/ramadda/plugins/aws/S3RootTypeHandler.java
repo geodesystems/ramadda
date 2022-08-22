@@ -673,38 +673,28 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         S3File file   = new S3File(rootId);
         String text   = request.getString("text", "");
         if (stringDefined(text)) {
-            List<String> found = file.doSearch(text);
+	    List<Entry> entries = new ArrayList<Entry>();
+            List<S3File> found = file.doSearch(text);
             if ((found == null) || (found.size() == 0)) {
                 sb.append(
                     getPageHandler().showDialogWarning(
-                        "Could not find object:" + text));
+                        "No results for: " + text));
 
                 return new Result("S3 List", sb);
             }
-            sb.append(HU.b("Searching for: ") + text);
-            sb.append("<ul>");
-            for (String f : found) {
-                f = f.trim();
-                if ( !rootId.endsWith("/")) {
-                    if ( !f.startsWith("/")) {
-                        f = "/" + f;
-                    }
-                }
-                String id = getEntryManager().createSynthId(entry,
-                                rootId + f);
-                sb.append("<li> ");
-                String url =
-                    HU.url(getRepository().URL_ENTRY_SHOW.toString(),
-                           ARG_ENTRYID, id);
-                sb.append(HU.href(url, f));
+            for (S3File f : found) {
+		Entry child =  createBucketEntry(request,entry,entry,f);
+		entries.add(child);
             }
-            sb.append("</ul>");
-        }
 
+	    if(entries.size()>0) 
+		sb.append(getWikiManager().makeTableTree(request, null,null,entries));
+        }
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
-        return new Result("S3 List", sb);
+	return getEntryManager().addEntryHeader(request, entry,new Result("S3 List", sb));
+	    
     }
 
 
@@ -756,7 +746,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         }
         StringBuilder sb = new StringBuilder();
         getS3SearchForm(request, entry, sb);
-
         return sb.toString();
     }
 
