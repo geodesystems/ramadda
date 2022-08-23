@@ -3161,7 +3161,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		for(Metadata metadata: metadataList) {
 		    String mtd = metadata.getAttr(1);
 		    String url = getMetadataManager().findType(metadata.getType()).getSearchUrl(request, metadata);
-		    HU.div(sb,HU.href(url, mtd),HU.attr("title","Search")+HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+		    MetadataHandler mtdh = getMetadataManager().findHandler(metadata.getType());
+		    String contents = mtdh.getTag(request, metadata);
+		    contents = HU.href(url, contents,HU.attr("title","Search"));
+		    sb.append(HU.span(contents,""));
+
 		}
 		sb.append("</div>");
 	    }
