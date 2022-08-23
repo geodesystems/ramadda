@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+    <handler class="org.ramadda.projects.asdi.AsdiMetadataHandler"  category="Basic Properties">
+    <type name="UN SDG Tag" id="un_sdg_tag" searchable="true" browsable="true" displaygroup="Tags and Keywords">
+      <element name="Tag" datatype="enumeration"
+	       values="file:/org/ramadda/projects/asdi/sdg.txt"/>
+
+    </type>
+</handler>
+</metadata>
+
+
