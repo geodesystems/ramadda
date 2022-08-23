@@ -105,8 +105,7 @@ public class AsdiMetadataHandler extends MetadataHandler {
 	    }
 	}
 	String extra = "";
-	if(color!=null) extra = HU.style("background:" + color+";"+"color:#fff;");
-	if(color!=null) extra = HU.style("background:" + color+";"+"xcolor:#fff;");	
+	if(color!=null) extra = HU.style("background:" + color+";") + HU.attr("data-background",color);
 	return HU.div(mtd,extra + HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
     }
 
