@@ -121,6 +121,11 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
+    public String getTag(Request request, Metadata metadata) {
+	String mtd = metadata.getAttr(1);
+	return HU.div(mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+    }
+
     /**
      * _more_
      *
