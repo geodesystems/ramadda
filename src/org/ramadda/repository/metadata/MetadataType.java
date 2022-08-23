@@ -1328,7 +1328,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         //Only show the value if its simple text
 	if(titles.size()>0) {
 	    lbl = lbl + " " + Utils.join(titles," - ");
-	    System.err.println("\tTitles:" + titles);
 	} else {
 	    if ((firstValue != null) && (firstValue.indexOf("<") < 0)) {
 		lbl = lbl + " " + firstValue;
