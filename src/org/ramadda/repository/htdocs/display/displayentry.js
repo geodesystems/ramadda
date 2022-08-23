@@ -2032,9 +2032,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    });
 		    let tag = $(this).attr("metadata-tag");
 		    if(tags.indexOf(tag)<0) {
-			let label = tag.replace(/^[^:]+:/,"");
-			style = $(this).attr('style');
-			contents+=HU.div(['data-background',$(this).attr('data-background'),'style',style??'',CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag],label);
+			if($(this).attr('data-image-url')) {
+			    contents+=HU.image($(this).attr('data-image-url'),[CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag]);
+			} else {
+			    let label = tag.replace(/^[^:]+:/,"");
+			    style = $(this).attr('style');
+			    contents+=HU.div(['data-background',$(this).attr('data-background'),'style',style??'',CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag],label);
+			}
 			tags.push(tag);
 		    }
 		});
