@@ -1,29 +1,48 @@
-<types supercategory="Geoscience" 	category="Point Data">
-
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    This file defines a number of entry types that handle the point data from the ASDI/AWS 
+    S3 data collection
+-->
+<types category="Point Data" supercategory="Geoscience">
 <!--
     For the ASDI data: 
     https://aws.amazon.com/marketplace/pp/prodview-yyq26ae3m6csk?sr=0-3&ref_=beagle&applicationId=AWSMPContessa#resources
     on S3 at: s3://noaa-gsod-pds/
--->
-<type name="type_noaa_gsod"  super="type_point" description="NOAA Global Surface Summary of Day">
-<!-- This specifies the file class that handles this data -->
-    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-    <property name="icon" value="/point/noaa.gif"/>
-    <column  name="station_name"   label="Station Name" size="1000" cansearch="true">
-      <property name="record_field" value="name"/>
-      <property name="is_default_entry_name" value="true"/>
-    </column>
-    <column  name="station_id"  type="enumerationplus" label="Station ID" size="1000" cansearch="true">
-      <property name="record_field" value="station"/>
-    </column>
+ -->
 
-    <!-- record.properties defines the data schema -->
-    <property name="record.properties">
-      skiplines=1
-      fields=station[type=enumeration], date[type=date format=yyyy-MM-dd], latitude, longitude, elevation, name[type=string], temp[label="Temperature"], temp_attributes, dewp[label="Dewpoint"], dewp_attributes, slp, slp_attributes, stp, stp_attributes, visib, visib_attributes, wdsp[label="Wind Speed"], wdsp_attributes, mxspd, gust[label="Wind Gust"], max, max_attributes[type=string], min, min_attributes[type=string], prcp, prcp_attributes[type=string], sndp, frshtt[type=string]
-    </property>
-<!-- The wiki display -->
-<wiki>
+  <type
+     description="NOAA Global Surface Summary of Day"
+     name="type_noaa_gsod"
+     super="type_point">
+<!-- This specifies the file class that handles this data  -->
+        <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+        <property name="icon" value="/point/noaa.gif"/>
+        <column
+       cansearch="true"
+       label="Station Name"
+       name="station_name"
+       size="1000">
+          <property name="record_field" value="name"/>
+          <property name="is_default_entry_name" value="true"/>
+        </column>
+        <column
+       cansearch="true"
+       label="Station ID"
+       name="station_id"
+       size="1000"
+       type="enumerationplus">
+            <property name="record_field" value="station"/>
+        </column>
+ 
+<!-- record.properties defines the data schema  -->
+        <property name="record.properties">
+<![CDATA[
+skiplines=1
+fields=station[type=enumeration], date[type=date format=yyyy-MM-dd], latitude, longitude, elevation, name[type=string], temp[label=&quot;Temperature&quot;], temp_attributes, dewp[label=&quot;Dewpoint&quot;], dewp_attributes, slp, slp_attributes, stp, stp_attributes, visib, visib_attributes, wdsp[label=&quot;Wind Speed&quot;], wdsp_attributes, mxspd, gust[label=&quot;Wind Gust&quot;], max, max_attributes[type=string], min, min_attributes[type=string], prcp, prcp_attributes[type=string], sndp, frshtt[type=string]
+]]>
+</property>
+<!-- The wiki display  -->
+    <wiki>
 <![CDATA[
 +section  title="Station: {{name}}"
 +note
@@ -49,16 +68,22 @@ part of the [https://aws.amazon.com/marketplace/seller-profile?id=e40a6e9c-c840-
 {{display_htmltable showMenu="true"
 fields="station, date, name, temp, dewp, slp, stp, visib, wdsp,  mxspd, gust, max, min,  prcp, sndp"}}
 ]]>
-</wiki>
-</type>
+    </wiki>
+  </type>
 
-<type name="type_asdi_sondehub_json"  super="type_point" description="SondeHub JSON Data"  handler="org.ramadda.data.services.PointTypeHandler">
-<property name="icon" value="/icons/json.png"/>
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property name="record.properties">
+  <type
+     description="SondeHub JSON Data"
+     handler="org.ramadda.data.services.PointTypeHandler"
+     name="type_asdi_sondehub_json"
+     super="type_point">
+    <property name="icon" value="/icons/json.png"/>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="record.properties">
+<![CDATA[
 csvcommands1=-json,,,-print
-</property>
-<wiki>
+]]>
+    </property>
+    <wiki>
 <![CDATA[
 +section  title={{name}}
 {{description wikify=true}}
@@ -73,26 +98,38 @@ csvcommands1=-json,,,-print
 -row
 -section
 ]]>
-</wiki>
-</type>
-
-  <type name="type_point_isd"  super="type_point" description="NOAA ISD Data"  
-handler="org.ramadda.data.services.PointTypeHandler">
+    </wiki>
+  </type>
+  <type
+      description="NOAA ISD Data"
+      handler="org.ramadda.data.services.PointTypeHandler"
+      name="type_point_isd"
+      super="type_point">
     <property name="icon" value="/point/noaa.gif"/>
     <property name="record.file.class" value="org.ramadda.projects.asdi.NoaaIsdFile"/>
-    <column  name="station_name"   label="Station Name" size="1000" cansearch="true">
+    <column
+	cansearch="true"
+	label="Station Name"
+	name="station_name"
+	size="1000">
       <property name="record_field" value="name"/>
       <property name="is_default_entry_name" value="true"/>
     </column>
-    <column  name="station"  type="enumerationplus" label="Station ID" size="1000" cansearch="true">
+    <column
+	cansearch="true"
+	label="Station ID"
+	name="station"
+	size="1000"
+	type="enumerationplus">
       <property name="record_field" value="station"/>
     </column>
-
- <property name="record.properties">
+    <property name="record.properties">
+<![CDATA[
 skiplines=1
-fields=station[type=enumeration label="Station" ],date[type=date label="Date"  format="yyyyMMdd'T'HHmmss" ],source[type=enumeration label="Source" ],latitude[type=double label="Latitude" ],longitude[type=double label="Longitude" ],elevation[type=double label="Elevation" ],name[type=string label="Name" ],report_type[type=string label="Report Type" ],call_sign[type=enumeration label="Call Sign" ],quality_control[type=enumeration label="Quality Control" ],wind_dir[type=double label="Wind Dir" ],wind_qc[type=string label="Wind Qc" ],wind_type[type=enumeration label="Wind Type" ],wind_speed[type=double label="Wind Speed" ],wind_speed_qc[type=string label="Wind Speed Qc"],cig_agl[type=double label="Cig Agl" ],cig_qc[type=string label="Cig Qc" ],cig_type[type=enumeration label="Cig Type" ],cig_cavok_code[type=enumeration label="Cig Cavok Code" ],vis[type=double label="Vis" ],vis_qc[type=string label="Vis Qc" ],vis_var[type=enumeration label="Vis Var" ],vis_var_qc[type=enumeration label="Vis Var Qc" ],temperature[type=double label="Temperature" ],temperature_qc[type=string label="Temperature Qc" ],dewpoint[type=double label="Dewpoint" ],dewpoint_qc[type=string label="Dewpoint Qc" ],pressure[type=double label="Pressure" ],pressure_qc[type=string label="Pressure Qc" ]
-     </property>
-<wiki>
+fields=station[type=enumeration label=&quot;Station&quot; ],date[type=date label=&quot;Date&quot;  format=&quot;yyyyMMdd'T'HHmmss&quot; ],source[type=enumeration label=&quot;Source&quot; ],latitude[type=double label=&quot;Latitude&quot; ],longitude[type=double label=&quot;Longitude&quot; ],elevation[type=double label=&quot;Elevation&quot; ],name[type=string label=&quot;Name&quot; ],report_type[type=string label=&quot;Report Type&quot; ],call_sign[type=enumeration label=&quot;Call Sign&quot; ],quality_control[type=enumeration label=&quot;Quality Control&quot; ],wind_dir[type=double label=&quot;Wind Dir&quot; ],wind_qc[type=string label=&quot;Wind Qc&quot; ],wind_type[type=enumeration label=&quot;Wind Type&quot; ],wind_speed[type=double label=&quot;Wind Speed&quot; ],wind_speed_qc[type=string label=&quot;Wind Speed Qc&quot;],cig_agl[type=double label=&quot;Cig Agl&quot; ],cig_qc[type=string label=&quot;Cig Qc&quot; ],cig_type[type=enumeration label=&quot;Cig Type&quot; ],cig_cavok_code[type=enumeration label=&quot;Cig Cavok Code&quot; ],vis[type=double label=&quot;Vis&quot; ],vis_qc[type=string label=&quot;Vis Qc&quot; ],vis_var[type=enumeration label=&quot;Vis Var&quot; ],vis_var_qc[type=enumeration label=&quot;Vis Var Qc&quot; ],temperature[type=double label=&quot;Temperature&quot; ],temperature_qc[type=string label=&quot;Temperature Qc&quot; ],dewpoint[type=double label=&quot;Dewpoint&quot; ],dewpoint_qc[type=string label=&quot;Dewpoint Qc&quot; ],pressure[type=double label=&quot;Pressure&quot; ],pressure_qc[type=string label=&quot;Pressure Qc&quot; ]
+]]>
+    </property>
+    <wiki>
 <![CDATA[
 +section # title="NOAA ISD Site:  {{name}} - {{field name=station}}"
 {{description}}
@@ -111,10 +148,6 @@ fields=station[type=enumeration label="Station" ],date[type=date label="Date"  f
 -row
 -section
 ]]>
-</wiki>
-
-  </type>
-
-
-
+    </wiki>
+    </type>
 </types>
