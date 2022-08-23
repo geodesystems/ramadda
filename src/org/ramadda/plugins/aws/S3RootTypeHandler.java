@@ -44,8 +44,11 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
+    private static final String ARG_SEARCH_TEXT = "searchtext";
+    private static final String ARG_SEARCH_ROOT = "searchroot";    
+
     /**  */
-    private static final String[] NAME_ALIASES = { "name", "stationname" };
+    private static final String[] NAME_ALIASES = { "name", "fullname","stationname" };
 
     /**  */
     private static final String[] LAT_ALIASES = { "lat", "latitude" };
@@ -152,18 +155,15 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                 for (String id : ids) {
                     if (getEntryManager().getEntryFromCache(id) == null) {
                         ids = null;
-
                         break;
                     }
                 }
             }
-            ids = null;
+	    //            ids = null;
             if (ids != null) {
                 System.err.println("getSynthIds: cached:" + synthId
-                                   + " cachekey:" + cacheKey);
-                System.err.println("Marker:"
+                                   + " cachekey:" + cacheKey +" marker:"
                                    + request.getString(ARG_MARKER, ""));
-
                 return ids;
             }
         }
@@ -495,7 +495,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                 if (template != null) {
                     template = template.replace("\\n", "\n");
                     desc     = "<wiki>\n" + template;
-
                     break;
                 }
             }
@@ -732,8 +731,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         S3File newFile = new S3File(getS3Path(base, path));
 
-        System.err.println("doLs: marker="
+        System.err.println("doLs: " + base +" marker="
                            + Utils.X(request.getString(ARG_MARKER, null)));
+	//	System.err.println(Utils.getStack(5));
 
         return newFile.doList(false, max, percent, maxSize,
                               request.getString(ARG_MARKER, null));
@@ -778,11 +778,28 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "S3 Search");
 
-        getS3SearchForm(request, entry, sb);
-
         String rootId = getRootId(entry);
-        S3File file   = new S3File(rootId);
-        String text   = request.getString("searchtext", "");
+        getS3SearchForm(request, entry, rootId,sb);
+
+
+        S3File file = null;
+        String text   = request.getString(ARG_SEARCH_TEXT, "");
+	if(request.defined(ARG_SEARCH_ROOT)) {
+	    String root = request.getString(ARG_SEARCH_ROOT);
+	    if(!root.startsWith(rootId)) {
+                sb.append(
+                    getPageHandler().showDialogWarning(
+						       "You can only search under the S3 root:" + rootId));
+		text=null;
+	    } else {
+		file = new S3File(root);
+	    }
+	} else {
+	    file = new S3File(rootId);
+	}
+	
+
+
         if (stringDefined(text)) {
             List<Entry> entries = new ArrayList<Entry>();
             final List<Propper> proppers = getConvertProperties(request,
@@ -830,9 +847,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             if (entries.size() > 0) {
-		sb.append(getWikiManager().wikifyEntry(request, entry,"+center\n{{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder=\"Search Page\"}}\n-center\n"));
-
-                sb.append(getWikiManager().makeTableTree(request, null, null,
+	        sb.append(getWikiManager().makeTableTree(request, null, null,
                         entries));
             }
         }
@@ -840,7 +855,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return getEntryManager().addEntryHeader(request, entry,
-                new Result("S3 List", sb));
+                new Result("S3 Search", sb));
 
     }
 
@@ -853,19 +868,24 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void getS3SearchForm(Request request, Entry entry,
+    private void getS3SearchForm(Request request, Entry entry, String rootId,
                                  StringBuilder sb)
             throws Exception {
+	sb.append(HU.formTable());
         sb.append(HU.form(getEntryActionUrl(request, entry,
                                             ACTION_SEARCH).toString()));
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HU.hidden(ARG_ACTION, ACTION_SEARCH));
-        sb.append(HU.input("searchtext", request.getString("searchtext", ""),
-                           HU.SIZE_30
-                           + HU.attrs("placeholder", "Search text")));
-        sb.append(HU.SPACE2);
-        sb.append(HU.submit("Search"));
+	HU.formEntry(sb, "Text:",HU.input(ARG_SEARCH_TEXT, request.getString(ARG_SEARCH_TEXT, ""),
+					  HU.SIZE_40
+					  + HU.attrs("placeholder", "Search text")));
+	HU.formEntry(sb,"Under:",
+		     HU.input(ARG_SEARCH_ROOT, request.getString(ARG_SEARCH_ROOT, ""),
+			      HU.SIZE_40
+			      + HU.attrs("placeholder", "e.g. " +rootId+"...")));
+	HU.formEntry(sb,"",HU.submit("Search"));
         sb.append(HU.formClose());
+	sb.append(HU.formTableClose());
     }
 
 
@@ -892,8 +912,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                         entry, tag, props);
         }
         StringBuilder sb = new StringBuilder();
-        getS3SearchForm(request, entry, sb);
-
+        String rootId = getRootId(entry);
+        getS3SearchForm(request, entry, rootId, sb);
         return sb.toString();
     }
 

@@ -24,7 +24,13 @@
 -center
 {{description wikify="true"}}
 +center
+<form>
+<input type="hidden" name="searchroot" value="{{this}}"> 
+<input  name="searchtext" placeholder="Search S3"> 
++skip
 {{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder="Search Page"}}
+-skip
+</form>
 -center
 {{tabletree maxHeight=500px}}
 ]]>
@@ -42,7 +48,11 @@
 :title {{name}}
 {{description suffix="<p>"}}
 +center
-{{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder="Search Page"}}
+<form action="{{root}}/entry/action">
+<input type="hidden" name="action" value="s3search">
+<input type="hidden" name="entryid" value="{{ancestor type=type_s3_root}}"> 
+<input type="hidden" name="searchroot" value="{{field name=bucket_id}}"> 
+<input  name="searchtext" placeholder="Search S3"> 
 -center
 {{tabletree message="" maxHeight=500px}}
 -col
