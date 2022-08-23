@@ -114,6 +114,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_DESCRIPTION),
                             new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_SHOWICON,"true"),
                             new WikiTag(WIKI_TAG_ENTRYLINK, null, "link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
+                            new WikiTag(WIKI_TAG_THIS,null),
+                            new WikiTag(WIKI_TAG_ANCESTOR,null,"type","entry type"), 			    
                             new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
@@ -2133,6 +2135,18 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    String url = license.getUrl();
             if(url!=null) result =  HU.href(url, result, "target=_other");
 	    return result;
+        } else if (theTag.equals(WIKI_TAG_THIS)) {
+	    return entry.getId();
+        } else if (theTag.equals(WIKI_TAG_ANCESTOR)) {
+	    String type = getProperty(wikiUtil, props, "type", null);
+	    Entry parent = entry.getParentEntry();
+	    if(parent==null) return entry.getId();
+	    if(type==null) return parent.getId();
+	    while(parent!=null) {
+		if(parent.getTypeHandler().isType(type)) return parent.getId();
+		parent = parent.getParentEntry();
+	    }
+	    return "null";
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
