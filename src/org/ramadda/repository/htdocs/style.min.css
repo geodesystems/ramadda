@@ -2687,6 +2687,13 @@ pre {
     color:rgb(51,51,51);
 }
 
+img.metadata-tag {
+    width:50px;
+    border-radius: 0px;
+    background:transparent;
+    padding:0px;
+    
+}
 .metadata-tag:hover {
     border:1px solid #888;
 }
