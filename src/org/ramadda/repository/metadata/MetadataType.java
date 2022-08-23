@@ -1249,6 +1249,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         String lbl = (String) request.getExtraProperty(PROP_METADATA_LABEL);
         String firstValue = null;
+	List<String> titles = new ArrayList<String>();
         if (lbl == null) {
             lbl = msgLabel(getName());
         }
@@ -1267,13 +1268,19 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
         String lastGroup = null;
         for (MetadataElement element : getChildren()) {
-            if (forEdit && (firstValue == null)) {
+            if (forEdit && (firstValue == null || element.getIsTitle())) {
+		String attr = metadata.getAttr(element.getIndex());
                 MetadataElement.MetadataHtml metadataHtml =
-                    element.getHtml(request, entry, this, metadata,
-                                    metadata.getAttr(element.getIndex()), 0);
+                    element.getHtml(request, entry, this, metadata,   attr, 0);
                 if (metadataHtml != null) {
-                    firstValue = metadataHtml.getHtml();
-                }
+		    if(firstValue==null)
+			firstValue = metadataHtml.getHtml();
+		} 
+		if(element.getIsTitle()) {
+		    if(element.isFileType())
+			attr = getStorageManager().getFileTail(attr);
+		    titles.add(attr);
+		}		    
             }
 
             if ((element.getGroup() != null)
@@ -1319,9 +1326,14 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
 
         //Only show the value if its simple text
-        if ((firstValue != null) && (firstValue.indexOf("<") < 0)) {
-            lbl = lbl + " " + firstValue;
-        }
+	if(titles.size()>0) {
+	    lbl = lbl + " " + Utils.join(titles," - ");
+	    System.err.println("\tTitles:" + titles);
+	} else {
+	    if ((firstValue != null) && (firstValue.indexOf("<") < 0)) {
+		lbl = lbl + " " + firstValue;
+	    }
+	}
 
         return new String[] { lbl, sb.toString() };
     }

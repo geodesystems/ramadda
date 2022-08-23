@@ -323,6 +323,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return result;
     }
 
+    public boolean isFileType() {
+        return dataType.equals(DATATYPE_FILE);
+    }
 
     /**
      * _more_

@@ -161,7 +161,7 @@
     <type
        name="File Attachment"
        id="content.attachment">
-      <element name="File" datatype="file" thumbnail="false"/>
+      <element name="File" datatype="file" thumbnail="false" istitle="true"/>
       <element name="Type" />
     </type>
 
@@ -384,9 +384,9 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     <type
        name="Convert file"
        id="convert_file">
-      <element name="for" label="For" datatype="enumeration" values="alias:Alias,location:Location,template:Template" default="alias"/>
-      <element name="type" label="Match Type" datatype="enumeration" values="exact:Exact,patttern:Pattern" default="exact"/>      
-      <element name="Convert file" datatype="file" thumbnail="false"/>
+      <element istitle="true" name="for" label="For" datatype="enumeration" values="alias:Alias,location:Location,template:Template" default="alias"/>
+      <element istitle="true" name="type" label="Match Type" datatype="enumeration" values="exact:Exact,patttern:Pattern" default="exact"/>      
+      <element istitle="true"  name="Convert file" datatype="file" thumbnail="false"/>
     </type>
 
 

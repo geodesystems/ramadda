@@ -120,6 +120,8 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     private boolean showInHtml = true;
 
+    private boolean isTitle = false;
+
     /** _more_ */
     private Hashtable<String, String> templates = new Hashtable<String,
                                                       String>();
@@ -403,6 +405,8 @@ public class MetadataTypeBase extends RepositoryManager {
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
                 false));
+
+        setIsTitle(XmlUtil.getAttribute(node, "istitle",false));
 
         NamedNodeMap nnm = node.getAttributes();
         if (nnm != null) {
@@ -901,6 +905,25 @@ public class MetadataTypeBase extends RepositoryManager {
     public boolean getSearchable() {
         return this.searchable;
     }
+
+    /**
+       Set the IsTitle property.
+
+       @param value The new value for IsTitle
+    **/
+    public void setIsTitle (boolean value) {
+	isTitle = value;
+    }
+
+    /**
+       Get the IsTitle property.
+
+       @return The IsTitle
+    **/
+    public boolean getIsTitle () {
+	return isTitle;
+    }
+
 
 
 }
