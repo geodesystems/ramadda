@@ -115,7 +115,6 @@ public class Propper {
                 sb.append(toks.get(i));
                 sb.append("\n");
             }
-	    System.err.println("LINE:" + firstLine +" exact:" + exact);
             propper        = new Propper(exact, firstLine, sb.toString());
             propper.isText = true;
         } else {  //csv
