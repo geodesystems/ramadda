@@ -2033,7 +2033,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    let tag = $(this).attr("metadata-tag");
 		    if(tags.indexOf(tag)<0) {
 			if($(this).attr('data-image-url')) {
-			    contents+=HU.image($(this).attr('data-image-url'),[CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag,'title',$(this).attr('title')??'']);
+			    let title = $(this).attr('title')+HU.getTitleBr()??'';
+			    title+="Click to filter";
+			    contents+=HU.image($(this).attr('data-image-url'),[CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag,'title',title]);
 			} else {
 			    let label = tag.replace(/^[^:]+:/,"");
 			    style = $(this).attr('style');
