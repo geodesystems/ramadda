@@ -102,18 +102,28 @@ public class Propper {
         } else if (filename.endsWith(".txt")) {
             String       contents = IOUtil.readContents(is);
             List<String> toks     = Utils.split(contents, "\n");
+	    String firstLine = null;
+	    int idx;
+            for (idx = 0; idx < toks.size(); idx++) {
+		String line = toks.get(idx);
+		if(line.startsWith("#")) continue;
+		firstLine = line;
+		break;
+	    }
             StringBuffer sb       = new StringBuffer();
-            for (int i = 1; i < toks.size(); i++) {
+            for (int i = idx+1; i < toks.size(); i++) {
                 sb.append(toks.get(i));
                 sb.append("\n");
             }
-            propper        = new Propper(exact, toks.get(0), sb.toString());
+	    System.err.println("LINE:" + firstLine +" exact:" + exact);
+            propper        = new Propper(exact, firstLine, sb.toString());
             propper.isText = true;
         } else {  //csv
             propper       = new Propper(exact);
             propper.isCsv = true;
             for (String line :
                     Utils.split(IOUtil.readContents(is), "\n", true, true)) {
+		if(line.startsWith("#")) continue;
                 List<String> cols = Utils.tokenizeColumns(line, ",");
                 if (propper.header == null) {
                     cols.remove(0);
@@ -240,6 +250,7 @@ public class Propper {
                 }
             }
         }
+	if(debug) System.err.println("Propper.get");
         if (values == null) {
             return null;
         }
@@ -247,7 +258,7 @@ public class Propper {
             for (Value v : values) {
                 if (exact) {
                     if (debug) {
-                        System.err.println("key:" + key + " value:" + v.key);
+                        System.err.println("\tkey:" + key + " value:" + v.key);
                     }
                     if (key.toString().equals(v.key)) {
                         return v.values;
