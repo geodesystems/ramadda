@@ -132,7 +132,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     private int columns = 60;
 
     /** _more_ */
-    private List<TwoFacedObject> values;
+    //    private List<TwoFacedObject> values;
+    private List<Object> values;    
 
     /** _more_ */
     private Hashtable<String, String> valueMap = new Hashtable<String,
@@ -238,7 +239,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         true);
             }
 
-            List<TwoFacedObject> enumValues = new ArrayList<TwoFacedObject>();
+	    //            List<TwoFacedObject> enumValues = new ArrayList<TwoFacedObject>();
+            List<Object> enumValues = new ArrayList<Object>();	    
             for (String tok : tmpValues) {
                 //Check for comment line
                 if (tok.startsWith("#")) {
@@ -247,19 +249,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 int idx = tok.indexOf(delimiter);
                 if (idx < 0) {
                     valueMap.put(tok, tok);
-                    enumValues.add(new TwoFacedObject(tok));
-
+		    enumValues.add(new TwoFacedObject(tok));
                     continue;
                 }
                 String[] toks = Utils.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
                     enumValues.add(new TwoFacedObject(tok));
-
                     continue;
                 }
                 valueMap.put(toks[0], toks[1]);
-                enumValues.add(new TwoFacedObject(toks[1], toks[0]));
+		//        public Selector(String label, String id, String tooltip, String icon,int margin, int padding, boolean isHeader) {
+		//                enumValues.add(new TwoFacedObject(toks[1], toks[0]));
+                enumValues.add(new HtmlUtils.Selector(toks[1], toks[0],toks[0],null,0,0,false));
             }
             enumValues.add(0, new TwoFacedObject(""));
             setValues(enumValues);
@@ -1149,7 +1151,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @param value The new value for Values
      */
-    public void setValues(List<TwoFacedObject> value) {
+    public void setValues(List<Object> value) {
         values = value;
     }
 
@@ -1158,7 +1160,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @return The Values
      */
-    public List<TwoFacedObject> getValues() {
+    public List<Object> getValues() {
         return values;
     }
 

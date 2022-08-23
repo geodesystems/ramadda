@@ -1858,12 +1858,18 @@ public class MetadataManager extends RepositoryManager {
             return;
         }
         MetadataElement           element    = type.getChildren().get(0);
-        List<TwoFacedObject>      enumValues = element.getValues();
+        List<Object>      enumValues = element.getValues();
         Hashtable<String, String> labels     = new Hashtable<String,
                                                    String>();
         if (enumValues != null) {
-            for (TwoFacedObject tfo : enumValues) {
-                labels.put((String) tfo.getId(), (String) tfo.getLabel());
+            for (Object o : enumValues) {
+		if(o instanceof TwoFacedObject) {
+		    TwoFacedObject tfo = (TwoFacedObject) o;
+		    labels.put((String) tfo.getId(), (String) tfo.getLabel());
+		} else if(o instanceof HtmlUtils.Selector) {
+		    HtmlUtils.Selector sel = (HtmlUtils.Selector) o;
+		    labels.put((String) sel.getId(), (String) sel.getLabel());
+		}
             }
         }
         String[] values = getDistinctValues(request, handler, type);

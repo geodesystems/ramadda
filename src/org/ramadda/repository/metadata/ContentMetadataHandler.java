@@ -5,13 +5,14 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
+import org.ramadda.repository.output.OutputType;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 
-
+import ucar.unidata.util.TwoFacedObject;
 import org.w3c.dom.*;
 
 
@@ -28,6 +29,7 @@ import java.net.URLConnection;
 
 
 
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -40,6 +42,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class ContentMetadataHandler extends MetadataHandler {
 
 
@@ -48,6 +51,9 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_THUMBNAIL = "content.thumbnail";
 
+    /** _more_ */
+    public static final String TYPE_TOOLS = "output_tools";
+    
     /** _more_ */
     public static final String TYPE_ICON = "content.icon";
 
@@ -153,6 +159,9 @@ public class ContentMetadataHandler extends MetadataHandler {
             }
         }
 
+
+
+
         return super.getHtml(request, entry, metadata);
     }
 
@@ -201,6 +210,35 @@ public class ContentMetadataHandler extends MetadataHandler {
             return sb.toString();
         }
 
+	try {
+	    if (element.getName().equals("output_type")) {
+		StringBuffer sb = new StringBuffer();
+		List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+		for(OutputType type:getRepository().getOutputTypes()) {
+		    tfos.add(new TwoFacedObject(type.getLabel(), type.getId()));
+		}
+
+		tfos.sort(new Comparator() {
+			public int compare(Object o1, Object o2) {
+			    String s1 = (String) ((TwoFacedObject) o1).getLabel();
+			    String s2 = (String) ((TwoFacedObject) o2).getLabel();
+			    return s1.compareToIgnoreCase(s2);
+			}
+		    });
+
+	    
+		for(TwoFacedObject tfo: tfos) {
+		    sb.append(tfo.getId());
+		    sb.append(":");
+		    sb.append(tfo.getLabel());
+		    sb.append(",");
+		}
+		return sb.toString();
+	    }
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+	
         return "";
     }
 

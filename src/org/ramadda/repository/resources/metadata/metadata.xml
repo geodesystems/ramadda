@@ -227,6 +227,7 @@ Override the logo icon and URL used in the default page templates.
          name="Timezone"/>
     </type>
 
+
     <type name="Sort Order" id="content.sort">
       <help>
 <![CDATA[
@@ -270,6 +271,20 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
       <element name="Alias" />
       <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
     </type>
+
+    <type
+       name="Tool outputs"
+       class="org.ramadda.repository.metadata.ContentMetadataHandler" 
+       id="output_tools">
+      <element name="output_type"  label="Output Type" datatype="enumeration" suffix="The output type to show in the tools list"/>
+      <help>
+<![CDATA[
+Add an output that shows up in the list of tools/services for an entry
+]]>
+</help>
+    </type>
+
+
 
     <type name="Wiki Category" id="wikicategory" foruser="false">
       <element name="Wiki Category" />
@@ -373,6 +388,9 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
       <element name="Text"/>
     </type>
 
+
+
+
     <type
        name="Entry Type Patterns"
        class="org.ramadda.repository.metadata.ContentMetadataHandler" 
@@ -380,6 +398,7 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
       <element name="entrytype"  label="Entry Type" datatype="enumeration" suffix="The entry type to use"/>
       <element name="patterns"  label="Patterns" rows="10" suffix="Patterns to match. One per line. Use &quot;file:&quot; to match any file and &quot;folder:&quot; to match any non file "/>
     </type>
+
 
     <type
        name="Convert file"

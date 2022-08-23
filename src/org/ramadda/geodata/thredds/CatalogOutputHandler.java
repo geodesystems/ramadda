@@ -98,7 +98,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG_EMBED =
-        new OutputType("THREDDS Catalog", "thredds.catalog.embed",
+        new OutputType("THREDDS Catalog - Embed", "thredds.catalog.embed",
                        OutputType.TYPE_FEEDS, "", ICON_CATALOG);
 
 

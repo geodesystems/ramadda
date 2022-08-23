@@ -2681,18 +2681,39 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         } else if (theTag.equals(WIKI_TAG_TOOLS)) {
             StringBuilder links = new StringBuilder();
             int           cnt   = 0;
+	    HashSet<String> seen = new HashSet<String>();
+
             for (Link link :
 		     getEntryManager().getEntryLinks(request, entry)) {
                 if ( !link.isType(OutputType.TYPE_IMPORTANT)) {
                     continue;
                 }
-
+		if(seen.contains(link.getUrl())) continue;
+		seen.add(link.getUrl());
                 String label = getIconImage(link.getIcon()) + HU.space(1)
 		    + link.getLabel();
                 HU.href(links, link.getUrl(), label);
                 links.append(HU.br());
                 cnt++;
             }
+	    List<Metadata> mtdList = 
+		getMetadataManager().findMetadata(request, entry,
+						  new String[]{"output_tools"}, true);
+	    if(mtdList!=null) {
+		for(Metadata mtd: mtdList) {
+		    OutputType type = getRepository().findOutputType(mtd.getAttr1());
+		    if(type==null) continue;
+		    Link link =getHtmlOutputHandler().makeLink(request, entry, type);
+		    if(seen.contains(link.getUrl())) continue;
+		    seen.add(link.getUrl());
+		    String label = getIconImage(link.getIcon()) + HU.space(1)
+			+ link.getLabel();
+		    HU.href(links, link.getUrl(), label);
+		    links.append(HU.br());
+		    cnt++;
+		}
+	    }
+
             if (cnt == 0) {
                 return "";
             }
