@@ -39,6 +39,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.metadata.License;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.search.SearchInfo;
@@ -3288,14 +3289,21 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 StringBuilder content =   new StringBuilder();
 		List<Metadata> tagList =null;
 		if(addTags) {
+		    String[] tagTypes;
+		    String  tagType = getProperty(wikiUtil, props, "tagTypes",null);
+		    if(tagType!=null) {
+			tagTypes = Utils.toStringArray(Utils.split(tagType,",",true,true));
+		    } else {
+			tagTypes = new String[]{"enum_tag","content.keyword"};
+		    }
 		    tagList = 
 			getMetadataManager().findMetadata(request, child,
-							  new String[]{"enum_tag","content.keyword"}, false);
+							  tagTypes, false);
 		    if(tagList!=null && tagList.size()>0) {
 			content.append("<div class=metadata-tags>");
 			for(Metadata metadata: tagList) {
-			    String mtd = metadata.getAttr(1);
-			    HU.div(content,mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+			    MetadataHandler mtdh = getMetadataManager().findHandler(metadata.getType());
+			    content.append(mtdh.getTag(request, metadata));
 			}
 			content.append("</div>");
 		    }
