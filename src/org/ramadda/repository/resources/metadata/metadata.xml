@@ -155,7 +155,7 @@
     <type
        name="Thumbnail Image"
        id="content.thumbnail">
-      <element name="Thumbnail File" datatype="file" thumbnail="true"/>
+      <element name="Thumbnail File" datatype="file" thumbnail="true" istitle="true"/>
     </type>
 
     <type
