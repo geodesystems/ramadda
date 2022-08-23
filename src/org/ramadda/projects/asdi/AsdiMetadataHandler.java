@@ -12,6 +12,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 
+import ucar.unidata.util.StringUtil;
 
 import org.w3c.dom.*;
 
@@ -97,16 +98,26 @@ public class AsdiMetadataHandler extends MetadataHandler {
     @Override
     public String getTag(Request request, Metadata metadata) {
 	String mtd = metadata.getAttr(1);
+	String image = null;
 	String color = null;
+	String text="";
 	for(int i=0;i<TAGS.length;i++) {
 	    if(mtd.equals(TAGS[i])) {
 		color = COLORS[i];
+		text = TAGS[i];
+		image = getPageHandler().makeHtdocsUrl("/asdi/E-WEB-Goal-" + StringUtil.padLeft(""+(i+1),2,"0"))+".png";
 		break;
 	    }
 	}
-	String extra = "";
-	if(color!=null) extra = HU.style("background:" + color+";") + HU.attr("data-background",color);
-	return HU.div(mtd,extra + HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+
+	if(image!=null) {
+	    return  HU.image(image,HU.attrs("title",text,"class","metadata-tag","metadata-tag",mtd,"metadata-tag-type","image","data-image-url",image));
+	} else {
+	    String extra = "";
+	    if(color!=null) extra = HU.style("background:" + color+";") + HU.attr("data-background",color);
+	    String contents=  mtd;
+	    return HU.div(mtd,extra + HU.cssClass("metadata-tag")+HU.attr("metadata-tag",contents));
+	}
     }
 
 }
