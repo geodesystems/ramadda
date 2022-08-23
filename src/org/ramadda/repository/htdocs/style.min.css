@@ -2696,6 +2696,7 @@ pre {
 }
 .metadata-tag-selected {
     background:#C5E5F5;
+    border:1px solid #000;
 }
 
 .metadata-image {
