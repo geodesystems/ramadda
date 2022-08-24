@@ -3020,6 +3020,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log("\tusing  fields:" + fields);
 		}
             }
+	    if (!fields) {
+		return null;
+	    }
 	    let aliases= {};
 	    let tmp = this.getProperty("fieldAliases");
 	    if(tmp) {
