@@ -552,12 +552,12 @@ public class CsvOperator {
             return new FileInputStream(filename);
         } catch (Exception exc) {
             try {
-                return IO.getInputStream(filename, CsvOperator.class);
+                return IO.getInputStream(filename, CsvOperator.class, true);
             } catch (Exception exc2) {
                 for (String prefix : FILE_PREFIXES) {
                     try {
                         return IO.getInputStream(prefix + "/" + filename,
-                                CsvOperator.class);
+						 CsvOperator.class,true);
                     } catch (Exception exc3) {}
                 }
             }

@@ -165,6 +165,12 @@ public class IO {
     }
 
 
+    public static InputStream getInputStream(String filename, boolean convertZipIfNeeded)
+            throws FileNotFoundException, Exception {
+        return getInputStream(filename, IO.class,convertZipIfNeeded);
+    }
+    
+
 
     /**
      * _more_
@@ -183,14 +189,21 @@ public class IO {
         checkFile(filename);
         File f = new File(filename);
         if (f.exists()) {
-            return convertInputStream(filename, new FileInputStream(f));
+            return new FileInputStream(f);
         }
 
         try {
             URL url = new URL(filename);
-            convertInputStream(filename, getInputStream(url));
+            return getInputStream(url);
         } catch (java.net.MalformedURLException exc) {}
-        return convertInputStream(filename,IOUtil.getInputStream(filename, origin));
+        return IOUtil.getInputStream(filename, origin);
+    }
+
+    public static InputStream getInputStream(String filename, Class origin, boolean convertZipIfNeeded)
+            throws FileNotFoundException, Exception {
+	InputStream inputStream = getInputStream(filename, origin);
+	if(convertZipIfNeeded) return convertInputStream(filename,inputStream);
+	return inputStream;
     }
 
 
@@ -405,7 +418,6 @@ public class IO {
         return new BufferedInputStream(is, size);
 
     }
-
 
 
     public static InputStream convertInputStream(String filename, InputStream is) throws Exception {

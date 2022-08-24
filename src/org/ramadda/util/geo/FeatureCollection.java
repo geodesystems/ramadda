@@ -8,6 +8,7 @@ package org.ramadda.util.geo;
 
 
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.IO;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -653,6 +654,14 @@ public class FeatureCollection {
         }
         sb.append(JsonUtil.listClose());
         sb.append(JsonUtil.mapClose());
+    }
+
+    public static void main(String[]args) throws Exception {
+	for(String file:args) {
+	    System.err.println("opening:" +file);
+            FeatureCollection.getFeatureCollection(file, IO.getInputStream(file));
+	    System.err.println("OK");
+	}
     }
 
 }
