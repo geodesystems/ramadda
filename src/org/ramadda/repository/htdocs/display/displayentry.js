@@ -973,7 +973,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
 	    buttonLabel = "Search";
-            let searchButton = HU.div(['style','xmargin-left:4px;xmargin-right:4px;margin-bottom:4px;width:80%;','class','ramadda-button',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "display-search-button ramadda-clickable"], buttonLabel);
+            let searchButton = HU.div(['style','margin-bottom:4px;max-width:80%;',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
             let settings = this.getSearchSettings();
 	    let addWidget = (label, widget)=>{
@@ -1110,6 +1110,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 //		    topItems = Utils.mergeLists([searchButton], topItems);
 		    topItems = topItems.map(item=>{return HU.div([STYLE,HU.css("margin-right","8px")], item);});
 		    form+=searchButton;
+		    form+="<br>";
 		    form+=   HU.hrow(...topItems);
 		}
 	    }
