@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 24 11:37:39 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 24 12:54:28 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -6065,6 +6065,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log("\tusing  fields:" + fields);
 		}
             }
+	    if (!fields) {
+		return null;
+	    }
 	    let aliases= {};
 	    let tmp = this.getProperty("fieldAliases");
 	    if(tmp) {
@@ -37674,8 +37677,8 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		let record = idToRecord[poly.attr(RECORD_ID)];
 		poly.attr("lastStroke",poly.attr("stroke"))
 		    .attr("lastFill",poly.attr("fill"));
-		poly.attr("stroke",_this.getPropertyHighlightStrokeColor("blue")).attr("stroke-width",_this.getPropertyHighlightStrokeWidth(1))
-		    .attr("fill",_this.getPropertyHighlightFill("blue"));
+		poly.attr("stroke",_this.getProperty('highlightStrokeColor','blue')).attr("stroke-width",_this.getProperty('highlightStrokeWidth',1))
+		    .attr("fill",_this.getProperty('highlightFillColor','blue'));
 		if(!tooltip) return;
 		let regionName = poly.attr("regionName");
 		let tt = null;
@@ -37687,7 +37690,6 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    tt =  _this.getRecordHtml(record,null,tooltip);
 		}
 		if(tt) {
-		    console.log("d:" + d3.event);
 		    _this.tooltipDiv.html(tt)
 			.style("left", (d3.event.pageX + 10) + "px")
 			.style("top", (d3.event.pageY + 20) + "px");
