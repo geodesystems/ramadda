@@ -768,7 +768,7 @@ public class MetadataHandler extends RepositoryManager {
 
             List<TwoFacedObject> existingValues =
                 trimValues((List<String>) Misc.toList(values));
-            List<TwoFacedObject> selectList = new ArrayList<TwoFacedObject>();
+            List selectList = new ArrayList();
             selectList.add(new TwoFacedObject("-" + msg("all") + "-", ""));
             MetadataElement element    = type.getChildren().get(0);
             List            enumValues = element.getValues();
@@ -777,10 +777,9 @@ public class MetadataHandler extends RepositoryManager {
             }
             if (enumValues != null) {
                 for (TwoFacedObject o : existingValues) {
-                    TwoFacedObject tfo = TwoFacedObject.findId(o.getId(),
-                                             enumValues);
-                    if (tfo != null) {
-                        selectList.add(tfo);
+                    Object selected = findId(o.getId(), enumValues);
+                    if (selected != null) {
+                        selectList.add(selected);
                     } else {
                         selectList.add(o);
                     }
@@ -800,6 +799,19 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
+
+    private Object findId(Object lookFor, List enums) {
+	for(Object o:enums) {
+	    if(o instanceof TwoFacedObject) {
+		if(((TwoFacedObject)o).getId().equals(lookFor))return o;
+	    }
+	    if(o instanceof HtmlUtils.Selector) {
+		if(((HtmlUtils.Selector)o).getId().equals(lookFor))return o;
+	    }	    
+	    if(lookFor.equals(o)) return o;
+	}
+	return null;
+    }
 
 
     /**
