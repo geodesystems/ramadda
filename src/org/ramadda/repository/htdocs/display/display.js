@@ -3067,6 +3067,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     fields = pointData.getRecordFields();
             }
 
+	    if(!fields) return [];
+
             let result = [];
             if (!ids) {
 		return result;

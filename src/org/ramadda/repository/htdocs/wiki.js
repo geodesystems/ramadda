@@ -181,122 +181,121 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 
 }
 
-class  WikiEditor {
-    constructor(entryId, formId, id, hidden,argOptions) {
-	this.entryId  = entryId;
-	this.ID_WIKI_PREVIEW = "preview";
-	this.ID_WIKI_PREVIEW_INNER = "preview_inner";
-	this.ID_WIKI_PREVIEW_LIVE = "preview_live";
-	this.ID_WIKI_PREVIEW_CONTENTS = "preview_contents";	
-	this.ID_WIKI_PREVIEW_OPEN= "preview_open";
-	this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
-	this.ID_WIKI_PREVIEW_WORDCOUNT = "preview_wordcount";
-	this.ID_WIKI_PREVIEW_COPY = "preview_copy";
-	this.ID_WIKI_PREVIEW_DOWNLOAD = "preview_download";
-	this.ID_WIKI_MESSAGE = "message";
-	this.ID_WIKI_MENUBAR    = "menubar";
-	this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
-	this.ID_WIKI_POPUP_OK= "wiki-popup-ok";
-	this.ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
-	this.ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
-	this.ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
+function  WikiEditor(entryId, formId, id, hidden,argOptions) {
+    this.entryId  = entryId;
+    this.ID_WIKI_PREVIEW = "preview";
+    this.ID_WIKI_PREVIEW_INNER = "preview_inner";
+    this.ID_WIKI_PREVIEW_LIVE = "preview_live";
+    this.ID_WIKI_PREVIEW_CONTENTS = "preview_contents";	
+    this.ID_WIKI_PREVIEW_OPEN= "preview_open";
+    this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
+    this.ID_WIKI_PREVIEW_WORDCOUNT = "preview_wordcount";
+    this.ID_WIKI_PREVIEW_COPY = "preview_copy";
+    this.ID_WIKI_PREVIEW_DOWNLOAD = "preview_download";
+    this.ID_WIKI_MESSAGE = "message";
+    this.ID_WIKI_MENUBAR    = "menubar";
+    this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
+    this.ID_WIKI_POPUP_OK= "wiki-popup-ok";
+    this.ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
+    this.ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
+    this.ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
 
-	this.initAttributes();
-	var options = {
-            autoScrollEditorIntoView: true,
-            copyWithEmptySelection: true,
-            //            theme:'ace/theme/solarized_light',
-	};
-	if (argOptions)
-            $.extend(options, argOptions);
-	$.extend(this,
-		 {id:id,
-		  editor:ace.edit(id),
-		  formId:formId,
-		  hidden:hidden});
-	this.myDiv =  $("#"+this.getId());
-	HU.addWikiEditor(this);
-	Utils.initDragAndDrop(this.getDiv(),
-			      event=>{
-				 let pos = this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
-				 let Range = ace.require('ace/range').Range;
-				 let range =new Range(pos.row, pos.column, pos.row, pos.column+5);
-				 if(this.dragMarker)    this.editor.session.removeMarker(this.dragMarker);
-				 this.dragMarker = this.getEditor().session.addMarker(range, "ace_active_char", "text", false);
-			     },
-			     event=>{
-				 this.clearDragAndDrop();
-			     },
-			      (event,item,result,wasDrop) =>{
-				  this.clearDragAndDrop();
+    this.initAttributes();
+    var options = {
+        autoScrollEditorIntoView: true,
+        copyWithEmptySelection: true,
+        //            theme:'ace/theme/solarized_light',
+    };
+    if (argOptions)
+        $.extend(options, argOptions);
+    $.extend(this,
+	     {id:id,
+	      editor:ace.edit(id),
+	      formId:formId,
+	      hidden:hidden});
+    this.myDiv =  $("#"+this.getId());
+    HU.addWikiEditor(this);
+    Utils.initDragAndDrop(this.getDiv(),
+			  event=>{
+			      let pos = this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+			      let Range = ace.require('ace/range').Range;
+			      let range =new Range(pos.row, pos.column, pos.row, pos.column+5);
+			      if(this.dragMarker)    this.editor.session.removeMarker(this.dragMarker);
+			      this.dragMarker = this.getEditor().session.addMarker(range, "ace_active_char", "text", false);
+			  },
+			  event=>{
+			      this.clearDragAndDrop();
+			  },
+			  (event,item,result,wasDrop) =>{
+			      this.clearDragAndDrop();
 
-				  if(!wasDrop) {
-				      this.lastPosition = this.getEditor().getCursorPosition();
-				  }
+			      if(!wasDrop) {
+				  this.lastPosition = this.getEditor().getCursorPosition();
+			      }
 
-				 Ramadda.handleDropEvent(event, item, result, this.entryId,(data, entryid, name,isImage)=>{
-				     this.handleEntryLink(entryid, name,this.lastPosition,true,{isImage:isImage});
-				 });
-			     });
+			      Ramadda.handleDropEvent(event, item, result, this.entryId,(data, entryid, name,isImage)=>{
+				  this.handleEntryLink(entryid, name,this.lastPosition,true,{isImage:isImage});
+			      });
+			  });
 
-	this.editor.setBehavioursEnabled(false);
-	this.editor.setDisplayIndentGuides(false);
-	this.editor.setKeyboardHandler("emacs");
-	this.editor.setShowPrintMargin(false);
-	this.editor.getSession().setUseWrapMode(true);
-	this.editor.setOptions(options);
-	this.editor.session.setMode("ace/mode/ramadda");
-	this.toolbar = $("#" + this.getId() +"_toolbar");
+    this.editor.setBehavioursEnabled(false);
+    this.editor.setDisplayIndentGuides(false);
+    this.editor.setKeyboardHandler("emacs");
+    this.editor.setShowPrintMargin(false);
+    this.editor.getSession().setUseWrapMode(true);
+    this.editor.setOptions(options);
+    this.editor.session.setMode("ace/mode/ramadda");
+    this.toolbar = $("#" + this.getId() +"_toolbar");
 
-	this.editor.container.addEventListener("contextmenu", (e) =>{
-	    e.preventDefault();
-	    this.handlePopupMenu(e);
-	});
-	this.editor.container.addEventListener("mousedown", (e) =>{
-	});
-	this.editor.container.addEventListener("mouseup", (e) =>{
-	    this.handleMouseUp(e);
-	});
-	this.editor.container.addEventListener("mouseleave", (e) => {
-	    this.handleMouseLeave(e);
-	});
-	this.editor.container.addEventListener("mousemove", (e) => {
-	    this.handleMouseMove(e);
-	});
-	this.editor.getSession().on('change', (e)=> {
-	    if(this.previewShown && this.previewLive) {
-		if(this.previewPending) return;
-		this.previewPending = setTimeout(()=>{
-		    this.previewPending = null;
-		    this.doPreview(this.entryId,true);
-		},100);
-	    }
+    this.editor.container.addEventListener("contextmenu", (e) =>{
+	e.preventDefault();
+	this.handlePopupMenu(e);
+    });
+    this.editor.container.addEventListener("mousedown", (e) =>{
+    });
+    this.editor.container.addEventListener("mouseup", (e) =>{
+	this.handleMouseUp(e);
+    });
+    this.editor.container.addEventListener("mouseleave", (e) => {
+	this.handleMouseLeave(e);
+    });
+    this.editor.container.addEventListener("mousemove", (e) => {
+	this.handleMouseMove(e);
+    });
+    this.editor.getSession().on('change', (e)=> {
+	if(this.previewShown && this.previewLive) {
+	    if(this.previewPending) return;
+	    this.previewPending = setTimeout(()=>{
+		this.previewPending = null;
+		this.doPreview(this.entryId,true);
+	    },100);
+	}
 
-	});
-	this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
-	this.wikiInitDisplaysButton();
+    });
+    this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
+    this.wikiInitDisplaysButton();
 
-	this.jq("previewbutton").click(()=>{
-	    HtmlUtils.hidePopupObject();
-	    this.doPreview(this.entryId);
-	});
-	this.jq("wordcount").click(()=>{
-	    HtmlUtils.hidePopupObject();
-	    this.doWordcount();
-	});	
-    }
+    this.jq("previewbutton").click(()=>{
+	HtmlUtils.hidePopupObject();
+	this.doPreview(this.entryId);
+    });
+    this.jq("wordcount").click(()=>{
+	HtmlUtils.hidePopupObject();
+	this.doWordcount();
+    });	
+}
 
-	
-    getId() {
+WikiEditor.prototype = {
+    getId:function() {
 	return this.id;
-    }
+    },
 
-    domId(suffix) {
+    domId:function(suffix) {
 	return this.getId() +"_"+ suffix;
-    }
+    },
 
 
-    handleEntryLink(entryId, name,pos,isNew,opts) {
+    handleEntryLink:function(entryId, name,pos,isNew,opts) {
 	let html =  HU.center(HU.b(name));
 	if(isNew) {
 	    html +="The new entry has been added. What do you want to insert into the document?<br>";
@@ -379,52 +378,50 @@ class  WikiEditor {
 	    else
 		this.insertAtCursor(text);
 	});
-    }
+    },
 
 
 
-    clearDragAndDrop() {
+    clearDragAndDrop:function() {
 	if(this.dragMarker)    this.getEditor().session.removeMarker(this.dragMarker);
-    }
+    },
 
-    getDiv() {
+    getDiv:function() {
 	return this.myDiv;
-    }
+    },
 
 
-
-
-    jq(suffix) {
+    jq:function(suffix) {
 	return $("#"+this.domId(suffix));
-    }
+    },
 
-    showMessage(msg) {
+    showMessage:function(msg) {
 	this.jq(this.ID_WIKI_MESSAGE).css("display","block").html(msg);
-    } 
+    },
 
-    clearMessage(msg) {
+    clearMessage:function(msg) {
 	this.jq(this.ID_WIKI_MESSAGE).css("display","none");
-    }
+    },
 
-    getEditor() {
+    getEditor:function() {
 	return this.editor;
-    }    
+    },    
 
-    getValue() {
+    getValue:function() {
 	return this.getEditor().getValue();
-    }
-	
-    getBlock() {
+    },
+    
+    getBlock:function() {
 	return $("#" + this.getId()+"_block");
-    }
+    },
 
-    getScroller() {
+    getScroller:function() {
 	return this.getBlock().find(".ace_scroller");
-    }
-    getSession() {
+    },
+    getSession:function() {
 	return this.getEditor().session;
-    }
-    insertAtCursor(value) {
+    },
+    insertAtCursor:function(value) {
 	value = Utils.decodeText(value);    
 	if(this.popupShowing) {
 	    let popup = this.jq(this.ID_WIKI_POPUP_EDITOR)[0];
@@ -443,9 +440,9 @@ class  WikiEditor {
         var cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(value);
         this.getEditor().focus();
-    }
+    },
 
-    insertTags(tagOpen, tagClose, sampleText) {
+    insertTags:function(tagOpen, tagClose, sampleText) {
 	var selText, isSample = false;
 	tagOpen = Utils.decodeText(tagOpen);
 	tagClose = Utils.decodeText(tagClose);    
@@ -460,9 +457,9 @@ class  WikiEditor {
         }
         this.getEditor().selection.moveTo(cursor.row, cursor.column);
         this.getEditor().focus();
-    }
+    },
 
-    getTagInfo(cursor) {
+    getTagInfo:function(cursor) {
 	cursor = cursor || this.getEditor().getCursorPosition();
 	let index = this.getSession().doc.positionToIndex(cursor);
 	let text =this.getEditor().getValue();
@@ -519,7 +516,7 @@ class  WikiEditor {
 		if(idx1!=-1 &&idx1<idx2) attrs = attrs.substring(idx1).trim();
 		else attrs = attrs.substring(idx2).trim();
 		if(attrs.endsWith("}}")) attrs = attrs.replace(/}}$/,"");
-//		console.log("chunk:" + chunk+": tag:" + tag +" attrs:" + attrs);
+		//		console.log("chunk:" + chunk+": tag:" + tag +" attrs:" + attrs);
 		if(tag=="group") {
 		    type="group"
 		    tag = "display";
@@ -547,7 +544,7 @@ class  WikiEditor {
 		let  endRow=-1;
 		let  startCol=-1;
 		let  endCol=-1;				
-//		console.log(left  +" "+ right);
+		//		console.log(left  +" "+ right);
 		let startChar = left+1;
 		let endChar = right+1;		
 		lines.every(line=>{
@@ -555,19 +552,19 @@ class  WikiEditor {
 		    if(startRow == -1 && nextCnt>=startChar) {
 			startRow=row;
 			startCol = startChar-cnt-1;
-//			console.log("start: " +startRow +" " + startCol  +" line:" + line);
+			//			console.log("start: " +startRow +" " + startCol  +" line:" + line);
 		    }
 		    if(startRow!=-1 && endRow == -1 && nextCnt>=endChar) {
 			endRow=row;
 			endCol = endChar-cnt;
-//			console.log("end: " +endRow +" " + endCol  +" line:" + line);
+			//			console.log("end: " +endRow +" " + endCol  +" line:" + line);
 			return false;
 		    }		    
 		    row++;
 		    cnt=nextCnt;
 		    return true;
 		});
-		      
+		
 		let range = {start: {row:startRow,column:startCol},
 			     end: {row:endRow,column:endCol}
 			    }
@@ -619,24 +616,25 @@ class  WikiEditor {
 	    }
 	}
 	return null;
-    }
+    },
 
-    handleSubmit() {
+    handleSubmit:function() {
 	if($("#" + this.hidden).length==0) {
 	    console.log("WikiEdit.handleSubmit: no hidden value");
 	}
 	$("#" + this.hidden).val(this.getEditor().getValue());
-    }
+    },
 
-    doWordcount(s) {
+    doWordcount:function(s) {
 	if(s==null)
 	    s = this.getEditor().getValue();
 	s = s.replace(/<[^>]+>/g," ").replace(/<\/[^>]>/g," ").replace(/&nbsp;/g," ");
 	s = Utils.split(s.replace(/[<>\n={}]/g," ")," ",true,true);
 	alert("Approximately " + s.length +" words");
-    }
+    },
 
-    async doPreview(entry,  inPlace) {
+
+    doPreview:async function (entry,  inPlace) {
 	let id = this.getId();
 	let area = $("#" + id);
 	if(!inPlace) {
@@ -714,9 +712,9 @@ class  WikiEditor {
 	    entryid:entry,
 	    text:text},
 	       wikiCallback).fail(wikiError);
-    }
+    },
 
-    getAttributeBlocks(tagInfo, forPopup, finalCallback) {
+    getAttributeBlocks:function(tagInfo, forPopup, finalCallback) {
 	if(!tagInfo) {
 	    return null;
 	}
@@ -734,10 +732,10 @@ class  WikiEditor {
 	}
 	if(!attrs) return null;
 	let blocks  = getWikiEditorMenuBlocks(attrs,forPopup,this.getId());
-//	if(display) {
-	    let ctItems =  Utils.getColorTablePopup(this, true);
-	    blocks.push({title:"Color table",items:ctItems});
-//	}
+	//	if(display) {
+	let ctItems =  Utils.getColorTablePopup(this, true);
+	blocks.push({title:"Color table",items:ctItems});
+	//	}
 
 
 	if(!title) {
@@ -747,10 +745,10 @@ class  WikiEditor {
 	let r = {blocks:blocks, title:title,display:display};
 	if(finalCallback) finalCallback(r);
 	return r;
-    }
+    },
 
 
-    handleEntriesPopup(ids,id) {
+    handleEntriesPopup:function(ids,id) {
 	this.getEntryNames(ids,(data)=>{
 	    if(data.length) {
 		let html = "";
@@ -760,14 +758,16 @@ class  WikiEditor {
 		jqid(id).html(html);
 	    }
 	},true);
-    }
+    },
 
 
-    handlePopupMenu(event, result) {
+    handlePopupMenu:function(event, result) {
 	let tagInfo = this.getTagInfo();
 	if(!tagInfo) {
 	    return;
 	}
+//	console.dir(tagInfo);
+	if(!tagInfo.chunk) return
 
 	if(!result) {
 	    this.getAttributeBlocks(tagInfo,true, (r)=>{
@@ -786,7 +786,6 @@ class  WikiEditor {
 	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
 	}
 	menu += HU.div([CLASS,"wiki-editor-popup-heading"], title);
-
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
 	    let id = Utils.getUniqueId("entrieslist");
@@ -813,26 +812,26 @@ class  WikiEditor {
 	menu += "</div>";
 
 
-//	let dialog = HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:false});
+	//	let dialog = HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:false});
 	let dialog = HU.makeDialog({content:menu,anchor:$(window),
 				    my: "left top",     at: "left+" +event.x +" top+" + (event.y),
 				    title:title,header:true,sticky:true,draggable:true,modal:false});	
 	HtmlUtils.setPopupObject(dialog);
-/*
-	let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-	popup.html(menu);
-	popup.show();
-	popup.position({
-	    of: $(window),
-            my: "left top",
-            at: "left+" +event.x +" top+" + (event.y),
-            collision: "fit fit"
-	});
-*/
-    }
+	/*
+	  let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
+	  popup.html(menu);
+	  popup.show();
+	  popup.position({
+	  of: $(window),
+          my: "left top",
+          at: "left+" +event.x +" top+" + (event.y),
+          collision: "fit fit"
+	  });
+	*/
+    },
 
 
-    handleMouseUp(e,result) {
+    handleMouseUp:function(e,result) {
 	if(!e.metaKey)  return;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
@@ -847,7 +846,7 @@ class  WikiEditor {
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
-//	let attrs = Utils.parseAttributes(tagInfo.attrs||"");
+	//	let attrs = Utils.parseAttributes(tagInfo.attrs||"");
 	let contents = tagInfo.attrs;
 
 	let prefix = tagInfo.type|| tagInfo.tag;
@@ -925,11 +924,11 @@ class  WikiEditor {
 	    dialog.remove();
 	    this.getSession().replace(tagInfo.range, text);
 	});	    
-    }
-    handleMouseLeave(e) {
+    },
+    handleMouseLeave:function(e) {
 	this.setInContext(false);
-    }
-    extractEntryIds(chunk) {
+    },
+    extractEntryIds:function(chunk) {
 	let regex =  /([a-z0-9]+-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]+)(.*)/;
 	let ids = [];
 	let match = chunk.match(regex);
@@ -942,9 +941,9 @@ class  WikiEditor {
 	    }
 	}
 	return ids;
-    }
+    },
 
-    getEntryNames(ids, callback, immediate) {
+    getEntryNames:function(ids, callback, immediate) {
 	let func = ()=>{
 	    let url = ramaddaBaseUrl+ "/entry/names?entryids=" + Utils.join(ids,",");
 	    this.getNamesPending = true;
@@ -961,9 +960,9 @@ class  WikiEditor {
 	    setTimeout(()=> {
 		func();
 	    },1000);
-    }
-	
-    setInContext(c,type,chunk) {
+    },
+    
+    setInContext:function(c,type,chunk) {
 	this.inContext = c;
 	let scroller = this.getScroller();
 	if(this.tagMarker)
@@ -979,19 +978,19 @@ class  WikiEditor {
 		message+="<br>Cmd-click to edit";
 	    /*
 	      For now don't do this in the tooltip since the tag popup menu has this
-	    if(chunk && !this.getNamesPending) {
-		let id = Utils.getUniqueId("tooltip");
-		message+=HU.div([ID,id,STYLE,HU.css("max-height","200px",'font-style','italic')]);
-		let ids = this.extractEntryIds(chunk);
-		if(ids.length) {
-		    this.getEntryNames(ids,(data)=>{
-			if(data.length) {
-			    let names = Utils.join(data.map(d=>{return d.name;}),"<br>");
-			    jqid(id).html(names);
-			}
-		    });
-		}
-	    }*/
+	      if(chunk && !this.getNamesPending) {
+	      let id = Utils.getUniqueId("tooltip");
+	      message+=HU.div([ID,id,STYLE,HU.css("max-height","200px",'font-style','italic')]);
+	      let ids = this.extractEntryIds(chunk);
+	      if(ids.length) {
+	      this.getEntryNames(ids,(data)=>{
+	      if(data.length) {
+	      let names = Utils.join(data.map(d=>{return d.name;}),"<br>");
+	      jqid(id).html(names);
+	      }
+	      });
+	      }
+	      }*/
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
@@ -1000,8 +999,8 @@ class  WikiEditor {
 		clearTimeout(this.lastTimeout);
 	}
 	this.lastTimeout = null;
-    }
-    handleMouseMove(e) {
+    },
+    handleMouseMove:function(e) {
 	if(this.lastTimeout)
 	    clearTimeout(this.lastTimeout);
 	let func = () =>{
@@ -1020,9 +1019,9 @@ class  WikiEditor {
 	} else {
 	    this.lastTimeout=setTimeout(func,1000);
 	}
-    }
+    },
 
-    getWikiAttributes(tagInfo, callback) {
+    getWikiAttributes:function(tagInfo, callback) {
 	if(this.wikiAttributes[tagInfo.tag]) {
 	    return this.wikiAttributes[tagInfo.tag];
 	}
@@ -1035,9 +1034,9 @@ class  WikiEditor {
 	    return false;
 	}
 	return this.wikiAttributesFromServer[tagInfo.tag];
-    }
+    },
 
-    getDisplayAttributes(tagInfo) {
+    getDisplayAttributes:function(tagInfo) {
 	let title = null;
 	let attrs = [];
 	let display = null;
@@ -1062,10 +1061,10 @@ class  WikiEditor {
 	    console.log("Error getting attrs for:" + tagInfo.type +" error:" + e  + " stack:" +e.stack);
 	}
 	return {attrs:attrs,title:title,display:display};
-    }
+    },
 
     
-    wikiInitDisplaysButton() {
+    wikiInitDisplaysButton:function() {
 	let id = this.getId();
 	let button = $("#displays_button"+ id);
 	button.click(() =>{
@@ -1116,9 +1115,9 @@ class  WikiEditor {
 	    wikiPopup =  popup;
 	});
 	
-    }
+    },
 
-    initAttributes() {
+    initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
 	    {p:'sortby',ex:'name|date|changedate|createdate|entryorder|number',tt:'sort type -name,date, change date, create date'},
@@ -1133,19 +1132,19 @@ class  WikiEditor {
 
 	this.wikiAttributesFromServer = null;
 	let treeAttrs = Utils.mergeLists([
-		{label:'Table Tree'},
-		{p:"simple",ex:true},
-		{p:"showHeader",ex:false},
-		{p:"showDate",ex:false},
-		{p:"showCreateDate",ex:false},
-		{p:"showSize",ex:false},
-		{p:"showType",ex:false},
-		{p:"showIcon",ex:false},
-		{p:"showThumbnails",ex:false},
-		{p:"showArrow",ex:false},
-		{p:"showForm",ex:false},
-	        {p:"showCrumbs",ex:true},
-		{p:'message',ex:''},
+	    {label:'Table Tree'},
+	    {p:"simple",ex:true},
+	    {p:"showHeader",ex:false},
+	    {p:"showDate",ex:false},
+	    {p:"showCreateDate",ex:false},
+	    {p:"showSize",ex:false},
+	    {p:"showType",ex:false},
+	    {p:"showIcon",ex:false},
+	    {p:"showThumbnails",ex:false},
+	    {p:"showArrow",ex:false},
+	    {p:"showForm",ex:false},
+	    {p:"showCrumbs",ex:true},
+	    {p:'message',ex:''},
 	    {p:'treePrefix',ex:''},
 	    {p:'chunkSize',ex:'10',tt:'break up the list of entries into chunkSize lists and display each list'},
 	    {p:'numChunks',ex:'2',tt:'how many entry chunks'},
@@ -1174,7 +1173,7 @@ class  WikiEditor {
 		{p:'numChunks',ex:'2',tt:'how many entry chunks'},
 		{p:'chunkColumns',ex:'2',tt:'how many columns use \"numChunks\" to match number of chunks'},
 		{p:'chunkStyle',ex:'margin:10px;',tt:'chunk style'}		
-],
+	    ],
 				    this.groupAttributes),		   
 	    section: [
 		{label:'Section Properties'},
@@ -1416,7 +1415,6 @@ class  WikiEditor {
 	    ],
 	}
     }
-    
 }
 
 
@@ -1478,12 +1476,12 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 
     return blocks;
 }
-    
+
 function getWikiEditorMenuBar(blocks,id, prefix) {
     let menu  = "";
     blocks.forEach((block,idx)=>{
 	if(typeof block=="string") {
-//	    console.log(block);
+	    //	    console.log(block);
 	    //TODO: this is the color tables
 	    //		menu+=block;
 	    return;
