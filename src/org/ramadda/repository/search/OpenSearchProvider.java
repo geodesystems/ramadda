@@ -127,7 +127,6 @@ public class OpenSearchProvider extends SearchProvider {
         url = url.replace("${time:end}", "");
         url = url.replace("${geo:box}", "");
 
-        System.err.println(getName() + " search url:" + url);
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is  = connection.getInputStream();
