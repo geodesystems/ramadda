@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 24 11:18:43 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 24 11:37:39 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -6111,6 +6111,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (pointData != null) 
                     fields = pointData.getRecordFields();
             }
+
+	    if(!fields) return [];
 
             let result = [];
             if (!ids) {
