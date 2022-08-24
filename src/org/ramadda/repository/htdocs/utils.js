@@ -4168,9 +4168,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
         });
     },
+    buttons:function(args) {
+	let buttons = Utils.wrap(args,"<div style='display:inline-block;margin-right:4px;'>","</div>");
+	return HU.div(['class','ramadda-button-bar'], buttons);
+    },
     hbox: function(args) {
-        var row = HtmlUtils.openTag("tr", ["valign", "top"]);
-        row += Utils.wrap(args, "<td>","<td>");
+        let row = HtmlUtils.openTag("tr", ["valign", "top"]);
+        row += Utils.wrap(args, "<td align-left>","<td>");
         row += "</tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
                         row);

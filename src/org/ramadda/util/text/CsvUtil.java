@@ -1567,7 +1567,7 @@ public class CsvUtil implements CsvCommands {
          */
         public Arg(String id, String desc, String... props) {
             if ((desc.length() == 0) && id.equals("columns")) {
-                desc = "Column indices. Can include ranges, e.g. 0-5";
+                desc = HELP_COLUMNS;
             }
             if ((desc.length() == 0) && id.equals("rows")) {
                 desc = "Row indices. Can include ranges, e.g. 0-5";
@@ -2030,8 +2030,8 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_ROTATE, "Rotate the data"),
         new Cmd(CMD_FLIP, "Reverse the order of the rows except the header"),
         new Cmd(CMD_MAKEFIELDS, "Make new columns from data values",
-		ARG_LABEL,"Make Fields from Values",
-                new Arg(ARG_COLUMN, "column to get new column header#", ATTR_TYPE,
+		ARG_LABEL,"Make Fields",
+                new Arg(ARG_COLUMN, "Column to get new column header#", ATTR_TYPE,
 			TYPE_COLUMN), new Arg("value columns",
 					      "Columns to get values from", ATTR_TYPE,
 					      TYPE_COLUMNS), new Arg("unique column",
@@ -2076,13 +2076,13 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
         new Cmd(CMD_FIRSTCHARS,
 		"Extract first N characters and create new column",
-		ARG_LABEL,"Extract 1st Chars - Make Column",
+		ARG_LABEL,"Make Column from  1st Chars",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("name", "New column name"),
 		new Arg("number", "Number of characters")),
         new Cmd(CMD_LASTCHARS,
 		"Extract last N characters and create new column",
-		ARG_LABEL,"Extract Last Chars - Make Column",
+		ARG_LABEL,"Make Column from  Last Chars",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("name", "New column name"),
 		new Arg("number", "Number of characters")),
@@ -2102,18 +2102,16 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_CHANGE, "Change columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN),
-                new Arg("substitution string",
-                        "use $1, $2, etc for pattern (...) matches")),
+                new Arg("substitution string",HELP_SUBSTITUTION)),
         new Cmd(CMD_CHANGEROW, "Change the values in the row/cols",
 		ARG_LABEL,"Change Row Values",
                 new Arg("rows","",ATTR_TYPE,TYPE_LIST),
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN),
-                new Arg("substitution string")),
+                new Arg("substitution string",HELP_SUBSTITUTION)),
         new Cmd(CMD_REPLACE, "Replace",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("substitution string",
-                        "use {value} for value")),
+                new Arg("substitution string",HELP_SUBSTITUTION+"<br>use {value} for value")),
         new Cmd(CMD_SET, "Write the value into the cells",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("rows", "", ATTR_TYPE, TYPE_LIST), new Arg("value")),
@@ -2186,7 +2184,7 @@ public class CsvUtil implements CsvCommands {
                 new Arg("template", "Template - use ${column_name} ... ")),
         new Cmd(CMD_ASCII, "Convert non ascii characters",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("substitution string", "")),
+                new Arg("substitution string", HELP_SUBSTITUTION)),
         new Cmd(CMD_ISMOBILE, "Add a true/false if the string is a mobile phone",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_JS,

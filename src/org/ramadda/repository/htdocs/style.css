@@ -254,6 +254,12 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     background:var(--highlight-background);
 }
 
+.ramadda-button-bar {
+    text-align:center;
+    padding-top:0.5em;
+    padding-bottom:0.5em;        
+}
+
 .ramadda-button a, .ramadda-button a:hover {
     color:rgb(85, 85, 85);
     text-decoration:none;
@@ -1817,6 +1823,9 @@ thin_hr,.ramadda-thin-hr {
 .ui-widget select , .ui-widget .ui-widget {
 }
 
+.ui-button a {
+    color:#555 !important;
+}
 .ui-button {
     padding:0.2em 0.5em;
 }

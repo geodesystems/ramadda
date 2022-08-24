@@ -414,7 +414,12 @@ function  ConvertForm(inputId, entry,params) {
 	    while(tmp>=0) {
 		let c = text[tmp];
 		if (c == "-") {
-		    if(lastWasChar) {
+		    let prev = text[tmp-1];
+		    let ok = true;
+		    if(prev && !prev.match(/\s/)) {
+			ok = false;
+		    }
+		    if(ok && lastWasChar) {
 			left = tmp;
 			break;
 		    }
@@ -1142,7 +1147,7 @@ function  ConvertForm(inputId, entry,params) {
 	    let desc = cmd.description.replace(/^\(/,"").replace(/\)$/,"");
 	    let label = cmd.label || Utils.camelCase(cmd.command.replace(/^-/,""));
 
-	    let inner = HU.center(HU.h2(label)) + HU.center(desc);
+	    let inner = HU.div(['class','ramadda-heading'],label) + HU.center(desc);
 	    inner+=HU.formTable();
 	    this.columnInput = null;
 	    this.headerInput = null;	    
@@ -1150,6 +1155,7 @@ function  ConvertForm(inputId, entry,params) {
 	    cmd.args.forEach((a,idx)=>{
 		let v = opts.values && idx<opts.values.length?opts.values[idx]:"";
 		let label = a.label || Utils.makeLabel(a.id);
+		label = label+':';
 		let id = this.domId("csvcommand" + idx);
 		let desc = a.description||"";
 //		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
@@ -1157,7 +1163,8 @@ function  ConvertForm(inputId, entry,params) {
 		let getExtra = ()=>{
 		    let extra = "";
 		    if((a.type=="column" || a.type=="columns") && this.allColumnIds.length>0) {
-			extra +=HU.span(['inputid',id,TITLE,"Add column",CLASS,"ramadda-clickable seesv-column-button","columnid",id],HU.getIconImage("fa-plus"));
+			let plus = HU.span(['inputid',id,TITLE,"Add column",CLASS,"ramadda-clickable seesv-column-button","columnid",id],HU.getIconImage("fa-plus"));
+			extra  = plus+extra;
 		    }
 		    return extra;
 		};
@@ -1165,14 +1172,15 @@ function  ConvertForm(inputId, entry,params) {
 		let getDesc = (oneLine)=>{
 		    let extra = getExtra();
 		    if(extra=="" && desc=="") return "";
-//		    if(extra!="" && desc!="") {
-			if(oneLine)
-			    desc = extra +" " +desc;
-			else
-			    desc = HU.div([],desc) + extra;
-//		    }
-
-		    return   HU.div([STYLE,HU.css('max-width','500px','vertical-align','top')],desc);
+		    if(Utils.stringDefined(extra)) {
+			desc = HU.table([],HU.tr(['valign','top'],HU.td(['width','1%'],extra)+HU.td([],desc)));
+		    }
+		    let help = "";
+		    if(a.type=="columns")
+			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage("fa-question-circle"),
+					    ['target','_help']);
+		    desc+=help;
+		    return   HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],desc);
 		}
 
 
@@ -1185,12 +1193,13 @@ function  ConvertForm(inputId, entry,params) {
 
 		if(a.rows) {
 		    inner+=HU.formEntryTop(label,
-					   HU.hbox([HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]),desc]));		
+					   HU.hbox([HU.textarea("",v,["cols", a.columns || "30", "rows",a.rows,ID,id,"size",10]),desc]));		
 		} else if(a.type=="list" || a.type=="columns" || a.type=="rows") {
 		    let delim = a.delimiter||",";
 		    let lines = v.split(delim);
 		    v = lines.join("\n");
- 		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",a.rows||"5",ID,id]),
+		    let numRows = a.type=="rows"?3:(a.rows||"3");
+ 		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",numRows,ID,id]),
 				 			  getDesc()]));
 		} else if(a.values || a.type=="enumeration") {
 		    let values
@@ -1223,9 +1232,12 @@ function  ConvertForm(inputId, entry,params) {
 		}
 	    });
 	    inner+=HU.formTableClose();
-	    inner += HU.div([STYLE,HU.css("margin-bottom","10px")], HU.center(HU.div([STYLE,HU.css("display","inline-block"), ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,this.domId(ID_CANCELCOMMAND)],"Cancel")));
+	    let help = ramaddaBaseUrl +'/userguide/seesv.html#' + cmd.command;
+	    help = HU.div(['style',HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['target','_help']));
+	    let buttons = HU.buttons([HU.div([ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
+				      HU.div([ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);
 
-
+	    inner+=buttons;
 	    if(this.addDialog) {
 		this.addDialog.hide();
 	    }
@@ -1292,6 +1304,7 @@ function  ConvertForm(inputId, entry,params) {
 	    
 
 	    this.jq("csvcommand0").focus();
+	    this.jq('showhelp').button().click(()=>{});
 	    this.jq(ID_ADDCOMMAND).button().click(()=>{
 		submit();
 	    });

@@ -7,6 +7,9 @@ package org.ramadda.util.text;
 
 public interface CsvCommands {
 
+    public static final String HELP_SUBSTITUTION = "use $1, $2, etc for pattern (...) matches";
+    public static final String HELP_COLUMNS = "Column indices. Can include ranges, e.g. 0-5";
+
     public static final String ARG_LABEL  ="-label";
     public static final String ARG_TYPE = "type";
     public static final String ARG_COLUMN  ="column";

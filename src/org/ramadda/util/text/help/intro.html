@@ -118,6 +118,7 @@ seesv -columns column1,column2 -p file.csv > output.csv
 
 
 
+<a name="help_columns"></a>
 <h2>Column Identifiers</h2>  
 Note: many of these commands use one or more column names from the source file. 
 These column names are converted to a canonical identifier format by lower casing, changing spaces to "_" and
@@ -153,7 +154,7 @@ seesv -columns column1-columnN -p test.csv > newtest.csv
 #or indices:
 seesv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
 
-#or mix and match
+#or mix and match numeric and names
 seesv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
 
 #Specify a step:
