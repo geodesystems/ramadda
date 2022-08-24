@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 24 07:44:04 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 24 11:18:43 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -5767,7 +5767,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
 	    //	    console.log("fields:" + this.lastSelectedFields);
-	    return Utils.cloneList(this.lastSelectedFields);
+	    return Utils.cloneList(this.lastSelectedFields??[]);
         },
         getSelectedFieldsInner: function(dfltList) {
             if (this.debugSelected) {
