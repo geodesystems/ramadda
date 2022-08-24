@@ -222,6 +222,7 @@ function  ConvertForm(inputId, entry,params) {
 		    let fileSelect =  HU.div([ID,"convertcsv_file1_selectlink", "class","ramadda-highlightable  ramadda-menubar-button"], "Select file");
 		    let categories = {};
 		    let category="";
+		    let allItems = [];
 		    this.outputCommands = [];
 		    this.commands.forEach(cmd=>{
 			let command = cmd.command;
@@ -254,16 +255,21 @@ function  ConvertForm(inputId, entry,params) {
 			    tooltip +=" <" +a.id  +desc+ "> ";
 			});
 			tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
+			let corpus = cmd.label +" " + cmd.command.replace(/-/g," ") +" " + cmd.description;
+			corpus = corpus.replace(/[\n\"\']/g," ");
 			let label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
 			docs+="etl " + "{" + command +"} {"  + label+"} {" +  desc + "} "   + docArgs +"\n"
 			this.commandsMap[command] = cmd;
-			menuItems.push(HU.div([TITLE,desc||"",CLASS, "ramadda-hoverable ramadda-clickable","command",command],label));
+			let menuItem = HU.div(['data-corpus',corpus,TITLE,(desc||"")+"<br>"+cmd.command,'style',HU.css('margin','1px','border','1px solid transparent'),CLASS, "ramadda-hoverable ramadda-clickable","command",command],label);
+			menuItems.push(menuItem);
+			allItems.push(menuItem);
 		    });
 		    menus.push(fileSelect);
 		    //		Utils.makeDownloadFile("etlcommands.tcl",docs);
 		    let menuBar=menus.join("");
 		    this.jq("menu").html(HU.div([],menuBar));
 		    this.jq("menu").find(".ramadda-menubar-button").click(function() {
+			let title = $(this).attr("category");
 			let cat = $(this).attr("category");
 			let button = $(this);
 			if(!cat || !categories[cat]) {
@@ -274,9 +280,43 @@ function  ConvertForm(inputId, entry,params) {
 			items = items.map(list=>{
 			    return list.join("");
 			});
-			let menu = Utils.wrap(items,"<div style='vertical-align:top;margin:5px;display:inline-block;'>","</div>");
-			let dialog = HU.makeDialog({content:menu,anchor:$(this)});
-			dialog.find(".ramadda-clickable").click(function(event) {
+//			items = allItems;
+
+			let menuId = HU.getUniqueId("menu_");
+			let menu = HU.div(['id',menuId],Utils.wrap(items,"<div style='vertical-align:top;margin:5px;display:inline-block;'>","</div>"));
+			let inputId = HU.getUniqueId("input_");
+			let input = HU.div(['style','font-size:80%;text-align:center;margin:5px;'],
+					   HU.input("","",[STYLE,HU.css("width","150px;"), 'placeholder','Search Commands',ID,inputId]));
+			menu = input+menu;
+			
+			let dialog = HU.makeDialog({content:menu,anchor:$(this),header:true,draggable:true,title:title});
+			let commands = dialog.find(".ramadda-clickable");
+			commands.tooltip({
+			    show:{delay:1000},
+			    content: function () {
+				return $(this).prop('title');
+			    }
+			});
+			jqid(menuId).css('min-width',jqid(menuId).width());
+			$("#"+inputId).keyup(function(event) {
+			    let text = $(this).val().trim().toLowerCase();
+			    commands.each(function() {
+				if(text=="") {
+				    $(this).css('background','transparent').css('border','1px solid transparent');
+				} else {
+				    let corpus = $(this).attr('data-corpus');
+				    if(!corpus) return;
+				    corpus =  corpus.toLowerCase();
+				    if(corpus.indexOf(text)>=0) {
+					$(this).css('background','var(--color-mellow-yellow)').css('border','var(--highlight-border');
+				    } else {
+					$(this).css('background','transparent').css('border','1px solid transparent');
+				    }
+				}
+			    });
+			});
+
+			commands.click(function(event) {
 			    let cmd = _this.commandsMap[$(this).attr("command")];
 			    dialog.remove();
 			    if(!cmd) {
@@ -286,8 +326,6 @@ function  ConvertForm(inputId, entry,params) {
 			});
 		    });
 		}
-		
-
 	    })
 		.fail(function(jqxhr, textStatus, error) {
 		});
@@ -1127,12 +1165,12 @@ function  ConvertForm(inputId, entry,params) {
 		let getDesc = (oneLine)=>{
 		    let extra = getExtra();
 		    if(extra=="" && desc=="") return "";
-		    if(extra!="" && desc!="") {
+//		    if(extra!="" && desc!="") {
 			if(oneLine)
 			    desc = extra +" " +desc;
 			else
-			    desc = desc+"<br>" + extra;
-		    }
+			    desc = HU.div([],desc) + extra;
+//		    }
 
 		    return   HU.div([STYLE,HU.css('max-width','500px','vertical-align','top')],desc);
 		}
@@ -1152,7 +1190,7 @@ function  ConvertForm(inputId, entry,params) {
 		    let delim = a.delimiter||",";
 		    let lines = v.split(delim);
 		    v = lines.join("\n");
-		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "10", "rows",a.rows||"5",ID,id]),
+ 		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",a.rows||"5",ID,id]),
 				 			  getDesc()]));
 		} else if(a.values || a.type=="enumeration") {
 		    let values
@@ -1164,7 +1202,7 @@ function  ConvertForm(inputId, entry,params) {
 		    }
 		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(",")),getDesc()]));
 		} else if(a.type=="column") {
-		    let size = a.size || 5;
+		    let size = a.size || 30;
 		    let title = a.tooltip || "";
 		    let input;
 //		    if(this.columnIds) {
