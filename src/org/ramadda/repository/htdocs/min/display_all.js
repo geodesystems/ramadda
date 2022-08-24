@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Aug 24 13:02:50 MDT 2022";
+var build_date="RAMADDA build date: Wed Aug 24 13:14:27 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -30342,7 +30342,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
 	    buttonLabel = "Search";
-            let searchButton = HU.div(['style','xmargin-left:4px;xmargin-right:4px;margin-bottom:4px;width:80%;','class','ramadda-button',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "display-search-button ramadda-clickable"], buttonLabel);
+            let searchButton = HU.div(['style','margin-bottom:4px;max-width:80%;',ATTR_ID, this.getDomId(ID_SEARCH), ATTR_CLASS, "ramadda-button display-search-button ramadda-clickable"], buttonLabel);
             let extra = "";
             let settings = this.getSearchSettings();
 	    let addWidget = (label, widget)=>{
@@ -30479,6 +30479,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 //		    topItems = Utils.mergeLists([searchButton], topItems);
 		    topItems = topItems.map(item=>{return HU.div([STYLE,HU.css("margin-right","8px")], item);});
 		    form+=searchButton;
+		    form+="<br>";
 		    form+=   HU.hrow(...topItems);
 		}
 	    }
@@ -30491,7 +30492,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
-		console.log(ancestor,name);
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
