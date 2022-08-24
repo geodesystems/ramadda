@@ -6,8 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.auth.*;
 
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
@@ -15,8 +14,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
-
 
 import java.io.*;
 
@@ -58,6 +55,8 @@ public class S3File extends FileWrapper {
     /**  */
     private AmazonS3 s3;
 
+    private String accessKey;
+    private String secretKey;
 
     /**
      *
@@ -99,8 +98,12 @@ public class S3File extends FileWrapper {
      */
     private AmazonS3 getS3() {
         if (s3 == null) {
-            AnonymousAWSCredentials credentials =
-                new AnonymousAWSCredentials();
+	    AWSCredentials credentials=null;
+	    if(Utils.stringDefined(accessKey) && Utils.stringDefined(secretKey))  {
+		credentials = new   BasicAWSCredentials(accessKey, secretKey);
+	    } else {
+		credentials = new AnonymousAWSCredentials();
+	    }
             s3 = new AmazonS3Client(credentials);
         }
 
