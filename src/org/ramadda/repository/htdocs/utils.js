@@ -423,7 +423,7 @@ var Utils =  {
     },
 
     cloneList: function(l) {
-        return l.slice(0);
+        return l?l.slice(0):null;
     },
     removeElement: function(list,value) {
         if(!list) list = [];

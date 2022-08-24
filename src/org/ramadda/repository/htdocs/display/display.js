@@ -2722,7 +2722,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
 	    //	    console.log("fields:" + this.lastSelectedFields);
-	    return Utils.cloneList(this.lastSelectedFields);
+	    return Utils.cloneList(this.lastSelectedFields??[]);
         },
         getSelectedFieldsInner: function(dfltList) {
             if (this.debugSelected) {
