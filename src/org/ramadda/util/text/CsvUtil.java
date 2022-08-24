@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2022 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2022 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
@@ -155,7 +155,7 @@ public class CsvUtil implements CsvCommands {
                 System.err.println("Arg:" + arg);
             }
         }
-//	debugArgs = true;
+	//	debugArgs = true;
     }
 
     /**
@@ -578,7 +578,7 @@ public class CsvUtil implements CsvCommands {
 	//Check for the -args command
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-	    if(arg.equals("-args")) {
+	    if(arg.equals(CMD_ARGS)) {
 		doArgs = true;
 		continue;
 	    }
@@ -588,7 +588,7 @@ public class CsvUtil implements CsvCommands {
 	//	System.err.println("args:" + args);
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-	    if(arg.equals("-args")) {
+	    if(arg.equals(CMD_ARGS)) {
 		doArgs = true;
 		continue;
 	    }
@@ -628,7 +628,7 @@ public class CsvUtil implements CsvCommands {
                     System.out.print(arg + " ");
                 }
             }
-            if (arg.equals("-help")) {
+            if (arg.equals(CMD_HELP)) {
                 usage("", null);
                 return;
             }
@@ -637,11 +637,11 @@ public class CsvUtil implements CsvCommands {
                 return;
             }
             if (arg.equals("-helpraw")) {
-                usage("", null, "-raw", "true");
+                usage("", null, CMD_RAW, "true");
                 return;
             }
             if (arg.equals("-helpjson")) {
-                usage("", null, "-json", "true");
+                usage("", null, CMD_JSON, "true");
                 return;
             }
             if (arg.startsWith("-help:")) {
@@ -659,24 +659,24 @@ public class CsvUtil implements CsvCommands {
             }
 
 
-            if (arg.equals("-cat")) {
+            if (arg.equals(CMD_CAT)) {
                 doConcat = true;
                 continue;
             }
 
-            if (arg.equals("-append")) {
+            if (arg.equals(CMD_APPEND)) {
                 doAppend = true;
 		appendSkip = Integer.parseInt(args.get(++i));
                 continue;
             }
 
-            if (arg.equals("-chop")) {
+            if (arg.equals(CMD_CHOP)) {
                 doLast = true;
 		lastLines = Integer.parseInt(args.get(++i));
                 continue;
             }	    	    
 
-            if (arg.equals("-raw")) {
+            if (arg.equals(CMD_RAW)) {
                 doRaw = true;
                 continue;
             }
@@ -686,7 +686,7 @@ public class CsvUtil implements CsvCommands {
                 continue;
             }
 
-            if (arg.equals("-header")) {
+            if (arg.equals(CMD_HEADER)) {
                 myTextReader.setFirstRow(
 					 new Row(Utils.split(args.get(++i), ",")));
                 continue;
@@ -968,29 +968,29 @@ public class CsvUtil implements CsvCommands {
             new ArrayList<NamedChannel>();
         for (String file : files) {
 	    try {
-	    if (file.toLowerCase().endsWith(".xls")) {
-		String csv = XlsUtil.xlsToCsv(file);
-		InputStream bais=  new ByteArrayInputStream(csv.getBytes());
-		ReadableByteChannel in = Channels.newChannel(bais);
-		channels.add(new NamedChannel(file, in));
-		continue;
-	    }
-	    if (file.toLowerCase().endsWith(".xlsx")) {
-		String csv = XlsUtil.xlsxToCsv(file);
-		InputStream bais=  new ByteArrayInputStream(csv.getBytes());
-		ReadableByteChannel in = Channels.newChannel(bais);
-		channels.add(new NamedChannel(file, in));
-		continue;
-	    }
+		if (file.toLowerCase().endsWith(".xls")) {
+		    String csv = XlsUtil.xlsToCsv(file);
+		    InputStream bais=  new ByteArrayInputStream(csv.getBytes());
+		    ReadableByteChannel in = Channels.newChannel(bais);
+		    channels.add(new NamedChannel(file, in));
+		    continue;
+		}
+		if (file.toLowerCase().endsWith(".xlsx")) {
+		    String csv = XlsUtil.xlsxToCsv(file);
+		    InputStream bais=  new ByteArrayInputStream(csv.getBytes());
+		    ReadableByteChannel in = Channels.newChannel(bais);
+		    channels.add(new NamedChannel(file, in));
+		    continue;
+		}
 
-	    if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
-		InputStream is = new GZIPInputStream(new FileInputStream(file));
-		ReadableByteChannel in = Channels.newChannel(is);
-		channels.add(new NamedChannel(file, in));
-		continue;
-	    }
+		if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
+		    InputStream is = new GZIPInputStream(new FileInputStream(file));
+		    ReadableByteChannel in = Channels.newChannel(is);
+		    channels.add(new NamedChannel(file, in));
+		    continue;
+		}
 
-            channels.add(new NamedChannel(file, new RandomAccessFile(file,"r").getChannel()));
+		channels.add(new NamedChannel(file, new RandomAccessFile(file,"r").getChannel()));
 	    } catch(FileNotFoundException fnfe) {
 		throw new RuntimeException("Error missing file:" + file);
 	    }
@@ -1616,7 +1616,12 @@ public class CsvUtil implements CsvCommands {
          * @param desc _more_
          */
         public Cmd(String cmd, String desc, Object... args) {
-	    //	    System.out.println("public static final String ARG_" + cmd.toUpperCase().replace("-","")+"=\"" + cmd +"\";");
+	    //	    String _cmd = "CMD_" +cmd.toUpperCase().replace("-","");
+	    //	    String tcl  ="tclsh ~/bin/cvrt.tcl ";
+	    //	    String QT = "\\\"";
+	    //	    if(cmd.indexOf("<")<0)System.out.println(tcl +  QT+cmd+QT +" " + _cmd +" CsvUtil.java");
+
+
             this.cmd  = cmd;
             this.desc = desc;
             for (int i=0;i<args.length;i++) {
@@ -1671,7 +1676,6 @@ public class CsvUtil implements CsvCommands {
 
     public static class Category extends Cmd {
 
-
         /**
          * _more_
          *
@@ -1692,39 +1696,39 @@ public class CsvUtil implements CsvCommands {
 
     /** _more_ */
     private static final Cmd[] commands = {
-        new Cmd("-help", "print this help)"),
-        new Cmd("-help:<topic search string>",
+        new Cmd(CMD_HELP, "print this help)"),
+        new Cmd(CMD_HELP+":<topic search string>",
                 "print help that matches topic"),
 
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
-        new Cmd("-delimiter", "Specify a delimiter",
+        new Cmd(CMD_DELIMITER, "Specify a delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
                         "size", "5")),
-        new Cmd("-tab", "Use tabs. A shortcut for -delimiter tab"),
-        new Cmd("-widths", "Columns are fixed widths", new Arg("widths", "w1,w2,...,wN")),
-        new Cmd("-quotesnotspecial", "Don't treat quotes as special characters",
+        new Cmd(CMD_TAB, "Use tabs. A shortcut for -delimiter tab"),
+        new Cmd(CMD_WIDTHS, "Columns are fixed widths", new Arg("widths", "w1,w2,...,wN")),
+        new Cmd(CMD_QUOTESNOTSPECIAL, "Don't treat quotes as special characters",
 		ARG_LABEL,"Quotes Not Special"),
-        new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files",
+        new Cmd(CMD_CLEANINPUT, "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files",
 		ARG_LABEL,"Input is Clean"),
-        new Cmd("-bom", "Input has a leading byte order mark (BOM) that should be stripped out"),		
-        new Cmd("-header", "Raw header",  new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
-        new Cmd("-json", "Parse the input as json",
+        new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out"),		
+        new Cmd(CMD_HEADER, "Raw header",  new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
+        new Cmd(CMD_JSON, "Parse the input as json",
                 new Arg("arrayPath",
 			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
 			"label", "Array path"), new Arg("objectPaths",
 							"One or more paths to the objects e.g. geometry,features",
 							"size", "30", "label", "Object paths", ATTR_TYPE,
 							TYPE_LIST, "size", "30")),
-        new Cmd("-geojson", "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
-        new Cmd("-pdf", "Read input from a PDF file."),	
-        new Cmd("-xml", "Parse the input as xml",
+        new Cmd(CMD_GEOJSON, "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
+        new Cmd(CMD_PDF, "Read input from a PDF file."),	
+        new Cmd(CMD_XML, "Parse the input as xml",
                 new Arg("path", "Path to the elements", "size", "60")),
-        new Cmd("-shapefile", "Parse the input shapefile",
+        new Cmd(CMD_SHAPEFILE, "Parse the input shapefile",
                 new Arg("props", "\"addPoints true addShapes false\"")),	
-        new Cmd("-lines", "Parse the input as text lines"),
+        new Cmd(CMD_LINES, "Parse the input as text lines"),
 
-        new Cmd("-htmltable", "Parse tables in the input html file",
+        new Cmd(CMD_HTMLTABLE, "Parse tables in the input html file",
 		ARG_LABEL,"Html Table",
                 new Arg("skip", "Number of tables to skip", ATTR_TYPE,
 			"number"), new Arg("pattern", "Pattern to skip to",
@@ -1732,233 +1736,230 @@ public class CsvUtil implements CsvCommands {
 					   "40"), new Arg("properties",
 							  "Other name value args - <ul><li> numTables N:Number of tables to process. Default is 1<li> removeEntity true:remove HTML entities <li> removePattern pattern<li> extractUrls true <li> columnN.extractUrls true: N=column number<li> stripTags false: strip any HTML tags. Default =true<li> columnN.stripTags false: N=column number. Set stripTags for the column</ul>",
 							  "rows", "6", "size", "40")),
-        new Cmd("-htmlpattern", "Parse the input html file",
+        new Cmd(CMD_HTMLPATTERN, "Parse the input html file",
 		ARG_LABEL,"Html Pattern",
                 new Arg(ARG_COLUMNS, "Column names", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("startPattern", "", ATTR_TYPE, TYPE_PATTERN),
                 new Arg("endPattern", "", ATTR_TYPE, TYPE_PATTERN),
                 new Arg("pattern", "Row pattern. Use (...) to match columns",
                         ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-harvest", "Harvest links in web page. This results in a 2 column dataset with fields: label,url",
+        new Cmd(CMD_HARVEST, "Harvest links in web page. This results in a 2 column dataset with fields: label,url",
 		new Arg("pattern","regexp to match")),
-        new Cmd("-text", "Extract rows from the text",
+        new Cmd(CMD_TEXT, "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", ATTR_TYPE, TYPE_PATTERN),
                 new Arg("token pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-extractpattern", "Extract rows from the text",
+        new Cmd(CMD_EXTRACTPATTERN, "Extract rows from the text",
 		ARG_LABEL,"Extract Pattern",		
                 new Arg("comma separated header"),
                 new Arg("token pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-tokenize", "Tokenize the input from the pattern",
+        new Cmd(CMD_TOKENIZE, "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-sql", "Read data from the given database",
+        new Cmd(CMD_SQL, "Read data from the given database",
                 new Arg("db", "The database id (defined in the environment)",ATTR_TYPE,"enumeration","values","property:seesv_dbs"),
 		new Arg("table", "Comma separate list of tables to select from","size","60"),
 		new Arg(ARG_COLUMNS, "Comma separated list of columns to select"),
 		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike",ATTR_TYPE,"rows","delimiter",";","size","60"),				
 		new Arg("properties", "name space value properties. e.g., join col1,col2")),
-        new Cmd("-synthetic", "Generate an empty file with the given number of rows",
+        new Cmd(CMD_SYNTHETIC, "Generate an empty file with the given number of rows",
                 new Arg("header","comma separated header"),
                 new Arg("values","comma separated values"),		
                 new Arg("rows")),
 
-        new Cmd("-prune", "Prune out the first N bytes",
+        new Cmd(CMD_PRUNE, "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", ATTR_TYPE,
                         "number")),
-        new Cmd("-deheader", "Strip off the RAMADDA point header"),
-        new Cmd("-headernames", "Make the header proper capitalization",
+        new Cmd(CMD_DEHEADER, "Strip off the RAMADDA point header"),
+        new Cmd(CMD_HEADERNAMES, "Make the header proper capitalization",
 		ARG_LABEL,"Header Names"),
-        new Cmd("-headerids", "Make the header be ids"),	
-        new Cmd("-ids", "Use canonical names"),
-        new Cmd("-cat", "Concat the columns in one or more csv files", "*.csv"),
-        new Cmd("-append", "Append the files, skipping the given rows in the latter files",
+        new Cmd(CMD_HEADERIDS, "Make the header be ids"),	
+        new Cmd(CMD_IDS, "Use canonical names"),
+        new Cmd(CMD_CAT, "Concat the columns in one or more csv files", "*.csv"),
+        new Cmd(CMD_APPEND, "Append the files, skipping the given rows in the latter files",
 		new Arg("skip","Number of rows to skip"),
 		new Arg("files","*.csv")),
-        new Cmd("-chop", "Write out last N lines. include the header",
+        new Cmd(CMD_CHOP, "Write out last N lines. include the header",
 		new Arg("numlines","Number of lines to leave"),
 		new Arg("file","*.csv")),		
         /** *  Filter * */
         new Category("Filter"),
-        new Cmd("-skiplines", "Skip number of raw lines.",
+        new Cmd(CMD_SKIPLINES, "Skip number of raw lines.",
+		ARG_LABEL,"Skip Lines",
                 new Arg("lines", "How many raw lines to skip", ATTR_TYPE, "number")),	
-        new Cmd("-if", "Next N args specify a filter command followed by any change commands followed by an -endif."),
-        new Cmd("-start", "Start at pattern in source file",
+        new Cmd(CMD_IF, "Next N args specify a filter command followed by any change commands followed by an -endif."),
+        new Cmd(CMD_START, "Start at pattern in source file",
                 new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-stop", "End at pattern in source file",
+        new Cmd(CMD_STOP, "End at pattern in source file",
                 new Arg("stop pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-rawlines", "",
+        new Cmd(CMD_RAWLINES, "",
                 new Arg("lines",
                         "Pass through and print out rawlines unprocesed")),
-        new Cmd("-inputnotcontains", "Filter out input lines that contain any of the strings",
+        new Cmd(CMD_INPUTNOTCONTAINS, "Filter out input lines that contain any of the strings",
                 new Arg("filters",
                         "Comma separated list of strings to filter on")),
-        new Cmd(
-		"-min",
+        new Cmd(CMD_MIN,
 		"Only pass thorough lines that have at least this number of columns",
 		new Arg("min # columns", "", ATTR_TYPE, "number")),
-        new Cmd(
-		"-max",
+        new Cmd(CMD_MAX,
 		"Only pass through lines that have no more than this number of columns",
 		new Arg("max # columns", "", ATTR_TYPE, "number")),
-        new Cmd(
-		"-numcolumns",
+        new Cmd(CMD_NUMCOLUMNS,
 		"Remove or add values so each row has the number of columns",
 		new Arg("number", "", ATTR_TYPE, "number")),
-        new Cmd("-has", "Only pass through anything if the data has the given columns",
+        new Cmd(CMD_HAS, "Only pass through anything if the data has the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-pattern", "Pass through rows that the columns each match the pattern",
+        new Cmd(CMD_PATTERN, "Pass through rows that the columns each match the pattern",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-notpattern",
+        new Cmd(CMD_NOTPATTERN,
                 "Pass through rows that don't match the pattern",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("pattern", "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-fuzzypattern", "Pass through rows that the columns each fuzzily match the pattern",
+        new Cmd(CMD_FUZZYPATTERN, "Pass through rows that the columns each fuzzily match the pattern",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-lengthgreater", "Pass through rows that the length of the columns is greater than",
+        new Cmd(CMD_LENGTHGREATER, "Pass through rows that the length of the columns is greater than",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("length", "")),
 
-       new Cmd("-same", "Pass through where the 2 columns have the same value",
-
+	new Cmd(CMD_SAME, "Pass through where the 2 columns have the same value",
                 new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd("-notsame", "Pass through where the 2 columns don't have the same value",
+        new Cmd(CMD_NOTSAME, "Pass through where the 2 columns don't have the same value",
                 new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN)),			
-        new Cmd("-unique", "Pass through unique values", new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
+        new Cmd(CMD_UNIQUE, "Pass through unique values", new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match. use fuzzy:? to print out values)",ATTR_TYPE,"enumeration","values","exact,clean,fuzzy:threshold")),
-        new Cmd("-dups", "Pass through duplicate values", new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
-        new Cmd("-sample", "Pass through rows based on probablity",
+        new Cmd(CMD_DUPS, "Pass through duplicate values", new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+        new Cmd(CMD_SAMPLE, "Pass through rows based on probablity",
                 new Arg("probablity", "0-1 probability of passing through a row")),
 
-        new Cmd("-minvalue",  "Pass through the row that has the min value in the group of columns defined by the key column",
+        new Cmd(CMD_MINVALUE,  "Pass through the row that has the min value in the group of columns defined by the key column",
 		new Arg("key column","",ATTR_TYPE,TYPE_COLUMN),
                 new Arg("value column","",ATTR_TYPE,TYPE_COLUMN)),
-        new Cmd("-maxvalue",  "Pass through the row that has the max value in the group of columns defined by the key column",
+        new Cmd(CMD_MAXVALUE,  "Pass through the row that has the max value in the group of columns defined by the key column",
 		new Arg("key column","",ATTR_TYPE,TYPE_COLUMN),
                 new Arg("value column","",ATTR_TYPE,TYPE_COLUMN)),
-        new Cmd("-eq", "Pass through rows that the column value equals the given value",
+        new Cmd(CMD_EQ, "Pass through rows that the column value equals the given value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd("-ne", "Pass through rows that the column value does not equal the given value",
+        new Cmd(CMD_NE, "Pass through rows that the column value does not equal the given value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd("-gt", "Pass through rows that the column value is greater than the given value",
+        new Cmd(CMD_GT, "Pass through rows that the column value is greater than the given value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd("-ge", "Pass through rows that the column value is greater than or equals the given value",
+        new Cmd(CMD_GE, "Pass through rows that the column value is greater than or equals the given value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd("-lt", "Pass through rows that the column value is less than the given value",
+        new Cmd(CMD_LT, "Pass through rows that the column value is less than the given value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd("-le", "Pass through rows that the column value is less than or equals the given value",
+        new Cmd(CMD_LE, "Pass through rows that the column value is less than or equals the given value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd("-between", "Extract rows that are within the range",
+        new Cmd(CMD_BETWEEN, "Extract rows that are within the range",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("min value"),new Arg("max value")),
 
-	new Cmd("-notbetween","Extract rows that are not within the range",
+	new Cmd(CMD_NOTBETWEEN,"Extract rows that are not within the range",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("min value"),new Arg("max value")),
-        new Cmd("-betweenstring", "Extract rows that are between the given strings",
+        new Cmd(CMD_BETWEENSTRING, "Extract rows that are between the given strings",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("start string"),new Arg("end string")),
 
-        new Cmd("-notbetweenstring", "Extract rows that are between the given strings",
+        new Cmd(CMD_NOTBETWEENSTRING, "Extract rows that are between the given strings",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("start string"),new Arg("end string")),
-        new Cmd("-groupfilter", "One row in each group has to match",
+        new Cmd(CMD_GROUPFILTER, "One row in each group has to match",
                 new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("value_column", "Value column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("operator", "", "values", "=,!=,~,<,<=,>,>="),
                 new Arg("value")),
-        new Cmd("-before", "Pass through rows whose date is before the given date",
+        new Cmd(CMD_BEFORE, "Pass through rows whose date is before the given date",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("format","Date Format, e.g. yyyy-MM-dd"),
                 new Arg("date"),
 		new Arg("format2","Date Format, e.g. yyyy-MM-dd")),
-        new Cmd("-after", "Pass through rows whose date is after the given date",
+        new Cmd(CMD_AFTER, "Pass through rows whose date is after the given date",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), 
 		new Arg("format","Date Format, e.g. yyyy-MM-dd"),
                 new Arg("date"),
 		new Arg("format2","Date Format, e.g. yyyy-MM-dd")),
-       new Cmd("-countvalue", "No more than count unique values",
+	new Cmd(CMD_COUNTVALUE, "No more than count unique values",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("count")),
-        new Cmd("-decimate", "only include every <skip factor> row",
+        new Cmd(CMD_DECIMATE, "only include every <skip factor> row",
                 new Arg("rows", "# of start rows to include"),
                 new Arg("skip", "skip factor")),
 
-        new Cmd("-ifin", "Pass through rows that the columns with ID is in given file",
+        new Cmd(CMD_IFIN, "Pass through rows that the columns with ID is in given file",
                 new Arg(ARG_COLUMN, "Column in the file", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("file", "The file"),
                 new Arg("column2", "Column in main file", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd("-ifnotin", "Pass through rows that the columns with ID is not in given file",
+        new Cmd(CMD_IFNOTIN, "Pass through rows that the columns with ID is not in given file",
                 new Arg(ARG_COLUMN, "Column in the file", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("file", "The file"),
                 new Arg("column2", "Column in main file", ATTR_TYPE, TYPE_COLUMN)),	
 
-        new Cmd("-ifmatchesfile", "Pass through rows that the columns with ID begins with something in the given file",
+        new Cmd(CMD_IFMATCHESFILE, "Pass through rows that the columns with ID begins with something in the given file",
                 new Arg("pattern", "Pattern template, e.g. ^${value}"),
                 new Arg(ARG_COLUMN, "Column in the file", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("file", "The file"),
                 new Arg("column2", "Column in main file", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd("-ifnotmatchesfile", "Pass through rows that the columns with ID does not begin with something in the given file",
+        new Cmd(CMD_IFNOTMATCHESFILE, "Pass through rows that the columns with ID does not begin with something in the given file",
                 new Arg("pattern", "Pattern template, e.g. ^${value}"),
                 new Arg("file", "The file"),
                 new Arg("column2", "Column in main file", ATTR_TYPE, TYPE_COLUMN)),	
 	
 
-        new Cmd("-skippattern", "Skip any line that matches the pattern",
+        new Cmd(CMD_SKIPPATTERN, "Skip any line that matches the pattern",
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-        new Cmd("-skip", "Skip number of processed rows.",
+        new Cmd(CMD_SKIP, "Skip number of processed rows.",
                 new Arg("rows", "How many rows to skip", ATTR_TYPE, "number")),
 
         /** *  Slice and dice * */
         new Category("Slice and Dice","Add/remove columns, rows, restructure, etc"),
-        new Cmd("-columns",  "Only include the given columns",
+        new Cmd(CMD_COLUMNS,  "Only include the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-notcolumns", "Don't include given columns",
+        new Cmd(CMD_NOTCOLUMNS, "Don't include given columns",
 		ARG_LABEL,"Not Columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-firstcolumns", "Move columns to beginning",
+        new Cmd(CMD_FIRSTCOLUMNS, "Move columns to beginning",
 		ARG_LABEL,"Move Columns First",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-columnsbefore", "Move columns before the given column",
+        new Cmd(CMD_COLUMNSBEFORE, "Move columns before the given column",
 		ARG_LABEL,"Move Columns Before",
                 new Arg(ARG_COLUMN, "Column to move before", ATTR_TYPE, TYPE_COLUMN),
                 new Arg(ARG_COLUMNS, "Columns to move", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-columnsafter", "Move columns after given column",
+        new Cmd(CMD_COLUMNSAFTER, "Move columns after given column",
 		ARG_LABEL,"Move Columns After",
                 new Arg(ARG_COLUMN, "Column to move after", ATTR_TYPE, TYPE_COLUMN),
                 new Arg(ARG_COLUMNS, "Columns to move", ATTR_TYPE, TYPE_COLUMNS)),	
-        new Cmd("-delete", "Remove the columns",
+        new Cmd(CMD_DELETE, "Remove the columns",
 		ARG_LABEL,"Delete Columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-cut", "Drop rows",
+        new Cmd(CMD_CUT, "Drop rows",
 		ARG_LABEL,"Delete Rows",
                 new Arg("rows",
                         "One or more rows. -1 to the end. e.g., 0-3,5,10,-1",
                         ATTR_TYPE, "rows")),
-        new Cmd("-include", "Only include specified rows",
+        new Cmd(CMD_INCLUDE, "Only include specified rows",
 		ARG_LABEL,"Include Rows",
                 new Arg("rows", "one or more rows, -1 to the end", ATTR_TYPE,
                         "rows")),
-	new Cmd("-rows_first", "Move rows to the top that match the pattern",
+	new Cmd(CMD_ROWS_FIRST, "Move rows to the top that match the pattern",
 		ARG_LABEL,"Move Rows First",
                 new Arg(ARG_COLUMNS, "columns to match on", ATTR_TYPE,  TYPE_COLUMNS),
                 new Arg("pattern", "Pattern")),
-	new Cmd("-rows_last", "Move rows to the end of list that match the pattern",
+	new Cmd(CMD_ROWS_LAST, "Move rows to the end of list that match the pattern",
 		ARG_LABEL,"Move Rows Last",
                 new Arg(ARG_COLUMNS, "columns to match on", ATTR_TYPE,  TYPE_COLUMNS),
                 new Arg("pattern", "Pattern")),
 
-        new Cmd("-copy", "Copy column",
+        new Cmd(CMD_COPY, "Copy column",
 		ARG_LABEL,"Copy Column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), "name"),
-        new Cmd("-add","Add new columns",
+        new Cmd(CMD_ADD,"Add new columns",
 		ARG_LABEL,"Add Columns",
 		new Arg("names", "Comma separated list of new column names",ATTR_TYPE,TYPE_LIST),		
 		new Arg(
 			"values",
 			"Comma separated list of new values", ATTR_TYPE,
 			TYPE_LIST)),
-        new Cmd("-insert","Insert new column values",
+        new Cmd(CMD_INSERT,"Insert new column values",
 		ARG_LABEL,"Insert Columns",
 		new Arg(ARG_COLUMN, "Column to insert before", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("name", "Name of new column"),		
@@ -1966,92 +1967,92 @@ public class CsvUtil implements CsvCommands {
 			"values",
 			"Single value or comma separated for multiple rows", ATTR_TYPE,
 			TYPE_LIST)),
-	new Cmd("-concat", "Create a new column from the given columns",
+	new Cmd(CMD_CONCAT, "Create a new column from the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), "delimiter",
 		new Arg("name","Name of new colums")),
-        new Cmd("-concatrows", "Concatenate multiple rows into a single row",
+        new Cmd(CMD_CONCATROWS, "Concatenate multiple rows into a single row",
                 new Arg("num_rows", "Number of rows", ATTR_TYPE, "number")), 
-        new Cmd("-combine",
+        new Cmd(CMD_COMBINE,
                 "Combine columns with the delimiter. deleting columns",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "delimiter",
                 "new column name"),
-        new Cmd("-combineinplace", "Combine columns with the delimiter",
+        new Cmd(CMD_COMBINEINPLACE, "Combine columns with the delimiter",
 		ARG_LABEL,"Combine in place",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "delimiter",
                 "new column name"),
-        new Cmd("-merge",
+        new Cmd(CMD_MERGE,
                 "Apply operators to columns",
                 new Arg(ARG_COLUMNS, "Columns to merge", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("name", "New column(s) name"),
                 new Arg("operator", "Operator", "values",
                         "average,min,max,count")),
-        new Cmd("-split", "Split the column",
+        new Cmd(CMD_SPLIT, "Split the column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("delimiter", "What to split on"),
                 new Arg("names", "Comma separated new column names", ATTR_TYPE,
                         TYPE_LIST)),
-        new Cmd("-splat",
+        new Cmd(CMD_SPLAT,
                 "Create a new column from the values in the given column",
                 "key col", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 "delimiter", new Arg("name", "new column name")),
-        new Cmd("-shift", "Shift columns over by count for given rows",
+        new Cmd(CMD_SHIFT, "Shift columns over by count for given rows",
                 new Arg("rows", "Rows to apply to", ATTR_TYPE, "rows"),
                 new Arg(ARG_COLUMN, "Column to start at", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("count")),
-        new Cmd("-slice",
+        new Cmd(CMD_SLICE,
                 "Slide columns down and over to append new rows to the bottom",
                 new Arg(ARG_COLUMNS, "Columns to move", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("dest", "Desc column to move to", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("fill", "Comma separated list of values to fill out the new row")),				
-        new Cmd("-addcell", "Add a new cell at row/column",
+        new Cmd(CMD_ADDCELL, "Add a new cell at row/column",
 		ARG_LABEL,"Add Cell",
 		new Arg("row"),
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), "value"),
-        new Cmd("-deletecell",  "Delete cell at row/column",
+        new Cmd(CMD_DELETECELL,  "Delete cell at row/column",
 		ARG_LABEL,"Delete Cell",
 		new Arg("row"),
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd("-appendrows", "Only include specified rows",
+        new Cmd(CMD_APPENDROWS, "Only include specified rows",
 		ARG_LABEL,"Append Rows",
                 new Arg("skip", "How many rows to skip", ATTR_TYPE, "number"),
                 new Arg("count", "How many rows to merge", ATTR_TYPE, "number"),
                 new Arg("delimiter", "How many rows to merge")),
 
-        new Cmd("-mergerows", "Merge rows",
+        new Cmd(CMD_MERGEROWS, "Merge rows",
 		ARG_LABEL,"Merge Rows",
                 new Arg("rows", "2 or more rows", ATTR_TYPE, "rows"),
                 new Arg("delimiter"), new Arg("close")),
-        new Cmd("-rowop", "Apply an operator to columns and merge rows",
+        new Cmd(CMD_ROWOP, "Apply an operator to columns and merge rows",
                 new Arg("keys", "Key columns", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("values", "Value columns", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("operator", "Operator", "values",
                         "average,min,max,count")),
-        new Cmd("-rotate", "Rotate the data"),
-        new Cmd("-flip", "Reverse the order of the rows except the header"),
-        new Cmd("-makefields", "Make new columns from data values",
+        new Cmd(CMD_ROTATE, "Rotate the data"),
+        new Cmd(CMD_FLIP, "Reverse the order of the rows except the header"),
+        new Cmd(CMD_MAKEFIELDS, "Make new columns from data values",
 		ARG_LABEL,"Make Fields from Values",
                 new Arg(ARG_COLUMN, "column to get new column header#", ATTR_TYPE,
 			TYPE_COLUMN), new Arg("value columns",
-					   "Columns to get values from", ATTR_TYPE,
-					   TYPE_COLUMNS), new Arg("unique column",
-							       "The unique value, e.g. date", ATTR_TYPE,
-							       TYPE_COLUMN), new Arg("other columns",
-										  "Other columns to include", ATTR_TYPE,
-										  TYPE_COLUMNS)),
-        new Cmd("-furl", "Use values in header to make new row",
+					      "Columns to get values from", ATTR_TYPE,
+					      TYPE_COLUMNS), new Arg("unique column",
+								     "The unique value, e.g. date", ATTR_TYPE,
+								     TYPE_COLUMN), new Arg("other columns",
+											   "Other columns to include", ATTR_TYPE,
+											   TYPE_COLUMNS)),
+        new Cmd(CMD_FURL, "Use values in header to make new row",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), "header label",
                 "value label"),
-        new Cmd("-explode", "Make separate files based on value of column",
+        new Cmd(CMD_EXPLODE, "Make separate files based on value of column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd("-join", "Join the 2 files together",
+        new Cmd(CMD_JOIN, "Join the 2 files together",
                 new Arg("key columns", "key columns the file to join with", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("value_columns", "value columns"),
                 new Arg("file", "File to join with", ATTR_TYPE, "file"),
                 new Arg("source_columns", "source key columns"),
 		new Arg("default_value", "default value")),
-        new Cmd("-cross", "Make a cross product of 2 data files",
+        new Cmd(CMD_CROSS, "Make a cross product of 2 data files",
                 new Arg("file", "File to cross with", ATTR_TYPE, "file")),
-        new Cmd("-fuzzyjoin", "Join the 2 files together using fuzzy matching logic",
+        new Cmd(CMD_FUZZYJOIN, "Join the 2 files together using fuzzy matching logic",
 		ARG_LABEL,"Fuzzy Join",
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
                 new Arg("key columns", "Numeric column numbers of the file to join with", ATTR_TYPE, TYPE_COLUMNS),
@@ -2062,287 +2063,275 @@ public class CsvUtil implements CsvCommands {
 
 
 
-        new Cmd("-normal", "Normalize the strings",
+        new Cmd(CMD_NORMAL, "Normalize the strings",
                 new Arg(ARG_COLUMNS, "Columns", ATTR_TYPE, TYPE_COLUMNS)
 		),
-        new Cmd("-countunique","Count Unique Values",
+        new Cmd(CMD_COUNTUNIQUE,"Count Unique Values",
 		ARG_LABEL,"Count Unique Values",
 		"Count number of unique values",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-dissect", "Make fields based on patterns",
+        new Cmd(CMD_DISSECT, "Make fields based on patterns",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("pattern","e.g., \"(field1:.*) (field2:.*) ...\"",ATTR_TYPE,TYPE_PATTERN,"size","80")),
-        new Cmd("-keyvalue", "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
+        new Cmd(CMD_KEYVALUE, "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd(
-		"-firstchars",
+        new Cmd(CMD_FIRSTCHARS,
 		"Extract first N characters and create new column",
 		ARG_LABEL,"Extract 1st Chars - Make Column",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("name", "New column name"),
 		new Arg("number", "Number of characters")),
-        new Cmd(
-		"-lastchars",
+        new Cmd(CMD_LASTCHARS,
 		"Extract last N characters and create new column",
 		ARG_LABEL,"Extract Last Chars - Make Column",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("name", "New column name"),
 		new Arg("number", "Number of characters")),
-        new Cmd(
-		"-between_indices",
+        new Cmd(CMD_BETWEEN_INDICES,
 		"Extract characters between the 2 indices",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("name", "New column name"),
 		new Arg("start", "Start index"),
 		new Arg("end", "End index")),		
-        new Cmd("-fromheading", "Extract column values from headings",
+        new Cmd(CMD_FROMHEADING, "Extract column values from headings",
 		ARG_LABEL,"From Heading",
                 new Arg(ARG_COLUMNS, "Columns of headings", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("names", "Comma separated list of new column names", ATTR_TYPE, TYPE_LIST),
                 new Arg("pattern", "Regexp to apply to header with () defining column values")),				
         /** *  Change values * */
         new Category("Change"),
-        new Cmd("-change", "Change columns",
+        new Cmd(CMD_CHANGE, "Change columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN),
                 new Arg("substitution string",
                         "use $1, $2, etc for pattern (...) matches")),
-        new Cmd("-changerow", "Change the values in the row/cols",
+        new Cmd(CMD_CHANGEROW, "Change the values in the row/cols",
 		ARG_LABEL,"Change Row Values",
                 new Arg("rows","",ATTR_TYPE,TYPE_LIST),
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN),
                 new Arg("substitution string")),
-        new Cmd("-replace", "Replace",
+        new Cmd(CMD_REPLACE, "Replace",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("substitution string",
                         "use {value} for value")),
-        new Cmd("-set", "Write the value into the cells",
+        new Cmd(CMD_SET, "Write the value into the cells",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("rows", "", ATTR_TYPE, TYPE_LIST), new Arg("value")),
-        new Cmd("-macro",
+        new Cmd(CMD_MACRO,
 		"Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header",
 		new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN), new Arg("template"),
 		new Arg("column label")),
-        new Cmd("-setcol",
+        new Cmd(CMD_SETCOL,
 		"Write the value into the write col for rows that match the pattern",
 		new Arg(ARG_COLUMN, "match col #", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN),
 		new Arg("write column", "", ATTR_TYPE, TYPE_COLUMN), new Arg("value")),
-        new Cmd(
-		"-copyif",
+        new Cmd(CMD_COPYIF,
 		"Copy column 2 to column 3 if all of the columns match the pattern",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("pattern", ""),
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN)),		
-        new Cmd(
-		"-copycolumns",
+        new Cmd(CMD_COPYCOLUMNS,
 		"Copy columns 1  to columns 2",
 		ARG_LABEL,"Copy Columns",
 		new Arg("columns1", "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("columns2", "", ATTR_TYPE, TYPE_COLUMNS)),		
 
-        new Cmd(
-		"-filldown",
+        new Cmd(CMD_FILLDOWN,
 		"Fill down with last non-null value",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd(
-		"-unfill",
+        new Cmd(CMD_UNFILL,
 		"Set following cells to blank if the same as previous cell",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
-        new Cmd(
-		"-priorprefix",
+        new Cmd(CMD_PRIORPREFIX,
 		"Append prefix from the previous element to rows that match pattern",
 		ARG_LABEL,"Prior Prefix",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN), new Arg("delimiter")),
-        new Cmd("-case", "Change case of column - type:lower,upper,proper,capitalize",
+        new Cmd(CMD_CASE, "Change case of column - type:lower,upper,proper,capitalize",
 		ARG_LABEL,"Change Case",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("type", "", "values", "lower,upper,proper,capitalize")),
-        new Cmd("-padleft", "Pad left with given character",
+        new Cmd(CMD_PADLEFT, "Pad left with given character",
 		ARG_LABEL,"Pad Left",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("character", "Character to pad to"),
                 new Arg("length", "Length")),
-        new Cmd("-padright", "Pad right with given character",
+        new Cmd(CMD_PADRIGHT, "Pad right with given character",
 		ARG_LABEL,"Pad Right",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("character", "Character to pad to"),
                 new Arg("length", "Length")),	
 
 
-        new Cmd("-trim", "Trim leading and trailing white space",
+        new Cmd(CMD_TRIM, "Trim leading and trailing white space",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-trimquotes", "Trim leading and trailing quotes",
+        new Cmd(CMD_TRIMQUOTES, "Trim leading and trailing quotes",
 		ARG_LABEL,"Trim Quotes",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
-        new Cmd("-width", "Limit the string size of the columns",
+        new Cmd(CMD_WIDTH, "Limit the string size of the columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), new Arg("size")),
-        new Cmd(
-		"-prepend",
+        new Cmd(CMD_PREPEND,
 		"Add the text to the beginning of the file. use _nl_ to insert newlines",
 		new Arg("text")),
-        new Cmd("-pad", "Add or remove columns to achieve the count",
+        new Cmd(CMD_PAD, "Add or remove columns to achieve the count",
                 new Arg("count"), new Arg("pad string")),
-        new Cmd("-prefix", "Add prefix to column",
+        new Cmd(CMD_PREFIX, "Add prefix to column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("prefix","String to use")),
-        new Cmd("-suffix", "Add suffix to column",
+        new Cmd(CMD_SUFFIX, "Add suffix to column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), "suffix"),
-        new Cmd("-subst", "Create a new column with the template",
+        new Cmd(CMD_SUBST, "Create a new column with the template",
                 new Arg("column_name", "New Column Name"),
                 new Arg("template", "Template - use ${column_name} ... ")),
-        new Cmd("-ascii", "Convert non ascii characters",
+        new Cmd(CMD_ASCII, "Convert non ascii characters",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("substitution string", "")),
-        new Cmd("-ismobile", "Add a true/false if the string is a mobile phone",
+        new Cmd(CMD_ISMOBILE, "Add a true/false if the string is a mobile phone",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd(
-		"-js",
+        new Cmd(CMD_JS,
 		"Define Javascript (e.g., functions) to use later in the -func call",
 		ARG_LABEL,"Define Javascript",
 		new Arg("javascript", "", "rows", "6")),
-        new Cmd("-func",
+        new Cmd(CMD_FUNC,
 		ARG_LABEL,"Javascript Function",
                 "Apply the javascript function. Use _colname or _col#",
                 new Arg("names", "New column names", ATTR_TYPE, TYPE_LIST),
                 new Arg("javascript", "javascript expression", "size", "60")),
-        new Cmd("-endswith", "Ensure that each column ends with the string",
+        new Cmd(CMD_ENDSWITH, "Ensure that each column ends with the string",
 		ARG_LABEL,"Ends With",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), new Arg("string")),
-        new Cmd("-truncate", "", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+        new Cmd(CMD_TRUNCATE, "", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
                 "max length", "suffix"),
-        new Cmd("-extract", "Extract text from column and make a new column",
+        new Cmd(CMD_EXTRACT, "Extract text from column and make a new column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("pattern", "", ATTR_TYPE, TYPE_PATTERN),
                 new Arg("replace with", "use 'none' for no replacement"),
                 new Arg("name","new column name")),
-        new Cmd("-urlarg", "Extract URL argument and make a new column",
+        new Cmd(CMD_URLARG, "Extract URL argument and make a new column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("argname", "URL arg name")),
 
-        new Cmd("-urlencode", "URL encode the columns",
+        new Cmd(CMD_URLENCODE, "URL encode the columns",
 		ARG_LABEL,"URL Encode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-urldecode", "URL decode the columns",
+        new Cmd(CMD_URLDECODE, "URL decode the columns",
 		ARG_LABEL,"URL Decode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
-        new Cmd("-map", "Change values in column to new values",
+        new Cmd(CMD_MAP, "Change values in column to new values",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "new columns name",
                 "value newvalue ..."),
-        new Cmd("-format", "Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)", 
+        new Cmd(CMD_FORMAT, "Apply decimal format to the columns (see https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)", 
 		ARG_LABEL,"Decimal Format",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("format", "Decimal format  e.g. '##0.00'")),
-        new Cmd(
-		"-denormalize",
+        new Cmd(CMD_DENORMALIZE,
 		"Read the id,value from file and substitute the value in the dest file col idx",
 		new Arg("file", "From csv file", ATTR_TYPE, "file"), "from id idx",
 		"from value idx", "to idx", "new col name", "mode replace add"),
-        new Cmd("-break", "Break apart column values and make new rows",
+        new Cmd(CMD_BREAK, "Break apart column values and make new rows",
                 "label1", "label2", TYPE_COLUMNS),
 
-        new Cmd("-makeids", "Turn the header row into IDs (lowercase, no space, a-z0-9_)",
+        new Cmd(CMD_MAKEIDS, "Turn the header row into IDs (lowercase, no space, a-z0-9_)",
 		ARG_LABEL,"Make IDs"),
 
-        new Cmd("-faker", "Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker",
+        new Cmd(CMD_FAKER, "Fake up data. See the docs at https://ramadda.org/repository/userguide/seesv.html#-faker",
 		ARG_LABEL,"Fake Data",
 		new Arg("what","firstname|lastname|fullname|etc"),
 		new Arg(ARG_COLUMNS,"Columns to change. Of none given then add the fake value",ATTR_TYPE,TYPE_COLUMNS)),		
 
-       /** *  Add values * */
+	/** *  Add values * */
         new Category("Add Values"),
-        new Cmd("-md", "Make a message digest of the column values",
+        new Cmd(CMD_MD, "Make a message digest of the column values",
 		ARG_LABEL,"Message Digest",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("type", "", ATTR_TYPE,"enumeration","values", "MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512,")),
-        new Cmd("-tob64", "Base 64 Encode",
+        new Cmd(CMD_TOB64, "Base 64 Encode",
 		ARG_LABEL,"Base 64 Encode",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-fromb64", "Base 64 Decode",
+        new Cmd(CMD_FROMB64, "Base 64 Decode",
 		ARG_LABEL,"Base 64 Decode",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-rot13", "Rot 13",
+        new Cmd(CMD_ROT13, "Rot 13",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-	new Cmd("-encrypt", "Encrypt using AES with SHA-256 key",
+	new Cmd(CMD_ENCRYPT, "Encrypt using AES with SHA-256 key",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("password")),
-	new Cmd("-decrypt", "Encrypt using AES with SHA-256 key",
+	new Cmd(CMD_DECRYPT, "Encrypt using AES with SHA-256 key",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("password")),	
-        new Cmd("-uuid", "Add a UUID field"),
-        new Cmd("-number", "Add 1,2,3... as column"),
-        new Cmd("-letter", "Add 'A','B', ... as column"),
-	new Cmd("-soundex", "Generate a soundex code",
+        new Cmd(CMD_UUID, "Add a UUID field"),
+        new Cmd(CMD_NUMBER, "Add 1,2,3... as column"),
+        new Cmd(CMD_LETTER, "Add 'A','B', ... as column"),
+	new Cmd(CMD_SOUNDEX, "Generate a soundex code",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-wikidesc", "Add a description from wikipedia",
+        new Cmd(CMD_WIKIDESC, "Add a description from wikipedia",
 		ARG_LABEL,"Add wikipedia desc.",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "suffix"),
-        new Cmd("-image", "Search for an image",
+        new Cmd(CMD_IMAGE, "Search for an image",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "suffix"),
-        new Cmd("-embed", "Download the URL and embed the image contents",
+        new Cmd(CMD_EMBED, "Download the URL and embed the image contents",
                 new Arg("url column")),
-        new Cmd("-fetch", "Fetch the URL and embed the contents",
+        new Cmd(CMD_FETCH, "Fetch the URL and embed the contents",
                 new Arg("name","Name of new column"),
                 new Arg("ignore_errors","Ignore Errors e.g., true or false",ATTR_TYPE,"boolean"),
 		new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
-        new Cmd(
-		"-imagefill",
+	new Cmd(CMD_IMAGEFILL,
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
 		new Arg("querycolumn", "", ATTR_TYPE, TYPE_COLUMNS), "suffix",
 		new Arg("imagecolumn", "", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd("-download", "Download the URL",
+        new Cmd(CMD_DOWNLOAD, "Download the URL",
                 new Arg(ARG_COLUMN, "Column that holds the URL", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("suffix", "File suffix")),
-        new Cmd("-gender", "Figure out the gender of the name in the column",
+        new Cmd(CMD_GENDER, "Figure out the gender of the name in the column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS)),
 
 
         /** *  Dates * */
         new Category("Dates"),
-        new Cmd("-indateformat", "Specify date format for parsing",
+        new Cmd(CMD_INDATEFORMAT, "Specify date format for parsing",
 		ARG_LABEL,"Input Date Format",
                 new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
 		new Arg("timezone", "")),
-        new Cmd("-outdateformat", "Specify date format for formatting",
+        new Cmd(CMD_OUTDATEFORMAT, "Specify date format for formatting",
 		ARG_LABEL,"Output Date Format",
                 new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
 		new Arg("timezone", "")),		
 
-        new Cmd("-convertdate", "Convert date", 
+        new Cmd(CMD_CONVERTDATE, "Convert date", 
 		ARG_LABEL,"Convert Date",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS)),
 
-        new Cmd("-adddate", "Add date", 
+        new Cmd(CMD_ADDDATE, "Add date", 
 		ARG_LABEL,"Add to Date",
                 new Arg("date_column", "Date Column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("value", "Value Column"),		
                 new Arg("value_type", "Value type - millisecond,second,minute,hour,hour_of_day,week,month,year")),
 
-        new Cmd("-extractdate", "Extract date",
+        new Cmd(CMD_EXTRACTDATE, "Extract date",
 		ARG_LABEL,"Extract Date",
 		new Arg("date column", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
 			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond")),
 
-        new Cmd("-formatdate", "Format date",
+        new Cmd(CMD_FORMATDATE, "Format date",
 		ARG_LABEL,"Format Date",
                 new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS), "target date format"),
 
-        new Cmd("-elapsed", "Calculate elapsed time (ms) between rows",
+        new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
 
-        new Cmd("-latest", "Pass through rows whose date is the latest in the group of rows defined by the key column",
+        new Cmd(CMD_LATEST, "Pass through rows whose date is the latest in the group of rows defined by the key column",
                 new Arg(ARG_COLUMNS, "Key columns", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg(ARG_COLUMN, "Date column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("format","Date Format, e.g. yyyy-MM-dd")),
 
-        new Cmd("-datediff", "Calculate elapsed time between columns column1-column2",
+        new Cmd(CMD_DATEDIFF, "Calculate elapsed time between columns column1-column2",
 		ARG_LABEL,"Date Difference",
                 new Arg("column1","Column 1",ATTR_TYPE,TYPE_COLUMN),
                 new Arg("column2","Column 2",ATTR_TYPE,TYPE_COLUMN),
 		new Arg("unit","Unit-milliseconds,seconds,minutes,hours,days",ATTR_TYPE,"enumeration","values","milliseconds,seconds,minutes,hours,days")),
-	new Cmd("-datecompare", "add a true/false column comparing the date values",
+	new Cmd(CMD_DATECOMPARE, "add a true/false column comparing the date values",
 		ARG_LABEL,"Date Compare",
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN),
@@ -2351,93 +2340,93 @@ public class CsvUtil implements CsvCommands {
 
         /** *  Numeric * */
         new Category("Numeric/Boolean"),
-        new Cmd("-scale", "Set value={value+delta1}*scale+delta2",
+        new Cmd(CMD_SCALE, "Set value={value+delta1}*scale+delta2",
 		ARG_LABEL,"Scale Value",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "delta1", "scale",
                 "delta2"),
-        new Cmd("-generate", "Add row values", "label", "start", "step"),
-        new Cmd("-decimals", "Round decimals", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+        new Cmd(CMD_GENERATE, "Add row values", "label", "start", "step"),
+        new Cmd(CMD_DECIMALS, "Round decimals", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("num_decimals","how many decimals to round to")),
-        new Cmd("-fuzz", "fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+        new Cmd(CMD_FUZZ, "fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out", new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("num_places","how many places to round to. use <=0 for decimals"),
 		new Arg("num_random_digits","how many random digits")),	
-        new Cmd("-ceil", "Set the max value", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+        new Cmd(CMD_CEIL, "Set the max value", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("value","Value")),
-        new Cmd("-floor", "Set the min value", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+        new Cmd(CMD_FLOOR, "Set the min value", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("value","Value")),		
-        new Cmd("-delta",
+        new Cmd(CMD_DELTA,
                 "Add column that is the delta from the previous step",
                 new Arg("key columns"), new Arg(ARG_COLUMNS)),
-        new Cmd("-operator",
+        new Cmd(CMD_OPERATOR,
                 "Apply the operator to the given columns and create new one",
                 new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,TYPE_COLUMNS), "new col name", "operator +,-,*,/,%,average"),
 
-	new Cmd("-compare", "Add a true/false column comparing the values",
+	new Cmd(CMD_COMPARE, "Add a true/false column comparing the values",
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("operator", "<,<=,=,!=,>=,>", ATTR_TYPE, "enumeration","values","<,<=,=,!=,>=,>")),
-        new Cmd("-round", "Round the values", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-abs", "Make absolute values", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_ROUND, "Round the values", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_ABS, "Make absolute values", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 	//TODO:
-        new Cmd("-clip", "Clip the number to within the range", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),new Arg("min"), new Arg("max")),
-        new Cmd("-rand", "make random value",
+        new Cmd(CMD_CLIP, "Clip the number to within the range", new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),new Arg("min"), new Arg("max")),
+        new Cmd(CMD_RAND, "make random value",
 		new Arg("column name"),
 		new Arg("minrange","Minimum range (e.g. 0)"),
 		new Arg("maxrange","Maximum range (e.g. 1)")),		
-        new Cmd("-even", "Add true if the column starts with an even number",
+        new Cmd(CMD_EVEN, "Add true if the column starts with an even number",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-sum",
+        new Cmd(CMD_SUM,
 		"Sum values keying on key column value. If no value columns specified then do a count",
 		"key columns", "value columns", "carry over columns"),
-        new Cmd("-pivot",
+        new Cmd(CMD_PIVOT,
 		"Make a pivot table",
 		new Arg("key columns","Columns to key on",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("column columns", "The columns the values of which are used to make the new columns in the result",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("value column","The value column",ATTR_TYPE,TYPE_COLUMN),
 		new Arg("operator","The operator to apply -  count,sum,average,min,max")),
-        new Cmd("-summary",
+        new Cmd(CMD_SUMMARY,
 		"count/sum/average/min/max values keying on key column value. If no value columns specified then do a count",
 		new Arg("key columns","Columns to key on",ATTR_TYPE,TYPE_COLUMNS), new Arg("value columns", "Columns to apply operators on",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("carry over columns","Extra columns to include",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("ops","any of count,sum,average,min,max")),
-        new Cmd("-histogram",
+        new Cmd(CMD_HISTOGRAM,
 		"Make a histogram with the given column and bins",
 		new Arg(ARG_COLUMN,"The column",ATTR_TYPE,TYPE_COLUMN),
 		new Arg("bins","Comma separated set of bin values"),
 		new Arg("value columns","Extra columns to sum up",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("ops","ops to apply to extra columns - any of count,sum,average,min,max")),		
-        new Cmd("-percent", "", "columns to add"),
-        new Cmd("-increase", "Calculate percent increase",
+        new Cmd(CMD_PERCENT, "", "columns to add"),
+        new Cmd(CMD_INCREASE, "Calculate percent increase",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "how far back"),
-        new Cmd("-average", "Calculate a moving average", "columns",
+        new Cmd(CMD_AVERAGE, "Calculate a moving average", "columns",
                 "period", "label"),
-        new Cmd("-ranges", "Create a new column with the (string) ranges where the value falls in",
+        new Cmd(CMD_RANGES, "Create a new column with the (string) ranges where the value falls in",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("name", "New column name"),		
 		new Arg("start", "Numeric start of range"),
 		new Arg("size", "Numeric size of range")),		
-        new Cmd("-bytes", "Convert suffixed values (e.g., 2 MB) into the number",
+        new Cmd(CMD_BYTES, "Convert suffixed values (e.g., 2 MB) into the number",
                 new Arg("unit", "", ATTR_TYPE, "enumeration","values","binary,metric"),
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-column_and", "And values", ARG_LABEL,"Logical And",
+        new Cmd(CMD_COLUMN_AND, "And values", ARG_LABEL,"Logical And",
 		new Arg("name","New column name"), new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-colum_nor", "Or values",
+        new Cmd(CMD_COLUM_NOR, "Or values",
 		ARG_LABEL,"Logical Or",
 		new Arg("name","New column name"), new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-column_not", "Not value", new Arg("name","New column name"), new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),		
+        new Cmd(CMD_COLUMN_NOT, "Not value", new Arg("name","New column name"), new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),		
 
-	new Cmd("-check", "Check that the values are numbers",
+	new Cmd(CMD_CHECK, "Check that the values are numbers",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("what", "How strict", ATTR_TYPE, "enumeration","values","strict,ramadda")),
 
         /** * Geocode  * */
         new Category("Geospatial"),
-        new Cmd("-geocode", 
+        new Cmd(CMD_GEOCODE, 
 		"Geocode using given columns", 
 		new Arg(ARG_COLUMNS, "Address columns", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
                 new Arg("suffix")),
-        new Cmd("-geocodeifneeded", 
+        new Cmd(CMD_GEOCODEIFNEEDED, 
 		"Geocode if needed", 
 		ARG_LABEL,"Geocode if needed",
 		new Arg(ARG_COLUMNS, "Address columns", ATTR_TYPE, TYPE_COLUMNS),
@@ -2445,162 +2434,160 @@ public class CsvUtil implements CsvCommands {
                 new Arg("suffix"),
                 new Arg("latitude", "latitude column",ATTR_TYPE,TYPE_COLUMN),
                 new Arg("longitude", "longitude column",ATTR_TYPE,TYPE_COLUMN)),		
-        new Cmd("-geocodeaddressdb", "Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column", 
+        new Cmd(CMD_GEOCODEADDRESSDB, "Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column", 
 		ARG_LABEL,"Geocode for DB",
                 new Arg(ARG_COLUMNS,"columns",ATTR_TYPE,TYPE_COLUMNS), "prefix", "suffix"),
-        new Cmd("-geocodejoin", "Geocode with file",
+        new Cmd(CMD_GEOCODEJOIN, "Geocode with file",
 		ARG_LABEL,"Geocode Join",
                 new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("csv file", "File to get lat/lon from", ATTR_TYPE,
                         "file"), "key idx", "lat idx", "lon idx"),
-        new Cmd("-bounds", 
+        new Cmd(CMD_BOUNDS, 
 		"Geocode within bounds", 
 		new Arg("north"),new Arg("west"),new Arg("south"),new Arg("east")),
-        new Cmd("-decodelatlon", 
+        new Cmd(CMD_DECODELATLON, 
 		"Decode latlon", 
 		ARG_LABEL,"Deocde Lat/Lon",
 		new Arg(ARG_COLUMNS,"Lat or Lon column",ATTR_TYPE,TYPE_COLUMNS)),
-        new Cmd("-getaddress", "Get address from lat/lon",
+        new Cmd(CMD_GETADDRESS, "Get address from lat/lon",
 		ARG_LABEL,"Reverse geocode",
                 new Arg("latitude", "latitude column"),
                 new Arg("latitude", "latitude column")),		
-        new Cmd("-statename", "Add state name from state ID",
+        new Cmd(CMD_STATENAME, "Add state name from state ID",
 		ARG_LABEL,"State Name from ID",
                 new Arg("state_column","State ID column")),
-	new Cmd("-geoname", "Look up location name",
+	new Cmd(CMD_GEONAME, "Look up location name",
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("fields","fields in shapefile"),		
                 new Arg("latitude_column", "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("longitude_column", "Longitude column", ATTR_TYPE, TYPE_COLUMN)),
-	new Cmd("-geocontains", "Check for containment",
+	new Cmd(CMD_GEOCONTAINS, "Check for containment",
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("name","new column name"),		
                 new Arg("latitude_column", "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("longitude_column", "Longitude column", ATTR_TYPE, TYPE_COLUMN)),		
-	new Cmd("-elevation", "Look up elevation(using 1/3 arc-second DEM)",
+	new Cmd(CMD_ELEVATION, "Look up elevation(using 1/3 arc-second DEM)",
                 new Arg("latitude_column", "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("longitude_column", "Longitude column", ATTR_TYPE, TYPE_COLUMN)),	
 
-        new Cmd("-mercator", "Convert x/y to lon/lat",
+        new Cmd(CMD_MERCATOR, "Convert x/y to lon/lat",
 		ARG_LABEL,"Convert Mercator",
 		new Arg(ARG_COLUMNS,"x and y columns")),
-        new Cmd("-region", "Add the state's region",
+        new Cmd(CMD_REGION, "Add the state's region",
                 new Arg(ARG_COLUMNS, "Columns with state name or abbrev.", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-population", "Add in population from address",
+        new Cmd(CMD_POPULATION, "Add in population from address",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("prefix", "e.g., state: or county: or city:"), "suffix"),
-	new Cmd("-neighborhood", "Look up neighborhood for a given location",
+	new Cmd(CMD_NEIGHBORHOOD, "Look up neighborhood for a given location",
                 new Arg("latitude_column", "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("longitude_column", "Longitude column", ATTR_TYPE, TYPE_COLUMN)),	
 
 
         /** * Other  * */
         new Category("Misc."),
-        new Cmd("-expandcommands", "Apply the commands to each of the columns",
+        new Cmd(CMD_EXPANDCOMMANDS, "Apply the commands to each of the columns",
 		ARG_LABEL,"Expand Commands",
 		new Arg(ARG_COLUMNS, "Columns to expand with", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("commands", "Commands", "rows", "6")),
-        new Cmd("-sort", "Sort",
+        new Cmd(CMD_SORT, "Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd("-descsort", "",
+        new Cmd(CMD_DESCSORT, "",
 		ARG_LABEL,"Sort descending",
                 new Arg(ARG_COLUMN, "Column to descending sort on", ATTR_TYPE,  TYPE_COLUMN)),
-        new Cmd("-count", "Show count"),
-        new Cmd("-alias", "Set a field alias",
+        new Cmd(CMD_COUNT, "Show count"),
+        new Cmd(CMD_ALIAS, "Set a field alias",
 		new Arg("name","Name"),
 		new Arg("alias","Alias")),
-        new Cmd("-value", "Define a macro value for later use",
+        new Cmd(CMD_VALUE, "Define a macro value for later use",
 		new Arg("name","Name"),
 		new Arg("value","Value")),
-        new Cmd("-filepattern", "Extract a macro value from a filename",
+        new Cmd(CMD_FILEPATTERN, "Extract a macro value from a filename",
 		new Arg("name","Macro name"),
 		new Arg("pattern","Pattern")),		
-        new Cmd("-maxrows", "", "Max rows to process"),
-        new Cmd("-changeline",  "Change the line",
+        new Cmd(CMD_MAXROWS, "", "Max rows to process"),
+        new Cmd(CMD_CHANGELINE,  "Change the line",
                 "from", "to"),
-        new Cmd("-changeraw",  "Change input text",
+        new Cmd(CMD_CHANGERAW,  "Change input text",
                 new Arg("from","From pattern"),
 		new Arg("to","To string")),
-        new Cmd("-crop",  "Crop last part of string after any of the patterns",
+        new Cmd(CMD_CROP,  "Crop last part of string after any of the patterns",
                 ARG_COLUMNS, "pattern1,pattern2"),
-        new Cmd("-strict",
+        new Cmd(CMD_STRICT,
 		"Be strict on columns. any rows that are not the size of the other rows are dropped"),
-        new Cmd("-flag",
+        new Cmd(CMD_FLAG,
 		"Be strict on columns. any rows that are not the size of the other rows are shown"),
-        new Cmd("-verify",
+        new Cmd(CMD_VERIFY,
                 "Throw error if a row has a different number of columns",
                 new Arg("# columns", "", ATTR_TYPE, "number")),
-        new Cmd("-prop", "Set a property",
+        new Cmd(CMD_PROP, "Set a property",
                 new Arg("property", "", "values", "position"),
                 new Arg("value", "start, end, etc")),
-        new Cmd("-comment", "", "string"),
-        new Cmd("-verify",
+        new Cmd(CMD_COMMENT, "", "string"),
+        new Cmd(CMD_VERIFY,
                 "Verify that all of the rows have the same # of columns"),
-        new Cmd("-ext",
+        new Cmd(CMD_EXT,
                 "Execute the external program",
 		new Arg("program_id",
 			"matches with seesv.ext.&lt;program_id&gt;=/path")),
-        new Cmd("-exec",
+        new Cmd(CMD_EXEC,
                 "Execute the external program for every line",
 		new Arg("program_id",
 			"matches with seesv.ext.&lt;program_id&gt;=/path")),
         /*  Output   */
         new Category("Output"), 
-	new Cmd("-print", "Delimited output"),
-	new Cmd("-printdelim", "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
-        new Cmd("-comment", "Add a comment to the output",new Arg("comment","The comment")),
-        new Cmd("-outputprefix", "Specify text to add to the beginning of the file",new Arg("text","The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order mark.")),	
-        new Cmd("-printheader", "Print header"),
-        new Cmd("-raw", "Print the file raw"),
-        new Cmd("-table", "Print HTML table and stats"),
-        new Cmd("-cols", "Set the width of the columns for output. Use with -p",new Arg("width","Column width")),		
-        new Cmd("-stats", "Print summary stats"),
-        new Cmd("-torecord", "Print records"),
-        new Cmd("-toxml", "Generate XML", new Arg("outer tag"),new Arg("inner tag")),
-        new Cmd("-tojson", "Generate JSON"),
-        new Cmd("-todb", "Write to Database",
+	new Cmd(CMD_PRINT, "Delimited output"),
+	new Cmd(CMD_PRINTDELIM, "Delimited output", new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
+        new Cmd(CMD_COMMENT, "Add a comment to the output",new Arg("comment","The comment")),
+        new Cmd(CMD_OUTPUTPREFIX, "Specify text to add to the beginning of the file",new Arg("text","The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order mark.")),	
+        new Cmd(CMD_PRINTHEADER, "Print header"),
+        new Cmd(CMD_RAW, "Print the file raw"),
+        new Cmd(CMD_TABLE, "Print HTML table and stats"),
+        new Cmd(CMD_COLS, "Set the width of the columns for output. Use with -p",new Arg("width","Column width")),		
+        new Cmd(CMD_STATS, "Print summary stats"),
+        new Cmd(CMD_TORECORD, "Print records"),
+        new Cmd(CMD_TOXML, "Generate XML", new Arg("outer tag"),new Arg("inner tag")),
+        new Cmd(CMD_TOJSON, "Generate JSON"),
+        new Cmd(CMD_TODB, "Write to Database",
 		new Arg("db id",""),
 		new Arg("table","table name"),
 		new Arg(ARG_COLUMNS,"database columns"),		
 		new Arg("properties","name value properties")),		
-        new Cmd("-template", "Apply the template to make the output",
+        new Cmd(CMD_TEMPLATE, "Apply the template to make the output",
                 new Arg("prefix", "", "size", "40"),
                 new Arg("template", "Use ${column_name} or indices: ${0},${1}, etc for values", "rows",
                         "6"),
 		new Arg("row_delimiter", "Output between rows",
 			"size", "40"),
 		new Arg("suffix", "", "size", "40")),
-        new Cmd("-subd", "Subdivide into different files",
+        new Cmd(CMD_SUBD, "Subdivide into different files",
 		new Arg(ARG_COLUMNS,"columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS),		
 		new Arg("ranges","Comma separated ranges min1;max1;step1,min2;max2;step2"),
 		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., grid${ikey}.csv")),		
-        new Cmd("-maptiles", "Tile the data on lat/lon",
+        new Cmd(CMD_MAPTILES, "Tile the data on lat/lon",
 		new Arg(ARG_COLUMNS,"lat/lon columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS),		
 		new Arg("degrees","Degrees per tile. Defaults to 1"),
 		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., tile${vkey}.csv. Defaults to a tile${vket}.csv")),		
 
-        new Cmd("-addheader", "Add the RAMADDA point properties",
+        new Cmd(CMD_ADDHEADER, "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
                         "rows", "6")),
-        new Cmd(
-		"-db", "Generate the RAMADDA db xml from the header",
+        new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header",
 		new Arg(
 			"properties",
 			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
-        new Cmd(
-		"-dbprops", "Print to stdout props for db generation",
+        new Cmd(CMD_DBPROPS, "Print to stdout props for db generation",
 		new Arg("id pattern"),
 		new Arg("suffix pattern")),
-        new Cmd("-write", "Write the contents of a row to a named file", new Arg("file name template"),new Arg("contents template")),
-        new Cmd("-fields", "Print the fields"),
-        new Cmd("-run", "", "Name of process directory"),
-        new Cmd("-progress", "Show progress",
+        new Cmd(CMD_WRITE, "Write the contents of a row to a named file", new Arg("file name template"),new Arg("contents template")),
+        new Cmd(CMD_FIELDS, "Print the fields"),
+        new Cmd(CMD_RUN, "", "Name of process directory"),
+        new Cmd(CMD_PROGRESS, "Show progress",
 		new Arg("rows", "How often to print")),
-        new Cmd("-debugrows", "Debug # rows",
+        new Cmd(CMD_DEBUGROWS, "Debug # rows",
 		new Arg("rows", "# of rows")),	
-	new Cmd("-script", "Generate the script to call"),
-        new Cmd("-args", "Generate the CSV file commands"),
-        new Cmd("-pointheader", "Generate the RAMADDA point properties"),
+	new Cmd(CMD_SCRIPT, "Generate the script to call"),
+        new Cmd(CMD_ARGS, "Generate the CSV file commands"),
+        new Cmd(CMD_POINTHEADER, "Generate the RAMADDA point properties"),
     };
 
 
@@ -2630,9 +2617,9 @@ public class CsvUtil implements CsvCommands {
         for (int i = 0; i < args.length; i += 2) {
             if (args[i].equals("-exact")) {
                 exact = args[i + 1].equals("true");
-            } else if (args[i].equals("-raw")) {
+            } else if (args[i].equals(CMD_RAW)) {
                 raw = args[i + 1].equals("true");
-            } else if (args[i].equals("-json")) {
+            } else if (args[i].equals(CMD_JSON)) {
                 json = args[i + 1].equals("true");
             }
         }
@@ -2747,7 +2734,7 @@ public class CsvUtil implements CsvCommands {
                     pw.println(pad + cmd);
                 }
             }
-            if (raw && cmd.startsWith("-db")) {
+            if (raw && cmd.startsWith(CMD_DB)) {
                 break;
             }
             cnt++;
@@ -2799,7 +2786,7 @@ public class CsvUtil implements CsvCommands {
 	    cnt++;
 	    String path = "/org/ramadda/util/text/help/" + c.cmd.replace("-","")+".html";
 	    String extra = IO.readContents(path,(String)null);
-	    if(c.cmd.startsWith("-help")) continue;
+	    if(c.cmd.startsWith(CMD_HELP)) continue;
 	    sb.append("<a name='" + c.cmd+"'></a>");
 	    hb.append("<li> <a href='#" + c.cmd +"'><i>" + c.cmd+"</i>: " + c.desc +"</a>");
 	    sb.append("<div class=command> <i><a href='#" + c.cmd +"'>" + c.cmd+"</a></i> ");
@@ -3004,16 +2991,16 @@ public class CsvUtil implements CsvCommands {
 
     private void makeFunctions() {
 
-	defineFunction("-skip",1,(ctx,args,i) -> {
+	defineFunction(CMD_SKIP,1,(ctx,args,i) -> {
 		ctx.setSkip(Integer.parseInt(args.get(++i)));
 		return i;
 	    });
-	defineFunction("-skiplines",1,(ctx,args,i) -> {
+	defineFunction(CMD_SKIPLINES,1,(ctx,args,i) -> {
 		ctx.setSkipLines(Integer.parseInt(args.get(++i)));
 		return i;
 	    });	
 
-	defineFunction("-skippattern",1,(ctx,args,i) -> {
+	defineFunction(CMD_SKIPPATTERN,1,(ctx,args,i) -> {
 		ctx.setSkipPattern(args.get(++i));
 		return i;
 	    });
@@ -3023,101 +3010,101 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-changeline",2,(ctx,args,i) -> {
+	defineFunction(CMD_CHANGELINE,2,(ctx,args,i) -> {
 		ctx.setChangeString(args.get(++i), args.get(++i));
 		return i;
 	    });
 
-	defineFunction("-image",2, (ctx,args,i) -> {
+	defineFunction(CMD_IMAGE,2, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ImageSearch(ctx, getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-appendrows",3, (ctx,args,i) -> {
+	defineFunction(CMD_APPENDROWS,3, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowAppender(Integer.parseInt(args.get(++i)),
-							  Integer.parseInt(args.get(++i)),
-							  args.get(++i)));
+							   Integer.parseInt(args.get(++i)),
+							   args.get(++i)));
 		return i;
 	    });
-	defineFunction("-rows_first",2, (ctx,args,i) -> {
+	defineFunction(CMD_ROWS_FIRST,2, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.RowShuffler(ctx, true,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-rows_last",2, (ctx,args,i) -> {
+	defineFunction(CMD_ROWS_LAST,2, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.RowShuffler(ctx,false,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });		
-	defineFunction("-embed",1, (ctx,args,i) -> {
+	defineFunction(CMD_EMBED,1, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Embed(ctx, args.get(++i)));
 		return i;
 	    });
-	defineFunction("-fetch",3, (ctx,args,i) -> {
+	defineFunction(CMD_FETCH,3, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Fetch(ctx, args.get(++i), args.get(++i).equals("true"), args.get(++i)));
 		return i;
 	    });		
-	defineFunction("-countunique",1, (ctx,args,i) -> {
+	defineFunction(CMD_COUNTUNIQUE,1, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.CountUnique(ctx, getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-download",2, (ctx,args,i) -> {
+	defineFunction(CMD_DOWNLOAD,2, (ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Downloader(ctx, this, args.get(++i), args.get(++i)));
 		return i;
 	    });	
 
-	defineFunction(new String[]{"-c","-columns"},1,(ctx,args,i) -> {
+	defineFunction(new String[]{"-c",ARG_COLUMNS},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSelector(ctx, getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-columnsbefore",2,(ctx,args,i) -> {
+	defineFunction(CMD_COLUMNSBEFORE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnsBefore(ctx, args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-columnsafter",2,(ctx,args,i) -> {
+	defineFunction(CMD_COLUMNSAFTER,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnsAfter(ctx, args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });		
-	defineFunction("-firstcolumns",1,(ctx,args,i) -> {
+	defineFunction(CMD_FIRSTCOLUMNS,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnFirst(ctx, getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-notcolumns",1,(ctx,args,i) -> {
+	defineFunction(CMD_NOTCOLUMNS,1,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));
 		ctx.addProcessor(new Converter.ColumnNotSelector(ctx, cols));
 		return i;
 	    });
 
-	defineFunction("-number",0,(ctx,args,i) -> {
+	defineFunction(CMD_NUMBER,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Number(ctx));
 		return i;
 	    });
 
-	defineFunction("-letter",0,(ctx,args,i) -> {
+	defineFunction(CMD_LETTER,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Letter(ctx));
 		return i;
 	    });
 
-	defineFunction("-uuid",0,(ctx,args,i) -> {
+	defineFunction(CMD_UUID,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.UUID(ctx));
 		return i;
 	    });
 
 
-	defineFunction("-fromb64",1,(ctx,args,i) -> {
+	defineFunction(CMD_FROMB64,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.B64Decode(ctx,getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-tob64",1,(ctx,args,i) -> {
+	defineFunction(CMD_TOB64,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.B64Encode(ctx,getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-rot13",1,(ctx,args,i) -> {
+	defineFunction(CMD_ROT13,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Rot13(ctx,getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-encrypt",2,(ctx,args,i) -> {
+	defineFunction(CMD_ENCRYPT,2,(ctx,args,i) -> {
 		try {
 		    ctx.addProcessor(new Converter.EncryptDecrypt(ctx,true,getCols(args.get(++i)),args.get(++i)));
 		} catch(Exception exc) {
@@ -3125,7 +3112,7 @@ public class CsvUtil implements CsvCommands {
 		}
 		return i;
 	    });
-	defineFunction("-decrypt",2,(ctx,args,i) -> {
+	defineFunction(CMD_DECRYPT,2,(ctx,args,i) -> {
 		try {
 		    ctx.addProcessor(new Converter.EncryptDecrypt(ctx,false,getCols(args.get(++i)),args.get(++i)));
 		} catch(Exception exc) {
@@ -3134,28 +3121,28 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });		    			
 
-	defineFunction("-start",1,(ctx,args,i) -> {
+	defineFunction(CMD_START,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-stop",1,(ctx,args,i) -> {
+	defineFunction(CMD_STOP,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Stop(ctx,args.get(++i)));
 
 		return i;
 	    });
 
-	defineFunction("-min",1,(ctx,args,i) -> {
+	defineFunction(CMD_MIN,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.MinColumns(ctx, Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-max",1,(ctx,args,i) -> {
+	defineFunction(CMD_MAX,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.MaxColumns(ctx, Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-decimate",2,(ctx,args,i) -> {
+	defineFunction(CMD_DECIMATE,2,(ctx,args,i) -> {
 		int start = Integer.parseInt(args.get(++i));
 		int skip  = Integer.parseInt(args.get(++i));
 		if (skip > 0) {
@@ -3165,7 +3152,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-db",1,(ctx,args,i) -> {
+	defineFunction(CMD_DB,1,(ctx,args,i) -> {
 		Hashtable<String, String> props =  parseProps(args.get(++i));
 		ctx.putProperty("installPlugin", ""+(Utils.equals(props.get("-install"),"true") || Utils.equals(props.get("install"),
 														"true")));
@@ -3177,18 +3164,18 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction(new String[]{"-dbprops"},2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_DBPROPS},2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.DbProps(ctx,args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction(new String[]{"-fields"},0,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_FIELDS},0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Fields(ctx));
 		return i;
 	    });
 	
 
-	defineFunction("-if",3, (ctx,args,i) -> {
+	defineFunction(CMD_IF,3, (ctx,args,i) -> {
 		String type = args.get(++i);
 		CsvFunctionHolder pfunc = getFunction(type);
 		if(pfunc==null) throw new RuntimeException("Unknown -if predicate:" + type);
@@ -3230,7 +3217,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-expandcommands",1, (ctx,args,i) -> {
+	defineFunction(CMD_EXPANDCOMMANDS,1, (ctx,args,i) -> {
 		List<String> cols =  Utils.split(args.get(++i), ",", true, true);
 		List<String> applyArgs = new ArrayList<String>();
 		while(true) {
@@ -3257,9 +3244,9 @@ public class CsvUtil implements CsvCommands {
 	};
 
 	defineFunction("-unfurl",4,unfurlFunc);
-	defineFunction("-makefields",4,unfurlFunc);	
+	defineFunction(CMD_MAKEFIELDS,4,unfurlFunc);	
 
-	defineFunction("-furl",3,(ctx,args,i) -> {
+	defineFunction(CMD_FURL,3,(ctx,args,i) -> {
 		List<String> valueCols = getCols(args.get(++i));
 		ctx.addProcessor(new RowCollector.Furler(ctx,
 							 valueCols, args.get(++i), args.get(++i)));
@@ -3267,7 +3254,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-break",3,(ctx,args,i) -> {
+	defineFunction(CMD_BREAK,3,(ctx,args,i) -> {
 		String       label1 = args.get(++i);
 		String       label2 = args.get(++i);
 		List<String> cols   = getCols(args.get(++i));
@@ -3276,39 +3263,39 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-sort",1,(ctx,args,i) -> {
+	defineFunction(CMD_SORT,1,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Sorter(ctx,getCols(args.get(++i)), true));
 
 		return i;
 	    });
 
-	defineFunction("-descsort",1,(ctx,args,i) -> {
+	defineFunction(CMD_DESCSORT,1,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Sorter(ctx,getCols(args.get(++i)), false));
 		return i;
 	    });
 
-	defineFunction("-ifin",3,(ctx,args,i) -> {
+	defineFunction(CMD_IFIN,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.IfIn(ctx, true, args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-ifnotin",3,(ctx,args,i) -> {
+	defineFunction(CMD_IFNOTIN,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.IfIn(ctx, false,args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-ifmatchesfile",4,(ctx,args,i) -> {
+	defineFunction(CMD_IFMATCHESFILE,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.MatchesFile(ctx, true, args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-ifnotmatchesfile",4,(ctx,args,i) -> {
+	defineFunction(CMD_IFNOTMATCHESFILE,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.MatchesFile(ctx, false, args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 	
 
-	defineFunction("-join",5,(ctx,args,i) -> {
+	defineFunction(CMD_JOIN,5,(ctx,args,i) -> {
 		List<String> keys1   = getCols(args.get(++i));
 		List<String> values1 = getCols(args.get(++i));
 		String       file    = args.get(++i);
@@ -3316,13 +3303,13 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new Processor.Joiner(ctx,keys1, values1, file, keys2,args.get(++i)));
 		return i;
 	    });
-	defineFunction("-cross",1,(ctx,args,i) -> {
+	defineFunction(CMD_CROSS,1,(ctx,args,i) -> {
 		String       file    = args.get(++i);
 		ctx.addProcessor(new RowCollector.Crosser(ctx, file));
 		return i;
 	    });	
 
-	defineFunction("-fuzzyjoin",6,(ctx,args,i) -> {
+	defineFunction(CMD_FUZZYJOIN,6,(ctx,args,i) -> {
 		int threshold = Integer.parseInt(args.get(++i));
 		List<String> keys1   = getCols(args.get(++i));
 		List<String> values1 = getCols(args.get(++i));
@@ -3332,18 +3319,18 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 	
-	defineFunction("-normal",1,(ctx,args,i) -> {
+	defineFunction(CMD_NORMAL,1,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
 		ctx.addProcessor(new RowCollector.Normal(ctx, cols));
 		return i;
 	    });
 
-	defineFunction("-ranges",4,(ctx,args,i) -> {
+	defineFunction(CMD_RANGES,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ranges(ctx, args.get(++i),args.get(++i), Double.parseDouble(args.get(++i)), Double.parseDouble(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-sum",3,(ctx,args,i) -> {
+	defineFunction(CMD_SUM,3,(ctx,args,i) -> {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));
 		List<String> extra  = getCols(args.get(++i));
@@ -3352,7 +3339,7 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new RowCollector.Summary(ctx,what,keys, values, extra));
 		return i;
 	    });
-	defineFunction("-summary",4,(ctx,args,i) -> {
+	defineFunction(CMD_SUMMARY,4,(ctx,args,i) -> {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));
 		List<String> extra  = getCols(args.get(++i));
@@ -3360,7 +3347,7 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new RowCollector.Summary(ctx, what,keys, values, extra));
 		return i;
 	    });
-	defineFunction("-pivot",4,(ctx,args,i) -> {
+	defineFunction(CMD_PIVOT,4,(ctx,args,i) -> {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> columns = getCols(args.get(++i));
 		String value = args.get(++i);
@@ -3368,31 +3355,31 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new RowCollector.Pivot(ctx, keys, columns, value, ops));
 		return i;
 	    });		
-	defineFunction("-histogram",4,(ctx,args,i) -> {
+	defineFunction(CMD_HISTOGRAM,4,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Histogram(ctx, args.get(++i),args.get(++i),getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });	
 
-	defineFunction(new String[]{"-u","-unique"},2,(ctx,args,i) -> {
+	defineFunction(new String[]{"-u",CMD_UNIQUE},2,(ctx,args,i) -> {
 		List<String> toks = getCols(args.get(++i));
 		ctx.addProcessor(new Filter.Unique(ctx, toks,args.get(++i)));
 		return i;
 	    });
-	defineFunction(new String[]{"-sample"},1,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_SAMPLE},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Sample(ctx, Double.parseDouble(args.get(++i))));
 		return i;
 	    });	
 
-	defineFunction("-dups",1,(ctx,args,i) -> {
+	defineFunction(CMD_DUPS,1,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Dups(ctx,getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-verify",0,(ctx,args,i) -> {
+	defineFunction(CMD_VERIFY,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Verifier(ctx));
 		return i;
 	    });
-	defineFunction("-ext",1,(ctx,args,i) -> {
+	defineFunction(CMD_EXT,1,(ctx,args,i) -> {
 		List<String> a = new ArrayList<String>();
 		String id = args.get(++i);
 		int j=i+1;
@@ -3404,7 +3391,7 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new Processor.Ext(this,ctx,id,a));
 		return j;
 	    });
-	defineFunction("-exec",1,(ctx,args,i) -> {
+	defineFunction(CMD_EXEC,1,(ctx,args,i) -> {
 		List<String> a = new ArrayList<String>();
 		String id = args.get(++i);
 		int j=i+1;
@@ -3417,7 +3404,7 @@ public class CsvUtil implements CsvCommands {
 		return j;
 	    });		
 
-	defineFunction("-count",0,(ctx,args,i) -> {
+	defineFunction(CMD_COUNT,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Counter(ctx));
 		return i;
 	    });
@@ -3428,60 +3415,60 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-strict",0,(ctx,args,i) -> {
+	defineFunction(CMD_STRICT,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Counter(ctx,true));
 		return i;
 	    });
 
-	defineFunction("-flag",0,(ctx,args,i) -> {
+	defineFunction(CMD_FLAG,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Counter(ctx, true, true));
 		return i;
 	    });
 
 
-	defineFunction("-rotate",0,(ctx,args,i) -> {
+	defineFunction(CMD_ROTATE,0,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Rotator(ctx));
 		return i;
 	    });
 
-	defineFunction("-flip",0,(ctx,args,i) -> {
+	defineFunction(CMD_FLIP,0,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Flipper(ctx));
 		return i;
 	    });
 
-	defineFunction("-rawlines",1,(ctx,args,i) -> {
+	defineFunction(CMD_RAWLINES,1,(ctx,args,i) -> {
 		rawLines = Integer.parseInt(args.get(++i));
 		return i;
 	    });
 
-	defineFunction("-inputnotcontains",1,(ctx,args,i) -> {
+	defineFunction(CMD_INPUTNOTCONTAINS,1,(ctx,args,i) -> {
 		ctx.setLineFilters(Utils.split(args.get(++i)));
 		return i;
 	    });
 	
-	defineFunction("-tab",0,(ctx,args,i) -> {
+	defineFunction(CMD_TAB,0,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = "tab");
 		return i;
 	    });
 
-	defineFunction("-delimiter",1,(ctx,args,i) -> {
+	defineFunction(CMD_DELIMITER,1,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
 	    });
-	defineFunction("-quotesnotspecial",0,(ctx,args,i) -> {
+	defineFunction(CMD_QUOTESNOTSPECIAL,0,(ctx,args,i) -> {
 		ctx.setQuotesNotSpecial(true);
 		return i;
 	    });
-	defineFunction("-cleaninput",0,(ctx,args,i) -> {
+	defineFunction(CMD_CLEANINPUT,0,(ctx,args,i) -> {
 		ctx.setCleanInput(true);
 		return i;
 	    });
-	defineFunction("-bom",0,(ctx,args,i) -> {
+	defineFunction(CMD_BOM,0,(ctx,args,i) -> {
 		inputIsBom = true;
 		return i;
 	    });			
 
-	defineFunction("-widths",1,(ctx,args,i) -> {
+	defineFunction(CMD_WIDTHS,1,(ctx,args,i) -> {
 		List<Integer> widths = new ArrayList<Integer>();
 		for (String tok : Utils.split(args.get(++i), ",", true,
 					      true)) {
@@ -3500,38 +3487,38 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-cut",1,(ctx,args,i) -> {
+	defineFunction(CMD_CUT,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.RowCutter(ctx,Utils.getNumbers(args.get(++i)), true));
 		return i;
 	    });
 
 
-	defineFunction("-include",1,(ctx,args,i) -> {
+	defineFunction(CMD_INCLUDE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.RowCutter(ctx, Utils.getNumbers(args.get(++i)), false));
 		return i;
 	    });
 
 
 	
-	defineFunction("-prop",2,(ctx,args,i) -> {
+	defineFunction(CMD_PROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Propper(args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-rowop",3,(ctx,args,i) -> {
+	defineFunction(CMD_ROWOP,3,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.RowOperator(getCols(args.get(++i)),getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 
 	
-	defineFunction("-percent",  1,(ctx,args,i) -> {
+	defineFunction(CMD_PERCENT,  1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnPercenter(getCols(args.get(++i))));
 		return i;
 	    });
 
 
-	defineFunction("-average",3,(ctx,args,i) -> {
+	defineFunction(CMD_AVERAGE,3,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
 		int          period = Integer.parseInt(args.get(++i));
 		String       label  = args.get(++i);
@@ -3542,11 +3529,11 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-increase",2,(ctx,args,i) -> {
+	defineFunction(CMD_INCREASE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnIncrease(args.get(++i), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-column_and",2,(ctx,args,i) -> {
+	defineFunction(CMD_COLUMN_AND,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.And(args.get(++i), getCols(args.get(++i))));
 		return i;
 	    });
@@ -3554,11 +3541,11 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new Converter.Or(args.get(++i), getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-column_not",2,(ctx,args,i) -> {
+	defineFunction(CMD_COLUMN_NOT,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Not(args.get(++i), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-check",2,(ctx,args,i) -> {
+	defineFunction(CMD_CHECK,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Checker(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });				
@@ -3570,54 +3557,54 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-pad",2,(ctx,args,i) -> {
+	defineFunction(CMD_PAD,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Padder(Integer.parseInt(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-prefix",2,(ctx,args,i) -> {
+	defineFunction(CMD_PREFIX,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Prefixer(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-suffix",1,(ctx,args,i) -> {
+	defineFunction(CMD_SUFFIX,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Suffixer(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-explode",1,(ctx,args,i) -> {
+	defineFunction(CMD_EXPLODE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Exploder(ctx, args.get(++i)));
 		return i;
 	    });
-	defineFunction("-dissect",2,(ctx,args,i) -> {
+	defineFunction(CMD_DISSECT,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Dissector(args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-keyvalue",1,(ctx,args,i) -> {
+	defineFunction(CMD_KEYVALUE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.KeyValue(args.get(++i)));
 		return i;
 	    });		
 
-	defineFunction("-firstchars",3,(ctx,args,i) -> {
+	defineFunction(CMD_FIRSTCHARS,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.First(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-lastchars",3,(ctx,args,i) -> {
+	defineFunction(CMD_LASTCHARS,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Last(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });			
-	defineFunction("-between_indices",4,(ctx,args,i) -> {
+	defineFunction(CMD_BETWEEN_INDICES,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Between(args.get(++i), args.get(++i),args.get(++i), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-fromheading",3,(ctx,args,i) -> {
+	defineFunction(CMD_FROMHEADING,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.FromHeading(getCols(args.get(++i)), args.get(++i), args.get(++i)));
 		return i;
 	    });				
 
 
-	defineFunction("-gender",1,(ctx,args,i) -> {
+	defineFunction(CMD_GENDER,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Genderizer(args.get(++i)));
 		return i;
 	    });
@@ -3627,50 +3614,50 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-imagefill",3,(ctx,args,i) -> {
+	defineFunction(CMD_IMAGEFILL,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ImageSearch(ctx,getCols(args.get(++i)), args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-wikidesc",2,(ctx,args,i) -> {
+	defineFunction(CMD_WIKIDESC,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.WikiDescSearch(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-statename",1,(ctx,args,i) -> {
+	defineFunction(CMD_STATENAME,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.StateNamer(args.get(++i)));
 		return i;
 	    });
-	defineFunction("-geoname",4,(ctx,args,i) -> {
+	defineFunction(CMD_GEONAME,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-decodelatlon",1,(ctx,args,i) -> {	
+	defineFunction(CMD_DECODELATLON,1,(ctx,args,i) -> {	
 		ctx.addProcessor(new Geo.DecodeLatLon(getCols(args.get(++i))));
 		return i;
 	    });	
-	defineFunction("-getaddress",4,(ctx,args,i) -> {
+	defineFunction(CMD_GETADDRESS,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });	
-	defineFunction("-geocontains",4,(ctx,args,i) -> {
+	defineFunction(CMD_GEOCONTAINS,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });	
-	defineFunction("-elevation",2,(ctx,args,i) -> {
+	defineFunction(CMD_ELEVATION,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Elevation(args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-neighborhood",2,(ctx,args,i) -> {
+	defineFunction(CMD_NEIGHBORHOOD,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Neighborhood(args.get(++i),args.get(++i)));
 		return i;
 	    });			
 
-	defineFunction("-geocode",3,(ctx,args,i) -> {
+	defineFunction(CMD_GEOCODE,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
-	defineFunction("-bounds",4,(ctx,args,i) -> {
+	defineFunction(CMD_BOUNDS,4,(ctx,args,i) -> {
 		ctx.setBounds(new Bounds(Double.parseDouble(args.get(++i)),
 					 Double.parseDouble(args.get(++i)),
 					 Double.parseDouble(args.get(++i)),
@@ -3679,73 +3666,73 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-geocodeifneeded",5,(ctx,args,i) -> {
+	defineFunction(CMD_GEOCODEIFNEEDED,5,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(),args.get(++i),
 						  args.get(++i)));
 		return i;
 	    });	
 
-	defineFunction("-getaddress",2,(ctx,args,i) -> {
+	defineFunction(CMD_GETADDRESS,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GetAddress(args.get(++i), args.get(++i)));
 		return i;
 	    });	
 
-	defineFunction("-geocodejoin",5,(ctx,args,i) -> {
+	defineFunction(CMD_GEOCODEJOIN,5,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
-							Integer.parseInt(args.get(++i)),
-							Integer.parseInt(args.get(++i)), false));
+						  Integer.parseInt(args.get(++i)),
+						  Integer.parseInt(args.get(++i)), false));
 		return i;
 	    });
 
 
 
-	defineFunction("-geocodeaddressdb",3,(ctx,args,i) -> {
+	defineFunction(CMD_GEOCODEADDRESSDB,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(), true));
 		return i;
 	    });
 
 	defineFunction("-geocodedb",5,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
-							Integer.parseInt(args.get(++i)),
-							Integer.parseInt(args.get(++i)), true));
+						  Integer.parseInt(args.get(++i)),
+						  Integer.parseInt(args.get(++i)), true));
 		return i;
 	    });
 
 
-	defineFunction("-population",3,(ctx,args,i) -> {
+	defineFunction(CMD_POPULATION,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Populator(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
 
-	defineFunction("-region",1,(ctx,args,i) -> {
+	defineFunction(CMD_REGION,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Regionator(getCols(args.get(++i))));
 		return i;
 	    });
 
 
-	defineFunction("-crop",2,(ctx,args,i) -> {
+	defineFunction(CMD_CROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Cropper(getCols(args.get(++i)), Utils.split(args.get(++i), ",", true, true)));
 		return i;
 	    });
 
-	defineFunction("-change",3,(ctx,args,i) -> {
+	defineFunction(CMD_CHANGE,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),args.get(++i),  args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-replace",2,(ctx,args,i) -> {
+	defineFunction(CMD_REPLACE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnReplacer(ctx,getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });	
 
 
-	defineFunction("-ascii",2,(ctx,args,i) -> {
+	defineFunction(CMD_ASCII,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ascii(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-ismobile",1,(ctx,args,i) -> {
+	defineFunction(CMD_ISMOBILE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter(args.get(++i)) {
 			int index;
 			@Override
@@ -3768,14 +3755,14 @@ public class CsvUtil implements CsvCommands {
 	    });
 	
 
-	defineFunction("-endswith",2,(ctx,args,i) -> {
+	defineFunction(CMD_ENDSWITH,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnEndsWith(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 
 
-	defineFunction("-extract",4,(ctx,args,i) -> {
+	defineFunction(CMD_EXTRACT,4,(ctx,args,i) -> {
 		String   col     = args.get(++i);
 		String pattern = args.get(++i);
 		String replace = args.get(++i);
@@ -3789,25 +3776,25 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-urlarg",2,(ctx,args,i) -> {
+	defineFunction(CMD_URLARG,2,(ctx,args,i) -> {
 		ctx.addProcessor(
 				 new Converter.UrlArg(args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-urlencode",1,(ctx,args,i) -> {
+	defineFunction(CMD_URLENCODE,1,(ctx,args,i) -> {
 		ctx.addProcessor(
 				 new Converter.UrlEncode(getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-urldecode",1,(ctx,args,i) -> {
+	defineFunction(CMD_URLDECODE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.UrlDecode(getCols(args.get(++i))));
 		return i;
 	    });	
 	
 
 
-	defineFunction("-truncate",3,(ctx,args,i) -> {
+	defineFunction(CMD_TRUNCATE,3,(ctx,args,i) -> {
 		int    col    = Integer.parseInt(args.get(++i));
 		int    length = Integer.parseInt(args.get(++i));
 		String suffix = args.get(++i);
@@ -3818,7 +3805,7 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-changerow",4,(ctx,args,i) -> {
+	defineFunction(CMD_CHANGEROW,4,(ctx,args,i) -> {
 		List<Integer> rows    = Utils.getNumbers(args.get(++i));
 		List<String>  cols    = getCols(args.get(++i));
 		String        pattern = args.get(++i);
@@ -3830,40 +3817,40 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-formatdate", 1,(ctx,args,i) -> {
+	defineFunction(CMD_FORMATDATE, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new DateOps.DateFormatter(getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-elapsed", 1,(ctx,args,i) -> {
+	defineFunction(CMD_ELAPSED, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new DateOps.Elapsed(args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-datediff", 3,(ctx,args,i) -> {
+	defineFunction(CMD_DATEDIFF, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new DateOps.Diff(args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });	
 
 
-	defineFunction(new String[]{"-indateformat","-dateformat"}, 2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_INDATEFORMAT,"-dateformat"}, 2,(ctx,args,i) -> {
 		inDater = new Dater(args.get(++i),args.get(++i));
 		ctx.addProcessor(new DateOps.DateFormatSetter(true, inDater));
 		return i;
 	    });
 
-	defineFunction(new String[]{"-outdateformat"}, 2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_OUTDATEFORMAT}, 2,(ctx,args,i) -> {
 		outDater = new Dater(args.get(++i),args.get(++i));
 		ctx.addProcessor(new DateOps.DateFormatSetter(false, outDater));
 		return i;
 	    });	
 
-	defineFunction("-convertdate",1,(ctx,args,i) -> {
+	defineFunction(CMD_CONVERTDATE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new DateOps.DateConverter(args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-adddate",3,(ctx,args,i) -> {
+	defineFunction(CMD_ADDDATE,3,(ctx,args,i) -> {
 		String dateCol =args.get(++i);
 		String valueCol =args.get(++i);
 		String type =args.get(++i);				
@@ -3871,7 +3858,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-extractdate",2,(ctx,args,i) -> {
+	defineFunction(CMD_EXTRACTDATE,2,(ctx,args,i) -> {
 		String col  = args.get(++i);
 		String what = args.get(++i);
 		ctx.addProcessor(new DateOps.DateExtracter(col, what));
@@ -3880,7 +3867,7 @@ public class CsvUtil implements CsvCommands {
 
 
 
-	defineFunction("-before",4,(ctx,args,i) -> {
+	defineFunction(CMD_BEFORE,4,(ctx,args,i) -> {
 		try {
 		    int    col  = Integer.parseInt(args.get(++i));
 		    String sdf1 = args.get(++i);
@@ -3897,7 +3884,7 @@ public class CsvUtil implements CsvCommands {
 		    }
 		    ctx.addProcessor(
 				     new DateOps.DateBefore(
-							      col, new SimpleDateFormat(sdf1), dttm));
+							    col, new SimpleDateFormat(sdf1), dttm));
 
 		    return i;
 		} catch(Exception exc) {
@@ -3905,7 +3892,7 @@ public class CsvUtil implements CsvCommands {
 		}
 	    });
 
-	defineFunction("-after",4,(ctx,args,i) -> {
+	defineFunction(CMD_AFTER,4,(ctx,args,i) -> {
 		try {
 		    int    col  = Integer.parseInt(args.get(++i));
 		    String sdf1 = args.get(++i);
@@ -3922,7 +3909,7 @@ public class CsvUtil implements CsvCommands {
 		    }
 		    ctx.addProcessor(
 				     new DateOps.DateAfter(
-							     col, new SimpleDateFormat(sdf1), dttm));
+							   col, new SimpleDateFormat(sdf1), dttm));
 
 		    return i;
 	       	} catch(Exception exc) {
@@ -3931,7 +3918,7 @@ public class CsvUtil implements CsvCommands {
 
 	    });
 
-	defineFunction("-latest",3,(ctx,args,i) -> {
+	defineFunction(CMD_LATEST,3,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));
 		String       col  = args.get(++i);
 		String       sdf  = args.get(++i);
@@ -3947,13 +3934,13 @@ public class CsvUtil implements CsvCommands {
 
 
 
-	defineFunction(new String[]{"-htmltable","-html"},3,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_HTMLTABLE,"-html"},3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.HtmlDataProvider(args.get(++i), args.get(++i),
 									 parseProps(args.get(++i))));
 
 		return i;
 	    });
-	defineFunction("-htmlpattern",4,(ctx,args,i) -> {
+	defineFunction(CMD_HTMLPATTERN,4,(ctx,args,i) -> {
 		ctx.getProviders().add(
 				       new DataProvider.HtmlPatternDataProvider(args.get(++i), args.get(++i),
 										args.get(++i), args.get(++i)));
@@ -3961,12 +3948,12 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-harvest",1,(ctx,args,i) -> {
+	defineFunction(CMD_HARVEST,1,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.Harvester( args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-text",3,(ctx,args,i) -> {
+	defineFunction(CMD_TEXT,3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.TextDataProvider(args.get(++i), args.get(++i), args.get(++i)));
 
 		return i;
@@ -3977,7 +3964,7 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-extractpattern",2,(ctx,args,i) -> {
+	defineFunction(CMD_EXTRACTPATTERN,2,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.PatternExtractDataProvider(args.get(++i), args.get(++i)));
 		return i;
 	    });
@@ -3987,25 +3974,25 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-tokenize",2,(ctx,args,i) -> {
+	defineFunction(CMD_TOKENIZE,2,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.PatternDataProvider(Utils.split(args.get(++i), ","),
 									    args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-json",2,(ctx,args,i) -> {
+	defineFunction(CMD_JSON,2,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.JsonDataProvider(args.get(++i), args.get(++i)));
 
 		return i;
 	    });
 
-	defineFunction("-geojson",1,(ctx,args,i) -> {
+	defineFunction(CMD_GEOJSON,1,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.GeoJsonDataProvider(args.get(++i).equals("true")));
 
 		return i;
 	    });
 	
-	defineFunction("-sql",5,(ctx,args,i) -> {
+	defineFunction(CMD_SQL,5,(ctx,args,i) -> {
 		//-sql db table cols "col1 value col2 value"
 		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i),
 									args.get(++i),
@@ -4015,26 +4002,26 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-xml",1,(ctx,args,i) -> {
+	defineFunction(CMD_XML,1,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.XmlDataProvider(args.get(++i)));
 		return i;
 	    });
-	defineFunction("-lines",0,(ctx,args,i) -> {
+	defineFunction(CMD_LINES,0,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.Lines());
 		return i;
 	    });
-	defineFunction("-synthetic",3,(ctx,args,i) -> {
+	defineFunction(CMD_SYNTHETIC,3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.Synthetic(args.get(++i),args.get(++i),Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-pdf",0,(ctx,args,i) -> {
+	defineFunction(CMD_PDF,0,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.Pdf(this));
 		return i;
 	    });
 	
 
-	defineFunction("-shapefile",1,(ctx,args,i) -> {
+	defineFunction(CMD_SHAPEFILE,1,(ctx,args,i) -> {
 		makeInputStreamRaw = true;
 		ctx.getProviders().add(new ShapefileProvider(parseProps(args.get(++i))));
 		return i;
@@ -4045,28 +4032,28 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 	
-	defineFunction("-changeraw",2,(ctx,args,i) -> {
+	defineFunction(CMD_CHANGERAW,2,(ctx,args,i) -> {
 		ctx.addChangeFromTo(args.get(++i),args.get(++i));
 		return i;
 	    });
 
-	defineFunction("-maxrows",1,(ctx,args,i) -> {
+	defineFunction(CMD_MAXROWS,1,(ctx,args,i) -> {
 		ctx.setMaxRows(Integer.parseInt(args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-prune",1,(ctx,args,i) -> {
+	defineFunction(CMD_PRUNE,1,(ctx,args,i) -> {
 		ctx.setPruneBytes(Integer.parseInt(args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-mergerows",3,(ctx,args,i) -> {
+	defineFunction(CMD_MERGEROWS,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowMerger(Utils.getNumbers(args.get(++i)), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-prepend",1,(ctx,args,i) -> {
+	defineFunction(CMD_PREPEND,1,(ctx,args,i) -> {
 		String text = args.get(++i);
 		text = text.replaceAll("_nl_", "\n");
 		ctx.setPrepend(text);
@@ -4080,36 +4067,36 @@ public class CsvUtil implements CsvCommands {
 
 
 	
-	defineFunction("-map", 3,(ctx,args,i) -> {
+	defineFunction(CMD_MAP, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnMapper(getCols(args.get(++i)), args.get(++i),
 							    Utils.parseCommandLine(args.get(++i))));
 		return i;
 	    });
 
 
-	defineFunction("-split", 3,(ctx,args,i) -> {
+	defineFunction(CMD_SPLIT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSplitter(
 							      args.get(++i), args.get(++i),
 							      Utils.split(args.get(++i), ",")));
 		return i;
 	    });
 
-	defineFunction("-delete", 1,(ctx,args,i) -> {
+	defineFunction(CMD_DELETE, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnDeleter(getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-add", 2,(ctx,args,i) -> {
+	defineFunction(CMD_ADD, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnAdder(args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-insert", 3,(ctx,args,i) -> {
+	defineFunction(CMD_INSERT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnInserter(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-shift", 3,(ctx,args,i) -> {
+	defineFunction(CMD_SHIFT, 3,(ctx,args,i) -> {
 		List<Integer> rows  = Utils.getNumbers(args.get(++i));
 		int           col   = Integer.parseInt(args.get(++i));
 		int           count = Integer.parseInt(args.get(++i));
@@ -4117,7 +4104,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-slice", 3,(ctx,args,i) -> {
+	defineFunction(CMD_SLICE, 3,(ctx,args,i) -> {
 		List<String> cols  = getCols(args.get(++i));
 		String dest = args.get(++i);
 		List<String> fill = Utils.split(args.get(++i),",",false,false);
@@ -4126,7 +4113,7 @@ public class CsvUtil implements CsvCommands {
 	    });
 	
 
-	defineFunction("-generate", 3,(ctx,args,i) -> {
+	defineFunction(CMD_GENERATE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Generator(args.get(++i), Double.parseDouble(args.get(++i)),
 							 Double.parseDouble(args.get(++i))));
 		return i;
@@ -4134,19 +4121,19 @@ public class CsvUtil implements CsvCommands {
 
 
 
-	defineFunction("-macro", 3,(ctx,args,i) -> {
+	defineFunction(CMD_MACRO, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnMacro(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-format", 2,(ctx,args,i) -> {
+	defineFunction(CMD_FORMAT, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnFormatter(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-scale", 3,(ctx,args,i) -> {
+	defineFunction(CMD_SCALE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnScaler(getCols(args.get(++i)), Double.parseDouble(args.get(++i)),
 							    Double.parseDouble(args.get(++i)),
 							    Double.parseDouble(args.get(++i))));
@@ -4155,17 +4142,17 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-decimals", 2,(ctx,args,i) -> {
+	defineFunction(CMD_DECIMALS, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-fuzz", 2,(ctx,args,i) -> {
+	defineFunction(CMD_FUZZ, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Fuzzer(getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
 						      Integer.parseInt(args.get(++i))));
 		return i;
 	    });	
 
-	defineFunction("-ceil", 2,(ctx,args,i) -> {
+	defineFunction(CMD_CEIL, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ceil(getCols(args.get(++i)), Double.parseDouble(args.get(++i))));
 		return i;
 	    });
@@ -4175,22 +4162,22 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 	
-	defineFunction("-copy", 2,(ctx,args,i) -> {
+	defineFunction(CMD_COPY, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnCopier(args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-concat", 3,(ctx,args,i) -> {
+	defineFunction(CMD_CONCAT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnNewer(getCols(args.get(++i)), args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-concatrows", 1,(ctx,args,i) -> {
+	defineFunction(CMD_CONCATROWS, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowConcat(Integer.parseInt(args.get(++i))));
 		return i;
 	    });	
 
-	defineFunction("-splat", 4,(ctx,args,i) -> {
+	defineFunction(CMD_SPLAT, 4,(ctx,args,i) -> {
 		String key       = args.get(++i);
 		String value     = args.get(++i);
 		String delimiter = args.get(++i);
@@ -4198,7 +4185,7 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new RowCollector.Splatter(ctx, key, value, delimiter, name));
 		return i;
 	    });
-	defineFunction("-delta", 2,(ctx,args,i) -> {
+	defineFunction(CMD_DELTA, 2,(ctx,args,i) -> {
 		List<String> keyidxs = getCols(args.get(++i));
 		List<String> idxs    = getCols(args.get(++i));
 		ctx.addProcessor(new Converter.Delta(keyidxs, idxs));
@@ -4207,7 +4194,7 @@ public class CsvUtil implements CsvCommands {
 
 
 
-	defineFunction("-operator", 3,(ctx,args,i) -> {
+	defineFunction(CMD_OPERATOR, 3,(ctx,args,i) -> {
 		List<String> idxs = getCols(args.get(++i));
 		String       name = args.get(++i);
 		String       op   = args.get(++i);
@@ -4216,66 +4203,66 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-compare", 3,(ctx,args,i) -> {
+	defineFunction(CMD_COMPARE, 3,(ctx,args,i) -> {
 		Processor processor = new Converter.CompareNumber(args.get(++i),args.get(++i),args.get(++i));
 		ctx.addProcessor(processor);
 		return i;
 	    });
 
 
-	defineFunction("-datecompare", 3,(ctx,args,i) -> {
+	defineFunction(CMD_DATECOMPARE, 3,(ctx,args,i) -> {
 		Processor processor = new DateOps.CompareDate(args.get(++i),args.get(++i),args.get(++i));
 		ctx.addProcessor(processor);
 		return i;
 	    });
 	
 
-	defineFunction("-js", 1,(ctx,args,i) -> {
+	defineFunction(CMD_JS, 1,(ctx,args,i) -> {
 		js.append(args.get(++i));
 		js.append("\n");
 		return i;
 	    });
 
-	defineFunction("-func", 2,(ctx,args,i) -> {
+	defineFunction(CMD_FUNC, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnFunc(ctx, js.toString(), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-mercator", 1,(ctx,args,i) -> {
+	defineFunction(CMD_MERCATOR, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Mercator(getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-round", 1,(ctx,args,i) -> {
+	defineFunction(CMD_ROUND, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnRounder(getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-bytes", 2,(ctx,args,i) -> {
+	defineFunction(CMD_BYTES, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Bytes(args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });	
-	defineFunction("-abs", 1,(ctx,args,i) -> {
+	defineFunction(CMD_ABS, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnAbs(getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-rand", 3,(ctx,args,i) -> {
+	defineFunction(CMD_RAND, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnRand(args.get(++i), Double.parseDouble(args.get(++i)),Double.parseDouble(args.get(++i))));
 		return i;
 	    });		
-	defineFunction("-subst", 2,(ctx,args,i) -> {
+	defineFunction(CMD_SUBST, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Subst(args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-md", 2,(ctx,args,i) -> {
+	defineFunction(CMD_MD, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.MD(ctx,getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-soundex", 1,(ctx,args,i) -> {
+	defineFunction(CMD_SOUNDEX, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.SoundexMaker(getCols(args.get(++i))));
 		return i;
 	    });	
-	defineFunction("-even", 1,(ctx,args,i) -> {
+	defineFunction(CMD_EVEN, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Even(getCols(args.get(++i))));
 		return i;
 	    });	
@@ -4291,89 +4278,89 @@ public class CsvUtil implements CsvCommands {
 	    });	
 
 
-	defineFunction("-case", 2,(ctx,args,i) -> {
+	defineFunction(CMD_CASE, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Case(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-padleft", 3,(ctx,args,i) -> {
+	defineFunction(CMD_PADLEFT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PadLeftRight(true,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-padright", 3,(ctx,args,i) -> {
+	defineFunction(CMD_PADRIGHT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PadLeftRight(false,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
 		return i;
 	    });	
 
 
-	defineFunction("-numcolumns", 1,(ctx,args,i) -> {
+	defineFunction(CMD_NUMCOLUMNS, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.NumColumns(Integer.parseInt(args.get(++i))));
 		return i;
 	    });	
 
 
 
-	defineFunction("-trim", 1,(ctx,args,i) -> {
+	defineFunction(CMD_TRIM, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Trim(getCols(args.get(++i))));
 		return i;
 	    });	
 
-	defineFunction("-trimquotes", 1,(ctx,args,i) -> {
+	defineFunction(CMD_TRIMQUOTES, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.TrimQuotes(getCols(args.get(++i))));
 		return i;
 	    });	
 	
-	defineFunction("-addcell", 3,(ctx,args,i) -> {
+	defineFunction(CMD_ADDCELL, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnNudger(Integer.parseInt(args.get(++i)),Integer.parseInt(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-deletecell", 2,(ctx,args,i) -> {
+	defineFunction(CMD_DELETECELL, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnUnNudger(Integer.parseInt(args.get(++i)), getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-copyif", 4,(ctx,args,i) -> {
+	defineFunction(CMD_COPYIF, 4,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.CopyIf(getCols(args.get(++i)),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction("-copycolumns", 2,(ctx,args,i) -> {
+	defineFunction(CMD_COPYCOLUMNS, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.CopyColumns(getCols(args.get(++i)), getCols(args.get(++i))));
 		return i;
 	    });	
 
-	defineFunction("-filldown", 1,(ctx,args,i) -> {
+	defineFunction(CMD_FILLDOWN, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.FillDown(getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-unfill", 1,(ctx,args,i) -> {
+	defineFunction(CMD_UNFILL, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Unfill(getCols(args.get(++i))));
 		return i;
 	    });	
 
 
-	defineFunction("-priorprefix", 3,(ctx,args,i) -> {
+	defineFunction(CMD_PRIORPREFIX, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PriorPrefixer(Integer.parseInt(args.get(++i)), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-set", 3,(ctx,args,i) -> {
+	defineFunction(CMD_SET, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSetter(getCols(args.get(++i)),getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 
-	defineFunction("-faker", 2,(ctx,args,i) -> {
+	defineFunction(CMD_FAKER, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Faker(ctx,args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });
 
 
-	defineFunction("-makeids", 0,(ctx,args,i) -> {
+	defineFunction(CMD_MAKEIDS, 0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.MakeIds());
 		return i;
 	    });
 
-	defineFunction("-setcol", 4,(ctx,args,i) -> {
+	defineFunction(CMD_SETCOL, 4,(ctx,args,i) -> {
 		String col1    = args.get(++i);
 		String pattern = args.get(++i);
 		String col2    = args.get(++i);
@@ -4382,30 +4369,30 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-width", 2,(ctx,args,i) -> {
+	defineFunction(CMD_WIDTH, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnWidth(getCols(args.get(++i)), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-merge", 3,(ctx,args,i) -> {
+	defineFunction(CMD_MERGE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnMerger(getCols(args.get(++i)),args.get(++i),args.get(++i)));
 		return i;
 	    });
 
 
 
-	defineFunction("-combine", 3,(ctx,args,i) -> {
+	defineFunction(CMD_COMBINE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnConcatter(getCols(args.get(++i)),args.get(++i),args.get(++i),false));
 		return i;
 	    });
 
 
-	defineFunction("-combineinplace", 3,(ctx,args,i) -> {
+	defineFunction(CMD_COMBINEINPLACE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnConcatter(getCols(args.get(++i)),args.get(++i),args.get(++i),true));
 		return i;
 	    });
 
-	defineFunction("-denormalize", 6,(ctx,args,i) -> {
+	defineFunction(CMD_DENORMALIZE, 6,(ctx,args,i) -> {
 		String file = args.get(++i);
 		int    col1 = Integer.parseInt(args.get(++i));
 		int    col2 = Integer.parseInt(args.get(++i));
@@ -4423,7 +4410,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-alias",2,(ctx,args,i) -> {
+	defineFunction(CMD_ALIAS,2,(ctx,args,i) -> {
 		ctx.putFieldAlias(args.get(++i),args.get(++i));
 		return i;
 	    });
@@ -4435,43 +4422,43 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-same", 2,(ctx,args,i) -> {
+	defineFunction(CMD_SAME, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),false));
 		return i;
 	    });
 
-	defineFunction("-notsame", 2,(ctx,args,i) -> {
+	defineFunction(CMD_NOTSAME, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),true));
 		return i;
 	    });		
 
-	defineFunction("-pattern", 2,(ctx,args,i) -> {
+	defineFunction(CMD_PATTERN, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-notpattern", 2,(ctx,args,i) -> {
+	defineFunction(CMD_NOTPATTERN, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
 		return i;
 	    });
 
-	defineFunction("-fuzzypattern", 3,(ctx,args,i) -> {
+	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
 		return i;
 	    });
 
-	defineFunction("-lengthgreater", 2,(ctx,args,i) -> {
+	defineFunction(CMD_LENGTHGREATER, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), 
 			      new Filter.Length(ctx,true,getCols(args.get(++i)),Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-countvalue", 2,(ctx,args,i) -> {
+	defineFunction(CMD_COUNTVALUE, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(ctx,args.get(++i), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-groupfilter", 4,(ctx,args,i) -> {
+	defineFunction(CMD_GROUPFILTER, 4,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.GroupFilter(ctx, getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
 							      CsvOperator.getOperator(args.get(++i)),
 							      args.get(++i)));
@@ -4479,7 +4466,7 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-eq", 2,(ctx,args,i) -> {
+	defineFunction(CMD_EQ, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_EQUALS,
@@ -4487,7 +4474,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-ne", 2,(ctx,args,i) -> {
+	defineFunction(CMD_NE, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_NOTEQUALS,
@@ -4496,7 +4483,7 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-lt", 2,(ctx,args,i) -> {
+	defineFunction(CMD_LT, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
@@ -4504,7 +4491,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-gt", 2,(ctx,args,i) -> {
+	defineFunction(CMD_GT, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_GT,
@@ -4512,7 +4499,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-has", 1,(ctx,args,i) -> {
+	defineFunction(CMD_HAS, 1,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.Has(ctx,
 					     getCols(args.get(++i))));
@@ -4520,7 +4507,7 @@ public class CsvUtil implements CsvCommands {
 	    });	
 
 
-	defineFunction("-betweenstring", 3,(ctx,args,i) -> {
+	defineFunction(CMD_BETWEENSTRING, 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.BetweenString(ctx,false,
 						       args.get(++i), 
@@ -4529,7 +4516,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-notbetweenstring", 3,(ctx,args,i) -> {
+	defineFunction(CMD_NOTBETWEENSTRING, 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.BetweenString(ctx,true,
 						       args.get(++i), 
@@ -4538,7 +4525,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-between", 3,(ctx,args,i) -> {
+	defineFunction(CMD_BETWEEN, 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,true,
 						     getCols(args.get(++i)), 
@@ -4547,7 +4534,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-notbetween", 3,(ctx,args,i) -> {
+	defineFunction(CMD_NOTBETWEEN, 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.RangeFilter(ctx,false,
 						     getCols(args.get(++i)), 
@@ -4563,7 +4550,7 @@ public class CsvUtil implements CsvCommands {
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),Filter.ValueFilter.OP_DEFINED, 0));
 		return i;
 	    });
-	defineFunction("-maxvalue", 2,(ctx,args,i) -> {
+	defineFunction(CMD_MAXVALUE, 2,(ctx,args,i) -> {
 		String key   = args.get(++i);
 		String value = args.get(++i);
 		ctx.addProcessor(
@@ -4571,7 +4558,7 @@ public class CsvUtil implements CsvCommands {
 
 		return i;
 	    });
-	defineFunction("-minvalue", 2,(ctx,args,i) -> {
+	defineFunction(CMD_MINVALUE, 2,(ctx,args,i) -> {
 		String key   = args.get(++i);
 		String value = args.get(++i);
 		ctx.addProcessor(
@@ -4583,48 +4570,48 @@ public class CsvUtil implements CsvCommands {
 
 	defineFunction("-quit",0,(ctx,args,i) -> {
 		String last = args.get(args.size() - 1);
-		if (last.equals("-print") || last.equals("-p")) {
+		if (last.equals(CMD_PRINT) || last.equals("-p")) {
 		    ctx.addProcessor(
 				     new Processor.Printer(ctx.getPrintFields(), false,","));
-		} else if (last.equals("-table")) {
+		} else if (last.equals(CMD_TABLE)) {
 		    ctx.addProcessor(new RowCollector.Html(ctx));
 		}
 		return -1;
 	    });
 
-	defineFunction(new String[]{"-progress","-dots"},1,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_PROGRESS,"-dots"},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Dots(Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-debugrows",1,(ctx,args,i) -> {
+	defineFunction(CMD_DEBUGROWS,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.DebugRows(Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 	
 
-	defineFunction("-headernames",0,(ctx,args,i) -> {
+	defineFunction(CMD_HEADERNAMES,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderNames());
 		return i;
 	    });
 
-	defineFunction("-headerids",0,(ctx,args,i) -> {
+	defineFunction(CMD_HEADERIDS,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderIds());
 		return i;
 	    });
 	
-	defineFunction("-ids",0,(ctx,args,i) -> {
+	defineFunction(CMD_IDS,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ids());
 		return i;
 	    });	
 
 
-	defineFunction("-addheader",1,(ctx,args,i) -> {
+	defineFunction(CMD_ADDHEADER,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderMaker(this,parseProps(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction("-deheader",0,(ctx,args,i) -> {
+	defineFunction(CMD_DEHEADER,0,(ctx,args,i) -> {
 		ctx.putProperty("deheader","true");
 		return i;
 	    });
@@ -4652,13 +4639,13 @@ public class CsvUtil implements CsvCommands {
 	    });
 
 
-	defineFunction("-toxml",2,(ctx,args,i) -> {
+	defineFunction(CMD_TOXML,2,(ctx,args,i) -> {
 		hasSink = true;
 		ctx.addProcessor(new DataSink.ToXml(args.get(++i),args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-todb",4,(ctx,args,i) -> {
+	defineFunction(CMD_TODB,4,(ctx,args,i) -> {
 		//		hasSink = true;
 		ctx.addProcessor(new DataSink.ToDb(this, args.get(++i), args.get(++i),args.get(++i),parseProps(args.get(++i))));
 		return i;
@@ -4666,13 +4653,13 @@ public class CsvUtil implements CsvCommands {
 
 
 
-	defineFunction("-tojson",0,(ctx,args,i) -> {
+	defineFunction(CMD_TOJSON,0,(ctx,args,i) -> {
 		hasSink = true;
 		ctx.addProcessor(new DataSink.ToJson());
 		return i;
 	    });
 
-	defineFunction("-write",2,(ctx,args,i) -> {
+	defineFunction(CMD_WRITE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new DataSink.Write(this,args.get(++i),args.get(++i)));
 		return i;
 	    });
@@ -4680,12 +4667,12 @@ public class CsvUtil implements CsvCommands {
 	
 
 
-	defineFunction("-table",0, (ctx,args,i) -> {
+	defineFunction(CMD_TABLE,0, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Html(ctx));
 		return i;
 	    });
 
-	defineFunction("-cols",1, (ctx,args,i) -> {
+	defineFunction(CMD_COLS,1, (ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Cols(Integer.parseInt(args.get((++i)))));
 		return i;
 	    });	
@@ -4697,24 +4684,24 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction(new String[]{"-torecord","-record"},0,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_TORECORD,"-record"},0,(ctx,args,i) -> {
 		ctx.addProcessor(
 				 new Processor.Prettifier());
 		return i;
 	    });
 
-	defineFunction("-comment",1,(ctx,args,i) -> {
+	defineFunction(CMD_COMMENT,1,(ctx,args,i) -> {
 		ctx.addComment(args.get(++i));
 		return i;
 	    });	
 
-	defineFunction("-outputprefix",1,(ctx,args,i) -> {
+	defineFunction(CMD_OUTPUTPREFIX,1,(ctx,args,i) -> {
 		ctx.setOutputPrefix(args.get(++i));
 		return i;
 	    });	
 	
 
-	defineFunction(new String[]{"-tocsv","-print","-p","-printdelim"}, 0,(ctx,args,i) -> {
+	defineFunction(new String[]{"-tocsv",CMD_PRINT,"-p",CMD_PRINTDELIM}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		if (ctx.getProperty("seenPrint")!=null) {
 		    return i;
@@ -4724,7 +4711,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction("-stats",0,(ctx,args,i) -> {
+	defineFunction(CMD_STATS,0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		ctx.addProcessor(new RowCollector.Stats(ctx, this,true));
 		return i;
@@ -4740,7 +4727,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });	
 
-	defineFunction("-table",0,(ctx,args,i) -> {
+	defineFunction(CMD_TABLE,0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		ctx.addProcessor(new RowCollector.Stats(ctx, this,false));
 		return i;
@@ -4748,13 +4735,13 @@ public class CsvUtil implements CsvCommands {
 	
 
 
-	defineFunction("-subd",3,(ctx,args,i) -> {
+	defineFunction(CMD_SUBD,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),
-						   args.get(++i), args.get(++i)));
+						    args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-	defineFunction("-maptiles",3,(ctx,args,i) -> {
+	defineFunction(CMD_MAPTILES,3,(ctx,args,i) -> {
 		List<String> cols = getCols(Utils.getDefinedString(args.get(++i),"latitude,longitude"));
 		double degrees  = Double.parseDouble(Utils.getDefinedString(args.get(++i),"1.0"));
 		String range = "-90;90;" +(int)(180/degrees)+ ",-180;180;" + (int)(360/degrees);
@@ -4766,7 +4753,7 @@ public class CsvUtil implements CsvCommands {
 	    });	
 
 
-	defineFunction("-template",4,(ctx,args,i) -> {
+	defineFunction(CMD_TEMPLATE,4,(ctx,args,i) -> {
 		try {
 		    String prefix   = args.get(++i).replaceAll("_nl_", "\n");
 		    String template = args.get(++i).replaceAll("_nl_", "\n");
@@ -4793,13 +4780,13 @@ public class CsvUtil implements CsvCommands {
 
 
 
-	defineFunction(new String[]{"-printheader","-ph"},0,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_PRINTHEADER,"-ph"},0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader());
 		return i;
 	    });
 
 	
-	defineFunction("-pointheader",0,(ctx,args,i) -> {
+	defineFunction(CMD_POINTHEADER,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader(true));
 		return i;
 	    });
@@ -4857,11 +4844,11 @@ public class CsvUtil implements CsvCommands {
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
 
-	    if(arg.equals("-value")) {
+	    if(arg.equals(CMD_VALUE)) {
 		macros.put(args.get(++i),args.get(++i));
 		continue;
 	    }
-	    if(arg.equals("-filepattern")) {
+	    if(arg.equals(CMD_FILEPATTERN)) {
 		filePatternNames.add(args.get(++i));		
 		filePatterns.add(args.get(++i));
 
@@ -4911,7 +4898,7 @@ public class CsvUtil implements CsvCommands {
 	}
 
 	args = newArgs;
-//	debugArgs = true;
+	//	debugArgs = true;
 
 
 	for (int i = 0; i < args.size(); i++) {
@@ -4945,7 +4932,7 @@ public class CsvUtil implements CsvCommands {
 		    if (pw == null) {
 			pw = new PrintWriter(getOutputStream());
 		    }
-		    if ( !arg.equals("-table")) {
+		    if ( !arg.equals(CMD_TABLE)) {
 			arg = arg.replaceAll("\"", "\\\\\"");
 			pw.print("\"" + arg + "\",");
 		    }
@@ -4980,7 +4967,7 @@ public class CsvUtil implements CsvCommands {
 		}
 
 
-		if (arg.equals("-args")) {
+		if (arg.equals(CMD_ARGS)) {
 		    doArgs = true;
 		    continue;
 		}
@@ -4988,7 +4975,7 @@ public class CsvUtil implements CsvCommands {
 		    doArgs2 = true;
 		    continue;
 		}
-		if (arg.equals("-script")) {
+		if (arg.equals(CMD_SCRIPT)) {
 		    outputScript(args, ctx);
 		    return false;
 		}		
@@ -5054,8 +5041,8 @@ public class CsvUtil implements CsvCommands {
 	pw.print("sh ${SEESV}/seesv.sh ");	
 	boolean seenPrint = false;
 	for (String arg: args) {
-	    if(arg.equals("-script")) continue;
-	    if(arg.equals("-print")) seenPrint = true;
+	    if(arg.equals(CMD_SCRIPT)) continue;
+	    if(arg.equals(CMD_PRINT)) seenPrint = true;
 	    arg = arg.replaceAll("\\$","\\\\\\$");
 	    pw.print("\"" + arg+"\" ");
 	}
@@ -5167,7 +5154,7 @@ public class CsvUtil implements CsvCommands {
 	    String s = sb.toString();
 	    if (s.equals(Utils.MULTILINE_END)) {
 		if (keepLineSeparation) {
-                        current = null;
+		    current = null;
 		}
 		continue;
 	    }
@@ -5210,11 +5197,11 @@ public class CsvUtil implements CsvCommands {
 
 
 	/*
-	System.out.println("a,b,c,d,e");
-	for(int i=0;i<100000;i++) {
-	    System.out.println(i+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456));
-	}
-	if(true) return;
+	  System.out.println("a,b,c,d,e");
+	  for(int i=0;i<100000;i++) {
+	  System.out.println(i+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456));
+	  }
+	  if(true) return;
 	*/
 
 
@@ -5315,9 +5302,6 @@ public class CsvUtil implements CsvCommands {
 	public String toString() {
 	    return "fmt:" + sdfString;
 	}
-
-
     }
-
 
 }
