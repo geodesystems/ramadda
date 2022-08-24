@@ -1,7 +1,7 @@
 #!/usr/bin/tclsh
 
 set ::mydir [file dirname [file normalize [info script]]]
-set ::root https://geodesystems.com/repository
+set ::root https://ramadda.org/repository
 source $::mydir/uitest.tcl
 
 
@@ -79,7 +79,7 @@ if {[llength $urls]} {
 	capture ""  "Page $cnt" $url 0 $sleep
     }
 } else {
-#Run with the default geodesystems.com entries
+#Run with the default ramadda.org entries
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
     runGroup "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
     runGroup "Data tables" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e

@@ -33,13 +33,13 @@ proc recurse {id {name init}} {
     if {[info exists ::seen($id)]} {return}
     set ::seen($id) 1
     puts stderr "$id $name"
-    set url "https://geodesystems.com/repository/entry/show?entryid=${id}#fortest"
+    set url "https://ramadda.org/repository/entry/show?entryid=${id}#fortest"
     set failed [catch {exec curl --insecure -f -silent -o /dev/null $url} err]
     if {$failed} {
 	puts stderr "Failed $name $id : $err"
 	exit
     }
-    set url "https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false"
+    set url "https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false"
     set csv [string trim [getCsvUrl $url]]
     set lines [split $csv "\n"]
     while {[llength $lines]>0} {

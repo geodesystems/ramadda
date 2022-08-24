@@ -4,7 +4,7 @@ tclsh fetchurls.tcl -loop <some file with a list of URLs>
 
 
 runuitest.tcl:
-This runs through most of the pages at https://geodesystems.com/repository/a/examples,
+This runs through most of the pages at https://ramadda.org/repository/a/examples,
 brings up the page in Safari, pauses for some number of seconds to allow the page to render, and captures the image.
 A file is generated: uiimages.html
 

@@ -126,7 +126,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
     if {![file exists $thumb]} {
 	puts stderr "\ttesting $name\n\turl:$url"
 	#Bring Firefox to the front and tell it to load the page
-	if {[regexp geodesystems.com $url]} {
+	if {[regexp ramadda.org $url]} {
 	    if {![regexp fortest $url]} {
 		set url "$url#fortest"
 	    }

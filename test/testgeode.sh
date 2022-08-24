@@ -25,7 +25,7 @@ do
     echo "entry: ${id}"
     for output in "${outputs[@]}"
     do
-        url="http://geodesystems.com/repository/entry/show?entryid=${id}&output=${output}"
+        url="http://ramadda.org/repository/entry/show?entryid=${id}&output=${output}"
         curl -s -S  -o test.out  ${url}  
         if (($? > 0)); then
             echo "FAILED:  ${url}"
