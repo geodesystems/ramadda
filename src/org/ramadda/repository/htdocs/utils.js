@@ -3899,8 +3899,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HtmlUtils.makeMessage("fas fa-spinner fa-spin",msg);
     },    
 
-    makeSlides: function(id,args) {
+    makeSlides: function(id,args, tries) {
+	if(!Utils.isDefined(tries)) {
+	    tries = 0;
+	}
         if(!HtmlUtils.loadSlides()) {
+	    tries++;
+	    if(tries>10) return;
+	    console.log("MS-1");
 	    setTimeout(()=>{
 		HtmlUtils.makeSlides(id,args);
 	    },1000);
@@ -3909,6 +3915,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             dots:true
         };
         if(args) $.extend(opts,args);
+        if(!$("#" + id).slick) {
+	    tries++;
+	    if(tries>10) return;
+	    //not loaded yet
+	    setTimeout(()=>{
+		HtmlUtils.makeSlides(id,args);
+	    },500);
+	}
+
         $("#" + id).slick(opts);
         HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
