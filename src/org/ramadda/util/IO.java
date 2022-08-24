@@ -187,6 +187,13 @@ public class IO {
     public static InputStream getInputStream(String filename, Class origin)
             throws FileNotFoundException, Exception {
         checkFile(filename);
+	//Check for malformed URL
+	if(filename.matches("(?i)^https:/[^/]+.*")) {
+	    filename = filename.replace("https:/","https://");
+	    //	    System.err.println("BAD:" + filename);
+	}
+
+
         File f = new File(filename);
         if (f.exists()) {
             return new FileInputStream(f);
@@ -1258,15 +1265,12 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-
-        if (true) {
-            File f = new File("/Users/jeffmc/test2");
-            System.err.println(f.getCanonicalPath());
-
-            return;
-
-        }
-
+	for(String f: args) {
+	    System.err.println("f:" + f);
+	    getInputStream(f);
+	    System.err.println("ok");
+	}
+	if(true) return;
 
         final PipedOutputStream pos       = new PipedOutputStream();
         final PipedInputStream  pis       = new PipedInputStream(pos);
