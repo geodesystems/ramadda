@@ -3049,7 +3049,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });	
 
-	defineFunction(new String[]{"-c",ARG_COLUMNS},1,(ctx,args,i) -> {
+	defineFunction(new String[]{"-c",CMD_COLUMNS},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSelector(ctx, getCols(args.get(++i))));
 		return i;
 	    });
