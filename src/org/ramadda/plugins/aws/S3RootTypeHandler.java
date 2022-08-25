@@ -514,8 +514,12 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                               dataDate.getTime(), dataDate.getTime(), values);
 
 
-	bucketEntry.putTransientProperty(PROP_AWS_KEY, getAwsKey(rootEntry));
         bucketEntry.putTransientProperty("originalname", originalName);
+	//Put the AWS key if we have it
+	String key = getAwsKey(rootEntry);
+	if(key!=null) {
+	    bucketEntry.putTransientProperty(PROP_AWS_KEY, getAwsKey(rootEntry));
+	}	    
         for (Propper locProps :
                 getConvertProperties(request, rootEntry, "location")) {
             List<String> cols = (List<String>) locProps.get(parentName + "/"
