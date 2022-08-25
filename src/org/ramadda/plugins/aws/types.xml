@@ -25,9 +25,11 @@
 +center
 <b>AWS/S3 Bucket:</b> {{field name=root_id}}
 -center
++skip
 +center
 {{tags types="un_sdg_tag,enum_tag,content.keyword"}}
 -center
+-skip
 {{description wikify="true"}}
 +center
 <form>
