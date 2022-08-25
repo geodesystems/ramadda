@@ -90,6 +90,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     public static final int IDX_ROOT = IDX++;
 
+    public static final int IDX_AWS_KEY = IDX++;
+
+
     /**  */
     public static final int IDX_DO_CACHE = IDX++;
 
@@ -212,7 +215,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
         //      S3File.debug = true;
         long t1 = System.currentTimeMillis();
-        S3File.S3ListResults results = doLs(request, rootEntry, new S3File(synthId),
+        S3File.S3ListResults results = doLs(request, rootEntry, createS3File(rootEntry,synthId),
                                             null, max, percent, maxSize);
         long t2 = System.currentTimeMillis();
         //      Utils.printTimes("ls:" + synthId,t1,t2);
@@ -511,6 +514,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                               dataDate.getTime(), dataDate.getTime(), values);
 
 
+	bucketEntry.putTransientProperty(PROP_AWS_KEY, getAwsKey(rootEntry));
         bucketEntry.putTransientProperty("originalname", originalName);
         for (Propper locProps :
                 getConvertProperties(request, rootEntry, "location")) {
@@ -641,7 +645,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 		String spath = path.toString();
 		if(cache!=null) s3File = cache.get(spath);
 		if(s3File==null) {
-		    s3File = S3File.createFile(spath);
+		    s3File = S3File.createFile(spath,getAwsKey(rootEntry));
 		}
                 long t2 = System.currentTimeMillis();
                 if (s3File == null) {
@@ -710,6 +714,14 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return sb.toString();
     }
 
+    private String getAwsKey(Entry rootEntry) {
+	return  rootEntry.getStringValue(IDX_AWS_KEY,null);
+    }
+
+    private S3File createS3File(Entry rootEntry, String path) {
+	return new S3File(path, getAwsKey(rootEntry));
+    }
+
     /**
      * _more_
      *
@@ -729,7 +741,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                      String path, int max, double percent,
                                      long maxSize)
             throws Exception {
-        S3File newFile = new S3File(getS3Path(base, path));
+        S3File newFile = createS3File(rootEntry, getS3Path(base, path));
 
         System.err.println("doLs: " + base +" marker="
                            + Utils.X(request.getString(ARG_MARKER, null)));
@@ -792,10 +804,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 						       "You can only search under the S3 root:" + rootId));
 		text=null;
 	    } else {
-		file = new S3File(root);
+		file = createS3File(entry,root);
 	    }
 	} else {
-	    file = new S3File(rootId);
+	    file = createS3File(entry,rootId);
 	}
 	
 
