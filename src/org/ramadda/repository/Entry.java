@@ -232,7 +232,7 @@ public class Entry implements Cloneable {
      * @param isDummy  true if stoopid
      */
     public Entry(TypeHandler handler, boolean isDummy) {
-        this(handler, isDummy, "Search Results");
+        this(handler, isDummy, "Listing");
     }
 
 
