@@ -1229,6 +1229,11 @@ public class Utils extends IO {
         return null;
     }
 
+    public static String redact(String s) {
+	return "********";
+    }
+
+
     /**
      * _more_
      *

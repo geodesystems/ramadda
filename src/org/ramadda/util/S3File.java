@@ -67,6 +67,16 @@ public class S3File extends FileWrapper {
         this(bucket, true);
     }
 
+    public S3File(String bucket,String accesskey, String secretKey) {
+	this(bucket);
+	setKey(accessKey, secretKey);
+    }
+
+    public S3File(String bucket,String key) {
+	this(bucket);
+	setKey(key);
+    }
+
     /**
      *
      * @param bucket _more_
@@ -93,6 +103,23 @@ public class S3File extends FileWrapper {
     }
 
 
+    public void setKey(String key) {
+	if(!Utils.stringDefined(key)) return;
+	List<String> toks = Utils.splitUpTo(key,":",2);
+	if(toks.size()==1) {
+	    String envKey = System.getenv().get(key);
+	    if(!Utils.stringDefined(envKey)) {
+		throw new IllegalArgumentException("No AWS S3 ENV key found:" +Utils.redact(key));
+	    }
+	    toks = Utils.splitUpTo(envKey,":",2);
+	    if(toks.size()!=2) {
+		throw new IllegalArgumentException("Bad format for AWS S3 ENV key:" +Utils.redact(envKey));
+	    }
+	}
+	setKey(toks.get(0),toks.get(1));	
+    }
+
+
     /**
      *  @return _more_
      */
@@ -100,8 +127,10 @@ public class S3File extends FileWrapper {
         if (s3 == null) {
 	    AWSCredentials credentials=null;
 	    if(Utils.stringDefined(accessKey) && Utils.stringDefined(secretKey))  {
+		//System.err.println("Using key:" + accessKey +" secret:" + secretKey);
 		credentials = new   BasicAWSCredentials(accessKey, secretKey);
 	    } else {
+		//		System.err.println("****** Using anonymous credentials");
 		credentials = new AnonymousAWSCredentials();
 	    }
             s3 = new AmazonS3Client(credentials);
@@ -191,7 +220,11 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public static S3File createFile(String bucket) throws Exception {
-        S3File       tmp   = new S3File(bucket);
+	return createFile(bucket, null);
+    }
+
+    public static S3File createFile(String bucket, String key) throws Exception {	
+        S3File       tmp   = new S3File(bucket, key);
         List<S3File> files = tmp.doList(true).files;
         if ((files != null) && (files.size() > 0)) {
             return files.get(0);
@@ -343,9 +376,10 @@ public class S3File extends FileWrapper {
         try {
             listing = getS3().listObjectsV2(request);
         } catch (Exception exc) {
-            System.err.println("error:" + exc);
-
-            return new S3ListResults(null, files);
+	    //Pass the exception back
+	    throw exc;
+	    //            System.err.println("error:" + exc);
+	    //            return new S3ListResults(null, files);
         }
         List<String> commonPrefixes = listing.getCommonPrefixes();
 
@@ -359,16 +393,15 @@ public class S3File extends FileWrapper {
                 System.err.println("\tPREFIX:" + name);
             }
             //Check for a self listing
+	    S3File dir;
             if (self && theBucket.endsWith(name)) {
-                S3File dir = new S3File(theBucket, true);
+                dir = new S3File(theBucket, true);
                 files.add(dir);
             } else {
-                S3File dir = new S3File(theBucket + name, true);
+                dir = new S3File(theBucket + name, true);
                 files.add(dir);
             }
-            //      S3File dir = new S3File(theBucket + name, true);
-            //      System.err.println("ADDING:" + dir);
-            //      files.add(dir);
+	    dir.setKey(accessKey, secretKey);
         }
 
         for (S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
@@ -383,7 +416,7 @@ public class S3File extends FileWrapper {
             //      String path = self
             //          ? theBucket
             //          : theBucket + name;
-            files.add(createS3File(objectSummary));
+            files.add(createS3File(objectSummary,getAccessKey(), getSecretKey()));
         }
 
         if (debug) {
@@ -402,6 +435,11 @@ public class S3File extends FileWrapper {
       * @return _more_
      */
     public static S3File createS3File(S3ObjectSummary objectSummary) {
+	return createS3File(objectSummary,null, null);
+    }
+
+    public static S3File createS3File(S3ObjectSummary objectSummary,String accessKey, String secretKey) {
+
         String path = S3PREFIX + "//" + objectSummary.getBucketName() + "/"
                       + objectSummary.getKey();
         String name = getObjectName(objectSummary.getKey());
@@ -409,6 +447,7 @@ public class S3File extends FileWrapper {
         S3File file = new S3File(path, name, objectSummary.getSize(),
                                  objectSummary.getLastModified());
 
+	file.setKey(accessKey, secretKey);
         return file;
     }
 
@@ -432,17 +471,11 @@ public class S3File extends FileWrapper {
      */
     @Override
     public FileWrapper getParentFile() {
-        /*
-          String parent = bucket;
-          if(parent.endsWith("/")) parent = parent.substring(0,parent.length()-1);
-          String parent = bucket.replace("/[^/]+/?$");
-        */
         String p = bucket.replaceAll("(.*)/[^/]+/?$", "$1/");
         if (p.equals("s3://")) {
             return null;
         }
-
-        return new S3File(p);
+        return new S3File(p,accessKey,secretKey);
     }
 
 
@@ -879,7 +912,7 @@ public class S3File extends FileWrapper {
             System.err.println(msg);
         }
         System.err.println(
-            "Usage:\nS3File \n\t<-download  download the files>  \n\t<-nomakedirs don't make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing>\n\t<-search search_term>\n\t<-self print out the details about the bucket> ... one or more buckets");
+            "Usage:\nS3File \n\t<-key KEY_SPEC (Key spec is either a accesskey:secretkey or an env variable set to accesskey:secretkey)>\n\t<-download  download the files>  \n\t<-nomakedirs don't make a tree when downloading files> \n\t<-overwrite overwrite the files when downloading> \n\t<-sizelimit size mb (don't download files larger than limit (mb)> \n\t<-percent 0-1  (for buckets with many (>100) siblings apply this as percent probablity that the bucket will be downloaded)> \n\t<-recursive  recurse down the tree when listing>\n\t<-search search_term>\n\t<-self print out the details about the bucket> ... one or more buckets");
         Utils.exitTest(0);
     }
 
@@ -910,6 +943,7 @@ public class S3File extends FileWrapper {
         int          maxCalls    = 10;
         double       percent     = -1;
         int          sizeLimit   = -1;
+	String key = null;
         for (int i = 0; i < args.length; i++) {
             String path = args[i];
             if (path.startsWith("--")) {
@@ -943,6 +977,14 @@ public class S3File extends FileWrapper {
                 excludes.add(args[++i]);
                 continue;
             }
+            if (path.equals("-key")) {
+                if (i == args.length - 1) {
+                    usage("Bad key arg");
+                }
+		key = args[++i];
+                continue;
+            }
+
             if (path.equals("-maxcalls")) {
                 if (i == args.length - 1) {
                     usage("Bad maxcals arg");
@@ -997,7 +1039,7 @@ public class S3File extends FileWrapper {
             }
 
             if (doSelf) {
-                S3File file = createFile(path);
+                S3File file = createFile(path,key);
                 if (file != null) {
                     System.out.println("Got:" + file.toStringVerbose());
                 } else {
@@ -1006,9 +1048,9 @@ public class S3File extends FileWrapper {
                 continue;
             }
             if (search != null) {
-                S3File file = new S3File(path);
+                S3File file = new S3File(path,key);
                 List<S3File> results = file.doSearch(search, null, maxCalls,
-                                           verbose);
+						     verbose);
                 if (results.size() == 0) {
                     System.err.println("Nothing found");
                 } else {
@@ -1017,8 +1059,7 @@ public class S3File extends FileWrapper {
                 continue;
             }
 
-
-            FileWrapper f = FileWrapper.createFileWrapper(path);
+            S3File  f = new S3File(path,key);
             if (doRecursive) {
                 FileWrapper.walkDirectory(f, new MyFileViewer(doDownload,
                         makeDirs, overWrite, sizeLimit, percent, verbose,
@@ -1068,6 +1109,48 @@ public class S3File extends FileWrapper {
          */
         public boolean match(String s, S3ObjectSummary objectSummary);
     }
+
+    public void setKey (String accessKey, String secretKey) {
+	setAccessKey(accessKey);
+	setSecretKey(secretKey);	
+    }
+
+     /**
+       Set the AccessKey property.
+
+       @param value The new value for AccessKey
+    **/
+    public void setAccessKey (String value) {
+	accessKey = value;
+    }
+
+    /**
+       Get the AccessKey property.
+
+       @return The AccessKey
+    **/
+    public String getAccessKey () {
+	return accessKey;
+    }
+
+    /**
+       Set the SecretKey property.
+
+       @param value The new value for SecretKey
+    **/
+    public void setSecretKey (String value) {
+	secretKey = value;
+    }
+
+    /**
+       Get the SecretKey property.
+
+       @return The SecretKey
+    **/
+    public String getSecretKey () {
+	return secretKey;
+    }
+
 
 
 }
