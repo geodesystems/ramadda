@@ -4891,13 +4891,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private String getPropertyValue(String name, boolean checkDb,
                                     boolean needsToBeNonEmpty) {
-        //        propdebug = name.equals(PROP_REGISTRY_SERVERS);
+	//	propdebug = name.equals(PROP_READ_ONLY);
 
 	//	System.err.println("getPropertyValue:" + name);
 	propcnt++;
 
 	if(propdebug) {
-	    //	    System.err.println("getPropertyValue:" + name);
+	    System.err.println("getPropertyValue:" + name);
 	    //	    propcnt++;
 	}
         if (systemEnv == null) {
@@ -4910,7 +4910,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) cmdLineProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-		//                System.err.println("\t override from command line:" + prop);
+		System.err.println("\t override from command line:" + prop);
             }
 
             return prop;
@@ -4919,7 +4919,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) localProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-		//                System.err.println("\t override from local:" + prop);
+		System.err.println("\t override from local:" + prop);
             }
 
             return prop;
@@ -4928,7 +4928,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) pluginProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-		//                System.err.println("\t override from plugin:" + prop);
+		System.err.println("\t override from plugin:" + prop);
             }
 
             return prop;
@@ -4937,7 +4937,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) coreProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-		//                System.err.println("\t override from core:" + prop);
+		System.err.println("\t override from core:" + prop);
             }
 
             return prop;
@@ -4948,7 +4948,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) cmdLineProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-		//                System.err.println("\t from command line:" + prop);
+		System.err.println("\t from command line:" + prop);
             }
 
             return prop;
@@ -5149,8 +5149,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public boolean getProperty(String name, boolean dflt) {
         String prop = getProperty(name);
-        if (prop != null) {
-            return Boolean.parseBoolean(prop);
+        if (Utils.stringDefined(prop)) {
+            boolean value =  Boolean.parseBoolean(prop.trim());
+	    return value;
         }
 
         return dflt;
@@ -5186,7 +5187,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public long getProperty(String name, long dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
-            return Long.parseLong(prop);
+            return Long.parseLong(prop.trim());
         }
 
         return dflt;
@@ -5203,7 +5204,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public double getProperty(String name, double dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
-            return Double.parseDouble(prop);
+            return Double.parseDouble(prop.trim());
         }
 
         return dflt;
