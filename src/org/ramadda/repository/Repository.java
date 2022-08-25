@@ -1099,8 +1099,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 for (String ip :
                         Utils.split(IOUtil.readContents(blacklistFile), "\n",
                                     true, true)) {
-                    getLogManager().logInfoAndPrint(
-                        "RAMADDA: Add blacklist ip:" + ip);
+		    //                    getLogManager().logInfoAndPrint("RAMADDA: Add blacklist ip:" + ip);
                     blacklist.add(ip);
                 }
             } catch (Exception exc) {
