@@ -2381,7 +2381,7 @@ public class StorageManager extends RepositoryManager implements PointFile
             if ( !cachedFile.exists()) {
 		System.err.println("Copying S3 file:" + bucket + " " + formatFileLength(bucket.length()));
 		//		System.err.println(Utils.getStack(10));
-                new S3File(bucket).copyFileTo(cachedFile);
+                new S3File(bucket, (String)entry.getTransientProperty(PROP_AWS_KEY)).copyFileTo(cachedFile);
             } else {
 	    //                System.err.println("S3 file was cached:" + fileName);
             }

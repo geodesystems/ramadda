@@ -2108,6 +2108,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ENCRYPT_CIPHER = "ramadda.encrypt.cipher";
 
+    public static final String PROP_AWS_KEY = "ramadda.aws.key";
 
 
     /** _more_ */

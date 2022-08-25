@@ -6712,7 +6712,12 @@ public class EntryManager extends RepositoryManager {
         OutputHandler.State state;
 	if (handleEntryAsGroup(entry)) {
 	    List<Entry>  children     = new ArrayList<Entry>();
-	    getChildrenEntries(request, getRepository().getHtmlOutputHandler(),entry, children);
+	    try {
+		getChildrenEntries(request, getRepository().getHtmlOutputHandler(),entry, children);
+	    } catch(Exception exc) {
+		//Don't throw the exception since this would block the user from showing the entry menu
+                logError("Calling getChildrenEntries:"+entry.getName() , exc);
+	    }
 	    state = new OutputHandler.State(entry,children);
 	} else  {
 	    state = new OutputHandler.State(entry);
@@ -6927,7 +6932,7 @@ public class EntryManager extends RepositoryManager {
 	finisher.accept(otherSB,"Etc");	
 	
         if (typeMask!=OutputType.TYPE_ALL && (typeMask & OutputType.TYPE_CHILDREN) != 0) {
-            List<Entry> children = getChildren(request, entry);
+            List<Entry> children = getChildrenSafe(request, entry);
             if (children.size() > 0) {
                 StringBuilder childrenSB = new StringBuilder();
 		for (Entry child : getEntryUtil().sortEntriesOnName(children,false)) {
@@ -8642,6 +8647,20 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /**
+       Get the children entries. If there is an error then log it and return an empty list
+       We have this because the getChildren call can throw an error (e.g., Bad
+       AWS S3 credentials) and this can block critical user things (menus, etc);
+     */
+    public List<Entry> getChildrenSafe(Request request, Entry parentEntry) {
+	try {
+	    return getChildren(request, parentEntry);
+	} catch(Exception exc) {
+	    logError("Error getting chilldren:" + parentEntry,exc);
+	    return new ArrayList<Entry>();
+	}
+    }
+
 
     /**
      * _more_
@@ -8751,8 +8770,7 @@ public class EntryManager extends RepositoryManager {
             } catch (Exception exc) {
                 getLogManager().logError("Error getting synthIds from:"
                                          + mainEntry, exc);
-
-                return new ArrayList<String>();
+		throw exc;
             }
         }
 

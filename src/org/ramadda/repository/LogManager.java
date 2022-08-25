@@ -338,7 +338,6 @@ public class LogManager extends RepositoryManager {
             LOGGER_OK = false;
             System.err.println("Error getting logger: " + exc);
             exc.printStackTrace();
-
             return null;
         }
         loggers.put(logId, logger);
@@ -624,6 +623,8 @@ public class LogManager extends RepositoryManager {
             System.err.println("RAMADDA ERROR:" + message);
             log.error(message);
         }
+	//For now don't print the stack trace as the logging above prints it
+	if(true) return;
 	if(thr!=null) {
 	    thr.printStackTrace();
  	} else if(exc!=null) {
