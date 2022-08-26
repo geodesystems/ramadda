@@ -70,7 +70,7 @@ textarea, input {
 }
 
 select, input, password, .fileinput, textarea {
-    border  :var(--basic-border)
+    border  :var(--basic-border);
 }
 
 .fileinput_wrapper {
