@@ -1,0 +1,166 @@
+id,fullname,lat,lon
+KAPD,KAPD - Fairbanks/Pedro Dome,65.035,-147.50167
+KAEC,KAEC - Fairbanks/Nome,64.51139,-165.295
+KACG,KACG - Juneau/Sitka,56.85278,-135.52917
+KAIH,KAIH - Anchorage/Middleton Island,59.46139,-146.30306
+KABC,KABC - Anchorage/Bethel,60.79194,-161.87639
+KAHG,KAHG - Anchorage/Nikiski,60.72583,-151.35139
+KAKC,KAKC - Anchorage/King Salmon,58.67944,-156.62944
+KBMX,KBMX - Birmingham/Alabaster,33.17222,-86.76972
+KMOB,KMOB - Mobile,30.67944,-88.23972
+KHTX,KHTX - Birmingham/Northeastern Al,34.93056,-86.08333
+KMXX,KMXX - Birmingham/Maxwell Afb,32.53667,-85.78972
+KEOX,KEOX - Birmingham/Fort Rucker,31.46056,-85.45944
+KLZK,KLZK - Little Rock/N Little Rock,34.83639,-92.26222
+KSRX,KSRX - Tulsa/Western Arkansas,35.29056,-94.36167
+KIWA,KIWA - Phoenix/Mesa,33.28917,-111.67
+KEMX,KEMX - Tucson/Pima County,31.89361,-110.63028
+KFSX,KFSX - Flagstaff/Coconino,34.57444,-111.19778
+KYUX,KYUX - Phoenix/Yuma,32.49528,-114.65667
+KDAX,KDAX - Sacramento,38.50111,-121.67778
+KVTX,KVTX - Los Angeles/Ventura County,34.41167,-119.17944
+KMUX,KMUX - San Francisco Bay Area/Santa,37.15528,-121.89833
+KBHX,KBHX - Eureka/Humboldt County,40.49833,-124.29194
+KHNX,KHNX - San Joaquin Valley/Hanford,36.31417,-119.63222
+KNKX,KNKX - San Diego,32.91889,-117.04194
+KSOX,KSOX - San Diego/Orange County,33.81778,-117.63583
+KVBX,KVBX - Los Angeles/Orcutt Oil Field,34.83806,-120.39694
+KEYX,KEYX - Las Vegas/Edwards Afb,35.09778,-117.56083
+KBBX,KBBX - Sacramento/Oro Dam Blvd West,39.49611,-121.63167
+KFTG,KFTG - Denver/Boulder,39.78667,-104.54583
+KPUX,KPUX - Pueblo/Pueblo County,38.45944,-104.18139
+KGJX,KGJX - Grand Junction/Mesa,39.06222,-108.21389
+KDOX,KDOX - Wakefield/Ellendale State Fo,38.82556,-75.43972
+KMLB,KMLB - Melbourne,28.11333,-80.65417
+KAMX,KAMX - Miami,25.61111,-80.41278
+KTBW,KTBW - Tampa Bay Area/Ruskin,27.70556,-82.40167
+KJAX,KJAX - Jacksonville,30.48472,-81.70194
+KTLH,KTLH - Tallahassee,30.3975,-84.32889
+KBYX,KBYX - Miami/Boca Chica Key,24.5975,-81.70306
+KEVX,KEVX - Tallahassee/Eglin Afb,30.56444,-85.92139
+KFFC,KFFC - Atlanta/Peachtree City,33.36361,-84.56583
+KJGX,KJGX - Atlanta/State Hwy 96,32.67528,-83.35111
+KVAX,KVAX - Tallahassee/State Rd 129,30.89028,-83.00167
+KGUA,KGUA - Guam/Barrigada Communication,13.45444,144.80833
+KHMO,KHMO - Honolulu/Molokai,21.13278,-157.18
+KHWA,KHWA - Honolulu/Hawaii,19.095,-155.56889
+KHKM,KHKM - Honolulu/Kohala,20.12556,-155.77778
+KHKI,KHKI - Honolulu/Kauai,21.89417,-159.55222
+KDMX,KDMX - Des Moines/Johnston,41.73111,-93.72278
+KDVN,KDVN - Quad Cities/Davenport,41.61167,-90.58083
+KCBX,KCBX - Boise/Ada County,43.49056,-116.23556
+KSFX,KSFX - Pocatello/Idaho Falls/Spring,43.10583,-112.68611
+KLOT,KLOT - Chicago/Romeoville,41.60472,-88.08472
+KILX,KILX - Central Illinois/Lincoln,40.15056,-89.33694
+KIND,KIND - Indianapolis,39.7075,-86.28028
+KIWX,KIWX - Northern Indiana/North Webst,41.35889,-85.7
+KVWX,KVWX - Evansville/Gibson,38.26028,-87.72444
+KDDC,KDDC - Dodge City,37.76083,-99.96889
+KICT,KICT - Wichita,37.65472,-97.44278
+KTWX,KTWX - Topeka/Alma,38.99694,-96.2325
+KGLD,KGLD - Goodland,39.36694,-101.70028
+KLVX,KLVX - Louisville/Fort Knox,37.97528,-85.94389
+KPAH,KPAH - Paducah,37.06833,-88.77194
+KJKL,KJKL - Jackson/Noctor,37.59083,-83.31306
+KHPX,KHPX - Paducah/Us Hwy 41 N,36.73667,-87.285
+KLIX,KLIX - New Orleans/Baton Rouge/Slid,30.33667,-89.82556
+KLCH,KLCH - Lake Charles,30.12528,-93.21583
+KSHV,KSHV - Shreveport,32.45083,-93.84139
+KPOE,KPOE - Lake Charles/Fort Polk,31.15556,-92.97583
+KBOX,KBOX - Boston/Taunton,41.95583,-71.13694
+KLWX,KLWX - Baltimore/Wash/Sterling,38.97611,-77.4875
+KGYX,KGYX - Portland/Gray,43.89139,-70.25639
+KCBW,KCBW - Portland/Houlton,46.03917,-67.80639
+KDTX,KDTX - Detroit/White Lake,42.69972,-83.47167
+KGRR,KGRR - Grand Rapids,42.89389,-85.54472
+KMQT,KMQT - Marquette,46.53111,-87.54833
+KAPX,KAPX - North Central Lower Michigan,44.90722,-84.71972
+KMPX,KMPX - Minneapolis/Chanhassen,44.84889,-93.56556
+KDLH,KDLH - Duluth,46.83694,-92.20972
+KLSX,KLSX - St. Louis/St Charles,38.69889,-90.68278
+KEAX,KEAX - Kansas City/Pleasant Hill/Pl,38.81028,-94.26444
+KSGF,KSGF - Springfield,37.23528,-93.40056
+KJAN,KJAN - Jackson,32.31778,-90.08
+KDGX,KDGX - Brandon,32.27972,-89.98417
+KGWX,KGWX - Memphis/Ms Hwy 8 & Us Hwy 27,33.89667,-88.32889
+KTFX,KTFX - Great Falls,47.45972,-111.38528
+KMSX,KMSX - Missoula/Missoula County,47.04111,-113.98611
+KBLX,KBLX - Billings/Yellowstone County,45.85389,-108.60667
+KGGW,KGGW - Glasgow,48.20639,-106.625
+KMHX,KMHX - Morehead City/Newport,34.77611,-76.87611
+KLTX,KLTX - Wilmington/Shallotte,33.98944,-78.42889
+KRAX,KRAX - Raleigh/Durham/Clayton,35.66556,-78.48972
+KBIS,KBIS - Bismarck,46.77083,-100.76056
+KMVX,KMVX - Eastern North Dakota/Mayvill,47.52778,-97.32556
+KMBX,KMBX - Bismarck/Mchenry County,48.3925,-100.865
+KUEX,KUEX - Hastings/Webster County,40.32083,-98.44194
+KOAX,KOAX - Omaha/Valley,41.32028,-96.36667
+KLNX,KLNX - North Platte/Thedford,41.95778,-100.57639
+KDIX,KDIX - Philadelphia/Manchester,39.94694,-74.41083
+KABX,KABX - Albuquerque,35.14972,-106.82389
+KFDX,KFDX - Albuquerque/State Rd 89,34.63528,-103.63
+KHDX,KHDX - El Paso/White Sands Missile,33.07639,-106.12278
+KRGX,KRGX - Reno/Washoe County,39.75417,-119.46222
+KESX,KESX - Las Vegas/Nelson,35.70111,-114.89139
+KLRX,KLRX - Elko/Lander County,40.73972,-116.80278
+KOKX,KOKX - New York City/Upton,40.86556,-72.86389
+KBGM,KBGM - Binghamton,42.19972,-75.98472
+KENX,KENX - Albany/East Berne,42.58639,-74.06389
+KBUF,KBUF - Buffalo/Cheektowaga,42.94889,-78.73667
+KTYX,KTYX - Montague/Fort Drum,43.75583,-75.68
+KCLE,KCLE - Cleveland,41.41306,-81.85972
+KILN,KILN - Cincinnati/Wilmington,39.42028,-83.82167
+KTLX,KTLX - Oklahoma City/Norman,35.33306,-97.27778
+KINX,KINX - Tulsa/Inola,36.175,-95.56472
+KFDR,KFDR - Oklahoma City/Altus Afb,34.36222,-98.97639
+KVNX,KVNX - Oklahoma City/Kegelman Aux F,36.74083,-98.12778
+KRTX,KRTX - Portland/Scappoose,45.71472,-122.96528
+KMAX,KMAX - Medford/Jackson County,42.08111,-122.71722
+KPDT,KPDT - Pendleton,45.69056,-118.85278
+KPBZ,KPBZ - Pittsburgh/Coraopolis,40.53167,-80.21806
+KCCX,KCCX - Central Pennsylvania/Rush,40.92306,-78.00361
+KJUA,KJUA - San Juan/Cayey,18.11556,-66.07806
+KCAE,KCAE - Columbia,33.94861,-81.11833
+KGSP,KGSP - Greenville/Spartanburg/Greer,34.88333,-82.22
+KCLX,KCLX - Charleston/Grays,32.65556,-81.04222
+KABR,KABR - Aberdeen,45.45583,-98.41306
+KFSD,KFSD - Sioux Falls,43.58778,-96.72944
+KUDX,KUDX - Rapid City/New Underwood,44.125,-102.82972
+KNQA,KNQA - Memphis/Millington,35.34472,-89.87333
+KMRX,KMRX - Knoxville/Tri-cities/Morrist,36.16861,-83.40167
+KOHX,KOHX - Nashville/Old Hickory,36.24722,-86.5625
+KAMA,KAMA - Amarillo,35.23333,-101.70917
+KHGX,KHGX - Houston/Galveston/Dickinson,29.47194,-95.07917
+KFWS,KFWS - Dallas/Fort Worth,32.57306,-97.30306
+KEWX,KEWX - Austin/San Antonio/New Braun,29.70389,-98.02833
+KLBB,KLBB - Lubbock,33.65417,-101.81417
+KMAF,KMAF - Midland/Odessa,31.94333,-102.18917
+KBRO,KBRO - Brownsville,25.91611,-97.41889
+KEPZ,KEPZ - El Paso/Santa Teresa,31.87306,-106.69806
+KSJT,KSJT - San Angelo,31.37139,-100.4925
+KCRP,KCRP - Corpus Christi/Corpus Christ,27.78417,-97.51111
+KGRK,KGRK - Dallas/Fort Worth/Ft Hood,30.72194,-97.38306
+KDYX,KDYX - San Angelo/Shackelford Count,32.53833,-99.25444
+KDFX,KDFX - Austin/San Antonio/Us Hwy 90,29.27278,-100.28056
+KMTX,KMTX - Salt Lake City/Elder County,41.26278,-112.44778
+KICX,KICX - Salt Lake City/Cedar City,37.59083,-112.86222
+KFCX,KFCX - Roanoke/Floyd County,37.02444,-80.27389
+KAKQ,KAKQ - Wakefield,36.98389,-77.00722
+KCXX,KCXX - Burlington/Colchester,44.51111,-73.16639
+KATX,KATX - Seattle/Tacoma/Camano Island,48.19444,-122.49583
+KOTX,KOTX - Spokane,47.68028,-117.62667
+KGRB,KGRB - Green Bay/Ashwaubenon,44.49833,-88.11139
+KMKX,KMKX - Milwaukee/Dousman,42.96778,-88.55056
+KARX,KARX - La Crosse,43.82278,-91.19111
+KRLX,KRLX - Charleston/Ruthdale,38.31111,-81.72306
+KCYS,KCYS - Cheyenne,41.15194,-104.80611
+KRIW,KRIW - Riverton,43.06611,-108.47722
+KNOP3,KNOP3 - Open RPG3,35.23806,-97.46
+KSHI,KSHI - Shanghai,31.00111,121.885
+KPEK,KPEK - Beijing,40.05083,116.60972
+KLGX,KLGX - Langley Hill,47.13,-124.09972
+KOUN,KOUN - Norman KOUN,35.23583,-97.46194
+KCRI,KCRI - Norman KCRI,35.23806,-97.46
+KKJK,"KKJK - Kunsan, Korea",35.92417,126.62194
+KKSG,"KKSG - Camp Humphreys, Korea",36.95944,127.01806
+KODN,"KODN - KADENA, Japan",26.30194,127.90972

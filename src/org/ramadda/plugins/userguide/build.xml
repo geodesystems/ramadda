@@ -4,7 +4,6 @@
     <target name="all" depends="docs,plugin"/>
 
     <target name="plugin">
-      
       <property name="plugin" value="userguide"/>
       <property name="plugin_group" value="coreplugins"/>
       <ant antfile="${basedir}/build.xml" target="plugin_build"/>

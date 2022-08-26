@@ -1,0 +1,11 @@
+^\d\d/\d\d$
++section title="NEXRAD Stations - {{name entry=parent}} {{name}} {{name entry=grandparent}}"
++inset left=20px right=20px
+{{map listentries=true hideIfNoLocations=true}}
+-inset
+<p>
++center
+{{display_simplesearch  width=200px  doPageSearch=true  inputSize=20 placeholder="Search Stations"}}
+-center
+{{tabletree maxHeight=400px}}
+-section
