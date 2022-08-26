@@ -857,7 +857,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             if (entries.size() > 0) {
-	        sb.append(getWikiManager().makeTableTree(request, null, null,
+		Hashtable props = Utils.makeHashtable(OutputConstants.ARG_SHOWCRUMBS,"true");
+	        sb.append(getWikiManager().makeTableTree(request, null, props,
                         entries));
             }
         }
