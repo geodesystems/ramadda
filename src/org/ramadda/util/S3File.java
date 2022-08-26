@@ -7,28 +7,19 @@ package org.ramadda.util;
 
 
 import com.amazonaws.auth.*;
-
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
 import java.io.*;
-
 import java.net.*;
-
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
-
 /**
- * Class description
  *
  *
  * @version        $version$, Sun, Aug 7, '22
@@ -372,18 +363,8 @@ public class S3File extends FileWrapper {
                                   ? pair[1]
                                   : "";
 
-        ListObjectsV2Result listing;
-        try {
-            listing = getS3().listObjectsV2(request);
-        } catch (Exception exc) {
-	    //Pass the exception back
-	    throw exc;
-	    //            System.err.println("error:" + exc);
-	    //            return new S3ListResults(null, files);
-        }
+        ListObjectsV2Result listing = getS3().listObjectsV2(request);
         List<String> commonPrefixes = listing.getCommonPrefixes();
-
-
         for (String s : commonPrefixes) {
             String name = getObjectName(s).trim();
             if (name.length() == 0) {
@@ -412,10 +393,6 @@ public class S3File extends FileWrapper {
             if ((maxSize > 0) && (objectSummary.getSize() > maxSize)) {
                 continue;
             }
-
-            //      String path = self
-            //          ? theBucket
-            //          : theBucket + name;
             files.add(createS3File(objectSummary,getAccessKey(), getSecretKey()));
         }
 
@@ -424,7 +401,6 @@ public class S3File extends FileWrapper {
         }
 
         String token = listing.getNextContinuationToken();
-
         return new S3ListResults(token, files);
     }
 
@@ -571,24 +547,6 @@ public class S3File extends FileWrapper {
         copyFileTo(bucket, file);
     }
 
-    /**
-     *
-     * @param pattern _more_
-     * @param key _more_
-      * @return _more_
-     */
-    private boolean searchMatch(String pattern, String key) {
-        try {
-            if (key.matches(pattern)) {
-                return true;
-            }
-        } catch (Exception ignore) {}
-        if (key.indexOf(pattern) >= 0) {
-            return true;
-        }
-
-        return false;
-    }
 
 
     /**
@@ -642,7 +600,7 @@ public class S3File extends FileWrapper {
                 if (found.size() > SEARCH_MAX_FOUND) {
                     break;
                 }
-                if (searchMatch(search, objectSummary.getKey())) {
+                if (Utils.matchesOrContains(objectSummary.getKey(),search)) {
                     found.add(createS3File(objectSummary));
                     continue;
                 }
