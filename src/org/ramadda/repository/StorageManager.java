@@ -934,10 +934,11 @@ public class StorageManager extends RepositoryManager implements PointFile
     private TempDir getLongTermCacheDir() {
         if (longTermCacheDir == null) {
             longTermCacheDir = makeTempDir(DIR_LONGTERM_CACHE);
+	    //10GB
             longTermCacheDir.setMaxSize(
-                1000 * 1000
-                * getRepository().getProperty(
-                    "ramadda.longtermcache.size", 1000));
+					1000 * 1000
+					* getRepository().getProperty(
+								      "ramadda.longtermcache.size", 10000));
         }
 
         return longTermCacheDir;
