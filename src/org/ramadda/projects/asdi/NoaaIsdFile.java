@@ -78,34 +78,6 @@ public class NoaaIsdFile extends CsvFile {
     boolean hdr = true;
     public List<String> processTokens(TextRecord record, List<String> toks,
                                       boolean isHeader) {
-	
-	//Don't do this now because we have skiplines=1 set in the noaatypes file
-	if(false && hdr) {
-	    System.err.println("HEADER");
-	    hdr= false;
-	    this.header = Utils.split(FIELDS,",");
-	    if(false) {
-	    for(int i=0;i<header.size();i++) {
-		if(i>0)	System.out.print(",");
-		else System.out.print("fields=");
-		String s = header.get(i).toLowerCase();
-		String type = "double";
-		String extra = "";
-		String label = Utils.makeLabel(s);
-		if(s.indexOf("qc")>=0) type="string";
-		if(i==STATION) type="enumeration";
-		else if(i== DATE) {
-		    type="date";
-		    extra =" format=\"yyyyMMdd'T'HHmmss\" ";
-		} else if(i== SOURCE) type="enumeration";
-		else if(i==NAME || i==REPORT_TYPE) type="string";
-		else if(i==CALL_SIGN || i == QUALITY_CONTROL) type="enumeration";
-		System.out.print(s+"[type=" + type+" label=\"" + label+"\" " + extra+"]");
-	    }
-	    }
-	    System.out.println("");
-	    return this.header;
-	}
 	List<String> newToks = new ArrayList<String>();
 	for(int i=0;i<toks.size() && i<=SLP;i++) {
 	    String tok = toks.get(i);
