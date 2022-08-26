@@ -234,6 +234,7 @@
             <include name="${plugin_dir}/lib/**/*"/>
             <include name="${plugin_dir}/resources/**/*"/>
             <include name="${plugin_dir}/**/*.xml"/>
+            <include name="${plugin_dir}/**/*.csv"/>	    
             <include name="${plugin_dir}/**/*.sql"/>
             <include name="${plugin_dir}/**/*.txt"/>
             <include name="${plugin_dir}/**/*.html"/>
