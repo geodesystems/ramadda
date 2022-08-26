@@ -593,6 +593,18 @@ public class Utils extends IO {
     }
 
 
+    public static boolean matchesOrContains(String str, String pattern) {
+	if(str==null || pattern==null) return false;
+	str  = str.toLowerCase();
+	try {
+	    if (str.matches(pattern)) 
+		return true;
+	} catch(Exception ignore) {}
+	if(str.indexOf(pattern) >= 0) {
+	    return true;
+	}
+	return false;
+    }
 
 
     /**
