@@ -65,6 +65,7 @@
 {{tabletree message="" maxHeight=500px}}
 -col
 +col-md-3
+{{tools includeicon="true" title="Services" message=""}}
 {{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
 <p>
 {{mapentry message="" width="250" height="250"  box.maxheight="300" xblock.show="true" xblock.title="Location" block.open="true"}}

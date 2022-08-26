@@ -822,7 +822,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                                                entry, "alias");
             S3File.Searcher searcher = new S3File.Searcher() {
                 public boolean match(
-                        String s,
+                        String lookFor,
                         com.amazonaws.services.s3.model.S3ObjectSummary o) {
                     String fileName = new File(o.getKey()).getName();
                     String[] keys = new String[] { fileName,
@@ -830,14 +830,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     for (Propper aliases : proppers) {
                         String alias = aliases.getNamedValue(NAME_ALIASES,
                                            keys);
-                        if (alias == null) {
-                            continue;
-                        }
-                        if (alias.matches(s) || (alias.indexOf(s) >= 0)) {
-                            return true;
-                        }
+			if(Utils.matchesOrContains(alias,lookFor)) return true;
                     }
-
                     return false;
                 }
             };
