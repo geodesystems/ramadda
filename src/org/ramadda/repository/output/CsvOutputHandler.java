@@ -65,7 +65,7 @@ public class CsvOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    public static final OutputType OUTPUT_CSV = new OutputType("CSV",
+    public static final OutputType OUTPUT_CSV = new OutputType("CSV Listing",
                                                     "default.csv",
                                                     OutputType.TYPE_FEEDS,
                                                     "", ICON_CSV);
