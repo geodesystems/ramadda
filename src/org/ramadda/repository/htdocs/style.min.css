@@ -2713,16 +2713,15 @@ img.metadata-tag {
     border-radius: 0px;
     background:transparent;
     padding:0px;
-    border:1px solid transparent;
-    
+    border:2px solid transparent;
 }
 
 img.metadata-tag:hover {
-    border:1px solid #000;
+    border:2px solid blue;
 }
 
 img.metadata-tag-selected {
-    border:1px solid #000;
+    border:2px solid #000;
     background:transparent;
 }
 
