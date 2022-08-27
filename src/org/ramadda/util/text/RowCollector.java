@@ -1881,6 +1881,8 @@ public class RowCollector extends Processor {
         /** _more_ */
         private boolean asc = true;
 
+	private String how="";
+
         /**
          * _more_
          *
@@ -1894,6 +1896,12 @@ public class RowCollector extends Processor {
             super(cols);
             this.asc = asc;
         }
+
+        public Sorter(TextReader ctx, List<String> cols, boolean asc, String how) {
+            super(cols);
+            this.asc = asc;
+	    this.how = how;
+        }	
 
 
         /**
@@ -1916,7 +1924,7 @@ public class RowCollector extends Processor {
             }
             Row headerRow = rows.get(0);
             rows.remove(0);
-            Collections.sort(rows, new Row.RowCompare(indices, asc));
+            Collections.sort(rows, new Row.RowCompare(indices, asc,how));
             rows.add(0, headerRow);
 
             return rows;
@@ -2130,7 +2138,7 @@ public class RowCollector extends Processor {
                             MapProvider mp  = util.getMapProvider();
                             if(mp!=null) {
                                 List<double[]> pts = new ArrayList<double[]>();
-                                for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
+                                for(int ptIdx=0;ptIdx<lat.pts.size() && ptIdx<lon.pts.size();ptIdx++)
                                     pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
                                 Hashtable<String,String>props = new Hashtable<String,String>();
                                 props.put("simple","true");

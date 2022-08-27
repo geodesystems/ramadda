@@ -14,6 +14,7 @@ public interface CsvCommands {
     public static final String ARG_TYPE = "type";
     public static final String ARG_COLUMN  ="column";
     public static final String ARG_COLUMNS  ="columns";
+    public static final String ARG_PATTERN  ="pattern";
     public static final String ATTR_TYPE = "type";
     public static final String TYPE_COLUMNS = "columns";
     public static final String TYPE_COLUMN = "column";
@@ -245,6 +246,7 @@ public interface CsvCommands {
     public static final String CMD_POPULATION="-population";
     public static final String CMD_NEIGHBORHOOD="-neighborhood";
     public static final String CMD_EXPANDCOMMANDS="-expandcommands";
+    public static final String CMD_SORTBY="-sortby";
     public static final String CMD_SORT="-sort";
     public static final String CMD_DESCSORT="-descsort";
     public static final String CMD_COUNT="-count";
