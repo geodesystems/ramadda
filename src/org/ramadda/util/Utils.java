@@ -1169,8 +1169,7 @@ public class Utils extends IO {
      *
      * @throws Exception _more_
      */
-    public static String[] findPatterns(String s, String regexp)
-            throws Exception {
+    public static String[] findPatterns(String s, String regexp) {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(s);
         if ( !matcher.find()) {
