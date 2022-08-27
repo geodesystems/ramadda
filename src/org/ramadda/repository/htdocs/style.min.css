@@ -665,6 +665,7 @@ a.ramadda-entry-nav-page {
     padding-right:8px;
     padding-top:2px;
     padding-bottom:2px;
+    user-select: none; 
 }
 
 .ramadda-menubar-button-last {
