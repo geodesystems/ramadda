@@ -6025,7 +6025,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         formBuffer.append(HtmlUtils.formTable());
         FormInfo formInfo = new FormInfo(formId);
         tableHandler.addColumnsToEntryForm(request, formBuffer, entry,
-                                           values, formInfo, this,true);
+                                           values, formInfo, this);
 
         formBuffer.append(HtmlUtils.formTableClose());
         formBuffer.append(buttons);
@@ -6297,7 +6297,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         bulkSB.append(HtmlUtils.formClose());
         List<String> tabTitles   = new ArrayList<String>();
         List<String> tabContents = new ArrayList<String>();
-        if (showEntryCreate) {
+       if (showEntryCreate) {
             tabTitles.add(msg("Form"));
             tabContents.add(formBuffer.toString());
         }
