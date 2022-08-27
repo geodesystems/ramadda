@@ -1818,9 +1818,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return typeHandler;
         } catch (Exception exc) {
             System.err.println("Error creating type handler:"
-                               + XmlUtil.toString(entryNode));
+                               + XmlUtil.toString(entryNode).replaceAll("\\s\\s+"," "));
             exc.printStackTrace();
-
             throw exc;
         }
 
@@ -5287,8 +5286,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        System.err.println("RAMADDA: done loading schema");
 
         loadSql();
+
+	
         getDatabaseManager().initComplete();
         readDatabaseProperties();
+        getDatabaseManager().applyUpdates();
+
     }
 
     /**

@@ -249,6 +249,51 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+    public void applyUpdates() {
+	if(true) return;
+	for(int i=1;i<10;i++) {
+	    try {
+		String path = "/org/ramadda/repository/resources/db/dbchanges_" + i+".txt";
+
+		String updateContents = 
+		    getStorageManager().readUncheckedSystemResource(path);
+		for(String line: Utils.split(updateContents,"\n",true,true)) {
+		    if(line.startsWith("#")) continue;
+		    if(line.equals("quit")) break;		    
+		    List<String> toks = Utils.split(line,":",true,true);
+		    if(toks.size()!=3 && toks.size()!=4) continue;
+		    if(toks.size()==3) {
+			//apply to all
+			applyUpdate(toks.get(0),toks.get(1),toks.get(2));
+		    }  else {
+			//check the db
+			if(toks.get(0).indexOf(db)>=0) { 
+			    applyUpdate(toks.get(1),toks.get(2),toks.get(3));
+			}
+		    }
+		}
+	    } catch(java.io.IOException expected) {
+		break;
+	    } catch(Exception exc) {
+		System.err.println("EXC:" + exc);
+		exc.printStackTrace();
+		break;
+	    }		
+	}
+    }
+
+    private void applyUpdate(String table, String column, String type) throws Exception {
+        Connection connection = null;
+        try {
+	    connection = getConnection();
+
+
+        } finally {
+	    if(connection!=null)
+		closeConnection(connection);
+        }
+    }
+
 
     /**
      * _more_
