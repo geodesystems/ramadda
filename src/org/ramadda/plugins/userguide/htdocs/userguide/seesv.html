@@ -78,7 +78,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 269 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 268 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
@@ -425,7 +425,7 @@ Resulting in:
 <p></div><a name='-geojson'></a><div class=command> <i><a href='#-geojson'>-geojson</a></i>  &lt;includePolygon&gt; </div><div class=command-block>Parse the input as geojson<br>
 <ul>
 <li> <i>includePolygon</i>:
-true|false Include polygon<br>
+Include polygon values:true,false <br>
 </ul>
 </div><a name='-pdf'></a><div class=command> <i><a href='#-pdf'>-pdf</a></i> </div><div class=command-block>Read input from a PDF file.<br>
 The RAMADDA_TABULA environment variable needs to be set to the tabula.sh file found in this release
@@ -2748,7 +2748,7 @@ Call:
 
 
 <p></div></ul><br><hr><a name='Misc.'></a><b style='font-size:120%;'>Misc.</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-expandcommands'><i>-expandcommands</i>: Apply the commands to each of the columns</a><li> <a href='#-sort'><i>-sort</i>: Sort</a><li> <a href='#-descsort'><i>-descsort</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-maxrows'><i>-maxrows</i>: </a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-verify'><i>-verify</i>: Throw error if a row has a different number of columns</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-comment'><i>-comment</i>: </a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a><li> <a href='#-exec'><i>-exec</i>: Execute the external program for every line</a></div><a name='-expandcommands'></a><div class=command> <i><a href='#-expandcommands'>-expandcommands</a></i>  &lt;columns&gt;  &lt;commands&gt; </div><div class=command-block>Apply the commands to each of the columns<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-expandcommands'><i>-expandcommands</i>: Apply the commands to each of the columns</a><li> <a href='#-sortby'><i>-sortby</i>: </a><li> <a href='#-count'><i>-count</i>: Show count</a><li> <a href='#-alias'><i>-alias</i>: Set a field alias</a><li> <a href='#-value'><i>-value</i>: Define a macro value for later use</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename</a><li> <a href='#-maxrows'><i>-maxrows</i>: Set max rows to process</a><li> <a href='#-changeline'><i>-changeline</i>: Change the line</a><li> <a href='#-changeraw'><i>-changeraw</i>: Change input text</a><li> <a href='#-crop'><i>-crop</i>: Crop last part of string after any of the patterns</a><li> <a href='#-strict'><i>-strict</i>: Be strict on columns. any rows that are not the size of the other rows are dropped</a><li> <a href='#-flag'><i>-flag</i>: Be strict on columns. any rows that are not the size of the other rows are shown</a><li> <a href='#-verify'><i>-verify</i>: Throw error if a row has a different number of columns</a><li> <a href='#-prop'><i>-prop</i>: Set a property</a><li> <a href='#-comment'><i>-comment</i>: </a><li> <a href='#-verify'><i>-verify</i>: Verify that all of the rows have the same # of columns</a><li> <a href='#-ext'><i>-ext</i>: Execute the external program</a><li> <a href='#-exec'><i>-exec</i>: Execute the external program for every line</a></div><a name='-expandcommands'></a><div class=command> <i><a href='#-expandcommands'>-expandcommands</a></i>  &lt;columns&gt;  &lt;commands&gt; </div><div class=command-block>Apply the commands to each of the columns<br>
 <ul>
 <li> <i>columns</i>:
 Columns to expand with<br>
@@ -2769,14 +2769,13 @@ You use the ${column} macro to replace the given column ID. So, running:
 This expands out to:
 <seesv>seesv -decimals column1 2 -abs column1  -decimals column1 2 -abs column1</seesv>
 
-<p></div><a name='-sort'></a><div class=command> <i><a href='#-sort'>-sort</a></i>  &lt;columns&gt; </div><div class=command-block>Sort<br>
-<ul>
+<p></div><a name='-sortby'></a><div class=command> <i><a href='#-sortby'>-sortby</a></i>  &lt;columns&gt;  &lt;direction&gt;  &lt;how&gt; </div><div class=command-block><ul>
 <li> <i>columns</i>:
 Column to sort on<br>
-</ul>
-</div><a name='-descsort'></a><div class=command> <i><a href='#-descsort'>-descsort</a></i>  &lt;column&gt; </div><div class=command-block><ul>
-<li> <i>column</i>:
-Column to descending sort on<br>
+<li> <i>direction</i>:
+Direction values:up,down <br>
+<li> <i>how</i>:
+How values:string,number,length,extract <br>
 </ul>
 </div><a name='-count'></a><div class=command> <i><a href='#-count'>-count</a></i> </div><div class=command-block>Show count<br>
 </div><a name='-alias'></a><div class=command> <i><a href='#-alias'>-alias</a></i>  &lt;name&gt;  &lt;alias&gt; </div><div class=command-block>Set a field alias<br>
@@ -2808,16 +2807,17 @@ Macro name<br>
 <li> <i>pattern</i>:
 Pattern<br>
 </ul>
-</div><a name='-maxrows'></a><div class=command> <i><a href='#-maxrows'>-maxrows</a></i>  &lt;Max rows to process&gt; </div><div class=command-block><ul>
-<li> <i>Max rows to process</i>:
-<br>
+</div><a name='-maxrows'></a><div class=command> <i><a href='#-maxrows'>-maxrows</a></i>  &lt;rows&gt; </div><div class=command-block>Set max rows to process<br>
+<ul>
+<li> <i>rows</i>:
+Number of rows<br>
 </ul>
 </div><a name='-changeline'></a><div class=command> <i><a href='#-changeline'>-changeline</a></i>  &lt;from&gt;  &lt;to&gt; </div><div class=command-block>Change the line<br>
 <ul>
 <li> <i>from</i>:
-<br>
+From pattern<br>
 <li> <i>to</i>:
-<br>
+To string<br>
 </ul>
 </div><a name='-changeraw'></a><div class=command> <i><a href='#-changeraw'>-changeraw</a></i>  &lt;from&gt;  &lt;to&gt; </div><div class=command-block>Change input text<br>
 <ul>
@@ -2928,8 +2928,8 @@ url2.html,contents of url2
 
 
 <p></div></ul><br><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
-</div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Delimited output<br>
+<div class=header>Commands:<ul></ul><li> <a href='#-print'><i>-print</i>: Delimited output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Print with delimited output</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header</a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-script'><i>-script</i>: Generate the script to call</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a></div><a name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Delimited output<br>
+</div><a name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Print with delimited output<br>
 <ul>
 <li> <i>delimiter</i>:
 Delimiter - ,|^ etc. Use "tab" for tab<br>
