@@ -247,13 +247,16 @@ function  ConvertForm(inputId, entry,params) {
 			    category = cmd.label;
 			    menuCategories[category] = menuItems = [];
 			    menus.push(HU.div(["class","ramadda-highlightable ramadda-menubar-button","category",category], category));
+
 			    return;
 			}
-			if(!command || !command.startsWith("-") || command.startsWith("-help")) return;
+			if(!command || !command.startsWith("-") || command.startsWith("-help")) {
+			    return;
+			}
 			if(category=="Output") {
 			    if(cmd.args.length==0) {
 				this.outputCommands.push(cmd);
-				return;
+//				return;
 			    }
 			}
 			let desc = cmd.description;
