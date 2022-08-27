@@ -94,31 +94,12 @@ CREATE TABLE  metadata (id varchar(200),
 			entry_id varchar(200),
                         type varchar(200),
                 	inherited int,
-                        attr1 varchar(32000),
-                        attr2 varchar(32000),
-                        attr3 varchar(32000),
-                        attr4 varchar(32000),
+                        attr1 ramadda.clob,
+                        attr2 ramadda.clob,
+                        attr3 ramadda.clob,
+                        attr4 ramadda.clob,
 		        extra ramadda.bigclob);
 
-
-
-#if  derby 
-     alter table metadata alter  attr1 set data type varchar(32000);
-     alter table metadata alter  attr2 set data type varchar(32000);
-     alter table metadata alter  attr3 set data type varchar(32000);
-     alter table metadata alter  attr4 set data type varchar(32000);     
-#endif
-
-#if comment
-TODO: add mysql, oracle and h2
-#endif
-
-#if postgres
---     alter table metadata modify column attr1 varchar(32000);
---     alter table metadata modify column attr2 varchar(32000);
---     alter table metadata modify column attr3 varchar(32000);
---     alter table metadata modify column attr4 varchar(32000);
-#endif
 
 
 
@@ -126,16 +107,6 @@ CREATE INDEX METADATA_INDEX_ID ON metadata (ID);
 CREATE INDEX METADATA_INDEX_ENTRYID ON metadata (ENTRY_ID);
 CREATE INDEX METADATA_INDEX_TYPE ON metadata (TYPE);
 ---- CREATE INDEX METADATA_INDEX_ATTR1 ON metadata (ATTR1);
-
-CREATE TABLE  metadata_test1 (id varchar(200),
-			entry_id varchar(200),
-                        type varchar(200),
-                	inherited int,
-                        attr1 varchar(6000),
-                        attr2 varchar(6000),
-                        attr3 varchar(6000),
-                        attr4 varchar(6000),
-		        extra ramadda.bigclob);
 
 
 -----------------------------------------------------------------------
@@ -186,9 +157,77 @@ CREATE TABLE  users (id varchar(200),
 		     language varchar(50),
 		     template varchar(200),
                      isguest int,
-                     properties varchar(10000));
+                     properties ramadda.clob);
 
 alter table users add column description varchar(5000);
+
+#if SKIP
+users:
+     properties varchar(10000),
+
+type_convertible:
+convert_commands: varchar(10000:
+
+media_3dmodel:
+	annotations: varchar
+
+type_document_ohms:
+	change usage to ohms_usage
+
+
+#endif
+
+
+
+
+-----------------------------------------------------------------------
+--- Updates for the different databases
+-----------------------------------------------------------------------
+
+#if  derby 
+     alter table metadata alter  attr1 set data type varchar(32000);
+     alter table metadata alter  attr2 set data type varchar(32000);
+     alter table metadata alter  attr3 set data type varchar(32000);
+     alter table metadata alter  attr4 set data type varchar(32000);     
+
+     alter table db_agendaitems add column new_description clob;
+     update db_agendaitems set new_description=description;
+     rename column db_agendaitems.description to old_description;
+     rename column db_agendaitems.new_description to description;
+     alter table db_agendaitems drop column old_description;
+
+
+#endif
+
+
+#if mysql
+    alter table db_agendaitems modify column description text;	
+    alter table metadata modify column attr1  text;
+    alter table metadata modify column attr2  text;
+    alter table metadata modify column attr3  text;
+    alter table metadata modify column attr4  text;
+#endif
+
+
+#if TODO
+    metadata:
+                        attr1 varchar(32000),
+                        attr2 varchar(32000),
+                        attr3 varchar(32000),
+                        attr4 varchar(32000),
+#endif
+
+
+
+
+#if postgres
+--     alter table metadata modify column attr1 varchar(32000);
+--     alter table metadata modify column attr2 varchar(32000);
+--     alter table metadata modify column attr3 varchar(32000);
+--     alter table metadata modify column attr4 varchar(32000);
+#endif
+
+
 
 
 -----------------------------------------------------------------------
