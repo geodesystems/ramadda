@@ -1331,6 +1331,17 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
+    public void addColumnsToEntryForm(Request request, Appendable formBuffer,
+                                      Entry entry, Object[] values,
+                                      FormInfo formInfo,
+                                      TypeHandler sourceTypeHandler)
+            throws Exception {
+	//Call in the first
+        addColumnsToEntryForm(request, formBuffer, entry, values,formInfo, sourceTypeHandler,true);
+	//Call in the second
+        addColumnsToEntryForm(request, formBuffer, entry, values,formInfo, sourceTypeHandler,false);	
+    }
+
     /**
      * _more_
      *
