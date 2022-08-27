@@ -7,7 +7,7 @@
 <column name="state" type="enumerationplus" label="State or Province" />
 <column name="postalcode" type="enumerationplus" label="Postal Code"   columns="12"/>
 <column name="country" type="enumerationplus" label="Country"  />
-<column name="notes" type="string" label="Notes"   rows="5" columns="40" size="10000" />
+<column name="notes" type="clob" label="Notes"   rows="5" columns="40" />
 </table>
 
 <table  id="geocodedaddress"  name="Geocoded Address Database" cansearch="true"  canlist="true">
@@ -18,7 +18,7 @@
 <column name="state" type="enumerationplus" label="State or Province" />
 <column name="postalcode" type="enumerationplus" label="Postal Code"   columns="12"/>
 <column name="country" type="enumerationplus" label="Country"  />
-<column name="notes" type="string" label="Notes"   rows="5" columns="40" size="10000" />
+<column name="notes" type="clob" label="Notes"   rows="5" columns="40"  />
 <column  name="location"  type="latlon"  label="Location"   canlist="false" />
 </table>
 
