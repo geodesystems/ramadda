@@ -398,40 +398,6 @@ public abstract class Tables {
 
 
 
-    public static class METADATA_TEST1 extends Tables {
-        public static final String NAME = "metadata_test1";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".id";
-        public static final String COL_NODOT_ID =   "id";
-        public static final String COL_ENTRY_ID =  NAME + ".entry_id";
-        public static final String COL_NODOT_ENTRY_ID =   "entry_id";
-        public static final String COL_TYPE =  NAME + ".type";
-        public static final String COL_NODOT_TYPE =   "type";
-        public static final String COL_INHERITED =  NAME + ".inherited";
-        public static final String COL_NODOT_INHERITED =   "inherited";
-        public static final String COL_ATTR1 =  NAME + ".attr1";
-        public static final String COL_NODOT_ATTR1 =   "attr1";
-        public static final String COL_ATTR2 =  NAME + ".attr2";
-        public static final String COL_NODOT_ATTR2 =   "attr2";
-        public static final String COL_ATTR3 =  NAME + ".attr3";
-        public static final String COL_NODOT_ATTR3 =   "attr3";
-        public static final String COL_ATTR4 =  NAME + ".attr4";
-        public static final String COL_NODOT_ATTR4 =   "attr4";
-        public static final String COL_EXTRA =  NAME + ".extra";
-        public static final String COL_NODOT_EXTRA =   "extra";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_ENTRY_ID,COL_TYPE,COL_INHERITED,COL_ATTR1,COL_ATTR2,COL_ATTR3,COL_ATTR4,COL_EXTRA
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final METADATA_TEST1 table  = new  METADATA_TEST1();
-    }
-
-
 
     public static class MONITORS extends Tables {
         public static final String NAME = "monitors";
