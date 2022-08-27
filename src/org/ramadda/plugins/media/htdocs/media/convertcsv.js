@@ -298,7 +298,7 @@ function  ConvertForm(inputId, entry,params) {
 	    menu = HU.div(menuAttrs,menu);
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.div(['style','font-size:80%;text-align:center;margin:5px;'],
-			       HU.input("","",[STYLE,HU.css("width","150px;"), 'placeholder','Search Commands',ID,inputId]));
+			       HU.input("","",['autofocus',null,STYLE,HU.css("width","150px"), 'placeholder','Search Commands',ID,inputId]));
 	    menu = input+menu;
 	    
 	    if(_this.menuDialog) {
@@ -332,7 +332,8 @@ function  ConvertForm(inputId, entry,params) {
 		}
 
 	    };
-	    $("#"+inputId).keyup(function(event) {
+	    jqid(inputId).focus();
+	    jqid(inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		commands.each(function() {
 		    if(text=="") {
