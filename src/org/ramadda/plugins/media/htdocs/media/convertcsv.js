@@ -2,6 +2,8 @@
 function  ConvertForm(inputId, entry,params) {
     this.params = params||{};
     const ID_SETTINGS  = "settings";
+    const ID_ALL  = "all";
+    const ID_SELECTFILE  = "selectfile";    
     const ID_HELP  = "help";    
     const ID_MENU = "menu";
     const ID_INPUT = "input";
@@ -77,8 +79,16 @@ function  ConvertForm(inputId, entry,params) {
 	    
 
 	    let topLeft = HU.div([ID,this.domId(ID_MENU),"style","display:inline-block;"],"");
-	    let topRight =  HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_SETTINGS),TITLE,"Settings",STYLE,HU.css("cursor","pointer")],HU.getIconImage("fa-cog")) +SPACE2 +
-		HtmlUtil.span([ID,this.domId(ID_HELP),CLASS,"ramadda-clickable", TITLE,"Help"], HtmlUtils.getIconImage("fa-question-circle"))+SPACE2;
+	    let topRight = [['Select file entry', ID_SELECTFILE,'fas fa-file-arrow-up'],
+			    ['All commands', ID_ALL,'fa-binoculars'],
+			    ['Settings',ID_SETTINGS,'fa-cog'],
+			    ['Help',ID_HELP,'fa-question-circle']].reduce((current,v)=>{
+				let link = HU.span(['title',v[0],ID,this.domId(v[1]),
+						    'style','margin-right:10px;',
+						    'class','ramadda-clickable ramadda-highlightable'],
+						   HU.getIconImage(v[2]));
+				return current +link;
+			    },"");
 	    
 	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
 
@@ -160,6 +170,15 @@ function  ConvertForm(inputId, entry,params) {
 	    this.jq(ID_HELP).click((e)=>{
 		this.call("-help");
 	    });
+
+
+	    this.jq(ID_SELECTFILE).click(function(event){
+		selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid',''+_this.entry,null,null,
+				   {anchor:$(this),locationMy:'top right',locationAt:'bottom right-50',minWidth:'300px'});
+	    });
+	    this.jq(ID_ALL).click(function(e){
+		_this.showMenu(_this.allMenuItems,$(this),"All Commands",true);
+	    });
 	    this.jq(ID_SETTINGS).click(function(e){
 		let html ="";
 		html += "Rows: " + HtmlUtil.input("",_this.maxRows,["size","2", ID,_this.domId("maxrows")]) +"<br>";
@@ -217,20 +236,16 @@ function  ConvertForm(inputId, entry,params) {
 		    result= JSON.parse(result);
 		    this.commands = result.commands;
 		    this.commandsMap = {}
-		    let docs ="";
 		    let menus = [];
-		    let fileSelect =  HU.div([ID,"convertcsv_file1_selectlink", "class","ramadda-highlightable  ramadda-menubar-button"], "Select file");
-		    let categories = {};
+		    let menuCategories = {};
 		    let category="";
-		    let allItems = [];
+		    this.allMenuItems = [];
 		    this.outputCommands = [];
 		    this.commands.forEach(cmd=>{
 			let command = cmd.command;
 			if(cmd.isCategory) {
 			    category = cmd.label;
-			    docs+="etlcat {" + category+"}\n";
-
-			    categories[category] = menuItems = [];
+			    menuCategories[category] = menuItems = [];
 			    menus.push(HU.div(["class","ramadda-highlightable ramadda-menubar-button","category",category], category));
 			    return;
 			}
@@ -241,94 +256,104 @@ function  ConvertForm(inputId, entry,params) {
 				return;
 			    }
 			}
-			let tooltip = "";
 			let desc = cmd.description;
-			if(desc && desc!="") {
-			    tooltip =desc+"\n";
-			}
-			tooltip += command;
-			let docArgs="";
 			cmd.args.forEach(a=>{
 			    let desc = a.desc;
-			    docArgs+=" {{" +a.id+"} {" + (a.description||"") +"}} "
 			    if(desc!="") desc = " "  + desc;
-			    tooltip +=" <" +a.id  +desc+ "> ";
 			});
-			tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
 			let corpus = cmd.label +" " + cmd.command.replace(/-/g," ") +" " + cmd.description;
 			corpus = corpus.replace(/[\n\"\']/g," ");
 			let label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
-			docs+="etl " + "{" + command +"} {"  + label+"} {" +  desc + "} "   + docArgs +"\n"
 			this.commandsMap[command] = cmd;
 			let menuItem = HU.div(['data-corpus',corpus,TITLE,(desc||"")+"<br>"+cmd.command,'style',HU.css('margin','1px','border','1px solid transparent'),CLASS, "ramadda-hoverable ramadda-clickable","command",command],label);
 			menuItems.push(menuItem);
-			allItems.push(menuItem);
+			this.allMenuItems.push(menuItem);
 		    });
-		    menus.push(fileSelect);
-		    //		Utils.makeDownloadFile("etlcommands.tcl",docs);
 		    let menuBar=menus.join("");
 		    this.jq("menu").html(HU.div([],menuBar));
 		    this.jq("menu").find(".ramadda-menubar-button").click(function() {
-			let title = $(this).attr("category");
 			let cat = $(this).attr("category");
-			let button = $(this);
-			if(!cat || !categories[cat]) {
+			if(!cat || !menuCategories[cat]) {
 			    selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid','" + this.entry+"');
 			    return;
 			}
-			let items = Utils.splitList(categories[cat],10);
-			items = items.map(list=>{
+			let title = $(this).attr("category");
+			let items = Utils.splitList(menuCategories[cat],12).map(list=>{
 			    return list.join("");
 			});
-//			items = allItems;
-
-			let menuId = HU.getUniqueId("menu_");
-			let menu = HU.div(['id',menuId],Utils.wrap(items,"<div style='vertical-align:top;margin:5px;display:inline-block;'>","</div>"));
-			let inputId = HU.getUniqueId("input_");
-			let input = HU.div(['style','font-size:80%;text-align:center;margin:5px;'],
-					   HU.input("","",[STYLE,HU.css("width","150px;"), 'placeholder','Search Commands',ID,inputId]));
-			menu = input+menu;
-			
-			let dialog = HU.makeDialog({content:menu,anchor:$(this),header:true,draggable:true,title:title});
-			let commands = dialog.find(".ramadda-clickable");
-			commands.tooltip({
-			    show:{delay:1000},
-			    content: function () {
-				return $(this).prop('title');
-			    }
-			});
-			jqid(menuId).css('min-width',jqid(menuId).width());
-			$("#"+inputId).keyup(function(event) {
-			    let text = $(this).val().trim().toLowerCase();
-			    commands.each(function() {
-				if(text=="") {
-				    $(this).css('background','transparent').css('border','1px solid transparent');
-				} else {
-				    let corpus = $(this).attr('data-corpus');
-				    if(!corpus) return;
-				    corpus =  corpus.toLowerCase();
-				    if(corpus.indexOf(text)>=0) {
-					$(this).css('background','var(--color-mellow-yellow)').css('border','var(--highlight-border');
-				    } else {
-					$(this).css('background','transparent').css('border','1px solid transparent');
-				    }
-				}
-			    });
-			});
-
-			commands.click(function(event) {
-			    let cmd = _this.commandsMap[$(this).attr("command")];
-			    dialog.remove();
-			    if(!cmd) {
-				return;
-			    }
-			    _this.addCommand(cmd,null,button);
-			});
+			_this.showMenu(items,$(this),title);
 		    });
 		}
-	    })
-		.fail(function(jqxhr, textStatus, error) {
+	    }).fail(function(jqxhr, textStatus, error) {
+	    });
+	},
+	showMenu: function(items,anchor,title,all) {
+	    let _this = this;
+	    let menuId = HU.getUniqueId("menu_");
+	    let menu;
+	    if(all) menu =  Utils.wrap(items,"<div style='border:1px solid #ececec;vertical-align:top;margin:2px;display:inline-block;'>","</div>");
+	    else menu = Utils.wrap(items,"<div style='vertical-align:top;margin:5px;display:inline-block;'>","</div>");
+	    let menuAttrs = ['id',menuId];
+	    if(all)  menuAttrs.push('style',HU.css('margin','10px','overflow-y','auto','max-height','300px','min-height','200px','max-width','800px','min-width','600px'));
+	    menu = HU.div(menuAttrs,menu);
+	    let inputId = HU.getUniqueId("input_");
+	    let input = HU.div(['style','font-size:80%;text-align:center;margin:5px;'],
+			       HU.input("","",[STYLE,HU.css("width","150px;"), 'placeholder','Search Commands',ID,inputId]));
+	    menu = input+menu;
+	    
+	    if(_this.menuDialog) {
+		_this.menuDialog.remove();
+	    }
+	    let dialog = _this.menuDialog = HU.makeDialog({my:all?'right top':'left top',at:all?'right bottom':'left bottom',content:menu,anchor:anchor,header:true,draggable:true,title:title});
+	    let commands = dialog.find(".ramadda-clickable");
+	    commands.tooltip({
+		show:{delay:1000},
+		content: function () {
+		    return $(this).prop('title');
+		}
+	    });
+	    jqid(menuId).css('min-width',jqid(menuId).width());
+	    let toggle = (item,on,force)=>{
+		if(force) {
+		    item.css('background','transparent').css('border','1px solid transparent');
+		}
+		if(on) {
+		    if(all) {
+			item.parent().show();
+		    } else {
+			if(!force)
+			    item.css('background','var(--color-mellow-yellow)').css('border','var(--highlight-border');
+		    }
+		} else {
+		    if(all)
+			item.parent().hide();
+		    else
+			item.css('background','transparent').css('border','1px solid transparent');
+		}
+
+	    };
+	    $("#"+inputId).keyup(function(event) {
+		let text = $(this).val().trim().toLowerCase();
+		commands.each(function() {
+		    if(text=="") {
+			toggle($(this),true,true);
+		    } else {
+			let corpus = $(this).attr('data-corpus');
+			if(!corpus) return;
+			corpus =  corpus.toLowerCase();
+			toggle($(this),corpus.indexOf(text)>=0);
+		    }
 		});
+	    });
+
+	    commands.click(function(event) {
+		let cmd = _this.commandsMap[$(this).attr("command")];
+		dialog.remove();
+		if(!cmd) {
+		    return;
+		}
+		_this.addCommand(cmd,null,anchor);
+	    });
 	},
 	output: function(html) {
 	    this.jq('output').html(html);
@@ -1160,23 +1185,26 @@ function  ConvertForm(inputId, entry,params) {
 		let desc = a.description||"";
 //		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
 		desc = desc.trim().replace(/\n/g,"<br>");		
-		let getExtra = ()=>{
+		let getExtra = (arg)=>{
 		    let extra = "";
-		    if((a.type=="column" || a.type=="columns") && this.allColumnIds.length>0) {
+		    if((arg.type=="column" || arg.type=="columns") && this.allColumnIds.length>0) {
 			let plus = HU.span(['inputid',id,TITLE,"Add column",CLASS,"ramadda-clickable seesv-column-button","columnid",id],HU.getIconImage("fa-plus"));
 			extra  = plus+extra;
 		    }
 		    return extra;
 		};
 
-		let getDesc = (oneLine)=>{
-		    let extra = getExtra();
+		let getDesc = (arg,oneLine)=>{
+		    let extra = getExtra(arg);
 		    if(extra=="" && desc=="") return "";
+		    if((desc+':') == label) desc="";
+
+
 		    if(Utils.stringDefined(extra)) {
 			desc = HU.table([],HU.tr(['valign','top'],HU.td(['width','1%'],extra)+HU.td([],desc)));
 		    }
 		    let help = "";
-		    if(a.type=="columns")
+		    if(arg.type=="columns")
 			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage("fa-question-circle"),
 					    ['target','_help']);
 		    desc+=help;
@@ -1200,7 +1228,7 @@ function  ConvertForm(inputId, entry,params) {
 		    v = lines.join("\n");
 		    let numRows = a.type=="rows"?3:(a.rows||"3");
  		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",numRows,ID,id]),
-				 			  getDesc()]));
+				 			  getDesc(a)]));
 		} else if(a.values || a.type=="enumeration") {
 		    let values
 		    if(a.values) {
@@ -1209,7 +1237,7 @@ function  ConvertForm(inputId, entry,params) {
 			console.log(JSON.stringify(a));
 			value="foo,bar";
 		    }
-		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(",")),getDesc()]));
+		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(","),v),getDesc(a)]));
 		} else if(a.type=="column") {
 		    let size = a.size || 30;
 		    let title = a.tooltip || "";
@@ -1219,7 +1247,7 @@ function  ConvertForm(inputId, entry,params) {
 //		    } else {
 			input  = HU.input("",v,[ID,id,"size",size,TITLE, title]);
 //		    }
-		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(true)]));
+		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(a,true)]));
 		} else {
 		    let size = a.size ||30;
 		    if(a.type=="number") size=a.size||5;
@@ -1228,7 +1256,7 @@ function  ConvertForm(inputId, entry,params) {
 		    if(a.type=="pattern" && !a.placeholder)
 			title = "Escapes- _leftparen_, _rightparen_, _leftbracket_, _rightbracket_, _dot_, _dollar_, _star_, _plus_, _nl_"
 		    let input = HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]);
-		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(true)]));
+		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(a,true)]));
 		}
 	    });
 	    inner+=HU.formTableClose();
