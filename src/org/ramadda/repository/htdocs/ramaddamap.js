@@ -10,7 +10,7 @@ var debugPopup = false;
 var ramaddaMapRegions = null;
 
 
-let RamaddaToFloat = v=>{
+var RamaddaToFloat = v=>{
     if(v!=null) v=parseFloat(v);
     return v;
 };

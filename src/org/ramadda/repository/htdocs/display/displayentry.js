@@ -411,28 +411,28 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{label:'Search'},
         {p:'showForm',d: true},
         {p:'formOpen',d: true},	
-        {p:'showOrderBy',d:true,ex: 'true'},
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_'},
         {p:'orientation',ex:'horizontal|vertical',d:'horizontal'},
-        {p:'showSearchSettings',d: true},
-        {p:'showToggle',d: false},
 	{p:'formHeight',d:'400px'},
         {p:'entriesHeight',d:'400px'},	
         {p:'showEntries',d: true},
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
         {p:'entryTypes',ex:'comma separated list of types'},
-	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
 	{p:'searchOpen',d: true},
-        {p:'showAncestor',d: true},
+        {p:'showOrderBy',d:true,ex: 'true'},
+        {p:'showSearchSettings',d: true},
+        {p:'showToggle',d: false},
 	{p:'showEntryBreadcrumbs',ex:'false'},
 	{p:'showSnippetInList',ex:'true'},
         {p:'showDate',d: true},
         {p:'showCreateDate',ex:'true',d: false},	
         {p:'showArea',d: true},
         {p:'showText',d: true},
+	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
+        {p:'showAncestor',d: true},
 	{p:'textRequired',d:false},
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
@@ -1124,10 +1124,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
 		let aid = this.domId(ID_ANCESTOR);
-		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
 		let input = HU.input("",name||"",["READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
-
 
 		extra += HU.hidden("",ancestor||"",[ID,aid+"_hidden"]);
 		extra+=addWidget("",HU.div([ID,this.domId(ID_SEARCH_ANCESTOR)], HU.leftRightTable(clear,input,"5%", "95%")));

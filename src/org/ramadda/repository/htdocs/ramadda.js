@@ -1088,7 +1088,10 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 var selectors = new Array();
 
 function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl,props) {
+    let _this = this;
     this.id = selectorId;
+    this.domId = HU.getUniqueId('selector_');
+
     this.props = props||{};
     this.elementId = elementId;
     this.localeId = localeId;
@@ -1107,39 +1110,57 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         return $(id);
     }
 
+    this.cancel= function(override) {
+	if(!override) {
+	    if(this.pinned) return;
+	}
+	jqid(this.domId).remove();
+    }
+
     this.clearInput = function() {
         this.getHiddenComponent().val("");
         this.getTextComponent().val("");
     }
 
     this.handleClick = function(event) {
-        let src = null;
-	if(this.props.eventSourceId) {
-	    src = jqid(this.props.eventSourceId);
-	}
-	if(src==null || src.length==0) {
-	    if(event && event.target) {
-		src = $(event.target);
+        let src = this.props.anchor;
+	if(!src) {
+	    if(this.props.eventSourceId) {
+		src = jqid(this.props.eventSourceId);
 	    }
-	}
-	if(src==null || src.length==0)  {
-            let srcId = this.id + '_selectlink';
-	    src = jqid(srcId);
-	}
-	if(src==null || src.length==0)  {
-	    src = jqid(this.id);
+	    if(src==null || src.length==0) {
+		if(event && event.target) {
+		    src = $(event.target);
+		}
+	    }
+	    if(src==null || src.length==0)  {
+		let srcId = this.id + '_selectlink';
+		src = jqid(srcId);
+	    }
+	    if(src==null || src.length==0)  {
+		src = jqid(this.id);
+	    }
 	}
 
         HtmlUtils.hidePopupObject(event);
-        this.div = GuiUtils.getDomObject('ramadda-selectdiv');
-        let selectDiv = $("#ramadda-selectdiv");
-        selectDiv.show();
-        selectDiv.position({
-            of: src,
-            my: "left top",
-            at: "left bottom",
-//            collision: "none none"
-        });
+	let container = $(HU.div(['style','position:relative;'])).appendTo("body");
+        $(HU.div(['style',HU.css('min-width','200px','min-height','200px'),'class','ramadda-selectdiv','id',this.domId])).appendTo(container);
+        this.div = jqid(this.domId);
+	if(this.props.minWidth) {
+	    this.div.css('min-width',this.props.minWidth);
+	}
+	this.div.draggable();
+	this.anchor = src;
+	this.showDiv = () =>{
+            this.div.show();
+            this.div.position({
+		of: this.anchor,
+		my: this.props.locationMy??"left top",
+		at: this.props.locationAt??"left bottom",
+		collision: this.props.collision??"fit fit"
+            });
+	};
+
 
         let url =  "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
 	if(this.ramaddaUrl && !this.ramaddaUrl.startsWith("/")) {
@@ -1157,10 +1178,55 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         if (this.entryType) {
             url = url + "&entrytype=" + this.entryType;
         }
-        GuiUtils.loadXML(url, handleSelect, this.id);
+        GuiUtils.loadXML(url, (request,id)=>{_this.handleSelect(request,id)}, this.id);
         return false;
     }
     this.handleClick(event);
+}
+
+
+Selector.prototype = {
+    handleSelect:function(request, id) {
+	let _this = this;
+	let xmlDoc = request.responseXML.documentElement;
+	text = getChildText(xmlDoc);
+	let pinId = this.domId +"-pin";
+	let pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), ["class","ramadda-popup-pin", "id",pinId]); 
+	let closeImage = HtmlUtils.getIconImage(icon_close, []);
+	let closeId = id+'_close';
+	let close = HU.span(['id',closeId,'class','ramadda-clickable'],closeImage);
+	let title = (this.props?this.props.title:"")??"";
+	let extra = (this.props?this.props.extra:"")??"";
+	if(Utils.stringDefined(title)) {
+	    title = HU.span(['style','margin-left:5px;'], title);
+	}
+	let header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin+title);
+	let popup = HtmlUtils.div(["id",id+"-popup"], header + extra+text);
+	this.div.html(popup);
+	this.showDiv();
+	
+	jqid(closeId).click(()=>{
+	    this.cancel(true);
+	});
+	$("#" + pinId).click(function() {
+	    _this.pinned = !_this.pinned;
+	    if(!_this.pinned) {
+		$(this).removeClass("ramadda-popup-pin-pinned");
+	    } else {
+		$(this).addClass("ramadda-popup-pin-pinned");
+	    }
+	});
+	/*
+	let arr = this.div.getElementsByTagName('script')
+	//Eval any embedded js
+	for (let n = 0; n < arr.length; n++) {
+	    eval(arr[n].innerHTML);
+	}
+	*/
+	if(this.props && this.props.initCallback) {
+	    this.props.initCallback();
+	}
+    }
 }
 
 
@@ -1171,8 +1237,7 @@ function selectClick(id, entryId, value, opts) {
     if(!handler) handler = getHandler(selector.elementId);
     if (handler) {
         handler.selectClick(selector.selecttype, id, entryId, value);
-        selectCancel();
-	console.log("no handler");
+        selector.cancel();
         return;
     }
 
@@ -1203,30 +1268,27 @@ function selectClick(id, entryId, value, opts) {
         selector.getHiddenComponent().val(entryId);
         selector.getTextComponent().val(value);
     }
-    selectCancel();
+    selector.cancel();
 }
 
-function selectCancel(override) {
-    if(!override) {
-	if($("#ramadda-selectdiv-pin").attr("data-pinned")) return;
-    }
-    $("#ramadda-selectdiv").hide();
-}
 
 
 function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
     let key = selectorId + (baseUrl||"");
-    if (!selectors[key]) {
-        selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
+    if (true || !selectors[key]) {
+        return selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
     } else {
-        //Don:  alert('have selector'):
-        selectors[key].handleClick(event);
+        return selectors[key].handleClick(event);
     }
 }
 
 
-function selectInitialClick(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl) {
-    selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl);
+var currentSelector;
+function selectInitialClick(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
+    if(currentSelector) {
+	currentSelector.cancel();
+    }
+    currentSelector = selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
     return false;
 }
 
@@ -1248,42 +1310,6 @@ function clearSelect(id) {
     }
 }
 
-
-function handleSelect(request, id) {
-    selector = selectors[id];
-    let xmlDoc = request.responseXML.documentElement;
-    text = getChildText(xmlDoc);
-    let pinId = selector.div.id +"-pin";
-    let pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), ["class","ramadda-popup-pin", "id",pinId]); 
-    let closeImage = HtmlUtils.getIconImage(icon_close, []);
-    let close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
-    let title = (selector.props?selector.props.title:"")??"";
-    let extra = (selector.props?selector.props.extra:"")??"";
-    if(Utils.stringDefined(title)) {
-	title = HU.span(['style','margin-left:5px;'], title);
-    }
-    let header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin+title);
-    let popup = HtmlUtils.div(["id",id+"-popup"], header + extra+text);
-    selector.div.obj.innerHTML = popup;
-    $("#" + selector.div.id).draggable();
-    $("#" + pinId).click(function() {
-	if($(this).attr("data-pinned")) {
-	    $(this).removeClass("ramadda-popup-pin-pinned");
-	    $(this).attr("data-pinned",false);
-	} else {
-	    $(this).addClass("ramadda-popup-pin-pinned");
-	    $(this).attr("data-pinned",true);
-	}
-    });
-    let arr = selector.div.obj.getElementsByTagName('script')
-    //Eval any embedded js
-    for (let n = 0; n < arr.length; n++) {
-	eval(arr[n].innerHTML);
-    }
-    if(selector.props && selector.props.initCallback) {
-	selector.props.initCallback();
-    }
-}
 
 
 function getChildText(node) {

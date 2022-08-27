@@ -691,7 +691,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    cmd.handler.layerOptions.styleMap=styleMap;
 			    this.showCommandMessage(glyphType.isImage()?"Click and drag to create image":"New Entry Marker");
 			    cmd.activate();
-			    selectCancel(true);
+			    if(this.selector) this.selector.cancel(true);
 			};
 
 			if(args.url) {
@@ -703,7 +703,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let initCallback = ()=>{
 			    this.jq('mapresource').change(()=>{
 				callback("",{},this.jq('mapresource').val());
-				selectCancel();
+				if(this.selector) this.selector.cancel();
 			    });
 			    this.jq('imageurl').keypress(function(e){
 				if(e.keyCode == 13) {
@@ -731,7 +731,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				     callback:callback,
 				     'eventSourceId':this.domId(ID_MENU_NEW)};
 			let entryType = glyphType.isImage()?'type_image':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
-			selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),entryType,null,props);
+			this.selector = selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),entryType,null,props);
 			return
 		    } else if(glyphType.getType() == GLYPH_MARKER) {
 			let html =  "";
