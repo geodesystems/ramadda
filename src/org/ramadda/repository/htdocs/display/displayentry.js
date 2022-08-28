@@ -1994,7 +1994,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
-        {p:'showParent',tt:'Show parent entry in search results'},	
+        {p:'showParent',ex:'true',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
@@ -2381,7 +2381,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(showParent && entry.getParentName()) {
 		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
-		    link = HU.hbox([plink,HU.span(['style','margin-right:2px;margin-left:2px;'],"&raquo;"), link]);
+		    link = HU.hbox([plink,HU.span(['style','margin-right:4px;margin-left:4px;'],"&raquo;"), link]);
 		}
 		inner+=HU.div(attrs, link);
 	    });
