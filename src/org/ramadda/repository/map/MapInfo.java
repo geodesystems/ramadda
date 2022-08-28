@@ -78,6 +78,8 @@ public class MapInfo {
     /** is the map for selection */
     private boolean forSelection = false;
 
+    private boolean showFooter = true;
+    
     /** _more_ */
     private boolean mapHidden = false;
 
@@ -461,9 +463,11 @@ public class MapInfo {
         String showDetailsLink =
             (String) getMapProps().get("showDetailsLink");
 
-        result.append("\n");
-        result.append(footer);
-        result.append(HU.leftRight(readout, footer2));
+	if(showFooter) {
+	    result.append("\n");
+	    result.append(footer);
+	    result.append(HU.leftRight(readout, footer2));
+	}
         result.append(popup);
         /*
         if (Misc.equals(showDetailsLink, "true")) {
@@ -517,7 +521,7 @@ public class MapInfo {
         }
         */
 
-        HU.script(sb, getFinalJS());
+	HU.script(sb, getFinalJS());
         sb.append("\n");
 
         return sb.toString();
@@ -1604,4 +1608,10 @@ public class MapInfo {
     public String getHeaderMessage() {
         return headerMessage;
     }
+
+    public void setShowFooter(boolean v) {
+	showFooter = v;
+    }
+
+
 }

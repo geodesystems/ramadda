@@ -135,6 +135,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             Request tmp = getRepository().getTmpRequest();
             MapInfo mapInfo = createMap(tmp, null, width, height, false,
                                         props);
+	    mapInfo.setShowFooter(false);
             int radius = (props == null)
                          ? 4
                          : Utils.getProperty(props, "radius", 4);
