@@ -155,7 +155,7 @@ public class S3File extends FileWrapper {
     @Override
     public FileWrapper[] doListFiles() {
         try {
-            Results results = doList(false, -1);
+            S3Results results = doList(false, -1);
             if (results == null) {
                 return new FileWrapper[] {};
             }
@@ -230,7 +230,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doList() throws Exception {
+    public S3Results doList() throws Exception {
         return doList(false, -1);
     }
 
@@ -241,7 +241,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doList(boolean self) throws Exception {
+    public S3Results doList(boolean self) throws Exception {
         return doList(self, -1);
     }
 
@@ -252,7 +252,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doList(int max) throws Exception {
+    public S3Results doList(int max) throws Exception {
         return doList(false, max);
     }
 
@@ -264,7 +264,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doList(boolean self, int max) throws Exception {
+    public S3Results doList(boolean self, int max) throws Exception {
         return doList(self, max, -1, -1, null);
     }
 
@@ -284,7 +284,7 @@ public class S3File extends FileWrapper {
      * @version        $version$, Tue, Aug 16, '22
      * @author         Enter your name here...
      */
-    public static class Results {
+    public static class S3Results {
 
         /**  */
         String marker;
@@ -300,11 +300,11 @@ public class S3File extends FileWrapper {
          * @param marker _more_
          * @param files _more_
          */
-        public Results(String marker, List<S3File> files) {
+        public S3Results(String marker, List<S3File> files) {
             this.marker = marker;
             this.files  = files;
 	}
-	public Results(String marker, List<S3File> files, String message) {
+	public S3Results(String marker, List<S3File> files, String message) {
 	    this(marker,files);
 	    this.message= message;
         }
@@ -340,7 +340,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doList(boolean self, int max, double percent,
+    public S3Results doList(boolean self, int max, double percent,
                                 long maxSize, String marker)
             throws Exception {
         boolean debug = false;
@@ -410,7 +410,7 @@ public class S3File extends FileWrapper {
         }
 
         String token = listing.getNextContinuationToken();
-        return new Results(token, files);
+        return new S3Results(token, files);
     }
 
 
@@ -566,7 +566,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doSearch(String search, Searcher searcher, String marker)
+    public S3Results doSearch(String search, Searcher searcher, String marker)
             throws Exception {
         return doSearch(search, searcher, SEARCH_MAX_CALLS, false,marker);
     }
@@ -581,7 +581,7 @@ public class S3File extends FileWrapper {
      *
      * @throws Exception _more_
      */
-    public Results doSearch(String search, Searcher searcher,
+    public S3Results doSearch(String search, Searcher searcher,
 				  int maxCalls, boolean verbose,String marker)
             throws Exception {
 	//	System.err.println("marker:"  + marker);
@@ -635,7 +635,7 @@ public class S3File extends FileWrapper {
                 break;
             }
         }
-	return new Results(marker, found,cnt>0?"Searched " + cnt +" objects":null);
+	return new S3Results(marker, found,cnt>0?"Searched " + cnt +" objects":null);
     }
 
 
@@ -1014,7 +1014,7 @@ public class S3File extends FileWrapper {
             }
             if (search != null) {
                 S3File file = new S3File(path,key);
-                Results results = file.doSearch(search, null, maxCalls,
+                S3Results results = file.doSearch(search, null, maxCalls,
 						      verbose,null);
                 if (results.files.size() == 0) {
                     System.err.println("Nothing found");

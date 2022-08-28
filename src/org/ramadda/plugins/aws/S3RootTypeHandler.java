@@ -222,7 +222,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
         //      S3File.debug = true;
         long t1 = System.currentTimeMillis();
-        S3File.Results results = doLs(request, rootEntry,
+        S3File.S3Results results = doLs(request, rootEntry,
                                       createS3File(rootEntry, synthId), null,
                                       max, percent, maxSize);
         long t2 = System.currentTimeMillis();
@@ -775,7 +775,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public S3File.Results doLs(Request request, Entry rootEntry, S3File base,
+    public S3File.S3Results doLs(Request request, Entry rootEntry, S3File base,
                                String path, int max, double percent,
                                long maxSize)
             throws Exception {
@@ -877,7 +877,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             if ( !request.exists("next")) {
                 marker = null;
             }
-            S3File.Results found = file.doSearch(text, searcher, marker);
+            S3File.S3Results found = file.doSearch(text, searcher, marker);
             marker = found.getMarker();
             //      System.err.println("found:" + marker);
             String message = found.getMessage();
