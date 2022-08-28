@@ -1594,6 +1594,13 @@ public class Utils extends IO {
         return l;
     }
 
+    public static List getKeys(LinkedHashMap properties) {
+        List l = new ArrayList();
+        for(Object o: properties.keySet()) {
+	    l.add(o);
+	}
+	return l;
+    }
 
     /**
      * _more_
