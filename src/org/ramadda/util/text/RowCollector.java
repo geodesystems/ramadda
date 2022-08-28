@@ -2104,6 +2104,7 @@ public class RowCollector extends Processor {
                 w.println("<tr valign=top>");
                 for(int i=0;i<cols.size();i++) {
                     ColStat col =  cols.get(i);
+		    if(col.skip) continue;
                     String typeIcon = "";
                     String tt       = "";
                     if (col.type.equals("string")) {
@@ -2132,8 +2133,6 @@ public class RowCollector extends Processor {
 			    next.skip = true;
                             ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
                             ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;
-			    //                            i++;
-			    //			    extraAttrs=HU.attr("colspan","2");
                             StringBuilder map = new StringBuilder();	
                             MapProvider mp  = util.getMapProvider();
                             if(mp!=null) {
@@ -2143,8 +2142,9 @@ public class RowCollector extends Processor {
                                 Hashtable<String,String>props = new Hashtable<String,String>();
                                 props.put("simple","true");
                                 props.put("radius","3");
-                                mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
-                                extra = map.toString();
+                                mp.makeMap(map,"100%",justStats?"300px":"130px",pts,props);
+                                extra = HU.div(map.toString(),HU.style("margin:5px;border:1px solid #aaa;"));
+				extraAttrs=" colspan=2 ";
                             }
                         }
                     } else {
@@ -2180,7 +2180,7 @@ public class RowCollector extends Processor {
                         }
                     }
                     extra = HU.div(extra,HU.attrs("class","csv-summary","style","display:none;"));
-                    w.println("<th " + extraAttrs+" nowrap>" +  label  + extra + "</th>");
+                    w.println(HU.th(label  + extra,extraAttrs+" nowrap " +HU.style("padding:2px !important;")));
                 }
                 w.println("</tr>");
 
@@ -2336,7 +2336,6 @@ public class RowCollector extends Processor {
             /**  */
             boolean interactive;
 
-	    boolean isGeo = false;
 
             /** _more_ */
             Hashtable<Object, Integer> uniques = new Hashtable<Object,

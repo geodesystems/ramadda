@@ -15,6 +15,9 @@ public interface CsvCommands {
     public static final String ARG_COLUMN  ="column";
     public static final String ARG_COLUMNS  ="columns";
     public static final String ARG_PATTERN  ="pattern";
+    public static final String ARG_LATITUDE  ="latitude";
+    public static final String ARG_LONGITUDE  ="longitude";
+    public static final String ARG_NAME  ="name";        
     public static final String ATTR_TYPE = "type";
     public static final String TYPE_COLUMNS = "columns";
     public static final String TYPE_COLUMN = "column";

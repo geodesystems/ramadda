@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.text.SimpleDateFormat;
@@ -124,7 +125,7 @@ public class CsvOperator {
     private List header;
 
     /** _more_ */
-    private Hashtable<String, Integer> columnMap;
+    private LinkedHashMap<String, Integer> columnMap;
 
     /** _more_ */
     private List<String> columnNames;
@@ -629,8 +630,8 @@ public class CsvOperator {
             iv = columnMap.get(colId);
         }
         if (iv == null) {
-            throw new IllegalArgumentException("Could not find column index:"
-                    + tok + " possible columns: " + Utils.getKeys(columnMap));
+            throw new IllegalArgumentException("Could not find column:"
+                    + tok + "\npossible columns: " + Utils.getKeys(columnMap));
         }
 
         return (iv != null)
@@ -644,7 +645,7 @@ public class CsvOperator {
     private void checkColumns() {
         if (columnNames == null) {
             columnNames = new ArrayList<String>();
-            columnMap   = new Hashtable<String, Integer>();
+            columnMap   = new LinkedHashMap<String, Integer>();
             if (header == null) {
                 debug("no names or header");
 
@@ -816,9 +817,7 @@ public class CsvOperator {
                     }
                 }
                 if ((start == -1) || (end == -1)) {
-                    for (Enumeration keys = columnMap.keys();
-                            keys.hasMoreElements(); ) {
-                        String key = (String) keys.nextElement();
+		    for(String key: columnMap.keySet()) {
                         System.err.println("key:" + key);
                     }
                     fatal(ctx, "Could not find indices:" + toks);
