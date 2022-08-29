@@ -1042,7 +1042,13 @@ function  ConvertForm(inputId, entry,params) {
 			    cnt++;
 			});
 			if(table) {
-			    HtmlUtils.formatTable(output.find( ".ramadda-table"),{paging:false,height:"200px",fixedHeader: true,scrollX:true});
+//			    Utils.makeDownloadFile('test.html',output.html());
+			    try {
+				//Don't format the table as it is always screwed up with the header, etc
+				//HtmlUtils.formatTable(output.find( ".ramadda-table"),{paging:false,height:"200px",fixedHeader: true,scrollX:true});
+			    } catch(err) {
+				//Ignore this
+			    }
 			}
 		    } else if(!raw && showHtml) {
   			let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$4</a>$5</th>");
@@ -1222,7 +1228,6 @@ function  ConvertForm(inputId, entry,params) {
 		if(!this.dbInput && cmd.command=="-db" && a.id=="properties") {
 		    this.dbInput = id;
 		}		
-
 		if(a.rows) {
 		    inner+=HU.formEntryTop(label,
 					   HU.hbox([HU.textarea("",v,["cols", a.columns || "30", "rows",a.rows,ID,id,"size",10]),desc]));		
@@ -1242,6 +1247,8 @@ function  ConvertForm(inputId, entry,params) {
 			value="foo,bar";
 		    }
 		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(","),v),getDesc(a)]));
+		} else if(a.type=="boolean") {
+		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],['true','false'],v),getDesc(a)]));		    
 		} else if(a.type=="column") {
 		    let size = a.size || 30;
 		    let title = a.tooltip || "";
