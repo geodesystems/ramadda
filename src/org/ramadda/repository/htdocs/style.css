@@ -640,6 +640,10 @@ a.ramadda-entry-nav-page {
     padding-bottom:0px;
 }
 
+.csv-header {
+    border-bottom: 1px solid #000;
+}
+
 .csv_header_field {
     color:blue;
     cursor:pointer;
