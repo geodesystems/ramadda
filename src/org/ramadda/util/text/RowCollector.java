@@ -936,7 +936,7 @@ public class RowCollector extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            printRow(ctx, row, true);
+            printRow(ctx, row, true,true);
             return row;
         }
 
@@ -949,7 +949,7 @@ public class RowCollector extends Processor {
          *
          * @throws Exception _more_
          */
-        public void printRow(TextReader ctx, Row row, boolean addCnt)
+        public void printRow(TextReader ctx, Row row, boolean addCnt, boolean even)
 	    throws Exception {
 
 
@@ -968,7 +968,7 @@ public class RowCollector extends Processor {
                 open  = "<th>";
                 close = "</th>";
             } else {
-                ctx.getWriter().println("<tr  valign=top>");
+                ctx.getWriter().println("<tr  valign=top class=" + (even?"ramadda-row-even":"ramadda-row-odd") +">");
             }
 
 
@@ -2097,14 +2097,15 @@ public class RowCollector extends Processor {
             w.println("#rows:" + rowCnt);
             if(cols ==null) cols = new ArrayList<ColStat>();
             if (interactive) {
+		StringBuilder summary = new StringBuilder();
                 w.println(HU.SPACE2);
                 w.println("<span id=header></span>");
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
-                w.println("<tr valign=top>");
-                for(int i=0;i<cols.size();i++) {
+                w.println("<tr valign=top class=csv-header>");
+                summary.append("<tr valign=top class=csv-summary style='display:none;background:var(--header-background);'>");	                for(int i=0;i<cols.size();i++) {
                     ColStat col =  cols.get(i);
-		    if(col.skip) continue;
+		    //		    if(col.skip) continue;
                     String typeIcon = "";
                     String tt       = "";
                     if (col.type.equals("string")) {
@@ -2179,77 +2180,21 @@ public class RowCollector extends Processor {
                             extra+=printUniques.apply(col);
                         }
                     }
-                    extra = HU.div(extra,HU.attrs("class","csv-summary","style","display:none;"));
-                    w.println(HU.th(label  + extra,extraAttrs+" nowrap " +HU.style("padding:2px !important;")));
+                    extra = HU.div(extra,"");
+                    w.println(HU.th(label," nowrap " +HU.style("padding:2px !important;")));
+		    if(!col.skip) 
+			summary.append(HU.td(extra,extraAttrs+" nowrap " +HU.style("padding:2px !important;")));
                 }
                 w.println("</tr>");
-
-		/*
-		  w.println("<tr valign=top class=th2>");
-		  for(int i=0;i<cols.size();i++) {
-		  ColStat col =  cols.get(i);
-		  if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
-		  ColStat next = i<cols.size()-1?cols.get(i+1):null;
-		  if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
-		  ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
-		  ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;
-		  i++;
-		  w.println("<th colspan=2>");
-		  StringBuilder map = new StringBuilder();
-		  MapProvider mp  = util.getMapProvider();
-		  if(mp!=null) {
-		  List<double[]> pts = new ArrayList<double[]>();
-		  for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
-		  pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
-		  Hashtable<String,String>props = new Hashtable<String,String>();
-		  props.put("simple","true");
-		  props.put("radius","3");
-		  mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
-		  w.print(map.toString());
-		  }
-		  w.println("</th>");
-		  continue;
-		  }
-		  }
-		  w.println("<th>");
-		  if (col.type.equals("numeric")) {
-		  layout.accept("min:", "" + col.min);
-		  layout.accept("max:", "" + col.max);
-		  if (col.numMissing > 0) {
-		  layout.accept("#missing:",
-		  "" + col.numMissing);
-		  }
-		  if (col.numErrors > 0) {
-		  layout.accept("#errors:",   "" + col.numErrors);
-		  if (col.sampleError != null) {
-		  layout.accept("eg:"
-		  + ((col.sampleError.trim().length()
-		  == 0)
-		  ? "<blank>"
-		  : col.sampleError), "");
-		  }
-		  }
-		  printUniques.accept(col);
-		  } else if (col.type.equals("date")) {
-		  if (col.minDate != null) {
-		  layout.accept("min:", fmtSdf.format(col.minDate));
-		  }
-		  if (col.maxDate != null) {
-		  layout.accept("max:",fmtSdf.format(col.maxDate));
-		  }
-		  } else if (col.type.equals("image")) {
-		  } else if (col.type.equals("url")) {
-		  } else {
-		  printUniques.accept(col);
-		  }
-		  w.println("</th>");
-		  }
-		  w.println("</tr>");
-		*/
 		w.println("</thead>");
 		w.println("<tbody>");
+                summary.append("</tr>");		
+		w.println(summary);
 
+
+		boolean even= false;
 		for (Row row : rows) {
+		    even = !even;
 		    if(!justStats) {
 			if (cnt++ > 200) {
 			    w.println("<tr><td colspan=" + row.size()
@@ -2260,7 +2205,6 @@ public class RowCollector extends Processor {
 		    Row r = new Row();
 		    for (int i = 0; i < cols.size(); i++) {
 			ColStat col = cols.get(i);
-			//			if(col.skip) continue;
 			if(i<row.size()) {
 			    if(col.mergeNext) {
 				r.add(col.format(ctx,row.get(i))+"," + cols.get(i+1).format(ctx,row.get(i+1)));
@@ -2270,7 +2214,7 @@ public class RowCollector extends Processor {
 			}
 		    }
 		    if(!justStats) {
-			printRow(ctx, r, false);
+			printRow(ctx, r, false,even);
 		    }
 		}
 		w.println("</tbody>");
