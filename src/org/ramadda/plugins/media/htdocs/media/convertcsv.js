@@ -154,6 +154,7 @@ function  ConvertForm(inputId, entry,params) {
 	    this.jq(ID_OUTPUTS).button().click(function(){
 		let html = _this.outputCommands.reduce((acc,cmd)=>{
 		    if(cmd.command=="-table") return acc;
+		    if(cmd.command=="-stats") return acc;		    
 		    acc+=HU.div([CLASS,"ramadda-clickable","command",cmd.command,TITLE,cmd.command],cmd.description);
 		    return acc;
 		},"");
@@ -640,6 +641,7 @@ function  ConvertForm(inputId, entry,params) {
 		    command +="\n";
 		}
 	    }
+
 	    command = command.trim();
 	    if(what!="-raw" && command.indexOf("-template ")>=0) what = "";
 
@@ -703,6 +705,9 @@ function  ConvertForm(inputId, entry,params) {
 	    this.insertCommand(field +value);
 	},
 	call:function(cmds,args) {
+
+
+
 	    let _this =this;
 	    if (!args)  {
 		args = {};
@@ -731,6 +736,7 @@ function  ConvertForm(inputId, entry,params) {
 	    }
 
 
+	    let isTypeXml = cmds && cmds.indexOf("-typexml")>=0;
 	    let isScript  = args.csvoutput=="-script";
 	    let isArgs  = args.csvoutput=="-args";
 	    let debug = cmds.match("-debug");
@@ -744,6 +750,8 @@ function  ConvertForm(inputId, entry,params) {
 	    let isDb = args.csvoutput == "-db" || cmds.indexOf("-db")>=0;
 	    let isJson = args.csvoutput=="-tojson";
 	    let isXml = args.csvoutput=="-toxml";	
+
+
 	    let csv = args.csvoutput=="-print";
 	    let stats = args.csvoutput=="-htmlstats";
 	    let table =  args.csvoutput=="-table";					    
@@ -767,7 +775,8 @@ function  ConvertForm(inputId, entry,params) {
 	    if(isScript) filename = "convert.sh";
 	    else if(isArgs) filename = "convertargs.txt";
 	    else if(isJson) filename = "results.json";
-	    else if(isXml) filename = "results.xml";			
+	    else if(isXml) filename = "results.xml";
+	    else if(isTypeXml) filename = "types.xml";				    
 
 
 	    if(args.process)
@@ -809,7 +818,7 @@ function  ConvertForm(inputId, entry,params) {
 			Utils.makeDownloadFile(filename,result);
 		    });
 		}
-
+		
 	    };
 	    let jqxhr = $.getJSON( url, (data) =>{
 //		console.log(typeof jqxhr.getAllResponseHeaders());
@@ -938,6 +947,10 @@ function  ConvertForm(inputId, entry,params) {
 			}
 
 			result = result.trim();
+			if(isTypeXml) {
+			    writePre(result.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+			    return;
+			}
 			let isXml = result.startsWith("<") && result.endsWith(">")
 			if(isXml) {
 			    try {
@@ -1297,7 +1310,7 @@ function  ConvertForm(inputId, entry,params) {
 		_this.allColumnIds.forEach(id=>{
 		    html+=HU.div([CLASS,"ramadda-clickable","columnid",id],id);
 		});
-		html = HU.div([STYLE,HU.css('margin','5px')], html);
+		html = HU.div([STYLE,HU.css('max-height:200px;overflow-y:auto;margin','5px')], html);
 		let popup =   HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:$(this)});
 		popup.find(".ramadda-clickable").click(function() {
 		    let id = $(this).attr("columnid");
