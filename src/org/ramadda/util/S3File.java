@@ -626,10 +626,6 @@ public class S3File extends FileWrapper {
             if (++numCalls >= maxCalls) {
                 break;
             }
-            if (found.size() > SEARCH_MAX_FOUND) {
-                break;
-            }
-
             marker = listing.getNextContinuationToken();
             if (marker == null) {
                 break;
