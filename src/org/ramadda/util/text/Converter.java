@@ -1971,8 +1971,6 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnPercenter extends Converter {
 
-
-
         /**
          * @param cols _more_
          */

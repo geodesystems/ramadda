@@ -573,6 +573,10 @@ public class CsvUtil implements CsvCommands {
 	boolean doArgs = false;
 	int                doArgsCnt     = 0;
 	int                doArgsIndex   = 1;
+	StringBuilder argsBuff = null;
+	boolean doTypeXml = false;
+	String typeName = "";
+	String typeDesc = "";
 	PrintWriter pw        = null;
 	//	System.err.println("args:" + args);
 	//Check for the -args command
@@ -582,6 +586,11 @@ public class CsvUtil implements CsvCommands {
 		doArgs = true;
 		continue;
 	    }
+	    if(arg.equals(CMD_TYPE_XML)) {
+		doArgs = true;
+		doTypeXml = true;
+		continue;
+	    }	    
 	}
 
 
@@ -592,24 +601,31 @@ public class CsvUtil implements CsvCommands {
 		doArgs = true;
 		continue;
 	    }
+	    if(arg.equals(CMD_TYPE_XML)) {
+		doArgs = true;
+		doTypeXml = true;
+		typeName = (args.get(++i));
+		typeDesc = (args.get(++i));    		
+		continue;
+	    }	    
 	    if (doArgs) {
-		if (pw == null) {
-		    pw = new PrintWriter(getOutputStream());
-		    pw.print("csvcommands1=");
+		if (argsBuff == null) {
+		    argsBuff = new StringBuilder();
+		    argsBuff.append("csvcommands1=");
 		} else {
 		    doArgsCnt++;
 		    if (doArgsCnt > 4) {
-			pw.print("\n");
+			argsBuff.append("\n");
 			doArgsCnt = 0;
 			doArgsIndex++;
-			pw.print("csvcommands" + doArgsIndex + "=");
+			argsBuff.append("csvcommands" + doArgsIndex + "=");
 		    } else {
-			pw.print(",");
+			argsBuff.append(",");
 		    }
 		}
 		arg = arg.replaceAll(",", "\\\\,");
 		//		System.err.println("arg:" + arg);
-		pw.print(arg);
+		argsBuff.append(arg);
 		continue;
 	    }
 
@@ -701,10 +717,30 @@ public class CsvUtil implements CsvCommands {
 	}
 
 
-	if (doArgs) {
-	    if (pw != null) {
-		pw.print("\n");
+	if(doTypeXml) {
+	    if (argsBuff != null) {
+		argsBuff.append("\n");
 	    }
+	    pw   = new PrintWriter(getOutputStream());	
+    pw.println("<types>");
+	    pw.println("<type name=\"" + typeName +"\" description=\"" + typeDesc +"\" super=\"type_point\" category=\"Point Data\"\nhandler=\"org.ramadda.data.services.PointTypeHandler\">"); 	    
+	    pw.println("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>");
+	    pw.println("<property name=\"record.properties\">");
+	    pw.print(argsBuff);
+	    pw.println("</property>");
+	    pw.println("</type>");
+	    pw.println("</types>");	    	    
+	    pw.close();
+	    return;
+	}
+
+
+	if (doArgs) {
+	    if (argsBuff != null) {
+		argsBuff.append("\n");
+	    }
+	    pw   = new PrintWriter(getOutputStream());
+	    pw.print(argsBuff);
 	    pw.close();
 	    return;
 	}
@@ -1703,8 +1739,7 @@ public class CsvUtil implements CsvCommands {
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
         new Cmd(CMD_DELIMITER, "Specify a delimiter",
-                new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
-                        "size", "5")),
+                new Arg("delimiter", "Use 'space' for space, 'tab' for tab",  ATTR_SIZE, "5")),
         new Cmd(CMD_TAB, "Use tabs. A shortcut for -delimiter tab"),
         new Cmd(CMD_WIDTHS, "Columns are fixed widths",
 		new Arg("widths", "w1,w2,...,wN")),
@@ -1717,32 +1752,32 @@ public class CsvUtil implements CsvCommands {
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
         new Cmd(CMD_JSON, "Parse the input as json",
                 new Arg("arrayPath",
-			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
-			"label", "Array path"),
+			"Path to the array e.g., obj1.arr[2].obj2",
+			"label", "Array path",
+			ATTR_SIZE, "30"),
 		new Arg("objectPaths",
 			"One or more paths to the objects e.g. geometry,features",
-			"label", "Object paths", ATTR_TYPE,
-			TYPE_LIST, "size", "30")),
+			"label", "Object paths",
+			ATTR_TYPE, TYPE_LIST, ATTR_SIZE, "30")),
         new Cmd(CMD_GEOJSON, "Parse the input as geojson",
 		new Arg("includePolygon","Include polygon",
 			ATTR_TYPE,"enumeration","values","true,false")),
         new Cmd(CMD_PDF, "Read input from a PDF file."),	
         new Cmd(CMD_XML, "Parse the input as xml",
-                new Arg("path", "Path to the elements", "size", "60")),
+                new Arg("path", "Path to the elements", ATTR_SIZE, "60")),
         new Cmd(CMD_SHAPEFILE, "Parse the input shapefile",
                 new Arg("props", "\"addPoints true addShapes false\"")),	
         new Cmd(CMD_LINES, "Parse the input as text lines"),
-
         new Cmd(CMD_HTMLTABLE, "Parse tables in the input html file",
 		ARG_LABEL,"Html Table",
                 new Arg("skip", "Number of tables to skip", ATTR_TYPE,
-			"number"),
+			TYPE_NUMBER),
 		new Arg(ARG_PATTERN, "Pattern to skip to",
-			ATTR_TYPE, TYPE_PATTERN, "size",
+			ATTR_TYPE, TYPE_PATTERN, ATTR_SIZE,
 			"40"),
 		new Arg("properties",
 			"Other name value args - <ul><li> numTables N:Number of tables to process. Default is 1<li> removeEntity true:remove HTML entities <li> removePattern pattern<li> extractUrls true <li> columnN.extractUrls true: N=column number<li> stripTags false: strip any HTML tags. Default =true<li> columnN.stripTags false: N=column number. Set stripTags for the column</ul>",
-			"rows", "6", "size", "40")),
+			ATTR_ROWS, "6", ATTR_SIZE, "40")),
         new Cmd(CMD_HTMLPATTERN, "Parse the input html file",
 		ARG_LABEL,"Html Pattern",
                 new Arg(ARG_COLUMNS, "Column names", ATTR_TYPE, TYPE_COLUMNS),
@@ -1766,18 +1801,18 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_SQL, "Read data from the given database",
                 new Arg("db", "The database id (defined in the environment)",
 			ATTR_TYPE,"enumeration","values","property:seesv_dbs"),
-		new Arg("table", "Comma separate list of tables to select from","size","60"),
+		new Arg("table", "Comma separate list of tables to select from",ATTR_SIZE,"60"),
 		new Arg(ARG_COLUMNS, "Comma separated list of columns to select"),
-		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike",ATTR_TYPE,"rows","delimiter",";","size","60"),				
+		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike",ATTR_TYPE,TYPE_ROWS,"delimiter",";",ATTR_SIZE,"60"),				
 		new Arg("properties", "name space value properties. e.g., join col1,col2")),
         new Cmd(CMD_SYNTHETIC, "Generate an empty file with the given number of rows",
                 new Arg("header","comma separated header"),
                 new Arg("values","comma separated values"),		
-                new Arg("number_rows","Number of rows",ATTR_TYPE,"number")),
+                new Arg("number_rows","Number of rows",ATTR_TYPE,TYPE_NUMBER)),
 
         new Cmd(CMD_PRUNE, "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", ATTR_TYPE,
-                        "number")),
+                        TYPE_NUMBER)),
         new Cmd(CMD_DEHEADER, "Strip off the RAMADDA point header"),
         new Cmd(CMD_HEADERNAMES, "Make the header proper capitalization",
 		ARG_LABEL,"Header Names"),
@@ -1794,7 +1829,7 @@ public class CsvUtil implements CsvCommands {
         new Category("Filter"),
         new Cmd(CMD_SKIPLINES, "Skip number of raw lines.",
 		ARG_LABEL,"Skip Lines",
-                new Arg("lines", "How many raw lines to skip", ATTR_TYPE, "number")),	
+                new Arg("lines", "How many raw lines to skip", ATTR_TYPE, TYPE_NUMBER)),	
         new Cmd(CMD_IF, "Next N args specify a filter command followed by any change commands followed by an -endif."),
         new Cmd(CMD_START, "Start at pattern in source file",
                 new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
@@ -1810,14 +1845,14 @@ public class CsvUtil implements CsvCommands {
                         "Comma separated list of strings to filter on")),
         new Cmd(CMD_MIN,
 		"Only pass thorough lines that have at least this number of columns",
-		new Arg("min # columns", "", ATTR_TYPE, "number")),
+		new Arg("min # columns", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_MAX,
 		"Only pass through lines that have no more than this number of columns",
-		new Arg("max # columns", "", ATTR_TYPE, "number")),
+		new Arg("max # columns", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_NUMCOLUMNS,
 		"Remove or add values so each row has the number of columns",
 		ARG_LABEL,"Ensure # of columns",
-		new Arg("number", "", ATTR_TYPE, "number")),
+		new Arg("number", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_HAS, "Only pass through anything if the data has the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_PATTERN, "Pass through rows that the columns each match the pattern",
@@ -1958,10 +1993,10 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_PATTERN, "", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_SKIP, "Skip number of processed rows.",
 		ARG_LABEL,"Skip Rows",
-                new Arg("rows", "How many rows to skip", ATTR_TYPE, "number")),
+                new Arg("rows", "How many rows to skip", ATTR_TYPE, TYPE_NUMBER)),
 
-        /** *  Slice and dice * */
-        new Category("Slice and Dice","Add/remove columns, rows, restructure, etc"),
+        /** *  Sliceand dice * */
+        new Category("Slice","Add/remove columns, rows, restructure, etc"),
         new Cmd(CMD_COLUMNS,  "Only include the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_NOTCOLUMNS, "Don't include given columns",
@@ -1984,11 +2019,11 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_CUT, "Drop rows",
 		ARG_LABEL,"Delete Rows",
                 new Arg("rows",   "One or more rows. -1 to the end. e.g., 0-3,5,10,-1",
-                        ATTR_TYPE, "rows")),
+                        ATTR_TYPE, TYPE_ROWS)),
         new Cmd(CMD_INCLUDE, "Only include specified rows",
 		ARG_LABEL,"Include Rows",
                 new Arg("rows", "one or more rows, -1 to the end", ATTR_TYPE,
-                        "rows")),
+                        TYPE_ROWS)),
 	new Cmd(CMD_ROWS_FIRST, "Move rows to the top that match the pattern",
 		ARG_LABEL,"Move Rows First",
                 new Arg(ARG_COLUMNS, "columns to match on", ATTR_TYPE,  TYPE_COLUMNS),
@@ -2000,7 +2035,8 @@ public class CsvUtil implements CsvCommands {
 
         new Cmd(CMD_COPY, "Copy column",
 		ARG_LABEL,"Copy Column",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), ARG_NAME),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), 
+		new Arg(ARG_NAME)),
         new Cmd(CMD_ADD,"Add new columns",
 		ARG_LABEL,"Add Columns",
 		new Arg("names", "Comma separated list of new column names",ATTR_TYPE,TYPE_LIST),		
@@ -2015,18 +2051,21 @@ public class CsvUtil implements CsvCommands {
 			"Single value or comma separated for multiple rows", ATTR_TYPE,
 			TYPE_LIST)),
 	new Cmd(CMD_CONCAT, "Create a new column from the given columns",
-                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS), "delimiter",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("delimiter"),
 		new Arg(ARG_NAME,"Name of new colums")),
         new Cmd(CMD_CONCATROWS, "Concatenate multiple rows into a single row",
-                new Arg("num_rows", "Number of rows", ATTR_TYPE, "number")), 
+                new Arg("num_rows", "Number of rows", ATTR_TYPE, TYPE_NUMBER)), 
         new Cmd(CMD_COMBINE,
                 "Combine columns with the delimiter. deleting columns",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "delimiter",
-                "new column name"),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("delimiter"),
+                new Arg("column name","New column name")),
         new Cmd(CMD_COMBINEINPLACE, "Combine columns with the delimiter",
 		ARG_LABEL,"Combine in place",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "delimiter",
-                "new column name"),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+		new Arg("delimiter"),
+                new Arg("column name","New column name")),
         new Cmd(CMD_MERGE,
                 "Apply operators to columns",
                 new Arg(ARG_COLUMNS, "Columns to merge", ATTR_TYPE, TYPE_COLUMNS),
@@ -2040,12 +2079,12 @@ public class CsvUtil implements CsvCommands {
                         TYPE_LIST)),
         new Cmd(CMD_SPLAT,
                 "Create a new column from the values in the given column",
-                "key col",
+                new Arg("keycol","Key column", ATTR_TYPE,TYPE_COLUMN),
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("delimiter"),
 		new Arg(ARG_NAME, "new column name")),
         new Cmd(CMD_SHIFT, "Shift columns over by count for given rows",
-                new Arg("rows", "Rows to apply to", ATTR_TYPE, "rows"),
+                new Arg("rows", "Rows to apply to", ATTR_TYPE, TYPE_ROWS),
                 new Arg(ARG_COLUMN, "Column to start at", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("count")),
         new Cmd(CMD_SLICE,
@@ -2056,20 +2095,21 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_ADDCELL, "Add a new cell at row/column",
 		ARG_LABEL,"Add Cell",
 		new Arg("row"),
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), "value"),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), 
+		new Arg("value")),
         new Cmd(CMD_DELETECELL,  "Delete cell at row/column",
 		ARG_LABEL,"Delete Cell",
 		new Arg("row"),
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
         new Cmd(CMD_APPENDROWS, "Only include specified rows",
 		ARG_LABEL,"Append Rows",
-                new Arg("skip", "How many rows to skip", ATTR_TYPE, "number"),
-                new Arg("count", "How many rows to merge", ATTR_TYPE, "number"),
+                new Arg("skip", "How many rows to skip", ATTR_TYPE, TYPE_NUMBER),
+                new Arg("count", "How many rows to merge", ATTR_TYPE, TYPE_NUMBER),
                 new Arg("delimiter", "How many rows to merge")),
 
         new Cmd(CMD_MERGEROWS, "Merge rows",
 		ARG_LABEL,"Merge Rows",
-                new Arg("rows", "2 or more rows", ATTR_TYPE, "rows"),
+                new Arg("rows", "2 or more rows", ATTR_TYPE, TYPE_ROWS),
                 new Arg("delimiter"),
 		new Arg("close")),
         new Cmd(CMD_ROWOP, "Apply an operator to columns and merge rows",
@@ -2125,7 +2165,7 @@ public class CsvUtil implements CsvCommands {
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_DISSECT, "Make fields based on patterns",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg(ARG_PATTERN,"e.g., \"(field1:.*) (field2:.*) ...\"",ATTR_TYPE,TYPE_PATTERN,"size","80")),
+		new Arg(ARG_PATTERN,"e.g., \"(field1:.*) (field2:.*) ...\"",ATTR_TYPE,TYPE_PATTERN,ATTR_SIZE,"80")),
         new Cmd(CMD_KEYVALUE, "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
         new Cmd(CMD_FIRSTCHARS,
@@ -2196,6 +2236,7 @@ public class CsvUtil implements CsvCommands {
 
         new Cmd(CMD_FILLDOWN,
 		"Fill down with last non-null value",
+		ARG_LABEL,"Fill Down",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_UNFILL,
 		"Set following cells to blank if the same as previous cell",
@@ -2240,7 +2281,8 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("prefix","String to use")),
         new Cmd(CMD_SUFFIX, "Add suffix to column",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN), "suffix"),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
+		new Arg("suffix")),
         new Cmd(CMD_SUBST, "Create a new column with the template",
                 new Arg("column_name", "New Column Name"),
                 new Arg("template", "Template - use ${column_name} ... ")),
@@ -2248,16 +2290,16 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("substitution string", HELP_SUBSTITUTION)),
         new Cmd(CMD_ISMOBILE, "Add a true/false if the string is a mobile phone",
+		ARG_LABEL,"Is Mobile",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_JS,
 		"Define Javascript (e.g., functions) to use later in the -func call",
 		ARG_LABEL,"Define Javascript",
-		new Arg("javascript", "", "rows", "6")),
-        new Cmd(CMD_FUNC,
+		new Arg("javascript", "", ATTR_ROWS, "6")),
+        new Cmd(CMD_FUNC, "Apply the javascript function. Use _colname or _col#",
 		ARG_LABEL,"Javascript Function",
-                "Apply the javascript function. Use _colname or _col#",
                 new Arg("names", "New column names", ATTR_TYPE, TYPE_LIST),
-                new Arg("javascript", "javascript expression", "size", "60")),
+                new Arg("javascript", "javascript expression", ATTR_SIZE, "60")),
         new Cmd(CMD_ENDSWITH, "Ensure that each column ends with the string",
 		ARG_LABEL,"Ends With",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
@@ -2291,10 +2333,15 @@ public class CsvUtil implements CsvCommands {
                 new Arg("format", "Decimal format  e.g. '##0.00'")),
         new Cmd(CMD_DENORMALIZE,
 		"Read the id,value from file and substitute the value in the dest file col idx",
-		new Arg("file", "From csv file", ATTR_TYPE, "file"), "from id idx",
-		"from value idx", "to idx", "new col name", "mode replace add"),
+		new Arg("file", "From csv file", ATTR_TYPE, "file"), 
+		new Arg("from id idx"),
+		new Arg("from value idx"),
+		new Arg("to idx"),
+		new Arg("new col name"),
+		new Arg("mode replace add")),
         new Cmd(CMD_BREAK, "Break apart column values and make new rows",
-                "label1", "label2",
+		new Arg("label1"),
+		new Arg("label2"),
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
 
         new Cmd(CMD_MAKEIDS, "Turn the header row into IDs (lowercase, no space, a-z0-9_)",
@@ -2306,7 +2353,7 @@ public class CsvUtil implements CsvCommands {
 		new Arg(ARG_COLUMNS,"Columns to change. Of none given then add the fake value",ATTR_TYPE,TYPE_COLUMNS)),		
 
 	/** *  Add values * */
-        new Category("Add Values"),
+        new Category("Values"),
         new Cmd(CMD_MD, "Make a message digest of the column values",
 		ARG_LABEL,"Message Digest",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
@@ -2330,11 +2377,13 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_LETTER, "Add 'A','B', ... as column"),
 	new Cmd(CMD_SOUNDEX, "Generate a soundex code",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd(CMD_WIKIDESC, "Add a description from wikipedia",
-		ARG_LABEL,"Add wikipedia desc.",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "suffix"),
+        new Cmd(CMD_WIKIDESC, "Add a description from Wikipedia",
+		ARG_LABEL,"Add Wikipedia Desc.",
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+		new Arg("suffix")),
         new Cmd(CMD_IMAGE, "Search for an image",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "suffix"),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("suffix")),
         new Cmd(CMD_EMBED, "Download the URL and embed the image contents",
                 new Arg("url column")),
         new Cmd(CMD_FETCH, "Fetch the URL and embed the contents",
@@ -2343,7 +2392,9 @@ public class CsvUtil implements CsvCommands {
 		new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
 	new Cmd(CMD_IMAGEFILL,
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
-		new Arg("querycolumn", "", ATTR_TYPE, TYPE_COLUMNS), "suffix",
+		ARG_LABEL,"Image Fill",
+		new Arg("querycolumn", "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("suffix"),
 		new Arg("imagecolumn", "", ATTR_TYPE, TYPE_COLUMN)),
         new Cmd(CMD_DOWNLOAD, "Download the URL",
                 new Arg(ARG_COLUMN, "Column that holds the URL", ATTR_TYPE, TYPE_COLUMN),
@@ -2381,7 +2432,8 @@ public class CsvUtil implements CsvCommands {
 
         new Cmd(CMD_FORMATDATE, "Format date",
 		ARG_LABEL,"Format Date",
-                new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS), "target date format"),
+                new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
+		new Arg("target date format")),
 
         new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
@@ -2404,33 +2456,41 @@ public class CsvUtil implements CsvCommands {
 	
 
         /** *  Numeric * */
-        new Category("Numeric/Boolean"),
+	new Category("Numeric"),
         new Cmd(CMD_SCALE, "Set value={value+delta1}*scale+delta2",
 		ARG_LABEL,"Scale Value",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "delta1", "scale",
-                "delta2"),
-        new Cmd(CMD_GENERATE, "Add row values", "label", "start", "step"),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("delta1","",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("scale","",ATTR_TYPE,TYPE_NUMBER),
+                new Arg("delta2","",ATTR_TYPE,TYPE_NUMBER)),
+        new Cmd(CMD_GENERATE, "Add row values",
+		new Arg("label"),
+		new Arg("start","",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("step","",ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_DECIMALS, "Round decimals",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("num_decimals","how many decimals to round to")),
+                new Arg("num_decimals","how many decimals to round to",
+			ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_FUZZ, "fuzz the number. if num_places less than zero than that is the # of decimals. else that is the lower digits to fuzz out",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("num_places","how many places to round to. use <=0 for decimals"),
-		new Arg("num_random_digits","how many random digits")),	
+                new Arg("num_places","how many places to round to. use <=0 for decimals",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("num_random_digits","how many random digits",ATTR_TYPE,TYPE_NUMBER)),	
         new Cmd(CMD_CEIL, "Set the max value",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("value","Value")),
+                new Arg("value","Value",ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_FLOOR, "Set the min value",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("value","Value")),		
+                new Arg("value","Value",ATTR_TYPE,TYPE_NUMBER)),		
         new Cmd(CMD_DELTA,
                 "Add column that is the delta from the previous step",
-                new Arg("key columns"),
-		new Arg(ARG_COLUMNS)),
+                new Arg("key columns","",ATTR_TYPE,TYPE_COLUMNS),
+		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
         new Cmd(CMD_OPERATOR,
                 "Apply the operator to the given columns and create new one",
-                new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,TYPE_COLUMNS), "new col name", "operator +,-,*,/,%,average"),
-
+                new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,TYPE_COLUMNS),
+		new Arg("new col name"),
+		new Arg("operator","Operator:+,-,*,/,%,average",
+			ATTR_TYPE,"enumeration","values","+,-,*,/,%,average")),
 	new Cmd(CMD_COMPARE, "Add a true/false column comparing the values",
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN),
@@ -2438,21 +2498,24 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_ROUND, "Round the values",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_ABS, "Make absolute values",
+		ARG_LABEL,"Absolute Value",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 	//TODO:
         new Cmd(CMD_CLIP, "Clip the number to within the range",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-		new Arg("min"),
-		new Arg("max")),
+		new Arg("min","",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("max","",ATTR_TYPE,TYPE_NUMBER)),
         new Cmd(CMD_RAND, "make random value",
 		new Arg("column name"),
-		new Arg("minrange","Minimum range (e.g. 0)"),
-		new Arg("maxrange","Maximum range (e.g. 1)")),		
+		new Arg("minrange","Minimum range (e.g. 0)",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("maxrange","Maximum range (e.g. 1)",ATTR_TYPE,TYPE_NUMBER)),		
         new Cmd(CMD_EVEN, "Add true if the column starts with an even number",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_SUM,
 		"Sum values keying on key column value. If no value columns specified then do a count",
-		"key columns", "value columns", "carry over columns"),
+		new Arg("key columns", "",ATTR_TYPE,TYPE_COLUMNS),
+		new Arg("value columns",  "",ATTR_TYPE,TYPE_COLUMNS),
+		new Arg("carry over columns", "",ATTR_TYPE,TYPE_COLUMNS)),
         new Cmd(CMD_PIVOT,
 		"Make a pivot table",
 		new Arg("key columns","Columns to key on",ATTR_TYPE,TYPE_COLUMNS),
@@ -2471,11 +2534,17 @@ public class CsvUtil implements CsvCommands {
 		new Arg("bins","Comma separated set of bin values"),
 		new Arg("value columns","Extra columns to sum up",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("ops","ops to apply to extra columns - any of count,sum,average,min,max")),		
-        new Cmd(CMD_PERCENT, "", "columns to add"),
+        new Cmd(CMD_PERCENT, "Add columns together. Replace with their percentage", 
+		ARG_LABEL,"Calculate Percent",
+		new Arg(ARG_COLUMNS,"Columns to add",ATTR_TYPE,"columns")),
         new Cmd(CMD_INCREASE, "Calculate percent increase",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), "how far back"),
-        new Cmd(CMD_AVERAGE, "Calculate a moving average", "columns",
-                "period", "label"),
+		ARG_LABEL,"% Increase",
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS), 
+		new Arg("how far back","",ATTR_TYPE,TYPE_NUMBER)),
+        new Cmd(CMD_AVERAGE, "Calculate a moving average", 
+		new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,"columns"),
+                new Arg("period","",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("label")),
         new Cmd(CMD_RANGES, "Create a new column with the (string) ranges where the value falls in",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg(ARG_NAME, "New column name"),		
@@ -2516,12 +2585,15 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_LONGITUDE, "longitude column",ATTR_TYPE,TYPE_COLUMN)),		
         new Cmd(CMD_GEOCODEADDRESSDB, "Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column", 
 		ARG_LABEL,"Geocode for DB",
-                new Arg(ARG_COLUMNS,"columns",ATTR_TYPE,TYPE_COLUMNS), "prefix", "suffix"),
+                new Arg(ARG_COLUMNS,"columns",ATTR_TYPE,TYPE_COLUMNS),
+                new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
+		new Arg("suffix")),
         new Cmd(CMD_GEOCODEJOIN, "Geocode with file",
 		ARG_LABEL,"Geocode Join",
                 new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("csv file", "File to get lat/lon from", ATTR_TYPE,
-                        "file"), "key idx", "lat idx", "lon idx"),
+                        "file"),
+		new Arg("key idx"), new Arg("lat idx"), new Arg("lon idx")),
         new Cmd(CMD_BOUNDS, 
 		"Geocode within bounds", 
 		new Arg("north"),
@@ -2560,18 +2632,19 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_COLUMNS, "Columns with state name or abbrev.", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_POPULATION, "Add in population from address",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("prefix", "e.g., state: or county: or city:"), "suffix"),
+                new Arg("prefix", "e.g., state: or county: or city:"),
+		new Arg("suffix")),
 	new Cmd(CMD_NEIGHBORHOOD, "Look up neighborhood for a given location",
                 new Arg(ARG_LATITUDE, "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN)),	
 
 
         /** * Other  * */
-        new Category("Misc."),
-        new Cmd(CMD_EXPANDCOMMANDS, "Apply the commands to each of the columns",
-		ARG_LABEL,"Expand Commands",
+        new Category("Misc"),
+        new Cmd(CMD_PROC, "Apply the commands to each of the columns",
+		ARG_LABEL,"Procedure",
 		new Arg(ARG_COLUMNS, "Columns to expand with", ATTR_TYPE, TYPE_COLUMNS),
-		new Arg("commands", "Commands", "rows", "6")),
+		new Arg("commands", "Commands. Ends with -endproc", ATTR_ROWS, "6")),
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("direction", "Direction", ATTR_TYPE, "enumeration","values","up,down"),
@@ -2596,7 +2669,7 @@ public class CsvUtil implements CsvCommands {
 		new Arg(ARG_PATTERN,"Pattern",ATTR_TYPE, TYPE_PATTERN)),		
         new Cmd(CMD_MAXROWS, "Set max rows to process",
 		ARG_LABEL,"Max Rows",		
-		new Arg("rows","Number of rows",ATTR_TYPE, "number")),
+		new Arg("rows","Number of rows",ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_CHANGELINE,  "Change the line",
 		ARG_LABEL,"Change Line",
                 new Arg("from","From pattern"),
@@ -2606,7 +2679,7 @@ public class CsvUtil implements CsvCommands {
                 new Arg("from","From pattern"),
 		new Arg("to","To string")),
         new Cmd(CMD_CROP,  "Crop last part of string after any of the patterns",
-                ARG_COLUMNS,
+                new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("patterns","Comma separated list of patterns",ARG_TYPE,"list")),
         new Cmd(CMD_STRICT,
 		"Be strict on columns. any rows that are not the size of the other rows are dropped"),
@@ -2614,11 +2687,12 @@ public class CsvUtil implements CsvCommands {
 		"Be strict on columns. any rows that are not the size of the other rows are shown"),
         new Cmd(CMD_VERIFY,
                 "Throw error if a row has a different number of columns",
-                new Arg("# columns", "", ATTR_TYPE, "number")),
+                new Arg("# columns", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_PROP, "Set a property",
                 new Arg("property", "", "values", "position"),
                 new Arg("value", "start, end, etc")),
-        new Cmd(CMD_COMMENT, "", "string"),
+        new Cmd(CMD_COMMENT, "",
+		new Arg("comment")),
         new Cmd(CMD_VERIFY,
                 "Verify that all of the rows have the same # of columns"),
         new Cmd(CMD_EXT,
@@ -2660,10 +2734,10 @@ public class CsvUtil implements CsvCommands {
 		new Arg(ARG_COLUMNS,"database columns"),		
 		new Arg("properties","name value properties")),		
         new Cmd(CMD_TEMPLATE, "Apply the template to make the output",
-                new Arg("prefix", "", "size", "40"),
-                new Arg("template", "Use ${column_name} or indices: ${0},${1}, etc for values", "rows", "6"),
-		new Arg("row_delimiter", "Output between rows",	"size", "40"),
-		new Arg("suffix", "", "size", "40")),
+                new Arg("prefix", "", ATTR_SIZE, "40"),
+                new Arg("template", "Use ${column_name} or indices: ${0},${1}, etc for values", ATTR_ROWS, "6"),
+		new Arg("row_delimiter", "Output between rows",	ATTR_SIZE, "40"),
+		new Arg("suffix", "", ATTR_SIZE, "40")),
         new Cmd(CMD_SUBD, "Subdivide into different files",
 		ARG_LABEL,"Subdivide",
 		new Arg(ARG_COLUMNS,"columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS),		
@@ -2677,11 +2751,11 @@ public class CsvUtil implements CsvCommands {
 
         new Cmd(CMD_ADDHEADER, "Add the RAMADDA point properties",
 		ARG_LABEL,"Add Point Header",
-                new Arg("properties", "name1 value1 ... nameN valueN", "rows", "6")),
+                new Arg("properties", "name1 value1 ... nameN valueN", ATTR_ROWS, "6")),
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
-			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
+			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", ATTR_ROWS, "6")),
         new Cmd(CMD_DBPROPS, "Print to stdout props for db generation",
 		ARG_LABEL,"Print DB Properties",
 		new Arg("id pattern"),
@@ -2690,7 +2764,7 @@ public class CsvUtil implements CsvCommands {
 		new Arg("file name template"),
 		new Arg("contents template")),
         new Cmd(CMD_FIELDS, "Print the fields"),
-        new Cmd(CMD_RUN, "", "Name of process directory"),
+        new Cmd(CMD_RUN, "", new Arg("Name of process directory")),
         new Cmd(CMD_PROGRESS, "Show progress",
 		ARG_LABEL,"Print Progress",
 		new Arg("rows", "How often to print")),
@@ -2698,8 +2772,11 @@ public class CsvUtil implements CsvCommands {
 		ARG_LABEL,"Debug Rows",
 		new Arg("rows", "# of rows")),	
 	new Cmd(CMD_SCRIPT, "Generate the script to call"),
-        new Cmd(CMD_ARGS, "Generate the CSV file commands"),
         new Cmd(CMD_POINTHEADER, "Generate the RAMADDA point properties"),
+        new Cmd(CMD_ARGS, "Generate the CSV file commands"),
+        new Cmd(CMD_TYPE_XML, "Generate the type xml",
+		new Arg("type_id","Type ID, e.g.type_point_my"),
+		new Arg("type_desc","Type Description"))
     };
 
 
@@ -3329,13 +3406,14 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
-	defineFunction(CMD_EXPANDCOMMANDS,1, (ctx,args,i) -> {
+	defineFunction(new String[]{CMD_PROC,CMD_EXPANDCOMMANDS},1, (ctx,args,i) -> {
 		List<String> cols =  Utils.split(args.get(++i), ",", true, true);
 		List<String> applyArgs = new ArrayList<String>();
 		while(true) {
 		    if(i>=args.size()) throw new RuntimeException("Unclosed -exand");
 		    String a = args.get(++i);
-		    if(a.equals("-endexpandcommands")) break;
+		    if(a.equals("-endproc")) break;
+		    if(a.equals("-endexpandcommands")) break;		    
 		    applyArgs.add(a);
 		}
 		ctx.addProcessor(new Processor.Expand(this,ctx,cols,applyArgs));

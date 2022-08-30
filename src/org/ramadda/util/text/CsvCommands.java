@@ -19,9 +19,13 @@ public interface CsvCommands {
     public static final String ARG_LONGITUDE  ="longitude";
     public static final String ARG_NAME  ="name";        
     public static final String ATTR_TYPE = "type";
+    public static final String ATTR_SIZE = "size";
+    public static final String ATTR_ROWS =  "rows";
     public static final String TYPE_COLUMNS = "columns";
     public static final String TYPE_COLUMN = "column";
     public static final String TYPE_LIST = "list";
+    public static final String TYPE_ROWS =  "rows";    
+    public static final String TYPE_NUMBER = "number";
     public static final String TYPE_PATTERN = "pattern";
 
 
@@ -249,6 +253,7 @@ public interface CsvCommands {
     public static final String CMD_POPULATION="-population";
     public static final String CMD_NEIGHBORHOOD="-neighborhood";
     public static final String CMD_EXPANDCOMMANDS="-expandcommands";
+    public static final String CMD_PROC="-proc";    
     public static final String CMD_SORTBY="-sortby";
     public static final String CMD_SORT="-sort";
     public static final String CMD_DESCSORT="-descsort";
@@ -292,5 +297,6 @@ public interface CsvCommands {
     public static final String CMD_DEBUGROWS="-debugrows";
     public static final String CMD_SCRIPT="-script";
     public static final String CMD_ARGS="-args";
+    public static final String CMD_TYPE_XML="-typexml";
     public static final String CMD_POINTHEADER="-pointheader";
 }
