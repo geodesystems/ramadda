@@ -1376,6 +1376,11 @@ var Utils =  {
         }
         return words;
     },
+    stringEquals: function(s1,s2) {
+	if(s1===null && s2===null) return true;
+	if(s1===null || s2===null) return false;
+	return new String(s1).valueOf()===new String(s2).valueOf();
+    },
     stringDefined: function(v) {
         if (!Utils.isDefined(v)) return false;
         if (v == null || v == "") return false;
