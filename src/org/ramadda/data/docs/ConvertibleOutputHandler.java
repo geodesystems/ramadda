@@ -213,6 +213,12 @@ public class ConvertibleOutputHandler extends OutputHandler {
                            + "/media/convertcsv.js");
 
 
+	if (getAccessManager().canDoEdit(request, entry)) {
+	    props.put("canEdit","true");	    
+	}
+
+
+
 	List params = Utils.makeList(props);
 	String jsparams = JsonUtil.mapAndQuote(params);
         HU.script(sb,
