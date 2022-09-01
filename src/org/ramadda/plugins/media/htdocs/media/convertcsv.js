@@ -1,4 +1,5 @@
 
+
 function  ConvertForm(inputId, entry,params) {
     this.params = params||{};
     const ID_SETTINGS  = "settings";
@@ -20,10 +21,16 @@ function  ConvertForm(inputId, entry,params) {
     const ID_CANCELCOMMAND = "cancelcommand";
     const ID_PRE = "csvpre";
 
-    $.extend(this,{
+    if(params.canEdit) {
+	$(window).bind('beforeunload', (e)=>{
+	    return this.checkChanged(e);
+        });
+    }
 
+    $.extend(this,{
 	entry:entry,
 	editor:null,
+	canEdit: params.canEdit,
 	inputId: inputId||"convertcsv_input",
 	baseId: inputId||"convertcsv_input",
 	applyToSiblings:false,
@@ -43,6 +50,22 @@ function  ConvertForm(inputId, entry,params) {
 	},
 	jq: function(id) {
 	    return $("#"+this.domId(id));
+	},
+	checkChanged: function(e) {
+	    e = e || window.event;
+	    let currentInput = this.getInput();
+//	    console.log('current',currentInput);
+//	    console.log('last',this.lastSavedInput);
+//	    console.log("eq:" + Utils.stringEquals(currentInput,this.lastSavedInput));
+	    if(!Utils.stringEquals(currentInput,this.lastSavedInput)) {
+		let msg  =  'Changes have been made. Are you sure you want to leave?';
+		if(e) {
+		    e.preventDefault();
+		    e.returnValue = msg;
+		}
+		return msg;
+	    }
+	    return;
 	},
 	addColumnId: function(id) {
 	    if(!this.allColumnIds.includes(id))
@@ -632,7 +655,8 @@ function  ConvertForm(inputId, entry,params) {
 	display:function(what, process,html,command) {
 	    if(!command) {
 		command ="";
-		lines = this.getInput().split("\n");
+		this.lastSavedInput = this.getInput();
+		lines = this.lastSavedInput.split("\n");
 		for(let i=0;i<lines.length;i++){
 		    line = lines[i].trim();
 		    if(line =="") continue;
@@ -705,15 +729,11 @@ function  ConvertForm(inputId, entry,params) {
 	    this.insertCommand(field +value);
 	},
 	call:function(cmds,args) {
-
-
-
 	    let _this =this;
 	    if (!args)  {
 		args = {};
 	    }
 	    this.output(HtmlUtil.tag("pre",[],"Processing..."));
-
 	    let cleanCmds = "";
 	    let lines = cmds.split("\n");
 	    let doExplode = false;
@@ -1371,6 +1391,7 @@ function  ConvertForm(inputId, entry,params) {
     });
 
     this.init();
+    this.lastSavedInput = this.getInput();
 
 }
 
