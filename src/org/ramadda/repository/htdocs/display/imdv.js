@@ -2397,7 +2397,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let loadCallback = (map,layer)=>{
-		if(layer.mapGlyph)layer.mapGlyph.applyMapStyle();
+		if(layer.mapGlyph)layer.mapGlyph.applyMaptyle();
 	    }
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
@@ -4697,6 +4697,7 @@ MapGlyph.prototype = {
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+	display.setProperty("showRecordSelection",false);
 
 	display.errorMessageHandler = (display,msg) =>{
 	    this.display.setErrorMessage(msg,5000);

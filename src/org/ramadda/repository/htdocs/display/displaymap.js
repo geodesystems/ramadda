@@ -4181,6 +4181,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
+	    if(displayDebug.handleEventRecordSelect)
+		this.logMsg("handleEvent");
 	    this.highlightPoint(args.record.getLatitude(),args.record.getLongitude(),args.highlight,true);
 	},
         handleEventRecordSelection: function(source, args) {
@@ -4189,7 +4191,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 	    args.highlight = true;
-            if (!this.getProperty("showRecordSelection", true)) {
+            if (!this.getShowRecordSelection(true)) {
 		return;
 	    }
 	    this.handleEventRecordHighlight(source,args);
