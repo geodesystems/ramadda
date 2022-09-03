@@ -5365,9 +5365,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             hideEffectSpeed: 400,
         };
         if(args) $.extend(opts,args);
-        HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
-                                [ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
-                                s, ()=>{$(s).selectBoxIt(opts);});
+	$( document ).ready(function() {
+            HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
+                                    [ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
+                                    s, ()=>{
+					$(s).selectBoxIt(opts);
+				    });
+	});
     },
     valueDefined: function(value) {
         if (value != "" && value.indexOf("--") != 0) {
