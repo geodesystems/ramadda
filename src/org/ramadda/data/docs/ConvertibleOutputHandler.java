@@ -37,6 +37,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class ConvertibleOutputHandler extends OutputHandler {
 
 
