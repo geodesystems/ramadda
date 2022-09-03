@@ -3640,27 +3640,34 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     },
     loadJqueryLib: function(name,css,js,selector,callback) {
+	let debug = false;
+        if(debug) console.log('loadJqueryLib:' + name);
         if(!HtmlUtils.loaded[name]) {
-//          console.log('loading ' + name);
             css.forEach(url=>{
+		if(debug) console.log('\tcss: ' + url);
                 let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
                 $(css).appendTo("head");
             });
             js.forEach(url=>{
+		if(debug) console.log('\tjs: ' + url);
                 let html = 
                     "<script src='" + url +"'  type=text/JavaScript></script>";
                 $(html).appendTo("head");
             });
             HtmlUtils.loaded[name] = true;
         }
+	if(debug) console.log('\tafter loading');
         //check and wait for it
         if(!$(selector)[name]) {
+	    if(debug) console.log('\tnot loaded:' + name);
             setTimeout(()=>{
                 HtmlUtils.loadJqueryLib(name,css,js,selector,callback);
             },50);
             return
         }
+	if(debug) console.log('\tcalling callback');
         callback();
+	if(debug) console.log('\tdone calling callback');
     },
     createFancyBox: function(selector, args) {
         args = args||{};
@@ -5356,21 +5363,29 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     textarea: function(name, value, attrs) {
         return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },
-    initSelect: function(s, args) {
-        if(s.length==0) return;
+    initSelect: function(selector, args) {
+        if(selector.length==0) return;
         let opts = {
             showEffect: "fadeIn",
             showEffectSpeed: 400,
             hideEffect: "fadeOut",
             hideEffectSpeed: 400,
+	    autoWidth: false
         };
         if(args) $.extend(opts,args);
 	$( document ).ready(function() {
             HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
                                     [ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
-                                    s, ()=>{
-					$(s).selectBoxIt(opts);
-				    });
+                                    selector, ()=>{
+					//Call later. This somehow fixes a major performance problem with
+					//menus that are hidden
+					setTimeout(()=>{
+					    let cnt = 0;
+//					    console.log("before selectBoxIt call");
+					    $(selector).selectBoxIt(opts);
+//					    console.log("after selectBoxIt call");
+					},2);
+					});
 	});
     },
     valueDefined: function(value) {
