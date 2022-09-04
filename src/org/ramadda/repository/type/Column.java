@@ -91,6 +91,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    private SimpleDateFormat displayFormat = null;
+
     /** _more_ */
     private SimpleDateFormat dateParser = null;
 
@@ -550,6 +552,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 dateParser = new SimpleDateFormat(dttmFormat);
             }
+        }
+
+        dttmFormat = XmlUtil.getAttribute(element, "displayFormat",
+                                (String) null);
+        if (dttmFormat != null) {
+	    displayFormat = new SimpleDateFormat(dttmFormat);
         }
 
 
@@ -1369,7 +1377,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                 sb.append("null");
             } else {
                 String s;
-                if (sdf != null) {
+                if (displayFormat != null) {
+                    s = displayFormat.format((Date) values[offset]);
+		} else  if (sdf != null) {
                     s = sdf.format((Date) values[offset]);
                 } else {
                     s = dateFormat.format((Date) values[offset]);
