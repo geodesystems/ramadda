@@ -2412,6 +2412,7 @@ public abstract class Processor extends CsvOperator {
             String dfltChangeType = getDbProp("table", "changetype", "false");
 
             String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
+            String displayFormat = getDbProp("table", "displayFormat", (String)null);
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col   = row1.getValues().get(colIdx);
                 String colId = makeID(col);
@@ -2572,6 +2573,11 @@ public abstract class Processor extends CsvOperator {
                 if (type.equals("date")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",
                             getDbProp(colId, "format", format) }));
+		    String fmt = getDbProp(colId, "displayFormat", displayFormat);
+		    if(fmt!=null) 
+			attrs.append(XmlUtil.attrs(new String[] { "displayFormat",
+								 fmt}));
+	   
                 }
 
                 StringBuffer inner = new StringBuffer();
