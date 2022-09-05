@@ -785,45 +785,27 @@ public class CsvUtil implements CsvCommands {
                 myTextReader.addProcessor(iteratePattern);
             }
 	    //For now do the old way so we handle utf-8 better
-	    boolean newWay = false;
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
                 if (iteratePattern != null) {
                     iteratePattern.setPattern(pattern);
                 }
-		for(String file: files) {
-		    if(Utils.isUrl(file)) newWay=false;
-		}
 		int providerCnt = 0;
                 for (DataProvider provider : providers) {
 		    providerCnt++;
-		    if(newWay) {
-			int cnt=0;
-			for (NamedChannel input : getChannels(files)) {
-			    myTextReader.resetProcessors();
-			    TextReader clone = myTextReader.cloneMe(input,
-								    outputFile, outputStream);
-			    process(clone, provider,cnt++);
-			    myTextReader.setFirstRow(null);
-			    input.close();
-			    provider.finish();
-			}
-		    } else {
-			int cnt=0;
-			for (NamedInputStream input : getStreams(files)) {
-			    //			    System.err.println("FILE:" + input);
-			    myTextReader.resetProcessors();
-			    TextReader clone = myTextReader.cloneMe(input,
-								    outputFile, outputStream);
-			    process(clone, provider,cnt++);
-			    myTextReader.setFirstRow(null);
-			    input.close();
-			}
-			if (okToRun) {
-			    myTextReader.finishProcessing();
-			}
-			provider.finish();
+		    int cnt=0;
+		    for (NamedInputStream input : getStreams(files)) {
+			//			    System.err.println("FILE:" + input);
+			myTextReader.resetProcessors();
+			myTextReader.setInput(input);
+			process(myTextReader, provider,cnt++);
+			myTextReader.setFirstRow(null);
+			input.close();
 		    }
+		    if (okToRun) {
+			myTextReader.finishProcessing();
+		    }
+		    provider.finish();
 		    myTextReader.flush();
 		    myTextReader.close();
                 }

@@ -76,8 +76,6 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private NamedInputStream input;
 
-    /**  */
-    private NamedChannel inputChannel;
 
     /** _more_ */
     private String inputFile;
@@ -274,11 +272,11 @@ public class TextReader implements Cloneable {
     private CsvUtil.Dater  outDater;
 
 
-
     /**
      * _more_
      */
-    public TextReader() {}
+    public TextReader() {
+    }
 
     /**
      * _more_
@@ -579,11 +577,7 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     public String readContents() throws Exception {
-        if (input != null) {
-            return IO.readInputStream(input.getInputStream());
-        }
-
-        return IO.readChannel(inputChannel.getChannel());
+	return IO.readInputStream(input.getInputStream());
     }
 
     /**
@@ -772,11 +766,15 @@ public class TextReader implements Cloneable {
 	that.outputPrefix = this.outputPrefix;
         that.cleanInput = this.cleanInput;
         that.debug      = this.debug;
+        that.bounds     = this.bounds;
+        that.skipStrings   = this.skipStrings;
+        that.changeStrings = this.changeStrings;
+        that.setPrepend(this.prepend);
+        that.allData = this.allData;
         that.input      = input;
         that.output     = output;
         that.outputFile = outputFile;
         that.writer     = null;
-        that.bounds     = this.bounds;
 
         if (debug) {
             that.debugSB = this.debugSB;
@@ -786,10 +784,6 @@ public class TextReader implements Cloneable {
                 that.debugSB = new StringBuilder();
             }
         }
-        that.skipStrings   = this.skipStrings;
-        that.changeStrings = this.changeStrings;
-        that.setPrepend(this.prepend);
-        that.allData = this.allData;
         if (that.outputFile != null) {
             that.output = null;
         }
@@ -798,44 +792,7 @@ public class TextReader implements Cloneable {
     }
 
 
-    /**
-     *
-     * @param inputChannel _more_
-     * @param outputFile _more_
-     * @param output _more_
-     *
-     * @return _more_
-     *
-     * @throws CloneNotSupportedException _more_
-     */
-    public TextReader cloneMe(NamedChannel inputChannel, File outputFile,
-                              OutputStream output)
-            throws CloneNotSupportedException {
-        TextReader that = (TextReader) super.clone();
-        that.debug        = this.debug;
-        that.inputChannel = inputChannel;
-        that.output       = output;
-        that.outputFile   = outputFile;
-        that.writer       = null;
 
-        if (debug) {
-            that.debugSB = this.debugSB;
-            if ((that.output != null) && (that.debugSB != null)
-                    && (that.debugSB.length() > 0)) {
-                that.getWriter().print(that.debugSB);
-                that.debugSB = new StringBuilder();
-            }
-        }
-        that.skipStrings   = this.skipStrings;
-        that.changeStrings = this.changeStrings;
-        that.setPrepend(this.prepend);
-        that.allData = this.allData;
-        if (that.outputFile != null) {
-            that.output = null;
-        }
-
-        return that;
-    }
 
     /**
        Set the OutputPrefix property.
@@ -878,10 +835,6 @@ public class TextReader implements Cloneable {
         if (input != null) {
             return input.getName();
         }
-        if (inputChannel != null) {
-            return inputChannel.getName();
-        }
-
         return null;
     }
 
@@ -943,57 +896,6 @@ public class TextReader implements Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private int readCharNew() throws Exception {
-        ByteBuffer buff = getBuffer();
-        if (buff == null) {
-            return UNDEF;
-        }
-        while (true) {
-            if ( !buff.hasRemaining()) {
-                return UNDEF;
-            }
-            int c = UNDEF;
-            if (prependReader != null) {
-                c = prependReader.read();
-                if (c == -1) {
-                    prependReader = null;
-                }
-            }
-            if (c == UNDEF) {
-                while (pruneBytes > 0) {
-                    if ( !buff.hasRemaining()) {
-                        buff = getBuffer();
-                    }
-                    if (buff == null) {
-                        return UNDEF;
-                    }
-                    buff.get();
-                    pruneBytes--;
-                }
-                if ( !buff.hasRemaining()) {
-                    buff = getBuffer();
-                }
-                if (buff == null) {
-                    return UNDEF;
-                }
-                if ( !buff.hasRemaining()) {
-                    return UNDEF;
-                }
-                c = buff.get();
-            }
-            if (c != 0x00) {
-                return c;
-            }
-        }
-    }
-
 
 
 
@@ -1005,17 +907,10 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     private int readChar() throws Exception {
-        int c;
-        if (inputChannel != null) {
-            c = readCharNew();
-        } else {
-            c = readCharOld();
-            //      System.err.println("old:" + (char)c);
-        }
+        int c =  readCharOld();
         if (c == UNDEF) {
             hasInput = false;
         }
-
         return c;
     }
 
@@ -1396,7 +1291,6 @@ public class TextReader implements Cloneable {
         try {
             if (writer == null) {
                 OutputStream os = this.getOutput();
-		//System.err.println("MAKING WRITER");
                 writer = new PrintWriter(os);
                 if (getDebug()) {
                     if (debugSB.length() > 0) {
@@ -1557,7 +1451,6 @@ public class TextReader implements Cloneable {
 
 
 
-
     /**
      * _more_
      *
@@ -1595,8 +1488,6 @@ public class TextReader implements Cloneable {
     public InputStream getInputStream() throws Exception {
         if (input != null) {
             return input.getInputStream();
-        } else if (inputChannel != null) {
-            return Channels.newInputStream(getChannel());
         } else {
             return null;
         }
@@ -1619,64 +1510,6 @@ public class TextReader implements Cloneable {
 
         return reader;
     }
-
-    /**
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public ByteBuffer getBuffer() throws Exception {
-        if (buff == null) {
-            channel = getChannel();
-            buff    = ByteBuffer.allocate(32000);
-            int bytesRead = channel.read(buff);
-            if (bytesRead < 0) {
-                return null;
-            }
-            buff.flip();
-            if ( !buff.hasRemaining()) {
-                return null;
-            }
-
-            return buff;
-        }
-        if ( !buff.hasRemaining()) {
-            buff.clear();
-            int bytesRead = channel.read(buff);
-            if (bytesRead < 0) {
-                return null;
-            }
-            buff.flip();
-        }
-
-        return buff;
-    }
-
-
-    /**
-     *
-     * @param channel _more_
-     */
-    public void setInputChannel(NamedChannel channel) {
-        this.inputChannel = channel;
-    }
-
-    /**
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private ReadableByteChannel getChannel() throws Exception {
-        if (channel == null) {
-            channel = inputChannel.getChannel();
-            buff    = ByteBuffer.allocate(32000);
-        }
-
-        return channel;
-    }
-
 
 
     /**
@@ -2081,7 +1914,6 @@ public class TextReader implements Cloneable {
             TextReader          textReader = new TextReader();
             InputStream         fis        = new FileInputStream(args[0]);
             ReadableByteChannel channel    = Channels.newChannel(fis);
-            textReader.inputChannel = new NamedChannel(args[0], channel);
             //      textReader.setReader(new BufferedReader(new InputStreamReader(fis)));
             long t1  = System.currentTimeMillis();
             int  cnt = 0;
