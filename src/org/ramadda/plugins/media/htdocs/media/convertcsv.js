@@ -877,6 +877,7 @@ function  ConvertForm(inputId, entry,params) {
 		    } catch(err) {
 			console.log("Error decoding result:" + err);
 		    }
+		    
 		    //Decode utf-8
 		    result = decodeURIComponent(escape(result));
 		    if(isScript) {
@@ -1114,7 +1115,8 @@ function  ConvertForm(inputId, entry,params) {
 				out=HU.pre(result);
 			    } catch(err) {
 				console.log("Error:" + err);
-				out = "<b>Error processing json:" + err+"</b><br>";
+//				out = "<b>Error processing json:" + err+"</b><br>";
+				result = result.replace(/,/g,',\n').replace(/\s\s+/g,' ');
 				out +=HU.pre(result);
 			    }
 			    output.html(out);
