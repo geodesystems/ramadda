@@ -294,7 +294,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             throws Exception {
 
         File destDir = getCurrentProcessingDir(request, true,
-                           "CSV Processing");
+                           "SeeSV Processing");
 
         if (request.get("clearoutput", false)) {
             for (File f : destDir.listFiles()) {
@@ -413,6 +413,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		     && !args.contains("-raw")
 		     && !args.contains("-stats")
 		     && !args.contains("-record")
+		     && !args.contains("-tojson")
 		     && !args.contains("-table")
 		     && !args.contains("-cols")		     
 		     && !args.contains("-db")) {
@@ -426,7 +427,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
 
                 currentArgs = args;
-                //              System.err.println("args:" + args);
+		//		System.err.println("args:" + args);
                 //              for(String arg: args)
 
                 //                  System.err.println("arg:" + arg+":");
@@ -481,7 +482,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
                 prevCsvUtil = csvUtil;
                 getSessionManager().putSessionProperty(request, "csvutil",
-                        csvUtil);
+						       csvUtil);
                 //              System.err.println("RUN:");
                 for (Entry e : entries) {
                     //              System.err.println("\tentry:" + e);
@@ -516,7 +517,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 if ( !process) {
                     lastResult = IO.readContents(newFiles.get(0));
                 } else {
-                    StringBuffer html = new StringBuffer();
+                    StringBuffer html = new StringBuffer("");
+		    html.append(HU.formTable());
                     for (String newFile : newFiles) {
                         File f = new File(newFile);
                         String id =
@@ -530,32 +532,23 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                     .getAbsoluteUrl(getRepository()
                                         .URL_ENTRY_SHOW), ARG_ENTRYID, id);
 
-                        if (newFile.endsWith(".csv")) {
-                            //                        url += "&output=" + OUTPUT_CONVERT_FORM;
-                        }
                         String getUrl =
                             HtmlUtils.url(
                                 request.makeUrl(
                                     getRepository().URL_ENTRY_GET) + "/"
                                         + f.getName(), ARG_ENTRYID, id);
-                        html.append("  ");
-                        html.append(HtmlUtils.href(getUrl, "Download",
-                                HU.attrs("class", "ramadda-button")));
-                        if (request.getUser().getAdmin()) {
-                            html.append(" File on server: "
-                                        + HtmlUtils.input("", f, "size=80"));
-                        }
-                        html.append("<br>");
-                        html.append("View temp file: ");
-                        html.append(HtmlUtils.href(url, f.getName(),
-                                "target=_output"));
+                        html.append(HU.row(HU.td(HtmlUtils.href(getUrl, "Download",
+								HU.attrs("class", "ramadda-button")))));
 
-                        //If they are creating point data then add an add entry link
-                        //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
-                        //                        url += "&output=" + OUTPUT_CONVERT_FORM;
-                        //                    }
-                        html.append("<br>");
-                    }
+                        if (request.getUser().getAdmin()) {
+                            HU.formEntry(html,"File on server:",
+					 HtmlUtils.input("", f, "size=80"));
+                        }
+                        HU.formEntry(html,"View temp file:",
+				     HtmlUtils.href(url, f.getName(),
+						    "target=_output"));
+
+		    }
                     String urlParent =
                         HtmlUtils
                             .url(request
@@ -565,11 +558,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                             getStorageManager()
                                                 .getEncodedProcessDirEntryId(
                                                     destDir.getName()));
-                    html.append(HtmlUtils.href(urlParent, "View All",
-                            "target=_output"));
-                    String s = JsonUtil.mapAndQuote(Utils.makeList("url",
-								   html.toString().replaceAll("\"", "\\\"")));
+                    HU.formEntry(html,"",HtmlUtils.href(urlParent, "View All",
+						       "target=_output"));
 
+		    html.append(HU.formTableClose());
+
+		    String shtml = HU.insetDiv(html, 0,20,0,0);
+		    String s = JsonUtil.mapAndQuote(Utils.makeList("url",shtml.replaceAll("\"", "\\\"")));
                     return new Result(s, "application/json");
                 }
             }
@@ -639,6 +634,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
         try {
             List<String> files = new ArrayList<String>();
 	    String path;
+	    String fileSuffix = ".csv";
+	    if(args.contains("-tojson")) fileSuffix = ".json";
+	    else if(args.contains("-toxml")) fileSuffix = ".xml";	    
 	    if(entry.isFile()) {
 		path =  getStorageManager().getEntryFile(entry).toString();
 	    } else {
@@ -649,10 +647,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
                          runDir,
                          IOUtil.stripExtension(
                              getStorageManager().getFileTail(
-                                 entry.getResource().getPath())) + ".csv");
+                                 entry.getResource().getPath())) + fileSuffix);
 
             csvUtil.setOutputFile(f);
-            //      System.err.println("\tcalling csvUtil.run");
+	    //	    System.err.println("\tcalling csvUtil.run:" + f);
             csvUtil.run(files);
             if ( !csvUtil.getOkToRun()) {
                 return;
