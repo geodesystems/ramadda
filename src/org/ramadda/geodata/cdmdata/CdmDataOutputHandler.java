@@ -1886,19 +1886,26 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
                         tIdx += timeStride) {
                     Array a;
-                    if (finalZRange.length() == 1) {
-                        a = theGrid.readYXData(tIdx, 0);
-                    } else {
-                        a = theGrid.readVolumeData(tIdx);
-                    }
-                    if (debug) {
-                        System.err.println("\treading time index:" + tIdx
-                                           + " size:" + a.getSize());
-                    }
-                    cnt += writeJson(
-                        writer, cnt, max, a,
-                        JsonUtil.quote(theDates.get(tIdx).toString()),
-                        points, finalZRange, scaler);
+		    //		    System.err.println("time idx:" + tIdx +" date:" + theDates.get(tIdx));
+		    try {
+			if (finalZRange.length() == 1) {
+			    a = theGrid.readYXData(tIdx, 0);
+			} else {
+			    a = theGrid.readVolumeData(tIdx);
+			}
+			if (debug) {
+			    System.err.println("read time index:" + tIdx  + " " + theDates.get(tIdx));
+			    //+" size:" + a.getSize());
+			}
+			cnt += writeJson(
+					 writer, cnt, max, a,
+					 JsonUtil.quote(theDates.get(tIdx).toString()),
+					 points, finalZRange, scaler);
+		    } catch(Exception exc) {
+			System.err.println("Error reading time:" + tIdx + " " + theDates.get(tIdx));
+			exc.printStackTrace();
+			break;
+		    }
                 }
                 writer.println("]}");
                 writer.close();
@@ -1940,9 +1947,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         synchronized (writer) {
             int written           = 0;
             int numPointsPerLevel = (int) (a.getSize() / zRange.length());
+	    /*
             System.err.println("a:" + a.getSize() + " per level:"
                                + (numPointsPerLevel) + " #points:"
                                + points.size());
+	    */
             for (int z = zRange.first(); z <= zRange.last(); z++) {
                 for (int i = 0; (i < numPointsPerLevel) && (cnt < max); i++) {
                     written++;
@@ -1962,9 +1971,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                         writer.print(z);
                     }
                     writer.print(",");
-                    writer.print(llp.getLatitude());
+                    writer.print(Utils.decimals(llp.getLatitude(),6));
                     writer.print(",");
-                    writer.print(llp.getLongitude());
+                    writer.print(Utils.decimals(llp.getLongitude(),6));
                     writer.print("]");
                 }
             }
