@@ -3761,9 +3761,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String inset(String html, int top, int left, int bottom,
+    public static String inset(Object html, int top, int left, int bottom,
                                int right) {
-        return span(html, style(insetStyle(top, left, bottom, right)));
+        return span(html.toString(), style(insetStyle(top, left, bottom, right)));
     }
 
 
@@ -3778,9 +3778,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String insetDiv(String html, int top, int left, int bottom,
+    public static String insetDiv(Object html, int top, int left, int bottom,
                                   int right) {
-        return div(html, style(insetStyle(top, left, bottom, right)));
+        return div(html.toString(), style(insetStyle(top, left, bottom, right)));
     }
 
     /**
