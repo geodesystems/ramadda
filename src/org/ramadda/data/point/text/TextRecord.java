@@ -270,8 +270,7 @@ public class TextRecord extends DataRecord {
 
 
 
-    /**  */
-    static boolean nio = false;
+
 
     /**
      * _more_
@@ -285,17 +284,10 @@ public class TextRecord extends DataRecord {
     public String readNextLine(RecordIO recordIO) throws Exception {
         boolean debug = false;
         if (textReader == null) {
-            nio        = !nio;
-            nio        = false;
             textReader = new TextReader();
             //      System.err.println("making text reader:" +(nio?"new way":"old way"));
             InputStream fis = recordIO.getInputStream();
-            if (nio) {
-                ReadableByteChannel in = Channels.newChannel(fis);
-                textReader.setInputChannel(new NamedChannel("", in));
-            } else {
-                textReader.setReader(recordIO.getBufferedReader());
-            }
+	    textReader.setReader(recordIO.getBufferedReader());
         }
         while (true) {
             if (firstDataLine != null) {
