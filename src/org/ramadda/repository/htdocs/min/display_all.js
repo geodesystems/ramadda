@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Aug 28 11:39:42 MDT 2022";
+var build_date="RAMADDA build date: Mon Sep  5 16:17:04 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -31363,7 +31363,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'doTagSearch',ex:'true'},	
-        {p:'showParent',tt:'Show parent entry in search results'},	
+        {p:'showParent',ex:'true',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
@@ -31750,7 +31750,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(showParent && entry.getParentName()) {
 		    let url = ramaddaBaseUrl+ "/entry/show?entryid=" + entry.parent;
 		    let plink = HU.href(url, HU.image(entry.parentIcon) +" " + entry.parentName);
-		    link = HU.hbox([plink,HU.span(['style','margin-right:2px;margin-left:2px;'],"&raquo;"), link]);
+		    link = HU.hbox([plink,HU.span(['style','margin-right:4px;margin-left:4px;'],"&raquo;"), link]);
 		}
 		inner+=HU.div(attrs, link);
 	    });
@@ -37223,6 +37223,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
+	    if(displayDebug.handleEventRecordSelect)
+		this.logMsg("handleEvent");
 	    this.highlightPoint(args.record.getLatitude(),args.record.getLongitude(),args.highlight,true);
 	},
         handleEventRecordSelection: function(source, args) {
@@ -37231,7 +37233,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 	    args.highlight = true;
-            if (!this.getProperty("showRecordSelection", true)) {
+            if (!this.getShowRecordSelection(true)) {
 		return;
 	    }
 	    this.handleEventRecordHighlight(source,args);
@@ -40847,7 +40849,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let loadCallback = (map,layer)=>{
-		if(layer.mapGlyph)layer.mapGlyph.applyMapStyle();
+		if(layer.mapGlyph)layer.mapGlyph.applyMaptyle();
 	    }
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
@@ -43147,6 +43149,7 @@ MapGlyph.prototype = {
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
 	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+	display.setProperty("showRecordSelection",false);
 
 	display.errorMessageHandler = (display,msg) =>{
 	    this.display.setErrorMessage(msg,5000);
