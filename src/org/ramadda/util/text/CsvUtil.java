@@ -1126,7 +1126,7 @@ public class CsvUtil implements CsvCommands {
                     continue;
                 }
                 String p = ze.getName().toLowerCase();
-                if (p.endsWith(".csv") || p.endsWith(".tsv")||p.endsWith(".txt")) {
+                if (p.endsWith(".csv") || p.endsWith(".tsv")||p.endsWith(".txt") || p.endsWith(".json")||p.endsWith(".geojson")) {
                     return zin;
                 }
                 //Apple health
