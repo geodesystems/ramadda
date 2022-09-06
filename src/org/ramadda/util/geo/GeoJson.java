@@ -14,6 +14,8 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.Bounds;
 
+import org.ramadda.util.text.CsvUtil;
+
 import org.w3c.dom.*;
 
 
@@ -32,9 +34,9 @@ import java.text.StringCharacterIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 
@@ -60,18 +62,12 @@ public class GeoJson extends JsonUtil {
     public static void geojsonFileToCsv(String file, PrintStream pw,
                                         String colString)
             throws Exception {
-        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
-        BufferedReader br   = new BufferedReader(new InputStreamReader(is));
-
-        StringBuilder  json = new StringBuilder();
-        String         input;
-        while ((input = br.readLine()) != null) {
-            json.append(input);
-            json.append("\n");
-        }
-
-        geojsonToCsv(json.toString(), pw, colString, false);
+        String contents = IOUtil.readContents(file, JsonUtil.class);
+        //        InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
+        InputStream is = new ByteArrayInputStream(contents.getBytes());
+        geojsonToCsv(is, pw, colString, false);
     }
+
 
 
     /**
@@ -83,8 +79,29 @@ public class GeoJson extends JsonUtil {
      *
      * @throws Exception _more_
      */
-    public static void geojsonToCsv(String json, Appendable pw,
+    public static void geojsonToCsv(InputStream json, PrintStream pw,
                                     String colString, boolean addPolygons)
+            throws Exception {
+        Iterator     iterator = makeIterator(json, colString, addPolygons);
+        List<String> values;
+        while ((values = iterator.next()) != null) {
+            pw.append(CsvUtil.columnsToString(values, ",", true));
+        }
+
+
+    }
+
+    /**
+     *
+     * @param json _more_
+     * @param colString _more_
+     * @param addPolygons _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Iterator makeIterator(InputStream json, String colString,
+                                        boolean addPolygons)
             throws Exception {
         HashSet cols = null;
         if (colString != null) {
@@ -94,79 +111,146 @@ public class GeoJson extends JsonUtil {
             }
         }
 
-        JSONObject obj      = new JSONObject(json);
-        JSONArray  features = readArray(obj, "features");
-	LinkedHashSet<String> names = new LinkedHashSet<String>();
+        JSONObject            obj      =
+            new JSONObject(new JSONTokener(json));
+        JSONArray             features = readArray(obj, "features");
+        LinkedHashSet<String> names    = new LinkedHashSet<String>();
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
             JSONObject props   = feature.getJSONObject("properties");
-	    for(String name: JSONObject.getNames(props)) {
-		if(!names.contains(name)) names.add(name);
-	    }
-	}
+            for (String name : JSONObject.getNames(props)) {
+                if ( !names.contains(name)) {
+                    names.add(name);
+                }
+            }
+        }
 
-	List<String> nameList = new ArrayList<String>();
-	for (String name : names) {
-	    if ((cols != null) && !cols.contains(name)) {
-		continue;
-	    }
-	    nameList.add(name);
-	    pw.append(name.toLowerCase());
-	    pw.append(",");
-	}
-	pw.append("latitude,longitude");
-	if (addPolygons) {
-	    pw.append(",polygon");
-	}
-	pw.append("\n");
-	
-        for (int i = 0; i < features.length(); i++) {
-            JSONObject feature = features.getJSONObject(i);
-            JSONObject props   = feature.getJSONObject("properties");
-            List<List<Point>> pts = null;
-            if (addPolygons) {
+        List<String> nameList = new ArrayList<String>();
+        for (String name : names) {
+            if ((cols != null) && !cols.contains(name)) {
+                continue;
+            }
+            nameList.add(name);
+        }
+
+        return new Iterator(features, nameList, addPolygons);
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Sep 6, '22
+     * @author         Enter your name here...
+     */
+    public static class Iterator {
+
+        /**  */
+        JSONObject obj;
+
+        /**  */
+        int featureIdx = -1;
+
+        /**  */
+        JSONArray features;
+
+        /**  */
+        List<String> names;
+
+        /**  */
+        boolean addPolygon;
+
+        /**
+         *
+         *
+         * @param features _more_
+         * @param names _more_
+         * @param addPolygon _more_
+         */
+        public Iterator(JSONArray features, List<String> names,
+                        boolean addPolygon) {
+            this.features   = features;
+            this.names      = names;
+            this.addPolygon = addPolygon;
+        }
+
+        /**
+         *  @return _more_
+         */
+        private List<String> makeHeader() {
+            List<String> header = new ArrayList<String>();
+            for (String name : names) {
+                header.add(name.toLowerCase());
+            }
+            header.add("latitude");
+            header.add("longitude");
+            if (addPolygon) {
+                header.add("polygon");
+            }
+
+            return header;
+        }
+
+        /**
+         *  @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public List<String> next() throws Exception {
+            if (featureIdx++ < 0) {
+                return makeHeader();
+            }
+            if (featureIdx >= features.length()) {
+                return null;
+            }
+            List<String>      values  = new ArrayList<String>();
+            JSONObject        feature = features.getJSONObject(featureIdx);
+            JSONObject        props   = feature.getJSONObject("properties");
+            List<List<Point>> pts     = null;
+            if (addPolygon) {
                 pts = new ArrayList<List<Point>>();
             }
             Bounds    bounds   = getFeatureBounds(feature, null, pts);
             JSONArray geom     = readArray(feature, "geometry.coordinates");
             String    type     = readValue(feature, "geometry.type", "NULL");
             Point     centroid = bounds.getCenter();
-            for (String name : nameList) {
+            for (String name : names) {
                 String value = props.optString(name, "");
-		value = value.replaceAll("\n"," ");
+                value = value.replaceAll("\n", " ");
                 if (value.indexOf(",") >= 0) {
                     value = "\"" + value + "\"";
                 }
-                pw.append(value);
-                pw.append(",");
+                values.add(value);
             }
-            pw.append(centroid.getLatitude() + "," + centroid.getLongitude());
-            if (addPolygons) {
-                pw.append(",");
+            Utils.add(values, "" + centroid.getLatitude(),
+                      "" + centroid.getLongitude());
+            if (addPolygon) {
+                StringBuilder poly = new StringBuilder();
                 for (List<Point> p2 : pts) {
                     for (Point tuple : p2) {
-                        pw.append("" + tuple.getLatitude());
-                        pw.append(";");
-                        pw.append("" + tuple.getLongitude());
-                        pw.append(";");
+                        poly.append("" + tuple.getLatitude());
+                        poly.append(";");
+                        poly.append("" + tuple.getLongitude());
+                        poly.append(";");
                     }
                 }
+                values.add(poly.toString());
             }
-            pw.append("\n");
+
+            return values;
         }
+
+
     }
 
 
+
     /**
-     *
-     * @param json _more_
-     * @param pw _more_
-     * @param colString _more_
-     * @param addPolygons _more_
-     *
      * @param file _more_
      *
-      * @return _more_
+     *  @return _more_
      * @throws Exception _more_
      */
     public static List<Feature> getFeatures(String file) throws Exception {
@@ -446,11 +530,13 @@ public class GeoJson extends JsonUtil {
                                           List<List<Point>> pts)
             throws Exception {
         JSONArray coords1;
-	//Catch and ignore null coordinates
-	try {
-	    coords1 = readArray(feature, "geometry.coordinates");
-	} catch(Exception ignore) {return bounds;}
-        String    type    = readValue(feature, "geometry.type", "NULL");
+        //Catch and ignore null coordinates
+        try {
+            coords1 = readArray(feature, "geometry.coordinates");
+        } catch (Exception ignore) {
+            return bounds;
+        }
+        String type = readValue(feature, "geometry.type", "NULL");
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray   coords2 = coords1.getJSONArray(idx1);
@@ -558,18 +644,17 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	geojsonFileToCsv(args[0], System.out, (args.length > 1)
-			 ? args[1]
-			 : null);
-	if (true) {
-	    return;
-	}
-	
 
+        geojsonFileToCsv(args[0], System.out, (args.length > 1)
+                ? args[1]
+                : null);
+        if (true) {
+            return;
+        }
 
         getFeatures(args[0]);
         //      System.err.println(getFeatures(args[0]));
-	Utils.exitTest(0);
+        Utils.exitTest(0);
 
 
         geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
@@ -614,9 +699,8 @@ public class GeoJson extends JsonUtil {
 
 
         */
-        geojsonFileToCsv(args[0], System.out, (args.length > 1)
-                ? args[1]
-                : null);
+
+
         //        convertCameras(args);
     }
 
