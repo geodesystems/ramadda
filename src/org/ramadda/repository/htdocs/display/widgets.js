@@ -1233,7 +1233,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    min = Utils.min(min,v);
 	    max = Utils.max(max,v);
 	});
-//	console.log("minmax:" + min +" " + max);
 	this.minValue =min;
 	this.maxValue =max;	
 	this.origRange = [min,max];
@@ -1372,7 +1371,16 @@ ColorByInfo.prototype = {
 	}
     },
     setRange: function(minValue,maxValue, force) {
-//	console.log(" setRange: min:" + minValue + " max:" + maxValue);
+	if(this.display.getProperty("useDataForColorRange") && this.origRange) {
+	    minValue = this.origRange[0];
+	    maxValue = this.origRange[1];	    
+//	    this.range = this.maxValue -this.minValue;
+//	    console.log(this.minValue,this.maxValue);
+//	    return;
+	}	    
+
+	if(displayDebug.colorTable)
+	    console.log(" setRange: min:" + minValue + " max:" + maxValue);
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
@@ -1389,7 +1397,7 @@ ColorByInfo.prototype = {
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
-	this.range = maxValue - minValue;
+	this.range = this.maxValue -this.minValue;
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
 	}
