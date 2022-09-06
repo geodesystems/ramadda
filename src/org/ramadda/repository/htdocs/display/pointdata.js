@@ -42,7 +42,6 @@ function DataCollection() {
 
 function BasePointData(name, properties) {
     if (properties == null) properties = {};
-
     RamaddaUtil.defineMembers(this, {
         recordFields: null,
         records: null,
@@ -75,7 +74,7 @@ function BasePointData(name, properties) {
             return this.properties;
         },
         getProperty: function(key, dflt) {
-            var value = this.properties[key];
+            let value = this.properties[key];
             if (value == null) return dflt;
             return value;
         },
@@ -4063,8 +4062,7 @@ RequestMacro.prototype = {
 		}
 		if(debug)
 		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
-		
-		widget = HU.select("",attrs,values,this.dflt,20);
+		widget = HU.select("",attrs,values,this.dflt,30);
 	    }
 	} else if(this.type=="numeric") {
 	    let minId = this.display.getDomId(this.getId()+"_min");
