@@ -4800,6 +4800,16 @@ public class Utils extends IO {
 
 
 
+    public static List<List<String>> multiSplit(Object source, String delim1,String delim2, int tupleSize) {
+	List<List<String>> result = new ArrayList<List<String>>();
+	for(String tuple:split(source.toString(),delim1,true,true)) {
+	    List<String>toks = Utils.splitUpTo(tuple,delim2,tupleSize);
+	    result.add(toks);
+	}
+	return result;
+    }
+
+
     /**
      * _more_
      *
