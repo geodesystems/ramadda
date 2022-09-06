@@ -3880,14 +3880,33 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
                 return null;
             }
+	    List<String> pre = null;
+	    List<String> post = null;
+	    String before = getProperty(wikiUtil, props,"linksBefore",null);
+	    String after = getProperty(wikiUtil, props,"linksAfter",null);	    
+	    if(before!=null) {
+		pre = new ArrayList<String>();
+		for(List<String> toks: Utils.multiSplit(before,",",";",2)) {
+		    pre.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
+		}
+	    }
+	    if(after!=null) {
+		post = new ArrayList<String>();
+		for(List<String> toks: Utils.multiSplit(after,",",";",2)) {
+		    post.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
+		}
+	    }
+
+
 
 	    if(!chunkDefined(request, wikiUtil,props)) {
-		return makeLinks(request,originalEntry,entry, wikiUtil,props,isList, children);
+		return makeLinks(request,originalEntry,entry, wikiUtil,props,isList, children,pre,post);
 	    }
 	    List<List> chunkedEntries = getChunks(request,wikiUtil, props, children);	    
 	    List<String> tds = new ArrayList<String>();
 	    for(List entries: chunkedEntries) {
-		tds.add(makeLinks(request,originalEntry,entry, wikiUtil,props,isList, (List<Entry>)entries));
+		tds.add(makeLinks(request,originalEntry,entry, wikiUtil,props,isList, (List<Entry>)entries,pre,post));
+		pre = null; post=null;
 	    }
 	    return makeChunks(request, wikiUtil, props, tds);
         } else {
@@ -3935,7 +3954,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     }
 
 
-    private String  makeLinks(Request request,Entry originalEntry, Entry entry, WikiUtil wikiUtil,Hashtable props, boolean isList, List<Entry>children) throws Exception {
+    private String  makeLinks(Request request,Entry originalEntry, Entry entry, WikiUtil wikiUtil,Hashtable props,
+			      boolean isList, List<Entry>children,List<String> pre, List<String> post) throws Exception {
 
 	boolean highlightThis = getProperty(wikiUtil, props,
 					    "highlightThis", false);
@@ -3989,6 +4009,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	}
 
 	List<String> links = new ArrayList<String>();
+	if(pre!=null) for(String s: pre)links.add("<li> " + s);
 	for (Entry child : children) {
 	    String url;
 	    if (linkResource
@@ -4045,6 +4066,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    links.add(s);
 	}
 
+	if(post!=null) for(String s: post)links.add("<li> " + s);
 	if(decorate) {
 	    return Utils.join(links,"",false);
 	}

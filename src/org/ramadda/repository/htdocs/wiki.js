@@ -1166,6 +1166,8 @@ WikiEditor.prototype = {
 		{p:'output',ex:'',tt:'Link to output'},
 		{p:'tagopen',ex:'html before link'},
 		{p:'tagclose',ex:'html after link'},	
+		{p:'linksBefore',ex:'"url;label,url;label"'},
+		{p:'linksAfter',ex:'"url;label,url;label"'},		
 		{p:'innerClass',ex:''},
 		{p:'class',ex:'',tt:'link css class'},
 		{p:'style',ex:'',tt:'link style'},
