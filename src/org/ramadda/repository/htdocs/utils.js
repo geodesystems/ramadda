@@ -5308,6 +5308,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 label=item[1];
                 item = item[0];
             }
+	    let fullLabel  = label;
             if(maxWidth && label.length>maxWidth)
                 label = label.substring(0,maxWidth)+"...";
             var extra = "";
@@ -5318,7 +5319,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             } else {
                 if(selected == item) extra=" selected ";
             }
-            options+="<option " + extra +" value='" + item +"'>" + label +"</option>";
+	    let tt = fullLabel;
+	    if(item!=tt) {
+		tt = tt+HU.getTitleBr() + item;
+	    }
+            options+=HU.tag("option",['title',tt,extra,null,'value',item],label);
         });
         return options;
     },
