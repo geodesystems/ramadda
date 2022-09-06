@@ -649,7 +649,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 vars += ",";
             }
 	    //	    if(getProperty(var.getShortName(), "colortable", null) == null) {
-	    //		System.out.println(var.getShortName().toLowerCase()+".alias=");
+		//		System.out.println(var.getShortName().toLowerCase()+".alias=");
 	    //	    }
 
             vars += var.getShortName() + ":" + var.getDescription();
