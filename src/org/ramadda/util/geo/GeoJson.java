@@ -32,6 +32,7 @@ import java.text.StringCharacterIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -95,29 +96,33 @@ public class GeoJson extends JsonUtil {
 
         JSONObject obj      = new JSONObject(json);
         JSONArray  features = readArray(obj, "features");
-        //        List<String> names    = null;
-        String[] names = null;
+	LinkedHashSet<String> names = new LinkedHashSet<String>();
         for (int i = 0; i < features.length(); i++) {
-            //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
             JSONObject props   = feature.getJSONObject("properties");
-            if (names == null) {
-                names = JSONObject.getNames(props);
-                for (String name : names) {
-                    if ((cols != null) && !cols.contains(name)) {
-                        continue;
-                    }
-                    pw.append(name.toLowerCase());
-                    pw.append(",");
-                }
-                pw.append("latitude,longitude");
-                if (addPolygons) {
-                    pw.append(",polygon");
-                }
-                pw.append("\n");
-                //              pw.append("location\n");
-            }
+	    for(String name: JSONObject.getNames(props)) {
+		if(!names.contains(name)) names.add(name);
+	    }
+	}
 
+	List<String> nameList = new ArrayList<String>();
+	for (String name : names) {
+	    if ((cols != null) && !cols.contains(name)) {
+		continue;
+	    }
+	    nameList.add(name);
+	    pw.append(name.toLowerCase());
+	    pw.append(",");
+	}
+	pw.append("latitude,longitude");
+	if (addPolygons) {
+	    pw.append(",polygon");
+	}
+	pw.append("\n");
+	
+        for (int i = 0; i < features.length(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject props   = feature.getJSONObject("properties");
             List<List<Point>> pts = null;
             if (addPolygons) {
                 pts = new ArrayList<List<Point>>();
@@ -126,8 +131,9 @@ public class GeoJson extends JsonUtil {
             JSONArray geom     = readArray(feature, "geometry.coordinates");
             String    type     = readValue(feature, "geometry.type", "NULL");
             Point     centroid = bounds.getCenter();
-            for (String name : names) {
+            for (String name : nameList) {
                 String value = props.optString(name, "");
+		value = value.replaceAll("\n"," ");
                 if (value.indexOf(",") >= 0) {
                     value = "\"" + value + "\"";
                 }
@@ -552,6 +558,15 @@ public class GeoJson extends JsonUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	geojsonFileToCsv(args[0], System.out, (args.length > 1)
+			 ? args[1]
+			 : null);
+	if (true) {
+	    return;
+	}
+	
+
+
         getFeatures(args[0]);
         //      System.err.println(getFeatures(args[0]));
 	Utils.exitTest(0);
@@ -576,12 +591,6 @@ public class GeoJson extends JsonUtil {
           return;
           }
 
-          geojsonFileToCsv(args[0], System.out, (args.length > 1)
-          ? args[1]
-          : null);
-          if (true) {
-          return;
-          }
 
 
           String  file = args[0];
