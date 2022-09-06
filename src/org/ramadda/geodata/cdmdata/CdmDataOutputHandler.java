@@ -648,6 +648,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             } else {
                 vars += ",";
             }
+	    //	    if(getProperty(var.getShortName(), "colortable", null) == null) {
+	    //		System.out.println(var.getShortName().toLowerCase()+".alias=");
+	    //	    }
+
             vars += var.getShortName() + ":" + var.getDescription();
         }
         displayProps.add("request.gridField.includeAll");
@@ -1571,23 +1575,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 wikiProps.put("gridField", field);
                 getWikiTagAttrs(request, entry, "display", wikiProps,
                                 displayProps);
-                String colorTable = getProperty(field, "colortable", null);
-                if (colorTable != null) {
-                    displayProps.add("colorTable");
-                    displayProps.add(JsonUtil.quote(colorTable));
-                }
-                String colorTableMin = getProperty(field, "colortable.min",
-                                           null);
-                if (colorTableMin != null) {
-                    displayProps.add("colorByMin");
-                    displayProps.add(JsonUtil.quote(colorTableMin));
-                }
-                String colorTableMax = getProperty(field, "colortable.max",
-                                           null);
-                if (colorTableMax != null) {
-                    displayProps.add("colorByMax");
-                    displayProps.add(JsonUtil.quote(colorTableMax));
-                }
+		getDisplayProperties(request, field,displayProps);
+
 
                 writer.println(",\"properties\":");
                 writer.println(JsonUtil.map(displayProps));
@@ -1629,6 +1618,38 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     }
 
 
+    private void getDisplayProperties(Request request, String field,List<String>displayProps) {
+	String colorTable = getProperty(field, "colortable", null);
+	if (colorTable != null) {
+	    displayProps.add("colorTable");
+	    displayProps.add(JsonUtil.quote(colorTable));
+	}
+	String colors = getProperty(field, "colors", null);
+	if (colors != null) {
+	    displayProps.add("colors");
+	    colors = colors.trim();
+	    //Check for array
+	    if(colors.startsWith("[")) 
+		displayProps.add(colors);
+	    else
+		displayProps.add(JsonUtil.quote(colors));
+	}		
+	//		System.err.println(field+" ct:" + colorTable);
+	//		System.err.println(field+" colors:" + colors);
+	String colorTableMin = getProperty(field, "colortable.min",
+                                           null);
+	if (colorTableMin != null) {
+	    displayProps.add("colorByMin");
+	    displayProps.add(JsonUtil.quote(colorTableMin));
+	}
+	String colorTableMax = getProperty(field, "colortable.max",
+                                           null);
+	//	System.err.println("F:" + field +" " + colorTable +" range:" + colorTableMin+" " + colorTableMax);
+	if (colorTableMax != null) {
+	    displayProps.add("colorByMax");
+	    displayProps.add(JsonUtil.quote(colorTableMax));
+	}
+    }
 
     /**
      * _more_
@@ -1643,7 +1664,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
 
-        final boolean debug = true;
+        final boolean debug = false;
         String        path  = getPath(request, entry);
         if (debug) {
             System.err.println("outputGridJson path:" + path);
@@ -1859,24 +1880,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 wikiProps.put("gridField", field);
                 getWikiTagAttrs(request, entry, "display", wikiProps,
                                 displayProps);
-                String colorTable = getProperty(field, "colortable", null);
-                if (colorTable != null) {
-                    displayProps.add("colorTable");
-                    displayProps.add(JsonUtil.quote(colorTable));
-                }
-                String colorTableMin = getProperty(field, "colortable.min",
-                                           null);
-                if (colorTableMin != null) {
-                    displayProps.add("colorByMin");
-                    displayProps.add(JsonUtil.quote(colorTableMin));
-                }
-                String colorTableMax = getProperty(field, "colortable.max",
-                                           null);
-                if (colorTableMax != null) {
-                    displayProps.add("colorByMax");
-                    displayProps.add(JsonUtil.quote(colorTableMax));
-                }
-
+		getDisplayProperties(request, field,displayProps);
                 writer.println(",\"properties\":");
                 writer.println(JsonUtil.map(displayProps));
                 writer.println(",\"data\":[");
