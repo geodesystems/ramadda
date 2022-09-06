@@ -3,12 +3,9 @@
 */
 
 
-
 var xcnt=0;
-
 var DISPLAY_COUNT=0;
-
-const displayDebug = {
+var  displayDebug= {
     getProperty:false,
     notifyEvent:false,
     notifyEventAll:false,
@@ -27,8 +24,8 @@ const displayDebug = {
     groupBy:false,
     gridPoints:false,
     setEntry:false,
-    initMap:false
-
+    initMap:false,
+    colorTable:false
 }
 
 
@@ -1228,8 +1225,11 @@ function DisplayThing(argId, argProperties) {
 	    if(!Array.isArray(keys)) keys = [keys];
 	    for(let i=0;i<keys.length;i++) {
 		let key = keys[i];
+//		if(key == "colorTable") debug = true;
 		if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
 		if(this.dynamicProperties) {
+		    if(debug)
+			console.log("key:" + key +" value:" +this.dynamicProperties[key]);
 		    if(Utils.isDefined(this.dynamicProperties[key])) {
 			return this.dynamicProperties[key];
 		    }
@@ -1733,13 +1733,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let popup = HtmlUtils.getTooltip();
 		HtmlUtils.setPopupObject(popup);
 		let html = "";
-		html += HU.div([CLASS,"ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
-		html += HU.div([CLASS,"ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
-		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
+		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
+		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
+		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","reset"],"Reset range");
+		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","ussedata"],"Use data range");		
 		if(_this.getProperty("colorByLog")) {
-		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use linear scale");
+		    html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","togglelog"],"Use linear scale");
 		} else {
-		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use log scale");
+		    html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","togglelog"],"Use log scale");
 		}
 		html += Utils.getColorTablePopup();
 		popup.html(html);
@@ -1759,10 +1760,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		popup.find(".ramadda-menu-item").click(function() {
 		    let what = $(this).attr("what");
+		    _this.setProperty("useDataForColorRange", false);
 		    if(what == "reset") {
 			_this.setProperty("colorByMin",_this.getProperty("colorByMinOrig"));
 			_this.setProperty("colorByMax",_this.getProperty("colorByMaxOrig"));
 			_this.setProperty("overrideColorRange", false);
+		    } else  if(what == "ussedata") {
+			_this.setProperty("useDataForColorRange", true);
 		    } else if(what == "togglelog") {
 			if(!_this.getProperty("colorByLog")) 
 			    _this.setProperty("colorByLog",true);
@@ -1812,26 +1816,63 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (names) {
 		names.every(name=>{
                     ct = this.getProperty(name);
-		    if(ct) return false;
+		    if(ct) {
+			if(displayDebug.colorTable)
+			    this.logMsg("getColorTableName: name:" + name +" ct1:"  + ct);
+			return false;
+		    }
 		    return true;
 		});
             } else {
 		var colorBy = this.getProperty("colorBy");
 		if(colorBy) {
                     ct = this.getProperty("colorTable." + colorBy);
+		    if(ct && displayDebug.colorTable)
+			this.logMsg("getColorTableName: " + "colorTable." + colorBy+" ct2:"  + ct);
 		}
 		if(!ct) {
                     ct = this.getProperty("colorBar", this.getProperty("colorTable"));
+		    if(ct && displayDebug.colorTable)
+			this.logMsg("getColorTableName: ct3:"  + ct);
 		}
             }
             if (ct == "none") return null;
+	    if(displayDebug.colorTable) this.logMsg("getColorTableName:" + names +" color table:" + ct);
             return ct;
         },
-	getColorTable: function(justColors, name, dflt) {
-            let colorTable = this.getColorTableName(name);
+	getColorTable: function(justColors, names, dflt) {
+	    if(names && !Array.isArray(names)) {
+		names  = [names];
+	    }
+	    if(names && justColors && this.dynamicProperties && names.includes("colorTable")) {
+		let ct;
+		let gotOne = false;
+		names.every(name=>{
+		    if(this.dynamicProperties[name])
+			gotOne = true;
+		    return !gotOne;
+		});
+		if(!gotOne && this.dynamicProperties['colors']) {
+		    let colors = this.dynamicProperties['colors'];
+		    if(!Array.isArray(colors)) {
+			//Check for commas
+			colors = colors.replace(/\\,/g,"_comma_");
+			colors = colors.split(",");
+			colors = colors.map(c=>{
+			    return c.replace(/_comma_/g,",");
+			});
+			return colors;
+		    }
+
+		}
+	    }
+	    //Check the dynamic properties for
+            let colorTable = this.getColorTableName(names);
             if (!colorTable) {
                 colorTable = dflt;
             }
+
+	    if(displayDebug.colorTable) console.log("CT:" + names +" " + justColors +" name:" + colorTable);
 	    return this.getColorTableInner(justColors, colorTable);
 	},
 	getColorTableInner: function(justColors, colorTable) {
