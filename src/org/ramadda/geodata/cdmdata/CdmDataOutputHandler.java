@@ -652,7 +652,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 		//		System.out.println(var.getShortName().toLowerCase()+".alias=");
 	    //	    }
 
-            vars += var.getShortName() + ":" + var.getDescription();
+	    String name = var.getShortName().replaceAll(",","\\\\,");
+	    String desc = var.getDescription().replaceAll(",","\\\\,");	    
+	    //	    System.err.println("VAR:" + name +" " + desc);
+            vars += name + ":" + desc;
         }
         displayProps.add("request.gridField.includeAll");
         displayProps.add("false");
