@@ -2674,26 +2674,36 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeLabel(String label) {
+	if(label==null || label.length()<=2) return label;
+	String olabel = label;
 	label = label.replaceAll("\\."," ").replaceAll("_", " ").replaceAll("-"," ");
 	label = label.replaceAll("\\s\\s+"," ");
         StringBuilder tmpSB             = new StringBuilder();
         StringBuilder sb                = new StringBuilder();
         boolean       lastCharUpperCase = false;
-        for (int i = 0; i < label.length(); i++) {
-            char    c           = label.charAt(i);
-            boolean isUpperCase = Character.isUpperCase(c);
-            if (i > 0) {
-                if (isUpperCase) {
-                    if ( !lastCharUpperCase) {
-                        sb.append(" ");
-                    }
-                }
-            }
-            lastCharUpperCase = isUpperCase;
-            sb.append(c);
+        for (String tok : Utils.split(label, " ", true, true)) {
+	    if(tok.length()<4) {
+		sb.append(tok);
+		sb.append(" ");
+		continue;
+	    }
+	    for (int i = 0; i < tok.length(); i++) {
+		char    c           = tok.charAt(i);
+		boolean isUpperCase = Character.isUpperCase(c);
+		if (i > 0) {
+		    if (isUpperCase) {
+			if ( !lastCharUpperCase) {
+			    sb.append(" ");
+			}
+		    }
+		}
+		lastCharUpperCase = isUpperCase;
+		sb.append(c);
+	    }
+	    sb.append(" ");
         }
 
-        label = sb.toString();
+        label = sb.toString().trim();
         for (String tok : Utils.split(label, " ", true, true)) {
             tok = tok.substring(0, 1).toUpperCase()
                   + tok.substring(1, tok.length()).toLowerCase();
@@ -2701,7 +2711,6 @@ public class Utils extends IO {
             tmpSB.append(" ");
         }
         label = tmpSB.toString().trim();
-
         return label;
 
     }
@@ -5975,9 +5984,17 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    for(String s: args) {
+		System.err.println(makeLabel(s));
+	    }
+	    System.exit(0);
+	}
+
+
         if (true) {
 	    System.err.println("S:" + splitMacros("hello there ${how foo=bar} i am ${fine}"));
-	    return;
+	    System.exit(0);
 	}
 
         if (true) {
