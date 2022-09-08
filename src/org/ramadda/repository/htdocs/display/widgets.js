@@ -1841,7 +1841,7 @@ function SizeBy(display,records,fieldProperty) {
     this.display = display;
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
-    let fields = pointData.getRecordFields();
+    let fields = pointData?pointData.getRecordFields():[];
     $.extend(this, {
         id: this.display.getProperty(fieldProperty|| "sizeBy"),
         minValue: 0,
