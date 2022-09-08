@@ -227,11 +227,12 @@ function addRamaddaDisplay(display) {
     return display;
 }
 
-async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
+async function ramaddaDisplaySetSelectedEntry(entryId, displays,except) {
     await getGlobalRamadda().getEntry(entryId, e => {
 	displays = displays||Utils.displaysList;
 	if(displays) {
 		displays.forEach(d=>{
+		    if(d==except) return
 		    if(d.setEntry) d.setEntry(e);
 		});
 	}
@@ -2016,7 +2017,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = pointData.getRecords();
 	    }
 	    let fields = pointData.getRecordFields();
-	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
+	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
 	},
 	getColorByMap: function(prop) {
 	    prop = this.getProperty(prop||"colorByMap");
@@ -2054,7 +2055,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         clearCachedData: function() {},
         setEntry: function(entry) {
 	    if(displayDebug.setEntry)
-		console.log(this.type+".setEntry:" + entry);
+		this.logMsg("setEntry:" + entry);
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;
