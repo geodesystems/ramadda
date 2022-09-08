@@ -781,6 +781,11 @@ public class Utils extends IO {
         return s.trim();
     }
 
+    public static String clip(String s, String prefix) {
+	if(s==null) return null;
+	return s.substring(prefix.length());
+    }
+
     /**
      * _more_
      *
