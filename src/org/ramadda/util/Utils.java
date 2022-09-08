@@ -1653,7 +1653,7 @@ public class Utils extends IO {
      */
     public static Hashtable getProperties(String s) {
         Hashtable p = new Hashtable();
-        for (String line : Utils.split(s, "\n", true, true)) {
+        for (String line : Utils.split(s, "\n")) {
             if (line.startsWith("#")) {
                 continue;
             }
@@ -1667,6 +1667,8 @@ public class Utils extends IO {
 
         return p;
     }
+
+
 
     /**
      * _more_
@@ -3161,7 +3163,7 @@ public class Utils extends IO {
     public static Hashtable<String, String> parseKeyValue(String args) {
         Hashtable props = new Hashtable();
         for (String tok : Utils.parseCommandLine(args)) {
-            List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
+            List<String> toks = splitUpTo(tok, "=", 2);
             if (toks.size() == 2) {
                 props.put(toks.get(0), toks.get(1));
             } else if (toks.size() == 1) {
@@ -4839,18 +4841,31 @@ public class Utils extends IO {
         return StringUtil.split(s.toString(), delim, cnt);
     }
 
+
+    
     /**
-     * _more_
-     *
-     * @param s _more_
-     * @param delim _more_
-     * @param cnt _more_
-     *
-     * @return _more_
-     */
-    public static List<String> splitUpTo(Object s, String delim, int cnt) {
-        return StringUtil.splitUpTo(s.toString(), delim, cnt);
+       Copied from ucar.unidata.util.StringUtil
+       don't trim the results
+    */
+    public static List<String> splitUpTo(Object o, String delimiter,
+					 int cnt) {
+	String s = o.toString();
+	List<String> toks = new ArrayList<String>();
+	for (int i = 0; i < cnt - 1; i++) {
+	    int idx = s.indexOf(delimiter);
+	    if (idx < 0) {
+		break;
+	    }
+	    toks.add(s.substring(0, idx));
+	    s = s.substring(idx + 1);
+	}
+	if (s.length() > 0) {
+	    toks.add(s);
+	}
+	return toks;
     }
+
+
 
     /**
      * _more_
