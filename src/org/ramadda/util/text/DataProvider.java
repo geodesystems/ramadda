@@ -85,7 +85,6 @@ public abstract class DataProvider extends CsvOperator {
     public Row makeRow() {
         Row row = new Row();
         row.setRowCount(rowCnt++);
-
         return row;
     }
 
@@ -2019,6 +2018,7 @@ public abstract class DataProvider extends CsvOperator {
             this.header = Utils.split(header, ",", true, true);
             this.values = Utils.split(values, ",", true, true);
             this.rows   = rows;
+	    while(this.values.size()<this.header.size()) this.values.add("");
         }
 
 
@@ -2047,23 +2047,17 @@ public abstract class DataProvider extends CsvOperator {
             if (count > rows) {
                 return null;
             }
-            Row row = makeRow();
-            if (count == 0) {
+            count++;
+	    if (count == 1) {
+		Row row = makeRow();
                 for (String name : header) {
                     row.add(name);
                 }
+		return row;
             } else {
-                for (int i = 0; i < header.size(); i++) {
-                    if (i < values.size()) {
-                        row.add(values.get(i));
-                    } else {
-                        row.add("");
-                    }
-                }
+		Row row = makeRow(values);
+		return row;
             }
-            count++;
-
-            return row;
         }
 
     }

@@ -1738,7 +1738,7 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            debug("processRow");
+	    //            debug("processRow");
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(ctx.getWriter(), row, null /*exValues*/);
@@ -1848,14 +1848,15 @@ public abstract class Processor extends CsvOperator {
 	    }
 
 
-
             List    values        = row.getValues();
             boolean escapeColumns = true;
             if (theTemplate == null) {
-                for (int colIdx = 0; colIdx < values.size(); colIdx++) {
+		int size = values.size();
+		int colIdx = 0;
+                for (colIdx = 0; colIdx < size; colIdx++) {
                     Object v = values.get(colIdx);
                     if (colIdx > 0) {
-                        writer.append(delimiter);
+			writer.append(delimiter);
                     }
                     if (v == null) {
 			continue;
@@ -1895,8 +1896,10 @@ public abstract class Processor extends CsvOperator {
                             sv).replace("${" + field + "}", sv);
                 }
             }
+
+
             if (theTemplate == null) {
-                writer.append("\n");
+		writer.append("\n");
 		if(firstRow) {
 		    for(String comment: ctx.getComments()) {
 			if(commentChar==null)
