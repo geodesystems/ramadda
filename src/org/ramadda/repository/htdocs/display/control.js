@@ -302,7 +302,9 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{label:"Metadata"},
 	{p:"decorate",ex:true},
 	{p:"asList",ex:true},
-	{p:"reverseFields",ex:true},		
+	{p:"reverseFields",ex:true},
+	{p:"sortFields",d:true,ex:true},
+	{p:"includeLatLon",d:false,ex:true},				
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
 	{p:"showPopup",d:true,ex:false,tt:"Popup the selector"},	
@@ -371,6 +373,16 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		});
 		fields=tmp;
 	    }
+	    if(!this.getIncludeLatLon()) {
+		fields = fields.filter(f=>{
+		    return !f.isFieldGeo();
+		});
+	    }
+	    if(this.getSortFields(true)) {
+		fields = fields.sort((f1,f2)=>{
+		    return f1.getDescription().localeCompare(f2.getDescription());
+		});
+	    }
 	    this.fields	     = fields;
 	    this.fieldsMap={};
 	    this.fields.forEach(f=>{
@@ -378,7 +390,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    });
 //	    html += HU.center("#" + records.length +" records");
 	    let fs = [];
-	    let clazz = " display-fields-field ";
+	    let clazz = " ramadda-clickable display-fields-field ";
 	    let asList = this.getAsList();
 	    if(this.getDecorate(true)) clazz+= " display-fields-field-decorated ";
 	    if(asList)

@@ -2819,15 +2819,20 @@ table.dataTable tfoot td {
 
 .display-fields-field {
     display:inline-block;
-    padding:5px;
-    margin:5px;
+    padding:8px;
     user-select:none;
     border:1px solid transparent;
 }
 
+
+
 .display-fields-field-decorated {
     border:1px solid #ccc;
-    border-radius:var(--default-radius);
+    border-bottom:0px solid #ccc;
+}
+
+.display-fields-field-decorated:last-child {
+    border:1px solid #ccc;
 }
 
 .display-fields-field-selectable {
@@ -2843,11 +2848,11 @@ table.dataTable tfoot td {
 
 .display-fields-field-selected {
     background:#e0f0ff; 
-    font-weight:bold;
+    font-weight:800;
 }
 
 .display-fields-field:hover {
-    border:var(--highlight-border);
+    background:var(--highlight-background);
 }
 
 .tl-slide-content-container {
