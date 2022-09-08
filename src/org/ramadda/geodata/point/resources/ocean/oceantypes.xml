@@ -3,6 +3,40 @@
   <type name="type_point_ocean"  description="" super="type_point" category="Ocean and Water Data" foruser="false">
   </type>
 
+<type name="type_point_ex02" description="EX02 Sonde Data" super="type_point_ocean"
+      handler="org.ramadda.data.services.PointTypeHandler">
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<!--
+    The record.properties defines the set of csv commands used to clean up the input file
+    note: the end of the csvcommnads2 line actually has a space. this is important
+-->
+<property name="record.properties">
+csvcommands1=-maxrows,30,-bom,-encoding,UTF-16LE
+csvcommands2=-skiplines,9,-concat,date_mm_dd_yyyy\,time_hh_mm_ss, 
+csvcommands3=date,-firstcolumns,date,-notcolumns,date_mm_dd_yyyy\,time_hh_mm_ss\,time_fract_sec
+csvcommands4=-addheader,date.type date date.format {MM/dd/yyyy HH:mm:ss},-print
+</property>
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{group showMenu=true}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+indexField=".*depth.*" 
+fields=".*temp.*,sal.*" 
+}} 
+
+:heading Table
+{{display_download showMenu=false}} 
+{{display_htmltable showMenu=false}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
+
   <type name="type_point_ocean_netcdf_track"  super="type_point_ocean" description="NetCDF Track Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="isTrajectory" value="true"/>
      <property name="icon" value="/point/glider.png"/>
@@ -59,7 +93,7 @@ fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATIT
      </property>
 	<wiki><![CDATA[
 +inset
-			
+		
 			<table border="0" width=100% cellspacing=0 cellpadding=0 height="100%">
 				<tr>
 					<td  valign=top width="70%">
