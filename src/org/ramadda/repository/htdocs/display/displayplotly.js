@@ -1036,6 +1036,9 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
         getDisplayStyle: function() {
             return "";
         },
+	showFieldsInDialog: function() {
+	    return true;
+	},
         updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
@@ -1046,6 +1049,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		return;
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
+
             if (fields.length == 0) {
 		let tmp = this.getFieldsByType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
