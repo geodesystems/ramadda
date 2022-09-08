@@ -1751,11 +1751,11 @@ public abstract class Converter extends Processor {
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
-                String id = col.replaceAll("\\([^\\)]+\\)", "").replaceAll(
+                String id = col.replaceAll("°"," ").replaceAll("\\([^\\)]+\\)", "").replaceAll(
                                 "\\?", "").replaceAll("\\$", "").replaceAll(
                                 ",", "_").replaceAll(
                                 "-", "_").trim().toLowerCase().replaceAll(
-                                " ", "_").replaceAll(":", "_");
+									  " ", "_").replaceAll(":", "_");
 
                 id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
@@ -1789,6 +1789,7 @@ public abstract class Converter extends Processor {
                 if (makeLabel && (label == null)) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
                             ""));
+		    label = label.replaceAll("°"," ");
                 }
 		if(label!=null) label = label.replaceAll("[\"']+","");
 
