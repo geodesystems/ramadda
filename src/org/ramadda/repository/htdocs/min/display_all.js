@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Sep  7 20:58:57 MDT 2022";
+var build_date="RAMADDA build date: Thu Sep  8 14:17:05 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -1843,7 +1843,7 @@ function SizeBy(display,records,fieldProperty) {
     this.display = display;
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
-    let fields = pointData.getRecordFields();
+    let fields = pointData?pointData.getRecordFields():[];
     $.extend(this, {
         id: this.display.getProperty(fieldProperty|| "sizeBy"),
         minValue: 0,
@@ -3280,11 +3280,12 @@ function addRamaddaDisplay(display) {
     return display;
 }
 
-async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
+async function ramaddaDisplaySetSelectedEntry(entryId, displays,except) {
     await getGlobalRamadda().getEntry(entryId, e => {
 	displays = displays||Utils.displaysList;
 	if(displays) {
 		displays.forEach(d=>{
+		    if(d==except) return
 		    if(d.setEntry) d.setEntry(e);
 		});
 	}
@@ -5069,7 +5070,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = pointData.getRecords();
 	    }
 	    let fields = pointData.getRecordFields();
-	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
+	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
 	},
 	getColorByMap: function(prop) {
 	    prop = this.getProperty(prop||"colorByMap");
@@ -5107,7 +5108,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         clearCachedData: function() {},
         setEntry: function(entry) {
 	    if(displayDebug.setEntry)
-		console.log(this.type+".setEntry:" + entry);
+		this.logMsg("setEntry:" + entry);
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;
@@ -21939,7 +21940,9 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{label:"Metadata"},
 	{p:"decorate",ex:true},
 	{p:"asList",ex:true},
-	{p:"reverseFields",ex:true},		
+	{p:"reverseFields",ex:true},
+	{p:"sortFields",d:true,ex:true},
+	{p:"includeLatLon",d:false,ex:true},				
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
 	{p:"showPopup",d:true,ex:false,tt:"Popup the selector"},	
@@ -22008,6 +22011,16 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		});
 		fields=tmp;
 	    }
+	    if(!this.getIncludeLatLon()) {
+		fields = fields.filter(f=>{
+		    return !f.isFieldGeo();
+		});
+	    }
+	    if(this.getSortFields(true)) {
+		fields = fields.sort((f1,f2)=>{
+		    return f1.getDescription().localeCompare(f2.getDescription());
+		});
+	    }
 	    this.fields	     = fields;
 	    this.fieldsMap={};
 	    this.fields.forEach(f=>{
@@ -22015,7 +22028,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    });
 //	    html += HU.center("#" + records.length +" records");
 	    let fs = [];
-	    let clazz = " display-fields-field ";
+	    let clazz = " ramadda-clickable display-fields-field ";
 	    let asList = this.getAsList();
 	    if(this.getDecorate(true)) clazz+= " display-fields-field-decorated ";
 	    if(asList)
@@ -34139,7 +34152,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(record && this.getProperty("shareSelected")) {
 		    let idField = this.getFieldById(null,"id");
 		    if(idField) {
-			ramaddaDisplaySetSelectedEntry(record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays());
+			ramaddaDisplaySetSelectedEntry(record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays(),this);
 		    }
 		    if(debugPopup) console.log("\tdisplaymap: share selected");
 //		    didSomething= true;
@@ -36945,13 +36958,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(sizeBy.index>=0) {
 			    size = props.pointRadius;
 			}
-			if(!recordLayout.collisionInfo)  {
+			//not sure why this check was here for the collisioninfo
+//			if(!recordLayout.collisionInfo)  {
 			    mapPoint = this.map.createMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 			    mapPoint.isMarker = true;
 			    mapPoints.push(mapPoint);
 			    this.markers[record.getId()] = mapPoint;
 			    pointsToAdd.push(mapPoint);
-			}
+//			}
 		    } else  {
 			let attrs = {
 			}
@@ -38426,8 +38440,10 @@ function CollisionInfo(display,numRecords, roundPoint) {
 	    let collisionIconSize=this.display.getCollisionIconSize(16);		
 	    if(collisionIcon)
 		this.dot = this.display.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], collisionIcon, "", "",null,collisionIconSize,null,null,null,null,false);
-	    else
-		this.dot = this.display.map.createPoint("dot-" + idx, this.roundPoint, this.getCollisionDotStyle(this),null,textGetter);
+	    else {
+		let style = this.getCollisionDotStyle(this);
+		this.dot = this.display.map.createPoint("dot-" + idx, this.roundPoint, style,null,textGetter);
+	    }
 	    this.dot.collisionInfo  = this;
 	    return this.dot;
 	},
@@ -38476,6 +38492,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 		f.featureVisible = this.visible;
 		this.display.map.checkFeatureVisible(f,true);
 	    });
+
 	    this.records.forEach(record=>{
 		let layoutThis = this.display.displayInfo[record.getId()];
 		if(!layoutThis) {
