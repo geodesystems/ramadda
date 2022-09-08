@@ -1050,7 +1050,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(record && this.getProperty("shareSelected")) {
 		    let idField = this.getFieldById(null,"id");
 		    if(idField) {
-			ramaddaDisplaySetSelectedEntry(record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays());
+			ramaddaDisplaySetSelectedEntry(record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays(),this);
 		    }
 		    if(debugPopup) console.log("\tdisplaymap: share selected");
 //		    didSomething= true;
@@ -3856,13 +3856,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(sizeBy.index>=0) {
 			    size = props.pointRadius;
 			}
-			if(!recordLayout.collisionInfo)  {
+			//not sure why this check was here for the collisioninfo
+//			if(!recordLayout.collisionInfo)  {
 			    mapPoint = this.map.createMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 			    mapPoint.isMarker = true;
 			    mapPoints.push(mapPoint);
 			    this.markers[record.getId()] = mapPoint;
 			    pointsToAdd.push(mapPoint);
-			}
+//			}
 		    } else  {
 			let attrs = {
 			}
@@ -5337,8 +5338,10 @@ function CollisionInfo(display,numRecords, roundPoint) {
 	    let collisionIconSize=this.display.getCollisionIconSize(16);		
 	    if(collisionIcon)
 		this.dot = this.display.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], collisionIcon, "", "",null,collisionIconSize,null,null,null,null,false);
-	    else
-		this.dot = this.display.map.createPoint("dot-" + idx, this.roundPoint, this.getCollisionDotStyle(this),null,textGetter);
+	    else {
+		let style = this.getCollisionDotStyle(this);
+		this.dot = this.display.map.createPoint("dot-" + idx, this.roundPoint, style,null,textGetter);
+	    }
 	    this.dot.collisionInfo  = this;
 	    return this.dot;
 	},
@@ -5387,6 +5390,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 		f.featureVisible = this.visible;
 		this.display.map.checkFeatureVisible(f,true);
 	    });
+
 	    this.records.forEach(record=>{
 		let layoutThis = this.display.displayInfo[record.getId()];
 		if(!layoutThis) {
