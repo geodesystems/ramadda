@@ -14,6 +14,18 @@ import org.ramadda.repository.Constants;
 public interface WikiConstants {
 
 
+    public static final String ENTRY_PREFIX_CHILD= "child:";
+    public static final String ENTRY_PREFIX_GRANDCHILD= "grandchild:";
+    public static final String ENTRY_PREFIX_ALIAS= "alias:";
+    public static final String ENTRY_PREFIX_LINK= "link:";
+    public static final String ENTRY_PREFIX_SEARCH= "search:";
+    public static final String ENTRY_PREFIX_TYPE = "type:";
+    public static final String ENTRY_PREFIX_ORDERBY = "orderby:";
+    public static final String ENTRY_PREFIX_ANCESTOR = "ancestor:";
+    public static final String ENTRY_PREFIX_DESCENDENT = "descendent:";
+    public static final String ENTRY_PREFIX_ASCENDING = "ascending:";
+
+
     /** wiki page type */
     public static String TYPE_WIKIPAGE = "wikipage";
 
@@ -587,6 +599,8 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_ENTRYID = "entryid";
+
+    public static final String WIKI_TAG_ALIAS = "alias";    
 
     /** wiki import */
     public static final String WIKI_TAG_LAYOUT = "layout";

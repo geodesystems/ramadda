@@ -106,6 +106,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
+
+
+
     /** list of import items for the text editor menu */
     //J--
     public static final WikiTagCategory[] WIKITAGS = {
@@ -215,6 +218,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_LAYOUT),
 			    new WikiTag(WIKI_TAG_MENU,null,"title","","popup","true","ifUser","false"),
                             new WikiTag(WIKI_TAG_ENTRYID),
+                            new WikiTag(WIKI_TAG_ALIAS,null,"name","alias","entry","entry id"),
                             new WikiTag(WIKI_TAG_SEARCH,null,
                                         ATTR_TYPE, "", 
                                         "#"+ATTR_FIELDS,"",
@@ -792,7 +796,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public Entry findEntryFromId(Request request, Entry entry,
 				 WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
+
+
+
         Entry theEntry = null;
+
+	//Check for an alias:
+	theEntry =(Entry) wikiUtil.getWikiProperty("entry:" + entryId);
+	if(theEntry!=null) return theEntry;
+
+
         int   barIndex = entryId.indexOf("|");
         if (barIndex >= 0) {
             entryId = entryId.substring(0, barIndex);
@@ -806,16 +819,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    return findEntryFromId(serverInfo, entry, wikiUtil, props, entryId);
 	}
 
-        if (entryId.startsWith("alias:")) {
-            String alias = entryId.substring("alias:".length());
+        if (entryId.startsWith(ENTRY_PREFIX_ALIAS)) {
+            String alias = Utils.clip(entryId,ENTRY_PREFIX_ALIAS);
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
-        if (entryId.startsWith("child:")) {
+        if (entryId.startsWith(ENTRY_PREFIX_CHILD)) {
 	    //child:type:<some type>
-            String tok = entryId.substring("child:".length());
-            if (tok.startsWith("type:")) {
-                tok     = tok.substring("type:".length());
+            String tok = Utils.clip(entryId,ENTRY_PREFIX_CHILD);
+            if (tok.startsWith(ENTRY_PREFIX_TYPE)) {
+                tok     = Utils.clip(tok,ENTRY_PREFIX_TYPE);
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
 	    }
@@ -827,16 +840,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             return null;
         }
 
-        if (entryId.startsWith("grandchild:")) {
+        if (entryId.startsWith(ENTRY_PREFIX_GRANDCHILD)) {
 	    //grandchild:type:<some type>
 	    List<Entry> children = getEntryManager().getChildren(request, entry);
 	    children= EntryUtil.sortEntriesOnDate(children,false);	    
 	    if (children.size() == 0) {
 		return null;
 	    }
-            String tok = entryId.substring("grandchild:".length());
-            if (tok.startsWith("type:")) {
-                tok     = tok.substring("type:".length());
+            String tok = Utils.clip(entryId,ENTRY_PREFIX_GRANDCHILD);
+            if (tok.startsWith(ENTRY_PREFIX_TYPE)) {
+                tok     = Utils.clip(tok,ENTRY_PREFIX_TYPE);
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
 	    }
@@ -849,9 +862,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-
-        if (entryId.startsWith("ancestor:")) {
-            String type      = entryId.substring("ancestor:".length()).trim();
+	/*
+	  ancestor:type
+	 */
+        if (entryId.startsWith(ENTRY_PREFIX_ANCESTOR)) {
+            String type      = Utils.clip(entryId,ENTRY_PREFIX_ANCESTOR).trim();
             Entry  lastEntry = entry;
             Entry  current   = entry;
             while (true) {
@@ -870,7 +885,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 
-        if (entryId.equals("link") || entryId.startsWith("link:")) {
+        if (entryId.equals("link") || entryId.startsWith(ENTRY_PREFIX_LINK)) {
             String type = StringUtil.findPattern(entryId, ":(.*)$");
             //            System.err.println("Link: " + type);
             List<Association> associations =
@@ -913,9 +928,52 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
         }
 
+	
+	if(theEntry==null && entryId.startsWith(ENTRY_PREFIX_SEARCH)) {
+	    entryId = Utils.clip(entryId,ENTRY_PREFIX_SEARCH);
+	    List<String> toks = Utils.split(entryId,";",true,true);
+	    /*
+	      entry=search:ancestor;type:some_type;orderby:
+	    */
+            Request myRequest = new Request(getRepository(), request.getUser());
+	    boolean ascending = false;
+	    String orderBy = ORDERBY_FROMDATE;
+	    for(String tok: toks) {
+		if(tok.startsWith(ENTRY_PREFIX_TYPE)) {
+		    myRequest.put(ARG_TYPE,Utils.clip(tok,ENTRY_PREFIX_TYPE));
+		} else if(tok.startsWith(ENTRY_PREFIX_ORDERBY)) {
+		    orderBy = Utils.clip(tok,ENTRY_PREFIX_ORDERBY);
+		} else if(tok.startsWith(ENTRY_PREFIX_ASCENDING)) {
+		    tok= Utils.clip(tok,ENTRY_PREFIX_ASCENDING);		    
+		    ascending = tok.length()==0|| tok.equals("true");
+		} else if(tok.startsWith(ENTRY_PREFIX_DESCENDENT)) {
+		    tok = Utils.clip(tok,ENTRY_PREFIX_DESCENDENT);
+		    if(tok.length()==0) {
+			myRequest.put(ARG_ANCESTOR,entry.getId());
+		    } else {
+			Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, tok);
+			if(otherEntry!=null) {
+			    myRequest.put(ARG_ANCESTOR,otherEntry.getId());
+			} else {
+			    System.err.println("Could not find descendent entry:" + tok);
+			}
+		    }
+		}
+	    }
+	    myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+	    myRequest.put(ARG_MAX,"1");
+	    List<Entry> entries = getSearchManager().doSearch(myRequest,new SearchInfo());
+	    if(entries.size()>0) {
+		theEntry = entries.get(0);
+	    }
+	}
+
         if (theEntry == null) {
             theEntry = getEntryManager().getEntry(request, entryId);
         }
+
+
+
         if (theEntry == null) {
             theEntry = findWikiEntry(request, wikiUtil, entryId, entry);
         }
@@ -927,7 +985,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
         //Look for relative to the current entry
-        if (theEntry == null) {
+        if (entry!=null && theEntry == null) {
             theEntry = getEntryManager().findEntryFromPath(request, entry,
 							   entryId);
         }
@@ -2312,6 +2370,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
             return dateFormat.format(date1) + separator
 		+ dateFormat.format(date2);
+        } else if (theTag.equals(WIKI_TAG_ALIAS)) {
+	    String name = getProperty(wikiUtil,props,"name","alias");
+	    String entryId = getProperty(wikiUtil,props,"entry","");	    
+	    Entry theEntry = findEntryFromId(request, entry, wikiUtil, props,  entryId);
+	    if(theEntry!=null)
+		wikiUtil.putWikiProperty("entry:" + name, theEntry);
+	    return "";
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
         } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
@@ -5917,14 +5982,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     continue;
                 }
 
-                List<Entry>[] pair = getSearchManager().doSearch(myRequest,
-								 new SearchInfo());
-                //                if(myRequest.defined(ARG_PROVIDER)) {
-                //List<Entry>[] pair = getEntryManager().getEntries(myRequest);
-                entries.addAll(applyFilter(request, wikiUtil, pair[0],
+                entries.addAll(applyFilter(request, wikiUtil,
+					   getSearchManager().doSearch(myRequest, new SearchInfo()),
                                            filter, props));
-                entries.addAll(applyFilter(request, wikiUtil, pair[1], filter, props));
-
                 continue;
             }
 
