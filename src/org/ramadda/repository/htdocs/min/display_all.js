@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Sep  6 10:20:33 MDT 2022";
+var build_date="RAMADDA build date: Wed Sep  7 20:58:57 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -16033,7 +16033,7 @@ function RequestMacro(display, macro) {
 	if(this.getProperty("request." + macro+".includeNone",false)) {
 	    values.push(["","None"]);
 	}
-	enums.split(",").forEach(tok=>{
+	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
 	    let label = toks[1];
