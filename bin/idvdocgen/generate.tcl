@@ -51,6 +51,8 @@ proc ht::pre {c} {
     set c [gen::replace $c < "&lt;"]
     set c [gen::replace $c > "&gt;"]
     set c [gen::replace $c \" "&quot;"]
+    set c [gen::replace $c "\{\{" "\{<noop>\{"]
+    set c [gen::replace $c "\}\}" "\}<noop>\}"]    
     return "<pre>$c</pre>"
 }
 
