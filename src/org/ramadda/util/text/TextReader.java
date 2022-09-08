@@ -76,6 +76,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private NamedInputStream input;
 
+    private String encoding;
 
     /** _more_ */
     private String inputFile;
@@ -1451,6 +1452,9 @@ public class TextReader implements Cloneable {
 
 
 
+    public void setEncoding(String encoding) {
+	this.encoding = encoding;
+    }
     /**
      * _more_
      *
@@ -1498,13 +1502,21 @@ public class TextReader implements Cloneable {
      *
      * @return _more_
      */
-    public BufferedReader getReader() {
+    public BufferedReader getReader() throws Exception {
         if (reader == null) {
             NamedInputStream input = getInput();
-            InputStreamReader isr =
-                new InputStreamReader(
-				      input.getInputStream(),
-				      java.nio.charset.StandardCharsets.UTF_8);
+            InputStreamReader isr;
+	    if(encoding!=null) {
+		//		System.err.println("TextReader.getReader encoding:" + encoding);
+                isr = new InputStreamReader(
+					    input.getInputStream(),
+					    encoding);
+	    } else {
+		//		System.err.println("UTF8");
+                isr = new InputStreamReader(
+					    input.getInputStream(),
+					    java.nio.charset.StandardCharsets.UTF_8);
+	    }
             reader = new BufferedReader(isr);
         }
 
