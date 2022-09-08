@@ -1327,8 +1327,7 @@ var Utils =  {
         return ok;
     },
     makeLabel: function(s,dontSplitOnCaps) {
-        s  = String(s);
-        s = s.trim();
+        s  = String(s).trim();
 	if(!dontSplitOnCaps)
 	    s = s.replace(/([A-Z])/g," $1");
         s =  this.camelCase(s.replace(/_/g," "));
