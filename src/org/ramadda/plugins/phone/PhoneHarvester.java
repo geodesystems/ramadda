@@ -580,10 +580,8 @@ public class PhoneHarvester extends Harvester {
                 //search boron
                 //                System.err.println("text:" + text);
                 request.put(ARG_TEXT, text.toString());
-                List[] pair = getSearchManager().doSearch(request,
-                                  new SearchInfo());
-                pair[0].addAll(pair[1]);
-                entries = (List<Entry>) pair[0];
+                entries =  getSearchManager().doSearch(request,
+						       new SearchInfo());
                 phoneToEntries.put(info.getFromPhone(), entries);
                 String prefix = request.getString("prefix", (String) null);
                 if (prefix != null) {
