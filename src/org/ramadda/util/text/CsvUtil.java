@@ -135,6 +135,7 @@ public class CsvUtil implements CsvCommands {
     private boolean hasSink = false;
 
     private boolean inputIsBom = false;
+    private String encoding;
 
 
     /**
@@ -218,6 +219,7 @@ public class CsvUtil implements CsvCommands {
     private TextReader initTextReader(TextReader textReader) {
 	textReader.setInDater(inDater);
 	textReader.setOutDater(outDater);	
+	textReader.setEncoding(encoding);
 	return textReader;
     }
 
@@ -1729,7 +1731,10 @@ public class CsvUtil implements CsvCommands {
 		ARG_LABEL,"Quotes Not Special"),
         new Cmd(CMD_CLEANINPUT, "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files",
 		ARG_LABEL,"Input is Clean"),
-        new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out",ARG_LABEL,"Strip BOM"),		
+        new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out",ARG_LABEL,"Strip BOM"),
+        new Cmd(CMD_ENCODING,
+		"Specify the file encoding",ARG_LABEL,"File Encoding",
+		new Arg("encoding","Encoding, e.g., UTF-16LE, UTF-16BE, UTF-LE")),			
         new Cmd(CMD_HEADER, "Raw header",ARG_LABEL,"Add Header",
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
         new Cmd(CMD_JSON, "Parse the input as json",
@@ -3645,7 +3650,12 @@ public class CsvUtil implements CsvCommands {
 	defineFunction(CMD_BOM,0,(ctx,args,i) -> {
 		inputIsBom = true;
 		return i;
-	    });			
+	    });
+	defineFunction(CMD_ENCODING,1,(ctx,args,i) -> {
+		encoding = args.get(++i);
+		ctx.setEncoding(encoding);
+		return i;
+	    });				
 
 	defineFunction(CMD_WIDTHS,1,(ctx,args,i) -> {
 		List<Integer> widths = new ArrayList<Integer>();
