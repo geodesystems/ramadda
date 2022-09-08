@@ -281,11 +281,19 @@ var Utils =  {
 	if(idx<0) return [s];
 	return [s.substring(0,idx),s.substring(idx+1)];
     },
+    debug:false,
     split: function(s,delim,trim,excludeEmpty,dflt) {
         if(!Utils.isDefined(s)) return dflt;
         let l = [];
-        s.split(delim||",").forEach((tok)=>{
+	delim = delim??",";
+	//Convert the escaped delims
+	let regexp = new RegExp('\\\\' + delim,"g");
+	s = s.replace(regexp,'_HIDEDELIM_');
+	if(this.debug) console.log(s);
+//	console.log(s);
+        s.split(delim).forEach((tok)=>{
             tok = tok.replace(/_comma_/g,",");
+	    tok = tok.replace(/_HIDEDELIM_/g,delim);
             if(trim) tok = tok.trim();
             if(excludeEmpty && tok == "") return;
             l.push(tok);
@@ -934,6 +942,7 @@ var Utils =  {
         }
         return s;
     },
+    
     wrap: function(l, prefix, suffix) {
         let s= ""; 
         l.forEach(item=>{
@@ -5303,18 +5312,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeOptions: function(list, selected,maxWidth,debug) {
         let options = "";
         list.forEach(item=>{
-            var label = item;
+            let label = item;
             if(Array.isArray(item)) {
                 label=item[1];
                 item = item[0];
             }
 	    let fullLabel  = label;
             if(maxWidth && label.length>maxWidth)
-                label = label.substring(0,maxWidth)+"...";
-            var extra = "";
+                label = label.substring(0,maxWidth)+'...';
+            var extra = '';
             if(selected && Array.isArray(selected)) {
                 if(selected.indexOf(item)>=0) {
-                    extra=" selected ";
+                    extra=' selected ';
                 }
             } else {
                 if(selected == item) extra=" selected ";
