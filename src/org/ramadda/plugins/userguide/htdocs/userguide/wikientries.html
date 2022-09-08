@@ -273,9 +273,6 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 </pre>
 
 
-<li> <a name="earth"></a>Tag: <a href="#earth">earth</a><div class='ramadda-wiki-tag'><pre>{<noop>{earth <i>width="width of map" height="height of map"</i>}}</pre></div> 
-Display the Google Earth plugin. 
-<p>
 <li> <a name="comments"></a>Tag: <a href="#comments">comments</a><div class='ramadda-wiki-tag'><pre>{<noop>{comments}}</pre></div> Show the comments.
 <p>
 <li> <a name="breadcrumbs"></a>Tag: <a href="#breadcrumbs">breadcrumbs</a><div class='ramadda-wiki-tag'><pre>{<noop>{breadcrumbs}}</pre></div> Show the breadcrumb path.
@@ -539,9 +536,36 @@ It can take the form:
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
-<li> <a name="grid"></a>Tag: <a href="#grid">grid</a><div class='ramadda-wiki-tag'><pre>{<noop>{grid}}</pre></div> Show the children in a grid. e.g., show 
-the grandchildren as a grid:
-<pre>{<noop>{grid entries="grandchildren"}}</pre>
+<li> <a name="grid"></a>Tag: <a href="#grid">grid</a><div class='ramadda-wiki-tag'><pre>{<noop>{grid}}</pre></div> Show the children in a grid. 
+
+A common display is showing the children entries in a grid where each entry shows its thumbnail
+image attachment, 
+e.g., <a href=https://ramadda.org/repository/alias/examples>RAMADDA Examples</a>
+<center><span style='display:inline-block'><center><div><a href="images/grid.png"><img  src="images/grid.png"  style='width:60%;padding:4px;margin:8px;'  alt="images/grid.png" ></a></div></center></span></center>
+To do this use:
+<pre>
+{<noop>{grid  
+tag=&quot;card&quot;  
+sort=&quot;name&quot; 
+inner-height=&quot;200&quot;   
+width=&quot;200&quot; 
+showIcon=&quot;false&quot; 
+showLink=&quot;false&quot; 
+showSnippetHover=&quot;true&quot;
+}<noop>}
+</pre>
+The attributes:
+<ul>
+  <li> tag: what to display in each grid box
+  <li> sort: sort by name
+  <li> inner-height, width: grid box dimensions
+  <li> showIcon: should the entry icon be shown
+  <li> showLink: should a link to the entry be shown
+  <li> showSnippet: should the entry <a href="#snippet">snippet</a> be shown
+</ul>    
+
+    
+
 
 
 <li> <a name="recent"></a>Tag: <a href="#recent">recent</a><div class='ramadda-wiki-tag'><pre>{<noop>{recent <i>days="number of days to show"</i>}}</pre></div>

@@ -177,7 +177,7 @@ The first set of tags show some information for the entry. Note: the attributes 
 <li> [wiki::tagdef description {wikify="true|false"}] Entry description. If wikify=true then treat the description as
 wiki text.
 
-<p>
+<br>
 <li> 
 [wiki::tagdef fromdate {format="date time format"} ]<br> 
 [wiki::tagdef todate {format="date time format"} ]<br> 
@@ -190,9 +190,9 @@ This follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
-<p>
+<br>
 <li> [wiki::tagdef information] The information tabs.
-<p>
+<br>
 <li> [wiki::tagdef properties {metadata.types="types to show or not show"}] Show the properties listing.
 The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
 
@@ -207,10 +207,11 @@ Then if you wanted to just show  the Project PI property then do:
 }]
 
 
+<br>
 <li> [wiki::tagdef html] Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
-<p>
+<br>
 <li> [wiki::tagdef link {linkresource=true|false button=true|false output=someoutput}] Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
-<p>
+<br>
 <li> [wiki::tagdef map {width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"}] Display a map. If the entry is a folder then display the children entries of the folder.
 
 If you do not specify a width then the map will be sized to fit its page. 
@@ -228,17 +229,14 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 }]
 
 
-<li> [wiki::tagdef earth {width="width of map" height="height of map"}] 
-Display the Google Earth plugin. 
-<p>
 <li> [wiki::tagdef comments] Show the comments.
-<p>
+<br>
 <li> [wiki::tagdef breadcrumbs] Show the breadcrumb path.
-<p>
+<br>
 <li> [wiki::tagdef layout] This shows the "Layout:" toolbar bar for an entry.
-<p>
+<br>
 <li> [wiki::tagdef toolbar] Show the entry toolbar.
-<p>
+<br>
 <li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}] <br>
 Include an image. If src is not given then this shows the image (if there is one) 
 from the entry.  If src is specified it can take on the form: 
@@ -262,7 +260,7 @@ resource).  height and width can be used to scale the image, the alt
 attribute will be used in place of the entry id as a label on the image
 for accessibility.
 
-<p>
+<br>
 <li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}] 
 Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.
@@ -478,6 +476,7 @@ search
 [ug::subsubheading {Collection Tags} collection_tags]
 <ul>
 
+<br>
 <li> [wiki::tagdef tree]
 The tree tag is used to display the children entries of a folder.
 It can take the form:
@@ -486,14 +485,38 @@ It can take the form:
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
-<li> [wiki::tagdef grid] Show the children in a grid. e.g., show 
-the grandchildren as a grid:
-[wiki::text {{<noop>{grid entries="grandchildren"}}}]
+<br>
+<li> [wiki::tagdef grid] Show the children in a grid. 
 
-
+A common display is showing the children entries in a grid where each entry shows its thumbnail
+image attachment, 
+e.g., <a href=https://ramadda.org/repository/alias/examples>RAMADDA Examples</a>
+[ht::screenshot images/grid.png]
+To do this use:
+[ht::pre {
+{{grid  
+tag="card"  
+sort="name" 
+inner-height="200"   
+width="200" 
+showIcon="false" 
+showLink="false" 
+showSnippetHover="true"
+}}
+}]
+The attributes:
+<ul>
+  <li> tag: what to display in each grid box
+  <li> sort: sort by name
+  <li> inner-height, width: grid box dimensions
+  <li> showIcon: should the entry icon be shown
+  <li> showLink: should a link to the entry be shown
+  <li> showSnippet: should the entry <a href="#snippet">snippet</a> be shown
+</ul>    
+<br>
 <li> [wiki::tagdef recent {days="number of days to show"}]
 Show the most recent N days in a list organized by day.
-
+<br>
 <li> [wiki::tagdef imageplayer {width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"}]
 Show images in an image player, e.g.
 [wiki::text {{<noop>{imageplayer loopdelay="500" loopstart="true"}}}] 
@@ -501,7 +524,7 @@ Show images in an image player, e.g.
 If <i>useAttachment</i> is true then, if the entry's file is not an image but it has
 an attachment that is an image then use the attachment image.
 
-
+<br>
 <li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]
 Show a 3 column gallery:
 [wiki::text {{<noop>{gallery columns="3"}}}] 
@@ -512,6 +535,7 @@ Show a vertical listing of the children entry images:
 Set the image width and only show up to 5 images:
 [wiki::text {{<noop>{gallery  width="300" max="5"}}}]
 
+<br>
 <li> [wiki::tagdef tabs] Show the children as tabs:
 [wiki::text {{<noop>{tabs}}}] 
 
@@ -538,6 +562,7 @@ Additional arguments:
 
 
 
+<br>
 <li> [wiki::tagdef slideshow] Show the children in a slideshow:
 [wiki::text {{<noop>{slideshow}}}] 
 <p>
@@ -550,9 +575,7 @@ Uses the same arguments as tabs, plus:
 <li>width="width" - width of the display 
 <li>height="height" - height of the display
 </ul>
-
-<p>
-
+<br>
 <li> [wiki::tagdef links {separator="separator text to use" 
                           style="inline css style for the link"
                           class="css class for the link"
@@ -588,6 +611,7 @@ You can create a header with wiki text like:
 }]
 
 
+<br>
 <li> [wiki::tagdef search {
                   type="entry type" 
                   search.showform="true|false"
@@ -598,6 +622,7 @@ The "search" tag performs an entry type specific search and embed it into the wi
 The default is to not show the form.
 
 
+<br>
 <li> [wiki::tagdef apply]
 The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
 the results in a variety of ways (e.g.,  table, tabs);
