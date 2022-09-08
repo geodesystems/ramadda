@@ -559,7 +559,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
-            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], " FIELDS ");
+            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
