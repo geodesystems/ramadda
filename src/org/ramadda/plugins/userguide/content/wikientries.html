@@ -60,9 +60,9 @@ This would give us:
 
 
 [ug::subsubheading {Specify other entries with the <i>entry</i> attribute} entry]
-Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry" attribute, e.g:
+Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry"
+attribute, e.g:
 [wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
-
 
 
 The entry value can be:
@@ -79,11 +79,47 @@ The entry value can be:
 <li> The entry itself - "this"
 <p>
 <li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:entry_type"
+<p>
+<li> An ancestor entry of a particular type using "ancestor:".<br>
+For example, if you wanted to display the links of the first ancestor of the "group" type
+[ht::pre {
+{{links entry="ancestor:group"}}
+}]
+    
+<p>
+<li> An entry found through a search by prefixing the entryid with "search:" and specifying a number of
+search parameters.
+For example if you wanted to show a line chart of the  latest  entry of type "type_point_netcdf" you would specify:
+<br>
+[ht::pre {
+{{display_linechart entry="search:ascending:false;type:type_point_netcdf;"}}
+}]
+
+The "ascending:false" says to find the latest. If you wanted to find the earliest entry you would specify
+"ascending:true".
+<p>
+If you wanted to only search under a certain entry (e.g,  a collection of data files) you specify this
+with the "descendent:" prefix:
+
+[ht::pre {
+{{display_linechart entry="search:descendent:some_entry_id;ascending:;type:type_point_netcdf;"}}
+}]
+
+
 </ul>
 
 
-The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
-adds both the ID of the entry as well as its name. 
+[ug::subsubheading {Alias tag} alias]
+The alias tag allows you to specify some entry and associate it with an alias. You can then
+refer to that alias in subsequent wiki tags. For example, if you wanted to search for a particular entry type
+then display it as a chart later you could do:
+
+[ht::pre {
+{{alias name=someentry entry="search:descendent:this;ascending:;type:type_point_netcdf;"}}
+{{display_linechart entry=someentry}}
+}]
+
+
 
 [ug::subsubheading {Property tag} property]
 The <i>property</i> tag supports defining 
