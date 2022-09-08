@@ -3971,7 +3971,7 @@ function RequestMacro(display, macro) {
 	if(this.getProperty("request." + macro+".includeNone",false)) {
 	    values.push(["","None"]);
 	}
-	enums.split(",").forEach(tok=>{
+	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
 	    let label = toks[1];
