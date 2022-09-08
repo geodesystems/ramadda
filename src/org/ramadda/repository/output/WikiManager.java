@@ -929,41 +929,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
 
 	
-	if(theEntry==null && entryId.startsWith(ENTRY_PREFIX_SEARCH)) {
-	    entryId = Utils.clip(entryId,ENTRY_PREFIX_SEARCH);
-	    List<String> toks = Utils.split(entryId,";",true,true);
-	    /*
-	      entry=search:ancestor;type:some_type;orderby:
-	    */
-            Request myRequest = new Request(getRepository(), request.getUser());
-	    boolean ascending = false;
-	    String orderBy = ORDERBY_FROMDATE;
-	    for(String tok: toks) {
-		if(tok.startsWith(ENTRY_PREFIX_TYPE)) {
-		    myRequest.put(ARG_TYPE,Utils.clip(tok,ENTRY_PREFIX_TYPE));
-		} else if(tok.startsWith(ENTRY_PREFIX_ORDERBY)) {
-		    orderBy = Utils.clip(tok,ENTRY_PREFIX_ORDERBY);
-		} else if(tok.startsWith(ENTRY_PREFIX_ASCENDING)) {
-		    tok= Utils.clip(tok,ENTRY_PREFIX_ASCENDING);		    
-		    ascending = tok.length()==0|| tok.equals("true");
-		} else if(tok.startsWith(ENTRY_PREFIX_DESCENDENT)) {
-		    tok = Utils.clip(tok,ENTRY_PREFIX_DESCENDENT);
-		    if(tok.length()==0) {
-			myRequest.put(ARG_ANCESTOR,entry.getId());
-		    } else {
-			Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, tok);
-			if(otherEntry!=null) {
-			    myRequest.put(ARG_ANCESTOR,otherEntry.getId());
-			} else {
-			    System.err.println("Could not find descendent entry:" + tok);
-			}
-		    }
-		}
-	    }
-	    myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
-	    myRequest.put(ARG_MAX,"1");
-	    List<Entry> entries = getSearchManager().doSearch(myRequest,new SearchInfo());
-	    if(entries.size()>0) {
+	if(theEntry==null) {
+	    List<Entry> entries =
+		getEntriesFromEmbeddedSearch(request, wikiUtil,  props, entry,  entryId, 1);
+	    if(entries!=null && entries.size()>0) {
 		theEntry = entries.get(0);
 	    }
 	}
@@ -998,6 +967,49 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         return theEntry;
 
     }
+
+    private List<Entry> getEntriesFromEmbeddedSearch(Request request, WikiUtil wikiUtil, Hashtable props,
+						     Entry entry, String entryId, int max) throws Exception {
+	if(!entryId.startsWith(ENTRY_PREFIX_SEARCH)) {
+	    return null;
+	}
+	entryId = Utils.clip(entryId,ENTRY_PREFIX_SEARCH);
+	List<String> toks = Utils.split(entryId,";",true,true);
+	/*
+	  entry=search:ancestor;type:some_type;orderby:
+	*/
+	Request myRequest = new Request(getRepository(), request.getUser());
+	boolean ascending = false;
+	String orderBy = ORDERBY_FROMDATE;
+	for(String tok: toks) {
+	    if(tok.startsWith(ENTRY_PREFIX_TYPE)) {
+		myRequest.put(ARG_TYPE,Utils.clip(tok,ENTRY_PREFIX_TYPE));
+	    } else if(tok.startsWith(ENTRY_PREFIX_ORDERBY)) {
+		orderBy = Utils.clip(tok,ENTRY_PREFIX_ORDERBY);
+	    } else if(tok.startsWith(ENTRY_PREFIX_ASCENDING)) {
+		tok= Utils.clip(tok,ENTRY_PREFIX_ASCENDING);		    
+		ascending = tok.length()==0|| tok.equals("true");
+	    } else if(tok.startsWith(ENTRY_PREFIX_DESCENDENT)) {
+		tok = Utils.clip(tok,ENTRY_PREFIX_DESCENDENT);
+		if(tok.length()==0) {
+		    myRequest.put(ARG_ANCESTOR,entry.getId());
+		} else {
+		    Entry otherEntry = findEntryFromId(request,  entry, wikiUtil, props, tok);
+		    if(otherEntry!=null) {
+			myRequest.put(ARG_ANCESTOR,otherEntry.getId());
+		    } else {
+			System.err.println("Could not find descendent entry:" + tok);
+		    }
+		}
+	    }
+	}
+	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
+	if(max>0) 
+	    myRequest.put(ARG_MAX,""+max);
+	return  getSearchManager().doSearch(myRequest,new SearchInfo());
+    }
+
+
 
     /**
      * Get a wiki image link
