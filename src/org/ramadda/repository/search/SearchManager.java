@@ -2639,7 +2639,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    public List<Entry>[] doSearch(Request request, SearchInfo searchInfo)
+    public List<Entry> doSearch(Request request, SearchInfo searchInfo)
 	throws Exception {
 
         HashSet<String> providers = new HashSet<String>();
@@ -2652,9 +2652,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
 
         boolean     doAll      = providers.contains("all");
-
-        List<Entry> folders    = new ArrayList<Entry>();
-        List<Entry> entries    = new ArrayList<Entry>();
         List<Entry> allEntries = new ArrayList<Entry>();
 
         boolean     doSearch   = true;
@@ -2697,19 +2694,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             runSearch(runnables, running, runnableCnt);
 	}
 
-        if ( !request.exists(ARG_ORDERBY)) {
-            for (Entry e : allEntries) {
-                if (e.isGroup()) {
-                    folders.add(e);
-                } else {
-                    entries.add(e);
-                }
-            }
-        } else {
-            entries = allEntries;
-        }
 
-        if ((folders.size() == 0) && (entries.size() == 0)) {
+
+        if (allEntries.size() == 0) {
             if (request.defined(ARG_GROUP)) {
                 String groupId = (String) request.getString(ARG_GROUP,
 							    "").trim();
@@ -2717,23 +2704,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 							     groupId);
                 if ((theGroup != null)
 		    && theGroup.getTypeHandler().isSynthType()) {
-                    List<Entry> children =
-                        getEntryManager().getChildrenAll(request, theGroup,
-							 null);
-                    for (Entry child : children) {
-                        if (child.isGroup()) {
-                            folders.add(child);
-                        } else {
-                            entries.add(child);
-                        }
-                    }
+                    allEntries = getEntryManager().getChildrenAll(request, theGroup,
+								  null);
                 }
             }
         }
 
-
-        return (List<Entry>[]) new List[] { folders, entries };
-
+	return allEntries;
     }
 
 
@@ -2763,14 +2740,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<ServerInfo> servers    = null;
 
         ServerInfo       thisServer = getRepository().getServerInfo();
-
-        List<Entry>      children    = new ArrayList<Entry>();
-
-	//	System.err.println("calling doSearch:" + request.getString(ARG_TEXT,""));
-	List[] pair = doSearch(request, searchInfo);
-	//	System.err.println("done calling doSearch");
-	children.addAll((List<Entry>) pair[0]);
-	children.addAll((List<Entry>) pair[1]);
+	List<Entry> children = doSearch(request, searchInfo);
         int   total    = children.size();
         Entry theGroup = null;
 
