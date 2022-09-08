@@ -915,10 +915,7 @@ public class CommandHarvester extends Harvester {
 
         request.put("command.args", args.getArgs());
 
-        List[] pair = getSearchManager().doSearch(request, new SearchInfo());
-        pair[0].addAll(pair[1]);
-
-        List<Entry>  entries = (List<Entry>) pair[0];
+        List<Entry> entries = getSearchManager().doSearch(request, new SearchInfo());
         List<String> ids     = new ArrayList<String>();
         for (Entry entry : entries) {
             ids.add(entry.getId());
