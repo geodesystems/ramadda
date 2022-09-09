@@ -388,7 +388,7 @@ public class CsvFile extends TextFile {
         if (fieldString != null) {
             if (debug) {
                 System.err.println(
-                    "CsvFile.getFirstLineFields: has fields property");
+                    "CsvFile.getFirstLineFields: has fields property:" + fieldString);
             }
 
             return false;
