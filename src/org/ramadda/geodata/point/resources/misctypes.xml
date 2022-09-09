@@ -5,15 +5,23 @@
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <wiki>
 <![CDATA[
-+section  title="{{name}}"
-<div style='text-align:right;'> 
-<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
-</div> 
++section  title="{{name}}"                                                                          
+<div style='text-align:right;'>                                                                     
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>           
+</div>                                                                                              
 {{description wikify=true}}
-:heading Map
-{{display_map height="60vh" max=20000}}
-:heading Table
-{{display_table}}
+:heading Map                                                                                        
+{{display_map height="60vh" max=20000 showScaleLine=true 
+tooltip="${default}"
+colorBy="temp.*|pressure.*|#"
+colorByFields="#"
+colorTable=plotly_reds
+isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strokeWidth=0
+}}   
+{{display_linechart showMenu=true fields="temp.*|pressure.*|#1" max=20000}}
+----
+:heading Table   
+{{display_table max=20000}}  
 -section
 ]]>
 </wiki>
