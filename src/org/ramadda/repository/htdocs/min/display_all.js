@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep  8 14:17:05 MDT 2022";
+var build_date="RAMADDA build date: Thu Sep  8 18:31:20 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -5702,14 +5702,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
                             var widget;
                             if (this.canDoMultiFields()) {
-                                widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass], on);
+                                widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass], on,label);
+				html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
+					       widget);
                             } else {
                                 widget = HU.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
+				html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
+					       widget + " " + label);
                             }
-
-                            html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-					   widget + " " + label
-					  );
                         }
                         //                        html+= "<br>";
                     }
@@ -5754,6 +5754,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getSelectedFields: function(dfltList) {
 	    let debug = displayDebug.getSelectedFields;
+//	    debug =true;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
 	    if(this.getBinDate()) {
@@ -5775,22 +5776,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.lastSelectedFields = this.getSelectedFieldsInner(dfltList);
 	    let notFields = this.getProperty("notFields");
 	    if(notFields) {
-		let tmp = [];
-		this.lastSelectedFields.forEach(f=>{
-		    if(f.getId().match(notFields) || f.getLabel().match(notFields)) return;
-		    tmp.push(f);
+		this.lastSelectedFields = this.lastSelectedFields.filter(f=>{
+		    if(f.getId().match(notFields) || f.getLabel().match(notFields)) return false;
+		    return true;
 		});
-		this.lastSelectedFields = tmp;
 	    }
 
 
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
-            let fixedFields = this.getPropertyFields();
-
-	    //NOT NOW as this nukes the fields property
-            //if (fixedFields) fixedFields.length = 0;
-
             this.setDisplayTitle();
 	    if(this.getBinDate()) {
 		var binType = this.getProperty("binType","total");
@@ -5829,10 +5823,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     console.log("\treturning this.selectedFields:" + this.selectedFields);
                 return this.selectedFields;
             }
-            var df = [];
-            var dataList = this.dataCollection.getList();
+            let df = [];
+            let dataList = this.dataCollection.getList();
             //If we have fixed fields then clear them after the first time
-            var fixedFields = this.getPropertyFields();
+            let fixedFields = this.getPropertyFields();
             if (fixedFields && (typeof fixedFields) == "string") {
                 fixedFields  = fixedFields.split(",");
 	    }
@@ -5847,7 +5841,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    let i1 = parseFloat(pair[0].trim().substring(1));
 		    let i2 = parseFloat(pair[1].trim().substring(1));
 		    for(let i=i1;i<=i2;i++) tmpFields.push("#" + i);
-		    
 		});
 		fixedFields = tmpFields;
 	    }
@@ -5871,7 +5864,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         console.log("\thave fixed fields:" + fixedFields.length);
 		    let selected = [];
                     for (var i = 0; i < fixedFields.length; i++) {
-                        var sfield = fixedFields[i];
+                        let sfield = fixedFields[i];
 			if(sfield =="*") {
 			    selected  =fields;
 			    break;
@@ -5896,21 +5889,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 	    this.userHasSelectedAField = false;
-            var fieldsToSelect = null;
-            var firstField = null;
+            if (this.debugSelected)
+                console.log("\tuser has selected");
+            let fieldsToSelect = null;
+            let firstField = null;
             this.selectedCbx = [];
-            var cbxExists = false;
-
-
-            for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                var pointData = dataList[collectionIdx];
+            let cbxExists = false;
+            for (let collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
+                let pointData = dataList[collectionIdx];
                 fieldsToSelect = this.getFieldsToSelect(pointData);
-                for (i = 0; i < fieldsToSelect.length; i++) {
-                    var field = fieldsToSelect[i];
+                for (let i = 0; i < fieldsToSelect.length; i++) {
+                    let field = fieldsToSelect[i];
                     if (firstField == null && field.isNumeric()) firstField = field;
-                    var idBase = "cbx_" + collectionIdx + "_" + i;
-                    var cbxId = this.getDomId(idBase);
-                    var cbx = $("#" + cbxId);
+                    let idBase = "cbx_" + collectionIdx + "_" + i;
+                    let cbxId = this.getDomId(idBase);
+                    let cbx = $("#" + cbxId);
                     if (cbx.length>0) {
                         cbxExists = true;
                     } else {
@@ -5979,10 +5972,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
             if (this.defaultSelectedToAll()) {
 		let allFields = this.getFields();
+                let tmp = [];
 		if(allFields) {
-                    var tmp = [];
                     for (i = 0; i < allFields.length; i++) {
-			var field = allFields[i];
+			let field = allFields[i];
 			if (!field.isFieldGeo()) {
                             tmp.push(field);
 			}
@@ -5999,7 +5992,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return dfltList;
             }
             for (i = 0; i < fields.length; i++) {
-                var field = fields[i];
+                let field = fields[i];
                 if (field.isNumeric() && !field.isFieldGeo()) return [field];
             }
             return [];
@@ -8144,7 +8137,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getDialogContents: function(tabTitles, tabContents) {
 	    this.getDisplayDialogContents(tabTitles, tabContents);
         },
+	showFieldsInDialog: function() {
+	    return false;
+	},
         getDisplayDialogContents: function(tabTitles, tabContents) {
+	    if(this.showFieldsInDialog()) {
+	        let html = HU.div([ATTR_ID, this.domId(ID_FIELDS)],"");
+		tabTitles.push("Fields");
+		tabContents.push(html);
+	    }
+
             var get = this.getGet();
             var menuItems = [];
             this.getMenuItems(menuItems);
@@ -16926,7 +16928,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             let height = "600";
-            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], " FIELDS ");
+            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], "  ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -49083,6 +49085,9 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
         getDisplayStyle: function() {
             return "";
         },
+	showFieldsInDialog: function() {
+	    return true;
+	},
         updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
@@ -49093,6 +49098,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		return;
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
+
             if (fields.length == 0) {
 		let tmp = this.getFieldsByType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
@@ -49166,9 +49172,9 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     xanchor: this.getProperty("legendXAnchor"),
                 },
                 showlegend: this.getProperty("showLegend",true),
-                paper_bgcolor: this.getProperty("chart.fill", 'rgb(254, 247, 234)'),
 		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
-                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+//                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+                plot_bgcolor: this.getProperty("chartArea.fill", '#fff'),				
                 hovermode: 'closest'
             };
 	    if(fields.length>1) {
