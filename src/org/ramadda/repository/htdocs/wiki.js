@@ -653,7 +653,7 @@ WikiEditor.prototype = {
 	    } else {
 		let left = Utils.join([
 		    HU.span([CLASS, 'ramadda-clickable',ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',['title','Preview Again'])),
-		    HU.checkbox('',[TITLE,'Live Preciew',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'')+SPACE4,
+		    HU.checkbox('',[TITLE,'Live Preview',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'')+SPACE4,
 		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
 
 		    HU.span([CLASS, 'ramadda-clickable',TITLE,'Copy',ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),

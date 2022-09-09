@@ -1123,9 +1123,9 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     xanchor: this.getProperty("legendXAnchor"),
                 },
                 showlegend: this.getProperty("showLegend",true),
-                paper_bgcolor: this.getProperty("chart.fill", 'rgb(254, 247, 234)'),
 		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
-                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+//                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+                plot_bgcolor: this.getProperty("chartArea.fill", '#fff'),				
                 hovermode: 'closest'
             };
 	    if(fields.length>1) {

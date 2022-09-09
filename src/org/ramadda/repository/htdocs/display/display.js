@@ -2919,8 +2919,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
             if (this.defaultSelectedToAll()) {
 		let allFields = this.getFields();
+                let tmp = [];
 		if(allFields) {
-                    let tmp = [];
                     for (i = 0; i < allFields.length; i++) {
 			let field = allFields[i];
 			if (!field.isFieldGeo()) {
