@@ -19,6 +19,10 @@ csvcommands4=-addheader,date.type date date.format {MM/dd/yyyy HH:mm:ss},-print
 <wiki>
 <![CDATA[
 +section title={{name}}
+<div style='text-align:right;'> 
+<span style='display:inline-block;margin-right:10px'>{{fromdate  format="yyyy-MM-dd HH:mm z"}}</span>
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div> 
 {{description wikify=true}}
 {{group showMenu=true}}
 {{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
