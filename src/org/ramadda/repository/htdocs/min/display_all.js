@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep  8 18:31:20 MDT 2022";
+var build_date="RAMADDA build date: Thu Sep  8 23:28:23 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -6129,6 +6129,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			console.log("\tField:" + field.getId());
 		    }
 		    
+		    if(fieldId=="#") {
+			if(field.isFieldNumeric()) {
+			    theField =  field;
+			    return false;
+			}
+			continue;
+		    }
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
 			if(debug)
@@ -6165,6 +6172,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return result;
 	    }
 	    if(ids=="*") return fields;
+	    if(ids=="#") {
+		return  fields.filter(f=>{
+		    return !f.isFieldLongitude() &&
+			!f.isFieldLatitude() &&
+			f.isFieldNumeric();
+		});
+	    }
             if ((typeof ids) == "string")
                 ids = ids.split(",");
             if (!fields) {
@@ -10250,7 +10264,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	findMatchingIndex: function(record) {
 	    if(!record) return {index:-1,record:null};
-	    var index = this.recordToIndex[record.getId()];
+	    let index = this.recordToIndex[record.getId()];
 	    if(Utils.isDefined(index)) {
 		return {index:index, record:this.indexToRecord[index]}
 	    }
