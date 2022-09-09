@@ -479,6 +479,14 @@ public class Utils extends IO {
         return map;
     }
 
+    public static void print(Hashtable props) {
+        for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+            Object key   =  keys.nextElement();
+            Object value = props.get(key);
+            System.out.println("KEY:" +key +"=" + value+":");
+        }	
+    }	
+
     /**
      * _more_
      *
@@ -1652,19 +1660,29 @@ public class Utils extends IO {
      * @return _more_
      */
     public static Hashtable getProperties(String s) {
+	return getProperties(s,false);
+    }
+
+    public static Hashtable getProperties(String s, boolean trimValues) {
         Hashtable p = new Hashtable();
         for (String line : Utils.split(s, "\n")) {
             if (line.startsWith("#")) {
                 continue;
             }
             List<String> toks = Utils.splitUpTo(line, "=", 2);
+            if (toks.size() == 0) continue;
+	    String key = toks.get(0).trim();
+	    key = key.replaceAll("\\r", "");
             if (toks.size() == 2) {
-                p.put(toks.get(0).trim(), toks.get(1));
+		String value = toks.get(1);
+		//Make sure to remove the newline char
+		value = value.replaceAll("\\r", "");
+		if(trimValues) value = value.trim();
+		p.put(key, value);
             } else if (toks.size() == 1) {
-                p.put(toks.get(0).trim(), "");
+                p.put(key, "");
             }
         }
-
         return p;
     }
 
