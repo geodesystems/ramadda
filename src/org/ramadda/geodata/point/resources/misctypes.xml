@@ -1,5 +1,27 @@
 <types supercategory="Geoscience">
 
+<type name="type_point_track_csv"  description="Track CSV Data"  super="type_point"
+      supercategory="Geoscience" category="Point Data">
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<wiki>
+<![CDATA[
++section  title="{{name}}"
+<div style='text-align:right;'> 
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div> 
+{{description wikify=true}}
+:heading Map
+{{display_map height="60vh" max=20000}}
+:heading Table
+{{display_table}}
+-section
+]]>
+</wiki>
+
+  </type>
+
+
+
   <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler">
      <property name="icon" value="/point/openaq.png"/>
      <column  name="location"  label="Location" cansearch="true"/>
@@ -425,11 +447,7 @@ fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld
 ]]>
 
 </wiki>
-
-
-
-
-  </type>
+</type>
 
 
 
