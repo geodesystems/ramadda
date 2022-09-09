@@ -1659,9 +1659,9 @@ public class Utils extends IO {
             }
             List<String> toks = Utils.splitUpTo(line, "=", 2);
             if (toks.size() == 2) {
-                p.put(toks.get(0), toks.get(1));
-            } else if (toks.size() == 2) {
-                p.put(toks.get(0), "");
+                p.put(toks.get(0).trim(), toks.get(1));
+            } else if (toks.size() == 1) {
+                p.put(toks.get(0).trim(), "");
             }
         }
 
