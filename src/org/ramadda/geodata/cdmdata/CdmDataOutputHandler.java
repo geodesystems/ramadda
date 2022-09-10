@@ -1365,7 +1365,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridCsv(final Request request, final Entry entry)
             throws Exception {
 
-        final boolean debug = true;
+        final boolean debug = false;
         String        path  = getPath(request, entry);
         String gridField = request.getString("gridField", (String) null);
         final GridDataset  gds   = getCdmManager().getGridDataset(entry,
@@ -1667,7 +1667,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
 
-        final boolean debug = false;
+        final boolean debug = true;
         String        path  = getPath(request, entry);
         if (debug) {
             System.err.println("outputGridJson path:" + path);
@@ -1675,7 +1675,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         String gridField = request.getString("gridField", (String) null);
         final GridDataset  gds   = getCdmManager().getGridDataset(entry,
                                        path);
-        List<CalendarDate> dates = getGridDates(gds);
         if ((gridField == null) || (gridField.length() == 0)) {
             gridField = gds.getDataVariables().get(0).getShortName();
         }
@@ -1684,6 +1683,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (grid == null) {
             throw new RuntimeException("Could not find grid field:" + field);
         }
+        List<CalendarDate> dates = getGridDates(gds);
+	GridCoordSystem      gcs      = grid.getCoordinateSystem();
+	CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+	if (timeAxis != null) {
+	    dates = timeAxis.getCalendarDates();
+	}
+
+
+
         final String fieldLabel = grid.getDescription();
         int          timeIndex  = -1;
         Range        tRange     = null;
@@ -1812,7 +1820,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 
 
-        GridCoordSystem         gcs    = grid.getCoordinateSystem();
         int                     lats   = (int) gcs.getYHorizAxis().getSize();
         int                     lons   = (int) gcs.getXHorizAxis().getSize();
         final List<LatLonPoint> points = new ArrayList<LatLonPoint>();
