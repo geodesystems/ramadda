@@ -131,6 +131,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,"","showTitle","false"),
+                            new WikiTag(WIKI_TAG_SHOW_AS, null, ATTR_ENTRY,"","type","entry type to display as","#target","target entry"),
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000","style","",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
@@ -2389,6 +2390,30 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(theEntry!=null)
 		wikiUtil.putWikiProperty("entry:" + name, theEntry);
 	    return "";
+        } else if (theTag.equals(WIKI_TAG_SHOW_AS)) {
+	    String template = null;
+	    String type = getProperty(wikiUtil,props,"type",null);
+
+	    String target = getProperty(wikiUtil,props,"target",null);	    
+	    if(stringDefined(type)) {
+		TypeHandler typeHandler =
+                    getRepository().getTypeHandler(type);
+		if(typeHandler==null) return "Bad type:" + type;
+		template = typeHandler.getWikiTemplate(request);
+	    } else if(stringDefined(target)) {
+		Entry targetEntry = getEntryManager().getEntry(request,target);
+		if(targetEntry==null) return "Bad target entry:" + target;
+		template = targetEntry.getTypeHandler().getWikiTemplate(request,targetEntry);
+	    }
+	    if(!stringDefined(template)) {
+		return "No template found";
+	    }
+	    wikiUtil.putWikiProperty("showTitle","false");
+	    String results = wikifyEntry(request,  entry, wikiUtil, template, false,
+					 Utils.makeHashSet(WIKI_TAG_DESCRIPTION,WIKI_TAG_SHOW_AS),
+					 false);
+	    wikiUtil.removeWikiProperty("showTitle");
+	    return results;
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
         } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
