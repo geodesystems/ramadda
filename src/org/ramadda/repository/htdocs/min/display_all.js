@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep  8 23:29:43 MDT 2022";
+var build_date="RAMADDA build date: Sat Sep 10 10:07:46 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -1322,6 +1322,12 @@ ColorByInfo.prototype = {
     isEnabled: function() {
 	return this.enabled;
     },
+    getField: function() {
+	return this.field;
+    },
+    getColors: function() {
+	return this.colors;
+    },    
     displayColorTable: function(width,force, domId) {
 	if(!this.getProperty("showColorTable",true)) return;
 	if(this.compareFields.length>0) {
@@ -33225,6 +33231,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
+
+	{p:'showBounds',ex:'true',d:false},
+	{p:'boundsStrokeColor',d:'blue'},
+	{p:'boundsFillColor',d:'transparent'},
+	{p:'boundsFillOpacity',d:'0.0'},			
+
 	{p:'showOpacitySlider',ex:'false',d:false},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
@@ -33487,11 +33499,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.hadInitialPosition = true;
                 let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
-                    if (this.getProperty("showBounds", false)) {
+                    if (this.getShowBounds()) {
                         var attrs = {};
-                        if (this.getProperty("boundsColor")) {
-                            attrs.strokeColor = this.getProperty("boundsColor", "");
+                        if (this.getBoundsStrokeColor(this.getProperty("boundsColor"))) {
+                            attrs.strokeColor = this.getBoundsStrokeColor(this.getProperty("boundsColor"));
                         }
+                        attrs.fillColor = this.getBoundsFillColor();
+                        attrs.fillOpacity = this.getBoundsFillOpacity();			
                         this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
                     }
 		    if(!hasLoc)
@@ -44680,6 +44694,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
 		this.recordMap[record.rowIndex] = record;
+		this.recordMap[record.getId()] = record;
 		let formatFieldValue=(f,record)=>{
 		}
 
@@ -44845,6 +44860,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let tooltipClick = this.getProperty("tooltipClick");
 	    let rows = this.jq(ID_TABLE).find(".display-htmltable-row");
 	    this.makeTooltips(rows,records);
+	    rows.click(function() {
+		let record = _this.recordMap[$(this).attr(RECORD_ID)];
+		if(!record) return;
+		_this.propagateEventRecordSelection({record:record});
+	    });
 	    let opts = {
                 ordering: false,
 		scrollY:this.getScrollY("400px")
@@ -48206,17 +48226,20 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	},
 	updateUIInner:function(args) {
 	},
-        setDimensions: function(layout, widthDelta) {
+        setDimensions: function(layout, widthDelta,ext) {
+	    ext = ext??{};
             //                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
             var height = parseInt(this.getProperty("height", "400").replace("px", "").replace("%", ""));
             //                layout.width = width-widthDelta;
             layout.height = height;
 	    if(!layout.margin) layout.margin={};
 	    [["l","marginLeft"],["r","marginRight"],["t","marginTop"],["b","marginBottom"]].map(t=>{
-		if(Utils.isDefined(this.getProperty(t[1])))
-		    layout.margin[t[0]]  = this.getProperty(t[1]);
+		let key = t[1];
+		if(Utils.isDefined(this.getProperty(key)))
+		    layout.margin[t[0]]  = this.getProperty(key);
+		else if(Utils.isDefined(ext[key])) 
+		    layout.margin[t[0]]  = ext[key];
 	    });
-
         },
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);
@@ -48487,14 +48510,12 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
 
 
 function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
-    var SUPER;
-    $.extend(this, {
-        width: "400px",
-        height: "400px",
-    });
-    RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
-
-    RamaddaUtil.defineMembers(this, {
+    let SUPER = new RamaddaPlotlyDisplay(displayManager, id, type, properties);
+    let myProps = [
+	{label:'3D Plot'},
+	{p:'markerSize',d:6},
+    ];
+    defineDisplay(this, SUPER, myProps, {
         addEvents: function(plot, myPlot) {
             myPlot.on('plotly_click', function() {
                 //                        alert('You clicked this Plotly chart!');
@@ -48509,11 +48530,10 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             return 'scatter3d';
         },
         updateUIInner: function() {
-            var records = this.filterData();
+            let records = this.filterData();
             if (!records) return;
-            var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldByType(fields, "string");
-            var fields = this.getFieldsByType(fields, "numeric");
+            let allFields = this.getSelectedFields(this.getData().getRecordFields());
+            let fields = this.getFieldsByType(allFields, "numeric");
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -48522,71 +48542,137 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
                 this.displayError("Don't have 3 numeric fields specified");
                 return;
             }
-            var x = this.getColumnValues(records, fields[0]);
-            var y = this.getColumnValues(records, fields[1]);
-            var z = this.getColumnValues(records, fields[2]);
+	    this.records = records;
+	    this.xField = fields[0];	    
+	    this.yField = fields[1];
+	    this.zField = fields[2];	    
+            let x = this.getColumnValues(records, this.xField);
+            let y = this.getColumnValues(records, this.yField);
+            let z = this.getColumnValues(records, this.zField);
+	    let marker =  {
+                size: +this.getMarkerSize(),
+		color:'#fff',
+                opacity: 0.8,
+                line: {
+		    color: 'blue',
+                    width: 2
+                },
+            };
 
-            var trace1 = {
+            let colorBy = this.getColorByInfo(records);
+	    if(colorBy.isEnabled()) {
+		let dataColumn = this.getColumnValues(records, colorBy.getField());
+		marker.line.color = Utils.normalize(dataColumn.values);		    
+		let scale = [];
+		let colors = colorBy.getColors();
+		colors.forEach((c,idx)=>{
+		    scale.push([idx/colors.length,c]);
+		});
+		scale.push([1,scale[scale.length-1][1]]);
+		marker.line.colorscale=scale;
+		marker.colorscale=scale;
+	    }
+
+            this.trace1 = {
+		name:colorBy.isEnabled()?colorBy.getField().getLabel():"",
                 x: x.values,
                 y: y.values,
                 z: z.values,
                 mode: 'markers',
-                marker: {
-                    size: 12,
-                    line: {
-                        color: 'rgba(217, 217, 217, 0.14)',
-                        width: 0.5
-                    },
-                    opacity: 0.8
-                },
+		marker:marker,
                 type: this.get3DType()
             };
 
-
-            var plotData = [trace1];
-
-
-            var layout = {
+	    let gridColor = this.getProperty('axisLineColor','rgb(255,255,255)');
+            let layout = {
                 scene: {
                     xaxis: {
-                        backgroundcolor: "rgb(200, 200, 230)",
-                        gridcolor: "rgb(255, 255, 255)",
+                        backgroundcolor: 'rgb(200, 200, 230)',
+                        gridcolor: gridColor,
                         showbackground: true,
-                        zerolinecolor: "rgb(255, 255, 255)",
-                        title: fields[0].getLabel(),
+                        zerolinecolor: gridColor,
+                        title: this.xField.getLabel(),
                     },
                     yaxis: {
-                        backgroundcolor: "rgb(230, 200,230)",
-                        gridcolor: "rgb(255, 255, 255)",
+                        backgroundcolor: 'rgb(230, 200,230)',
+                        gridcolor: gridColor,
                         showbackground: true,
-                        zerolinecolor: "rgb(255, 255, 255)",
-                        title: fields[1].getLabel(),
+                        zerolinecolor: gridColor,
+                        title: this.yField.getLabel(),
                     },
                     zaxis: {
-                        backgroundcolor: "rgb(230, 230,200)",
-                        gridcolor: "rgb(255, 255, 255)",
+                        backgroundcolor: 'rgb(230, 230,200)',
+                        gridcolor: gridColor,
                         showbackground: true,
-                        zerolinecolor: "rgb(255, 255, 255)",
-                        title: fields[2].getLabel(),
+                        zerolinecolor: gridColor,
+                        title: this.zField.getLabel(),
                     }
                 },
                 margin: {
                     l: 0,
                     r: 0,
-                    b: 50,
-                    t: 50,
+                    b:0,
+                    t:0,
                     pad: 4
                 },
+		legend: {
+		    yanchor:"top", y:1,   xanchor: 'center', x: 0.5, orientation: 'h' 
+		}
             };
             this.setDimensions(layout, 2);
-            this.makePlot(plotData, layout);
+	    layout.showLegend=false;
+            let trace2 = {
+		name:'Selected',
+		showLegend:false,
+                mode: 'markers',
+                type: this.get3DType(),
+                x: [],
+                y: [],
+                z: [],
+		marker:{
+                    size: this.getMarkerSize()+6,
+		    color:'red',
+                    opacity: 0.8,
+                    line: {
+			color: 'red',
+			width: 2
+                    },
+		},
+            };
+
+
+            let plotData = [this.trace1,trace2];
+	    this.plot = this.makePlot(plotData, layout);
+	    this.plot.on('plotly_click', (data)=>{
+		if(data.points && data.points.length) {
+		    let record = records[data.points[0].pointNumber];
+		    if(record) {
+			this.propagateEventRecordSelection({record: record});
+		    }
+		}
+
+	    });
+	    if(colorBy.isEnabled()) {
+		colorBy.displayColorTable();
+	    }
+
         },
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    let record = args.record;
+	    if(!record) return;
+            let x = this.xField.getValue(record);
+            let y = this.yField.getValue(record);
+            let z = this.zField.getValue(record);	    	    
+	    let update = {'x': [[x]], 'y': [[y]],'z':[[z]]};
+	    Plotly.update(this.plot, update, {}, [1]);
+	}
     });
 }
 
 
 function Ramadda3dmeshDisplay(displayManager, id, properties) {
-    var SUPER;
+    let SUPER;
     $.extend(this, {
         width: "100%",
         height: "100%",
