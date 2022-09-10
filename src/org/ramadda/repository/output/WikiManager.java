@@ -2695,7 +2695,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		 entry.getResource().isS3())
 		&& entry.getResource().getPath().toLowerCase().endsWith(
 									".nc")) {
-		System.err.println("as grid");
 		TypeHandler gridType =
                     getRepository().getTypeHandler("cdm_grid");
                 if (gridType != null) {
