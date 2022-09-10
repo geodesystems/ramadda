@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Sep 10 10:07:46 MDT 2022";
+var build_date="RAMADDA build date: Sat Sep 10 12:17:51 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -48167,7 +48167,7 @@ addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
     requiresData: true,
-    forUser: false,
+    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
