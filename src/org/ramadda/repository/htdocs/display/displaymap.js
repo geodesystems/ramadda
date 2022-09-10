@@ -107,6 +107,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},	
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
+
+	{p:'showBounds',ex:'true',d:false},
+	{p:'boundsStrokeColor',d:'blue'},
+	{p:'boundsFillColor',d:'transparent'},
+	{p:'boundsFillOpacity',d:'0.0'},			
+
 	{p:'showOpacitySlider',ex:'false',d:false},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false',d:true},
@@ -369,11 +375,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		this.hadInitialPosition = true;
                 let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
-                    if (this.getProperty("showBounds", false)) {
+                    if (this.getShowBounds()) {
                         var attrs = {};
-                        if (this.getProperty("boundsColor")) {
-                            attrs.strokeColor = this.getProperty("boundsColor", "");
+                        if (this.getBoundsStrokeColor(this.getProperty("boundsColor"))) {
+                            attrs.strokeColor = this.getBoundsStrokeColor(this.getProperty("boundsColor"));
                         }
+                        attrs.fillColor = this.getBoundsFillColor();
+                        attrs.fillOpacity = this.getBoundsFillOpacity();			
                         this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
                     }
 		    if(!hasLoc)
