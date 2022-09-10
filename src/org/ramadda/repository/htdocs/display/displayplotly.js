@@ -84,7 +84,7 @@ addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
     requiresData: true,
-    forUser: false,
+    forUser: true,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
