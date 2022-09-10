@@ -933,6 +933,17 @@ var Utils =  {
 	}
 	return s;
     },
+    /*
+      normalize the vec arg of numbers to 0...1
+     */
+    normalize:function(vec) {
+	let vmin = Math.min(...vec);
+	let vmax = Math.max(...vec);
+	let vdelta = vmax - vmin;
+	return vec.map(value => {
+	    return (value - vmin) / vdelta;
+	})
+    },
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
