@@ -1320,6 +1320,12 @@ ColorByInfo.prototype = {
     isEnabled: function() {
 	return this.enabled;
     },
+    getField: function() {
+	return this.field;
+    },
+    getColors: function() {
+	return this.colors;
+    },    
     displayColorTable: function(width,force, domId) {
 	if(!this.getProperty("showColorTable",true)) return;
 	if(this.compareFields.length>0) {
