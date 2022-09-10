@@ -1249,6 +1249,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
 		this.recordMap[record.rowIndex] = record;
+		this.recordMap[record.getId()] = record;
 		let formatFieldValue=(f,record)=>{
 		}
 
@@ -1414,6 +1415,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let tooltipClick = this.getProperty("tooltipClick");
 	    let rows = this.jq(ID_TABLE).find(".display-htmltable-row");
 	    this.makeTooltips(rows,records);
+	    rows.click(function() {
+		let record = _this.recordMap[$(this).attr(RECORD_ID)];
+		if(!record) return;
+		_this.propagateEventRecordSelection({record:record});
+	    });
 	    let opts = {
                 ordering: false,
 		scrollY:this.getScrollY("400px")
