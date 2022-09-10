@@ -33,6 +33,9 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 <wiki>
 <![CDATA[
 +section  title="{{name}}"  
+<div style='text-align:right;'>                                                                     
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>           
+</div>                                                                                              
 {{description wikify=true}}
 {{property max=20000}}
 {{group  colorTable=blues 
