@@ -2238,10 +2238,16 @@ public class WikiUtil {
                     String  label       = (String) props.get("label");
                     String  heading     = (String) props.get("heading");
                     String  title       = (String) props.get("title");
+                    String  titleStyle  = (String) props.get("titleStyle");
                     String  subTitle    = (String) props.get("subTitle");
+		    if(Misc.equals(getWikiProperty("showTitle"),"false")) {
+			title = subTitle = null;
+		    }
+						   
+
+
                     String  classArg    = (String) props.get("class");
                     String  style       = (String) props.get("style");
-                    String  titleStyle  = (String) props.get("titleStyle");
                     String  headerStyle = (String) props.get("headerStyle");
                     boolean doBorderTop = tline.indexOf("----") >= 0;
                     boolean doEvenOdd   = tline.indexOf("#") >= 0;
