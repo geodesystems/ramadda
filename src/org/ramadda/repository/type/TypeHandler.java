@@ -828,6 +828,18 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public String getWikiTemplate(Request request)
+            throws Exception {
+        if (wikiTemplate != null) {
+            return wikiTemplate;
+        }
+        if (getParent() != null) {
+            return getParent().getWikiTemplate(request);
+        }
+
+        return null;
+    }
+    
 
     /**
      * _more_
