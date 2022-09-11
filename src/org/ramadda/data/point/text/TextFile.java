@@ -194,8 +194,7 @@ public abstract class TextFile extends PointFile {
      * @return _more_
      */
     public int getSkipLines(VisitInfo visitInfo) {
-        int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "0"));
-
+        int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "1"));
         return skipLines;
     }
 
@@ -621,8 +620,10 @@ public abstract class TextFile extends PointFile {
                 i++;
             }
             if (headerLines.size() != skipCnt) {
+		System.err.println(headerLines);
                 throw new IllegalArgumentException(
-                    "Bad number of header lines:" + headerLines.size());
+                    "Bad number of header lines:" + headerLines.size() +" expected:" + skipCnt);
+
             }
             if (debug) {
                 System.err.println(
