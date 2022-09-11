@@ -393,7 +393,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         int step = 50;
         sb.append(HtmlUtils.href(request.getUrl(), msg("Next") + " " + step));
         sb.append(HtmlUtils.br());
-        sb.append("<table cellspacing=0 cellpadding=5 border=1>");
+        sb.append("<table class='stripe ramadda-table' table-height='300px'>");
         final int[]   cnt     = { 0 };
         RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
 
@@ -403,10 +403,12 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
                 if (cnt[0] == 0) {
                     String style = HtmlUtils.style("background: #c3d9ff;");
+		    style="";
+                    sb.append("<thead>");
                     sb.append("<tr valign=bottom>");
-                    sb.append("<td " + style + ">");
+                    sb.append("<th " + style + ">");
                     sb.append(HtmlUtils.b("Index"));
-                    sb.append("</td>");
+                    sb.append("</th>");
                     for (int fieldCnt = 0; fieldCnt < fields.size();
                             fieldCnt++) {
                         RecordField field = fields.get(fieldCnt);
@@ -418,18 +420,17 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                         }
                         if (field.isBitField()) {
                             String[] bitFields = field.getBitFields();
-                            sb.append("<td align=center " + style + ">");
+                            sb.append("<th align=center " + style + ">");
                             sb.append(field.getName());
-                            sb.append("</td>");
+                            sb.append("</th>");
                             for (int i = 0; i < bitFields.length; i++) {
-                                sb.append("<td align=center " + style + ">");
+                                sb.append("<th align=center " + style + ">");
                                 sb.append(HtmlUtils.b("Bit #" + i + "<br>"
                                         + bitFields[i]));
-                                sb.append("</td>");
+                                sb.append("</th>");
                             }
-
                         } else {
-                            sb.append("<td align=center " + style + ">");
+                            sb.append("<th align=center " + style + ">");
                             if (field.getArity() > 1) {
                                 sb.append(HtmlUtils.b(field.getName()
                                         + "&nbsp;[" + field.getArity()
@@ -437,10 +438,12 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                             } else {
                                 sb.append(HtmlUtils.b(field.getName()));
                             }
-                            sb.append("</td>");
+                            sb.append("</th>");
                         }
                     }
                     sb.append("</tr>");
+                    sb.append("</thead>");
+                    sb.append("</tbody>");		    		    
                 }
                 sb.append("<tr>");
                 sb.append("<td>");
@@ -531,6 +534,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             throw new RuntimeException(inner);
         }
 
+        sb.append("</tbody>");
         sb.append("</table>");
         request.getRepository().getPageHandler().entrySectionClose(request,
                 recordEntry.getEntry(), sb);
