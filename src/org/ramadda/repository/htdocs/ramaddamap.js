@@ -2973,10 +2973,6 @@ RepositoryMap.prototype = {
 	    //	$("#"+this.mapDivId+"_themap").attr('tabindex','1');
 	    const el = document.querySelector("#"+this.mapDivId+"_themap");
 	    el.onwheel = (event)=>{
-		if(this.tmp)
-		    console.dir(this.tmp);
-		this.tmp = null;
-		//log(this.getMap().getZoom());
 		event.preventDefault();
 	    };
 	}
