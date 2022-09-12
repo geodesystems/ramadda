@@ -611,6 +611,10 @@ public class CsvUtil implements CsvCommands {
 		continue;
 	    }	    
 	    if (doArgs) {
+		if(doTypeXml && arg.equals("-maxrows")) {
+		    i++;
+		    continue;
+		}
 		if (argsBuff == null) {
 		    argsBuff = new StringBuilder();
 		    argsBuff.append("csvcommands1=");
@@ -724,11 +728,11 @@ public class CsvUtil implements CsvCommands {
 		argsBuff.append("\n");
 	    }
 	    pw   = new PrintWriter(getOutputStream());	
-    pw.println("<types>");
+	    pw.println("<types>");
 	    pw.println("<type name=\"" + typeName +"\" description=\"" + typeDesc +"\" super=\"type_point\" category=\"Point Data\"\nhandler=\"org.ramadda.data.services.PointTypeHandler\">"); 	    
 	    pw.println("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>");
 	    pw.println("<property name=\"record.properties\">");
-	    pw.print(argsBuff);
+	    pw.print(argsBuff.toString().replaceAll(" ","_space_"));
 	    pw.println("</property>");
 	    pw.println("</type>");
 	    pw.println("</types>");	    	    
