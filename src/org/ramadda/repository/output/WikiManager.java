@@ -2075,7 +2075,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
             boolean showicon = getShowIcon(wikiUtil, props, false);
             if (showicon) {
-                label = HU.img(getIconUrl("/icons/download.png"))
+                label = HU.img(getIconUrl("fas fa-download"))
 		    + HU.space(2) + label;
             }
 
