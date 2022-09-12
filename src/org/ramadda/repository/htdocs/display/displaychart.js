@@ -268,6 +268,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     const ID_HIGHLIGHTFIELDSHOLDER = "highlightfieldsholder";
     const ID_HIGHLIGHTFIELDS = "highlightfields";	    
     let _this = this;
+    if(!Utils.isDefined(properties['sortOnDate']))
+	properties['sortOnDate'] = true;
     //Init the defaults first
     $.extend(this, {
 	debugChartOptions:false,
