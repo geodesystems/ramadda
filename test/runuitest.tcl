@@ -65,6 +65,7 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
     }
     lappend urls "$arg"
 }
+
 if {[llength $urls]} {
     set cnt 0
     foreach url $urls {

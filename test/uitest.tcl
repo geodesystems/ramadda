@@ -194,20 +194,20 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    if {[regexp {vega-embed\.min\.js\.map} $line]} {
 		continue
 	    }
-	    if([regexp {\[Warning\] *THREE.*} $Line]} {
+	    if {[regexp {\[Warning\] *THREE.*} $line]} {
 		continue;
 	    }
-	    if([regexp {.*\.map due to access control checks.*} $Line]} {
+	    if {[regexp {.*\.map due to access control checks.*} $line]} {
 		continue;
 	    }
 
-	    if([regexp {.*Not allowed to request resource.*} $Line]} {
+	    if {[regexp {.*Not allowed to request resource.*} $line]} {
 		continue;
 	    }
-	    if([regexp {\.js\.map.*} $Line]} {
+	    if {[regexp {\.js\.map.*} $line]} {
 		continue;
 	    }	    
-	    
+
 	    if {[regexp {Failed to load resource} $line]} {
 		if {![regexp {Insurrection} $line]} {
 		    if {$seenFailed} continue;
