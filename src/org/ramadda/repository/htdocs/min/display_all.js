@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep 12 13:15:42 MDT 2022";
+var build_date="RAMADDA build date: Mon Sep 12 16:48:47 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4397,7 +4397,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'layoutHere',ex:true},
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
-	{p:'tooltip',doGetter:false,ex:'${default}'},
+	{p:'tooltip',doGetter:false,d:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'includeFieldDescriptionInTooltip'},
@@ -6004,7 +6004,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return [];
 	},
 	sortRecords: function(records, sortFields) {
-	    if(this.getProperty("sortOnDate")) {
+	    if(this.getSortOnDate()) {
 		records.sort(function(a, b) {
 		    if (a.getDate() && b.getDate()) {
 			if (a.getDate().getTime() < b.getDate().getTime()) return -1;
@@ -16657,6 +16657,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     const ID_HIGHLIGHTFIELDSHOLDER = "highlightfieldsholder";
     const ID_HIGHLIGHTFIELDS = "highlightfields";	    
     let _this = this;
+    if(!Utils.isDefined(properties['sortOnDate']))
+	properties['sortOnDate'] = true;
     //Init the defaults first
     $.extend(this, {
 	debugChartOptions:false,
