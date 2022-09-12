@@ -2165,7 +2165,13 @@ table.dataTable tbody tr {
 
 table.dataTable thead th, table.dataTable thead td {
     padding: 2px 8px !important;
+    padding-bottom: 0px !important;
 }
+
+table.dataTable thead th, table.dataTable thead td {
+    border-bottom-color: #888 !important;
+}
+
 
 table.dataTable tbody th, table.dataTable tbody td {
     padding: 4px 8px !important;
