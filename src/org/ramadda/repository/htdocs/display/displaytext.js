@@ -545,6 +545,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
+	    let fields = pointData.getRecordFields();
 	    if(this.getOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    if(this.getShowFirst(true)) {
@@ -585,7 +586,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 		records = tmp;
 	    }	    
-	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
 	    let template = this.getTemplate("");
