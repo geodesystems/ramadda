@@ -130,7 +130,7 @@ public class CsvFile extends TextFile {
         csvCommands = commands.toString().trim().replaceAll("\\\\,",
                 "_comma_");
         for (String arg : Utils.split(csvCommands, ",")) {
-            args.add(arg.replaceAll("_comma_", ",").replaceAll("_space_"," "));
+            args.add(arg.replaceAll("_comma_", ",").replaceAll("_csvcommandspace_"," "));
         }
         return args;
     }
