@@ -732,7 +732,7 @@ public class CsvUtil implements CsvCommands {
 	    pw.println("<type name=\"" + typeName +"\" description=\"" + typeDesc +"\" super=\"type_point\" category=\"Point Data\"\nhandler=\"org.ramadda.data.services.PointTypeHandler\">"); 	    
 	    pw.println("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>");
 	    pw.println("<property name=\"record.properties\">");
-	    pw.print(argsBuff.toString().replaceAll(" ","_space_"));
+	    pw.print(argsBuff.toString().replaceAll(" ","_csvcommandspace_"));
 	    pw.println("</property>");
 	    pw.println("</type>");
 	    pw.println("</types>");	    	    
@@ -5095,7 +5095,7 @@ public class CsvUtil implements CsvCommands {
 
 
 	for (int i = 0; i < args.size(); i++) {
-	    String arg = args.get(i);
+	    String arg = args.get(i).trim();
 	    if (debugArgs) {
 		System.err.println("\targ[" + i + "]=" + arg);
 	    }
@@ -5288,7 +5288,6 @@ public class CsvUtil implements CsvCommands {
 	s = s.replaceAll("_quote_", "\"");
 	s = s.replaceAll("\n", " ");
 	List<String> toks = Utils.parseCommandLine(s);
-	//	System.err.println("s:" + s);
 	//	System.err.println("toks:" + toks);
 	Hashtable<String, String> props = new Hashtable<String, String>();
 	for (int j = 0; j < toks.size(); j += 2) {
@@ -5304,7 +5303,7 @@ public class CsvUtil implements CsvCommands {
 		}
 
 		throw new IllegalArgumentException(
-						   "Error: Odd number of arguments:\n" + err);
+						   "Error: Odd number of arguments:\n" + err +" string:" + s);
 	    }
 	    //	    System.err.println(toks.get(j)+"="+ toks.get(j + 1));
 	    props.put(toks.get(j), toks.get(j + 1));
