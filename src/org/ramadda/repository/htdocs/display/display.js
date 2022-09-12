@@ -1338,7 +1338,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'layoutHere',ex:true},
 	{p:'width',doGetter:false,ex:'100%'},
 	{p:'height',doGetter:false,ex:'400'},
-	{p:'tooltip',doGetter:false,ex:'${default}'},
+	{p:'tooltip',doGetter:false,d:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'includeFieldDescriptionInTooltip'},
@@ -2945,7 +2945,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return [];
 	},
 	sortRecords: function(records, sortFields) {
-	    if(this.getProperty("sortOnDate")) {
+	    if(this.getSortOnDate()) {
 		records.sort(function(a, b) {
 		    if (a.getDate() && b.getDate()) {
 			if (a.getDate().getTime() < b.getDate().getTime()) return -1;
