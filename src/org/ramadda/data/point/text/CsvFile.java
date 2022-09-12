@@ -90,6 +90,7 @@ public class CsvFile extends TextFile {
     /** _more_ */
     private static Hashtable filesBeingWritten = new Hashtable();
 
+
     /**
      * _more_
      *
@@ -129,10 +130,11 @@ public class CsvFile extends TextFile {
         csvCommands = commands.toString().trim().replaceAll("\\\\,",
                 "_comma_");
         for (String arg : Utils.split(csvCommands, ",")) {
-            args.add(arg.replaceAll("_comma_", ","));
+            args.add(arg.replaceAll("_comma_", ",").replaceAll("_space_"," "));
         }
         return args;
     }
+
 
 
     /**
@@ -396,14 +398,14 @@ public class CsvFile extends TextFile {
         if (hasAddHeader) {
             if (debug) {
                 System.err.println(
-                    "CsvFile.getFirstLineFields: has fields property");
+                    "CsvFile.getFirstLineFields: hasAddHeader=true");
             }
 
             return false;
         }
         if (debug) {
             System.err.println(
-                "CsvFile.getFirstLineFields: has csv commands:"
+                "CsvFile.getFirstLineFields: has csv commands="
                 + hasCsvCommands + " super:" + super.getFirstLineFields());
         }
 

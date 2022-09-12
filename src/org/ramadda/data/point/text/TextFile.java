@@ -194,7 +194,7 @@ public abstract class TextFile extends PointFile {
      * @return _more_
      */
     public int getSkipLines(VisitInfo visitInfo) {
-        int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "1"));
+        int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "0"));
         return skipLines;
     }
 
@@ -406,6 +406,12 @@ public abstract class TextFile extends PointFile {
         boolean firstLineFields   = getFirstLineFields();
         String  sfieldRow         = (String) getProperty("fieldRow", null);
         String  lastHeaderPattern = getProperty("lastHeaderPattern", null);
+	int skipCnt  = getSkipLines(visitInfo);
+	if (debug) {
+	    System.err.println(
+			       "TextFile.prepareToVisit: skipLines:"+skipCnt+" haveReadHeader:" + haveReadHeader +" headerDelimiter:" + headerDelimiter + " firstLineFields:" + firstLineFields+" lastHeaderPattern:" + lastHeaderPattern);
+	}
+
         if (headerDelimiter != null) {
             if (debug) {
                 System.err.println(
@@ -500,9 +506,7 @@ public abstract class TextFile extends PointFile {
                 }
 
             }
-
         } else if (firstLineFields || (sfieldRow != null)) {
-            int skipCnt  = getSkipLines(visitInfo);
             int fieldRow = (sfieldRow != null)
                            ? Integer.parseInt(sfieldRow)
                            : 0;
@@ -605,7 +609,6 @@ public abstract class TextFile extends PointFile {
                 putProperty(PROP_FIELDS, f);
             }
         } else {
-            int skipCnt = getSkipLines(visitInfo);
             commentLineStart = getProperty("commentLineStart", null);
             boolean seenLastHeaderPattern = false;
             for (int i = 0; i < skipCnt; ) {
