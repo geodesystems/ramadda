@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep 12 10:05:09 MDT 2022";
+var build_date="RAMADDA build date: Mon Sep 12 13:15:42 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -27410,6 +27410,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
+	    let fields = pointData.getRecordFields();
 	    if(this.getOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    if(this.getShowFirst(true)) {
@@ -27450,7 +27451,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 		records = tmp;
 	    }	    
-	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
 	    let template = this.getTemplate("");
