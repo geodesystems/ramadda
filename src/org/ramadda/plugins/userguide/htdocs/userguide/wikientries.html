@@ -222,7 +222,7 @@ The first set of tags show some information for the entry. Note: the attributes 
 <li> <a name="description"></a>Tag: <a href="#description">description</a><div class='ramadda-wiki-tag'><pre>{<noop>{description <i>wikify="true|false"</i>}}</pre></div> Entry description. If wikify=true then treat the description as
 wiki text.
 
-<p>
+<br>
 <li> 
 <a name="fromdate"></a>Tag: <a href="#fromdate">fromdate</a><div class='ramadda-wiki-tag'><pre>{<noop>{fromdate <i>format="date time format"</i>}}</pre></div><br> 
 <a name="todate"></a>Tag: <a href="#todate">todate</a><div class='ramadda-wiki-tag'><pre>{<noop>{todate <i>format="date time format"</i>}}</pre></div><br> 
@@ -235,9 +235,9 @@ This follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
-<p>
+<br>
 <li> <a name="information"></a>Tag: <a href="#information">information</a><div class='ramadda-wiki-tag'><pre>{<noop>{information}}</pre></div> The information tabs.
-<p>
+<br>
 <li> <a name="properties"></a>Tag: <a href="#properties">properties</a><div class='ramadda-wiki-tag'><pre>{<noop>{properties <i>metadata.types="types to show or not show"</i>}}</pre></div> Show the properties listing.
 The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
 
@@ -252,10 +252,11 @@ Then if you wanted to just show  the Project PI property then do:
 </pre>
 
 
+<br>
 <li> <a name="html"></a>Tag: <a href="#html">html</a><div class='ramadda-wiki-tag'><pre>{<noop>{html}}</pre></div> Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
-<p>
+<br>
 <li> <a name="link"></a>Tag: <a href="#link">link</a><div class='ramadda-wiki-tag'><pre>{<noop>{link <i>linkresource=true|false button=true|false output=someoutput</i>}}</pre></div> Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
-<p>
+<br>
 <li> <a name="map"></a>Tag: <a href="#map">map</a><div class='ramadda-wiki-tag'><pre>{<noop>{map <i>width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"</i>}}</pre></div> Display a map. If the entry is a folder then display the children entries of the folder.
 
 If you do not specify a width then the map will be sized to fit its page. 
@@ -274,13 +275,13 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 
 
 <li> <a name="comments"></a>Tag: <a href="#comments">comments</a><div class='ramadda-wiki-tag'><pre>{<noop>{comments}}</pre></div> Show the comments.
-<p>
+<br>
 <li> <a name="breadcrumbs"></a>Tag: <a href="#breadcrumbs">breadcrumbs</a><div class='ramadda-wiki-tag'><pre>{<noop>{breadcrumbs}}</pre></div> Show the breadcrumb path.
-<p>
+<br>
 <li> <a name="layout"></a>Tag: <a href="#layout">layout</a><div class='ramadda-wiki-tag'><pre>{<noop>{layout}}</pre></div> This shows the "Layout:" toolbar bar for an entry.
-<p>
+<br>
 <li> <a name="toolbar"></a>Tag: <a href="#toolbar">toolbar</a><div class='ramadda-wiki-tag'><pre>{<noop>{toolbar}}</pre></div> Show the entry toolbar.
-<p>
+<br>
 <li> <a name="image"></a>Tag: <a href="#image">image</a><div class='ramadda-wiki-tag'><pre>{<noop>{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}</pre></div> <br>
 Include an image. If src is not given then this shows the image (if there is one) 
 from the entry.  If src is specified it can take on the form: 
@@ -304,7 +305,7 @@ resource).  height and width can be used to scale the image, the alt
 attribute will be used in place of the entry id as a label on the image
 for accessibility.
 
-<p>
+<br>
 <li> <a name="menu"></a>Tag: <a href="#menu">menu</a><div class='ramadda-wiki-tag'><pre>{<noop>{menu <i>popup="true|false" title="title to use" menus="file,edit,feeds,view,other"</i>}}</pre></div> 
 Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.
@@ -528,6 +529,7 @@ search
 </div> 
 <ul>
 
+<br>
 <li> <a name="tree"></a>Tag: <a href="#tree">tree</a><div class='ramadda-wiki-tag'><pre>{<noop>{tree}}</pre></div>
 The tree tag is used to display the children entries of a folder.
 It can take the form:
@@ -536,6 +538,7 @@ It can take the form:
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
+<br>
 <li> <a name="grid"></a>Tag: <a href="#grid">grid</a><div class='ramadda-wiki-tag'><pre>{<noop>{grid}}</pre></div> Show the children in a grid. 
 
 A common display is showing the children entries in a grid where each entry shows its thumbnail
@@ -563,14 +566,10 @@ The attributes:
   <li> showLink: should a link to the entry be shown
   <li> showSnippet: should the entry <a href="#snippet">snippet</a> be shown
 </ul>    
-
-    
-
-
-
+<br>
 <li> <a name="recent"></a>Tag: <a href="#recent">recent</a><div class='ramadda-wiki-tag'><pre>{<noop>{recent <i>days="number of days to show"</i>}}</pre></div>
 Show the most recent N days in a list organized by day.
-
+<br>
 <li> <a name="imageplayer"></a>Tag: <a href="#imageplayer">imageplayer</a><div class='ramadda-wiki-tag'><pre>{<noop>{imageplayer <i>width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"</i>}}</pre></div>
 Show images in an image player, e.g.
 <pre>{<noop>{imageplayer loopdelay="500" loopstart="true"}}</pre> 
@@ -578,7 +577,7 @@ Show images in an image player, e.g.
 If <i>useAttachment</i> is true then, if the entry's file is not an image but it has
 an attachment that is an image then use the attachment image.
 
-
+<br>
 <li> <a name="gallery"></a>Tag: <a href="#gallery">gallery</a><div class='ramadda-wiki-tag'><pre>{<noop>{gallery <i>width="image width" columns="number of columns" showdescription="true"</i>}}</pre></div>
 Show a 3 column gallery:
 <pre>{<noop>{gallery columns="3"}}</pre> 
@@ -589,6 +588,7 @@ Show a vertical listing of the children entry images:
 Set the image width and only show up to 5 images:
 <pre>{<noop>{gallery  width="300" max="5"}}</pre>
 
+<br>
 <li> <a name="tabs"></a>Tag: <a href="#tabs">tabs</a><div class='ramadda-wiki-tag'><pre>{<noop>{tabs}}</pre></div> Show the children as tabs:
 <pre>{<noop>{tabs}}</pre> 
 
@@ -615,6 +615,7 @@ Additional arguments:
 
 
 
+<br>
 <li> <a name="slideshow"></a>Tag: <a href="#slideshow">slideshow</a><div class='ramadda-wiki-tag'><pre>{<noop>{slideshow}}</pre></div> Show the children in a slideshow:
 <pre>{<noop>{slideshow}}</pre> 
 <p>
@@ -627,9 +628,7 @@ Uses the same arguments as tabs, plus:
 <li>width="width" - width of the display 
 <li>height="height" - height of the display
 </ul>
-
-<p>
-
+<br>
 <li> <a name="links"></a>Tag: <a href="#links">links</a><div class='ramadda-wiki-tag'><pre>{<noop>{links <i>separator="separator text to use" 
                           style="inline css style for the link"
                           class="css class for the link"
@@ -665,6 +664,7 @@ You can create a header with wiki text like:
 </pre>
 
 
+<br>
 <li> <a name="search"></a>Tag: <a href="#search">search</a><div class='ramadda-wiki-tag'><pre>{<noop>{search <i>type="entry type" 
                   search.showform="true|false"
                   search.showheader="true|false"</i>}}</pre></div>
@@ -674,6 +674,7 @@ The "search" tag performs an entry type specific search and embed it into the wi
 The default is to not show the form.
 
 
+<br>
 <li> <a name="apply"></a>Tag: <a href="#apply">apply</a><div class='ramadda-wiki-tag'><pre>{<noop>{apply}}</pre></div>
 The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
 the results in a variety of ways (e.g.,  table, tabs);
