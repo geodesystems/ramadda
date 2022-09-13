@@ -729,11 +729,13 @@ public class CsvUtil implements CsvCommands {
 	    }
 	    pw   = new PrintWriter(getOutputStream());	
 	    pw.println("<types>");
-	    pw.println("<type name=\"" + typeName +"\" description=\"" + typeDesc +"\" super=\"type_point\" category=\"Point Data\"\nhandler=\"org.ramadda.data.services.PointTypeHandler\">"); 	    
+
+	    pw.println("<type name=\"" + typeName +"\" \ndescription=\"" + typeDesc +"\" \nsuper=\"type_point\" \ncategory=\"Point Data\"\nsupercategory=\"Geoscience\"\nhandler=\"org.ramadda.data.services.PointTypeHandler\">"); 	    
 	    pw.println("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>");
 	    pw.println("<property name=\"record.properties\">");
 	    pw.print(argsBuff.toString().replaceAll(" ","_csvcommandspace_"));
 	    pw.println("</property>");
+	    pw.println("<wiki>\n<![CDATA[\n+section  title=\"{{name}}\"\nPut display wiki text here\n-section\n]]>\n</wiki>\n");
 	    pw.println("</type>");
 	    pw.println("</types>");	    	    
 	    pw.close();
@@ -2767,7 +2769,7 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_POINTHEADER, "Generate the RAMADDA point properties"),
         new Cmd(CMD_ARGS, "Generate the CSV file commands"),
         new Cmd(CMD_TYPE_XML, "Generate the type xml",
-		new Arg("type_id","Type ID, e.g.type_point_my"),
+		new Arg("type_id","Type ID, e.g.type_point_mypointdata"),
 		new Arg("type_desc","Type Description"))
     };
 
