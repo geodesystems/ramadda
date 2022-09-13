@@ -56,7 +56,6 @@ Other "special" roles include:
 
 Furthermore, any role can be negated with "!"
 
-
 <p>
 In the example shown above any user in the role "group1" can view anything under the
 sub test entry.
@@ -69,10 +68,14 @@ On the right shows a summary table for the particular entry being viewed.
 This shows the access control
 settings for all of the ancestor entries of the current entry and allows the 
 user to see just what access settings are applicable to the entry.
+
+<div class="important">
 To see if a given user has the ability to do a particular action for a particular entry RAMADDA looks
 at the permissions for the entry and its ancestors and either looks for the
 first permission  grant or the first permission denial.
 If nothing matches then permission is not granted. 
+<p>
+</div>
 <p>
 
 Here are other examples:
@@ -81,6 +84,22 @@ Here are other examples:
 <div class="access-example">
 none
 </div>
+
+This will only allow admins and entry owners to view anything under that tree.
+
+<li> To make an entry (or tree of entries) inaccessable to non logged in users - under the <i>view</i> action enter:
+<div class="access-example">
+user
+none
+</div>
+
+<li> To make an entry (or tree of entries) inaccessable to users outside of an ip address  - under the <i>view</i> action enter:
+<div class="access-example">
+ip:some_ip_prefix
+none
+</div>
+
+
 
 <li> To allow anyone to view the entries in a tree but don't allow anyone to
   access the files then under the <i>file</i> action enter:
