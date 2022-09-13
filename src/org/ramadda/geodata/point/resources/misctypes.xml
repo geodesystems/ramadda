@@ -5,13 +5,13 @@
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <wiki>
 <![CDATA[
-+section  title="{{name}}"                                                                          
-<div style='text-align:right;'>                                                                     
-<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>           
-</div>                                                                                              
++section  title="{{name}}"
+<div style='text-align:right;'>
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div>
 {{description wikify=true}}
-:heading Map                                                                                        
-{{display_map height="60vh" max=20000 showScaleLine=true 
+:heading Map
+{{display_map height="60vh" max=20000 showScaleLine=true
 tooltip="${default}"
 colorBy="temp.*|pressure.*|#"
 colorByFields="#"
@@ -32,26 +32,24 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <wiki>
 <![CDATA[
-+section  title="{{name}}"  
-<div style='text-align:right;'>                                                                     
-<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>           
-</div>                                                                                              
++section  title="{{name}}"
+<div style='text-align:right;'>
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div>
 {{description wikify=true}}
 {{property max=20000}}
-{{group  colorTable=blues 
-}}
+{{group  colorTable=blues}}
 +row
 +col-6
 {{display_3dscatter width="100%"  colorByFields="#" colorBy="temp.*|press.*|#"
-fields="latitude,longitude,alt.*|elev.*"
-}}
+fields="latitude,longitude,alt.*|elev.*"}}
 -col
 +col-6
 {{display_map height=400px isPath=true radius=2 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
 -col
 -row
 {{display_linechart showMenu=true fields="temp.*|press.*|#"}}
-
+:p
 {{display_htmltable}}
 -section
 ]]>
