@@ -803,8 +803,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         Entry theEntry = null;
 
 	//Check for an alias:
-	theEntry =(Entry) wikiUtil.getWikiProperty("entry:" + entryId);
-	if(theEntry!=null) return theEntry;
+	if(wikiUtil!=null) {
+	    theEntry =(Entry) wikiUtil.getWikiProperty("entry:" + entryId);
+	    if(theEntry!=null) return theEntry;
+	}
 
 
         int   barIndex = entryId.indexOf("|");
