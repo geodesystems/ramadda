@@ -5,7 +5,12 @@
 
 <type name="type_point_ex02" description="EX02 Sonde Data" super="type_point_ocean"
       handler="org.ramadda.data.services.PointTypeHandler">
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="icon" value="/point/exo2.png"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <!--
     The record.properties defines the set of csv commands used to clean up the input file
 -->
@@ -15,9 +20,12 @@ csvcommands2=-skiplines,9,-concat,date_mm_dd_yyyy\,time_hh_mm_ss,_csvcommandspac
 csvcommands3=date,-firstcolumns,date,-notcolumns,date_mm_dd_yyyy\,time_hh_mm_ss\,time_fract_sec
 csvcommands4=-addheader,date.type_csvcommandspace_date_csvcommandspace_date.format_csvcommandspace_{MM/dd/yyyy_csvcommandspace_HH:mm:ss},-print
 </property>
+<column  name="station"  label="Station" type="enumerationplus">
+   <property name="record_field" value="site_name"/>
+</column>
 <wiki>
 <![CDATA[
-+section title={{name}}
++section title="Station: {{field name=station}} - {{name}}"
 <div style='text-align:right;'> 
 <span style='display:inline-block;margin-right:10px'>{{fromdate  format="yyyy-MM-dd HH:mm z"}}</span>
 <span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
