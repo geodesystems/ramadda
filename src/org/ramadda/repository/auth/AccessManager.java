@@ -719,17 +719,13 @@ public class AccessManager extends RepositoryManager {
         if (entry == null) {
             return false;
         }
+        List<Role> roles      = getRoles(entry, action);
 	boolean debug = false;
+	//	debug = action.equals(Permission.ACTION_VIEW) && entry.getId().equals("53e607ef-5593-4ca9-adc0-618425e0ea98");
 	if(debug)
-	    System.err.println("canDoActionInner:" + user +" entry:"+ entry +" id:" + entry.getId() +" action:" + action);
+	    System.err.println("canDoActionInner:" + user +" entry:"+ entry +" id:" + entry +" action:" + action +" roles:" + roles);
         boolean    hadInherit = false;
         boolean    hadAny     = false;
-        List<Role> roles      = getRoles(entry, action);
-        if (debug && (roles != null) && (roles.size() > 0)) {
-            System.err.println("canDoAction:  user=" + user + " action="
-                               + action + " entry=" + entry + " roles="
-                               + roles);
-        }
         if ((roles != null) && (roles.size() > 0)) {
             /*
               ip:222
