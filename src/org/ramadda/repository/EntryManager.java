@@ -704,6 +704,7 @@ public class EntryManager extends RepositoryManager {
             if (entry == null) {
                 String entryId = request.getString(urlArg, BLANK);
                 Entry  tmp     = getEntry(request, entryId, false);
+		System.err.println("e2:" + tmp);
                 if (tmp != null) {
                     logInfo("Cannot access entry:" + entryId + "  IP:"
                             + request.getIp());
@@ -9610,9 +9611,15 @@ public class EntryManager extends RepositoryManager {
 	//            name = topEntryName + Entry.PATHDELIMITER + name;
 	//        }
 
+	//It might just be an ID?
+	if(!haveBase && name.indexOf(Entry.PATHDELIMITER)<0) {
+	    return null;
+	}
         //split the list
         List<String> toks = (List<String>) Utils.split(name,
 						       Entry.PATHDELIMITER, true, true);
+
+	//	debug = true;
 	if(debug)
 	    System.err.println("\tname:" + name);
 	if(debug)
