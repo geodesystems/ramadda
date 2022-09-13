@@ -81,47 +81,46 @@ If nothing matches then permission is not granted.
 Here are other examples:
 <ul>
 <li> To make a whole tree of entrys inaccessable - under the <i>view</i> action enter:
-<div class="access-example">
+<pre>
 none
-</div>
+</pre>
 
 This will only allow admins and entry owners to view anything under that tree.
 
 <li> To make an entry (or tree of entries) inaccessable to non logged in users - under the <i>view</i> action enter:
-<div class="access-example">
+<pre>
 user
 none
-</div>
+</pre>
 
 <li> To make an entry (or tree of entries) inaccessable to users outside of an ip address  - under the <i>view</i> action enter:
-<div class="access-example">
+<pre>
 ip:some_ip_prefix
 none
-</div>
-
+</pre>
 
 
 <li> To allow anyone to view the entries in a tree but don't allow anyone to
   access the files then under the <i>file</i> action enter:
-<div class="access-example">
+<pre>
 none
-</div>
+</pre>
 
 <li> To allow anyone to view the entries in a tree but only allow file access to
  users who are coming from the IP address 123.456 then 
 under the <i>file</i> action do:
-<div class="access-example">
-ip:123.456<br>
+<pre>
+ip:123.456
 none
-</div>
+</pre>
 
 
 <li> If you wanted to give a certain user permission (e.g., joe) to view the entry but not allow
 any one else to view the entry then enter under the <i>view</i> action:
-<div class="access-example">
-user:joe<br>
+<pre>
+user:joe
 none
-</div>
+</pre>
 
 RAMADDA would first check if the given user was "joe". If it is "joe" then permission is granted. If
 its not "joe" then RAMADDA looks at the next role - "none". This blocks any other access.
@@ -129,9 +128,10 @@ its not "joe" then RAMADDA looks at the next role - "none". This blocks any othe
 
 <li> To allow for a group of users in the role "group1" to be able to edit and create new entries under a whole 
 tree then enter:
-<div class="access-example">
+<pre>
 group1
-</div>
+</pre>
+
 for both the <i>edit</i> and the <i>new</i> actions.
 
 <li> A common case is to allow one role to have new and edit capabilities under a whole tree (like the group1 
@@ -166,27 +166,41 @@ Each access type can contain any number of roles (one per line).
 <li> Assigned user roles - All users can have one or more roles. This is set by the site administrator 
 when editing the user. They are just string names. For example, you might have the roles "group1" and
 "group2". If you wanted to grant access to "group1" you would just enter:
-<div class="access-example">group1</div>
+<pre>
+group1
+</pre>
 
 If you wanted to grant access to users in either group1 or group2 you would enter:
-<div class="access-example">group1<br>group2</div>
+<pre>
+group1
+group2
+</pre>
 
 
 <li> Self identity role - If you enter a role in the form as <i>user:someuserid</i> this grants 
 access to that specific user. So, if you wanted to give "joe" access to something enter:
-<div class="access-example">user:joe</div>
+<pre>
+user:joe
+</pre>
 
 <li> <i>ip:ip address</i>  - This format grants access to incoming requests with the given ip address or ip address suffix.
 For example, the following would grant access to any request coming from any IP address that starts with 128.117
 
-<div class="access-example">ip:128.117</div>
+<pre>
+ip:128.117
+</pre>
 
 <li> <i>!some role</i> - Prefixing a role with &quot;!&quot; is a way to deny specific access to a user, role, or ip address.
 For example, the following would deny access to any request coming from any IP address that starts with 128.117:
-<div class="access-example">!ip:128.117</div>
+<pre>
+!ip:128.117
+</pre>
 
 Say you want to grant access to user "joe" but deny access to user "jim". You would do:
-<div class="access-example">user:joe<br>!user:jim</div>
+<pre>
+user:joe
+!user:jim
+</pre>
 
 </ul>
 
