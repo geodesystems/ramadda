@@ -730,6 +730,10 @@ RepositoryMap.prototype = {
     CUSTOM_MAP : "CUSTOM",
     
 
+    validBounds: function(b) {
+	if(!b) return false
+	return !isNaN(b.bottom) && !isNaN(b.left) && !isNaN(b.right) && !isNaN(b.top);
+    },
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
 	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds +" justMarkers:" + justMarkerLayer);
@@ -803,17 +807,18 @@ RepositoryMap.prototype = {
 		    }
                     let dataBounds = layer.getDataExtent();
                     if (dataBounds) {
-                        let latlon = this.transformProjBounds(dataBounds);
+                        let latLonBounds = this.transformProjBounds(dataBounds);
+			if(!this.validBounds(latLonBounds)) continue;
                         if (bounds)
-                            bounds.extend(latlon);
+                            bounds.extend(latLonBounds);
                         else
-                            bounds = latlon;
+                            bounds = latLonBounds;
 			if(debugBounds)
-			    console.log("centerOnMarkers using layer.getDataExtent: " + latlon +" layer=" + layer.name +" " + layer.ramaddaId);
+			    console.log("centerOnMarkers using layer.getDataExtent: " + latLonBounds +" layer=" + layer.name +" " + layer.ramaddaId);
                     }
                 }
             }
-        }
+	}
 
 
         if (!bounds) {
