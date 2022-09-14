@@ -1390,6 +1390,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
 	{label:'Filter Data'},
+	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
+	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
 	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
 	{p:'filterFields',ex:''},
 	{p:'filterFieldsToPropagate'},
