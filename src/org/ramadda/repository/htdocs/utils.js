@@ -1098,16 +1098,15 @@ var Utils =  {
     },
     formatDateYYYYMMDDHHMM: function(date, options, args) {
         if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-        var month = (date.getUTCMonth() + 1);
+        let month = (date.getUTCMonth() + 1);
         if(month<10) month = "0" + month;
-        var d = date.getUTCDate();
+        let d = date.getUTCDate();
         if(d<10) d = "0" +d;
-        var h = date.getHours()+1;
+        let h = date.getUTCHours();
         if(h<10) h = "0" + h;
-        var minute = date.getMinutes();
+        let minute = date.getUTCMinutes();
         if(minute<10) minute = "0" + minute;
         let hhmm=  h+":" +minute;
-
         return date.getUTCFullYear() + "-" + month + "-" + d+" " + hhmm;
     },
     formatDateYYYYMMDDHHMMSS: function(date, options, args) {
@@ -1116,11 +1115,11 @@ var Utils =  {
         if(month<10) month = "0" + month;
         var d = date.getUTCDate();
         if(d<10) d = "0" +d;
-        var h = date.getHours()+1;
+        var h = date.getUTCHours()+1;
         if(h<10) h = "0" + h;
-        var minute = date.getMinutes();
+        var minute = date.getUTCMinutes();
         if(minute<10) minute = "0" + minute;
-        var seconds = date.getSeconds();
+        var seconds = date.getUTCSeconds();
         if(seconds<10) seconds = "0" + seconds;	
         let hhmmss=  h+":" +minute+":"+seconds;
 
@@ -1146,16 +1145,16 @@ var Utils =  {
     },
     formatDateMMDD: function(date, delimiter) {
         if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
-        var m = (date.getUTCMonth() + 1);
+        let m = (date.getUTCMonth() + 1);
         if(m<10) m = "0" + m;
-        var d = date.getUTCDate();
+        let d = date.getUTCDate();
         if(d<10) d = "0" +d;
         return  m + (delimiter?delimiter:"-") + d;
     },
     formatDateHHMM: function(date, delimiter) {
-        var h = date.getHours()+1;
+        let h = date.getUTCHours();
         if(h<10) h = "0" + h;
-        var m = date.getMinutes();
+        let m = date.getUTCMinutes();
         if(m<10) m = "0" + m;
         return  h+":" +m;
     },
@@ -1505,7 +1504,17 @@ var Utils =  {
                             return "${" + t.macro+"}";
                         } 
                         if(value.getTime) {
-                            return  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
+			    let offset = t.attrs['offset'] ?? opts.timezoneOffset; 
+			    let suffix = "";
+			    if(t.attrs['localTime']) {
+				let offset  = new Date().getTimezoneOffset()*60*1000;
+				value = new Date(value.getTime()-offset)
+//				suffix = " " +  Intl.DateTimeFormat().resolvedOptions().timeZone;
+//				console.log(value.toTimeString(undefined, { xtimeZoneName: 'short' }));
+//				console.log(value.toTimeString());
+				
+			    }
+                            return  Utils.formatDateWithFormat(value,t.attrs['format']||opts.dateFormat) +suffix;
                         } 
                         if(t.attrs["display"]) {
                             if(handler) {
