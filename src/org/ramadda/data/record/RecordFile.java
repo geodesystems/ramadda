@@ -10,6 +10,7 @@ import org.ramadda.data.record.filter.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
+import org.ramadda.util.TTLCache;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -40,6 +41,8 @@ import java.util.zip.*;
 public abstract class RecordFile {
     static int xcnt = 0;
     int mycnt = xcnt++;
+
+    private static TTLCache<String, Integer> pointCountCache = new TTLCache<String,Integer>(5*60*1000,"RecordFile Point Count" );
 
     /** debug */
     public static boolean debug = false;
@@ -972,6 +975,28 @@ public abstract class RecordFile {
 
 
 
+    private int countRecords() throws Exception {
+	int cnt = 0;
+	VisitInfo visitInfo = new VisitInfo();
+	RecordIO  recordIO     = doMakeInputIO(visitInfo, true);
+	if (recordIO.isOk()) {
+	    visitInfo.setRecordIO(recordIO);
+	    prepareToVisit(visitInfo);
+            BaseRecord record = makeRecord(visitInfo);
+            while (true) {
+		BaseRecord.ReadStatus status = readNextRecord(visitInfo, record);
+		if (status == BaseRecord.ReadStatus.EOF) {
+		    break;
+		    
+		}
+		cnt++;
+	    }
+	    recordIO.close();
+	}
+	return cnt;
+	
+    }
+	
     /**
      * _more_
      *
@@ -989,7 +1014,24 @@ public abstract class RecordFile {
         if (visitInfo == null) {
             visitInfo = new VisitInfo();
         }
+
+	int last = visitInfo.getLast();
+	int numRecords = -1;
         int      skip     = getSkip(visitInfo);
+	int reallySkip = 0;
+	if(last>=0) {
+	    Integer num = pointCountCache.get(filename);
+	    if(num==null) {
+		num = new Integer(countRecords());
+		pointCountCache.put(filename,num);
+		//		System.err.println("countRecords:" + num);
+	    }
+	    numRecords = num;
+	    if(numRecords>last) {
+		reallySkip = numRecords-last;
+	    }
+	}
+	
         RecordIO recordIO = doMakeInputIO(visitInfo, skip == 0);
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);
@@ -1016,12 +1058,12 @@ public abstract class RecordFile {
 	    boolean haveEndDate = visitInfo.getEndDate()!=null;
 	    long endDate =0L;
 	    if(haveEndDate) {
-		System.err.println("endDate:" + visitInfo.getEndDate());
 		endDate = visitInfo.getEndDate().getTime();
 	    }
 
-
             while (true) {
+
+
                 if ((visitInfo.getStop() > 0)
                         && (visitInfo.getRecordIndex()
                             > visitInfo.getStop())) {
@@ -1030,9 +1072,23 @@ public abstract class RecordFile {
                 try {
                     //This sets the record index
                     BaseRecord.ReadStatus status = readNextRecord(visitInfo, record);
+
+
+
                     if (status == BaseRecord.ReadStatus.EOF) {
+			if(last==1) {
+                            visitor.visitRecord(this, visitInfo, record);
+			}
                         break;
                     }
+		    if(last==1) {
+			continue;
+		    }
+		    if(reallySkip>0) {
+			reallySkip--;
+			continue;
+		    }
+
                     record.index = visitInfo.getRecordIndex();
                     if (status == BaseRecord.ReadStatus.OK) {
                         if ( !processAfterReading(visitInfo, record)) {

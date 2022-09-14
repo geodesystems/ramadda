@@ -50,7 +50,7 @@ public class VisitInfo {
     private int max = -1;
 
     /** _more_ */
-    private int last = -1;    
+    private int last = -1;
 
     private Date startDate;
 

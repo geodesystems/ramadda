@@ -641,9 +641,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (request.defined(ARG_MAX)) {
                     visitInfo.setMax(request.get(ARG_MAX, 5000));
                 }
-                if (request.defined(ARG_LAST)) {
-                    visitInfo.setLast(request.get(ARG_LAST, 1000));
-                }
+                if (request.defined(ARG_RECORD_LAST)) {
+                    visitInfo.setLast(request.get(ARG_RECORD_LAST, -1));
+                }		
                 if (request.defined(ARG_SKIP)) {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
                 }
@@ -986,11 +986,11 @@ public class PointOutputHandler extends RecordOutputHandler {
                 extra += "&"
                          + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
             }
-            String last = (String) props.get("last");
-            if (last != null) {
+	    int last = Utils.getProperty(props,"lastRecords",-1);
+            if (last >=0) {
                 extra += "&"
-                         + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last);
-            }
+                         + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last+"");
+            }	    
 
             String startDate = (String) props.get("request.startdate");
             if (startDate != null) {
