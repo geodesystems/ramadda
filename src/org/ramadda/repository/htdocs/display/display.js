@@ -790,7 +790,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getFields: function(fields) {
             if (!fields) {
-                var pointData = this.pointData || this.getData();
+                let pointData = this.pointData || this.getData();
                 if (pointData == null) {
 		    return null;
 		}
@@ -5002,7 +5002,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return null;
 		}
 	    }
-            var dataList = this.dataCollection.getList();
+            let dataList = this.dataCollection.getList();
             return dataList[0];
         },
         hasData: function() {

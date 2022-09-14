@@ -43,7 +43,6 @@ function DataCollection() {
 function BasePointData(name, properties) {
     if (properties == null) properties = {};
     RamaddaUtil.defineMembers(this, {
-        recordFields: null,
         records: null,
         entryId: null,
         entry: null
@@ -64,7 +63,7 @@ function BasePointData(name, properties) {
             return false;
         },
         hasData: function() {
-            return this.records != null && this.records.length>0;
+            return this.records != null && this.records.length>0 && this.recordFields!=null;
         },
         clear: function() {
             this.records = null;
@@ -203,6 +202,7 @@ function convertToPointData(array) {
 function PointData(name, recordFields, records, url, properties) {
     RamaddaUtil.inherit(this, new BasePointData(name, properties));
     this.parentPointData = properties?properties.parent:null;
+
     RamaddaUtil.defineMembers(this, {
         recordFields: recordFields,
         records: records,
