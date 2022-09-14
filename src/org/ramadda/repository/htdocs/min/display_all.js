@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Sep 14 09:10:18 MDT 2022";
+var build_date="RAMADDA build date: Wed Sep 14 11:52:52 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3849,7 +3849,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getFields: function(fields) {
             if (!fields) {
-                var pointData = this.pointData || this.getData();
+                let pointData = this.pointData || this.getData();
                 if (pointData == null) {
 		    return null;
 		}
@@ -8061,7 +8061,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return null;
 		}
 	    }
-            var dataList = this.dataCollection.getList();
+            let dataList = this.dataCollection.getList();
             return dataList[0];
         },
         hasData: function() {
@@ -12130,7 +12130,6 @@ function DataCollection() {
 function BasePointData(name, properties) {
     if (properties == null) properties = {};
     RamaddaUtil.defineMembers(this, {
-        recordFields: null,
         records: null,
         entryId: null,
         entry: null
@@ -12151,7 +12150,7 @@ function BasePointData(name, properties) {
             return false;
         },
         hasData: function() {
-            return this.records != null && this.records.length>0;
+            return this.records != null && this.records.length>0 && this.recordFields!=null;
         },
         clear: function() {
             this.records = null;
@@ -12290,6 +12289,7 @@ function convertToPointData(array) {
 function PointData(name, recordFields, records, url, properties) {
     RamaddaUtil.inherit(this, new BasePointData(name, properties));
     this.parentPointData = properties?properties.parent:null;
+
     RamaddaUtil.defineMembers(this, {
         recordFields: recordFields,
         records: records,
@@ -27410,11 +27410,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
-	    let pointData = this.getData();
-	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
-	    let fields = pointData.getRecordFields();
+	    let fields = this.getFields();
+	    if(!fields) return;
 	    if(this.getOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    if(this.getShowFirst(true)) {
