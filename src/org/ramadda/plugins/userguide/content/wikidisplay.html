@@ -1,10 +1,11 @@
 [ht::head {Wiki Display Components}]
+<%childlist%>
 
 
 RAMADDA provides a number of information and data display components in the wiki facility. 
 There are a number of  
-<a href="https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
-<a href="https://geodesystems.com/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
+<a href="https://ramadda.org/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
+<a href="https://ramadda.org/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
 
 
 [ug::subheading {The Basics} basics]
@@ -23,12 +24,61 @@ If [ug::attr layoutHere] is set to false then the component is laid out by the c
 Otherwise it is displayed in place.
 <p>
 
-Some of the displays use a color table: 
+
+
+[ug::subheading {The Data} thedata]
+The data that is displayed takes the form of a number of records where each record is composed of the same number of fields.
+Optionally, records can also have a latitude/longitude position and a date associated with them.
+You can think of the data as a structured representation of a CSV file. 
+<pre>
+name(type=string),occupation(type=enumeration),value1(type=double),value2(type=int)
+Joe,bartender,1.3,17
+Jill,ceo,39,54
+Jane,pilot,39,54
+...
+</pre>
+
+
+The total number of records fetched from the server
+can be set with the "max" attribute. This will only retrieve the first N records.
+So, for example if you have a dataset with lots of records (e.g., 20000) you can display them
+all (e.g., in a line chart) with:
+[wiki::text {{<noop>{display_linechart max=20000}}}]
+
+If you have a number of displays on one page that you want to apply the same max value for then use:
 [wiki::text {
-colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
+{<noop>{property max=20000}}
+{<noop>{display_linechart}}
+{<noop>{display_table}}      	
 }]
-The full set of color tables can be viewed at 
-<a href="${root}/colortables">here</a>.
+
+You can specify a stride with the "skip" attribute. For example if you want to fetch every other record do:
+[wiki::text {{<noop>{display_linechart skip=1}}}]
+
+Every 10th record do:
+[wiki::text {{<noop>{display_linechart skip=10}}}]		  
+	
+If you only wanted the last N records specify, e.g.:   
+[wiki::text {{<noop>{display_linechart lastRecords=10}}}]		  
+
+You can also specify a start and end date range with:
+[wiki::text {{<noop>{display_linechart startDate="yyyy-MM-dd HH:mm" endDate="yyyy-MM-dd HH:mm"}}}]
+e.g.:
+[wiki::text {{<noop>{display_linechart startDate="2021-01-01"}}}]		
+
+The startDate and endDate can also be relative to the current date. For example, if you wanted to get the last week's data you would do:
+[wiki::text {{<noop>{display_linechart startDate="-1 week"}}}]		
+In general the relative dates take the form:
+<pre>
+&lt;offset&gt; &lt;dateunit&gt;
+where:
+dateunit=second|minute|hour|day|week|month|year|century|millenium
+</pre>
+
+For example:
+[wiki::text {{<noop>{display_linechart startDate="-13 days" endDate="-5 days"}}}]
+
+
 
 
 [ug::subheading {Specifying Fields} fields]
@@ -45,13 +95,13 @@ fields="1,#2,#3"
 }]
 
 The field ids for a point data entry can be viewed with the  Metadata view, e.g. -  
-(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
+(<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
 
 [wiki::text {{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}}]
 
 [ug::subheading {Filtering Data} filters]
-A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
+A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://ramadda.org/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
 [ht::cimg images/filters.png {Filtering Data} {width=50%}]
 
@@ -175,6 +225,9 @@ uniqueField=&lt;field id&gt;
 
 [ug::subheading {Color} ]
 RAMADDA provides a large number of built-in color tables.
+The full set of color tables can be viewed at 
+<a href="${root}/colortables">here</a>.
+
 When editing the wiki text if you right-lick inside
 of a <i>{<noop>{display ...}}</i> tag a context menu will be shown that will list the available color tables.
 Colors are defined and can also be modified the following ways.
@@ -290,13 +343,13 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 When you have multiple entries you can create a display (e.g., a time series)
 and allow the user to select which entry to display.
 
-<a href="https://geodesystems.com/repository/a/swe">Here</a> is an example
+<a href="https://ramadda.org/repository/a/swe">Here</a> is an example
 that shows a time series plot of one of a set of data files:
 <center><img src="changeentries.png" width="80%"></center>
 
 
 Below is the relevant wiki text for the above display. You can also view the
-full wiki text <a href="https://geodesystems.com/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
+full wiki text <a href="https://ramadda.org/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
 
 All that is needed is to add a <i>changeEntries=true</i> attribute to the group tag.
 An optional <i>changeEntriesLabel</i> can be specified to provide a context specific label.
@@ -435,7 +488,7 @@ displayDiv="mapDisplay${entryid}"
 } {
 images/charts/mappoints.png
 } {
-https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4
+https://ramadda.org/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4
 }]
 
 [ht::cimg images/charts/map.png {Chloropleth Map} {width=50%} ]
@@ -697,7 +750,7 @@ fields=""
 } {
 images/charts/radar.png
 } {
-https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
 }]
 
 [displayType {Wind Rose} windrose {
@@ -706,7 +759,7 @@ fields=""
 } {
 images/charts/windrose.png
 } {
-https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
 }]
 
 
@@ -716,7 +769,7 @@ fields="tmax,vp"
 } {
 images/charts/density.png
 } {
-https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
 }]
 
 
@@ -727,7 +780,7 @@ fields=""
 } {
 images/charts/3dscatter.png
 } {
-https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
+https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb
 }]
 
 
@@ -760,3 +813,4 @@ images/charts/gauge.png
 
 
 
+[ht::foot]

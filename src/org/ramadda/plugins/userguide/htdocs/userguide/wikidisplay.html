@@ -27,15 +27,54 @@ pre {
 
 <div style="margin-left:20px;">
 
-</head>
-<body>
 
+<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.0&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#basics" >
+<a href="#basics">The Basics</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.1&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#thedata" >
+<a href="#thedata">The Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.2&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#fields" >
+<a href="#fields">Specifying Fields</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.3&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#filters" >
+<a href="#filters">Filtering Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.4&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#converting" >
+<a href="#converting">Converting Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.5&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#subsetting" >
+<a href="#subsetting">Subsetting Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.6&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#" >
+Color
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.7&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#groups" >
+<a href="#groups">Display Groups</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.8&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#changeentries" >
+<a href="#changeentries">Displaying Multiple Entries</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3.9&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#displays" >
+<a href="#displays">The Displays</a>
+</a><br></td></tr></table></div>
 
 
 RAMADDA provides a number of information and data display components in the wiki facility. 
 There are a number of  
-<a href="https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
-<a href="https://geodesystems.com/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
+<a href="https://ramadda.org/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
+<a href="https://ramadda.org/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
 
 
 <a name="basics"></a><p><div class="ramadda-help-heading">6.3.0 <a href="#basics">The Basics</a></div> 
@@ -54,15 +93,64 @@ If <i>layoutHere</i> is set to false then the component is laid out by the conta
 Otherwise it is displayed in place.
 <p>
 
-Some of the displays use a color table: 
+
+
+<a name="thedata"></a><p><div class="ramadda-help-heading">6.3.1 <a href="#thedata">The Data</a></div> 
+The data that is displayed takes the form of a number of records where each record is composed of the same number of fields.
+Optionally, records can also have a latitude/longitude position and a date associated with them.
+You can think of the data as a structured representation of a CSV file. 
 <pre>
-colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
+name(type=string),occupation(type=enumeration),value1(type=double),value2(type=int)
+Joe,bartender,1.3,17
+Jill,ceo,39,54
+Jane,pilot,39,54
+...
 </pre>
-The full set of color tables can be viewed at 
-<a href="${root}/colortables">here</a>.
 
 
-<a name="fields"></a><p><div class="ramadda-help-heading">6.3.1 <a href="#fields">Specifying Fields</a></div> 
+The total number of records fetched from the server
+can be set with the "max" attribute. This will only retrieve the first N records.
+So, for example if you have a dataset with lots of records (e.g., 20000) you can display them
+all (e.g., in a line chart) with:
+<pre>{<noop>{display_linechart max=20000}}</pre>
+
+If you have a number of displays on one page that you want to apply the same max value for then use:
+<pre>
+{<noop>{property max=20000}}
+{<noop>{display_linechart}}
+{<noop>{display_table}}      	
+</pre>
+
+You can specify a stride with the "skip" attribute. For example if you want to fetch every other record do:
+<pre>{<noop>{display_linechart skip=1}}</pre>
+
+Every 10th record do:
+<pre>{<noop>{display_linechart skip=10}}</pre>		  
+	
+If you only wanted the last N records specify, e.g.:   
+<pre>{<noop>{display_linechart lastRecords=10}}</pre>		  
+
+You can also specify a start and end date range with:
+<pre>{<noop>{display_linechart startDate="yyyy-MM-dd HH:mm" endDate="yyyy-MM-dd HH:mm"}}</pre>
+e.g.:
+<pre>{<noop>{display_linechart startDate="2021-01-01"}}</pre>		
+
+The startDate and endDate can also be relative to the current date. For example, if you wanted to get the last week's data you would do:
+<pre>{<noop>{display_linechart startDate="-1 week"}}</pre>		
+In general the relative dates take the form:
+<pre>
+&lt;offset&gt; &lt;dateunit&gt;
+where:
+dateunit=second|minute|hour|day|week|month|year|century|millenium
+</pre>
+
+For example:
+<pre>{<noop>{display_linechart startDate="-13 days" endDate="-5 days"}}</pre>
+
+
+
+
+<a name="fields"></a><p><div class="ramadda-help-heading">6.3.2 <a href="#fields">Specifying Fields</a></div> 
 Most of these displays are based on <a href='pointdata.html'>point data</a> in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Each field has  a certain type - double, integer, string,  date.
@@ -76,13 +164,13 @@ fields="1,#2,#3"
 </pre>
 
 The field ids for a point data entry can be viewed with the  Metadata view, e.g. -  
-(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
+(<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
 
 <pre>{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}</pre>
 
-<a name="filters"></a><p><div class="ramadda-help-heading">6.3.2 <a href="#filters">Filtering Data</a></div> 
-A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
+<a name="filters"></a><p><div class="ramadda-help-heading">6.3.3 <a href="#filters">Filtering Data</a></div> 
+A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://ramadda.org/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
 <center><a name="image1"></a><div><a href="images/filters.png"><img  src="images/filters.png" width=50% alt="Filtering Data" ></a><br><span class="caption">Image 1: Filtering Data</span></div></center>
 
@@ -141,7 +229,7 @@ Specify extra text to wrap the filter value
 
 </ul>
 
-<a name="converting"></a><p><div class="ramadda-help-heading">6.3.3 <a href="#converting">Converting Data</a></div> 
+<a name="converting"></a><p><div class="ramadda-help-heading">6.3.4 <a href="#converting">Converting Data</a></div> 
 <pre>
 convertData="command1;command2;...;"
 
@@ -156,7 +244,7 @@ e.g.:
 </pre>
 
 
-<a name="subsetting"></a><p><div class="ramadda-help-heading">6.3.4 <a href="#subsetting">Subsetting Data</a></div> 
+<a name="subsetting"></a><p><div class="ramadda-help-heading">6.3.5 <a href="#subsetting">Subsetting Data</a></div> 
 You can specify various filters applied to the data
 <pre>
 By date:
@@ -204,8 +292,11 @@ uniqueField=&lt;field id&gt;
 
 
 
-<p><div class="ramadda-help-heading">6.3.5 Color</div> 
+<p><div class="ramadda-help-heading">6.3.6 Color</div> 
 RAMADDA provides a large number of built-in color tables.
+The full set of color tables can be viewed at 
+<a href="${root}/colortables">here</a>.
+
 When editing the wiki text if you right-lick inside
 of a <i>{<noop>{display ...}}</i> tag a context menu will be shown that will list the available color tables.
 Colors are defined and can also be modified the following ways.
@@ -228,7 +319,7 @@ colorByFields=&lt;field1,field2,...,fieldN&gt; - specify a number of fields to a
 </pre>
 
 
-<a name="groups"></a><p><div class="ramadda-help-heading">6.3.6 <a href="#groups">Display Groups</a></div>  
+<a name="groups"></a><p><div class="ramadda-help-heading">6.3.7 <a href="#groups">Display Groups</a></div>  
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
@@ -317,17 +408,17 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="changeentries"></a><p><div class="ramadda-help-heading">6.3.7 <a href="#changeentries">Displaying Multiple Entries</a></div>  
+<a name="changeentries"></a><p><div class="ramadda-help-heading">6.3.8 <a href="#changeentries">Displaying Multiple Entries</a></div>  
 When you have multiple entries you can create a display (e.g., a time series)
 and allow the user to select which entry to display.
 
-<a href="https://geodesystems.com/repository/a/swe">Here</a> is an example
+<a href="https://ramadda.org/repository/a/swe">Here</a> is an example
 that shows a time series plot of one of a set of data files:
 <center><img src="changeentries.png" width="80%"></center>
 
 
 Below is the relevant wiki text for the above display. You can also view the
-full wiki text <a href="https://geodesystems.com/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
+full wiki text <a href="https://ramadda.org/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
 
 All that is needed is to add a <i>changeEntries=true</i> attribute to the group tag.
 An optional <i>changeEntriesLabel</i> can be specified to provide a context specific label.
@@ -358,7 +449,7 @@ The above lists the entries in a menu. Alternatively you can display the entries
 or in a timeline. 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">6.3.8 <a href="#displays">The Displays</a></div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">6.3.9 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -457,7 +548,7 @@ colorBy="total_ballots"
 colorTable="inversegrayscale"
 colorByMin="min value"
 colorByMax="max value"
-displayDiv="mapDisplay${entryid}"}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><center><a name="image8"></a><div><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  style="max-width:90%; " alt="Map" ></a><br><span class="caption">Image 8: Map</span></div></center>
+displayDiv="mapDisplay${entryid}"}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><center><a name="image8"></a><div><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  style="max-width:90%; " alt="Map" ></a><br><span class="caption">Image 8: Map</span></div></center>
 
 <center><a name="image9"></a><div><a href="images/charts/map.png"><img  src="images/charts/map.png" width=50% alt="Chloropleth Map" ></a><br><span class="caption">Image 9: Chloropleth Map</span></div></center>
 
@@ -701,25 +792,25 @@ width=&quot;500&quot;  height=&quot;250&quot;}}</pre><center><a name="image15"><
 <a name="radar"></a>
 <div class="ramadda-help-subsubheading"><a href="#radar">Radar Display</a>
 </div> 
-<a name="display_radar"></a><pre>{<noop>{display_radar fields=""}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image16"></a><div><a href="images/charts/radar.png"><img  src="images/charts/radar.png"  style="max-width:90%; " alt="Radar Display" ></a><br><span class="caption">Image 16: Radar Display</span></div></center>
+<a name="display_radar"></a><pre>{<noop>{display_radar fields=""}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image16"></a><div><a href="images/charts/radar.png"><img  src="images/charts/radar.png"  style="max-width:90%; " alt="Radar Display" ></a><br><span class="caption">Image 16: Radar Display</span></div></center>
 
 <a name="windrose"></a>
 <div class="ramadda-help-subsubheading"><a href="#windrose">Wind Rose</a>
 </div> 
-<a name="display_windrose"></a><pre>{<noop>{display_windrose fields=""}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image17"></a><div><a href="images/charts/windrose.png"><img  src="images/charts/windrose.png"  style="max-width:90%; " alt="Wind Rose" ></a><br><span class="caption">Image 17: Wind Rose</span></div></center>
+<a name="display_windrose"></a><pre>{<noop>{display_windrose fields=""}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image17"></a><div><a href="images/charts/windrose.png"><img  src="images/charts/windrose.png"  style="max-width:90%; " alt="Wind Rose" ></a><br><span class="caption">Image 17: Wind Rose</span></div></center>
 
 
 <a name="density"></a>
 <div class="ramadda-help-subsubheading"><a href="#density">Density Display</a>
 </div> 
-<a name="display_density"></a><pre>{<noop>{display_density fields="tmax,vp"}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image18"></a><div><a href="images/charts/density.png"><img  src="images/charts/density.png"  style="max-width:90%; " alt="Density Display" ></a><br><span class="caption">Image 18: Density Display</span></div></center>
+<a name="display_density"></a><pre>{<noop>{display_density fields="tmax,vp"}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image18"></a><div><a href="images/charts/density.png"><img  src="images/charts/density.png"  style="max-width:90%; " alt="Density Display" ></a><br><span class="caption">Image 18: Density Display</span></div></center>
 
 
 
 <a name="3dscatter"></a>
 <div class="ramadda-help-subsubheading"><a href="#3dscatter">3D Scatter</a>
 </div> 
-<a name="display_3dscatter"></a><pre>{<noop>{display_3dscatter fields=""}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image19"></a><div><a href="images/charts/3dscatter.png"><img  src="images/charts/3dscatter.png"  style="max-width:90%; " alt="3D Scatter" ></a><br><span class="caption">Image 19: 3D Scatter</span></div></center>
+<a name="display_3dscatter"></a><pre>{<noop>{display_3dscatter fields=""}}</pre><a href='https://ramadda.org/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><center><a name="image19"></a><div><a href="images/charts/3dscatter.png"><img  src="images/charts/3dscatter.png"  style="max-width:90%; " alt="3D Scatter" ></a><br><span class="caption">Image 19: 3D Scatter</span></div></center>
 
 
 
@@ -743,45 +834,14 @@ If <i>missingValue</i> is specified than any point value with that value won't b
 </div> 
 This shows a single value from a series of point data.
 <a name="display_gauge"></a><pre>{<noop>{display_gauge fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;}}</pre><center><a name="image21"></a><div><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  style="max-width:90%; " alt=" Gauge" ></a><br><span class="caption">Image 21:  Gauge</span></div></center>
+
+
+
+
+
 </div>
 <p>
-<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.0&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#basics" >
-<a href="#basics">The Basics</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.1&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#fields" >
-<a href="#fields">Specifying Fields</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.2&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#filters" >
-<a href="#filters">Filtering Data</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.3&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#converting" >
-<a href="#converting">Converting Data</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.4&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#subsetting" >
-<a href="#subsetting">Subsetting Data</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.5&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#" >
-Color
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.6&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#groups" >
-<a href="#groups">Display Groups</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.7&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#changeentries" >
-<a href="#changeentries">Displaying Multiple Entries</a>
-</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
-6.3.8&nbsp;
-</span></td><td><a  class="childlist-link"  href="wikidisplay.html#displays" >
-<a href="#displays">The Displays</a>
-</a><br></td></tr></table></div>
+
 <p>&nbsp;<p>
 <a href="wikientries.html"><span title="Previous: Wiki Display of Entries"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="wikidisplay2.html"><span title="Next: More Wiki Display Components"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikidisplay.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
 <p>
