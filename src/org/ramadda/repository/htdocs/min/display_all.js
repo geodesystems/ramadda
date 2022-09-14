@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep 12 19:43:45 MDT 2022";
+var build_date="RAMADDA build date: Wed Sep 14 09:10:18 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4449,6 +4449,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
 	{label:'Filter Data'},
+	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
+	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
 	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
 	{p:'filterFields',ex:''},
 	{p:'filterFieldsToPropagate'},
@@ -27377,17 +27379,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"templateStyle",ex:'display:inline-block;',tt:'Style for the wrapper div'},	
-	{p:"emptyMessage"},
+	{p:"emptyMessage",tt:'Text to show when there are no records to show'},
 	{p:"select",ex:"max|min|<|>|=|<=|>=|contains"},
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',ex:'true'},
+	{p:'showFirst',ex:'true',tt:'Show first record'},
+	{p:'showLast',ex:'true',tt:'Show last record'},		
 	{p:'showRecords',tt:'comma separated list of record indices',ex:'0,3,4'},
 	{p:'dontShowRecords',tt:'comma separated list of record indices to not show',ex:'0,3,4'},	
-	{p:'showFirst',ex:'true'},
-	{p:'showLast',ex:'true'},		
 	{p:'selectHighlight',ex:'true'},	
-	{p:'handleSelectOnClick'},
+	{p:'handleSelectOnClick',ex:'false',tt:"Don't select the record on a click"},
 	{p:"groupByField"},
 	{p:"groupDelimiter",ex:"<br>"},	
 	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
