@@ -86,6 +86,7 @@ import java.util.zip.ZipOutputStream;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class PointOutputHandler extends RecordOutputHandler {
 
 
