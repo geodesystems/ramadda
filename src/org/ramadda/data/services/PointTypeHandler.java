@@ -243,7 +243,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                 || tag.startsWith("display_")) {
             try {
                 if (props != null) {
-                    if (props.get("max") == null) {
+                    if (props.get("max") == null && props.get("lastRecords")==null) {
                         props.put("max",
                                   "" + getDefaultMax(request, entry, tag,
                                       props));

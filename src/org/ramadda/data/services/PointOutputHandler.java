@@ -643,7 +643,11 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
                 if (request.defined(ARG_RECORD_LAST)) {
                     visitInfo.setLast(request.get(ARG_RECORD_LAST, -1));
+		    if (!request.defined(ARG_MAX)) {
+			visitInfo.setMax(visitInfo.getMax());
+		    }
                 }		
+
                 if (request.defined(ARG_SKIP)) {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
                 }
@@ -894,6 +898,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         PointTypeHandler typeHandler =
             (PointTypeHandler) entry.getTypeHandler();
 
+
         List<RecordTypeHandler.Macro> macros = typeHandler.getMacros(entry);
         if (macros != null) {
             String all = null;
@@ -969,28 +974,25 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
 
-        String max = null;
-        if (props != null) {
-            max = (String) props.get(ARG_MAX);
-        }
-        if (max == null) {
-            max = "5000";
-        }
-
-        extra += "&" + HU.arg(RecordFormHandler.ARG_MAX, max);
-
 
         if (props != null) {
+	    int last = Utils.getProperty(props,"lastRecords",-1);
+            if (last >=0) {
+                extra += "&"
+                         + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last+"");
+		//if no max set then use the last value
+		if(props.get(ARG_MAX)==null)
+		    props.put(ARG_MAX,""+last);
+            }	    
+
+	    String max =  Utils.getProperty(props,ARG_MAX,"5000");
+	    extra += "&" + HU.arg(RecordFormHandler.ARG_MAX, max);
+
             String skip = (String) props.get("skip");
             if (skip != null) {
                 extra += "&"
                          + HU.arg(RecordFormHandler.ARG_RECORD_SKIP, skip);
             }
-	    int last = Utils.getProperty(props,"lastRecords",-1);
-            if (last >=0) {
-                extra += "&"
-                         + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last+"");
-            }	    
 
             String startDate = (String) props.get("request.startdate");
             if (startDate != null) {
