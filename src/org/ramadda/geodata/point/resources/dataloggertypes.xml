@@ -9,6 +9,7 @@
 #This is the row that defines the field names, i.e., the second row (like above) has a comma separated list of names
 fieldRow=2
 
+cleanInput=true
 missing=-7999
 
 #total number of header rows to skip over. In the above example there are 4 total header lines. the 2nd line has the field names
