@@ -76,6 +76,9 @@ public abstract class BaseRecord implements Cloneable {
     /** Are we in quick scan mode */
     private boolean quickScan = false;
 
+    protected boolean skipProcessing = false;
+
+
     /** _more_ */
     private long recordTime = UNDEFINED_TIME;
 
@@ -115,6 +118,12 @@ public abstract class BaseRecord implements Cloneable {
         this.recordFile = recordFile;
         this.bigEndian  = bigEndian;
     }
+
+    public int skipCnt = 0;
+    public void setSkipProcessing(boolean v) {
+	skipProcessing  = v;
+    }
+
 
     /**
      * _more_

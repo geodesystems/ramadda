@@ -925,7 +925,6 @@ public abstract class RecordFile {
         visitInfo.addRecordIndex(1);
         BaseRecord.ReadStatus status =
             record.readNextRecord(visitInfo.getRecordIO());
-
         return status;
     }
 
@@ -983,11 +982,11 @@ public abstract class RecordFile {
 	    visitInfo.setRecordIO(recordIO);
 	    prepareToVisit(visitInfo);
             BaseRecord record = makeRecord(visitInfo);
+	    record.setSkipProcessing(true);
             while (true) {
 		BaseRecord.ReadStatus status = readNextRecord(visitInfo, record);
 		if (status == BaseRecord.ReadStatus.EOF) {
 		    break;
-		    
 		}
 		cnt++;
 	    }
@@ -1022,10 +1021,12 @@ public abstract class RecordFile {
 	if(last>=0) {
 	    Integer num = pointCountCache.get(filename);
 	    if(num==null) {
+		long t1  = System.currentTimeMillis();
 		num = new Integer(countRecords());
-		pointCountCache.put(filename,num);
-		//		System.err.println("countRecords:" + num);
+		long t2  = System.currentTimeMillis();
+		//		Utils.printTimes("RecordFile.countRecords",t1,t2);
 	    }
+	    pointCountCache.put(filename,num);
 	    numRecords = num;
 	    if(numRecords>last) {
 		reallySkip = numRecords-last;
@@ -1043,6 +1044,10 @@ public abstract class RecordFile {
         boolean ok = true;
         try {
             BaseRecord record = makeRecord(visitInfo);
+	    if(reallySkip>0) {
+		record.setSkipProcessing(true);
+	    }
+
             if (visitInfo.getStart() > 0) {
                 skip(visitInfo, record, visitInfo.getStart());
                 visitInfo.setRecordIndex(visitInfo.getStart());
@@ -1061,31 +1066,29 @@ public abstract class RecordFile {
 		endDate = visitInfo.getEndDate().getTime();
 	    }
 
+
             while (true) {
-
-
                 if ((visitInfo.getStop() > 0)
                         && (visitInfo.getRecordIndex()
                             > visitInfo.getStop())) {
                     break;
                 }
                 try {
-                    //This sets the record index
                     BaseRecord.ReadStatus status = readNextRecord(visitInfo, record);
-
-
-
                     if (status == BaseRecord.ReadStatus.EOF) {
 			if(last==1) {
                             visitor.visitRecord(this, visitInfo, record);
 			}
                         break;
                     }
-		    if(last==1) {
-			continue;
-		    }
 		    if(reallySkip>0) {
 			reallySkip--;
+			if(reallySkip<=0) {
+			    record.setSkipProcessing(false);
+			}
+			continue;
+		    }
+		    if(last==1) {
 			continue;
 		    }
 
@@ -1114,10 +1117,9 @@ public abstract class RecordFile {
                                     && (cnt > visitInfo.getMax())) {
                                 break;
                             }
-                            if ( !visitor.visitRecord(this, visitInfo,
-                                    record)) {
+                            if ( !visitor.visitRecord(this, visitInfo, record)) {
                                 break;
-                            }
+			    }
                         }
                     }
                     record = makeNextRecord(record);
@@ -1142,7 +1144,7 @@ public abstract class RecordFile {
             long t2 = System.currentTimeMillis();
             if (debug) {
                 System.err.println("RECORD: # visited:" + cnt + " in time:"
-                                   + (t2 - t1) + "ms");
+                                   + (t2 - t1) + "ms" +" skipCnt:" + record.skipCnt);
             }
         } finally {
             try {
@@ -1283,7 +1285,6 @@ public abstract class RecordFile {
         BaseRecord record    = (BaseRecord) makeRecord(new VisitInfo());
         skip(new VisitInfo(recordIO), record, index);
         record.readNextRecord(recordIO);
-
         return record;
     }
 

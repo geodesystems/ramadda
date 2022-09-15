@@ -698,14 +698,12 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
                                       Entry entry, String ext)
             throws Exception {
         buffered = !buffered;
-
-        /*
-        if(buffered) {
+	/*        if(buffered) {
             System.err.println("Using buffered");
             return new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream(request, jobId, entry, ext))));
-        }
+	    }
         System.err.println("Using unbuffered");
-        */
+	*/
         return new PrintWriter(getOutputStream(request, jobId, entry, ext));
     }
 

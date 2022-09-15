@@ -8,7 +8,6 @@ package org.ramadda.data.point.text;
 
 import org.apache.commons.lang3.text.StrTokenizer;
 
-
 import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
@@ -101,6 +100,8 @@ public class TextRecord extends DataRecord {
     /**  */
     private List<String> tokenList = new ArrayList<String>();
 
+    private boolean cleanInput = false;
+
     /** _more_ */
     private int badCnt = 0;
 
@@ -151,6 +152,10 @@ public class TextRecord extends DataRecord {
      */
     public TextRecord(RecordFile file, boolean dummyBigEndian) {
         this(file);
+    }
+
+    public void setCleanInput(boolean v) {
+	cleanInput = v;
     }
 
     /**
@@ -285,6 +290,9 @@ public class TextRecord extends DataRecord {
         boolean debug = false;
         if (textReader == null) {
             textReader = new TextReader();
+	    if(cleanInput) {
+		textReader.setCleanInput(true);
+	    }
             //      System.err.println("making text reader:" +(nio?"new way":"old way"));
             InputStream fis = recordIO.getInputStream();
 	    textReader.setReader(recordIO.getBufferedReader());
@@ -352,7 +360,6 @@ public class TextRecord extends DataRecord {
         String line = null;
         if ((tokens != null) && (tokens.length == 0)) {
             System.err.println("TextRecord.read zero length tokens array");
-
             return ReadStatus.EOF;
         }
 
@@ -366,6 +373,12 @@ public class TextRecord extends DataRecord {
                 if (line == null) {
                     return ReadStatus.EOF;
                 }
+		//This gets set when we're making the record count or when we are seeking to the last records
+		if(skipProcessing) {
+		    skipCnt++;
+		    return ReadStatus.OK;
+		}
+
                 //                System.err.println("LINE:" + line);
                 if (matchUpColumns && (rawOK == null)) {
                     List<String> toks = Utils.tokenizeColumns(line,
@@ -411,7 +424,6 @@ public class TextRecord extends DataRecord {
                                         tokenList);
                 toks = ((TextFile) getRecordFile()).processTokens(this, toks,
                         false);
-
                 if (bePickyAboutTokens && (toks.size() != tokens.length)) {
                     StringBuilder msg =
                         new StringBuilder("Error processing file: "
@@ -512,12 +524,11 @@ public class TextRecord extends DataRecord {
                 }
                 tokenCnt++;
 
-
-
                 if (field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
                     continue;
                 }
+
 
                 if (field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
@@ -533,8 +544,6 @@ public class TextRecord extends DataRecord {
                     System.err.println("tok null: " + tokenCnt + " " + line);
                 }
 
-
-                //Check for the riscan NaN
                 if (isMissingValue(field, tok)) {
                     values[fieldCnt] = Double.NaN;
                 } else {

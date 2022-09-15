@@ -643,9 +643,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                     visitInfo.setMax(request.get(ARG_MAX, 5000));
                 }
                 if (request.defined(ARG_RECORD_LAST)) {
-                    visitInfo.setLast(request.get(ARG_RECORD_LAST, -1));
-		    if (!request.defined(ARG_MAX)) {
-			visitInfo.setMax(visitInfo.getMax());
+		    int last = request.get(ARG_RECORD_LAST, -1);
+		    if(last>0) {
+			visitInfo.setLast(last);
+			//If there wasn't a max set then set it to something larger than the last count in
+			//in case the caching of the count is out of date
+			if (!request.defined(ARG_MAX)) {
+			    visitInfo.setMax(last+100);
+			}
 		    }
                 }		
 
@@ -983,7 +988,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                          + HU.arg(RecordFormHandler.ARG_RECORD_LAST, last+"");
 		//if no max set then use the last value
 		if(props.get(ARG_MAX)==null)
-		    props.put(ARG_MAX,""+last);
+		    props.put(ARG_MAX,""+(last+100));
             }	    
 
 	    String max =  Utils.getProperty(props,ARG_MAX,"5000");

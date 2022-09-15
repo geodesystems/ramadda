@@ -475,6 +475,9 @@ public class CsvFile extends TextFile {
     @Override
     public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields());
+	if(getProperty("cleanInput",false)) {
+	    record.setCleanInput(true);
+	}
         if (getBaseDate() != null) {
             record.setBaseDate(getBaseDate());
         }

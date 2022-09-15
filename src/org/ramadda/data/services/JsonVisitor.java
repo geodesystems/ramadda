@@ -41,7 +41,8 @@ public class JsonVisitor extends BridgeRecordVisitor {
 
 
     /** _more_ */
-    private static final String COMMA = ",\n";
+    private static final String COMMA_NL = ",\n";
+    private static final String COMMA = ",";    
 
     /** _more_ */
     private static final String QUOTE = "\"";
