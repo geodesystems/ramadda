@@ -1009,7 +1009,6 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     public String readLine() throws Exception {
-
         if ( !hasInput) {
             return null;
         }
@@ -1023,7 +1022,6 @@ public class TextReader implements Cloneable {
                     return line;
                 }
             }
-
             return getReader().readLine();
         }
 
@@ -1924,9 +1922,9 @@ public class TextReader implements Cloneable {
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < 5; i++) {
             TextReader          textReader = new TextReader();
+	    textReader.setCleanInput(true);
             InputStream         fis        = new FileInputStream(args[0]);
-            ReadableByteChannel channel    = Channels.newChannel(fis);
-            //      textReader.setReader(new BufferedReader(new InputStreamReader(fis)));
+	    textReader.setReader(new BufferedReader(new InputStreamReader(fis)));
             long t1  = System.currentTimeMillis();
             int  cnt = 0;
             while (true) {
