@@ -1,4 +1,6 @@
-<wiki>
+<html>
+<title>Simple Records</title>
+<body>
 +section title="Simple Records"
 
 The simple records entry type supports creating a structured data set of anything you like. You can think of it as a smart spreadsheet. 
@@ -46,10 +48,11 @@ The attributes of a field include:
 The default display of the simple records entry includes a link to the "Add Record" and "Edit Records" forms, a line chart and a table of the data. This display can easily be changed by simply setting the description of the entry to be "wiki" text (more info <a href="{{root}}/userguide/wikitext.html">here</a>). An example is shown below. The {<noop>{simple_add}} tag includes the "Add Record" and "Edit Records" links.
 <nowiki>
 <pre>
-+section  title="{{name}}"
-{{simple_add}}
-{{group showMenu="true" layoutType="table"   showTitle="false"}}
-{{display  type="table"  height="400"   layoutHere="true"  showMenu="true"  showTitle="true"  }} 
++section  title="{<noop>{name}}"
+{<noop>{simple_add}}
+{<noop>{group showMenu="true" layoutType="table"   showTitle="false"}}
+{<noop>{display  type="table"  height="400"   layoutHere="true"  showMenu="true"  showTitle="true"  }} 
+-section
 </pre>
 </nowiki>
 
@@ -57,4 +60,5 @@ The default display of the simple records entry includes a link to the "Add Reco
 
 -section
 
-
+</body>
+</html>
