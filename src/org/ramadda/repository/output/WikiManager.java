@@ -1456,6 +1456,31 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         StringBuilder sb = new StringBuilder();
 
+	boolean inAbs = !tag.equals(WIKI_TAG_ABSOPEN) &&
+	    !tag.equals(WIKI_TAG_ABSCLOSE) && Misc.equals("true",wikiUtil.getWikiProperty("inabs"));
+	if(inAbs) {
+	    String style2="position:absolute;";
+	    String left = getProperty(wikiUtil,props,"absLeft",null);
+	    String right = getProperty(wikiUtil,props,"absRight",null);
+	    String top = getProperty(wikiUtil,props,"absTop",null);
+	    String bottom = getProperty(wikiUtil,props,"absBottom",null);
+	    if(!stringDefined(left) && !stringDefined(right)) left="10px";
+	    if(!stringDefined(top) && !stringDefined(bottom)) top="10px";	    
+	    if(stringDefined(left)) style2+=HU.css("left",left);
+	    if(stringDefined(right)) style2+=HU.css("right",right);
+	    if(stringDefined(top)) style2+=HU.css("top",top);
+	    if(stringDefined(bottom)) style2+=HU.css("bottom",bottom);
+	    style2+=HU.css("display","inline-block");
+	    String translateX = getProperty(wikiUtil,props,"absTranslateX",null);
+	    String translateY = getProperty(wikiUtil,props,"absTranslateY",null);	    
+	    if(translateX!=null)
+		style2+="-webkit-transform: translateX(" + translateX+");transform: translateX(" + translateX+");";
+	    if(translateY!=null)
+		style2+="-webkit-transform: translateY(" + translateY+");transform: translateY(" + translateY+");";
+	    sb.append(HU.open("div",HU.style(style2)));
+	}
+
+
         String rowLabel = getProperty(wikiUtil, props,
                                       attrPrefix + ATTR_ROW_LABEL,
                                       (String) null);
@@ -1527,6 +1552,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					getIconUrl(ICON_TOGGLEARROWRIGHT));
 
         }
+
+	if(inAbs) {
+	    sb.append(HU.close("div"));
+	}
 
         return sb.toString();
     }
@@ -2551,6 +2580,46 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         } else if (theTag.equals(WIKI_TAG_CARD)) {
             return makeCard(request, wikiUtil, props, entry);
+        } else if (theTag.equals(WIKI_TAG_ABSCLOSE)) {
+	    wikiUtil.putWikiProperty("inabs","false");
+	    return "</div>";
+        } else if (theTag.equals(WIKI_TAG_ABSOPEN)) {
+	    //	    StringBuilder sb = new StringBuilder();
+	    wikiUtil.putWikiProperty("inabs","true");
+	    String defaultWidth = "800px";
+	    String image = getProperty(wikiUtil, props, "image",null);
+	    String width = getProperty(wikiUtil,props,"width",null);
+	    String height = getProperty(wikiUtil,props,"height",null);	    
+	    String imageEntryId= getProperty(wikiUtil,props,"imageEntry",null); 
+	    if(image==null && imageEntryId==null) {
+		if(width==null) width=defaultWidth;
+		if(height==null) height="600px";		
+	    } else {
+		String iwidth = getProperty(wikiUtil,props,"imageWidth",width);
+		String iheight = getProperty(wikiUtil,props,"imageHeight",null);	    
+		props.remove("width");
+		props.remove("height");		
+		if(iwidth==null) iwidth=width=defaultWidth;
+		props.put("width",iwidth);
+		if(iheight!=null) {
+		    props.put("height",iheight);
+		}		
+	    }
+	    String style = HU.css("position","relative",
+				  "width",width);
+	    if(height!=null) style+=HU.css("height",height);
+	    style+=getProperty(wikiUtil,props,"style","");
+	    props.put("style","");
+	    sb.append(HU.open("div",HU.style(style)));
+	    if(image!=null || imageEntryId!=null) {
+		if(image!=null)
+		    props.put("src",image);
+		Entry imageEntry = entry;
+		if(imageEntryId!=null)
+		    imageEntry =  getEntryManager().getEntry(request,imageEntryId);
+		sb.append(getWikiImage(wikiUtil, request, imageEntry, props));
+	    }
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
         } else if (theTag.equals(WIKI_TAG_URL)) {
@@ -8132,11 +8201,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             anotherDivId = HU.getUniqueId("displaydiv");
         }
         anotherDivId = anotherDivId.replace("$entryid", entry.getId());
+
+	String style = "position:relative;";
         HU.div(sb, "",
                HU.clazz("display-container") + HU.id(anotherDivId)
-               + HU.style("position:relative;"));
+               + HU.style(style));
         Utils.add(propList, "divid", JsonUtil.quote(anotherDivId));
         props.remove("layoutHere");
+
 
 	String groupVar = (String) request.getExtraProperty(PROP_GROUP_VAR);
 	boolean needToCreateGroup = groupVar == null;
