@@ -330,6 +330,9 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_VERSION = "ramadda_version";
 
+    public static final String WIKI_TAG_ABSOPEN = "absopen";
+    public static final String WIKI_TAG_ABSCLOSE = "absclose";
+
     /**  */
     public static final String WIKI_TAG_MAKELABEL = "makelabel";
 
