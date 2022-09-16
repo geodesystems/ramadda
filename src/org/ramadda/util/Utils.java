@@ -6003,6 +6003,24 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
+	    File file = new File(args[0]);
+	    BufferedImage image = ImageIO.read(file);
+	    int redd = 0;
+	    int greenn = 0;
+	    int bluee = 0;
+	    HashSet<String> seen = new HashSet<String>();
+	    System.err.println(image.getHeight());
+	    for (int i = 0; i < image.getHeight(); i++) {
+		//		try {
+		    java.awt.Color c = new java.awt.Color(image.getRGB(0,i));
+		    System.out.print("'rgb(" + c.getRed()+","+c.getGreen()+","+ c.getBlue()+")',");
+		    //		} catch(Exception exc) {}
+	    }
+	    System.exit(0);
+	}
+
+
+	if(true) {
 	    for(String s: args) {
 		System.err.println(makeLabel(s));
 	    }
