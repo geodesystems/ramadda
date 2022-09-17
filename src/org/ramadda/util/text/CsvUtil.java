@@ -1753,6 +1753,12 @@ public class CsvUtil implements CsvCommands {
 			"One or more paths to the objects e.g. geometry,features",
 			"label", "Object paths",
 			ATTR_TYPE, TYPE_LIST, ATTR_SIZE, "30")),
+        new Cmd(CMD_JSONVALUE, "Extract a value from a JSON column",
+                new Arg(ARG_COLUMNS, "Column names", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg("arrayPath",
+			"Path to the array e.g., obj1.arr[2].obj2",
+			"label", "Array path",
+			ATTR_SIZE, "30")),
         new Cmd(CMD_GEOJSON, "Parse the input as geojson",
 		new Arg("includePolygon","Include polygon",
 			ATTR_TYPE,"enumeration","values","true,false")),
@@ -1990,7 +1996,7 @@ public class CsvUtil implements CsvCommands {
                 new Arg("rows", "How many rows to skip", ATTR_TYPE, TYPE_NUMBER)),
 
         /** *  Sliceand dice * */
-        new Category("Slice","Add/remove columns, rows, restructure, etc"),
+        new Category("Slice and Dice","Add/remove columns, rows, restructure, etc"),
         new Cmd(CMD_COLUMNS,  "Only include the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_NOTCOLUMNS, "Don't include given columns",
@@ -4181,6 +4187,12 @@ public class CsvUtil implements CsvCommands {
 
 		return i;
 	    });
+	defineFunction(CMD_JSONVALUE,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.JsonValue(getCols(args.get(++i)), 
+							 args.get(++i)));
+
+		return i;
+	    });	
 
 	defineFunction(CMD_GEOJSON,1,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.GeoJsonDataProvider(args.get(++i).equals("true")));

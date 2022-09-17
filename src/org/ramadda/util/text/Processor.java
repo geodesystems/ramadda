@@ -20,6 +20,8 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
 
+import org.json.*;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -616,7 +618,54 @@ public abstract class Processor extends CsvOperator {
 
     }
 
+    public static class JsonValue extends Processor {
 
+	String path;
+
+        /**
+         * _more_
+         *
+         * @param flag _more_
+         * @param value _more_
+         */
+	
+        public JsonValue(List<String> cols, String path) {
+            super(cols);
+	    this.path = path;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    if(rowCnt++==0) return row;
+            List<Integer> indices = getIndices(ctx);
+	    for(int idx:indices) {
+		String v = row.getString(idx);
+		try {
+		    JSONObject obj  = new JSONObject(v);
+		    Object o = JsonUtil.readValue(obj, path,v);
+		    row.set(idx,o.toString());
+		} catch(Exception exc) {
+		    System.err.println("Errow:" + exc +" value:" + v);
+		}
+	    }
+            return row;
+        }
+
+    }
+
+    
 
 
     /**
