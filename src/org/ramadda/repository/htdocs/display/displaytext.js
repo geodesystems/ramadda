@@ -556,14 +556,15 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    return;
 		}
 		records = this.selectedRecords|| [this.selectedRecord];
+		records= this.sortRecords(records);
 	    } else {
+		records= this.sortRecords(records);
 		if(this.getShowFirst(false)) {
 		    records = [records[0]];
 		} else 	if(this.getShowLast(false)) {
 		    records = [records[records.length-1]];
 		}
 	    }
-	    records= this.sortRecords(records);
 	    let showRecords = this.getShowRecords();
 	    if(showRecords) {
 		let tmp = [];
