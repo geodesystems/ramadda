@@ -1143,6 +1143,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.pctFields = this.display.percentFields.split(",");
     }
 
+
     let colors = defaultColorTable || this.display.getColorTable(true,[colorByAttr +".colorTable","colorTable"]);
     if(!colors && colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
@@ -2787,8 +2788,8 @@ Glyph.prototype = {
 	    if(this.template) {
 		label = this.template.replace("${value}",label);
 	    }
-	    ctx.font = this.font || "12pt arial"
-	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| "#000";
+	    ctx.font = this.font ?? this.display.getProperty("glyphFont","12pt sans-serif");
+	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty("glyphColor","#000");
 	    let text = String(label);
 	    if(args.record) {
 		args.record.fields.forEach(f=>{
