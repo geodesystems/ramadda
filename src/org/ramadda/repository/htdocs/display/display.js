@@ -687,6 +687,8 @@ function DisplayThing(argId, argProperties) {
 //	    debug = true;
 	    for (let col = 0; col < fields.length; col++) {
 		let f = fields[col];
+		let mattrs  = macros.getAttributes(f.getId());
+		if(mattrs && !mattrs['label']) mattrs['label'] = f.getLabel();
 		let value = row[f.getIndex()];
 		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
@@ -3504,6 +3506,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return null;
 	    }
 
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -5294,12 +5297,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		leftStyle = HU.css("width",HU.getDimension(this.getProperty("leftSideWidth")));
 	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT),STYLE,leftStyle],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
-	    let sideWidth = "1%";
-	    let centerWidth = "98%";	    
+	    let sideWidth = "1px";
+	    let centerWidth = "100%";	    
             let contents = this.getContentsDiv();
 	    //display table
 	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
-
 	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
             let table =   h0+HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
