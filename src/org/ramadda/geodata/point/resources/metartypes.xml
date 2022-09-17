@@ -42,6 +42,45 @@ fields=raw_text[chartable=true type=string],station_id[type=string],observation_
   </type>
 
 
+  <type name="type_nws_obs"  super="type_point" description="NWS Current Observations"  handler="org.ramadda.geodata.point.NwsObsTypeHandler">
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>          
+     <property name="icon" value="/point/noaa.gif"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true" values="file:/org/ramadda/geodata/point/resources/weatherstations.txt"/>
+ <property name="record.properties">
+skiplines=1
+fields=timestamp[type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=true isLatitude=true],longitude[chartable=true isLongitude=true],temperature[unit=C],dewpoint[unit=C],winddirection[label="Wind Direction" unit=degrees],windspeed[label="Wind Speed" unit=km_h-1],windgust[label="Wind Gust" unit=km_h-1],barometricpressure[label="Barometric Pressure" unit=Pa],sealevelpressure[label="Sea Level Pressure" unit=Pa],visibility[unit=m],maxtemperaturelast24hours[label="Max Temperature Last 24 Hours" unit=C],mintemperaturelast24hours[label="Min Temperature Last 24 Hours" unit=C],precipitationlast3hours[label="Precipitation Last 3 Hours" unit=m],precipitationlast6hours[label="Precipitation Last 6 Hours" unit=m],relativehumidity[label="Relative Humidity" unit=percent],windchill[label="Wind Chill" unit=C],heatindex[label="Hear Index" unit=C]
+ </property>
+
+<wiki>
+<![CDATA[
++section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
+{{description}}
++row
++col-md-8
+{{group showMenu="true" layoutType="table" layoutColumns="1"}}
+{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=temperature}}
+{{display_linechart showMenu="true" showTitle="false" layoutHere="false" fields=sealevelpressure}}
+{{display_barchart showMenu="true" showTitle="false" layoutHere="false" fields=precipitationlast6hours}}
+
+-col
++col-md-4
+{{map  zoomLevel=3 height="350"  layoutHere="true" }}
+-col
+-row
+----
+:heading Text
+{{display_text showMenu=false recordTemplate="${default itemsPerColumn=20}" }}
+]]>
+</wiki>
+</type>
+  
+
 
 
 </types>

@@ -5,7 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-import org.ramadda.util.Utils;
+
+import org.json.*;
 
 
 
@@ -14,10 +15,11 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 
-import java.util.Hashtable;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
-import org.json.*;
+
+import java.util.Hashtable;
 
 
 /**
@@ -26,7 +28,7 @@ import org.json.*;
  *
  *
  */
-public class AwcMetarTypeHandler extends PointTypeHandler {
+public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
     /** _more_ */
     public static final String URL =
@@ -57,37 +59,24 @@ public class AwcMetarTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
-    private Hashtable<String,JSONObject> stations;
 
-
-    private JSONObject getStation(String id) throws Exception {
-	if(stations==null) {
-	    JSONArray a= new JSONArray(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/weatherstations.json"));
-	    Hashtable<String,JSONObject> tmp  =new Hashtable<String,JSONObject>();
-	    for (int i = 0; i < a.length(); i++) {
-		JSONObject station = a.getJSONObject(i);
-		tmp.put(station.getString("id"),station);
-	    }
-	    stations = tmp;
-	}
-	return stations.get(id);
-    }
-
-    public void initializeNewEntry(Request request, Entry entry,                                    
-                                   boolean fromImport)                                              
-            throws Exception {                                                                      
-        super.initializeNewEntry(request, entry, fromImport);                                       
-        if (fromImport) {                                                                           
-            return;                                                                                 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param fromImport _more_
+     *
+     * @throws Exception _more_
+     */
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+            throws Exception {
+        super.initializeNewEntry(request, entry, fromImport);
+        if (fromImport) {
+            return;
         }
-        String id = (String) entry.getStringValue(IDX_SITE_ID, "");
-	if(!Utils.stringDefined(id)) return;
-	JSONObject station = getStation(id);
-	if(station==null) return;
-	if(!Utils.stringDefined(entry.getName())) entry.setName(station.getString("name"));
-    	entry.setLatitude(station.getDouble("lat"));
-    	entry.setLongitude(station.getDouble("lon"));	
-   }
+	initializeNewEntry(request, entry,  (String) entry.getStringValue(IDX_SITE_ID, ""));
+    }
 
 
 
@@ -98,16 +87,18 @@ public class AwcMetarTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param forRead _more_
      *
      * @return _more_
      *
      * @throws Exception On badnes
      */
     @Override
-    public String getPathForEntry(Request request, Entry entry, boolean forRead)
+    public String getPathForEntry(Request request, Entry entry,
+                                  boolean forRead)
             throws Exception {
         if (entry.isFile()) {
-            return super.getPathForEntry(request, entry,forRead);
+            return super.getPathForEntry(request, entry, forRead);
         }
         String siteId = entry.getStringValue(IDX_SITE_ID, "");
         int    offset = (int) entry.getIntValue(IDX_TIME_OFFSET, 24);
