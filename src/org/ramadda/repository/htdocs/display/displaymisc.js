@@ -3967,9 +3967,9 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		this.setDisplayMessage(this.getNoDataMessage());
 		return;
 	    }
-	    let style = this.getPropertyCanvasStyle("");
-	    let highlightStyle = this.getPropertyHighlightStyle("");
-	    let unHighlightStyle = this.getPropertyUnHighlightStyle("");
+	    let style = this.getCanvasStyle("");
+	    let highlightStyle = this.getHighlightStyle("");
+	    let unHighlightStyle = this.getUnHighlightStyle("");
 	    let columns = this.getProperty("columns");
 	    let html = "";
 	    let canvasWidth = this.getPropertyCanvasWidth();
