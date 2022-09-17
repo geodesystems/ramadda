@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep 15 09:41:33 MDT 2022";
+var build_date="RAMADDA build date: Fri Sep 16 18:38:15 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -1144,6 +1144,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if (this.display.percentFields != null) {
         this.pctFields = this.display.percentFields.split(",");
     }
+
 
     let colors = defaultColorTable || this.display.getColorTable(true,[colorByAttr +".colorTable","colorTable"]);
     if(!colors && colorByAttr) {
@@ -2789,8 +2790,8 @@ Glyph.prototype = {
 	    if(this.template) {
 		label = this.template.replace("${value}",label);
 	    }
-	    ctx.font = this.font || "12pt arial"
-	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| "#000";
+	    ctx.font = this.font ?? this.display.getProperty("glyphFont","12pt sans-serif");
+	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty("glyphColor","#000");
 	    let text = String(label);
 	    if(args.record) {
 		args.record.fields.forEach(f=>{
@@ -3746,6 +3747,8 @@ function DisplayThing(argId, argProperties) {
 //	    debug = true;
 	    for (let col = 0; col < fields.length; col++) {
 		let f = fields[col];
+		let mattrs  = macros.getAttributes(f.getId());
+		if(mattrs && !mattrs['label']) mattrs['label'] = f.getLabel();
 		let value = row[f.getIndex()];
 		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
@@ -6563,6 +6566,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return null;
 	    }
 
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -8353,12 +8357,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		leftStyle = HU.css("width",HU.getDimension(this.getProperty("leftSideWidth")));
 	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT),STYLE,leftStyle],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
-	    let sideWidth = "1%";
-	    let centerWidth = "98%";	    
+	    let sideWidth = "1px";
+	    let centerWidth = "100%";	    
             let contents = this.getContentsDiv();
 	    //display table
 	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
-
 	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
             let table =   h0+HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
@@ -27425,14 +27428,15 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    return;
 		}
 		records = this.selectedRecords|| [this.selectedRecord];
+		records= this.sortRecords(records);
 	    } else {
+		records= this.sortRecords(records);
 		if(this.getShowFirst(false)) {
 		    records = [records[0]];
 		} else 	if(this.getShowLast(false)) {
 		    records = [records[records.length-1]];
 		}
 	    }
-	    records= this.sortRecords(records);
 	    let showRecords = this.getShowRecords();
 	    if(showRecords) {
 		let tmp = [];
@@ -47415,9 +47419,9 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		this.setDisplayMessage(this.getNoDataMessage());
 		return;
 	    }
-	    let style = this.getPropertyCanvasStyle("");
-	    let highlightStyle = this.getPropertyHighlightStyle("");
-	    let unHighlightStyle = this.getPropertyUnHighlightStyle("");
+	    let style = this.getCanvasStyle("");
+	    let highlightStyle = this.getHighlightStyle("");
+	    let unHighlightStyle = this.getUnHighlightStyle("");
 	    let columns = this.getProperty("columns");
 	    let html = "";
 	    let canvasWidth = this.getPropertyCanvasWidth();
