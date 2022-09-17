@@ -2544,7 +2544,7 @@ table.dataTable tfoot td {
 }
 
 .display-canvas-canvas {
-    border:1px solid #999;
+/*    border:1px solid #999;*/
 }
 
 .display-canvas-canvas-highlight {
@@ -2554,13 +2554,9 @@ table.dataTable tfoot td {
     background:#ccc;
 }
 
-
 .display-canvas-block {
     display:inline-block;
     text-align:center;
-    padding-left:5px;
-    padding-right:5px;
-    margin:5px;
 }
 
 
