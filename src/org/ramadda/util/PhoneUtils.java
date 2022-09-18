@@ -16,9 +16,10 @@ import java.net.*;
 
 import java.net.URL;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-
+import java.util.List;
 
 /**
  * A set of utility methods for dealing with phone things
@@ -32,6 +33,8 @@ public class PhoneUtils {
     /**  */
     private static String numverifyKey;
 
+    private static String numlookupapiKey;
+
     /**  */
     private static String TWILIO_ACCOUNT_SID;
 
@@ -40,6 +43,15 @@ public class PhoneUtils {
 
     /**  */
     private static String TWILIO_PHONE;
+
+
+    private static boolean haveInited = false;
+    public static void initKeys() {
+	if(haveInited) return;
+	haveInited = true;
+	//	numverifyKey = System.getenv("NUMVERIFY_API_KEY");
+	numlookupapiKey = System.getenv("NUMLOOKUPAPI_API_KEY");	
+    }
 
 
     /**
@@ -72,6 +84,23 @@ public class PhoneUtils {
     private static Hashtable<String, HashSet> campaigns =
         new Hashtable<String, HashSet>();
 
+    public static final int SMS_CODE_SENT = 0;
+    public static final int SMS_CODE_ALREADYSENT = 1;    
+    public static final int SMS_CODE_BADPHONE = 2;
+    public static final int SMS_CODE_ERROR = 3;    
+
+
+    private static File getCampaignFile(String campaign) {
+	return  new File(campaign + ".sent.txt");
+    }
+
+    private static void writeCampaignFile(String campaign, String phone, String status ) throws Exception {
+	if(campaign==null) return;
+	FileWriter fw = new FileWriter(getCampaignFile(campaign), true);
+	fw.write(phone + ":"+ status+"\n");
+	fw.close();
+    }
+
     /**
      *
      * @param phone _more_
@@ -82,7 +111,7 @@ public class PhoneUtils {
      *
      * @throws Exception _more_
      */
-    public static boolean sendSMS(String phone, String msg,
+    public static int sendSMS(String phone, String msg,
                                   boolean ignoreInvalidNumbers,
                                   String campaign)
             throws Exception {
@@ -97,14 +126,12 @@ public class PhoneUtils {
                         + phone);
             }
             System.err.println("Invalid phone number:" + phone);
-
-            return false;
+            return SMS_CODE_BADPHONE;
         }
-        File    f    = null;
 
         HashSet seen = null;
         if (campaign != null) {
-            f    = new File(campaign + ".sent.txt");
+            File f    = getCampaignFile(campaign);
             seen = campaigns.get(campaign);
             if (seen == null) {
                 seen = new HashSet();
@@ -115,17 +142,21 @@ public class PhoneUtils {
                     BufferedReader    fr  = new BufferedReader(isr);
                     String            line;
                     while ((line = fr.readLine()) != null) {
-                        seen.add(line);
+			line = line.trim();
+			List<String> toks = Utils.splitUpTo(line,":",2);
+                        seen.add(toks.get(0));
                     }
                     fis.close();
                 }
             }
             if (seen.contains(phone)) {
-                System.err.println("Already sent:" + phone);
-
-                return true;
+		//                System.err.println("Already sent:" + phone);
+                return SMS_CODE_ALREADYSENT;
             }
         }
+
+
+	//	https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Messages.json
 
 
         String url = "https://api.twilio.com/2010-04-01/Accounts/"
@@ -138,31 +169,33 @@ public class PhoneUtils {
         Object     _status = obj.opt("status");
         if (_status == null) {
             System.err.println("no status in response:" + result);
-
-            return false;
+            return SMS_CODE_ERROR;
         }
         String status = _status.toString();
         if (status.equals("400")) {
-            System.err.println("error:" + obj.opt("message"));
-
-            return false;
+	    int code = obj.getInt("code");
+	    if(code == 21211) {
+		//Write the bad phone
+		writeCampaignFile(campaign,phone,"failed");
+		return SMS_CODE_BADPHONE;
+	    }
+            System.err.println("error:" + result);
+            return SMS_CODE_ERROR;
         }
 
         if ( !status.equals("queued")) {
             System.err.println("error: unknown status:" + status
-                               + " message:" + obj.opt("message"));
+                               + " message:" +result);
 
-            return false;
+            return SMS_CODE_ERROR;
         }
-        System.err.println("sent:" + phone);
-        if (campaign != null) {
+	//        System.err.println("sent:" + phone);
+        if (seen != null) {
             seen.add(phone);
-            FileWriter fw = new FileWriter(f, true);
-            fw.write(phone + "\n");
-            fw.close();
         }
+	writeCampaignFile(campaign,phone,"sent");
 
-        return true;
+        return SMS_CODE_SENT;
     }
 
     /**
@@ -204,6 +237,9 @@ public class PhoneUtils {
         }
     }
 
+    private static Hashtable<String,Boolean> isMobile;
+
+    private static List<String> numbers;
 
     /**
      *
@@ -213,12 +249,35 @@ public class PhoneUtils {
      * @throws Exception _more_
      */
     public static boolean isPhoneMobile(String phone) throws Exception {
-        Hashtable result = getPhoneInfo(phone);
+	File cacheFile = new File("ismobile.txt");
+	if(isMobile==null) {
+	    isMobile = new Hashtable<String,Boolean>();
+	    numbers = new ArrayList<String>();
+	    if(cacheFile.exists()) {
+		for(String num: Utils.split(IO.readContents(cacheFile),"\n",true,true)) {
+		    List<String> toks = Utils.splitUpTo(num,":",2);
+		    numbers.add(num);
+		    num = toks.get(0);
+		    boolean good = toks.get(1).trim().equals("true");
+		    isMobile.put(num,new Boolean(good));
+		}
+	    }
+	}
+	Boolean b = isMobile.get(phone);
+	if(b!=null) {
+	    System.err.println("cached:" + phone);
+	    return b.booleanValue();
+	}
+        PhoneInfo result = getPhoneInfo(phone);
         if (result == null) {
-            return false;
-        }
-
-        return result.get("line_type").equals("mobile");
+            b = new Boolean(false);
+        } else {
+	    b = new Boolean(result.lineType.equals("mobile"));
+	}
+	isMobile.put(phone,b);
+	numbers.add(phone+":"+b);
+	IOUtil.writeFile(cacheFile,Utils.join(numbers,"\n"));
+	return b.booleanValue();
     }
 
     /**
@@ -245,14 +304,15 @@ public class PhoneUtils {
      *  @return _more_
      */
     public static String cleanPhone(String phone) {
-        phone = phone.replaceAll("-", "").replaceAll("-", "");
-        if ( !phone.startsWith("+")) {
-            if ( !phone.startsWith("1")) {
+        phone = phone.replaceAll("[^0-9]+", "");
+	//        phone = phone.replaceAll("-", "").replaceAll("-", "").replaceAll("\\s","").replaceAll("\\(","").replaceAll("\\)","").replaceAll("\\.","");
+	//Assume US
+        if (!phone.startsWith("+")) {
+            if (!phone.startsWith("1")) {
                 phone = "1" + phone;
             }
             phone = "+" + phone;
         }
-
         return phone;
     }
 
@@ -263,38 +323,81 @@ public class PhoneUtils {
      *
      * @throws Exception _more_
      */
-    public static Hashtable getPhoneInfo(String phone) throws Exception {
-        if (numverifyKey == null) {
-            numverifyKey = System.getenv("NUMVERIFY_API_KEY");
-            if (numverifyKey == null) {
-                throw new IllegalArgumentException(
-                    "No NUMVERIFY_API_KEY defined");
-            }
+    public static PhoneInfo getPhoneInfo(String phone) throws Exception {
+	initKeys();
+	if (numverifyKey == null && numlookupapiKey == null) {
+	    throw new IllegalArgumentException(
+					       "No NUMVERIFY_API_KEY or NUMLOOKUPAPI_API_KEY defined");
         }
         phone = cleanPhone(phone);
-        String url = HtmlUtils.url("http://apilayer.net/api/validate",
-                                   "access_key", numverifyKey, "number",
-                                   phone, "country_code", "", "format", "1");
-
-        String result = IO.readContents(url, PhoneUtils.class);
-        //      System.err.println(url);
+	if(phone.length()!=12) return null;
+        if (numverifyKey != null) {
+	    String url = HtmlUtils.url("http://apilayer.net/api/validate",
+				       "access_key", numverifyKey, "number",
+				       phone, "country_code", "", "format", "1");
+	    String result = IO.readContents(url, PhoneUtils.class);
+	    //      System.err.println(url);
         //      System.err.println(result);
-        JSONObject obj = new JSONObject(result);
-        if ( !obj.isNull("error")) {
-            obj = obj.getJSONObject("error");
+	    JSONObject obj = new JSONObject(result);
+	    if ( !obj.isNull("error")) {
+		obj = obj.getJSONObject("error");
+		throw new IllegalArgumentException("Error fetching url:" + url
+						   + "\nerror:" + obj.opt("info"));
+	    }
+	    if ( !obj.getBoolean("valid")) {
+		return null;
+	    }
 
-            throw new IllegalArgumentException("Error fetching url:" + url
-                    + "\nerror:" + obj.opt("info"));
-        }
-        if ( !obj.getBoolean("valid")) {
-            return null;
-        }
+	    return new PhoneInfo(obj.getString("country_code"), 
+				 obj.getString("location"), 
+				 obj.getString("line_type"));
+	}
 
-        return Utils.makeHashtable("country_code",
-                                   obj.getString("country_code"), "location",
-                                   obj.getString("location"), "line_type",
-                                   obj.getString("line_type"));
+	String url = HtmlUtils.url("https://api.numlookupapi.com/v1/validate/" + phone,"apikey",numlookupapiKey);
+	String result = IO.readContents(url, PhoneUtils.class);
+	//	System.err.println(url);
+	//	System.err.println(result);
+	/*
+{
+  "valid": true,
+  "number": "18004190157",
+  "local_format": "8004190157",
+  "international_format": "+18004190157",
+  "country_prefix": "+1",
+  "country_code": "US",
+  "country_name": "United States of America",
+  "location": "",
+  "carrier": "",
+  "line_type": "toll_free"
+  }*/
 
+	JSONObject obj = new JSONObject(result);
+	if ( !obj.isNull("error")) {
+	    obj = obj.getJSONObject("error");
+	    throw new IllegalArgumentException("Error fetching url:" + url
+					       + "\nerror:" + obj.opt("info"));
+	}
+	if ( !obj.getBoolean("valid")) {
+	    return null;
+	}
+	return new PhoneInfo(obj.getString("country_code"),
+			     obj.getString("location"),
+			     obj.getString("line_type"));
+
+
+    }
+
+    private static class PhoneInfo {
+	String countryCode;
+	String location;
+	String lineType;
+	PhoneInfo(String countryCode,
+		  String location,
+		  String lineType) {
+	    this.countryCode=countryCode;
+	    this.location=location;
+	    this.lineType=lineType;
+	}
     }
 
 
@@ -319,8 +422,10 @@ public class PhoneUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.err.println(isPhoneMobile("3038982413"));
-        System.err.println(isPhoneMobile("3035437510"));
+	for(int i=0;i<10;i++) {
+	    System.err.println(isPhoneMobile("3038982413"));
+	    System.err.println(isPhoneMobile("3035437510"));
+	}
         if (true) {
             return;
         }
@@ -362,7 +467,7 @@ public class PhoneUtils {
             if (line.startsWith("#")) {
                 continue;
             }
-            if ( !sendSMS(line, message, false, campaign)) {
+            if (sendSMS(line, message, false, campaign)==SMS_CODE_ERROR) {
                 break;
             }
         }
