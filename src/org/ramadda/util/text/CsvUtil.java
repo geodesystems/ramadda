@@ -137,6 +137,8 @@ public class CsvUtil implements CsvCommands {
     private boolean inputIsBom = false;
     private String encoding;
 
+    private boolean commandLine = false;
+    private boolean isVerifiedUser = false;    
 
     /**
      * _more_
@@ -343,6 +345,10 @@ public class CsvUtil implements CsvCommands {
     **/
     public boolean getInteractive () {
 	return interactive;
+    }
+
+    public void setIsVerifiedUser(boolean v) {
+	isVerifiedUser = v;
     }
 
 
@@ -2289,9 +2295,17 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_ASCII, "Convert non ascii characters",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("substitution string", HELP_SUBSTITUTION)),
+        new Cmd(CMD_CLEANPHONE, "Clean the phone number",
+		ARG_LABEL,"Clean Phone",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_ISMOBILE, "Add a true/false if the string is a mobile phone",
 		ARG_LABEL,"Is Mobile",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_SMS, "Send a text message - only for command line",
+		ARG_LABEL,"Send SMS",
+                new Arg(ARG_COLUMN, "Phone number", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("campaign", "Campaign"),
+                new Arg("message", "Message template", ATTR_SIZE, "60",ATTR_ROWS, "6")),
         new Cmd(CMD_JS,
 		"Define Javascript (e.g., functions) to use later in the -func call",
 		ARG_LABEL,"Define Javascript",
@@ -3935,6 +3949,9 @@ public class CsvUtil implements CsvCommands {
 
 
 	defineFunction(CMD_ISMOBILE,1,(ctx,args,i) -> {
+		if(!commandLine && !isVerifiedUser) {
+		    throw new IllegalArgumentException("-ismobile command only available from command line or from logged in user");
+		}
 		ctx.addProcessor(new Converter(args.get(++i)) {
 			int index;
 			@Override
@@ -3945,10 +3962,92 @@ public class CsvUtil implements CsvCommands {
 				return row;
 			    }
 			    try {
-				boolean isMobile = PhoneUtils.isPhoneMobile(row.getString(index));
-				row.add(""+ isMobile);
+				if(!row.indexOk(index)) {
+				    row.add("false");
+				} else {
+				    boolean isMobile = PhoneUtils.isPhoneMobile(row.getString(index));
+				    row.add(""+ isMobile);
+				}
 			    } catch(Exception exc) {
 				fatal(ctx, "Error checking ismobile", exc);
+			    }
+			    return row;
+			}
+		    });
+		return i;
+	    });
+	
+
+	defineFunction(CMD_SMS,3,(ctx,args,i) -> {
+		if(!commandLine && !isVerifiedUser) {
+		    throw new IllegalArgumentException("-sms command only available from command line or from logged in user");
+		}
+		final String phoneColumn = args.get(++i);
+		final String campaign = args.get(++i);
+		final String message = args.get(++i);		
+		ctx.addProcessor(new Converter(phoneColumn) {
+			Row header;
+			@Override
+			public Row processRow(TextReader ctx, Row row) {
+			    if(rowCnt++==0) {
+				header = row;
+				return row;
+			    }
+			    int idx = getIndex(ctx);
+			    if(!row.indexOk(idx)) {
+				return row;
+			    }
+			    String phone = row.getString(idx);
+			    String template = message;
+			    for (int i = 0; i < header.size(); i++) {
+				String value = row.getString(i);
+				String colName = (String) header.get(i);
+				String colId   = Utils.makeID(colName, false);
+				template = template.replace("{" + colId+"}",value).replace("{" + colName+"}",value).replace("{" + i+"}",value).replace("\\n","\n");
+			    }
+			    if(template.indexOf("{")>=0) {
+				throw new IllegalArgumentException("There appears to be a macro in the message:" + template);
+			    }
+			    try {
+				int code  = PhoneUtils.sendSMS(phone, template,true,campaign);
+				if(code == PhoneUtils.SMS_CODE_ERROR) {
+				    throw new RuntimeException("Failed to send message");
+				}
+				if(code == PhoneUtils.SMS_CODE_BADPHONE) {
+				    System.err.println("bad phone:" + phone);
+				} if(code == PhoneUtils.SMS_CODE_ALREADYSENT) {
+				    System.err.println("already sent:" + phone);
+				} else {
+				    System.err.println("sent:" + phone);
+				}
+
+
+			    } catch(Exception exc) {
+				throw new RuntimeException(exc);
+			    }
+			    return row;
+			}
+		    });
+		return i;
+	    });
+
+
+	defineFunction(CMD_CLEANPHONE,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter(getCols(args.get(++i))) {
+			@Override
+			public Row processRow(TextReader ctx, Row row) {
+			    if(rowCnt++==0) {
+				return row;
+			    }
+			    for(int idx: getIndices(ctx)) {
+				if(idx<row.size()) {
+				    String v = row.getString(idx);
+				    v = PhoneUtils.cleanPhone(v);
+				    if(v.length()!=12) {
+					v = "";
+				    }
+				    row.set(idx,v);
+				}
 			    }
 			    return row;
 			}
@@ -5402,7 +5501,6 @@ public class CsvUtil implements CsvCommands {
 	    return;
 	}
 
-
 	/*
 	  System.out.println("a,b,c,d,e");
 	  for(int i=0;i<100000;i++) {
@@ -5414,6 +5512,7 @@ public class CsvUtil implements CsvCommands {
 
 	GeoUtils.setCacheDir(new File("."));
 	CsvUtil csvUtil = new CsvUtil(args);
+	csvUtil.commandLine  = true;
 	csvUtil.setCsvContext(new CsvContext() {
 		public List<Class> getClasses() {
 		    String _name=null;

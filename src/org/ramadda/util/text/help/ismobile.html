@@ -1,0 +1,18 @@
+The -ismobile command uses one of two external APIs  - 
+<a href="https://numlookupapi.com/">https://numverify.com/</a>
+or <a href="https://numlookupapi.com/">https://numlookupapi.com</a>.
+After making an account with either of these services
+set the corresponding environment variables:
+<pre>
+export NUMLOOKUPAPI_API_KEY=
+or
+export NUMVERIFY_API_KEY=
+</pre>
+
+This command is only available when running from the command line or if running within RAMADDA the user is a logged in user.
+We do this as the SeeSV service within RAMADDA can be run by any user.
+<p>
+A cache file, ismobile.txt,  of past phone numbers will be created in the local working directory so this command can be run multiple times
+without resorting to the API calls for past phone numbers.
+
+

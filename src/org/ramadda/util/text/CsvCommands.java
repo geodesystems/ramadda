@@ -170,6 +170,8 @@ public interface CsvCommands {
     public static final String CMD_SUFFIX="-suffix";
     public static final String CMD_SUBST="-subst";
     public static final String CMD_ASCII="-ascii";
+    public static final String CMD_CLEANPHONE="-cleanphone";
+    public static final String CMD_SMS="-sms";    
     public static final String CMD_ISMOBILE="-ismobile";
     public static final String CMD_JS="-js";
     public static final String CMD_FUNC="-func";

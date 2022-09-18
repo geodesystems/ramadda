@@ -1,0 +1,22 @@
+The -sms command uses <a href="https://www.twilio.com/">https://www.twilio.com/</a>
+to send text messages.
+This command is only available when running from the command line or if running within RAMADDA the user is a logged in user.
+We do this as the SeeSV service within RAMADDA can be run by any user.
+<p>
+To enable this command create an account at Twilio and access your API keys. Add the following
+environment variables:
+<pre>
+export TWILIO_ACCOUNT_SID=
+export TWILIO_AUTH_TOKEN=
+export TWILIO_PHONE=
+</pre>
+
+This command takes a column ID which holds the phone number, a campaign identifier and a message template.
+
+The campaign identifier is used to create a list of phone numbers that a message has already been sent to.
+For example if you first run:
+seesv:seesv -sms phone some_campaign "Hi there"
+The SeeSV package will write out to a file &lt;campaign&gt;.sent.txt the list of phone numbers that the message was sent to.
+If the command is interrupted then rerun with the same campaign ID then those numbers that have had a message sent to will
+not have the message sent again.
+
