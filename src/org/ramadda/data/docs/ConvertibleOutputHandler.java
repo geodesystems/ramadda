@@ -462,6 +462,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
                 newFiles = new ArrayList<String>();
                 csvUtil  = new CsvUtil(args, runDir);
+		csvUtil.setIsVerifiedUser(!request.isAnonymous());
                 csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
                 csvUtil.setCsvContext(new CsvContext() {
