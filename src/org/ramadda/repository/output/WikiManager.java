@@ -2618,8 +2618,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(canEdit) {
 		HU.div(sb,"",HU.style("width:" + width)+HU.id(id+"_header"));
 	    }
-	    sb.append(HU.open("div", HU.style(style)));
-	    sb.append("\n");
 	    StringBuilder attrs = new StringBuilder();
 	    for(int i=0;i<50;i++) {
 		String line = getProperty(wikiUtil,props,"line"+i,null);
@@ -2627,8 +2625,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    attrs.append(HU.attr("line" + i,line));
 		}
 	    }
-	    sb.append(HU.open("canvas", attrs+HU.attrs("id",id,"tabindex","1","width", width,"height",height,"style",HU.css("position","absolute","background","transparent", "left","0px","top","0px"))));
-	    sb.append(HU.close("canvas"));
+
+	    sb.append(HU.open("div", HU.id(id)+HU.style(style)+attrs));
+	    sb.append("\n");
+	    //	    sb.append(HU.open("canvas", attrs+HU.attrs("definedWidth",width,"id",id,"tabindex","1","width", width,"height",height,"style",HU.css("position","absolute","background","transparent", "left","0px","top","0px"))));
+	    //	    sb.append(HU.close("canvas"));
 	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/canvas.js")));
 	    sb.append("\n");
 	    HU.script(sb, "new RamaddaCanvas('"+id+"'," + canEdit+");\n");
