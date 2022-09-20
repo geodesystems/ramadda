@@ -150,6 +150,13 @@ h4 {
     display:inline-block;
 }
 
+.ramadda-abs-canvas {
+}
+.ramadda-abs-canvas:focus {
+    border:0px;
+    outline:none;
+}
+			    
 
 .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
@@ -1694,6 +1701,7 @@ mapheader {
 
 /* superfish menu styling */
 
+
 .sf-menu   {
     font-size: var(--font-size);
     margin:0px;
@@ -1703,6 +1711,7 @@ mapheader {
 .sf-menu a {
     font-size: var(--font-size);
     padding: 6px;
+    border-left: 0px solid #fff !important;
 }
 
 .sf-menu  li {
