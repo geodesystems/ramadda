@@ -1473,13 +1473,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    style2+=HU.css("display","inline-block");
 	    String translateX = getProperty(wikiUtil,props,"absTranslateX",null);
 	    String translateY = getProperty(wikiUtil,props,"absTranslateY",null);	    
+	    String transform ="";
 	    if(translateX!=null)
-		style2+="-webkit-transform: translateX(" + translateX+");transform: translateX(" + translateX+");";
+		transform+=" translateX(" + translateX+") ";
 	    if(translateY!=null)
-		style2+="-webkit-transform: translateY(" + translateY+");transform: translateY(" + translateY+");";
-	    sb.append(HU.open("div",HU.style(style2)));
+		transform+=" translateY(" + translateY+") ";
+	    if(Utils.stringDefined(transform)) 
+		style2+="-webkit-transform: " +transform+";transform: " + transform +";";
+	    sb.append(HU.open("div",HU.cssClass("ramadda-abs") + HU.style(style2)));
 	}
-
 
         String rowLabel = getProperty(wikiUtil, props,
                                       attrPrefix + ATTR_ROW_LABEL,
@@ -2585,7 +2587,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    return "</div>";
         } else if (theTag.equals(WIKI_TAG_ABSOPEN)) {
 	    //	    StringBuilder sb = new StringBuilder();
-	    wikiUtil.putWikiProperty("inabs","true");
 	    String defaultWidth = "800px";
 	    String image = getProperty(wikiUtil, props, "image",null);
 	    String width = getProperty(wikiUtil,props,"width",null);
@@ -2610,14 +2611,35 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    if(height!=null) style+=HU.css("height",height);
 	    style+=getProperty(wikiUtil,props,"style","");
 	    props.put("style","");
-	    sb.append(HU.open("div",HU.style(style)));
+	    String id = HU.getUniqueId("canvas_");
+	    wikiUtil.putWikiProperty("inabs","true");
+	    boolean canEdit = getProperty(wikiUtil, props,"canEdit",false) &&
+		getAccessManager().canDoEdit(request, entry);
+	    if(canEdit) {
+		HU.div(sb,"",HU.style("width:" + width)+HU.id(id+"_header"));
+	    }
+	    sb.append(HU.open("div", HU.style(style)));
+	    sb.append("\n");
+	    StringBuilder attrs = new StringBuilder();
+	    for(int i=0;i<50;i++) {
+		String line = getProperty(wikiUtil,props,"line"+i,null);
+		if(line!=null) {
+		    attrs.append(HU.attr("line" + i,line));
+		}
+	    }
+	    sb.append(HU.open("canvas", attrs+HU.attrs("id",id,"tabindex","1","width", width,"height",height,"style",HU.css("position","absolute","background","transparent", "left","0px","top","0px"))));
+	    sb.append(HU.close("canvas"));
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/canvas.js")));
+	    sb.append("\n");
+	    HU.script(sb, "new RamaddaCanvas('"+id+"'," + canEdit+");\n");
+	    sb.append("\n");
 	    if(image!=null || imageEntryId!=null) {
 		if(image!=null)
 		    props.put("src",image);
 		Entry imageEntry = entry;
 		if(imageEntryId!=null)
 		    imageEntry =  getEntryManager().getEntry(request,imageEntryId);
-		sb.append(getWikiImage(wikiUtil, request, imageEntry, props));
+		sb.append(HU.div(getWikiImage(wikiUtil, request, imageEntry, props),HU.cssClass("ramadda-bgimage")));
 	    }
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_IMAGE)) {
@@ -6823,7 +6845,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         Utils.appendAll(tags2,
 			l.call("Popup", "+popup link=_qt_Link_qt_ icon=_qt_fas fa-cog_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
-			l.call("Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; background:green;_qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
+			l.call("Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; _qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
 			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
 			l.call("Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", ""),	    

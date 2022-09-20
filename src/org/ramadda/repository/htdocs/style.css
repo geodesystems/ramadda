@@ -146,6 +146,11 @@ h4 {
 }
 
 
+.ramadda-abs {
+    display:inline-block;
+}
+
+
 .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
 }
