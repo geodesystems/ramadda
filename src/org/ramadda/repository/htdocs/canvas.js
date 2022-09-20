@@ -121,7 +121,6 @@ function RamaddaCanvas(id,canEdit) {
     this.canvas.mousemove(()=>{
 	this.canvas[0].focus();
     });
-    this.canvas[0].focus();
     this.canvas[0].addEventListener("keypress", function(e){
 	let c = String.fromCharCode(e.which);
 	if(c=='c') {
