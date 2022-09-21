@@ -925,7 +925,6 @@ WikiEditor.prototype = {
 	});	    
     },
     makeSearchAttributesDialog:function(anchor,blocks,model) {
-	console.log(anchor.length);
 	let _this = this;
 	let all = "";
 	blocks.forEach((block,idx)=>{
@@ -934,7 +933,7 @@ WikiEditor.prototype = {
 	    }
 	    if(block.title=='Color table') return;
 	    let title = block.title;
-	    all+=HU.div([],HU.b(title));
+	    all+=HU.div(['class','wiki-searchheader','data-block-index',block.index],HU.b(title));
 	    all+="<div>";
 	    let items = Utils.join(block.items," ");
 	    items = items.replace(/<div/g,'<span').replace(/\/div>/g,'/span>');		
@@ -947,21 +946,36 @@ WikiEditor.prototype = {
 	let dialog = HU.makeDialog({content:all,anchor:anchor,title:"Attributes",header:true,
 				    sticky:true,draggable:true,modal:model});
 	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
+	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
 	jqid(_this.domId('allsearch')).keyup(function(event) {
 	    let text = $(this).val().trim().toLowerCase();
+	    let seen = {};
 	    commands.each(function() {
 		if(text=='') {
 		    $(this).show();
 		} else {
-		    let corpus = $(this).html() + " " +($(this).attr('title')??'');
+		    let corpus = $(this).attr('data-corpus');
 		    if(!corpus) return;
 		    corpus =  corpus.toLowerCase();
-		    if(corpus.indexOf(text)>=0)
+		    if(corpus.indexOf(text)>=0) {
 			$(this).show();
-		    else
-			$(this).hide();			
+			seen[$(this).attr('data-block-index')] = true;
+		    } else {
+			$(this).hide();
+		    }
 		}
 	    });
+	    if(text=='') {
+		headers.show();
+	    } else {
+		headers.each(function(){
+		    if(seen[$(this).attr('data-block-index')])
+			$(this).show();
+		    else
+			$(this).hide();
+		});
+
+	    }
 	});
     },
     handleMouseLeave:function(e) {
@@ -1465,7 +1479,7 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
     let block = null;
     let addBlock = (title)=> {
 	let items = [];
-	blocks.push(block={title:title,items:items});
+	blocks.push(block={index:blocks.length,title:title,items:items});
     };
     let itemClass = "ramadda-menu-item " + (forPopup?" ramadda-hoverable ramadda-highlightable ":"")
     let processAttr =(tag)=>{
@@ -1502,9 +1516,10 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	attr=" " +tag.p+"=" + attr +" ";
 	attr  =attr.replace(/\"/g,"&quot;");
 	if(block) {
+	    let corpus = label +" " + (tag.tt??"");
 	    if(id)
 		label = HtmlUtils.onClick("insertText('" + id +"','"+attr+"')",label);
-	    block.items.push(HU.div([CLASS,itemClass,TITLE,tag.tt||"",'data-attribute',attr], label));
+	    block.items.push(HU.div(['data-block-index',block.index,'data-corpus',corpus,CLASS,itemClass,TITLE,tag.tt||"",'data-attribute',attr], label));
 	} else {
 	    console.log("no attribute block");
 	}

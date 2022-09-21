@@ -4401,9 +4401,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 //          console.log(JSON.stringify(args,null,2));
             $.extend(opts, args);
         }
+
+
+
+
         if(opts.anchor && (typeof opts.anchor=="string")) {
             opts.anchor = $("#"  + opts.anchor);
         }
+
+        if(opts.anchor && opts.anchor.length==0) {
+	    console.log("Utils.makeDialog: Invalid anchor");
+	    opts.anchor=null;
+	}
 
         let parentId;
         let html;
