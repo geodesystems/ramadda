@@ -785,7 +785,8 @@ WikiEditor.prototype = {
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
 	}
-	menu += HU.div([CLASS,"wiki-editor-popup-heading"], title);
+	let search =  HU.span(['id',this.domId('searchattributes'),CLASS,"wiki-popup-menu-header ramadda-clickable",'title','Search attributes'],HU.getIconImage('fa-binoculars'));
+	menu += HU.div([CLASS,"wiki-editor-popup-heading"], search+" " + title);
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
 	    let id = Utils.getUniqueId("entrieslist");
@@ -810,28 +811,22 @@ WikiEditor.prototype = {
 	    menu += HU.close('div');
 	});
 	menu += "</div>";
-
-
-	//	let dialog = HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:false});
 	let dialog = HU.makeDialog({content:menu,anchor:$(window),
 				    my: "left top",     at: "left+" +event.x +" top+" + (event.y),
 				    title:title,header:true,sticky:true,draggable:true,modal:false});	
 	HtmlUtils.setPopupObject(dialog);
-	/*
-	  let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-	  popup.html(menu);
-	  popup.show();
-	  popup.position({
-	  of: $(window),
-          my: "left top",
-          at: "left+" +event.x +" top+" + (event.y),
-          collision: "fit fit"
-	  });
-	*/
+
+	jqid(this.domId('searchattributes')).click(()=>{
+	    dialog.remove();
+	    this.makeSearchAttributesDialog(this.toolbar,blocks,false);
+	});
+
+
     },
 
 
     handleMouseUp:function(e,result) {
+	let _this = this;
 	if(!e.metaKey)  return;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
@@ -862,9 +857,13 @@ WikiEditor.prototype = {
 				 HU.span([TITLE,"Tidy the text",ID,this.domId(this.ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
 				 HU.span([TITLE,"Compact the text",ID,this.domId(this.ID_WIKI_POPUP_COMPACT)], HU.getIconImage("fas fa-snowplow")) + SPACE1 +								 HU.span([ID,this.domId(this.ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
 				 HU.span([ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel")));
-	let dialog;
-	dialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:title,header:true,
-				sticky:true,draggable:true,modal:true,modalContentsCss:HU.css('left','50px')});
+
+	let dialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:title,header:true,
+				    sticky:true,draggable:true,modal:true,modalContentsCss:HU.css('left','50px')});
+	jqid('searchattributes').click(function(){
+	    _this.makeSearchAttributesDialog($(this),blocks,true);
+	});
+
 	this.popupShowing = true;
 	this.jq(this.ID_WIKI_POPUP_EDITOR).focus();
 
@@ -876,7 +875,7 @@ WikiEditor.prototype = {
 	let tidyfunc =tidy=>{
 	    let val = this.jq(this.ID_WIKI_POPUP_EDITOR).val().trim();
 	    let attrs = Utils.parseAttributesAsList(val);
-	    let nval = "";
+	    let nval = '';
 	    let cnt = 0;
 	    for(let i=0;i<attrs.length;i+=2) {
 		let v =  attrs[i+1];
@@ -924,6 +923,46 @@ WikiEditor.prototype = {
 	    dialog.remove();
 	    this.getSession().replace(tagInfo.range, text);
 	});	    
+    },
+    makeSearchAttributesDialog:function(anchor,blocks,model) {
+	console.log(anchor.length);
+	let _this = this;
+	let all = "";
+	blocks.forEach((block,idx)=>{
+	    if(typeof block=="string") {
+		return;
+	    }
+	    if(block.title=='Color table') return;
+	    let title = block.title;
+	    all+=HU.div([],HU.b(title));
+	    all+="<div>";
+	    let items = Utils.join(block.items," ");
+	    items = items.replace(/<div/g,'<span').replace(/\/div>/g,'/span>');		
+	    all+=items;
+	    all+="</div>";
+	});
+	all = HU.center(HU.input('','',['placeholder','Search','id',_this.domId('allsearch'),'width','10'])) +
+	    HU.div(['id',_this.domId('allsearch_corpus'),'style',HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
+	all  = HU.div(['style','margin:5px;'], all);
+	let dialog = HU.makeDialog({content:all,anchor:anchor,title:"Attributes",header:true,
+				    sticky:true,draggable:true,modal:model});
+	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
+	jqid(_this.domId('allsearch')).keyup(function(event) {
+	    let text = $(this).val().trim().toLowerCase();
+	    commands.each(function() {
+		if(text=='') {
+		    $(this).show();
+		} else {
+		    let corpus = $(this).html() + " " +($(this).attr('title')??'');
+		    if(!corpus) return;
+		    corpus =  corpus.toLowerCase();
+		    if(corpus.indexOf(text)>=0)
+			$(this).show();
+		    else
+			$(this).hide();			
+		}
+	    });
+	});
     },
     handleMouseLeave:function(e) {
 	this.setInContext(false);
@@ -1481,6 +1520,7 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 
 function getWikiEditorMenuBar(blocks,id, prefix) {
     let menu  = "";
+    menu += HU.tag(TAG_LI, [],HU.div(['id','searchattributes',CLASS,"wiki-popup-menu-header ramadda-clickable",'title','Search attributes'],HU.getIconImage('fa-binoculars')));
     blocks.forEach((block,idx)=>{
 	if(typeof block=="string") {
 	    //	    console.log(block);
@@ -1499,6 +1539,6 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 	menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
     });
     let menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
-			 HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu));
+			 HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu))
     return menubar;
 }
