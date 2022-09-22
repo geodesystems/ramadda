@@ -16,6 +16,9 @@ amip_goga:Global AMIP
 amip_toga:Tropical AMIP
 amip_obs_rf_hurrell:AMIP with Observed Radiative Forcing, Hurrell SST
 amip_obs_rf_ersstv5:AMIP with Observed Radiative Forcing, ERSSTv5 SST
+clim57:SST 1957-2000 Mean Control Run
+clim57+hrl:SST Mean Control Run + Obs
+clim57+cmip6:SST Mean Control Run + CMIP6
 # 
 # old names
 #
