@@ -357,6 +357,16 @@ function DisplayManager(argId, argProperties) {
 //		console.log("URL:" + jsonUrl);
 	    }
 
+	    /*
+	    if(display.getBounds) {
+		let b = display.getBounds();
+		//NWSE
+		jsonUrl = HU.url(jsonUrl,["bounds",b.top+","+b.right+","+b.bottom+","+b.left]);
+		console.log(b);
+		console.log(jsonUrl);
+	    }
+	    //	    https://localhost:8430/repository/entry/show?entryid=89516542-f88f-43cf-98ce-f8ea2d3111b0&map_bounds=63.6307%2C-183.21358%2C29.38993%2C15.41923&zoomLevel=3&mapCenter=49.38817%2C-83.89717
+*/
 
             if (this.hasGeoMacro(jsonUrl)) {
                 var lon = props.lon;
@@ -505,7 +515,10 @@ function DisplayManager(argId, argProperties) {
         addDisplay: function(display) {
             display.setDisplayManager(this);
             this.getLayoutManager().addDisplay(display);
-            display.loadInitialData();
+	    //Call loadInitialData a bit later so the display (e.g., the map) can be initialized
+	    setTimeout(()=>{
+		display.loadInitialData();
+	    },1);
         },
 	getDisplays: function() {
 	    return this.getLayoutManager().getDisplays();
