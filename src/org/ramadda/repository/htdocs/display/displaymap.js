@@ -527,7 +527,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         applyVectorMap: function(force, textGetter, args) {
 	},
         getBounds: function() {
-	    return this.map.getBounds();
+	    if(this.map)
+		return this.map.getBounds();
+	    return null;
 	},
     });
 }
@@ -1227,7 +1229,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
         },
         getBounds: function() {
-	    return this.map.getBounds();
+	    if(this.map)
+		return this.map.getBounds();
+	    return null;
 	},
         mapFeatureSelected: function(layer) {
             if (!this.getPointData()) {
@@ -2590,6 +2594,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
+
 	    if(this.updateUICallback) {
 		clearTimeout(this.updateUICallback);
 		this.updateUICallback = null;
@@ -2616,7 +2621,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getShowTableOfContents(false)) {
 		this.makeToc(records);
 	    }
- 
 	    if(!this.updatingFromClip) {
 		//stop the flash
 		if(args.source!="animation") {
