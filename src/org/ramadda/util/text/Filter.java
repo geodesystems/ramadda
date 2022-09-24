@@ -8,6 +8,7 @@ package org.ramadda.util.text;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import ucar.unidata.util.StringUtil;
 
 
 import java.io.*;
@@ -1301,7 +1302,6 @@ public class Filter extends Processor {
             if (line.matches(pattern) || (line.indexOf(pattern) >= 0)) {
                 seenStop = true;
                 ctx.stopRunning();
-
                 return false;
             }
 
@@ -1325,6 +1325,7 @@ public class Filter extends Processor {
         /** _more_ */
         private boolean seenStart;
 
+	private boolean isRegexp = false;
 
         /**
          * _more_
@@ -1336,6 +1337,7 @@ public class Filter extends Processor {
         public Start(TextReader ctx, String pattern) {
             this.pattern   = pattern;
             this.seenStart = false;
+	    isRegexp  =  StringUtil.containsRegExp(pattern);
         }
 
 
@@ -1354,13 +1356,16 @@ public class Filter extends Processor {
             if (seenStart) {
                 return true;
             }
-            if (row.toString().matches(pattern)) {
-                seenStart = true;
-
-                return false;
-            }
-
-            return false;
+	    if(isRegexp) {
+		if (row.toString().matches(pattern)) {
+		    seenStart = true;
+		}
+	    } else {
+		if (row.toString().indexOf(pattern)>=0) {
+		    seenStart = true;
+		}
+	    }
+	    return seenStart;
         }
     }
 
