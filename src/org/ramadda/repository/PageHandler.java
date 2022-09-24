@@ -2051,6 +2051,7 @@ public class PageHandler extends RepositoryManager {
         String       onLabel = null;
         for (RequestUrl requestUrl : urls) {
             String label = requestUrl.getLabel();
+            if (label != null) label = label.replaceAll(" ","&nbsp;");
             label = msg(label);
             if (label == null) {
                 label = requestUrl.toString();
@@ -2065,9 +2066,10 @@ public class PageHandler extends RepositoryManager {
             //            }
         }
         StringBuilder header = new StringBuilder();
+	//add a space after so the whole line can be broken
         HU.div(header,
                StringUtil.join(
-                   "<span class=\".ramadda-separator\">|</span>",
+                   "<span class=\"ramadda-separator\">|</span> ",
                    links), HU.cssClass("ramadda-linksheader-links"));
         header.append("\n");
         sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
