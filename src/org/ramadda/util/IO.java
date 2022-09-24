@@ -23,8 +23,9 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -129,16 +130,18 @@ public class IO {
      * @return _more_
      */
     public static boolean okToReadFrom(String file) {
-	for(FileChecker  checker: fileCheckers) {
-	    if(checker.canReadFile(file)) return true;
-	}
+        for (FileChecker checker : fileCheckers) {
+            if (checker.canReadFile(file)) {
+                return true;
+            }
+        }
 
         File f = new File(file);
         if (okToReadFromDirs.size() > 0) {
             boolean ok = false;
             for (File dir : okToReadFromDirs) {
                 if (isADescendent(dir, f)) {
-		    return true;
+                    return true;
                 }
             }
 
@@ -165,11 +168,21 @@ public class IO {
     }
 
 
-    public static InputStream getInputStream(String filename, boolean convertZipIfNeeded)
+    /**
+     *
+     * @param filename _more_
+     * @param convertZipIfNeeded _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     * @throws FileNotFoundException _more_
+     */
+    public static InputStream getInputStream(String filename,
+                                             boolean convertZipIfNeeded)
             throws FileNotFoundException, Exception {
-        return getInputStream(filename, IO.class,convertZipIfNeeded);
+        return getInputStream(filename, IO.class, convertZipIfNeeded);
     }
-    
+
 
 
     /**
@@ -187,11 +200,11 @@ public class IO {
     public static InputStream getInputStream(String filename, Class origin)
             throws FileNotFoundException, Exception {
         checkFile(filename);
-	//Check for malformed URL
-	if(filename.matches("(?i)^https:/[^/]+.*")) {
-	    filename = filename.replace("https:/","https://");
-	    //	    System.err.println("BAD:" + filename);
-	}
+        //Check for malformed URL
+        if (filename.matches("(?i)^https:/[^/]+.*")) {
+            filename = filename.replace("https:/", "https://");
+            //      System.err.println("BAD:" + filename);
+        }
 
 
         File f = new File(filename);
@@ -201,16 +214,32 @@ public class IO {
 
         try {
             URL url = new URL(filename);
+
             return getInputStream(url);
         } catch (java.net.MalformedURLException exc) {}
+
         return IOUtil.getInputStream(filename, origin);
     }
 
-    public static InputStream getInputStream(String filename, Class origin, boolean convertZipIfNeeded)
+    /**
+     *
+     * @param filename _more_
+     * @param origin _more_
+     * @param convertZipIfNeeded _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     * @throws FileNotFoundException _more_
+     */
+    public static InputStream getInputStream(String filename, Class origin,
+                                             boolean convertZipIfNeeded)
             throws FileNotFoundException, Exception {
-	InputStream inputStream = getInputStream(filename, origin);
-	if(convertZipIfNeeded) return convertInputStream(filename,inputStream);
-	return inputStream;
+        InputStream inputStream = getInputStream(filename, origin);
+        if (convertZipIfNeeded) {
+            return convertInputStream(filename, inputStream);
+        }
+
+        return inputStream;
     }
 
 
@@ -224,8 +253,9 @@ public class IO {
      * @throws IOException _more_
      */
     public static String readInputStream(InputStream is) throws IOException {
-	return org.apache.commons.io.IOUtils.toString(is,StandardCharsets.UTF_8);
-	//        return IOUtil.readContents(is);
+        return org.apache.commons.io.IOUtils.toString(is,
+                StandardCharsets.UTF_8);
+        //        return IOUtil.readContents(is);
     }
 
 
@@ -262,7 +292,9 @@ public class IO {
         if (f == null) {
             return null;
         }
-        f = f.replaceAll("[^\\.a-zA-Z_0-9 ]+", "_").trim().replaceAll("\\.\\.+",".");
+        f = f.replaceAll("[^\\.a-zA-Z_0-9 ]+",
+                         "_").trim().replaceAll("\\.\\.+", ".");
+
         return f;
     }
 
@@ -282,9 +314,9 @@ public class IO {
         try {
             InputStream is = Utils.getInputStream(file, Utils.class);
             if (is != null) {
-		//                byte[] bytes = IOUtil.readBytes(is);
-		//                return ImageIO.read(new ByteArrayInputStream(bytes));
-		return ImageIO.read(is);
+                //                byte[] bytes = IOUtil.readBytes(is);
+                //                return ImageIO.read(new ByteArrayInputStream(bytes));
+                return ImageIO.read(is);
             }
             System.err.println("Could not read image:" + file);
         } catch (Exception exc) {
@@ -401,13 +433,13 @@ public class IO {
 
                 throw new IOException(msg);
             }
-	}
+        }
 
-	try {
-	    is = convertInputStream(filename, is);
-	}catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+        try {
+            is = convertInputStream(filename, is);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
 
 
 
@@ -427,7 +459,17 @@ public class IO {
     }
 
 
-    public static InputStream convertInputStream(String filename, InputStream is) throws Exception {
+    /**
+     *
+     * @param filename _more_
+     * @param is _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static InputStream convertInputStream(String filename,
+            InputStream is)
+            throws Exception {
         if (filename.toLowerCase().endsWith(".gz")) {
             is = new GZIPInputStream(is);
         }
@@ -451,8 +493,9 @@ public class IO {
             is = zin;
         }
 
-	return is;
-	}
+        return is;
+    }
+
     /**
      * _more_
      *
@@ -633,6 +676,7 @@ public class IO {
      */
     public static String readContents(File file) throws IOException {
         checkFile(file.toString());
+
         return IOUtil.readContents(file);
     }
 
@@ -935,6 +979,34 @@ public class IO {
         }
     }
 
+    /**
+     *
+     * @param url _more_
+     * @param args _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static InputStream getInputStreamFromGet(URL url, String... args)
+            throws Exception {
+        checkFile(url);
+        HttpURLConnection connection =
+            (HttpURLConnection) url.openConnection();
+        //        connection.setDoOutput(true);
+        //        connection.setDoInput(true);
+        //        connection.setInstanceFollowRedirects(false);
+        connection.setRequestMethod("GET");
+        //        connection.setRequestProperty("charset", "utf-8");
+        //      System.err.println("header:");
+        for (int i = 0; i < args.length; i += 2) {
+            //            System.err.println(args[i]+":" + args[i+1]);
+            connection.setRequestProperty(args[i], args[i + 1]);
+        }
+
+        return connection.getInputStream();
+    }
+
+
 
     /**
      * This will prune out any leading &lt;unique id&gt;_file_&lt;actual file name&gt;
@@ -1022,11 +1094,17 @@ public class IO {
 
 
 
-    private static List<FileChecker> fileCheckers = new ArrayList<FileChecker>();
+    /**  */
+    private static List<FileChecker> fileCheckers =
+        new ArrayList<FileChecker>();
 
 
+    /**
+     *
+     * @param checker _more_
+     */
     public static void addFileChecker(FileChecker checker) {
-	fileCheckers.add(checker);
+        fileCheckers.add(checker);
     }
 
 
@@ -1050,9 +1128,9 @@ public class IO {
      * @param file _more_
      */
     public static void checkFile(String file) {
-	if(!okToReadFrom(file)) {
-	    throw new RuntimeException("Cannot read file:" + file);
-	}
+        if ( !okToReadFrom(file)) {
+            throw new RuntimeException("Cannot read file:" + file);
+        }
     }
 
     /**
@@ -1067,6 +1145,7 @@ public class IO {
          * _more_
          *
          * @param file _more_
+          * @return _more_
          */
         public boolean canReadFile(String file);
     }
@@ -1228,6 +1307,7 @@ public class IO {
             //Convert this to get of "..", etc
             parent = new File(parent.getCanonicalPath());
             child  = new File(child.getCanonicalPath());
+
             return isADescendentNonCanonical(parent, child);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -1265,12 +1345,14 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	for(String f: args) {
-	    System.err.println("f:" + f);
-	    getInputStream(f);
-	    System.err.println("ok");
-	}
-	if(true) return;
+        for (String f : args) {
+            System.err.println("f:" + f);
+            getInputStream(f);
+            System.err.println("ok");
+        }
+        if (true) {
+            return;
+        }
 
         final PipedOutputStream pos       = new PipedOutputStream();
         final PipedInputStream  pis       = new PipedInputStream(pos);
@@ -1444,7 +1526,7 @@ public class IO {
     }
 
 
-    
+
     /**
      * _more_
      *
@@ -1526,10 +1608,16 @@ public class IO {
 
 
 
+    /**
+     *
+     * @param files _more_
+     * @param descending _more_
+      * @return _more_
+     */
     public static File[] sortFilesOnNumber(File[] files,
-            final boolean descending) {
+                                           final boolean descending) {
         List tmp = new ArrayList();
-        for (File file: files) {
+        for (File file : files) {
             String s1 = StringUtil.findPattern(file.getName(), "([0-9]+)");
             if (s1 == null) {
                 s1 = "9999";
@@ -1567,13 +1655,14 @@ public class IO {
         Object[] array = tmp.toArray();
         Arrays.sort(array, comp);
         List<File> result = new ArrayList<File>();
-        for (int i=0;i<array.length;i++) {
-	    Object[] tuple = (Object[]) array[i];
-	    files[i] = (File) tuple[0];
+        for (int i = 0; i < array.length; i++) {
+            Object[] tuple = (Object[]) array[i];
+            files[i] = (File) tuple[0];
         }
+
         return files;
     }
-    
+
 
 
 
