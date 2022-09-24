@@ -137,57 +137,64 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
         }
 
 	public InputStream doMakeInputStream(boolean buffered) throws Exception {
-            String  json = IO.doGet(new URL(getFilename()), "accept",
-				       "application/geo+json");
-
-            JSONObject obj   = new JSONObject(json);
-            JSONArray features   = obj.getJSONArray("features");
-	    StringBuilder sb = new StringBuilder();
-	    String fields = "timestamp,latitude,longitude,temperature,dewpoint,windDirection,windSpeed,windGust,barometricPressure,seaLevelPressure,visibility,maxTemperatureLast24Hours,minTemperatureLast24Hours,precipitationLast3Hours,precipitationLast6Hours,relativeHumidity,windChill,heatIndex";
-	    sb.append(fields);
-	    sb.append("\n");
-	    List<String> fieldList = Utils.split(fields,",",true,true);
-	    for (int i = 0; i < features.length(); i++) {
-		JSONObject feature = features.getJSONObject(i);
-		JSONObject properties= feature.getJSONObject("properties");		
-		StringBuilder row = new StringBuilder();
-		boolean gotOneGoodOne = false;
-		for(int j=0;j<fieldList.size();j++) {
-		    if(j>0) row.append(",");
-		    String f = fieldList.get(j);
-		    if(f.equals("latitude")) {
-			row.append(entry.getLatitude());
-			continue;
-		    }
-		    if(f.equals("longitude")) {
-			row.append(entry.getLongitude());
-			continue;
-		    }		    
-		    if(f.equals("timestamp")) {
-			String time = properties.getString(f);
-			time = time.replace("+00:00","");
-			row.append(time);
-			continue;
-		    }
-		    JSONObject fobj = properties.optJSONObject(f);
-		    if(fobj==null) {
-			row.append("NaN");
-			continue;
-		    }
-		    double d =fobj.optDouble("value"); 
-		    if(!Double.isNaN(d)) gotOneGoodOne = true;
-		    row.append(d);
-		}		    
-		if(gotOneGoodOne) {
-		    sb.append(row);
-		    sb.append("\n");
-		}
-	    }
-	    return new ByteArrayInputStream(sb.toString().getBytes());
-
+	    final PipedOutputStream pos = new PipedOutputStream();
+	    final PipedInputStream  pis = new PipedInputStream(pos);
+	    final PrintWriter pw = new PrintWriter(pos);
+	    ucar.unidata.util.Misc.run(new Runnable() {
+		    public void run()  {
+			try {
+			    String  json = IO.doGet(new URL(getFilename()), "accept",   "application/geo+json");
+			    JSONObject obj   = new JSONObject(json);
+			    JSONArray features   = obj.getJSONArray("features");
+			    String fields = "timestamp,latitude,longitude,temperature,dewpoint,windDirection,windSpeed,windGust,barometricPressure,seaLevelPressure,visibility,maxTemperatureLast24Hours,minTemperatureLast24Hours,precipitationLast3Hours,precipitationLast6Hours,relativeHumidity,windChill,heatIndex";
+			    pw.print(fields);
+			    pw.print("\n");
+			    List<String> fieldList = Utils.split(fields,",",true,true);
+			    for (int i = 0; i < features.length(); i++) {
+				JSONObject feature = features.getJSONObject(i);
+				JSONObject properties= feature.getJSONObject("properties");		
+				StringBuilder row = new StringBuilder();
+				boolean gotOneGoodOne = false;
+				for(int j=0;j<fieldList.size();j++) {
+				    if(j>0) row.append(",");
+				    String f = fieldList.get(j);
+				    if(f.equals("latitude")) {
+					row.append(entry.getLatitude());
+					continue;
+				    }
+				    if(f.equals("longitude")) {
+					row.append(entry.getLongitude());
+					continue;
+				    }		    
+				    if(f.equals("timestamp")) {
+					String time = properties.getString(f);
+					time = time.replace("+00:00","");
+					row.append(time);
+					continue;
+				    }
+				    JSONObject fobj = properties.optJSONObject(f);
+				    if(fobj==null) {
+					row.append("NaN");
+					continue;
+				    }
+				    double d =fobj.optDouble("value"); 
+				    if(!Double.isNaN(d)) gotOneGoodOne = true;
+				    row.append(d);
+				}		    
+				if(gotOneGoodOne) {
+				    pw.print(row);
+				    pw.print("\n");
+				}
+			    }
+			    pw.flush();
+			    pw.close();
+			} catch(Exception exc) {
+			    System.err.println("Error reading NwsObs:" + exc);
+			    exc.printStackTrace();
+			}
+		    }});
+	    return pis;
 	}
-
     }
-
 
 }
