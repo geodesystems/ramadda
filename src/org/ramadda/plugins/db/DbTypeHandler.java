@@ -4669,8 +4669,27 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String mapDisplayId = "mapDisplay_" + Utils.getGuid();
             props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
-                              entry, width, height, false, props);
+								    entry, width, height, false, props);
 	    map.addProperty("linked","true");
+	    //Add the search bounding box if defined
+	    for (Column column : tableHandler.getColumns()) {
+		if(column.isType(column.DATATYPE_LATLON)) {
+		    String    searchArg = column.getSearchArg();
+		    if(request.defined(searchArg+"_north") &&
+		       request.defined(searchArg+"_west") &&
+		       request.defined(searchArg+"_south") &&
+		       request.defined(searchArg+"_east")) {
+			map.addBox("", "", "",
+				   new MapBoxProperties("red", false), 
+				   request.get(searchArg+"_north",90.0),
+				   request.get(searchArg+"_west",-180.0),
+				   request.get(searchArg+"_south",-90.0),
+				   request.get(searchArg+"_east",180.0));			       
+		    }
+		}
+	    }
+
+
             StringBuilder entryList = new StringBuilder();
             if ( !forPrint) {
                 sb.append(
