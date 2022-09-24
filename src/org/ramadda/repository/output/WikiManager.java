@@ -170,6 +170,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_SHOWICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
+                            new WikiTag(WIKI_TAG_ABSOPEN,null,"canEdit","true","imageEntry","","width","100%","#height","height"),
+                            new WikiTag(WIKI_TAG_ABSCLOSE,null), 			    
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
                             new WikiTag(WIKI_TAG_MULTI, null,"#_tag","","#_template",""), 
                             new WikiTag(WIKI_TAG_APPLY, null, APPLY_PREFIX
