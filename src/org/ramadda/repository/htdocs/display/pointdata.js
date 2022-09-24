@@ -4034,7 +4034,7 @@ RequestMacro.prototype = {
 	let label = this.label;
 	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
 	if(this.type=="bounds") {
-	    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
+	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,"Reload with current bounds",ID,this.display.getDomId(this.getId())], false, "In bounds");
 	    label = null;
 	} else if(this.type=="enumeration") {
  	    if(this.values && this.values.length>0) {
