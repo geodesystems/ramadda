@@ -40,7 +40,10 @@ var MapUtils =  {
         return  new OpenLayers.Feature.Vector(geom,attrs,style);
     },
     formatLocationValue:function(value) {
-	return number_format(value, 4);
+        value = parseFloat(value);
+        let scale = Math.pow(10,7);
+        value = (Math.floor(value * scale) /scale);
+	return value;
     },
     getVectorStyle:function(style) {
 	return OpenLayers.Feature.Vector.style[style];
