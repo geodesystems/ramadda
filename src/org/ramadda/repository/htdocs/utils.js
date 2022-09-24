@@ -5192,7 +5192,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     url:function(path,args) {
 	let url = path;
 	for(let i=0;i<args.length;i+=2) {
-	    if(i==0) url+="?";
+	    if(i==0 && url.indexOf("?")<0) url+="?";
 	    else url+="&";
 	    let name = args[i];
 	    let value=args[i+1];
