@@ -320,6 +320,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean addNot = false;
 
+
     /** _more_ */
     private boolean addFileToSearch = false;
 
@@ -588,7 +589,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         showEmpty  = getAttributeOrTag(element, "showempty", true);
 	showInFormFirst  = getAttributeOrTag(element, "showinformfirst", showInFormFirst);
 
-        addNot     = getAttributeOrTag(element, "addnot", addNot);
+	//If it is a latlon then always do the negation
+        addNot     = getAttributeOrTag(element, "addnot", isType(DATATYPE_LATLON));
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
                                             addFileToSearch);
         isMediaUrl = getAttributeOrTag(element, "ismediaurl", false);
@@ -2176,7 +2178,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         boolean[] fromFile  = { false };
         String    searchArg = getSearchArg();
         boolean   doNegate  = false;
-        if (addNot && request.defined(searchArg + "_not")) {
+        if (request.defined(searchArg + "_not")) {
             doNegate = request.get(searchArg + "_not", false);
         }
 
@@ -2215,18 +2217,56 @@ public class Column implements DataTypes, Constants, Cloneable {
                                               Double.NaN)));
 
 
+	    List<Clause> ns = new ArrayList<Clause>();
+	    List<Clause> ew = new ArrayList<Clause>();	    
+	    Clause top=null,bottom=null,right=null,left=null;
             if (latLonOk(north)) {
-                where.add(Clause.le(columnName + "_lat", north));
-            }
+		if(doNegate)
+		    ns.add(top=Clause.gt(columnName + "_lat", north));
+		else
+		    ns.add(Clause.le(columnName + "_lat", north));
+	    }
             if (latLonOk(south)) {
-                where.add(Clause.ge(columnName + "_lat", south));
+		if(doNegate)
+		    ns.add(bottom=Clause.lt(columnName + "_lat", south));
+		else
+		    ns.add(Clause.ge(columnName + "_lat", south));		
             }
             if (latLonOk(west)) {
-                where.add(Clause.ge(columnName + "_lon", west));
+		if(doNegate)
+		    ew.add(left=Clause.lt(columnName + "_lon", west));
+		else
+		    ew.add(Clause.ge(columnName + "_lon", west));		
             }
             if (latLonOk(east)) {
-                where.add(Clause.le(columnName + "_lon", east));
+		if(doNegate)
+		    ew.add(right=Clause.gt(columnName + "_lon", east));
+		else
+		    ew.add(Clause.le(columnName + "_lon", east));		
             }
+	    if(!doNegate) {
+		where.addAll(ns);
+		where.addAll(ew);		
+	    } else {
+		List<Clause> ors = new ArrayList<Clause>();
+		if(left!=null) {
+		    ors.add(left);
+		}
+		if(right!=null) {
+		    ors.add(right);
+		}
+		if(top!=null) {
+		    ors.add(top);
+		}
+		if(bottom!=null) {
+		    ors.add(bottom);
+		}						
+		if(ors.size()>0) {
+		    where.add(Clause.or(ors));
+		}
+	    }
+
+
             getRepository().getSessionManager().setArea(request, north, west,
                     south, east);
         } else if (isType(DATATYPE_LATLONBBOX)) {
@@ -2396,7 +2436,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     }
                     //For now just check for straight equality
                     //                    clauses.add(Clause.upperEquals(getFullName(), value, doNegate));
-                    clauses.add(Clause.eq(getFullName(), value, doNegate));
+		    clauses.add(Clause.eq(getFullName(), value, doNegate));
                 }
                 if (clauses.size() > 0) {
                     Clause clause;
