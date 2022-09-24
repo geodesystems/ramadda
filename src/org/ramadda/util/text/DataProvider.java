@@ -657,7 +657,6 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-
             boolean    debug = false;
             int        xcnt  = 0;
             JSONArray  array = null;
@@ -718,9 +717,11 @@ public abstract class DataProvider extends CsvOperator {
                 Hashtable       primary   = new Hashtable();
                 List<Hashtable> secondary = new ArrayList<Hashtable>();
                 List<String>    arrayKeys = new ArrayList<String>();
+		//		System.err.println("ROW:"+ arrayIdx);
                 if (objectPathList != null) {
                     JSONObject jrow = array.getJSONObject(arrayIdx);
                     for (String tok : objectPathList) {
+			//			System.err.println("\ttok:" + tok);
                         if (tok.equals("*")) {
                             primary.putAll(JsonUtil.getHashtable(jrow, true,
                                     arrayKeys));
@@ -741,11 +742,15 @@ public abstract class DataProvider extends CsvOperator {
                                             false, arrayKeys));
                                 }
                             } catch (Exception exc) {
-                                Object o = JsonUtil.readArray(jrow, tok);
-                                if (o != null) {
-                                    primary.putAll(JsonUtil.getHashtable(o,
-                                            true, arrayKeys));
-                                }
+				try {
+				    Object o = JsonUtil.readArray(jrow, tok);
+				    if (o != null) {
+					primary.putAll(JsonUtil.getHashtable(o,
+									     true, arrayKeys));
+				    }
+				} catch (Exception exc2) {
+				    primary.put(tok,jrow.getString(tok));
+				}
                             }
                         }
                     }
@@ -802,6 +807,7 @@ public abstract class DataProvider extends CsvOperator {
                     for (String name : names) {
                         row.add(name);
                     }
+		    //		    System.err.println("names:" + names);
                 }
                 /*
                   JSONArray fields = root.optJSONArray("fields");
@@ -822,7 +828,7 @@ public abstract class DataProvider extends CsvOperator {
                         if (value == null) {
                             value = "NULL";
                         }
-                        //                      System.err.println("NAME:" + name +" value:" + value);
+			//			System.err.println("\tNAME:" + name +" value:" + value);
                         row.add(value);
                     }
                 }
