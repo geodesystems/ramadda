@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Sep 21 17:17:23 MDT 2022";
+var build_date="RAMADDA build date: Sun Sep 25 14:36:12 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -11732,6 +11732,16 @@ function DisplayManager(argId, argProperties) {
 //		console.log("URL:" + jsonUrl);
 	    }
 
+	    /*
+	    if(display.getBounds) {
+		let b = display.getBounds();
+		//NWSE
+		jsonUrl = HU.url(jsonUrl,["bounds",b.top+","+b.right+","+b.bottom+","+b.left]);
+		console.log(b);
+		console.log(jsonUrl);
+	    }
+	    //	    https://localhost:8430/repository/entry/show?entryid=89516542-f88f-43cf-98ce-f8ea2d3111b0&map_bounds=63.6307%2C-183.21358%2C29.38993%2C15.41923&zoomLevel=3&mapCenter=49.38817%2C-83.89717
+*/
 
             if (this.hasGeoMacro(jsonUrl)) {
                 var lon = props.lon;
@@ -11880,7 +11890,10 @@ function DisplayManager(argId, argProperties) {
         addDisplay: function(display) {
             display.setDisplayManager(this);
             this.getLayoutManager().addDisplay(display);
-            display.loadInitialData();
+	    //Call loadInitialData a bit later so the display (e.g., the map) can be initialized
+	    setTimeout(()=>{
+		display.loadInitialData();
+	    },1);
         },
 	getDisplays: function() {
 	    return this.getLayoutManager().getDisplays();
@@ -16124,7 +16137,7 @@ RequestMacro.prototype = {
 	let label = this.label;
 	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
 	if(this.type=="bounds") {
-	    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
+	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,"Reload with current bounds",ID,this.display.getDomId(this.getId())], false, "In bounds");
 	    label = null;
 	} else if(this.type=="enumeration") {
  	    if(this.values && this.values.length>0) {
@@ -33658,7 +33671,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         applyVectorMap: function(force, textGetter, args) {
 	},
         getBounds: function() {
-	    return this.map.getBounds();
+	    if(this.map)
+		return this.map.getBounds();
+	    return null;
 	},
     });
 }
@@ -34358,7 +34373,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
         },
         getBounds: function() {
-	    return this.map.getBounds();
+	    if(this.map)
+		return this.map.getBounds();
+	    return null;
 	},
         mapFeatureSelected: function(layer) {
             if (!this.getPointData()) {
@@ -35721,6 +35738,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
+
 	    if(this.updateUICallback) {
 		clearTimeout(this.updateUICallback);
 		this.updateUICallback = null;
@@ -35747,7 +35765,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getShowTableOfContents(false)) {
 		this.makeToc(records);
 	    }
- 
 	    if(!this.updatingFromClip) {
 		//stop the flash
 		if(args.source!="animation") {
