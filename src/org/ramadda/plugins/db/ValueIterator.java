@@ -905,7 +905,7 @@ public abstract class ValueIterator implements DbConstants {
             entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 8);
             extraCols = Utils.split(request.getString(ARG_EXTRA_COLUMNS, ""),
                                     "\n", true, true);
-            columns     = db.getColumnsToUse(request, false);
+            columns     = db.getColumnsToUse(request, true);
             columnNames = Column.getNames(columns);
 	    addViewHeader(request, entry, VIEW_TABLE,null);
         }
