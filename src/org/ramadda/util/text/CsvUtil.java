@@ -1001,15 +1001,13 @@ public class CsvUtil implements CsvCommands {
         for (String file : files) {
 	    try {
 		if (file.toLowerCase().endsWith(".xls")) {
-		    String csv = XlsUtil.xlsToCsv(file);
-		    InputStream bais=  new ByteArrayInputStream(csv.getBytes());
+		    InputStream bais=  XlsUtil.xlsToCsv(file);
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
 		}
 		if (file.toLowerCase().endsWith(".xlsx")) {
-		    String csv = XlsUtil.xlsxToCsv(file);
-		    InputStream bais=  new ByteArrayInputStream(csv.getBytes());
+		    InputStream bais=  XlsUtil.xlsxToCsv(file);
 		    ReadableByteChannel in = Channels.newChannel(bais);
 		    channels.add(new NamedChannel(file, in));
 		    continue;
@@ -1120,15 +1118,10 @@ public class CsvUtil implements CsvCommands {
 	if(!Utils.isUrl(file)) {
 	    checkOkToRead(file);
         }
-
         if (file.endsWith(".xls")) {
-            String csv = XlsUtil.xlsToCsv(file);
-            return new BufferedInputStream(
-					   new ByteArrayInputStream(csv.getBytes()));
+            return  XlsUtil.xlsToCsv(file,myTextReader.getMaxRows());
 	} else if (file.endsWith(".xlsx")) {
-            String csv = XlsUtil.xlsxToCsv(file);
-            return new BufferedInputStream(
-					   new ByteArrayInputStream(csv.getBytes()));
+            return  XlsUtil.xlsxToCsv(file,myTextReader.getMaxRows());
 	} else if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
 	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file)));
         } else if (!makeInputStreamRaw && file.toLowerCase().endsWith(".zip")) {

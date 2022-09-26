@@ -6,11 +6,22 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
+import com.monitorjbl.xlsx.StreamingReader;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+
+import org.apache.poi.xssf.streaming.*;
 
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -18,15 +29,9 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
 import ucar.unidata.util.*;
 
-
-
-import java.io.FileOutputStream;
-import java.io.InputStream;
-
-import java.rmi.RemoteException;
+import java.io.*;
 
 import java.text.SimpleDateFormat;
 
@@ -47,97 +52,237 @@ import java.util.List;
 public class XlsUtil {
 
     /**
-     * Convert excel to csv
-     *
-     * @param sdf If non null then use this to format any date cells
-     *
-     * @param filename _more_
-     *
-     * @return csv
-     */
-    public static String xlsToCsv(String filename) {
-        try {
-
-            StringBuffer sb         = new StringBuffer();
-            InputStream  myxls = IO.getInputStream(filename, XlsUtil.class);
-            HSSFWorkbook wb         = new HSSFWorkbook(myxls);
-            HSSFSheet    sheet      = wb.getSheetAt(0);
-            boolean      seenNumber = false;
-            for (int rowIdx = sheet.getFirstRowNum();
-                    rowIdx <= sheet.getLastRowNum(); rowIdx++) {
-                HSSFRow row = sheet.getRow(rowIdx);
-                if (row == null) {
-                    continue;
-                }
-
-                short firstCol = row.getFirstCellNum();
-                for (short col = firstCol; col < row.getLastCellNum();
-                        col++) {
-                    HSSFCell cell = row.getCell(col);
-                    if (cell == null) {
-                        break;
-                    }
-                    String value = cell.toString();
-                    if (col > firstCol) {
-                        sb.append(",");
-                    }
-                    sb.append(clean(value));
-                }
-                sb.append("\n");
-            }
-
-            return sb.toString();
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-
-        }
-    }
-
-
-    /**
      * _more_
      *
      * @param filename _more_
      *
      * @return _more_
      */
-    public static String xlsxToCsv(String filename) {
+    public static InputStream xlsxToCsv(final String filename) {
+        return xlsxToCsv(filename, -1);
+    }
+
+
+    /**
+     *
+     * @param filename _more_
+     * @param maxRows _more_
+      * @return _more_
+     */
+    public static InputStream xlsxToCsv(final String filename, int maxRows) {
         try {
+            final PipedOutputStream    pos = new PipedOutputStream();
+            final BufferedOutputStream bos = new BufferedOutputStream(pos);
+            final PipedInputStream     pis = new PipedInputStream(pos);
+            final PrintWriter          pw  = new PrintWriter(pos);
+            ucar.unidata.util.Misc.run(new Runnable() {
+                public void run() {
+                    try {
+                        InputStream is = new BufferedInputStream(
+                                             IO.getInputStream(
+                                                 filename, XlsUtil.class));
+                        Workbook wb = StreamingReader.builder()
+                        //                      .rowCacheSize(100)    
+                        //                      .bufferSize(4096)     
+                        .open(is);
 
-            StringBuffer sb         = new StringBuffer();
-            InputStream  myxls = IO.getInputStream(filename, XlsUtil.class);
-            XSSFWorkbook wb         = new XSSFWorkbook(myxls);
-            XSSFSheet    sheet      = wb.getSheetAt(0);
-            boolean      seenNumber = false;
-            for (int rowIdx = sheet.getFirstRowNum();
-                    rowIdx <= sheet.getLastRowNum(); rowIdx++) {
-                XSSFRow row = sheet.getRow(rowIdx);
-                if (row == null) {
-                    continue;
-                }
+                        //Only read the first sheet
+                        for (Sheet sheet : wb) {
+                            int rowIdx = 0;
+                            for (Row row : sheet) {
+                                rowIdx++;
+                                if ((maxRows >= 0) && (rowIdx > maxRows)) {
+                                    break;
+                                }
+                                if (row == null) {
+                                    continue;
+                                }
+                                short firstCol = row.getFirstCellNum();
+                                for (short col = firstCol;
+                                        col < row.getLastCellNum(); col++) {
+                                    Cell cell = row.getCell(col);
+                                    if (cell == null) {
+                                        break;
+                                    }
+                                    String value = cell.getStringCellValue();
+                                    if (col > firstCol) {
+                                        pw.print(",");
+                                    }
+                                    pw.print(clean(value));
+                                }
+                                pw.println("");
+                            }
 
-                short firstCol = row.getFirstCellNum();
-                for (short col = firstCol; col < row.getLastCellNum();
-                        col++) {
-                    XSSFCell cell = row.getCell(col);
-                    if (cell == null) {
-                        break;
+                            break;
+                        }
+
+                        pw.flush();
+                        pw.close();
+                        wb.close();
+                        is.close();
+                    } catch (Exception exc) {
+                        System.err.println("Error reading NwsObs:" + exc);
+                        exc.printStackTrace();
                     }
-                    String value = cell.toString();
-                    if (col > firstCol) {
-                        sb.append(",");
-                    }
-                    sb.append(clean(value));
                 }
-                sb.append("\n");
-            }
+            });
 
-            return sb.toString();
+            return pis;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
 
         }
     }
+
+
+
+    /**
+     *
+     * @param filename _more_
+     * @param maxRows _more_
+      * @return _more_
+     */
+    public static InputStream OLD_xlsxToCsv(final String filename,
+                                            int maxRows) {
+        try {
+            final PipedOutputStream pos = new PipedOutputStream();
+            final PipedInputStream  pis = new PipedInputStream(pos);
+            final PrintWriter       pw  = new PrintWriter(pos);
+            ucar.unidata.util.Misc.run(new Runnable() {
+                public void run() {
+                    try {
+                        System.err.println("start");
+                        long         t1   = System.currentTimeMillis();
+                        File         file = new File(filename);
+                        XSSFWorkbook wb;
+                        if (file.exists()) {
+                            System.err.println("before:" + file);
+                            OPCPackage opcPackage = OPCPackage.open(file,
+                                                        PackageAccess.READ);
+                            wb = new XSSFWorkbook(opcPackage);
+                            System.err.println("opened");
+                        } else {
+                            InputStream myxls = new BufferedInputStream(
+                                                    IO.getInputStream(
+                                                        filename,
+                                                        XlsUtil.class));
+                            wb = new XSSFWorkbook(myxls);
+                        }
+                        long t2 = System.currentTimeMillis();
+                        System.err.println("making wb:" + (t2 - t1) + " ms");
+                        XSSFSheet sheet      = wb.getSheetAt(0);
+                        boolean   seenNumber = false;
+                        System.err.println("rows:" + sheet.getLastRowNum());
+                        for (int rowIdx = sheet.getFirstRowNum();
+                                rowIdx <= sheet.getLastRowNum(); rowIdx++) {
+                            if ((maxRows >= 0) && (rowIdx > maxRows)) {
+                                break;
+                            }
+                            XSSFRow row = sheet.getRow(rowIdx);
+                            if (row == null) {
+                                continue;
+                            }
+
+                            short firstCol = row.getFirstCellNum();
+                            for (short col = firstCol;
+                                    col < row.getLastCellNum(); col++) {
+                                XSSFCell cell = row.getCell(col);
+                                if (cell == null) {
+                                    break;
+                                }
+                                String value = cell.toString();
+                                if (col > firstCol) {
+                                    pw.print(",");
+                                }
+                                pw.print(clean(value));
+                            }
+                            pw.print("\n");
+                        }
+
+                        pw.flush();
+                        pw.close();
+                    } catch (Exception exc) {
+                        System.err.println("Error reading NwsObs:" + exc);
+                        exc.printStackTrace();
+                    }
+                }
+            });
+
+            return pis;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+
+        }
+    }
+
+    /**
+     *
+     * @param filename _more_
+     *  @return _more_
+     */
+    public static InputStream xlsToCsv(String filename) {
+        return xlsToCsv(filename, -1);
+    }
+
+    /**
+     *
+     * @param filename _more_
+     * @param maxRows _more_
+      * @return _more_
+     */
+    public static InputStream xlsToCsv(String filename, int maxRows) {
+        try {
+            final PipedOutputStream pos = new PipedOutputStream();
+            final PipedInputStream  pis = new PipedInputStream(pos);
+            final PrintWriter       pw  = new PrintWriter(pos);
+            ucar.unidata.util.Misc.run(new Runnable() {
+                public void run() {
+                    try {
+                        InputStream myxls = IO.getInputStream(filename,
+                                                XlsUtil.class);
+                        HSSFWorkbook wb         = new HSSFWorkbook(myxls);
+                        HSSFSheet    sheet      = wb.getSheetAt(0);
+                        boolean      seenNumber = false;
+                        for (int rowIdx = sheet.getFirstRowNum();
+                                rowIdx <= sheet.getLastRowNum(); rowIdx++) {
+                            if ((maxRows >= 0) && (rowIdx > maxRows)) {
+                                break;
+                            }
+                            HSSFRow row = sheet.getRow(rowIdx);
+                            if (row == null) {
+                                continue;
+                            }
+                            short firstCol = row.getFirstCellNum();
+                            for (short col = firstCol;
+                                    col < row.getLastCellNum(); col++) {
+                                HSSFCell cell = row.getCell(col);
+                                if (cell == null) {
+                                    break;
+                                }
+                                String value = cell.toString();
+                                if (col > firstCol) {
+                                    pw.print(",");
+                                }
+                                pw.print(clean(value));
+                            }
+                            pw.print("\n");
+                        }
+                        pw.flush();
+                        pw.close();
+                    } catch (Exception exc) {
+                        System.err.println("Error reading NwsObs:" + exc);
+                        exc.printStackTrace();
+                    }
+                }
+            });
+
+            return pis;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
 
     /**
      * _more_
@@ -168,11 +313,16 @@ public class XlsUtil {
      */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
-            String csv;
-            if (arg.endsWith(".xlsx")) {
-                csv = xlsxToCsv(arg);
-            } else {
-                csv = xlsToCsv(arg);
+            String csv = null;
+            for (int i = 0; i < 10; i++) {
+                long t1 = System.currentTimeMillis();
+                if (arg.endsWith(".xlsx")) {
+                    csv = IO.readInputStream(xlsxToCsv(arg, -50));
+                } else {
+                    csv = IO.readInputStream(xlsToCsv(arg));
+                }
+                long t2 = System.currentTimeMillis();
+                Utils.printTimes("read", t1, t2);
             }
             String newFile = IOUtil.stripExtension(arg) + ".csv";
             IOUtil.writeFile(newFile, csv);
