@@ -208,7 +208,7 @@ RamaddaCanvas.prototype = {
     initDrag:function() {
 	let _this = this;
 	let divs = this.div.find('.ramadda-abs');
-	divs = this.div.children('[style*="position:absolute"]');
+	divs = this.div.children('div[style*="position:absolute"]');
 	divs.draggable({
 	    start: function( e, ui ) {
 		$(this).css('right','');
