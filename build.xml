@@ -299,7 +299,7 @@
 	<copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${seesv_destdir}/lib"/>		
 	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.5.jar"  todir="${seesv_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/commons-text-1.9.jar"  todir="${seesv_destdir}/lib"/>			
-	
+	<copy overwrite="true" file="${lib_dir}/xlsx-streamer-2.2.0.jar"  todir="${seesv_destdir}/lib"/>		
 	<copy overwrite="true" file="${lib_dir}/automaton-1.11-8.jar" todir="${seesv_destdir}/lib"/>		
         <copy overwrite="true" file="${lib_dir}/generex-1.0.2.jar"  todir="${seesv_destdir}/lib"/>		
 	<copy overwrite="true" file="${lib_dir}/javafaker-1.0.2.jar"  todir="${seesv_destdir}/lib"/>		
@@ -559,6 +559,7 @@
         <unjar src="${lib_dir}/commons-pool2-2.2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-text-1.9.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-fileupload-1.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/xlsx-streamer-2.2.0.jar" dest="${tmpjar_dir}"/>	
 
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpmime-4.5.13.jar" dest="${tmpjar_dir}"/>
