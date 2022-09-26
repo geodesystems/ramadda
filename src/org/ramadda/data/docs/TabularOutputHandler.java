@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.data.docs;
 
 
+import com.monitorjbl.xlsx.StreamingReader;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -630,11 +631,13 @@ public class TabularOutputHandler extends OutputHandler {
                 suffix =
                     IOUtil.getFileExtension(file.toString()).toLowerCase();
             }
+	    /*
             if (suffix.equals(".xlsx") || suffix.equals(".xls")) {
                 if (file.length() > 10 * 1000000) {
                     throw new IllegalArgumentException("File too big");
                 }
             }
+	    */
 
         }
 
@@ -758,9 +761,14 @@ public class TabularOutputHandler extends OutputHandler {
     private static Workbook makeWorkbook(String suffix,
                                          InputStream inputStream)
             throws Exception {
-        return (suffix.equals(".xls")
-                ? new HSSFWorkbook(inputStream)
-                : new XSSFWorkbook(inputStream));
+	suffix = suffix.toLowerCase();
+        if(suffix.equals(".xls"))
+	   return  new HSSFWorkbook(inputStream);
+	return  StreamingReader.builder()
+	    //			    .rowCacheSize(100)    
+	    //			    .bufferSize(4096)     
+	    .open(inputStream);  
+	//	   : new XSSFWorkbook(inputStream));
 
     }
 
@@ -795,15 +803,14 @@ public class TabularOutputHandler extends OutputHandler {
             //            System.err.println("\tsheet:" + sheet.getSheetName() + " #rows:" + sheet.getLastRowNum());
             List<List<Object>> rows      = new ArrayList<List<Object>>();
             int                sheetSkip = visitInfo.getSkip();
-            for (int rowIdx = sheet.getFirstRowNum();
-                    (rows.size() < maxRows)
-                    && (rowIdx <= sheet.getLastRowNum());
-                    rowIdx++) {
+	    int rowIdx=0;
+	    for (Row row : sheet) {
+		rowIdx++;
+		if(rows.size() > maxRows) break;
                 if (sheetSkip-- > 0) {
                     continue;
                 }
 
-                Row row = sheet.getRow(rowIdx);
                 if (row == null) {
                     continue;
                 }
@@ -847,7 +854,9 @@ public class TabularOutputHandler extends OutputHandler {
                  * }
                  */
                 rows.add(cols);
-            }
+	    }
+	    wb.close();
+            IOUtil.close(inputStream);
             if ( !visitor.visit(visitInfo, sheet.getSheetName(), rows)) {
                 break;
             }
