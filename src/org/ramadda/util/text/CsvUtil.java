@@ -2470,6 +2470,8 @@ public class CsvUtil implements CsvCommands {
 		new Arg("delta1","",ATTR_TYPE,TYPE_NUMBER),
 		new Arg("scale","",ATTR_TYPE,TYPE_NUMBER),
                 new Arg("delta2","",ATTR_TYPE,TYPE_NUMBER)),
+        new Cmd(CMD_MAKENUMBER, "Make number",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_GENERATE, "Add row values",
 		new Arg("label"),
 		new Arg("start","",ATTR_TYPE,TYPE_NUMBER),
@@ -4440,6 +4442,11 @@ public class CsvUtil implements CsvCommands {
 
 		return i;
 	    });
+
+	defineFunction(CMD_MAKENUMBER, 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.MakeNumber(getCols(args.get(++i))));
+		return i;
+	    });	
 
 
 	defineFunction(CMD_DECIMALS, 2,(ctx,args,i) -> {

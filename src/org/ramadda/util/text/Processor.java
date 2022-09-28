@@ -1697,7 +1697,9 @@ public abstract class Processor extends CsvOperator {
         private String suffix;
 
         /** _more_ */
-        private String delimiter;
+        private String delimiter=null;
+
+	private String columnDelimiter = ",";
 
         /** _more_ */
         private boolean addPointHeader = false;
@@ -1756,9 +1758,9 @@ public abstract class Processor extends CsvOperator {
          * @param trim _more_
          * @param delimiter _more_
          */
-        public Printer(boolean addHeader, boolean trim, String delimiter) {
+        public Printer(boolean addHeader, boolean trim, String columnDelimiter) {
             this(addHeader);
-            this.delimiter = initDelimiter(delimiter);
+            this.columnDelimiter = initDelimiter(columnDelimiter);
             this.trim = trim;
         }
 
@@ -1864,6 +1866,7 @@ public abstract class Processor extends CsvOperator {
 	    handleRow(ctx,writer,row,true);
 	}
 
+	int x = 0;
 	public void handleRow(TextReader ctx, PrintWriter writer, Row row, boolean checkFirst)
 	    throws Exception {	    
             String  theTemplate = template;
@@ -1905,7 +1908,7 @@ public abstract class Processor extends CsvOperator {
                 for (colIdx = 0; colIdx < size; colIdx++) {
                     Object v = values.get(colIdx);
                     if (colIdx > 0) {
-			writer.append(delimiter);
+			writer.append(columnDelimiter);
                     }
                     if (v == null) {
 			continue;
@@ -1921,7 +1924,7 @@ public abstract class Processor extends CsvOperator {
 		    }
 		    boolean addQuote = false;
 		    if (escapeColumns) {
-			addQuote = (sv.indexOf(delimiter) >= 0)
+			addQuote = (sv.indexOf(columnDelimiter) >= 0)
 			    || (sv.indexOf("\n") >= 0);
 			if (sv.indexOf("\"") >= 0) {
 			    addQuote = true;

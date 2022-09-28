@@ -4261,6 +4261,48 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class MakeNumber extends Converter {
+
+        /**
+         * @param cols _more_
+         */
+        public MakeNumber(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+            for (int index : indices) {
+		if(row.indexOk(index)) {
+		    String s = row.getString(index);
+		    s = s.replaceAll(",","").replaceAll("\\s","");
+		    try {
+			double d = Double.parseDouble(s);
+			if(d == (int)d) {
+			    row.set(index,Integer.toString((int)d));
+			} else {
+			    row.set(index,Double.toString(d));
+			}
+		    } catch (NumberFormatException nfe) {
+			row.set(index,"NaN");
+		    }
+		}
+	    }		
+
+            return row;
+        }
+
+    }
+    
 
     /**
      * Class description

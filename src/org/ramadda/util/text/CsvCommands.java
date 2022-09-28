@@ -149,6 +149,7 @@ public interface CsvCommands {
     public static final String CMD_FROMHEADING="-fromheading";
     public static final String CMD_CHANGE="-change";
     public static final String CMD_CHANGEROW="-changerow";
+    public static final String CMD_MAKENUMBER="-makenumber";
     public static final String CMD_REPLACE="-replace";
     public static final String CMD_SET="-set";
     public static final String CMD_MACRO="-macro";
