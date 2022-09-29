@@ -428,15 +428,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                        HashSet notTags) {
 
         try {
-
-
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request  = (Request) wikiUtil.getProperty(ATTR_REQUEST);
 
             Entry   theEntry = entry;
             if (tag.equals(WIKI_TAG_IMPORT)) {
                 //Old style
-                if (remainder.indexOf("=") < 0) {
+                if (remainder.trim().length()>0 && remainder.indexOf("=") < 0) {
                     List<String> toks = Utils.splitUpTo(remainder, " ",
 							3);
                     if (toks.size() < 2) {
@@ -858,12 +856,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
 	    }
-	    List<Entry> gchildren = getEntryManager().getChildren(request, children.get(0));
-	    gchildren= EntryUtil.sortEntriesOnDate(gchildren,false);	    
-	    if (gchildren.size() == 0) {
-		return null;
+	    for(Entry child: children) {
+		List<Entry> gchildren = getEntryManager().getChildren(request, child);
+		if (gchildren.size() != 0) {
+		    gchildren= EntryUtil.sortEntriesOnDate(gchildren,false);	    
+		    return gchildren.get(0);
+		}
 	    }
-	    return gchildren.get(0);
+	    return null;
         }
 
 
