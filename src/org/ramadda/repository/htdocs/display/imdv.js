@@ -2896,15 +2896,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    parent.addClass('imdv-legend-label-invisible');			    
 	    });
 	},
-	wikify:function(wiki,entryId,wikiCallback,wikiError) {
-	    wikiError = wikiError || (error=>{this.handleError(error);});
-	    let url = ramaddaBaseUrl + "/wikify";
-	    $.post(url,{
-		doImports:"false",
-		entryid:entryId??this.getProperty("entryId"),
-		text:wiki},
-		   wikiCallback).fail(wikiError);
-	},
 
 	checkTopWiki:function() {
 	    if(this.canEdit())
