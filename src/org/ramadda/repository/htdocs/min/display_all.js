@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep 26 12:54:32 MDT 2022";
+var build_date="RAMADDA build date: Thu Sep 29 09:55:55 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3059,12 +3059,10 @@ Glyph.prototype = {
 
 }
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2022 Geode Systems LLC
 */
 
 
-var xcnt=0;
-var DISPLAY_COUNT=0;
 var  displayDebug= {
     getProperty:false,
     notifyEvent:false,
@@ -3180,7 +3178,6 @@ const HIGHLIGHT_COLOR = "#436EEE";
 const VALUE_NONE = "--none--";
 
 
-
 const DisplayEvent = {
 };
 
@@ -3222,7 +3219,8 @@ displayDefineEvent("removeDisplay");
 displayDefineEvent("filterChanged");
 
 
-let globalDisplayCount = 0;
+var globalDisplayCount = 0;
+var DISPLAY_COUNT=0;
 function addGlobalDisplayProperty(name, value) {
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
@@ -3281,7 +3279,9 @@ function getGlobalDisplayProperty(name) {
 }
 
 
+let addDisplayListener = null;
 function addRamaddaDisplay(display) {
+    if(addDisplayListener) addDisplayListener(display);
     Utils.addDisplay(display);
     display.displayCount=globalDisplayCount++;
     return display;
@@ -4752,6 +4752,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
             func.apply(this, [source, data]);
         },
+	wikify:function(wiki,entryId,wikiCallback,wikiError) {
+	    wikiError = wikiError || (error=>{this.handleError(error);});
+	    let url = ramaddaBaseUrl + "/wikify";
+	    $.post(url,{
+		doImports:"false",
+		entryid:entryId??this.getProperty("entryId"),
+		text:wiki},
+		   wikiCallback).fail(wikiError);
+	},
+
+
 	myDisplayCount:DISPLAY_COUNT++,
 	logMsg:function(msg, time) {
 	    let label = this.getLogLabel();
@@ -8188,6 +8199,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },	
         checkLayout: function() {
 	},
+	isActiveDisplay: function() {
+            return this.getMainDiv().length;
+	},
+	handleWindowResize:function() {
+	    if(this.isActiveDisplay()) {
+		this.displayData();
+	    } else {
+		//TODO: remove this display from the global list?
+		//		this.logMsg("not active");
+	    }
+	},
         displayData: function() {},
         setDisplayReady: function() {
 //	    console.log("setDisplayReady");
@@ -8249,7 +8271,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getMainDiv: function() {
 	    //Don't check the parent for the targetDiv
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
-	    return $("#" + divid); 
+	    return $("#" + divId); 
 	},
         getGroupDiv: function() {
 	    return $("#" + this.getProperty("groupDiv"));
@@ -10067,18 +10089,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
-
-//	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
-
+//	    debug = true;
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
-	    if(debug) console.log(this.type+" pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
+	    if(debug)
+		this.logMsg("pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
 	    if(debug)
 		console.log("\tclearing last selected fields");
 	    let records = pointData.getRecords();
-	    
 	    this.lastSelectedFields = null;
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
@@ -12106,7 +12126,32 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
 */
 
 const FILTER_ALL = "-all-";
-let pointDataCache = {};
+
+
+if (window.pointDataCache == null) {
+    window.pointDataCache= {};
+    //kick off a monitoring thread
+    let monitor = ()=>{
+	for(key in window.pointDataCache) {
+	    let obj = window.pointDataCache[key];
+	    let anyActive = false;
+	    obj.displays.forEach(display=>{
+		if(!display.isActiveDisplay || display.isActiveDisplay()) {
+		    anyActive = true;
+		}
+	    });
+	    if(!anyActive) {
+		delete window.pointDataCache[key];
+	    }
+	}
+	setTimeout(monitor,5000);
+    };
+    setTimeout(monitor,5000);    
+}
+
+function getPointDataCache() {
+    return window.pointDataCache;
+}
 
 function DataCollection() {
     RamaddaUtil.defineMembers(this, {
@@ -12338,7 +12383,7 @@ function PointData(name, recordFields, records, url, properties) {
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
 	    let url = this.getUrl();
-            let cacheObject = pointDataCache[url];
+            let cacheObject = getPointDataCache()[url];
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
@@ -12419,10 +12464,10 @@ function PointData(name, recordFields, records, url, properties) {
             root.loadPointJson(jsonUrl, display, reload);
         },
 	getCacheObject: function() {
-            let cacheObject = pointDataCache[this.getUrl()];
+            let cacheObject = getPointDataCache()[this.getUrl()];
 	    if(!cacheObject) {
 		let cacheUrl = this.getCacheUrl();
-		if(cacheUrl) cacheObject = pointDataCache[cacheUrl];
+		if(cacheUrl) cacheObject = getPointDataCache()[cacheUrl];
 	    }
 	    return cacheObject;
 	},
@@ -12461,7 +12506,7 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
-            let cacheObject = pointDataCache[cacheId];
+            let cacheObject = getPointDataCache()[cacheId];
             if (cacheObject == null) {
                 cacheObject = {
                     pointData: null,
@@ -12476,7 +12521,7 @@ function PointData(name, recordFields, records, url, properties) {
                 };
 		if(debug)
                     console.log("\tcreated cache object: " +cacheId);
-                pointDataCache[cacheId] = cacheObject;
+                getPointDataCache()[cacheId] = cacheObject;
             } else {
 		if(cacheObject.pending.indexOf(display)>=0) {
 		    if(debug)
@@ -12545,7 +12590,7 @@ function PointData(name, recordFields, records, url, properties) {
 		cacheObject.pending.map(display=>{
                     display.pointDataLoadFailed(err);
 		});
-		delete pointDataCache[url];
+		delete getPointDataCache()[url];
                 pointData.stopLoading();
             }
 
@@ -12617,18 +12662,18 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 
 		let size = 0;
-		Object.keys(pointDataCache).map(key=>{
-		    size+=pointDataCache[key].size;
+		Object.keys(getPointDataCache()).map(key=>{
+		    size+=getPointDataCache()[key].size;
 		});
 		if(debug)
 		    console.log("\tcache size:" + size);
 		//Size is just the number of rows*columns
 		if(size>1000000) {
-		    Object.keys(pointDataCache).map(key=>{
-			if(pointDataCache[key].pending.length==0) {
+		    Object.keys(getPointDataCache()).map(key=>{
+			if(getPointDataCache()[key].pending.length==0) {
 			    if(debug)
 				console.log("\tDeleting from cache:" + key);
-			    delete pointDataCache[key];
+			    delete getPointDataCache()[key];
 			}
 		    });
 		}
@@ -22687,8 +22732,9 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    }
 	},
         pointDataLoaded: function(pointData, url, reload) {
+//	    this.logMsg("pointDataLoaded");
 	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
-	    if(this.haveLoadedData&& this.records) {
+	    if(this.haveLoadedData && this.records) {
 		setTimeout(()=>{
 		    let record = this.records[+this.jq(ID_MENU).val()];
 		    if(record) {
@@ -22699,6 +22745,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	},
 
 	updateUI: function() {
+//	    this.logMsg("updateUI");
 	    this.records = this.filterData();
 	    if(!this.records) return;
 	    let options = [];
@@ -29484,6 +29531,7 @@ let DISPLAY_METADATA = "metadata";
 let DISPLAY_ENTRYTIMELINE = "entrytimeline";
 let DISPLAY_REPOSITORIES = "repositories";
 let DISPLAY_ENTRYTITLE = "entrytitle";
+let DISPLAY_ENTRYWIKI = "entrywiki";
 let DISPLAY_SEARCH  = "search";
 let DISPLAY_SIMPLESEARCH  = "simplesearch";
 let ID_RESULTS = "results";
@@ -29560,6 +29608,12 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_ENTRYTITLE,
     label: "Entry Title",
+    requiresData: false,
+    category: CATEGORY_ENTRIES
+});
+addGlobalDisplayType({
+    type: DISPLAY_ENTRYWIKI,
+    label: "Entry Wiki",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
@@ -32814,6 +32868,70 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
 		}
 	    }
 	    this.displayHtml(html);
+        },
+	setEntry: function(entry) {
+	    this.sourceEntry = entry;
+	    this.initDisplay();
+	},
+        handleEventEntrySelection: function(source, args) {
+        },
+    });
+}
+
+
+function RamaddaEntrywikiDisplay(displayManager, id, properties) {
+    const ID_WIKI = "wiki";
+    let SUPER;
+    if(!properties.displayStyle)
+	properties.displayStyle="width:100%;"
+    $.extend(this, {
+        sourceEntry: properties.sourceEntry
+    });
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
+
+    if (properties.sourceEntry == null && properties.entryId != null) {
+        let _this = this;
+        let f = async function() {
+            await _this.getEntry(properties.entryId, entry => {
+                _this.sourceEntry = entry;
+                _this.initDisplay()
+            });
+        }
+        f();
+    }
+
+    let myProps = [
+	{label:'Entry Wiki'},
+	{p:'wiki',d:'{{import showTitle=false}}',ex:'wiki text'},
+	{p:'wikiStyle',d:'width:100%;max-width:95vw'}
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	initDisplay: function() {
+            this.createUI();
+	    let html = HU.div(['id',this.domId(ID_WIKI),'style',this.getWikiStyle()]);
+	    this.displayHtml(html);
+	    if(this.sourceEntry) {
+		let e = this.sourceEntry;
+		let wiki = this.getWiki();
+		wiki = wiki.replace(/\\n/g,"\n");
+		//Delete the old displays
+		if(this.addedDisplays) {
+		    this.addedDisplays.forEach(display=>{
+			if(display.getId)
+			    removeRamaddaDisplay(display.getId());
+		    });
+		}
+		this.addedDisplays = [];
+		this.wikify(wiki,e.getId(),html=>{
+		    addDisplayListener = display=>{
+			this.addedDisplays.push(display);
+//			console.log("add display:" + display.type);
+		    };
+		    this.jq(ID_WIKI).html(html);
+		    addDisplayListener = null;
+		});
+	    }
         },
 	setEntry: function(entry) {
 	    this.sourceEntry = entry;
@@ -41466,15 +41584,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    parent.addClass('imdv-legend-label-invisible');			    
 	    });
 	},
-	wikify:function(wiki,entryId,wikiCallback,wikiError) {
-	    wikiError = wikiError || (error=>{this.handleError(error);});
-	    let url = ramaddaBaseUrl + "/wikify";
-	    $.post(url,{
-		doImports:"false",
-		entryid:entryId??this.getProperty("entryId"),
-		text:wiki},
-		   wikiCallback).fail(wikiError);
-	},
 
 	checkTopWiki:function() {
 	    if(this.canEdit())
@@ -48226,6 +48335,7 @@ addGlobalDisplayType({
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
+    const ID_PLOT= "plot";
     const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     //Dynamically load plotly
@@ -48311,16 +48421,17 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             this.clearHtml();
 	    let html = 
 		HtmlUtils.div(["id",this.getDomId(ID_HEADER)],"") +
-		HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], "") +
+		HtmlUtils.div(["id", this.getDomId(ID_PLOT), "style", "width:100%;"+this.getDisplayStyle()], "") +
 		HtmlUtils.div(["id",this.getDomId(ID_FOOTER)],"");
 	    this.setContents(html);
-            //For some reason plotly won't display repeated times in the DISPLAY div
-            var plot = Plotly.plot(this.getDomId("tmp"), data, layout,{displayModeBar: false});
-            var myPlot = document.getElementById(this.getDomId("tmp"));
-	    if(myPlot) {
-		this.addEvents(plot, myPlot);
-	    }
-	    return myPlot;
+	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
+	    setTimeout(()=>{
+		let plot = Plotly.plot(this.getDomId(ID_PLOT), data, layout,{displayModeBar: false});
+		let myPlot = document.getElementById(this.getDomId(ID_PLOT));
+		if(myPlot) {
+		    this.initPlot(plot, myPlot);
+		}
+	    },1);
         },
         handleClickEvent: function(data) {
 	    if(data.points && data.points.length>0) {
@@ -48335,7 +48446,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		}
 	    }
 	},
-        addEvents: function(plot, myPlot) {
+        initPlot: function(plot, myPlot) {
 	    let _this = this;
             myPlot.on('plotly_click', function(data) {
 		_this.handleClickEvent(data);
@@ -48540,7 +48651,8 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 	{p:'markerSize',d:6},
     ];
     defineDisplay(this, SUPER, myProps, {
-        addEvents: function(plot, myPlot) {
+        initPlot: function(plot, myPlot) {
+	    SUPER.initPlot.call(this, plot, myPlot);
             myPlot.on('plotly_click', function() {
                 //                        alert('You clicked this Plotly chart!');
             });
@@ -48666,21 +48778,23 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 
 
             let plotData = [this.trace1,trace2];
-	    this.plot = this.makePlot(plotData, layout);
-	    this.plot.on('plotly_click', (data)=>{
-		if(data.points && data.points.length) {
-		    let record = records[data.points[0].pointNumber];
-		    if(record) {
-			this.propagateEventRecordSelection({record: record});
-		    }
-		}
-
-	    });
+	    this.makePlot(plotData, layout);
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
 
         },
+        initPlot: function(plot, myPlot) {
+	    SUPER.initPlot.call(this, plot, myPlot);
+	    myPlot.on('plotly_click', (data)=>{
+		if(data.points && data.points.length) {
+		    let record = this.records[data.points[0].pointNumber];
+		    if(record) {
+			this.propagateEventRecordSelection({record: record});
+		    }
+		}
+	    });
+	},
         handleEventRecordSelection: function(source, args) {
 	    SUPER.handleEventRecordSelection.call(this, source, args);
 	    let record = args.record;
@@ -48860,9 +48974,12 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    var myPlot =  this.makePlot(data, layout);
-	    myPlot.on('plotly_sunburstclick', d=>{this.handleSunburstClickEvent(d)});
+	    this.makePlot(data, layout);
         },
+        initPlot: function(plot, myPlot) {
+	    SUPER.initPlot.call(this, plot, myPlot);
+	    myPlot.on('plotly_sunburstclick', d=>{this.handleSunburstClickEvent(d)});
+	},
         handleSunburstClickEvent: function(data) {
 	    if(!data.points || data.points.length<=0) {
 		return;
