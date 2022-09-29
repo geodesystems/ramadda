@@ -2171,8 +2171,8 @@ var Utils =  {
             let timeoutFunc = ()=>  {
                 for (let i = 0; i < Utils.displaysList.length; i++) {
                     let display = Utils.displaysList[i];
-                    if (display.displayData) {
-                        display.displayData();
+                    if (display.handleWindowResize) {
+                        display.handleWindowResize();
                     }
                 }
                 this.pendingResizeTimeout=null;
