@@ -252,16 +252,16 @@ RamaddaCanvas.prototype = {
 	if(Math.abs(mx-cmx)<30) {
 	    line += "absLeft=50% absTranslateX=-50% ";
 	} else if(l<cw-r) {
-	    line += "absLeft=" + parseInt(l)+"px;";
+	    line += "absLeft=" + parseInt(l)+"px ";
 	} else {
-	    line += "absRight=" + parseInt(cw-r)+"px;";
+	    line += "absRight=" + parseInt(cw-r)+"px ";
 	}
 	if(Math.abs(my-cmy)<30) {
 	    line += "absTop=50% absTranslateY=50% ";
 	} else if(t<ch-b) {
-	    line += "absTop=" + parseInt(t)+"px;";
+	    line += "absTop=" + parseInt(t)+"px ";
 	} else {
-	    line += "absBottom=" + parseInt(ch-b)+"px;";
+	    line += "absBottom=" + parseInt(ch-b)+"px ";
 	}
 	return line
     },	
