@@ -1290,6 +1290,7 @@ public class TextReader implements Cloneable {
         try {
             if (writer == null) {
                 OutputStream os = this.getOutput();
+		//		System.err.println("TextReader.getWriter");
                 writer = new PrintWriter(os);
                 if (getDebug()) {
                     if (debugSB.length() > 0) {
@@ -1314,6 +1315,7 @@ public class TextReader implements Cloneable {
      * @param writer _more_
      */
     public void setWriter(PrintWriter writer) {
+	System.err.println("setWriter");
         this.writer = writer;
     }
 
@@ -1470,6 +1472,8 @@ public class TextReader implements Cloneable {
      */
     public void setInput(NamedInputStream value) {
         input = value;
+	reader = null;
+	hasInput = true;
     }
 
     /**

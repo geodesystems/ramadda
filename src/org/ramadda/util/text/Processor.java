@@ -1812,6 +1812,8 @@ public abstract class Processor extends CsvOperator {
         public void handleHeaderRow(Appendable writer, Row header,
                                      List exValues)
                 throws Exception {
+	    //	    System.err.println("\theader row:" + header);
+	    
             StringBuilder   sb     = new StringBuilder();
             HashSet<String> seen   = new HashSet<String>();
             List            values = header.getValues();
@@ -1869,6 +1871,7 @@ public abstract class Processor extends CsvOperator {
 	int x = 0;
 	public void handleRow(TextReader ctx, PrintWriter writer, Row row, boolean checkFirst)
 	    throws Exception {	    
+	    //	    System.err.println("\tHandle row:" + row);
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
 	    if(headerRow==null) headerRow =row;

@@ -809,7 +809,7 @@ public class CsvUtil implements CsvCommands {
 		    providerCnt++;
 		    int cnt=0;
 		    for (NamedInputStream input : getStreams(files)) {
-			//			    System.err.println("FILE:" + input);
+			//			System.err.println("file:" + input);
 			myTextReader.resetProcessors();
 			myTextReader.setInput(input);
 			process(myTextReader, provider,cnt++);
@@ -893,6 +893,7 @@ public class CsvUtil implements CsvCommands {
         Row row;
 	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
+	    //	    System.err.println ("row:" + row);
 	    if(row==null) break;
 	    if(rowCnt++==0 && fileCnt>0) {
 		continue;

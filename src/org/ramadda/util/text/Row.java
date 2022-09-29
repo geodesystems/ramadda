@@ -272,6 +272,12 @@ public class Row {
         }
     }
 
+    public void add(double v) {
+	if(v==(int)v) values.add((int)v);
+	else values.add(v);
+    }
+
+
     /**
      * _more_
      *
