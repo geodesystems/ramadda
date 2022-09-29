@@ -119,6 +119,7 @@ addGlobalDisplayType({
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
+    const ID_PLOT= "plot";
     const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     //Dynamically load plotly
@@ -204,16 +205,17 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             this.clearHtml();
 	    let html = 
 		HtmlUtils.div(["id",this.getDomId(ID_HEADER)],"") +
-		HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], "") +
+		HtmlUtils.div(["id", this.getDomId(ID_PLOT), "style", "width:100%;"+this.getDisplayStyle()], "") +
 		HtmlUtils.div(["id",this.getDomId(ID_FOOTER)],"");
 	    this.setContents(html);
-            //For some reason plotly won't display repeated times in the DISPLAY div
-            var plot = Plotly.plot(this.getDomId("tmp"), data, layout,{displayModeBar: false});
-            var myPlot = document.getElementById(this.getDomId("tmp"));
-	    if(myPlot) {
-		this.addEvents(plot, myPlot);
-	    }
-	    return myPlot;
+	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
+	    setTimeout(()=>{
+		let plot = Plotly.plot(this.getDomId(ID_PLOT), data, layout,{displayModeBar: false});
+		let myPlot = document.getElementById(this.getDomId(ID_PLOT));
+		if(myPlot) {
+		    this.initPlot(plot, myPlot);
+		}
+	    },1);
         },
         handleClickEvent: function(data) {
 	    if(data.points && data.points.length>0) {
@@ -228,7 +230,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		}
 	    }
 	},
-        addEvents: function(plot, myPlot) {
+        initPlot: function(plot, myPlot) {
 	    let _this = this;
             myPlot.on('plotly_click', function(data) {
 		_this.handleClickEvent(data);
@@ -433,7 +435,8 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 	{p:'markerSize',d:6},
     ];
     defineDisplay(this, SUPER, myProps, {
-        addEvents: function(plot, myPlot) {
+        initPlot: function(plot, myPlot) {
+	    SUPER.initPlot.call(this, plot, myPlot);
             myPlot.on('plotly_click', function() {
                 //                        alert('You clicked this Plotly chart!');
             });
@@ -559,21 +562,23 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 
 
             let plotData = [this.trace1,trace2];
-	    this.plot = this.makePlot(plotData, layout);
-	    this.plot.on('plotly_click', (data)=>{
-		if(data.points && data.points.length) {
-		    let record = records[data.points[0].pointNumber];
-		    if(record) {
-			this.propagateEventRecordSelection({record: record});
-		    }
-		}
-
-	    });
+	    this.makePlot(plotData, layout);
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
 
         },
+        initPlot: function(plot, myPlot) {
+	    SUPER.initPlot.call(this, plot, myPlot);
+	    myPlot.on('plotly_click', (data)=>{
+		if(data.points && data.points.length) {
+		    let record = this.records[data.points[0].pointNumber];
+		    if(record) {
+			this.propagateEventRecordSelection({record: record});
+		    }
+		}
+	    });
+	},
         handleEventRecordSelection: function(source, args) {
 	    SUPER.handleEventRecordSelection.call(this, source, args);
 	    let record = args.record;
@@ -753,9 +758,12 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    var myPlot =  this.makePlot(data, layout);
-	    myPlot.on('plotly_sunburstclick', d=>{this.handleSunburstClickEvent(d)});
+	    this.makePlot(data, layout);
         },
+        initPlot: function(plot, myPlot) {
+	    SUPER.initPlot.call(this, plot, myPlot);
+	    myPlot.on('plotly_sunburstclick', d=>{this.handleSunburstClickEvent(d)});
+	},
         handleSunburstClickEvent: function(data) {
 	    if(!data.points || data.points.length<=0) {
 		return;

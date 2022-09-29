@@ -13,6 +13,7 @@ let DISPLAY_METADATA = "metadata";
 let DISPLAY_ENTRYTIMELINE = "entrytimeline";
 let DISPLAY_REPOSITORIES = "repositories";
 let DISPLAY_ENTRYTITLE = "entrytitle";
+let DISPLAY_ENTRYWIKI = "entrywiki";
 let DISPLAY_SEARCH  = "search";
 let DISPLAY_SIMPLESEARCH  = "simplesearch";
 let ID_RESULTS = "results";
@@ -89,6 +90,12 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_ENTRYTITLE,
     label: "Entry Title",
+    requiresData: false,
+    category: CATEGORY_ENTRIES
+});
+addGlobalDisplayType({
+    type: DISPLAY_ENTRYWIKI,
+    label: "Entry Wiki",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
@@ -3343,6 +3350,70 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
 		}
 	    }
 	    this.displayHtml(html);
+        },
+	setEntry: function(entry) {
+	    this.sourceEntry = entry;
+	    this.initDisplay();
+	},
+        handleEventEntrySelection: function(source, args) {
+        },
+    });
+}
+
+
+function RamaddaEntrywikiDisplay(displayManager, id, properties) {
+    const ID_WIKI = "wiki";
+    let SUPER;
+    if(!properties.displayStyle)
+	properties.displayStyle="width:100%;"
+    $.extend(this, {
+        sourceEntry: properties.sourceEntry
+    });
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
+
+    if (properties.sourceEntry == null && properties.entryId != null) {
+        let _this = this;
+        let f = async function() {
+            await _this.getEntry(properties.entryId, entry => {
+                _this.sourceEntry = entry;
+                _this.initDisplay()
+            });
+        }
+        f();
+    }
+
+    let myProps = [
+	{label:'Entry Wiki'},
+	{p:'wiki',d:'{{import showTitle=false}}',ex:'wiki text'},
+	{p:'wikiStyle',d:'width:100%;max-width:95vw'}
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	initDisplay: function() {
+            this.createUI();
+	    let html = HU.div(['id',this.domId(ID_WIKI),'style',this.getWikiStyle()]);
+	    this.displayHtml(html);
+	    if(this.sourceEntry) {
+		let e = this.sourceEntry;
+		let wiki = this.getWiki();
+		wiki = wiki.replace(/\\n/g,"\n");
+		//Delete the old displays
+		if(this.addedDisplays) {
+		    this.addedDisplays.forEach(display=>{
+			if(display.getId)
+			    removeRamaddaDisplay(display.getId());
+		    });
+		}
+		this.addedDisplays = [];
+		this.wikify(wiki,e.getId(),html=>{
+		    addDisplayListener = display=>{
+			this.addedDisplays.push(display);
+//			console.log("add display:" + display.type);
+		    };
+		    this.jq(ID_WIKI).html(html);
+		    addDisplayListener = null;
+		});
+	    }
         },
 	setEntry: function(entry) {
 	    this.sourceEntry = entry;

@@ -1007,8 +1007,9 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    }
 	},
         pointDataLoaded: function(pointData, url, reload) {
+//	    this.logMsg("pointDataLoaded");
 	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
-	    if(this.haveLoadedData&& this.records) {
+	    if(this.haveLoadedData && this.records) {
 		setTimeout(()=>{
 		    let record = this.records[+this.jq(ID_MENU).val()];
 		    if(record) {
@@ -1019,6 +1020,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	},
 
 	updateUI: function() {
+//	    this.logMsg("updateUI");
 	    this.records = this.filterData();
 	    if(!this.records) return;
 	    let options = [];

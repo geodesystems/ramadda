@@ -3,7 +3,32 @@
 */
 
 const FILTER_ALL = "-all-";
-let pointDataCache = {};
+
+
+if (window.pointDataCache == null) {
+    window.pointDataCache= {};
+    //kick off a monitoring thread
+    let monitor = ()=>{
+	for(key in window.pointDataCache) {
+	    let obj = window.pointDataCache[key];
+	    let anyActive = false;
+	    obj.displays.forEach(display=>{
+		if(!display.isActiveDisplay || display.isActiveDisplay()) {
+		    anyActive = true;
+		}
+	    });
+	    if(!anyActive) {
+		delete window.pointDataCache[key];
+	    }
+	}
+	setTimeout(monitor,5000);
+    };
+    setTimeout(monitor,5000);    
+}
+
+function getPointDataCache() {
+    return window.pointDataCache;
+}
 
 function DataCollection() {
     RamaddaUtil.defineMembers(this, {
@@ -235,7 +260,7 @@ function PointData(name, recordFields, records, url, properties) {
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
 	    let url = this.getUrl();
-            let cacheObject = pointDataCache[url];
+            let cacheObject = getPointDataCache()[url];
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
@@ -316,10 +341,10 @@ function PointData(name, recordFields, records, url, properties) {
             root.loadPointJson(jsonUrl, display, reload);
         },
 	getCacheObject: function() {
-            let cacheObject = pointDataCache[this.getUrl()];
+            let cacheObject = getPointDataCache()[this.getUrl()];
 	    if(!cacheObject) {
 		let cacheUrl = this.getCacheUrl();
-		if(cacheUrl) cacheObject = pointDataCache[cacheUrl];
+		if(cacheUrl) cacheObject = getPointDataCache()[cacheUrl];
 	    }
 	    return cacheObject;
 	},
@@ -358,7 +383,7 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
-            let cacheObject = pointDataCache[cacheId];
+            let cacheObject = getPointDataCache()[cacheId];
             if (cacheObject == null) {
                 cacheObject = {
                     pointData: null,
@@ -373,7 +398,7 @@ function PointData(name, recordFields, records, url, properties) {
                 };
 		if(debug)
                     console.log("\tcreated cache object: " +cacheId);
-                pointDataCache[cacheId] = cacheObject;
+                getPointDataCache()[cacheId] = cacheObject;
             } else {
 		if(cacheObject.pending.indexOf(display)>=0) {
 		    if(debug)
@@ -442,7 +467,7 @@ function PointData(name, recordFields, records, url, properties) {
 		cacheObject.pending.map(display=>{
                     display.pointDataLoadFailed(err);
 		});
-		delete pointDataCache[url];
+		delete getPointDataCache()[url];
                 pointData.stopLoading();
             }
 
@@ -514,18 +539,18 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 
 		let size = 0;
-		Object.keys(pointDataCache).map(key=>{
-		    size+=pointDataCache[key].size;
+		Object.keys(getPointDataCache()).map(key=>{
+		    size+=getPointDataCache()[key].size;
 		});
 		if(debug)
 		    console.log("\tcache size:" + size);
 		//Size is just the number of rows*columns
 		if(size>1000000) {
-		    Object.keys(pointDataCache).map(key=>{
-			if(pointDataCache[key].pending.length==0) {
+		    Object.keys(getPointDataCache()).map(key=>{
+			if(getPointDataCache()[key].pending.length==0) {
 			    if(debug)
 				console.log("\tDeleting from cache:" + key);
-			    delete pointDataCache[key];
+			    delete getPointDataCache()[key];
 			}
 		    });
 		}

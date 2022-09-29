@@ -1,10 +1,8 @@
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2022 Geode Systems LLC
 */
 
 
-var xcnt=0;
-var DISPLAY_COUNT=0;
 var  displayDebug= {
     getProperty:false,
     notifyEvent:false,
@@ -120,7 +118,6 @@ const HIGHLIGHT_COLOR = "#436EEE";
 const VALUE_NONE = "--none--";
 
 
-
 const DisplayEvent = {
 };
 
@@ -162,7 +159,8 @@ displayDefineEvent("removeDisplay");
 displayDefineEvent("filterChanged");
 
 
-let globalDisplayCount = 0;
+var globalDisplayCount = 0;
+var DISPLAY_COUNT=0;
 function addGlobalDisplayProperty(name, value) {
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
@@ -221,7 +219,9 @@ function getGlobalDisplayProperty(name) {
 }
 
 
+let addDisplayListener = null;
 function addRamaddaDisplay(display) {
+    if(addDisplayListener) addDisplayListener(display);
     Utils.addDisplay(display);
     display.displayCount=globalDisplayCount++;
     return display;
@@ -1692,6 +1692,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.log(this.getLogLabel() +".notifyEvent calling function:" + func.name);
             func.apply(this, [source, data]);
         },
+	wikify:function(wiki,entryId,wikiCallback,wikiError) {
+	    wikiError = wikiError || (error=>{this.handleError(error);});
+	    let url = ramaddaBaseUrl + "/wikify";
+	    $.post(url,{
+		doImports:"false",
+		entryid:entryId??this.getProperty("entryId"),
+		text:wiki},
+		   wikiCallback).fail(wikiError);
+	},
+
+
 	myDisplayCount:DISPLAY_COUNT++,
 	logMsg:function(msg, time) {
 	    let label = this.getLogLabel();
@@ -5128,6 +5139,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },	
         checkLayout: function() {
 	},
+	isActiveDisplay: function() {
+            return this.getMainDiv().length;
+	},
+	handleWindowResize:function() {
+	    if(this.isActiveDisplay()) {
+		this.displayData();
+	    } else {
+		//TODO: remove this display from the global list?
+		//		this.logMsg("not active");
+	    }
+	},
         displayData: function() {},
         setDisplayReady: function() {
 //	    console.log("setDisplayReady");
@@ -5189,7 +5211,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getMainDiv: function() {
 	    //Don't check the parent for the targetDiv
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
-	    return $("#" + divid); 
+	    return $("#" + divId); 
 	},
         getGroupDiv: function() {
 	    return $("#" + this.getProperty("groupDiv"));
@@ -7007,18 +7029,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
-
-//	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
-
+//	    debug = true;
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
-	    if(debug) console.log(this.type+" pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
+	    if(debug)
+		this.logMsg("pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
 	    if(debug)
 		console.log("\tclearing last selected fields");
 	    let records = pointData.getRecords();
-	    
 	    this.lastSelectedFields = null;
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
