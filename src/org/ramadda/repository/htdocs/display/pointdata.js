@@ -23,7 +23,7 @@ if (window.pointDataCache == null) {
 	}
 	setTimeout(monitor,5000);
     };
-    setTimeout(monitor,5000);    
+    setTimeout(monitor,30000);    
 }
 
 function getPointDataCache() {

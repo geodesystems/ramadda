@@ -34,6 +34,8 @@ public class User {
     public static final String PROP_CAN_CHANGE_PASSWORD =
         "prop.changepassword";
 
+    public static final String PROP_AVATAR = "avatar";
+
     /** _more_ */
     private String id = "";
 
@@ -233,8 +235,20 @@ public class User {
         properties.put(key, value);
     }
 
+    public void deleteProperty(String key) {
+	properties.remove(key);
+    }
 
+    public String getAvatar() {
+        return (String) properties.get(PROP_AVATAR);
+    }
 
+    public void setAvatar(String s) {
+	if(s==null)
+	    deleteProperty(PROP_AVATAR);
+	else
+	    putProperty(PROP_AVATAR,s);
+    }            
 
 
     /**

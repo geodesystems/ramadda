@@ -336,7 +336,7 @@ public class PageHandler extends RepositoryManager {
         showSearch = getRepository().getProperty("ramadda.showsearch", true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
-                                        "none").trim();
+                                        "all").trim();
         footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
         noStyle     = getRepository().getProperty(PROP_NOSTYLE, false);
@@ -697,22 +697,19 @@ public class PageHandler extends RepositoryManager {
         List<String> allLinks = new ArrayList<String>();
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
-                                     extra, true);
+					      extra, true);
         allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
-
-
         String menuHtml = HU.div(StringUtil.join("", allLinks),
                                  HU.cssClass("ramadda-user-menu"));
 
+	List<String> pageLinks = new ArrayList<String>();
         if (showSearch) {
-            HU.mouseClickHref(
-                extra, "Utils.searchPopup('searchlink','popupanchor');",
-                searchImg, "");
-            HU.span(extra, "",
-                    HU.attrs("id", "popupanchor", "style",
-                             "position:relative;"));
-            extra.append(HU.SPACE2);
+	    pageLinks.add(HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
+					    searchImg, "")+
+			  HU.span("",
+				  HU.attrs("id", "popupanchor", "style",
+					   "position:relative;")));
         }
 
         String theFooter = footer;
@@ -722,11 +719,14 @@ public class PageHandler extends RepositoryManager {
                                    + "';\n");
         }
 
-        extra.append(HU.makePopup(null, popupImage, menuHtml,
-                                  arg("my", "right top"),
-                                  arg("at", "left bottom"),
-                                  arg("animate", false)));
-        menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
+	pageLinks.add(HU.makePopup(null, popupImage, menuHtml,
+				   arg("my", "right top"),
+				   arg("at", "left bottom"),
+				   arg("animate", false)));
+	if(extra.length()>0)
+	    pageLinks.add(extra.toString());
+        menuHtml = HU.div(Utils.wrap(pageLinks, "<span class=ramadda-page-link>", "</span>"),
+			  HU.clazz("ramadda-user-menu"));
 
 
         String[] macros = new String[] {
@@ -1939,9 +1939,10 @@ public class PageHandler extends RepositoryManager {
             labels.add(HU.faIcon("fa-sign-out-alt") + " " + msg("Logout"));
             tips.add(msg("Logout"));
             String label = user.getLabel().replace(" ", "&nbsp;");
-            String userIcon = HU.faIcon("fa-user", "title",
-                                        "Settings for " + label, "class",
-                                        "ramadda-user-menu-image");
+	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true," class='ramadda-user-menu-image' title='Settings for " + label+"'");
+            String userIcon = avatar!=null?avatar:HU.faIcon("fa-user", "title",
+							    "Settings for " + label, "class",
+							    "ramadda-user-menu-image");
 
             String settingsUrl =
                 request.makeUrl(getRepositoryBase().URL_USER_FORM);
@@ -1951,7 +1952,6 @@ public class PageHandler extends RepositoryManager {
                     HU.href(
                         settingsUrl, userIcon,
                         HU.cssClass("ramadda-user-settings-link")));
-                prefix.append(HU.space(2));
             } else {
                 extras.add("");
                 urls.add(settingsUrl);

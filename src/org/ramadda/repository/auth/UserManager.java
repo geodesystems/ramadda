@@ -100,6 +100,10 @@ public class UserManager extends RepositoryManager {
     public static final String ARG_USER_ANSWER = "user_answer";
 
     /** _more_ */
+    public static final String ARG_USER_AVATAR = "user_avatar";    
+    public static final String ARG_USER_AVATAR_DELETE = "user_avatar_delete";    
+
+    /** _more_ */
     public static final String ARG_USER_BULK = "user_bulk";
 
     /** _more_ */
@@ -147,6 +151,7 @@ public class UserManager extends RepositoryManager {
     public static final String PROP_REGISTER_OK = "ramadda.register.ok";
 
 
+
     /** _more_ */
     public static final String PROP_REGISTER_KEY = "ramadda.register.key";
 
@@ -186,6 +191,8 @@ public class UserManager extends RepositoryManager {
 
     /** _more_ */
     public static final String PROP_USER_AGREE = "ramadda.user.agree";
+
+
 
 
 
@@ -1130,14 +1137,39 @@ public class UserManager extends RepositoryManager {
         user.setQuestion(request.getString(ARG_USER_QUESTION,
                                            user.getQuestion()));
         user.setAnswer(request.getString(ARG_USER_ANSWER, user.getAnswer()));
-        if (doAdmin) {
-            applyAdminState(request, user);
-        }
+	if(request.get(ARG_USER_AVATAR_DELETE,false)) {
+	    File f= getUserAvatarFile(user);
+	    if(f!=null) f.delete();
+	    user.setAvatar(null);
+	} else {
+	    String avatar = request.getUploadedFile(ARG_USER_AVATAR);
+	    if(avatar!=null) {
+		//Get rid of the old one
+		File f= getUserAvatarFile(user);
+		System.err.println("Existing:" + f);
+		if(f!=null) f.delete();
+		String ext = IOUtil.getFileExtension(avatar);
+		File userDir = getStorageManager().getUserDir(user.getId(),true);
+		File upload = new File(avatar);
+		File dest = new File(IOUtil.joinDir(userDir, "avatar" + ext));
+		System.err.println("NEW:" + dest);
+		getStorageManager().moveFile(upload, dest);
+		user.setAvatar(dest.getName());
+	    }
+	}
+
+
         String phone = request.getString("phone",
                                          (String) user.getProperty("phone"));
         if (phone != null) {
             user.putProperty("phone", phone);
         }
+
+        if (doAdmin) {
+            applyAdminState(request, user);
+        }
+
+
 
         makeOrUpdateUser(user, true);
     }
@@ -1345,6 +1377,17 @@ public class UserManager extends RepositoryManager {
                                 HtmlUtils.input("phone",
                                     (String) user.getProperty("phone", ""),
                                     HtmlUtils.SIZE_40)));
+	    String file  = HtmlUtils.fileInput(ARG_USER_AVATAR, "");
+	    String avatar =   getUserAvatar(request,  user, true,null);
+	    if(avatar!=null) {
+		file+="<p>"+avatar +" " + HU.labeledCheckbox(ARG_USER_AVATAR_DELETE,"true",false,"Delete");
+	    }
+	    sb.append(formEntry(request,msgLabel("Avatar"), file));
+
+            sb.append(formEntry(request, msgLabel("Phone"),
+                                HtmlUtils.input("phone",
+                                    (String) user.getProperty("phone", ""),
+                                    HtmlUtils.SIZE_40)));	    
         }
 
         List<TwoFacedObject> templates =
@@ -2101,6 +2144,46 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    public String  getUserAvatar(Request request, User user, boolean checkIfExists,
+				 String imageArgs) {
+	if(checkIfExists && getUserAvatarFile(user) == null) return null;
+	if(imageArgs == null) imageArgs = " width=60px ";
+	if(imageArgs.indexOf("width=")<0) imageArgs+=" width=60px ";
+	return HU.img(getRepository().getUrlBase()+"/user/avatar?user="+ user.getId()+"&ts=" + System.currentTimeMillis(),null,imageArgs);
+    }
+
+    private File getUserAvatarFile(User user)  {
+	if(user==null) return null;
+	String avatar = user.getAvatar();
+	if(!stringDefined(avatar)) return null;
+	File f = new File(IOUtil.joinDir(getStorageManager().getUserDir(user.getId(),false), avatar));
+	if(!f.exists()) return null;
+	return f;
+    }	
+
+
+    public Result processAvatar(Request request) throws Exception {
+	String userId = request.getString("user",null);
+	String file = null;
+        InputStream inputStream = null;
+	if(userId!=null) {
+	    File f= getUserAvatarFile(findUser(userId));
+	    if(f!=null) {
+		file = f.toString();
+		inputStream = getStorageManager().getFileInputStream(f);
+	    }
+	}
+	if(inputStream==null) {
+	    file = "/org/ramadda/repository/htdocs/images/avatar.png";
+	    inputStream = Utils.getInputStream(file,getClass());
+	}
+        String mimeType = getRepository().getMimeTypeFromSuffix(
+								IOUtil.getFileExtension(file));
+        Result      result      = new Result(inputStream, mimeType);
+        result.setCacheOk(false);
+        return result;
+
+    }
 
 
     /**
@@ -3574,16 +3657,19 @@ public class UserManager extends RepositoryManager {
         User user = request.getUser();
         request.appendMessage(sb);
         sb.append(HtmlUtils.p());
-        sb.append(msgHeader("User Settings"));
-        request.formPostWithAuthToken(sb,
-                                      getRepositoryBase().URL_USER_CHANGE);
+        sb.append(HU.div("User Settings",HU.cssClass("formgroupheader")));
+	sb.append("<br>");
+        request.uploadFormWithAuthToken(sb,
+					getRepositoryBase().URL_USER_CHANGE);
+	String buttons = HtmlUtils.submit(msg("Change Settings"), ARG_USER_CHANGE);
+        sb.append(buttons);
         makeUserForm(request, user, sb, false);
-        sb.append(HtmlUtils.submit(msg("Change Settings"), ARG_USER_CHANGE));
+        sb.append(buttons);
         sb.append(HtmlUtils.formClose());
 
         if (user.canChangePassword()) {
             sb.append(HtmlUtils.p());
-            sb.append(msgHeader("Password"));
+	    sb.append(HU.div("Password",HU.cssClass("formgroupheader")));
             request.formPostWithAuthToken(
                 sb, getRepositoryBase().URL_USER_CHANGE);
             makePasswordForm(request, user, sb);

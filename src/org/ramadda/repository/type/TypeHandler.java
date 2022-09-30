@@ -3621,48 +3621,51 @@ public class TypeHandler extends RepositoryManager {
                     }
                 }
 
-                if (showCreated
-                        && typeHandler.okToShowInHtml(entry, "owner", true)) {
-                    String userSearchLink =
-                        HtmlUtils
-                            .href(HtmlUtils
-                                .url(request
-                                    .makeUrl(getRepository()
+	    }
+
+	    if (showCreated
+		&& typeHandler.okToShowInHtml(entry, "owner", true)) {
+		String userSearchLink =
+		    HtmlUtils
+		    .href(HtmlUtils
+			  .url(request
+			       .makeUrl(getRepository()
                                         .URL_USER_PROFILE), ARG_USER_ID,
-                                            entry.getUser().getId()), entry
-                                                .getUser()
-                                                .getLabel(), "title=\"View user profile\"");
+			       entry.getUser().getId()), entry
+			  .getUser()
+			  .getLabel(), "title=\"View user profile\"");
 
 
-                    String linkMsg =
-                        msg(
+		String linkMsg =
+		    msg(
                         "Search for entries of this type created by the user");
-                    String userLinkId = HtmlUtils.getUniqueId("userlink_");
-                    userSearchLink = HtmlUtils
-                        .href(getSearchManager().URL_SEARCH_TYPE + "/"
-                              + entry.getTypeHandler().getType() + "?"
-                              + ARG_USER_ID + "=" + entry.getUser().getId()
-                              + "&" + SearchManager.ARG_SEARCH_SUBMIT
-                              + "=true", entry.getUser().getLabel(), HtmlUtils
-                                  .id(userLinkId) + HtmlUtils
-                                  .cssClass("entry-type-search") + HtmlUtils
-                                  .attr(HtmlUtils
-                                      .ATTR_ALT, msg(linkMsg)) + HtmlUtils
-                                          .attr(HtmlUtils
-                                              .ATTR_TITLE, linkMsg));
+		String userLinkId = HtmlUtils.getUniqueId("userlink_");
+		userSearchLink = HtmlUtils
+		    .href(getSearchManager().URL_SEARCH_TYPE + "/"
+			  + entry.getTypeHandler().getType() + "?"
+			  + ARG_USER_ID + "=" + entry.getUser().getId()
+			  + "&" + SearchManager.ARG_SEARCH_SUBMIT
+			  + "=true", entry.getUser().getLabel(), HtmlUtils
+			  .id(userLinkId) + HtmlUtils
+			  .cssClass("entry-type-search") + HtmlUtils
+			  .attr(HtmlUtils
+				.ATTR_ALT, msg(linkMsg)) + HtmlUtils
+			  .attr(HtmlUtils
+				.ATTR_TITLE, linkMsg));
+		String overview = getUserManager().getUserAvatar(request,entry.getUser(),true,null);
+		if(overview!=null) {
+		    userSearchLink+="<br>" + overview;
 
-
-                    sb.append(formEntry(request, msgLabel("Created by"),
-                                        userSearchLink));
-                    /*
-                      String tt = JQuery.select(JQuery.id(userLinkId)) +".tooltip({content: function() {return 'tooltip';}});\n";
-                      sb.append(HtmlUtils.comment("user tooltip"));
-                      sb.append(HtmlUtils.script("\n$(function() {\n" + tt +"\n});\n"));
-                      System.err.println(tt);
-                    */
-                }
-            }
-
+		}
+		sb.append(formEntry(request, msgLabel("Created by"),
+				    userSearchLink));
+		/*
+		  String tt = JQuery.select(JQuery.id(userLinkId)) +".tooltip({content: function() {return 'tooltip';}});\n";
+		  sb.append(HtmlUtils.comment("user tooltip"));
+		  sb.append(HtmlUtils.script("\n$(function() {\n" + tt +"\n});\n"));
+		  System.err.println(tt);
+		*/
+	    }
 
             boolean hasDataDate = false;
 

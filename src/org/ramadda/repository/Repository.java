@@ -6443,8 +6443,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processDocs(Request request) throws Exception {
         StringBuilder  sb      = new StringBuilder();
         List<String[]> docUrls = getPluginManager().getDocUrls();
-        sb.append(HtmlUtils.sectionOpen(msg("Available documentation"),
-                                        false));
+        getPageHandler().sectionOpen(request, sb,"Available documentation",false);
         if (docUrls.size() == 0) {
             sb.append(
                 getPageHandler().showDialogNote(
@@ -6476,8 +6475,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        sb.append(HtmlUtils.sectionClose());
-
+        getPageHandler().sectionClose(request, sb);
         return new Result("Documentation", sb);
     }
 
