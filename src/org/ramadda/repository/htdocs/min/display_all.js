@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Sep 29 12:40:09 MDT 2022";
+var build_date="RAMADDA build date: Sat Oct  1 10:04:39 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -12146,7 +12146,7 @@ if (window.pointDataCache == null) {
 	}
 	setTimeout(monitor,5000);
     };
-    setTimeout(monitor,5000);    
+    setTimeout(monitor,30000);    
 }
 
 function getPointDataCache() {

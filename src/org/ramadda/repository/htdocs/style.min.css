@@ -21,16 +21,16 @@
     --href-color: #000;
     --color-mellow-yellow:#fffeec;
     --default-radius:4px;
-   --nav-hover-color:var(--highlight-color);
-   --cal-font-size:10pt;
-   --cal-background:#C5E5F5;
-   --nav-left-z-index: 50;
-   --nav-page-fixed-z-index:200; 
-   --block-z-index:1;
-   --draggable-z-index:1000;
-   --expandable-z-index:500;
-   --draft-z-index:3000;
-   --splash-z-index:3000;
+    --nav-hover-color:var(--highlight-color);
+    --cal-font-size:10pt;
+    --cal-background:#C5E5F5;
+    --nav-left-z-index: 50;
+    --nav-page-fixed-z-index:200; 
+    --block-z-index:1;
+    --draggable-z-index:1000;
+    --expandable-z-index:500;
+    --draft-z-index:3000;
+    --splash-z-index:3000;
    --splash-z-index2:3001;   
    --ol-z-index:0;
    --ol-popup-z-index:1100;
@@ -3229,6 +3229,16 @@ label {
 .ramadda-user-menu {
     margin-right:0px;
 }
+
+.ramadda-user-profile {
+    margin:2px;
+    padding:5px;
+    display:inline-block;
+    border:var(--basic-border);
+    border-radius: var(--default-radius);
+}
+
+
 .ramadda-logo-image {
 }
 
@@ -3457,11 +3467,40 @@ td .ramadda-role {
     padding: 5px;
 }
 
+.ramadda-user-menu {
+    display:table;
+    font-weight: normal;
+    vertical-align:center;
+}
+
+.ramadda-user-menu a {
+    font-weight: normal;
+    width: 100%;
+}
+
+.ramadda-page-link {
+    padding-right:5px;
+    display:inline-block;
+    display: table-cell;
+    vertical-align: middle;
+}
+
 .ramadda-user-menu-image {
     margin-bottom: 0px;
     padding:0px;
     vertical-align: middle;
 }
+
+img.ramadda-user-menu-image {
+    border-radius: 50%;
+    border:1px solid transparent;
+    width:25px;
+}
+
+img.ramadda-user-menu-image:hover {
+    border:1px solid var(--hover-color);
+}
+
 
 .ramadda-user-settings-link {
     font-size:80%;
@@ -3503,14 +3542,6 @@ td .ramadda-role {
     color: black;
 }
 
-.ramadda-user-menu {
-    font-weight: normal;
-}
-
-.ramadda-user-menu a {
-    font-weight: normal;
-    width: 100%;
-}
 
 .ramadda-user-field, .ramadda-user-field:focus  {
     border : 1px #888888 solid;
@@ -4441,8 +4472,8 @@ wiki {
 .formgroupheader {
     margin-top:4px;
     margin-bottom:0px;
+    padding-top:6px;
     padding-left: 8px;
-    padding-top: 4px;
     padding-bottom: 0px;
     color: #000;
     background-color : #eee;
