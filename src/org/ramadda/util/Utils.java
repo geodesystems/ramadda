@@ -4834,6 +4834,13 @@ public class Utils extends IO {
 
 
 
+    public static String applyMacros(String template,String...args) {
+	for(int i=0;i<args.length;i+=2) {
+	    template = template.replace("${" + args[i]+"}",args[i+1]);
+	}
+	return template;
+    }
+
     public static List<List<String>> multiSplit(Object source, String delim1,String delim2, int tupleSize) {
 	List<List<String>> result = new ArrayList<List<String>>();
 	for(String tuple:split(source.toString(),delim1,true,true)) {
