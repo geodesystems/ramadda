@@ -529,6 +529,9 @@ public interface WikiConstants {
     public static final String WIKI_TAG_THIS = "this";
     public static final String WIKI_TAG_ANCESTOR = "ancestor";    
 
+    public static final String WIKI_TAG_USER = "user";
+
+
     /**  */
     public static final String WIKI_TAG_PREV = "prev";
 

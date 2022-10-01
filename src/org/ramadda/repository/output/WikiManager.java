@@ -52,6 +52,7 @@ import org.ramadda.repository.type.DataTypes;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.DataPolicy;
 import org.ramadda.repository.util.SelectInfo;
 
@@ -210,6 +211,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
                             new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150"),
                             new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
+                            new WikiTag(WIKI_TAG_USER, null, "users","user1,user2","delimiter"," ","style","","showAvatar","true","showEmail","true"),
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
                             new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","","decorate","false"),
@@ -1893,6 +1895,71 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 						      threshold);
 
             return tagCloud.toString();
+        } else if (theTag.equals(WIKI_TAG_USER)) {
+	    List<String> ids = new ArrayList<String>();
+	    String userId = getProperty(wikiUtil,props,"user",null);
+	    if(userId!=null) {
+		ids.add(userId);
+	    }
+	    String users = getProperty(wikiUtil,props,"users",null);
+	    if(users!=null) {
+		ids.addAll(Utils.split(users,",",true,true));
+	    }	    
+	    if(ids.size()==0) {
+		User user = entry.getUser();
+		if(user!=null) 
+		    ids.add(user.getId());
+	    }
+	    if(ids.size()==0) return "No user:" + userId;
+	    String delimiter = getProperty(wikiUtil,props,"delimiter"," ");
+	    String template = getProperty(wikiUtil,props,"template",null);
+	    boolean showAvatar = getProperty(wikiUtil,props,"showAvatar",true);
+	    boolean showSearch = getProperty(wikiUtil,props,"showSearch",true);
+	    boolean showEmail = getProperty(wikiUtil,props,"showEmail",true);
+	    boolean showDescription = getProperty(wikiUtil,props,"showDescription",true);
+	    
+	    
+	    for(String id:ids) {
+		User user = getUserManager().findUser(id);
+		if(user==null) continue;
+		String avatar = getUserManager().getUserAvatar(request,  user, false,"width=" + getProperty(wikiUtil,props,"avatarWidth","60px"));
+		if(template!=null) {
+		    sb.append(Utils.applyMacros(template,
+						  "avatar",avatar,
+						  "search",
+						  getUserManager().getUserSearchLink(request, user),
+						  "name",user.getLabel(),
+						  "id",user.getId(),						  
+						  "description",user.getDescription()));
+		    
+		    continue;
+		}
+		
+		sb.append(HU.open("div",HU.cssClass("ramadda-user-profile") +HU.style(getProperty(wikiUtil, props,"style",""))));
+		sb.append("<table><tr valign=top>");
+		if(showAvatar) HU.tag(sb,"td","",avatar);
+		sb.append("<td>");
+		if(showAvatar)sb.append("<div style='margin-left:10px;'>");
+		else sb.append("<div>");		
+		if(showSearch) 
+		    sb.append(getUserManager().getUserSearchLink(request, user));
+		else
+		    sb.append(user.getLabel());
+		if(showEmail && stringDefined(user.getEmail())) {
+		    sb.append("<br>");
+		    sb.append(HU.href("mailto:" +user.getEmail(),user.getEmail()));
+		}
+		sb.append("</div>");
+		sb.append("</td></tr></table>");
+		if(showDescription && stringDefined(user.getDescription())) {
+		    sb.append(HU.div(user.getDescription(),
+				     HU.style(HU.css("max-width","150px","max-height","200px","overflow-y","auto"))));
+		}	    
+		//		sb.append("</td></tr></table>");
+		sb.append(HU.close("div"));
+		sb.append(delimiter);
+	    }
+	    return sb.toString(); 
         } else if (theTag.equals(WIKI_TAG_COMMENTS)) {
             return getHtmlOutputHandler().getCommentBlock(request, entry,
 							  false).toString();

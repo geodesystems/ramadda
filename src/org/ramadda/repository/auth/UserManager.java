@@ -8,6 +8,7 @@ package org.ramadda.repository.auth;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
+import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
@@ -1031,18 +1032,31 @@ public class UserManager extends RepositoryManager {
 
         getDatabaseManager().update(Tables.USERS.NAME, Tables.USERS.COL_ID,
                                     user.getId(), new String[] {
-            Tables.USERS.COL_NAME, Tables.USERS.COL_PASSWORD,
-            Tables.USERS.COL_EMAIL, Tables.USERS.COL_QUESTION,
-            Tables.USERS.COL_ANSWER, Tables.USERS.COL_ADMIN,
-            Tables.USERS.COL_LANGUAGE, Tables.USERS.COL_TEMPLATE,
-            Tables.USERS.COL_ISGUEST, Tables.USERS.COL_PROPERTIES
+            Tables.USERS.COL_NAME,
+	    Tables.USERS.COL_PASSWORD,
+            Tables.USERS.COL_DESCRIPTION,
+            Tables.USERS.COL_EMAIL,
+	    Tables.USERS.COL_QUESTION,
+            Tables.USERS.COL_ANSWER,
+	    Tables.USERS.COL_ADMIN,
+            Tables.USERS.COL_LANGUAGE,
+	    Tables.USERS.COL_TEMPLATE,
+            Tables.USERS.COL_ISGUEST,
+	    Tables.USERS.COL_PROPERTIES
         }, new Object[] {
-            user.getName(), user.getHashedPassword(), user.getEmail(),
-            user.getQuestion(), user.getAnswer(), user.getAdmin()
-                    ? Integer.valueOf(1)
-                    : Integer.valueOf(0), user.getLanguage(), user.getTemplate(),
-		    Boolean.valueOf(user.getIsGuest()), user.getPropertiesBlob()
-        });
+					user.getName(), 
+					user.getHashedPassword(),
+					user.getDescription(),
+					user.getEmail(),
+					user.getQuestion(),
+					user.getAnswer(),
+					user.getAdmin()
+					? Integer.valueOf(1)
+					: Integer.valueOf(0),
+					user.getLanguage(),
+					user.getTemplate(),
+					Boolean.valueOf(user.getIsGuest()), user.getPropertiesBlob()
+				    });
         userMap.remove(user.getId());
 
 
@@ -1327,6 +1341,7 @@ public class UserManager extends RepositoryManager {
                               boolean includeAdmin)
             throws Exception {
         sb.append(HtmlUtils.formTable());
+	sb.append(formEntry(request, msgLabel("ID"), user.getId()));
         if (user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Name"),
                                 HtmlUtils.input(ARG_USER_NAME,
@@ -2144,12 +2159,26 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    public String getUserSearchLink(Request request, User user) {
+	String linkMsg ="Search for entries by this user";
+	String userLinkId = HtmlUtils.getUniqueId("userlink_");
+	String label = user.getLabel();
+	return  HU.href(getSearchManager().URL_ENTRY_SEARCH + "?"
+		  + ARG_USER_ID + "=" + user.getId()
+		  + "&" + SearchManager.ARG_SEARCH_SUBMIT
+			+ "=true", label,HU.attr("title",linkMsg));
+    }
+	
+
+
     public String  getUserAvatar(Request request, User user, boolean checkIfExists,
 				 String imageArgs) {
-	if(checkIfExists && getUserAvatarFile(user) == null) return null;
+	if(checkIfExists && (user==null || getUserAvatarFile(user) == null)) return null;
 	if(imageArgs == null) imageArgs = " width=60px ";
 	if(imageArgs.indexOf("width=")<0) imageArgs+=" width=60px ";
-	return HU.img(getRepository().getUrlBase()+"/user/avatar?user="+ user.getId()+"&ts=" + System.currentTimeMillis(),null,imageArgs);
+	String url = getRepository().getUrlBase()+"/user/avatar?ts=" + System.currentTimeMillis();
+	if(user!=null) url+="&user="+ user.getId();
+	return HU.img(url,null,imageArgs);
     }
 
     private File getUserAvatarFile(User user)  {

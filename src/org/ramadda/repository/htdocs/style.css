@@ -21,16 +21,16 @@
     --href-color: #000;
     --color-mellow-yellow:#fffeec;
     --default-radius:4px;
-   --nav-hover-color:var(--highlight-color);
-   --cal-font-size:10pt;
-   --cal-background:#C5E5F5;
-   --nav-left-z-index: 50;
-   --nav-page-fixed-z-index:200; 
-   --block-z-index:1;
-   --draggable-z-index:1000;
-   --expandable-z-index:500;
-   --draft-z-index:3000;
-   --splash-z-index:3000;
+    --nav-hover-color:var(--highlight-color);
+    --cal-font-size:10pt;
+    --cal-background:#C5E5F5;
+    --nav-left-z-index: 50;
+    --nav-page-fixed-z-index:200; 
+    --block-z-index:1;
+    --draggable-z-index:1000;
+    --expandable-z-index:500;
+    --draft-z-index:3000;
+    --splash-z-index:3000;
    --splash-z-index2:3001;   
    --ol-z-index:0;
    --ol-popup-z-index:1100;
@@ -3229,6 +3229,16 @@ label {
 .ramadda-user-menu {
     margin-right:0px;
 }
+
+.ramadda-user-profile {
+    margin:2px;
+    padding:5px;
+    display:inline-block;
+    border:var(--basic-border);
+    border-radius: var(--default-radius);
+}
+
+
 .ramadda-logo-image {
 }
 
