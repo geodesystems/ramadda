@@ -3491,6 +3491,10 @@ td .ramadda-role {
     vertical-align: middle;
 }
 
+.ramadda-user-avatar {
+    border-radius: 50%;
+}
+
 img.ramadda-user-menu-image {
     border-radius: 50%;
     border:1px solid transparent;

@@ -1922,7 +1922,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    for(String id:ids) {
 		User user = getUserManager().findUser(id);
 		if(user==null) continue;
-		String avatar = getUserManager().getUserAvatar(request,  user, false,"width=" + getProperty(wikiUtil,props,"avatarWidth","60px"));
+		String avatar = getUserManager().getUserAvatar(request,  user, false, getProperty(wikiUtil,props,"avatarWidth",60),null);
 		if(template!=null) {
 		    sb.append(Utils.applyMacros(template,
 						  "avatar",avatar,

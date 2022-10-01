@@ -3652,7 +3652,7 @@ public class TypeHandler extends RepositoryManager {
 				.ATTR_ALT, msg(linkMsg)) + HtmlUtils
 			  .attr(HtmlUtils
 				.ATTR_TITLE, linkMsg));
-		String overview = getUserManager().getUserAvatar(request,entry.getUser(),true,null);
+		String overview = getUserManager().getUserAvatar(request,entry.getUser(),true,40,null);
 		if(overview!=null) {
 		    userSearchLink+="<br>" + overview;
 

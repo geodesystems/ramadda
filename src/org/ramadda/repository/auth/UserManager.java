@@ -1393,7 +1393,7 @@ public class UserManager extends RepositoryManager {
                                     (String) user.getProperty("phone", ""),
                                     HtmlUtils.SIZE_40)));
 	    String file  = HtmlUtils.fileInput(ARG_USER_AVATAR, "");
-	    String avatar =   getUserAvatar(request,  user, true,null);
+	    String avatar =   getUserAvatar(request,  user, true,-1,null);
 	    if(avatar!=null) {
 		file+="<p>"+avatar +" " + HU.labeledCheckbox(ARG_USER_AVATAR_DELETE,"true",false,"Delete");
 	    }
@@ -2172,10 +2172,13 @@ public class UserManager extends RepositoryManager {
 
 
     public String  getUserAvatar(Request request, User user, boolean checkIfExists,
-				 String imageArgs) {
+				 int width, String imageArgs) {
+	if(width<0) width=40;
 	if(checkIfExists && (user==null || getUserAvatarFile(user) == null)) return null;
-	if(imageArgs == null) imageArgs = " width=60px ";
-	if(imageArgs.indexOf("width=")<0) imageArgs+=" width=60px ";
+	if(imageArgs == null) imageArgs = "";
+	if(imageArgs.indexOf("width=")<0) imageArgs+=" width=" + width+"px ";
+	imageArgs+=HU.cssClass("ramadda-user-avatar");
+
 	String url = getRepository().getUrlBase()+"/user/avatar?ts=" + System.currentTimeMillis();
 	if(user!=null) url+="&user="+ user.getId();
 	return HU.img(url,null,imageArgs);
