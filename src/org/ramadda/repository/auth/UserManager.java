@@ -1160,13 +1160,11 @@ public class UserManager extends RepositoryManager {
 	    if(avatar!=null) {
 		//Get rid of the old one
 		File f= getUserAvatarFile(user);
-		System.err.println("Existing:" + f);
 		if(f!=null) f.delete();
 		String ext = IOUtil.getFileExtension(avatar);
 		File userDir = getStorageManager().getUserDir(user.getId(),true);
 		File upload = new File(avatar);
 		File dest = new File(IOUtil.joinDir(userDir, "avatar" + ext));
-		System.err.println("NEW:" + dest);
 		getStorageManager().moveFile(upload, dest);
 		user.setAvatar(dest.getName());
 	    }
