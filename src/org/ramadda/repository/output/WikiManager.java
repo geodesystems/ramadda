@@ -7914,7 +7914,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    HU.importJS(sb, getPageHandler().getCdnPath("/lib/here.js"));
 	}
 
-        this.addDisplayImports(request, sb, isMap);
+        this.addDisplayImports(request, sb, true);
 
 
 	if(isNotebook) {
