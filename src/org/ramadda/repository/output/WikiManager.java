@@ -233,7 +233,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                         SpecialSearch.ATTR_TABS,
                                         SpecialSearch.TAB_LIST),
                             new WikiTag(WIKI_TAG_UPLOAD,null, ATTR_TITLE,"Upload file", ATTR_SHOWICON,"false"), 
-                            new WikiTag(WIKI_TAG_ROOT)),
+                            new WikiTag(WIKI_TAG_ROOT),
+			    new WikiTag("loremipsum")),
     };
     //J++
 
@@ -4063,6 +4064,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             makeGallery(request, wikiUtil, children, props, sb);
 
             return sb.toString();
+	} else if(theTag.equals("loremipsum")) {
+	    int count = getProperty(wikiUtil, props, "count",1);
+	    String src  = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
+	    for(int i=0;i<count && i<10;i++) {
+		if(i>0) sb.append("<p>");
+		sb.append(src);
+	    }
+	    return HU.div(sb.toString(),HU.style("font-style:italic;"));
         } else if (theTag.equals(WIKI_TAG_ROOT)) {
             return getRepository().getUrlBase();
         } else if (theTag.equals(WIKI_TAG_FULLTREE) || theTag.equals(WIKI_TAG_MENUTREE)) {
@@ -6935,6 +6944,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         Utils.appendAll(tags3,
                         l.call( "Callout", "+callout_nl__nl_", "-callout"),
                         l.call( "Callout info", "+callout-info_nl__nl_", "-callout"),
+                        l.call( "Callout tip", "+callout-tip_nl__nl_", "-callout"),
                         l.call( "Callout question", "+callout-question_nl__nl_", "-callout"),
                         l.call( "Callout warning", "+callout-warning_nl__nl_", "-callout"));
 

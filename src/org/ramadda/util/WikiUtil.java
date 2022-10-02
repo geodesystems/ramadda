@@ -2371,7 +2371,9 @@ public class WikiUtil {
                                           "24px");
                     String icon = (String) props.get("icon");
                     if (icon == null) {
-                        icon = what.equals("-question")
+                        icon = what.equals("-tip")?
+			    "fa-circle-check":
+			    what.equals("-question")
                                ? "fa-question-circle"
                                : what.equals("-info")
                                  ? "fa-info-circle"
@@ -2731,6 +2733,14 @@ public class WikiUtil {
 
                     continue;
                 }
+
+                if (tline.startsWith(":anchor ")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    buff.append(HU.anchorName((toks.size() > 1)
+					      ? toks.get(1)
+					      : ""));
+                    continue;
+		}
 
                 if (tline.startsWith(":b ")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
