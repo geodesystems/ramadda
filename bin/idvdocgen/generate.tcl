@@ -139,7 +139,7 @@ proc ht::doImage {img centered {caption ""} {extra ""}} {
 
 
 proc ht::screenshot {img {caption ""} {css ""}} {
-    set extra  " style='width:60%;padding:4px;margin:8px;$css' "
+    set extra  " style='width:80%;padding:4px;margin:8px;$css' "
     return "<center><span style='display:inline-block'>[ht::cimg $img $caption $extra]</span></center>"
 }
 
