@@ -90,19 +90,18 @@ To add attributes to the div do:
 
 To create a button do:
 [wiki::text {
-
 :button /url Some label
-
 :button-green /url Some label
-
 :button-blue /url Some label
 }]
 
 Will produce:
-[ht::cimg images/buttons.png {Buttons} {border=0}]
-
-
-
+:button /url Some label
+:br
+:button-green /url Some label
+:br
+:button-blue /url Some label
+:p
 
 You can escape your wiki text and include raw, unprocessed text with the &lt;nowiki&gt; tag:
 [wiki::text {
@@ -121,10 +120,7 @@ For example, if you want to include javascript in your text do:
 ...
 &lt;/script&gt;
 &lt;/nowiki&gt;
-
 }]
-
-See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
 
 
 [ug::subsubheading {Macros} {macros}]
@@ -255,7 +251,7 @@ You can change the background color with:
 :note-rose Rose colored background
 }]
 
-Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
+Examples at <a href="https://ramadda.org/repository/alias/wikiexamples">https://ramadda.org/repository/alias/wikiexamples</a>.
 <p>
 
 
@@ -458,7 +454,6 @@ for(let i=0;&lt;l.length;i++) {
 var x = {}
 ```
 }]
-
 
 
 [ug::subsubheading {Embedding Vega Charts} vega]

@@ -2,59 +2,36 @@
 
 <%nochildlist%>
 
-RAMADDA uses wiki text in a number of ways. You can  create Wiki Page entries, you can style any entry
-using wiki text and you can also add in a Page Style metadata element that allows you
-to define the style used for a whole collection of entries.
+RAMADDA uses wiki text in a number of ways. You can  create Wiki Page entries, you
+can style any entry using wiki text and you can also add in a Page Style metadata element
+that allows you to define the style used for a whole collection of entries.
 
 
 [ug::subheading {Wiki Editor} editor]
-RAMADDA provides a wiki text editor:
-[ht::cimg images/wikiedit.png {Wiki Text Editor} {border=0 width=70%}]
+RAMADDA provides a wiki text editor for use with all of the above ways of using wiki text:
+[ht::screenshot images/wikiedit.png {Wiki Text Editor} {border=0 width=70%}]
 
+The menu bar provides a large number of options for entering the wiki text.
 <a name="menubar"></a>
 <ul>
-<li>
-The  buttons allow you to add basic wiki markup.
+<li> Formatting  - Basic wiki text formatting - sections, tabs, accoridion, slides, notes, etc.
 <p>
-<li>
-The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
-(e.g., name, description, children entries, etc).
+<li> Misc  - Further formatting options  - title, heading, paragraph, links, etc
 <p>
-<li>
-The Add entry id menu allows you to specify the entry to use in properties (see below).
+<li> Entries - Wiki display components used to display RAMADDA entries.
+For single entries there is  name, data, description, download, etc.
+For multiple entiries there is tabletree, links, map, gallery, etc
 <p>
-<li>
-The Add entry link menu adds wiki links to other entries.
+<li> Import Entry  - select an entry then specify how to embed it, e.g. Link, Tree, Gallery, or the entry specifier "entry=ID".
+<p>
+<li> Entry ID - Select an entry and insert its ID.
+<p>
+<li> Displays  - 
+<p>
+<li> Field ID - 
+<p>
+<li> Etc... - A live preview window, word count and links to help.
 </ul>
-
-
-
-[ug::subheading {Wiki Text in Entries} wikidesc]
-You can use the wiki text display capabilities to customize the default
-HTML view of any other entry or folder types. If the description of the entry
-begins with &quot;&lt;wiki&gt;&quot; then we treat the description as wiki text
-and process it to create the default HTML view. This allows you to override the default html display and come up with your own display.
-For example, here is Unidata's <a href="http://motherlode.ucar.edu/repository/entry/show/RAMADDA/Unidata/Workshops/2009+Users+Workshop?entryid=21d48da6-9b34-41cd-bdee-1b73b68ae32f">2009 User's Workshop page</a> and here is the desciption of that page:
-<pre>
-&lt;wiki&gt;
-&lt;center&gt;
-&lt;h3&gt;
-Welcome to the RAMADDA area for the Spring 2009 User's Workshop.&lt;br&gt;Using Operational and Experimental Observations in Geoscience Education&lt;br&gt;
-June 8th-12th&lt;/h3&gt;
-&lt;/center&gt;
-
-&lt;table width="100%"&gt;&lt;tr valign="top"&gt;&lt;td&gt;
-
-{<noop>{tree title="Links"}}
-&lt;/td&gt;&lt;td&gt;
-&lt;img src="http://www.unidata.ucar.edu/photos/2006userwkshp/collage.jpg" width="500"&gt;
-&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-
-Presentation Schedule:
-{<noop>{import entry="075c24ad-9078-4f3f-8a96-1866668a449b" output="calendar.calendar" }}
-</pre>
-
-In this case we use html and the import tags to come up with the page layout.
 
 
 
@@ -63,7 +40,20 @@ One of the entry types that RAMADDA provides is a Wiki Page entry.
 You create a new Wiki Page just like you create any entry - in a folder
 that you have create privileges for go to  File-&gt;New Entry menu.
 In the form select &quot;Wiki Page&quot; to go to the Wiki Page create form:
-[ht::cimg images/wikicreate.png {Wiki Page Create Form} {border=0 width=70%}]
+[ht::screenshot images/wikicreate.png {Wiki Page Create Form}]
+
+
+
+[ug::subheading {Wiki Text in Entries} wikidesc]
+You can use the wiki text display capabilities to customize the default
+HTML view of any other entry or folder types. In the description of the entry
+click on the <img src="{{root}}/icons/wiki.png"> checkbox. This enables the wiki text editor:
+
+[ht::screenshot images/wikicreate2.png {Wiki Entry Description}]
+
+
+
+
 
 
 
