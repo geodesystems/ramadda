@@ -2075,7 +2075,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(buttons);
         HU.close(sb, "div");
         StringBuilder js = new StringBuilder();
-        js.append("HtmlUtil.initSelect('.search-select');\n");
+        js.append("$( document ).ready(function() {HtmlUtil.initSelect('.search-select');\n});");
         HtmlUtils.script(sb, js.toString());
         sb.append(HU.comment("search form close"));
         sb.append(HtmlUtils.formClose());
