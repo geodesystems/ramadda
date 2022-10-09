@@ -2723,6 +2723,13 @@ public class WikiUtil {
 		    continue;
 		}
 
+                if (tline.startsWith(":vspace")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    String space = toks.size()==1?"10px":HU.makeDim(toks.get(1),"px");
+		    buff.append(HU.div("",HU.style(HU.css("margin-top",space))));
+		    continue;
+		}
+
                 if (tline.equals(":br")) {
                     buff.append("<br>");
 
