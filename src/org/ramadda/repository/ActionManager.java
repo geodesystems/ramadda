@@ -129,8 +129,8 @@ public class ActionManager extends RepositoryManager {
                 getPageHandler().entrySectionOpen(request, action.getEntry(),
                         sb, "Action: " + action.getName());
             } else {
-                sb.append(HtmlUtils.sectionOpen("Action: "
-                        + action.getName(), false));
+                getPageHandler().sectionOpen(request, sb, "Action: "
+					     + action.getName(),false);
             }
         }
 
@@ -197,7 +197,7 @@ public class ActionManager extends RepositoryManager {
                 getPageHandler().entrySectionClose(request,
                         action.getEntry(), sb);
             } else {
-                sb.append(HtmlUtils.sectionClose());
+                getPageHandler().sectionClose(request, sb);
             }
         }
         Result result = makeResult(request, "Status", status, sb, json);

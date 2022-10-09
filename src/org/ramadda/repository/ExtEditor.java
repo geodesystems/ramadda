@@ -71,6 +71,9 @@ public class ExtEditor extends RepositoryManager {
     /** _more_ */
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
 
+    public static final String ARG_EXTEDIT_REINDEX = "extedit.reindex";
+
+
     public static final String ARG_EXTEDIT_THUMBNAIL= "extedit.thumbnail";    
 
 
@@ -98,6 +101,9 @@ public class ExtEditor extends RepositoryManager {
 
     /** _more_ */
     public static final String ARG_EXTEDIT_SPATIAL = "extedit.spatial";
+
+
+
 
     /** _more_ */
     public static final String ARG_EXTEDIT_TEMPORAL = "extedit.temporal";
@@ -178,6 +184,7 @@ public class ExtEditor extends RepositoryManager {
 
 	String[] what = new String[]{
 	    ARG_EXTEDIT_EDIT,
+	    //	    ARG_EXTEDIT_REINDEX,
 	    ARG_EXTEDIT_REPORT,
 	    ARG_EXTEDIT_CHANGETYPE,
 	    ARG_EXTEDIT_CHANGETYPE_RECURSE,
@@ -186,10 +193,13 @@ public class ExtEditor extends RepositoryManager {
 	};
 	
 
+
+
         final StringBuilder sb = new StringBuilder();
         final StringBuilder prefix = new StringBuilder();
         final StringBuilder suffix = new StringBuilder();
 	Object actionId=null;
+	boolean canCancel = false;
 
 
 
@@ -271,9 +281,29 @@ public class ExtEditor extends RepositoryManager {
                 }
             };
 
-	    actionId = getActionManager().runAction(action,"extendededitjs","");
+	    actionId = getActionManager().runAction(action,"Change Metadata","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_EDIT};
 	    //            return getActionManager().doAction(request, action, "Walking the tree", "", entry);
+	} else  if (request.exists(ARG_EXTEDIT_REINDEX)) {
+	    //	    final boolean doMetadata = request.get(ARG_EXTEDIT_METADATA, false);
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+		    try {
+			getSearchManager().reindexLuceneTreeFields(actionId, finalEntry);
+			getActionManager().setContinueHtml(actionId,
+							   "Reindexing finished");
+		    } catch(Throwable thr) {
+			getActionManager().setContinueHtml(actionId,
+							   "An error occurred reindexing entry\n" + thr);
+			thr.printStackTrace();
+			return;
+		    }
+                }
+            };
+
+	    actionId = getActionManager().runAction(action,"Reindex","",finalEntry);
+	    canCancel = true;
+	    what = new String[]{ARG_EXTEDIT_REINDEX};
         } else  if (request.exists(ARG_EXTEDIT_CHANGETYPE)) {
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
                                              request.getString(
@@ -351,7 +381,7 @@ public class ExtEditor extends RepositoryManager {
                 }
             };
 
-	    actionId = getActionManager().runAction(action,"extendededitjs","");
+	    actionId = getActionManager().runAction(action,"Change Type","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_CHANGETYPE_RECURSE};
         } else if (request.exists(ARG_EXTEDIT_JS)) {
             final boolean forReal =
@@ -462,7 +492,7 @@ public class ExtEditor extends RepositoryManager {
 						       walker.getMessageBuffer().toString());
                 }
             };
-	    actionId = getActionManager().runAction(action,"extendededitjs","");
+	    actionId = getActionManager().runAction(action,"extendededitjs","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_JS};
 
         } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
@@ -499,7 +529,7 @@ public class ExtEditor extends RepositoryManager {
                 }
             };
 
-	    actionId = getActionManager().runAction(action,"","");
+	    actionId = getActionManager().runAction(action,"","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_URL_CHANGE};
         } else  if (request.exists(ARG_EXTEDIT_REPORT)) {
             final long[] size     = { 0 };
@@ -610,9 +640,14 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(prefix);
 	if(actionId!=null) {
 	    String url = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&output=json";
+
 	    sb.append(HU.b("Results"));
 	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
-	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"');\n");
+	    if(canCancel) {
+		String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
+		sb.append(HU.button(HU.href(cancelUrl,"Cancel")));
+	    }
+	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"',"+ canCancel+");\n");
 	}
 
 
@@ -654,12 +689,16 @@ public class ExtEditor extends RepositoryManager {
 		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
 						    true, "Recurse"));
 		closer.accept(form,"Set metadata");
+	    } else if(form.equals(ARG_EXTEDIT_REINDEX)){
+		opener.accept("Reindex");
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
+					     true, "Show missing files")  + "<br>");
+		closer.accept(form, "Reindex Search");
 	    } else if(form.equals(ARG_EXTEDIT_REPORT)){
 		opener.accept("File Listing");
-		sb.append(HU.checkbox(ARG_EXTEDIT_REPORT_MISSING, "true",
-					     true) + " " + msg("Show missing files")  + "<br>");
-		sb.append(HU.checkbox(ARG_EXTEDIT_REPORT_FILES, "true", true)
-			  + " " + msg("Show OK files") + "<p>");
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
+					     true,"Show missing files")  + "<br>");
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_FILES, "true", true,"Show OK files") + "<p>");
 		closer.accept(form, "Generate File Listing");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
 		opener.accept("Change Entry Type");
@@ -695,8 +734,8 @@ public class ExtEditor extends RepositoryManager {
 			     HU.select(ARG_EXTEDIT_NEWTYPE,
 				       tfos));
 		HU.formEntry(sb, "",
-			     HU.checkbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
-					 false) + " " + msg("Yes, change them"));
+			     HU.labeledCheckbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
+						false, "Yes, change them"));
 		sb.append(HU.formTableClose());
 		closer.accept(form,"Change the type of all descendent entries");
 	    }	else if(form.equals(ARG_EXTEDIT_URL_CHANGE)){		

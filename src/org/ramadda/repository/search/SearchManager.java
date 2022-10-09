@@ -459,6 +459,36 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	getActionManager().actionComplete(actionId);
     }
 
+    public void reindexLuceneTreeFields(Object actionId, Entry root)  throws Throwable {	
+	IndexWriter writer = getLuceneWriter();
+	getActionManager().setActionMessage(actionId,
+					    "indexing:" + root);
+
+	Misc.sleepSeconds(5);
+	reindexLuceneTreeFields(writer, actionId, root);
+	writer.commit();
+	getActionManager().actionComplete(actionId);
+    }
+
+
+    private void reindexLuceneTreeFields(IndexWriter writer, Object actionId, Entry root)  throws Throwable {	
+	IndexReader reader =  DirectoryReader.open(writer);
+	IndexSearcher searcher = new IndexSearcher(reader);
+	Query query = new TermQuery(new Term(FIELD_ENTRYID, root.getId()));
+	TopDocs       hits     = searcher.search(query, 1);
+	ScoreDoc[]    docs     = hits.scoreDocs;
+	if(docs.length==0) {
+	    System.err.println("not found:"  + root);
+	    return;
+	}
+	org.apache.lucene.document.Document doc =
+	    searcher.doc(docs[0].doc);
+	System.err.println("got:" + root);
+
+
+    }
+
+
 
     private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
         return  new Callable<Boolean>() {
