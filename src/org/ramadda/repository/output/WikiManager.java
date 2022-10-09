@@ -2848,10 +2848,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
             List<String> displayProps = new ArrayList<String>();
             if (jsonUrl == null) {
-                if (props.get("max") == null) {
-                    String max = getProperty(wikiUtil, props, "max", null);
-                    if (max != null) {
-                        props.put("max", max);
+		//Push the props
+		for(String prop:new String[]{"max","lastRecords"}) {
+		    if (props.get(prop) == null) {
+			String value = getProperty(wikiUtil, props, prop, null);
+			if (value != null) {
+			    props.put(prop,value);
+			}
                     }
                 }
 
