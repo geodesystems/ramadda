@@ -5771,15 +5771,15 @@ public class TypeHandler extends RepositoryManager {
                                         + msg("Search metadata");*/
 
             String searchExact = " "
-                                 + HtmlUtils.checkbox(ARG_EXACT, "true",
-                                     request.get(ARG_EXACT, false)) + " "
-                                         + msg("Match exactly");
+                                 + HtmlUtils.labeledCheckbox(ARG_EXACT, "true",
+							     request.get(ARG_EXACT, false),
+							     "Match exactly");
             String extra = HtmlUtils.p() + searchExact + searchMetaData;
             if (getDatabaseManager().supportsRegexp()) {
-                extra = HtmlUtils.checkbox(
-                    ARG_ISREGEXP, "true",
-                    request.get(ARG_ISREGEXP, false)) + " "
-                        + msg("Use regular expression");
+                extra = HtmlUtils.labeledCheckbox(
+						  ARG_ISREGEXP, "true",
+						  request.get(ARG_ISREGEXP, false),
+						  "Use regular expression");
 
                 extra = HtmlUtils.makeToggleInline(msg("More..."), extra,
                         false);
@@ -5920,10 +5920,9 @@ public class TypeHandler extends RepositoryManager {
                                      ? " MULTIPLE SIZE=4 "
                                      : ""));
             String groupCbx = (advancedForm
-                               ? HtmlUtils.checkbox(ARG_TYPE_EXCLUDE, "true",
-                                   request.get(ARG_TYPE_EXCLUDE,
-                                       false)) + HtmlUtils.space(1)
-                                           + msg("Exclude")
+                               ? HtmlUtils.labeledCheckbox(ARG_TYPE_EXCLUDE, "true",
+							   request.get(ARG_TYPE_EXCLUDE,
+								       false),"Exclude")
                                : "");
 
 
@@ -5951,12 +5950,10 @@ public class TypeHandler extends RepositoryManager {
         if (advancedForm || request.defined(ARG_GROUP)) {
             String groupArg = (String) request.getString(ARG_GROUP, "");
             String searchChildren = " "
-                                    + HtmlUtils.checkbox(ARG_GROUP_CHILDREN,
+                                    + HtmlUtils.labeledCheckbox(ARG_GROUP_CHILDREN,
                                         "true",
                                         request.get(ARG_GROUP_CHILDREN,
-                                            false)) + " ("
-                                                + msg("Search sub-folders")
-                                                + ")";
+						    false),"(Search sub-folders)");
             if (groupArg.length() > 0) {
                 basicSB.append(HtmlUtils.hidden(ARG_GROUP, groupArg));
                 Entry group = getEntryManager().findGroup(request, groupArg);
@@ -6088,17 +6085,17 @@ public class TypeHandler extends RepositoryManager {
                                    dateTypeValue);
 
         String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
-        String noDateInput = HtmlUtils.checkbox(ARG_DATE_NODATAMODE,
+        String noDateInput = HtmlUtils.labeledCheckbox(ARG_DATE_NODATAMODE,
                                  VALUE_NODATAMODE_INCLUDE,
-                                 noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
+						       noDataMode.equals(VALUE_NODATAMODE_INCLUDE),
+						       "Include entries with no data times");
         String dateExtra;
         if (arg.getHasRange()) {
             dateExtra = HtmlUtils.makeToggleInline(msg("More..."),
                     HtmlUtils.br() + HtmlUtils.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
                 msgLabel("Or search relative"), dateSelectInput, "",
-                noDateInput + HtmlUtils.space(1)
-                + msg("Include entries with no data times")
+                noDateInput
             }), false);
         } else {
             dateExtra = HtmlUtils.makeToggleInline(msg("More..."),
@@ -6142,19 +6139,19 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public static String getSpatialSearchTypeWidget(Request request) {
-        String radio = HtmlUtils.radio(
+        String radio = HtmlUtils.labeledRadio(
                            ARG_AREA_MODE, VALUE_AREA_OVERLAPS,
                            request.getString(
                                ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
-                               VALUE_AREA_OVERLAPS)) + msg("Overlaps")
+									  VALUE_AREA_OVERLAPS),"Overlaps")
                                    + HtmlUtils.space(3)
-                                   + HtmlUtils.radio(
+	    + HtmlUtils.labeledRadio(
                                        ARG_AREA_MODE, VALUE_AREA_CONTAINS,
                                        request.getString(
                                            ARG_AREA_MODE,
                                            VALUE_AREA_OVERLAPS).equals(
-                                               VALUE_AREA_CONTAINS)) + msg(
-                                                   "Contained by");
+								       VALUE_AREA_CONTAINS),
+				       "Contained by");
 
         return radio;
     }
