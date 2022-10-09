@@ -952,10 +952,9 @@ public class AssociationManager extends RepositoryManager {
         sb.append(HU.formTable());
 
         String searchExact = " "
-                             + HU.checkbox(ARG_EXACT, "true",
+                             + HU.labeledCheckbox(ARG_EXACT, "true",
                                            request.get(ARG_EXACT,
-                                               false)) + " "
-                                                   + msg("Match exactly");
+						       false),"Match exactly");
         sb.append(HU.formEntry(msgLabel("Name"),
                                HU.input(ARG_NAME,
                                         request.getSanitizedString(ARG_NAME,
