@@ -459,6 +459,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	getActionManager().actionComplete(actionId);
     }
 
+    /* Not implemented yet
     public void reindexLuceneTreeFields(Object actionId, Entry root)  throws Throwable {	
 	IndexWriter writer = getLuceneWriter();
 	getActionManager().setActionMessage(actionId,
@@ -487,8 +488,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     }
-
-
+    */
 
     private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
         return  new Callable<Boolean>() {
@@ -1620,6 +1620,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		entriesMovedInner(request, child);
 	    }
 	}
+	//TODO: instead of completely reindexing the entries instead delete the ancestor/parent fields
+	//and add the new ones back into the index
 	List<String> ids = new ArrayList<String>();
 	List<Entry> entries = new ArrayList<Entry>();
 	ids.add(entry.getId());

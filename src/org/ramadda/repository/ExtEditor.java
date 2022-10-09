@@ -286,6 +286,7 @@ public class ExtEditor extends RepositoryManager {
 	    //            return getActionManager().doAction(request, action, "Walking the tree", "", entry);
 	} else  if (request.exists(ARG_EXTEDIT_REINDEX)) {
 	    //	    final boolean doMetadata = request.get(ARG_EXTEDIT_METADATA, false);
+	    /* not implemented yet
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(Object actionId) throws Exception {
 		    try {
@@ -304,6 +305,7 @@ public class ExtEditor extends RepositoryManager {
 	    actionId = getActionManager().runAction(action,"Reindex","",finalEntry);
 	    canCancel = true;
 	    what = new String[]{ARG_EXTEDIT_REINDEX};
+	    */
         } else  if (request.exists(ARG_EXTEDIT_CHANGETYPE)) {
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
                                              request.getString(
