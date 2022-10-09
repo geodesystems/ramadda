@@ -124,6 +124,7 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 ----
 +row
 +col-md-8
+{{property lastRecords="20000"}}
 {{group showMenu="true" }}
 {{display_linechart fields="pm2.5" }}
 {{display_linechart fields="temperature" }}
