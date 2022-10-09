@@ -1365,10 +1365,10 @@ public class Admin extends RepositoryManager {
                 HtmlUtils.colspan(msgHeader("Site Information"), 2)));
         String allSslCbx =
             HtmlUtils.space(3)
-            + HtmlUtils.checkbox(
+            + HtmlUtils.labeledCheckbox(
                 PROP_ACCESS_ALLSSL, "true",
-                getRepository().getProperty(PROP_ACCESS_ALLSSL, false)) + " "
-                    + msg("Force all connections to be secure");
+                getRepository().getProperty(PROP_ACCESS_ALLSSL, false),
+		"Force all connections to be secure");
 
         String sslMsg =
             "Note: To enable ssl see the <a target=\"_help\" href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
@@ -1542,28 +1542,28 @@ public class Admin extends RepositoryManager {
         asb.append(
             HtmlUtils.formEntry(
                 "",
-                HtmlUtils.checkbox(
-                    PROP_ACCESS_ADMINONLY, "true",
-                    getRepository().getProperty(
-                        PROP_ACCESS_ADMINONLY, false)) + HtmlUtils.space(2)
-                            + msg("Only allows administrators to access the site")));
+                HtmlUtils.labeledCheckbox(
+					  PROP_ACCESS_ADMINONLY, "true",
+					  getRepository().getProperty(
+								      PROP_ACCESS_ADMINONLY, false),
+					  "Only allows administrators to access the site")));
         asb.append(
             HtmlUtils.formEntry(
                 "",
-                HtmlUtils.checkbox(
+                HtmlUtils.labeledCheckbox(
                     PROP_ACCESS_REQUIRELOGIN, "true",
                     getRepository().getProperty(
-                        PROP_ACCESS_REQUIRELOGIN, false)) + HtmlUtils.space(
-                            2) + msg("Require login to access the site")));
+						PROP_ACCESS_REQUIRELOGIN, false),
+		    "Require login to access the site")));
 
         asb.append(
             HtmlUtils.formEntry(
                 "",
-                HtmlUtils.checkbox(
+                HtmlUtils.labeledCheckbox(
                     PROP_ACCESS_NOBOTS, "true",
                     getRepository().getProperty(
-                        PROP_ACCESS_NOBOTS, false)) + HtmlUtils.space(2)
-                            + msg("Disallow robots")));
+						PROP_ACCESS_NOBOTS, false),
+		    "Disallow robots")));
 
 
 
@@ -1660,8 +1660,8 @@ public class Admin extends RepositoryManager {
         String outputDiv = HtmlUtils.div(outputSB.toString(),
                                          HtmlUtils.cssClass("scrollablediv"));
         osb.append("\n");
-        String doAllOutput = HtmlUtils.checkbox("outputtype.all", "true",
-                                 false) + HtmlUtils.space(1) + msg("Use all");
+        String doAllOutput = HtmlUtils.labeledCheckbox("outputtype.all", "true",
+						       false, "Use all");
         osb.append(HtmlUtils.formEntryTop("", doAllOutput + outputDiv));
         osb.append("\n");
         StringBuffer handlerSB = new StringBuffer();
@@ -2833,9 +2833,8 @@ public class Admin extends RepositoryManager {
                 sb.append(HtmlUtils.section(HtmlUtils.h3(msg("Shutdown"))
                         + HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
                         + HtmlUtils.space(2)
-                        + HtmlUtils.checkbox(ARG_SHUTDOWN_CONFIRM, "true", false)
-                        + HtmlUtils.space(1)
-                        + msg("Yes, I really want to shutdown the server")));
+					    + HtmlUtils.labeledCheckbox(ARG_SHUTDOWN_CONFIRM, "true", false,
+									"Yes, I really want to shutdown the server")));
                 sb.append(HtmlUtils.formClose());
             }
 
