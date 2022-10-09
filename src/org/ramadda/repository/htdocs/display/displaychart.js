@@ -323,6 +323,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.pointShape',d:null,ex:null},	
 	{p:'some_field.pointShape',d:null,ex:null},
 
+	{p:'dragToZoom',d:true},
+	{p:'dragToPan',d:false},	
+
 	{label:'Trendlines'},
 	{p:'showTrendline',d:null,ex:"true"},
 	{p:"trendlineType",ex:"exponential"},
@@ -1609,6 +1612,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    };
 
 
+	    if(this.getDragToZoom()) {
+		chartOptions.explorer =  { 
+		    actions: ['dragToZoom', 'rightClickToReset'],
+		    axis: 'horizontal',
+		    keepInBounds: true,
+		    maxZoomIn: 4.0
+		};
+	    } else if(this.getDragToPan()) {
+		chartOptions.explorer= {
+		    axis: 'horizontal',
+		    keepInBounds: true,
+		    maxZoomIn: 4.0
+		}
+	    }
 
             chartOptions.vAxis = {
                 gridlines: {},
