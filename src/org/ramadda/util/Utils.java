@@ -5182,6 +5182,10 @@ public class Utils extends IO {
         return join(l, delim, false);
     }
 
+    public static String join(String delim, String...args) {
+	return join(Arrays.asList(args),delim);
+    }
+
     /**
      * _more_
      *
