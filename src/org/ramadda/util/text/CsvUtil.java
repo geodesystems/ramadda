@@ -58,6 +58,8 @@ import org.ramadda.util.sql.SqlUtil;
 @SuppressWarnings("unchecked")
 public class CsvUtil implements CsvCommands {
 
+    private static final String PREFIX_FILE = "file:";
+
     /** _more_          */
     private static boolean debugFiles = false;
 
@@ -1098,8 +1100,8 @@ public class CsvUtil implements CsvCommands {
 
 
     public String readFile(String file) throws Exception {
-	if (file.startsWith("file:")) {
-	    file = file.substring("file:".length());
+	if (file.startsWith(PREFIX_FILE)) {
+	    file = file.substring(PREFIX_FILE.length());
 	}
 	checkOkToRead(file);
 	return  IO.readContents(new File(file));
@@ -3174,6 +3176,14 @@ public class CsvUtil implements CsvCommands {
 
     private Hashtable<String,CsvFunctionHolder> functions;
 
+    private String getText(String v) throws Exception {
+	if (v.startsWith(PREFIX_FILE)) {
+	    v = readFile(v);
+	}
+	return v;
+    }
+
+
     private void defineFunction(String[] names, int args, CsvFunction func) {
 	for(String  name: names)
 	    defineFunction(name,args,func);
@@ -5063,19 +5073,10 @@ public class CsvUtil implements CsvCommands {
 
 	defineFunction(CMD_TEMPLATE,4,(ctx,args,i) -> {
 		try {
-		    String prefix   = args.get(++i).replaceAll("_nl_", "\n");
-		    String template = args.get(++i).replaceAll("_nl_", "\n");
+		    String prefix   = getText(args.get(++i).replaceAll("_nl_", "\n"));
+		    String template = getText(args.get(++i).replaceAll("_nl_", "\n"));
 		    String delim    = args.get(++i).replaceAll("_nl_", "\n");
-		    String suffix   = args.get(++i).replaceAll("_nl_", "\n");
-		    if (prefix.startsWith("file:")) {
-			prefix = readFile(prefix);
-		    }
-		    if (template.startsWith("file:")) {
-			template = readFile(template);
-		    }
-		    if (suffix.startsWith("file:")) {
-			suffix = readFile(suffix);
-		    }
+		    String suffix   = getText(args.get(++i).replaceAll("_nl_", "\n"));
 		    ctx.addProcessor(
 				     new Processor.Printer(
 							   prefix, template, delim, suffix));
