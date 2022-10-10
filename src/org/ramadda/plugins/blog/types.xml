@@ -15,11 +15,9 @@
 
 
   <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.plugins.blog.BlogEntryTypeHandler" category="Information" foruser="true" metadata="enum_tag,content.attachment">
-     <property name="icon" value="/blog/blog_icon.png"/>
-
+     <property name="icon" value="/blog/blog-solid.png"/>
      <property name="form.name.label" value="Subject"/>
      <property name="form.name.columns" value="80"/>
-
      <property name="form.description.label" value="Blog Entry"/>
      <property name="form.description.rows" value="10"/>
      <property name="form.description.iswiki" value="true"/>
