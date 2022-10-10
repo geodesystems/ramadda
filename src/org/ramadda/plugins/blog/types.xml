@@ -3,7 +3,7 @@
 
   <type name="weblog"  description="Weblog" handler="org.ramadda.plugins.blog.WeblogTypeHandler" category="Information" metadata="enum_tag,content.attachment">
 
-     <property name="icon" value="/blog/blog-icon-box-orange-16.png"/>
+     <property name="icon" value="/blog/blog-solid.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="false"/>
