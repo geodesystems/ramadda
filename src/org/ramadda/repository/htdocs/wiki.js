@@ -642,8 +642,9 @@ WikiEditor.prototype = {
     doColor: function (event) {
 	let html = "<input type=color id=colorpicker style='xdisplay:none;'>";
 	html+= HU.div(['class','ramadda-buttons'],
-		      HU.span([ID,this.domId(this.ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
-		      HU.span([ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel"));
+		      HU.span([ID,this.domId("color_apply")],"Apply") + SPACE1 +
+		      HU.span([ID,this.domId("color_ok")],"Ok") + SPACE1 +
+		      HU.span([ID,this.domId("color_cancel")],"Cancel"));
 
 	html = HU.div(['class','ramadda-dialog'],html);
 	if(this.colorDialog) {
@@ -661,11 +662,17 @@ WikiEditor.prototype = {
 	    this.colorDialog.remove();
 	    this.colorDialog = null;
 	};
-	this.jq(this.ID_WIKI_POPUP_OK).button().click(()=>{
+	let apply = () =>{
 	    this.insertAtCursor(picker.val());
+	};
+	this.jq('color_apply').button().click(()=>{
+	    apply();
+	});
+	this.jq('color_ok').button().click(()=>{
+	    apply();
 	    close();
 	});
-	this.jq(this.ID_WIKI_POPUP_CANCEL).button().click(()=>{
+	this.jq('color_cancel').button().click(()=>{
 	    close();
 	});	
 	picker.trigger('click');
