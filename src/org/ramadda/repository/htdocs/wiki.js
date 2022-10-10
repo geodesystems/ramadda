@@ -193,7 +193,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.ID_WIKI_PREVIEW_COPY = "preview_copy";
     this.ID_WIKI_PREVIEW_DOWNLOAD = "preview_download";
     this.ID_WIKI_MESSAGE = "message";
-    this.ID_WIKI_MENUBAR    = "menubar";
+    this.ID_WIKI_MENUBAR   = "menubar";
     this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
     this.ID_WIKI_POPUP_OK= "wiki-popup-ok";
     this.ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
@@ -275,10 +275,15 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
 
+
     this.jq("previewbutton").click(()=>{
 	HtmlUtils.hidePopupObject();
 	this.doPreview(this.entryId);
     });
+    this.jq("color").click((event)=>{
+	HtmlUtils.hidePopupObject();
+	this.doColor(event);
+    });	
     this.jq("wordcount").click(()=>{
 	HtmlUtils.hidePopupObject();
 	this.doWordcount();
@@ -633,6 +638,38 @@ WikiEditor.prototype = {
 	alert("Approximately " + s.length +" words");
     },
 
+
+    doColor: function (event) {
+	let html = "<input type=color id=colorpicker style='xdisplay:none;'>";
+	html+= HU.div(['class','ramadda-buttons'],
+		      HU.span([ID,this.domId(this.ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
+		      HU.span([ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel"));
+
+	html = HU.div(['class','ramadda-dialog'],html);
+	if(this.colorDialog) {
+	    this.colorDialog.remove();
+	}
+	this.colorDialog = HU.makeDialog({content:html,anchor:this.getDiv(),
+				    my: "left top",     
+				    at: "left+200" +" top+" + (event.y),
+				    title:"Select Color",
+				    header:true,sticky:true,draggable:true,modal:false});	
+	let picker = $("#colorpicker");
+	let close = () =>{
+	    picker.attr('type','text').attr('type','color');
+	    picker.remove();
+	    this.colorDialog.remove();
+	    this.colorDialog = null;
+	};
+	this.jq(this.ID_WIKI_POPUP_OK).button().click(()=>{
+	    this.insertAtCursor(picker.val());
+	    close();
+	});
+	this.jq(this.ID_WIKI_POPUP_CANCEL).button().click(()=>{
+	    close();
+	});	
+	picker.trigger('click');
+    },
 
     doPreview:async function (entry,  inPlace) {
 	let id = this.getId();

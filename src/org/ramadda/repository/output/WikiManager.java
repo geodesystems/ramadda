@@ -7022,6 +7022,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			     "ramadda-menubar-button ramadda-menubar-button-last"))
 	    +   HU.div("",HU.attrs("id", textAreaId+"_preview", "class", "wiki-editor-preview"));
 
+        String colorButton =
+	    HU.href("#", "Color",
+		    HU.attrs("id", textAreaId+"_color", "xstyle", "padding:5px;",
+			     "xclass",
+			     "ramadda-menubar-button ramadda-menubar-button-last"));
+
+
         String wcButton =
 	    HU.href("#", "Word Count",
 		    HU.attrs("id", textAreaId+"_wordcount", "xstyle", "padding:5px;",
@@ -7030,7 +7037,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
-	help.append(previewButton+"<br>" + wcButton +"<div class=ramadda-thin-hr></div><b>Help</b><br>");
+	help.append(Utils.join("<br>",previewButton, colorButton, wcButton) +"<div class=ramadda-thin-hr></div><b>Help</b><br>");
 
 
 	BiConsumer<String,String> makeHelp = (p,title)->{

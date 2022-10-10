@@ -231,6 +231,15 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     font-size:16pt;
 }
 
+.ramadda-dialog {
+    margin:8px;
+}
+
+.ramadda-buttons {
+    text-align:center;
+    margin:4px;
+}
+
 .ramadda-menu-button {
     background:#fff;
     display:inline-block;
@@ -5169,6 +5178,7 @@ a.wiki-link-noexist {
     border: none;
     background: none;
 }
+
 
 .ui-dialog {
      -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
