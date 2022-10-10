@@ -2803,7 +2803,6 @@ public class WikiUtil {
                                          ? toks.get(2)
                                          : "link";
                     buff.append(HU.href(toks.get(1), label));
-
                     continue;
                 }
 
@@ -2922,6 +2921,10 @@ public class WikiUtil {
                     String        tag       = toks.get(0).substring(1);
                     //box-green
 
+                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
+							     ? toks.get(1)
+							     : "");
+
                     List<String>  toks2 = Utils.splitUpTo(tag, "-", 2);
                     String        what      = toks2.get(0);
                     //box
@@ -2932,7 +2935,14 @@ public class WikiUtil {
                     //green
 
                     StringBuilder extra     = new StringBuilder();
-                    String        style     = getAttribute(tline, "style");
+                    String        style     = (String)props.get("style");    
+                    String        background     = (String)props.get("background");
+		    if(background!=null) {
+			if(style==null) style="";
+			style = "background:" + background+";" + style;
+		    }
+
+
                     if (style != null) {
                         extra.append(HU.style(style));
                     }
