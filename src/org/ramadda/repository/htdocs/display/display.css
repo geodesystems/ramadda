@@ -2688,7 +2688,7 @@ table.dataTable tfoot td {
 
 .display-simplesearch-entries {
     max-width:300px;
-    scroll-x:auto;
+    overflow-x:hidden;
     padding:5px;
     max-height:300px;
     overflow-y:auto;
@@ -2697,6 +2697,9 @@ table.dataTable tfoot td {
 
 
 .display-simplesearch-entry {
+    max-width:300px;
+    white-space:nowrap;
+    overflow-x:hidden;
     margin-left:4px;
     margin-right:4px;
 }
@@ -2708,7 +2711,6 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entry:hover a {
-    @I-HOVER@
 }
 
 

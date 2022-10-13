@@ -2382,7 +2382,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    entries.forEach((entry,idx) =>{
 		map[entry.getId()] = entry;
 		let thumb = entry.getThumbnail();
-		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry","entryid",entry.getId()];
+		let attrs = [TITLE,entry.getName(),CLASS,"display-simplesearch-entry","entryid",entry.getId()];
 		if(thumb) attrs.push("thumbnail",thumb);
 		let link = HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName());
 		if(showParent && entry.getParentName()) {
