@@ -88,7 +88,7 @@ public class PhoneUtils {
     public static final int SMS_CODE_ALREADYSENT = 1;    
     public static final int SMS_CODE_BADPHONE = 2;
     public static final int SMS_CODE_ERROR = 3;    
-
+    public static final int SMS_CODE_UNSUBSCRIBED = 4;
 
     private static File getCampaignFile(String campaign) {
 	return  new File(campaign + ".sent.txt");
@@ -112,8 +112,8 @@ public class PhoneUtils {
      * @throws Exception _more_
      */
     public static int sendSMS(String phone, String msg,
-                                  boolean ignoreInvalidNumbers,
-                                  String campaign)
+			      boolean ignoreInvalidNumbers,
+			      String campaign)
             throws Exception {
         if ( !initTwilio()) {
             throw new IllegalArgumentException(
@@ -172,8 +172,13 @@ public class PhoneUtils {
             return SMS_CODE_ERROR;
         }
         String status = _status.toString();
+	int code = obj.optInt("code",-1);
+	if(code == 21610) {
+	    writeCampaignFile(campaign,phone,"unsubscribed");
+	    return SMS_CODE_UNSUBSCRIBED;
+	}
+
         if (status.equals("400")) {
-	    int code = obj.getInt("code");
 	    if(code == 21211) {
 		//Write the bad phone
 		writeCampaignFile(campaign,phone,"failed");
@@ -330,8 +335,12 @@ public class PhoneUtils {
 					       "No NUMVERIFY_API_KEY or NUMLOOKUPAPI_API_KEY defined");
         }
         phone = cleanPhone(phone);
-	if(phone.length()!=12) return null;
+	if(phone.length()!=12) {
+	    System.err.println("BAD PHONE:" + phone);
+	    return null;
+	}
         if (numverifyKey != null) {
+	    System.err.println("Using numverify");
 	    String url = HtmlUtils.url("http://apilayer.net/api/validate",
 				       "access_key", numverifyKey, "number",
 				       phone, "country_code", "", "format", "1");
@@ -353,6 +362,7 @@ public class PhoneUtils {
 				 obj.getString("line_type"));
 	}
 
+	System.err.println("Using numlookup");
 	String url = HtmlUtils.url("https://api.numlookupapi.com/v1/validate/" + phone,"apikey",numlookupapiKey);
 	String result = IO.readContents(url, PhoneUtils.class);
 	//	System.err.println(url);

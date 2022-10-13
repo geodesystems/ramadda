@@ -3176,11 +3176,15 @@ public class CsvUtil implements CsvCommands {
 
     private Hashtable<String,CsvFunctionHolder> functions;
 
-    private String getText(String v) throws Exception {
-	if (v.startsWith(PREFIX_FILE)) {
-	    v = readFile(v);
+    private String getText(String v)  {
+	try {
+	    if (v.startsWith(PREFIX_FILE)) {
+		v = readFile(v);
+	    }
+	    return v;
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
 	}
-	return v;
     }
 
 
@@ -3990,8 +3994,12 @@ public class CsvUtil implements CsvCommands {
 		}
 		final String phoneColumn = args.get(++i);
 		final String campaign = args.get(++i);
-		final String message = args.get(++i);		
+		final String message = getText(args.get(++i)).replace("\\n","\n");		
 		ctx.addProcessor(new Converter(phoneColumn) {
+			int numAlreadySent=0;
+			int numUnsubscribed = 0;
+			int numSent=0;
+			int numFailed=0;			
 			Row header;
 			@Override
 			public Row processRow(TextReader ctx, Row row) {
@@ -4021,13 +4029,16 @@ public class CsvUtil implements CsvCommands {
 				}
 				if(code == PhoneUtils.SMS_CODE_BADPHONE) {
 				    System.err.println("bad phone:" + phone);
-				} if(code == PhoneUtils.SMS_CODE_ALREADYSENT) {
-				    System.err.println("already sent:" + phone);
+				} else if(code == PhoneUtils.SMS_CODE_ALREADYSENT) {
+				    numAlreadySent++;
+				    System.err.println("already sent:" + phone +" total:" + numAlreadySent);
+				} else if(code == PhoneUtils.SMS_CODE_UNSUBSCRIBED) {
+				    numUnsubscribed++;
+				    System.err.println("unsubscribed:" + phone +" total unsubscribed:" + numUnsubscribed);
 				} else {
-				    System.err.println("sent:" + phone);
+				    numSent++;
+				    System.err.println("sent:" + phone +" total:" + numSent);
 				}
-
-
 			    } catch(Exception exc) {
 				throw new RuntimeException(exc);
 			    }

@@ -281,6 +281,7 @@ public interface CsvCommands {
     public static final String CMD_PRINTDELIM="-printdelim";
     public static final String CMD_OUTPUTPREFIX="-outputprefix";
     public static final String CMD_PRINTHEADER="-printheader";
+    public static final String CMD_CHUNK="-chunk";
     public static final String CMD_RAW="-raw";
     public static final String CMD_TABLE="-table";
     public static final String CMD_COLS="-cols";

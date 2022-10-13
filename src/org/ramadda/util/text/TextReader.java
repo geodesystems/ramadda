@@ -416,6 +416,12 @@ public class TextReader implements Cloneable {
         return verbose;
     }
 
+    /*
+      print out the message if verbose=true
+     */
+    public void logMessage(String msg) {
+	if(verbose) System.err.println(msg);
+    }
 
     public void setInDater(CsvUtil.Dater dater) {
 	this.inDater = dater;
