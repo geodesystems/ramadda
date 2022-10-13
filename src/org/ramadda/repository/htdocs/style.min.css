@@ -5354,6 +5354,10 @@ a.wiki-link-noexist {
     display:relative;
 }
 
+.ace_selected {
+    background:#ccc;
+}
+
 .ace_active_char {
     position: absolute;
     background:green;
