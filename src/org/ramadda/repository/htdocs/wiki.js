@@ -238,6 +238,8 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 			      });
 			  });
 
+
+
     this.editor.setBehavioursEnabled(false);
     this.editor.setDisplayIndentGuides(false);
     this.editor.setKeyboardHandler("emacs");
@@ -442,7 +444,7 @@ WikiEditor.prototype = {
 		return;
 	    }
 	}
-        var cursor = this.getEditor().getCursorPosition();
+        let cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(value);
         this.getEditor().focus();
     },
@@ -638,9 +640,8 @@ WikiEditor.prototype = {
 	alert("Approximately " + s.length +" words");
     },
 
-
     doColor: function (event) {
-	let html = "<input type=color id=colorpicker style='xdisplay:none;'>";
+	let html = HU.tag("input",['style',HU.css('width','100px','height','100px'), 'type','color','id',this.domId('color_picker')]);
 	html+= HU.div(['class','ramadda-buttons'],
 		      HU.span([ID,this.domId("color_apply")],"Apply") + SPACE1 +
 		      HU.span([ID,this.domId("color_ok")],"Ok") + SPACE1 +
@@ -651,19 +652,28 @@ WikiEditor.prototype = {
 	    this.colorDialog.remove();
 	}
 	this.colorDialog = HU.makeDialog({content:html,anchor:this.getDiv(),
-				    my: "left top",     
-				    at: "left+200" +" top+" + (event.y),
+				    my: "left bottom",     
+				    at: "left+200" +" top-50",
 				    title:"Select Color",
 				    header:true,sticky:true,draggable:true,modal:false});	
-	let picker = $("#colorpicker");
+	let picker = this.jq('color_picker');
 	let close = () =>{
 	    picker.attr('type','text').attr('type','color');
 	    picker.remove();
+	    if(this.colorMarker)    this.editor.session.removeMarker(this.colorMarker);
 	    this.colorDialog.remove();
 	    this.colorDialog = null;
 	};
+	//xxxxx
 	let apply = () =>{
-	    this.insertAtCursor(picker.val());
+            let pos = this.getEditor().getCursorPosition();
+	    let val = picker.val();
+	    this.insertAtCursor(val);
+	    console.dir(pos);
+	    let Range = ace.require('ace/range').Range;
+	    let range =new Range(pos.row, pos.column, pos.row, pos.column+val.length);
+	    if(this.colorMarker)    this.editor.session.removeMarker(this.colorMarker);
+//	    this.colorMarker = this.getEditor().session.addMarker(range, "ace_selected", "text", false);
 	};
 	this.jq('color_apply').button().click(()=>{
 	    apply();
@@ -675,7 +685,9 @@ WikiEditor.prototype = {
 	this.jq('color_cancel').button().click(()=>{
 	    close();
 	});	
-	picker.trigger('click');
+	setTimeout(()=>{
+	    picker.trigger('click');
+	});
     },
 
     doPreview:async function (entry,  inPlace) {
