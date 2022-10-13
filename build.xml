@@ -278,6 +278,7 @@
     </jar>
     <copy overwrite="true" file="${src_dir}/org/ramadda/util/text/seesv.sh"  todir="${seesv_destdir}"/>
     <copy overwrite="true" file="${src_dir}/org/ramadda/util/text/s3.sh"  todir="${seesv_destdir}"/>	
+    <copy overwrite="true" file="${src_dir}/org/ramadda/util/text/sendsms.sh"  todir="${seesv_destdir}"/>    
     <copy overwrite="true" file="${basedir}/bin/tabula.sh"  todir="${seesv_destdir}"/>
     <copy overwrite="true" file="${src_dir}/org/ramadda/util/text/README"  todir="${seesv_destdir}"/>	
     <copy overwrite="true" file="${src_dir}/org/ramadda/util/text/seesv.html"  todir="${seesv_destdir}"/>	
