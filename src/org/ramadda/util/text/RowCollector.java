@@ -951,8 +951,6 @@ public class RowCollector extends Processor {
          */
         public void printRow(TextReader ctx, Row row, boolean addCnt, boolean even)
 	    throws Exception {
-
-
             List values = row.getValues();
             if (cnt == 0) {
                 ctx.getWriter().println(
@@ -972,7 +970,7 @@ public class RowCollector extends Processor {
             }
 
 
-            String style = "white-space:nowrap;overflow-x:auto;";
+            String style = "white-space:nowrap;overflow-x:auto;padding-right:4px;";
             //Check for the width
             int    lineWidth = 0;
             String s         = "";
@@ -1002,9 +1000,9 @@ public class RowCollector extends Processor {
                     ctx.getWriter().print("</div>");
                     ctx.getWriter().print(close);
                 }
-                ctx.getWriter().print(open);
-                ctx.getWriter().print("<div style='" + style + "'>");
                 if (cnt == 0) {
+		    ctx.getWriter().print(open);
+		    ctx.getWriter().print("<div style='" + style + "'>");
                     ctx.getWriter().print("#" + i + "&nbsp;");
                     ctx.getWriter().print("");
                     String label = Utils.makeLabel(""
@@ -1015,6 +1013,15 @@ public class RowCollector extends Processor {
 							  label.replaceAll("\"", "&quot;"))));
                 } else {
                     Object value = values.get(i);
+		    boolean alignRight = false;
+		    if(value!=null) {
+			alignRight = Utils.isNumber(value.toString());
+		    }
+		    if(alignRight)
+			ctx.getWriter().print("<td align=right>");
+		    else
+			ctx.getWriter().print(open);		    
+		    ctx.getWriter().print("<div style='" + style + "'>");
                     String label = ((value == null)
                                     ? ""
                                     : value.toString());
@@ -2120,12 +2127,13 @@ public class RowCollector extends Processor {
                         typeIcon = "fas fa-link";
                     } else {
                         typeIcon = "fas fa-hashtag";
+			col.alignRight = true;
                     }
                     String type = HU.faIcon(typeIcon, "title", "type: " + col.type, "style", "font-size:10pt;");
                     String name = col.name;
                     String label = Utils.makeLabel(name);
                     String id = Utils.makeID(name);
-                    label = HU.span(type + "&nbsp;" + label,HU.attrs("class","csv-id","fieldid",id));
+                    label = HU.div(type + "&nbsp;" + label,HU.attrs("style","text-align:center;width:100%","class","csv-id","fieldid",id));
                     String extra = "";
 		    String extraAttrs = "";
                     if (!col.skip && Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
@@ -2181,7 +2189,7 @@ public class RowCollector extends Processor {
                         }
                     }
                     extra = HU.div(extra,"");
-                    w.println(HU.th(label," nowrap " +HU.style("padding:2px !important;")));
+                    w.println(HU.th(label," nowrap " +HU.attr("align","center")+HU.style("padding:2px !important;")));
 		    if(!col.skip) 
 			summary.append(HU.td(extra,extraAttrs+" nowrap " +HU.style("padding:2px !important;")));
                 }
@@ -2253,6 +2261,8 @@ public class RowCollector extends Processor {
             /** _more_ */
             String type;
 
+	    boolean alignRight = false;
+	    
             /** _more_ */
             String sample;
 
