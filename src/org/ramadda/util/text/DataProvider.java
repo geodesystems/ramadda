@@ -2061,7 +2061,7 @@ public abstract class DataProvider extends CsvOperator {
                 }
 		return row;
             } else {
-		Row row = makeRow(values);
+		Row row = makeRow(new ArrayList(values));
 		return row;
             }
         }
