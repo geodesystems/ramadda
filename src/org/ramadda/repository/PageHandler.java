@@ -628,17 +628,20 @@ public class PageHandler extends RepositoryManager {
 
         String jsContent = getTemplateJavascriptContent();
         String bottom    = null;
+	String extraFooter = null;
         if (fullTemplate || suffix) {
             contents = Utils.append(contents, result.getStringContent());
             if (htmlTemplate.hasMacro(MACRO_BOTTOM)) {
                 bottom = jsContent;
             } else {
-                contents = Utils.append(contents, jsContent);
+		extraFooter = jsContent;
+		//                contents = Utils.append(contents, jsContent);
             }
         }
         String        content = (contents != null)
                                 ? contents.toString()
                                 : null;
+
 
         StringBuilder head    = new StringBuilder();
         if (request.getHead0() != null) {
@@ -713,6 +716,8 @@ public class PageHandler extends RepositoryManager {
         }
 
         String theFooter = footer;
+	if(extraFooter!=null) theFooter+=extraFooter;
+
         Entry  thisEntry = request.getCurrentEntry();
         if (thisEntry != null) {
             theFooter += HU.script("ramaddaThisEntry='" + thisEntry.getId()
