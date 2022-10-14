@@ -83,6 +83,22 @@ public abstract class Converter extends Processor {
     }
 
 
+        /**
+         * @param n _more_
+         * @return _more_
+         */
+        private static String getLabel(int n) {
+            int d = (int) (n / 25.0);
+            int r = n % 25;
+	    //	    System.err.println("d:" + d +" r:" + r);
+            if (d != 0) {
+                return getLabel(d-1) + Utils.LETTERS[r];
+            } else {
+                return Utils.LETTERS[r];
+            }
+        }
+
+
 
     /**
      * Class description
@@ -6648,28 +6664,11 @@ public abstract class Converter extends Processor {
             cnt++;
             if (cnt == 1) {
                 add(ctx, row, "label");
-
                 return row;
-
             }
             String letter = getLabel(cnt - 2);
             add(ctx, row, letter);
-
             return row;
-        }
-
-        /**
-         * @param n _more_
-         * @return _more_
-         */
-        private String getLabel(int n) {
-            int d = (int) (n / 25.0);
-            int r = n % 25;
-            if (d != 0) {
-                return getLabel(d) + Utils.LETTERS[r];
-            } else {
-                return Utils.LETTERS[r];
-            }
         }
     }
 
@@ -6713,19 +6712,6 @@ public abstract class Converter extends Processor {
         }
 
 
-        /**
-         * @param n _more_
-         * @return _more_
-         */
-        private String getLabel(int n) {
-            int d = (int) (n / 25.0);
-            int r = n % 25;
-            if (d != 0) {
-                return getLabel(d) + Utils.LETTERS[r];
-            } else {
-                return Utils.LETTERS[r];
-            }
-        }
     }
 
 
@@ -7075,6 +7061,10 @@ public abstract class Converter extends Processor {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	for(int i=0;i<2000;i++) {
+	    System.out.println("getLabel:" + i+"="+getLabel(i));
+	}
+	if(true) System.exit(0);
         List l = new ArrayList();
         l.add("a");
         l.add("b");
