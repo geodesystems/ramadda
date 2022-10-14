@@ -2643,15 +2643,14 @@ public class Utils extends IO {
      * @return _more_
      */
     public static boolean isNumber(String s) {
+	if(s==null) return false;
         if (s.equals("nan") || s.equals("NaN")) {
             return true;
         }
         try {
             Double.parseDouble(s);
-
             return true;
         } catch (Exception ignore) {}
-
         return false;
     }
 
