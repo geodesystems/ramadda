@@ -302,6 +302,7 @@ public abstract class Geo extends Processor {
             }
             boolean didOne = false;
             for (int i : indices) {
+		if(!row.indexOk(i)) continue;
                 Object value = values.get(i);
                 if (didOne) {
                     key.append(", ");
@@ -317,10 +318,8 @@ public abstract class Geo extends Processor {
 
             double lat = Double.NaN;
             double lon = Double.NaN;
-            if (key != null) {
+            if (didOne && key != null) {
                 Place place = null;
-
-
                 if (doAddress) {
                     place = GeoUtils.getLocationFromAddress(key.toString(),
                             ctx.getBounds());

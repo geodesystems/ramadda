@@ -149,6 +149,7 @@ public interface CsvCommands {
     public static final String CMD_FROMHEADING="-fromheading";
     public static final String CMD_CHANGE="-change";
     public static final String CMD_CHANGEROW="-changerow";
+    public static final String CMD_CLEANWHITESPACE="-cleanwhitespace";
     public static final String CMD_MAKENUMBER="-makenumber";
     public static final String CMD_REPLACE="-replace";
     public static final String CMD_SET="-set";
@@ -179,6 +180,7 @@ public interface CsvCommands {
     public static final String CMD_ENDSWITH="-endswith";
     public static final String CMD_TRUNCATE="-truncate";
     public static final String CMD_EXTRACT="-extract";
+    public static final String CMD_EXTRACTHTML="-extracthtml";
     public static final String CMD_URLARG="-urlarg";
     public static final String CMD_URLENCODE="-urlencode";
     public static final String CMD_URLDECODE="-urldecode";

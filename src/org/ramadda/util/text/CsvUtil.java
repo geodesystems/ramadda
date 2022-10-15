@@ -2212,6 +2212,8 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("rows", "", ATTR_TYPE, TYPE_LIST),
 		new Arg("value")),
+        new Cmd(CMD_CLEANWHITESPACE, "Clean whitespace",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_MACRO,
 		"Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header",
 		new Arg(ARG_PATTERN, "", ATTR_TYPE, TYPE_PATTERN),
@@ -2326,7 +2328,11 @@ public class CsvUtil implements CsvCommands {
         new Cmd(CMD_URLARG, "Extract URL argument and make a new column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("argname", "URL arg name")),
-
+        new Cmd(CMD_EXTRACTHTML, "Extract text from HTML",
+		ARG_LABEL,"Extract HTML",
+                new Arg(ARG_COLUMN, "URL Column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("names", "Comma separated list of new column names",ATTR_TYPE,TYPE_LIST),
+		new Arg(ARG_PATTERN,"Pattern",ATTR_TYPE, TYPE_PATTERN)),		
         new Cmd(CMD_URLENCODE, "URL encode the columns",
 		ARG_LABEL,"URL Encode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -3945,6 +3951,10 @@ public class CsvUtil implements CsvCommands {
 		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),args.get(++i),  args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_CLEANWHITESPACE,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.CleanWhitespace(getCols(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction(CMD_REPLACE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnReplacer(ctx,getCols(args.get(++i)),args.get(++i)));
@@ -4092,6 +4102,19 @@ public class CsvUtil implements CsvCommands {
 
 		return i;
 	    });
+
+
+	defineFunction(CMD_EXTRACTHTML,3,(ctx,args,i) -> {
+		String col = args.get(++i);
+		List<String> names = Utils.split(args.get(++i),",",true,true);
+ 		String pattern = args.get(++i);
+		ctx.addProcessor(
+				 new Converter.HtmlExtracter(
+							     col,names,pattern));
+
+		return i;
+	    });
+
 
 
 	defineFunction(CMD_URLARG,2,(ctx,args,i) -> {

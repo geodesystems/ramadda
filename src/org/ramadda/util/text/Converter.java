@@ -2877,6 +2877,45 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class CleanWhitespace extends Converter {
+
+        /**
+         *
+         * @param cols _more_
+         */
+        public CleanWhitespace(List<String> cols) {
+            super(cols);
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                if ( !ctx.getAllData()) {
+                    return row;
+                }
+            }
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+		if(!row.indexOk(index)) continue;
+		String s = row.getString(index).trim();
+		s = s.replaceAll("\n"," ").replaceAll("\r"," ").replaceAll("\\s\\s+"," ");
+		row.set(index, s);
+            }
+
+            return row;
+        }
+
+    }
+
+
 
     /**
      * Class description
@@ -3173,6 +3212,75 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+    public static class HtmlExtracter extends Converter {
+	private String scol;
+	
+	private int col;
+
+        /** _more_ */
+        private List<String> names;
+
+        /** _more_ */
+        private Pattern pattern;
+
+	/**
+         * @param col _more_
+         * @param pattern _more_
+         * @param replace _more_
+         * @param name _more_
+         */
+        public HtmlExtracter(String col, List<String> names, String pattern) {
+            this.scol    = col;
+	    this.pattern  = Pattern.compile(pattern, Pattern.DOTALL | Pattern.MULTILINE);
+            //this.pattern  = Pattern.compile(pattern);
+            this.names    = names;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                this.col = getColumnIndex(ctx, scol);
+		for(String name: names)
+		    add(ctx, row, name);
+                return row;
+            }
+            String url    = row.getString(col);
+	    try {
+		String html = IO.readContents(url,(String)null);
+		if(html==null) {
+		    for(String name: names)
+			add(ctx, row, "");
+		    return row;
+		}
+		//		html = html.replace("\n"," ").replace("\r"," ");
+		Matcher matcher = pattern.matcher(html);
+		if (!matcher.find()) {
+		    System.err.println("Not foudn");
+		    for(String name: names)
+			add(ctx, row, "");
+		    return row;
+		}
+
+		for(int i=0;i<names.size();i++) {
+		    add(ctx, row, matcher.group(i+1));
+		}
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	    
+	    //            add(ctx, row, newValue);
+            return row;
+        }
+
+    }
+
+
 
     /**
      * Class description
