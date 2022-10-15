@@ -694,6 +694,7 @@ public abstract class Processor extends CsvOperator {
          */
         public Dissector(String col, String pattern) {
             super(col);
+	    pattern = pattern.replace("_quote_","\"");
             patternNames = new ArrayList<String>();
             pattern      = Utils.extractPatternNames(pattern, patternNames);
             this.pattern = Pattern.compile(pattern);
@@ -716,6 +717,9 @@ public abstract class Processor extends CsvOperator {
 
                 return row;
             }
+	    if(!row.indexOk(index)) {
+		return row;
+	    }
             String  v       = row.getString(index);
             Matcher matcher = pattern.matcher(v);
             if ( !matcher.find()) {

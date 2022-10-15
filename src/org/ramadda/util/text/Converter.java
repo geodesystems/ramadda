@@ -1359,6 +1359,7 @@ public abstract class Converter extends Processor {
             }
             List<Integer> indices = getIndices(ctx);
             for (int i : indices) {
+		if(!row.indexOk(i)) continue;
                 row.set(i, pad + row.get(i));
             }
 
@@ -1405,6 +1406,7 @@ public abstract class Converter extends Processor {
             }
             List<Integer> indices = getIndices(ctx);
             for (int i : indices) {
+		if(!row.indexOk(i)) continue;
                 row.set(i, row.get(i) + pad);
             }
 
