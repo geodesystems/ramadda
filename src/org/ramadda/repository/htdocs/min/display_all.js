@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Oct 13 01:22:32 MDT 2022";
+var build_date="RAMADDA build date: Sat Oct 15 13:01:40 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4235,21 +4235,16 @@ function DisplayThing(argId, argProperties) {
 	    let debug = false;
 	    if(!this.getPropertyCounts[key]) {
 		this.getPropertyCounts[key]=0;
-//		debug = true;
 	    }
-//	    if(key=="gridlines.color") debug = true;
+/*
+  Don't try to optimize. It causes problems
 	    if(typeof this.transientProperties[key]!='undefined') {
 		if(debug) {
 		    console.log("getProperty:" + key +"  dflt:"+ dflt +" transient:" + this.transientProperties[key]);
 		}
-		let value =  this.transientProperties[key];
-		/*
-		if(this.priorProps[key]) {
-		    if(this.priorProps[key]  !=dflt)	console.log("prior:" + key +"  dflt:"+ dflt +" transient:" + this.transientProperties[key]);
-		} 
-		*/
-		return value;
+		return   this.transientProperties[key];
 	    }
+*/
 
 	    debug|=this.debugGetProperty;
 	    this.getPropertyCount++;
@@ -4286,6 +4281,8 @@ function DisplayThing(argId, argProperties) {
 	    let debug = displayDebug.getProperty;
 	    debug = this.debugGetProperty;
 	    if(!Array.isArray(keys)) keys = [keys];
+//	    debug = keys.includes('iconSize');
+
 	    for(let i=0;i<keys.length;i++) {
 		let key = keys[i];
 //		if(key == "colorTable") debug = true;
@@ -4473,6 +4470,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterValues'},
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
+	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'filterShowCount',ex:false},
 	{p:'filterShowTotal',ex:true},		
 	{p:'&lt;field&gt;.filterLabel'},
@@ -6619,13 +6617,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		r.clearHighlight(this);
 	    });
 
+//	    debug=true;
 //	    if(debug)   console.log("checking dates");
 	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
 		if(!date) return true;
 		return this.dateInRange(date,idx<5 && debug);
 	    });
-	    if(debug)   console.log("filter Fields:" + this.filters.length +" #records:" + records.length);
+	    if(debug)   this.logMsg("filter Fields:" + this.filters.length +" #records:" + records.length);
 
 	    if(this.filters.length) {
 		let newData = [];
@@ -6648,6 +6647,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
+//		    console.log("\trow:" + rowIdx+" ok:" + ok);
 		    if(highlight) {
 			newData.push(record);
 			record.setHighlight(this, ok);
@@ -8424,6 +8424,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (height) {
                 style += HU.css(HEIGHT, height);
             }
+
             let maxheight = this.getProperty("maxHeight");
             if (maxheight) {
                 style += HU.css("max-height", HU.getDimension(maxheight),"overflow-y","auto");
@@ -9339,6 +9340,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}
 		HtmlUtils.hidePopupObject();
+
 		let input = $(this);
 		let val = $(this).val().trim();
 		if(val=="") return;
@@ -12600,7 +12602,6 @@ function PointData(name, recordFields, records, url, properties) {
 //			if(displayDebug.setEntry)
 //			    console.log("pointdata got data:"+ data.substring(0,2000));
 			data = JSON.parse(data);
-
 		    } catch(exc) {
 			console.log("Error:" + exc);
 			if(data.length>1000) data = data.substring(0,999);
@@ -13123,6 +13124,7 @@ PointRecord.prototype =  {
 
 
 function makePointData(json, derived, source,url) {
+
     let debug  =false;
     if(debug) console.log("makePointData");
     var fields = [];
@@ -13660,8 +13662,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
 		if(debug) {
-		    if(!this.isEnabled())			console.log("\t"+ this+"  not enabled");
-		    if(!this.mySearch)			console.log("\t" + this+"  no mySearch");
+		    if(!this.isEnabled())
+			console.log("\t"+ this+"  not enabled");
+		    if(!this.mySearch)
+			console.log("\t" + this+"  no mySearch");
 		}
 		return ok;
 	    }
@@ -13710,6 +13714,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		ok = false;
 		rowValue  = String(rowValue).toLowerCase();
 
+
 		for(let j=0;j<this.mySearch._values.length;j++) {
 		    let fv = this.mySearch._values[j];
 		    if(startsWith) {
@@ -13722,7 +13727,8 @@ function RecordFilter(display,filterFieldId, properties) {
 			break;
 		    }
 		}
-		
+
+
 		if(!ok && !startsWith) {
 		    for(ri=0;ri<this.mySearch.matchers.length;ri++) {
 			let matcher = this.mySearch.matchers[ri];
@@ -13831,6 +13837,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		id: this.getId(),
 		fieldId:this.getFieldId()
 	    };
+
+
+
+
+	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterLive",false)) {
+		let widgetId = this.getFilterId(this.getId());
+		let widget = $("#" + widgetId);
+		if(widget.length) {
+		    widget.keyup(function() {
+			inputFunc($(this),null,$(this).val());
+		    });
+		}
+	    }
+
 
 	    this.initDateWidget(inputFunc);
 	    //	HtmlUtils.initSelect($("#" + this.widgetId));
@@ -14164,7 +14184,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    maxStyle = "background:" + TEXT_HIGHLIGHT_COLOR+";";
 		    dfltValueMax = parseFloat(tmpMax);
 		}
-
 
                 widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-type",this.getFieldType(),"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
 		widget += "-";
