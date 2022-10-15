@@ -1101,8 +1101,7 @@ public class GeoUtils {
                 FileWriter     fw = new FileWriter(cacheFile, true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 cacheWriter = new PrintWriter(bw);
-            }
-            addressToLocation = new Hashtable<String, Place>();
+	    }
         }
 
         if (addressToLocation != null) {
