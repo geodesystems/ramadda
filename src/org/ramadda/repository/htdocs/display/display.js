@@ -1175,21 +1175,16 @@ function DisplayThing(argId, argProperties) {
 	    let debug = false;
 	    if(!this.getPropertyCounts[key]) {
 		this.getPropertyCounts[key]=0;
-//		debug = true;
 	    }
-//	    if(key=="gridlines.color") debug = true;
+/*
+  Don't try to optimize. It causes problems
 	    if(typeof this.transientProperties[key]!='undefined') {
 		if(debug) {
 		    console.log("getProperty:" + key +"  dflt:"+ dflt +" transient:" + this.transientProperties[key]);
 		}
-		let value =  this.transientProperties[key];
-		/*
-		if(this.priorProps[key]) {
-		    if(this.priorProps[key]  !=dflt)	console.log("prior:" + key +"  dflt:"+ dflt +" transient:" + this.transientProperties[key]);
-		} 
-		*/
-		return value;
+		return   this.transientProperties[key];
 	    }
+*/
 
 	    debug|=this.debugGetProperty;
 	    this.getPropertyCount++;
@@ -1226,6 +1221,8 @@ function DisplayThing(argId, argProperties) {
 	    let debug = displayDebug.getProperty;
 	    debug = this.debugGetProperty;
 	    if(!Array.isArray(keys)) keys = [keys];
+//	    debug = keys.includes('iconSize');
+
 	    for(let i=0;i<keys.length;i++) {
 		let key = keys[i];
 //		if(key == "colorTable") debug = true;
@@ -1413,6 +1410,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterValues'},
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
+	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'filterShowCount',ex:false},
 	{p:'filterShowTotal',ex:true},		
 	{p:'&lt;field&gt;.filterLabel'},
@@ -3559,13 +3557,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		r.clearHighlight(this);
 	    });
 
+//	    debug=true;
 //	    if(debug)   console.log("checking dates");
 	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
 		if(!date) return true;
 		return this.dateInRange(date,idx<5 && debug);
 	    });
-	    if(debug)   console.log("filter Fields:" + this.filters.length +" #records:" + records.length);
+	    if(debug)   this.logMsg("filter Fields:" + this.filters.length +" #records:" + records.length);
 
 	    if(this.filters.length) {
 		let newData = [];
@@ -3588,6 +3587,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
+//		    console.log("\trow:" + rowIdx+" ok:" + ok);
 		    if(highlight) {
 			newData.push(record);
 			record.setHighlight(this, ok);
@@ -5364,6 +5364,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (height) {
                 style += HU.css(HEIGHT, height);
             }
+
             let maxheight = this.getProperty("maxHeight");
             if (maxheight) {
                 style += HU.css("max-height", HU.getDimension(maxheight),"overflow-y","auto");
@@ -6279,6 +6280,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}
 		HtmlUtils.hidePopupObject();
+
 		let input = $(this);
 		let val = $(this).val().trim();
 		if(val=="") return;
