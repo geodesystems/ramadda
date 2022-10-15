@@ -477,7 +477,6 @@ function PointData(name, recordFields, records, url, properties) {
 //			if(displayDebug.setEntry)
 //			    console.log("pointdata got data:"+ data.substring(0,2000));
 			data = JSON.parse(data);
-
 		    } catch(exc) {
 			console.log("Error:" + exc);
 			if(data.length>1000) data = data.substring(0,999);
@@ -1000,6 +999,7 @@ PointRecord.prototype =  {
 
 
 function makePointData(json, derived, source,url) {
+
     let debug  =false;
     if(debug) console.log("makePointData");
     var fields = [];
@@ -1537,8 +1537,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
 		if(debug) {
-		    if(!this.isEnabled())			console.log("\t"+ this+"  not enabled");
-		    if(!this.mySearch)			console.log("\t" + this+"  no mySearch");
+		    if(!this.isEnabled())
+			console.log("\t"+ this+"  not enabled");
+		    if(!this.mySearch)
+			console.log("\t" + this+"  no mySearch");
 		}
 		return ok;
 	    }
@@ -1587,6 +1589,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		ok = false;
 		rowValue  = String(rowValue).toLowerCase();
 
+
 		for(let j=0;j<this.mySearch._values.length;j++) {
 		    let fv = this.mySearch._values[j];
 		    if(startsWith) {
@@ -1599,7 +1602,8 @@ function RecordFilter(display,filterFieldId, properties) {
 			break;
 		    }
 		}
-		
+
+
 		if(!ok && !startsWith) {
 		    for(ri=0;ri<this.mySearch.matchers.length;ri++) {
 			let matcher = this.mySearch.matchers[ri];
@@ -1708,6 +1712,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		id: this.getId(),
 		fieldId:this.getFieldId()
 	    };
+
+
+
+
+	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterLive",false)) {
+		let widgetId = this.getFilterId(this.getId());
+		let widget = $("#" + widgetId);
+		if(widget.length) {
+		    widget.keyup(function() {
+			inputFunc($(this),null,$(this).val());
+		    });
+		}
+	    }
+
 
 	    this.initDateWidget(inputFunc);
 	    //	HtmlUtils.initSelect($("#" + this.widgetId));
@@ -2041,7 +2059,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    maxStyle = "background:" + TEXT_HIGHLIGHT_COLOR+";";
 		    dfltValueMax = parseFloat(tmpMax);
 		}
-
 
                 widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-type",this.getFieldType(),"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
 		widget += "-";
