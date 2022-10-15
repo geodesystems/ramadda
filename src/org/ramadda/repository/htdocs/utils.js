@@ -712,7 +712,9 @@ var Utils =  {
             if(!what) {
                 what = "text/plain";
                 args.beforeSend =  function( xhr ) {
-                    xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+		    //If we do this then it screws up the encoding
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                    xhr.overrideMimeType( "text/plain;" );
                 };
             }
             args.xhrFields = {
