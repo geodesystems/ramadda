@@ -787,22 +787,22 @@ public abstract class Processor extends CsvOperator {
             if (rowCnt++ == 0) {
                 index = getIndex(ctx);
                 row.add("File");
-
                 return row;
             }
             String value = row.getString(index);
+	    String tail;
             if (suffix.length() == 0) {
-                suffix = IOUtil.getFileTail(value);
-            }
-            File tmpFile = csvUtil.getTmpFile(suffix);
+                tail = IOUtil.getFileTail(value);
+            } else {
+		tail = suffix;
+	    }
+            File tmpFile = csvUtil.getTmpFile(tail);
             if (tmpFile == null) {
                 row.add("");
-
                 return row;
             }
             if (value.length() == 0) {
                 row.add("");
-
                 return row;
             }
             try {
