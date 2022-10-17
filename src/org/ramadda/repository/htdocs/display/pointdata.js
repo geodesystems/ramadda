@@ -1340,7 +1340,12 @@ function RecordFilter(display,filterFieldId, properties) {
     this.isText = (this.id == ID_TEXT);
     let fields;
     if(this.isText) {
-	fields = display.getFieldsByType(null, "string");
+	let f = display.getProperty("textFilterFields");
+	if(f) {
+	    fields = display.getFieldsByIds(null,f);
+	} else {
+	    fields = display.getFieldsByType(null, "string");
+	}
     } else {
 	let filterField = display.getFieldById(null, filterFieldId);
 	if(filterField)
