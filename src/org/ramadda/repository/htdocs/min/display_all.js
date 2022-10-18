@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Oct 15 13:01:40 MDT 2022";
+var build_date="RAMADDA build date: Tue Oct 18 11:10:17 MDT 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3126,6 +3126,7 @@ const ID_TOP_LEFT = "topleft";
 const ID_DETAILS = "details";
 const ID_DETAILS_SNIPPET = "snippet";
 const ID_DISPLAY_CONTENTS = "contents";
+const ID_DISPLAY_CONTAINER = "container";
 const ID_DISPLAY_TOP = "top";
 const ID_DISPLAY_BOTTOM = "bottom";
 const ID_GROUP_CONTENTS = "group_contents";
@@ -8402,7 +8403,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
+            html += HU.div(['id',this.domId(ID_DISPLAY_CONTAINER),CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -12893,6 +12894,9 @@ function RecordField(props, source) {
         isFieldString: function() {
             return this.type == "string" || this.type == "enumeration" || this.type == "multienumeration";
         },
+        isFieldBoolean: function() {
+            return this.type == "boolean";
+	},
         isFieldEnumeration: function() {
             return this.type == "enumeration" || this.type == "multienumeration";
         },
@@ -13465,7 +13469,12 @@ function RecordFilter(display,filterFieldId, properties) {
     this.isText = (this.id == ID_TEXT);
     let fields;
     if(this.isText) {
-	fields = display.getFieldsByType(null, "string");
+	let f = display.getProperty("textFilterFields");
+	if(f) {
+	    fields = display.getFieldsByIds(null,f);
+	} else {
+	    fields = display.getFieldsByType(null, "string");
+	}
     } else {
 	let filterField = display.getFieldById(null, filterFieldId);
 	if(filterField)
@@ -13550,6 +13559,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.isText) return false;
 	    return this.getField().isNumeric();
 	},
+	isFieldBoolean:function() {
+	    if(this.isText) return false;
+	    return this.getField().isFieldBoolean();
+	},	
 	isFieldEnumeration: function() {
 	    if(this.isText) return false;
 	    return this.getField().isFieldEnumeration();
@@ -13677,6 +13690,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		else if(op.op==">") ok= rowValue>op.value;
 		else if(op.op==">=") ok= rowValue>=op.value;
 		else if(op.op=="==") ok= rowValue==op.value;				
+	    } else   if(this.isFieldBoolean()) {
+		rowValue=String(rowValue);
+		ok = this.mySearch.values.includes(rowValue);
 	    } else   if(this.isFieldEnumeration()) {
 		rowValue=String(rowValue);
 		if(this.isFieldMultiEnumeration()) {
@@ -13713,8 +13729,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		let startsWith = this.startsWith;
 		ok = false;
 		rowValue  = String(rowValue).toLowerCase();
-
-
 		for(let j=0;j<this.mySearch._values.length;j++) {
 		    let fv = this.mySearch._values[j];
 		    if(startsWith) {
@@ -13990,8 +14004,25 @@ function RecordFilter(display,filterFieldId, properties) {
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		widget = HU.select("",attrs,enums,selected);
-	    } else   if(this.isFieldEnumeration()) {
+	    } else   if(this.isFieldBoolean()) {
+		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
+		let filterValues = this.getProperty(this.getId()+".filterValues");
+                let enums = [];
+		let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
+		let allName = this.getProperty(this.getId() +".allName","-");
+		enums.push(['',allName]);
+		if(filterValues) {
+		    filterValues.split(",").forEach(tok=>{
+			let toks = tok.split(":");
+			enums.push(toks);
+		    });
+		} else {
+		    enums.push('true','false');
+		}
 
+//		let values = filterValues?filterValues.split(","):["-","true","false"];
+		widget = HU.select("",attrs,enums,this.dflt);
+	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
@@ -27497,7 +27528,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_max}'},
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
-	{p:'highlightOnScroll',ex:'true'}];
+	{p:'highlightOnScroll',ex:'true'},
+	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'}];
+
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	dataFilterChanged: function() {
@@ -27976,6 +28009,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
+
 	    if(this.getPropertySelectHighlight()) {
 		this.selectedRecord=args.record;
 		this.callUpdateUI();
@@ -27998,7 +28032,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			if(myCount == this.highlightCount) {
 			    this.highlightElement(args);
 			}
-		    },500);
+		    },100);
 		}
 	    } else {
 		var id = "#" + this.getId()+"-"+args.record.getId();
@@ -28026,6 +28060,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
+
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
@@ -28048,16 +28083,16 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		});
 	    } 
-	    
 
 	    try {
-		if(!args.skipScroll) {
-		    var eo = element.offset();
+		if(this.getScrollOnHighlight() && !args.skipScroll) {
+		    let eo = element.offset();
 		    if(eo==null) return;
-		    var container = this.getContents();
+		    let container = this.getContents();
+		    container = this.jq(ID_DISPLAY_CONTAINER);
 		    if(this.getProperty("orientation","vertical")== "vertical") {
-			var c = container.offset().top;
-			var s = container.scrollTop();
+			let c = container.offset().top;
+			let s = container.scrollTop();
 			container.scrollTop(eo.top- c + s)
 		    } else {
 			var c = container.offset().left;
