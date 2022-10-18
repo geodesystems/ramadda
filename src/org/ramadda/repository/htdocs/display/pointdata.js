@@ -768,6 +768,9 @@ function RecordField(props, source) {
         isFieldString: function() {
             return this.type == "string" || this.type == "enumeration" || this.type == "multienumeration";
         },
+        isFieldBoolean: function() {
+            return this.type == "boolean";
+	},
         isFieldEnumeration: function() {
             return this.type == "enumeration" || this.type == "multienumeration";
         },
@@ -1430,6 +1433,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.isText) return false;
 	    return this.getField().isNumeric();
 	},
+	isFieldBoolean:function() {
+	    if(this.isText) return false;
+	    return this.getField().isFieldBoolean();
+	},	
 	isFieldEnumeration: function() {
 	    if(this.isText) return false;
 	    return this.getField().isFieldEnumeration();
@@ -1557,6 +1564,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		else if(op.op==">") ok= rowValue>op.value;
 		else if(op.op==">=") ok= rowValue>=op.value;
 		else if(op.op=="==") ok= rowValue==op.value;				
+	    } else   if(this.isFieldBoolean()) {
+		rowValue=String(rowValue);
+		ok = this.mySearch.values.includes(rowValue);
 	    } else   if(this.isFieldEnumeration()) {
 		rowValue=String(rowValue);
 		if(this.isFieldMultiEnumeration()) {
@@ -1593,8 +1603,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		let startsWith = this.startsWith;
 		ok = false;
 		rowValue  = String(rowValue).toLowerCase();
-
-
 		for(let j=0;j<this.mySearch._values.length;j++) {
 		    let fv = this.mySearch._values[j];
 		    if(startsWith) {
@@ -1870,8 +1878,25 @@ function RecordFilter(display,filterFieldId, properties) {
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		widget = HU.select("",attrs,enums,selected);
-	    } else   if(this.isFieldEnumeration()) {
+	    } else   if(this.isFieldBoolean()) {
+		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
+		let filterValues = this.getProperty(this.getId()+".filterValues");
+                let enums = [];
+		let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
+		let allName = this.getProperty(this.getId() +".allName","-");
+		enums.push(['',allName]);
+		if(filterValues) {
+		    filterValues.split(",").forEach(tok=>{
+			let toks = tok.split(":");
+			enums.push(toks);
+		    });
+		} else {
+		    enums.push('true','false');
+		}
 
+//		let values = filterValues?filterValues.split(","):["-","true","false"];
+		widget = HU.select("",attrs,enums,this.dflt);
+	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
