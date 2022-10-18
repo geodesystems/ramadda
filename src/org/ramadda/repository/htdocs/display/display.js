@@ -66,6 +66,7 @@ const ID_TOP_LEFT = "topleft";
 const ID_DETAILS = "details";
 const ID_DETAILS_SNIPPET = "snippet";
 const ID_DISPLAY_CONTENTS = "contents";
+const ID_DISPLAY_CONTAINER = "container";
 const ID_DISPLAY_TOP = "top";
 const ID_DISPLAY_BOTTOM = "bottom";
 const ID_GROUP_CONTENTS = "group_contents";
@@ -5342,7 +5343,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
+            html += HU.div(['id',this.domId(ID_DISPLAY_CONTAINER),CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
