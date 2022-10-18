@@ -529,7 +529,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_max}'},
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
-	{p:'highlightOnScroll',ex:'true'}];
+	{p:'highlightOnScroll',ex:'true'},
+	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'}];
+
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	dataFilterChanged: function() {
@@ -1008,6 +1010,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
+
 	    if(this.getPropertySelectHighlight()) {
 		this.selectedRecord=args.record;
 		this.callUpdateUI();
@@ -1030,7 +1033,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			if(myCount == this.highlightCount) {
 			    this.highlightElement(args);
 			}
-		    },500);
+		    },100);
 		}
 	    } else {
 		var id = "#" + this.getId()+"-"+args.record.getId();
@@ -1058,6 +1061,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
+
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
@@ -1080,16 +1084,16 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		});
 	    } 
-	    
 
 	    try {
-		if(!args.skipScroll) {
-		    var eo = element.offset();
+		if(this.getScrollOnHighlight() && !args.skipScroll) {
+		    let eo = element.offset();
 		    if(eo==null) return;
-		    var container = this.getContents();
+		    let container = this.getContents();
+		    container = this.jq(ID_DISPLAY_CONTAINER);
 		    if(this.getProperty("orientation","vertical")== "vertical") {
-			var c = container.offset().top;
-			var s = container.scrollTop();
+			let c = container.offset().top;
+			let s = container.scrollTop();
 			container.scrollTop(eo.top- c + s)
 		    } else {
 			var c = container.offset().left;
