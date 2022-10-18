@@ -535,6 +535,8 @@ public class GeoUtils {
 
 
 
+    private static Object ADDRESS_MUTEX = new Object();
+
     /** _more_ */
     private static Hashtable<String, Place> addressToLocation = null;
 
@@ -544,6 +546,43 @@ public class GeoUtils {
     /** _more_ */
     private static PrintWriter hoodsWriter;
 
+
+    private static Hashtable<String, Place> getGeocodeCache() throws Exception {
+        if (addressToLocation == null) {
+	    synchronized(ADDRESS_MUTEX) {
+		if (addressToLocation == null) {
+		    Hashtable<String, Place> tmp =  new Hashtable<String, Place>();
+		    if (cacheDir != null) {
+			File cacheFile = new File(IOUtil.joinDir(cacheDir,
+								 "addresslocations2.txt"));
+			if (cacheFile.exists()) {
+			    try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(cacheFile)))) {
+				while(true) {
+				    String line  = reader.readLine();
+				    if(line==null) break;
+				    line = line.trim();
+				    if(line.length()==0) continue;
+				    List<String> toks = StringUtil.split(line,
+									 cacheDelimiter);
+				    if (toks.size() == 4) {
+					tmp.put(toks.get(0),
+						new Place(toks.get(1),
+							  Double.parseDouble(toks.get(2)),
+							  Double.parseDouble(toks.get(3))));
+				    }
+				}
+			    }
+			}
+			FileWriter     fw = new FileWriter(cacheFile, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			cacheWriter = new PrintWriter(bw);
+		    }
+		    addressToLocation = tmp;
+		}
+	    }
+	}
+	return addressToLocation;
+    }
 
     /**
      * _more_
@@ -884,16 +923,16 @@ public class GeoUtils {
 						     Bounds bounds, boolean debug)
 	throws Exception {
 
-        //      debug = true;
-        if ( !Utils.stringDefined(address)) {
+	//	debug = true;
+        if ( !Utils.stringDefined(address) || address.equals(",")) {
             return null;
         }
-	
+	if(debug)
+	    System.err.println("address:" + address);
 
         Place       place    = null;
         GeoResource resource = null;
 	GeoResource resource2 = null;
-
 	Locale locale = new Locale(address);
 	place = locale.match();
 	if(place!=null) return place;
@@ -992,7 +1031,7 @@ public class GeoUtils {
             String       county = toks.get(0).trim();
             String       state  = toks.size()<2?null:toks.get(1).trim();
             if (debug) {
-                System.out.println("trying:" + county + "," + state);
+                System.out.println("\ttrying:" + county + "," + state);
             }
 	    if(state!=null) {
 		place = resource.getPlace(county + "," + state);
@@ -1001,11 +1040,11 @@ public class GeoUtils {
 		}
 		state = (String) statesMap.get(state);
 		if (debug) {
-		    System.out.println("state after:" + county + "," + state);
+		    System.out.println("\tstate after:" + county + "," + state);
 		}
 		if (state != null) {
 		    if (debug) {
-			System.out.println("trying:" + county + "," + state);
+			System.out.println("\ttrying:" + county + "," + state);
 		    }
 		    place = resource.getPlace(county + "," + state);
 		    if (place != null) {
@@ -1076,71 +1115,28 @@ public class GeoUtils {
 	}
 
         initKeys();
-        //geocodeioKey = null;
-        //hereKey = null;
-        //googleKey = null;       
-        if (addressToLocation == null) {
-            addressToLocation = new Hashtable<String, Place>();
-            if (cacheDir != null) {
-                File cacheFile = new File(IOUtil.joinDir(cacheDir,
-                                     "addresslocations2.txt"));
-                if (cacheFile.exists()) {
-                    for (String line :
-                            StringUtil.split(IO.readContents(cacheFile),
-                                             "\n", true, true)) {
-                        List<String> toks = StringUtil.split(line,
-                                                cacheDelimiter);
-                        if (toks.size() == 4) {
-                            addressToLocation.put(toks.get(0),
-                                    new Place(toks.get(1),
-                                        Double.parseDouble(toks.get(2)),
-                                        Double.parseDouble(toks.get(3))));
-                        }
-                    }
-                }
-                FileWriter     fw = new FileWriter(cacheFile, true);
-                BufferedWriter bw = new BufferedWriter(fw);
-                cacheWriter = new PrintWriter(bw);
+	place = getGeocodeCache().get(address);
+	if (place != null) {
+	    if (debug) {
+		System.err.println("\tfound in cached address list");
 	    }
-        }
-
-        if (addressToLocation != null) {
-            place = addressToLocation.get(address);
-            if (place != null) {
-                if (debug) {
-                    System.out.println("found in cached address list");
-                }
-
-                return place;
-            }
-        }
-
-        if ((address.length() == 0) || address.equals(",")) {
-            return null;
+	    return place;
         }
         //        System.err.println("looking for address:" + address);
-
         String latString      = null;
         String lonString      = null;
         String encodedAddress = StringUtil.replace(address, " ", "%20");
         String name           = address;
-        place = null;
-
-        if ((place == null) && (googleKey != null)) {
-            String result = null;
+        if (place == null && googleKey != null) {
             try {
-                //https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
-
-		String url =
-                    "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + encodedAddress + "&key=" + googleKey;
+		String url =HtmlUtils.url("https://maps.googleapis.com/maps/api/geocode/json",
+				   "address", address, "key" ,googleKey);
                 if (bounds != null) {
                     url += "&bounds=" + bounds.getSouth() + ","
                            + bounds.getWest() + "|" + bounds.getNorth() + ","
                            + bounds.getEast();
                 }
-                result = IO.readContents(url, GeoUtils.class);
-
+                String result = IO.readContents(url, GeoUtils.class);
                 name = StringUtil.findPattern(result,
                         "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
                 if (name == null) {
@@ -1153,29 +1149,27 @@ public class GeoUtils {
                 if ((latString != null) && (lonString != null)) {
                     place = new Place(name, latString, lonString);
                 }
-                System.err.println("address:" + address +" google:" + place);
                 if (place == null) {
                     JSONObject json = new JSONObject(result);
-                    System.err.println("google error:"
-                                       + json.getString("error_message"));
+		    String status = json.optString("status","");
+		    if(!status.equals("ZERO_RESULTS")) {
+			String message = json.optString("error_message",null);
+			if(message!=null)  message = result;
+			System.err.println("google error:"+ message);
+		    }
                 }
-
             } catch (Exception exc) {
-                System.err.println("exc:" + exc);
+                System.err.println("Error calling google:" + exc);
             }
-            if (debug) {
-                System.err.println("google:" + place);
-            }
+	    if(debug)
+		System.err.println("\tgoogle:" + place);
         }
 
         if ((place != null) && !place.within(bounds)) {
             place = null;
         }
         if ((place == null) && (geocodeioKey != null)) {
-            String url = "https://api.geocod.io/v1.6/geocode?";
-            url += HtmlUtils.arg("q", address, true);
-            url += "&";
-            url += HtmlUtils.arg("api_key", geocodeioKey, true);
+            String url = HtmlUtils.url("https://api.geocod.io/v1.6/geocode","q", address, "api_key", geocodeioKey);
             String result = IO.readContents(url, GeoUtils.class);
             //"lat":39.988424,"lng":-105.226083
             latString = StringUtil.findPattern(result,
@@ -1185,11 +1179,8 @@ public class GeoUtils {
             if ((latString != null) && (lonString != null)) {
                 place = new Place(name, latString, lonString);
             }
-
-	    System.err.println("address:" + address +" geocodeio:" + place);
-
             if (debug) {
-                System.err.println("geocodeio:" + place);
+                System.err.println("\tgeocodeio:" + place);
             }
         }
 
@@ -1199,7 +1190,7 @@ public class GeoUtils {
         if ((place == null) && (hereKey != null)) {
             String url = HtmlUtils.url(
                              "https://geocode.search.hereapi.com/v1/geocode",
-                             "q", encodedAddress, "apiKey", hereKey);
+                             "q", address, "apiKey", hereKey);
             String result = IO.doGet(new URL(url));
             latString = StringUtil.findPattern(result,
                     "\"lat\"\\s*:\\s*([-\\d\\.]+),");
@@ -1208,9 +1199,8 @@ public class GeoUtils {
             if ((latString != null) && (lonString != null)) {
                 place = new Place(name, latString, lonString);
             }
-	    System.err.println("address:" + address +" here:" + place);
             if (debug) {
-                System.err.println("here:" + place);
+                System.err.println("\there:" + place);
             }
         }
 
@@ -1220,9 +1210,8 @@ public class GeoUtils {
         }
         if (place == null) {
             //fall back to us census
-            String url =
-                "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?format=json&benchmark=2020&address="
-                + encodedAddress;
+            String url =HtmlUtils.url("https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
+				      "format","json","benchmark","2020","address", address);
             String result = IO.readContents(url, GeoUtils.class);
             latString = StringUtil.findPattern(result,
                     "\"y\"\\s*:\\s*([-\\d\\.]+)");
@@ -1232,16 +1221,14 @@ public class GeoUtils {
                 place = new Place(name, latString, lonString);
             }
             if (debug) {
-                System.err.println("census:" + place);
+                System.err.println("\tcensus:" + place);
             }
         }
 
         if (place != null) {
-            if (addressToLocation != null) {
-                addressToLocation.put(address, place);
-            }
+	    getGeocodeCache().put(address, place);
             if (cacheWriter != null) {
-                synchronized (cacheWriter) {
+		synchronized(ADDRESS_MUTEX) {
                     cacheWriter.println(address + cacheDelimiter
                                         + place.getName() + cacheDelimiter
                                         + place.getLatitude()
@@ -1250,20 +1237,16 @@ public class GeoUtils {
                     cacheWriter.flush();
                 }
             }
-
             return place;
         } else {
             if (cacheWriter != null) {
-                synchronized (cacheWriter) {
+		synchronized(ADDRESS_MUTEX) {
                     //                cacheWriter.println(address + cacheDelimiter + Double.NaN + cacheDelimiter + Double.NaN);
                     //                cacheWriter.flush();
                 }
             }
         }
-
         return null;
-
-
     }
 
 
