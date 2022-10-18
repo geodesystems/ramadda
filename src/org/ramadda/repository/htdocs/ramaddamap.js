@@ -667,7 +667,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 	}
 
 
-        if (this.clickListener != null) {
+	if(Utils.isDefined(this.clickListener)) {
             this.clickListener.handleClick(this, e, lonlat.lon, lonlat.lat);
         }
 
@@ -3378,11 +3378,10 @@ RepositoryMap.prototype = {
 
         if (this.clickHandler)
             return;
+	this.clickListener = object;
         if (!this.map) {
             return;
 	}
-
-
 
         this.clickHandler = new OpenLayers.Control.Click();
         this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object);
@@ -4822,9 +4821,13 @@ RepositoryMap.prototype = {
         }
 
 
-	if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
-	    if(debugPopup) console.log("\tfeatureSelectHandler returned true");
-	    return;
+	//Only do this if we don't have a clickListener
+	if(!Utils.isDefined(this.clickListener)) {
+	    console.log("showMarkerPopup:" + this.clickListener);
+	    if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
+		if(debugPopup) console.log("\tfeatureSelectHandler returned true");
+		return;
+	    }
 	}
 
         let id = marker.ramaddaId;
