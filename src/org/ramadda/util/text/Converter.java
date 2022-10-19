@@ -3320,7 +3320,7 @@ public abstract class Converter extends Processor {
 		    }
 		}
 		if(html==null) {
-		    html = IO.readUrl(url,(String)null);
+		    html = IO.readUrl(url);
 		    if(cacheFile!=null && html!=null) {
 			try(OutputStream fos = new FileOutputStream(cacheFile)) {
 			    IOUtil.writeTo(new ByteArrayInputStream(html.getBytes()),fos);
