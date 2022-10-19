@@ -68,6 +68,7 @@ import org.ramadda.util.S3File;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.text.CsvUtil;
 
 
 import org.ramadda.util.PropertyProvider;
@@ -1624,7 +1625,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setGeocodeioKey(getProperty("geocodeio.key", (String) null));
             GeoUtils.setHereKey(getProperty("here.key", (String) null));	    
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
-            CsvUtils.setCacheDir(getStorageManager().getCacheDir().getDir());
+            CsvUtil.setCacheDir(getStorageManager().getCacheDir().getDir());
         }
 
 

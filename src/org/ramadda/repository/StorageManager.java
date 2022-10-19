@@ -917,7 +917,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      *
      * @return  the directory
      */
-    private TempDir getCacheDir() {
+    protected TempDir getCacheDir() {
         if (cacheDir == null) {
             cacheDir = makeTempDir(DIR_CACHE);
             cacheDir.setMaxSize(1000 * 1000 * 1000);
