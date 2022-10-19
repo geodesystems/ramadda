@@ -1624,6 +1624,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setGeocodeioKey(getProperty("geocodeio.key", (String) null));
             GeoUtils.setHereKey(getProperty("here.key", (String) null));	    
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
+            CsvUtils.setCacheDir(getStorageManager().getCacheDir().getDir());
         }
 
 
