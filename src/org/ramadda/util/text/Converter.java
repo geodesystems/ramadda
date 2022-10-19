@@ -3283,6 +3283,82 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class HtmlInfo extends Converter {
+	private String scol;
+	
+	private int col;
+
+	/**
+         */
+        public HtmlInfo(String col) {
+            this.scol    = col;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                this.col = getColumnIndex(ctx, scol);
+		row.add("icon");
+		row.add("description");
+                return row;
+            }
+            String url    = row.getString(col);
+	    try {
+		System.err.println("url:" + url);
+		String html=null;
+		File cacheFile = null;
+		if(CsvUtil.getCacheDir()!=null) {
+		    cacheFile = new File(CsvUtil.getCacheDir(),"cached_" + Utils.makeID(url));
+		    if(cacheFile.exists()) {
+			System.err.println("from Cache:"+ cacheFile);
+			html = IO.readContents(cacheFile);
+		    }
+		}
+		if(html==null) {
+		    html = IO.readUrl(url,(String)null);
+		    if(cacheFile!=null && html!=null) {
+			try(OutputStream fos = new FileOutputStream(cacheFile)) {
+			    IOUtil.writeTo(new ByteArrayInputStream(html.getBytes()),fos);
+			}
+
+		    }
+		}
+		//String html = IO.readContents("alasu.html",(String)null);
+		if(html==null) {
+		    row.add("");
+		    row.add("");
+		    return row;
+		}
+		int idx = html.indexOf("<body");
+		if(idx>=0) html = html.substring(0,idx);
+		Pattern pattern  = Pattern.compile(".*<meta[^>]+name=\"description\"[^>]+content=\"([^\"]+)\".*",Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		//		System.out.println(html);
+		//		html = html.replace("\n"," ").replace("\r"," ");
+		Matcher matcher = pattern.matcher(html);
+		if (!matcher.find()) {
+		    System.err.println("Not found");
+		    //		    System.out.println(html);
+		    //		    System.exit(1);
+		    row.add("");
+		    return row;
+		}
+		add(ctx, row, matcher.group(0+1));
+		System.err.println("OK");
+		//		add(ctx, row, matcher.group(0+2));		
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+            return row;
+        }
+
+    }
+    
+
 
     /**
      * Class description

@@ -66,6 +66,9 @@ public class CsvUtil implements CsvCommands {
     /** _more_          */
     private static boolean debugArgs = false;
 
+    private static File cacheDir;
+
+
     private boolean interactive = false;
     
     /** _more_ */
@@ -1080,6 +1083,14 @@ public class CsvUtil implements CsvCommands {
     }
 
 
+
+    public static void setCacheDir(File dir) {
+	cacheDir = dir;
+    }
+
+    public static File getCacheDir() {
+	return cacheDir;
+    }    
 
     /*
       Throw an error if we're not allows to write the file
@@ -2333,6 +2344,8 @@ public class CsvUtil implements CsvCommands {
                 new Arg(ARG_COLUMN, "URL Column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("names", "Comma separated list of new column names",ATTR_TYPE,TYPE_LIST),
 		new Arg(ARG_PATTERN,"Pattern",ATTR_TYPE, TYPE_PATTERN)),		
+        new Cmd(CMD_HTMLINFO, "Extract icon and description from input URL",
+                new Arg(ARG_COLUMN, "URL Column", ATTR_TYPE, TYPE_COLUMN)),
         new Cmd(CMD_URLENCODE, "URL encode the columns",
 		ARG_LABEL,"URL Encode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -4115,6 +4128,14 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_HTMLINFO,1,(ctx,args,i) -> {
+		String col = args.get(++i);
+		ctx.addProcessor(
+				 new Converter.HtmlInfo(col));
+
+		return i;
+	    });	
+
 
 
 	defineFunction(CMD_URLARG,2,(ctx,args,i) -> {
@@ -5546,6 +5567,7 @@ public class CsvUtil implements CsvCommands {
 	*/
 
 
+	CsvUtil.setCacheDir(new File("."));
 	GeoUtils.setCacheDir(new File("."));
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.commandLine  = true;
