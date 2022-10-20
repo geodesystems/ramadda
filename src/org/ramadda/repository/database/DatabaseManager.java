@@ -2453,6 +2453,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             sql = sql.replace("ramadda.double", "double");
             sql = sql.replace("ramadda.datetime", "datetime");
             sql = sql.replace("ramadda.clob", "text");
+            sql = sql.replace("ramadda.bigvarchar_orclob", "text");	    
             sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
             //sql = sql.replace("ramadda.datetime", "timestamp");
@@ -2460,12 +2461,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             sql = sql.replace("ramadda.double", "double");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "clob(64000)");
+            sql = sql.replace("ramadda.bigvarchar_orclob", "varchar(32000)");	    
             sql = sql.replace("ramadda.bigclob", "clob");
             sql = sql.replace("ramadda.bigint", "bigint");
         } else if (db.equals(SqlUtil.DB_POSTGRES)) {
             sql = sql.replace("ramadda.double", "float8");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "text");
+            sql = sql.replace("ramadda.bigvarchar_orclob", "text");	    
             sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
         } else if (db.equals(SqlUtil.DB_ORACLE)) {
@@ -2473,12 +2476,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             //            sql = sql.replace("ramadda.datetime", "date");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "clob");
+            sql = sql.replace("ramadda.bigvarchar_orclob", "clob");	    
             sql = sql.replace("ramadda.bigclob", "clob");
             sql = sql.replace("ramadda.bigint", "bigint");
         } else if (db.equals(SqlUtil.DB_H2)) {
             sql = sql.replace("ramadda.double", "float8");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "text");
+            sql = sql.replace("ramadda.bigvarchar_orclob", "text");	    
             sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
         }
