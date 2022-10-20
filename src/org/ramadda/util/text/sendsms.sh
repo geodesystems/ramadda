@@ -107,4 +107,4 @@ fi
 set -e
 
 echo "calling sh $seesv/seesv.sh -sms phone ${campaign} ${message} ${input}"
-sh $seesv/seesv.sh -sms phone "${campaign}" "${message}" ${input}
+sh $seesv/seesv.sh -progress 100 -sms phone "${campaign}" "${message}" ${input}

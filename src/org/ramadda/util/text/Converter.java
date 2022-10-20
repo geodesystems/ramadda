@@ -3307,20 +3307,38 @@ public abstract class Converter extends Processor {
 		row.add("description");
                 return row;
             }
+	    if(!row.indexOk(this.col)) {
+		return row;
+	    }
             String url    = row.getString(col);
 	    try {
-		System.err.println("url:" + url);
 		String html=null;
 		File cacheFile = null;
 		if(CsvUtil.getCacheDir()!=null) {
 		    cacheFile = new File(CsvUtil.getCacheDir(),"cached_" + Utils.makeID(url));
 		    if(cacheFile.exists()) {
-			System.err.println("from Cache:"+ cacheFile);
+//			System.err.println("from Cache:"+ cacheFile);
 			html = IO.readContents(cacheFile);
 		    }
 		}
 		if(html==null) {
-		    html = IO.readUrl(url);
+		    try {
+			System.err.println("url:" + url);
+			if(url.startsWith("http:")) {
+			    //Try https first
+			    try {
+				html = IO.readUrl(url.replace("http:","https:"));
+			    } catch(Exception exc) {
+			    }
+			}
+			if(html==null)
+			    html = IO.readUrl(url);
+		    } catch(Exception exc) {
+			System.err.println("error reading url:" + url +"\n" + exc);
+			row.add("");
+			row.add("");
+			return row;
+		    }
 		    if(cacheFile!=null && html!=null) {
 			try(OutputStream fos = new FileOutputStream(cacheFile)) {
 			    IOUtil.writeTo(new ByteArrayInputStream(html.getBytes()),fos);
@@ -3328,27 +3346,74 @@ public abstract class Converter extends Processor {
 
 		    }
 		}
-		//String html = IO.readContents("alasu.html",(String)null);
 		if(html==null) {
 		    row.add("");
 		    row.add("");
 		    return row;
 		}
-		int idx = html.indexOf("<body");
-		if(idx>=0) html = html.substring(0,idx);
-		Pattern pattern  = Pattern.compile(".*<meta[^>]+name=\"description\"[^>]+content=\"([^\"]+)\".*",Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-		//		System.out.println(html);
-		//		html = html.replace("\n"," ").replace("\r"," ");
-		Matcher matcher = pattern.matcher(html);
-		if (!matcher.find()) {
-		    System.err.println("Not found");
-		    //		    System.out.println(html);
-		    //		    System.exit(1);
-		    row.add("");
-		    return row;
+		int idx1 = html.indexOf("<head");
+		int idx2= html.indexOf("</head");		
+		if(idx1>=0 && idx2>=idx1) {
+		    html = html.substring(idx1,idx2);
+		} else {
+		    int idx = html.indexOf("<body");
+		    if(idx>=0) html = html.substring(0,idx);
 		}
-		add(ctx, row, matcher.group(0+1));
-		System.err.println("OK");
+		Pattern metaPattern  = Pattern.compile("<meta([^>]+>)",
+						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Pattern metaPattern2  = Pattern.compile("name=\"description\"[^>]+content=\"([^\"]+)\"",
+						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher metaMatcher = metaPattern.matcher(html);
+		String desc = "";
+		while(metaMatcher.find()) {
+		    String meta =  metaMatcher.group(0+1);
+		    Matcher matcher = metaPattern2.matcher(meta);		    
+		    if(matcher.find()) {
+			desc = matcher.group(1);
+			break;
+		    }
+		}
+		add(ctx, row, desc);
+
+
+		Pattern linkPattern  = Pattern.compile("<link([^>]+>)",
+						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Pattern relPattern  = Pattern.compile("rel *= *(?:\"|')([^\"']+)(\"|')");
+		Pattern hrefPattern  = Pattern.compile("href *= *(?:\"|')([^\"']+)(\"|')");
+		Pattern sizesPattern  = Pattern.compile("sizes *= *(?:\"|')([^\"']+)(\"|')");				
+		Pattern linkPattern2  = Pattern.compile("name=\"description\"[^>]+content=\"([^\"]+)\"",
+						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher linkMatcher = linkPattern.matcher(html);
+		String image32 = null;
+		String image = null;
+		while(linkMatcher.find()) {
+		    String link =  linkMatcher.group(1);
+		    //		    System.out.println(link);
+		    //		    System.err.println("LINK:" + link);
+		    Matcher relMatcher = relPattern.matcher(link);		    
+		    if(!relMatcher.find()) continue;
+		    String rel = relMatcher.group(1);
+		    //		    System.err.println("REL:" + rel);
+		    if(!rel.equals("icon")) continue;
+		    Matcher hrefMatcher = hrefPattern.matcher(link);		    
+		    if(!hrefMatcher.find()) continue;
+		    image = hrefMatcher.group(1);
+		    //		    System.err.println("IMAGE:" + image);
+		    Matcher sizesMatcher = sizesPattern.matcher(link);		    
+		    if(sizesMatcher.find()) {
+			String sizes = hrefMatcher.group(1);
+			if(sizes.indexOf("32x32")>=0) {
+			    image32 = image;
+			    break;
+			}
+		    }
+		}
+		if(image==null && image32==null)
+		    System.err.println("NULL:" + url);
+		
+		if(image32==null) image32 = image;
+		if(image32==null) image32 = "FOO";
+		add(ctx, row, image);		
 		//		add(ctx, row, matcher.group(0+2));		
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
