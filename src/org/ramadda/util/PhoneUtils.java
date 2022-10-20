@@ -326,8 +326,7 @@ public class PhoneUtils {
         }
         Boolean b = isMobile.get(phone);
         if (b != null) {
-            System.err.println("cached:" + phone);
-
+	    //            System.err.println("cached:" + phone);
             return b.booleanValue();
         }
         PhoneInfo result = getPhoneInfo(phone);
@@ -379,6 +378,8 @@ public class PhoneUtils {
 
         return phone;
     }
+    private static boolean printedMessage = false;
+
 
     /**
      *
@@ -396,11 +397,13 @@ public class PhoneUtils {
         phone = cleanPhone(phone);
         if (phone.length() != 12) {
             System.err.println("BAD PHONE:" + phone);
-
             return null;
         }
         if (numverifyKey != null) {
-            System.err.println("Using numverify");
+	    if(!printedMessage) {
+		printedMessage = true;
+		System.err.println("Using numverify");
+	    }
             String url = HtmlUtils.url("http://apilayer.net/api/validate",
                                        "access_key", numverifyKey, "number",
                                        phone, "country_code", "", "format",
@@ -424,7 +427,10 @@ public class PhoneUtils {
                                  obj.getString("line_type"));
         }
 
-        System.err.println("Using numlookup");
+	if(!printedMessage) {
+	    printedMessage = true;
+	    System.err.println("Using numlookup");
+	}
         String url =
             HtmlUtils.url("https://api.numlookupapi.com/v1/validate/"
                           + phone, "apikey", numlookupapiKey);
