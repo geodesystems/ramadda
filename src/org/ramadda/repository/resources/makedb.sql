@@ -94,10 +94,10 @@ CREATE TABLE  metadata (id varchar(200),
 			entry_id varchar(200),
                         type varchar(200),
                 	inherited int,
-                        attr1 ramadda.clob,
-                        attr2 ramadda.clob,
-                        attr3 ramadda.clob,
-                        attr4 ramadda.clob,
+                        attr1 ramadda.bigvarchar_orclob,
+                        attr2 ramadda.bigvarchar_orclob,
+                        attr3 ramadda.bigvarchar_orclob,
+                        attr4 ramadda.bigvarchar_orclob,
 		        extra ramadda.bigclob);
 
 
@@ -185,19 +185,16 @@ type_document_ohms:
 -----------------------------------------------------------------------
 
 #if  derby 
-     alter table metadata alter  attr1 set data type varchar(32000);
-     alter table metadata alter  attr2 set data type varchar(32000);
-     alter table metadata alter  attr3 set data type varchar(32000);
-     alter table metadata alter  attr4 set data type varchar(32000);     
+     alter table metadata alter  attr1 set data type ramadda.bigvarchar_orclob;
+     alter table metadata alter  attr2 set data type ramadda.bigvarchar_orclob;
+     alter table metadata alter  attr3 set data type ramadda.bigvarchar_orclob;
+     alter table metadata alter  attr4 set data type ramadda.bigvarchar_orclob;     
+---     alter table db_agendaitems add column new_description clob;
+---     update db_agendaitems set new_description=description;
+---     rename column db_agendaitems.description to old_description;
+---     rename column db_agendaitems.new_description to description;
+---     alter table db_agendaitems drop column old_description;
 
-     alter table db_agendaitems add column new_description clob;
-     update db_agendaitems set new_description=description;
-     rename column db_agendaitems.description to old_description;
-     rename column db_agendaitems.new_description to description;
-     alter table db_agendaitems drop column old_description;
-
-
-#endif
 
 
 #if mysql
