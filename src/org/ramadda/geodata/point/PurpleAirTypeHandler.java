@@ -325,6 +325,11 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                      + HU.arg("api_key", apiKey) + "&"
                      + HU.arg("fields", fields);
         if (Utils.stringDefined(privateKey)) {
+	    privateKey = privateKey.trim();
+	    String tmp = getRepository().getProperty(privateKey,(String) null);
+	    if (Utils.stringDefined(tmp)) {
+		privateKey = tmp;
+	    }
             url += "&" + HU.arg("read_key", privateKey);
         }
         try {

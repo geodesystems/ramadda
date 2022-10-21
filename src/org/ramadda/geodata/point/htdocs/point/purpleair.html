@@ -54,7 +54,14 @@ Alternatively, you can access IDs for any public sensor from the map at <a href=
 Hover over the "Get This widget" link to see the ID in the embed HTML, e.g. 112686, or in the Download Data link.
 <p>
 
-When a new Purple Air Sensor entry is created RAMADDA will fetch, through the API, the metadata for the sensor, e.g. name, location, model, etc.   If the sensor is a private sensor you can enter the private key when creating the entry. The private key is available through your Purple Air account.
+  When a new Purple Air Sensor entry is created RAMADDA will fetch, through the API, the metadata for the sensor, e.g. name, location, model, etc.   If the sensor is a private sensor you can enter the private key when creating the entry. The private key is available through your Purple Air account.
+  You can also add your private   key as a RAMADDA property in a .properties file on your server. Specify your the property ID as the private key in the entry. For example, if you had a private key "some_private_key" then, in a repository.properties file enter:
+<pre>
+myprivatekey=some_private_key
+</pre>    
+
+The name of the property, e.g.,  "myprivatekey", is arbitrary. Now, when you create the PurpleAir
+Entry in RAMADDA in the private key field just entry "myprivatekey".
 <p>
 
 The default display for a Purple Air Sensor entry is shown below. Note, initially there is no data but over time the data will be fetched from the API. 
