@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>Data Upload</title>
+</head>
+<body>
+
+<div class="ramadda-section">
+<h2>Data Upload</h2>
+RAMADDA provides a data upload API that enables record oriented data to
+be uploaded and appended to some file based on a sensor ID
+This service is centered around one or more groups, i.e., a group of
+data files. For each group you need to define the following properties
+in the repository.properties file in your RAMADDA home directory:
+
+
+<pre>
+upload.&lt;GROUP&gt;.directory=/path/to/store/the/files
+upload.&lt;GROUP&gt;.file=file name template
+upload.&lt;GROUP&gt;.header=header for when a file is created
+upload.&lt;GROUP&gt;.apikey=apikey
+
+e.g. for a group "group1":
+upload.group1.directory=/data/group1
+upload.group1.file=somedata_{sensor}.csv
+upload.group1.header=#This is the header for the data\nd1,d2,d3
+upload.group1.apikey=mykey
+
+</pre>
+
+<ul>
+<li> The .header is used when a file is first created. Use "\n" as a new line. RAMADDA
+will also write out a new line at the end of the header. 
+<li> The .file property is a template that gives the name of the file to create. Use "{sensor}"
+  for the sensor id and "{group}" for the group id
+<li> The .apikey is used to verify the API call to upload data
+</ul>
+
+The above properties define a group "group1". To upload a record for the sensor "sensor1"
+simply call the API with:
+<pre>
+https://server/data/upload?group=group1&sensor=sensor1&data=7,8,9
+</pre>
+
+This results in a new file called somedata_sensor1.csv
+under the directory /data/group1. The file will initially hold:
+<pre>
+#This is the header for the data
+d1,d2,d3
+7,8,9
+</pre>
+
+If you wanted to upload multiple records then do:
+<pre>
+https://server/data/upload?group=group1&sensor=sensor1&data=7,8,9\n10,11,12
+</pre>
+
+Data from another sensor would be uploaded as:
+
+<pre>
+https://server/data/upload?group=group1&sensor=sensor2&data=7,8,9\n10,11,12
+</pre>
+
+Note: the return of the above API calls will be JSON of the form:
+<pre>
+{"code":"ok","message":"data uploaded"}
+</pre>
+
+If there is an error it will return, e.g.:
+<pre>
+  {"code":"error","message":"No upload group found"}
+</pre>
+
+</div>
+</body>
+</html>

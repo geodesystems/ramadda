@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.plugins.dataupload.DataApiHandler" id="dataupload">
+      <api request="/data/upload"    method="processUpload" admin="false"/>
+</api>
