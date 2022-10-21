@@ -20,7 +20,8 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/aws/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/apis/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/atlassian/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/datapolicy/build.xml" inheritAll="false"/>      
+      <ant antfile="${src_dir}/org/ramadda/plugins/datapolicy/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/dataupload/build.xml" inheritAll="false"/>            
       <ant antfile="${src_dir}/org/ramadda/plugins/beforeafter/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/biblio/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/biz/build.xml" inheritAll="false"/>
