@@ -67,11 +67,11 @@ public class DataApiHandler extends RepositoryManager implements RequestHandler 
 
                 return null;
             }
+	    dir = dir.trim();
             File file = new File(dir);
             if ( !file.exists()) {
                 getRepository().getLogManager().logError(
                     "DataApiHandler: upload directory does not exist:" + dir);
-
                 return null;
             }
             uploadGroup = new UploadGroup(getRepository(), group, file);
