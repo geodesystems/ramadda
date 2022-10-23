@@ -2780,6 +2780,12 @@ public class CsvUtil implements CsvCommands {
 		new Arg("degrees","Degrees per tile. Defaults to 1"),
 		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., tile${vkey}.csv. Defaults to a tile${vket}.csv")),		
 
+
+        new Cmd(CMD_CHUNK, "Make a number of output files with a max number of rows",
+		ARG_LABEL,"Chunk Output",
+		new Arg("output_template","Output template - use ${number}, e.g., output${number}.csv. Defaults to a output${number}.csv"),
+		new Arg("number","Number of rows in each file")),		
+
         new Cmd(CMD_ADDHEADER, "Add the RAMADDA point properties",
 		ARG_LABEL,"Add Point Header",
                 new Arg("properties", "name1 value1 ... nameN valueN", ATTR_ROWS, "6")),
@@ -4441,6 +4447,7 @@ public class CsvUtil implements CsvCommands {
 		return i;
 	    });
 
+	
 
 	defineFunction(CMD_SPLIT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSplitter(
@@ -5107,6 +5114,11 @@ public class CsvUtil implements CsvCommands {
 	    });	
 	
 
+
+	defineFunction(CMD_CHUNK, 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Chunker(this, args.get(++i), Integer.parseInt(args.get(++i))));
+		return i;
+	    });
 
 	defineFunction(CMD_SUBD,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Subd(this,getCols(args.get(++i)),

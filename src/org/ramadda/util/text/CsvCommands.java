@@ -284,7 +284,6 @@ public interface CsvCommands {
     public static final String CMD_PRINTDELIM="-printdelim";
     public static final String CMD_OUTPUTPREFIX="-outputprefix";
     public static final String CMD_PRINTHEADER="-printheader";
-    public static final String CMD_CHUNK="-chunk";
     public static final String CMD_RAW="-raw";
     public static final String CMD_TABLE="-table";
     public static final String CMD_COLS="-cols";
@@ -295,6 +294,7 @@ public interface CsvCommands {
     public static final String CMD_TODB="-todb";
     public static final String CMD_TEMPLATE="-template";
     public static final String CMD_SUBD="-subd";
+    public static final String CMD_CHUNK="-chunk";
     public static final String CMD_MAPTILES="-maptiles";
     public static final String CMD_ADDHEADER="-addheader";
     public static final String CMD_DB="-db";

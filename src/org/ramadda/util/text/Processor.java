@@ -1717,6 +1717,9 @@ public abstract class Processor extends CsvOperator {
         /**  */
         private Row headerRow;
 
+        public Printer() {
+	}
+
         /**
          * ctor
          *
@@ -2176,6 +2179,74 @@ public abstract class Processor extends CsvOperator {
 
 
 
+
+    public static class Chunker extends Printer {
+
+	private CsvUtil csvUtil;
+	private int numRows;
+
+        /** _more_ */
+        private String template;
+
+	private int count;
+
+	private Row header;
+
+	int fileCnt  = 0;
+
+	PrintWriter pw;
+
+        /**
+         */
+        public Chunker(CsvUtil csvUtil, String template,int numRows) {
+            this.csvUtil = csvUtil;
+            this.template = template;
+            this.numRows = numRows;
+        }
+
+        public void finish(TextReader ctx) throws Exception {
+	    if(pw!=null) {
+		pw.close();
+	    }
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    try {
+		if (rowCnt++ == 0) {
+		    header = row;
+		    return row;
+		}
+
+		if(count>=numRows) {
+		    if(pw!=null) {
+			pw.close();
+		    }
+		    pw = null;
+		    count=0;
+		}
+		if(pw == null) {
+		    fileCnt++;
+		    String file = template.replace("${number}",""+fileCnt);
+		    csvUtil.checkOkToWrite(file);
+		    FileWriter fw = new FileWriter(file);
+		    BufferedWriter bw = new BufferedWriter(fw);
+		    pw = new PrintWriter(bw);
+		    handleRow(ctx, pw, header,false);
+		}
+		count++;
+		handleRow(ctx, pw, row,false);
+		return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+    }
 
     /**
      * Class description
