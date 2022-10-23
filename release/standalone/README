@@ -2,18 +2,21 @@
 ###################################################################
 RAMADDA Home Directory
 ###################################################################
-RAMADDA, on both Un*x and Windows, requires a home directory where it creates the DB, saves files, etc
+RAMADDA, on both Un*x and Windows, requires a home directory where it creates the DB,
+saves files, etc.
 There is documentation here: https://ramadda.org/repository/userguide/installing.html
 
 You will need to create this directory. By default RAMADDA looks for:
 <user home directory>/.ramadda
 
-You can override the home directory (see below or in ramadda.bat) with the Java command line argument:
+You can override the home directory (see below or in ramadda.bat) with the Java command
+line argument:
 -Dramadda_home=/some/other/directory/ramadda 
 
-When RAMADDA first starts up it writes an install.properties file that contains an install password.
+When RAMADDA first starts up it writes an install.properties file that contains an
+install password and prints out this password to stdout.
 ramadda.install.password=<some password>
-You will need this password when doing the final RAMADDA configuration
+You will need this password when doing the final web-based  RAMADDA configuration
 
 
 ###################################################################
@@ -22,17 +25,18 @@ Initial setup on Un*x systems
 
 Here is the recommended setup to run RAMADDA stand-alone.
 Create a ramadda directory to hold the @RELEASE@ release 
-and copy the ramaddaenv.sh file to the ramadda directory.
+and copy the ramaddaenv.sh file from the release directory
+to the ramadda directory.
 
-
+Looks like:
 ramadda
       @RELEASE@
       ramaddaenv.sh
 
-Edit the ramaddaenv.sh to point to where Java is located, what port to run 
+Edit the copied ramaddaenv.sh to point to where Java is located, what port to run 
 RAMADDA on and where is the RAMADDA home directory.
 
-RAMADDA requires Java 1.6 or above to run.
+RAMADDA requires Java 1.8 or above to run.
 
 To run RAMADDA just do:
 
@@ -47,7 +51,6 @@ change these settings is with command line arguments:
 
     sh @RELEASE@/ramadda.sh -port 8081 -Dramadda_home=/some/other/directory/ramadda
 
-
 See the Database section below on how to change the database
 
 You need to complete the configuration at:
@@ -58,7 +61,7 @@ http://ramadda.org/repository/userguide/installing.html
 
 
 ###################################################################
-Running in the background
+Running in as a service in the background
 ###################################################################
 
 The script @RELEASE@/ramaddaService.sh can start, stop and restart a running
@@ -77,7 +80,6 @@ Configuration
 ###################################################################
 
 The ramadda.sh script runs the stand-alone version of RAMADDA.
-
 The script uses the environment variables:
 RAMADDA_HOME - The directory RAMADDA stores everything in.  Defaults to <user home>/.ramadda
 
@@ -95,14 +97,20 @@ in the parent directory of the release directory.
 Plugins
 ###################################################################
 When you start RAMADDA it will create a plugins directory under the RAMADDA
-home directory. During the web-based initialization you can choose (on
-by default) to install the "allplugins.zip" file. This contains the majority
-of the RAMADDA plugins.
+home directory. During the web-based initialization you can choose  to install
+the following plugins. It is recommended to install all of the plugins (except the
+bioplugins). They pretty much just provide different entry types
+coreplugins: 
+geoplugins: Lots of geoscience related data and services
+miscplugins:
+bioplugins: bioscience data
 
-There are some other plugin files available via Geode Systems (http://geodesystems.com/repository/alias/release/)
+There are some other plugin files available via ramadda.org (https://ramadda.org/repository/alias/release/)
 which you can install in the plugins directory.
 
-When you re-install a new version of RAMADDA make sure to also download and install the most recent versions of any plugins you are using.
+When you re-install a new version of RAMADDA any plugins you have installed previously
+will get updated.
+
 
 
 ###################################################################
