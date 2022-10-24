@@ -3994,17 +3994,25 @@ public class EntryManager extends RepositoryManager {
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
                     sentNotification = true;
-                    getRepository().getMailManager().sendEmail(
-							       metadata.getAttr2(), "Uploaded Entry",
-							       contents.toString(), true);
+		    try {
+			getRepository().getMailManager().sendEmail(
+								   metadata.getAttr2(), "Uploaded Entry",
+								   contents.toString(), true);
+		    } catch(Exception exc) {
+			getLogManager().logError("Sending upload email", exc);
+		    }
 
                 }
 
             }
             if ( !sentNotification) {
-                getRepository().getMailManager().sendEmail(
-							   parentUser.getEmail(), "Uploaded Entry",
-							   contents.toString(), true);
+		try {
+		    getRepository().getMailManager().sendEmail(
+							       parentUser.getEmail(), "Uploaded Entry",
+							       contents.toString(), true);
+		} catch(Exception exc) {
+		    getLogManager().logError("Sending upload email", exc);
+		}
             }
         }
     }
