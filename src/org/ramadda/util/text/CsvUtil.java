@@ -3000,7 +3000,7 @@ public class CsvUtil implements CsvCommands {
 		sb.append(c.desc);
 		if(extra!=null) {
 		    sb.append(" ");
-		    sb.append(extra);
+		    processHelpContents(sb, extra);
 		}
 		sb.append("${header" + headers.size()+"}");
 
@@ -3041,58 +3041,7 @@ public class CsvUtil implements CsvCommands {
 		sb.append("</ul>\n");		
 	    }
 	    if(extra!=null) {
-		boolean inData = false;
-		List<String> dataLines = null;
-		for(String line:Utils.split(extra,"\n")) {
-		    if(line.trim().startsWith("seesv:")) {
-			line = line.substring("seesv:".length()).trim();
-			line = line.replaceAll("<","&lt;").replaceAll(">","&gt;");
-			if(!line.startsWith("seesv")) line = "seesv " + line;
-			sb.append("<seesv>");
-			sb.append(line);
-			sb.append("</seesv>");
-			continue;
-		    }
-		    if(line.startsWith("import:")) {
-			line = line.substring("import:".length()).trim();
-			if(!line.startsWith("/")) {
-			    line = "/org/ramadda/util/text/help/" + line;
-			}
-			String include = IO.readContents(line,(String)null);
-			if(include==null) throw new IllegalArgumentException("Bad import:" + line);
-			include = include.replaceAll("<","&lt;").replaceAll(">","&gt;");
-			sb.append(include);
-			continue;
-		    }
-		    if(line.startsWith("data:")) {
-			line = line.substring("data:".length()).trim();
-			if(!line.startsWith("/")) {
-			    line = "/org/ramadda/util/text/test/" + line;
-			}
-			String include = IO.readContents(line,(String)null);
-			if(include==null) throw new IllegalArgumentException("Bad import:" + line);
-			genHelpData(sb, Utils.split(include,"\n"));
-			continue;
-		    }
-
-		    String _line = line.trim();
-		    if(_line.equals("<data>")) {
-			inData = true;
-			dataLines = new ArrayList<String>();
-			continue;
-		    }
-		    if(_line.equals("</data>")) {
-			inData = false;
-			genHelpData(sb,dataLines);
-			continue;
-		    }
-		    if(inData) {
-			dataLines.add(line);
-			continue;
-		    }
-		    sb.append(line);
-		    sb.append("\n");
-		}
+		processHelpContents(sb, extra);
 		sb.append("<p>");
 	    }
 	    sb.append("</div>");
@@ -3114,6 +3063,62 @@ public class CsvUtil implements CsvCommands {
         pw.flush();
     }
 
+
+    private void processHelpContents(StringBuilder sb, String help) throws Exception {
+	if(help==null) return;
+	List<String> dataLines = null;
+	boolean inData = false;
+	for(String line:Utils.split(help,"\n")) {
+	    if(line.trim().startsWith("seesv:")) {
+		line = line.substring("seesv:".length()).trim();
+		line = line.replaceAll("<","&lt;").replaceAll(">","&gt;");
+		if(!line.startsWith("seesv")) line = "seesv " + line;
+		sb.append("<seesv>");
+		sb.append(line);
+		sb.append("</seesv>");
+		continue;
+	    }
+	    if(line.startsWith("import:")) {
+		line = line.substring("import:".length()).trim();
+		if(!line.startsWith("/")) {
+		    line = "/org/ramadda/util/text/help/" + line;
+		}
+		String include = IO.readContents(line,(String)null);
+		if(include==null) throw new IllegalArgumentException("Bad import:" + line);
+		include = include.replaceAll("<","&lt;").replaceAll(">","&gt;");
+		sb.append(include);
+		continue;
+	    }
+	    if(line.startsWith("data:")) {
+		line = line.substring("data:".length()).trim();
+		if(!line.startsWith("/")) {
+		    line = "/org/ramadda/util/text/test/" + line;
+		}
+		String include = IO.readContents(line,(String)null);
+		if(include==null) throw new IllegalArgumentException("Bad import:" + line);
+		genHelpData(sb, Utils.split(include,"\n"));
+		continue;
+	    }
+
+	    String _line = line.trim();
+	    if(_line.equals("<data>")) {
+		inData = true;
+		dataLines = new ArrayList<String>();
+		continue;
+	    }
+	    if(_line.equals("</data>")) {
+		inData = false;
+		genHelpData(sb,dataLines);
+		continue;
+	    }
+	    if(inData) {
+		dataLines.add(line);
+		continue;
+	    }
+	    sb.append(line);
+	    sb.append("\n");
+	}
+    }	
 
     private void genHelpData(StringBuilder sb, List<String> dataLines) {
 	sb.append("<br>");
