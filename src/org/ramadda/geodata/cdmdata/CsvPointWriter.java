@@ -40,7 +40,7 @@ public class CsvPointWriter extends DataSink {
      * @param arg _more_
      *  @return _more_
      */
-    public boolean canHandle(CsvUtil csvUtil, String arg) {
+    public boolean canHandle(Seesv csvUtil, String arg) {
         return arg.equals("-tonc");
     }
 
@@ -52,7 +52,7 @@ public class CsvPointWriter extends DataSink {
      * @param index _more_
      *  @return _more_
      */
-    public int processArgs(CsvUtil csvUtil, List<String> args, int index) {
+    public int processArgs(Seesv csvUtil, List<String> args, int index) {
         if (index >= args.size() - 2) {
             throw new IllegalArgumentException(
                 "Usage: -tonc \"name value\" ");

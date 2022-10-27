@@ -268,9 +268,9 @@ public class TextReader implements Cloneable {
     private Bounds bounds;
 
 
-    private CsvUtil.Dater  inDater;
+    private Seesv.Dater  inDater;
 
-    private CsvUtil.Dater  outDater;
+    private Seesv.Dater  outDater;
 
 
     /**
@@ -343,7 +343,7 @@ public class TextReader implements Cloneable {
      *
      * @throws Exception _more_
      */
-    public Row processRow(CsvUtil csvUtil, Row row) throws Exception {
+    public Row processRow(Seesv csvUtil, Row row) throws Exception {
         if (firstProcessor != null) {
             row = firstProcessor.handleRow(this, row);
         } else {
@@ -423,11 +423,11 @@ public class TextReader implements Cloneable {
 	if(verbose) System.err.println(msg);
     }
 
-    public void setInDater(CsvUtil.Dater dater) {
+    public void setInDater(Seesv.Dater dater) {
 	this.inDater = dater;
     }
 
-    public void setOutDater(CsvUtil.Dater dater) {
+    public void setOutDater(Seesv.Dater dater) {
 	this.outDater = dater;
     }    
     

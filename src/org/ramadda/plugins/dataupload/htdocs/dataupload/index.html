@@ -38,7 +38,7 @@ will also write out a new line at the end of the header.
 The above properties define a group "group1". To upload a record for the sensor "sensor1"
 simply call the API with:
 <pre>
-https://server/data/upload?group=group1&sensor=sensor1&data=7,8,9
+https://server/data/upload?apikey=&lt;your key&gt;&group=group1&sensor=sensor1&data=7,8,9
 </pre>
 
 This results in a new file called somedata_sensor1.csv
@@ -51,13 +51,13 @@ d1,d2,d3
 
 If you wanted to upload multiple records then do:
 <pre>
-https://server/data/upload?group=group1&sensor=sensor1&data=7,8,9\n10,11,12
+https://server/data/upload?apikey=&lt;your key&gt;&group=group1&sensor=sensor1&data=7,8,9\n10,11,12
 </pre>
 
 Data from another sensor would be uploaded as:
 
 <pre>
-https://server/data/upload?group=group1&sensor=sensor2&data=7,8,9\n10,11,12
+https://server/data/upload?apikey=&lt;your key&gt;&group=group1&sensor=sensor2&data=7,8,9\n10,11,12
 </pre>
 
 Note: the return of the above API calls will be JSON of the form:

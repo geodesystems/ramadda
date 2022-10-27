@@ -24,7 +24,7 @@ import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 
 import org.w3c.dom.*;
@@ -209,7 +209,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                 "utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" ",
                 "-print"
             };
-            CsvUtil csvUtil = new CsvUtil(args,
+            Seesv csvUtil = new Seesv(args,
                                           new BufferedOutputStream(bos),
                                           null);
             csvUtil.setInputStream(super.doMakeInputStream(buffered));

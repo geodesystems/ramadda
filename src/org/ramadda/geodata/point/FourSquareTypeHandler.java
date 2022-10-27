@@ -7,7 +7,7 @@ package org.ramadda.geodata.point;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 
 import org.ramadda.data.record.*;
@@ -140,7 +140,7 @@ public class FourSquareTypeHandler extends PointTypeHandler {
         }
 
 	@Override
-	public InputStream doMakeInputStream(CsvUtil csvUtil, boolean buffered) throws Exception {
+	public InputStream doMakeInputStream(Seesv csvUtil, boolean buffered) throws Exception {
 	    return IO.getInputStreamFromGet(new URL(getFilename()), "accept",   "application/json",
 					    "Authorization", repository.getProperty(PROP_KEY,"").trim());
 	}

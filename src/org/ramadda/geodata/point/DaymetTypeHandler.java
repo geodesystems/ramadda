@@ -13,7 +13,7 @@ import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -190,7 +190,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
                     "0,1", "-", "", "-scale", "3", "0", "0.0393700787", "0",
                     "-format", "3", "#0.00", "-columns", "9,2-8", "-print"
                 };
-                CsvUtil csvUtil = new CsvUtil(args,
+                Seesv csvUtil = new Seesv(args,
                                       new BufferedOutputStream(fos), null);
                 csvUtil.setInputStream(super.doMakeInputStream(buffered));
                 csvUtil.run(null);

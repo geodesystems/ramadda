@@ -15,8 +15,8 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.text.CsvUtil;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -511,7 +511,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             StringBuilder      csv  = new StringBuilder();
             List<List<String>> rows = getRows(entry, recordFields);
             for (List<String> cols : rows) {
-                csv.append(CsvUtil.columnsToString(cols, ","));
+                csv.append(Seesv.columnsToString(cols, ","));
                 csv.append("\n");
             }
             byte[]               bytes = csv.toString().getBytes();

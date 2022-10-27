@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -491,7 +491,7 @@ public class LogManager extends RepositoryManager {
         cols.add(entry.getName());
         cols.add(activity);
         cols.add(sdf.format(new Date()));
-        String message = CsvUtil.columnsToString(cols, ",", false);
+        String message = Seesv.columnsToString(cols, ",", false);
         if (logger != null) {
             logger.info(message);
         } else {

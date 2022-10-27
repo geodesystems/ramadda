@@ -24,7 +24,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.Element;
 
@@ -349,7 +349,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
          * @throws Exception _more_
          */
         @Override
-        public InputStream doMakeInputStream(CsvUtil csvUtil,
+        public InputStream doMakeInputStream(Seesv csvUtil,
                                              boolean buffered)
                 throws Exception {
             if (dataUrl != null) {

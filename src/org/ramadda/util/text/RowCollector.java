@@ -1953,7 +1953,7 @@ public class RowCollector extends Processor {
             new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
         /** _more_ */
-        private CsvUtil util;
+        private Seesv util;
 
         /**  */
         private boolean justStats;
@@ -1976,7 +1976,7 @@ public class RowCollector extends Processor {
          * @param util _more_
          * @param justStats _more_
          */
-        public Stats(TextReader ctx, CsvUtil util, boolean justStats) {
+        public Stats(TextReader ctx, Seesv util, boolean justStats) {
 	    super(ctx);
             this.util      = util;
             this.justStats = justStats;
@@ -2316,7 +2316,7 @@ public class RowCollector extends Processor {
              * @param n _more_
              * @param sample _more_
              */
-            public ColStat(CsvUtil util, boolean interactive, String n,
+            public ColStat(Seesv util, boolean interactive, String n,
                            String sample) {
                 this.interactive = interactive;
                 label            = name;

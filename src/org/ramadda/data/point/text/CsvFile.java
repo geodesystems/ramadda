@@ -9,7 +9,7 @@ package org.ramadda.data.point.text;
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -190,9 +190,9 @@ public class CsvFile extends TextFile {
             commands.add("-print");
         }
 	if(debug)
-	    System.err.println("making CsvUtil:" + commands);
+	    System.err.println("making Seesv:" + commands);
 	commands = preprocessCsvCommands(commands);
-        CsvUtil csvUtil = new CsvUtil(commands,
+        Seesv csvUtil = new Seesv(commands,
                                       new BufferedOutputStream(fos), null);
 
         RecordFileContext ctx = getRecordFileContext();
@@ -200,7 +200,7 @@ public class CsvFile extends TextFile {
             csvUtil.setPropertyProvider(ctx.getPropertyProvider());
         }
         //else   System.err.println("No RecordFileContext set");
-        runCsvUtil(csvUtil, buffered);
+        runSeesv(csvUtil, buffered);
         fos.flush();
         fos.close();
     }
@@ -288,7 +288,7 @@ public class CsvFile extends TextFile {
      *
      * @throws Exception _more_
      */
-    public InputStream doMakeInputStream(CsvUtil csvUtil, boolean buffered)
+    public InputStream doMakeInputStream(Seesv csvUtil, boolean buffered)
             throws Exception {
         return super.doMakeInputStream(buffered);
     }
@@ -301,7 +301,7 @@ public class CsvFile extends TextFile {
      *
      * @throws Exception _more_
      */
-    public void runCsvUtil(CsvUtil csvUtil, boolean buffered)
+    public void runSeesv(Seesv csvUtil, boolean buffered)
             throws Exception {
         csvUtil.setInputStream(doMakeInputStream(csvUtil, buffered));
         csvUtil.run(null);

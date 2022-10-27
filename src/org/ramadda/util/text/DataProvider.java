@@ -54,7 +54,7 @@ import java.util.regex.*;
 public abstract class DataProvider extends CsvOperator {
 
     /** _more_ */
-    private CsvUtil csvUtil;
+    private Seesv csvUtil;
 
     /**
      * _more_
@@ -71,7 +71,7 @@ public abstract class DataProvider extends CsvOperator {
      *
      * @throws Exception _more_
      */
-    public void initialize(CsvUtil csvUtil, TextReader ctx) throws Exception {
+    public void initialize(Seesv csvUtil, TextReader ctx) throws Exception {
         rowCnt = 0;
     }
 
@@ -186,7 +186,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader textReader)
+        public void initialize(Seesv csvUtil, TextReader textReader)
                 throws Exception {
             super.initialize(csvUtil, textReader);
             String s = textReader.convertContents(textReader.readContents());
@@ -868,7 +868,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx)
+        public void initialize(Seesv csvUtil, TextReader ctx)
                 throws Exception {
             super.initialize(csvUtil, ctx);
             iterator = GeoJson.makeIterator(ctx.getInputStream(), null,
@@ -964,7 +964,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx)
+        public void initialize(Seesv csvUtil, TextReader ctx)
                 throws Exception {
             super.initialize(csvUtil, ctx);
             this.connection = csvUtil.getDbConnection(ctx, this, props, db,
@@ -1240,7 +1240,7 @@ public abstract class DataProvider extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public void initialize(CsvUtil csvUtil, TextReader textReader)
+        public void initialize(Seesv csvUtil, TextReader textReader)
                 throws Exception {
             super.initialize(csvUtil, textReader);
             List<String> files = csvUtil.getInputFiles();
@@ -1849,7 +1849,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx)
+        public void initialize(Seesv csvUtil, TextReader ctx)
                 throws Exception {
             super.initialize(csvUtil, ctx);
             this.ctx = ctx;
@@ -1903,7 +1903,7 @@ public abstract class DataProvider extends CsvOperator {
                     if ((i2 >= 0) && ((i1 < 0) || (i2 < i1))) {
                         delimiter = "|";
                     }
-                    //              System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
+                    //              System.err.println("Seesv.delimiter is null new one is:" + delimiter);
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
@@ -1954,7 +1954,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx)
+        public void initialize(Seesv csvUtil, TextReader ctx)
                 throws Exception {
             super.initialize(csvUtil, ctx);
             this.ctx = ctx;
@@ -2036,7 +2036,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx)
+        public void initialize(Seesv csvUtil, TextReader ctx)
                 throws Exception {
             super.initialize(csvUtil, ctx);
             this.ctx = ctx;
@@ -2100,7 +2100,7 @@ public abstract class DataProvider extends CsvOperator {
          * _more_
          * @param csvUtil _more_
          */
-        public Pdf(CsvUtil csvUtil) {
+        public Pdf(Seesv csvUtil) {
             tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             tabula = csvUtil.getProperty("RAMADDA_TABULA");
@@ -2120,7 +2120,7 @@ public abstract class DataProvider extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx)
+        public void initialize(Seesv csvUtil, TextReader ctx)
                 throws Exception {
             super.initialize(csvUtil, ctx);
             this.ctx = ctx;

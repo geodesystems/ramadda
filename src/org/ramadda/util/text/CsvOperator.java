@@ -135,7 +135,7 @@ public class CsvOperator {
     private String scol;
 
     /**  */
-    CsvUtil csvUtil;
+    Seesv csvUtil;
 
 
 
@@ -149,7 +149,7 @@ public class CsvOperator {
      *
      * @param csvUtil _more_
      */
-    public CsvOperator(CsvUtil csvUtil) {
+    public CsvOperator(Seesv csvUtil) {
         this.csvUtil = csvUtil;
     }
 
@@ -425,7 +425,7 @@ public class CsvOperator {
      * @throws RuntimeException _more_
      */
     public void fatal(TextReader ctx, String msg) throws RuntimeException {
-        throw new CsvUtil.MessageException(msg + " function: "
+        throw new Seesv.MessageException(msg + " function: "
                                            + getClass().getSimpleName());
     }
 

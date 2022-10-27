@@ -44,7 +44,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
      *
      * @param csvUtil _more_
      */
-    public DataSink(CsvUtil csvUtil) {
+    public DataSink(Seesv csvUtil) {
         this.csvUtil = csvUtil;
     }
 
@@ -55,7 +55,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
      *
      * @return _more_
      */
-    public abstract boolean canHandle(CsvUtil csvUtil, String arg);
+    public abstract boolean canHandle(Seesv csvUtil, String arg);
 
 
     /**
@@ -66,7 +66,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
      *
      * @return _more_
      */
-    public int processArgs(CsvUtil csvUtil, List<String> args, int index) {
+    public int processArgs(Seesv csvUtil, List<String> args, int index) {
         return index;
     }
 
@@ -212,12 +212,12 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
 
 	private  String contentTemplate;
 
-	private CsvUtil csvUtil;
+	private Seesv csvUtil;
 
         /**
          * ctor
          */
-        public Write(CsvUtil csvUtil, String fileNameTemplate, String contentTemplate) {
+        public Write(Seesv csvUtil, String fileNameTemplate, String contentTemplate) {
 	    this.csvUtil = csvUtil;
 	    this.fileNameTemplate = fileNameTemplate;
 	    this.contentTemplate = contentTemplate;	    
@@ -446,7 +446,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
          * @param table _more_
          * @param props _more_
          */
-        public ToDb(CsvUtil csvUtil, String db, String table, String columns,
+        public ToDb(Seesv csvUtil, String db, String table, String columns,
                     Hashtable<String, String> props) {
             super(csvUtil);
             //_default_

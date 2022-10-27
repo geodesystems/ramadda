@@ -28,7 +28,7 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 import org.ramadda.util.text.DataProvider;
 import org.ramadda.util.text.Filter;
 import org.ramadda.util.text.Processor;
@@ -741,7 +741,7 @@ public class TabularOutputHandler extends OutputHandler {
             textReader.addProcessor(new Filter.PatternFilter(textReader,-1,
                     "(?i:.*" + searchText + ".*)"));
         }
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
         visitor.visit(textReader, entry.getName(), rows);
     }

@@ -12,7 +12,7 @@ import org.ramadda.data.record.*;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -96,7 +96,7 @@ public class ConvertibleFile extends CsvFile {
      * @throws Exception _more_
      */
     @Override
-    public void runCsvUtil(CsvUtil csvUtil, boolean buffered)
+    public void runSeesv(Seesv csvUtil, boolean buffered)
             throws Exception {
 	List<String> files = null;
         if (entry.getResource().hasResource()) {

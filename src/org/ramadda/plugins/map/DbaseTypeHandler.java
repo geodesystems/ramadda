@@ -24,7 +24,7 @@ import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.*;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.Element;
 
@@ -258,7 +258,7 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
                     if (colCnt++ > 0) {
                         sb.append(",");
                     }
-                    sb.append(CsvUtil.cleanColumnValue(value));
+                    sb.append(Seesv.cleanColumnValue(value));
                 }
                 sb.append("\n");
             }

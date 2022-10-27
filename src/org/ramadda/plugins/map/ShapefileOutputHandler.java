@@ -25,7 +25,7 @@ import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
 import org.ramadda.util.geo.KmlUtil;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
@@ -695,7 +695,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                     sb.print(",");
                 }
                 line += "," + value;
-                sb.print(CsvUtil.cleanColumnValue(value));
+                sb.print(Seesv.cleanColumnValue(value));
             }
             if (debug) {
                 System.out.println("line:" + line);

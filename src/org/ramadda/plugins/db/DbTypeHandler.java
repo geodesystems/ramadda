@@ -41,7 +41,7 @@ import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
 
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 import org.ramadda.util.text.DataProvider;
 import org.ramadda.util.text.Filter;
 import org.ramadda.util.text.Processor;
@@ -2988,7 +2988,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         textReader.addProcessor(myProcessor);
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         DataProvider.CsvDataProvider provider =
             new DataProvider.CsvDataProvider(textReader,0);
         csvUtil.process(textReader, provider,0);

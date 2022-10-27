@@ -15,7 +15,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import ucar.unidata.util.StringUtil;
 import org.w3c.dom.*;
@@ -98,7 +98,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
         }
 
 
-        List<StringBuilder> toks = CsvUtil.tokenizeCommands(commands);
+        List<StringBuilder> toks = Seesv.tokenizeCommands(commands);
         List<String>        args = new ArrayList<String>();
         for (int j = 0; j < toks.size(); j++) {
             String arg = toks.get(j).toString();

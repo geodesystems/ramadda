@@ -20,7 +20,7 @@ import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.geo.Point;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -252,7 +252,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
         String[]              args = new String[] { "-table" };
 
-        CsvUtil csvUtil = new CsvUtil(args, new BufferedOutputStream(bos2),
+        Seesv csvUtil = new Seesv(args, new BufferedOutputStream(bos2),
                                       null);
 
         csvUtil.setInteractive(true);

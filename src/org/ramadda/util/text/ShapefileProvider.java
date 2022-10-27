@@ -61,7 +61,7 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
      *
      * @throws Exception _more_
      */
-    public void initialize(CsvUtil csvUtil, TextReader textReader)
+    public void initialize(Seesv csvUtil, TextReader textReader)
             throws Exception {
         List<String> files = csvUtil.getInputFiles();
         if (files.size() == 0) {

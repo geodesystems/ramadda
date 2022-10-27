@@ -20,7 +20,7 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 import org.ramadda.util.text.DataProvider;
 
 import org.w3c.dom.*;
@@ -462,7 +462,7 @@ public class GtfsImportHandler extends ImportHandler {
             }
         });
 
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
         if (stops.size() > 0) {
             setBounds(stops.get(0).getParentEntry(), stops);
@@ -565,7 +565,7 @@ public class GtfsImportHandler extends ImportHandler {
                 return row;
             }
         });
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
         Hashtable<String, List<float[]>> sorted = new Hashtable<String,
@@ -659,7 +659,7 @@ public class GtfsImportHandler extends ImportHandler {
                 return row;
             }
         });
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
         return stops;
@@ -725,7 +725,7 @@ public class GtfsImportHandler extends ImportHandler {
                 return row;
             }
         });
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
         return cal;
@@ -859,7 +859,7 @@ public class GtfsImportHandler extends ImportHandler {
             }
         });
 
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
 
@@ -1023,7 +1023,7 @@ public class GtfsImportHandler extends ImportHandler {
 
         });
 
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
         return agencies;
@@ -1078,7 +1078,7 @@ public class GtfsImportHandler extends ImportHandler {
                 return row;
             }
         });
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
     }
 
@@ -1121,7 +1121,7 @@ public class GtfsImportHandler extends ImportHandler {
                 return row;
             }
         });
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
     }
 
@@ -1162,7 +1162,7 @@ public class GtfsImportHandler extends ImportHandler {
                 return row;
             }
         });
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
     }
 
@@ -1420,7 +1420,7 @@ public class GtfsImportHandler extends ImportHandler {
 
         });
 
-        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
     }

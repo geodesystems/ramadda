@@ -1674,15 +1674,15 @@ public abstract class Converter extends Processor {
         /**
          * @param props _more_
          */
-        public HeaderMaker(CsvUtil csvUtil, Hashtable<String, String> props) {
+        public HeaderMaker(Seesv csvUtil, Hashtable<String, String> props) {
             this.props = new PatternProps(props);
-            defaultType = CsvUtil.getDbProp(props, "default", "type",
+            defaultType = Seesv.getDbProp(props, "default", "type",
                                             defaultType);
-            defaultTypeFromProperties = CsvUtil.getDbProp(props, "default",
+            defaultTypeFromProperties = Seesv.getDbProp(props, "default",
                     "type", null);
-            defaultChartable = CsvUtil.getDbProp(props, "default",
+            defaultChartable = Seesv.getDbProp(props, "default",
                     "chartable", true);
-	    String namesFile = CsvUtil.getDbProp(props, null, "namesfile", null);
+	    String namesFile = Seesv.getDbProp(props, null, "namesfile", null);
 	    try {
 		if(namesFile!=null) {
 		    String names = csvUtil.readFile(namesFile);
@@ -1692,8 +1692,8 @@ public abstract class Converter extends Processor {
 		System.err.println("Could not read names file:" + namesFile);
 		throw new RuntimeException(exc);
 	    }
-            makeLabel = CsvUtil.getDbProp(props, null, "makeLabel", true);
-            toStdOut  = CsvUtil.getDbProp(props, null, "stdout", false);
+            makeLabel = Seesv.getDbProp(props, null, "makeLabel", true);
+            toStdOut  = Seesv.getDbProp(props, null, "stdout", false);
         }
 
 
@@ -1732,9 +1732,9 @@ public abstract class Converter extends Processor {
                 sb.append("#fields=");
             }
             List values = new ArrayList<String>();
-            String dfltFormat = CsvUtil.getDbProp(props, "default", "format",
+            String dfltFormat = Seesv.getDbProp(props, "default", "format",
                                     null);
-            String dfltUnit = CsvUtil.getDbProp(props, "default", "unit",
+            String dfltUnit = Seesv.getDbProp(props, "default", "unit",
                                   null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
@@ -1782,7 +1782,7 @@ public abstract class Converter extends Processor {
                     "\\.", "_").replaceAll("_+_", "_").replaceAll(
                     "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
 
-                id = CsvUtil.getDbProp(props, id, i, "id", id);
+                id = Seesv.getDbProp(props, id, i, "id", id);
 
 
 		List<String> proppers = null;
@@ -1790,14 +1790,14 @@ public abstract class Converter extends Processor {
 		    proppers = (List<String>)propper.get(col,id);
 		}
                 StringBuffer attrs = new StringBuffer();
-                String group = CsvUtil.getDbProp(props, id, i, "group",
+                String group = Seesv.getDbProp(props, id, i, "group",
                                    (String) null);
                 if (group != null) {
                     attrs.append(" group=\"" + group + "\" ");
                 }
 
                 if (label == null) {
-                    label = CsvUtil.getDbProp(props, id, i, "label",
+                    label = Seesv.getDbProp(props, id, i, "label",
                             (String) null);
                 }
 		if(label==null && proppers!=null) label  = proppers.get(0);
@@ -1826,7 +1826,7 @@ public abstract class Converter extends Processor {
                     attrs.append(" description=\"" + desc + "\" ");
                 }
                 if (unit == null) {
-                    unit = CsvUtil.getDbProp(props, id, i, "unit", dfltUnit);
+                    unit = Seesv.getDbProp(props, id, i, "unit", dfltUnit);
                 }
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
@@ -1839,7 +1839,7 @@ public abstract class Converter extends Processor {
                 //              System.err.println("id:"  + id  + " default:" + type);
                 boolean isGeo = false;
 
-                boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
+                boolean chartable = Seesv.getDbProp(props, id, "chartable",
                                         defaultChartable);
                 if (id.equals("date")) {
                     type = "date";
@@ -1900,17 +1900,17 @@ public abstract class Converter extends Processor {
 
                 //              System.err.println("\tfinal type:" + type);
 
-                type = CsvUtil.getDbProp(props, id, i, "type", type);
+                type = Seesv.getDbProp(props, id, i, "type", type);
                 if (Misc.equals(type, "enum")) {
                     type = "enumeration";
                 }
-                format = CsvUtil.getDbProp(props, id, i, "format", format);
+                format = Seesv.getDbProp(props, id, i, "format", format);
                 if (format != null) {
                     format = format.replaceAll("_space_", " ");
                 }
 
                 attrs.append(" type=\"" + type + "\"");
-                String enumeratedValues = CsvUtil.getDbProp(props, id, i,
+                String enumeratedValues = Seesv.getDbProp(props, id, i,
                                               "enumeratedValues", null);
                 if (enumeratedValues != null) {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
@@ -3314,8 +3314,8 @@ public abstract class Converter extends Processor {
 	    try {
 		String html=null;
 		File cacheFile = null;
-		if(CsvUtil.getCacheDir()!=null) {
-		    cacheFile = new File(CsvUtil.getCacheDir(),"cached_" + Utils.makeID(url));
+		if(Seesv.getCacheDir()!=null) {
+		    cacheFile = new File(Seesv.getCacheDir(),"cached_" + Utils.makeID(url));
 		    if(cacheFile.exists()) {
 //			System.err.println("from Cache:"+ cacheFile);
 			html = IO.readContents(cacheFile);

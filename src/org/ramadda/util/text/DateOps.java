@@ -531,9 +531,9 @@ public abstract class DateOps extends Processor {
     
     public static class DateFormatSetter extends Processor {
 	boolean in;
-	CsvUtil.Dater dater;
+	Seesv.Dater dater;
 
-	public DateFormatSetter(boolean in,CsvUtil.Dater dater) {
+	public DateFormatSetter(boolean in,Seesv.Dater dater) {
 	    this.in = in;
 	    this.dater = dater;
 	}

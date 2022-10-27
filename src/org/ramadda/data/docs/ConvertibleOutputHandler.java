@@ -14,7 +14,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvContext;
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -339,8 +339,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
 
 
         if (request.get("stop", false)) {
-            CsvUtil csvUtil =
-                (CsvUtil) getSessionManager().getSessionProperty(request,
+            Seesv csvUtil =
+                (Seesv) getSessionManager().getSessionProperty(request,
                     "csvutil");
             if (csvUtil != null) {
                 csvUtil.stopRunning();
@@ -366,7 +366,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 
 
         List    currentArgs = null;
-        CsvUtil csvUtil     = null;
+        Seesv csvUtil     = null;
         try {
             String processEntryId =
                 getStorageManager().getProcessDirEntryId(destDir.getName());
@@ -376,7 +376,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             String       commandString = request.getString("commands", "");
             //A hack because the Request changes any incoming "script" to "_script_"
             commandString = commandString.replaceAll("_script_", "script");
-	    List<List<String>> llines  =  CsvUtil.tokenizeCommands(commandString,process);
+	    List<List<String>> llines  =  Seesv.tokenizeCommands(commandString,process);
             if (request.defined("csvoutput")) {
                 String       output   = request.getString("csvoutput");
                 List<String> lastLine = llines.get(llines.size() - 1);
@@ -384,7 +384,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     lastLine.add(output);
                 }
             }
-            CsvUtil prevCsvUtil = null;
+            Seesv prevSeesv = null;
             for (int i = 0; i < llines.size(); i++) {
                 List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
@@ -460,7 +460,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     request.put("applysiblings", "true");
                 }
                 newFiles = new ArrayList<String>();
-                csvUtil  = new CsvUtil(args, runDir);
+                csvUtil  = new Seesv(args, runDir);
 		csvUtil.setIsVerifiedUser(!request.isAnonymous());
                 csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
@@ -477,10 +477,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     }
                 });
                 csvUtil.setMapProvider(getRepository().getMapManager());
-                if (prevCsvUtil != null) {
-                    csvUtil.initWith(prevCsvUtil);
+                if (prevSeesv != null) {
+                    csvUtil.initWith(prevSeesv);
                 }
-                prevCsvUtil = csvUtil;
+                prevSeesv = csvUtil;
                 getSessionManager().putSessionProperty(request, "csvutil",
 						       csvUtil);
                 //              System.err.println("RUN:");
@@ -593,8 +593,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
             }
             s = new String(Utils.encodeBase64(s));
             s = JsonUtil.mapAndQuote(Utils.makeList("error", s));
-            if (inner instanceof CsvUtil.MessageException) {
-                s          = ((CsvUtil.MessageException) inner).getMessage();
+            if (inner instanceof Seesv.MessageException) {
+                s          = ((Seesv.MessageException) inner).getMessage();
                 printStack = false;
                 s          = new String(Utils.encodeBase64(s));
                 s          = JsonUtil.mapAndQuote(Utils.makeList("message", s));
@@ -625,7 +625,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void outputConvertProcessInner(Request request, boolean process,
-                                          Entry entry, CsvUtil csvUtil,
+                                          Entry entry, Seesv csvUtil,
                                           File destDir, File runDir,
                                           List<String> args,
                                           List<String> newFiles)

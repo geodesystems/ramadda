@@ -14,7 +14,7 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.geo.Bounds;
 
-import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -85,7 +85,7 @@ public class GeoJson extends JsonUtil {
         Iterator     iterator = makeIterator(json, colString, addPolygons);
         List<String> values;
         while ((values = iterator.next()) != null) {
-            pw.append(CsvUtil.columnsToString(values, ",", true));
+            pw.append(Seesv.columnsToString(values, ",", true));
         }
 
 
