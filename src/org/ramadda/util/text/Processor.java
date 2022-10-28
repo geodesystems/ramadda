@@ -103,10 +103,10 @@ public abstract class Processor extends CsvOperator {
     /**
      
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      */
-    public Processor(Seesv csvUtil) {
-        super(csvUtil);
+    public Processor(Seesv seesv) {
+        super(seesv);
     }
 
 
@@ -377,7 +377,7 @@ public abstract class Processor extends CsvOperator {
     public static class Expand extends Processor {
 
         /**  */
-        private Seesv csvUtil;
+        private Seesv seesv;
 
         /**  */
         private List<String> args;
@@ -388,15 +388,15 @@ public abstract class Processor extends CsvOperator {
 
         /**
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          * @param cols _more_
          * @param args _more_
          */
-        public Expand(Seesv csvUtil, TextReader ctx, List<String> cols,
+        public Expand(Seesv seesv, TextReader ctx, List<String> cols,
                       List<String> args) {
             super(cols);
-            this.csvUtil = csvUtil;
+            this.seesv = seesv;
             this.args    = args;
         }
 
@@ -433,7 +433,7 @@ public abstract class Processor extends CsvOperator {
                 //              System.err.println("\tcvrted args:" + cvrtedArgs);
                 for (int j = 0; j < cvrtedArgs.size(); j++) {
                     String                    arg  = cvrtedArgs.get(j);
-                    Seesv.CsvFunctionHolder func = csvUtil.getFunction(arg);
+                    Seesv.CsvFunctionHolder func = seesv.getFunction(arg);
                     if (func == null) {
                         throw new RuntimeException(
                             "Unknown function in -apply:" + cvrtedArgs);
@@ -468,7 +468,7 @@ public abstract class Processor extends CsvOperator {
                 makeCommands(ctx, row);
             }
             try {
-                row = applyCtx.processRow(csvUtil, row);
+                row = applyCtx.processRow(seesv, row);
 
                 return row;
             } catch (Exception exc) {
@@ -751,7 +751,7 @@ public abstract class Processor extends CsvOperator {
     public static class Downloader extends Processor {
 
         /**  */
-        private Seesv csvUtil;
+        private Seesv seesv;
 
         /**  */
         private String suffix;
@@ -764,14 +764,14 @@ public abstract class Processor extends CsvOperator {
          *
          *
          * @param ctx _more_
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param col _more_
          * @param suffix _more_
          */
-        public Downloader(TextReader ctx, Seesv csvUtil, String col,
+        public Downloader(TextReader ctx, Seesv seesv, String col,
                           String suffix) {
             super(col);
-            this.csvUtil = csvUtil;
+            this.seesv = seesv;
             this.suffix  = suffix;
         }
 
@@ -796,7 +796,7 @@ public abstract class Processor extends CsvOperator {
             } else {
 		tail = suffix;
 	    }
-            File tmpFile = csvUtil.getTmpFile(tail);
+            File tmpFile = seesv.getTmpFile(tail);
             if (tmpFile == null) {
                 row.add("");
                 return row;
@@ -1367,7 +1367,7 @@ public abstract class Processor extends CsvOperator {
     public static class If extends Processor {
 
         /**  */
-        Seesv csvUtil;
+        Seesv seesv;
 
         /**  */
         TextReader predicate;
@@ -1380,13 +1380,13 @@ public abstract class Processor extends CsvOperator {
          *
          *
          * @param dummy _more_
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param predicate _more_
          * @param ctx _more_
          */
-        public If(TextReader dummy, Seesv csvUtil, TextReader predicate,
+        public If(TextReader dummy, Seesv seesv, TextReader predicate,
                   TextReader ctx) {
-            this.csvUtil   = csvUtil;
+            this.seesv   = seesv;
             this.predicate = predicate;
             this.ctx       = ctx;
         }
@@ -1415,7 +1415,7 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            Row tmp = predicate.processRow(csvUtil, row);
+            Row tmp = predicate.processRow(seesv, row);
             if (tmp == null) {
                 return row;
             }
@@ -1425,7 +1425,7 @@ public abstract class Processor extends CsvOperator {
             if (debug) {
                 System.err.println("IF:" + row);
             }
-            row = this.ctx.processRow(csvUtil, row);
+            row = this.ctx.processRow(seesv, row);
             if (debug) {
                 System.err.println("After:" + row);
             }
@@ -1513,15 +1513,15 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          * @param id _more_
          * @param args _more_
          */
-        public Ext(Seesv csvUtil, TextReader ctx, String id,
+        public Ext(Seesv seesv, TextReader ctx, String id,
                    List<String> args) {
 
-            String path = (String) csvUtil.getProperty("seesv_ext_" + id);
+            String path = (String) seesv.getProperty("seesv_ext_" + id);
             if (path == null) {
                 fatal(ctx, "Could not find path property seesv_ext_" + id);
             }
@@ -1613,17 +1613,17 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          * @param id _more_
          * @param args _more_
          */
-        public Exec(Seesv csvUtil, TextReader ctx, String id,
+        public Exec(Seesv seesv, TextReader ctx, String id,
                    List<String> args) {
 
-            String path = (String) csvUtil.getProperty("seesv_exec_" + id);
+            String path = (String) seesv.getProperty("seesv_exec_" + id);
             if (path == null) {
-		path = (String) csvUtil.getProperty("seesv_ext_" + id);
+		path = (String) seesv.getProperty("seesv_ext_" + id);
 	    }
             if (path == null) {
                 fatal(ctx, "Could not find path property seesv_ext_" + id);
@@ -2030,7 +2030,7 @@ public abstract class Processor extends CsvOperator {
 	private List<String> cols;
 
         /**  */
-        private Seesv csvUtil;
+        private Seesv seesv;
 
         /**  */
         private String output;
@@ -2048,15 +2048,15 @@ public abstract class Processor extends CsvOperator {
 
         /**
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          * @param cols _more_
          * @param args _more_
          */
-        public Subd(Seesv csvUtil,  List<String> cols, String rangeDef, String output) {
+        public Subd(Seesv seesv,  List<String> cols, String rangeDef, String output) {
 	    super(false,false,",");
 	    this.cols =cols;
-            this.csvUtil = csvUtil;
+            this.seesv = seesv;
 	    ranges = new ArrayList<Range>();
 	    this.output=  output;
 	    for(String tuple:Utils.split(rangeDef,",",true,true)) {
@@ -2156,7 +2156,7 @@ public abstract class Processor extends CsvOperator {
 		PrintWriter pw = writers.get(key.toString());
 		if(pw == null) {
 		    String file = output.replace("${ikey}",key).replace("${vkey}",vkey);
-		    csvUtil.checkOkToWrite(file);
+		    seesv.checkOkToWrite(file);
 		    boolean exists = new File(file).exists();
 		    //Open in append mode
 		    FileWriter fw = new FileWriter(file, true);
@@ -2182,7 +2182,7 @@ public abstract class Processor extends CsvOperator {
 
     public static class Chunker extends Printer {
 
-	private Seesv csvUtil;
+	private Seesv seesv;
 	private int numRows;
 
         /** _more_ */
@@ -2198,8 +2198,8 @@ public abstract class Processor extends CsvOperator {
 
         /**
          */
-        public Chunker(Seesv csvUtil, String template,int numRows) {
-            this.csvUtil = csvUtil;
+        public Chunker(Seesv seesv, String template,int numRows) {
+            this.seesv = seesv;
             this.template = template;
             this.numRows = numRows;
         }
@@ -2233,7 +2233,7 @@ public abstract class Processor extends CsvOperator {
 		if(pw == null) {
 		    fileCnt++;
 		    String file = template.replace("${number}",""+fileCnt);
-		    csvUtil.checkOkToWrite(file);
+		    seesv.checkOkToWrite(file);
 		    FileWriter fw = new FileWriter(file);
 		    BufferedWriter bw = new BufferedWriter(fw);
 		    pw = new PrintWriter(bw);

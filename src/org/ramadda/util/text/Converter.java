@@ -1674,7 +1674,7 @@ public abstract class Converter extends Processor {
         /**
          * @param props _more_
          */
-        public HeaderMaker(Seesv csvUtil, Hashtable<String, String> props) {
+        public HeaderMaker(Seesv seesv, Hashtable<String, String> props) {
             this.props = new PatternProps(props);
             defaultType = Seesv.getDbProp(props, "default", "type",
                                             defaultType);
@@ -1685,7 +1685,7 @@ public abstract class Converter extends Processor {
 	    String namesFile = Seesv.getDbProp(props, null, "namesfile", null);
 	    try {
 		if(namesFile!=null) {
-		    String names = csvUtil.readFile(namesFile);
+		    String names = seesv.readFile(namesFile);
 		    propper = org.ramadda.util.Propper.create(true,namesFile,(InputStream)new ByteArrayInputStream(names.getBytes()));
 		}
 	    } catch(Exception exc) {
@@ -3409,7 +3409,7 @@ public abstract class Converter extends Processor {
 		    }
 		}
 		if(image==null && image32==null)
-		    System.err.println("NULL:" + url);
+		    System.err.println("NULL IMAGE:" + url);
 		
 		if(image32==null) image32 = image;
 		if(image32==null) image32 = "FOO";

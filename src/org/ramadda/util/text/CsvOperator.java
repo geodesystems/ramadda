@@ -135,7 +135,7 @@ public class CsvOperator {
     private String scol;
 
     /**  */
-    Seesv csvUtil;
+    Seesv seesv;
 
 
 
@@ -147,10 +147,10 @@ public class CsvOperator {
     /**
      
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      */
-    public CsvOperator(Seesv csvUtil) {
-        this.csvUtil = csvUtil;
+    public CsvOperator(Seesv seesv) {
+        this.seesv = seesv;
     }
 
 
@@ -194,8 +194,8 @@ public class CsvOperator {
       * @return _more_
      */
     public String getProperty(String name) {
-        if (csvUtil != null) {
-            return csvUtil.getProperty(name);
+        if (seesv != null) {
+            return seesv.getProperty(name);
         }
 
         return null;

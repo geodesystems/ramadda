@@ -336,21 +336,21 @@ public class TextReader implements Cloneable {
 
     /**
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      * @param row _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Row processRow(Seesv csvUtil, Row row) throws Exception {
+    public Row processRow(Seesv seesv, Row row) throws Exception {
         if (firstProcessor != null) {
             row = firstProcessor.handleRow(this, row);
         } else {
             /* for now don't print out to csv - need to use -p
                if(cnt==1) System.err.println("using csvtil.columnsToString");
             Appendable pw = getWriter();
-            pw.append(csvUtil.columnsToString(row.getValues(),
+            pw.append(seesv.columnsToString(row.getValues(),
                                               getOutputDelimiter()));
             pw.append("\n");
             //            getWriter().flush();

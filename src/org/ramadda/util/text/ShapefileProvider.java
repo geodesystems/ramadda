@@ -56,14 +56,14 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
      * _more_
      *
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      * @param textReader _more_
      *
      * @throws Exception _more_
      */
-    public void initialize(Seesv csvUtil, TextReader textReader)
+    public void initialize(Seesv seesv, TextReader textReader)
             throws Exception {
-        List<String> files = csvUtil.getInputFiles();
+        List<String> files = seesv.getInputFiles();
         if (files.size() == 0) {
             return;
         }

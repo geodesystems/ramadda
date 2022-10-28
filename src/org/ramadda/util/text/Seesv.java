@@ -239,15 +239,15 @@ public class Seesv implements CsvCommands {
     /**
      * _more_
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      */
-    public void initWith(Seesv csvUtil) {
-	this.inDater = csvUtil.inDater;
-	this.outDater = csvUtil.outDater;	
-        this.js      = csvUtil.js;
-	this.sinks = csvUtil.sinks;
-	this.macros.putAll(csvUtil.macros);
-        //        this.delimiter = csvUtil.delimiter;
+    public void initWith(Seesv seesv) {
+	this.inDater = seesv.inDater;
+	this.outDater = seesv.outDater;	
+        this.js      = seesv.js;
+	this.sinks = seesv.sinks;
+	this.macros.putAll(seesv.macros);
+        //        this.delimiter = seesv.delimiter;
     }
 
     public List<String> getInputFiles() {
@@ -3186,18 +3186,18 @@ public class Seesv implements CsvCommands {
 
     public static int SKIP_INDEX = -999;
     public static class CsvFunctionHolder {
-	private Seesv csvUtil;
+	private Seesv seesv;
 	private String  name;
 	private int numargs;
 	private CsvFunction func;
-	CsvFunctionHolder(Seesv csvUtil, String name,int numargs,CsvFunction func) {
-	    this.csvUtil = csvUtil;
+	CsvFunctionHolder(Seesv seesv, String name,int numargs,CsvFunction func) {
+	    this.seesv = seesv;
 	    this.name = name;
 	    this.numargs = numargs;
 	    this.func = func;
 	}
 	public int run(TextReader ctx, List<String> args, int index) throws Exception {
-	    if ( !csvUtil.ensureArg(args, index, numargs)) {
+	    if ( !seesv.ensureArg(args, index, numargs)) {
 		return -1;
 	    }
 	    return this.func.method(ctx,args,index);
@@ -5586,9 +5586,9 @@ public class Seesv implements CsvCommands {
 
 	Seesv.setCacheDir(new File("."));
 	GeoUtils.setCacheDir(new File("."));
-	Seesv csvUtil = new Seesv(args);
-	csvUtil.commandLine  = true;
-	csvUtil.setCsvContext(new CsvContext() {
+	Seesv seesv = new Seesv(args);
+	seesv.commandLine  = true;
+	seesv.setCsvContext(new CsvContext() {
 		public List<Class> getClasses() {
 		    String _name=null;
 		    ArrayList<Class> classes = new ArrayList<Class>();
@@ -5625,7 +5625,7 @@ public class Seesv implements CsvCommands {
 	    });
 
 	try {
-	    csvUtil.run(null);
+	    seesv.run(null);
 	} catch(MessageException cexc) {
 	    System.err.println(cexc.getMessage());
 	    Utils.exitTest(1);

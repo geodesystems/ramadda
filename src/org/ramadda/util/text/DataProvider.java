@@ -54,7 +54,7 @@ import java.util.regex.*;
 public abstract class DataProvider extends CsvOperator {
 
     /** _more_ */
-    private Seesv csvUtil;
+    private Seesv seesv;
 
     /**
      * _more_
@@ -66,12 +66,12 @@ public abstract class DataProvider extends CsvOperator {
      * _more_
      *
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      * @param ctx _more_
      *
      * @throws Exception _more_
      */
-    public void initialize(Seesv csvUtil, TextReader ctx) throws Exception {
+    public void initialize(Seesv seesv, TextReader ctx) throws Exception {
         rowCnt = 0;
     }
 
@@ -181,14 +181,14 @@ public abstract class DataProvider extends CsvOperator {
         /**
          * _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param textReader _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader textReader)
+        public void initialize(Seesv seesv, TextReader textReader)
                 throws Exception {
-            super.initialize(csvUtil, textReader);
+            super.initialize(seesv, textReader);
             String s = textReader.convertContents(textReader.readContents());
             tokenize(textReader, s);
         }
@@ -863,14 +863,14 @@ public abstract class DataProvider extends CsvOperator {
 
         /**
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader ctx)
+        public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
-            super.initialize(csvUtil, ctx);
+            super.initialize(seesv, ctx);
             iterator = GeoJson.makeIterator(ctx.getInputStream(), null,
                                             addPolygon);
         }
@@ -959,15 +959,15 @@ public abstract class DataProvider extends CsvOperator {
         /**
          * _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader ctx)
+        public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
-            super.initialize(csvUtil, ctx);
-            this.connection = csvUtil.getDbConnection(ctx, this, props, db,
+            super.initialize(seesv, ctx);
+            this.connection = seesv.getDbConnection(ctx, this, props, db,
                     table);
             List<Clause> clauses = new ArrayList<Clause>();
             String       join    = (String) props.get("join");
@@ -1234,16 +1234,16 @@ public abstract class DataProvider extends CsvOperator {
 
         /**
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param textReader _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public void initialize(Seesv csvUtil, TextReader textReader)
+        public void initialize(Seesv seesv, TextReader textReader)
                 throws Exception {
-            super.initialize(csvUtil, textReader);
-            List<String> files = csvUtil.getInputFiles();
+            super.initialize(seesv, textReader);
+            List<String> files = seesv.getInputFiles();
             if (files.size() == 0) {
                 return;
             }
@@ -1844,14 +1844,14 @@ public abstract class DataProvider extends CsvOperator {
          * _more_
          *
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader ctx)
+        public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
-            super.initialize(csvUtil, ctx);
+            super.initialize(seesv, ctx);
             this.ctx = ctx;
         }
 
@@ -1949,14 +1949,14 @@ public abstract class DataProvider extends CsvOperator {
         /**
          * _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader ctx)
+        public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
-            super.initialize(csvUtil, ctx);
+            super.initialize(seesv, ctx);
             this.ctx = ctx;
         }
 
@@ -2031,14 +2031,14 @@ public abstract class DataProvider extends CsvOperator {
         /**
          * _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader ctx)
+        public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
-            super.initialize(csvUtil, ctx);
+            super.initialize(seesv, ctx);
             this.ctx = ctx;
         }
 
@@ -2098,14 +2098,14 @@ public abstract class DataProvider extends CsvOperator {
 
         /**
          * _more_
-         * @param csvUtil _more_
+         * @param seesv _more_
          */
-        public Pdf(Seesv csvUtil) {
+        public Pdf(Seesv seesv) {
             tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
-            tabula = csvUtil.getProperty("RAMADDA_TABULA");
+            tabula = seesv.getProperty("RAMADDA_TABULA");
             if (tabula == null) {
-                tabula = csvUtil.getProperty("ramadda_tabula");
+                tabula = seesv.getProperty("ramadda_tabula");
             }
         }
 
@@ -2115,14 +2115,14 @@ public abstract class DataProvider extends CsvOperator {
          * _more_
          *
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param ctx _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(Seesv csvUtil, TextReader ctx)
+        public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
-            super.initialize(csvUtil, ctx);
+            super.initialize(seesv, ctx);
             this.ctx = ctx;
             Runtime rt = Runtime.getRuntime();
             if (tabula == null) {

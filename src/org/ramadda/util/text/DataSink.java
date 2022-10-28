@@ -42,31 +42,31 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
     /**
      *
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      */
-    public DataSink(Seesv csvUtil) {
-        this.csvUtil = csvUtil;
+    public DataSink(Seesv seesv) {
+        this.seesv = seesv;
     }
 
     /**
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      * @param arg _more_
      *
      * @return _more_
      */
-    public abstract boolean canHandle(Seesv csvUtil, String arg);
+    public abstract boolean canHandle(Seesv seesv, String arg);
 
 
     /**
      *
-     * @param csvUtil _more_
+     * @param seesv _more_
      * @param args _more_
      * @param index _more_
      *
      * @return _more_
      */
-    public int processArgs(Seesv csvUtil, List<String> args, int index) {
+    public int processArgs(Seesv seesv, List<String> args, int index) {
         return index;
     }
 
@@ -212,13 +212,13 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
 
 	private  String contentTemplate;
 
-	private Seesv csvUtil;
+	private Seesv seesv;
 
         /**
          * ctor
          */
-        public Write(Seesv csvUtil, String fileNameTemplate, String contentTemplate) {
-	    this.csvUtil = csvUtil;
+        public Write(Seesv seesv, String fileNameTemplate, String contentTemplate) {
+	    this.seesv = seesv;
 	    this.fileNameTemplate = fileNameTemplate;
 	    this.contentTemplate = contentTemplate;	    
 	}
@@ -249,7 +249,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
 						   + file);
 	    }
 
-	    OutputStream fos = csvUtil.makeOutputStream(file);
+	    OutputStream fos = seesv.makeOutputStream(file);
 	    IOUtil.write(fos,v);
 	    fos.close();
 	    System.err.println(file);
@@ -442,13 +442,13 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
          * @param db _more_
          * @param columns _more_
          *
-         * @param csvUtil _more_
+         * @param seesv _more_
          * @param table _more_
          * @param props _more_
          */
-        public ToDb(Seesv csvUtil, String db, String table, String columns,
+        public ToDb(Seesv seesv, String db, String table, String columns,
                     Hashtable<String, String> props) {
-            super(csvUtil);
+            super(seesv);
             //_default_
             //c1,c2,c3
             //from1:c2,
@@ -498,7 +498,7 @@ public abstract class DataSink extends Processor implements Cloneable,CsvPlugin 
          */
         private void init(TextReader ctx, Row row) throws Exception {
             this.header = row;
-            this.connection = csvUtil.getDbConnection(ctx, this, props, db,
+            this.connection = seesv.getDbConnection(ctx, this, props, db,
                     table);
             //"" -> db1,db2,...
             if (columns.size() == 0) {
