@@ -3498,7 +3498,7 @@ public class RowCollector extends Processor {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            CsvOperator operator = null;
+            SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             rows2        = new ArrayList<Row>();
             String delimiter = null;

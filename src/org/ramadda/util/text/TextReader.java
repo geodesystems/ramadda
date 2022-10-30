@@ -220,7 +220,7 @@ public class TextReader implements Cloneable {
 
 
     /** _more_ */
-    private CsvOperator currentOperator;
+    private SeesvOperator currentOperator;
 
 
     /** _more_ */
@@ -517,7 +517,7 @@ public class TextReader implements Cloneable {
      *
      * @param value The new value for CurrentOperator
      */
-    public void setCurrentOperator(CsvOperator value) {
+    public void setCurrentOperator(SeesvOperator value) {
         currentOperator = value;
     }
 
@@ -526,7 +526,7 @@ public class TextReader implements Cloneable {
      *
      * @return The CurrentOperator
      */
-    public CsvOperator getCurrentOperator() {
+    public SeesvOperator getCurrentOperator() {
         return currentOperator;
     }
 

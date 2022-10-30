@@ -47,7 +47,7 @@ import java.util.regex.*;
  * @author         Jeff McWhirter
  */
 @SuppressWarnings("unchecked")
-public class CsvOperator {
+public class SeesvOperator {
 
     /**  */
     public static final HtmlUtils HU = null;
@@ -142,14 +142,14 @@ public class CsvOperator {
     /**
      * _more_
      */
-    public CsvOperator() {}
+    public SeesvOperator() {}
 
     /**
      
      *
      * @param seesv _more_
      */
-    public CsvOperator(Seesv seesv) {
+    public SeesvOperator(Seesv seesv) {
         this.seesv = seesv;
     }
 
@@ -159,7 +159,7 @@ public class CsvOperator {
      *
      * @param col _more_
      */
-    public CsvOperator(String col) {
+    public SeesvOperator(String col) {
         sindices = new ArrayList<String>();
         if (Utils.stringDefined(col)) {
             sindices.add(col);
@@ -171,7 +171,7 @@ public class CsvOperator {
      *
      * @param cols _more_
      */
-    public CsvOperator(List<String> cols) {
+    public SeesvOperator(List<String> cols) {
         this.sindices = cols;
     }
 
@@ -553,12 +553,12 @@ public class CsvOperator {
             return new FileInputStream(filename);
         } catch (Exception exc) {
             try {
-                return IO.getInputStream(filename, CsvOperator.class, true);
+                return IO.getInputStream(filename, SeesvOperator.class, true);
             } catch (Exception exc2) {
                 for (String prefix : FILE_PREFIXES) {
                     try {
                         return IO.getInputStream(prefix + "/" + filename,
-						 CsvOperator.class,true);
+						 SeesvOperator.class,true);
                     } catch (Exception exc3) {}
                 }
             }

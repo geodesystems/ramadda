@@ -51,7 +51,7 @@ import java.util.regex.*;
  */
 
 @SuppressWarnings("unchecked")
-public abstract class DataProvider extends CsvOperator {
+public abstract class DataProvider extends SeesvOperator {
 
     /** _more_ */
     private Seesv seesv;

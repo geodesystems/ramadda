@@ -58,7 +58,7 @@ import java.util.regex.*;
  */
 
 @SuppressWarnings("unchecked")
-public abstract class Processor extends CsvOperator {
+public abstract class Processor extends SeesvOperator {
 
     //These are copies from /org.ramadda.data.record.RecordField;
 
@@ -3408,7 +3408,7 @@ public abstract class Processor extends CsvOperator {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            CsvOperator operator = null;
+            SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             map        = new Hashtable<String, Row>();
             headerRow1 = null;
@@ -3431,7 +3431,7 @@ public abstract class Processor extends CsvOperator {
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 if (operator == null) {
-                    operator = new CsvOperator();
+                    operator = new SeesvOperator();
                     operator.setHeader(cols);
                     keys1Indices   = operator.getIndices(reader, keys1);
                     values1Indices = operator.getIndices(reader, values1);
@@ -3629,7 +3629,7 @@ public abstract class Processor extends CsvOperator {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            CsvOperator operator = null;
+            SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             rows       = new ArrayList<KeyRow>();
             headerRow1 = null;
@@ -3652,7 +3652,7 @@ public abstract class Processor extends CsvOperator {
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 if (operator == null) {
-                    operator = new CsvOperator();
+                    operator = new SeesvOperator();
                     operator.setHeader(cols);
                     keys1Indices   = operator.getIndices(reader, keys1);
                     values1Indices = operator.getIndices(reader, values1);

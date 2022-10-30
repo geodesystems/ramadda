@@ -391,7 +391,7 @@ public class Seesv implements SeesvCommands {
     }
 
 
-    public Connection getDbConnection(TextReader ctx, CsvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
+    public Connection getDbConnection(TextReader ctx, SeesvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
 	String dbs = getProperty("seesv_dbs");
 	if(!Utils.stringDefined(db)) {
 	    op.fatal(ctx, "No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
@@ -535,7 +535,7 @@ public class Seesv implements SeesvCommands {
         try {
             runInner(files);
         } catch (Exception exc) {
-            CsvOperator op = (myTextReader == null)
+            SeesvOperator op = (myTextReader == null)
 		? null
 		: myTextReader.getCurrentOperator();
             if (op != null) {
@@ -863,7 +863,7 @@ public class Seesv implements SeesvCommands {
             processInner(ctx, provider,fileCnt);
 	    ctx.flush();
         } catch (Exception exc) {
-            CsvOperator op = (ctx == null)
+            SeesvOperator op = (ctx == null)
 		? null
 		: ctx.getCurrentOperator();
 
@@ -4845,7 +4845,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_GROUPFILTER, 4,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.GroupFilter(ctx, getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
-							      CsvOperator.getOperator(args.get(++i)),
+							      SeesvOperator.getOperator(args.get(++i)),
 							      args.get(++i)));
 		return i;
 	    });

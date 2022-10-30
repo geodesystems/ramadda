@@ -350,7 +350,7 @@ public class Filter extends Processor {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            CsvOperator operator = null;
+            SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             seen = new HashSet();
             String delimiter = null;
@@ -372,7 +372,7 @@ public class Filter extends Processor {
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 if (operator == null) {
-                    operator = new CsvOperator();
+                    operator = new SeesvOperator();
                     operator.setHeader(cols);
                     idx1 = operator.getColumnIndex(reader, col1);
                 }
@@ -615,7 +615,7 @@ public class Filter extends Processor {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            CsvOperator operator = null;
+            SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             strings  = new ArrayList<String>();
             patterns = new ArrayList<Pattern>();
@@ -638,7 +638,7 @@ public class Filter extends Processor {
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 if (operator == null) {
-                    operator = new CsvOperator();
+                    operator = new SeesvOperator();
                     operator.setHeader(cols);
                     idx1 = operator.getColumnIndex(reader, col1);
                 }
