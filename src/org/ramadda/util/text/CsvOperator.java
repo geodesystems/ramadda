@@ -743,6 +743,18 @@ public class CsvOperator {
                     return;
                 }
 
+                if (tok.equals("*")) {
+                    for (int i = 0; i < header.size(); i++) {
+                        if ( !colsSeen.contains(i)) {
+                            colsSeen.add(i);
+                            indices.add(i);
+                        }
+                    }
+
+                    return;
+                }
+
+
 		//check for regexp
                 if (tok.indexOf("*")>=0 || tok.indexOf("+")>=0) {
                     for (int i = 0; i < header.size(); i++) {
@@ -758,16 +770,6 @@ public class CsvOperator {
 		    return;
 		}
 
-                if (tok.equals("*")) {
-                    for (int i = 0; i < header.size(); i++) {
-                        if ( !colsSeen.contains(i)) {
-                            colsSeen.add(i);
-                            indices.add(i);
-                        }
-                    }
-
-                    return;
-                }
                 Integer iv = getColumnIndex(ctx, tok);
                 if (iv != null) {
                     start = end = iv;
