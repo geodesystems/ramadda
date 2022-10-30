@@ -14,4 +14,4 @@ import java.util.List;
  * @author Jeff McWhirter
  */
 
-public abstract interface CsvPlugin {}
+public abstract interface SeesvPlugin {}

@@ -13,7 +13,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvContext;
+import org.ramadda.util.text.SeesvContext;
 import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
@@ -464,10 +464,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		csvUtil.setIsVerifiedUser(!request.isAnonymous());
                 csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
-                csvUtil.setCsvContext(new CsvContext() {
+                csvUtil.setSeesvContext(new SeesvContext() {
                     public List<Class> getClasses() {
                         return getRepository().getPluginManager()
-                            .getCsvClasses();
+                            .getSeesvClasses();
                     }
                     public String getProperty(String key, String dflt) {
                         return getRepository().getProperty(key, dflt);

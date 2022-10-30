@@ -5,7 +5,7 @@
 
 package org.ramadda.util.text;
 
-public interface CsvCommands {
+public interface SeesvCommands {
 
     public static final String HELP_SUBSTITUTION = "use $1, $2, etc for pattern (...) matches";
     public static final String HELP_COLUMNS = "Column indices. Can include ranges, e.g. 0-5";

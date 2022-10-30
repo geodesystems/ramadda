@@ -17,7 +17,7 @@ import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
 
-import org.ramadda.util.text.CsvPlugin;
+import org.ramadda.util.text.SeesvPlugin;
 
 
 import org.w3c.dom.*;
@@ -193,7 +193,7 @@ public class PluginManager extends RepositoryManager {
     private HashSet seenThings = new HashSet();
 
     /**  */
-    private List<Class> csvClasses = new ArrayList<Class>();
+    private List<Class> seesvClasses = new ArrayList<Class>();
 
     /**
      * _more_
@@ -222,8 +222,8 @@ public class PluginManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Class> getCsvClasses() {
-        return csvClasses;
+    public List<Class> getSeesvClasses() {
+        return seesvClasses;
     }
 
 
@@ -882,10 +882,9 @@ public class PluginManager extends RepositoryManager {
 
 
 
-            if (CsvPlugin.class.isAssignableFrom(c)) {
-                pluginStat("CSV Class", c.getName());
-                csvClasses.add(c);
-
+            if (SeesvPlugin.class.isAssignableFrom(c)) {
+                pluginStat("SEESV Class", c.getName());
+                seesvClasses.add(c);
                 return;
             }
 

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  */
 
-public interface CsvContext extends PropertyProvider {
+public interface SeesvContext extends PropertyProvider {
 
 
     /**

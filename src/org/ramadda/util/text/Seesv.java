@@ -56,7 +56,7 @@ import org.ramadda.util.sql.SqlUtil;
  * @author Jeff McWhirter
  */
 @SuppressWarnings("unchecked")
-public class Seesv implements CsvCommands {
+public class Seesv implements SeesvCommands {
 
     private static final String PREFIX_FILE = "file:";
 
@@ -133,7 +133,7 @@ public class Seesv implements CsvCommands {
 
     private boolean makeInputStreamRaw = false;
 
-    private CsvContext csvContext;
+    private SeesvContext seesvContext;
 
     private List<DataSink> sinks;
 
@@ -260,11 +260,11 @@ public class Seesv implements CsvCommands {
 
        @param value The new value for Context
     **/
-    public void setCsvContext (CsvContext value) {
-	csvContext = value;
+    public void setSeesvContext (SeesvContext value) {
+	seesvContext = value;
 	sinks = new ArrayList<DataSink>();
 	try {
-	    for(Class c: csvContext.getClasses()) {
+	    for(Class c: seesvContext.getClasses()) {
 		if (DataSink.class.isAssignableFrom(c)) {
 		    DataSink sink = (DataSink) c.getDeclaredConstructor().newInstance();
 		    sinks.add(sink);
@@ -281,12 +281,12 @@ public class Seesv implements CsvCommands {
 
        @return The Context
     **/
-    public CsvContext getCsvContext () {
-	return csvContext;
+    public SeesvContext getSeesvContext () {
+	return seesvContext;
     }
 
     public File getTmpFile(String name) {
-	if(csvContext!=null) return csvContext.getTmpFile(name);
+	if(seesvContext!=null) return seesvContext.getTmpFile(name);
 	return null;
     }
 
@@ -5588,7 +5588,7 @@ public class Seesv implements CsvCommands {
 	GeoUtils.setCacheDir(new File("."));
 	Seesv seesv = new Seesv(args);
 	seesv.commandLine  = true;
-	seesv.setCsvContext(new CsvContext() {
+	seesv.setSeesvContext(new SeesvContext() {
 		public List<Class> getClasses() {
 		    String _name=null;
 		    ArrayList<Class> classes = new ArrayList<Class>();

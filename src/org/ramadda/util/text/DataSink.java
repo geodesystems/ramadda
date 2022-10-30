@@ -32,7 +32,7 @@ import java.util.Properties;
  * @author Jeff McWhirter
  */
 
-public abstract class DataSink extends Processor implements Cloneable,CsvPlugin {
+public abstract class DataSink extends Processor implements Cloneable,SeesvPlugin {
 
     /**
      * _more_
