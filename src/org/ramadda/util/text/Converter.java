@@ -3303,8 +3303,10 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 this.col = getColumnIndex(ctx, scol);
-		row.add("icon");
+		row.add("title");
 		row.add("description");
+		row.add("keywords");
+		row.add("icon");
                 return row;
             }
 	    if(!row.indexOk(this.col)) {
@@ -3316,9 +3318,15 @@ public abstract class Converter extends Processor {
 		File cacheFile = null;
 		if(Seesv.getCacheDir()!=null) {
 		    cacheFile = new File(Seesv.getCacheDir(),"cached_" + Utils.makeID(url));
+		    if(!cacheFile.exists()) {
+			cacheFile = new File(Seesv.getCacheDir(),"cached_" + Utils.makeID(url.replace("http:","https:")));
+		    }
 		    if(cacheFile.exists()) {
 //			System.err.println("from Cache:"+ cacheFile);
 			html = IO.readContents(cacheFile);
+			if(!url.startsWith("https:") && cacheFile.getName().startsWith("cached_https_")) {
+			    url = url.replace("http:","https:");
+			}
 		    }
 		}
 		if(html==null) {
@@ -3335,9 +3343,7 @@ public abstract class Converter extends Processor {
 			    html = IO.readUrl(url);
 		    } catch(Exception exc) {
 			System.err.println("error reading url:" + url +"\n" + exc);
-			row.add("");
-			row.add("");
-			return row;
+			html = "";
 		    }
 		    if(cacheFile!=null && html!=null) {
 			try(OutputStream fos = new FileOutputStream(cacheFile)) {
@@ -3347,10 +3353,11 @@ public abstract class Converter extends Processor {
 		    }
 		}
 		if(html==null) {
-		    row.add("");
-		    row.add("");
+		    row.add("","","","");
 		    return row;
 		}
+		html  = html.replace("\r\n","\n");
+		/*
 		int idx1 = html.indexOf("<head");
 		int idx2= html.indexOf("</head");		
 		if(idx1>=0 && idx2>=idx1) {
@@ -3359,14 +3366,48 @@ public abstract class Converter extends Processor {
 		    int idx = html.indexOf("<body");
 		    if(idx>=0) html = html.substring(0,idx);
 		}
+		*/
+		Pattern titlePattern  = Pattern.compile("<title[^>]*>(.*?)</title",
+							Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+
+		Matcher titleMatcher  = titlePattern.matcher(html);
+		if(titleMatcher.find()) {
+		    String title = titleMatcher.group(1).replace("[\n\r]+"," ").trim();		    
+		    String tmp = title;
+		    title = title.replaceAll("(?i)(homepage|home page|home)[\\s\\-\\|]*","").trim();
+		    title = title.replaceAll("^[\\|-]+","");
+		    title = title.replaceAll("[\\|-]+$","");
+		    title = title.replace("&amp;","&").replace("&#8211;","-");
+		    title  = title.trim();
+		    if(title.equalsIgnoreCase("page")) title = tmp;
+		    add(ctx, row, title);
+		    //		    add(ctx, row, title);
+		} else {
+		    add(ctx, row, "");		    
+		}
+
 		Pattern metaPattern  = Pattern.compile("<meta([^>]+>)",
 						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Pattern metaPattern2  = Pattern.compile("name=\"description\"[^>]+content=\"([^\"]+)\"",
 						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Pattern contentPattern  = Pattern.compile("content=\"([^\"]+)\"",
+						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);		
 		Matcher metaMatcher = metaPattern.matcher(html);
 		String desc = "";
+		String keywords = "";		
+		List<String> metas = new ArrayList<String>();
 		while(metaMatcher.find()) {
-		    String meta =  metaMatcher.group(0+1);
+		    metas.add(metaMatcher.group(1));
+		}
+
+		for(String meta:metas) {
+		    if(meta.toLowerCase().indexOf("keywords")>=0) {
+			Matcher contentMatcher = contentPattern.matcher(meta);		    
+			if(contentMatcher.find()) {
+			    keywords=contentMatcher.group(1);
+			    keywords= keywords.replaceAll("[\n\r]+",",").replaceAll(",[,\\s]+",",");
+			}
+		    }
 		    Matcher matcher = metaPattern2.matcher(meta);		    
 		    if(matcher.find()) {
 			desc = matcher.group(1);
@@ -3374,7 +3415,7 @@ public abstract class Converter extends Processor {
 		    }
 		}
 		add(ctx, row, desc);
-
+		add(ctx, row, keywords);
 
 		Pattern linkPattern  = Pattern.compile("<link([^>]+>)",
 						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
@@ -3393,8 +3434,9 @@ public abstract class Converter extends Processor {
 		    Matcher relMatcher = relPattern.matcher(link);		    
 		    if(!relMatcher.find()) continue;
 		    String rel = relMatcher.group(1);
-		    //		    System.err.println("REL:" + rel);
-		    if(!rel.equals("icon")) continue;
+		    if(url.indexOf("howard")>=0)
+			System.err.println("REL:" + rel);
+		    if(!rel.equals("icon") && !rel.equals("shortcut icon") &&  !rel.equals("apple-touch-icon")) continue;
 		    Matcher hrefMatcher = hrefPattern.matcher(link);		    
 		    if(!hrefMatcher.find()) continue;
 		    image = hrefMatcher.group(1);
@@ -3408,12 +3450,31 @@ public abstract class Converter extends Processor {
 			}
 		    }
 		}
-		if(image==null && image32==null)
-		    System.err.println("NULL IMAGE:" + url);
 		
 		if(image32==null) image32 = image;
-		if(image32==null) image32 = "FOO";
-		add(ctx, row, image);		
+		if(!Utils.stringDefined(image32)) {
+		    Pattern metaPattern3  = Pattern.compile("content=\"([^\"]+)\"",
+							    Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		    for(String meta: metas) {
+			if(meta.indexOf("og:image")<0) continue;
+			Matcher imageMatcher = metaPattern3.matcher(meta);
+			if(imageMatcher.find()) {
+			    image32 = imageMatcher.group(1);
+			    break;
+			}
+		    }
+		}
+
+
+		if(Utils.stringDefined(image32)) {
+		    URL tmp = new URL(new URL(url),image32);
+		    image32 = tmp.toString();
+		    //		    System.err.println("IMAGE:" + image32);
+		} else {
+		    image32 = "";
+		    //		    System.err.println("NULL IMAGE:" + url +" " + cacheFile);
+		}
+		add(ctx, row, image32);		
 		//		add(ctx, row, matcher.group(0+2));		
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
