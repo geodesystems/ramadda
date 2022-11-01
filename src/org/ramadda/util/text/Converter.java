@@ -21,8 +21,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
+import java.net.*;
 
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.*;
 import java.text.DecimalFormat;
@@ -3478,6 +3478,62 @@ public abstract class Converter extends Processor {
 		//		add(ctx, row, matcher.group(0+2));		
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
+	    }
+            return row;
+        }
+
+    }
+
+
+    public static class CheckMissing extends Converter {
+	private String scol;
+	
+	private int col;
+	private String replace;
+
+	/**
+         */
+        public CheckMissing(String col, String replace) {
+            this.scol    = col;
+	    this.replace =replace;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                this.col = getColumnIndex(ctx, scol);
+                return row;
+            }
+	    if(!row.indexOk(this.col)) {
+		return row;
+	    }
+            String url    = row.getString(col);
+	    if(!Utils.stringDefined(url)) {
+		row.set(col,replace);
+		return row;
+	    }
+
+	    try {
+		URL _url = new URL(url);
+		HttpURLConnection connection  = (HttpURLConnection)_url.openConnection();
+		int               response = connection.getResponseCode();
+		//Check for redirect. this only does one level of redirect
+		if ((response == HttpURLConnection
+		     .HTTP_MOVED_TEMP) || (response == HttpURLConnection
+					   .HTTP_MOVED_PERM) || (response == HttpURLConnection
+								 .HTTP_SEE_OTHER)) {
+		    row.set(col,  connection.getHeaderField("Location"));
+		} else if(response!=HttpURLConnection.HTTP_OK) {
+		    row.set(col,  connection.getHeaderField("Location"));
+		}
+		connection.getInputStream().close();
+	    } catch(Exception exc) {
+		row.set(col,replace);
 	    }
             return row;
         }

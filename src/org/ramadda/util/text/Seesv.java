@@ -395,18 +395,18 @@ public class Seesv implements SeesvCommands {
 	String dbs = getProperty("seesv_dbs");
 	if(!Utils.stringDefined(db)) {
 	    op.fatal(ctx, "No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
-
 	}
-	String jdbcUrl = getProperty("seesv_db_" + db + "_url");
+	String prefix = "seesv_db_" + db;
+	String jdbcUrl = getProperty(prefix + "_url");
 	Properties connectionProps = new Properties();
 	if(jdbcUrl==null) {
-	    op.fatal(ctx, "No seesv_db_" + db + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
+	    op.fatal(ctx, "No " + prefix + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
 	}
 
 	String     user            = props.get("db.user");
 	String     password        = props.get("db.password");
-	if(user==null) user = getProperty("seesv_db_" + db +"_user");
-	if(password==null) password = getProperty("seesv_db_" + db +"_password");	
+	if(user==null) user = getProperty(prefix +"_user");
+	if(password==null) password = getProperty(prefix+"_password");	
 
 	Connection connection = null;
 	try {
@@ -417,14 +417,14 @@ public class Seesv implements SeesvCommands {
 
 	if (props.get("help")!=null && props.get("help").equals("true")) {
 	    throw new Seesv.MessageException("table:" + table
-					       + "\ncolumns:\n"
-					       + Utils.wrap(SqlUtil.getColumnNames(connection,
-										   table, true), "\t", "\n"));
+					     + "\ncolumns:\n"
+					     + Utils.wrap(SqlUtil.getColumnNames(connection,
+										 table, true), "\t", "\n"));
 	}
 
 
 	//Check tables whitelist
-	String tables   = getProperty("seesv_db_" + db + "_tables",  "");
+	String tables   = getProperty(prefix + "_tables",  "");
 	List   okTables = Utils.split(tables, ",", true, true);
 	if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
 	    okTables = SqlUtil.getTableNames(connection);
@@ -2346,6 +2346,9 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_PATTERN,"Pattern",ATTR_TYPE, TYPE_PATTERN)),		
         new Cmd(CMD_HTMLINFO, "Extract icon and description from input URL",
                 new Arg(ARG_COLUMN, "URL Column", ATTR_TYPE, TYPE_COLUMN)),
+        new Cmd(CMD_CHECKMISSING, "Check for missing URL",
+                new Arg(ARG_COLUMN, "URL Column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("replace_with", "Replace with")),
         new Cmd(CMD_URLENCODE, "URL encode the columns",
 		ARG_LABEL,"URL Encode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -2682,10 +2685,10 @@ public class Seesv implements SeesvCommands {
 		new Arg("how", "How", ATTR_TYPE, "enumeration","values","string,number,length,extract")),
 
 	/*        new Cmd(CMD_SORT, "Sort",
-                new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd(CMD_DESCSORT, "",
-		ARG_LABEL,"Sort descending",
-                new Arg(ARG_COLUMN, "Column to descending sort on", ATTR_TYPE,  TYPE_COLUMN)),
+		  new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
+		  new Cmd(CMD_DESCSORT, "",
+		  ARG_LABEL,"Sort descending",
+		  new Arg(ARG_COLUMN, "Column to descending sort on", ATTR_TYPE,  TYPE_COLUMN)),
 	*/
         new Cmd(CMD_COUNT, "Show count"),
         new Cmd(CMD_ALIAS, "Set a field alias",
@@ -4147,6 +4150,12 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
+
+	defineFunction(CMD_CHECKMISSING,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.CheckMissing(args.get(++i),args.get(++i)));
+		return i;
+	    });	
+	
 
 
 	defineFunction(CMD_URLARG,2,(ctx,args,i) -> {
@@ -5667,7 +5676,7 @@ public class Seesv implements SeesvCommands {
 		return sdf.parse(d);
             } catch (Exception exc) {
 		throw new Seesv.MessageException("Could not parse date:" + d + " with format:"
-						   + sdfString);
+						 + sdfString);
             }
 	}
 

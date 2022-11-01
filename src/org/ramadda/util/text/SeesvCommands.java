@@ -47,6 +47,7 @@ public interface SeesvCommands {
     public static final String CMD_SHAPEFILE="-shapefile";
     public static final String CMD_LINES="-lines";
     public static final String CMD_HTMLINFO="-htmlinfo";
+    public static final String CMD_CHECKMISSING="-checkmissing";
     public static final String CMD_HTMLTABLE="-htmltable";
     public static final String CMD_HTMLPATTERN="-htmlpattern";
     public static final String CMD_HARVEST="-harvest";
