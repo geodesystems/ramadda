@@ -3316,10 +3316,10 @@ public abstract class Converter extends Processor {
 	    try {
 		String html=null;
 		File cacheFile = null;
-		if(Seesv.getCacheDir()!=null) {
-		    cacheFile = new File(Seesv.getCacheDir(),"cached_" + Utils.makeID(url));
+		if(Seesv.getTmpCacheDir()!=null) {
+		    cacheFile = new File(Seesv.getTmpCacheDir(),"cached_" + Utils.makeID(url));
 		    if(!cacheFile.exists()) {
-			cacheFile = new File(Seesv.getCacheDir(),"cached_" + Utils.makeID(url.replace("http:","https:")));
+			cacheFile = new File(Seesv.getTmpCacheDir(),"cached_" + Utils.makeID(url.replace("http:","https:")));
 		    }
 		    if(cacheFile.exists()) {
 //			System.err.println("from Cache:"+ cacheFile);

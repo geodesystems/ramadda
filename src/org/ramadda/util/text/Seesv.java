@@ -66,7 +66,7 @@ public class Seesv implements SeesvCommands {
     /** _more_          */
     private static boolean debugArgs = false;
 
-    private static File cacheDir;
+    private static File tmpCacheDir;
 
 
     private boolean interactive = false;
@@ -1084,12 +1084,12 @@ public class Seesv implements SeesvCommands {
 
 
 
-    public static void setCacheDir(File dir) {
-	cacheDir = dir;
+    public static void setTmpCacheDir(File dir) {
+	tmpCacheDir = dir;
     }
 
-    public static File getCacheDir() {
-	return cacheDir;
+    public static File getTmpCacheDir() {
+	return tmpCacheDir;
     }    
 
     /*
@@ -5593,8 +5593,8 @@ public class Seesv implements SeesvCommands {
 	*/
 
 
-	Seesv.setCacheDir(new File("."));
-	GeoUtils.setCacheDir(new File("."));
+	Seesv.setTmpCacheDir(new File("."));
+	IO.setCacheDir(new File("."));
 	Seesv seesv = new Seesv(args);
 	seesv.commandLine  = true;
 	seesv.setSeesvContext(new SeesvContext() {
