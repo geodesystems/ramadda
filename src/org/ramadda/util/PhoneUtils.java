@@ -308,7 +308,7 @@ public class PhoneUtils {
      * @throws Exception _more_
      */
     public static boolean isPhoneMobile(String phone) throws Exception {
-        File cacheFile = new File("ismobile.txt");
+        File cacheFile = IO.getCacheFile("ismobile.txt");
         if (isMobile == null) {
             isMobile = new Hashtable<String, Boolean>();
             numbers  = new ArrayList<String>();
