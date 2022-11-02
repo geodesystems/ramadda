@@ -62,6 +62,35 @@ public class IO {
 
 
 
+    /** _more_ */
+    private static File cacheDir;
+
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     */
+    public static void setCacheDir(File file) {
+        cacheDir = file;
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     */
+    public static File getCacheDir() {
+	return cacheDir;
+    }
+
+
+    public static File getCacheFile(String filename) {
+	if(cacheDir==null) throw new IllegalStateException("No Utils.cacheDir defined");
+	return new File(cacheDir,filename);
+    }
+
+
     /**
      * _more_
      *
