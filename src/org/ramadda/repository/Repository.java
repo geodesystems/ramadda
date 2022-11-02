@@ -1624,8 +1624,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setGoogleKey(getProperty("google.key", (String) null));
             GeoUtils.setGeocodeioKey(getProperty("geocodeio.key", (String) null));
             GeoUtils.setHereKey(getProperty("here.key", (String) null));	    
-            GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
-            Seesv.setCacheDir(getStorageManager().getCacheDir().getDir());
+            IO.setCacheDir(getStorageManager().getRepositoryDir());
+            Seesv.setTmpCacheDir(getStorageManager().getCacheDir().getDir());
         }
 
 
