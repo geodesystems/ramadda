@@ -422,6 +422,7 @@ function RepositoryMap(mapId, params) {
 
         defaultMapLayer: map_default_layer,
 
+	displayDivSticky:true,
 	showLayerToggle:false,
 	showLatLonLines:false,
         showScaleLine: showDflt,
@@ -4823,7 +4824,7 @@ RepositoryMap.prototype = {
 
 	//Only do this if we don't have a clickListener
 	if(!Utils.isDefined(this.clickListener)) {
-	    console.log("showMarkerPopup:" + this.clickListener);
+//	    console.log("showMarkerPopup:" + this.clickListener);
 	    if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
 		if(debugPopup) console.log("\tfeatureSelectHandler returned true");
 		return;
