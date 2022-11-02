@@ -107,9 +107,6 @@ public class GeoUtils {
 
 
     /** _more_ */
-    private static File cacheDir;
-
-    /** _more_ */
     private static PrintWriter cacheWriter;
 
     /** _more_ */
@@ -196,14 +193,6 @@ public class GeoUtils {
         geocodeioKey = key;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
-    public static void setCacheDir(File file) {
-        cacheDir = file;
-    }
 
     /**
      * _more_
@@ -552,6 +541,7 @@ public class GeoUtils {
 	    synchronized(ADDRESS_MUTEX) {
 		if (addressToLocation == null) {
 		    Hashtable<String, Place> tmp =  new Hashtable<String, Place>();
+		    File cacheDir =  IO.getCacheDir();
 		    if (cacheDir != null) {
 			File cacheFile = new File(IOUtil.joinDir(cacheDir,
 								 "addresslocations2.txt"));
@@ -1303,6 +1293,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     private static Hashtable<String, String> getHoods() throws Exception {
+	File cacheDir =  IO.getCacheDir();
         if ((hoods == null) && (cacheDir != null)) {
             File cacheFile = new File(IOUtil.joinDir(cacheDir,
                                  "neighborhoods.txt"));
@@ -1579,7 +1570,7 @@ public class GeoUtils {
           }
         */
 
-        setCacheDir(new File("."));
+        Utils.setCacheDir(new File("."));
 
         /*
           if(true) {
