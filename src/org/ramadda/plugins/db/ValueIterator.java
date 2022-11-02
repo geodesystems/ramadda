@@ -833,6 +833,8 @@ public abstract class ValueIterator implements DbConstants {
         /** _more_          */
         int entriesPerPage;
 
+	boolean numberEntries = false;
+	
         /** _more_          */
         String searchColumn;
 
@@ -903,6 +905,7 @@ public abstract class ValueIterator implements DbConstants {
                 throws Exception {
             super.initialize(request, doGroupBy);
             entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 8);
+	    numberEntries = request.get(ARG_NUMBER_ENTRIES,false);
             extraCols = Utils.split(request.getString(ARG_EXTRA_COLUMNS, ""),
                                     "\n", true, true);
             columns     = db.getColumnsToUse(request, true);
@@ -928,6 +931,7 @@ public abstract class ValueIterator implements DbConstants {
             }
 
             int entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 8);
+	    boolean numberEntries = request.get(ARG_NUMBER_ENTRIES,false);
             if (forPrint) {
                 canEdit = false;
             }
@@ -971,7 +975,10 @@ public abstract class ValueIterator implements DbConstants {
             HtmlUtils.open(tableHeader, "tr", "valign", "top");
             if ( !forPrint) {
                 db.makeTableHeader(tableHeader, "&nbsp;");
-            }
+            } else {
+		if(numberEntries)
+		    db.makeTableHeader(tableHeader, "#");
+	    }
             for (int i = 0; i < columns.size(); i++) {
                 Column column = columns.get(i);
                 String type;
@@ -1016,6 +1023,8 @@ public abstract class ValueIterator implements DbConstants {
                         : "=desc"), label) + extra;
                 db.makeTableHeader(tableHeader, link);
             }
+
+
             for (String col : extraCols) {
                 db.makeTableHeader(tableHeader, col);
             }
@@ -1111,6 +1120,8 @@ public abstract class ValueIterator implements DbConstants {
             String divId = "div_" + dbid;
             sb.append("\n");
             HU.open(sb, "tr", "dbrowid", dbid);
+	    if(numberEntries)
+                HtmlUtils.td(sb, ""+(rowCnt));
             if ( !forPrint) {
                 HtmlUtils.open(sb, "td", "width", "10", "style",
                                "white-space:nowrap;");

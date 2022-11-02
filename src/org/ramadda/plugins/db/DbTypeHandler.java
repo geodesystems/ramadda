@@ -938,7 +938,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
         if (forPrint) {
             getPageHandler().entrySectionClose(request, entry, sb);
-
             return;
         }
 
@@ -2398,7 +2397,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                 ARG_ENTRIES_PER_PAGE,
                                                 request.getString(
                                                     ARG_ENTRIES_PER_PAGE,
-                                                    "30"), HtmlUtils.SIZE_5);
+                                                    "30"), HtmlUtils.SIZE_5) +
+		HU.space(4) +
+		HU.labeledCheckbox(ARG_NUMBER_ENTRIES,"true",request.get(ARG_NUMBER_ENTRIES,false),
+				   "Number results");
             if (addressTemplate != null) {
                 print += "<br>" + HU.b("Address label skip: ")
                          + HU
@@ -3577,7 +3579,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                           Appendable sb, boolean doForm,
                           boolean showHeaderLinks)
             throws Exception {
-
         DbInfo           dbInfo       = getDbInfo();
         List<Column>     columnsToUse = getColumnsToUse(request, true);
         SimpleDateFormat sdf          = getDateFormat(request, entry);
@@ -3591,6 +3592,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         boolean forPrint       = request.get(ARG_FOR_PRINT, false);
         int     entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 8);
+	boolean numberEntries = request.get(ARG_NUMBER_ENTRIES,false);
         if (forPrint) {
             canEdit = false;
         }
@@ -3643,9 +3645,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                            "border", "1", "cellspacing", "0", "cellpadding",
                            "0", "width", "100%");
             HtmlUtils.open(tableHeader, "tr", "valign", "top");
+	    System.err.println(forPrint +" " + numberEntries);
             if ( !forPrint) {
                 makeTableHeader(tableHeader, "&nbsp;");
-            }
+            } else {
+		if(numberEntries)
+		    makeTableHeader(tableHeader, "#");
+	    }
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 String type;
@@ -3776,6 +3782,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     : " ramadda-row-odd ") + " dbrow ", "id", rowId, "title",
                     "Click to view details"));
 
+	    if(numberEntries) {
+                HtmlUtils.td(hb, ""+(cnt+1));
+	    }
+		
             even = !even;
             if ( !forPrint) {
                 HtmlUtils.open(hb, "td", "width", "10", "style",
@@ -4651,19 +4661,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Column           polygonColumn = getDbInfo().getPolygonColumn();
         //      int rowCnt = 0;
         int entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 30);
+	boolean numberEntries = request.get(ARG_NUMBER_ENTRIES,false);
         int lineCnt        = 0;
         List<String> extraCols =
             Utils.split(request.getString(ARG_EXTRA_COLUMNS, ""), "\n", true,
                         true);
         List<List> lists;
         if (forPrint) {
-            lists = (List<List>) Utils.splitList(valueList, entriesPerPage);
+            lists = (List<List>) Utils.splitList(valueList, entriesPerPage+1);
         } else {
             lists = new ArrayList<List>();
             lists.add(valueList);
         }
 
-        for (List listValues : lists) {
+        int cnt=0;
+	for (List listValues : lists) {
             String mapDisplayId = "mapDisplay_" + Utils.getGuid();
             props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
@@ -4806,7 +4818,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 theSB.append(" ");
                 String label = getMapLabel(request, entry, values, sdf,
                                            forPrint);
-                theSB.append(map.getHiliteHref(dbid, label));
+		if(numberEntries)
+		    label = (++cnt)+" " + label;
+		theSB.append(map.getHiliteHref(dbid, label));
                 theSB.append("</div>");
                 //            theSB.append(HtmlUtils.br());
                 String info = getHtml(request, entry, dbid, getColumns(),
@@ -4863,7 +4877,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	    map.center();
             if ( !simpleMap) {
-                HtmlUtils.open(sb, "table", "class",
+                HtmlUtils.open(sb, "table", "border","1","class",
                                " db-map-table " + (forPrint
                         ? " db-map-table-print "
                         : ""), "cellpadding", "0", "border", "0", "width",
@@ -4888,7 +4902,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     String rightDiv =
                         searchLink + "<div id=\"" + mapDisplayId
                         + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
-                        + height + "px; overflow-y:hidden;\"></div>";
+                        + height + "px; overflow-y:auto;\"></div>";
 
                     sb.append(
                         HtmlUtils.col(
@@ -4902,6 +4916,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String js =
 		map.getVariableName()+  ".highlightMarkers('.db-map-list-outer .db-map-list-entry');";
             sb.append(HtmlUtils.script(JQuery.ready(js)));
+            if (forPrint) {
+                sb.append("<div class=pagebreak></div>");
+            }
+
 	}
 
 

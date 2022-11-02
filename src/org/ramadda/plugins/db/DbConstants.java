@@ -131,6 +131,7 @@ public interface DbConstants extends Constants {
 
     /** _more_ */
     public static final String ARG_ENTRIES_PER_PAGE = "entriesperpage";
+    public static final String ARG_NUMBER_ENTRIES = "numberentries";
 
     /** _more_ */
     public static final String ARG_AGG_PERCENT = "aggpercent";
