@@ -165,6 +165,41 @@ public abstract class Converter extends Processor {
         }
     }
 
+    public static class Highlighter extends Converter {
+	String prefix;
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public Highlighter(List<String> cols, String color) {
+            super(cols);
+	    if(color.equals("green")) prefix=Utils.ANSI_GREEN_BOLD;
+	    else if(color.equals("yellow")) prefix=Utils.ANSI_YELLOW_BOLD;
+	    else if(color.equals("blue")) prefix=Utils.ANSI_BLUE_BOLD;
+	    else if(color.equals("purple")) prefix=Utils.ANSI_PURPLE_BOLD;
+	    else if(color.equals("cyan")) prefix=Utils.ANSI_CYAN_BOLD;
+	    else prefix=Utils.ANSI_RED_BOLD;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+	    for(int idx:getIndices(ctx)) {
+		if(row.indexOk(idx)) {
+		    row.set(idx,prefix+row.getString(idx)+Utils.ANSI_RESET);
+		}
+	    }
+	    return row;
+        }
+    }
+    
 
     public static class RowAppender  extends Converter {
 	private int skip;

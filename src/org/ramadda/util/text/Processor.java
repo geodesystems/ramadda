@@ -1909,7 +1909,6 @@ public abstract class Processor extends SeesvOperator {
 		writer.append(prefix);
 	    }
 
-
             List    values        = row.getValues();
             boolean escapeColumns = true;
             if (theTemplate == null) {

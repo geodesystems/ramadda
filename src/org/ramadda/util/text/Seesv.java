@@ -2748,6 +2748,10 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Output Prefix",
 		new Arg("text","The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order mark.")),	
         new Cmd(CMD_PRINTHEADER, "Print header",
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("color", "Color",
+			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),
+        new Cmd(CMD_HIGHLIGHT, "Highlight the columns",
 		ARG_LABEL,"Print Header"),
         new Cmd(CMD_RAW, "Print the file raw"),
         new Cmd(CMD_TABLE, "Print HTML table and stats"),
@@ -5170,6 +5174,13 @@ public class Seesv implements SeesvCommands {
 
 
 
+	defineFunction(CMD_HIGHLIGHT,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Highlighter(
+							   getCols(args.get(++i)),
+							   args.get(++i)));
+		return i;
+	    });
+
 	defineFunction(new String[]{CMD_PRINTHEADER,"-ph"},0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader());
 		return i;
@@ -5583,16 +5594,6 @@ public class Seesv implements SeesvCommands {
 	    S3File.main(args);
 	    return;
 	}
-
-	/*
-	  System.out.println("a,b,c,d,e");
-	  for(int i=0;i<100000;i++) {
-	  System.out.println(i+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456)+"," + (i*0.123456));
-	  }
-	  if(true) return;
-	*/
-
-
 	Seesv.setTmpCacheDir(new File("."));
 	IO.setCacheDir(new File("."));
 	Seesv seesv = new Seesv(args);
