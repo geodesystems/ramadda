@@ -1296,7 +1296,7 @@ public class GeoUtils {
 	File cacheDir =  IO.getCacheDir();
         if ((hoods == null) && (cacheDir != null)) {
             File cacheFile = new File(IOUtil.joinDir(cacheDir,
-                                 "neighborhoods.txt"));
+						     "neighborhoods.txt"));
             if (cacheFile.exists()) {
                 hoods = new Hashtable<String, String>();
                 //              System.err.println("Reading neighborhoods.txt");
@@ -1570,7 +1570,7 @@ public class GeoUtils {
           }
         */
 
-        Utils.setCacheDir(new File("."));
+        IO.setCacheDir(new File("."));
 
         /*
           if(true) {
