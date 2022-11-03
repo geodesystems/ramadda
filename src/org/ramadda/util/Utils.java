@@ -104,6 +104,15 @@ public class Utils extends IO {
     public static final String ANSI_WHITE_BOLD = "\033[1;37m";  // WHITE
 
 
+    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
+    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
+    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
+    public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
+    public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    
     /** _more_ */
     private static DecimalFormat[] FORMATS = {
         new DecimalFormat("#0"), new DecimalFormat("#0.0"),
@@ -115,38 +124,38 @@ public class Utils extends IO {
 
     /** _more_ */
     public static final String WHITESPACE_CHARS = ""
-    /* dummy empty string for homogeneity */
-    + "\\u0009"  // CHARACTER TABULATION
-    + "\\u000A"  // LINE FEED (LF)
-    + "\\u000B"  // LINE TABULATION
-    + "\\u000C"  // FORM FEED (FF)
-    + "\\u000D"  // CARRIAGE RETURN (CR)
-    + "\\u0020"  // SPACE
-    + "\\u0085"  // NEXT LINE (NEL) 
-    + "\\u00A0"  // NO-BREAK SPACE
-    + "\\u1680"  // OGHAM SPACE MARK
-    + "\\u180E"  // MONGOLIAN VOWEL SEPARATOR
-    + "\\u2000"  // EN QUAD 
-    + "\\u2001"  // EM QUAD 
-    + "\\u2002"  // EN SPACE
-    + "\\u2003"  // EM SPACE
-    + "\\u2004"  // THREE-PER-EM SPACE
-    + "\\u2005"  // FOUR-PER-EM SPACE
-    + "\\u2006"  // SIX-PER-EM SPACE
-    + "\\u2007"  // FIGURE SPACE
-    + "\\u2008"  // PUNCTUATION SPACE
-    + "\\u2009"  // THIN SPACE
-    + "\\u200A"  // HAIR SPACE
-    + "\\u2028"  // LINE SEPARATOR
-    + "\\u2029"  // PARAGRAPH SEPARATOR
-    + "\\u202F"  // NARROW NO-BREAK SPACE
-    + "\\u205F"  // MEDIUM MATHEMATICAL SPACE
-    + "\\u3000"  // IDEOGRAPHIC SPACE
+	/* dummy empty string for homogeneity */
+	+ "\\u0009"  // CHARACTER TABULATION
+	+ "\\u000A"  // LINE FEED (LF)
+	+ "\\u000B"  // LINE TABULATION
+	+ "\\u000C"  // FORM FEED (FF)
+	+ "\\u000D"  // CARRIAGE RETURN (CR)
+	+ "\\u0020"  // SPACE
+	+ "\\u0085"  // NEXT LINE (NEL) 
+	+ "\\u00A0"  // NO-BREAK SPACE
+	+ "\\u1680"  // OGHAM SPACE MARK
+	+ "\\u180E"  // MONGOLIAN VOWEL SEPARATOR
+	+ "\\u2000"  // EN QUAD 
+	+ "\\u2001"  // EM QUAD 
+	+ "\\u2002"  // EN SPACE
+	+ "\\u2003"  // EM SPACE
+	+ "\\u2004"  // THREE-PER-EM SPACE
+	+ "\\u2005"  // FOUR-PER-EM SPACE
+	+ "\\u2006"  // SIX-PER-EM SPACE
+	+ "\\u2007"  // FIGURE SPACE
+	+ "\\u2008"  // PUNCTUATION SPACE
+	+ "\\u2009"  // THIN SPACE
+	+ "\\u200A"  // HAIR SPACE
+	+ "\\u2028"  // LINE SEPARATOR
+	+ "\\u2029"  // PARAGRAPH SEPARATOR
+	+ "\\u202F"  // NARROW NO-BREAK SPACE
+	+ "\\u205F"  // MEDIUM MATHEMATICAL SPACE
+	+ "\\u3000"  // IDEOGRAPHIC SPACE
         ;
 
     /** _more_ */
     public static final String WHITESPACE_CHARCLASS = "[" + WHITESPACE_CHARS
-                                                      + "]";
+	+ "]";
 
 
     /** _more_ */
@@ -304,7 +313,7 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static String getUrlArg(String urlString, String name)
-            throws Exception {
+	throws Exception {
         URL    url   = new URL(urlString);
         String query = url.getQuery();
         for (String param : query.split("&")) {
@@ -312,8 +321,8 @@ public class Utils extends IO {
             String   key  = URLDecoder.decode(pair[0], "UTF-8");
             if (key.equals(name)) {
                 return (pair.length > 1)
-                       ? URLDecoder.decode(pair[1], "UTF-8")
-                       : "";
+		    ? URLDecoder.decode(pair[1], "UTF-8")
+		    : "";
             }
         }
 
@@ -574,7 +583,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<List<String>> tokenize(String source,
-            String rowDelimiter, String columnDelimiter, int skip) {
+					      String rowDelimiter, String columnDelimiter, int skip) {
         int                cnt     = 0;
         List<List<String>> results = new ArrayList<List<String>>();
         List<String> lines = Utils.split(source, rowDelimiter, true, true);
@@ -633,7 +642,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-            List<Integer> widths) {
+					       List<Integer> widths) {
         List<String> toks    = new ArrayList<String>();
         int          lastIdx = 0;
         for (int i = 0; i < widths.size(); i++) {
@@ -661,7 +670,7 @@ public class Utils extends IO {
      */
 
     public static List<String> tokenizeColumns(String line,
-            String columnDelimiter) {
+					       String columnDelimiter) {
         StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
         tokenizer.setEmptyTokenAsNull(true);
         if ( !columnDelimiter.equals(",")) {
@@ -698,7 +707,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-            StrTokenizer tokenizer) {
+					       StrTokenizer tokenizer) {
         return tokenizeColumns(line, tokenizer, null);
     }
 
@@ -715,7 +724,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-            StrTokenizer tokenizer, List<String> toks) {
+					       StrTokenizer tokenizer, List<String> toks) {
         tokenizer.reset(line);
         String tokens[] = tokenizer.getTokenArray();
         if (toks == null) {
@@ -845,7 +854,7 @@ public class Utils extends IO {
      */
     public static boolean isReal(double d) {
         if ( !Double.isNaN(d) && (d != Double.POSITIVE_INFINITY)
-                && (d != Double.NEGATIVE_INFINITY)) {
+	     && (d != Double.NEGATIVE_INFINITY)) {
             return true;
         }
 
@@ -1002,7 +1011,7 @@ public class Utils extends IO {
         // FIRST TEST reference point
         System.out.println("Julian date for May 23, 1968 : "
                            + toJulian(new int[] { 1968,
-                5, 23 }));
+						 5, 23 }));
         // output : 2440000
         int results[] = fromJulian(toJulian(new int[] { 1968, 5, 23 }));
         System.out.println("... back to calendar : " + results[0] + " "
@@ -1011,7 +1020,7 @@ public class Utils extends IO {
         // SECOND TEST today
         Calendar today = Calendar.getInstance();
         double todayJulian = toJulian(new int[] { today.get(Calendar.YEAR),
-                today.get(Calendar.MONTH) + 1, today.get(Calendar.DATE) });
+						 today.get(Calendar.MONTH) + 1, today.get(Calendar.DATE) });
         System.out.println("Julian date for today : " + todayJulian);
         results = fromJulian(todayJulian);
         System.out.println("... back to calendar : " + results[0] + " "
@@ -1043,7 +1052,7 @@ public class Utils extends IO {
     public static String getArticle(String s) {
         s = s.toLowerCase();
         if (s.startsWith("a") || s.startsWith("e") || s.startsWith("i")
-                || s.startsWith("o") || s.startsWith("u")) {
+	    || s.startsWith("o") || s.startsWith("u")) {
             return "an";
         } else {
             return "a";
@@ -1061,14 +1070,14 @@ public class Utils extends IO {
         try {
             String yyyy = "\\d\\d\\d\\d";
             String str = StringUtil.findPattern(s,
-                             "(" + yyyy + "-\\d\\d-\\d\\d)");
+						"(" + yyyy + "-\\d\\d-\\d\\d)");
             if (str != null) {
                 //                System.err.println("pattern 1:" + str);
                 return parseDate(str);
             }
 
             str = StringUtil.findPattern(
-                s, "(" + yyyy + "\\d\\d\\d\\d-\\d\\d\\d\\d\\d\\d)");
+					 s, "(" + yyyy + "\\d\\d\\d\\d-\\d\\d\\d\\d\\d\\d)");
             if (str != null) {
                 try {
                     //                    System.err.println("pattern 2:" + str);
@@ -1117,8 +1126,8 @@ public class Utils extends IO {
         Constructor[]     constructors = c.getConstructors();
         if (constructors.length == 0) {
             System.err.println(
-                "*** Could not find any constructors for class:"
-                + c.getName());
+			       "*** Could not find any constructors for class:"
+			       + c.getName());
 
             return null;
         }
@@ -1129,8 +1138,8 @@ public class Utils extends IO {
         }
         if (allCtors.size() > 1) {
             throw new IllegalArgumentException(
-                "More than one constructors matched for class:"
-                + c.getName());
+					       "More than one constructors matched for class:"
+					       + c.getName());
         }
         if (allCtors.size() == 1) {
             return (Constructor) allCtors.get(0);
@@ -1246,11 +1255,11 @@ public class Utils extends IO {
      */
     public static Date findDate(String source, String[] datePatterns,
                                 String[] dateFormats)
-            throws Exception {
+	throws Exception {
         for (int dateFormatIdx = 0; dateFormatIdx < datePatterns.length;
-                dateFormatIdx++) {
+	     dateFormatIdx++) {
             String dttm = StringUtil.findPattern(source,
-                              datePatterns[dateFormatIdx]);
+						 datePatterns[dateFormatIdx]);
             if (dttm != null) {
                 dttm = dttm.replaceAll(" _ ", " ");
                 dttm = dttm.replaceAll(" / ", "/");
@@ -1285,7 +1294,7 @@ public class Utils extends IO {
      *  @return _more_
      */
     public static SimpleDateFormat makeDateFormat(String format,
-            String timezone) {
+						  String timezone) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         if (timezone != null) {
             sdf.setTimeZone(TimeZone.getTimeZone(timezone));
@@ -1379,9 +1388,9 @@ public class Utils extends IO {
      */
     public static String getAttributeOrTag(Element node, String attrOrTag,
                                            String dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = XmlUtil.getAttribute(node, attrOrTag,
-                               (String) null);
+						(String) null);
         if (attrValue == null) {
             Node child = XmlUtil.findChild(node, attrOrTag);
             if (child != null) {
@@ -1402,9 +1411,9 @@ public class Utils extends IO {
 
     public static String getAttributeOrTagUpTree(Node node, String attrOrTag,
 						 String dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = XmlUtil.getAttribute(node, attrOrTag,
-                               (String) null);
+						(String) null);
         if (attrValue == null) {
             Node child = XmlUtil.findChild(node, attrOrTag);
             if (child != null) {
@@ -1448,7 +1457,7 @@ public class Utils extends IO {
      */
     public static boolean getAttributeOrTag(Element node, String attrOrTag,
                                             boolean dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
@@ -1471,7 +1480,7 @@ public class Utils extends IO {
      */
     public static int getAttributeOrTag(Element node, String attrOrTag,
                                         int dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
@@ -1494,7 +1503,7 @@ public class Utils extends IO {
      */
     public static double getAttributeOrTag(Element node, String attrOrTag,
                                            double dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
@@ -1754,8 +1763,8 @@ public class Utils extends IO {
         }
         path = path.replaceAll("\\?.*?$", "").toLowerCase();
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")
-                || path.endsWith(".gif") || path.endsWith(".png")
-                || path.endsWith(".webp") || path.endsWith(".bmp")) {
+	    || path.endsWith(".gif") || path.endsWith(".png")
+	    || path.endsWith(".webp") || path.endsWith(".bmp")) {
             return true;
         }
         //wms layer
@@ -1930,8 +1939,8 @@ public class Utils extends IO {
             try {
 
                 value = (hours.equals("") == true)
-                        ? 0
-                        : Double.parseDouble(hours);
+		    ? 0
+		    : Double.parseDouble(hours);
                 if ( !minutes.equals("")) {
                     value += Double.parseDouble(minutes) / 60.;
                 }
@@ -1961,7 +1970,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<double[]> parsePointString(String s,
-            List<double[]> points) {
+						  List<double[]> points) {
         if (s == null) {
             return points;
         }
@@ -2148,8 +2157,8 @@ public class Utils extends IO {
                 } catch (Exception exc3) {
                 */
                 throw new RuntimeException("Failed to decode base64. error:"
-                //+ exc3);
-                + exc2);
+					   //+ exc3);
+					   + exc2);
                 //}
             }
         }
@@ -2168,7 +2177,7 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static List<String> extractPatterns(String text, String pattern)
-            throws Exception {
+	throws Exception {
         List<String> values = new ArrayList<String>();
         Pattern      p      = Pattern.compile(pattern);
         Matcher      m      = p.matcher(text);
@@ -2202,7 +2211,7 @@ public class Utils extends IO {
        Returns a 2-array:
        array[0] = error results; 
        array[1] = results; 
-     */
+    */
     public static String[] runCommands(List<String>commands) throws Exception {
         ProcessBuilder pb      = new ProcessBuilder(commands);
         Process        process = pb.start();
@@ -2354,7 +2363,7 @@ public class Utils extends IO {
                 }
 
                 throw new IllegalArgumentException("Error: argument " + arg
-                        + " needs a value specified");
+						   + " needs a value specified");
             }
         }
 
@@ -2380,7 +2389,7 @@ public class Utils extends IO {
                 }
 
                 throw new IllegalArgumentException("Error: argument " + arg
-                        + " needs a value specified");
+						   + " needs a value specified");
             }
         }
 
@@ -2604,11 +2613,11 @@ public class Utils extends IO {
                                 String delimiter) {
         label = stripTags(label);
         label = label.trim().toLowerCase().replaceAll(
-            ":", delimiter).replaceAll("&", delimiter).replaceAll(
-            " ", delimiter).replaceAll("\\.", delimiter).replaceAll(
-            "\n", delimiter).replaceAll("\\(", delimiter).replaceAll(
-            "\\)", delimiter).replaceAll("\\?", delimiter).replaceAll(
-            "[\"'`]+", "").trim();
+						      ":", delimiter).replaceAll("&", delimiter).replaceAll(
+													    " ", delimiter).replaceAll("\\.", delimiter).replaceAll(
+																				    "\n", delimiter).replaceAll("\\(", delimiter).replaceAll(
+																											     "\\)", delimiter).replaceAll("\\?", delimiter).replaceAll(
+																																		       "[\"'`]+", "").trim();
         label = label.replaceAll("-", delimiter);
         label = label.replaceAll(",", delimiter);
         label = label.replaceAll("/", delimiter);
@@ -2625,7 +2634,7 @@ public class Utils extends IO {
 
     /** _more_ */
     private static final String[] DATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
-            "(january|february|march|april|may|june|july|august|septembe|october|november|december).*" };
+	"(january|february|march|april|may|june|july|august|septembe|october|november|december).*" };
 
     /**
      * _more_
@@ -2683,7 +2692,7 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void appendAll(Appendable sb, Object... args)
-            throws Exception {
+	throws Exception {
         for (Object arg : args) {
             if (arg != null) {
                 sb.append(arg.toString());
@@ -2732,7 +2741,7 @@ public class Utils extends IO {
         label = sb.toString().trim();
         for (String tok : Utils.split(label, " ", true, true)) {
             tok = tok.substring(0, 1).toUpperCase()
-                  + tok.substring(1, tok.length()).toLowerCase();
+		+ tok.substring(1, tok.length()).toLowerCase();
             tmpSB.append(tok);
             tmpSB.append(" ");
         }
@@ -2830,12 +2839,12 @@ public class Utils extends IO {
             //HH:MM
         } else if (toks.size() == 2) {
             seconds += Integer.parseInt(toks.get(0)) * 60 * 60
-                       + Integer.parseInt(toks.get(1)) * 60;
+		+ Integer.parseInt(toks.get(1)) * 60;
             //HH:MM:SS
         } else if (toks.size() >= 3) {
             seconds += Integer.parseInt(toks.get(0)) * 60 * 60
-                       + Integer.parseInt(toks.get(1)) * 60
-                       + Integer.parseInt(toks.get(2));
+		+ Integer.parseInt(toks.get(1)) * 60
+		+ Integer.parseInt(toks.get(2));
         }
 
         return seconds;
@@ -3088,7 +3097,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<StringBuilder> parseMultiLineCommandLine(
-            String commandString) {
+								String commandString) {
 
         List<StringBuilder> lines      = new ArrayList<StringBuilder>();
         StringBuilder       sb         = null;
@@ -3135,7 +3144,7 @@ public class Utils extends IO {
                     bracketCnt--;
                     if (bracketCnt < 0) {
                         throw new IllegalArgumentException(
-                            "Unopened bracket:" + commandString);
+							   "Unopened bracket:" + commandString);
                     }
                     if (bracketCnt > 0) {
                         sb = append(c, sb, lines);
@@ -3229,7 +3238,7 @@ public class Utils extends IO {
      *  @return _more_
      */
     public static List<String> parseCommandLine(String s,
-            boolean throwError) {
+						boolean throwError) {
 
         //        System.err.println("command line:" + s);
         List<String> args = new ArrayList<String>();
@@ -3563,7 +3572,7 @@ public class Utils extends IO {
                 cal.add(Calendar.YEAR, factor * 1000);
             } else {
                 throw new IllegalArgumentException("Bad time format:" + s
-                        + " unknown time field:" + unit);
+						   + " unknown time field:" + unit);
             }
             dttm = cal.getTime();
         }
@@ -3571,7 +3580,7 @@ public class Utils extends IO {
         if (dttm == null) {
             Pattern pattern =
                 Pattern.compile(
-                    "([\\+\\-0-9]+) +(second|minute|hour|day|week|month|year|decade|century|millenium)s?");
+				"([\\+\\-0-9]+) +(second|minute|hour|day|week|month|year|decade|century|millenium)s?");
             Matcher matcher = pattern.matcher(s);
             if (matcher.find()) {
                 String quantity = matcher.group(1).trim();
@@ -3678,8 +3687,8 @@ public class Utils extends IO {
         if (stopWords == null) {
             HashSet<String> tmp = new HashSet<String>();
             for (String line :
-                    split(IO.readContents("/org/ramadda/util/stopwords.txt",
-                                          Utils.class), "\n", true, true)) {
+		     split(IO.readContents("/org/ramadda/util/stopwords.txt",
+					   Utils.class), "\n", true, true)) {
                 tmp.add(line);
             }
             stopWords = tmp;
@@ -3821,221 +3830,221 @@ public class Utils extends IO {
     /** _more_ */
     public static final Hashtable<String, Color> COLORNAMES =
         (Hashtable<String,
-                   Color>) makeHashtable("lightsalmon",
-                                         new Color(255, 160, 122), "salmon",
-                                         new Color(250, 128, 114),
-                                         "darksalmon",
-                                         new Color(233, 150, 122),
-                                         "lightcoral",
-                                         new Color(240, 128, 128),
-                                         "indianred", new Color(205, 92, 92),
-                                         "crimson", new Color(220, 20, 60),
-                                         "firebrick", new Color(178, 34, 34),
-                                         "red", new Color(255, 0, 0),
-                                         "darkred", new Color(139, 0, 0),
-                                         "coral", new Color(255, 127, 80),
-                                         "tomato", new Color(255, 99, 71),
-                                         "orangered", new Color(255, 69, 0),
-                                         "gold", new Color(255, 215, 0),
-                                         "orange", new Color(255, 165, 0),
-                                         "darkorange",
-                                         new Color(255, 140, 0),
-                                         "lightyellow",
-                                         new Color(255, 255, 224),
-                                         "lemonchiffon",
-                                         new Color(255, 250, 205),
-                                         "lightgoldenrodyellow",
-                                         new Color(250, 250, 210),
-                                         "papayawhip",
-                                         new Color(255, 239, 213),
-                                         "moccasin",
-                                         new Color(255, 228, 181),
-                                         "peachpuff",
-                                         new Color(255, 218, 185),
-                                         "palegoldenrod",
-                                         new Color(238, 232, 170), "khaki",
-                                         new Color(240, 230, 140),
-                                         "darkkhaki",
-                                         new Color(189, 183, 107), "yellow",
-                                         new Color(255, 255, 0), "lawngreen",
-                                         new Color(124, 252, 0),
-                                         "chartreuse",
-                                         new Color(127, 255, 0), "limegreen",
-                                         new Color(50, 205, 50), "lime",
-                                         new Color(0, 255, 0), "forestgreen",
-                                         new Color(34, 139, 34), "green",
-                                         new Color(0, 128, 0), "darkgreen",
-                                         new Color(0, 100, 0), "greenyellow",
-                                         new Color(173, 255, 47),
-                                         "yellowgreen",
-                                         new Color(154, 205, 50),
-                                         "springgreen",
-                                         new Color(0, 255, 127),
-                                         "mediumspringgreen",
-                                         new Color(0, 250, 154),
-                                         "lightgreen",
-                                         new Color(144, 238, 144),
-                                         "palegreen",
-                                         new Color(152, 251, 152),
-                                         "darkseagreen",
-                                         new Color(143, 188, 143),
-                                         "mediumseagreen",
-                                         new Color(60, 179, 113), "seagreen",
-                                         new Color(46, 139, 87), "olive",
-                                         new Color(128, 128, 0),
-                                         "darkolivegreen",
-                                         new Color(85, 107, 47), "olivedrab",
-                                         new Color(107, 142, 35),
-                                         "lightcyan",
-                                         new Color(224, 255, 255), "cyan",
-                                         new Color(0, 255, 255), "aqua",
-                                         new Color(0, 255, 255),
-                                         "aquamarine",
-                                         new Color(127, 255, 212),
-                                         "mediumaquamarine",
-                                         new Color(102, 205, 170),
-                                         "paleturquoise",
-                                         new Color(175, 238, 238),
-                                         "turquoise",
-                                         new Color(64, 224, 208),
-                                         "mediumturquoise",
-                                         new Color(72, 209, 204),
-                                         "darkturquoise",
-                                         new Color(0, 206, 209),
-                                         "lightseagreen",
-                                         new Color(32, 178, 170),
-                                         "cadetblue",
-                                         new Color(95, 158, 160), "darkcyan",
-                                         new Color(0, 139, 139), "teal",
-                                         new Color(0, 128, 128),
-                                         "powderblue",
-                                         new Color(176, 224, 230),
-                                         "lightblue",
-                                         new Color(173, 216, 230),
-                                         "lightskyblue",
-                                         new Color(135, 206, 250), "skyblue",
-                                         new Color(135, 206, 235),
-                                         "deepskyblue",
-                                         new Color(0, 191, 255),
-                                         "lightsteelblue",
-                                         new Color(176, 196, 222),
-                                         "dodgerblue",
-                                         new Color(30, 144, 255),
-                                         "cornflowerblue",
-                                         new Color(100, 149, 237),
-                                         "steelblue",
-                                         new Color(70, 130, 180),
-                                         "royalblue",
-                                         new Color(65, 105, 225), "blue",
-                                         new Color(0, 0, 255), "mediumblue",
-                                         new Color(0, 0, 205), "darkblue",
-                                         new Color(0, 0, 139), "navy",
-                                         new Color(0, 0, 128),
-                                         "midnightblue",
-                                         new Color(25, 25, 112),
-                                         "mediumslateblue",
-                                         new Color(123, 104, 238),
-                                         "slateblue",
-                                         new Color(106, 90, 205),
-                                         "darkslateblue",
-                                         new Color(72, 61, 139), "lavender",
-                                         new Color(230, 230, 250), "thistle",
-                                         new Color(216, 191, 216), "plum",
-                                         new Color(221, 160, 221), "violet",
-                                         new Color(238, 130, 238), "orchid",
-                                         new Color(218, 112, 214), "fuchsia",
-                                         new Color(255, 0, 255), "magenta",
-                                         new Color(255, 0, 255),
-                                         "mediumorchid",
-                                         new Color(186, 85, 211),
-                                         "mediumpurple",
-                                         new Color(147, 112, 219),
-                                         "blueviolet",
-                                         new Color(138, 43, 226),
-                                         "darkviolet",
-                                         new Color(148, 0, 211),
-                                         "darkorchid",
-                                         new Color(153, 50, 204),
-                                         "darkmagenta",
-                                         new Color(139, 0, 139), "purple",
-                                         new Color(128, 0, 128), "indigo",
-                                         new Color(75, 0, 130), "pink",
-                                         new Color(255, 192, 203),
-                                         "lightpink",
-                                         new Color(255, 182, 193), "hotpink",
-                                         new Color(255, 105, 180),
-                                         "deeppink", new Color(255, 20, 147),
-                                         "palevioletred",
-                                         new Color(219, 112, 147),
-                                         "mediumvioletred",
-                                         new Color(199, 21, 133), "white",
-                                         new Color(255, 255, 255), "snow",
-                                         new Color(255, 250, 250),
-                                         "honeydew",
-                                         new Color(240, 255, 240),
-                                         "mintcream",
-                                         new Color(245, 255, 250), "azure",
-                                         new Color(240, 255, 255),
-                                         "aliceblue",
-                                         new Color(240, 248, 255),
-                                         "ghostwhite",
-                                         new Color(248, 248, 255),
-                                         "whitesmoke",
-                                         new Color(245, 245, 245),
-                                         "seashell",
-                                         new Color(255, 245, 238), "beige",
-                                         new Color(245, 245, 220), "oldlace",
-                                         new Color(253, 245, 230),
-                                         "floralwhite",
-                                         new Color(255, 250, 240), "ivory",
-                                         new Color(255, 255, 240),
-                                         "antiquewhite",
-                                         new Color(250, 235, 215), "linen",
-                                         new Color(250, 240, 230),
-                                         "lavenderblush",
-                                         new Color(255, 240, 245),
-                                         "mistyrose",
-                                         new Color(255, 228, 225),
-                                         "gainsboro",
-                                         new Color(220, 220, 220),
-                                         "lightgray",
-                                         new Color(211, 211, 211), "silver",
-                                         new Color(192, 192, 192),
-                                         "darkgray",
-                                         new Color(169, 169, 169), "gray",
-                                         new Color(128, 128, 128), "dimgray",
-                                         new Color(105, 105, 105),
-                                         "lightslategray",
-                                         new Color(119, 136, 153),
-                                         "slategray",
-                                         new Color(112, 128, 144),
-                                         "darkslategray",
-                                         new Color(47, 79, 79), "black",
-                                         new Color(0, 0, 0), "cornsilk",
-                                         new Color(255, 248, 220),
-                                         "blanchedalmond",
-                                         new Color(255, 235, 205), "bisque",
-                                         new Color(255, 228, 196),
-                                         "navajowhite",
-                                         new Color(255, 222, 173), "wheat",
-                                         new Color(245, 222, 179),
-                                         "burlywood",
-                                         new Color(222, 184, 135), "tan",
-                                         new Color(210, 180, 140),
-                                         "rosybrown",
-                                         new Color(188, 143, 143),
-                                         "sandybrown",
-                                         new Color(244, 164, 96),
-                                         "goldenrod",
-                                         new Color(218, 165, 32), "peru",
-                                         new Color(205, 133, 63),
-                                         "chocolate",
-                                         new Color(210, 105, 30),
-                                         "saddlebrown",
-                                         new Color(139, 69, 19), "sienna",
-                                         new Color(160, 82, 45), "brown",
-                                         new Color(165, 42, 42), "maroon",
-                                         new Color(128, 0, 0));
+	 Color>) makeHashtable("lightsalmon",
+			       new Color(255, 160, 122), "salmon",
+			       new Color(250, 128, 114),
+			       "darksalmon",
+			       new Color(233, 150, 122),
+			       "lightcoral",
+			       new Color(240, 128, 128),
+			       "indianred", new Color(205, 92, 92),
+			       "crimson", new Color(220, 20, 60),
+			       "firebrick", new Color(178, 34, 34),
+			       "red", new Color(255, 0, 0),
+			       "darkred", new Color(139, 0, 0),
+			       "coral", new Color(255, 127, 80),
+			       "tomato", new Color(255, 99, 71),
+			       "orangered", new Color(255, 69, 0),
+			       "gold", new Color(255, 215, 0),
+			       "orange", new Color(255, 165, 0),
+			       "darkorange",
+			       new Color(255, 140, 0),
+			       "lightyellow",
+			       new Color(255, 255, 224),
+			       "lemonchiffon",
+			       new Color(255, 250, 205),
+			       "lightgoldenrodyellow",
+			       new Color(250, 250, 210),
+			       "papayawhip",
+			       new Color(255, 239, 213),
+			       "moccasin",
+			       new Color(255, 228, 181),
+			       "peachpuff",
+			       new Color(255, 218, 185),
+			       "palegoldenrod",
+			       new Color(238, 232, 170), "khaki",
+			       new Color(240, 230, 140),
+			       "darkkhaki",
+			       new Color(189, 183, 107), "yellow",
+			       new Color(255, 255, 0), "lawngreen",
+			       new Color(124, 252, 0),
+			       "chartreuse",
+			       new Color(127, 255, 0), "limegreen",
+			       new Color(50, 205, 50), "lime",
+			       new Color(0, 255, 0), "forestgreen",
+			       new Color(34, 139, 34), "green",
+			       new Color(0, 128, 0), "darkgreen",
+			       new Color(0, 100, 0), "greenyellow",
+			       new Color(173, 255, 47),
+			       "yellowgreen",
+			       new Color(154, 205, 50),
+			       "springgreen",
+			       new Color(0, 255, 127),
+			       "mediumspringgreen",
+			       new Color(0, 250, 154),
+			       "lightgreen",
+			       new Color(144, 238, 144),
+			       "palegreen",
+			       new Color(152, 251, 152),
+			       "darkseagreen",
+			       new Color(143, 188, 143),
+			       "mediumseagreen",
+			       new Color(60, 179, 113), "seagreen",
+			       new Color(46, 139, 87), "olive",
+			       new Color(128, 128, 0),
+			       "darkolivegreen",
+			       new Color(85, 107, 47), "olivedrab",
+			       new Color(107, 142, 35),
+			       "lightcyan",
+			       new Color(224, 255, 255), "cyan",
+			       new Color(0, 255, 255), "aqua",
+			       new Color(0, 255, 255),
+			       "aquamarine",
+			       new Color(127, 255, 212),
+			       "mediumaquamarine",
+			       new Color(102, 205, 170),
+			       "paleturquoise",
+			       new Color(175, 238, 238),
+			       "turquoise",
+			       new Color(64, 224, 208),
+			       "mediumturquoise",
+			       new Color(72, 209, 204),
+			       "darkturquoise",
+			       new Color(0, 206, 209),
+			       "lightseagreen",
+			       new Color(32, 178, 170),
+			       "cadetblue",
+			       new Color(95, 158, 160), "darkcyan",
+			       new Color(0, 139, 139), "teal",
+			       new Color(0, 128, 128),
+			       "powderblue",
+			       new Color(176, 224, 230),
+			       "lightblue",
+			       new Color(173, 216, 230),
+			       "lightskyblue",
+			       new Color(135, 206, 250), "skyblue",
+			       new Color(135, 206, 235),
+			       "deepskyblue",
+			       new Color(0, 191, 255),
+			       "lightsteelblue",
+			       new Color(176, 196, 222),
+			       "dodgerblue",
+			       new Color(30, 144, 255),
+			       "cornflowerblue",
+			       new Color(100, 149, 237),
+			       "steelblue",
+			       new Color(70, 130, 180),
+			       "royalblue",
+			       new Color(65, 105, 225), "blue",
+			       new Color(0, 0, 255), "mediumblue",
+			       new Color(0, 0, 205), "darkblue",
+			       new Color(0, 0, 139), "navy",
+			       new Color(0, 0, 128),
+			       "midnightblue",
+			       new Color(25, 25, 112),
+			       "mediumslateblue",
+			       new Color(123, 104, 238),
+			       "slateblue",
+			       new Color(106, 90, 205),
+			       "darkslateblue",
+			       new Color(72, 61, 139), "lavender",
+			       new Color(230, 230, 250), "thistle",
+			       new Color(216, 191, 216), "plum",
+			       new Color(221, 160, 221), "violet",
+			       new Color(238, 130, 238), "orchid",
+			       new Color(218, 112, 214), "fuchsia",
+			       new Color(255, 0, 255), "magenta",
+			       new Color(255, 0, 255),
+			       "mediumorchid",
+			       new Color(186, 85, 211),
+			       "mediumpurple",
+			       new Color(147, 112, 219),
+			       "blueviolet",
+			       new Color(138, 43, 226),
+			       "darkviolet",
+			       new Color(148, 0, 211),
+			       "darkorchid",
+			       new Color(153, 50, 204),
+			       "darkmagenta",
+			       new Color(139, 0, 139), "purple",
+			       new Color(128, 0, 128), "indigo",
+			       new Color(75, 0, 130), "pink",
+			       new Color(255, 192, 203),
+			       "lightpink",
+			       new Color(255, 182, 193), "hotpink",
+			       new Color(255, 105, 180),
+			       "deeppink", new Color(255, 20, 147),
+			       "palevioletred",
+			       new Color(219, 112, 147),
+			       "mediumvioletred",
+			       new Color(199, 21, 133), "white",
+			       new Color(255, 255, 255), "snow",
+			       new Color(255, 250, 250),
+			       "honeydew",
+			       new Color(240, 255, 240),
+			       "mintcream",
+			       new Color(245, 255, 250), "azure",
+			       new Color(240, 255, 255),
+			       "aliceblue",
+			       new Color(240, 248, 255),
+			       "ghostwhite",
+			       new Color(248, 248, 255),
+			       "whitesmoke",
+			       new Color(245, 245, 245),
+			       "seashell",
+			       new Color(255, 245, 238), "beige",
+			       new Color(245, 245, 220), "oldlace",
+			       new Color(253, 245, 230),
+			       "floralwhite",
+			       new Color(255, 250, 240), "ivory",
+			       new Color(255, 255, 240),
+			       "antiquewhite",
+			       new Color(250, 235, 215), "linen",
+			       new Color(250, 240, 230),
+			       "lavenderblush",
+			       new Color(255, 240, 245),
+			       "mistyrose",
+			       new Color(255, 228, 225),
+			       "gainsboro",
+			       new Color(220, 220, 220),
+			       "lightgray",
+			       new Color(211, 211, 211), "silver",
+			       new Color(192, 192, 192),
+			       "darkgray",
+			       new Color(169, 169, 169), "gray",
+			       new Color(128, 128, 128), "dimgray",
+			       new Color(105, 105, 105),
+			       "lightslategray",
+			       new Color(119, 136, 153),
+			       "slategray",
+			       new Color(112, 128, 144),
+			       "darkslategray",
+			       new Color(47, 79, 79), "black",
+			       new Color(0, 0, 0), "cornsilk",
+			       new Color(255, 248, 220),
+			       "blanchedalmond",
+			       new Color(255, 235, 205), "bisque",
+			       new Color(255, 228, 196),
+			       "navajowhite",
+			       new Color(255, 222, 173), "wheat",
+			       new Color(245, 222, 179),
+			       "burlywood",
+			       new Color(222, 184, 135), "tan",
+			       new Color(210, 180, 140),
+			       "rosybrown",
+			       new Color(188, 143, 143),
+			       "sandybrown",
+			       new Color(244, 164, 96),
+			       "goldenrod",
+			       new Color(218, 165, 32), "peru",
+			       new Color(205, 133, 63),
+			       "chocolate",
+			       new Color(210, 105, 30),
+			       "saddlebrown",
+			       new Color(139, 69, 19), "sienna",
+			       new Color(160, 82, 45), "brown",
+			       new Color(165, 42, 42), "maroon",
+			       new Color(128, 0, 0));
 
     /** hex color string without leading # */
     public static final String HEX_COLOR_PATTERN =
@@ -4102,7 +4111,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static float distanceBetweenPoints(float vx, float vy, float wx,
-            float wy) {
+					      float wy) {
         return square(vx - wx) + square(vy - wy);
     }
 
@@ -4119,7 +4128,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static float distanceToSegmentSquared(float px, float py,
-            float vx, float vy, float wx, float wy) {
+						 float vx, float vy, float wx, float wy) {
         float l2 = distanceBetweenPoints(vx, vy, wx, wy);
         if (l2 == 0) {
             return distanceBetweenPoints(px, py, vx, vy);
@@ -4149,9 +4158,9 @@ public class Utils extends IO {
      * @return _more_
      */
     public static float perpendicularDistance(float px, float py, float vx,
-            float vy, float wx, float wy) {
+					      float vy, float wx, float wy) {
         return (float) Math.sqrt(distanceToSegmentSquared(px, py, vx, vy, wx,
-                wy));
+							  wy));
     }
 
     /**
@@ -4165,7 +4174,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static float getMaxPerpendicularDistance(List<float[]> list,
-            int s, int e, int[] index) {
+						    int s, int e, int[] index) {
         // Find the point with the maximum distance
         float dmax = 0;
         if (index != null) {
@@ -4265,9 +4274,9 @@ public class Utils extends IO {
         //I really shouldn't be doing this here
 	s  =s.toLowerCase();
         return (s.length() == 0) || s.equals("---") || s.equals("n.v.")
-               || s.equals("null") || s.equals("nan")
-               || s.equals("na") || s.equals("n/a") 
-               || s.equals("ukn") || s.equals("e");
+	    || s.equals("null") || s.equals("nan")
+	    || s.equals("na") || s.equals("n/a") 
+	    || s.equals("ukn") || s.equals("e");
     }
 
 
@@ -4282,7 +4291,7 @@ public class Utils extends IO {
      * @throws NumberFormatException _more_
      */
     public static double parseNumber(String value)
-            throws NumberFormatException {
+	throws NumberFormatException {
         if (value.equals(MISSING) || value.equals(NaN)) {
             return Double.NaN;
         }
@@ -4388,8 +4397,8 @@ public class Utils extends IO {
             sdf         = new SimpleDateFormat(this.format);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             this.pattern = (pattern != null)
-                           ? Pattern.compile(spattern = pattern)
-                           : null;
+		? Pattern.compile(spattern = pattern)
+		: null;
         }
 
         /**
@@ -4532,13 +4541,13 @@ public class Utils extends IO {
             }
             if (value < that.value) {
                 return ascending
-                       ? -1
-                       : 1;
+		    ? -1
+		    : 1;
             }
             if (value > that.value) {
                 return ascending
-                       ? 1
-                       : -1;
+		    ? 1
+		    : -1;
             }
 
             return 0;
@@ -4739,7 +4748,7 @@ public class Utils extends IO {
             return null;
         }
         p = p.replaceAll("_leftparen_", "\\\\(").replaceAll("_rightparen_",
-                         "\\\\)");
+							    "\\\\)");
         p = p.replaceAll("_leftbracket_",
                          "\\\\[").replaceAll("_rightbracket_", "\\\\]");
         String hr = "<a[^>]*?href *= *\"?([^ <\"]+)";
@@ -5114,7 +5123,7 @@ public class Utils extends IO {
      * @param tab _more_
      */
     public static void findDescendantsFromPath(Element parent, List tags,
-            int tagIdx, List results, String tab) {
+					       int tagIdx, List results, String tab) {
         String  tag     = (String) tags.get(tagIdx);
         boolean lastTag = (tagIdx == tags.size() - 1);
         //      System.err.println (tab+XmlUtil.getLocalName(parent) + " looking for:" + tag + " idx:" + tagIdx+ " lastTag:" + lastTag);
@@ -5124,7 +5133,7 @@ public class Utils extends IO {
             Element child = (Element) elements.item(i);
             //      System.err.println (tab+">child:" + XmlUtil.getLocalName(child));
             if (tag.equals(XmlUtil.TAG_WILDCARD)
-                    || XmlUtil.isTag(child, tag)) {
+		|| XmlUtil.isTag(child, tag)) {
                 if (lastTag) {
                     results.add(child);
                 } else {
@@ -5156,7 +5165,7 @@ public class Utils extends IO {
 
     /**
        Clip the length of the string to the given length. Add the suffix at the end if clipped
-     */
+    */
     public static String clip(String s, int length,String suffix) {
 	if(s==null) return null;
 	if(s.length()>length) {
@@ -5262,8 +5271,8 @@ public class Utils extends IO {
             lists.add(list);
         } else {
             int     rem   = (remainder.length > 0)
-                            ? remainder[0]
-                            : 0;
+		? remainder[0]
+		: 0;
             boolean debug = false;
             if (debug) {
                 System.err.println("*** max:" + max + " rem:" + rem);
@@ -5525,14 +5534,14 @@ public class Utils extends IO {
      */
     public static Date[] getDateRange(String fromDate, String toDate,
                                       Date base)
-            throws java.text.ParseException {
+	throws java.text.ParseException {
 
         Date fromDttm = Utils.stringDefined(fromDate)
-                        ? DateUtil.parseRelative(base, fromDate, -1)
-                        : null;
+	    ? DateUtil.parseRelative(base, fromDate, -1)
+	    : null;
         Date toDttm   = Utils.stringDefined(toDate)
-                        ? DateUtil.parseRelative(base, toDate, +1)
-                        : null;
+	    ? DateUtil.parseRelative(base, toDate, +1)
+	    : null;
         //      System.err.println ("dflt: " + base);
         //      System.err.println ("fromDttm:" + fromDate + " date:" + fromDttm);
         //      System.err.println ("toDttm:" + toDate + " date:" + toDttm);
@@ -5550,10 +5559,10 @@ public class Utils extends IO {
         }
 
         if ((fromDttm == null) && (fromDate != null)
-                && fromDate.startsWith("-")) {
+	    && fromDate.startsWith("-")) {
             if (toDttm == null) {
                 throw new IllegalArgumentException(
-                    "Cannot do relative From Date when To Date is not set");
+						   "Cannot do relative From Date when To Date is not set");
             }
             fromDttm = DateUtil.getRelativeDate(toDttm, fromDate);
         }
@@ -5561,7 +5570,7 @@ public class Utils extends IO {
         if ((toDttm == null) && (toDate != null) && toDate.startsWith("+")) {
             if (fromDttm == null) {
                 throw new IllegalArgumentException(
-                    "Cannot do relative From Date when To Date is not set");
+						   "Cannot do relative From Date when To Date is not set");
             }
             toDttm = DateUtil.getRelativeDate(fromDttm, toDate);
         }
@@ -6031,9 +6040,9 @@ public class Utils extends IO {
 	    System.err.println(image.getHeight());
 	    for (int i = 0; i < image.getHeight(); i++) {
 		//		try {
-		    java.awt.Color c = new java.awt.Color(image.getRGB(0,i));
-		    System.out.print("'rgb(" + c.getRed()+","+c.getGreen()+","+ c.getBlue()+")',");
-		    //		} catch(Exception exc) {}
+		java.awt.Color c = new java.awt.Color(image.getRGB(0,i));
+		System.out.print("'rgb(" + c.getRed()+","+c.getGreen()+","+ c.getBlue()+")',");
+		//		} catch(Exception exc) {}
 	    }
 	    System.exit(0);
 	}
