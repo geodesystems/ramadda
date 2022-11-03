@@ -67,12 +67,21 @@ public class IO {
 
 
     /**
-     * _more_
+     * Set the cache location. This is used by PhoneUtils for ismobile lookup
+     * and by GeoUtils for geocoding
+     * This won't set it if it has been set already. Also, it will first check if there
+     * is an environment variable RAMADDA_CACHE_DIR and use that
      *
      * @param file _more_
      */
     public static void setCacheDir(File file) {
-        cacheDir = file;
+	if(cacheDir==null) {
+	    //call getCacheDir which checks the env variable
+	    cacheDir = getCacheDir();
+	    if(cacheDir==null) {
+		cacheDir = file;
+	    }
+	}
     }
 
     /**
@@ -81,6 +90,12 @@ public class IO {
      * @param file _more_
      */
     public static File getCacheDir() {
+	if(cacheDir==null) {
+            String env= System.getenv("RAMADDA_CACHE_DIR");
+	    if(env!=null) {
+		cacheDir = new File(env);
+	    }
+	}
 	return cacheDir;
     }
 
