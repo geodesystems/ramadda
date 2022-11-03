@@ -1868,7 +1868,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("number", "", ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_HAS, "Only pass through anything if the data has the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-        new Cmd(CMD_PATTERN, "Pass through rows that the columns each match the pattern",
+        new Cmd(CMD_FIND, "Pass through rows that the columns each match the pattern",
 		ARG_LABEL,"Match",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg(ARG_PATTERN, "regexp or prefix with includes:s1,s2 to do substrings match", ATTR_TYPE, TYPE_PATTERN)),
@@ -2747,11 +2747,15 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_OUTPUTPREFIX, "Specify text to add to the beginning of the file",
 		ARG_LABEL,"Output Prefix",
 		new Arg("text","The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order mark.")),	
-        new Cmd(CMD_PRINTHEADER, "Print header",
+        new Cmd(CMD_HIGHLIGHT, "Highlight the columns",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("color", "Color",
 			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),
-        new Cmd(CMD_HIGHLIGHT, "Highlight the columns",
+        new Cmd(CMD_BACKGROUND, "Background the columns",
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("color", "Color",
+			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),	
+        new Cmd(CMD_PRINTHEADER, "Print header",
 		ARG_LABEL,"Print Header"),
         new Cmd(CMD_RAW, "Print the file raw"),
         new Cmd(CMD_TABLE, "Print HTML table and stats"),
@@ -4830,7 +4834,7 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });		
 
-	defineFunction(CMD_PATTERN, 2,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_FIND,CMD_PATTERN}, 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
@@ -5174,12 +5178,18 @@ public class Seesv implements SeesvCommands {
 
 
 
-	defineFunction(CMD_HIGHLIGHT,2,(ctx,args,i) -> {
+	defineFunction(new String[]{"-hl",CMD_HIGHLIGHT},2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Highlighter(
 							   getCols(args.get(++i)),
 							   args.get(++i)));
 		return i;
 	    });
+	defineFunction(new String[]{"-bg",CMD_BACKGROUND},2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Backgrounder(
+							   getCols(args.get(++i)),
+							   args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction(new String[]{CMD_PRINTHEADER,"-ph"},0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader());

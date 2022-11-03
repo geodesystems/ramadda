@@ -190,6 +190,9 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
 	    for(int idx:getIndices(ctx)) {
 		if(row.indexOk(idx)) {
@@ -200,6 +203,44 @@ public abstract class Converter extends Processor {
         }
     }
     
+    public static class Backgrounder extends Converter {
+	String prefix;
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public Backgrounder(List<String> cols, String color) {
+            super(cols);
+	    if(color.equals("green")) prefix=Utils.ANSI_GREEN_BACKGROUND;
+	    else if(color.equals("yellow")) prefix=Utils.ANSI_YELLOW_BACKGROUND;
+	    else if(color.equals("blue")) prefix=Utils.ANSI_BLUE_BACKGROUND;
+	    else if(color.equals("purple")) prefix=Utils.ANSI_PURPLE_BACKGROUND;
+	    else if(color.equals("cyan")) prefix=Utils.ANSI_CYAN_BACKGROUND;
+	    else prefix=Utils.ANSI_RED_BACKGROUND;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+	    for(int idx:getIndices(ctx)) {
+		if(row.indexOk(idx)) {
+		    row.set(idx,prefix+row.getString(idx)+Utils.ANSI_RESET);
+		}
+	    }
+	    return row;
+        }
+    }
+
 
     public static class RowAppender  extends Converter {
 	private int skip;
