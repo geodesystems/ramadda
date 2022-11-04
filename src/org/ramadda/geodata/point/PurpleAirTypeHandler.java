@@ -81,6 +81,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0,0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count";
 
 
+
     /**  */
     private static final String FIELDS_STRING_ALL =
         "humidity, humidity_a, humidity_b, temperature, temperature_a, temperature_b, pressure, pressure_a, pressure_b,voc, voc_a, voc_b, ozone1, analog_input,pm1.0, pm1.0_a, pm1.0_b, pm1.0_atm, pm1.0_atm_a, pm1.0_atm_b, pm1.0_cf_1, pm1.0_cf_1_a, pm1.0_cf_1_b,pm2.5_alt, pm2.5_alt_a, pm2.5_alt_b, pm2.5, pm2.5_a, pm2.5_b, pm2.5_atm, pm2.5_atm_a, pm2.5_atm_b, pm2.5_cf_1, pm2.5_cf_1_a, pm2.5_cf_1_b,pm2.5_10minute, pm2.5_10minute_a, pm2.5_10minute_b, pm2.5_30minute, pm2.5_30minute_a, pm2.5_30minute_b, pm2.5_60minute, pm2.5_60minute_a, pm2.5_60minute_b, pm2.5_6hour, pm2.5_6hour_a, pm2.5_6hour_b, pm2.5_24hour, pm2.5_24hour_a, pm2.5_24hour_b, pm2.5_1week, pm2.5_1week_a, pm2.5_1week_b,pm10.0, pm10.0_a, pm10.0_b, pm10.0_atm, pm10.0_atm_a, pm10.0_atm_b, pm10.0_cf_1, pm10.0_cf_1_a, pm10.0_cf_1_b,scattering_coefficient, scattering_coefficient_a, scattering_coefficient_b, deciviews, deciviews_a, deciviews_b, visual_range, visual_range_a, visual_range_b,0.3_um_count, 0.3_um_count_a, 0.3_um_count_b, 0.5_um_count, 0.5_um_count_a, 0.5_um_count_b, 1.0_um_count, 1.0_um_count_a, 1.0_um_count_b, 2.5_um_count, 2.5_um_count_a, 2.5_um_count_b, 5.0_um_count, 5.0_um_count_a, 5.0_um_count_b, 10.0_um_count 10.0_um_count_a, 10.0_um_count_b";
@@ -92,6 +93,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**  */
     private static final List<String> FIELDS_LIST_ALL =
         Utils.split(FIELDS_STRING_ALL, ",");
+
+
+    private static String FIELDS_PROPERTY_SHORT;
+    private static String FIELDS_PROPERTY_ALL;    
 
 
     /**
@@ -129,6 +134,31 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private boolean isAllFields(Entry entry) {
 	//The all is defined in resources/misctypes.xml
 	return Utils.equals(entry.getValue(IDX_FIELDS),"all");
+    }
+
+    private String makeFieldsProperty(Entry entry,List<String>fields) {
+	StringBuilder sb = new StringBuilder();
+	sb.append("date[type=date format=\"yyyy-MM-dd'T'HH:mm:ssZ\"]");
+	for(String field: fields) {
+	    sb.append(",");
+	    sb.append(field);	    
+	    sb.append("[type=double ");
+	    if(field.indexOf("humidity")>=0) sb.append(" unit=\"%\" ");
+	    else if(field.indexOf("temperature")>=0) sb.append(" offset1=\"-32\" scale=\"0.555555\" unit=\"celsius\" ");	    
+	    else if(field.indexOf("pressure")>=0) sb.append(" unit=\"mb\" ");
+	    else if(field.indexOf("ozone")>=0) sb.append(" unit=\"ppb\" ");	    
+	    sb.append("]");
+	}
+	return sb.toString();
+    }	
+
+    private String getFieldsProperty(Entry entry) {
+	if(FIELDS_PROPERTY_SHORT==null) {
+	    FIELDS_PROPERTY_SHORT = makeFieldsProperty(entry,FIELDS_LIST_SHORT);
+	    FIELDS_PROPERTY_ALL = makeFieldsProperty(entry,FIELDS_LIST_ALL);	    
+	}
+	if(isAllFields(entry)) return FIELDS_PROPERTY_ALL;
+	return FIELDS_PROPERTY_SHORT;	
     }
 
     /**
@@ -481,7 +511,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new PurpleAirRecordFile(getRepository(), entry,
+        return new PurpleAirRecordFile(getRepository(), this,entry,
                                        getPathForEntry(request, entry, true));
     }
 
@@ -498,6 +528,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         /** _more_ */
         Repository repository;
 
+	PurpleAirTypeHandler typeHandler;
+
         /** _more_ */
         Entry entry;
 
@@ -511,13 +543,21 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public PurpleAirRecordFile(Repository repository, Entry entry,
+        public PurpleAirRecordFile(Repository repository, PurpleAirTypeHandler typeHandler, Entry entry,
                                    String filename)
                 throws IOException {
             super(filename);
+	    this.typeHandler = typeHandler;
             this.repository = repository;
             this.entry      = entry;
         }
+
+	@Override
+	public String getFieldsProperty() {
+	    return typeHandler.getFieldsProperty(entry);
+	}
+
+
 
         /**
          * _more_
