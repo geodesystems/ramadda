@@ -412,6 +412,11 @@ public class CsvFile extends TextFile {
         return hasCsvCommands || super.getFirstLineFields();
     }
 
+    public String getFieldsProperty() {
+        return  getProperty(PROP_FIELDS, null);
+    }
+
+
     /**
      * _more_
      *
@@ -421,8 +426,7 @@ public class CsvFile extends TextFile {
      */
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
-
-        String fieldString = getProperty(PROP_FIELDS, null);
+        String fieldString = getFieldsProperty();
         if (debug) {
             System.err.println("CsvFile.doMakeFields fieldString:"
                                + fieldString);
