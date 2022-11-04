@@ -112,7 +112,7 @@ fields="latitude,longitude,alt.*|elev.*"}}
      <column  name="active"  label="Active"  type="boolean" default="true"/>     
      <column  name="fields"  label="Fields"  type="enumeration" values="short:Short,all:All"
 	      default="short"
-	      suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair.html#fields&gt;More information&lt;/a&gt;"/>
+	      suffix="What fields to gather. Note: if you change this then also clear the file from the File menu. &lt;a target=_help href=/repository/point/purpleair_index.html#fields&gt;More information&lt;/a&gt;"/>
 
      <column  name="model"  label="Model" type="string" editable="false"/>
      <column  name="hardware"  label="Hardware" type="string" editable="false"/>     
