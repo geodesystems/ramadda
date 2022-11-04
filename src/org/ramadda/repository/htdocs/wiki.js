@@ -1198,14 +1198,14 @@ WikiEditor.prototype = {
 		let tooltip = type.tooltip||"";
 		tooltip = tooltip.replace(/"/g,"&quot;");
 		let click = "insertDisplayText('" + id + "','" + type.type+"')";
-		let link = HU.div([CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
+		let link = HU.div(['data-category',category,'data-corpus',type.label+' ' + tooltip,CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
 		links[category].push(link);
             });
 	    let menu = "<table><tr valign=top>";
             for (let i = 0; i < cats.length; i++) {
 		let cat = cats[i];
 		let menuItems = Utils.join(links[cat],"<div>\n");
-		menu += HU.td([],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
+		menu += HU.td(['data-category',cat,CLASS,'wiki-editor-display-category'],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
             }
 	    menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
 	    let init = ()=>{
@@ -1218,9 +1218,47 @@ WikiEditor.prototype = {
 		    position: { my: "left top", at: "right top" }		
 		});
 	    };
+	    menu = HU.center(HU.input('','',['placeholder','Search','id',this.domId('displaysearch'),'width','10'])) +menu;
+	    menu = HU.div(['style','margin:10px;'], menu);
 	    let popup = HU.makeDialog({content:menu,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
 	    if(wikiPopup) 
 		wikiPopup.hide();
+	    popup.tooltip();
+
+	    
+	    let headers = popup.find('.wiki-editor-display-category');
+	    let _this = this;
+	    let displayLinks = popup.find('.wiki-editor-popup-link');
+	    this.jq('displaysearch').keyup(function(event) {
+		let text = $(this).val().trim().toLowerCase();
+		let seen = {};
+		displayLinks.each(function() {
+		    if(text=='') {
+			$(this).show();
+		    } else {
+			let corpus = $(this).attr('data-corpus');
+			if(!corpus) return;
+			corpus =  corpus.toLowerCase();
+			if(corpus.indexOf(text)>=0) {
+			    $(this).show();
+			    seen[$(this).attr('data-category')] = true;
+			} else {
+			    $(this).hide();
+			}
+		    }
+		});
+		if(text=='') {
+		    headers.show();
+		} else {
+		    headers.each(function(){
+			if(seen[$(this).attr('data-category')])
+			    $(this).show();
+			else
+			    $(this).hide();
+		    });
+		}
+	    });
+
 	    wikiPopup =  popup;
 	});
 	
