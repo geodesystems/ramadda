@@ -1,0 +1,130 @@
+<html>
+<title>Purple Air</title>
+<body>
+<div class="ramadda-section">
+
+  
+<center><h2>Purple Air Data</h2></center>
+
+:navtop
+
+:p
+:lheading Configuring the API
+Sensor data from Purple Air sensors can be read and displayed in RAMADDA.
+The data is provided by Purple Air through their <a href="https://api.purpleair.com/">API</a> and requires an API key. To 
+get the key send a request to <a mailto:contact@purpleair.com>contact@purpleair.com</a>. Once you have the key add a 
+property to your repository.properties file (in the RAMADDA home directory) and restart your RAMADDA.
+<pre>
+purpleair.api.key=key here
+</pre>
+
+The default frequency for fetching data is  every 15 minutes. This can be changed with a property
+in repository.properties:
+<pre>
+purpleair.frequency=15
+</pre>
+
+
+With the API key specified RAMADDA will periodically access the API for each Purple Air entry
+you have created and append the  current data to a local CSV file in RAMADDA. 
+This file can be downloaded from the sensor entry page.
+Over time these files can grow to be quite large (depending on the API fetch frequency).
+The default display only shows the most recent 20000 records.
+You can clear out the entire file for an sensor entry
+through the Clear File menu item.
+
+:p
+:lheading Creating Purple Air Entries
+Once the API key is configured you can create new Purple Air Sensor entries. Go to the RAMADDA folder you want
+to add the entries to and from the entry popup menu select "Pick a Type...". From the list under Geoscience/Point Data select
+"Purple Air Sensor". The only field you need to specify is the Sensor ID. The ID is a numeric ID and should be able to be accessed
+through your Purple Air account.
+:p
+Alternatively, you can access IDs for any public sensor from the map at <a href="https://map.purpleair.com/">https://map.purpleair.com/</a>. Click  on the sensor of interest and you should see the below popup.
+Hover over the "Get This widget" link to see the ID in the embed HTML, e.g. 112686, or in the Download Data link.
+<center><img src=purpleair_popup.png width=200></center>
+:p
+
+When a new Purple Air Sensor entry is created RAMADDA will fetch the metadata for the sensor, 
+e.g. name, location, model, etc.   If the sensor is a private sensor you can enter the private 
+key when creating the entry. The private key is available through your Purple Air account.
+  You can also add your private   key as a RAMADDA property in a .properties file on your 
+server. Specify your the property ID as the private key in the entry. For example, if you 
+had a private key "some_private_key" then, in a repository.properties file enter:
+<pre>
+myprivatekey=some_private_key
+</pre>    
+
+The name of the property, e.g.,  "myprivatekey", is arbitrary. Now, when you create the Purple Air
+entry in RAMADDA in the private key field just entry "myprivatekey".
+<p>
+
+The default display for a Purple Air Sensor entry is shown below. Note, initially there is no data but over time the data will be fetched from the API. 
+<center><img border=1 src=purpleair_entry.png width=600></center>
+:p
+If you want to stop fetching then, go the Edit page for the entry  and set Active to No.
+<center><img border=1 src=purpleair_edit.png width=600></center>
+
+:p
+:lheading Select Fields
+The <a href="https://api.purpleair.com/#api-sensors-get-sensor-data">Purple Air API</a>
+provides a large number of sensor fields. The Purple Air RAMADDA entry allows you to select
+one of two sets of fields - Short or All.
+:p
++callout-warning
+Note: if you change which fields are being collected than the data file that is created
+needs to be reset so that the file contains all of the same fields. To do this go the Purple Air
+RAMADDA entry and select "Clear File" from the entry menu. This will delete the existing file
+and create a new one with the new set of field identifiers.
+-callout
+:p
+
+The Short list is the basic set of environmental fields:
+<pre>
+humidity
+temperature
+pressure
+voc
+ozone1
+pm1.0,pm2.5,pm10.0
+0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count
+</pre>
+
+The All list includes all of the available fields:
+<pre>
+humidity, humidity_a, humidity_b
+temperature, temperature_a, temperature_b
+pressure, pressure_a, pressure_b
+voc, voc_a, voc_b
+ozone1
+analog_input
+pm1.0, pm1.0_a, pm1.0_b, pm1.0_atm, pm1.0_atm_a, pm1.0_atm_b
+pm1.0_cf_1, pm1.0_cf_1_a, pm1.0_cf_1_b
+pm2.5_alt, pm2.5_alt_a, pm2.5_alt_b, pm2.5, pm2.5_a, pm2.5_b
+pm2.5_atm, pm2.5_atm_a, pm2.5_atm_b, pm2.5_cf_1, pm2.5_cf_1_a
+pm2.5_cf_1_b,pm2.5_10minute, pm2.5_10minute_a, pm2.5_10minute_b
+pm2.5_30minute, pm2.5_30minute_a, pm2.5_30minute_b, pm2.5_60minute
+pm2.5_60minute_a, pm2.5_60minute_b, pm2.5_6hour, pm2.5_6hour_a
+pm2.5_6hour_b, pm2.5_24hour, pm2.5_24hour_a, pm2.5_24hour_b
+pm2.5_1week, pm2.5_1week_a, pm2.5_1week_b,pm10.0, pm10.0_a
+pm10.0_b, pm10.0_atm, pm10.0_atm_a, pm10.0_atm_b, pm10.0_cf_1
+pm10.0_cf_1_a, pm10.0_cf_1_b
+scattering_coefficient, scattering_coefficient_a, scattering_coefficient_b
+deciviews, deciviews_a, deciviews_b
+visual_range, visual_range_a, visual_range_b
+0.3_um_count, 0.3_um_count_a, 0.3_um_count_b, 
+0.5_um_count, 0.5_um_count_a, 0.5_um_count_b
+1.0_um_count, 1.0_um_count_a, 1.0_um_count_b
+2.5_um_count, 2.5_um_count_a, 2.5_um_count_b
+5.0_um_count, 5.0_um_count_a, 5.0_um_count_b
+10.0_um_count 10.0_um_count_a, 10.0_um_count_b
+</pre>
+
+
+
+
+
+</div>
+</body>
+</html>
+
