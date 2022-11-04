@@ -995,7 +995,7 @@ public class PluginManager extends RepositoryManager {
                 String htpath = entryName.substring(idx + "htdocs".length());
                 htdocsMap.put(htpath, path);
 
-                if (htpath.matches("/[^/]+/index.html")) {
+                if (htpath.matches("/[^/]+/index.html") || htpath.matches("/[^/]+/[^/]+_index.html")) {
                     try {
                         String contents =
                             getStorageManager().readSystemResource(path);
