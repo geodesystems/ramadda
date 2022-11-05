@@ -1301,7 +1301,7 @@ public class WikiUtil {
                                   HU.id(compId)
                                   + HU.attr("style", "display:none;")
                                   + HU.cssClass(HU.CSS_CLASS_POPUP_CONTENTS));
-		    buff.append("<div>");
+		    buff.append("<div style='margin:5px;'>");
 		    continue;
 		}
 
