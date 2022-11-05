@@ -4474,11 +4474,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             src.show();
         }
 
-        if(opts.animate && opts.animate!="false") {
-            popup.show(400);
-        } else {
-            popup.show();
-        }
 
         if(opts.anchor) {
             if(opts.width) {
@@ -4493,6 +4488,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 //          console.log(opts.my +" " + opts.at);
         }
 
+        if(opts.animate && opts.animate!=="false") {
+	    popup.hide();
+            popup.show(400);
+        } else {
+            popup.show();
+        }
+
         if(opts.draggable) {
             if(opts.modal) {
                 $("#" + innerId).draggable();
@@ -4503,6 +4505,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         } else if(!opts.sticky) {
             HtmlUtils.setPopupObject(popup);
         }
+
         if(opts.header) {
             $("#" + id +"_close").click(function() {
                 popup.hide();
