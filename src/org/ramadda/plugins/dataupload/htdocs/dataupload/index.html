@@ -87,14 +87,17 @@ To configure a relay server for a particular group just provide the RAMADDA URL 
 <pre>
 upload.&lt;GROUP&gt;.relay.servers=&lt;comma separated list of RAMADDA URLs&gt;
 e.g.:
-upload.group1.relay.servers=https://ramadda.org/repository
+upload.group1.relay.servers=https://ramadda.org/repository,https://geodesystems.com/repository
 </pre>
 
 By default the group and API key from the initial call is used. This can be overwritten with:
 <pre>
-upload.&lt;GROUP&gt;.relay.apikey=&lt;some other key&gt;
-upload.&lt;GROUP&gt;.relay.group=&lt;some other group&gt;  
+upload.&lt;GROUP&gt;.relay.apikeys=&lt;comma separated list of keys&gt;
+upload.&lt;GROUP&gt;.relay.groups=&lt;comma separated list of groups&gt;  
 </pre>
+
+where each key and group in the list correspond to the server. You can specify only one key/group
+which would be applicable to all of the servers.
 
 :lheading Listing and Ingesting Files
 If you are logged into RAMADDA as a site administrator you can view the files that have been uploaded
