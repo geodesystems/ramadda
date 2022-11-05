@@ -102,6 +102,13 @@ which would be applicable to all of the servers.
 :lheading Listing and Ingesting Files
 If you are logged into RAMADDA as a site administrator you can view the files that have been uploaded
 by going to the url /repository/data/uploadlist  on your server.
+To enable this you must specify the below property property so that RAMADDA
+can know of the different upload groups you have defined:
+<pre>
+upload.groups=&lt;comma separated list of groups&gt;  
+e.g.:
+upload.groups=group1,group2
+</pre>
 :p
 As an administrator you can  ingest and make available these file in your RAMADDA as entries of a certain type.
 If they are CSV files then create a CSV File entry type. You can also define new entry types. There is 
