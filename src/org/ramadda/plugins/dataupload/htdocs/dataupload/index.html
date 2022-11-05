@@ -6,8 +6,14 @@
 
 <div class="ramadda-section">
 <h2>Data Upload</h2>
+
+:navtop
+
+
 RAMADDA provides a data upload API that enables record oriented data to
-be uploaded and appended to some file based on a sensor ID
+be uploaded and appended to some file based on a sensor ID.
+
+:lheading Configuration
 This service is centered around one or more groups, i.e., a group of
 data files. For each group you need to define the following properties
 in the repository.properties file in your RAMADDA home directory:
@@ -69,6 +75,49 @@ If there is an error it will return, e.g.:
 <pre>
   {"code":"error","message":"No upload group found"}
 </pre>
+
+:lheading Relaying Data
+You can also specify one or more other RAMADDA servers that you can relay data to. 
+When the first RAMADDA receives  data it first writes the data to the file as specified above. 
+If there are any relay servers specified then it also will pass on the data to
+each of those servers in turn.
+:p
+To configure a relay server for a particular group just provide the RAMADDA URL in the properties file as:
+
+<pre>
+upload.&lt;GROUP&gt;.relay.servers=&lt;comma separated list of RAMADDA URLs&gt;
+e.g.:
+upload.group1.relay.servers=https://ramadda.org/repository
+</pre>
+
+By default the group and API key from the initial call is used. This can be overwritten with:
+<pre>
+upload.&lt;GROUP&gt;.relay.apikey=&lt;some other key&gt;
+upload.&lt;GROUP&gt;.relay.group=&lt;some other group&gt;  
+</pre>
+
+:lheading Listing and Ingesting Files
+If you are logged into RAMADDA as a site administrator you can view the files that have been uploaded
+by going to the url /repository/data/uploadlist  on your server.
+:p
+As an administrator you can  ingest and make available these file in your RAMADDA as entries of a certain type.
+If they are CSV files then create a CSV File entry type. You can also define new entry types. There is 
+incomplete documentation available <a href="/repository/userguide/entrytypes.html">here</a>
+but there are logs of examples available on
+<a href="https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata/point/resources">GitHub</a>.
+:p
+To create the entry you can do any of the following:
+<ul>
+  <li> Create a <a href="/repository/userguide/harvesters.html">harvester</a> and have it periodically scan
+  the containing directory. This is the best approach for most cases.
+  <li> Create an individual entry with the full file path in the "Files on Server" tab in the create entry form
+  <li> Create an individual entry with the directory of the files in the "Files on Server" tab in the create entry form.
+    This will add all files as entries. However, any newly created files would have to be added again.
+  <li> Create a <a href="/repository/userguide/localfileview.html">Server Side File</a> entry. This won't add
+    the files as entries into RAMADDA's database but will make them accessible.
+</ul>
+
+
 
 </div>
 </body>
