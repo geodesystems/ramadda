@@ -333,6 +333,7 @@ public abstract class DataProvider extends SeesvOperator {
                 s = s.substring(idx + pattern.length());
             }
 
+	    s = s.replace("<TABLE","<table").replace("/TABLE>","/table").replace("<TR","<tr").replace("/TR>","/tr>");
             while (true) {
                 toks = Utils.tokenizeChunk(s, "<table", "</table");
                 if (toks == null) {
@@ -366,15 +367,15 @@ public abstract class DataProvider extends SeesvOperator {
                                        ? cols.get(colCnt)
                                        : cols.get(cols.size() - 1);
                         colCnt++;
-                        toks = Utils.tokenizePattern(tr, "(<td|<th)",
-                                "(</td|</th)");
+                        toks = Utils.tokenizePattern(tr, "(?i)(<td|<th)",
+                                "(?i)(</td|</th)");
                         if (toks == null) {
                             break;
                         }
                         String td = toks[0].trim();
                         tr = toks[1];
                         String colspan = StringUtil.findPattern(td,
-                                             "colspan *= *\"?([0-9]+)\"?");
+                                             "(?i)colspan *= *\"?([0-9]+)\"?");
                         int inserts = 1;
                         if (colspan != null) {
                             inserts = Integer.parseInt(colspan);
@@ -396,10 +397,10 @@ public abstract class DataProvider extends SeesvOperator {
                         //              System.err.println("after TD:" + td);
                         if (info.extractUrls) {
                             String url = StringUtil.findPattern(td,
-                                             "href *= *\"([^\"]+)\"");
+                                             "(?i)href *= *\"([^\"]+)\"");
                             if (url == null) {
                                 url = StringUtil.findPattern(td,
-                                        "href *= *\'([^\"]+)\'");
+                                        "(?i)href *= *\'([^\"]+)\'");
                             }
                             if (url != null) {
                                 td = url;
