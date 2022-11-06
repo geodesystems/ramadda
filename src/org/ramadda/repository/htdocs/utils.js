@@ -4377,6 +4377,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             }
         })
     },
+    toggleDialogs:{},
     makeDialog: function(args) {
         HtmlUtils.hidePopupObject();
         let opts  = {
@@ -4404,6 +4405,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $.extend(opts, args);
         }
 
+
+	//Check if there is a toggleid and the popup is visible
+	if(opts.toggleid && this.toggleDialogs[opts.toggleid]) {
+	    let dialog = this.toggleDialogs[opts.toggleid];
+	    if(dialog.is(":visible")) {
+		//If it is then hide it and return
+		dialog.hide();
+		this.toggleDialogs[opts.toggleid] = null;
+		return;
+	    }
+	}
 
 
 
@@ -4488,12 +4500,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 //          console.log(opts.my +" " + opts.at);
         }
 
+
         if(opts.animate && opts.animate!=="false") {
 	    popup.hide();
             popup.show(400);
         } else {
             popup.show();
         }
+
 
         if(opts.draggable) {
             if(opts.modal) {
@@ -4503,8 +4517,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 //          popup.resizable({containment: "parent",handles: 'se',});
             }
         } else if(!opts.sticky) {
-            HtmlUtils.setPopupObject(popup);
+	    //Only set this if we don't have a toggleid cause if we
+	    //do have one then the popup is meant to be persistent
+	    if(!opts.toggleid)
+		HtmlUtils.setPopupObject(popup);
         }
+
 
         if(opts.header) {
             $("#" + id +"_close").click(function() {
@@ -4515,6 +4533,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             });
         }
+
         if(opts.initCall) {
             if(typeof opts.initCall == "string") {
                 eval(opts.initCall);
@@ -4522,6 +4541,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 opts.initCall();
             }
         }
+	if(opts.toggleid) {
+	    this.toggleDialogs[opts.toggleid] = popup;
+	}
         return popup;
     },
     //If value==null then remove the param
