@@ -1282,6 +1282,9 @@ public class WikiUtil {
 		    Hashtable props = getProps.apply(tline);
 		    String icon = (String) props.get("icon");
 		    String link =  Utils.getProperty(props,"link","");
+		    String style =  Utils.getProperty(props,"style","");
+		    String linkStyle =  Utils.getProperty(props,"linkStyle","");
+		    String linkTitle =  Utils.getProperty(props,"linkTitle","");		    		    		    
 		    if(icon!=null) link = HU.image(handler.getWikiImageUrl(this, icon, props))+HU.SPACE + link;
 		    else if(link.length()==0) link = "Link";
 		    NamedValue[]args = new NamedValue[]{
@@ -1292,22 +1295,24 @@ public class WikiUtil {
 			arg("my",Utils.getProperty(props,"my",null)),
 			arg("at",Utils.getProperty(props,"at",null)),
 			arg("draggable",Utils.getProperty(props,"draggable","false")),
-			arg("sticky",Utils.getProperty(props,"sticky","false")),									
+			arg("sticky",Utils.getProperty(props,"sticky","false")),
+			arg("toggleid",HU.getUniqueId("popup"))
 		    };
+
+		    link = HU.span(link,HU.attr("title",linkTitle) +HU.style(linkStyle));
 		    String []tuple=HtmlUtils.makePopupLink(link, args);
 		    String compId = tuple[0];
 		    buff.append(tuple[1]);
 		    HU.open(buff,"div",
-                                  HU.id(compId)
-                                  + HU.attr("style", "display:none;")
-                                  + HU.cssClass(HU.CSS_CLASS_POPUP_CONTENTS));
-		    buff.append("<div style='margin:5px;'>");
+			    HU.id(compId)
+			    + HU.style(style)
+			    + HU.attr("style", "display:none;")
+			    + HU.cssClass(HU.CSS_CLASS_POPUP_CONTENTS));
 		    continue;
 		}
 
 
 		if (tline.startsWith("-popup")) {
-		    buff.append("</div>");
 		    buff.append("</div>");
 		    continue;
 		}		
