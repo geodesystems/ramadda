@@ -3995,7 +3995,6 @@ public abstract class Converter extends Processor {
             rows.remove(rowNumber);
             if (firstRow == null) {
                 firstRow = row;
-
                 return null;
             }
             for (int i = 0; i < row.size(); i++) {
@@ -4005,8 +4004,17 @@ public abstract class Converter extends Processor {
                 String ss = (i < firstRow.size())
                             ? firstRow.getString(i)
                             : "";
-                ss = ss + delimiter + s;
-                firstRow.set(i, ss);
+		if(delimiter.equals("+")) {
+		    try {
+			double d1 = Double.parseDouble(s);
+			double d2 = Double.parseDouble(ss);		    
+			firstRow.set(i, ""+(d1+d2));
+		    } catch(NumberFormatException nfe) {
+		    }
+		} else {
+		    ss = ss + delimiter + s;
+		    firstRow.set(i, ss);
+		}
             }
             if (rows.size() == 0) {
                 for (int i = 0; i < firstRow.size(); i++) {
