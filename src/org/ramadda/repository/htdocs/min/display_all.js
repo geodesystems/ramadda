@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov  6 10:30:38 MST 2022";
+var build_date="RAMADDA build date: Mon Nov  7 11:11:01 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -18975,6 +18975,9 @@ function PiechartDisplay(displayManager, id, properties) {
         setChartSelection: function(index) {
 	    //noop
 	},
+	//Override these methods since the pie chart can't use the explorer
+	getDragToZoom:function(){return false;},
+	getDragToPan:function(){return false;},	
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
                 let stringField = this.getFieldByType(this.getFields(), "string");
