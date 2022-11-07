@@ -2473,6 +2473,9 @@ function PiechartDisplay(displayManager, id, properties) {
         setChartSelection: function(index) {
 	    //noop
 	},
+	//Override these methods since the pie chart can't use the explorer
+	getDragToZoom:function(){return false;},
+	getDragToPan:function(){return false;},	
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
                 let stringField = this.getFieldByType(this.getFields(), "string");
