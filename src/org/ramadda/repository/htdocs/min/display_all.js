@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Nov  7 11:11:01 MST 2022";
+var build_date="RAMADDA build date: Tue Nov  8 11:06:21 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -38771,7 +38771,7 @@ addGlobalDisplayType({
     type: DISPLAY_IMDV,
     label: "Integrated Map Data",
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip("Integrated Map Data"),        
+    tooltip: makeDisplayTooltip("Integrated Map Data",[],"Create interactive maps with points, routes, data, etc"),        
 });
 
 var MAP_RESOURCES;
