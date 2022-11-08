@@ -6926,7 +6926,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			); 
 
         Utils.appendAll(tags2,
-			l.call("Popup", "+popup link=_qt_Link_qt_ icon=_qt_fas fa-cog_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
+			l.call("Popup", "+popup link=_qt_Link_qt_ icon=_qt_fa-solid fa-arrow-right-from-bracket_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
 			l.call("Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; _qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
 			l.call("Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),

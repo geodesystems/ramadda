@@ -4393,6 +4393,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             remove:true,
             my: "left top",
             at: "left bottom",      
+	    animate:false,
+	    animateSpeed:300,
             title:"",
             inPlace:true,
             fit:true
@@ -4502,8 +4504,21 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
         if(opts.animate && opts.animate!=="false") {
+	    opts.animateSpeed = +opts.animateSpeed;
 	    popup.hide();
-            popup.show(400);
+	    if(opts.slideLeft) {
+		let at = "right bottom";
+		popup.position({
+                    of: opts.anchor,
+                    my: opts.my,
+                    at: at,
+                    collision:opts.fit?"fit fit":null
+		});
+		popup.show("slide", { direction: "right" }, +opts.animateSpeed);
+	    } else {
+		popup.show(opts.animateSpeed);
+	    }
+
         } else {
             popup.show();
         }
