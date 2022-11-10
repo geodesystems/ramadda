@@ -1298,6 +1298,7 @@ public class WikiUtil {
 			arg("sticky",Utils.getProperty(props,"sticky","false")),
 			arg("slideLeft",Utils.getProperty(props,"slideLeft","false")),
 			arg("animateSpeed",Utils.getProperty(props,"animateSpeed","300")),
+					
 			arg("toggleid",HU.getUniqueId("popup"))
 		    };
 
