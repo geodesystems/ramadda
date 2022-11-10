@@ -12,6 +12,7 @@ import org.ramadda.util.text.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -27,7 +28,7 @@ public class CsvPointWriter extends DataSink {
     private Row header = null;
 
     /**  */
-    private Hashtable<String, String> props;
+    private Dictionary<String, String> props;
 
     /**
      *
