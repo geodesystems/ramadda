@@ -29,6 +29,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.nio.*;
+import java.nio.charset.Charset;
 import java.nio.channels.*;
 
 import java.text.DateFormat;
@@ -40,6 +41,7 @@ import java.util.function.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -391,7 +393,7 @@ public class Seesv implements SeesvCommands {
     }
 
 
-    public Connection getDbConnection(TextReader ctx, SeesvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
+    public Connection getDbConnection(TextReader ctx, SeesvOperator op, Dictionary<String,String> props, String db, String table) throws Exception {
 	String dbs = getProperty("seesv_dbs");
 	if(!Utils.stringDefined(db)) {
 	    op.fatal(ctx, "No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
@@ -1358,7 +1360,7 @@ public class Seesv implements SeesvCommands {
      *
      * @return _more_
      */
-    public static String getDbProp(Hashtable<String, String> props,
+    public static String getDbProp(Dictionary<String, String> props,
                                    String colId, String prop, String dflt) {
         String key   = (colId == null)
 	    ? prop
@@ -1402,7 +1404,7 @@ public class Seesv implements SeesvCommands {
      *
      * @return _more_
      */
-    public static String getDbProp(Hashtable<String, String> props,
+    public static String getDbProp(Dictionary<String, String> props,
                                    String colId, int index, String prop,
                                    String dflt) {
         String value = getDbProp(props, colId, prop, null);
@@ -1424,7 +1426,7 @@ public class Seesv implements SeesvCommands {
      *
      * @return _more_
      */
-    public static boolean getDbProp(Hashtable<String, String> props,
+    public static boolean getDbProp(Dictionary<String, String> props,
                                     String colId, String prop, boolean dflt) {
         String value = getDbProp(props, colId, prop, (String) null);
         if (value == null) {
@@ -3407,7 +3409,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_DB,1,(ctx,args,i) -> {
-		Hashtable<String, String> props =  parseProps(args.get(++i));
+		Dictionary<String, String> props =  parseProps(args.get(++i));
 		ctx.putProperty("installPlugin", ""+(Utils.equals(props.get("-install"),"true") || Utils.equals(props.get("install"),
 														"true")));
 		ctx.putProperty("nukeDb", ""+(Utils.equals(props.get("-nukedb"), "true")
@@ -5502,7 +5504,24 @@ public class Seesv implements SeesvCommands {
      *
      * @return _more_
      */
-    public  Hashtable<String, String> parseProps(String s) {
+    public  Dictionary<String, String> parseProps(String s) {
+	if(s.startsWith(PREFIX_FILE)) {
+	    File file = new File(s.substring(PREFIX_FILE.length()));
+	    checkOkToRead(file.toString());
+	    Properties tmp = new Properties();
+	    try {
+		String contents =  IO.readContents(file);
+		contents = contents.replace("${directory}",file.getParent());
+		InputStream fis= new ByteArrayInputStream(contents.getBytes());
+		tmp.load(new InputStreamReader(fis, Charset.forName("UTF-8")));
+		fis.close();
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }		
+	    Dictionary dict = tmp;
+	    return (Dictionary<String,String>)dict;
+	}
+
 	s = s.replaceAll("_quote_", "\"");
 	s = s.replaceAll("\n", " ");
 	List<String> toks = Utils.parseCommandLine(s);

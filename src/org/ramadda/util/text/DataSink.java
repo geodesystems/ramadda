@@ -22,6 +22,7 @@ import java.sql.*;
 
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -422,7 +423,7 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
         String table;
 
         /**  */
-        Hashtable<String, String> props;
+        Dictionary<String, String> props;
 
         /**  */
         List<String[]> columns;
@@ -447,7 +448,7 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
          * @param props _more_
          */
         public ToDb(Seesv seesv, String db, String table, String columns,
-                    Hashtable<String, String> props) {
+                    Dictionary<String, String> props) {
             super(seesv);
             //_default_
             //c1,c2,c3

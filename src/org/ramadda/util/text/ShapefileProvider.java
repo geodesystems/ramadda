@@ -12,6 +12,7 @@ import org.ramadda.util.geo.*;
 
 import java.io.*;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
      *
      * @param props _more_
      */
-    public ShapefileProvider(Hashtable props) {
+    public ShapefileProvider(Dictionary props) {
         addPoints = Utils.getProperty(props, "addPoints", true);
         addShapes = Utils.getProperty(props, "addShapes", false);
 

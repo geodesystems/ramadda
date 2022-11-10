@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -1750,7 +1751,7 @@ public abstract class Converter extends Processor {
         /**
          * @param props _more_
          */
-        public HeaderMaker(Seesv seesv, Hashtable<String, String> props) {
+        public HeaderMaker(Seesv seesv, Dictionary<String, String> props) {
             this.props = new PatternProps(props);
             defaultType = Seesv.getDbProp(props, "default", "type",
                                             defaultType);

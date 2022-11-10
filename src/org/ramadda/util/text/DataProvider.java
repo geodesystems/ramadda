@@ -36,6 +36,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -224,7 +225,7 @@ public abstract class DataProvider extends SeesvOperator {
         private String pattern;
 
         /** _more_ */
-        private Hashtable<String, String> props;
+        private Dictionary<String, String> props;
 
         /**
          * _more_
@@ -234,7 +235,7 @@ public abstract class DataProvider extends SeesvOperator {
          * @param props _more_
          */
         public HtmlDataProvider(String sSkip, String htmlPattern,
-                                Hashtable<String, String> props) {
+                                Dictionary<String, String> props) {
             super();
             this.pattern = htmlPattern;
             this.props   = props;
@@ -914,7 +915,7 @@ public abstract class DataProvider extends SeesvOperator {
         private String where;
 
         /** _more_ */
-        private Hashtable<String, String> props;
+        private Dictionary<String, String> props;
 
         /** _more_ */
         private Connection connection;
@@ -949,7 +950,7 @@ public abstract class DataProvider extends SeesvOperator {
          */
         public SqlDataProvider(String db, String table, String columns,
                                String where,
-                               Hashtable<String, String> props) {
+                               Dictionary<String, String> props) {
             this.db      = db.trim();
             this.table   = SqlUtil.sanitize(table.trim());
             this.columns = SqlUtil.sanitize(columns.trim());

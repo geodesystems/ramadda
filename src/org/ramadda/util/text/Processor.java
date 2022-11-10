@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -2315,7 +2316,7 @@ public abstract class Processor extends SeesvOperator {
     public static class DbXml extends Processor {
 
         /** _more_ */
-        private Hashtable<String, String> props;
+        private Dictionary<String, String> props;
 
         /**  */
         private List<String[]> patternProps = new ArrayList<String[]>();
@@ -2334,7 +2335,7 @@ public abstract class Processor extends SeesvOperator {
          * @param ctx _more_
          * @param props _more_
          */
-        public DbXml(TextReader ctx, Hashtable<String, String> props) {
+        public DbXml(TextReader ctx, Dictionary<String, String> props) {
             this.props = props;
             for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
                 String key = (String) k.nextElement();
