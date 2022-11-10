@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -2234,7 +2235,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static String getProperty(Hashtable props, String key) {
+    public static String getProperty(Dictionary props, String key) {
         return getProperty(props, key, (String) null);
     }
 
@@ -2248,7 +2249,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static String getProperty(Hashtable props, String key,
+    public static String getProperty(Dictionary props, String key,
                                      String dflt) {
         Object o = props.get(key);
         if (o == null) {
@@ -2272,7 +2273,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static boolean getProperty(Hashtable props, String key,
+    public static boolean getProperty(Dictionary props, String key,
                                       boolean dflt) {
         String s = Utils.getProperty(props, key, (String) null);
         if (s == null) {
@@ -2291,7 +2292,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static int getProperty(Hashtable props, String key, int dflt) {
+    public static int getProperty(Dictionary props, String key, int dflt) {
         String s = Utils.getProperty(props, key, (String) null);
         if ( !stringDefined(s)) {
             return dflt;
