@@ -13,7 +13,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Dictionary;
 import java.util.List;
 
 import java.util.regex.Matcher;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class PatternProps {
 
     /**  */
-    private Hashtable<String, String> props;
+    private Dictionary<String, String> props;
 
     /**  */
     private List<Pattern> patterns = new ArrayList<Pattern>();
@@ -40,7 +40,7 @@ public class PatternProps {
      *
      * @param props _more_
      */
-    public PatternProps(Hashtable<String, String> props) {
+    public PatternProps(Dictionary<String, String> props) {
         this.props = props;
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key = (String) keys.nextElement();
