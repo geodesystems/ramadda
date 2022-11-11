@@ -16,7 +16,8 @@ import ucar.unidata.idv.IntegratedDataViewer;
 import ucar.unidata.idv.MapViewManager;
 import ucar.unidata.idv.ViewManager;
 import ucar.unidata.ui.DateTimePicker;
-import ucar.unidata.ui.HttpFormEntry;
+import org.ramadda.util.HttpFormEntry;
+//import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
@@ -157,9 +158,12 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         super(idv, element);
         repositoryClient = new InteractiveRepositoryClient();
 
+	/*
+	  We used to enable the below setting but it is breaking things in the IDV so for now comment this out
         //Some SSL connections are failing so we turn this off
         //See  -http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
         System.setProperty("jsse.enableSNIExtension", "false");
+	*/
     }
 
 
