@@ -722,6 +722,9 @@ public class Filter extends Processor {
         /** _more_ */
         boolean debug = false;
 
+	boolean isEquals = false;
+
+
         /**
          * _more_
          *
@@ -738,6 +741,7 @@ public class Filter extends Processor {
             if ((cols.size() == 1) && cols.get(0).equals("-1")) {
                 setIndex(-1);
             }
+
         }
 
 
@@ -790,6 +794,13 @@ public class Filter extends Processor {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
+            spattern = pattern;
+            if (pattern.startsWith("=")) {
+		isEquals=true;
+		spattern = spattern.substring(1);
+		return;
+	    }
+
             if (pattern.startsWith("includes:")) {
                 strings =
                     Utils.split(pattern.substring("includes:".length()), ",");
@@ -799,7 +810,6 @@ public class Filter extends Processor {
 
             blank    = pattern.equals("");
             pattern  = Utils.convertPattern(pattern);
-            spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);
                 not     = true;
@@ -867,7 +877,7 @@ public class Filter extends Processor {
                     ok = false;
                     for (int i = 0; i < row.size(); i++) {
                         String v = row.getString(i);
-                        if (strings != null) {
+			if (strings != null) {
                             boolean any = false;
                             for (String s : strings) {
                                 if (v.indexOf(s) >= 0) {
@@ -893,6 +903,11 @@ public class Filter extends Processor {
                     continue;
                 }
                 String v = row.getString(idx);
+		if(isEquals) {
+		    ok = doNegate(v.equalsIgnoreCase(spattern));
+		    continue;
+		}
+
                 if (strings != null) {
                     boolean any = false;
                     for (String s : strings) {
