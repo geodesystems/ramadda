@@ -192,6 +192,7 @@ public interface SeesvCommands {
     public static final String CMD_DENORMALIZE="-denormalize";
     public static final String CMD_BREAK="-break";
     public static final String CMD_MAKEIDS="-makeids";
+    public static final String CMD_TOID="-toid";    
     public static final String CMD_FAKER="-faker";
     public static final String CMD_MD="-md";
     public static final String CMD_TOB64="-tob64";

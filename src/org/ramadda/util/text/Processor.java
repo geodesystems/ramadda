@@ -2812,7 +2812,7 @@ public abstract class Processor extends SeesvOperator {
                     return false;
                 }
             }
-            if (Utils.stringDefined(suffixPattern)) {
+           if (Utils.stringDefined(suffixPattern)) {
                 if ( !suffix.matches(suffixPattern)) {
                     return false;
                 }

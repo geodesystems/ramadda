@@ -853,9 +853,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            //      System.err.println("row:" + row);
             List<Integer> indices = getIndices(ctx);
-
             return removeColumns(indices, row);
         }
 
@@ -4551,11 +4549,11 @@ public abstract class Converter extends Processor {
          * @param newName _more_
          * @param mode _more_
          */
-        public Denormalizer(String mapFile, int col1, int col2, int col,
+        public Denormalizer(String mapFile, int col1, int col2, String col,
                             String newName, String mode) {
+	    super(col);
             try {
                 makeMap(mapFile, col1, col2);
-                this.destCol    = col;
                 this.newColName = newName;
                 this.mode       = mode;
                 this.doDelete   = mode.endsWith("delete");
@@ -4587,7 +4585,9 @@ public abstract class Converter extends Processor {
                     continue;
                 }
                 List<String> toks = Utils.tokenizeColumns(line, ",");
-                map.put(toks.get(col1), toks.get(col2).replaceAll("\"", ""));
+		if(col1<toks.size() && col2<toks.size()) {
+		    map.put(toks.get(col1), toks.get(col2).replaceAll("\"", ""));
+		}
             }
         }
 
@@ -4601,6 +4601,7 @@ public abstract class Converter extends Processor {
             List   values   = row.getValues();
             String newValue = null;
             if (rowCnt++ == 0) {
+		destCol = getIndex(ctx);
                 if (newColName.length() > 1) {
                     newValue = newColName;
                 }
@@ -4687,7 +4688,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_ */
+       /** _more_ */
         private double scale;
 
 
@@ -5814,6 +5815,45 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+    public static class ToId extends Converter {
+
+
+        /**
+         * @param indices _more_
+         * @param action _more_
+         */
+        public ToId(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+		if(!row.indexOk(index)) continue;
+                String s  = (String) row.getValues().get(index);
+                if (s == null) {
+                    return row;
+                }
+                row.getValues().set(index, Utils.makeID(s));
+            }
+
+            return row;
+        }
+
+    }
+
+
 
     /**
      * Class description

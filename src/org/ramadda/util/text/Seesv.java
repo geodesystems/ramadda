@@ -2268,6 +2268,9 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Change Case",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("type", "", "values", "lower,upper,proper,capitalize")),
+        new Cmd(CMD_TOID, "Convert the column(s) into IDS (lowercase, no space, a-z0-9_)",
+		ARG_LABEL,"TOID",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_PADLEFT, "Pad left with given character",
 		ARG_LABEL,"Pad Left",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
@@ -4686,6 +4689,12 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.Case(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_TOID, 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ToId(getCols(args.get(++i))));
+		return i;
+	    });
+
+
 	defineFunction(CMD_PADLEFT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PadLeftRight(true,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
 		return i;
@@ -4800,7 +4809,7 @@ public class Seesv implements SeesvCommands {
 		String file = args.get(++i);
 		int    col1 = Integer.parseInt(args.get(++i));
 		int    col2 = Integer.parseInt(args.get(++i));
-		int    col3 = Integer.parseInt(args.get(++i));
+		String col3 = args.get(++i);
 		String name = args.get(++i);
 		String mode = args.get(++i);
 		ctx.addProcessor(new Converter.Denormalizer(file, col1, col2, col3, name, mode));
@@ -5511,7 +5520,9 @@ public class Seesv implements SeesvCommands {
 	    Properties tmp = new Properties();
 	    try {
 		String contents =  IO.readContents(file);
-		contents = contents.replace("${directory}",file.getParent());
+		String parent = file.getParent();
+		if(parent!=null)
+		    contents = contents.replace("${directory}",file.getParent());
 		InputStream fis= new ByteArrayInputStream(contents.getBytes());
 		tmp.load(new InputStreamReader(fis, Charset.forName("UTF-8")));
 		fis.close();
