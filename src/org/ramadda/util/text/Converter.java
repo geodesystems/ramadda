@@ -652,6 +652,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    //	    debug = rowCnt++==0;
             List<Integer> indices = getIndices(ctx);
             if (indices.size() == 0) {
                 return row;
@@ -5845,7 +5846,7 @@ public abstract class Converter extends Processor {
                 if (s == null) {
                     return row;
                 }
-                row.getValues().set(index, Utils.makeID(s));
+                row.getValues().set(index, makeID(s));
             }
 
             return row;
@@ -6801,6 +6802,9 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+
+
 
 
     /**

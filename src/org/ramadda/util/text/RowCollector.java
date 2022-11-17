@@ -3550,6 +3550,40 @@ public class RowCollector extends Processor {
     }
 
 
+    public static class Cloner extends Converter {
+
+        /** _more_ */
+        private int count;
+
+
+        /**
+         * @param row _more_
+         * @param col _more_
+         * @param value _more_
+         */
+        public Cloner(int cnt) {
+            this.count = cnt;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++==0) return row;
+	    Processor nextProcessor = getNextProcessor();
+	    if (nextProcessor != null) {
+		try {
+		    for(int i=0;i<count;i++) {
+			nextProcessor.handleRow(ctx, new Row(row));
+		    }
+		} catch(Exception exc) {throw new RuntimeException(exc);}
+	    }
+            return row;
+        }
+    }
 
 
 }

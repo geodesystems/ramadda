@@ -124,6 +124,7 @@ public interface SeesvCommands {
     public static final String CMD_CONCATROWS="-concatrows";
     public static final String CMD_COMBINE="-combine";
     public static final String CMD_COMBINEINPLACE="-combineinplace";
+    public static final String CMD_CLONE="-clone";
     public static final String CMD_MERGE="-merge";
     public static final String CMD_SPLIT="-split";
     public static final String CMD_SPLAT="-splat";

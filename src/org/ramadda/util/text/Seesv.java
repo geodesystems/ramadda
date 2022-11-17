@@ -2116,6 +2116,9 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Delete Cell",
 		new Arg("row"),
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
+        new Cmd(CMD_CLONE,
+                "Clone each row N times",
+                new Arg("count", "Number of clonese",ATTR_TYPE, TYPE_NUMBER)),
         new Cmd(CMD_APPENDROWS, "Only include specified rows",
 		ARG_LABEL,"Append Rows",
                 new Arg("skip", "How many rows to skip", ATTR_TYPE, TYPE_NUMBER),
@@ -4721,6 +4724,10 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.TrimQuotes(getCols(args.get(++i))));
 		return i;
 	    });	
+	defineFunction(CMD_CLONE, 1,(ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.Cloner(Integer.parseInt(args.get(++i))));
+		return i;
+	    });
 	
 	defineFunction(CMD_ADDCELL, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnNudger(Integer.parseInt(args.get(++i)),Integer.parseInt(args.get(++i)), args.get(++i)));

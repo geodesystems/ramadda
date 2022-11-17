@@ -751,7 +751,15 @@ public abstract class DataProvider extends SeesvOperator {
 									     true, arrayKeys));
 				    }
 				} catch (Exception exc2) {
-				    primary.put(tok,jrow.getString(tok));
+				    try {
+					primary.put(tok,jrow.getString(tok));
+				    } catch(Exception exc3) {
+					try {
+					    primary.put(tok,jrow.getDouble(tok));
+					} catch(Exception exc4) {
+					    primary.put(tok,jrow.getBoolean(tok));
+					}
+				    }
 				}
                             }
                         }

@@ -1954,8 +1954,9 @@ public abstract class Processor extends SeesvOperator {
                     Object v     = values.get(colIdx);
                     String sv    = v.toString();
                     String field = headerRow.getString(colIdx);
+                    String fieldId = makeID(headerRow.getString(colIdx));		    
                     theTemplate = theTemplate.replace("${" + colIdx + "}",
-                            sv).replace("${" + field + "}", sv);
+						      sv).replace("${" + field + "}", sv).replace("${" + fieldId + "}", sv);
                 }
             }
 

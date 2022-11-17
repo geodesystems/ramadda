@@ -290,6 +290,8 @@ public class SeesvOperator {
         debug(msg, null);
     }
 
+    public boolean debug = false;
+
     /**
      * _more_
      *
@@ -297,7 +299,7 @@ public class SeesvOperator {
      * @param extra _more_
      */
     public void debug(String msg, Object extra) {
-        if (true) {
+        if (!debug) {
             return;
         }
         Integer cnt = debugCounts.get(msg);
@@ -616,7 +618,8 @@ public class SeesvOperator {
      */
     public int getColumnIndex(TextReader ctx, String tok) {
         checkColumns();
-        //      System.err.println("\tgetColumnIndex:" + tok);
+	if(debug)
+	    debug("\tgetColumnIndex:" + tok);
         Integer iv = columnMap.get(tok);
         //      System.err.println("\t\tiv-a:" + iv);
         if (iv == null) {
@@ -685,8 +688,14 @@ public class SeesvOperator {
             seen = new HashSet();
         }
         checkColumns();
-        if (s.startsWith("regex:")) {
+	boolean isRegexp = s.startsWith("regex:");
+	if(isRegexp) {
             s = s.substring("regex:".length());
+	} else {
+	    isRegexp = StringUtil.containsRegExp(s);
+	}
+
+        if (isRegexp) {
             //      System.err.println("pattern:" + s+":");
             Pattern p = Pattern.compile(s);
             for (int i = 0; i < header.size(); i++) {
@@ -883,7 +892,8 @@ public class SeesvOperator {
      * @return _more_
      */
     public List<Integer> getIndices(TextReader ctx, List<String> cols) {
-        debug("getIndices:" + cols);
+	if(debug)
+	    debug("getIndices:" + cols);
         if (cols == null) {
             return null;
         }
@@ -892,6 +902,8 @@ public class SeesvOperator {
         for (String s : cols) {
             getColumnIndex(ctx, indices, s, seen);
         }
+	if(debug)
+	    debug("getIndices:" + indices);
 
         return indices;
     }
