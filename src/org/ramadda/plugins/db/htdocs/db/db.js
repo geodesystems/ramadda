@@ -91,7 +91,48 @@ var DB =  {
     rowOut:function(rowId) {
 	//    $("#"+ rowId).css("background-color",  "#fff");
     },
-    toggleAllInit:function() {
+    toggleAllInit:function(formId) {
+	if(formId) {
+	    $("#"+formId).find('.ramadda-widgets-enumeration').each(function() {
+		let container = $(this);
+		let changeFunc = function() {
+		    let widgets = container.find('select');
+		    let anyBlank = false;
+		    let widget;
+		    widgets.each(function() {
+			widget = $(this);
+			let value = widget.val();
+			if(!Utils.stringDefined(value) || value=='-all-') {
+			    anyBlank = true;
+			}
+		    });
+		    if(!anyBlank && widget) {
+			let html = widget.prop('outerHTML');
+			html = html.replace('display:','xdisplay:');
+			let newWidget = $(html).appendTo(container);
+			$("<span>&nbsp;</span>").appendTo(container);			
+			newWidget.change(changeFunc);
+			HU.initSelect(newWidget);
+		    }
+		}
+		$(this).change(changeFunc);
+	    });
+	    $("#"+formId).find('.ramadda-widgets-text').each(function() {
+		let container = $(this);
+		let last = container.find('input').last();
+		let guid = HU.getUniqueId('plus');
+		let extraFieldsId = HU.getUniqueId('plus');
+		container.append(HU.span(['id',extraFieldsId]));
+		let extra = jqid(extraFieldsId);
+		container.append(HU.span(['title','Add search field','id',guid,'class','ramadda-clickable'],HU.getIconImage('fas fa-plus',[],['style','font-size:9pt;color:#ccc;'])));
+		jqid(guid).click(()=>{
+		    let newWidget = last.clone();
+		    newWidget.val("");
+		    newWidget.appendTo(extra);
+		    extra.append('&nbsp;');
+		});
+	    });
+	}
 	$("input[name='showtoggleall']").click(function(){
             var value  = $(this). prop("checked") == true;
             $("input[name^='show_']").prop("checked", value);

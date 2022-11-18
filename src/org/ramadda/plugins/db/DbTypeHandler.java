@@ -1103,7 +1103,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         addViewHeader(request, entry, sb, view, extraLinks);
         String formId = null;
         if (fromSearch) {
-            formId = addSearchAgain(request, entry, sb);
+            formId = addSearchAgain(request, entry, sb,true);
         }
         addPrevNext(request, entry, sb, numValues);
 
@@ -1121,12 +1121,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public String addSearchAgain(Request request, Entry entry, Appendable sb)
+    public String addSearchAgain(Request request, Entry entry, Appendable sb, boolean inToggle)
             throws Exception {
         String formId     = HtmlUtils.getUniqueId("form_");
         String searchForm = getSearchForm(request, entry, formId).toString();
-        sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
-                searchForm, false));
+	if(inToggle) {
+	    sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+						  searchForm, false));
+	} else {
+	    sb.append(searchForm);
+	}	    
 
         return formId;
     }
@@ -1476,7 +1480,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         ValueIterator iterator = makeValueIterator(request, entry, view,
-                                     action, fromSearch);
+						   action, fromSearch);
 
         if (valueList == null) {
             if (debugTimes && doCache) {
@@ -2018,7 +2022,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         super.addToProcessingForm(request, entry, sb);
         StringBuilder inner = new StringBuilder();
         inner.append(HtmlUtils.formTable());
-        getSearchFormInner(request, entry, inner, false);
+        getSearchFormInner(request, entry, inner, false,null);
         inner.append(HtmlUtils.formTableClose());
         org.ramadda.data.services.PointFormHandler.formGroup(request, sb,
                 "Database Search",
@@ -2066,7 +2070,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         HU.open(sb, "div", HU.cssClass("ramadda-form-block"));
         String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH);
         sb.append(buttons);
-        getSearchFormInner(request, entry, sb, true);
+        getSearchFormInner(request, entry, sb, true,formId);
         if (formJS != null) {
             HU.div(sb, "", HU.id("formjs_div"));
             sb.append(HU.script(formJS));
@@ -2108,7 +2112,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     private void getSearchFormInner(Request request, Entry entry,
-                                    Appendable sb, boolean normalForm)
+                                    Appendable sb, boolean normalForm, String formId)
             throws Exception {
 
         if (normalForm) {
@@ -2331,7 +2335,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 HtmlUtils.makeShowHideBlock("",
                                     viewSB.toString(), false)));
 
-        buffer.append(HtmlUtils.script("DB.toggleAllInit();"));
+	if(formId!=null)
+	    buffer.append(HtmlUtils.script("DB.toggleAllInit("+HU.squote(formId)+");"));
+	else
+	    buffer.append(HtmlUtils.script("DB.toggleAllInit();"));	
 
 
         StringBuilder uniqueSB = new StringBuilder();
@@ -2562,8 +2569,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
-        //      System.err.println("CLAUSES:" + where);
-
+	//	System.err.println("CLAUSES:" + where);
         //candidate = '${value1}' AND full_name   not in (select full_name from db_boulder_campaign_contributions where
         //candidate = '${value2}')
 
@@ -5987,7 +5993,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         Utils.append(sb, HtmlUtils.uploadForm(formUrl, HtmlUtils.id(formId)));
         Utils.append(sb, HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-
         return formId;
     }
 
@@ -6020,16 +6025,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder formBuffer = new StringBuilder();
 
         String        formId     = makeForm(request, entry, formBuffer);
-
-
         Object[]      values     = null;
         if (dbid != null) {
             values = getValues(entry, dbid);
             formBuffer.append(HtmlUtils.hidden(ARG_DBID, dbid));
             formBuffer.append(HtmlUtils.hidden(ARG_DBID_SELECTED, dbid));
         }
-
-
 
         StringBuilder buttons = new StringBuilder();
         if (doAnonForm) {

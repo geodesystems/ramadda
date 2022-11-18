@@ -97,6 +97,8 @@ public abstract class ValueIterator implements DbConstants {
 
     StringBuilder  sb;
 
+    protected boolean addedHeader =false;
+
     /** _more_          */
     boolean doGroupBy;
 
@@ -150,14 +152,18 @@ public abstract class ValueIterator implements DbConstants {
     }
 
     private String viewHeaderId;
-    public void addViewHeader(Request request, Entry entry, String view,  String extraLinks) throws Exception {
+    public void addViewHeader(Request request, Entry entry, String view,  String extraLinks, boolean nothingFound) throws Exception {
+	addedHeader = true;
 	Appendable sb       = getBuffer();
 	if (embedded) {
 	    db.addStyleSheet(request, sb);
 	} else {
 	    int max = db.getMax(request);
 	    db.addViewHeader(request, entry, sb,view,extraLinks);
-	    db.addSearchAgain(request, entry,sb);
+	    if(nothingFound) {
+		sb.append(db.getPageHandler().showDialogNote(db.msg("Nothing found")));
+	    }
+	    db.addSearchAgain(request, entry,sb,!nothingFound);
 	    viewHeaderId = Utils.getGuid();
 	    HU.div(sb, "",  HtmlUtils.id(viewHeaderId));
 	    //	    db.addPrevNext(request, entry,sb,max);
@@ -689,7 +695,6 @@ public abstract class ValueIterator implements DbConstants {
          */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
-
             super.finish(request);
         }
 
@@ -771,9 +776,7 @@ public abstract class ValueIterator implements DbConstants {
                             db.msgLabel("No entries in")
                             + db.getTitle(request, entry)));
                 } else {
-                    sb.append(
-                        db.getPageHandler().showDialogNote(
-                            db.msg("Nothing found")));
+		    //                    sb.append(db.getPageHandler().showDialogNote(db.msg("Nothing found")));
                 }
 	    }
 
@@ -803,6 +806,8 @@ public abstract class ValueIterator implements DbConstants {
      * @author         Enter your name here...    
      */
     public static class TableIterator extends HtmlIterator {
+
+
 
         /** _more_          */
         String tableId = Utils.getGuid();
@@ -910,7 +915,6 @@ public abstract class ValueIterator implements DbConstants {
                                     "\n", true, true);
             columns     = db.getColumnsToUse(request, true);
             columnNames = Column.getNames(columns);
-	    addViewHeader(request, entry, VIEW_TABLE,null);
         }
 
         /**
@@ -921,7 +925,9 @@ public abstract class ValueIterator implements DbConstants {
          * @throws Exception _more_
          */
         private void initializeTable(Request request) throws Exception {
-
+	    if(!addedHeader) {
+		addViewHeader(request, entry, VIEW_TABLE,null,false);
+	    }
             Appendable sb       = getBuffer();
             if (doForm) {
                 String formUrl =
@@ -1296,6 +1302,9 @@ public abstract class ValueIterator implements DbConstants {
          * @throws Exception _more_
          */
         public void finish(Request request) throws Exception {
+	    if(!addedHeader) {
+		addViewHeader(request, entry, VIEW_TABLE,null,rowCnt==0);
+	    }
             Appendable    sb = getBuffer();
             StringBuilder hb = new StringBuilder();
             if ( !forPrint && (rowCnt > 0)) {
@@ -1937,7 +1946,7 @@ public abstract class ValueIterator implements DbConstants {
 	    String links = db.getHref(request, entry,
 				   VIEW_GRID + gridColumn.getName(),
 				   "Grid View");
-	    addViewHeader(request, entry, VIEW_GRID + gridColumn.getName(),links);
+	    addViewHeader(request, entry, VIEW_GRID + gridColumn.getName(),links,false);
 
 	    enumValues = db.getEnumValues(request, entry, gridColumn);
 	    sb.append(
@@ -2076,7 +2085,7 @@ public abstract class ValueIterator implements DbConstants {
 	    String links = db.getHref(request, entry,
 				   VIEW_CATEGORY + gridColumn.getName(),
 				   "Category View");
-	    addViewHeader(request, entry,   VIEW_CATEGORY + gridColumn.getName(),links);
+	    addViewHeader(request, entry,   VIEW_CATEGORY + gridColumn.getName(),links,false);
         }
 
 
