@@ -327,8 +327,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     /**  */
     private boolean isMediaUrl = false;
 
-    /** _more_ */
-    private int numberOfSearchWidgets = 1;
 
     /** _more_ */
     private String suffix;
@@ -639,10 +637,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             properties.put(XmlUtil.getAttribute(propNode, "name"),
                            XmlUtil.getAttribute(propNode, "value"));
         }
-
-
-        numberOfSearchWidgets = XmlUtil.getAttribute(element,
-                "numberOfSearchWidgets", numberOfSearchWidgets);
 
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
@@ -2417,13 +2411,20 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else {
             //            String value = getSearchValue(request);
             if (values == null) {
-                String value = getSearchValue(request);
-                if (Utils.stringDefined(value)) {
-                    if (value.equals("_blank_")) {
-                        value = "";
-                    }
-                    addTextSearch(value, where, doNegate);
+		List<Clause> ors = new ArrayList<Clause>();
+		for(String value: getSearchValues(request)) {
+		    if (Utils.stringDefined(value)) {
+			if (value.equals("_blank_")) {
+			    value = "";
+			}
+			addTextSearch(value, ors, doNegate);
+		    }
                 }
+		if(ors.size()==1) {
+		    where.add(ors.get(0));
+		} else if(ors.size()>1) {
+		    where.add(Clause.or(ors));
+		}
             } else {
                 //This is for the file upload. Just do equality not the like that addTextSearch does
                 List<Clause> clauses = new ArrayList<Clause>();
@@ -2553,18 +2554,11 @@ public class Column implements DataTypes, Constants, Cloneable {
     private List<String> getSearchValues(Request request) throws Exception {
         String       searchArg = getSearchArg();
         List<String> result    = new ArrayList<String>();
-        for (int i = 0; i < numberOfSearchWidgets; i++) {
-            String sarg = searchArg + ((i == 0)
-                                       ? ""
-                                       : "" + i);
-            for (String arg :
-                    (List<String>) request.get(sarg,
-                        new ArrayList<String>())) {
-                //            result.addAll(Utils.split(arg, ",", true));
-                result.add(arg);
-            }
+	for (String arg :
+		 (List<String>) request.get(searchArg,
+					    new ArrayList<String>())) {
+	    result.add(arg);
         }
-
         return result;
     }
 
@@ -3503,18 +3497,25 @@ public class Column implements DataTypes, Constants, Cloneable {
             //      if(true) return;
             //            System.err.println(getName() + " values=" + tmpValues);
             StringBuilder tmpb = new StringBuilder();
-            for (int i = 0; i < numberOfSearchWidgets; i++) {
-                String arg = searchArg + ((i == 0)
-                                          ? ""
-                                          : "" + i);
-                HtmlUtils.select(tmpb, arg, tmpValues,
-                                 request.get(arg, new ArrayList<String>()),
+	    List<String> selectedValues = new ArrayList<String>();
+	    for(String v: getSearchValues(request)) {
+		if(Utils.stringDefined(v) && !TypeHandler.ALL.equals(v)) {
+		    selectedValues.add(v);
+		}
+	    }
+	    selectedValues.add("DUMMYVALUE");
+	    int i=0;
+	    for(String value:selectedValues) {
+		String arg = searchArg;
+                tmpb.append(HU.select(arg, tmpValues,
+				 value,
                                  selectExtra + ((i == 0)
                         ? HU.attr("id", widgetId)
-                        : ""), Integer.MAX_VALUE);
+						: "")));
                 tmpb.append(" ");
+		i++;
             }
-            widget = tmpb.toString();
+            widget = HU.div(tmpb.toString(), HU.cssClass("ramadda-widgets-enumeration"));
             //      System.err.println("widget:" + widget.length() +" " + tmpValues.size());
         } else if (isNumeric()) {
             String toId = Utils.makeID(searchArg + "_to");
@@ -3597,7 +3598,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 //                widget = HtmlUtils.textArea(searchArg, request.getString(searchArg, ""),
                 //                                           rows, columns);
             } else {
-
                 String text = request.getString(searchArg, "");
                 text = text.replaceAll("\"", "&quot;");
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
@@ -3611,8 +3611,21 @@ public class Column implements DataTypes, Constants, Cloneable {
                     widget = HtmlUtils.textArea(searchArg, text, 5, 20,
                             attrs);
                 } else {
-                    widget = HtmlUtils.input(searchArg, text,
-                                             HtmlUtils.SIZE_20 + attrs);
+		    StringBuilder tmpSB = new StringBuilder();
+		    List<String> searchValues = new ArrayList<String>();
+		    for(String value:getSearchValues(request)) {
+			if(!Utils.stringDefined(value)) continue;
+			searchValues.add(value);
+		    }
+		    if(searchValues.size()==0) searchValues.add("");
+		    for(String s:searchValues) {
+			s = s.trim();
+			s = s.replaceAll("\"", "&quot;");
+			tmpSB.append(HtmlUtils.input(searchArg, s,
+						     HtmlUtils.SIZE_20 + attrs));
+			tmpSB.append("&nbsp;");
+		    }
+		    widget = HU.div(tmpSB.toString(), HU.cssClass("ramadda-widgets-text"));
                 }
             }
         }
