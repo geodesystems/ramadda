@@ -2715,8 +2715,18 @@ public abstract class Processor extends SeesvOperator {
                 }
 
                 StringBuffer inner = new StringBuffer();
+                boolean isindex = "true".equals(getDbProp(colId, "isindex",
+							  "false"));
+
+                if (isindex) {
+                    inner.append(XmlUtil.tag("property",
+                                             XmlUtil.attrs(new String[] {
+						     "name", "isindex", "value", "true" })));
+                }
+
                 boolean doStats = "true".equals(getDbProp(colId, "dostats",
                                       dfltDoStats + ""));
+
 
                 if (doStats) {
                     inner.append(XmlUtil.tag("property",
