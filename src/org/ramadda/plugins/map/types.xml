@@ -224,7 +224,7 @@ mapVar="gpxMap${entryid}" }}
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-{{display_imdv height=90vh  showBounds=false  
+{{display_imdv height="calc(100vh-150px)"  showBounds=false  
 }}
 -section
 ]]>
