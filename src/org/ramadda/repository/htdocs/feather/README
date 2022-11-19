@@ -1,0 +1,4 @@
+Icons from feather - https://feathericons.com/
+converted from svg to png-
+replace the "currentColor" with "#000"
+run svgs.sh
