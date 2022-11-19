@@ -559,6 +559,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    displayFormat = new SimpleDateFormat(dttmFormat);
         }
 
+        List propNodes = XmlUtil.findChildren(element, "property");
+        for (int i = 0; i < propNodes.size(); i++) {
+            Element propNode = (Element) propNodes.get(i);
+            properties.put(XmlUtil.getAttribute(propNode, "name"),
+                           XmlUtil.getAttribute(propNode, "value"));
+        }
 
 
         List displayNodes = XmlUtil.findChildren(element, "display");
@@ -593,12 +599,13 @@ public class Column implements DataTypes, Constants, Cloneable {
                                             addFileToSearch);
         isMediaUrl = getAttributeOrTag(element, "ismediaurl", false);
         dflt       = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
-        doStats    = getAttributeOrTag(element, "dostats", doStats);
-
+        doStats    = getAttributeOrTag(element, "dostats", Utils.getProperty(properties,"dostats",false));
+        isIndex    = getAttributeOrTag(element, ATTR_ISINDEX, Utils.getProperty(properties,ATTR_ISINDEX,false));
         databaseDflt = getAttributeOrTag(element, "databaseDefault",
                                          (String) null);
         alias      = getAttributeOrTag(element, "alias", (String) null);
-        isIndex    = getAttributeOrTag(element, ATTR_ISINDEX, false);
+
+
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
@@ -631,12 +638,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             numberFormat = new DecimalFormat(tmp);
         }
 
-        List propNodes = XmlUtil.findChildren(element, "property");
-        for (int i = 0; i < propNodes.size(); i++) {
-            Element propNode = (Element) propNodes.get(i);
-            properties.put(XmlUtil.getAttribute(propNode, "name"),
-                           XmlUtil.getAttribute(propNode, "value"));
-        }
 
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
