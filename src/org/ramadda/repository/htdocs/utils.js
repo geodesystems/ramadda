@@ -3657,6 +3657,36 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return "&#10;";
     },
 
+    insertIntoTextarea:function(myField, value) {
+	if(typeof myField=='string') {
+	    myField =  document.getElementById(myField);
+	}
+
+	value = Utils.decodeText(value);    
+	var textScroll = myField.scrollTop;
+
+	//IE support
+	if (document.selection) {
+            myField.focus();
+            sel = document.selection.createRange();
+            sel.text = value;
+	}
+	//MOZILLA/NETSCAPE support
+	else if (myField.selectionStart || myField.selectionStart == '0') {
+            var startPos = myField.selectionStart;
+            var endPos = myField.selectionEnd;
+            myField.value = myField.value.substring(0, startPos) +
+		value +
+		myField.value.substring(endPos, myField.value.length);
+	    let newPos = startPos + value.length;
+	    myField.selectionEnd = newPos;
+	} else {
+            myField.value += value;
+	}
+	myField.scrollTop = textScroll;
+    },
+
+
     initLoadingImage:function(img) {
 	setTimeout(()=>{
 	    $(img).removeClass('ramadda-image-loading');
@@ -3689,14 +3719,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let emojis  = [];
 	    let cats = {};
 	    this.emojis = [];
+	    let lastCat;
 	    data.forEach(item=>{
-		let cat = cats[item.category];
+		let itemCategory = item.category??lastCat;
+		if(itemCategory) lastCat = itemCategory;
+		let cat = cats[itemCategory];
 		if(!cat) {
 		    cat = {
-			name:item.category,
+			name:itemCategory,
 			images:[]
 		    }
-		    cats[item.category] = cat;
+		    cats[itemCategory] = cat;
 		    emojis.push(cat);
 		}
 		let url = item.image;

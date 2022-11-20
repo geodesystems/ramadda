@@ -3033,21 +3033,7 @@ RepositoryMap.prototype = {
 
 
         if (this.params.showLatLonPosition) {
-            if (!this.latlonReadout)
-                this.latlonReadout = this.mapId + "_latlonreadout";
-            let latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
-            if (latLonReadout) {
-                this.getMap().addControl(new OpenLayers.Control.MousePosition({
-                    numDigits: 5,
-                    element: latLonReadout.obj,
-                    prefix: "Position: "
-                }));
-            } else {
-                this.getMap().addControl(new OpenLayers.Control.MousePosition({
-                    numDigits: 5,
-                    prefix: "Position: "
-                }));
-            }
+	    this.initMousePositionReadout();
         }
         if (this.params.showLocationSearch) {
             this.initLocationSearch();
@@ -3103,9 +3089,34 @@ RepositoryMap.prototype = {
 	    if(!marker) break;
 	    this.addMarkerEmbed(marker);
 	}	
-
-
     },
+
+    destroyMousePositionReadout:function() {
+	if(this.mousePositionReadout) {
+	    this.mousePositionReadout.destroy();
+	}
+	this.mousePositionReadout  =null;
+    },
+
+    initMousePositionReadout:function() {
+	if(this.mousePositionReadout) return;
+        if (!this.latlonReadout)
+            this.latlonReadout = this.mapId + "_latlonreadout";
+        let latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
+        if (latLonReadout) {
+	    this.getMap().addControl(this.mousePositionReadout = new OpenLayers.Control.MousePosition({
+                numDigits: 5,
+                element: latLonReadout.obj,
+                prefix: ""
+            }));
+        } else {
+            this.getMap().addControl(this.mousePositionReadout = new OpenLayers.Control.MousePosition({
+                numDigits: 5,
+                prefix: ""
+            }));
+        }
+    },
+
     handleKeyUp:function(evt) {
 	if(this.keyUpListener) {
 	    this.keyUpListener(evt);

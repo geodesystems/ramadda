@@ -54,34 +54,17 @@ function insertAtCursor(id, myField, value) {
 	return;
     }
 
-    value = Utils.decodeText(value);    
+
     if (editor) {
+	value = Utils.decodeText(value);    
 	editor.insertAtCursor(value);
         return;
     }
 
-    var textScroll = myField.scrollTop;
-
-    //IE support
-    if (document.selection) {
-        myField.focus();
-        sel = document.selection.createRange();
-        sel.text = value;
-    }
-    //MOZILLA/NETSCAPE support
-    else if (myField.selectionStart || myField.selectionStart == '0') {
-        var startPos = myField.selectionStart;
-        var endPos = myField.selectionEnd;
-        myField.value = myField.value.substring(0, startPos) +
-            value +
-            myField.value.substring(endPos, myField.value.length);
-	let newPos = startPos + value.length;
-	myField.selectionEnd = newPos;
-    } else {
-        myField.value += value;
-    }
-    myField.scrollTop = textScroll;
+    HtmlUtils.insertIntoTextarea(myField,value);
 }
+
+
 
 function insertTags(id, tagOpen, tagClose, sampleText) {
     HtmlUtils.hidePopupObject();
