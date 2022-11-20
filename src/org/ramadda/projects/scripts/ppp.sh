@@ -3,10 +3,11 @@
 #RAMADDA DB file
 #
 mydir=`dirname $0`
-~/bin/seesv.sh  -cleaninput -progress 5000 -sample 0.001 \
-      -firstcolumns "borrower_.*,CurrentApprovalAmount" \
-      -notcolumns ".*PROCEED.*" \
-      -case "BorrowerCity,ServicingLenderCity,ProjectCity,Ethnicity,OriginatingLenderCity" proper \
-      -denormalize ${mydir}/naics.csv 0 1 naicscode "" replace \
-      -p "$@" 
+source "${mydir}/init.sh"
+${seesv}  -cleaninput -progress 5000 -sample 0.001 \
+	  -firstcolumns "borrower_.*,CurrentApprovalAmount" \
+	  -notcolumns ".*PROCEED.*" \
+	  -case "BorrowerCity,ServicingLenderCity,ProjectCity,Ethnicity,OriginatingLenderCity" proper \
+	  -denormalize ${mydir}/naics.csv 0 1 naicscode "" replace \
+	  -p "$@" 
 
