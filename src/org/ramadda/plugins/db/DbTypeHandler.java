@@ -2882,8 +2882,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public Result handleBulkUpload(final Request request, final Entry entry,
-                                   InputStream source)
+    private Result handleBulkUpload(final Request request, final Entry entry,
+				    List<NamedInputStream> sources)
             throws Exception {
 
         String delimiter = request.getString(ARG_DB_BULK_DELIMITER, ",");
@@ -2892,119 +2892,125 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         int                       skip = request.get(ARG_DB_BULK_SKIP, 1);
         final DbInfo              dbInfo     = getDbInfo();
-        final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
-        final int[]               cnt        = { 0 };
-        final int[]               scnt       = { 0 };
-        TextReader                textReader = new TextReader();
+        final int[]               totalCnt       = { 0 };
+	final int[]               cnt        = { 0 };
+	final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
 
         final Bounds bounds = new Bounds(Double.NaN, Double.NaN, Double.NaN,
                                          Double.NaN);
 
-        textReader.setInput(new NamedInputStream("input",
-                new BufferedInputStream(source)));
-        textReader.setSkip(skip);
-        textReader.setDelimiter(delimiter);
-        Processor myProcessor = new Processor() {
-            @Override
-            public org.ramadda.util.text.Row handleRow(TextReader textReader,
-                    org.ramadda.util.text.Row row) {
-                try {
-                    Object[] values = tableHandler.makeEntryValueArray();
-                    cnt[0]++;
-                    initializeValueArray(request, null, values);
-
-                    List<String> toks = row.getValues();
-                    if (toks.size() != dbInfo.getColumnsToUse().size()) {
-                        System.err.println("bad count: " + toks.size() + " "
-                                           + toks);
-                        String error =
-                            "Wrong number of values. Given line has: "
-                            + toks.size() + " Expected:"
-                            + dbInfo.getColumnsToUse().size() + "\n"
-                            + "Columns:" + dbInfo.getColumnsToUse() + "\n"
-                            + "Data:" + toks;
-
-                        throw new IllegalArgumentException(error);
-                    }
-                    String keyValue = null;
-
-                    for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
-                        Column column = dbInfo.getColumnsToUse().get(colIdx);
-                        String value  = (String) toks.get(colIdx).trim();
-                        if (column == dbInfo.getKeyColumn()) {
-                            keyValue = value;
-                        }
-                        try {
-                            column.setValue(entry, values, value);
-                        } catch (Exception exc) {
-                            exc.printStackTrace();
-
-                            throw new RuntimeException(
-                                "Error setting column value:"
-                                + column.getName() + "\nvalues:" + toks
-                                + "\nError:" + exc, exc);
-                        }
-                    }
-
-
-
-                    if (dbInfo.getHasLocation()) {
-                        double[] ll  = getLocation(values);
-                        double   lat = ll[0];
-                        double   lon = ll[1];
-                        if ( !Double.isNaN(lat) && !Double.isNaN(lon)) {
-                            bounds.expand(lat, lon);
-                        }
-                    }
-
-                    if (keyValue != null) {
-                        Clause clause =
-                            Clause.and(
-                                Clause.eq(
-                                    GenericTypeHandler.COL_ID,
-                                    entry.getId()), Clause.eq(
-                                        dbInfo.getKeyColumn().getName(),
-                                        keyValue));
-                        System.err.println("drop:" + clause);
-                        getDatabaseManager().delete(
-                            tableHandler.getTableName(), clause);
-                    }
-
-                    valueList.add(values);
-                    if (valueList.size() > 10000) {
-                        scnt[0] += valueList.size();
-                        long t1 = System.currentTimeMillis();
-                        doStore(entry, valueList, true);
-                        long t2 = System.currentTimeMillis();
-                        Utils.printTimes("DbTypeHandler.bulkUpload: stored: "
-                                         + scnt[0], t1, t2);
-                        valueList.clear();
-                    }
-
-                    return row;
-                } catch (Exception exc) {
-                    fatal(textReader, "Loading db", exc);
-
-                    return null;
-                }
-            }
-        };
         if (request.get(ARG_DB_BULK_NUKEIT, false)) {
             deleteEntireDatabase(request, entry);
         }
 
+	Processor myProcessor = new Processor() {
+		@Override
+		public org.ramadda.util.text.Row handleRow(TextReader textReader,
+							   org.ramadda.util.text.Row row) {
+		    try {
+			Object[] values = tableHandler.makeEntryValueArray();
+			cnt[0]++;
+			initializeValueArray(request, null, values);
+
+			List<String> toks = row.getValues();
+			if (toks.size() != dbInfo.getColumnsToUse().size()) {
+			    System.err.println("bad count: " + toks.size() + " "
+					       + toks);
+			    String error =
+				"Wrong number of values. Given line has: "
+				+ toks.size() + " Expected:"
+				+ dbInfo.getColumnsToUse().size() + "\n"
+				+ "Columns:" + dbInfo.getColumnsToUse() + "\n"
+				+ "Data:" + toks;
+
+			    throw new IllegalArgumentException(error);
+			}
+			String keyValue = null;
+
+			for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
+			    Column column = dbInfo.getColumnsToUse().get(colIdx);
+			    String value  = (String) toks.get(colIdx).trim();
+			    if (column == dbInfo.getKeyColumn()) {
+				keyValue = value;
+			    }
+			    try {
+				column.setValue(entry, values, value);
+			    } catch (Exception exc) {
+				exc.printStackTrace();
+
+				throw new RuntimeException(
+							   "Error setting column value:"
+							   + column.getName() + "\nvalues:" + toks
+							   + "\nError:" + exc, exc);
+			    }
+			}
 
 
-        textReader.addProcessor(myProcessor);
-        Seesv csvUtil = new Seesv(new ArrayList<String>());
-        DataProvider.CsvDataProvider provider =
-            new DataProvider.CsvDataProvider(textReader,0);
-        csvUtil.process(textReader, provider,0);
 
-        scnt[0] += valueList.size();
-        doStore(entry, valueList, true);
+			if (dbInfo.getHasLocation()) {
+			    double[] ll  = getLocation(values);
+			    double   lat = ll[0];
+			    double   lon = ll[1];
+			    if ( !Double.isNaN(lat) && !Double.isNaN(lon)) {
+				bounds.expand(lat, lon);
+			    }
+			}
+
+			if (keyValue != null) {
+			    Clause clause =
+				Clause.and(
+					   Clause.eq(
+						     GenericTypeHandler.COL_ID,
+						     entry.getId()), Clause.eq(
+									       dbInfo.getKeyColumn().getName(),
+									       keyValue));
+			    System.err.println("drop:" + clause);
+			    getDatabaseManager().delete(
+							tableHandler.getTableName(), clause);
+			}
+
+			valueList.add(values);
+			if (valueList.size() > 10000) {
+			    totalCnt[0] += valueList.size();
+			    long t1 = System.currentTimeMillis();
+			    doStore(entry, valueList, true);
+			    long t2 = System.currentTimeMillis();
+			    Utils.printTimes("DbTypeHandler.bulkUpload: stored: "
+					     + totalCnt[0], t1, t2);
+			    valueList.clear();
+			}
+
+			return row;
+		    } catch (Exception exc) {
+			fatal(textReader, "Loading db", exc);
+			return null;
+		    }
+		}
+	    };
+	
+
+	for(NamedInputStream input: sources) {
+	    System.err.println("DbTypeHandler.bulkUpload: processing:" + input.getName());
+	    InputStream source = input.getInputStream();
+	    valueList.clear();
+	    cnt[0]=0;
+	    TextReader                textReader = new TextReader();
+	    textReader.setInput(new NamedInputStream("input",
+						     new BufferedInputStream(source)));
+	    textReader.setSkip(skip);
+	    textReader.setDelimiter(delimiter);
+	    textReader.addProcessor(myProcessor);
+	    Seesv csvUtil = new Seesv(new ArrayList<String>());
+	    DataProvider.CsvDataProvider provider =
+		new DataProvider.CsvDataProvider(textReader,0);
+	    csvUtil.process(textReader, provider,0);
+	    totalCnt[0] += valueList.size();
+	    doStore(entry, valueList, true);
+	    source.close();
+	}
+
         System.err.println("DbTypeHandler.bulkUpload: final stored: "
-                           + scnt[0]);
+                           + totalCnt[0]);
 
         if ( !entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
@@ -3015,12 +3021,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         request.remove(ARG_DB_BULK_TEXT);
         request.remove(ARG_DB_BULK_FILE);
         request.remove(ARG_DB_BULK_LOCALFILE);
-
         tableHandler.clearCache();
-
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "Upload", true);
-        sb.append("Added " + scnt[0] + " entries");
+        sb.append("Added " + totalCnt[0] + " entries");
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return new Result("", sb);
@@ -3134,7 +3138,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 && (request.exists(ARG_DB_BULK_TEXT)
                     || request.exists(ARG_DB_BULK_FILE)
                     || request.exists(ARG_DB_BULK_LOCALFILE))) {
-            InputStream source = null;
+	    List<NamedInputStream> sources = new ArrayList<NamedInputStream>();
+            NamedInputStream source = null;
             String      bulkContent;
 
             if (request.exists(ARG_DB_BULK_FILE)) {
@@ -3144,23 +3149,31 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         "Uploaded file does not exist");
                 }
                 if (f.toString().toLowerCase().endsWith(".xls")) {
-                    source = XlsUtil.xlsToCsv(f.toString());
+                    source = new NamedInputStream(f.toString(),XlsUtil.xlsToCsv(f.toString()));
                 } else if (f.toString().toLowerCase().endsWith(".xlsx")) {
-                    source = XlsUtil.xlsxToCsv(f.toString());
+                    source = new NamedInputStream(f.toString(),XlsUtil.xlsxToCsv(f.toString()));
                 } else {
-                    source = getStorageManager().getFileInputStream(f);
+                    source = new NamedInputStream(f.toString(),getStorageManager().getFileInputStream(f));
                 }
             } else if (request.exists(ARG_DB_BULK_LOCALFILE)) {
                 request.ensureAdmin();
-                source = getStorageManager().getFileInputStream(
-                    new File(
-                        request.getString(ARG_DB_BULK_LOCALFILE, "").trim()));
+		File localFile = new File(request.getString(ARG_DB_BULK_LOCALFILE, "").trim());
+		if(localFile.isDirectory()) {
+		    //Only look for csv
+		    for(File child: localFile.listFiles()) {
+			if(!child.toString().toLowerCase().endsWith(".csv")) continue;
+			sources.add(new NamedInputStream(child.toString(),getStorageManager().getFileInputStream(child)));
+		    }
+		} else {
+		    source = new NamedInputStream(localFile.toString(),getStorageManager().getFileInputStream(localFile));
+		}
             } else {
-                source = new ByteArrayInputStream(
-                    request.getString(ARG_DB_BULK_TEXT, "").getBytes());
+                source = new NamedInputStream("inline text",new ByteArrayInputStream(
+										     request.getString(ARG_DB_BULK_TEXT, "").getBytes()));
             }
+	    if(source!=null && sources.size()==0) sources.add(source);
 
-            return handleBulkUpload(request, entry, source);
+            return handleBulkUpload(request, entry, sources);
         }
 
 
