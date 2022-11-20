@@ -8,5 +8,5 @@ mydir=`dirname $0`
       -notcolumns ".*PROCEED.*" \
       -case "BorrowerCity,ServicingLenderCity,ProjectCity,Ethnicity,OriginatingLenderCity" proper \
       -denormalize ${mydir}/naics.csv 0 1 naicscode "" replace \
-      -p "$@" > processedppp.csv
-~/bin/csv.sh  -cleaninput -progress 5000 -db "file:${mydir}/ppp.properties" processedppp.csv > pppdb.xml
+      -p "$@" 
+
