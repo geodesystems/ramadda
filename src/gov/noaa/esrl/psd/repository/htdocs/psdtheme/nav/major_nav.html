@@ -132,7 +132,6 @@
   background: #888;
 }
 
-
 .tooltip-inner {
   font-size:15px;
   box-shadow: 0px 1px 3px 3px rgba(150,150,150, 0.175);
@@ -140,15 +139,7 @@
   border: 1px solid #888;
 }
 
-.alert-primary {
-  color: #004085;
-  background-color: #cce5ff;
-  text-align:left;
-  margin-top:-10px;
-  border-radius: 0px;
-}
-
-.alert-danger {
+.alert-major-nav {
   color: white;/*#a94442;*/
   background-color: #eb1a3d;/*#f2dede;*/
   text-align:center;
@@ -156,22 +147,7 @@
   border-radius: 0px;
 }
 
-.alert {
-  padding: .75rem 1.25rem;
-  margin-bottom: 10px;
-  z-index:100;
-  top:0;
-  width:100%;
-  padding-right:20px;
-}
-
-.alert-primary a:visited, .alert-primary a {
-  color:#0056b3 !important;
-}
-
-
-
-.alert-danger a:visited, .alert-danger a {
+.alert-major-nav a:visited, .alert-major-nav a {
   color:#a94442 !important;
 }
 
@@ -198,10 +174,10 @@ $(function() {
 
 
   if( $.cookie('alert-primary') === 'closed' ){
-    $('.alert-danger').hide();
+    $('.alert-major-nav').hide();
     $("body").removeClass("body_alert");
   } else {
-   //  $('.alert-danger').show();
+  //   $('.alert-major-nav').show();
   //  $("body").addClass("body_alert");
   }
 
@@ -210,26 +186,19 @@ $(function() {
 
 <nav class="navbar navbar-fixed-top  navbar-inverse" role="navigation" >
 
-  <div class="alert alert-danger alert-dismissible small">
+  <div class="alert alert-major-nav alert-dismissible small">
     <script>
-        $('.alert-danger').hide();
+        $('.alert-major-nav').hide();
         $("body").removeClass("body_alert");
         console.log(window.location.href);
-        //$("body").addClass("body_alert");
+    //    $("body").addClass("body_alert");
     </script>
-
-
-    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be down/intermittent <u>between April 19th and April 23rd</u> due to planned maintenance.</strong>
+<!--
+    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be unavailable <u>between 4pm MDT April 18th and 5pm MDT April 19th</u> due to planned maintenance.</strong>
     <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
       <span aria-hidden="true" style="font-size:22px;color:white;">&times;</span>
     </button>
-
-	<!--
-    <i class="fas fa-exclamation-circle"></i> <strong>PSL Website Outage:</strong> On 1/21/2021 we will be doing power maintenance. Site will be down all day
-    <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
-      <span aria-hidden="true" style="font-size:22px;;">&times;</span>
-    </button>
-    -->
+-->
 
   </div>
 
@@ -239,15 +208,15 @@ $(function() {
     <div class="navbar-header">
       <div class="navbar-brand">
         <div class="hidden-xs" style="float: left;">
-          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.png"
-           class="header_logo" width="50px; alt="NOAA Logo" /></a>
+          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.svg"
+           class="header_logo" style="margin-right: 12px; width: 50px; alt="NOAA Logo" /></a>
         </div>
         <div class="visible-xs" style="float: left;">
-          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos//httpd-test/psl/img/logos/noaa_notext.svg"
-           class="header_logo" style="margin-top: 5px; width: 32px;" alt="NOAA Logo" /></a>
+          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.svg"
+           class="header_logo" style="margin: 8px; width: 32px;" alt="NOAA Logo" /></a>
         </div>
         <div style="float: left;">
-          <div style="margin: 12px 0 0 2px;"><a href="/" title="PSL">Physical Sciences Laboratory</a>
+          <div style="margin: 14px 0 0 0;"><a href="/" title="PSL">Physical Sciences Laboratory</a>
           </div>
         </div>
       </div>
@@ -275,6 +244,8 @@ $(function() {
                   <li><a href="/about/">About Us</a></li>
                   <li><a href="/about/org.html">Organization At-A-Glance</a></li>
                   <li><a href="/reviews/">Science Reviews</a></li>
+				  <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
+				  	title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
                   <li><a href="https://esrl.noaa.gov/about/visiting.html">Visiting NOAA Boulder</a></li>
                   <!--#if expr="$REMOTE_ADDR = /^10\.173\./  ||  $REMOTE_ADDR = /^140\.172\./"-->
                 </ul>
@@ -331,6 +302,7 @@ $(function() {
                   <li><a href="/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
                   <li><a href="/renewable_energy/">Renewable Energy</a></li>
                   <li><a href="/csi/">Interpreting Climate Conditions</a></li>
+                  <li><a href="/marine-heatwaves/">Marine Heatwaves</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -370,8 +342,7 @@ $(function() {
             <li><a href="/arctic/data/">Arctic</a></li>
             <li><a href="/psd2/coastal/satres/">Satellite</a></li>
             <li><a href="/boulder/">Boulder Climate &amp; Weather</a></li>
-            <li><a href="/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
-                Tools</a></li>
+            <li><a href="/data/getpage">Plotting &amp; Analysis Tools</a></li>
             <li><a href="/data/help/">Help</a></li>
 
           </ul>
@@ -382,12 +353,16 @@ $(function() {
             <li><a href="/products/">All</a></li>
             <li><a href="/products/monitor/">Experimental </a></li>
             <li><a href="/map/">Map Room</a></li>
-            <li><a href="/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
-                Tools</a></li>
+            <li><a href="/data/getpage">Plotting &amp; Analysis Tools</a></li>
             <li><a href="/forecasts/clim/">Subseasonal Tropical Forecasts</a></li>
             <li><a href="/ipcc/">Climate Change Web Portal</a></li>
+            <li><a href="/data/20thC_Rean/" data-toggle="tooltip"
+                data-placement="left" data-html="true" title="The 20th Century Reanalysis Project">20th Century Reanalysis</a></li>
             <li><a href="/repository/facts/" data-toggle="tooltip"
                 data-placement="left" data-html="true" title="<strong>FAC</strong>ility for Weather and Climate Assessmen<strong>TS</strong>">FACTS</a></li>
+
+            <li><a href="/data/writ/" data-toggle="tooltip"
+                data-placement="left" data-html="true" title="<strong>W</strong>eb-based <strong>R</strong>eanalyses <strong>I</strong>ntercomparison <strong>T</strong>ools">WRIT</a></li>
           </ul>
         </li>
         <li class="dropdown">

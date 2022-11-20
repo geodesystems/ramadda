@@ -36,6 +36,8 @@ amip_fully_forced:AMIP Fully Forced
 reanalysis:Reanalysis
 obs:Observations
 LENS:Large Ensemble
+LENS-C6BB:Large Ensemble (CMIP6 Biomass Burning)
+LENS-SMBB:Large Ensemble (Smooth Biomass Burning)
 CESM-LENS:CESM Large Ensemble
 historical:Historical Observed Radiative Forcing
 historicalNat:Historical Natural Radiative Forcing

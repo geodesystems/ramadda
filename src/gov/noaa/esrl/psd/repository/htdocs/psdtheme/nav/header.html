@@ -104,6 +104,14 @@
         $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top-100 }, 500);
     });
   });
+
+  $(function() {
+    $( ".page_nav a" ).click(function( event ) {
+        event.preventDefault();
+        console.log("scroll link page")
+        $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top-100 }, 500);
+    });
+  });
 </script>
 
 	<!--#if expr="$stylesheet" -->
@@ -178,8 +186,11 @@ nav.shrink .navbar-toggle {
 
 
 </style>
-
+<link rel="stylesheet" href='/css/sidebarnav.css' type="text/css">
 <!--#if expr="$sidebar_nav" -->
+
+
+
 <script>
 $(function() {
     $("div.container h1:first").hide();
@@ -194,6 +205,21 @@ $(function() {
 });
 
 </script>
+<!--#else -->
+<script>
+  $(function() {
+      if($("div.container .longTitle:first").length) {
+        console.log('title fix');
+        $("div.container .longTitle:first").hide();
+        var title = $("<h1></h1>").text($("div.container  .longTitle:first").text());
+        var titleColumn = $('<div class="col-sm-12 col-xs-12"></div>').html(title);
+        var titleBar = $("<div class='row'></div>").append(titleColumn);
+        $("#mainWrapper").before(titleBar);
+        $("#minor_nav").addClass('longTitleFix');
+      }
+  });
+  
+  </script>
 <!--#endif -->
 
 </head>
@@ -206,19 +232,18 @@ $(function() {
 </div><!--/.banner-->
 
 <!-- Page Content -->
-<div class="mainsection" role="main">
+<div class="mainsection" role="main" id="top">
 <div class="container">
 	<!--#if expr="$self"-->
 		<!--#include virtual="/nav/breadcrumbs.html"-->
 	<!--#elif expr="$title"-->
 		<!--#include virtual="/nav/breadcrumbs.html"-->
 	<!--#endif-->
-  <!--#include virtual="/warnings.html"-->
   <!--#if expr="$warnfilepath" -->
     <!--#include virtual="$warnfilepath"-->
   <!--#endif-->
 
-	<div class="row">
+	<div class="row" id="mainWrapper">
 	<!-- minor navigation -->
 	<!--#if expr="$minor_nav" -->
 	<div class="col-xs-12 col-sm-12 col-md-9">

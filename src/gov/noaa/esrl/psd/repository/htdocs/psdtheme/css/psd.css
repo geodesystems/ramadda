@@ -21,9 +21,12 @@ body {
   padding-top: 83px !important;
 }
 
-
 a:hover { text-decoration: none; /*color: #24a5b1;*/}
 a.btn { text-decoration: none;}
+
+a.email:link {
+  color: #337ab7 !important;
+}
 
 p {
 	margin-bottom: 20px;
@@ -33,11 +36,17 @@ p {
 li {
 	margin-bottom: 10px;
 }
+li:last-child {
+  margin-bottom: 20px;
+}
+
+.carousel li:last-child {
+  margin-bottom: 0px;
+}
 
 h1 {
 	font-weight: 300;
-    font-size: 2.3em;
-	margin: 0 0 20px 0;
+  margin: 0 0 20px 0;
 	padding-top: 0;
 }
 
@@ -48,11 +57,15 @@ h2 {
 }
 
 h3 {
-	font-weight: 400;
+	font-weight: 500;
 	margin: 0 0 15px 0;
 	line-height: 1.2;
+  font-size:24px;
 }
 
+h2.accent, h3.accent, h4.accent {
+	color:#679b6c;
+}
 
 h4 {
 	font-weight: 400;
@@ -270,133 +283,6 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
 	margin: auto;
 }
 
-/********** TOGGLED SIDE NAVIGATION ************/
-.sidenav {
-    height: 100%;
-    width: auto;
-    display:none;
-    position: fixed;
-    z-index: 200;
-    top: 0;
-    right: 0;
-    background-color: #41474d;
-    color: white;
-    overflow-x: visible;
-    overflow-y: scroll;
-    padding-top: 60px;
-    box-shadow: -6px 0px 12px 1px rgba(0, 0, 0, 0.175);
-    opacity: 0.95;
-}
-
-.sidenav dt {
-	font-weight: 300;
-	font-size: 17px;
-	margin: 0 0 10px 0;
-    background: #679b6c;
-    padding: 2px 0 2px 15px;
-    white-space: nowrap;
-}
-
-.sidenav dd {
-    padding: 0;
-    font-size: 14px;
-   	font-weight: 400;
-    margin: 0;
-    white-space: nowrap;
-
-}
-
-.sidenav a {
-    padding: 8px 8px 8px 20px;
-    text-decoration: none;
-    display: block;
-    transition: 0.3s;
-    color: #fff;
-}
-
-.sidenav dd:hover {
-    background: #888;
-}
-
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-}
-
-
-
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
-}
-
-
-/* sidenav css */
-.navsidebar {
-  position: relative;
-  float: right;
-  margin-right: 15px;
-  padding: 9px 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  background-color: transparent;
-  background-image: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-}
-.navsidebar .icon-bar + .icon-bar {
-    margin-top: 4px;
-}
-
-.navsidebar .icon-bar {
-  display: block;
-  width: 22px;
-  height: 2px;
-  border-radius: 1px;
-  background: #000;
-}
-
-
-
-.sidenav #minor_nav a:link, .sidenav #minor_nav a:visited, .sidenav #minor_nav a:focus {
-    color: #fff;
-    text-decoration: none;
-}
-
-.sidenav .closebtn:hover {
-	color: #679b6c;
-}
-
-.sidenav #minor_nav dt {
-    white-space:nowrap;
-    padding-right:5px;
-    width:100%;
-
-}
-
-.sidenav #minor_nav dd {
-    border:none;
-    padding: 0;
-    font-size: 14px;
-    font-weight: 400;
-    margin: 0;
-    white-space: nowrap;
-}
-
-
-.sidenav #minor_nav dd:hover {
-    background: #888;
-}
-
-.sidenav #minor_nav {
-  margin-top:0px;
-  padding-top:0px;
-  padding-right:0px;
-}
-
 .hero-feature img {
 	margin-bottom: 20px;
 
@@ -409,7 +295,7 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
 }
 
 
-/****** PSD BUTTONS ******/
+/****** PSL BUTTONS ******/
 
 /* Button Icons */
 .btn-psl-icon:link,
@@ -421,7 +307,7 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
     -o-transition: all .3s ease;
 }
 .btn-psl-icon:hover {
-	color: #1e8f13;
+	color: #679b6c;
 	background: none;
 }
 
@@ -468,8 +354,35 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
    color: white;
 }
 
-/** PANEL OVERRIDES -- Match Bootstrap Button Colors **/
+/** In-Page Button to Top of page **/
+.btn-top {
+  border-color: #679b6c;    
+  /*border-radius: 50%;*/
+  padding: 0 4px;
+  color:#679b6c;
+  margin-bottom:4px;
+}
 
+.btn-top:hover {
+color: #fff;
+background-color:#679b6c;
+border-color: #679b6c;
+}   
+
+/****************** 
+  PANEL OVERRIDES
+*******************/
+
+.panel > .panel-heading > .panel-title {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.panel > .panel-body h4 {
+  font-weight: 500;  
+}
+
+/** Match the Bootstrap Button Colors **/
 .panel-success {
     border-color: #5cb85c;
 }
@@ -490,7 +403,7 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
     border-color: #5bc0de;
 }
 
-/* PSD Panel Style */
+/** Styles for a PSL Panel **/
 .panel-psl {
     border-color: #679b6c;
 }
@@ -501,19 +414,16 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
     border-bottom: 1px solid #679b6c;
 }
 
-.panel-psl >.panel-heading > .panel-title {
-	font-weight: 400;
-}
-
-
+/** An Aqua Panel option **/
 .panel-aqua >.panel-heading {
 	color: #fff;
-    background-color: #008CBA;
-    border-bottom: 1px solid #008CBA;
+  background-color: #008CBA;
+  border-bottom: 1px solid #008CBA;
 }
 
-
-/** WELL OVERRIDES **/
+/****************
+  WELL OVERRIDES 
+*****************/
 .well {
     min-height: 20px;
     padding: 18px;
@@ -535,7 +445,7 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
 	letter-spacing: 1px;
 	font-weight: 400;
 	background-color: #343a40;
-    border-top: 4px solid #1e8f13;
+    border-top: 5px solid #679b6c;
 }
 
 .footer a {color: #ccc; text-decoration: none; }
@@ -583,7 +493,7 @@ i.circle:hover {
 .subFooter a:hover { color: #fff; text-decoration: none;}
 
 /****************************************/
-/* PSD HOME-SPECIFIC STYLES             */
+/* PSL HOME-SPECIFIC STYLES             */
 /****************************************/
 
 @media (min-width:800px) {
@@ -682,6 +592,15 @@ table.staff {
     background: white;
 }
 
+#minor_nav p a:hover {
+  color:#337ab7;
+}
+
+.longTitleFix {
+  margin-top: 0px !important;
+  padding-top: 0px !important;
+}
+
 .minor-nav-btn {
 	width: 100%;
 	margin-bottom: 30px;
@@ -718,6 +637,55 @@ table.staff {
 
 .minor_nav dd:hover {
     background: #eee;
+}
+
+
+/****************************************/
+/* IN-PAGE NAVIGATION                   */
+/****************************************/
+.page_nav {
+  font-size: 15px;
+  background: #f8f9fa;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+  padding: 8px 0 5px 15px;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+.page_nav dl {
+  margin: 0;
+  padding: 0;
+}
+.page_nav dd {
+  display: inline-block !important;
+  list-style: none;
+  margin: 0 auto;
+  white-space: nowrap;  
+}
+.page_nav dd:after {
+  content: ' \007C';
+  margin: 0 3px;
+  color: #ccc;  
+}
+
+.page_nav dd:nth-child(1) {
+  font-weight: 500;
+}
+
+.page_nav dd:nth-child(1):after {
+    content: '';
+    margin: 0 5px;
+  }
+.page_nav dd:last-child:after {
+    content: '';
+    margin: 0 10px;
+  }
+.page_nav a {
+
+  padding-bottom: 1px;
+}
+.page_nav a:hover {
+  border-bottom: 1px dotted;
 }
 
 
@@ -765,7 +733,7 @@ table.staff {
 .psl-blockquote {
 	color: #555;
 	font-size: 18px;
-	background: #f4f4f4;
+	background: #f8f9fa; /*#f4f4f4;*/
 	border-left: 10px solid #679b6c;
 	padding: 20px 25px 20px 25px;
 	margin:20px 0 20px 0;
@@ -790,6 +758,11 @@ table.staff {
 	padding-bottom: 5px;
 	padding-top: 5px;
 }
+
+
+/****************************************/
+/* COMPONENTS                           */
+/****************************************/
 
 /*** TAB STYLES ***/
 .tab .nav-tabs{
@@ -872,7 +845,7 @@ table.staff {
     }
 }
 
-/**** STYLES FOR NEWS ARTICLES ****/
+/**** NEWS ARTICLES ****/
 
 .newsArticle .thumbnail {
 	padding: 0;
@@ -935,7 +908,6 @@ table.staff {
 	font-size: 14px;
 	color: #666;
 }
-
 
 .newspaper1 p:first-child:first-letter {
   float: left;
@@ -1049,7 +1021,7 @@ input {
 }
 
 
-/*** CARD STYLES FROM BS4 ***/
+/*** CARD STYLES FROM BOOTSTRAP4 ***/
 .card {
     position: relative;
     display: -webkit-box;
@@ -1076,8 +1048,8 @@ input {
     background-color: rgba(0,0,0,.03);
     border-bottom: 1px solid rgba(0,0,0,.125);
 }
-/*** PAGINATION ***/
 
+/**** PAGINATION ****/
 .pagination>li>a {
 	color: #679b6c;
 }
@@ -1087,7 +1059,7 @@ input {
 }
 
 
-/*** TYPOGRAPHY ***/
+/**** TYPOGRAPHY ****/
 .text-indent {
 	margin-left: 15px;
 }
@@ -1111,7 +1083,16 @@ input {
 
 /*** MISC ***/
 .light-gray-bg {
-	background: #f8f8f8;
+	background: #f8f9fa;
+}
+
+/* Bootstrap .table overrides */
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f8f9fa; /* #f9f9f9; */
+}
+
+.table-hover > tbody > tr:hover {
+  background-color: #ebf2fa; /* #f5f5f5; */
 }
 
 /*** DATASET STYLES ****/
@@ -1132,7 +1113,7 @@ input {
 }
 
 
-/*** STAFF PROFILE PAGES ***/
+/**** STAFF PROFILE PAGES ****/
 .profileHome {
 	margin-bottom: 20px;
 }
@@ -1175,7 +1156,8 @@ input {
   text-align: center;
 }
 
-
+/*** PSL Panel Styles ***/ 
+/* There are two sections in this file with PSL panel styles -- need to consolidate */
   .psl-panel {
     height: 100%;
     position: relative;
@@ -1195,6 +1177,7 @@ input {
     background-color: transparent;
     border: none;
   }
+
 
   .row.is-flex {
     display: flex;
@@ -1416,3 +1399,33 @@ input {
 .ep_tm_page_content > table {
         display:none;
 }
+
+/**************************************************************
+******************** MISC STYLES *******************
+***************************************************************/
+
+/*** provide a bit more definition between sections on a long page
+Use a span for page content, e.g. /data/correlation/details.html **/
+
+.details div {
+  margin-bottom: 30px;
+}
+.details  p {
+  margin-bottom: 10px;
+}
+.details h3 {
+  margin-bottom: 8px;
+}
+/* slightly modified psl callout for use in a long/details page */
+.details .bd-callout-psl {
+  padding: 30px 30px 10px 30px;
+  margin: 30px;
+  font-size: 14px;
+}
+.details .bd-callout-psl h4 {
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 15px;
+  color: #41474d;
+}
+/*****/
