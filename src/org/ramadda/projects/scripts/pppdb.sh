@@ -3,4 +3,5 @@
 #RAMADDA DB file
 #
 mydir=`dirname $0`
-~/bin/seesv.sh  -cleaninput -progress 5000 -db "file:${mydir}/ppp.properties" "$@" > pppdb.xml
+source "${mydir}/init.sh"
+seesv  -cleaninput -progress 5000 -db "file:${mydir}/ppp.properties" "$@" > pppdb.xml
