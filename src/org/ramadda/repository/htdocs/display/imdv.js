@@ -4689,7 +4689,7 @@ MapGlyph.prototype = {
 	}
 
 	['right','left','bottom','top'].forEach(d=>{
-	    if(Utils.stringDefined(style[d])) css+=HU.css(d,style[d]);
+	    if(Utils.stringDefined(style[d])) css+=HU.css(d,HU.getDimension(style[d]));
 	});
 	jqid(this.getId()).remove();
 	let text = this.style.text??"";
