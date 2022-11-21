@@ -4,7 +4,8 @@
 #
 mydir=`dirname $0`
 source "${mydir}/init.sh"
-seesv  -cleaninput -progress 5000 -sample 0.001 \
+#-sample 0.001 \
+seesv  -cleaninput -progress 5000 \
 	  -firstcolumns "borrower_.*,CurrentApprovalAmount" \
 	  -notcolumns ".*PROCEED.*" \
 	  -case "BorrowerCity,ServicingLenderCity,ProjectCity,Ethnicity,OriginatingLenderCity" proper \
