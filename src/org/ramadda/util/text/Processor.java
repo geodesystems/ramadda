@@ -1248,7 +1248,7 @@ public abstract class Processor extends SeesvOperator {
      * @version        $version$, Tue, Nov 19, '19
      * @author         Enter your name here...
      */
-    public static class Dots extends Processor {
+    public static class Progress extends Processor {
 
         /**  */
         int every;
@@ -1256,12 +1256,14 @@ public abstract class Processor extends SeesvOperator {
         /**  */
         int printCnt = 0;
 
+	long t1;
+	
         /**
          * _more_
          *
          * @param every _more_
          */
-        public Dots(int every) {
+        public Progress(int every) {
             this.every = every;
         }
 
@@ -1292,8 +1294,11 @@ public abstract class Processor extends SeesvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            rowCnt++;
+	    if(rowCnt++==0) {
+		t1 = System.currentTimeMillis();
+	    }
 	    ctx.flush();
+	    long t2 = System.currentTimeMillis();
             if (every == 0) {
                 System.err.println(rowCnt);
             } else if ((rowCnt) % every == 0) {
@@ -1302,7 +1307,6 @@ public abstract class Processor extends SeesvOperator {
                 System.err.print(pre
                                  + StringUtil.padRight("#" + rowCnt, 10,
                                      " "));
-                //                System.err.print(".");
             }
 
             return row;

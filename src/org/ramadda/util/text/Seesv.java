@@ -5000,7 +5000,7 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(new String[]{CMD_PROGRESS,"-dots"},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Dots(Integer.parseInt(args.get(++i))));
+		ctx.addProcessor(new Processor.Progress(Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
