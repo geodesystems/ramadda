@@ -2723,9 +2723,8 @@ public abstract class Processor extends SeesvOperator {
 							  "false"));
 
                 if (isindex) {
-                    inner.append(XmlUtil.tag("property",
-                                             XmlUtil.attrs(new String[] {
-						     "name", "isindex", "value", "true" })));
+		    attrs.append(XmlUtil.attrs(new String[] { "isindex","true"}));
+
                 }
 
                 boolean doStats = "true".equals(getDbProp(colId, "dostats",
@@ -2733,10 +2732,7 @@ public abstract class Processor extends SeesvOperator {
 
 
                 if (doStats) {
-                    inner.append(XmlUtil.tag("property",
-                                             XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "dostats", "value", "true" })));
+		    attrs.append(XmlUtil.attrs(new String[] { "dostats","true"}));
                 }
                 if (Seesv.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
