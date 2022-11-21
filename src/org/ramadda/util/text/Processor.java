@@ -1955,6 +1955,7 @@ public abstract class Processor extends SeesvOperator {
                 }
             } else {
                 for (int colIdx = 0; colIdx < values.size(); colIdx++) {
+		    if(!headerRow.indexOk(colIdx)) continue;
                     Object v     = values.get(colIdx);
                     String sv    = v.toString();
                     String field = headerRow.getString(colIdx);
