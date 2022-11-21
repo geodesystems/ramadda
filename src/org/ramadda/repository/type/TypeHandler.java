@@ -7586,9 +7586,7 @@ public class TypeHandler extends RepositoryManager {
             SqlUtil.readString(
                 getRepository().getDatabaseManager().getIterator(stmt), 1);
         long t3 = System.currentTimeMillis();
-
-
-        //      Utils.printTimes("Key:"+ key +" times:",t1,t2,t3);
+	Utils.printTimes("Key:"+ key +" times:",t1,t2,t3);
         set = new HashSet();
         set.addAll(Misc.toList(values));
         columnEnumValues.put(key, set);
