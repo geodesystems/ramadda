@@ -7,8 +7,9 @@ source "${mydir}/init.sh"
 #-sample 0.001 \
 seesv  -cleaninput -progress 5000 \
 	  -firstcolumns "borrower_.*,CurrentApprovalAmount" \
-	  -notcolumns ".*PROCEED.*" \
-	  -case "BorrowerCity,ServicingLenderCity,ProjectCity,Ethnicity,OriginatingLenderCity" proper \
+	  -change borrowername "  +" " " \
+	  -notcolumns ".*PROCEED.*,originating.*,sbaofficecode,loannumber,processingmethod,servicinglenderlocationid,sbaofficecode,originatinglenderlocationid,HubzoneIndicator,lmiindicator,businessagedescription" \
+	  -case "BorrowerCity,ServicingLenderCity,ProjectCity,Ethnicity" proper \
 	  -denormalize ${mydir}/naics.csv 0 1 naicscode "" replace \
 	  -p "$@" 
 
