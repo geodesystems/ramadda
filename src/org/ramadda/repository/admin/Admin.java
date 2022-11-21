@@ -2294,6 +2294,7 @@ public class Admin extends RepositoryManager {
                     table.append("<table><tr>");
                     for (int i = 0; i < rsmd.getColumnCount(); i++) {
                         String col = rsmd.getColumnLabel(i + 1);
+			System.err.println("COL:"+ col);
                         if (col.equals("QUERY PLAN")) {
                             raw = new StringBuilder();
                         }
