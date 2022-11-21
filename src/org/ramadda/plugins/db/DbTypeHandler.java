@@ -2973,7 +2973,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			if (valueList.size() > 10000) {
 			    totalCnt[0] += valueList.size();
 			    long t1 = System.currentTimeMillis();
-			    doStore(entry, valueList, true);
+			    //			    Connection        connection = getDatabaseManager().getConnection();
+			    //			    connection.setAutoCommit(false);
+			    //			    doStore(entry, valueList, true,connection);
+			    //			    connection.commit();   connection.setAutoCommit(true);
 			    long t2 = System.currentTimeMillis();
 			    Utils.printTimes("DbTypeHandler.bulkUpload: stored: "
 					     + totalCnt[0], t1, t2);
@@ -3275,6 +3278,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     protected void doStore(Entry entry, List<Object[]> valueList,
                            boolean isNew)
             throws Exception {
+        Connection        connection = getDatabaseManager().getConnection();
+	try {
+	    connection.setAutoCommit(false);
+	    doStore(entry, valueList,isNew,connection);
+	    connection.commit();
+	    connection.setAutoCommit(true);
+        } finally {
+	    connection.close();
+            dbChanged(entry);
+        }
+    }
+
+    protected void doStore(Entry entry, List<Object[]> valueList,
+                           boolean isNew,Connection connection)
+            throws Exception {
         if (valueList.size() == 0) {
             return;
         }
@@ -3282,28 +3300,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String            sql        = makeInsertOrUpdateSql(entry, (isNew
                 ? null
                 : dbid));
-        Connection        connection = getDatabaseManager().getConnection();
         PreparedStatement stmt       = connection.prepareStatement(sql);
-        connection.setAutoCommit(false);
-        //            getRepository().getDatabaseManager().getPreparedStatement(sql);
-
-        try {
-            for (Object[] values : valueList) {
-                int stmtIdx = tableHandler.setStatement(entry, values, stmt,
-                                  isNew);
-                if ( !isNew) {
-                    stmt.setString(stmtIdx, dbid);
-                }
-                stmt.execute();
-            }
-            connection.commit();
-            connection.setAutoCommit(true);
-        } finally {
-            getRepository().getDatabaseManager().closeAndReleaseConnection(
-                stmt);
-            dbChanged(entry);
-        }
-
+	for (Object[] values : valueList) {
+	    int stmtIdx = tableHandler.setStatement(entry, values, stmt,
+						    isNew);
+	    if ( !isNew) {
+		stmt.setString(stmtIdx, dbid);
+	    }
+	    stmt.execute();
+	}
+	stmt.close();
     }
 
 
