@@ -744,7 +744,7 @@ public abstract class ValueIterator implements DbConstants {
             if (forPrint) {
                 request.put(ARG_TEMPLATE, "empty");
             }
-            makeResult(".html", "text/html");
+            makeResult("", "text/html");
 	    if(!embedded) {
 		db.getEntryManager().addEntryHeader(request, entry, result);
 		Appendable sb = getBuffer();
