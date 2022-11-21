@@ -2975,7 +2975,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			    long t1 = System.currentTimeMillis();
 			    //			    Connection        connection = getDatabaseManager().getConnection();
 			    //			    connection.setAutoCommit(false);
-			    //			    doStore(entry, valueList, true,connection);
+			    doStore(entry, valueList, true);
 			    //			    connection.commit();   connection.setAutoCommit(true);
 			    long t2 = System.currentTimeMillis();
 			    Utils.printTimes("DbTypeHandler.bulkUpload: stored: "
