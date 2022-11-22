@@ -5576,7 +5576,7 @@ public class TypeHandler extends RepositoryManager {
                 propertyValue.substring("file:".length()));
             delimiter = "\n";
         }
-        List<String> tmp = Utils.split(propertyValue, delimiter, true, true);
+        List<String> tmp = Utils.split(propertyValue, delimiter,true,false);
 
         return tmp;
     }
@@ -7454,7 +7454,16 @@ public class TypeHandler extends RepositoryManager {
             Entry entry)
             throws Exception {
         HashSet              set  = getEnumValuesInner(request, column,
-                                        entry);
+						       entry);
+
+	//If we get back null then the column should have values
+	if(set==null) {
+	    List<TwoFacedObject> tmp = column.getValues();
+	    if(tmp!=null) {
+		return tmp;
+	    }
+	}
+
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         List                 tmp  = new ArrayList();
         tmp.addAll(set);
@@ -7543,6 +7552,7 @@ public class TypeHandler extends RepositoryManager {
                                        Entry entry)
             throws Exception {
         Clause clause = getEnumValuesClause(column, entry);
+	boolean didClause= false;
         if (request != null) {
             List<Clause> ands = new ArrayList<Clause>();
             for (Column otherCol : getColumns()) {
@@ -7559,6 +7569,7 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
             if (ands.size() > 0) {
+		didClause = true;
                 if (clause == null) {
                     clause = Clause.and(ands);
                 } else {
@@ -7567,6 +7578,16 @@ public class TypeHandler extends RepositoryManager {
                 //                System.err.println("col:" + column + " Clause:" + clause);
             }
         }
+
+	//If we have no other clauses and the column has values defined then pass back null
+	//this tells the caller to get the values from the column
+	if(!didClause) {
+	    List<TwoFacedObject> tmp = column.getValues();
+	    if(tmp!=null && tmp.size()>0) {
+		return null;
+	    }
+	}
+
 
         //Use the clause string as part of the key
         String  key = getEnumValueKey(column, entry) + ((clause == null)
@@ -7586,7 +7607,7 @@ public class TypeHandler extends RepositoryManager {
             SqlUtil.readString(
                 getRepository().getDatabaseManager().getIterator(stmt), 1);
         long t3 = System.currentTimeMillis();
-	Utils.printTimes("Key:"+ key +" times:",t1,t2,t3);
+	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
         set = new HashSet();
         set.addAll(Misc.toList(values));
         columnEnumValues.put(key, set);
