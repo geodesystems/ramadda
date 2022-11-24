@@ -372,7 +372,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**  */
-    List<String[]> actions = new ArrayList<String[]>();
+    List<Action> actions = new ArrayList<Action>();
 
 
     /**
@@ -519,9 +519,12 @@ public class TypeHandler extends RepositoryManager {
             List actionNodes = XmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
                 Element actionNode = (Element) actionNodes.get(i);
-                actions.add(new String[] {
-                    XmlUtil.getAttribute(actionNode, "name"),
-                    XmlUtil.getAttribute(actionNode, "label") });
+                actions.add(new Action(
+				       XmlUtil.getAttribute(actionNode, "name"),
+				       XmlUtil.getAttribute(actionNode, "label"),
+				       XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
+				       XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
+				       XmlUtil.getAttribute(actionNode, "canedit","false").equals("true")));
             }
 
 
@@ -2861,15 +2864,24 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
-            throws Exception {
+	throws Exception {
 
-        if ( !request.getUser().getAnonymous()) {
-            for (String[] action : actions) {
-                links.add(new Link(getEntryActionUrl(request, entry,
-                        action[0]), ICON_EDIT, action[1],
-                                    OutputType.TYPE_FILE));
-            }
-        }
+	for (Action action : actions) {
+	    if(action.canEdit) {
+		if(!getAccessManager().canDoEdit(request, entry)) {
+		    continue;
+		}
+	    }
+
+	    if(action.forUser) {
+		if (request.getUser().getAnonymous()) {
+		    continue;
+		}
+	    }
+	    links.add(new Link(getEntryActionUrl(request, entry,
+						 action.id), action.icon, action.label,
+			       OutputType.TYPE_FILE));
+	}
 
         if (parent != null) {
             parent.getEntryLinks(request, entry, state, links);
@@ -7981,5 +7993,21 @@ public class TypeHandler extends RepositoryManager {
     public interface Entries extends Supplier<List<Entry>> {
 	public List<Entry> get();
     }
+
+    public static class Action {
+	private String id;
+	private String label;
+	private String icon;
+	private boolean forUser;
+	private boolean canEdit;
+	Action(String id, String label, String icon,boolean forUser,boolean canEdit) {
+	    this.id = id;
+	    this.label = label;
+	    this.icon = icon;
+	    this.forUser = forUser;
+	    this.canEdit = canEdit;
+	}
+    }
+
 
 }
