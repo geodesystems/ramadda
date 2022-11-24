@@ -2392,6 +2392,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("what","firstname|lastname|fullname|etc"),
 		new Arg(ARG_COLUMNS,"Columns to change. Of none given then add the fake value",ATTR_TYPE,TYPE_COLUMNS)),		
 
+        new Cmd(CMD_EDIT, "Hand edit a column (command line only). ESC-stop, BLANK-skip",
+                new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN)),
 	/** *  Add values * */
         new Category("Values"),
         new Cmd(CMD_MD, "Make a message digest of the column values",
@@ -2750,6 +2752,8 @@ public class Seesv implements SeesvCommands {
 	new Cmd(CMD_PRINT, "Delimited output"),
 	new Cmd(CMD_PRINTDELIM, "Print with delimited output", ARG_LABEL, "Delimited Print",
 		new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
+        new Cmd(CMD_OUTPUT, "Write to the given file (command line only)",
+                new Arg("file", "The file")),
         new Cmd(CMD_COMMENT, "Add a comment to the output",
 		new Arg("comment","The comment")),
         new Cmd(CMD_OUTPUTPREFIX, "Specify text to add to the beginning of the file",
@@ -5121,6 +5125,27 @@ public class Seesv implements SeesvCommands {
 	    });	
 	
 
+	defineFunction(CMD_OUTPUT,1,(ctx,args,i) -> {
+		if(!commandLine) throw new IllegalArgumentException(CMD_OUTPUT+" only enabled for command line usage");
+		String file  = args.get(++i);
+		try {
+		    checkOkToWrite(file);
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+		setOutputFile(new File(file));
+		ctx.setOutputFile(new File(file));
+		return i;
+	    });	
+
+
+	defineFunction(CMD_EDIT,1,(ctx,args,i) -> {
+		if(!commandLine) throw new IllegalArgumentException(CMD_EDIT+" only enabled for command line usage");
+		ctx.addProcessor(new Converter.Editor(args.get(++i)));
+		return i;
+	    });	
+
+
 	defineFunction(new String[]{"-tocsv",CMD_PRINT,"-p",CMD_PRINTDELIM}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		if (ctx.getProperty("seenPrint")!=null) {
@@ -5637,6 +5662,8 @@ public class Seesv implements SeesvCommands {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+
+
 	if(args.length>0 && args[0].equals("-s3")) {
 	    S3File.main(args);
 	    return;

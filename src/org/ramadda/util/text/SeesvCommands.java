@@ -292,6 +292,7 @@ public interface SeesvCommands {
     public static final String CMD_BACKGROUND="-background";    
     public static final String CMD_RAW="-raw";
     public static final String CMD_TABLE="-table";
+    public static final String CMD_EDIT="-edit";
     public static final String CMD_COLS="-cols";
     public static final String CMD_STATS="-stats";
     public static final String CMD_TORECORD="-torecord";
@@ -299,6 +300,7 @@ public interface SeesvCommands {
     public static final String CMD_TOJSON="-tojson";
     public static final String CMD_TODB="-todb";
     public static final String CMD_TEMPLATE="-template";
+    public static final String CMD_OUTPUT="-o";
     public static final String CMD_SUBD="-subd";
     public static final String CMD_CHUNK="-chunk";
     public static final String CMD_MAPTILES="-maptiles";

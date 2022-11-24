@@ -166,6 +166,70 @@ public abstract class Converter extends Processor {
         }
     }
 
+
+    public static class Editor extends Converter {
+	private Row header;
+
+	private BufferedReader br;
+
+	private boolean done = false;
+	
+	private Hashtable<String,String> seen = new Hashtable<String,String>();
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public Editor(String col) {
+            super(col);
+	    br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(done) return row;
+	    if(rowCnt++==0) {
+		header = row;
+		return row;
+	    }
+	    
+            int col  = getIndex(ctx);
+	    if(!header.indexOk(col) || !row.indexOk(col)) return row;
+	    String h = header.getString(col);
+	    String s = row.getString(col);
+	    String clear = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
+	    System.err.print(clear);
+	    String seenIt = seen.get(s);
+	    if(seenIt!=null) {
+		row.set(col,seenIt);
+		return row;
+	    }
+	    while(true) {
+		System.err.print(h+"("+ s+"):");
+		try {
+		    String v= br.readLine();
+		    if(v.length()==0) return row;
+		    if(v.length()==1 && v.charAt(0)==0x1b) {
+			System.err.print(clear);
+			done = true;
+			return row;
+		    }
+		    row.set(col,v);
+		    seen.put(s,v);
+		    return row;
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    }
+        }
+    }
+    
     public static class Highlighter extends Converter {
 	String prefix;
 

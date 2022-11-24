@@ -1600,6 +1600,7 @@ public class TextReader implements Cloneable {
      */
     public void setOutputFile(File file) {
         outputFile = file;
+	output = null;
     }
 
     /**
