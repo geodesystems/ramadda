@@ -149,6 +149,9 @@ public interface HtmlUtilsConstants {
     public static final String SIZE_90 = "  size=\"90\" ";
 
     /** _more_ */
+    public static final String SIZE_100 = "  size=\"100\" ";    
+
+    /** _more_ */
     public static final String ENTITY_NBSP = "&nbsp;";
 
     /** _more_ */
