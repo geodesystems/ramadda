@@ -516,15 +516,16 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private static final String ARG_DOWNLOAD = "download";
 
 
+    private static final String DOWNLOAD_TITLE="PurpleAir Download";
     public Result processGetHistory(Request request, Entry entry)
             throws Exception {
         StringBuilder sb      = new StringBuilder();
         if (apiKey == null) {
-	    getPageHandler().entrySectionOpen(request, entry, sb, "PurpleAir Download History");
+	    getPageHandler().entrySectionOpen(request, entry, sb, DOWNLOAD_TITLE);
             sb.append(getPageHandler().showDialogWarning("No API Key"));
 	    getPageHandler().entrySectionClose(request, entry, sb);
 	    return getEntryManager().addEntryHeader(request, entry,
-						    new Result("Download History", sb));
+						    new Result(DOWNLOAD_TITLE, sb));
 	}
 
 	Date startTimestamp=null;
@@ -587,7 +588,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    }
         }
 	
-	getPageHandler().entrySectionOpen(request, entry, sb, "PurpleAir Download History");
+	getPageHandler().entrySectionOpen(request, entry, sb, DOWNLOAD_TITLE);
+
+	sb.append(getWikiManager().wikify(request,"+note\nThis downloads historic sensor data from PurpleAir\n-note"));
+
 
 	if(messageSB.length()>0) {
 	    sb.append(messageSB);
@@ -620,7 +624,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		  FIELDS_DOWNLOAD_ALL.replace(",",", "));
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return getEntryManager().addEntryHeader(request, entry,
-						new Result("Download History", sb));
+						new Result(DOWNLOAD_TITLE, sb));
     }
     
 
