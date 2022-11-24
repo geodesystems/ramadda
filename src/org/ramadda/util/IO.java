@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -207,7 +207,7 @@ public class IO {
      * @throws FileNotFoundException _more_
      */
     public static InputStream getInputStream(String filename)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class);
     }
 
@@ -216,14 +216,14 @@ public class IO {
      *
      * @param filename _more_
      * @param convertZipIfNeeded _more_
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      * @throws FileNotFoundException _more_
      */
     public static InputStream getInputStream(String filename,
                                              boolean convertZipIfNeeded)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class, convertZipIfNeeded);
     }
 
@@ -242,7 +242,7 @@ public class IO {
      * @throws FileNotFoundException _more_
      */
     public static InputStream getInputStream(String filename, Class origin)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         checkFile(filename);
         //Check for malformed URL
         if (filename.matches("(?i)^https:/[^/]+.*")) {
@@ -270,14 +270,14 @@ public class IO {
      * @param filename _more_
      * @param origin _more_
      * @param convertZipIfNeeded _more_
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      * @throws FileNotFoundException _more_
      */
     public static InputStream getInputStream(String filename, Class origin,
                                              boolean convertZipIfNeeded)
-            throws FileNotFoundException, Exception {
+	throws FileNotFoundException, Exception {
         InputStream inputStream = getInputStream(filename, origin);
         if (convertZipIfNeeded) {
             return convertInputStream(filename, inputStream);
@@ -298,7 +298,7 @@ public class IO {
      */
     public static String readInputStream(InputStream is) throws IOException {
         return org.apache.commons.io.IOUtils.toString(is,
-                StandardCharsets.UTF_8);
+						      StandardCharsets.UTF_8);
         //        return IOUtil.readContents(is);
     }
 
@@ -313,7 +313,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String readChannel(ReadableByteChannel channel)
-            throws Exception {
+	throws Exception {
         ByteArrayOutputStream bos       = new ByteArrayOutputStream();
         ByteBuffer            buffer    = ByteBuffer.allocate(32000);
         int                   bytesRead = 0;
@@ -387,8 +387,8 @@ public class IO {
      * @throws IOException _more_
      */
     public static InputStream doMakeInputStream(String filename,
-            boolean buffered)
-            throws IOException {
+						boolean buffered)
+	throws IOException {
         return doMakeInputStream(filename, buffered, 0);
     }
 
@@ -405,8 +405,8 @@ public class IO {
      * @throws IOException _more_
      */
     private static InputStream doMakeInputStream(String filename,
-            boolean buffered, int tries)
-            throws IOException {
+						 boolean buffered, int tries)
+	throws IOException {
 
         checkFile(filename);
         int         size = 8000;
@@ -433,16 +433,16 @@ public class IO {
                     int               response = huc.getResponseCode();
                     //Check for redirect
                     if ((response == HttpURLConnection
-                            .HTTP_MOVED_TEMP) || (response == HttpURLConnection
-                            .HTTP_MOVED_PERM) || (response == HttpURLConnection
-                            .HTTP_SEE_OTHER)) {
+			 .HTTP_MOVED_TEMP) || (response == HttpURLConnection
+					       .HTTP_MOVED_PERM) || (response == HttpURLConnection
+								     .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
                         System.err.println("redirect from:" + url);
                         System.err.println("redirect to:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
-                                "Too many nested URL fetches:" + filename);
+							       "Too many nested URL fetches:" + filename);
                         }
                         //call this method recursively with the new URL
                         handlingRedirect = true;
@@ -459,7 +459,7 @@ public class IO {
                 System.err.println("Error URL: " + filename);
                 String msg = "An error has occurred";
                 if ((connection != null)
-                        && (connection instanceof HttpURLConnection)) {
+		    && (connection instanceof HttpURLConnection)) {
                     HttpURLConnection huc  = (HttpURLConnection) connection;
                     int               code = huc.getResponseCode();
                     if (code == 403) {
@@ -469,7 +469,7 @@ public class IO {
                         try {
                             InputStream err = huc.getErrorStream();
                             String response = new String(readBytes(err,
-                                                  10000));
+								   10000));
                             msg += " Message: " + response;
                         } catch (Exception ignoreIt) {}
                     }
@@ -507,13 +507,13 @@ public class IO {
      *
      * @param filename _more_
      * @param is _more_
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      */
     public static InputStream convertInputStream(String filename,
-            InputStream is)
-            throws Exception {
+						 InputStream is)
+	throws Exception {
         if (filename.toLowerCase().endsWith(".gz")) {
             is = new GZIPInputStream(is);
         }
@@ -551,7 +551,7 @@ public class IO {
      * @throws IOException _more_
      */
     public static byte[] readBytes(InputStream is, int maxSize)
-            throws IOException {
+	throws IOException {
         int    totalRead = 0;
         byte[] content   = new byte[100000];
         try {
@@ -642,7 +642,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static boolean writeFile(URL url, OutputStream os)
-            throws Exception {
+	throws Exception {
         if (url.getProtocol().equals("ftp")) {
             FTPClient ftpClient = null;
             try {
@@ -660,7 +660,7 @@ public class IO {
             }
         } else {
             InputStream is = Utils.getInputStream(url.toString(),
-                                 Utils.class);
+						  Utils.class);
             IOUtil.writeTo(is, os);
 
             return true;
@@ -694,7 +694,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String readContents(String contentName, Class clazz)
-            throws Exception {
+	throws Exception {
         checkFile(contentName);
         boolean isUrl = false;
         try {
@@ -734,7 +734,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String readContents(String contentName, String dflt)
-            throws Exception {
+	throws Exception {
         checkFile(contentName);
         boolean isUrl = false;
         try {
@@ -817,7 +817,7 @@ public class IO {
      * @throws Exception _more_
      */
     private static InputStream getInputStream(URL url, int tries)
-            throws Exception {
+	throws Exception {
         checkFile(url.toString());
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
@@ -826,14 +826,14 @@ public class IO {
             HttpURLConnection huc      = (HttpURLConnection) connection;
             int               response = huc.getResponseCode();
             if ((response == HttpURLConnection.HTTP_MOVED_TEMP)
-                    || (response == HttpURLConnection.HTTP_MOVED_PERM)
-                    || (response == HttpURLConnection.HTTP_SEE_OTHER)) {
+		|| (response == HttpURLConnection.HTTP_MOVED_PERM)
+		|| (response == HttpURLConnection.HTTP_SEE_OTHER)) {
                 String newUrl = connection.getHeaderField("Location");
                 //                System.err.println(newUrl);
                 //Don't follow too many redirects
                 if (tries > 10) {
                     throw new IllegalArgumentException(
-                        "Too many nested URL fetches:" + url);
+						       "Too many nested URL fetches:" + url);
                 }
 
                 //call this method recursively with the new URL
@@ -870,7 +870,7 @@ public class IO {
      * @throws Exception _more_
      */
     public static String doPost(URL url, String body, String... args)
-            throws Exception {
+	throws Exception {
         return doHttpRequest("POST", url, body, args);
     }
 
@@ -888,7 +888,7 @@ public class IO {
      */
     public static String doHttpRequest(String action, URL url, String body,
                                        String... args)
-            throws Exception {
+	throws Exception {
         //        URL url = new URL(request); 
         checkFile(url);
         HttpURLConnection connection =
@@ -913,9 +913,9 @@ public class IO {
         }
         try {
             return readString(
-                new BufferedReader(
-                    new InputStreamReader(
-                        connection.getInputStream(), "UTF-8")));
+			      new BufferedReader(
+						 new InputStreamReader(
+								       connection.getInputStream(), "UTF-8")));
         } catch (Exception exc) {
             System.err.println("IO: error doing http request:" + action
                                + "\nURL:" + url + "\nreturn code:"
@@ -943,8 +943,8 @@ public class IO {
     public static String readError(HttpURLConnection conn) {
         try {
             return readString(
-                new BufferedReader(
-                    new InputStreamReader(conn.getErrorStream(), "UTF-8")));
+			      new BufferedReader(
+						 new InputStreamReader(conn.getErrorStream(), "UTF-8")));
 
         } catch (Exception exc) {
             return "No error message";
@@ -985,6 +985,12 @@ public class IO {
      * @throws Exception _more_
      */
     public static String doGet(URL url, String... args) throws Exception {
+	Result result = doGetResult(url,args);
+	if(result.error) throw new RuntimeException(result.result);
+	return result.result;
+    }
+
+    public static Result doGetResult(URL url, String... args) throws Exception {	
         checkFile(url);
         HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
@@ -1000,9 +1006,9 @@ public class IO {
         }
         try {
             BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(
-                                        connection.getInputStream(),
-                                        "UTF-8"));
+						   new InputStreamReader(
+									 connection.getInputStream(),
+									 "UTF-8"));
 
             StringBuilder sb = new StringBuilder();
             String        line;
@@ -1010,44 +1016,149 @@ public class IO {
                 sb.append(line);
                 sb.append("\n");
             }
-
-            return sb.toString();
-        } catch (Exception exc) {
-            System.err.println("Error reading URL:" + url + " code:"
+            return new Result(sb.toString());
+        } catch (Throwable exc) {
+	    String error = readError(connection);
+            System.err.println("Error reading URL:" + url + "\ncode:"
                                + connection.getResponseCode());
-            System.err.println(readError(connection));
+            System.err.println("Error:"+ error);
             System.err.println("Fields:" + connection.getHeaderFields());
-
-            throw exc;
+	    return new Result(error,connection.getResponseCode(),true,exc);
             //            System.err.println(connection.getContent());
         }
     }
+
+    public static class Result {
+	int code;
+	boolean error = false;
+	String result;
+	Throwable exc;
+	InputStream inputStream;
+	Result(String result) {
+	    this.result = result;
+	}
+	Result(String result,int code,boolean error,Throwable exc) {
+	    this.result = result;
+	    this.code = code;
+	    this.error = error;
+	    this.exc = exc;
+	}
+	Result(InputStream inputStream) {
+	    this.inputStream = inputStream;
+	}
+	
+	/**
+	   Set the Result property.
+
+	   @param value The new value for Result
+	**/
+	public void setResult (String value) {
+	    result = value;
+	}
+
+	/**
+	   Get the Result property.
+
+	   @return The Result
+	**/
+	public String getResult () {
+	    return result;
+	}
+
+	/**
+	   Set the Code property.
+
+	   @param value The new value for Code
+	**/
+	public void setCode (int value) {
+	    code = value;
+	}
+
+	/**
+	   Get the Code property.
+
+	   @return The Code
+	**/
+	public int getCode () {
+	    return code;
+	}
+
+	/**
+	   Set the Error property.
+
+	   @param value The new value for Error
+	**/
+	public void setError (boolean value) {
+	    error = value;
+	}
+
+	/**
+	   Get the Error property.
+
+	   @return The Error
+	**/
+	public boolean getError () {
+	    return error;
+	}
+
+	/**
+	   Set the InputStream property.
+
+	   @param value The new value for InputStream
+	**/
+	public void setInputStream (InputStream value) {
+	    inputStream = value;
+	}
+
+	/**
+	   Get the InputStream property.
+
+	   @return The InputStream
+	**/
+	public InputStream getInputStream () {
+	    return inputStream;
+	}
+
+
+
+    }
+
 
     /**
      *
      * @param url _more_
      * @param args _more_
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      */
-    public static InputStream getInputStreamFromGet(URL url, String... args)
-            throws Exception {
-        checkFile(url);
+    public static Result  getInputStreamFromGet(URL url, String... args)
+	throws Exception {
+	checkFile(url);
+
         HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
-        //        connection.setDoOutput(true);
-        //        connection.setDoInput(true);
-        //        connection.setInstanceFollowRedirects(false);
-        connection.setRequestMethod("GET");
-        //        connection.setRequestProperty("charset", "utf-8");
-        //      System.err.println("header:");
-        for (int i = 0; i < args.length; i += 2) {
-            //            System.err.println(args[i]+":" + args[i+1]);
-            connection.setRequestProperty(args[i], args[i + 1]);
+	try {
+	    //        connection.setDoOutput(true);
+	    //        connection.setDoInput(true);
+	    //        connection.setInstanceFollowRedirects(false);
+	    connection.setRequestMethod("GET");
+	    //        connection.setRequestProperty("charset", "utf-8");
+	    //      System.err.println("header:");
+	    for (int i = 0; i < args.length; i += 2) {
+		//            System.err.println(args[i]+":" + args[i+1]);
+		connection.setRequestProperty(args[i], args[i + 1]);
+	    }
+	    return new Result(connection.getInputStream());
+        } catch (Throwable exc) {
+	    String error = readError(connection);
+            System.err.println("Error reading URL:" + url + "\ncode:"
+                               + connection.getResponseCode());
+            System.err.println("Error:"+ error);
+            System.err.println("Fields:" + connection.getHeaderFields());
+	    return new Result(error,connection.getResponseCode(),true,exc);
+            //            System.err.println(connection.getContent());
         }
-
-        return connection.getInputStream();
     }
 
 
@@ -1189,7 +1300,7 @@ public class IO {
          * _more_
          *
          * @param file _more_
-          * @return _more_
+	 * @return _more_
          */
         public boolean canReadFile(String file);
     }
@@ -1215,14 +1326,14 @@ public class IO {
      * @throws Exception On badness
      */
     public static void concat(List<String> files, OutputStream out)
-            throws Exception {
+	throws Exception {
         PrintWriter          writer    = new PrintWriter(out);
         String               delimiter = ",";
         List<BufferedReader> readers   = new ArrayList<BufferedReader>();
         for (String file : files) {
             readers.add(
-                new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file))));
+			new BufferedReader(
+					   new InputStreamReader(new FileInputStream(file))));
         }
         while (true) {
             int nullCnt = 0;
@@ -1260,13 +1371,13 @@ public class IO {
      */
     public static void append(List<String> files, OutputStream out,
                               int rowSkip)
-            throws Exception {
+	throws Exception {
         PrintWriter writer    = new PrintWriter(out);
         String      delimiter = ",";
         for (int i = 0; i < files.size(); i++) {
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        new FileInputStream(files.get(i))));
+						   new InputStreamReader(
+									 new FileInputStream(files.get(i))));
             int skip = rowSkip;
             while (true) {
                 String line = br.readLine();
@@ -1404,42 +1515,42 @@ public class IO {
 
 
         ucar.unidata.util.Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    PrintWriter pw = new PrintWriter(pos);
-                    for (int i = 0; i < 10; i++) {
-                        pw.println("LINE:" + i);
-                        pw.flush();
-                        ucar.unidata.util.Misc.sleep(500);
-                    }
-                    System.err.println("done writing");
-                    pos.close();
-                } catch (Exception exc) {
-                    System.err.println("write err:" + exc);
-                    exc.printStackTrace();
-                }
-            }
-        });
+		public void run() {
+		    try {
+			PrintWriter pw = new PrintWriter(pos);
+			for (int i = 0; i < 10; i++) {
+			    pw.println("LINE:" + i);
+			    pw.flush();
+			    ucar.unidata.util.Misc.sleep(500);
+			}
+			System.err.println("done writing");
+			pos.close();
+		    } catch (Exception exc) {
+			System.err.println("write err:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
 
         ucar.unidata.util.Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    InputStreamReader isr =
-                        new InputStreamReader(pis,
-                            java.nio.charset.StandardCharsets.UTF_8);
-                    BufferedReader reader = new BufferedReader(isr);
-                    String         line;
-                    while ((line = reader.readLine()) != null) {
-                        System.err.println("read:" + line);
-                    }
-                    running[0] = false;
-                    System.err.println("read: done");
-                } catch (Exception exc) {
-                    System.err.println("write err:" + exc);
-                    exc.printStackTrace();
-                }
-            }
-        });
+		public void run() {
+		    try {
+			InputStreamReader isr =
+			    new InputStreamReader(pis,
+						  java.nio.charset.StandardCharsets.UTF_8);
+			BufferedReader reader = new BufferedReader(isr);
+			String         line;
+			while ((line = reader.readLine()) != null) {
+			    System.err.println("read:" + line);
+			}
+			running[0] = false;
+			System.err.println("read: done");
+		    } catch (Exception exc) {
+			System.err.println("write err:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
 
 
         while (running[0]) {
@@ -1480,59 +1591,59 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut) {
-            @Override
-            public void println(Object x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(Object x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
-            @Override
-            public void println(boolean x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(boolean x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
+		@Override
+		public void println(Object x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(Object x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
+		@Override
+		public void println(boolean x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(boolean x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
 
-            @Override
-            public void println(String x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(String x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
-            @Override
-            public void println(int x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.println(x);
-            }
-            @Override
-            public void print(int x) {
-                oldErr.println("**************   ERROR\n"
-                               + Utils.getStack(10) + "\n************");
-                oldErr.print(x);
-            }
+		@Override
+		public void println(String x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(String x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
+		@Override
+		public void println(int x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(int x) {
+		    oldErr.println("**************   ERROR\n"
+				   + Utils.getStack(10) + "\n************");
+		    oldErr.print(x);
+		}
 
 
 
-        });
+	    });
     }
 
 
@@ -1553,20 +1664,20 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setOut(new PrintStream(oldErr) {
-            @Override
-            public void print(Object x) {
-                oldOut.print("**************   OUT\n" + Utils.getStack(10)
-                             + "\n************");
-                oldOut.print(x);
-            }
+		@Override
+		public void print(Object x) {
+		    oldOut.print("**************   OUT\n" + Utils.getStack(10)
+				 + "\n************");
+		    oldOut.print(x);
+		}
 
-            @Override
-            public void println(Object x) {
-                oldOut.println("**************   OUT\n" + Utils.getStack(10)
-                               + "\n************");
-                oldOut.println(x);
-            }
-        });
+		@Override
+		public void println(Object x) {
+		    oldOut.println("**************   OUT\n" + Utils.getStack(10)
+				   + "\n************");
+		    oldOut.println(x);
+		}
+	    });
     }
 
 
@@ -1656,7 +1767,7 @@ public class IO {
      *
      * @param files _more_
      * @param descending _more_
-      * @return _more_
+     * @return _more_
      */
     public static File[] sortFilesOnNumber(File[] files,
                                            final boolean descending) {
@@ -1670,32 +1781,32 @@ public class IO {
             tmp.add(new Object[] { file, v1 });
         }
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Object[] t1     = (Object[]) o1;
-                Object[] t2     = (Object[]) o2;
-                double   v1     = (double) t1[1];
-                double   v2     = (double) t2[1];
-                int      result = (v1 < v2)
-                                  ? -1
-                                  : (v1 == v2)
-                                    ? 0
-                                    : 1;
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
+		public int compare(Object o1, Object o2) {
+		    Object[] t1     = (Object[]) o1;
+		    Object[] t2     = (Object[]) o2;
+		    double   v1     = (double) t1[1];
+		    double   v2     = (double) t2[1];
+		    int      result = (v1 < v2)
+			? -1
+			: (v1 == v2)
+			? 0
+			: 1;
+		    if (descending) {
+			if (result >= 1) {
+			    return -1;
+			} else if (result <= -1) {
+			    return 1;
+			}
 
-                    return 0;
-                }
+			return 0;
+		    }
 
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
+		    return result;
+		}
+		public boolean equals(Object obj) {
+		    return obj == this;
+		}
+	    };
         Object[] array = tmp.toArray();
         Arrays.sort(array, comp);
         List<File> result = new ArrayList<File>();
