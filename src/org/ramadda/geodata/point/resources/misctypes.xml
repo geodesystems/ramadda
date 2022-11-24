@@ -97,15 +97,15 @@ fields="latitude,longitude,alt.*|elev.*"}}
   </type>
 
   <type name="type_point_purpleair"  description="Purple Air Sensor" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.PurpleAirTypeHandler">
-    <action name="clearfile" label="Clear File"/>
-     <property name="icon" value="/point/purpleair.png"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
-     <property name="form.properties.show" value="false"/>
-     <property name="map.chart.fields" value="temperature,pm2.5"/>          
-
+    <action name="gethistory" label="Download History" icon="fas fa-download"/>
+    <action name="clearfile" label="Clear File" icon="fas fa-rotate-right" canedit="true"/>
+    <property name="icon" value="/point/purpleair.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.date.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+    <property name="form.properties.show" value="false"/>
+    <property name="map.chart.fields" value="temperature,pm2.5"/>          
 
      <column  name="sensor_id"  label="Sensor ID" type="string"/>
      <column  name="private_key"  label="Private Key"  type="password"/>

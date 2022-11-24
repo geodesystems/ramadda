@@ -141,8 +141,10 @@ public class FourSquareTypeHandler extends PointTypeHandler {
 
 	@Override
 	public InputStream doMakeInputStream(Seesv csvUtil, boolean buffered) throws Exception {
-	    return IO.getInputStreamFromGet(new URL(getFilename()), "accept",   "application/json",
-					    "Authorization", repository.getProperty(PROP_KEY,"").trim());
+	    return null;
+	    //TODO:
+	    //	    return IO.getInputStreamFromGet(new URL(getFilename()), "accept",   "application/json",
+	    //					    "Authorization", repository.getProperty(PROP_KEY,"").trim());
 	}
     }
 

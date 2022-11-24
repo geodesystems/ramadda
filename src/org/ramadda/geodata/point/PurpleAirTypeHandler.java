@@ -18,9 +18,10 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
+import ucar.unidata.util.TwoFacedObject;
 import java.io.*;
 
 import java.net.URL;
@@ -51,7 +52,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private String apiKey;
 
     /** _more_ */
-    private SimpleDateFormat dateSDF;
+    private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 
     /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
@@ -79,6 +80,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     /**  */
     private static final String FIELDS_STRING_SHORT =
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0,0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count";
+
+
+    private static final String FIELDS_DOWNLOAD_ALL = "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,analog_input,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
 
 
 
@@ -394,6 +398,20 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         }
     }
 
+    private String getPrivateKey(Entry entry) {
+	String privateKey = (String) entry.getStringValue(IDX_PRIVATE_KEY, "");
+        if (Utils.stringDefined(privateKey)) {
+            privateKey = privateKey.trim();
+            String tmp = getRepository().getProperty(privateKey,
+                             (String) null);
+            if (Utils.stringDefined(tmp)) {
+                privateKey = tmp;
+            }
+	    return privateKey;
+        }
+	return null;
+    }
+
 
     /**
      *
@@ -411,18 +429,13 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         if ( !Utils.stringDefined(id)) {
             return null;
         }
-        String privateKey = (String) entry.getStringValue(IDX_PRIVATE_KEY,
-                                "");
+
         String url = "https://api.purpleair.com/v1/sensors/" + id + "?"
                      + HU.arg("api_key", apiKey) + "&"
                      + HU.arg("fields", fields);
-        if (Utils.stringDefined(privateKey)) {
+	String privateKey = getPrivateKey(entry);
+        if (privateKey!=null) {
             privateKey = privateKey.trim();
-            String tmp = getRepository().getProperty(privateKey,
-                             (String) null);
-            if (Utils.stringDefined(tmp)) {
-                privateKey = tmp;
-            }
             url += "&" + HU.arg("read_key", privateKey);
         }
         try {
@@ -455,6 +468,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
         String action = request.getString("action", "");
+        if (action.equals("gethistory")) {
+            return processGetHistory(request, entry);
+	}
+
         if ( !action.equals("clearfile")) {
             return super.processEntryAction(request, entry);
         }
@@ -491,6 +508,121 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                 new Result("Clear File", sb));
     }
 
+    private static final String ARG_GETHISTORY="gethistory";
+    private static final String ARG_START_TIMESTAMP="start_timestamp";
+    private static final String ARG_END_TIMESTAMP="end_timestamp";
+    private static final String ARG_AVERAGE ="average";
+    private static final String ARG_FIELDS ="fields";
+    private static final String ARG_DOWNLOAD = "download";
+
+
+    public Result processGetHistory(Request request, Entry entry)
+            throws Exception {
+        StringBuilder sb      = new StringBuilder();
+        if (apiKey == null) {
+	    getPageHandler().entrySectionOpen(request, entry, sb, "PurpleAir Download History");
+            sb.append(getPageHandler().showDialogWarning("No API Key"));
+	    getPageHandler().entrySectionClose(request, entry, sb);
+	    return getEntryManager().addEntryHeader(request, entry,
+						    new Result("Download History", sb));
+	}
+
+	Date startTimestamp=null;
+	Date endTimestamp=null;
+	StringBuilder messageSB = new StringBuilder();
+	boolean inError = false;
+	if(request.defined(ARG_START_TIMESTAMP)) {
+	    try  {
+		startTimestamp = request.getDate(ARG_START_TIMESTAMP,null);
+	    } catch(Exception exc) {
+		messageSB.append(getPageHandler().showDialogError("Bad start date:" + request.getString(ARG_START_TIMESTAMP,"")));
+		inError = true;
+	    }		
+	}
+	if(request.defined(ARG_END_TIMESTAMP)) {
+	    try {
+		endTimestamp = request.getDate(ARG_END_TIMESTAMP,null);
+	    } catch(Exception exc) {
+		messageSB.append(getPageHandler().showDialogError("Bad end date:" + request.getString(ARG_END_TIMESTAMP,"")));
+		inError = true;
+	    }
+	} 
+	if (!inError && request.exists(ARG_DOWNLOAD)) {
+	    String fields = request.getString(ARG_FIELDS,"");
+	    if(!stringDefined(fields)) fields = FIELDS_DOWNLOAD_ALL;
+	    String url = HU.url("https://api.purpleair.com/v1/sensors/" +
+				entry.getStringValue(IDX_SENSOR_ID,"")+"/history/csv",
+				ARG_FIELDS,fields,
+				ARG_AVERAGE,request.getString(ARG_AVERAGE,""));
+	    String privateKey = getPrivateKey(entry);
+	    if (privateKey!=null) {
+		privateKey = privateKey.trim();
+		url=HU.url(url, "read_key",privateKey);
+	    }
+
+	    if(startTimestamp!=null) url=HU.url(url,
+						ARG_START_TIMESTAMP,sdf.format(startTimestamp.getTime())+"T00:00:00Z");
+	    //Always have an end time
+	    Date endTime = endTimestamp!=null?endTimestamp:new Date();;
+	    if(endTime!=null) url=HU.url(url,
+					 ARG_END_TIMESTAMP,sdf.format(endTime.getTime())+"T23:59:59Z");
+	    try {
+		IO.Result result  = IO.getInputStreamFromGet(new URL(url),"X-API-Key",apiKey);
+		if(result.getError()) {
+		    String message = result.getResult();
+		    try {
+			JSONObject json = new JSONObject(message.trim());
+			message = json.getString("description");
+		    } catch(Exception ignore) {
+			System.err.println(ignore);
+		    }
+		    messageSB.append(getPageHandler().showDialogError("An error has occurred: " + message));
+		} else {
+		    InputStream bis = result.getInputStream();
+		    request.setReturnFilename(entry.getName()+".csv");
+		    return new Result(bis,"text/csv");
+		}
+	    } catch(Exception exc) {
+		messageSB.append(getPageHandler().showDialogError("An error has occurred: " + exc));
+	    }
+        }
+	
+	getPageHandler().entrySectionOpen(request, entry, sb, "PurpleAir Download History");
+
+	if(messageSB.length()>0) {
+	    sb.append(messageSB);
+	}
+	sb.append(request.form(getRepository().URL_ENTRY_ACTION));
+	sb.append(HU.hidden(ARG_ENTRYID,entry.getId()));
+	sb.append(HU.hidden(ARG_ACTION,"gethistory"));	
+	sb.append(HU.formTable());
+	sb.append(HU.formEntry("Start Date:",
+                getDateHandler().makeDateInput(request, ARG_START_TIMESTAMP,
+					       "entryform", startTimestamp,null,false)));
+	sb.append(HU.formEntry("End Date:",
+                getDateHandler().makeDateInput(request, ARG_END_TIMESTAMP,
+					       "entryform", endTimestamp,null,false)));	
+
+	List<TwoFacedObject> averages  = new ArrayList<TwoFacedObject>();
+	averages.add(new TwoFacedObject("Real time","0"));
+	averages.add(new TwoFacedObject("10 minutes","10"));
+	averages.add(new TwoFacedObject("30 minutes","30"));
+	averages.add(new TwoFacedObject("60 minutes","60"));
+	averages.add(new TwoFacedObject("6 hour","360"));
+	averages.add(new TwoFacedObject("1 day","1440"));	    			
+	sb.append(HU.formEntry("Average:",HU.select(ARG_AVERAGE,averages,request.getString(ARG_AVERAGE,"10"))));
+	sb.append(HU.formEntry("Fields:",HU.input(ARG_FIELDS,request.getString(ARG_FIELDS,""),
+						  HU.style("width:800px;"))));
+	sb.append(HU.formEntry("",HU.submit("Download",ARG_DOWNLOAD)));	
+	sb.append(HU.formTableClose());
+	sb.append(HU.formClose());
+	sb.append("Fields default to:<br>" +
+		  FIELDS_DOWNLOAD_ALL.replace(",",", "));
+	getPageHandler().entrySectionClose(request, entry, sb);
+	return getEntryManager().addEntryHeader(request, entry,
+						new Result("Download History", sb));
+    }
+    
 
 
 
