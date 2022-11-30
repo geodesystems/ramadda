@@ -157,8 +157,8 @@ public class Admin extends RepositoryManager {
 
 
     /** _more_ */
-    public RequestUrl URL_ADMIN_CLEANUP = new RequestUrl(this,
-                                              "/admin/cleanup",
+    public RequestUrl URL_ADMIN_MAINTENANCE = new RequestUrl(this,
+                                              "/admin/maintenance",
                                               "Maintenance");
 
     /** _more_ */
@@ -230,7 +230,7 @@ public class Admin extends RepositoryManager {
 	    getRegistryManager().URL_REGISTRY_REMOTESERVERS,
 	    /*URL_ADMIN_STARTSTOP,*/
 	    /*URL_ADMIN_TABLES, */
-	    URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS, URL_ADMIN_CLEANUP
+	    URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS, URL_ADMIN_MAINTENANCE
 	});
 
 
@@ -1018,7 +1018,7 @@ public class Admin extends RepositoryManager {
             }
         });
 
-        return makeResult(request, "Administration",
+	return makeResult(request, "RAMADDA-Admin-Shutdown",
                           new StringBuffer("Shutting down in 5 seconds"));
     }
 
@@ -1080,7 +1080,7 @@ public class Admin extends RepositoryManager {
         }
         sb.append("</form>");
 
-        return makeResult(request, "Administration", sb);
+        return makeResult(request, "RAMADDA-Admin-DB", sb);
 
     }
 
@@ -1106,7 +1106,7 @@ public class Admin extends RepositoryManager {
         }
         sb.append(HtmlUtils.formTableClose());
 
-        return makeResult(request, "Administration", sb);
+        return makeResult(request, "RAMADDA-Admin-Actions", sb);
     }
 
 
@@ -1125,7 +1125,7 @@ public class Admin extends RepositoryManager {
         sb.append(header("Database Tables"));
         sb.append(getDatabaseManager().getDbMetaData());
 
-        return makeResult(request, "Administration", sb);
+        return makeResult(request, "RAMADDA-Admin-DB", sb);
     }
 
     /** _more_ */
@@ -1150,7 +1150,7 @@ public class Admin extends RepositoryManager {
                                   getPageHandler().showDialogWarning(
                                       "Currently exporting the database"));
 
-            return makeResult(request, msg("Database export"), sb);
+            return makeResult(request, msg("RAMADDA-Admin-DB Export"), sb);
         }
 
 
@@ -1159,7 +1159,7 @@ public class Admin extends RepositoryManager {
                 dumpDatabase(actionId);
             }
         };
-        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_CLEANUP),
+        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
                                      "Continue");
 
         Result result = getActionManager().doAction(request, action,
@@ -1185,7 +1185,7 @@ public class Admin extends RepositoryManager {
                                   getPageHandler().showDialogWarning(
                                       "Currently reindexing"));
 
-            return makeResult(request, msg("Reindex"), sb);
+            return makeResult(request, msg("RAMADDA-Admin-Reindex"), sb);
         }
 
 
@@ -1202,7 +1202,7 @@ public class Admin extends RepositoryManager {
                 }
             }
         };
-        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_CLEANUP),
+        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_MAINTENANCE),
                                      "Continue");
 
         Result result = getActionManager().doAction(request, action,
@@ -1310,7 +1310,7 @@ public class Admin extends RepositoryManager {
                                  "Execute SQL"));
         sb.append("</ul>");
 
-        return makeResult(request, "Administration", sb);
+        return makeResult(request, "RAMADDA-Admin-DB", sb);
 
     }
 
@@ -1395,17 +1395,15 @@ public class Admin extends RepositoryManager {
                     PROP_PORT, getRepository().getProperty(PROP_PORT, ""),
                     HtmlUtils.SIZE_5)));
 
-        String cbx = HtmlUtils.checkbox(
-                         PROP_USE_FIXED_HOSTNAME, "true",
-                         getRepository().getProperty(
-                             PROP_USE_FIXED_HOSTNAME, false));
+        String cbx = HtmlUtils.labeledCheckbox(
+					       PROP_USE_FIXED_HOSTNAME, "true",
+					       getRepository().getProperty(PROP_USE_FIXED_HOSTNAME, false),
+					       "Use the fixed hostname:port in absolute URLs instead of the request's info");
 
 
-        csb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Absolute URLs"),
-                cbx + HtmlUtils.space(2)
-                + "Use the fixed hostname:port in absolute URLs instead of the request's info"));
+	HtmlUtils.formEntry(csb,
+			    msgLabel("Absolute URLs"),
+			    cbx);
 
         //Force the creation of some of the managers
         getRepository().getMailManager();
@@ -1650,11 +1648,8 @@ public class Admin extends RepositoryManager {
                 }
                 outputSB.append("\n<div style=\"margin-left:20px\">");
             }
-            outputSB.append(HtmlUtils.checkbox("outputtype." + type.getId(),
-                    "true", ok));
-            outputSB.append(HtmlUtils.space(1));
-            outputSB.append(type.getLabel());
-            outputSB.append(HtmlUtils.space(3));
+            outputSB.append(HtmlUtils.labeledCheckbox("outputtype." + type.getId(),
+						      "true", ok,type.getLabel()));
         }
         outputSB.append("</div>\n");
         String outputDiv = HtmlUtils.div(outputSB.toString(),
@@ -1697,7 +1692,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.sectionClose());
 
-        return makeResult(request, msg("Settings"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-Settings"), sb);
     }
 
 
@@ -2001,7 +1996,7 @@ public class Admin extends RepositoryManager {
         sb.append("</table>");
         sb.append(HtmlUtils.sectionClose());
 
-        return makeResult(request, msg("Access Overview"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-Access Overview"), sb);
     }
 
     /**
@@ -2151,7 +2146,7 @@ public class Admin extends RepositoryManager {
 
         sb.append(HtmlUtils.sectionClose());
 
-        return makeResult(request, msg("System"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-System"), sb);
     }
 
 
@@ -2181,7 +2176,7 @@ public class Admin extends RepositoryManager {
         }
         sb.append("</ul>");
 
-        return makeResult(request, msg("Snapshots"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-Snapshots"), sb);
     }
 
 
@@ -2249,7 +2244,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.sectionClose());
         sb.append("<table>");
         if (query == null) {
-            return makeResult(request, msg("SQL"), sb);
+            return makeResult(request, msg("RAMADDA-Admin-SQL"), sb);
         }
 
         long t1 = System.currentTimeMillis();
@@ -2258,7 +2253,7 @@ public class Admin extends RepositoryManager {
         if ((query.indexOf(";") > 0) || bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
 
-            return makeResult(request, msg("SQL"),
+            return makeResult(request, msg("RAMADDA-Admin-SQL"),
                               new StringBuffer("Executed SQL" + "<P>"
                                   + HtmlUtils.space(1) + sb.toString()));
 
@@ -2294,7 +2289,6 @@ public class Admin extends RepositoryManager {
                     table.append("<table><tr>");
                     for (int i = 0; i < rsmd.getColumnCount(); i++) {
                         String col = rsmd.getColumnLabel(i + 1);
-			System.err.println("COL:"+ col);
                         if (col.equals("QUERY PLAN")) {
                             raw = new StringBuilder();
                         }
@@ -2347,7 +2341,7 @@ public class Admin extends RepositoryManager {
             getRepository().clearCache();
             getRepository().readDatabaseProperties();
 
-            return makeResult(request, msg("SQL"),
+            return makeResult(request, msg("RAMADDA-Admin-SQL"),
                               new StringBuffer(msgLabel("Fetched rows") + cnt
                                   + HtmlUtils.space(1) + msgLabel("in")
                                   + (t2 - t1) + "ms <p>" + sb.toString()));
@@ -2394,11 +2388,11 @@ public class Admin extends RepositoryManager {
         if (delete) {
             getEntryManager().deleteEntries(request, badEntries, null);
 
-            return makeResult(request, msg("Scan"),
+            return makeResult(request, msg("RAMADDA-Admin-Scan"),
                               new StringBuffer("Deleted"));
         }
 
-        return makeResult(request, msg("Scan"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-Scan"), sb);
     }
 
     /**
@@ -2500,7 +2494,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.makeShowHideBlock(msg("Stack"),
                 "<pre>" + LogUtil.getStackDump(true) + "</pre>", false));
 
-        return makeResult(request, msg("Stack Trace"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-Stack Trace"), sb);
     }
 
     /**
@@ -2636,14 +2630,14 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result adminCleanup(Request request) throws Exception {
+    public Result adminMaintenance(Request request) throws Exception {
 
         StringBuffer  sb         = new StringBuffer();
 
         StringBuilder filePathSB = new StringBuilder();
         filePathSB.append(HtmlUtils.sectionOpen(null, false));
         filePathSB.append(HtmlUtils.h3("Change file paths"));
-        request.formPostWithAuthToken(filePathSB, URL_ADMIN_CLEANUP, "");
+        request.formPostWithAuthToken(filePathSB, URL_ADMIN_MAINTENANCE, "");
         filePathSB.append(
             "Change the stored file path for all entries that match the following pattern");
         filePathSB.append(HtmlUtils.formTable());
@@ -2660,12 +2654,8 @@ public class Admin extends RepositoryManager {
         filePathSB.append(HtmlUtils.submit(msg("Change file paths"),
                                            ACTION_CHANGEPATHS));
         filePathSB.append(HtmlUtils.space(2));
-        filePathSB.append(HtmlUtils.checkbox(ARG_CHANGEPATHS_CONFIRM, "true",
-                                             false));
-
-        filePathSB.append(HtmlUtils.space(2));
-        filePathSB.append(
-            "Yes, I really want to change all of the file paths");
+        filePathSB.append(HtmlUtils.labeledCheckbox(ARG_CHANGEPATHS_CONFIRM, "true",
+						    false,"Yes, I really want to change all of the file paths"));
         filePathSB.append(HtmlUtils.sectionClose());
 
         filePathSB.append(HtmlUtils.formClose());
@@ -2674,7 +2664,7 @@ public class Admin extends RepositoryManager {
         StringBuilder missingSB = new StringBuilder();
         missingSB.append(HtmlUtils.sectionOpen(null, false));
         missingSB.append(HtmlUtils.h3("List missing files"));
-        request.formPostWithAuthToken(missingSB, URL_ADMIN_CLEANUP, "");
+        request.formPostWithAuthToken(missingSB, URL_ADMIN_MAINTENANCE, "");
         missingSB.append("Skip pattern: "
                          + HtmlUtils.input("pattern",
                                            request.getString("pattern", ""),
@@ -2693,12 +2683,12 @@ public class Admin extends RepositoryManager {
             runningCleanup = false;
             cleanupTS++;
 
-            return new Result(request.makeUrl(URL_ADMIN_CLEANUP));
+            return new Result(request.makeUrl(URL_ADMIN_MAINTENANCE));
         } else if (request.defined(ACTION_START)) {
             //            Misc.run(this, "runDatabaseCleanUp", request);
             Misc.run(this, "runDatabaseOrphanCheck", request);
 
-            return new Result(request.makeUrl(URL_ADMIN_CLEANUP));
+            return new Result(request.makeUrl(URL_ADMIN_MAINTENANCE));
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
         } else if (request.defined(ACTION_FULLINDEX)) {
@@ -2708,14 +2698,14 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
 
-            return new Result(request.makeUrl(URL_ADMIN_CLEANUP));
+            return new Result(request.makeUrl(URL_ADMIN_MAINTENANCE));
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
         } else if (request.defined(ACTION_LISTMISSING)) {
             sb.append(missingSB);
             listMissingFiles(request, sb);
 
-            return makeResult(request, "Missing Files", sb);
+            return makeResult(request, "RAMADDA-Admin-Missing Files", sb);
         } else if (request.defined(ACTION_CHANGEPATHS)) {
             if (request.defined(ARG_CHANGEPATHS_PATTERN)) {
                 StringBuilder tmp = new StringBuilder();
@@ -2733,7 +2723,7 @@ public class Admin extends RepositoryManager {
             }
             sb.append(filePathSB);
 
-            return makeResult(request, msg("Change File Paths"), sb);
+            return makeResult(request, msg("RAMADDA-Admin-Change File Paths"), sb);
         } else if (request.defined(ACTION_SHUTDOWN)) {
             request.ensureAuthToken();
             if (getRepository().getShutdownEnabled()) {
@@ -2748,7 +2738,7 @@ public class Admin extends RepositoryManager {
                 sb.append(
                     "All passwords have been cleared. Make sure you go and change your password immediately");
 
-                return makeResult(request, msg("Cleanup"), sb);
+                return makeResult(request, msg("RAMADDA-Admin--Maintenance"), sb);
             }
         }
 
@@ -2768,7 +2758,7 @@ public class Admin extends RepositoryManager {
 
 
 
-            request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
+            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
 
             sb.append(
                 HtmlUtils.section(
@@ -2784,23 +2774,22 @@ public class Admin extends RepositoryManager {
             tmp.append(HtmlUtils.submit(msg("Clear all passwords"),
                                         ACTION_PASSWORDS_CLEAR));
             tmp.append(HtmlUtils.space(2));
-            tmp.append(HtmlUtils.checkbox(ARG_PASSWORDS_CLEAR_CONFIRM,
-                                          "true", false));
-            tmp.append(HtmlUtils.space(1));
-            tmp.append(msg("Yes, I really want to delete all passwords"));
+            tmp.append(HtmlUtils.labeledCheckbox(ARG_PASSWORDS_CLEAR_CONFIRM,
+						 "true", false,
+						 "Yes, I really want to delete all passwords"));
             tmp.append(HtmlUtils.br());
             tmp.append(
                 getPageHandler().showDialogNote(
                     "Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
 
-            request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
+            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
             sb.append(HtmlUtils.section(HtmlUtils.h3(msg("Clear Passwords"))
                                         + tmp.toString()));
             sb.append(HtmlUtils.formClose());
 
 
 
-            request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
+            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
             sb.append(
                 HtmlUtils.section(
                     HtmlUtils.h3(msg("Export Database"))
@@ -2811,7 +2800,7 @@ public class Admin extends RepositoryManager {
 
             sb.append(HtmlUtils.formClose());
 
-            request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
+            request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
             sb.append(
                 HtmlUtils.section(
                     HtmlUtils.h3(msg("Reindex Lucene Index"))
@@ -2830,7 +2819,7 @@ public class Admin extends RepositoryManager {
             sb.append(missingSB);
 
             if (getRepository().getShutdownEnabled()) {
-                request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
+                request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
                 sb.append(HtmlUtils.section(HtmlUtils.h3(msg("Shutdown"))
                         + HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN)
                         + HtmlUtils.space(2)
@@ -2848,7 +2837,7 @@ public class Admin extends RepositoryManager {
         }
 
         //        sb.append(cnt +" files do not exist in " + (t2-t1) );
-        return makeResult(request, msg("Cleanup"), sb);
+        return makeResult(request, msg("RAMADDA-Admin-Maintenance"), sb);
 
     }
 
