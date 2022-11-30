@@ -200,7 +200,7 @@
       <api request="/admin/actions"      method="adminActions"       />
       <api request="/admin/stats"        method="adminStats"         />
       <api request="/admin/access"       method="adminAccess"         />
-      <api request="/admin/cleanup"      method="adminCleanup"       />
+      <api request="/admin/maintenance"      method="adminMaintenance"       />
       <api request="/admin/scan"         method="adminScanForBadParents" />
       <api request="/admin/stack"        method="adminPrintStack" />
       <api request="/admin/snapshots"      method="adminSnapshots"           />
