@@ -2753,6 +2753,7 @@ public class Seesv implements SeesvCommands {
 	new Cmd(CMD_PRINTDELIM, "Print with delimited output", ARG_LABEL, "Delimited Print",
 		new Arg("delimiter","Delimiter - ,|^ etc. Use \"tab\" for tab")),	
         new Cmd(CMD_OUTPUT, "Write to the given file (command line only)",
+		ARG_LABEL,"Write to file",
                 new Arg("file", "The file")),
         new Cmd(CMD_COMMENT, "Add a comment to the output",
 		new Arg("comment","The comment")),
