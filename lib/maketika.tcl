@@ -1,3 +1,10 @@
+#
+#the tika-app-2.6.0.jar is from:
+#https://tika.apache.org/download.html
+#Because github doesn't like large files this is no longer in github
+#So, to run this script that produces the ramaddatika.jar
+#you need to download the tika-app jar
+#
 file delete -force tika
 file mkdir tika
 cd tika
