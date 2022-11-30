@@ -712,7 +712,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         sb.append(HtmlUtils.sectionClose());
 
-        return getAdmin().makeResult(request, "Entry Monitors", sb);
+        return getAdmin().makeResult(request, "RAMADDA-Admin-Monitors", sb);
     }
 
 

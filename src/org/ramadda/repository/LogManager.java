@@ -875,7 +875,7 @@ public class LogManager extends RepositoryManager {
 
         sb.append(HtmlUtils.sectionClose());
 
-        return getAdmin().makeResult(request, msg("Logs"), sb);
+        return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
 
     /**

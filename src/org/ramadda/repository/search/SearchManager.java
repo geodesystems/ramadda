@@ -556,16 +556,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if ( !block.equals(Admin.BLOCK_ACCESS)) {
             return;
         }
-        asb.append(HtmlUtils.colspan(msgHeader("Search"), 2));
-        asb.append(
-		   HtmlUtils
-		   .formEntry(
-			      "",
-			      HtmlUtils
-			      .checkbox(
-					PROP_SEARCH_LUCENE_ENABLED, "true",
-					isLuceneEnabled()) + HtmlUtils.space(2)
-			      + msg("Enable Lucene Indexing and Search")));
+        asb.append(HU.colspan(msgHeader("Search"), 2));
+	HU.formEntry(asb,  "",
+			    HU.labeledCheckbox(
+						      PROP_SEARCH_LUCENE_ENABLED, "true",
+						      isLuceneEnabled(),
+						      msg("Enable Lucene Indexing and Search")));
     }
 
 
@@ -1091,7 +1087,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	org.apache.lucene.document.Document doc =
 	    searcher.doc(docs[0].doc);
 
-	sb.append(HtmlUtils.formTable());
+	sb.append(HU.formTable());
 	for(IndexableField field: doc.getFields()) {
 	    String[]values  = doc.getValues(field.name());
 	    for(String v: values) {
@@ -1700,7 +1696,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
         String url = request.getAbsoluteUrl(URL_ENTRY_SEARCH.toString());
-        url = HtmlUtils.url(url, new String[] {
+        url = HU.url(url, new String[] {
 		ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
 		OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,
 		DateArgument.ARG_DATA.getFromArg(),
@@ -1731,9 +1727,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public Result processSearchForm(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
         makeSearchForm(request, sb);
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return makeResult(request, msg("Search Form"), sb);
     }
@@ -1741,7 +1737,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public Result processSearchSynonyms(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
 	Hashtable<String,List<String>> syns =getSynonyms();
         sb.append("<table>");
 	for(Object o:Utils.getKeys(syns)) {
@@ -1752,7 +1748,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sb.append("</tr>");
 	}
 	sb.append("</table>");
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
         return makeResult(request, msg("Search Synonyms"), sb);
     }
 
@@ -1802,12 +1798,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String value = (String) request.getString(ARG_TEXT, "");
         value = value.replaceAll("\"", "&quot;");
         String textField =
-            HtmlUtils.input(
+            HU.input(
 			    ARG_TEXT, value,
-			    HtmlUtils.attr("placeholder", msg(" Search text"))
-			    + HtmlUtils.id("searchinput") + HtmlUtils.SIZE_50
+			    HU.attr("placeholder", msg(" Search text"))
+			    + HU.id("searchinput") + HU.SIZE_50
 			    + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>";
-	//	textField+= HtmlUtils.script("Utils.searchSuggestInit('searchinput');");
+	//	textField+= HU.script("Utils.searchSuggestInit('searchinput');");
 
         return textField;
     }
@@ -1822,7 +1818,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private String getSearchButtons(Request request) throws Exception {
-        return HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT);
+        return HU.submit(msg("Search"), ARG_SEARCH_SUBMIT);
     }
 
     /**
@@ -1836,7 +1832,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private void getFormOpen(Request request, Appendable sb)
 	throws Exception {
         sb.append(
-		  HtmlUtils.form(
+		  HU.form(
 				 getSearchUrl(request),
 				 makeFormSubmitDialog(sb, msg("Searching..."))
 				 + " name=\"searchform\" "));
@@ -1862,11 +1858,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String        inner         = searchForm.toString();
         StringBuilder formSB        = new StringBuilder();
         boolean       showProviders = request.get("show_providers", false);
-        HtmlUtils.makeAccordion(formSB, msg("Search Options"), inner,
+        HU.makeAccordion(formSB, msg("Search Options"), inner,
                                 !showProviders, "ramadda-accordion", null);
 
-        sb.append(HtmlUtils.insetDiv(formSB.toString(), 0, 0, 0, 0));
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.insetDiv(formSB.toString(), 0, 0, 0, 0));
+        sb.append(HU.formClose());
     }
 
 
@@ -1885,10 +1881,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                 boolean typeSpecific, boolean addTextField)
 	throws Exception {
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                 HtmlUtils.cssClass("ramadda-search-form")));
+        sb.append(HU.open(HU.TAG_DIV,
+                                 HU.cssClass("ramadda-search-form")));
 	Function<String,String> inset = c->{
-	    return HtmlUtils.insetDiv(c, 5, 10, 10, 0);
+	    return HU.insetDiv(c, 5, 10, 10, 0);
 	};
 
 
@@ -1915,7 +1911,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         //Put in an empty submit button so when the user presses return 
         //it acts like a regular submit (not a submit to change the type)
-        sb.append(HtmlUtils.submitImage(getIconUrl(ICON_BLANK),
+        sb.append(HU.submitImage(getIconUrl(ICON_BLANK),
                                         ARG_SEARCH_SUBMIT, "",
                                         " style=\"display: none;\" "));
 
@@ -1944,9 +1940,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         long t1 = System.currentTimeMillis();
         if (includeMetadata()) {
             StringBuilder metadataSB = new StringBuilder();
-            metadataSB.append(HtmlUtils.formTable());
+            metadataSB.append(HU.formTable());
             getMetadataManager().addToSearchForm(request, metadataSB);
-            metadataSB.append(HtmlUtils.formTableClose());
+            metadataSB.append(HU.formTableClose());
             titles.add(msg("Properties"));
             contents.add(metadataSB.toString());
         }
@@ -1954,10 +1950,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         addSearchProviders(request, contents, titles);
         //            System.err.println("metadata form:" + (t2-t1));
 
-        /*            StringBuffer outputForm = new StringBuffer(HtmlUtils.formTable());
+        /*            StringBuffer outputForm = new StringBuffer(HU.formTable());
 		      String output = makeOutputSettings(request);
 		      outputForm.append(output);
-		      outputForm.append(HtmlUtils.formTableClose());
+		      outputForm.append(HU.formTableClose());
 		      contents.add(outputForm.toString());
 		      titles.add(msg("Output"));
         */
@@ -1979,14 +1975,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         StringBuilder formSB        = new StringBuilder();
         boolean       showProviders = request.get("show_providers", false);
         if (showProviders && (titles.size() == 1)) {
-            sb.append(HtmlUtils.h3("Search Providers"));
+            sb.append(HU.h3("Search Providers"));
             sb.append(contents.get(0));
         } else {
-            HtmlUtils.makeAccordion(formSB, titles, contents, !showProviders,
+            HU.makeAccordion(formSB, titles, contents, !showProviders,
                                     "ramadda-accordion", null);
         }
         sb.append(formSB.toString());
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        sb.append(HU.close(HU.TAG_DIV));
 
 
     }
@@ -2017,11 +2013,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String orderBy =
             HU.select(ARG_ORDERBY, orderByList,
 		      request.getString(ARG_ORDERBY,
-					"none")) + HtmlUtils.checkbox(ARG_ASCENDING,
+					"none")) + HU.labeledCheckbox(ARG_ASCENDING,
 								      "true",
-								      request.get(ARG_ASCENDING,
-										  false)) + HtmlUtils.space(1)
-	    + msg("ascending");
+								      request.get(ARG_ASCENDING,false),
+								      msg("ascending"));
         return HU.b("Output:") +" " +
 	    HU.select(ARG_OUTPUT, getOutputHandlerSelectList(),
 		      request.getString(ARG_OUTPUT, "")) +
@@ -2083,27 +2078,27 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 }
             }
 
-            String cbxId = HtmlUtils.getUniqueId("cbx");
+            String cbxId = HU.getUniqueId("cbx");
             String cbxCall =
-                HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                               HtmlUtils.call("HtmlUtils.checkboxClicked",
-					      HtmlUtils.comma("event",
-							      HtmlUtils.squote(ARG_PROVIDER),
-							      HtmlUtils.squote(cbxId))));
+                HU.attr(HU.ATTR_ONCLICK,
+                               HU.call("HU.checkboxClicked",
+					      HU.comma("event",
+							      HU.squote(ARG_PROVIDER),
+							      HU.squote(cbxId))));
 
 
 
-            String anchor = HtmlUtils.anchorName(searchProvider.getId());
-            String cbx = HtmlUtils.labeledCheckbox(ARG_PROVIDER,
+            String anchor = HU.anchorName(searchProvider.getId());
+            String cbx = HU.labeledCheckbox(ARG_PROVIDER,
 						   searchProvider.getId(), selected,
-						   cbxCall + HtmlUtils.id(cbxId),
+						   cbxCall + HU.id(cbxId),
 						   searchProvider.getFormLabel(false)
 						   + (showProviders
 						      ? " -- " + searchProvider.getId()
 						      : ""));
             cbx += anchor;
             cats.get(searchProvider.getCategory()).append(cbx);
-            cats.get(searchProvider.getCategory()).append(HtmlUtils.br());
+            cats.get(searchProvider.getCategory()).append(HU.br());
             cats.get(searchProvider.getCategory()).append("\n");
         }
 
@@ -2111,27 +2106,27 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             Appendable buff = cats.get(cat);
             if (cat.length() == 0) {
                 /*
-		  buff.append(HtmlUtils.labeledCheckbox(ARG_PROVIDER,
+		  buff.append(HU.labeledCheckbox(ARG_PROVIDER,
 		  "all", selectedProviders.contains("all"),"",
 		  msg("All Search Providers")));
                 */
                 providerSB.append(buff.toString());
             } else {
                 providerSB.append(
-				  HtmlUtils.div(
+				  HU.div(
 						cat,
-						HtmlUtils.cssClass(
+						HU.cssClass(
 								   "ramadda-search-provider-header")));
-                providerSB.append(HtmlUtils.div(buff.toString(),
-						HtmlUtils.cssClass("ramadda-search-provider-list")));
+                providerSB.append(HU.div(buff.toString(),
+						HU.cssClass("ramadda-search-provider-list")));
             }
         }
         String title = msg("Search providers");
         if (extra.length() > 0) {
-            title += HtmlUtils.space(4) + extra;
+            title += HU.space(4) + extra;
         }
         titles.add(title);
-        contents.add(HtmlUtils.insetDiv(providerSB.toString(), 0, 20, 0, 0));
+        contents.add(HU.insetDiv(providerSB.toString(), 0, 20, 0, 0));
     }
 
 
@@ -2155,7 +2150,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                         icon = getRepository().getIconUrl(icon);
                     }
                     tfos.add(new TwoFacedObject(type.getLabel(), type.getId()));
-                    //tfos.add(new HtmlUtils.Selector(HtmlUtils.space(2)
+                    //tfos.add(new HU.Selector(HU.space(2)
 		    //+ type.getLabel(), type.getId(), icon));
                 }
             }
@@ -2180,11 +2175,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                         true);
         String lastTok = toks.get(toks.size() - 1);
         if (lastTok.equals("type")) {
-            sb.append(HtmlUtils.sectionOpen(null, false));
-            HtmlUtils.open(sb, "div", HtmlUtils.cssClass("ramadda-links"));
+            sb.append(HU.sectionOpen(null, false));
+            HU.open(sb, "div", HU.cssClass("ramadda-links"));
             addSearchByTypeList(request, sb);
-            HtmlUtils.close(sb, "div");
-            sb.append(HtmlUtils.sectionClose());
+            HU.close(sb, "div");
+            sb.append(HU.sectionClose());
         } else {
             String      type        = lastTok;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
@@ -2241,16 +2236,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     String img;
                     if (icon == null) {
                         icon = ICON_BLANK;
-                        img = HtmlUtils.img(
+                        img = HU.img(
 					    typeHandler.getIconUrl(icon), "",
-					    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "16"));
+					    HU.attr(HU.ATTR_WIDTH, "16"));
                     } else {
-                        img = HtmlUtils.img(typeHandler.getIconUrl(icon));
+                        img = HU.img(typeHandler.getIconUrl(icon));
                     }
                     String label = img + HU.SPACE
 			+ typeHandler.getDescription() + HU.SPACE
 			+ "(" + cnt + ")";
-                    String href = HtmlUtils.href(getRepository().getUrlBase()
+                    String href = HU.href(getRepository().getUrlBase()
 						 + "/search/type/"
 						 + typeHandler.getType(), label);
                     String help = "Search for "
@@ -2286,61 +2281,61 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                      false);
 
         sb.append("<a name=entrytypes></a>");
-        sb.append(HtmlUtils.b("Entry Types"));
+        sb.append(HU.b("Entry Types"));
         sb.append(
-		  HtmlUtils.open(
+		  HU.open(
 				 "div",
-				 HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
-        sb.append(HtmlUtils.formTable());
+				 HU.style("max-height: 300px;overflow-y:auto;")));
+        sb.append(HU.formTable());
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
-                HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
+                HU.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
                                typeHandler.getType());
-            sb.append(HtmlUtils.row(HtmlUtils.cols(link,
+            sb.append(HU.row(HU.cols(link,
 						   typeHandler.getDescription())));
         }
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.close("div"));
+        sb.append(HU.formTableClose());
+        sb.append(HU.close("div"));
 
 
-        sb.append(HtmlUtils.close("<p>"));
+        sb.append(HU.close("<p>"));
         sb.append("<a name=outputtypes></a>");
-        sb.append(HtmlUtils.b("Output Types"));
+        sb.append(HU.b("Output Types"));
         sb.append(
-		  HtmlUtils.open(
+		  HU.open(
 				 "div",
-				 HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
-        sb.append(HtmlUtils.formTable());
+				 HU.style("max-height: 300px;overflow-y:auto;")));
+        sb.append(HU.formTable());
         for (OutputHandler outputHandler :
 		 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+                sb.append(HU.row(HU.cols(type.getId(),
 						       type.getLabel())));
             }
         }
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.close("div"));
+        sb.append(HU.formTableClose());
+        sb.append(HU.close("div"));
 
 
-        sb.append(HtmlUtils.close("<p>"));
+        sb.append(HU.close("<p>"));
         sb.append("<a name=metadatatypes></a>");
-        sb.append(HtmlUtils.b("Metadata Types"));
+        sb.append(HU.b("Metadata Types"));
         sb.append(
-		  HtmlUtils.open(
+		  HU.open(
 				 "div",
-				 HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
+				 HU.style("max-height: 300px;overflow-y:auto;")));
         sb.append(header(msg("Metadata Types")));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         for (MetadataType type :
 		 getRepository().getMetadataManager().getMetadataTypes()) {
             if ( !type.getSearchable()) {
                 continue;
             }
-            sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+            sb.append(HU.row(HU.cols(type.getId(),
 						   type.getName())));
         }
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.close("div"));
+        sb.append(HU.formTableClose());
+        sb.append(HU.close("div"));
 
         getPageHandler().sectionClose(request, sb);
 
@@ -2390,37 +2385,37 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
-                HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
+                HU.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
                                typeHandler.getType());
-            sb.append(HtmlUtils.row(HtmlUtils.cols(link,
+            sb.append(HU.row(HU.cols(link,
 						   typeHandler.getDescription())));
         }
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
 
         sb.append(header(msg("Output Types")));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         for (OutputHandler outputHandler :
 		 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+                sb.append(HU.row(HU.cols(type.getId(),
 						       type.getLabel())));
             }
         }
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
 
         sb.append(header(msg("Metadata Types")));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         for (MetadataType type :
 		 getRepository().getMetadataManager().getMetadataTypes()) {
             if ( !type.getSearchable()) {
                 continue;
             }
-            sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+            sb.append(HU.row(HU.cols(type.getId(),
 						   type.getName())));
         }
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
 
 
@@ -2475,7 +2470,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         StringBuffer sb = new StringBuffer();
         List<String> servers = (List<String>) request.get(ATTR_SERVER,
 							  new ArrayList());
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
         request.remove(ATTR_SERVER);
 
         boolean      didone   = false;
@@ -2489,7 +2484,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 sb.append(header(msg("Selected Servers")));
             }
             serverSB.append(server.getHref(" target=\"server\" "));
-            serverSB.append(HtmlUtils.br());
+            serverSB.append(HU.br());
             didone = true;
         }
 
@@ -2498,12 +2493,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		      getPageHandler().showDialogNote(msg("No servers selected")));
         } else {
             sb.append(
-		      HtmlUtils.div(
+		      HU.div(
 				    serverSB.toString(),
-				    HtmlUtils.cssClass(CSS_CLASS_SERVER_BLOCK)));
-            sb.append(HtmlUtils.p());
+				    HU.cssClass(CSS_CLASS_SERVER_BLOCK)));
+            sb.append(HU.p());
         }
-        sb.append(HtmlUtils.p());
+        sb.append(HU.p());
         //        sb.append(header(msg("Search Results")));
 
         return makeResult(request, msg("Remote Form"), sb);
@@ -2523,9 +2518,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        HtmlUtils.open(sb, "div", HtmlUtils.cssClass("ramadda-links"));
+        HU.open(sb, "div", HU.cssClass("ramadda-links"));
         getMetadataManager().addToBrowseSearchForm(request, sb);
-        HtmlUtils.close(sb, "div");
+        HU.close(sb, "div");
 
         return makeResult(request, msg("Search Form"), sb);
     }
@@ -2808,7 +2803,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (theGroup.isDummy()) {
             r = addHeaderToAncillaryPage(request, result);
         } else {
-            header.append(HtmlUtils.sectionOpen());
+            header.append(HU.sectionOpen());
             r = getEntryManager().addEntryHeader(request, theGroup, result);
         }
 
@@ -3098,9 +3093,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         for (int i = 0; i < whats.length; i++) {
             String item;
             if (what.equals(whats[i])) {
-                item = HtmlUtils.span(names[i], extra1);
+                item = HU.span(names[i], extra1);
             } else {
-                item = HtmlUtils.href(request.makeUrl(URL_SEARCH_FORM,
+                item = HU.href(request.makeUrl(URL_SEARCH_FORM,
 						      ARG_WHAT, whats[i], ARG_FORM_TYPE,
 						      formType), names[i], extra2);
             }
@@ -3114,9 +3109,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<TwoFacedObject> whatList = typeHandler.getListTypes(false);
         for (TwoFacedObject tfo : whatList) {
             if (tfo.getId().equals(what)) {
-                links.add(HtmlUtils.span(tfo.toString(), extra1));
+                links.add(HU.span(tfo.toString(), extra1));
             } else {
-                links.add(HtmlUtils.href(request.makeUrl(URL_SEARCH_FORM,
+                links.add(HU.href(request.makeUrl(URL_SEARCH_FORM,
 							 ARG_WHAT, BLANK + tfo.getId(), ARG_TYPE,
 							 typeHandler.getType()), tfo.toString(), extra2));
             }

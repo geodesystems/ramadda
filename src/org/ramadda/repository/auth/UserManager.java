@@ -2109,7 +2109,7 @@ public class UserManager extends RepositoryManager {
         sb.append(OutputHandler.makeTabs(tabTitles, tabContent, true));
         sb.append(HtmlUtils.sectionClose());
 
-        return getAdmin().makeResult(request, msg("Users"), sb);
+        return getAdmin().makeResult(request, msg("RAMADDA-Admin-Users"), sb);
     }
 
 
