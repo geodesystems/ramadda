@@ -649,7 +649,7 @@ public class HarvesterManager extends RepositoryManager {
         makeHarvestersList(request, harvesters, sb);
         sb.append(HtmlUtils.sectionClose());
 
-        return getAdmin().makeResult(request, msg("Harvesters"), sb);
+        return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
     }
 
     public String getLogLink() {

@@ -422,12 +422,11 @@ public class RegistryManager extends RepositoryManager {
             HtmlUtils.row(
                 HtmlUtils.colspan(msgHeader("Server Registry"), 2)));
 
-        csb.append(
-            HtmlUtils.formEntry(
-                "",
-                HtmlUtils.checkbox(
-                    PROP_REGISTRY_ENABLED, "true", isEnabledAsServer()) + " "
-                        + msg("Enable this server to be a registry for other servers")));
+
+	HtmlUtils.formEntry(csb,  "",
+			    HtmlUtils.labeledCheckbox(
+						      PROP_REGISTRY_ENABLED, "true", isEnabledAsServer(),
+						      msg("Enable this server to be a registry for other servers")));
 
         csb.append(
             HtmlUtils.formEntry(

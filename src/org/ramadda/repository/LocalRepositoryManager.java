@@ -590,7 +590,7 @@ public class LocalRepositoryManager extends RepositoryManager {
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.sectionClose());
 
-        return getAdmin().makeResult(request, "Administration", sb);
+        return getAdmin().makeResult(request, "RAMADDA-Admin-Repositories", sb);
 
     }
 
