@@ -46,6 +46,24 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+
+    /**
+       Override to use the entry type select menu
+    */
+    @Override
+    public String getFormWidget(Request request, Entry entry, Column column,
+                                String widget)
+            throws Exception {
+	if(column.getName().equals("directory_type")) {
+	    String selected = "";
+	    if(entry!=null) selected = (String) entry.getValue(LocalFileInfo.COL_DIRECTORY_TYPE);
+	    return  getRepository().makeTypeSelect(null, request,column.getEditArg(),
+				   null,true,selected,true,null, true);
+	}
+	return super.getFormWidget(request, entry,column, widget);
+    }
+
+
     /**
      * _more_
      *
@@ -185,7 +203,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         int    skip        = select.getSkip();
         long   t1          = System.currentTimeMillis();
 
-        String rootDirPath = localFileInfo.getRootDir().toString();
+	File rootDir = localFileInfo.getRootDir();
+	if(rootDir==null) return ids;
+        String rootDirPath = rootDir.toString();
         File   childPath = getFileFromId(synthId, localFileInfo.getRootDir());
         //        System.err.println ("synthId:" + synthId);
         if (debug) {
@@ -252,6 +272,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             files = IOUtil.sortFilesOnAge(files, descending);
         }
 
+	
         List<String> includes = localFileInfo.getIncludes();
         List<String> excludes = localFileInfo.getExcludes();
         long         age = (long) (1000 * (localFileInfo.getAgeLimit() * 60));
@@ -438,7 +459,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
 
-        //        System.err.println ("makeSynththEntry: id="+  id);
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(parentEntry);
         if ( !localFileInfo.isDefined()) {
             //            System.err.println ("\tnnot defined");
@@ -491,11 +511,18 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
         //        System.err.println("*** synth id:" + synthId);
 
-        TypeHandler handler = (targetFile.isDirectory()
-                               ? getRepository().getTypeHandler(
-                                   TypeHandler.TYPE_GROUP)
-                               : getRepository().getTypeHandler(
-                                   TypeHandler.TYPE_FILE));
+        TypeHandler handler;
+	if(targetFile.isDirectory()) {
+	    String directoryType = localFileInfo.getDirectoryType();
+	    if(!stringDefined(directoryType))
+		directoryType = TypeHandler.TYPE_GROUP;
+	    handler = getRepository().getTypeHandler(directoryType);
+	} else {
+	    handler = getEntryManager().findDefaultTypeHandler(targetFile.toString());
+	    if(handler==null)
+		handler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+	}
+
         Entry templateEntry = getEntryManager().getTemplateEntry(targetFile,
                                   null);
         Entry entry = null;

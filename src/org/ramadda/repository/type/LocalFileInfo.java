@@ -24,20 +24,27 @@ import java.util.List;
  */
 public class LocalFileInfo {
 
-    /** _more_ */
-    public static final int COL_PATH = 0;
+    public static int COL=0;
+
 
     /** _more_ */
-    public static final int COL_AGE = 1;
+    public static final int COL_PATH = COL++;
 
     /** _more_ */
-    public static final int COL_INCLUDES = 2;
+    public static final int COL_AGE = COL++;
 
     /** _more_ */
-    public static final int COL_EXCLUDES = 3;
+    public static final int COL_INCLUDES = COL++;
 
     /** _more_ */
-    public static final int COL_NAMES = 4;
+    public static final int COL_EXCLUDES = COL++;
+
+    /** _more_ */
+    public static final int COL_DIRECTORY_TYPE = COL++;
+
+
+    /** _more_ */
+    public static final int COL_NAMES = COL++;
 
 
 
@@ -49,6 +56,9 @@ public class LocalFileInfo {
 
     /** _more_ */
     private List<String> excludes;
+
+    private String directoryType;
+
 
     /** _more_ */
     private List<String> names;
@@ -70,11 +80,20 @@ public class LocalFileInfo {
         if (values == null) {
             return;
         }
-        rootDir  = new File((String) values[0]);
+
+	directoryType = (String) values[COL_DIRECTORY_TYPE];
+	if(!Utils.stringDefined(directoryType)) directoryType=null;
+
+
         names    = get(values, COL_NAMES);
         includes = get(values, COL_INCLUDES);
         excludes = get(values, COL_EXCLUDES);
         ageLimit = ((Double) values[COL_AGE]).doubleValue();
+	String rootPath = (String) values[0];
+	if(!Utils.stringDefined(rootPath)) {
+	    return;
+	}
+	rootDir  = new File(rootPath);
         checkMe(repository);
     }
 
@@ -209,6 +228,10 @@ public class LocalFileInfo {
         return ageLimit;
     }
 
+
+    public String getDirectoryType() {
+	return directoryType;
+    }
 
 
 }
