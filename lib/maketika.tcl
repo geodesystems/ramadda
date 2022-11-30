@@ -2,7 +2,7 @@ file delete -force tika
 file mkdir tika
 cd tika
 puts "unzipping tika"
-set rc [catch {exec unzip -o ../tika-app-2.1.0.jar} msg]
+set rc [catch {exec unzip -o ../tika-app-2.6.0.jar} msg]
 
 set delete {
     com/google dods ucar thredds org/slf4j org/apache/logging org/apache/http  org/joda
