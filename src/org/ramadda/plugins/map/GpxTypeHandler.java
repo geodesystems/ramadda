@@ -259,7 +259,9 @@ public class GpxTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
             throws Exception {
-        extractInfo(request, entry, true);
+	if(!fromImport) {
+	    extractInfo(request, entry, true);
+	}
     }
 
     /**
