@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
@@ -191,7 +191,7 @@ public class SeesvOperator {
     /**
      *
      * @param name _more_
-      * @return _more_
+     * @return _more_
      */
     public String getProperty(String name) {
         if (seesv != null) {
@@ -212,7 +212,7 @@ public class SeesvOperator {
     public String makeID(Object obj) {
         String colId = Utils.makeLabel(obj.toString());
         colId = colId.toLowerCase().replaceAll(" ",
-                "_").replaceAll("[^a-z0-9]", "_");
+					       "_").replaceAll("[^a-z0-9]", "_");
         colId = colId.replaceAll("_+_", "_");
         colId = colId.replaceAll("_$", "");
 
@@ -279,7 +279,7 @@ public class SeesvOperator {
 
     /** _more_ */
     private Hashtable<String, Integer> debugCounts = new Hashtable<String,
-                                                         Integer>();
+	Integer>();
 
     /**
      * _more_
@@ -321,20 +321,39 @@ public class SeesvOperator {
 
 
     /**
-     * _more_
+     * Parse the string as a double
      *
-     * @param s _more_
+     * @param s the string
      *
-     * @return _more_
+     * @return the double
      */
     public double parse(String s) {
+	return parse(null, s);
+    }
+
+    /**
+     * Parse the string as a double
+     * Use the row (if non-null) to add context to the error message
+     *
+     * @param s The string to parse
+     *
+     * @return double value
+     */
+    public double parse(Row row, String s) {
         s = s.trim().replaceAll(",", "");
         if (s.equals("")) {
             return 0;
         }
 
-        return Double.parseDouble(s);
-    }
+	try {
+	    return Double.parseDouble(s);
+	} catch(NumberFormatException nfe) {
+	    if(row!=null) 
+		throw new SeesvException(this, "Error parsing value:" + s +" row:" + row);
+	    else 
+		throw new SeesvException(this, "Error parsing value:" + s);
+	}
+    }    
 
 
 
@@ -427,8 +446,7 @@ public class SeesvOperator {
      * @throws RuntimeException _more_
      */
     public void fatal(TextReader ctx, String msg) throws RuntimeException {
-        throw new Seesv.MessageException(msg + " function: "
-                                           + getClass().getSimpleName());
+        throw new SeesvException(this,msg);
     }
 
     /**
@@ -441,7 +459,7 @@ public class SeesvOperator {
      * @throws RuntimeException _more_
      */
     public void fatal(TextReader ctx, String msg, Exception exc)
-            throws RuntimeException {
+	throws RuntimeException {
         Throwable inner = LogUtil.getInnerException(exc);
 
         throw new RuntimeException(msg + " function: "
@@ -550,7 +568,7 @@ public class SeesvOperator {
      * @throws Exception _more_
      */
     public static InputStream getInputStream(String filename)
-            throws Exception {
+	throws Exception {
         try {
             return new FileInputStream(filename);
         } catch (Exception exc) {
@@ -634,13 +652,13 @@ public class SeesvOperator {
         }
         if (iv == null) {
 	    System.out.println("C:" + columnMap +" " + columnMap.get("code"));
-            throw new IllegalArgumentException("Could not find column:"
-                    + tok + "\npossible columns: " + Utils.getKeys(columnMap));
+            throw new SeesvException(this, "Could not find column:"
+				     + tok + "\npossible columns: " + Utils.getKeys(columnMap));
         }
 
         return (iv != null)
-               ? iv
-               : -1;
+	    ? iv
+	    : -1;
     }
 
 
@@ -836,10 +854,10 @@ public class SeesvOperator {
                 }
                 /*
                   Integer iv2 = getColumnIndex(ctx, tok2);
-                if ((iv1 != null) && (iv2 != null)) {
-                    start = iv1;
-                    end   = iv2;
-                }
+		  if ((iv1 != null) && (iv2 != null)) {
+		  start = iv1;
+		  end   = iv2;
+		  }
                 */
             }
         }
@@ -855,14 +873,14 @@ public class SeesvOperator {
         }
 
         /*
-        for (int i = 0; i < columnNames.size(); i++) {
-            String v = columnNames.get(i);
-            if (v.startsWith(s)) {
-                columnMap.put(v, i);
-                indices.add(i);
-                return;
-            }
-            }*/
+	  for (int i = 0; i < columnNames.size(); i++) {
+	  String v = columnNames.get(i);
+	  if (v.startsWith(s)) {
+	  columnMap.put(v, i);
+	  indices.add(i);
+	  return;
+	  }
+	  }*/
 
     }
 
@@ -1023,9 +1041,9 @@ public class SeesvOperator {
      * @return _more_
      */
     public Hashtable<Object, List<Row>> groupRows(List<Row> rows,
-            List<Integer> indices, List keys) {
+						  List<Integer> indices, List keys) {
         Hashtable<Object, List<Row>> rowMap = new Hashtable<Object,
-                                                  List<Row>>();
+	    List<Row>>();
         for (Row row : rows) {
             List          values = row.getValues();
             StringBuilder key    = new StringBuilder();
@@ -1048,25 +1066,6 @@ public class SeesvOperator {
         return rowMap;
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
-     */
-    public static class CsvException extends RuntimeException {
-
-        /**
-         
-         *
-         * @param msg _more_
-         */
-        public CsvException(String msg) {
-            super(msg);
-        }
-    }
 
 
     /**

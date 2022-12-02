@@ -415,6 +415,7 @@ public abstract class Processor extends SeesvOperator {
             List<String>  cols    = new ArrayList<String>();
             List<Integer> indices = getIndices(ctx);
             for (Integer i : indices) {
+		if(!row.indexOk(i)) continue;
                 String column = row.getString(i);
                 cols.add(column);
                 if (debug) {
@@ -431,7 +432,7 @@ public abstract class Processor extends SeesvOperator {
                     arg = arg.replace("${column_name}", col);
                     cvrtedArgs.add(arg);
                 }
-                //              System.err.println("\tcvrted args:" + cvrtedArgs);
+		//		System.err.println("\tcvrted args:" + cvrtedArgs);
                 for (int j = 0; j < cvrtedArgs.size(); j++) {
                     String                    arg  = cvrtedArgs.get(j);
                     Seesv.CsvFunctionHolder func = seesv.getFunction(arg);

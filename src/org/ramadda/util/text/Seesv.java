@@ -418,10 +418,10 @@ public class Seesv implements SeesvCommands {
 	}
 
 	if (props.get("help")!=null && props.get("help").equals("true")) {
-	    throw new Seesv.MessageException("table:" + table
-					     + "\ncolumns:\n"
-					     + Utils.wrap(SqlUtil.getColumnNames(connection,
-										 table, true), "\t", "\n"));
+	    throw new SeesvException("table:" + table
+				     + "\ncolumns:\n"
+				     + Utils.wrap(SqlUtil.getColumnNames(connection,
+									 table, true), "\t", "\n"));
 	}
 
 
@@ -2010,6 +2010,10 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Skip Rows",
                 new Arg("rows", "How many rows to skip", ATTR_TYPE, TYPE_NUMBER)),
 
+        new Cmd(CMD_ENSURE_NUMERIC, "Throw error if non-numeric",
+		ARG_LABEL,"Ensure Numeric",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+	
         /** *  Sliceand dice * */
         new Category("Slice and Dice","Add/remove columns, rows, restructure, etc"),
         new Cmd(CMD_COLUMNS,  "Only include the given columns",
@@ -3194,19 +3198,6 @@ public class Seesv implements SeesvCommands {
 
     }
 
-    public static class MessageException extends RuntimeException {
-	String msg;
-	public MessageException(String s) {
-	    super(s);
-	    msg = s;
-	}
-
-	public String getMessage() {
-	    return msg;
-	}
-
-    }
-
 
     public static int SKIP_INDEX = -999;
     public static class CsvFunctionHolder {
@@ -3392,6 +3383,10 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_ENSURE_NUMERIC,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Filter.EnsureNumeric(ctx,getCols(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction(CMD_STOP,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Stop(ctx,args.get(++i)));
@@ -5711,8 +5706,8 @@ public class Seesv implements SeesvCommands {
 
 	try {
 	    seesv.run(null);
-	} catch(MessageException cexc) {
-	    System.err.println(cexc.getMessage());
+	} catch(SeesvException cexc) {
+	    System.err.println(cexc.getFullMessage());
 	    Utils.exitTest(1);
 	} catch(Exception exc) {
 	    Throwable inner = LogUtil.getInnerException(exc);
@@ -5751,8 +5746,8 @@ public class Seesv implements SeesvCommands {
 		if(!Utils.stringDefined(d)) return null;
 		return sdf.parse(d);
             } catch (Exception exc) {
-		throw new Seesv.MessageException("Could not parse date:" + d + " with format:"
-						 + sdfString);
+		throw new SeesvException("Could not parse date:" + d + " with format:"
+					 + sdfString);
             }
 	}
 

@@ -86,6 +86,7 @@ public interface SeesvCommands {
     public static final String CMD_SAMPLE="-sample";
     public static final String CMD_MINVALUE="-minvalue";
     public static final String CMD_MAXVALUE="-maxvalue";
+    public static final String CMD_ENSURE_NUMERIC="-ensurenumeric";
     public static final String CMD_EQ="-eq";
     public static final String CMD_NE="-ne";
     public static final String CMD_GT="-gt";

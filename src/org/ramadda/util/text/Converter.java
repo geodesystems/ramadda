@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
@@ -84,20 +84,20 @@ public abstract class Converter extends Processor {
     }
 
 
-        /**
-         * @param n _more_
-         * @return _more_
-         */
-        private static String getLabel(int n) {
-            int d = (int) (n / 25.0);
-            int r = n % 25;
-	    //	    System.err.println("d:" + d +" r:" + r);
-            if (d != 0) {
-                return getLabel(d-1) + Utils.LETTERS[r];
-            } else {
-                return Utils.LETTERS[r];
-            }
-        }
+    /**
+     * @param n _more_
+     * @return _more_
+     */
+    private static String getLabel(int n) {
+	int d = (int) (n / 25.0);
+	int r = n % 25;
+	//	    System.err.println("d:" + d +" r:" + r);
+	if (d != 0) {
+	    return getLabel(d-1) + Utils.LETTERS[r];
+	} else {
+	    return Utils.LETTERS[r];
+	}
+    }
 
 
 
@@ -636,7 +636,7 @@ public abstract class Converter extends Processor {
 
             if (what.equals("numberbetween")) {
                 return "" + faker.number().numberBetween((long) v1,
-                        (long) v2);
+							 (long) v2);
             }
 
             if (what.equals("randomdigit")) {
@@ -649,7 +649,7 @@ public abstract class Converter extends Processor {
 
             if (what.equals("randomdouble")) {
                 return "" + faker.number().randomDouble((int) v1, (long) v2,
-                        (long) v3);
+							(long) v3);
             }
 
             if (what.equals("randomnumber")) {
@@ -681,8 +681,8 @@ public abstract class Converter extends Processor {
             }
 
             throw new IllegalArgumentException(
-                "Unknown anonymization:" + what + " needs to be one of:"
-                + "firstname|fullname|lastname|name|namewithmiddle|prefix|suffix|title|username|address|city|country|state|stateabbr|streetname|timezone|zipcode|latitude|longitude|countrycode|boolean|asin|ean13|ean8|gtin13|gtin8|imei|isbn10|isbn13|isbngroup|isbngs1|isbnregistrant|color|department|material|price|productname|promotioncode|demonym|educationalattainment|maritalstatus|race|sex|bic|creditcard|iban|ssn|digit|digits:number_of_digits|numberbetween:first:last|randomdigit|randomdigitnotzero|randomDouble:maxNumberOfDecimals:min:max|randomnumber|cellphone|phonenumber|diseasename|hospitalname|medicinename|symptoms");
+					       "Unknown anonymization:" + what + " needs to be one of:"
+					       + "firstname|fullname|lastname|name|namewithmiddle|prefix|suffix|title|username|address|city|country|state|stateabbr|streetname|timezone|zipcode|latitude|longitude|countrycode|boolean|asin|ean13|ean8|gtin13|gtin8|imei|isbn10|isbn13|isbngroup|isbngs1|isbnregistrant|color|department|material|price|productname|promotioncode|demonym|educationalattainment|maritalstatus|race|sex|bic|creditcard|iban|ssn|digit|digits:number_of_digits|numberbetween:first:last|randomdigit|randomdigitnotzero|randomDouble:maxNumberOfDecimals:min:max|randomnumber|cellphone|phonenumber|diseasename|hospitalname|medicinename|symptoms");
         }
     }
 
@@ -931,7 +931,7 @@ public abstract class Converter extends Processor {
 
     /** _more_ */
     private static Hashtable<String, String> imageMap = new Hashtable<String,
-                                                            String>();
+	String>();
 
     /**
      * Class description
@@ -1019,8 +1019,8 @@ public abstract class Converter extends Processor {
                     String image = imageMap.get(s);
                     if (image == null) {
                         Process p = Runtime.getRuntime().exec(new String[] {
-                                        "sh",
-                                        script, s });
+				"sh",
+				script, s });
                         result =
                             IO.readInputStream(p.getInputStream()).trim();
                         JSONObject obj    = new JSONObject(result);
@@ -1128,7 +1128,7 @@ public abstract class Converter extends Processor {
                 InputStream is    = IO.getInputStream(_url);
                 byte[]      bytes = IOUtil.readBytes(is);
                 String b = "data:image/" + type + ";base64, "
-                           + Utils.encodeBase64Bytes(bytes);
+		    + Utils.encodeBase64Bytes(bytes);
                 row.add(b);
             } catch (Exception exc) {
                 System.err.println("Error reading url:" + url);
@@ -1280,16 +1280,16 @@ public abstract class Converter extends Processor {
                 String     title   = value.optString("title", "");
                 title = title.replaceAll(" ", "%20");
                 url = baseUrl + "?action=parse&prop=text&page=" + title
-                      + "&format=json";
+		    + "&format=json";
                 result = IO.readUrl(url);
                 obj    = new JSONObject(result);
                 obj    = JsonUtil.readObject(obj, "parse.text");
                 String contents = obj.optString("*", "");
                 String p = StringUtil.findPattern(contents,
-                               "(?s)/table>(.*?)<div id=\"toc\"");
+						  "(?s)/table>(.*?)<div id=\"toc\"");
                 if (p != null) {
                     String p2 = StringUtil.findPattern(contents,
-                                    "(?s).*?<p>(.*?)</p>");
+						       "(?s).*?<p>(.*?)</p>");
                     if (p2 != null) {
                         p = p2;
                     } else {
@@ -1613,7 +1613,7 @@ public abstract class Converter extends Processor {
                     String label =
                         Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
                     String unit = StringUtil.findPattern(col,
-                                      ".*?\\(([^\\)]+)\\).*");
+							 ".*?\\(([^\\)]+)\\).*");
                     StringBuffer attrs = new StringBuffer();
                     attrs.append("label=\"" + label + "\" ");
                     if (unit != null) {
@@ -1621,9 +1621,9 @@ public abstract class Converter extends Processor {
 
                     }
                     String id = label.replaceAll(
-                                    "\\([^\\)]+\\)", "").replaceAll(
-                                    "-", "_").trim().toLowerCase().replaceAll(
-                                    " ", "_").replaceAll(":", "_");
+						 "\\([^\\)]+\\)", "").replaceAll(
+										 "-", "_").trim().toLowerCase().replaceAll(
+															   " ", "_").replaceAll(":", "_");
                     id = id.replaceAll("/+", "_");
                     id = id.replaceAll("\\.", "_");
                     id = id.replaceAll("_+_", "_");
@@ -1817,11 +1817,11 @@ public abstract class Converter extends Processor {
         public HeaderMaker(Seesv seesv, Dictionary<String, String> props) {
             this.props = new PatternProps(props);
             defaultType = Seesv.getDbProp(props, "default", "type",
-                                            defaultType);
+					  defaultType);
             defaultTypeFromProperties = Seesv.getDbProp(props, "default",
-                    "type", null);
+							"type", null);
             defaultChartable = Seesv.getDbProp(props, "default",
-                    "chartable", true);
+					       "chartable", true);
 	    String namesFile = Seesv.getDbProp(props, null, "namesfile", null);
 	    try {
 		if(namesFile!=null) {
@@ -1863,7 +1863,7 @@ public abstract class Converter extends Processor {
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
-                                      "true");
+					      "true");
             PrintWriter  writer = ctx.getWriter();
             StringBuffer sb     = new StringBuffer();
             if (toStdOut) {
@@ -1873,9 +1873,9 @@ public abstract class Converter extends Processor {
             }
             List values = new ArrayList<String>();
             String dfltFormat = Seesv.getDbProp(props, "default", "format",
-                                    null);
+						null);
             String dfltUnit = Seesv.getDbProp(props, "default", "unit",
-                                  null);
+					      null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -1888,7 +1888,7 @@ public abstract class Converter extends Processor {
                         desc = toks[0];
                         desc = desc.replaceAll(",", "_comma_");
                         desc = desc.replaceAll("\"", "").replaceAll("\n",
-                                " ");
+								    " ");
                         col = col.replaceAll("<desc>.*</desc>", "");
                     }
                     toks = Utils.findPatterns(col, "<label>(.*)</label>");
@@ -1908,19 +1908,19 @@ public abstract class Converter extends Processor {
                 String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
-                                     "^3").replaceAll("\n", " ");
+							       "^3").replaceAll("\n", " ");
                 String id = col.replaceAll("°"," ").replaceAll("\\([^\\)]+\\)", "").replaceAll(
-                                "\\?", "").replaceAll("\\$", "").replaceAll(
-                                ",", "_").replaceAll(
-                                "-", "_").trim().toLowerCase().replaceAll(
-									  " ", "_").replaceAll(":", "_");
+											       "\\?", "").replaceAll("\\$", "").replaceAll(
+																	   ",", "_").replaceAll(
+																				"-", "_").trim().toLowerCase().replaceAll(
+																									  " ", "_").replaceAll(":", "_");
 
                 id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
-                    "\"", "_").replaceAll("%", "_").replaceAll(
-                    "\'", "_").replaceAll("/+", "_").replaceAll(
-                    "\\.", "_").replaceAll("_+_", "_").replaceAll(
-                    "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
+							  "\"", "_").replaceAll("%", "_").replaceAll(
+												     "\'", "_").replaceAll("/+", "_").replaceAll(
+																		 "\\.", "_").replaceAll("_+_", "_").replaceAll(
+																							       "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
 
                 id = Seesv.getDbProp(props, id, i, "id", id);
 
@@ -1931,14 +1931,14 @@ public abstract class Converter extends Processor {
 		}
                 StringBuffer attrs = new StringBuffer();
                 String group = Seesv.getDbProp(props, id, i, "group",
-                                   (String) null);
+					       (String) null);
                 if (group != null) {
                     attrs.append(" group=\"" + group + "\" ");
                 }
 
                 if (label == null) {
                     label = Seesv.getDbProp(props, id, i, "label",
-                            (String) null);
+					    (String) null);
                 }
 		if(label==null && proppers!=null) label  = proppers.get(0);
 		if(desc==null && proppers!=null && proppers.size()>1) desc  = proppers.get(1);		
@@ -1946,19 +1946,19 @@ public abstract class Converter extends Processor {
 
                 if (makeLabel && (label == null)) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
-                            ""));
+							   ""));
 		    label = label.replaceAll("°"," ");
                 }
 		if(label!=null) label = label.replaceAll("[\"']+","");
 
 
                 String unit = StringUtil.findPattern(col,
-                                  ".*?\\(([^\\)]+)\\).*");
+						     ".*?\\(([^\\)]+)\\).*");
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
-                                             " ").replaceAll("<p>", " ");
+								    " ").replaceAll("<p>", " ");
                     label = label.replaceAll("  +", " ").replace("_space_",
-                                             " ");
+								 " ");
                     attrs.append("label=\"" + label + "\" ");
                 }
 
@@ -1968,19 +1968,19 @@ public abstract class Converter extends Processor {
                 if (unit == null) {
                     unit = Seesv.getDbProp(props, id, i, "unit", dfltUnit);
                 }
-                if (unit != null) {
+                if (Utils.stringDefined(unit)) {
                     attrs.append("unit=\"" + unit + "\" ");
 
                 }
                 String format = dfltFormat;
                 String type   = (defaultTypeFromProperties != null)
-                                ? defaultTypeFromProperties
-                                : defaultType;
+		    ? defaultTypeFromProperties
+		    : defaultType;
                 //              System.err.println("id:"  + id  + " default:" + type);
                 boolean isGeo = false;
 
                 boolean chartable = Seesv.getDbProp(props, id, "chartable",
-                                        defaultChartable);
+						    defaultChartable);
                 if (id.equals("date")) {
                     type = "date";
                 } else if (id.equals("year")) {
@@ -2012,7 +2012,7 @@ public abstract class Converter extends Processor {
                 } else if (defaultTypeFromProperties == null) {
                     try {
                         if (_sample.equals("true")
-                                || _sample.equals("false")) {
+			    || _sample.equals("false")) {
                             type = "enumeration";
                         } else if (_sample.equals("nan")
                                    || _sample.equals("na")) {
@@ -2027,11 +2027,11 @@ public abstract class Converter extends Processor {
                             type = "integer";
                             //                      System.err.println("\tinteger:" + sample);
                         } else if (sample.matches(
-                                "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
+						  "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
                             //                      System.err.println("\tdouble:" + sample);
                             type = "double";
                         } else if (sample.matches(
-                                "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+						  "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
                             type   = "date";
                             format = "yyyy-MM-dd";
                         } else {}
@@ -2051,7 +2051,7 @@ public abstract class Converter extends Processor {
 
                 attrs.append(" type=\"" + type + "\"");
                 String enumeratedValues = Seesv.getDbProp(props, id, i,
-                                              "enumeratedValues", null);
+							  "enumeratedValues", null);
                 if (enumeratedValues != null) {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
                                  + "\"");
@@ -2099,8 +2099,8 @@ public abstract class Converter extends Processor {
                 try {
                     if (debug) {
                         System.err.println(
-                            "addheader: telling nextProcessor to handle row:"
-                            + firstRow);
+					   "addheader: telling nextProcessor to handle row:"
+					   + firstRow);
                     }
                     nextProcessor.handleRow(ctx, firstRow);
                 } catch (Exception exc) {
@@ -2153,16 +2153,16 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 String s = values.get(idx).toString().trim();
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s);
+		    ? 0
+		    : Double.parseDouble(s);
                 total += v;
                 cnt++;
             }
             for (Integer idx : indices) {
                 String s = values.get(idx).toString().trim();
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s);
+		    ? 0
+		    : Double.parseDouble(s);
                 if (total != 0) {
                     values.set(idx, v / total);
                 } else {
@@ -2554,8 +2554,8 @@ public abstract class Converter extends Processor {
                     }
                 }
                 double average = (cnt == 0)
-                                 ? Double.NaN
-                                 : total / cnt;
+		    ? Double.NaN
+		    : total / cnt;
                 add(ctx, row, average);
             }
 
@@ -2893,7 +2893,7 @@ public abstract class Converter extends Processor {
             } else {
                 this.isRegex = StringUtil.containsRegExp(pattern);
                 patterns.add(new String[] { Utils.convertPattern(pattern),
-                                            value });
+					   value });
             }
         }
 
@@ -2917,20 +2917,20 @@ public abstract class Converter extends Processor {
                 }
                 String pattern = toks.get(0);
                 patterns.add(new String[] { Utils.convertPattern(pattern),
-                                            (toks.size() > 1)
-                                            ? toks.get(1)
-                                            : "" });
+					   (toks.size() > 1)
+					   ? toks.get(1)
+					   : "" });
                 //              System.out.println(Utils.convertPattern(pattern));
             }
 
             Collections.sort(patterns, new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    String[] t1 = (String[]) o1;
-                    String[] t2 = (String[]) o2;
+		    public int compare(Object o1, Object o2) {
+			String[] t1 = (String[]) o1;
+			String[] t2 = (String[]) o2;
 
-                    return t2[0].length() - t1[0].length();
-                }
-            });
+			return t2[0].length() - t1[0].length();
+		    }
+		});
             //      for(String[]t:patterns)System.err.println(t[0]);
         }
 
@@ -3462,7 +3462,7 @@ public abstract class Converter extends Processor {
 			cacheFile = new File(Seesv.getTmpCacheDir(),"cached_" + Utils.makeID(url.replace("http:","https:")));
 		    }
 		    if(cacheFile.exists()) {
-//			System.err.println("from Cache:"+ cacheFile);
+			//			System.err.println("from Cache:"+ cacheFile);
 			html = IO.readContents(cacheFile);
 			if(!url.startsWith("https:") && cacheFile.getName().startsWith("cached_https_")) {
 			    url = url.replace("http:","https:");
@@ -3498,14 +3498,14 @@ public abstract class Converter extends Processor {
 		}
 		html  = html.replace("\r\n","\n");
 		/*
-		int idx1 = html.indexOf("<head");
-		int idx2= html.indexOf("</head");		
-		if(idx1>=0 && idx2>=idx1) {
-		    html = html.substring(idx1,idx2);
-		} else {
-		    int idx = html.indexOf("<body");
-		    if(idx>=0) html = html.substring(0,idx);
-		}
+		  int idx1 = html.indexOf("<head");
+		  int idx2= html.indexOf("</head");		
+		  if(idx1>=0 && idx2>=idx1) {
+		  html = html.substring(idx1,idx2);
+		  } else {
+		  int idx = html.indexOf("<body");
+		  if(idx>=0) html = html.substring(0,idx);
+		  }
 		*/
 		Pattern titlePattern  = Pattern.compile("<title[^>]*>(.*?)</title",
 							Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
@@ -3527,11 +3527,11 @@ public abstract class Converter extends Processor {
 		}
 
 		Pattern metaPattern  = Pattern.compile("<meta([^>]+>)",
-						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+						       Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Pattern metaPattern2  = Pattern.compile("name=\"description\"[^>]+content=\"([^\"]+)\"",
-						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+							Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Pattern contentPattern  = Pattern.compile("content=\"([^\"]+)\"",
-						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);		
+							  Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);		
 		Matcher metaMatcher = metaPattern.matcher(html);
 		String desc = "";
 		String keywords = "";		
@@ -3558,12 +3558,12 @@ public abstract class Converter extends Processor {
 		add(ctx, row, keywords);
 
 		Pattern linkPattern  = Pattern.compile("<link([^>]+>)",
-						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+						       Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Pattern relPattern  = Pattern.compile("rel *= *(?:\"|')([^\"']+)(\"|')");
 		Pattern hrefPattern  = Pattern.compile("href *= *(?:\"|')([^\"']+)(\"|')");
 		Pattern sizesPattern  = Pattern.compile("sizes *= *(?:\"|')([^\"']+)(\"|')");				
 		Pattern linkPattern2  = Pattern.compile("name=\"description\"[^>]+content=\"([^\"]+)\"",
-						   Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+							Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Matcher linkMatcher = linkPattern.matcher(html);
 		String image32 = null;
 		String image = null;
@@ -4063,11 +4063,11 @@ public abstract class Converter extends Processor {
             }
             for (int i = 0; i < row.size(); i++) {
                 String s  = (i < row.size())
-                            ? row.getString(i)
-                            : "";
+		    ? row.getString(i)
+		    : "";
                 String ss = (i < firstRow.size())
-                            ? firstRow.getString(i)
-                            : "";
+		    ? firstRow.getString(i)
+		    : "";
 		if(delimiter.equals("+")) {
 		    try {
 			double d1 = Double.parseDouble(s);
@@ -4550,8 +4550,8 @@ public abstract class Converter extends Processor {
                 try {
                     InputStream inputStream =
                         Utils.getInputStream(
-                            "/org/ramadda/util/text/gender.properties",
-                            getClass());
+					     "/org/ramadda/util/text/gender.properties",
+					     getClass());
                     genderProperties.load(inputStream);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -4635,10 +4635,10 @@ public abstract class Converter extends Processor {
          * @throws Exception _more_
          */
         private void makeMap(String filename, int col1, int col2)
-                throws Exception {
+	    throws Exception {
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(filename)));
+						   new InputStreamReader(
+									 getInputStream(filename)));
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -4753,7 +4753,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-       /** _more_ */
+	/** _more_ */
         private double scale;
 
 
@@ -4788,7 +4788,7 @@ public abstract class Converter extends Processor {
                         Double.parseDouble(row.get(index).toString());
                     row.set(index,
                             Double.valueOf((value + delta1) * scale
-                                       + delta2).toString());
+					   + delta2).toString());
                 } catch (NumberFormatException nfe) {}
             }
 
@@ -4951,7 +4951,7 @@ public abstract class Converter extends Processor {
                     String sdigits = "" + digits;
                     if (sdigits.length() < numRandomDigits) {
                         sdigits = StringUtil.padRight(sdigits,
-                                numRandomDigits, "0");
+						      numRandomDigits, "0");
                         digits = Integer.parseInt(sdigits);
                     }
 
@@ -4960,8 +4960,8 @@ public abstract class Converter extends Processor {
                         List<String> toks   = Utils.splitUpTo(svalue, ".", 2);
                         String       v      = toks.get(0);
                         String       d      = ((toks.size() > 1)
-                                ? toks.get(1)
-                                : "");
+					       ? toks.get(1)
+					       : "");
                         d = StringUtil.padRight(d, -places, "0");
                         if (d.length() > -places) {
                             d = d.substring(0, -places);
@@ -5292,6 +5292,9 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String op;
 
+	private String replaceCol;
+
+	private int replaceIdx=-1;
 
         /**  */
         String foo;
@@ -5308,6 +5311,10 @@ public abstract class Converter extends Processor {
             foo       = "" + indices;
             this.name = name;
             this.op   = op;
+	    if(name.startsWith("replace:")) {
+		replaceCol = name.substring("replace:".length());
+	    }
+		    
         }
 
 
@@ -5320,8 +5327,11 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
             if (rowCnt++ == 0) {
-                row.getValues().add(name);
-
+		if(replaceCol!=null) {
+		    replaceIdx = getIndex(ctx,replaceCol);
+		} else {
+		    row.getValues().add(name);
+		}
                 return row;
             }
             double value = 0;
@@ -5330,12 +5340,11 @@ public abstract class Converter extends Processor {
             //      System.err.println("op:" + op +" " + foo +" indices:" + indices);
             for (Integer idx : indices) {
                 int index = idx.intValue();
-                if ((index < 0) || (index >= row.size())) {
-                    //              System.err.println("\tSkipping:" + index);
+                if (!row.indexOk(index)) {
                     continue;
                 }
-                String s = row.getValues().get(index).toString();
-                double v = parse(s);
+                String s = row.getString(index);
+                double v = parse(row,s);
                 //              System.err.println("\tindex::" + index +" value:" + value);
                 if ( !Double.isNaN(v)) {
                     total += v;
@@ -5367,7 +5376,11 @@ public abstract class Converter extends Processor {
                 }
             }
             //      System.err.println("\tfinal value:" + value);
-            row.getValues().add(value + "");
+	    if(replaceIdx>=0) {
+		row.set(replaceIdx,value + "");
+	    } else {
+		row.getValues().add(value + "");
+	    }
             return row;
         }
 
@@ -5456,7 +5469,7 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         private Hashtable<String, Row> prevRows = new Hashtable<String,
-                                                      Row>();
+	    Row>();
 
         /** _more_ */
         List<Integer> indices;
@@ -5519,8 +5532,8 @@ public abstract class Converter extends Processor {
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-                double v1 = parse(prevRow.get(index).toString());
-                double v2 = parse(row.get(index).toString());
+                double v1 = parse(prevRow,prevRow.get(index).toString());
+                double v2 = parse(row,row.get(index).toString());
                 row.add((v2 - v1) + "");
             }
 
@@ -5570,8 +5583,8 @@ public abstract class Converter extends Processor {
             double lon    = x / shift * 180.0;
             double lat    = y / shift * 180.0;
             lat = 180 / Math.PI
-                  * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0))
-                     - Math.PI / 2.0);
+		* (2 * Math.atan(Math.exp(lat * Math.PI / 180.0))
+		   - Math.PI / 2.0);
 
             row.getValues().add(lat);
             row.getValues().add(lon);
@@ -5622,8 +5635,8 @@ public abstract class Converter extends Processor {
                 }
                 String s = row.getString(index);
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s.replaceAll(",", ""));
+		    ? 0
+		    : Double.parseDouble(s.replaceAll(",", ""));
                 row.set(index, "" + ((int) Math.round(v)));
             }
 
@@ -5763,8 +5776,8 @@ public abstract class Converter extends Processor {
                 }
                 String s = (String) row.getValues().get(index);
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s.replaceAll(",", ""));
+		    ? 0
+		    : Double.parseDouble(s.replaceAll(",", ""));
                 row.set(index, "" + Math.abs(v));
             }
 
@@ -6476,8 +6489,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int    col = hasColumns()
-                         ? getIndex(ctx)
-                         : -1;
+		? getIndex(ctx)
+		: -1;
             String v   = "";
             if (rowCnt == 0) {
                 v = name;
@@ -6775,8 +6788,8 @@ public abstract class Converter extends Processor {
             super(cols);
             if (cols.size() != cols2.size()) {
                 throw new IllegalArgumentException(
-                    "Mismatched columns in -copycolumns:" + cols + " "
-                    + cols2);
+						   "Mismatched columns in -copycolumns:" + cols + " "
+						   + cols2);
             }
             this.toCols = cols2;
         }
@@ -7012,7 +7025,7 @@ public abstract class Converter extends Processor {
 
         /**  */
         private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
-                                                           String>();
+	    String>();
 
 
         /**
@@ -7061,7 +7074,7 @@ public abstract class Converter extends Processor {
 
         /**  */
         private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
-                                                           String>();
+	    String>();
 
 
         /**
@@ -7183,8 +7196,8 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             String val = row.get(col).toString();
             if ((prefix != null)
-                    && (val.matches(pattern)
-                        || (val.indexOf(pattern) >= 0))) {
+		&& (val.matches(pattern)
+		    || (val.indexOf(pattern) >= 0))) {
                 row.set(col, prefix + delim + val);
             } else {
                 prefix = val;
@@ -7387,8 +7400,8 @@ public abstract class Converter extends Processor {
             } else {
                 for (int i : getIndices(ctx)) {
                     row.add(
-                        new String(
-                            Utils.decodeBase64(row.getString(i).getBytes())));
+			    new String(
+				       Utils.decodeBase64(row.getString(i).getBytes())));
                 }
             }
 
@@ -7462,7 +7475,7 @@ public abstract class Converter extends Processor {
          */
         public Crypt(boolean encrypt, TextReader ctx, List<String> cols,
                      String password)
-                throws Exception {
+	    throws Exception {
             super(cols);
 	    MessageDigest digester = MessageDigest.getInstance("SHA-256");
 	    digester.update(password.getBytes("UTF-8"));
@@ -7495,8 +7508,8 @@ public abstract class Converter extends Processor {
          * @throws Exception _more_
          */
         public EncryptDecrypt(TextReader ctx, boolean encrypt, List<String> cols, 
-                       String key)
-                throws Exception {
+			      String key)
+	    throws Exception {
             super(encrypt, ctx, cols, key);
 	    this.mode = encrypt;
         }
@@ -7648,7 +7661,7 @@ public abstract class Converter extends Processor {
             scope.put("x", scope, "33");
             Object result = cx.evaluateString(scope, s, "<cmd>", 1, null);
             System.err.println(
-                org.mozilla.javascript.Context.toString(result));
+			       org.mozilla.javascript.Context.toString(result));
         } finally {
             org.mozilla.javascript.Context.exit();
         }

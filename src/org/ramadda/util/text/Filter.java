@@ -1583,6 +1583,53 @@ public class Filter extends Processor {
     }
 
 
+    public static class EnsureNumeric extends Filter {
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         * @param op _more_
+         * @param value _more_
+         */
+        public EnsureNumeric(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+            for (int idx : getIndices(ctx)) {
+                if (!row.indexOk(idx)) {
+                    continue;
+                }
+		parse(row,row.getString(idx));
+            }
+            return true;
+        }
+    }
+
+
+
+
     /**
      * Class description
      *
