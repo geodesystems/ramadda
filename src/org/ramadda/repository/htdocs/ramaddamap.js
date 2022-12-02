@@ -952,13 +952,16 @@ RepositoryMap.prototype = {
 	    console.log("setZoom");
         this.getMap().zoomTo(zoom);
     },
-    zoomToMarkers: function() {
-        if (!this.markers)
+    zoomToLayer:function(layer) {
+        if (layer)
             return;
-        bounds = this.markers.getDataExtent();
+        let bounds = layer.getDataExtent();
         if (bounds == null) return;
         this.getMap().setCenter(bounds.getCenterLonLat());
         this.zoomToExtent(bounds);
+    },
+    zoomToMarkers: function() {
+	this.zoomToLayer(this.markers);
     },
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
@@ -1306,19 +1309,7 @@ RepositoryMap.prototype = {
 
         var _this = this;
         if (!feature.isSelected) {
-	    let fs = feature.style;
-            feature.originalStyle = feature.style;
-            feature.style = null;
-	    let highlight = this.getLayerHighlightStyle(layer);
-	    if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
-		highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4);
-	    }
-	    if(!Utils.isDefined(highlight.fillOpacity)) {
-		highlight.fillOpacity = 0.3;
-	    }
-	    fs = fs ??{};
-	    this.checkMatchStyle(fs,highlight);
-            layer.drawFeature(feature, highlight);
+	    this.highlightFeature(feature);
             if (this.params.displayDiv) {
                 this.displayedFeature = feature;
                 var callback = function() {
@@ -1335,6 +1326,29 @@ RepositoryMap.prototype = {
 
         }
     },
+    unhighlightFeature:function(feature) {
+	if(feature.originalStyle) {
+	    feature.style = feature.originalStyle;
+	    feature.layer.drawFeature(feature);
+	}
+    },
+    highlightFeature:function(feature,highlightStyle) {
+	let fs = feature.style;
+        feature.originalStyle = feature.style;
+        feature.style = null;
+	let layer = feature.layer;
+	let highlight = highlightStyle??this.getLayerHighlightStyle(layer);
+	if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
+	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4);
+	}
+	if(!Utils.isDefined(highlight.fillOpacity)) {
+	    highlight.fillOpacity = 0.3;
+	}
+	fs = fs ??{};
+	this.checkMatchStyle(fs,highlight);
+	feature.layer.drawFeature(feature, highlight);
+    },
+
     closeHighlightPopup: function() {
         if(this.highlightPopup) {
             this.getMap().removePopup(this.highlightPopup);
@@ -2595,6 +2609,7 @@ RepositoryMap.prototype = {
 		    }
                     return;
                 }
+
                 if (zoomToExtent) {
                     let dataBounds = layer.getDataExtent();
                     if (dataBounds) {
@@ -4104,6 +4119,7 @@ RepositoryMap.prototype = {
 	}
     },
 
+    
     getLayerVisbileExtent: function(layer) {
         let maxExtent = null;
         let features = layer.features;
