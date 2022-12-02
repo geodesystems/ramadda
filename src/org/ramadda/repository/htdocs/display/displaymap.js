@@ -630,6 +630,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
 	{p:'displayDiv',tt:'Div id to show highlights in'},
 	{p:'showRecordHighlight',d:true},
+	{p:'recordHighlightFeature',ex:'true',tt:'If there is a vector map that is being shown then highlight the map feature instead of drawing a point'},
 	{p:'recordHighlightShape',ex:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
@@ -4212,7 +4213,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
 	    if(displayDebug.handleEventRecordSelect)
 		this.logMsg("handleEvent");
-	    if(isNaN(args.record.getLatitude()) ||
+	    
+	    if(this.getRecordHighlightFeature() ||
+	       isNaN(args.record.getLatitude()) ||
 	       isNaN(args.record.getLongitude())) {
 		if(this.recordToFeature) {
 		    let feature = this.recordToFeature[args.record.getId()];
@@ -4223,7 +4226,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(feature) {
 			let style = {};
 			if(feature.style) style = $.extend(style,feature.style);
-			style = $.extend(style,{strokeColor: 'black',  strokeWidth: 3});
+			style = $.extend(style,{
+			    strokeColor: this.getRecordHighlightStrokeColor('red'),
+			    strokeWidth: this.getRecordHighlightStrokeWidth(3)}
+					);
 			this.getMap().highlightFeature(feature,style);
 						       
 		    }
