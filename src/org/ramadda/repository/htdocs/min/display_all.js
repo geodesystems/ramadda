@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Nov 30 13:00:58 MST 2022";
+var build_date="RAMADDA build date: Fri Dec  2 01:47:04 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -35161,6 +35161,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.selectedMarker = marker;
         },
         applyVectorMap: function(force, textGetter, args) {
+
+
+	    
+
 	    let debug = false;
             if (!force && this.vectorMapApplied) {
                 return;
@@ -35169,31 +35173,34 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.doDisplayMap() || !this.vectorLayer || !points) {
                 return;
             }
+
 	    if(!this.getApplyPointsToVectors()) {
 		return;
 	    }
-
-	    
+    
 	    if(!args) args = {};
 	    if(debug) this.logMsg("applyVectorMap");
 	    if(!textGetter) textGetter  = this.textGetter;
 
 	    let linkField=this.getFieldById(null,this.getProperty("linkField"));
-	    let linkFeature=this.getProperty("linkFeature");
+	    let linkFeature=this.getLinkFeature();
             let features = this.vectorLayer.features.slice();
+
+
             let allFeatures = features.slice();
-	    let recordToFeature = {};
+	    this.recordToFeature = {};
 	    if(debug) console.log("\t#features:" + features.length);
 	    points.forEach(point=>{
 		let record = point.record;
 		if(!record) return;
 		let feature = record.getDisplayProperty(this.getId(),"feature");
-		if(feature)  recordToFeature[record.getId()] = feature;
+		if(feature)  this.recordToFeature[record.getId()] = feature;
 	    });
 
 	    if(linkFeature && linkField) {
 		linkFeature = linkFeature.toLowerCase();
 		let recordMap = {};
+
 		points.forEach(p=>{
 		    let record = p.record;
 		    if(record) {
@@ -35226,7 +35233,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if(record) {
 				    if(debugFeatureLinking&& idx<10)
 					console.log("\tfound record:" + value+": " + record.getId());
-				    recordToFeature[record.getId()] = feature;
+				    this.recordToFeature[record.getId()] = feature;
 				} else {
 				    if(debugFeatureLinking) {
 					if(errorCnt++<20) {
@@ -35279,7 +35286,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let record = point.record;
                 let center = point.center;
 		let tmp = {index:-1,maxExtent: maxExtent};
-		let matchedFeature = recordToFeature[record.getId()];
+		let matchedFeature = this.recordToFeature[record.getId()];
 		if(matchedFeature) {
 		    if (matchedFeature.geometry) {
 			if (maxExtent === null) {
@@ -35435,6 +35442,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.getProperty("fixedPosition",false))  {
 		this.hadInitialPosition    = false;
 	    }
+
 
         },
 	findContainingFeature: function(features, center, info,debug) {
@@ -35601,6 +35609,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	requiresGeoLocation: function() {
 	    if(this.shapesField && this.shapesTypeField) return false;
+	    if(this.getLinkField() && this.getLinkFeature()) return false;
 	    return true;
 	},
 	addFilters: function(filters) {
@@ -35943,6 +35952,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
             let records = this.records =  this.filterData();
+
+
+
 	    if(this.shapesTypeField && this.shapesField) {
 		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
 		this.loadShapes(records);
@@ -36014,6 +36026,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	updateUIInner: function(args, pointData, records, debug) {
 	    let _this = this;
+
 	    let t1= new Date();
 	    debug = debug || displayDebug.displayMapUpdateUI;
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
@@ -36098,6 +36111,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let t2= new Date();
 //	    debug = true;
 	    if(debug) console.log("displaymap calling addPoints");
+
+
             this.addPoints(records,fields,points,pointBounds,debug);
 	    let t3= new Date();
             this.addLabels(records,fields);
@@ -36558,6 +36573,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let pointsToAdd = [];	    
 	    
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
+
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    this.lastColorBy = colorBy;
 	    let cidx=0
@@ -37532,7 +37548,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
 	    if(displayDebug.handleEventRecordSelect)
 		this.logMsg("handleEvent");
-	    this.highlightPoint(args.record.getLatitude(),args.record.getLongitude(),args.highlight,true);
+	    if(isNaN(args.record.getLatitude()) ||
+	       isNaN(args.record.getLongitude())) {
+		if(this.recordToFeature) {
+		    let feature = this.recordToFeature[args.record.getId()];
+		    if(this.highlightedFeature) {
+			this.getMap().unhighlightFeature(this.highlightedFeature);
+		    }
+		    this.highlightedFeature = feature;
+		    if(feature) {
+			let style = {};
+			if(feature.style) style = $.extend(style,feature.style);
+			style = $.extend(style,{strokeColor: 'black',  strokeWidth: 3});
+			this.getMap().highlightFeature(feature,style);
+						       
+		    }
+		}
+	    } else {
+		this.highlightPoint(args.record.getLatitude(),args.record.getLongitude(),args.highlight,true);
+	    }
 	},
         handleEventRecordSelection: function(source, args) {
 	    SUPER.handleEventRecordSelection.call(this, source, args);
