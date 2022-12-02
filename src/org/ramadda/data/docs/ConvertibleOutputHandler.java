@@ -14,6 +14,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.SeesvContext;
+import org.ramadda.util.text.SeesvException;
 import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
@@ -593,8 +594,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
             }
             s = new String(Utils.encodeBase64(s));
             s = JsonUtil.mapAndQuote(Utils.makeList("error", s));
-            if (inner instanceof Seesv.MessageException) {
-                s          = ((Seesv.MessageException) inner).getMessage();
+            if (inner instanceof SeesvException) {
+                s          = ((SeesvException) inner).getFullMessage();
                 printStack = false;
                 s          = new String(Utils.encodeBase64(s));
                 s          = JsonUtil.mapAndQuote(Utils.makeList("message", s));
