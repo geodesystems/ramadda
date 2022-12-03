@@ -1,7 +1,12 @@
 #
-#the tika-app-2.6.0.jar is from:
+#The com.monitorjbl.xlsx.StreamingReader for streaming XLS files
+#depends on an older version of tika so for now the ramaddatika.jar
+#is from (I think):
+#https://mvnrepository.com/artifact/org.apache.tika/tika-app/2.5.0
+#In the future if this gets resolved we can use the a more current version of tika from:
 #https://tika.apache.org/download.html
-#Because github doesn't like large files this is no longer in github
+#
+#Because github doesn't like large files the tika-app.jar is no longer in github
 #So, to run this script that produces the ramaddatika.jar
 #you need to download the tika-app jar
 #
@@ -9,7 +14,7 @@ file delete -force tika
 file mkdir tika
 cd tika
 puts "unzipping tika"
-set rc [catch {exec unzip -o ../tika-app-2.6.0.jar} msg]
+set rc [catch {exec unzip -o ../tika-app-2.5.0.jar} msg]
 
 set delete {
     com/google dods ucar thredds org/slf4j org/apache/logging org/apache/http  org/joda
