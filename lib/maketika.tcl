@@ -1,5 +1,5 @@
 #
-#The com.monitorjbl.xlsx.StreamingReader for streaming XLS files
+#The com.monitorjbl.xlsx.StreamingReader for streaming XLS files 
 #depends on an older version of tika so for now the ramaddatika.jar
 #is from (I think):
 #https://mvnrepository.com/artifact/org.apache.tika/tika-app/2.5.0
