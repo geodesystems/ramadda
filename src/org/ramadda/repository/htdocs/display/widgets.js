@@ -1467,7 +1467,9 @@ ColorByInfo.prototype = {
 	return c;
     },
 
-    getColorInner: function(value, pointRecord) {
+    getColorInner: function(value, pointRecord,debug) {
+//	debug=true;
+//	if(debug) console.log(value);
 	if(!this.initDisplayCalled)   this.initDisplay();
 
 	if(this.filterHighlight && pointRecord && !pointRecord.isHighlight(this.display)) {
@@ -1494,6 +1496,7 @@ ColorByInfo.prototype = {
             }
         } else {
             let v = value;
+
 	    if(this.stringMap) {
 		let color = this.stringMap[value];
 		if(!Utils.isDefined(color)) {
