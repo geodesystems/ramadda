@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec  2 12:07:31 MST 2022";
+var build_date="RAMADDA build date: Sun Dec  4 17:34:53 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -1469,7 +1469,9 @@ ColorByInfo.prototype = {
 	return c;
     },
 
-    getColorInner: function(value, pointRecord) {
+    getColorInner: function(value, pointRecord,debug) {
+//	debug=true;
+//	if(debug) console.log(value);
 	if(!this.initDisplayCalled)   this.initDisplay();
 
 	if(this.filterHighlight && pointRecord && !pointRecord.isHighlight(this.display)) {
@@ -1496,6 +1498,7 @@ ColorByInfo.prototype = {
             }
         } else {
             let v = value;
+
 	    if(this.stringMap) {
 		let color = this.stringMap[value];
 		if(!Utils.isDefined(color)) {
@@ -37861,13 +37864,15 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 
 
 const ID_BASEMAP = "basemap";
-function RamaddaBasemapDisplay(displayManager, id, type, properties) {
+function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     let myProps = [
 	{label:'Base map properties'},
 	{p:'regionField',ex:''},
-	{p:'valueField',ex:''},
 	{p:'mapFile',ex:'usmap.json|countries.json',d:"usmap.json"},
+	{p:'mapEntry',tt:'entry id of geojson map file'},
+	{p:'mapFeature',tt:'feature name to match data with'},		
+	{p:'valueField',tt:'Field to get the height of each polygon from',ex:''},
 	{p:'skipRegions',ex:'Alaska,Hawaii'},
 	{p:'pruneMissing',ex:'true'},				
 	{p:'mapBackground',ex:'transparent'},
@@ -37922,6 +37927,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
                 this.displayError("No value field specified");
 		return null
 	    }	    
+	    //If the colorBy wasn't set then use the value field
 	    if(valueField) {
 		if(this.getProperty("colorBy")==null) this.setProperty("colorBy",valueField.getId());
 		if(this.getProperty("sizeBy")==null) this.setProperty("sizeBy",valueField.getId());	    
@@ -38066,9 +38072,15 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		if(!this.gettingFile) {
 		    this.gettingFile = true;
 		    let mapFile = this.getPropertyMapFile();
-		    if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
-			mapFile =ramaddaCdn +"/resources/" + mapFile;
+		    let mapEntry = this.getMapEntry();
+		    if(mapEntry!=null) {
+			mapFile = ramaddaBaseUrl + "/entry/get?entryid=" + mapEntry;
+		    } else {
+			if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
+			    mapFile =ramaddaCdn +"/resources/" + mapFile;
+			}
 		    }
+		    console.log(mapFile);
 		    var jqxhr = $.getJSON(mapFile, (data) =>{
 			this.mapJson = data;
 			this.regionNames=[];
@@ -38153,7 +38165,12 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 
 	    this.aliasMap = {};
 	    features.forEach(blob=>{
-		let region = blob.properties.name || blob.properties.name_long || blob.properties.NAME || blob.properties.ADMIN; 
+		let region;
+		if(this.getMapFeature()) {
+		    region = blob.properties[this.getMapFeature()];
+		} else  {
+		    region = blob.properties.name || blob.properties.name_long || blob.properties.NAME || blob.properties.ADMIN;
+		}
 		let aliases = [region];
 		//Some hacks
 		if(region=="United States of America") aliases.push("United States");
@@ -38187,7 +38204,10 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 			ok =true;
 		    }});
 		if(!ok) this.handleWarning("Missing data for map region:" + region);
-		if(pruneMissing && !ok) return;
+		if(pruneMissing && !ok) {
+		    if(debug)console.log("missing data:" + region);
+//		    return;
+		}
 		this.regionNames.push(region);
 		let coords = blob.geometry.coordinates;
 		let info = {
@@ -38236,9 +38256,13 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 
 
 function RamaddaMapchartDisplay(displayManager, id, properties) {
-    const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPCHART, properties);
+    const SUPER = new RamaddaOtherMapDisplay(displayManager, id, DISPLAY_MAPCHART, properties);
     let myProps = [
 	{label:'Map chart Properties'},
+	{p:'fixedFillColor',tt:'Use this color for all polygons',ex:'red'},
+	{p:'fixedStrokeColor',tt:'Use this color for all polygons',ex:'red'},	
+	{p:'missingLineColor'},
+	{p:'missingFillColor'},		
 	{p:'maxLayers',ex:'10'},
 	{p:'translateX',ex:'0'},
 	{p:'translateY',ex:'0'},	
@@ -38266,11 +38290,16 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		values.layers = Math.round(values.percent*(maxLayers-1))+1;
 	    });
 	    this.colorBy = this.getColorByInfo(allRecords);
+
 	    let [width,height] = this.writeMap();
 	    let [svg, scaleX, scaleY] = this.makeSvg(width,height);
 	    SU.transform(svg,SU.translate(width/2, height/2), SU.scale(0.9), SU.rotate(this.getPropertyRotate(0)), SU.translate(-width/2,-height/2), SU.translate(this.getPropertyTranslateX(30),this.getPropertyTranslateY(0)), SU.skewX(this.getPropertySkewX(-10)), SU.scale(this.getPropertyScale(1)));
-	    var defs = svg.append("defs");
+	    let defs = svg.append("defs");
 	    SU.makeBlur(svg,"blur", this.getPropertyBlur(3));
+	    pruneMissing=false;
+	    let fixedFillColor = this.getFixedFillColor();
+	    let fixedStrokeColor = this.getFixedStrokeColor();	    	    
+//	    console.dir(this.colorBy);
 	    for(let layer=0;layer<maxLayers;layer++) {
 		this.regionNames.forEach(region=>{
 		    let values= this.findValues(region, valueMap);
@@ -38291,35 +38320,42 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		    if(!Utils.isDefined(maxLayer)) maxLayer = 1;
 		    if(layer>maxLayer) return;
 		    this.regions[region].polygons.forEach(polygon=>{
-			let uid = HtmlUtils.getUniqueId();
+			let uid = HtmlUtils.getUniqueId('selector_');
 			let poly = this.makePoly(polygon);
 			let fillColor = "transparent";
 			if(missing) {
-			    fillColor = "#ccc";
-			    lineColor="#000" 
+			    fillColor = this.getMissingFillColor("#ccc");
+			    lineColor=this.getMissingLineColor("#000"); 
 			} else {
 			    if(layer==maxLayer-1) {
-				fillColor = this.colorBy.getColor(value);
+				fillColor = this.colorBy.getColorFromRecord(record);
 				lineColor  = Utils.pSBC(0.1,fillColor);
 			    } else {
 				lineColor  = Utils.pSBC(-0.3,this.colorBy.getColor(value));
 			    }
+			    if(fixedFillColor)
+				fillColor=fixedFillColor;
+			    if(fixedStrokeColor)
+				lineColor=fixedStrokeColor;			    
 			}
 			if(missing) {
-			    svg.selectAll(region+uid)
+			    svg.selectAll(uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
 				    return d.map(d=>{return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");}).join(" ");
 				})
 				.attr("regionName",region)
-				.attr("fill","#ccc")
+				.attr("fill",fillColor)
 		    		.attr("stroke-width",1)
-			    	.attr("stroke","black");
+			    	.attr("stroke",lineColor);
 			    return;
 			}
+
+			
+
 			if(layer==0) {
-			    svg.selectAll(region+uid)
+			    svg.selectAll(uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
@@ -38330,7 +38366,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 				.style("filter","url(#blur)");
 			}
 			let polys = 
-			    svg.selectAll(region+uid)
+			    svg.selectAll(uid)
 			    .data([poly])
 			    .enter().append("polygon")
 			    .attr("points",function(d) { 
@@ -38346,7 +38382,8 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		    });
 		});
 	    }
-	    this.colorBy.displayColorTable();
+	    if(!fixedFillColor)
+		this.colorBy.displayColorTable();
 	}
     });
 }
@@ -38356,7 +38393,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 function RamaddaMaparrayDisplay(displayManager, id, properties) {
     const ID_MAPBLOCK = "mapblock";
     const ID_MAPLABEL = "maplabel";        
-    const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPARRAY, properties);
+    const SUPER = new RamaddaOtherMapDisplay(displayManager, id, DISPLAY_MAPARRAY, properties);
     let myProps = [
 	{label:'Map array properties'},
 	{p:'blockWidth',ex:''},
@@ -38379,8 +38416,10 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 	    let blockHeight= blockWidth;
 	    let pruneMissing = this.getPropertyPruneMissing(true);
 	    let sortedRegions = this.regionNames;
-	    if(this.getPropertySortByValue(true)) {
+	    if(this.getSortByValue(true)) {
 		sortedRegions.sort((a,b)=>{
+		    if(!valueMap[a]) return 1;
+		    if(!valueMap[b]) return -1;		    
 		    return valueMap[a].value-valueMap[b].value;
 		});
 	    } else {
@@ -38447,7 +38486,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			lineColor = "#ccc";
 		    }
 		    if(missing) {
-			svg.selectAll(region+uid)
+			svg.selectAll(uid)
 			    .data([poly])
 			    .enter().append("polygon")
 			    .attr("points",function(d) { 
@@ -38459,7 +38498,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			return;
 		    }
 		    let polys = 
-			svg.selectAll(region+uid)
+			svg.selectAll(uid)
 			.data([poly])
 			.enter().append("polygon")
 			.attr("points",function(d) { 
@@ -38483,10 +38522,10 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 
 function RamaddaMapshrinkDisplay(displayManager, id, properties) {
-    const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPSHRINK, properties);
+    const SUPER = new RamaddaOtherMapDisplay(displayManager, id, DISPLAY_MAPSHRINK, properties);
     let myProps = [
 	{label:'Map shrink Properties'},
-    ];
+   ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         makeMap: function() {
@@ -38539,7 +38578,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    transform = SU.translate(scaleX(center.x),scaleY(center.y)) + SU.scale(percent) + SU.translate(-scaleX(center.x),-scaleY(center.y))
 			}
 			if(missing) {
-			    svg.selectAll(region+"base"+uid)
+			    svg.selectAll("base"+uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
@@ -38551,7 +38590,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    return;
 			}
 			if(layer==0) {
-			    svg.selectAll(region+"base"+uid)
+			    svg.selectAll("base"+uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
@@ -38562,7 +38601,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 				.attr('transform',transform);
 			}
 			let polys = 
-			    svg.selectAll(region+uid)
+			    svg.selectAll(uid)
 			    .data([poly])
 			    .enter().append("polygon")
 			    .attr("points",function(d) { 
@@ -38587,7 +38626,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 
 
 function RamaddaMapimagesDisplay(displayManager, id, properties) {
-    const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPIMAGES, properties);
+    const SUPER = new RamaddaOtherMapDisplay(displayManager, id, DISPLAY_MAPIMAGES, properties);
     let myProps = [
 	{label:'Map Images Properties'},
 	{p:'imageField',ex:''},
@@ -38672,8 +38711,8 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			    return d.map(d=>{return [scaleX(d.x),scaleY(d.y)].join(",");}).join(" ");
 			})
 			.attr(RECORD_ID,recordId)
-		    	.attr("stroke-width",this.getPropertyStrokeWidth(1))
-			.attr("stroke",this.getPropertyStrokeColor("#000"));
+		    	.attr("stroke-width",this.getStrokeWidth(1))
+			.attr("stroke",this.getStrokeColor("#000"));
 		    if(values!=null)
 			polys.style("fill", "url(#bgimage"+ uid+")")
 		    else
