@@ -23,7 +23,10 @@
     --default-radius:4px;
     --nav-hover-color:var(--highlight-color);
     --cal-font-size:10pt;
+
+
     --cal-background:#C5E5F5;
+    --cal-background:#eaeaea;
     --nav-left-z-index: 50;
     --nav-page-fixed-z-index:200; 
     --block-z-index:1;
@@ -5450,6 +5453,14 @@ a.wiki-link-noexist {
     border-width: 0px;
 }
 
+
+.datetable {
+    border:1px solid #ccc;
+}
+
+.datetableheader {
+    background-color:var(--header-background);
+}    
 
 .calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
     border-color: #888;
