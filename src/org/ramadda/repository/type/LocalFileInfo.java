@@ -151,8 +151,8 @@ public class LocalFileInfo {
      */
     private void checkMe(Repository repository) throws Exception {
         if ( !rootDir.exists()) {
-            throw new RepositoryUtil.MissingEntryException(
-                "Could not find entry: " + rootDir);
+	    return;
+	    //	    throw new RepositoryUtil.MissingEntryException("Could not find entry: " + rootDir);
         }
         repository.getStorageManager().checkLocalFile(rootDir);
     }

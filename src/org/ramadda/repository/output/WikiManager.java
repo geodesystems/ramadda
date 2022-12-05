@@ -209,6 +209,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag("counter", null, "key", "key"),
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
                             new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
+                            new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
+                            new WikiTag(WIKI_TAG_DATETABLE, null,"byType","false","showTime","false"),			    			    
                             new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150"),
                             new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
                             new WikiTag(WIKI_TAG_USER, null, "users","user1,user2","delimiter"," ","style","","showAvatar","true","showEmail","true"),
@@ -2765,6 +2767,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             getCalendarOutputHandler().outputCalendar(request,
 						      getCalendarOutputHandler().makeCalendarEntries(request,
 												     children), sb, doDay);
+
+            return sb.toString();
+
+        } else if (theTag.equals(WIKI_TAG_DATETABLE)) {
+            List<Entry> children = getEntries(request, wikiUtil,
+					      originalEntry, entry, props);
+            getCalendarOutputHandler().makeDateTable(request,
+						     children, sb,
+						     getProperty(wikiUtil, props, "byType", false),
+						     getProperty(wikiUtil, props, "showTime", false));
 
             return sb.toString();
 

@@ -369,6 +369,9 @@ public interface WikiConstants {
     /** the calendar property */
     public static final String WIKI_TAG_CALENDAR = "calendar";
 
+    /** the calendar property */
+    public static final String WIKI_TAG_DATETABLE = "datetable";    
+
     /** _more_ */
     public static final String WIKI_TAG_GRAPH = "graph";
 

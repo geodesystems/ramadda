@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -448,15 +449,23 @@ public class CalendarOutputHandler extends OutputHandler {
                                   List<Entry> entries, Appendable sb)
             throws Exception {
         getPageHandler().entrySectionOpen(request, group, sb, "Date Grid");
-        List             types    = new ArrayList();
+	makeDateTable(request,entries, sb, true,true);
+        getPageHandler().entrySectionClose(request, group, sb);
+        return new Result(msg("Date Grid"), sb);
+    }
+
+    public void makeDateTable(Request request, 
+			      List<Entry> entries, Appendable sb, boolean byType,boolean showTime)
+	throws Exception {
+        List<String>     types    = new ArrayList<String>();
         List             days     = new ArrayList();
-        Hashtable        dayMap   = new Hashtable();
-        Hashtable        typeMap  = new Hashtable();
+        HashSet         seenDay  = new HashSet();
+        HashSet          seen = new HashSet(); 
         Hashtable        contents = new Hashtable();
 
         SimpleDateFormat sdf      = new SimpleDateFormat();
         sdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
-        sdf.applyPattern("yyyy/MM/dd");
+        sdf.applyPattern("d");
         SimpleDateFormat timeSdf = new SimpleDateFormat();
         timeSdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
         timeSdf.applyPattern("HH:mm");
@@ -464,21 +473,25 @@ public class CalendarOutputHandler extends OutputHandler {
         monthSdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
         monthSdf.applyPattern("MM");
         StringBuffer header = new StringBuffer();
-        header.append(HtmlUtils.cols(HtmlUtils.bold(msg("Date"))));
+        header.append(HtmlUtils.cols(HtmlUtils.bold("%date%")));
+	SimpleDateFormat headerSdf = new SimpleDateFormat("MMM yyyy");
         for (Entry entry : entries) {
             String type = entry.getTypeHandler().getType();
+	    if(!byType) type = "Entry";
             String day  = sdf.format(new Date(entry.getStartDate()));
-            if (typeMap.get(type) == null) {
-                types.add(entry.getTypeHandler());
-                typeMap.put(type, type);
-                header.append(
-                    "<td>"
-                    + HtmlUtils.bold(entry.getTypeHandler().getLabel())
-                    + "</td>");
+            if (!seen.contains(type)) {
+                seen.add(type);
+		if(byType) {
+		    types.add(entry.getTypeHandler().getType());
+		    header.append("<td>" + HtmlUtils.bold(entry.getTypeHandler().getLabel()) + "</td>");
+		} else {
+		    types.add(type);
+		    header.append("<td>" + HtmlUtils.bold(type) + "</td>");
+		}
             }
-            if (dayMap.get(day) == null) {
+            if (!seenDay.contains(day)) {
                 days.add(new Date(entry.getStartDate()));
-                dayMap.put(day, day);
+                seenDay.add(day);
             }
             String       time =
                 timeSdf.format(new Date(entry.getStartDate()));
@@ -488,29 +501,31 @@ public class CalendarOutputHandler extends OutputHandler {
                 colSB = new StringBuffer();
                 contents.put(key, colSB);
             }
-            colSB.append(getEntryManager().getAjaxLink(request, entry, time));
+            colSB.append(getEntryManager().getAjaxLink(request, entry, showTime?time:entry.getName()));
         }
 
-
         sb.append(
-            "<table class=\"dategrid\" border=\"1\" cellspacing=\"0\" cellpadding=\"3\" width=\"100%\">");
+            "<table class=\"datetable\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" width=\"100%\">");
         days = Misc.sort(days);
         String currentMonth = "";
+	int rowCnt = 0;
         for (int dayIdx = 0; dayIdx < days.size(); dayIdx++) {
             Date   date  = (Date) days.get(dayIdx);
             String month = monthSdf.format(date);
             //Put the header in every month
             if ( !currentMonth.equals(month)) {
                 currentMonth = month;
-                sb.append("<tr class=\"calheader\">" + header + "</tr>");
-            }
+		String headerDttm = headerSdf.format(date);
 
+                sb.append("<tr class=\"datetableheader\">" + header.toString().replace("%date%",headerDttm) + "</tr>");
+		rowCnt=0;
+            }
+	    boolean even = (rowCnt % 2) == 0;
+	    rowCnt++;
             String day = sdf.format(date);
-            sb.append("<tr valign=\"top\">");
-            sb.append("<td width=\"5%\">" + day + "</td>");
-            for (int i = 0; i < types.size(); i++) {
-                TypeHandler  typeHandler = (TypeHandler) types.get(i);
-                String       type        = typeHandler.getType();
+            sb.append("<tr valign=\"top\" class=" +(even?"ramadda-row-even":"ramadda-row-odd")+">");
+            sb.append("<td width='200'>&nbsp;&nbsp;" + day + "</td>");
+	    for(String type: types) {
                 String       key         = type + "_" + day;
                 StringBuffer cb          = (StringBuffer) contents.get(key);
                 if (cb == null) {
@@ -524,9 +539,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append("</tr>");
         }
         sb.append("</table>");
-        getPageHandler().entrySectionClose(request, group, sb);
 
-        return new Result(msg("Date Grid"), sb);
 
     }
 
