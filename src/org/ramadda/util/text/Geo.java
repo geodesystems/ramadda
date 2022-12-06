@@ -535,14 +535,17 @@ public abstract class Geo extends Processor {
         private int lonColumn = -1;
 
 
+	private String dflt;
+
         /**
          * @param lat _more_
          * @param lon _more_
          */
-        public Neighborhood(String lat, String lon) {
+        public Neighborhood(String lat, String lon, String dflt) {
             super();
             this.lat = lat;
             this.lon = lon;
+	    this.dflt = dflt;
         }
 
         /**
@@ -566,7 +569,7 @@ public abstract class Geo extends Processor {
                     Double.parseDouble(row.getString(lonColumn));
                 String result = GeoUtils.getNeighborhood(latValue, lonValue);
                 if (result == null) {
-                    result = "";
+                    result = dflt;
                 }
                 row.add(result);
 

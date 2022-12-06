@@ -2684,7 +2684,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("suffix")),
 	new Cmd(CMD_NEIGHBORHOOD, "Look up neighborhood for a given location",
                 new Arg(ARG_LATITUDE, "Latitude column", ATTR_TYPE, TYPE_COLUMN),
-                new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN)),	
+                new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("default","Default value")),	
 
 
         /** * Other  * */
@@ -3923,8 +3924,8 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Geo.Elevation(args.get(++i),args.get(++i)));
 		return i;
 	    });
-	defineFunction(CMD_NEIGHBORHOOD,2,(ctx,args,i) -> {
-		ctx.addProcessor(new Geo.Neighborhood(args.get(++i),args.get(++i)));
+	defineFunction(CMD_NEIGHBORHOOD,3,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.Neighborhood(args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });			
 

@@ -10,6 +10,7 @@ import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -1336,12 +1337,66 @@ public class GeoUtils {
         if (hoods != null) {
             String hood = hoods.get(key);
             if (hood != null) {
-                //              System.err.println("got from cache:" + hood);
+		System.err.println("got from cache:" + hood);
                 return hood;
             }
         }
+	String hood = getNeighborhoodInner(lat,lon);
+        if (hood!=null && hoodsWriter != null) {
+	    synchronized(hoodsWriter) {
+		hoodsWriter.println(key + cacheDelimiter + hood);
+		hoodsWriter.flush();
+	    }
+        }
 
+        return hood;
+    }
 
+    private static String getNeighborhoodGoogle(double lat, double lon)
+            throws Exception {
+	String url=HtmlUtils.url("https://maps.googleapis.com/maps/api/geocode/json",
+				 "result_type","neighborhood",
+				 "key",googleKey,
+				 "latlng",lat+","+lon);
+        String json = IO.doGet(new URL(url));
+	/*
+ "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "Keewayden",
+               "short_name" : "Keewayden",
+               "types" : [ "neighborhood", "political" ]
+            },
+	*/
+	JSONObject obj = new JSONObject(json);
+	JSONArray results = obj.optJSONArray("results");
+	if(results==null) return null;
+	if(results.length()==0) return null;
+	for(int i=0;i<results.length();i++) {
+	    obj = results.getJSONObject(i);
+	    JSONArray comps = obj.optJSONArray("address_components");
+	    if(comps==null) continue;
+	    for(int j=0;i<comps.length();j++) {
+		obj = comps.getJSONObject(j);
+		JSONArray types = obj.optJSONArray("types");
+		if(types==null) continue;
+		if(!JsonUtil.getList(types).contains("neighborhood")) continue;
+		return obj.getString("long_name");
+	    }
+	    
+	}
+
+	System.err.println(json);
+	return null;
+    }
+
+    private static String getNeighborhoodInner(double lat, double lon)
+            throws Exception {
+	initKeys();
+	if(googleKey!=null) {
+	    return getNeighborhoodGoogle(lat,lon);
+	} 
         String token = getPreciselyToken(false);
         if (token == null) {
             throw new RuntimeException(
@@ -1378,22 +1433,15 @@ public class GeoUtils {
         JSONArray a = obj.getJSONArray("location");
         if (a.length() == 0) {
             System.err.println("No location object found:" + json);
-
             return null;
         }
         obj = a.getJSONObject(0);
         JSONObject place      = obj.getJSONObject("place");
         JSONArray  nameArray  = place.getJSONArray("name");
         JSONObject nameObject = nameArray.getJSONObject(0);
-        String     hood       = nameObject.getString("value");
-        if (hoodsWriter != null) {
-            hoodsWriter.println(key + cacheDelimiter + hood);
-            hoodsWriter.flush();
-        }
-
-        return hood;
+        return  nameObject.getString("value");
     }
-
+    
 
     /**
      * _more_
@@ -1550,6 +1598,10 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	initKeys();
+	System.err.println(getNeighborhood(39.9905392833907,-105.22957815436592));
+
+
         if (false) {
             System.err.println(
                 getAddressFromLatLon(
