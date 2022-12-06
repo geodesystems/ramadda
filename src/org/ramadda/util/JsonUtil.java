@@ -833,9 +833,6 @@ public class JsonUtil {
         }
 
         List<String> childJson = new ArrayList<String>();
-
-
-
         NodeList     children  = node.getChildNodes();
 
 
@@ -1127,6 +1124,16 @@ public class JsonUtil {
         return hashtable;
     }
 
+    /**
+       Make a List from the array. For now this expects strings in the array
+     */
+    public static List<String> getList(JSONArray array) {
+	List<String> result  = new ArrayList<String>();
+	for(int i=0;i<array.length();i++) {
+	    result.add(array.getString(i));
+	}
+	return result;
+    }
 
 
 }
