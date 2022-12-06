@@ -584,7 +584,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         List<String> results = new ArrayList<String>();
         if ( !request.isAnonymous()) {
             Address address =
-                GeoUtils.getAddressFromLatLon(request.get("latitude", 0.0),
+                GeoUtils.getAddress(request.get("latitude", 0.0),
 					      request.get("longitude", 0.0));
             if (address != null) {
                 int idx = 0;
