@@ -423,10 +423,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      */
     private Sensor readSensor(Entry entry, String fields) throws Exception {
         if (apiKey == null) {
+	    System.err.println("PurpleAir: no apikey specified");
             return null;
         }
         String id = (String) entry.getStringValue(IDX_SENSOR_ID, "");
         if ( !Utils.stringDefined(id)) {
+	    System.err.println("PurpleAir: no sensor id in entry");
             return null;
         }
 
@@ -438,22 +440,22 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             privateKey = privateKey.trim();
             url += "&" + HU.arg("read_key", privateKey);
         }
-        try {
-            String json = IO.doGet(new URL(url));
-            //      System.err.println("fields:" + fields);
-            //      System.err.println(json);
-            JSONObject obj           = new JSONObject(json);
-            long       dataTimeStamp = obj.getLong("data_time_stamp");
 
-            return new Sensor(new Date(1000 * dataTimeStamp),
-                              obj.getJSONObject("sensor"));
-        } catch (Exception exc) {
-            getLogManager().logError("Error reading purpleair URL:" + url,
-                                     exc);
+	IO.Result result = IO.doGetResult(new URL(url));
+	if(result.getError()) {
+	    String error = result.getResult();
+	    try {
+		error = new JSONObject(error).getString("description");
+	    } catch(Exception ignore) {}
+	    getLogManager().logError("PurpleAir: Error reading PurpleAir for site:" + id+" error:" +error);
+	    throw new RuntimeException("Error accessing PurpleAir API for site:" + id+" error:" + error);
+	}
 
-            throw new RuntimeException(
-                "Error accessing purpleair API for site:" + id);
-        }
+	String json = result.getResult();
+	JSONObject obj           = new JSONObject(json);
+	long       dataTimeStamp = obj.getLong("data_time_stamp");
+	return new Sensor(new Date(1000 * dataTimeStamp),
+			  obj.getJSONObject("sensor"));
     }
 
 
