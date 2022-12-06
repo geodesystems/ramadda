@@ -1,8 +1,11 @@
 #!/bin/sh
 
 #This script uses https://letsencrypt.org and https://certbot.eff.org/ to create and install a SSL certificate for RAMADDA
-#You need to have certbot-auto installed:
-# https://certbot.eff.org/docs/install.html#certbot-auto
+#
+#You need to have the following packages installed:
+#certbot-auto:  https://certbot.eff.org/docs/install.html#certbot-auto
+#openssl: https://www.openssl.org/
+#keytool: part of a standard JAVA-JDK install
 
 #usage:
 #makekeystore.sh -help"
@@ -33,7 +36,8 @@ BIN_DIR=`dirname $0`
 #CERTBOT=/usr/local/bin/certbot-auto
 CERTBOT=/bin/certbot
 WHAT=new
-RAMADDA_HOME=/mnt/ramadda/repository 
+RAMADDA_HOME=/mnt/ramadda/repository
+HTDOCS=
 FIRST_DOMAIN=
 OTHER_DOMAINS=
 PASSWORD=
@@ -49,7 +53,9 @@ function usage()
     printf "\t-domain <mydomain.com> (specify the domain)\n"
     printf "\t-other  <www.mydomain.com,someotherdomain.com> (specify other domains)\n"        
     printf "\t-home /mnt/ramadda/repository (specify RAMADDA home dir)\n"
+    printf "\t-webroot <directory to top-level web root> \n"    
     printf "\t-password <password>  (keystore password. needs to be set in RAMADDA home dir)\n"
+
 }
 
 
@@ -120,6 +126,11 @@ do
 	    CERTBOT="$1"
 	    shift
 	    ;;
+	-webroot)
+	    shift
+	    HTDOCS="$1"
+	    shift
+	    ;;	
 	-help)
 	    usage
 	    exit 1
@@ -138,6 +149,11 @@ if [ -z "$FIRST_DOMAIN" ]; then
     echo "You must specify a domain"
     usage
     exit
+fi
+
+
+if [ "$HTDOCS" == "" ]; then
+    HTDOCS="${RAMADDA_HOME}/htdocs"
 fi
 
 
@@ -172,7 +188,7 @@ printf "\twhat:${WHAT}\n"
 printf "\tdomain:${FIRST_DOMAIN}\n"
 printf "\tother domains:${OTHER_DOMAINS}\n"
 printf "\thome dir:${RAMADDA_HOME}\n"
-
+printf "\tweb root:${HTDOCS}\n"
 
 ask   "Create the certificate? [y|n]"  "y"
 if [ "$response" != "y" ]; then
@@ -185,22 +201,20 @@ SRCKEYSTORE=keystore.pkcs12
 
 case ${WHAT} in
     ""|"renew")
-##	${CERTBOT} --dry-run --debug renew 
 	${CERTBOT} --debug renew 
 	;;
     "new")
-##	${CERTBOT}  --dry-run --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	if [ -z "$OTHER_DOMAINS" ]; then
-	    ${CERTBOT}  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN}
+	    ${CERTBOT}  --debug certonly --webroot -w ${HTDOCS} -d ${FIRST_DOMAIN}
 	else
-	    ${CERTBOT}  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
+	    ${CERTBOT}  --debug certonly --webroot -w ${HTDOCS} -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	fi
 	;;
     "dryrun")
 	if [ -z "$OTHER_DOMAINS" ]; then
-	    ${CERTBOT} --dry-run  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN}
+	    ${CERTBOT} --dry-run  --debug certonly --webroot -w ${HTDOCS} -d ${FIRST_DOMAIN}
 	else
-	    ${CERTBOT} --dry-run  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
+	    ${CERTBOT} --dry-run  --debug certonly --webroot -w ${HTDOCS} -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	fi
 	;;
 esac
