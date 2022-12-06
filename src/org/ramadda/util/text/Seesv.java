@@ -2682,6 +2682,7 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("prefix", "e.g., state: or county: or city:"),
 		new Arg("suffix")),
+
 	new Cmd(CMD_NEIGHBORHOOD, "Look up neighborhood for a given location",
                 new Arg(ARG_LATITUDE, "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN),
@@ -3912,10 +3913,7 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Geo.DecodeLatLon(getCols(args.get(++i))));
 		return i;
 	    });	
-	defineFunction(CMD_GETADDRESS,4,(ctx,args,i) -> {
-		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
-		return i;
-	    });	
+
 	defineFunction(CMD_GEOCONTAINS,4,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
@@ -3927,7 +3925,8 @@ public class Seesv implements SeesvCommands {
 	defineFunction(CMD_NEIGHBORHOOD,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Neighborhood(args.get(++i),args.get(++i),args.get(++i)));
 		return i;
-	    });			
+	    });
+
 
 	defineFunction(CMD_GEOCODE,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));

@@ -581,7 +581,6 @@ public abstract class Geo extends Processor {
 
     }
 
-
     /**
      * Class description
      *
@@ -877,7 +876,7 @@ public abstract class Geo extends Processor {
                 }
                 double latValue = Double.parseDouble(slat);
                 double lonValue = Double.parseDouble(slon);
-                Address address = GeoUtils.getAddressFromLatLon(latValue,
+                Address address = GeoUtils.getAddress(latValue,
                                       lonValue);
                 if (address != null) {
                     int idx = 0;
