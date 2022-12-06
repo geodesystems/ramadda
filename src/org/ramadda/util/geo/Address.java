@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
+import org.ramadda.util.Utils;
+
+import java.util.List;
+
 /**
  *
  * @author  Jeff McWhirter
@@ -30,6 +34,9 @@ public class Address {
     /**  */
     private String country;
 
+    public Address() {
+    }
+
     /**
      *
      *
@@ -49,13 +56,37 @@ public class Address {
         this.country    = country;
     }
 
+
+    /**
+       return if all of address/city/state/etc have been set
+    */
+    public boolean isComplete() {
+	return address!=null && city!=null && state!=null && postalCode!=null && country!=null;
+    }
+
+
     /**
      *  @return _more_
      */
     public String toString() {
-        return address + ", " + city + " " + postalCode + " " + state + " "
-               + country;
+        return address + ", " + city + " " +  " " + state + " "+postalCode +" "+ country;
     }
+
+    private static final String DELIM = "<addr_delim>";
+
+    public String encode() {
+        return address + DELIM+ city + DELIM + postalCode + DELIM + state + DELIM   + country;
+    }
+
+    public void decode(String s) {
+	List<String> toks = Utils.split(s,DELIM);
+	int i=0;
+        address=toks.get(i++);
+	city=toks.get(i++);
+	postalCode=toks.get(i++);
+	state=toks.get(i++);
+	country=toks.get(i++);
+    }    
 
 
     /**

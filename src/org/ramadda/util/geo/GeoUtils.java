@@ -367,6 +367,38 @@ public class GeoUtils {
 
 
     /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Address getAddress(double lat, double lon)
+            throws Exception {
+        String                    key   = lat + "_" + lon;
+        Hashtable<String, Address> addresses= getAddresses();
+        if (addresses != null) {
+            Address address = addresses.get(key);
+            if (address != null) {
+                return address;
+            }
+        }
+	Address address = getAddressInner(lat,lon);
+        if (address!=null && addressesWriter != null) {
+	    synchronized(addressesWriter) {
+		addressesWriter.println(key + cacheDelimiter + address.encode());
+		addressesWriter.flush();
+	    }
+        }
+        return address;
+    }
+
+
+
+    /**
      *
      * @param lat _more_
      * @param lon _more_
@@ -374,10 +406,14 @@ public class GeoUtils {
      *
      * @throws Exception _more_
      */
-    public static Address getAddressFromLatLon(double lat, double lon)
+    private static Address getAddressInner(double lat, double lon)
             throws Exception {
         initKeys();
         Address address = null;
+        if ((address == null) && (googleKey != null)) {
+            address = getAddressFromGoogle(lat, lon);
+        }
+
         if ((address == null) && (hereKey != null)) {
             address = getAddressFromLatLonHere(lat, lon);
         }
@@ -535,6 +571,12 @@ public class GeoUtils {
 
     /** _more_ */
     private static PrintWriter hoodsWriter;
+
+
+    private static Hashtable<String, Address> addresses = null;    
+
+    /** _more_ */
+    private static PrintWriter addressesWriter;
 
 
     private static Hashtable<String, Place> getGeocodeCache() throws Exception {
@@ -1241,11 +1283,6 @@ public class GeoUtils {
     }
 
 
-
-
-
-
-
     /** _more_ */
     private static String preciselyToken;
 
@@ -1271,14 +1308,14 @@ public class GeoUtils {
                 "No PRECISELY_API_KEY environment variable set");
         }
         String b64 = Utils.encodeBase64(key.trim());
-        //      System.err.println("key:" + key);
-        //      System.err.println("b64:" + b64);
+	System.err.println("key:" + key);
+	System.err.println("b64:" + b64);
         String json =
             IO.doPost(new URL("https://api.precisely.com/oauth/token"),
-                      "grant_type=client_credetnials", "Authorization",
+                      "grant_type=client_credentials", "Authorization",
                       "Basic " + b64, "Content-Type",
                       "application/x-www-form-urlencoded");
-        //      System.err.println(json);
+	System.err.println(json);
         JSONObject obj = new JSONObject(json);
         preciselyToken = obj.optString("access_token", null);
 
@@ -1300,7 +1337,6 @@ public class GeoUtils {
 						     "neighborhoods.txt"));
             if (cacheFile.exists()) {
                 hoods = new Hashtable<String, String>();
-                //              System.err.println("Reading neighborhoods.txt");
                 for (String line :
                         StringUtil.split(IO.readContents(cacheFile), "\n",
                                          true, true)) {
@@ -1320,6 +1356,33 @@ public class GeoUtils {
         return hoods;
     }
 
+    private static Hashtable<String,Address> getAddresses() throws Exception {
+	File cacheDir =  IO.getCacheDir();
+        if ((addresses == null) && (cacheDir != null)) {
+            File cacheFile = new File(IOUtil.joinDir(cacheDir,
+						     "addresses.txt"));
+            if (cacheFile.exists()) {
+               addresses = new Hashtable<String, Address>();
+                for (String line :
+			 StringUtil.split(IO.readContents(cacheFile), "\n",
+					  true, true)) {
+                    List<String> toks = StringUtil.split(line,
+                                            cacheDelimiter);
+		    String key = toks.get(0);
+		    Address address = new Address();
+		    address.decode(toks.get(1));
+                    addresses.put(key,address);
+                }
+            }
+            FileWriter     fw = new FileWriter(cacheFile, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            addressesWriter = new PrintWriter(bw);
+        }
+        return addresses;
+    }
+
+
+
     /**
      * _more_
      *
@@ -1337,7 +1400,7 @@ public class GeoUtils {
         if (hoods != null) {
             String hood = hoods.get(key);
             if (hood != null) {
-		System.err.println("got from cache:" + hood);
+		//		System.err.println("got from cache:" + hood);
                 return hood;
             }
         }
@@ -1359,6 +1422,7 @@ public class GeoUtils {
 				 "key",googleKey,
 				 "latlng",lat+","+lon);
         String json = IO.doGet(new URL(url));
+	System.err.println(json);
 	/*
  "results" : [
       {
@@ -1395,7 +1459,7 @@ public class GeoUtils {
             throws Exception {
 	initKeys();
 	if(googleKey!=null) {
-	    return getNeighborhoodGoogle(lat,lon);
+	    //	    return getNeighborhoodGoogle(lat,lon);
 	} 
         String token = getPreciselyToken(false);
         if (token == null) {
@@ -1423,11 +1487,10 @@ public class GeoUtils {
             json = IO.doGet(url, "Authorization", " Bearer " + token,
                             "Accept", "application/json");
         }
-        //      System.err.println(json);
+	//	System.err.println(json);
         JSONObject obj = new JSONObject(json);
         if ( !obj.has("location")) {
             System.err.println("No location array found:" + json);
-
             return null;
         }
         JSONArray a = obj.getJSONArray("location");
@@ -1442,6 +1505,70 @@ public class GeoUtils {
         return  nameObject.getString("value");
     }
     
+
+
+    private static boolean checkGoogleComponent(JSONObject obj, String type) {
+	JSONArray types = obj.optJSONArray("types");
+	if(types==null) return false;
+	return JsonUtil.getList(types).contains(type);
+    }
+
+    private static Address getAddressFromGoogle(double lat, double lon)
+	throws Exception {
+	String url=HtmlUtils.url("https://maps.googleapis.com/maps/api/geocode/json",
+				 //				 "result_type","neighborhood",
+				 "key",googleKey,
+				 "latlng",lat+","+lon);
+        String json = IO.doGet(new URL(url));
+	/*
+ "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "Keewayden",
+               "short_name" : "Keewayden",
+               "types" : [ "neighborhood", "political" ]
+            },
+	*/
+	JSONObject obj = new JSONObject(json);
+	JSONArray results = obj.optJSONArray("results");
+	if(results==null) return null;
+	if(results.length()==0) return null;
+	Address address = new Address();
+	String number = null;
+	String street = null;	
+	for(int i=0;i<results.length();i++) {
+	    obj = results.getJSONObject(i);
+	    JSONArray comps = obj.optJSONArray("address_components");
+	    if(comps==null) continue;
+	    for(int j=0;j<comps.length();j++) {
+		obj = comps.getJSONObject(j);
+		if(checkGoogleComponent(obj,"street_number")) {
+		    number = obj.getString("long_name");
+		    if(street!=null) address.setAddress(number+" " + street);
+		} else if(checkGoogleComponent(obj,"route")) {
+		    street = obj.getString("long_name");
+		    if(number!=null) address.setAddress(number+" " + street);
+		} else if(checkGoogleComponent(obj,"locality")) {
+		    address.setCity(obj.getString("long_name"));
+		} else if(checkGoogleComponent(obj,"administrative_area_level_2")) {
+		    address.setCounty(obj.getString("long_name"));
+		} else if(checkGoogleComponent(obj,"administrative_area_level_1")) {
+		    address.setState(obj.getString("long_name"));
+		} else if(checkGoogleComponent(obj,"country")) {
+		    address.setCountry(obj.getString("long_name"));
+		} else if(checkGoogleComponent(obj,"postal_code")) {
+		    address.setPostalCode(obj.getString("long_name"));		    
+		}		
+		if(address.isComplete()) return address;
+	    }
+	}
+
+	return null;
+    }
+
+
+
 
     /**
      * _more_
@@ -1599,17 +1726,9 @@ public class GeoUtils {
      */
     public static void main(String[] args) throws Exception {
 	initKeys();
-	System.err.println(getNeighborhood(39.9905392833907,-105.22957815436592));
+	System.err.println(getAddress(39.9905392833907,-105.22957815436592));
+	//	System.err.println(getNeighborhood(39.9905392833907,-105.22957815436592));
 
-
-        if (false) {
-            System.err.println(
-                getAddressFromLatLon(
-                    Double.parseDouble(args[0]),
-                    Double.parseDouble(args[1])));
-
-            return;
-        }
 
 
         /*
