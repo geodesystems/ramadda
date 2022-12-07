@@ -710,7 +710,8 @@ public class SeesvOperator {
 	if(isRegexp) {
             s = s.substring("regex:".length());
 	} else {
-	    isRegexp = StringUtil.containsRegExp(s);
+	    if(!s.equals("*"))
+		isRegexp = StringUtil.containsRegExp(s);
 	}
 
         if (isRegexp) {
