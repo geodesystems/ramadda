@@ -672,10 +672,10 @@ public class Utils extends IO {
 
     public static List<String> tokenizeColumns(String line,
 					       String columnDelimiter) {
-        StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
+        StringTokenizer tokenizer = StringTokenizer.getCSVInstance();
         tokenizer.setEmptyTokenAsNull(true);
         if ( !columnDelimiter.equals(",")) {
-            tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
+            tokenizer.setDelimiterString(columnDelimiter);
         }
 
         return tokenizeColumns(line, tokenizer);
@@ -688,11 +688,11 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static StrTokenizer getTokenizer(String columnDelimiter) {
-        StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
+    public static StringTokenizer getTokenizer(String columnDelimiter) {
+        StringTokenizer tokenizer = StringTokenizer.getCSVInstance();
         tokenizer.setEmptyTokenAsNull(true);
         if ( !columnDelimiter.equals(",")) {
-            tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
+            tokenizer.setDelimiterString(columnDelimiter);
         }
 
         return tokenizer;
@@ -708,7 +708,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-					       StrTokenizer tokenizer) {
+					       StringTokenizer tokenizer) {
         return tokenizeColumns(line, tokenizer, null);
     }
 
@@ -725,7 +725,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-					       StrTokenizer tokenizer, List<String> toks) {
+					       StringTokenizer tokenizer, List<String> toks) {
         tokenizer.reset(line);
         String tokens[] = tokenizer.getTokenArray();
         if (toks == null) {
