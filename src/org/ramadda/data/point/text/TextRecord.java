@@ -7,6 +7,7 @@ package org.ramadda.data.point.text;
 
 
 import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 
 import org.ramadda.data.point.*;
 
@@ -95,7 +96,7 @@ public class TextRecord extends DataRecord {
     private boolean matchUpColumns = false;
 
     /**  */
-    private StrTokenizer tokenizer;
+    private StringTokenizer tokenizer;
 
     /**  */
     private List<String> tokenList = new ArrayList<String>();
