@@ -461,7 +461,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean cacheHtdocs = true;
     
     /** _more_ */
-    private static final int HTDOCS_CACHE_LIMIT = 10000000;
+    private static final int HTDOCS_CACHE_LIMIT = 10_000_000;
 
     /** _more_ */
     private Hashtable<String, byte[]> htdocsCache = new Hashtable<String,
@@ -4267,20 +4267,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param force _more_
      */
     private void putHtdocsCache(String path, byte[] bytes, boolean force) {
+	if (!cacheHtdocs) return;
         synchronized (htdocsCache) {
             if ( !force && (htdocsCacheSize > HTDOCS_CACHE_LIMIT)) {
-                //            htdocsCache =  new Hashtable<String,  byte[]>();
-                //            htdocsCacheSize =0;
-		//		System.err.println("cache full:"+ path);
-                return;
+		htdocsCache =  new Hashtable<String,  byte[]>();
+		htdocsCacheSize =0;
+		System.err.println("clearing htdocs cache");
             }
-	    if (cacheHtdocs) {
-		//System.err.println("caching:" + path +" size:" + bytes.length + " total size:" + htdocsCacheSize);
-                htdocsCacheSize += bytes.length;
-                htdocsCache.put(path, bytes);
-	    } else {
-		//		System.err.println("no cache:" + path);
-	    }
+	    htdocsCacheSize += bytes.length;
+	    htdocsCache.put(path, bytes);
         }
     }
 
@@ -4425,11 +4420,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    if(debug)
 		System.err.println("\ttrying path:" + fullPath);
             try {
-		//		File file = new File(fullPath);
-		//		System.err.println("\tFile:" + file.exists()+" " + file.getParentFile());
-		//		if(file.exists()) {
-		//		    getStorageManager().checkLocalFile(file);
-		//		}
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
 		if(debug)
@@ -4453,10 +4443,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
 		    return processHtmlPage(request, inputStream, decorate);
                 }
-
                 return makeResult(request, path, inputStream, mimeType, true);
             } catch (IOException fnfe) {
-                //noop
                 //The first time through there are lots of filenotfound exeptions but then they get cached and we're good
             }
         }
