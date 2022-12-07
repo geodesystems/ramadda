@@ -35,7 +35,7 @@ set cntInterval 0
 set errors 0
 set max 1
 if {$::loop} {
-    set max 100
+    set max 1000
 }
 
 for {set i 0} {$i < $max} {incr i} {
