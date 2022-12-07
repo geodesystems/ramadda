@@ -5,5 +5,5 @@ if [ -z "$JAVA" ]; then
     JAVA=java
 fi
 
-${JAVA} -jar  ${mydir}/lib/seesv.jar "$@"
+${JAVA} -Djava.awt.headless=true -jar  ${mydir}/lib/seesv.jar "$@"
 

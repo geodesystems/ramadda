@@ -1889,19 +1889,15 @@ public abstract class Processor extends SeesvOperator {
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
 	    if(headerRow==null) headerRow =row;
-
+	    //	    System.err.println(firstRow +" " +row.isFirstRowInData());
             if (firstRow && row.isFirstRowInData()) {
                 commentChar = ctx.getCommentChar();
-                if (prefix != null) {
-                    writer.append(prefix);
-		    prefix = null;
-                }
                 if (theTemplate != null) {
                     return;
                 }
             } else {
 		//		System.err.println("ROW:" + rowCnt);
-                if (rowCnt>2 && delimiter != null && theTemplate != null) {
+                if (rowCnt>1 && delimiter != null && theTemplate != null) {
 		    writer.append(delimiter);
                 }
             }
@@ -1910,12 +1906,14 @@ public abstract class Processor extends SeesvOperator {
 		return;
 	    }
 
-	    String prefix = ctx.getOutputPrefix();
-	    if(prefix!=null) {
+	    String ctxPrefix = ctx.getOutputPrefix();
+	    if(ctxPrefix!=null) {
 		ctx.setOutputPrefix(null);
-		prefix = prefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");		
-		writer.append(prefix);
+		ctxPrefix = ctxPrefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");				writer.append(ctxPrefix);
 	    }
+     
+
+
 
             List    values        = row.getValues();
             boolean escapeColumns = true;
@@ -1982,6 +1980,10 @@ public abstract class Processor extends SeesvOperator {
 		    }
 		}
             } else {
+		if (theTemplate!=null && prefix != null) {
+                    writer.append(prefix);
+		    prefix = null;
+                }
                 writer.append(theTemplate);
             }
         }
