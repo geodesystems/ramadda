@@ -413,9 +413,9 @@ public class GeoUtils {
         if ((address == null) && (googleKey != null)) {
             address = getAddressFromGoogle(lat, lon);
         }
-
         if ((address == null) && (hereKey != null)) {
             address = getAddressFromLatLonHere(lat, lon);
+	    System.err.println("HERE ADDRESS:" + address);
         }
         if ((address == null) && (geocodeioKey != null)) {
             address = getAddressFromLatLonGeocodeio(lat, lon);
@@ -526,31 +526,33 @@ public class GeoUtils {
                 lat + "," + lon, "apiKey", hereKey);
         //      System.err.println(url);
         String json = IO.doGet(new URL(url));
-        //      System.err.println(json);
+	//	System.err.println(json);
         JSONObject obj = new JSONObject(json);
         if ( !obj.has("items")) {
             System.err.println("No items");
-
             return null;
         }
         JSONArray items = obj.getJSONArray("items");
         if (items.length() == 0) {
             System.err.println("No items");
-
             return null;
         }
         JSONObject item = items.getJSONObject(0);
         if ( !item.has("address")) {
             System.err.println("No address");
-
             return null;
         }
+
         JSONObject address = item.getJSONObject("address");
 
-        String a = address.getString("houseNumber") + " "
-                   + address.getString("street");
+        String a = "";
+	if(address.has("houseNumber"))
+	    a = address.getString("houseNumber") + " ";
+	if(address.has("street"))
+	    a = a + address.getString("street");
 
-        return new Address(a.trim(), address.getString("city"),
+        return new Address(a.trim(),
+			   address.getString("city"),
                            address.getString("county"),
                            address.getString("state"),
                            address.getString("postalCode"),
@@ -1315,7 +1317,7 @@ public class GeoUtils {
                       "grant_type=client_credentials", "Authorization",
                       "Basic " + b64, "Content-Type",
                       "application/x-www-form-urlencoded");
-	System.err.println(json);
+	//	System.err.println(json);
         JSONObject obj = new JSONObject(json);
         preciselyToken = obj.optString("access_token", null);
 
@@ -1422,7 +1424,7 @@ public class GeoUtils {
 				 "key",googleKey,
 				 "latlng",lat+","+lon);
         String json = IO.doGet(new URL(url));
-	System.err.println(json);
+	//	System.err.println(json);
 	/*
  "results" : [
       {
@@ -1450,8 +1452,7 @@ public class GeoUtils {
 	    }
 	    
 	}
-
-	System.err.println(json);
+	//	System.err.println(json);
 	return null;
     }
 
@@ -1513,6 +1514,8 @@ public class GeoUtils {
 	return JsonUtil.getList(types).contains(type);
     }
 
+    static String lastJson;
+
     private static Address getAddressFromGoogle(double lat, double lon)
 	throws Exception {
 	String url=HtmlUtils.url("https://maps.googleapis.com/maps/api/geocode/json",
@@ -1520,6 +1523,7 @@ public class GeoUtils {
 				 "key",googleKey,
 				 "latlng",lat+","+lon);
         String json = IO.doGet(new URL(url));
+	lastJson = json;
 	/*
  "results" : [
       {
@@ -1562,8 +1566,8 @@ public class GeoUtils {
 		}		
 		if(address.isComplete()) return address;
 	    }
+	    if(address.isPartialComplete()) return address;
 	}
-
 	return null;
     }
 

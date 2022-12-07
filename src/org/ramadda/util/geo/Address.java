@@ -61,21 +61,25 @@ public class Address {
        return if all of address/city/state/etc have been set
     */
     public boolean isComplete() {
-	return address!=null && city!=null && state!=null && postalCode!=null && country!=null;
+	return address!=null && city!=null && county!=null && state!=null && postalCode!=null && country!=null;
     }
+
+    public boolean isPartialComplete() {
+	return city!=null && county!=null && state!=null && postalCode!=null && country!=null;
+    }    
 
 
     /**
      *  @return _more_
      */
     public String toString() {
-        return address + ", " + city + " " +  " " + state + " "+postalCode +" "+ country;
+        return address + ", " + city + " " + county+ " " + state + " "+postalCode +" "+ country;
     }
 
     private static final String DELIM = "<addr_delim>";
 
     public String encode() {
-        return address + DELIM+ city + DELIM + postalCode + DELIM + state + DELIM   + country;
+        return address + DELIM+ city + DELIM + postalCode + DELIM +county+DELIM+ state + DELIM   + country;
     }
 
     public void decode(String s) {
@@ -84,6 +88,7 @@ public class Address {
         address=toks.get(i++);
 	city=toks.get(i++);
 	postalCode=toks.get(i++);
+	county=toks.get(i++);	
 	state=toks.get(i++);
 	country=toks.get(i++);
     }    
