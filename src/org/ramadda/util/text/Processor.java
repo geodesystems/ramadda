@@ -8,6 +8,7 @@ package org.ramadda.util.text;
 
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
@@ -1513,7 +1514,7 @@ public abstract class Processor extends SeesvOperator {
         BufferedReader reader;
 
         /**  */
-        StrTokenizer tokenizer;
+        StringTokenizer tokenizer;
 
 
         /**
@@ -1536,7 +1537,7 @@ public abstract class Processor extends SeesvOperator {
             commands.addAll(args);
             try {
                 //              System.err.println(commands);
-                tokenizer = StrTokenizer.getCSVInstance();
+                tokenizer = StringTokenizer.getCSVInstance();
                 tokenizer.setEmptyTokenAsNull(true);
                 ProcessBuilder pb = new ProcessBuilder(commands);
                 process      = pb.start();
@@ -1888,6 +1889,7 @@ public abstract class Processor extends SeesvOperator {
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
 	    if(headerRow==null) headerRow =row;
+
             if (firstRow && row.isFirstRowInData()) {
                 commentChar = ctx.getCommentChar();
                 if (prefix != null) {

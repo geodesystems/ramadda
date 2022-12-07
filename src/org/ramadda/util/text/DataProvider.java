@@ -7,7 +7,7 @@ package org.ramadda.util.text;
 
 
 import org.apache.commons.lang3.text.StrTokenizer;
-
+import org.apache.commons.text.StringTokenizer;
 import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
@@ -87,6 +87,10 @@ public abstract class DataProvider extends SeesvOperator {
         Row row = new Row();
         row.setRowCount(rowCnt++);
         return row;
+    }
+
+    public void incrRowCnt() {
+	rowCnt++;
     }
 
     /**
@@ -1816,7 +1820,9 @@ public abstract class DataProvider extends SeesvOperator {
         boolean deHeader = false;
 
         /**  */
-        private StrTokenizer tokenizer;
+        private StringTokenizer tokenizer;
+
+	private boolean doingSpaces = false;
 
         /**
          * _more_
@@ -1838,12 +1844,18 @@ public abstract class DataProvider extends SeesvOperator {
          * @param ctx _more_
          *  @return _more_
          */
-        private StrTokenizer getTokenizer(TextReader ctx) {
+        private StringTokenizer getTokenizer(TextReader ctx) {
             if (tokenizer == null) {
-                tokenizer = StrTokenizer.getCSVInstance();
+                tokenizer = StringTokenizer.getCSVInstance();
                 tokenizer.setEmptyTokenAsNull(true);
                 if ( !ctx.getDelimiter().equals(",")) {
-                    tokenizer.setDelimiterChar(ctx.getDelimiter().charAt(0));
+		    String delim = ctx.getDelimiter();
+		    if(delim.equals("_spaces_")) {
+			delim = " ";
+			doingSpaces = true;
+		    }
+		    
+                    tokenizer.setDelimiterString(delim);
                 }
             }
 
@@ -1895,12 +1907,16 @@ public abstract class DataProvider extends SeesvOperator {
                         deHeader = false;
                     }
                 }
+
                 if ( !ctx.lineOk(line)) {
+		    //		    System.err.println("NOT OK LINE:" + line);
                     continue;
                 }
+		//		System.err.println("LINE:" + line);
 
                 rowCnt++;
                 if (rowCnt <= ctx.getSkipLines()) {
+		    System.err.println("Add header:" + line);
                     ctx.addHeaderLine(line);
                     continue;
                 }
@@ -1925,8 +1941,12 @@ public abstract class DataProvider extends SeesvOperator {
                 } else if (ctx.getSplitOnSpaces()) {
                     return makeRow(Utils.split(line, " ", true, true));
                 } else {
-                    return makeRow(Utils.tokenizeColumns(line,
-                            getTokenizer(ctx)));
+		    StringTokenizer tokenizer = getTokenizer(ctx);
+		    if(doingSpaces) {
+			line = line.replaceAll("  *"," ").trim();
+		    }
+
+                    return makeRow(Utils.tokenizeColumns(line,tokenizer));
                 }
             }
         }
@@ -1982,7 +2002,6 @@ public abstract class DataProvider extends SeesvOperator {
             if ( !didFirst) {
                 didFirst = true;
                 row.add("line");
-
                 return row;
             }
             String line = ctx.readLine();
@@ -2089,7 +2108,7 @@ public abstract class DataProvider extends SeesvOperator {
     public static class Pdf extends DataProvider {
 
         /**  */
-        StrTokenizer tokenizer;
+        StringTokenizer tokenizer;
 
         /**  */
         boolean didFirst = false;
@@ -2111,7 +2130,8 @@ public abstract class DataProvider extends SeesvOperator {
          * @param seesv _more_
          */
         public Pdf(Seesv seesv) {
-            tokenizer = StrTokenizer.getCSVInstance();
+
+            tokenizer = StringTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             tabula = seesv.getProperty("RAMADDA_TABULA");
             if (tabula == null) {
@@ -2180,10 +2200,7 @@ public abstract class DataProvider extends SeesvOperator {
 
                 break;
             }
-
-
             List<String> toks = Utils.tokenizeColumns(line, tokenizer);
-
             return makeRow(toks);
         }
 

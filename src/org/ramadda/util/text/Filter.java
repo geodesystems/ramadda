@@ -1372,8 +1372,11 @@ public class Filter extends Processor {
                 return true;
             }
 	    if(isRegexp) {
+		System.err.println("ROW:" + row.toString());
 		if (row.toString().matches(pattern)) {
+		    System.err.println("MATCH");
 		    seenStart = true;
+
 		}
 	    } else {
 		if (row.toString().indexOf(pattern)>=0) {

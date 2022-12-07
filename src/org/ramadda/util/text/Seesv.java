@@ -722,8 +722,7 @@ public class Seesv implements SeesvCommands {
             }
 
             if (arg.equals(CMD_HEADER)) {
-                myTextReader.setFirstRow(
-					 new Row(Utils.split(args.get(++i), ",")));
+                myTextReader.setFirstRow(new Row(Utils.split(args.get(++i), ",")));
                 continue;
             }
 
@@ -894,31 +893,23 @@ public class Seesv implements SeesvCommands {
 	    if(fileCnt==0) {
 		processRow(ctx, firstRow);
 		rowCnt++;
+		provider.incrRowCnt();
 	    }
         }
 	long t1 = System.currentTimeMillis();
         Row row;
 	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
-	    //	    System.err.println ("row:" + row);
 	    if(row==null) break;
 	    if(rowCnt++==0 && fileCnt>0) {
 		continue;
 	    }
-
-	    if((rowCnt%100000)==0) {
-		//		Runtime.getRuntime().gc();
-		//		double mem2=Utils.getUsedMemory();
-		//		System.err.println("gc " + rowCnt +" "+ (mem2-mem1));
-		//		mem1=mem2;
-
-	    }
-
-	    //	    if((rowCnt%100000)==0) System.err.print(".");
             if (rowCnt <= ctx.getSkip()) {
                 continue;
             }
+
 	    if ( !processRow(ctx, row)) {
+		System.err.println ("break");
 		break;
 	    }
         }
@@ -3382,7 +3373,8 @@ public class Seesv implements SeesvCommands {
 	    });		    			
 
 	defineFunction(CMD_START,1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
+		ctx.setStartPattern(args.get(++i));
+		//		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_ENSURE_NUMERIC,1,(ctx,args,i) -> {
