@@ -6424,6 +6424,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.sectionOpen("Available Color Tables", false));
         sb.append(HtmlUtils.div("", "id='colortables'"));
+	sb.append(HtmlUtils.importJS(getHtdocsUrl("/colortables.js")));
         sb.append(
             HtmlUtils.script("Utils.displayAllColorTables('colortables');"));
         sb.append(HtmlUtils.sectionClose());

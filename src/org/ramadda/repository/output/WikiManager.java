@@ -4636,6 +4636,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	HtmlUtils.open(sb, "div", "id", id);
 	HtmlUtils.pre(sb, formatted);
 	HtmlUtils.close(sb, "div");
+	sb.append(HtmlUtils.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
 	sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
 	return sb.toString();
     }
@@ -8588,7 +8589,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		HU.cssPreloadLink(sb, css);
 		//                HU.cssLink(sb, css);
 		sb.append("\n");
-		for(String js: new String[]{"/display/pointdata.js", "/display/widgets.js",
+		for(String js: new String[]{"/colortables.js",
+					    "/display/pointdata.js", 
+					    "/display/widgets.js",
 					    "/display/display.js",
 					    "/display/displaymanager.js",
 					    "/display/displayentry.js",

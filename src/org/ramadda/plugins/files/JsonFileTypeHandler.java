@@ -154,6 +154,7 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
             HtmlUtils.open(sb, "div", "id", id);
             HtmlUtils.pre(sb, formatted);
             HtmlUtils.close(sb, "div");
+	    sb.append(HtmlUtils.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
             sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
         } catch (Exception exc) {
             sb.append("Error formatting JSON: " + exc);
