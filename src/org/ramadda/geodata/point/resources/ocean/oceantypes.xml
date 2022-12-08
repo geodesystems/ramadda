@@ -3,7 +3,7 @@
   <type name="type_point_ocean"  description="" super="type_point" category="Ocean and Water Data" foruser="false">
   </type>
 
-<type name="type_point_ex02" description="EX02 Sonde Data" super="type_point_ocean"
+<type name="type_point_ex02" description="EX02 Base" super="type_point_ocean" foruser="false"
       handler="org.ramadda.data.services.PointTypeHandler">
   <property name="icon" value="/point/exo2.png"/>
   <property name="form.properties.show" value="false"/>
@@ -20,9 +20,13 @@ csvcommands2=-skiplines,9,-concat,date_mm_dd_yyyy\,time_hh_mm_ss,_csvcommandspac
 csvcommands3=date,-firstcolumns,date,-notcolumns,date_mm_dd_yyyy\,time_hh_mm_ss\,time_fract_sec
 csvcommands4=-addheader,date.type_csvcommandspace_date_csvcommandspace_date.format_csvcommandspace_{MM/dd/yyyy_csvcommandspace_HH:mm:ss},-print
 </property>
-<column  name="station"  label="Station" type="enumerationplus">
+<column  name="station"  label="Station" type="enumerationplus" cansearch="true">
    <property name="record_field" value="site_name"/>
 </column>
+<column  name="serial_number"  label="Serial Number" type="enumerationplus" cansearch="true"/>
+
+
+<!-- specify the default wiki here for backwards compatability -->
 <wiki>
 <![CDATA[
 +section title="Station: {{field name=station}} - {{name}}"
@@ -39,6 +43,30 @@ fields=".*temp.*,sal.*"
 
 :heading Table
 {{display_download showMenu=false}} 
+{{display_htmltable showMenu=false}}
+-section
+]]>
+</wiki>
+</type>
+
+
+<type name="type_point_ex02_sonde" description="EX02 Sonde" super="type_point_ex02" foruser="true">
+</type>
+
+<type name="type_point_ex02_timeseries" description="EX02 Time Series" super="type_point_ex02" foruser="true">
+<wiki>
+<![CDATA[
++section title="Station: {{field name=station}} - {{name}}"
+<div style='text-align:right;'> 
+<span style='display:inline-block;margin-right:10px'>{{fromdate  format="yyyy-MM-dd HH:mm z"}}</span>
+<span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
+</div> 
+{{description wikify=true}}
+{{group showMenu=true}}
+{{display_linechart showMenu=true fields=".*temp.*,sal.*" }} 
+
+:heading Table
+{{display_download showMenu=false showDateSelect=true}} 
 {{display_htmltable showMenu=false}}
 -section
 ]]>
