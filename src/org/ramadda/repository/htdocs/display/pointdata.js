@@ -696,6 +696,10 @@ function RecordField(props, source) {
         isElevation: false,
 	forDisplay:true
     });
+    if(props.id) {
+	//A hack. maybe use Utils.makeID?
+	props.id = props.id.replace(/%/g,'');
+    }
     $.extend(this, props);
 
     $.extend(this, {
@@ -3790,7 +3794,7 @@ function CsvUtil() {
 
 
 var DataUtils = {
-    getCsv: function(fields, records) {
+    getCsv: function(fields, records,filter) {
 	let csv = "";
 	fields.forEach((f,idx)=>{
 	    if(idx>0) csv+=",";
@@ -3798,6 +3802,9 @@ var DataUtils = {
 	});
 	csv+="\n";
 	records.forEach(r=>{
+	    if(filter && !filter(r)) {
+		return;
+	    }
 	    fields.forEach((f,idx)=>{
 		let v = r.getValue(f.getIndex());
 		if(v && v.getTime) {
@@ -3820,9 +3827,10 @@ var DataUtils = {
 	});
 	return csv;
     },
-    getJson: function(fields, records, filename) {
+    getJson: function(fields, records, filename,filter) {
 	let json = [];
 	records.forEach(r=>{
+	    if(filter && !filter(r)) return;
 	    let obj = {};
 	    json.push(obj);
 	    fields.forEach((f,idx)=>{
