@@ -38,6 +38,7 @@ public interface SeesvCommands {
     public static final String CMD_CLEANINPUT="-cleaninput";
     public static final String CMD_BOM="-bom";
     public static final String CMD_ENCODING="-encoding";    
+    public static final String CMD_MULTIFILES = "-multifiles";
     public static final String CMD_HEADER="-header";
     public static final String CMD_JSON="-json";
     public static final String CMD_JSONVALUE="-jsonvalue";

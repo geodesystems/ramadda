@@ -93,6 +93,9 @@ public class Seesv implements SeesvCommands {
     /** _more_ */
     private TextReader myTextReader;
 
+    private boolean multiFiles = false;
+    private String multiFileTemplate = null;
+
     /** _more_ */
     private String currentArg;
 
@@ -699,6 +702,13 @@ public class Seesv implements SeesvCommands {
                 continue;
             }
 
+
+            if (arg.equals(CMD_MULTIFILES)) {
+		multiFiles = true;
+		multiFileTemplate = args.get(++i);
+		continue;
+	    }
+
             if (arg.equals(CMD_APPEND)) {
                 doAppend = true;
 		appendSkip = Integer.parseInt(args.get(++i));
@@ -816,10 +826,26 @@ public class Seesv implements SeesvCommands {
 		    int cnt=0;
 		    for (NamedInputStream input : getStreams(files)) {
 			//			System.err.println("file:" + input);
-			myTextReader.resetProcessors();
+			int fileCnt = cnt++;
+			if(multiFiles) {
+			    File newFile;
+			    if(Utils.stringDefined(multiFileTemplate)) {
+				String source  = new File(input.getName()).getName();
+				String name  = IOUtil.stripExtension(source);
+				newFile = new File(multiFileTemplate.replace("${source}",source).replace("${count}",""+(cnt)).replace("${name}",name));
+			    } else {
+				newFile = new File(input.getName()+".csv");
+			    }
+			    checkOkToWrite(newFile.toString());
+			    myTextReader.setOutputFile(newFile);
+			    //			    System.err.println("new file:" + newFile);
+			}
+			myTextReader.resetProcessors(multiFiles);
 			myTextReader.setInput(input);
-			process(myTextReader, provider,cnt++);
-			myTextReader.setFirstRow(null);
+			process(myTextReader, provider,multiFiles?0:fileCnt);
+			if(!multiFiles) {
+			    myTextReader.setFirstRow(null);
+			}
 			input.close();
 		    }
 		    if (okToRun) {
@@ -1743,6 +1769,8 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Quotes Not Special"),
         new Cmd(CMD_CLEANINPUT, "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files",
 		ARG_LABEL,"Input is Clean"),
+
+
         new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out",ARG_LABEL,"Strip BOM"),
         new Cmd(CMD_ENCODING,
 		"Specify the file encoding",ARG_LABEL,"File Encoding",
@@ -1750,6 +1778,10 @@ public class Seesv implements SeesvCommands {
 			"type","enumeration","values","UTF-16,UTF-16BE,UTF-16LE,UTF-32,UTF-32BE,UTF-32LE,UTF-8,CESU-8,IBM00858,IBM437,IBM775,IBM850,IBM852,IBM855,IBM857,IBM862,IBM866,ISO-8859-1,ISO-8859-13,ISO-8859-15,ISO-8859-2,ISO-8859-4,ISO-8859-5,ISO-8859-7,ISO-8859-9,KOI8-R,KOI8-U,Not available,US-ASCII,windows-1250,windows-1251,windows-1252,windows-1253,windows-1254,windows-1257,x-IBM737,x-IBM874,x-UTF-16LE-BOM,x-UTF-32BE-BOM,x-UTF-32LE-BOM")),			
         new Cmd(CMD_HEADER, "Raw header",ARG_LABEL,"Add Header",
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
+
+        new Cmd(CMD_MULTIFILES, "Treat input files separately",ARG_LABEL,"Multi-files",
+		new Arg("template", "File template  - ${source} ${name} ${count}")),
+
         new Cmd(CMD_JSON, "Parse the input as json",
                 new Arg("arrayPath",
 			"Path to the array e.g., obj1.arr[2].obj2",
@@ -5278,7 +5310,7 @@ public class Seesv implements SeesvCommands {
 
 	PrintWriter pw        = null;
 	if (debugArgs) {
-	    System.err.println("ParseArgs");
+	    System.err.println("ParseArgs:" + args);
 	}
 	List<String> filePatterns = new ArrayList<String>();
 	List<String> filePatternNames = new ArrayList<String>();	

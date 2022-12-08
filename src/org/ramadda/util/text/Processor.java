@@ -359,9 +359,12 @@ public abstract class Processor extends SeesvOperator {
     /**
      * _more_
      */
-    public void reset() {
+    public  void reset(boolean force) {
+	if(force) {
+	    rowCnt=0;
+	}
         if (nextProcessor != null) {
-            nextProcessor.reset();
+            nextProcessor.reset(force);
         }
     }
 
@@ -1778,6 +1781,15 @@ public abstract class Processor extends SeesvOperator {
             this.trim = trim;
         }
 
+	@Override
+        public void reset(boolean force) {
+	    super.reset(force);
+	    if(force) {
+		headerRow = null;
+	    }
+        }
+
+
         /**
          *
          * @param delimiter _more_
@@ -1889,7 +1901,7 @@ public abstract class Processor extends SeesvOperator {
             String  theTemplate = template;
             boolean firstRow    = rowCnt++ == 0;
 	    if(headerRow==null) headerRow =row;
-	    //	    System.err.println(firstRow +" " +row.isFirstRowInData());
+	    //	    System.err.println("\tfirstRow:" + firstRow +" row.isFirstRowInData:" +row.isFirstRowInData()+" header:" + headerRow);
             if (firstRow && row.isFirstRowInData()) {
                 commentChar = ctx.getCommentChar();
                 if (theTemplate != null) {
@@ -1912,9 +1924,6 @@ public abstract class Processor extends SeesvOperator {
 		ctxPrefix = ctxPrefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");				writer.append(ctxPrefix);
 	    }
      
-
-
-
             List    values        = row.getValues();
             boolean escapeColumns = true;
             if (theTemplate == null) {
@@ -2963,7 +2972,9 @@ public abstract class Processor extends SeesvOperator {
         /**
          * _more_
          */
-        public void reset() {
+	@Override
+        public void reset(boolean force) {
+	    super.reset(force);
             contains = null;
             values   = null;
         }
@@ -3093,7 +3104,9 @@ public abstract class Processor extends SeesvOperator {
         /**
          * _more_
          */
-        public void reset() {
+	@Override
+        public void reset(boolean force) {
+	    super.reset(force);
             rowCount     = 0;
             uniqueCounts = new Hashtable<Integer, Integer>();
             counts       = new ArrayList<Integer>();

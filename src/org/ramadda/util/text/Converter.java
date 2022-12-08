@@ -7182,8 +7182,9 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          */
-        public void reset() {
-            super.reset();
+	@Override
+        public void reset(boolean force) {
+            super.reset(force);
             prefix = null;
         }
 

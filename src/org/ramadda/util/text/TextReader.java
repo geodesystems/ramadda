@@ -372,9 +372,9 @@ public class TextReader implements Cloneable {
 
     /**
      */
-    public void resetProcessors() {
+    public void resetProcessors(boolean force) {
         if (firstProcessor != null) {
-            firstProcessor.reset();
+            firstProcessor.reset(force);
         }
     }
 
@@ -1613,6 +1613,7 @@ public class TextReader implements Cloneable {
     public void setOutputFile(File file) {
         outputFile = file;
 	output = null;
+	writer=null;
     }
 
     /**

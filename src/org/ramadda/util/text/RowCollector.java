@@ -129,8 +129,8 @@ public class RowCollector extends Processor {
      * _more_
      */
     @Override
-    public void reset() {
-        super.reset();
+    public void reset(boolean force) {
+        super.reset(force);
         rows = new ArrayList<Row>();
     }
 
