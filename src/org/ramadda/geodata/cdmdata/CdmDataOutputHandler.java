@@ -854,10 +854,17 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 	    String desc = "<i>" + var.getDescription()	+ "</i>"; 
             sbToUse.append(HU.row(HU.cols(HU.labeledCheckbox(ARG_VARIABLE, var.getShortName(),
 							     (grids.size() == 1),
-							     HU.id(cbxId) + call,label),desc)));
+							     HU.cssClass("ramadda-grid-variable") +HU.id(cbxId) + call,label),desc)));
 
 
         }
+	String toggleAllId = HU.getUniqueId("cbx_");
+	varSB.append(HU.labeledCheckbox("", HU.VALUE_TRUE,
+				     false,HU.attr("id",toggleAllId),
+				     "Toggle all"));
+
+
+
         if (varSB2D.length() > 0) {
             if (varSB3D.length() > 0) {
                 varSB.append(
@@ -904,6 +911,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             varSB.append(varSB3D);
         }
 
+	varSB.append("\n");
+	HU.script(varSB,"HtmlUtils.initToggleAll('" + toggleAllId+"','.ramadda-grid-variable');");
         return varSB;
     }
 
@@ -1012,6 +1021,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the results to"));
         sb.append(HU.formTableClose());
+
         sb.append(HU.div("Select Variables",HU.cssClass("ramadda-table-header")+HU.style("margin-top:6px;padding-top:2px;")));
         sb.append("<ul>");
         sb.append("<table>");

@@ -889,6 +889,15 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                            boolean useLevelValue) {
         int                varCnt            = 0;
         StringBuffer       varSB             = new StringBuffer();
+
+	String toggleAllId = HU.getUniqueId("cbx_");
+	varSB.append(HU.labeledCheckbox("", HU.VALUE_TRUE,
+				     false,HU.attr("id",toggleAllId),
+				     "Toggle all"));
+
+	
+
+
         StringBuffer       varSB2D           = new StringBuffer();
         StringBuffer       varSB3D           = new StringBuffer();
         List<GridDatatype> grids             = sortGrids(dataset);
@@ -930,6 +939,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 										  ARG_VARIABLE,
 										  var.getShortName(),
 										  (grids.size() == 1),
+										  HU.cssClass("ramadda-grid-variable") +
 										  HtmlUtils.id(cbxId)+ call,label),
 							"<i>"+ var.getDescription() + "</i>")));
 
@@ -980,6 +990,8 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             varSB.append(varSB3D);
         }
 
+	varSB.append("\n");
+	HU.script(varSB,"HtmlUtils.initToggleAll('" + toggleAllId+"','.ramadda-grid-variable');");
         return varSB;
     }
 
