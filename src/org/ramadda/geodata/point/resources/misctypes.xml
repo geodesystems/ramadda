@@ -164,6 +164,36 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
   <type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
 </type>
 
+
+<type name="type_sounding_text"  description="Text Sounding" super="type_sounding" category="Point Data"
+      handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/balloon.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+<wiki>
+<![CDATA[
++section title={{name}}   
+{{display_download}}
++row                                                                                                                                      
++col-9
+<div style="height:600px;">
+{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+</div>
+-col                                                                                                                                      
++col-3
+{{mapentry hideIfNotLocations=true}}
+-col
+-row   
+----
+{{information  details="true"  showTitle="false"  }} 
+-section
+]]>
+</wiki>
+</type>
+
+
+
   <type name="type_sounding_wyoming"  description="UW Sounding" super="type_sounding"  foruser="true" >
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="icon" value="/point/uw.png"/>
@@ -186,7 +216,7 @@ point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-<div style="height:600">
+<div style="height:600px;">
 {{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
 </div>
 :br
@@ -230,7 +260,7 @@ point.csvcommands=-delimiter,spaces,-start,(?s)----.*,-start,(?s)----.*,-stop,(?
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-<div style="height:600">
+<div style="height:600px;">
 {{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
 </div>
 :br
@@ -283,7 +313,7 @@ lastHeaderPattern=IX.*
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-<div style="height:600">
+<div style="height:600px;">
 {{display type=skewt layoutHere=true  
 height=400
 skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false windStride=100}}
@@ -327,7 +357,7 @@ point.csvcommands=-alldata,-skip,7,-widths,7_comma_7_comma_7_comma_7_comma_7_com
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-<div style="height:600">
+<div style="height:600px;">
 +row
 +col-8
 {{display type=skewt layoutHere=true  skewtWidth="500" skewtHeight="550" hodographWidth=150 showMenu=false showTitle=false}}
@@ -377,7 +407,7 @@ lastHeaderPattern=^ +s.*
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-<div style="height:600">
+<div style="height:600px;">
 {{display type=skewt layoutHere=true  
 height=400
 skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false windStride=100}}
