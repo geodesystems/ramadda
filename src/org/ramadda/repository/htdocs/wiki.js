@@ -1390,6 +1390,7 @@ WikiEditor.prototype = {
  		{p:'width',ex:'100%'},
 		{p:'height',ex:'400'},
 		{p:'listentries',ex:'true'},
+		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
 		{p:'details',ex:'false'},
 
 		{p:'showLines',ex:'true'},
