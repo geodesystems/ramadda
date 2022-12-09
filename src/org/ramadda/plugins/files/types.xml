@@ -58,7 +58,7 @@
 </type>
 
 
-<type name="type_file_matlab"  description="Matlab File" pattern=".*\.mat"  category="Documents">
+<type name="type_file_matlab"  description="Matlab File" pattern=".*\.(mat|m)"  category="Documents">
      <property name="icon" value="/files/matlab.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
