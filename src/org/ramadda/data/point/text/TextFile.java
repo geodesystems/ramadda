@@ -523,10 +523,11 @@ public abstract class TextFile extends PointFile {
                     headerLines.add(line);
                 }
                 skipCnt--;
+		//Not sure if this should be here for all files but skip over any comment lines 
+		if(line.startsWith("#")) continue;
                 fieldRow--;
                 if (fieldRow <= 0) {
                     fieldsLine = line;
-
                     break;
                 }
             }
@@ -542,6 +543,10 @@ public abstract class TextFile extends PointFile {
                 skipCnt--;
             }
 
+	    if(debug) {
+		System.err.println("headerLines:" + headerLines);
+		System.err.println("fieldsLine:" + fieldsLine);		
+	    }
             if (fieldsLine != null) {
                 String delim      = getProperty(PROP_DELIMITER, ",");
                 String sampleLine = visitInfo.getRecordIO().readLine();
