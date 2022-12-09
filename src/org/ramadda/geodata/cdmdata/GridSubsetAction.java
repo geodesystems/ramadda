@@ -164,6 +164,7 @@ public class GridSubsetAction extends MonitorAction {
      * @param entry _more_
      * @param isNew _more_
      */
+    @Override
     public void entryMatched(EntryMonitor monitor, Entry entry,
                              boolean isNew) {
         try {
@@ -208,9 +209,15 @@ public class GridSubsetAction extends MonitorAction {
                 monitor.getRepository().getStorageManager().getTmpFile(
                     request, fileName);
 
-
             request.putExtraProperty("subsetfile", file);
-            cdo.outputGridSubset(request, entry);
+            request.putExtraProperty("internal", "true");	    
+	    try {
+		cdo.outputGridSubset(request, entry);
+	    } catch(Exception exc) {
+		monitor.getRepository().getLogManager().logError("GridSubsetAction error:" + request,exc);
+		return;
+	    }
+
             file = monitor.getRepository().getStorageManager().moveToStorage(
                 request, file, fileName);
             String newName = entry.getName() + " Subset";

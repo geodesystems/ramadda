@@ -1079,24 +1079,22 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
         List<String> varNames = new ArrayList<String>();
         Hashtable    args     = request.getArgs();
-        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
-            String arg = (String) keys.nextElement();
-            if (arg.startsWith(VAR_PREFIX) && request.get(arg, false)) {
-                varNames.add(arg.substring(VAR_PREFIX.length()));
-            }
+	boolean allVars = request.get("allvars",false);
+	if(allVars) {
+	} else {
+	    for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+		String arg = (String) keys.nextElement();
+		if (arg.startsWith(VAR_PREFIX) && request.get(arg, false)) {
+		    varNames.add(arg.substring(VAR_PREFIX.length()));
+		}
+	    }
+	    for (String v :
+		     (List<String>) request.get(ARG_VARIABLE,
+						new ArrayList<String>())) {
+		varNames.addAll(StringUtil.split(v, ",", true, true));
+	    }
         }
 
-
-        for (String v :
-                (List<String>) request.get(ARG_VARIABLE,
-                                           new ArrayList<String>())) {
-            varNames.addAll(StringUtil.split(v, ",", true, true));
-        }
-
-        //        System.err.println("vars:" + varNames);
-
-
-        //            System.err.println(varNames);
         GridDataset gds = getCdmManager().getGridDataset(entry, path);
         // initialize the bounds and date range to the defaults
         LatLonRect        llr                 = gds.getBoundingBox();
@@ -1104,8 +1102,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         boolean           anySpatialDifferent = false;
         boolean           haveAllSpatialArgs  = true;
         //if (varNames.size() == 0 || varNames.get(0).equalsIgnoreCase("all")) {
-        if ((varNames.size() == 1)
-                && varNames.get(0).equalsIgnoreCase("all")) {
+        if (allVars ||((varNames.size() == 1)
+		       && varNames.get(0).equalsIgnoreCase("all"))) {
             List<VariableSimpleIF> variables = gds.getDataVariables();
             varNames = new ArrayList<String>();
             for (VariableSimpleIF var : variables) {
@@ -1198,15 +1196,23 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if ((dates[1] != null) && (dates[0] == null)) {
             dates[1] = null;
         }
+	boolean internal = Misc.equals(request.getExtraProperty("internal"),"true");
+
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].isAfter(dates[1]))) {
             sb.append(
                 getPageHandler().showDialogWarning(
-                    "From date is after to date"));
+						   "From date is after to date"));
+	    if(internal) {
+		throw new IllegalArgumentException("From date is after to date");
+	    }
         } else if (varNames.size() == 0) {
+	    if(internal) {
+		throw new IllegalArgumentException("No variables specified");
+	    }
+
 	    getPageHandler().entrySectionOpen(request, entry, sb, "Subset Grid");
-            sb.append(
-                getPageHandler().showDialogWarning("No variables selected"));
+            sb.append(getPageHandler().showDialogWarning("No variables selected"));
 	    makeGridSubsetForm(request,entry,sb);
 	    getPageHandler().entrySectionClose(request, entry, sb);
 	    return makeLinksResult(request, msg("Grid Subset"), sb,
