@@ -168,8 +168,11 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 <type name="type_sounding_text"  description="Text Sounding" super="type_sounding" category="Point Data"
       pattern=".*\.sounding\.csv"
       handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.patterns" value="latitude:lat=(.*?)_comma_,longitude:lon=(.*?)_comma_,date:utc_time=(\d\d\d\d-\d\d-\d\d \d\d:\d\d)"/>
      <property name="icon" value="/point/balloon.png"/>
+
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.pattern.date.format" value="yyyy-MM-dd HH:mm"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
 <wiki>
@@ -183,7 +186,7 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 </div>
 -col                                                                                                                                      
 +col-3
-{{mapentry hideIfNotLocations=true}}
+{{mapentry hideIfNoLocations=true}}
 -col
 -row   
 ----

@@ -784,17 +784,17 @@ public class PointTypeHandler extends RecordTypeHandler {
             if (patterns != null) {
                 List<String> toks = StringUtil.split(patterns, ",");
                 String       time = null;
+		System.err.println("header:" + header);
                 for (String tok : toks) {
                     List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
                     if (toks2.size() != 2) {
                         continue;
                     }
                     String field   = toks2.get(0).trim();
-                    String pattern = toks2.get(1);
+                    String pattern = toks2.get(1).replace("_comma_",",");
                     String value   = StringUtil.findPattern(header, pattern);
-                    //              System.err.println(field +" p:" + pattern +" v:" +value);
-
-                    if (value != null) {
+		    //		    System.err.println("\t" +field +" p:" + pattern +" v:" +value);
+                    if (Utils.stringDefined(value)) {
                         if (field.equals("latitude")) {
                             entry.setLatitude(Utils.decodeLatLon(value));
                         } else if (field.equals("longitude")) {
