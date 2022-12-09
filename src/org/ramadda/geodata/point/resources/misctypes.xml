@@ -28,6 +28,7 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 </type>
 
 <type name="type_point_3dtrack_csv"  description="3D Track CSV Data"  super="type_point"
+      pattern=".*flight_history\.csv"
       supercategory="Geoscience" category="Point Data">
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <wiki>
