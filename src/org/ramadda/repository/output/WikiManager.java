@@ -2820,6 +2820,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
 					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
 		}
+		//If there is an ancestor specified then we use the /search/do url
+		ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
+                if (ancestor!=null) {
+		    if(ancestor.equals(ID_THIS)) ancestor = entry.getId();
+                    jsonUrl += "&ancestor=" + ancestor;
+                }
+		jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
+				 JsonOutputHandler.OUTPUT_JSON_POINT.getId());
                 if (doEntry) {
                     jsonUrl += "&onlyentry=true";
                 }
@@ -2829,6 +2837,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		if(getProperty(wikiUtil, props, "imagesOnly", false)) {
                     jsonUrl += "&imagesOnly=true";
 		}
+
 		String entryTypes = getProperty(wikiUtil, props, "entryTypes",(String)null);
                 if (entryTypes!=null) {
                     jsonUrl += "&entryTypes=" + entryTypes;
@@ -6417,7 +6426,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                 Hashtable props, Entry baseEntry)
 	throws Exception {
         String[] args = new String[] {
-            ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
+            ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_ANCESTOR,ARG_FILESUFFIX, ARG_BBOX,
             ARG_BBOX + ".north", ARG_BBOX + ".west", ARG_BBOX + ".south",
             ARG_BBOX + ".east", DateArgument.ARG_DATA.getFrom(), ARG_MAX,
             ARG_ORDERBY, SearchManager.ARG_PROVIDER,
@@ -6437,7 +6446,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             }
 
             if (text != null) {
-                if (arg.equals(ARG_GROUP)) {
+                if (arg.equals(ARG_GROUP) || arg.equals(ARG_ANCESTOR)) {
                     //TODO: Handle other identifiers
                     if (text.equals(ID_THIS)) {
                         text = baseEntry.getId();
