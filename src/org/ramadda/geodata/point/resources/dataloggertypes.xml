@@ -32,8 +32,7 @@ depth_m.unit=M
 <div style="max-height:200px; overflow-y:auto;">
 {{description wikify=true}}
 </div>
-{{group showMenu=true}}
-{{display_download showMenu=false lastRecords="20000"}}
+<table><tr><td>{{group showMenu=true}}</td><td>{{display_download showMenu=false showDateSelect=true lastRecords="20000"}}</td></tr></table>
 {{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="20000"}}
 {{display_linechart showMenu=true fieldsPatterns=".*press" lastRecords="20000"}}
 :br
