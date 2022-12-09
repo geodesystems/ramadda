@@ -125,8 +125,9 @@ public class GridSubsetAction extends MonitorAction {
         sb.append(
             HtmlUtils.formEntryTop(
                 "Grid Subset Arguments:",
-                HtmlUtils.textArea(getArgId(ARG_ARGS), args, 5, 60)
-                + " " + "Arguments from the grid subset form"));
+                HtmlUtils.table(new Object[]{
+			 HtmlUtils.textArea(getArgId(ARG_ARGS), args, 5, 60),
+			 "Arguments from the grid subset form<br>Use allvars=true to select all of the variables"})));
 
         sb.append(HtmlUtils.formTableClose());
     }
