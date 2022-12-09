@@ -101,10 +101,41 @@ These don't define the fields or their order. They just define the default attri
 
   </type>
 
-  <type name="type_point_ocean_cnv"  super="type_point_ocean" description="SeaBird CNV Data"  handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.cnv">
+  <type name="type_point_ocean_cnv"  super="type_point_ocean" description="SeaBird CNV Data"
+	handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.cnv">
      <property name="isTrajectory" value="true"/>
      <property name="icon" value="/point/sbe.png"/>
      <property name="record.file.class" value="org.ramadda.geodata.point.ocean.CnvPointFile"/>
+<wiki>
+<![CDATA[
++section title={{name}}
+{{group showMenu=true}}
+{{display_download max="20000" showMenu=false}}
++row
++col-8
+{{display_linechart showMenu=true max="50000"
+fields="prDM,t090C"
+}}
+{{display_linechart showMenu=true max="50000"
+fields="sal00,sbeox0Mg/L"
+}}
+-col
++col-4
+{{display_map max="50000"}}
+-col
+-row
+----
+:heading Metadata
+<div style='max-height:200px;overflow-y:auto;'>
+{{description wikify=true}}
+</div>
+:br
+{{information details="true"}}
+-section
+]]>
+</wiki>
+
+
   </type>
 
   <type name="type_point_ocean_ooi_dmgx"  super="type_point_ocean" description="OOI Data"  handler="org.ramadda.data.services.PointTypeHandler">
