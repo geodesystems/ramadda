@@ -2613,15 +2613,17 @@ public class Utils extends IO {
     public static String makeID(String label, boolean forCode,
                                 String delimiter) {
         label = stripTags(label);
-        label = label.trim().toLowerCase().replaceAll(
-						      ":", delimiter).replaceAll("&", delimiter).replaceAll(
-													    " ", delimiter).replaceAll("\\.", delimiter).replaceAll(
-																				    "\n", delimiter).replaceAll("\\(", delimiter).replaceAll(
-																											     "\\)", delimiter).replaceAll("\\?", delimiter).replaceAll(
-																																		       "[\"'`]+", "").trim();
+        label = label.trim().toLowerCase();
+	label = label.replaceAll(":", delimiter).replaceAll("&", delimiter).replaceAll(" ", delimiter).replaceAll("\\.", delimiter).replaceAll(
+																	       "\n", delimiter);
+	label = label.replaceAll("\\(", delimiter).replaceAll("\\)", delimiter).replaceAll("\\?", delimiter);
+	label = label.replaceAll("[\"'`]+", "").trim();
+	//        label = label.replaceAll("\\([^\\)]+\\)", "XXX");
+
         label = label.replaceAll("-", delimiter);
         label = label.replaceAll(",", delimiter);
         label = label.replaceAll("/", delimiter);
+        label = label.replaceAll("%", "");	
         label = label.replaceAll("__+", delimiter);
         label = label.replaceAll("[\\{\\}=]+", delimiter);
         label = label.replaceAll("_$", "");
@@ -2629,6 +2631,7 @@ public class Utils extends IO {
             label = delimiter + label;
         }
 
+	//	System.err.println(label);
         return label;
     }
 
@@ -6031,6 +6034,14 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String label = " foo (untis)";
+	    label = label.replaceAll("\\([^\\)]+\\)", "XXX");
+	    System.err.println(label);
+	    return;
+	}
+
+
 	if(true) {
 	    File file = new File(args[0]);
 	    BufferedImage image = ImageIO.read(file);
