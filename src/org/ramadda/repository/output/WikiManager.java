@@ -2823,11 +2823,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		//If there is an ancestor specified then we use the /search/do url
 		ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
                 if (ancestor!=null) {
+		    jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
+				     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+
 		    if(ancestor.equals(ID_THIS)) ancestor = entry.getId();
                     jsonUrl += "&ancestor=" + ancestor;
                 }
-		jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
-				 JsonOutputHandler.OUTPUT_JSON_POINT.getId());
                 if (doEntry) {
                     jsonUrl += "&onlyentry=true";
                 }
