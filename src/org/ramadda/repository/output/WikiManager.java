@@ -2821,11 +2821,23 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
 		}
 		//If there is an ancestor specified then we use the /search/do url
+		boolean doSearch = getProperty(wikiUtil, props, "doSearch",false);
 		ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
-                if (ancestor!=null) {
+		
+                if (ancestor!=null || doSearch) {
 		    jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
 				     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
 
+		}
+		if(doSearch) {
+		    String type = getProperty(wikiUtil, props, "type",(String) null);
+		    if(type!=null)
+			jsonUrl += "&type=" + type;
+		}
+
+		//		System.err.println("JSON:" + jsonUrl +"  "+ doSearch);
+
+                if (ancestor!=null) {
 		    if(ancestor.equals(ID_THIS)) ancestor = entry.getId();
                     jsonUrl += "&ancestor=" + ancestor;
                 }
@@ -2838,6 +2850,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		if(getProperty(wikiUtil, props, "imagesOnly", false)) {
                     jsonUrl += "&imagesOnly=true";
 		}
+
 
 		String entryTypes = getProperty(wikiUtil, props, "entryTypes",(String)null);
                 if (entryTypes!=null) {
