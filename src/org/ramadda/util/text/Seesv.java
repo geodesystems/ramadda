@@ -832,7 +832,7 @@ public class Seesv implements SeesvCommands {
 			    if(Utils.stringDefined(multiFileTemplate)) {
 				String source  = new File(input.getName()).getName();
 				String name  = IOUtil.stripExtension(source);
-				newFile = new File(multiFileTemplate.replace("${source}",source).replace("${count}",""+(cnt)).replace("${name}",name));
+				newFile = new File(multiFileTemplate.replace("${file_name}",source).replace("${count}",""+(cnt)).replace("${file_shortname}",name));
 			    } else {
 				newFile = new File(input.getName()+".csv");
 			    }
@@ -847,8 +847,11 @@ public class Seesv implements SeesvCommands {
 			    myTextReader.setFirstRow(null);
 			}
 			input.close();
+			if(multiFiles) {
+			    myTextReader.finishProcessing();
+			}
 		    }
-		    if (okToRun) {
+		    if (okToRun && !multiFiles) {
 			myTextReader.finishProcessing();
 		    }
 		    provider.finish();
@@ -935,7 +938,6 @@ public class Seesv implements SeesvCommands {
             }
 
 	    if ( !processRow(ctx, row)) {
-		System.err.println ("break");
 		break;
 	    }
         }
@@ -957,6 +959,8 @@ public class Seesv implements SeesvCommands {
      */
     private boolean processRow(TextReader ctx, Row row)
 	throws Exception {
+
+	    
         ctx.initRow(row);
         if ((ctx.getMaxRows() >= 0)
 	    && (ctx.getVisitedRows() > ctx.getMaxRows())) {
@@ -5230,8 +5234,7 @@ public class Seesv implements SeesvCommands {
 		    String delim    = args.get(++i).replaceAll("_nl_", "\n");
 		    String suffix   = getText(args.get(++i).replaceAll("_nl_", "\n"));
 		    ctx.addProcessor(
-				     new Processor.Printer(
-							   prefix, template, delim, suffix));
+				     new Processor.Printer(prefix, template, delim, suffix));
 
 		    return i;
 		} catch(Exception exc) {

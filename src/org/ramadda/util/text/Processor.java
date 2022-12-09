@@ -1707,6 +1707,8 @@ public abstract class Processor extends SeesvOperator {
         /** _more_ */
         private String prefix;
 
+	private boolean haveWrittenPrefix = false;
+
         /** _more_ */
         private String suffix;
 
@@ -1786,6 +1788,7 @@ public abstract class Processor extends SeesvOperator {
 	    super.reset(force);
 	    if(force) {
 		headerRow = null;
+		haveWrittenPrefix = false;
 	    }
         }
 
@@ -1899,6 +1902,9 @@ public abstract class Processor extends SeesvOperator {
 	    throws Exception {	    
 	    //	    System.err.println("\tHandle row:" + row);
             String  theTemplate = template;
+	    if(theTemplate!=null) {
+		theTemplate = theTemplate.replace("${filename}",ctx.getCurrentFilename());
+	    }
             boolean firstRow    = rowCnt++ == 0;
 	    if(headerRow==null) headerRow =row;
 	    //	    System.err.println("\tfirstRow:" + firstRow +" row.isFirstRowInData:" +row.isFirstRowInData()+" header:" + headerRow);
@@ -1921,7 +1927,8 @@ public abstract class Processor extends SeesvOperator {
 	    String ctxPrefix = ctx.getOutputPrefix();
 	    if(ctxPrefix!=null) {
 		ctx.setOutputPrefix(null);
-		ctxPrefix = ctxPrefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");				writer.append(ctxPrefix);
+		ctxPrefix = ctxPrefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");
+		writer.append(ctxPrefix);
 	    }
      
             List    values        = row.getValues();
@@ -1989,9 +1996,9 @@ public abstract class Processor extends SeesvOperator {
 		    }
 		}
             } else {
-		if (theTemplate!=null && prefix != null) {
-                    writer.append(prefix);
-		    prefix = null;
+		if (theTemplate!=null && prefix != null && !haveWrittenPrefix) {
+		    writer.append(ctx.applyMacros(prefix));
+		    haveWrittenPrefix = true;
                 }
                 writer.append(theTemplate);
             }
@@ -2035,7 +2042,7 @@ public abstract class Processor extends SeesvOperator {
                 handleRow(ctx, writer, row);
             }
             if (suffix != null) {
-                writer.append(suffix);
+		writer.append(ctx.applyMacros(suffix));
             }
         }
 

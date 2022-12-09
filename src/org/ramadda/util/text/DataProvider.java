@@ -1916,7 +1916,6 @@ public abstract class DataProvider extends SeesvOperator {
 
                 rowCnt++;
                 if (rowCnt <= ctx.getSkipLines()) {
-		    System.err.println("Add header:" + line);
                     ctx.addHeaderLine(line);
                     continue;
                 }

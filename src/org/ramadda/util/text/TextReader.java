@@ -141,6 +141,7 @@ public class TextReader implements Cloneable {
     private List<String> lineFilters;
 
     private String startPattern;
+    private boolean seenStartPattern  =false;
 
     /** _more_ */
     private int skip = 0;
@@ -347,15 +348,6 @@ public class TextReader implements Cloneable {
     public Row processRow(Seesv seesv, Row row) throws Exception {
         if (firstProcessor != null) {
             row = firstProcessor.handleRow(this, row);
-        } else {
-            /* for now don't print out to csv - need to use -p
-               if(cnt==1) System.err.println("using csvtil.columnsToString");
-            Appendable pw = getWriter();
-            pw.append(seesv.columnsToString(row.getValues(),
-                                              getOutputDelimiter()));
-            pw.append("\n");
-            //            getWriter().flush();
-            */
         }
         return row;
     }
@@ -373,6 +365,7 @@ public class TextReader implements Cloneable {
     /**
      */
     public void resetProcessors(boolean force) {
+	seenStartPattern = false;
         if (firstProcessor != null) {
             firstProcessor.reset(force);
         }
@@ -981,12 +974,14 @@ public class TextReader implements Cloneable {
         if ((comment != null) && line.startsWith(comment)) {
             return false;
         }
-	if(startPattern!=null) {
+	//	System.err.println("\tlineOk: " +line +" seen:" + seenStartPattern);
+	if(!seenStartPattern && startPattern!=null) {
 	    if(!line.matches(startPattern)) {
 		return false;
 	    }
-	    startPattern=null;
+	    seenStartPattern = true;
 	}
+
 
 
         if (lineFilters != null) {
@@ -1502,6 +1497,20 @@ public class TextReader implements Cloneable {
     public NamedInputStream getInput() {
         return input;
     }
+
+    public String getCurrentFilename() {
+	if(input!=null) return input.getName();
+	return "";
+    }
+
+    public String applyMacros(String s) {
+	String source = getCurrentFilename();
+	String name  = IOUtil.stripExtension(source);
+	String id  = Utils.makeID(name);
+	return s.replace("${file_name}",source).replace("${file_shortname}",name).replace("${file_id}",id);
+    }	
+
+
 
     /**
      *
