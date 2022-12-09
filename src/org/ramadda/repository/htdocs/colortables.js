@@ -251,7 +251,13 @@ $.extend(Utils,{
         html += HtmlUtils.close(DIV);
         return html;
     },
+    addColorTables(tables) {
+	Object.keys(tables).forEach(key=>{
+	    Utils.ColorTables[key] = tables[key];
+	});
+    }
 });
+
 
 Utils.ColorTables =  {
     ramps: {label:"Ramps"},
