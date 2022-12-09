@@ -212,10 +212,13 @@ public abstract class MonitorAction implements Constants, Cloneable {
             if (group == null) {
                 group =
                     (Entry) entryMonitor.getRepository().getEntryManager()
-		    .findGroup(null, parentGroupId);
+		    .findGroup(entryMonitor.getRepository().getAdminRequest(), parentGroupId);
+		if(group==null)
+		    System.err.println("MonitorAction.getGroup: null group:" + parentGroupId);
             }
             return group;
         } catch (Exception exc) {
+	    entryMonitor.getRepository().getLogManager().logError("Monitor.getGroup:" + parentGroupId,exc);
             return null;
         }
     }
@@ -273,7 +276,8 @@ public abstract class MonitorAction implements Constants, Cloneable {
 
     public void applyGroupEditForm(Request request, EntryMonitor monitor) {
         this.parentGroupId = request.getString(getArgId(ARG_GROUP)
-                + "_hidden", "");
+					       + "_hidden", "");
+	System.err.println("parent group:" + parentGroupId);
         this.group    = null;
     }
 

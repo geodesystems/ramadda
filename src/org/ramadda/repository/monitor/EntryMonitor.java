@@ -11,6 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
@@ -819,11 +820,11 @@ public class EntryMonitor implements Constants {
         } else if (field.equals(ARG_FILESUFFIX)) {
             List<String> suffixes = (List<String>) value;
             String       path     = entry.getResource().getPath();
+	    //	    System.err.println("suffixes:" + suffixes +" path:" + path);
             if (path != null) {
                 for (String suffix : suffixes) {
-                    if (IOUtil.hasSuffix(path, suffix)) {
+                    if (IO.hasSuffix(path, suffix)) {
                         ok = true;
-
                         break;
                     }
                 }
