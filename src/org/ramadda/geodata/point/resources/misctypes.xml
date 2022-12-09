@@ -166,6 +166,7 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 
 
 <type name="type_sounding_text"  description="Text Sounding" super="type_sounding" category="Point Data"
+      pattern=".*\.sounding\.csv"
       handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/balloon.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
