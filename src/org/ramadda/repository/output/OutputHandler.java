@@ -1883,10 +1883,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                             "Select folder", false, null, entry);
         String addMetadata = !addMetadataField
                              ? ""
-                             : HU.checkbox(
+                             : HU.labeledCheckbox(
                                  ARG_METADATA_ADD, HU.VALUE_TRUE,
-                                 request.get(ARG_METADATA_ADD, false)) + msg(
-                                     "Add properties");
+                                 request.get(ARG_METADATA_ADD, false),
+				 "Add properties");
         sb.append(HU.formEntry(msgLabel("Folder"),
                                HU.disabledInput(ARG_PUBLISH_ENTRY, entryName,
                                    HU.id(ARG_PUBLISH_ENTRY)
