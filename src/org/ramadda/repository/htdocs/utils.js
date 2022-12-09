@@ -1377,7 +1377,8 @@ var Utils =  {
         s = s.replace(/[^\x00-\x7F]/g, "_");
         s = s.replace(/&/g,"_");
         s = s.replace(/\./g, "_");
-        s = s.replace(/[:\//]+/g, "_");      	
+        s = s.replace(/[:\//]+/g, "_");
+        s = s.replace(/_+$/,'');
         s = s.trim().toLowerCase().replace(/ /g,"_");
         return s;
     },    
@@ -4837,6 +4838,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	    if(values.length==1) {
 		values.forEach(value=>{
+		    if(item.name=="entryid") return;
+		    if(item.name=="submit") return;
+		    if(item.name=="output") return;		    		    
 		    args+=item.name+"=" + value+"\n";
 		});
 	    }
