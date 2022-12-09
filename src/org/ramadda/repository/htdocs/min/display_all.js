@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec  6 19:56:09 MST 2022";
+var build_date="RAMADDA build date: Thu Dec  8 22:41:51 MST 2022";
 
 
 
@@ -253,7 +253,13 @@ $.extend(Utils,{
         html += HtmlUtils.close(DIV);
         return html;
     },
+    addColorTables(tables) {
+	Object.keys(tables).forEach(key=>{
+	    Utils.ColorTables[key] = tables[key];
+	});
+    }
 });
+
 
 Utils.ColorTables =  {
     ramps: {label:"Ramps"},
@@ -13391,6 +13397,10 @@ function RecordField(props, source) {
         isElevation: false,
 	forDisplay:true
     });
+    if(props.id) {
+	//A hack. maybe use Utils.makeID?
+	props.id = props.id.replace(/%/g,'');
+    }
     $.extend(this, props);
 
     $.extend(this, {
@@ -16485,7 +16495,7 @@ function CsvUtil() {
 
 
 var DataUtils = {
-    getCsv: function(fields, records) {
+    getCsv: function(fields, records,filter) {
 	let csv = "";
 	fields.forEach((f,idx)=>{
 	    if(idx>0) csv+=",";
@@ -16493,6 +16503,9 @@ var DataUtils = {
 	});
 	csv+="\n";
 	records.forEach(r=>{
+	    if(filter && !filter(r)) {
+		return;
+	    }
 	    fields.forEach((f,idx)=>{
 		let v = r.getValue(f.getIndex());
 		if(v && v.getTime) {
@@ -16515,9 +16528,10 @@ var DataUtils = {
 	});
 	return csv;
     },
-    getJson: function(fields, records, filename) {
+    getJson: function(fields, records, filename,filter) {
 	let json = [];
 	records.forEach(r=>{
+	    if(filter && !filter(r)) return;
 	    let obj = {};
 	    json.push(obj);
 	    fields.forEach((f,idx)=>{
@@ -22990,7 +23004,9 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
     const ID_DOWNLOAD_CSV = "downloadcsv";
     const ID_DOWNLOAD_JSON = "downloadjson";
-    const ID_DOWNLOAD_COPY = "downloadcopy";        
+    const ID_DOWNLOAD_COPY = "downloadcopy";
+    const ID_FROMDATE = "fromdate";
+    const ID_TODATE = "todate";                
     const ID_CANCEL = "cancel";    
     let myProps =[
 	{label:'Download'},
@@ -23001,7 +23017,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{p:'askFields',d:'false',ex:'true'},
 	{p:'showCsvButton',ex:false,tt:'Show/hide the CSV button'},
 	{p:'showJsonButton',ex:false,tt:'Show/hide the JSON button'},
-	{p:'showCopyButton',ex:false,tt:'Show/hide the Copy button'},		
+	{p:'showCopyButton',ex:false,tt:'Show/hide the Copy button'},
+	{p:'showDateSelect',d:false,ex:true,tt:'Show date select'},			
 //	{p:'doSave',d:false,tt:'Show the save file button'}
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -23070,9 +23087,30 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	getSubsetFunction: function() {
+	    let fromDate = Utils.stringDefined(this.selectFromDate)?new Date(this.selectFromDate):null;
+	    let toDate = Utils.stringDefined(this.selectToDate)?new Date(this.selectToDate):null;	    
+	    //Offset the to date by 24 hours to get the end of the day
+	    if(toDate)
+		toDate = new Date(toDate.getTime()+1000*60*60*24);
+	    if(fromDate|| toDate) {
+		return record=>{
+		    if(!record.hasDate()) return false;
+		    let date = record.getDate();
+		    if(fromDate && date.getTime()<fromDate.getTime()) {
+			return false;
+		    }
+		    if(toDate && date.getTime()>toDate.getTime()) return false;		    
+		    return true;
+		};
+	    }
+	    return null;
+	},
+
 	getCsv: function(fields, records,copy) {
             fields = fields || this.getData().getRecordFields();
-	    let csv = DataUtils.getCsv(fields, records);
+	    
+	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction());
 	    if(copy) {
 		Utils.copyToClipboard(csv);
 		alert("Copied to clipboard");
@@ -23082,7 +23120,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
-	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json");
+	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json",this.getSubsetFunction());
 	},
 
 	applyFieldSelection: function() {
@@ -23114,7 +23152,15 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
 	    let html = HU.center("#" +records.length +" records") +HU.center(buttons);
-	    
+	    if(this.getShowDateSelect()) {
+		html+=HU.formTable();
+		html+=HU.formEntry('From date:',
+				   HU.tag("input",['id',this.domId(ID_FROMDATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
+		html+=HU.formEntry('To date:',
+				   HU.tag("input",['id',this.domId(ID_TODATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectToDate??'']));
+		html+=HU.formTableClose();
+	    }
+    
 	    html += "<b>Include:</b>";
 	    let cbx = "";
 	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +"<br>";
@@ -23132,6 +23178,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	doDownload: function() {
 	    let records = this.filterData();
 	    let func = (json,copy)=>{
+		if(this.getShowDateSelect()) {
+		    this.selectFromDate=this.jq(ID_FROMDATE).val();
+		    this.selectToDate=this.jq(ID_TODATE).val();		    
+		}
+
 		this.jq(ID_DIALOG).hide();
 		let fields = [];
 		this.applyFieldSelection();
@@ -23174,6 +23225,14 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		    });				    
 		};
 		dialog = this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init,this.getTitle());
+
+
+		if(this.getShowDateSelect()) {
+		    this.jq(ID_FROMDATE).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });
+		    this.jq(ID_TODATE).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });		    
+		}		
+
+
 	    } else  {
 		this.getCsv(null, records);
 	    }
@@ -26396,17 +26455,17 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
             options.showText = this.getProperty("showText",true);
             //            options.hodographWidth = 200;
-            var fields = this.getData().getRecordFields();
-            var names = [
-                {id:"pressure",aliases:["vertCoord"]},
-                {id:"height",aliases:["Geopotential_height_isobaric"]},
-                {id:"temperature",aliases:["Temperature_isobaric"]},
-                {id:"dewpoint",aliases:[]},
-                {id:"rh",aliases:["Relative_humidity_isobaric","relative_humidity"]},
-                {id:"wind_direction",aliases:[]},
-                {id:"wind_speed",aliases:[]},
-                {id:"uwind",aliases:["u-component_of_wind_isobaric","u"]},
-                {id:"vwind",aliases:["v-component_of_wind_isobaric","v"]},
+            let fields = this.getData().getRecordFields();
+            let names = [
+                {id:'pressure',aliases:['vertCoord','pressure_mb']},
+                {id:'height',aliases:['Geopotential_height_isobaric']},
+                {id:'temperature',aliases:['Temperature_isobaric','temperature_c']},
+                {id:'dewpoint',aliases:[]},
+                {id:'rh',aliases:['Relative_humidity_isobaric','relative_humidity']},
+                {id:'wind_direction',aliases:['wind_direction_true_deg']},
+                {id:'wind_speed',aliases:['wind_speed_m_s']},
+                {id:'uwind',aliases:['u-component_of_wind_isobaric','u']},
+                {id:'vwind',aliases:['v-component_of_wind_isobaric','v']},
             ];
             //TODO: check for units
             var data ={};
@@ -26427,13 +26486,20 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
 
+	    let getFieldIds = () =>{
+		return fields.reduce((acc,field)=>{
+		    return acc+field.getId()+"<br>";
+		},"<br>Fields:<br>");
+	    }
+		
+
             if(!data.pressure) {
-                this.displayError("No pressure defined in data");
+                this.displayError("No pressure defined in data." + getFieldIds());
                 return;
             }
 
             if(!data.temperature) {
-                this.displayError("No temperature defined in data");
+                this.displayError("No temperature defined in data." + getFieldIds());
                 return;
             }
 
@@ -26478,7 +26544,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 
             if(!data.dewpoint) {
                 if(!data.rh) {
-                    this.displayError("No dewpoint or rh");
+                    this.displayError("No dewpoint or rh." + getFieldIds());
                     return;
                 }
                 data.dewpoint = [];
@@ -26490,10 +26556,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
 
-
             if(!data.wind_speed) {
-                if(!data.uwind || !data.vwind) {
-                    this.displayError("No wind speed defined in data");
+               if(!data.uwind || !data.vwind) {
+                    this.displayError("No wind speed defined in data."  + getFieldIds());
                     return;
                 }
                 data.wind_speed = [];
