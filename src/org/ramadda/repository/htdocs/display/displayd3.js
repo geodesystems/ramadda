@@ -265,17 +265,17 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
             options.showText = this.getProperty("showText",true);
             //            options.hodographWidth = 200;
-            var fields = this.getData().getRecordFields();
-            var names = [
-                {id:"pressure",aliases:["vertCoord"]},
-                {id:"height",aliases:["Geopotential_height_isobaric"]},
-                {id:"temperature",aliases:["Temperature_isobaric"]},
-                {id:"dewpoint",aliases:[]},
-                {id:"rh",aliases:["Relative_humidity_isobaric","relative_humidity"]},
-                {id:"wind_direction",aliases:[]},
-                {id:"wind_speed",aliases:[]},
-                {id:"uwind",aliases:["u-component_of_wind_isobaric","u"]},
-                {id:"vwind",aliases:["v-component_of_wind_isobaric","v"]},
+            let fields = this.getData().getRecordFields();
+            let names = [
+                {id:'pressure',aliases:['vertCoord','pressure_mb']},
+                {id:'height',aliases:['Geopotential_height_isobaric']},
+                {id:'temperature',aliases:['Temperature_isobaric','temperature_c']},
+                {id:'dewpoint',aliases:[]},
+                {id:'rh',aliases:['Relative_humidity_isobaric','relative_humidity']},
+                {id:'wind_direction',aliases:['wind_direction_true_deg']},
+                {id:'wind_speed',aliases:['wind_speed_m_s']},
+                {id:'uwind',aliases:['u-component_of_wind_isobaric','u']},
+                {id:'vwind',aliases:['v-component_of_wind_isobaric','v']},
             ];
             //TODO: check for units
             var data ={};
@@ -296,13 +296,20 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
 
+	    let getFieldIds = () =>{
+		return fields.reduce((acc,field)=>{
+		    return acc+field.getId()+"<br>";
+		},"<br>Fields:<br>");
+	    }
+		
+
             if(!data.pressure) {
-                this.displayError("No pressure defined in data");
+                this.displayError("No pressure defined in data." + getFieldIds());
                 return;
             }
 
             if(!data.temperature) {
-                this.displayError("No temperature defined in data");
+                this.displayError("No temperature defined in data." + getFieldIds());
                 return;
             }
 
@@ -347,7 +354,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 
             if(!data.dewpoint) {
                 if(!data.rh) {
-                    this.displayError("No dewpoint or rh");
+                    this.displayError("No dewpoint or rh." + getFieldIds());
                     return;
                 }
                 data.dewpoint = [];
@@ -359,10 +366,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
 
-
             if(!data.wind_speed) {
-                if(!data.uwind || !data.vwind) {
-                    this.displayError("No wind speed defined in data");
+               if(!data.uwind || !data.vwind) {
+                    this.displayError("No wind speed defined in data."  + getFieldIds());
                     return;
                 }
                 data.wind_speed = [];
