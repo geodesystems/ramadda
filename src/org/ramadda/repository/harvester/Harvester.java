@@ -69,6 +69,8 @@ import java.util.regex.*;
  */
 public abstract class Harvester extends RepositoryManager {
 
+    public static boolean debug = false;
+
     /** _more_ */
     public static final String FILE_PLACEHOLDER = ".placeholder";
 
@@ -784,8 +786,8 @@ public abstract class Harvester extends RepositoryManager {
         StringBuffer runWidgets = new StringBuffer();
         int          widgetCnt  = 0;
         if (showWidget(ATTR_TESTMODE)) {
-            runWidgets.append(HtmlUtils.checkbox(ATTR_TESTMODE, "true",
-                    testMode) + HtmlUtils.space(1) + msg("Test mode"));
+            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_TESTMODE, "true",
+						 testMode, "Test mode"));
             runWidgets.append(HtmlUtils.space(3) + msgLabel("Count")
                               + HtmlUtils.input(ATTR_TESTCOUNT,
                                   "" + testCount, HtmlUtils.SIZE_5));
@@ -793,16 +795,15 @@ public abstract class Harvester extends RepositoryManager {
             widgetCnt++;
         }
         if (showWidget(ATTR_ACTIVEONSTART)) {
-            runWidgets.append(HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true",
-                    activeOnStart) + HtmlUtils.space(1)
-                                   + msg("Active on startup"));
+            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_ACTIVEONSTART, "true",
+							activeOnStart, "Active on startup"));
             runWidgets.append(HtmlUtils.br());
             widgetCnt++;
         }
 
         if (showWidget(ATTR_MONITOR)) {
-            runWidgets.append(HtmlUtils.checkbox(ATTR_MONITOR, "true",
-                    monitor) + HtmlUtils.space(1) + msg("Run continually"));
+            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_MONITOR, "true",
+							monitor, "Run continually"));
 
             runWidgets.append(HtmlUtils.br() + HtmlUtils.space(5));
             runWidgets.append(msgLabel("Every") + HtmlUtils.space(1)
@@ -813,9 +814,9 @@ public abstract class Harvester extends RepositoryManager {
             widgetCnt++;
         }
         if (showWidget(ATTR_GENERATEMD5)) {
-            runWidgets.append(HtmlUtils.checkbox(ATTR_GENERATEMD5, "true",
-                    generateMd5) + HtmlUtils.space(1)
-                                 + msg("Generate MD5 Checksum"));
+            runWidgets.append(HtmlUtils.labeledCheckbox(ATTR_GENERATEMD5, "true",
+							generateMd5,
+							"Generate MD5 Checksum"));
             widgetCnt++;
         }
 
@@ -1437,7 +1438,8 @@ public abstract class Harvester extends RepositoryManager {
      * @param msg _more_
      */
     public void debug(String msg) {
-        if (getTestMode()) {
+        if (debug || getTestMode()) {
+	    if(debug) System.err.println(msg);
             logHarvesterInfo(msg);
             msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             msg = msg.replace("\n", "<br>");
