@@ -24,21 +24,22 @@ timestamp.format=yyyy-MM-dd HH:mm:ss
 #You can define units for the fields with
 temp_c.unit=C
 depth_m.unit=M
-
 ]]>
-     </property>
-     <wiki>
+</property>
+<wiki>
 <![CDATA[
 +section  title="{{name}}"
-:rem Limit the height of the description
 <div style="max-height:200px; overflow-y:auto;">
 {{description wikify=true}}
 </div>
-:rem Show the entry information, metadata, etc
-{{information details=true}}
+{{group showMenu=true}}
+{{display_download showMenu=false lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*press" lastRecords="20000"}}
+:br
 ----
-:rem Show a line chart. The default fields are any that match the patterns
-{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh,.*press" lastRecords="20000"}}
+:heading Metadata
+{{information details=true}}
 -section
 ]]>
 </wiki>
