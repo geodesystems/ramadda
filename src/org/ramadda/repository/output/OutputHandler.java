@@ -1263,6 +1263,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 		Utils.add(attrs, "north",entry.getNorth(),"west",entry.getWest(),
 			  "south",entry.getSouth(),
 			  "east",entry.getEast());
+	    } else if(entry.hasLocationDefined()) {
+		Utils.add(attrs, "latitude",entry.getLatitude(),
+			  "longitude",entry.getLongitude());
+
 	    }
 	}
 
