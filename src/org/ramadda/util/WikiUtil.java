@@ -2325,7 +2325,7 @@ public class WikiUtil {
                                          HU.clazz("ramadda-page-subtitle"));
                         }
 			if(handler.titleOk(this)) {
-			    HU.div(buff,getTitle(title, titleStyle) + sub,
+			    HU.div(buff,getTitle(title, titleStyle!=null?titleStyle:"") + sub,
 				   HU.cssClass("ramadda-page-title")
 				   + ((headerStyle == null)
 				      ? ""
@@ -3600,11 +3600,11 @@ public class WikiUtil {
      */
     public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
-        return (url != null)
-               ? HU.href(url, label, (style == null)
-                                     ? null
-                                     : HU.style(style))
-               : label;
+        return  (url != null)
+	    ? HU.href(url, label, (style == null)
+		      ? null
+		      : HU.style(style))
+	    : label;
     }
 
     /**
