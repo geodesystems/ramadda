@@ -263,6 +263,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 
+    const LABEL_NONE = "<none>";
     const LIST_ROW_CLASS  = "imdv-feature-row";
     const LIST_SELECTED_CLASS  = "imdv-feature-selected";
     const ID_MAP_MENUBAR = "mapmenubar";
@@ -644,9 +645,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    tmpStyle.mapOptions.entryId = entryId;
 			    tmpStyle.mapOptions.entryType = attrs.entryType;
 			    if(attrs.entryName) {
-				attrs.name  = attrs.entryName;
+				attrs.name  = attrs.entryName;				
+				tmpStyle.label = attrs.entryName;				
 				delete attrs.entryName;
 			    }
+
 			    if(glyphType.isMap()) {
 				if(resourceId) {
 				    let resource  =MAP_RESOURCES_MAP[resourceId];
@@ -679,6 +682,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				this.clearCommands();
 				this.createData(mapOptions);
 				return;
+			    }
+
+			    if(glyphType.isEntry() && (Utils.isDefined(attrs.latitude) || Utils.isDefined(attrs.north))) {
+				if(confirm("Do you want to use this entry's location?")) {
+				    let style = $.extend({},tmpStyle);
+				    style.externalGraphic = attrs.icon;
+				    let glyphAttrs = tmpStyle.mapOptions;
+				    delete tmpStyle.mapOptions;
+				    $.extend(glyphAttrs,attrs);
+				    glyphAttrs.useentrylocation = true;
+				    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
+				    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,glyphAttrs, style,points);
+				    this.clearCommands();
+				    mapGlyph.zoomTo();
+				    return
+				}
 			    }
 
 			    if(glyphType.isImage()) {
@@ -737,6 +756,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			this.selector = selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),entryType,null,props);
 			return
 		    } else if(glyphType.getType() == GLYPH_MARKER) {
+/*
 			let html =  "";
 			let icon = this.lastIcon || tmpStyle.externalGraphic;
 			let icons = HU.image(icon,['id',this.domId("externalGraphic_image")]) +
@@ -771,15 +791,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    dialog.remove();
 			});
 
-
 			return
 		    } else if(glyphType.isLabel()) {
+*/
 			let input =  HU.textarea("",this.lastText??"",[ID,this.domId('labeltext'),"rows",3,"cols", 40]);
 			let html =  HU.formTable();
-			html += HU.formEntryTop("Text:",input);
+			html += HU.formEntryTop("Label:",input);
 			let icon = this.lastIcon || tmpStyle.externalGraphic;
 			let icons = HU.image(icon,['id',this.domId('externalGraphic_image')]) +
 			    HU.hidden('',icon,['id',this.domId('externalGraphic')]);
+			if(!Utils.isDefined(this.lastIncludeIcon)) this.lastIncludeIcon = true;
 			html += HU.formEntry("",HU.checkbox(this.domId('includeicon'),[],this.lastIncludeIcon,"Include Icon")+" " + icons);
 			html+="</table>";
 			html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')], HU.div([CLASS,"ramadda-button-ok display-button"], "OK") + SPACE2 +
@@ -789,7 +810,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			html+=HU.div(['id',this.domId('recenticons')]);
 			html+=HU.div(['id',this.domId('icons')]);
 			html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
-			let dialog = HU.makeDialog({content:html,title:'Text',header:true,my:"left top",at:"left bottom",draggable:true,anchor:this.jq(ID_MENU_NEW)});
+			let dialog = HU.makeDialog({content:html,title:'Marker',header:true,my:"left top",at:"left bottom",draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
 			this.addIconSelection(this.jq('icons'));
 			let cancel = ()=>{
@@ -803,11 +824,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				this.lastIcon = this.jq('externalGraphic').val();
 				tmpStyle.externalGraphic = this.lastIcon;
 				tmpStyle.labelAlign='cb';
-				tmpStyle.labelYOffset="10";
+				tmpStyle.labelYOffset="12";
 			    }
 			    let text = this.jq("labeltext").val();
 			    dialog.remove();
-			    if(!Utils.stringDefined(text)) return;
+//			    if(!Utils.stringDefined(text)) return;
 			    this.lastText = text;
 			    tmpStyle.label = text;
 			    cmd.handler.style = tmpStyle;
@@ -860,6 +881,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return false;
 	    });
 	},
+	createMapMarker:function(glyphType, glyphAttrs,style,points) {
+	    let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", style, points);
+	    feature.style = style;
+	    this.addFeatures([feature]);
+	    let mapGlyph = new MapGlyph(this,glyphType, glyphAttrs, feature,style);
+	    mapGlyph.checkImage(feature);
+	    this.addGlyph(mapGlyph);
+	    this.featureChanged();
+	    return mapGlyph;
+	},
+
 	clearCommands:function() {
 	    this.getMap().closePopup();
 	    this.clearMessage2();
@@ -1201,6 +1233,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.featureChanged();	    
 		let style = {};
 		mapGlyph.setName(this.jq("mapglyphname").val());
+		if(mapGlyph.isEntry()) {
+		    mapGlyph.setUseEntryName(this.jq("useentryname").is(":checked"));
+		    mapGlyph.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
+		    mapGlyph.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));				    
+		}
 		mapGlyph.applyPropertiesComponent();
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
@@ -1293,16 +1330,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    props.push(a);
 		    values[a] = style[a];
 		}
-		if(mapGlyph && mapGlyph.getType()==GLYPH_MARKER) {
-		    props = ["pointRadius","externalGraphic"];
-		} 
+//		if(mapGlyph && mapGlyph.getType()==GLYPH_MARKER) {props = ["pointRadius","externalGraphic"];} 
 	    } else {
 		props = ['strokeColor','strokeWidth','strokeDashstyle','strokeOpacity',
 			 'fillColor','fillOpacity',
 			 'pointRadius','externalGraphic','imageOpacity','fontSize','fontWeight','fontStyle','fontFamily','labelAlign','labelXOffset','labelYOffset'];
 	    }
-
-
 
 	    
 	    if(props.includes("entryId") && !props.includes("wikiText")) props.push("wikiText");
@@ -1310,6 +1343,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		props.push("popupText");
 	    }
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
+
+	    
 	    props.forEach(prop=>{
 		let id = "glyphedit_" + prop;
 		let domId = this.domId(id);
@@ -1340,9 +1375,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    let size = "20";
 		    if(prop=="label") {
-			size="80"
+			size="80";
 			widget =  HU.textarea("",v,[ID,domId,"rows",5,"cols", 60]);
+			if(mapGlyph.isEntry()) {
+			    widget+="<br>" +HU.checkbox(this.domId("useentrylabel"),[],mapGlyph.getUseEntryLabel(),"Use label from entry");
+			}
 		    } else if(prop=="popupText") {
+			return;
 			//skip this
 		    } else if(prop=="wikiText"|| prop=="text") {
 			size="80"
@@ -1411,6 +1450,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		}
 		html+=HU.formEntry(label+":",widget);
+		html+='\n';
 	    });
 	    html+="</table>";
 	    html = HU.div([STYLE,HU.css("max-height","350px","overflow-y","scroll","margin-bottom","5px")], html);
@@ -1437,7 +1477,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let content =[];
 	    if(mapGlyph) {
 		html =  HU.formTable();
-		html+=HU.formEntry("Name:",HU.input("",mapGlyph.getName(),['id',this.domId('mapglyphname'),'size','40']));
+		let nameWidget = HU.input("",mapGlyph.getName(),['id',this.domId('mapglyphname'),'size','40']);
+		if(mapGlyph.isEntry()) {
+		    nameWidget+="<br>" +HU.checkbox(this.domId("useentryname"),[],mapGlyph.getUseEntryName(),"Use name from entry");
+		    nameWidget+="<br>" +HU.checkbox(this.domId("useentrylocation"),[],mapGlyph.getUseEntryLocation(),"Use location from entry");
+		}
+		html+=HU.formEntry("Name:",nameWidget);
 		let level = mapGlyph.getVisibleLevelRange()??{};
 		html+=HU.formEntry("Visible:",HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible()));
 		let levels = [["","None"],[4,"4 - Most zoomed out"],5,6,7,8,
@@ -1484,8 +1529,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		let textarea = HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		content.push(["Display Properties",     HU.hbox([textarea, menuBar])]);
-
-
 	    } else {
 		let r =  this.makeStyleForm(style,mapGlyph);
 		content.push(["Style",r.html]);
@@ -1499,7 +1542,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.toggleBlock(HU.b(tuple[0]),tuple[1],idx==0);
 	    });
 	    html+=buttons;
-	    html  = HU.div(['style','min-width:600px',CLASS,"wiki-editor-popup"], html);
+	    html  = HU.div(['style',HU.css('min-width','600px','max-height','400px','overflow-y','auto'),CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true});
 	    dialog.find('.ramadda-icons-recent').click(function() {
@@ -1789,6 +1832,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    style = mapGlyph.getMapLayer().style||style;
 		}
 		if(style) {
+		    style = $.extend({},style);
 		    if(mapGlyph.getImage() && Utils.isDefined(mapGlyph.getImage().opacity)) {
 			style.imageOpacity=mapGlyph.getImage().opacity;
 			style.strokeColor="transparent";
@@ -1907,7 +1951,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    console.log("Unknown glyph:" + mapOptions.type);
 		    return;
 		}
-
+		
 		let feature = this.makeFeature(map,jsonObject.geometryType, style, points);
 		if(feature) {
 		    feature.style = style;
@@ -1915,6 +1959,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 		    mapGlyph.checkImage(feature);
 		    this.addGlyph(mapGlyph);
+
+		    //If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
+		    if(glyphType.isEntry()) {
+			let callback = (entry)=>{
+			    if(mapGlyph.getUseEntryName()) 
+				mapGlyph.setName(entry.getName());
+			    if(mapGlyph.getUseEntryLabel())
+				mapGlyph.style.label= entry.getName();
+			    if(mapGlyph.getUseEntryLocation()) {
+				let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", mapGlyph.style,
+							       [entry.getLatitude(), entry.getLongitude()]);
+				feature.style = mapGlyph.style;
+				mapGlyph.addFeature(feature,true);
+				this.addFeatures([feature]);
+			    }
+			    mapGlyph.applyMapStyle();
+			    this.featureChanged();	    
+			    this.redraw();
+			    this.makeLegend();
+			};
+			getRamadda().getEntry(mapOptions.entryId, callback);
+		    }
 		} else {
 		    console.log("Couldn't make feature:" + mapOptions.type);
 		}
@@ -2593,6 +2659,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doMakeMapGlyphs:function() {
 	    let externalGraphic = this.getExternalGraphic();
 	    if(!externalGraphic.startsWith(ramaddaBaseUrl)) externalGraphic = ramaddaBaseUrl+externalGraphic;
+/*
 	    new GlyphType(this,GLYPH_MARKER,"Marker",
 			  {strokeWidth:0, 
 			   fillColor:"transparent",
@@ -2600,6 +2667,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   pointRadius:this.getPointRadius(10)},
 			  MyPoint,
 			  {icon:ramaddaBaseUrl+"/map/marker-blue.png"});
+*/
+	    new GlyphType(this,GLYPH_MARKER,"Marker",
+			  {label : "label",
+			   externalGraphic: externalGraphic,
+			   pointRadius:this.getPointRadius(10),
+			   fontColor: this.getProperty("labelFontColor","#000"),
+			   fontSize: this.getFontSize(),
+			   fontFamily: this.getFontFamily(),
+			   fontWeight: this.getFontWeight(),
+			   fontStyle: this.getFontStyle(),
+			   labelAlign: this.getProperty("labelAlign","cb"),
+			   labelXOffset: this.getProperty("labelXOffset","0"),
+			   labelYOffset: this.getProperty("labelYOffset","14"),
+			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+
+			   strokeWidth:0,
+			   fillColor:'transparent',
+			   labelSelect:true,
+			  }, MyPoint,
+			  {icon:ramaddaBaseUrl+"/icons/text.png"});
 	    new GlyphType(this,GLYPH_POINT,"Point",
 			  {strokeWidth:this.getProperty("strokeWidth",2), 
 			   strokeDashstyle:'solid',
@@ -2610,26 +2698,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   pointRadius:this.getPointRadius(4)},
 			  MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
-	    new GlyphType(this,GLYPH_LABEL,"Label",
-			  {label : "label",
-			   externalGraphic: externalGraphic,
-			   pointRadius:this.getPointRadius(10),
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign: this.getProperty("labelAlign","lb"),
-			   labelXOffset: this.getProperty("labelXOffset","0"),
-			   labelYOffset: this.getProperty("labelYOffset","0"),
-			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-			   //			      pointRadius:0,
-			   strokeWidth:0,
-			   fillColor:'transparent',
-			   labelSelect:true,
-			  }, MyPoint,
-			  {icon:ramaddaBaseUrl+"/icons/text.png"});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text",
 			  {
 			      text:"",
@@ -2776,8 +2844,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:ramaddaBaseUrl+"/icons/imageicon.png"}
 			 );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
-			  {externalGraphic: ramaddaBaseUrl +"/icons/video.png",
-			   pointRadius:12},
+			  {externalGraphic: ramaddaBaseUrl +"/icons/entry.png",
+			   pointRadius:12,
+			   label:"label",
+			   fontColor: this.getProperty("labelFontColor","#000"),
+			   fontSize: this.getFontSize(),
+			   fontFamily: this.getFontFamily(),
+			   fontWeight: this.getFontWeight(),
+			   fontStyle: this.getFontStyle(),
+			   labelAlign: this.getProperty("labelAlign","cb"),
+			   labelXOffset: this.getProperty("labelXOffset","0"),
+			   labelYOffset: this.getProperty("labelYOffset","14"),
+			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0")
+			  },
 			  MyEntryPoint,
 			  {tooltip:"Add an entry as a marker",
 			   isEntry:true,
@@ -2790,9 +2870,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fontFamily: this.getFontFamily(),
 			   fontWeight: this.getFontWeight(),
 			   fontStyle: this.getFontStyle(),
-			   labelAlign: "cb",
-			   labelXOffset: 0,
-			   labelYOffset: 15},
+			   labelAlign: this.getProperty("labelAlign","cb"),
+			   labelXOffset: this.getProperty("labelXOffset","0"),
+			   labelYOffset: this.getProperty("labelYOffset","14")
+			   },
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
 			   isMultiEntry:true,
@@ -3041,6 +3122,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.getMap().currentPopup = popup;
 		    this.getMap().getMap().addPopup(popup);
 		    jqid(id).html(html);
+		    jqid(id).find("a").each(function() {
+			$(this).click(function(){
+			    let url = $(this).attr("href");
+			    if(url)
+				window.location=url;
+			});
+
+		    });
 		}
 
 		let doPopup = (html,props)=>{
@@ -3336,8 +3425,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 			return true
 		    });
-		    var pos = this.map.getLonLatFromViewPortPx(pixel);
-		    var geom = vertex.geometry;
+		    
+		    let pos = this.map.getLonLatFromViewPortPx(pixel);
+		    let geom = vertex.geometry;
 		    geom.move(pos.lon - geom.x, pos.lat - geom.y);
 		    p  = vertex.geometry.getVertices()[0];
 		    if(index==0) {
@@ -3557,6 +3647,15 @@ function MapGlyph(display,type,attrs,feature,style) {
     this.style = style??{};
     this.id = attrs.id ?? HU.getUniqueId("glyph_");
     if(feature) this.addFeature(feature);
+
+    if(this.isEntry()) {
+	if(!Utils.isDefined(this.attrs.useentryname))
+	    this.attrs.useentryname = true;
+	if(!Utils.isDefined(this.attrs.useentrylabel))
+	    this.attrs.useentrylabel = true;	
+    }
+
+
 }
 
 MapGlyph.prototype = {
@@ -3582,6 +3681,27 @@ MapGlyph.prototype = {
     },
     isMultiEntry:  function() {
 	return this.type == GLYPH_MULTIENTRY;
+    },
+    getUseEntryLocation: function() {
+	return this.attrs.useentrylocation;
+    },
+    setUseEntryLocation: function(v) {
+	this.attrs.useentrylocation = v;
+	return this;
+    },
+    getUseEntryName: function() {
+	return this.attrs.useentryname;
+    },
+    setUseEntryName: function(v) {
+	this.attrs.useentryname=v;
+	return this;
+    },
+    getUseEntryLabel: function() {
+	return this.attrs.useentrylabel;
+    },    
+    setUseEntryLabel: function(v) {
+	this.attrs.useentrylabel =v;
+	return this;
     },
     showMultiEntries:function() {
 	let _this = this;
@@ -3658,7 +3778,15 @@ MapGlyph.prototype = {
     getId:function() {
 	return this.id;
     },
-    addFeature: function(feature) {
+    getFeatures: function() {
+	return this.features;
+    },
+    clearFeatures: function() {
+	this.display.removeFeatures(this.features);
+	this.features = [];
+    },
+    addFeature: function(feature,andClear) {
+	if(andClear) this.clearFeatures();
 	this.features.push(feature);
 	feature.mapGlyph = this;
     },
@@ -3771,7 +3899,7 @@ MapGlyph.prototype = {
 	}
 
 	if(glyphType) {
-	    let icon = this.attrs.icon??this.style.externalGraphic??glyphType.getIcon();
+	    let icon = this.style.externalGraphic??this.attrs.icon??glyphType.getIcon();
 	    if(icon && icon.endsWith("blank.gif")) icon = glyphType.getIcon();
 	    icon = HU.image(icon,['width','18px']);
 	    if(url && forLegend)
@@ -3781,7 +3909,6 @@ MapGlyph.prototype = {
 		    HU.span([CLASS,"ramadda-clickable imdv-legend-item-view",
 			     'glyphid',this.getId(),
 			     TITLE,"Zoom to",],
-
 			    HU.getIconImage("fas fa-binoculars",[],LEGEND_IMAGE_ATTRS));
 	    }
 	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
@@ -4524,6 +4651,9 @@ MapGlyph.prototype = {
 
     },
     move:function(dx,dy) {
+	if(this.getUseEntryLocation()) {
+	    this.setUseEntryLocation(false);
+	}
 	this.features.forEach(feature=>{
 	    feature.geometry.move(dx,dy);
 	    feature.layer.drawFeature(feature);
