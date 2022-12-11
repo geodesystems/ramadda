@@ -326,7 +326,7 @@ proc ifInclude {if s} {
 }
 
 
-proc displayType {name id desc args {img ""} {url ""} } {
+proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
    set id [string trim $id]
    if {$id  == ""} {
      set id [string tolower $name]
@@ -337,7 +337,6 @@ proc displayType {name id desc args {img ""} {url ""} } {
    set h [ug::subsubheading $name $id]
    append h $desc
    set wiki [wiki::tagdefBlock display_$id "$args"]
-
    append h $wiki
    set url [string trim $url]
    if {$url !=""} {
@@ -354,6 +353,7 @@ proc displayType {name id desc args {img ""} {url ""} } {
           }
         append h [ht::cimg $img $name $extra]
     }
+   append h $desc2
     set h
 }
 
