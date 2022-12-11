@@ -3027,11 +3027,17 @@ public class EntryManager extends RepositoryManager {
             fatalError(request, "Cannot download url:" + url);
         }
         getStorageManager().checkPath(url);
-        String        tail       = IOUtil.getFileTail(url);
-        File          newFile = getStorageManager().getTmpFile(request, tail);
-
         URL           fromUrl    = new URL(url);
         URLConnection connection = fromUrl.openConnection();
+	String dispo = connection.getHeaderField("Content-disposition");
+        String        tail       = IOUtil.getFileTail(url);
+	if(dispo!=null) {
+	    String filename = StringUtil.findPattern(dispo,"filename=(.*)");
+	    if(stringDefined(filename))
+		tail = IO.cleanFileName(filename);
+	}
+        File          newFile = getStorageManager().getTmpFile(request, tail);
+
         InputStream   fromStream = connection.getInputStream();
         if (actionId != null) {
             ucar.unidata.util.JobManager.getManager().startLoad("File copy",
