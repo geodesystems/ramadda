@@ -687,7 +687,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(glyphType.isEntry() && (Utils.isDefined(attrs.latitude) || Utils.isDefined(attrs.north))) {
 				if(confirm("Do you want to use this entry's location?")) {
 				    let style = $.extend({},tmpStyle);
-				    style.externalGraphic = attrs.icon;
+				    style.externalGraphic =attrs.icon;
 				    let glyphAttrs = tmpStyle.mapOptions;
 				    delete tmpStyle.mapOptions;
 				    $.extend(glyphAttrs,attrs);
@@ -1232,12 +1232,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return (mapGlyph, props)=>{
 		this.featureChanged();	    
 		let style = {};
-		mapGlyph.setName(this.jq("mapglyphname").val());
-		if(mapGlyph.isEntry()) {
-		    mapGlyph.setUseEntryName(this.jq("useentryname").is(":checked"));
-		    mapGlyph.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
-		    mapGlyph.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));				    
-		}
 		mapGlyph.applyPropertiesComponent();
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
@@ -1257,6 +1251,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 		}
 
+		if(style.externalGraphic && !style.externalGraphic.startsWith('data:')) mapGlyph.attrs.icon=style.externalGraphic;
 
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
@@ -1274,13 +1269,33 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.getImage().setOpacity(style.imageOpacity);
 		    mapGlyph.checkImage();
 		}
+
 		mapGlyph.applyStyle(style);
+
+		//Make sure we do this after we set the above style properties
+		mapGlyph.setName(this.jq("mapglyphname").val());
+		if(mapGlyph.isEntry()) {
+		    mapGlyph.setUseEntryName(this.jq("useentryname").is(":checked"));
+		    mapGlyph.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
+		    mapGlyph.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
+		    let glyphs = this.jq("entryglyphs").val();
+		    mapGlyph.setEntryGlyphs(glyphs);
+		    if(Utils.stringDefined(glyphs)) {
+			mapGlyph.applyEntryGlyphs();
+		    }			
+		}
+		
+
 		mapGlyph.setVisible(this.jq("visible").is(":checked"),true);
 		mapGlyph.setVisibleLevelRange(this.jq("minlevel").val().trim(),
 					      this.jq("maxlevel").val().trim());
 		this.redraw();
 		this.makeLegend();
 		this.showMapLegend();
+
+
+
+
 	    };
 	},
 	doEdit: function(mapGlyph) {
@@ -1475,26 +1490,37 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    buttons +=HU.div([CLASS,"display-button","command",ID_CANCEL], "Cancel");	   
 	    buttons+="</center>";
 	    let content =[];
+	    let layout = (lbl,widget)=>{
+		html+=HU.b(lbl)+"<br>"+widget+"<br>";
+	    }
 	    if(mapGlyph) {
-		html =  HU.formTable();
 		let nameWidget = HU.input("",mapGlyph.getName(),['id',this.domId('mapglyphname'),'size','40']);
 		if(mapGlyph.isEntry()) {
 		    nameWidget+="<br>" +HU.checkbox(this.domId("useentryname"),[],mapGlyph.getUseEntryName(),"Use name from entry");
-		    nameWidget+="<br>" +HU.checkbox(this.domId("useentrylocation"),[],mapGlyph.getUseEntryLocation(),"Use location from entry");
+		    nameWidget+=HU.space(3) +HU.checkbox(this.domId("useentrylocation"),[],mapGlyph.getUseEntryLocation(),"Use location from entry");
 		}
-		html+=HU.formEntry("Name:",nameWidget);
+		layout("Name:",nameWidget);
+		if(mapGlyph.isEntry()) {
+		    layout("Glyphs:",
+			   HU.textarea("",mapGlyph.getEntryGlyphs()??"",[ID,this.domId("entryglyphs"),"rows",5,"cols", 80]));
+		    /*
+		      glyph1="type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100"
+		      glyph2="type:label,pos:sw,dx:25,dy:0,label:${atmos_temp}"
+		    */
+		}
+
 		let level = mapGlyph.getVisibleLevelRange()??{};
-		html+=HU.formEntry("Visible:",HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible()));
+		html+= HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible(),"Visible")+"<br>";
 		let levels = [["","None"],[4,"4 - Most zoomed out"],5,6,7,8,
 			      9,10,11,12,13,14,15,16,17,18,19,[20,"20 - Most zoomed in"]];
-		html+=HU.formEntry("Visible between levels:",
-				   HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level.min)?level.min:"",null,true) +
-				   " &lt;= level &lt;= " +
-				   HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level.max)?level.max:""));
-		html+=HU.formEntry("Current level:" , this.getCurrentLevel());
-		html+="</table>";
+		layout("Visible between levels:",
+		       HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level.min)?level.min:"",null,true) +
+		       " &lt;= level &lt;= " +
+		       HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level.max)?level.max:"")+" " +
+		       "(current level: " + this.getCurrentLevel()+")");
+		
 		let domId = this.domId("glyphedit_" + 'popupText');
-		html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 60]);
+		html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 80]);
 		content.push(["Properties",html]);
 	    }
 	    let blocks;
@@ -1975,7 +2001,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				this.addFeatures([feature]);
 			    }
 			    mapGlyph.applyMapStyle();
-			    this.featureChanged();	    
 			    this.redraw();
 			    this.makeLegend();
 			};
@@ -2940,6 +2965,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let label =  mapGlyph.getLabel(true,true);
+		
 		let body = HU.div(['style','margin-left:10px;'],mapGlyph.getLegendBody());
 		let block = HU.toggleBlockNew("",body,mapGlyph.getLegendVisible(),
 					      {separate:true,headerStyle:'display:inline-block;',
@@ -3165,13 +3191,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(mapGlyph.isEntry() || mapGlyph.isMultiEntry() || text.startsWith("<wiki>")) {
  		    if(debug)console.log("\twikifying")
 		    let wiki = text.startsWith("<wiki>")?text:mapGlyph.getWikiText();
-		    if(!Utils.stringDefined(wiki))
-			wiki = "+section title={{name}}\n{{simple}}\n-section";
+		    let width = "400";
+		    let height="300";
+		    let widthRegexp = /popupWidth *= *(\d+)/;
+		    let widthMatch = wiki.match(widthRegexp);
+		    if(widthMatch) {
+			width=widthMatch[1];
+			wiki = wiki.replace(widthRegexp,"");
+		    }
+		    let heightRegexp = /popupHeight *= *(\d+)/;		    
+		    let heightMatch = wiki.match(heightRegexp);
+		    if(heightMatch) {
+			height=heightMatch[1];
+			wiki = wiki.replace(heightRegexp,"");
+		    }		    
 
+		    if(!Utils.stringDefined(wiki))
+			wiki = "{{mappopup}}";
 		    let wikiCallback = html=>{
 			html = mapGlyph.convertPopupText(html);
 			html = HU.div(['style','max-height:300px;overflow-y:auto;'],html);
-			doPopup(html,{width:"600",height:"400"});
+			doPopup(html,{width:this.getProperty("popupWidth",width),
+				      height:this.getProperty("popupHeight",height)});
 		    };
 		    this.wikify(wiki,feature.entryId ?? mapGlyph.getEntryId(),wikiCallback);
 		    return false;
@@ -3682,6 +3723,124 @@ MapGlyph.prototype = {
     isMultiEntry:  function() {
 	return this.type == GLYPH_MULTIENTRY;
     },
+    getEntryGlyphs:function() {
+	return this.attrs.entryglyphs;
+    },
+    applyEntryGlyphs:function() {
+	if(!Utils.stringDefined(this.getEntryGlyphs())) return;
+	let glyphs = [];
+	this.getEntryGlyphs().trim().split("\n").forEach(line=>{
+	    line = line.trim();
+	    if(line.startsWith("#") || line == "") return;
+	    glyphs.push(line);
+	});
+
+	if(glyphs.length==0) return;
+
+	let url = ramaddaBaseUrl + "/entry/data?record.last=1&max=1&entryid=" + this.attrs.entryId;
+	let pointData = new PointData("",  null,null,url,
+				      {entryId:this.attrs.entryId});
+
+	let callback = (data)=>{
+	    this.makeGlyphs(pointData,data,glyphs);
+	}
+	pointData.loadData(this.display,null, callback);
+    },
+    makeGlyphs: function(pointData,data,glyphLines) {
+	let glyphs = [];
+	let lines=[];
+	let canvasWidth=100;
+	let canvasHeight=100;
+	let widthRegexp = /width *= *([0-9]+)/;
+	let heightRegexp = /height *= *([0-9]+)/;
+	let fillRegexp = /fill *= *(.+)/;
+	let borderRegexp = /border *= *(.+)/;			
+	let fill;
+	let border;	
+
+	glyphLines.forEach(line=>{
+	    line = line.trim();
+	    let skip = true;
+	    line.split(";").forEach(line2=>{
+		line2 = line2.trim();
+		let match;
+		if(match  = line2.match(widthRegexp)) {
+		    canvasWidth=parseFloat(match[1]);
+		    return;
+		}
+		
+		if(match  = line2.match(heightRegexp)) {
+		    canvasHeight=parseFloat(match[1]);
+		    return;
+		}
+		if(match  = line2.match(fillRegexp)) {
+		    fill=match[1];
+		    return;
+		}
+		if(match  = line2.match(borderRegexp)) {
+		    border=match[1];
+		    return;
+		}	    	    	    
+		skip=false;
+	    })
+	    if(!skip)
+		lines.push(line);
+	});
+
+
+	lines.forEach(line=>{
+	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
+		canvasWidth:canvasWidth,
+		canvasHeight: canvasHeight
+	    },line));
+	});
+	let cid = HU.getUniqueId("canvas_");
+	let c = HU.tag("canvas",[CLASS,"", STYLE,"xdisplay:none;", 	
+				 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
+
+	$(document.body).append(c);
+	let canvas = document.getElementById(cid);
+	let ctx = canvas.getContext("2d");
+	if(fill) {
+	    ctx.fillStyle=fill;
+	    ctx.fillRect(0,0,canvasWidth,canvasHeight);
+	}
+	if(border) {
+	    ctx.strokeStyle = border;
+	    ctx.strokeRect(0,0,canvasWidth,canvasHeight);
+	}
+
+	ctx.strokeStyle ="#000";
+	ctx.fillStyle="#000";
+//	for(let i=0;i<140;i+=20) {ctx.fillText(""+i,0,i);}
+
+	/*
+	ctx.strokeStyle ="#f00";
+	ctx.lineWidth=1;
+	ctx.beginPath();
+	ctx.moveTo(0,0);
+	ctx.lineTo(100,100);
+	ctx.stroke();
+	*/
+
+
+	glyphs.forEach(glyph=>{
+	    glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:data.getRecords()[0]});
+	});
+
+	let img = canvas.toDataURL();
+	if($('#testimg').length) 
+	    $("#testimg").html(HU.tag("img",["src",img]));
+	canvas.remove();
+	this.style.externalGraphic=img;
+	this.applyStyle(this.style);		
+	this.display.redraw();
+    },
+
+    setEntryGlyphs:function(v) {
+	this.attrs.entryglyphs = v;
+	return this;
+    },
     getUseEntryLocation: function() {
 	return this.attrs.useentrylocation;
     },
@@ -3900,6 +4059,7 @@ MapGlyph.prototype = {
 
 	if(glyphType) {
 	    let icon = this.style.externalGraphic??this.attrs.icon??glyphType.getIcon();
+	    if(icon.startsWith('data:')) icon = this.attrs.icon;
 	    if(icon && icon.endsWith("blank.gif")) icon = glyphType.getIcon();
 	    icon = HU.image(icon,['width','18px']);
 	    if(url && forLegend)
@@ -4003,11 +4163,11 @@ MapGlyph.prototype = {
 	    item(this.convertText(this.style.text));
 	}
 	item(this.display.getDistances(this.getGeometry(),this.getType()));
-	if(this.getPopupText())  {
-	    let text = this.getPopupText();
-	    if(text.startsWith("<wiki>")) {
-	    } else {
-		item(text.replace(/\n/g,"<br>"));
+	let text = this.getPopupText();
+	if(text)  {
+	    if(!text.startsWith("<wiki>")) {
+		//Don't show the popup text in the legend
+		//		item(text.replace(/\n/g,"<br>"));
 	    }
 	}
 	if(this.isMultiEntry()) {
