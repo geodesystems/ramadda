@@ -3948,11 +3948,11 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	{p:'highlightStyle',tt:'Highlight Style'},
 	{p:'unHighlightStyle',tt:'Unhighlight Style'},	
 	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
-	{label:'label glyph',p:"glyph1",ex:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
-	{label:'rect glyph', p:"glyph1",ex:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
-	{label:'circle glyph',p:"glyph1",ex:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
-	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
-	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
+	{label:'label glyph',p:"glyph1",ex:'"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"'},
+	{label:'rect glyph', p:"glyph1",ex:'"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"'},
+	{label:'circle glyph',p:"glyph1",ex:'"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100"'},
+	{label:'3dbar glyph', p:"glyph1",ex:'"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100"'},
+	{label:'gauge glyph',p:"glyph1",ex:'"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"'},
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
