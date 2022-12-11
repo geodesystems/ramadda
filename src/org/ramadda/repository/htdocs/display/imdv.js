@@ -1501,7 +1501,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		layout("Name:",nameWidget);
 		if(mapGlyph.isEntry()) {
-		    layout("Glyphs:",
+		    layout("Glyphs:</b> <a target=_help href=https://ramadda.org/repository/userguide/imdv.html#glyphs>Help</a><b>",
 			   HU.textarea("",mapGlyph.getEntryGlyphs()??"",[ID,this.domId("entryglyphs"),"rows",5,"cols", 80]));
 		    /*
 		      glyph1="type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100"
@@ -1993,7 +1993,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				mapGlyph.setName(entry.getName());
 			    if(mapGlyph.getUseEntryLabel())
 				mapGlyph.style.label= entry.getName();
-			    if(mapGlyph.getUseEntryLocation()) {
+			    if(mapGlyph.getUseEntryLocation() && entry.hasLocation()) {
 				let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", mapGlyph.style,
 							       [entry.getLatitude(), entry.getLongitude()]);
 				feature.style = mapGlyph.style;
