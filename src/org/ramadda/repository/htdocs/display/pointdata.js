@@ -326,7 +326,7 @@ function PointData(name, recordFields, records, url, properties) {
         isGroup: function() {
             return this.getGroupField()!=null;
         },
-        loadData: function(display, reload) {
+        loadData: function(display, reload,callback) {
 	    let root = this.getRootPointData();
             if (root.url == null) {
                 console.log("No URL");
@@ -336,9 +336,12 @@ function PointData(name, recordFields, records, url, properties) {
                 lat: this.lat,
                 lon: this.lon,
             };
-            let jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
+	    jsonUrl = root.url;
+
+	    if(display && display.displayManager)
+		jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
 	    root.jsonUrl = jsonUrl;
-            root.loadPointJson(jsonUrl, display, reload);
+            root.loadPointJson(jsonUrl, display, reload,callback);
         },
 	getCacheObject: function() {
             let cacheObject = getPointDataCache()[this.getUrl()];
@@ -373,7 +376,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    }
 	},
 
-        loadPointJson: function(url, display, reload) {
+        loadPointJson: function(url, display, reload,callback) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
             let pointData = this;
@@ -436,7 +439,10 @@ function PointData(name, recordFields, records, url, properties) {
 		if (cacheObject.pointData != null) {
 		    if(debug)
 			console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
-                    display.pointDataLoaded(cacheObject.pointData, url, reload);
+		    if(callback)
+			callback(cacheObject.pointData);
+                    else
+			display.pointDataLoaded(cacheObject.pointData, url, reload);
                     return;
 		}
 		cacheObject.pending.push(display);
@@ -508,7 +514,7 @@ function PointData(name, recordFields, records, url, properties) {
 		if(debug)
 		    console.log("\tmaking point data");
 		let t1 = new Date();
-                var newData = makePointData(data, _this.derived, display,_this.url);
+                var newData = makePointData(data, _this.derived, display,_this.url,callback);
 		let t2 = new Date();
 		if(debug)
 		    Utils.displayTimes("makePointData",[t1,t2],true);
@@ -527,10 +533,13 @@ function PointData(name, recordFields, records, url, properties) {
 			console.log("\tcacheObject.displays:" + cacheObject.displays.length)
 		}
                 cacheObject.pending = [];
-                for (let i = 0; i < tmp.length; i++) {
-		    if(debug)
-			console.log("\tcalling pointDataLoaded:" + tmp[i] +" #:" + pointData.getRecords().length);
-                    tmp[i].pointDataLoaded(pointData, url, reload);
+		if(callback) callback(pointData);
+		else {
+                    for (let i = 0; i < tmp.length; i++) {
+			if(debug)
+			    console.log("\tcalling pointDataLoaded:" + tmp[i] +" #:" + pointData.getRecords().length);
+			tmp[i].pointDataLoaded(pointData, url, reload);
+		    }
                 }
 
 		if(cacheObject.pointData.records && cacheObject.pointData.records.length) {
@@ -1005,7 +1014,7 @@ PointRecord.prototype =  {
 };
 
 
-function makePointData(json, derived, source,url) {
+function makePointData(json, derived, source,url,callback) {
 
     let debug  =false;
     if(debug) console.log("makePointData");
