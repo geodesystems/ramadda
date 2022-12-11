@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Dec 10 12:28:15 MST 2022";
+var build_date="RAMADDA build date: Sat Dec 10 17:29:25 MST 2022";
 
 
 
@@ -2759,10 +2759,10 @@ Annotations.prototype = {
 
 let Gfx = {
     gridData: function(gridId,fields, records,args) {
+	
 	if(!args) args = {};
 	if(isNaN(args.cellSize) || args.cellSize == null)
 	    args.cellSize = args.cellSizeX;
-
 	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
 	    args.cellSizeX= args.cellSize;
 	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
@@ -3304,6 +3304,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
 	if(!this.colorByField) {
 	    console.log("Could not find colorBy field:" + this.colorBy);
+	    console.log("Fields:" + fields);
 	} else {
 	    let props = {
 		Min:this.colorByMin,
@@ -34515,7 +34516,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_SHAPES = "shapes";
     const ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
     const ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
-    const ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
+    const ID_HEATMAP_ANIM_STEP_FORWARD = "heatmapanimstepforward";
+    const ID_HEATMAP_ANIM_STEP_BACK = "heatmapanimstepback";    
     const ID_HEATMAP_TOGGLE = "heatmaptoggle";    
     const ID_REGION_SELECTOR = "regionselector";
     const ID_HTMLLAYER = "htmllayer";
@@ -36793,7 +36795,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         setDateRange: function(min, max) {
 	    //Not sure why we do this
-	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+	    if(this.getDoGridPoints(false)|| this.getDoHeatmap(false)) {
 		SUPER.setDateRange.call(this, min,max);
 	    } else {
 		SUPER.setDateRange.call(this, min,max);
@@ -36822,9 +36824,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
 
 	},
-	stepHeatmapAnimation: function(){
+	stepHeatmapAnimation: function(delta){
 	    let index = this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex;
-	    index++;
+	    index+=delta;
+	    if(index<0) {
+		index = 0;
+	    }
 	    if(index>=this.heatmapLayers.length) {
 		index =0;
 	    }
@@ -36946,7 +36951,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let labels = [];
 	    let labelPrefix = this.getHmLabelPrefix("${field}-");
-	    groups.values.every((value,idx)=>{
+	    groups.values.forEach((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
@@ -36968,19 +36973,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			layer.date = value;
 		}
 		this.heatmapLayers.push(layer);
-		return true;
 	    });
 	    if(this.getHmShowGroups(true) && this.heatmapLayers.length>1 && !this.getAnimationEnabled()) {
 		this.heatmapPlayingAnimation = false;
-		let controls =  "";
+		let controls =  [];
+		controls.push(HU.div([ID,this.domId(ID_HEATMAP_ANIM_STEP_BACK),STYLE,HU.css("display","inline-block"),TITLE,"Step back"],
+ 				     HU.getIconImage("fa-step-backward",[CLASS,"display-anim-button"])));
+
 		if(!groupByField) 
-		    controls+=HU.div([ID,this.domId(ID_HEATMAP_ANIM_PLAY),STYLE,HU.css("display","inline-block"),TITLE,"Play/Stop Animation"],
-				     HU.getIconImage("fa-play",[CLASS,"display-anim-button"]));
-		controls += HU.div([ID,this.domId(ID_HEATMAP_ANIM_STEP),STYLE,HU.css("display","inline-block"),TITLE,"Step"],
- 				   HU.getIconImage("fa-step-forward",[CLASS,"display-anim-button"]));
+		    controls.push(HU.div([ID,this.domId(ID_HEATMAP_ANIM_PLAY),STYLE,HU.css("display","inline-block"),TITLE,"Play/Stop Animation"],
+					 HU.getIconImage("fa-play",[CLASS,"display-anim-button"])));
+		controls.push(HU.div([ID,this.domId(ID_HEATMAP_ANIM_STEP_FORWARD),STYLE,HU.css("display","inline-block"),TITLE,"Step forward"],
+ 				     HU.getIconImage("fa-step-forward",[CLASS,"display-anim-button"])));
 		
-		controls += HU.div([STYLE,HU.css("display","inline-block","margin-left","5px","margin-right","5px")], HU.select("",[ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels));
-		this.writeHeader(ID_HEADER2_PREPREFIX, controls);
+
+		controls.push(HU.div([STYLE,HU.css("display","inline-block","margin-left","5px","margin-right","5px")], HU.select("",[ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels)));
+		this.writeHeader(ID_HEADER2_PREPREFIX, Utils.join(controls,"&nbsp;&nbsp;"));
 		let _this = this;
 		this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
 		    let index = $(this)[0].selectedIndex;
@@ -36991,15 +36999,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
 		    $(this).html(HU.getIconImage(icon,[CLASS, "display-anim-button"]));
 		    if(_this.heatmapPlayingAnimation) {
-			_this.stepHeatmapAnimation();
+			_this.stepHeatmapAnimation(1);
 		    }
 		});
-		this.jq(ID_HEATMAP_ANIM_STEP).click(function() {
+		this.jq(ID_HEATMAP_ANIM_STEP_FORWARD).click(function() {
 		    _this.heatmapPlayingAnimation = false;
 		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
 		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[CLASS,"display-anim-button"]));
-		    _this.stepHeatmapAnimation();
+		    _this.stepHeatmapAnimation(1);
 		});
+		this.jq(ID_HEATMAP_ANIM_STEP_BACK).click(function() {
+		    _this.heatmapPlayingAnimation = false;
+		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HU.getIconImage(icon,[CLASS,"display-anim-button"]));
+		    _this.stepHeatmapAnimation(-1);
+		});		
 
 	    }
 	    if(groups.values[0]!="none") {
