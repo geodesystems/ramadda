@@ -2661,6 +2661,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 //	console.log("attr:" + name+"=" + value);
     });
 
+
     if(this.labelBy) {
 	this.labelField=display.getFieldById(fields,this.labelBy);
 	if(!this.labelField) {
@@ -2792,7 +2793,7 @@ Glyph.prototype = {
 	    if(this.template) {
 		label = this.template.replace("${value}",label);
 	    }
-	    ctx.font = this.font ?? this.display.getProperty("glyphFont","12pt sans-serif");
+	    ctx.font = this.font ??  this.display.getProperty("glyphFont","12pt sans-serif");
 	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty("glyphColor","#000");
 	    let text = String(label);
 	    if(args.record) {
@@ -2800,7 +2801,7 @@ Glyph.prototype = {
 		    text = text.replace("\${" + f.getId()+"}",args.record.getValue(f.getIndex()));
 		});
 	    }
-	    text = text.split("\n");
+	    text = text.replace(/_nl_/g,"\n").split("\n");
 	    let h = 0;
 	    let hgap = 3;
 	    let maxw = 0;
@@ -2813,7 +2814,7 @@ Glyph.prototype = {
 	    let pt = Utils.translatePoint(x, y, maxw,  h, this.pos,{dx:this.dx,dy:this.dy});
 	    text.forEach(t=>{
 		let dim = ctx.measureText(t);
-//		console.log(pt.x +" " + pt.y +" " + t);
+//		ctx.fillText(t,pt.x,25);
 		ctx.fillText(t,pt.x,pt.y);
 		pt.y += dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent + hgap;
 	    });
