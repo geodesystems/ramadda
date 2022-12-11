@@ -3474,6 +3474,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         } else if (theTag.equals(WIKI_TAG_SIMPLE)) {
             return makeSimpleDisplay(request, wikiUtil, props, originalEntry,
                                      entry);
+        } else if (theTag.equals(WIKI_TAG_MAPPOPUP)) {
+            return makeMapPopup(request, wikiUtil, props, originalEntry,
+				entry);
         } else if (theTag.equals(WIKI_TAG_TAGS)) {
             String types = getProperty(wikiUtil, props, "types",
 				       "enum_tag,content.keyword");
@@ -7838,6 +7841,20 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         return content;
 
     }
+
+    public String makeMapPopup(Request request, WikiUtil wikiUtil,
+                                    Hashtable props, Entry originalEntry,
+                                    Entry entry)
+	throws Exception {
+	String template = entry.getTypeHandler().getBubbleTemplate( request,  entry);
+	if(template!=null)
+	    return wikifyEntry(request, entry, template);
+	return wikifyEntry(request, entry, "+section title={{name}}\n{{simple}}\n-section");
+	//	return  makeSimpleDisplay(request,  wikiUtil, props, originalEntry, entry);
+    }
+
+
+
 
     private String getGroupVar(Request request) {
 	groupCount++;

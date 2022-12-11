@@ -642,6 +642,9 @@ public interface WikiConstants {
     public static final String WIKI_TAG_UPLOAD = "upload";
 
 
+    public static final String WIKI_TAG_MAPPOPUP = "mappopup";
+
+
     /** _more_ */
     public static final String FILTER_IMAGE = "image";
 
