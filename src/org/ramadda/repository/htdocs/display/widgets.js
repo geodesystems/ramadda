@@ -2185,10 +2185,10 @@ Annotations.prototype = {
 
 let Gfx = {
     gridData: function(gridId,fields, records,args) {
+	
 	if(!args) args = {};
 	if(isNaN(args.cellSize) || args.cellSize == null)
 	    args.cellSize = args.cellSizeX;
-
 	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
 	    args.cellSizeX= args.cellSize;
 	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
@@ -2730,6 +2730,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
 	if(!this.colorByField) {
 	    console.log("Could not find colorBy field:" + this.colorBy);
+	    console.log("Fields:" + fields);
 	} else {
 	    let props = {
 		Min:this.colorByMin,
