@@ -124,6 +124,37 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    public static List<Entry> applySkip(List<Entry> entries, int skip) {
+	if(skip>=1) {
+	    List<Entry> skipped = new ArrayList<Entry>();
+	    int cnt=-1;
+	    for(int i=0;i<entries.size();i++) {
+		if(cnt-->0) {
+		    continue;
+		}
+		cnt = skip;
+		skipped.add(entries.get(i));
+	    }
+	    entries = skipped;
+	}
+	return entries;
+    }
+	
+    public static List<Entry> applySample(List<Entry> entries, double prob) {
+	if(prob>0) {
+	    List<Entry> skipped = new ArrayList<Entry>();
+	    for(int i=0;i<entries.size();i++) {
+		double r = Math.random();
+		if(r <= prob)
+		    skipped.add(entries.get(i));
+	    }
+	    entries = skipped;
+	}
+	return entries;
+    }
+
+
+
     /**
      * _more_
      *
