@@ -1,115 +1,4 @@
 
-<style>
-
-.imageplayer {
-    background-color:#efefef;
-    background-color:#fff;
-}
-
-
-.imageplayer-images {
-    min-height: 200px; 
-}
-
-.imageplayer-buttons {
-    margin-left:4px;
-    padding-bottom: 2px;
-    display: inline-block;
-}
-
-.imageplayer-button {
-     margin: 0px;
-     margin-left: 2px;
-     margin-right: 2px;
-     padding: 0px;
-     margin-bottom: 2px;
-     font-size: 80%;
-     padding-left:5px;
-     padding-right:5px;
-}
-
-.imageplayer-button-play {
-     width: 50px;
-//     font-family: monospace;
-}
-
-.imageplayer-title {
-  padding: 5px;
-  color: #000;
-}
-
-
-.imageplayer-title a {
-  color: #000;
-}
-
-.imageplayer-title-date {
-  padding: 5px;
-   font-style:italic;
-}
-
-
-
-.imageplayer-filler {
-   width:10px;
-   height: 20px;
-   border: 0px red solid;
-}
-
-.imageplayer-boxes {
-   margin-bottom:4px;
-   vertical-align: bottom;
-   line-height:0.2em;
-   display: inline-block;
-}
-
-
-
-.imageplayer-box-on, .imageplayer-box-off {
-     display: inline-block;
-     margin-left: 2px;
-     padding:0px;
-     border: 1px #fff solid;
-     width:20px;
-     height:25px;
-}
-
-.imageplayer-box-on {
-     border: 1px #fff solid;
-     background-color: rgb(30, 144, 255);
-}
-
-.imageplayer-box-off {
-     background-color: #d3d3d3;
-}
-
-.imageplayer-box {
-    border:1px solid transparent;
-}
-
-.imageplayer-box:hover {
-    border:1px solid rgb(30, 144, 255);
-}
-
-.imageplayer-inputform  {
-margin-bottom:2px;
-}
-
-.imageplayer-block {
-   padding-left:10px;
-   overflow-y: auto;
-   overflow-x: hidden;
-}
-
-.imageplayer-icon {
-margin: 1px;
-padding:1px;
-width: 18px;
-}
-
-</style>
-
-
 
 <script LANGUAGE="JavaScript">
 var icon_blank = "${root}/icons/blank.gif";
@@ -117,7 +6,6 @@ var icon_start="${root}/imageplayer/control_play_blue.png";
 var icon_stop="${root}/imageplayer/control_pause_blue.png";
 var modeNormalImage =  "${root}/imageplayer/button_norm.gif";
 var modeRockingImage =  "${root}/imageplayer/button_sweep.gif";
-
 
 
 focus()
@@ -141,6 +29,8 @@ focus()
 //
 //     modified by D. Watson and A. Earnhart (CIRA/CSU), 7/30/97
 //     and Greg Thompson (NCAR/RAP) Dec. 11 1997
+//
+// modified by J. McWhirter for RAMADDA use
 //
 //============================================================
  
@@ -402,11 +292,17 @@ function ImagePlayer(args)  {
                 }
             }
             width=14;
-            while(width>2 && this.images.length*width >500) {
+            while(width>1 && this.images.length*width >400) {
                 width--;
             }
             imgAttrs =  attr("class","imageplayer-filler") + gotoalt;
-            var filler = HtmlUtil.div(["onClick", call("${imagePlayerVar}.setImage", i + ",-1"), "title", title, "class", "ramadda-clickable imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off"),"style","width:" + width+"px;"]);
+	    let boxStyle = HU.css("width" ,width+"px");
+	    if(this.images.length>400)
+		boxStyle += HU.css('margin-left','0px');
+	    else  if(this.images.length>200)
+		boxStyle += HU.css('margin-left','1px');
+
+            var filler = HtmlUtil.div(["onClick", call("${imagePlayerVar}.setImage", i + ",-1"), "title", title, "class", "ramadda-clickable imageplayer-box imageplayer-box-" + (isActiveImage?"on":"off"),"style",boxStyle]);
             var box = filler;                                                                                                                                              
             hidebox = tag("A", attr2("href","JavaScript: noop()", "onClick", call("${imagePlayerVar}.toggleImageOk",i)),
                           span(attr("style", "xbackground-color:" + hidecolor),img(icon_blank,imgAttrs + hidealt)));

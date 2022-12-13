@@ -2072,14 +2072,14 @@ public class ImageOutputHandler extends OutputHandler {
             String entryUrl = getEntryLink(request, entry);
             String dttm     = getEntryUtil().formatDate(request, entry);
             String title =
-                "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
+                "<table width=100% cellspacing=0 cellpadding=0>";
             title +=
-                "<tr><td><div class=\"imageplayer-title\">" + entryUrl
-                + "</div></td><td align=right><div class=\"imageplayer-title-date\">"
+                "<tr><td><div class=imageplayer-title>" + entryUrl
+                + "</div></td><td align=right><div class=imageplayer-title-date>"
                 + dttm + "</div></td></table>";
             title = title.replace("\"", "\\\"");
-            sb.append(playerVar + ".addImage(" + HtmlUtils.quote(url) + ","
-                      + HtmlUtils.quote(title) + ", " + HtmlUtils.quote(dttm)
+            sb.append(playerVar + ".addImage(" + HtmlUtils.squote(url) + ","
+                      + HtmlUtils.squote(title) + ", " + HtmlUtils.squote(dttm)
                       + ");\n");
             cnt++;
         }
@@ -2148,6 +2148,9 @@ public class ImageOutputHandler extends OutputHandler {
         tmp = tmp.replace("${imagehtml}", imageHtml);
         tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
         sb  = new StringBuilder();
+	HtmlUtils.cssLink(sb,
+			  getPageHandler().getCdnPath("/imageplayer/imageplayer.css"));
+
 
 
 

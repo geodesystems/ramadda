@@ -204,7 +204,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					"#showLink","true",
 					"bordercolor","#efefef",
 					"#" + ATTR_TEXTPOSITION,"top|left|right|bottom"), 
-                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","600")),
+                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","90%")),
         new WikiTagCategory("Misc",
                             new WikiTag("counter", null, "key", "key"),
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
@@ -415,6 +415,16 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         return Integer.parseInt(value);
     }
+
+    public double getProperty(WikiUtil wikiUtil, Hashtable props, String prop,
+                           double dflt) {
+        String value = getProperty(wikiUtil, props, prop, null);
+        if (value == null) {
+            return dflt;
+        }
+
+        return Double.parseDouble(value);
+    }    
 
 
     /**
@@ -4083,6 +4093,18 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (height > 0) {
                 imageRequest.put(ARG_HEIGHT, "" + height);
             }
+            children = getEntryUtil().sortEntriesOnDate(children, true);
+
+	    int skip = getProperty(wikiUtil,props,"skip",0);
+	    if(skip>=1) {
+		children = EntryUtil.applySkip(children,skip);
+	    }
+	    double sample = getProperty(wikiUtil,props,"sample",0.0);
+	    if(sample>0) {
+		children = EntryUtil.applySample(children,sample);
+	    }	    
+
+
             imageOutputHandler.makePlayer(imageRequest, entry, children, sb,
                                           getProperty(wikiUtil, props,
 						      "show_sort_links",

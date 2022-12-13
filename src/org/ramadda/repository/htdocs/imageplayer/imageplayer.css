@@ -1,0 +1,92 @@
+.imageplayer {
+    background-color:#efefef;
+    background-color:#fff;
+}
+.imageplayer-images {
+    min-height: 200px; 
+}
+.imageplayer-buttons {
+    margin-left:4px;
+    padding-bottom: 2px;
+    display: inline-block;
+}
+.imageplayer-button {
+     margin: 0px;
+     margin-left: 2px;
+     margin-right: 2px;
+     padding: 0px;
+     margin-bottom: 2px;
+     font-size: 80%;
+     padding-left:5px;
+     padding-right:5px;
+}
+.imageplayer-button-play {
+     width: 50px;
+}
+.imageplayer-title {
+  padding: 5px;
+  color: #000;
+}
+.imageplayer-title a {
+  color: #000;
+}
+
+.imageplayer-title-date {
+    display:block;
+    padding: 5px;
+    font-style:italic;
+}
+
+.imageplayer-filler {
+   width:10px;
+   height: 20px;
+   border: 0px red solid;
+}
+.imageplayer-boxes {
+   margin-bottom:4px;
+   vertical-align: bottom;
+   line-height:0.2em;
+   display: inline-block;
+}
+.imageplayer-box-on, .imageplayer-box-off {
+     display: inline-block;
+     margin-left: 2px;
+     padding:0px;
+     border: 1px #fff solid;
+     width:20px;
+     height:25px;
+}
+.imageplayer-box-on {
+     border: 1px #fff solid;
+     background-color: rgb(30, 144, 255);
+}
+
+.imageplayer-box-off {
+     background-color: #d3d3d3;
+}
+
+.imageplayer-box {
+    border:1px solid transparent;
+}
+
+.imageplayer-box:hover {
+    border:1px solid rgb(30, 144, 255);
+}
+
+.imageplayer-inputform  {
+margin-bottom:2px;
+}
+
+.imageplayer-block {
+    text-align:center;
+   padding-left:10px;
+   overflow-y: auto;
+   overflow-x: hidden;
+}
+
+.imageplayer-icon {
+margin: 1px;
+padding:1px;
+width: 18px;
+}
+
