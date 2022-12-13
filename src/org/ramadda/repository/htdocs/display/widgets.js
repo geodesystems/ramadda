@@ -2690,10 +2690,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.pos = "nw";
     }	
     
-    this.width = (+this.width);
-    this.height = (+this.height);
+
     
     let cvrt = s=>{
+	if(!isNaN(+s)) return +s;
 	s  = String(s);
 	s = s.replace(/canvasWidth2/g,""+(this.canvasWidth/2)).replace(/canvasWidth/g,this.canvasWidth);
 	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);	
@@ -2702,6 +2702,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	s = eval(s);
 	return s;
     };
+    this.width = cvrt(this.width);
+    this.height = cvrt(this.height);
+
     this.dx = cvrt(this.dx);
     this.dy = cvrt(this.dy);    
 
@@ -2723,6 +2726,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.sizeByInfo =  new ColorByInfo(display, fields, records, this.sizeBy,this.sizeBy, null, this.sizeBy,this.sizeByField,props);
 	}
     }
+
     if(!this.colorByInfo && this.colorBy) {
 	this.colorByField=display.getFieldById(fields,this.colorBy);
 	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
@@ -2737,8 +2741,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
 	}
     }
-
-
 }
 
 
@@ -2852,12 +2854,10 @@ Glyph.prototype = {
 	    */
 	    ctx.beginPath();
 	    let w = this.width*lengthPercent+ this.baseWidth;
-//	    this.dx=0; 
-//	    this.dy=-50;
-//	    this.pos="n"; 
 	    let pt = Utils.translatePoint(x, y, w,  w, this.pos,{dx:this.dx,dy:this.dy});
 	    let cx = pt.x+w/2;
 	    let cy = pt.y+w/2;
+	    if(debug) console.log("draw circle",{cx:cx,cy:cy,w:w});
 	    ctx.arc(cx,cy, w/2, 0, 2 * Math.PI);
 //	    console.log(pt.x +" " + pt.y +" " + cx +" " + cy  +" " + this.width);
 	    if(this.fill)  {
@@ -3011,7 +3011,7 @@ Glyph.prototype = {
 	    //	    ctx.fill();
 	    ctx.stroke();
 	} else {
-	    console.log("Unknwon cell shape:" + this.type);
+	    console.log("Unknown cell shape:" + this.type);
 	}
     },
     draw3DRect:function(canvas,ctx,x,y,width, height, depth) {

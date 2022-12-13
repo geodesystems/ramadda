@@ -585,6 +585,12 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		});
 	    }
 
+            let colorBy;
+	    if(this.getProperty("colorTable"))  {
+		colorBy = new ColorByInfo(this, [], []);
+		labels=[];
+	    }
+
 	    let colors = this.getColorList();
 	    let html = "";
 	    let colorWidth = this.getProperty("colorWidth","20px");
@@ -594,11 +600,6 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    let orientation = this.getProperty("orientation","horizontal");
 	    let delim = orientation=="horizontal"?" ":"<br>";
 	    let circles = this.getCircles();
-
-
-
-
-
 	    for(let i=0;i<labels.length;i++) {
 		let label = labels[i];
 		let color = colors[i]||"#fff";
@@ -616,6 +617,10 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		html = HU.center(html); 
 	    }
 	    this.setContents(html);
+	    if(colorBy) {
+		this.displayColorTable(colorBy,ID_COLORTABLE,this.getProperty("colorByMin",10),
+				       this.getProperty("colorByMax",100));
+	    }
 	},
     });
 }
