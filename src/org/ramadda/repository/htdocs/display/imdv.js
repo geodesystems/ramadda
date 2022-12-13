@@ -1803,7 +1803,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.showMessage("Saved");
 		    return
 		}
-		this.featureHasBeenChanged = false;
+		this.clearFeatureChanged();
 		if(result.error) {
 		    this.showMessage(result.error);
 		} else {
@@ -1840,7 +1840,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    if(result.error) {
 			_this.showMessage(result.error);
 		    } else {
-			_this.featureHasBeenChanged = false;
+			_this.clearFeatureChanged();
 			_this.showMessage(result.message);
 		    }
 		}
@@ -2283,6 +2283,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.showMapLegend();
 	    this.makeLegend();
 	},
+	clearFeatureChanged:function() {
+	    this.featureHasBeenChanged = false;
+	},
 	showNewMenu: function(button) {
 	    let _this = this;
 	    let html ="<table><tr valign=top>";
@@ -2654,7 +2657,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			} catch(err) {
 			    this.handleError(err);
 			}
-			this.featureHasBeenChanged = false;
+			this.clearFeatureChanged();
 			this.checkMapProperties();
 			this.makeLegend();
 			this.showMapLegend();
@@ -3795,6 +3798,7 @@ MapGlyph.prototype = {
 				      {entryId:opts.entryId});
 	let callback = (data)=>{
 	    this.makeGlyphs(pointData,data,glyphs);
+	    this.display.clearFeatureChanged();
 	}
 	pointData.loadData(this.display,null, callback);
     },
