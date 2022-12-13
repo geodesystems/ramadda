@@ -2658,7 +2658,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	if(value=="true") value=true;
 	else if(value=="false") value=false;
 	this[name] = value;
-//	console.log("attr:" + name+"=" + value);
+//	console.log(name+"="+value);
     });
 
 
@@ -2692,22 +2692,19 @@ function Glyph(display, scale, fields, records, args, attrs) {
     
     this.width = (+this.width);
     this.height = (+this.height);
-    if(this.dx=="canvasWidth") this.dx=this.canvasWidth;
-    else if(this.dx=="-canvasWidth") this.dx=-this.canvasWidth;
-    else if(this.dx=="canvasWidth2") this.dx=this.canvasWidth/2;
-    else if(this.dx=="-canvasWidth2") this.dx=-this.canvasWidth/2;    
-    else if(this.dx=="width") this.dx=this.width;
-    else if(this.dx=="-width") this.dx=-this.width;
-    else if(this.dx=="width2") this.dx=this.width/2;
-    else if(this.dx=="-width2") this.dx=-this.width/2;
-    if(this.dy=="canvasHeight") this.dy=this.canvasHeight;
-    else if(this.dy=="-canvasHeight") this.dy=-this.canvasHeight;
-    else if(this.dy=="canvasHeight2") this.dy=this.canvasHeight/2;
-    else if(this.dy=="-canvasHeight2") this.dy=-this.canvasHeight/2;    
-    else if(this.dy=="height") this.dy=this.height;
-    else if(this.dy=="-height") this.dy=-this.height;
-    else if(this.dy=="height2") this.dy=this.height/2;
-    else if(this.dy=="-height2") this.dy=-this.height/2;
+    
+    let cvrt = s=>{
+	s  = String(s);
+	s = s.replace(/canvasWidth2/g,""+(this.canvasWidth/2)).replace(/canvasWidth/g,this.canvasWidth);
+	s = s.replace(/canvasHeight2/g,""+(this.canvasHeight/2)).replace(/canvasHeight/g,this.canvasHeight);	
+	s = s.replace(/width2/g,""+(this.width/2)).replace(/width/g,this.width);	
+	s = s.replace(/height2/g,""+(this.height/2)).replace(/height/g,this.width);	
+	s = eval(s);
+	return s;
+    };
+    this.dx = cvrt(this.dx);
+    this.dy = cvrt(this.dy);    
+
 
     this.baseWidth = +this.baseWidth;
     this.width = (+this.width)*scale;
@@ -2752,6 +2749,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 
 Glyph.prototype = {
     draw: function(opts, canvas, ctx, x,y,args,debug) {
+	debug = this.debug??debug;
 	let color =   null;
 	if(this.colorByInfo) {
 	    if(this.colorByField) {
@@ -2793,18 +2791,29 @@ Glyph.prototype = {
 	    if(this.template) {
 		label = this.template.replace("${value}",label);
 	    }
+	    //Normalize the font
+	    if(this.font && this.font.match(/\d+(px|pt)$/)) {
+
+		this.font = this.font +" sans-serif";
+	    }
+
 	    ctx.font = this.font ??  this.display.getProperty("glyphFont","12pt sans-serif");
 	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty("glyphColor","#000");
+
+
+	    if(debug) console.log("glyph label: font=" + ctx.font +" fill:" + ctx.fillStyle +" stroke:" + ctx.strokeStyle);
 	    let text = String(label);
+
 	    if(args.record) {
-		args.record.fields.forEach(f=>{
-		    text = text.replace("\${" + f.getId()+"}",args.record.getValue(f.getIndex()));
+		text = this.display.applyRecordTemplate(args.record, null,null,text,{
+		    entryname:this.entryname
 		});
 	    }
 	    text = text.replace(/_nl_/g,"\n").split("\n");
 	    let h = 0;
 	    let hgap = 3;
 	    let maxw = 0;
+	    let pady = +(this.pady??2);
 	    text.forEach((t,idx)=>{
 		let dim = ctx.measureText(t);
 		if(idx>0) h+=hgap;
@@ -2812,11 +2821,24 @@ Glyph.prototype = {
 		h +=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
 	    });
 	    let pt = Utils.translatePoint(x, y, maxw,  h, this.pos,{dx:this.dx,dy:this.dy});
+	    if(debug) console.log("position:",{point:pt,x:x,y:y,text_width:maxw,text_height:h,pos:this.pos,dx:this.dx,dy:this.dy});
+	    let bg = this.bg;
 	    text.forEach(t=>{
 		let dim = ctx.measureText(t);
-//		ctx.fillText(t,pt.x,25);
-		ctx.fillText(t,pt.x,pt.y);
-		pt.y += dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent + hgap;
+		if(bg) {
+		    ctx.fillStyle = bg;
+		    let pad = +(this.bgpad??6);
+		    if(debug) console.log("drawing background:" + bg +" padding:" + pad);
+		    let rh = dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
+		    let rw = dim.width;
+		    ctx.fillRect(pt.x-pad,pt.y-rh-pad,rw+2*pad,rh+2*pad);
+		}
+		ctx.fillStyle = ctx.strokeStyle =    color || this.color|| this.display.getProperty("glyphColor","#000");
+		dim = ctx.measureText(t);
+		let offset =dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
+		if(debug) console.log("draw text:" + t +" x:" + pt.x +" y:"+ (pt.y+offset));
+		ctx.fillText(t,pt.x,pt.y+offset);
+		pt.y += pady+dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent + hgap;
 	    });
 	} else 	if(this.type == "circle") {
 	    /*

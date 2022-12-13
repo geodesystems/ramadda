@@ -3158,6 +3158,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 		}
 
+
 		let doPopup = (html,props)=>{
  		    if(debug)console.log("\tdoPopup:"+ html)
 		    let js =[];
@@ -3754,9 +3755,11 @@ MapGlyph.prototype = {
 	let widthRegexp = /width *= *([0-9]+)/;
 	let heightRegexp = /height *= *([0-9]+)/;
 	let fillRegexp = /fill *= *(.+)/;
-	let borderRegexp = /border *= *(.+)/;			
+	let borderRegexp = /border *= *(.+)/;
+	let fontRegexp = /font *= *(.+)/;				
 	let fill;
 	let border;	
+	let font;
 
 	glyphLines.forEach(line=>{
 	    line = line.trim();
@@ -3781,6 +3784,10 @@ MapGlyph.prototype = {
 		    border=match[1];
 		    return;
 		}	    	    	    
+		if(match  = line2.match(fontRegexp)) {
+		    font = match[1];
+		    return;
+		}
 		skip=false;
 	    })
 	    if(!skip)
@@ -3791,7 +3798,9 @@ MapGlyph.prototype = {
 	lines.forEach(line=>{
 	    glyphs.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),{
 		canvasWidth:canvasWidth,
-		canvasHeight: canvasHeight
+		canvasHeight: canvasHeight,
+		entryname: this.getName(),
+		font:font
 	    },line));
 	});
 	let cid = HU.getUniqueId("canvas_");

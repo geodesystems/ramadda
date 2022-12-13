@@ -943,6 +943,9 @@ PointRecord.prototype =  {
     setData: function(d) {
         this.data = d;
     },    
+    getFields: function() {
+	return this.fields;
+    },
     getValueFromField:function(id) {
 	let value = null;
 	this.fields.every(field=>{
