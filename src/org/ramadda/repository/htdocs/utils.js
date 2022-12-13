@@ -1853,8 +1853,9 @@ var Utils =  {
 			    value = "<tr><td align=right>" + t.attrs['label']+":</td><td>" + value +"</td></tr>";
 			}			    
 
-
-
+			if(t.attrs['prefixLabel']) {
+			    value = t.attrs['label']+': ' + value;
+			}
 
                         if(t.attrs["maxwidth"]) {
                             let width = t.attrs["maxwidth"];
