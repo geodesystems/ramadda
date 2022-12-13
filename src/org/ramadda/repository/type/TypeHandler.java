@@ -7450,7 +7450,11 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
         HashSet set = getEnumValuesInner(null, column, entry);
-        set.add(theValue);
+	if(set!=null) 
+	    set.add(theValue);
+	else {
+	    //????
+	}
     }
 
     /**
