@@ -624,6 +624,8 @@ function DisplayThing(argId, argProperties) {
 	},
 
 	applyRecordTemplate: function(record, row, fields, template, props,macros, debug) {
+	    if(!row) row = this.getDataValues(record);
+	    if(!fields) fields = record.getFields();
 	    fields = this.getFields(fields);
 	    if(!props) {
 		props = this.getTemplateProps(fields);
@@ -664,8 +666,43 @@ function DisplayThing(argId, argProperties) {
 	    //Look for a list
 	    macros.tokens.forEach(t=>{
 		if(!t.attrs) return;
+		let debug = t.attrs['debug'];
+		//check for numeric 
+		let field;
+		if(t.tag=="#") {
+		    if(debug) console.log("checking for numeric");
+		    for (let col = 0; col < fields.length; col++) {
+			let f = fields[col];
+			if(f.isNumeric()) {
+			    field=f;
+			    if(debug) console.log("found numeric:" + f);
+			    break;
+			}
+		    }
+		} else if(t.tag=='match' && t.attrs['pattern']) {
+		    let pattern = t.attrs['pattern'];
+		    if(debug) console.log("checking for pattern:" + pattern);
+		    fields.every(f=>{
+			if(f.getId().indexOf(pattern)>=0 || f.getLabel().indexOf(pattern)>=0 ||
+			   f.getId().match(pattern) || f.getLabel().match(pattern)) {
+			    field =f;
+			    if(debug) console.log("found pattern:" + f);
+			    return false;
+			}
+			return true;
+		    });
+		    
+		}
+		if(field) {
+		    t.tag = field.getId();
+		    t.attrs['label'] = field.getLabel();
+		}
+
+
 		if(t.tag=="default") {
 		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}",t.attrs);
+		} else if(t.tag=="entryname") {
+		    attrs[t.tag] = props["entryname"];
 		} else 	if(t.attrs["type"]=="list" && t.attrs["fields"]) {
 		    let html = "<table class=display-table>";
 		    t.attrs.fields.split(",").forEach(fieldName=>{
