@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 13 10:33:29 MST 2022";
+var build_date="RAMADDA build date: Tue Dec 13 13:37:39 MST 2022";
 
 
 
@@ -3446,17 +3446,27 @@ Glyph.prototype = {
 	    if(this.stroke) 
 		ctx.strokeRect(pt.x,pt.y, this.width, this.height);
 	} else if(this.type=="image") {
-	    if(this.imageField) {
-		let img = args.record.getValue(this.imageField.getIndex());
-		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-		let i = new Image();
-		i.src = img;
-		setTimeout(()=>{
-		    ctx.drawImage(i,pt.x,pt.y,40,40);
-		},1000);
-//		ctx.drawImage(this.myImage,pt.x,pt.y);
-//		ctx.drawImage(this.myImage,0,0);
+	    let src = this.url;
+	    if(!src && this.imageField) {
+		src =  args.record.getValue(this.imageField.getIndex());
 	    }
+	    if(src) {
+		src= src.replace("\${root}",ramaddaBaseUrl);
+		this.width = +(this.width??50);
+		this.height = +(this.height??50);		
+		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+		if(this.debug) console.log("image glyph:" + src,{pos:this.pos,pt:pt,x:x,y:y,dx:this.dx,dy:this.dy,width:this.width,height:this.height});
+		let i = new Image();
+		i.src = src;
+		ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+/*
+		setTimeout(()=>{
+		    ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+		},100);*/
+	    } else {
+		console.log("No url defined for glyph image");
+	    }
+	
 	} else 	if(this.type == "gauge") {
 	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
 	    ctx.fillStyle =  this.fillColor || "#F7F7F7";
@@ -43803,7 +43813,8 @@ MapGlyph.prototype = {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
 	if(this.isFixed()) {
-	    item(this.convertText(this.style.text));
+	    //Don't show the text in the legend for fixed glyphs
+//	    item(this.convertText(this.style.text));
 	}
 	item(this.display.getDistances(this.getGeometry(),this.getType()));
 	let text = this.getPopupText();
@@ -44626,17 +44637,21 @@ MapGlyph.prototype = {
 	});
 	jqid(this.getId()).remove();
 	let text = this.style.text??"";
-	text = this.convertText(text);
 	let html = HU.div(['id',this.getId(),CLASS,"ramadda-imdv-fixed",'style',css],"");
 	this.display.jq(ID_MAP_CONTAINER).append(html);
 	let toggleLabel = null;
 	if(text.startsWith("toggle:")) {
-	    let match = text.match(/toggle:(.*)\n/);
+	    text = text.trim();
+	    let regexp = /toggle:(.*)\n/;
+	    let match = text.match(regexp);
 	    if(match) {
 		toggleLabel=match[1];
-		text = text.replace(/toggle:(.*)\n/,"").trim();
+		text = text.replace(regexp,"").trim();
 	    }
+	} else {
+	    text = this.convertText(text);
 	}
+
 	if(text.startsWith("<wiki>")) {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
