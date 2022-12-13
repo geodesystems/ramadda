@@ -1250,6 +1250,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         name = name.replace("'", "\\'");
 	
+
 	List attrs = Utils.makeList(
                                 "entryType",
                                 HU.squote(entry.getTypeHandler().getType()),
@@ -1270,11 +1271,16 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	    }
 	}
 
-        sb.append(
-            HU.mouseClickHref(
-                HU.call(
-                    "selectClick",
-                    HU.comma(
+	String mapGlyphs = entry.getTypeHandler().getProperty(entry,"mapglyphs",null);
+	if(mapGlyphs!=null) {
+            Utils.add(attrs,  "mapglyphs", JsonUtil.quote(mapGlyphs));
+	    //"base64:" + Utils.encodeBase64(mapGlyphs));		      
+	}
+
+
+        sb.append(HU.mouseClickHref(HU.call(
+					    "selectClick",
+					    HU.comma(
                         HU.squote(target), HU.squote(entry.getId()),
                         HU.squote(name),
                         JsonUtil.map(attrs), HU.squote(

@@ -524,6 +524,12 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
+	String mapGlyphs = entry.getTypeHandler().getProperty(entry,"mapglyphs",null);
+	if(mapGlyphs!=null) {
+            JsonUtil.quoteAttr(items, "mapglyphs", mapGlyphs);
+	}
+
+
         if (request.get("includecrumbs", false)) {
             if (entry.getParentEntry() != null) {
                 JsonUtil.quoteAttr(items, "breadcrumbs",
