@@ -2872,17 +2872,27 @@ Glyph.prototype = {
 	    if(this.stroke) 
 		ctx.strokeRect(pt.x,pt.y, this.width, this.height);
 	} else if(this.type=="image") {
-	    if(this.imageField) {
-		let img = args.record.getValue(this.imageField.getIndex());
-		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
-		let i = new Image();
-		i.src = img;
-		setTimeout(()=>{
-		    ctx.drawImage(i,pt.x,pt.y,40,40);
-		},1000);
-//		ctx.drawImage(this.myImage,pt.x,pt.y);
-//		ctx.drawImage(this.myImage,0,0);
+	    let src = this.url;
+	    if(!src && this.imageField) {
+		src =  args.record.getValue(this.imageField.getIndex());
 	    }
+	    if(src) {
+		src= src.replace("\${root}",ramaddaBaseUrl);
+		this.width = +(this.width??50);
+		this.height = +(this.height??50);		
+		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+		if(this.debug) console.log("image glyph:" + src,{pos:this.pos,pt:pt,x:x,y:y,dx:this.dx,dy:this.dy,width:this.width,height:this.height});
+		let i = new Image();
+		i.src = src;
+		ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+/*
+		setTimeout(()=>{
+		    ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+		},100);*/
+	    } else {
+		console.log("No url defined for glyph image");
+	    }
+	
 	} else 	if(this.type == "gauge") {
 	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
 	    ctx.fillStyle =  this.fillColor || "#F7F7F7";
