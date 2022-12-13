@@ -26,6 +26,12 @@ temp_c.unit=C
 depth_m.unit=M
 ]]>
 </property>
+<!-- This defines how these entries are shown in the Integrated Map Data Viewer (IMDV) -->
+<property name="mapglyphs">
+fontSize=0px;size=75;width=500;height=100;fill=#efefef;border=#000;font=bold 36px sans-serif                    
+type:label,pady:5,pos:n,dx:canvasWidth2,dy:10-canvasHeight,label:${entryname}
+type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)" prefixLabel=true}
+</property>
 <wiki>
 <![CDATA[
 +section  title="{{name}}"

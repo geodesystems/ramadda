@@ -107,7 +107,11 @@ fields="latitude,longitude,alt.*|elev.*"}}
     <property name="form.location.show" value="true"/>
     <property name="form.properties.show" value="false"/>
     <property name="map.chart.fields" value="temperature,pm2.5"/>          
-
+<property name="mapglyphs">
+<![CDATA[fontSize=0px;size=25;width=50;height=50;font=bold 12px sans-serif  
+type:circle,width:canvasWidth-10,height:canvasHeight,pos:c,dx:canvasWidth2,dy:-canvasHeight2,colorBy=pm2.5,colorBy:pm2.5,colorTable:airquality,colorByMin:0,colorByMax:300              
+type:label,pos:c,dx:canvasWidth2,dy:-canvasHeight2,label:${pm2.5}]]>
+</property>
      <column  name="sensor_id"  label="Sensor ID" type="string"/>
      <column  name="private_key"  label="Private Key"  type="password"/>
      <column  name="active"  label="Active"  type="boolean" default="true"/>     
@@ -149,15 +153,12 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
      {{field name="model"  row.label="Model:"}}
      {{field name="hardware"  row.label="Hardware:"}}
      {{field name="location_type"  row.label="Location:"}}
-
 </table>
 -col
 -row
 ]]>
-
 </wiki>
-
-  </type>
+</type>
 
 
 
