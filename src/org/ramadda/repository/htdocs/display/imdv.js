@@ -4240,7 +4240,8 @@ MapGlyph.prototype = {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
 	if(this.isFixed()) {
-	    item(this.convertText(this.style.text));
+	    //Don't show the text in the legend for fixed glyphs
+//	    item(this.convertText(this.style.text));
 	}
 	item(this.display.getDistances(this.getGeometry(),this.getType()));
 	let text = this.getPopupText();
@@ -5063,17 +5064,21 @@ MapGlyph.prototype = {
 	});
 	jqid(this.getId()).remove();
 	let text = this.style.text??"";
-	text = this.convertText(text);
 	let html = HU.div(['id',this.getId(),CLASS,"ramadda-imdv-fixed",'style',css],"");
 	this.display.jq(ID_MAP_CONTAINER).append(html);
 	let toggleLabel = null;
 	if(text.startsWith("toggle:")) {
-	    let match = text.match(/toggle:(.*)\n/);
+	    text = text.trim();
+	    let regexp = /toggle:(.*)\n/;
+	    let match = text.match(regexp);
 	    if(match) {
 		toggleLabel=match[1];
-		text = text.replace(/toggle:(.*)\n/,"").trim();
+		text = text.replace(regexp,"").trim();
 	    }
+	} else {
+	    text = this.convertText(text);
 	}
+
 	if(text.startsWith("<wiki>")) {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)

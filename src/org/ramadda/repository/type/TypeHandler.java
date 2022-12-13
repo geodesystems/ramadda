@@ -316,9 +316,6 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private String bubbleTemplate;
-
-    /** _more_ */
     private String defaultChildrenEntries;
 
     /** _more_ */
@@ -504,9 +501,6 @@ public class TypeHandler extends RepositoryManager {
 		else
 		    System.err.println("No text in wiki tag:" + XmlUtil.toString(wiki));
 	    }
-
-            bubbleTemplate = Utils.getAttributeOrTag(node, ATTR_BUBBLE,
-                    (String) null);
 
             wikiTemplateInner = Utils.getAttributeOrTag(node,
                     ATTR_WIKI_INNER, (String) null);
@@ -868,54 +862,63 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getBubbleTemplate(Request request, Entry entry)
             throws Exception {
+	return getBubbleTemplate(request, entry, true);
+    }
 
-        List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry,
-                "content.mapbubble", true);
-        if (metadataList != null) {
-            //type-1, apply to this-2, name pattern - 3, wiki-4
-            Metadata theMetadata = null;
-            for (Metadata metadata : metadataList) {
-                if (Misc.equals(metadata.getAttr(2), "false")) {
-                    if (metadata.getEntryId().equals(entry.getId())) {
-                        continue;
-                    }
-                }
-                String types = metadata.getAttr(1);
-                if ((types == null) || (types.trim().length() == 0)) {
-                    theMetadata = metadata;
 
-                    break;
-                }
-                for (String type : Utils.split(types, ",", true, true)) {
-                    if (type.equals("file") && !entry.isGroup()) {
-                        theMetadata = metadata;
+    private String getBubbleTemplate(Request request, Entry entry, boolean checkMetadata)
+	throws Exception {	
 
-                        break;
-                    }
-                    if (type.equals("folder") && entry.isGroup()) {
-                        theMetadata = metadata;
+	if(checkMetadata) {
+	    List<Metadata> metadataList =
+		getMetadataManager().findMetadata(request, entry,
+						  "content.mapbubble", true);
+	    if (metadataList != null) {
+		//type-1, apply to this-2, name pattern - 3, wiki-4
+		Metadata theMetadata = null;
+		for (Metadata metadata : metadataList) {
+		    if (Misc.equals(metadata.getAttr(2), "false")) {
+			if (metadata.getEntryId().equals(entry.getId())) {
+			    continue;
+			}
+		    }
+		    String types = metadata.getAttr(1);
+		    if ((types == null) || (types.trim().length() == 0)) {
+			theMetadata = metadata;
 
-                        break;
-                    }
-                    if (entry.getTypeHandler().isType(type)) {
-                        theMetadata = metadata;
+			break;
+		    }
+		    for (String type : Utils.split(types, ",", true, true)) {
+			if (type.equals("file") && !entry.isGroup()) {
+			    theMetadata = metadata;
 
-                        break;
-                    }
-                }
-            }
+			    break;
+			}
+			if (type.equals("folder") && entry.isGroup()) {
+			    theMetadata = metadata;
 
-            if (theMetadata != null) {
-                return theMetadata.getAttr(4);
-            }
-        }
+			    break;
+			}
+			if (entry.getTypeHandler().isType(type)) {
+			    theMetadata = metadata;
 
+			    break;
+			}
+		    }
+		}
+
+		if (theMetadata != null) {
+		    return theMetadata.getAttr(4);
+		}
+	    }
+	}
+
+	String bubbleTemplate = getProperty(entry, "bubble",null);
         if (bubbleTemplate != null) {
             return bubbleTemplate;
         }
         if (getParent() != null) {
-            return getParent().getBubbleTemplate(request, entry);
+            return getParent().getBubbleTemplate(request, entry,false);
         }
 
         return null;

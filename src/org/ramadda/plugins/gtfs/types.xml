@@ -93,15 +93,14 @@ myLocationOffset="0.008"
 -section
 ]]>
 </wiki>
-     <bubble><![CDATA[
+<property name="bubble"><![CDATA[
 :heading Agency: {{name}}
 <center>
 {{link title="View agency details"}}
 </center>
 ]]>
-</bubble>
-
-   </type>
+</property>
+</type>
 
 
 
@@ -153,7 +152,7 @@ myLocationOffset="0.008"
 </wiki>
 
 
-     <bubble><![CDATA[
+<property name="bubble"><![CDATA[
 :title Stop: {{name}}
 ----
 +section 
@@ -169,8 +168,8 @@ myLocationOffset="0.008"
 -row
 -section
 ]]>
-</bubble>
-   </type>
+</property>
+  </type>
 
 
   <type name="type_gtfs_route"  description="Transit Route" handler="org.ramadda.plugins.gtfs.GtfsRouteTypeHandler"  >
@@ -207,14 +206,14 @@ myLocationOffset="0.008"
 
 ]]>
 </wiki>
-     <bubble><![CDATA[
+     <property name="bubble"><![CDATA[
 :heading Route: {{name}}
 <center>
 {{link title="View route details"}}
 </center>
 {{gtfs.route.latest}}
 ]]>
-</bubble>
+</property>
 
    </type>
 
@@ -342,7 +341,7 @@ showFooter="false"
      <column name="trip_id"  type="string"  label="Trip ID" />
      <column name="current_status"  type="string"  label="Current Status" />
      <column name="stop"  type="string"  label="Stop" />
-     <bubble><![CDATA[
+     <property name="bubble"><![CDATA[
 +section title={{name}}
 <table class="formtable">
 <tr><td class=formlabel>Time:</td><td>{{fromdate}}</td></tr>
@@ -353,7 +352,7 @@ showFooter="false"
 </table>
 -section
 ]]>
-</bubble>
+</property>
   </type>
 
 

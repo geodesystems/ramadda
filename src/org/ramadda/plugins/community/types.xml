@@ -153,12 +153,12 @@
 </children>
 
 
-     <bubble><![CDATA[
+<property name="bubble"><![CDATA[
 :heading {{link}}
 {{tree message="" details="false"}}
 ]]>
-</bubble>
-     <wiki><![CDATA[
+</property>
+<wiki><![CDATA[
 +section #
 :title {{name}}
 +row
