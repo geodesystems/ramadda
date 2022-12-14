@@ -420,7 +420,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    //If we are reloading then clear the data
 	    //Don't do this for now
 	    if(reload) {
-		//If its a reload then add all dependent displays to the pending list
+		//If its a reload then add all dependent displays to the pending listd
 		cacheObject.pointData = null;
 		cacheObject.pending = [];
 		if(debug)
@@ -480,8 +480,6 @@ function PointData(name, recordFields, records, url, properties) {
             let success=function(data) {
 		if(typeof data == "string") {
 		    try {
-//			if(displayDebug.setEntry)
-//			    console.log("pointdata got data:"+ data.substring(0,2000));
 			data = JSON.parse(data);
 		    } catch(exc) {
 			console.log("Error:" + exc);

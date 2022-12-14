@@ -2812,6 +2812,7 @@ Glyph.prototype = {
 		});
 	    }
 	    text = text.replace(/_nl_/g,"\n").split("\n");
+
 	    let h = 0;
 	    let hgap = 3;
 	    let maxw = 0;
@@ -2884,11 +2885,18 @@ Glyph.prototype = {
 		if(this.debug) console.log("image glyph:" + src,{pos:this.pos,pt:pt,x:x,y:y,dx:this.dx,dy:this.dy,width:this.width,height:this.height});
 		let i = new Image();
 		i.src = src;
-		ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
-/*
-		setTimeout(()=>{
+		if(!i.complete) {
+		    let loaded = false;
+		    i.onload=()=>{
+			ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+			loaded=true;
+		    }
+		    return () =>{
+			return loaded;
+		    }
+		} else {
 		    ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
-		},100);*/
+		}
 	    } else {
 		console.log("No url defined for glyph image");
 	    }
