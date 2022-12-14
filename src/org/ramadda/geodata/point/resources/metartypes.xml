@@ -55,14 +55,13 @@ fields=raw_text[chartable=true type=string],station_id[type=string],observation_
  <property name="record.properties">
 skiplines=1
 fields=timestamp[type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=true isLatitude=true],longitude[chartable=true isLongitude=true],temperature[unit=C],dewpoint[unit=C],winddirection[label="Wind Direction" unit=degrees],windspeed[label="Wind Speed" unit=km_h-1],windgust[label="Wind Gust" unit=km_h-1],barometricpressure[label="Barometric Pressure" unit=Pa],sealevelpressure[label="Sea Level Pressure" unit=Pa],visibility[unit=m],maxtemperaturelast24hours[label="Max Temperature Last 24 Hours" unit=C],mintemperaturelast24hours[label="Min Temperature Last 24 Hours" unit=C],precipitationlast3hours[label="Precipitation Last 3 Hours" unit=m],precipitationlast6hours[label="Precipitation Last 6 Hours" unit=m],relativehumidity[label="Relative Humidity" unit=percent],windchill[label="Wind Chill" unit=C],heatindex[label="Hear Index" unit=C]
- </property>
- <property name="bubble">
+</property>
+<property name="bubble">
 <![CDATA[
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
 {{group showMenu="false"}}
-{{display_linechart  fields=temperature}}
-{{display_linechart  fields=sealevelpressure}}
-{{display_barchart  fields=precipitationlast6hours}}
+{{display_linechart  fields=temperature lastRecords="1000"}}
+{{display_barchart  fields=precipitationlast6hours lastRecords="1000"}}
 -section
 ]]></property>
 

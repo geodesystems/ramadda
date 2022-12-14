@@ -39,8 +39,8 @@ type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  patt
 <![CDATA[
 +section  title="{{name}}"
 {{group showMenu="false"}}
-{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="5000"}}
-{{display_linechart showMenu=true fieldsPatterns=".*press" lastRecords="5000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="1000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*press" lastRecords="1000"}}
 -section
 ]]></property>
 
