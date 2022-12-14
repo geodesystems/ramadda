@@ -35,6 +35,15 @@ type:image,pos:nw,dx:10,dy:10-canvasHeight,width:60,height:60,url:${root}/point/
 type:label,pady:5,pos:nw,dx:80,dy:10-canvasHeight,label:${entryname}  
 type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)" prefixLabel=true}
 </property>
+<property name="bubble">
+<![CDATA[
++section  title="{{name}}"
+{{group showMenu="false"}}
+{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="5000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*press" lastRecords="5000"}}
+-section
+]]></property>
+
 <wiki>
 <![CDATA[
 +section  title="{{name}}"
