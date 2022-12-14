@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 13 13:59:21 MST 2022";
+var build_date="RAMADDA build date: Tue Dec 13 22:09:46 MST 2022";
 
 
 
@@ -3386,6 +3386,7 @@ Glyph.prototype = {
 		});
 	    }
 	    text = text.replace(/_nl_/g,"\n").split("\n");
+
 	    let h = 0;
 	    let hgap = 3;
 	    let maxw = 0;
@@ -3458,11 +3459,18 @@ Glyph.prototype = {
 		if(this.debug) console.log("image glyph:" + src,{pos:this.pos,pt:pt,x:x,y:y,dx:this.dx,dy:this.dy,width:this.width,height:this.height});
 		let i = new Image();
 		i.src = src;
-		ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
-/*
-		setTimeout(()=>{
+		if(!i.complete) {
+		    let loaded = false;
+		    i.onload=()=>{
+			ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
+			loaded=true;
+		    }
+		    return () =>{
+			return loaded;
+		    }
+		} else {
 		    ctx.drawImage(i,pt.x,pt.y,this.width,this.width);
-		},100);*/
+		}
 	    } else {
 		console.log("No url defined for glyph image");
 	    }
@@ -13192,7 +13200,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    //If we are reloading then clear the data
 	    //Don't do this for now
 	    if(reload) {
-		//If its a reload then add all dependent displays to the pending list
+		//If its a reload then add all dependent displays to the pending listd
 		cacheObject.pointData = null;
 		cacheObject.pending = [];
 		if(debug)
@@ -13252,8 +13260,6 @@ function PointData(name, recordFields, records, url, properties) {
             let success=function(data) {
 		if(typeof data == "string") {
 		    try {
-//			if(displayDebug.setEntry)
-//			    console.log("pointdata got data:"+ data.substring(0,2000));
 			data = JSON.parse(data);
 		    } catch(exc) {
 			console.log("Error:" + exc);
@@ -41588,6 +41594,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    this.redraw();
 			    this.makeLegend();
 			};
+
 			getRamadda().getEntry(mapOptions.entryId, callback);
 		    }
 		} else {
@@ -43349,7 +43356,11 @@ MapGlyph.prototype = {
 	return null;
     },
     applyEntryGlyphs:function(args) {
-	if(!Utils.stringDefined(this.getEntryGlyphs(true))) return;
+	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
+	    console.log("\tno glyphs");
+	    
+	    return;
+	}
 
 	let opts = {
 	    entryId:this.attrs.entryId
@@ -43365,7 +43376,10 @@ MapGlyph.prototype = {
 	    if(line.startsWith("#") || line == "") return;
 	    glyphs.push(line);
 	});
-	if(glyphs.length==0) return;
+	if(glyphs.length==0) {
+	    console.log("\tno glyphs-2");
+	    return;
+	}
 	let url = ramaddaBaseUrl + "/entry/data?record.last=1&max=1&entryid=" + opts.entryId;
 	let pointData = new PointData("",  null,null,url,
 				      {entryId:opts.entryId});
@@ -43373,7 +43387,30 @@ MapGlyph.prototype = {
 	    this.makeGlyphs(pointData,data,glyphs);
 	    this.display.clearFeatureChanged();
 	}
-	pointData.loadData(this.display,null, callback);
+	let fauxDisplay  = {
+	    display:this.display,
+	    type: "map glyph proxy",
+	    getId() {
+		return "ID";
+	    },
+	    pointDataLoaded:function(data,url) {
+		callback(data);
+
+	    },
+            pointDataLoadFailed:function(err){
+		this.display.pointDataLoadFailed(err);
+	    },
+	    applyRequestProperties:function(props) {
+	    },
+	    handleLog:function(err) {
+		this.display.handleLog(err);
+	    },
+	    displayError:function(err) {
+		console.log("Error:" + err);
+	    }
+	    
+	}
+	pointData.loadData(fauxDisplay,null);
     },
     makeGlyphs: function(pointData,data,glyphLines) {
 	let glyphs = [];
@@ -43459,39 +43496,50 @@ MapGlyph.prototype = {
 	    ctx.strokeStyle = border;
 	    ctx.strokeRect(0,0,canvasWidth,canvasHeight);
 	}
-
 	ctx.strokeStyle ="#000";
 	ctx.fillStyle="#000";
-//	for(let i=0;i<140;i+=20) {ctx.fillText(""+i,0,i);}
-
-	/*
-	ctx.strokeStyle ="#f00";
-	ctx.lineWidth=1;
-	ctx.beginPath();
-	ctx.moveTo(0,0);
-	ctx.lineTo(100,100);
-	ctx.stroke();
-	*/
-
-
+	let pending = [];
 	glyphs.forEach(glyph=>{
-	    glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:data.getRecords()[0]});
+	    //if its an image glyph then the image might not be loaded so the call returns a
+	    //isReady function that we keep checking until it is ready
+	    let isReady =  glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:data.getRecords()[0]});
+	    if(isReady) pending.push(isReady);
 	});
 
-	let img = canvas.toDataURL();
-	if($('#testimg').length) 
-	    $("#testimg").html(HU.tag("img",["src",img]));
-	canvas.remove();
-	if(fontSize) {
-	    this.style.fontSize=fontSize;
-	}
+	let finish = ()=>{
+	    let img = canvas.toDataURL();
+	    if($('#testimg').length) 
+		$("#testimg").html(HU.tag("img",["src",img]));
+	    canvas.remove();
+	    if(fontSize) {
+		this.style.fontSize=fontSize;
+	    }
+	    
+	    if(size) {
+		this.style.pointRadius=size;
+	    }
+	    this.style.externalGraphic=img;
+	    this.applyStyle(this.style);		
+	    this.display.redraw();
+	};
 
-	if(size) {
-	    this.style.pointRadius=size;
-	}
-	this.style.externalGraphic=img;
-	this.applyStyle(this.style);		
-	this.display.redraw();
+
+	let check = () =>{
+	    let allGood = true;
+	    pending.every(p=>{
+		if(!p()) {
+		    allGood=false;
+		    return false;
+		}
+		return true;
+	    });
+	    if(allGood) {
+		finish();
+	    }  else {
+		setTimeout(check,100);
+	    }
+	};
+	check();
     },
 
     setEntryGlyphs:function(v) {
