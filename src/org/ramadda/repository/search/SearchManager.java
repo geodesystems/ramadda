@@ -277,7 +277,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private List<SearchProvider> pluginSearchProviders =
         new ArrayList<SearchProvider>();
 
-    private Object luceneMutex = new Object();
+    private Object LUCENE_MUTEX = new Object();
 
     private Hashtable<String,List<String>> synonyms;
 
@@ -370,10 +370,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private IndexWriter getLuceneWriter() throws Exception {
 	if(luceneWriter==null) {
-	    Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
-	    IndexWriterConfig config = new IndexWriterConfig();
-	    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-	    luceneWriter = new IndexWriter(index, config);
+	    synchronized(LUCENE_MUTEX) {
+		if(luceneWriter==null) {
+		    Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
+		    IndexWriterConfig config = new IndexWriterConfig();
+		    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		    luceneWriter = new IndexWriter(index, config);
+		}
+	    }
 	}
 	return luceneWriter;
     }
@@ -607,7 +611,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private  void indexEntries(List<Entry> entries, Request request, boolean isNew)
 	throws Exception {
-	synchronized(luceneMutex) {
+	synchronized(LUCENE_MUTEX) {
 	    IndexWriter writer = getLuceneWriter();
 	    try {
 		for (Entry entry : entries) {
@@ -1637,7 +1641,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             return;
         }
         try {
-	    synchronized(luceneMutex) {
+	    synchronized(LUCENE_MUTEX) {
 		IndexWriter writer = getLuceneWriter();
 		for (String id : ids) {
 		    writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
