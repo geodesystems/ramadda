@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Dec 14 17:57:35 MST 2022";
+var build_date="RAMADDA build date: Thu Dec 15 13:42:05 MST 2022";
 
 
 
@@ -41028,6 +41028,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				HU.space(2)+widget;
 			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
 			} else if(prop=="labelAlign") {
+			    html +=HU.formTableClose();
+			    html +=HU.formTable();			    
 			    //lcr tmb
 			    let items = [["lt","Left Top"],["ct","Center Top"],["rt","Right Top"],
 					 ["lm","Left Middle"],["cm","Center Middle"],["rm","Right Middle"],
@@ -41152,12 +41154,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    html = buttons;
 	    content.forEach((tuple,idx)=>{
-		html+=HU.toggleBlock(HU.b(tuple[0]),tuple[1],idx==0);
+		html+=HU.toggleBlock(HU.b(tuple[0]),HU.div(['class','imdv-properties-section'],tuple[1]),idx==0);
 	    });
 	    html+=buttons;
-	    html  = HU.div(['style',HU.css('min-width','600px','max-height','400px','overflow-y','auto'),CLASS,"wiki-editor-popup"], html);
+	    html  = HU.div(['style',HU.css('min-width','600px'),CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
-	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true});
+	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
 	    dialog.find('.ramadda-icons-recent').click(function() {
 		let textarea = $(this).attr('textarea');
 		let icon = '<img src=' + $(this).attr('icon')+'>';
@@ -44152,15 +44154,14 @@ MapGlyph.prototype = {
 	});
 	let c = OpenLayers.Filter.Comparison;
 	let operators = [c.EQUAL_TO,c.NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null']];
-	let table = HU.b("Style Rules")+"<br>";
-	table+=HU.formTable();
+	let rulesTable = HU.formTable();
 	let sample = "Samples&#013;";
 	for(a in attrs) {
 	    let v = attrs[a]?String(attrs[a]):'';
 	    v = v.replace(/"/g,"").replace(/\n/g," ");
 	    sample+=a+"=" + v+"&#013;";
 	}
-	table+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
+	rulesTable+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules();
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
 	for(let index=0;index<20;index++) {
@@ -44185,11 +44186,11 @@ MapGlyph.prototype = {
 	    valueInput =HU.span(['id','mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
 	    let styleInput = HU.textarea("",s,['id','mapstyle_' + index,'rows','3','cols','10','title',styleTitle]);
-	    table+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
+	    rulesTable+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
-	table += "</table>";
-	table = HU.div(['style','max-height:200px;overflow-y:auto;'], table);
-	content.push(["Map Style Rules",colorBy+table]);
+	rulesTable += "</table>";
+	let table = HU.b("Style Rules")+HU.div(['class','imdv-properties-section'], rulesTable);
+	content.push(["Map Style Rules", colorBy+table]);
 	content.push(["Sample Values",ex]);
     },
     getMapStyleRules: function() {
