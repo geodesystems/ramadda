@@ -3862,6 +3862,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             contentId:null,
             anchor:null,
             draggable:false,
+	    resizable:false,
             decorate:true,
             header:false,
             remove:true,
@@ -3996,6 +3997,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         } else {
             popup.show();
         }
+
+
+        if(opts.resizable) {
+            if(opts.modal) {
+                $("#" + innerId).resizable();
+            } else {
+                popup.resizable();
+                //          popup.resizable({containment: "parent",handles: 'se',});
+            }
+	}
 
 
         if(opts.draggable) {
