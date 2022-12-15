@@ -2562,7 +2562,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let loadCallback = (map,layer)=>{
-		if(layer.mapGlyph)layer.mapGlyph.applyMaptyle();
+		if(layer.mapGlyph)layer.mapGlyph.applyMapStyle();
 	    }
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
