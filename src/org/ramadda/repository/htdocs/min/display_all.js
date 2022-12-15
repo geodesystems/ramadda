@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Dec 14 13:09:05 MST 2022";
+var build_date="RAMADDA build date: Wed Dec 14 17:57:35 MST 2022";
 
 
 
@@ -42141,7 +42141,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 
 	    let loadCallback = (map,layer)=>{
-		if(layer.mapGlyph)layer.mapGlyph.applyMaptyle();
+		if(layer.mapGlyph)layer.mapGlyph.applyMapStyle();
 	    }
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
