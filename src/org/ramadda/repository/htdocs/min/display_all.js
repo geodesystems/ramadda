@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec 15 13:42:05 MST 2022";
+var build_date="RAMADDA build date: Fri Dec 16 13:28:00 MST 2022";
 
 
 
@@ -3867,6 +3867,42 @@ function addGlobalDisplayType(type, front) {
 }
 
 
+var RamaddaDisplayUtils = {
+    getCanvasProps: function() {
+	return [
+	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
+	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
+	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
+	{label:'label glyph',p:"glyph1",ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
+	{label:'rect glyph', p:"glyph1",ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
+	{label:'circle glyph',p:"glyph1",ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	{label:'3dbar glyph', p:"glyph1",ex:'type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	    {label:'gauge glyph',p:"glyph1",ex:'type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0'}
+	];
+    },
+    getGlyphs:function(display,fields,records, canvasWidth, canvasHeight) {
+	let glyphs=[];
+	let cnt = 1;
+	if(!Utils.isDefined(canvasWidth)) {
+	    canvasWidth = display.getProperty("canvasWidth",100);
+	    canvasHeight = display.getProperty("canvasHeight",100);	    
+	}
+	while(cnt<11) {
+	    let attr = display.getProperty("glyph" + (cnt++));
+	    if(!attr)
+		continue;
+	    glyphs.push(new Glyph(display,1.0, fields,records,{
+		canvasWidth:canvasWidth,
+		canvasHeight: canvasHeight
+	    },attr));
+	}
+	return glyphs;
+    }
+
+}
+
+
+
 function makeDisplayTooltip(header,imgs,text) {
     let h =  "";
     if(header!=null) h +=HU.b(header);
@@ -4004,10 +4040,6 @@ addGlobalDisplayType({
     helpUrl:true
 
 },true);
-
-
-
-
 
 
 /**
@@ -34213,7 +34245,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:"vectorLayerFillColor"},
 	{p:"vectorLayerFillOpacity",ex:0.25},
         {p:"vectorLayerStrokeWidth",ex:2},
-];
+    ];
+
+    this.debugZoom = properties['debugZoom'];
     
     displayDefineMembers(this, myProps, {
         mapBoundsSet: false,
@@ -34264,6 +34298,36 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
+	checkLevelRange:function(layers, redraw) {
+	    if(!layers) layers=[this.getMap().getMarkersLayer()];
+	    if(this.debugZoom) console.log("features:");
+	    let level = this.getMap().getMap().getZoom();
+	    layers.forEach(layer=>{
+		if(!layer) return;
+		layer.features.forEach(feature=>{
+		    if(!feature.levelRange) {
+			if(this.debugZoom) console.log("\tno level range");
+			return;
+		    }
+		    if(!feature.style) feature.style = {};
+		    let visible = level>=feature.levelRange.min &&
+			level<=feature.levelRange.max;
+		    let changed= false;
+		    //		console.log("\tlevel:",level,feature.levelRange,visible); 
+		    if(visible) {
+			changed = feature.style.display != 'inline';
+			feature.style.display = 'inline';
+		    }  else {
+			changed = feature.style.display != 'none';
+			feature.style.display = 'none';
+		    }			
+		    if(redraw &&changed) {
+			layer.drawFeature(feature);
+		    }
+		});
+	    });
+	},
+
 	getMap:function() {
 	    return this.map;
 	},
@@ -34326,7 +34390,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(this.getShowOpacitySlider()) {
 		params.showOpacitySlider=true;
 	    }
-	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity"].forEach(p=>{
+	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity","changeSizeOnSelect"].forEach(p=>{
 		let v = this.getProperty(p);
 		if(Utils.isDefined(v)) {
 		    params[p] = v;
@@ -34799,6 +34863,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'hmCountThreshold',ex:'1'},
     ];
     
+    myProps.push({label:'Canvas'});
+    myProps.push(...RamaddaDisplayUtils.getCanvasProps());
+
+
     displayDefineMembers(this, myProps, {
         mapBoundsSet: false,
         features: [],
@@ -35165,6 +35233,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } else {
 		this.map.setDoPopup(this.getProperty("doPopup",true));
 	    }
+	    this.createTime = new Date();
+
             this.map.addClickHandler(this.domId(ID_LONFIELD), this
 				     .domId(ID_LATFIELD), null, this);
 
@@ -35174,48 +35244,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
             });
 
-            this.map.getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
-		if(this.callingUpdateUI) return;
-		if(this.lastUpdateTime) {
-		    let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
-		    if(diff<2000) {
-			return
-		    }
-		}
-//		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
-                this.mapBoundsChanged();
-		this.checkHeatmapReload();
-		this.updateHtmlLayers();
-		if(!this.haveAddPoints) {
-		    return;
-		}
+	    //register the events in a bit
+	    setTimeout(()=>{
+		this.registerEvents();
+	    },1000);
 
-		if(this.getHandleCollisions()) {
-		    if(this.lastZoom == this.map.getZoom()) {
-			return;
-		    }
-		    //Wait a bit
-		    if(this.lastCollisionTimeout) {
-			clearTimeout(this.lastCollisionTimeout);
-		    }
 
-//		    console.log(this.getLogLabel()+" setting up collision timeout");
-		    this.lastTimeout = setTimeout(()=>{
-			this.haveCalledUpdateUI = false;
-//			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
-			this.updateUI();
-			this.lastCollisionTimeout = null;
-		    },1000);
-		}
-//		console.log(this.getLogLabel()+" finished zoomend");
-            });
-	    this.createTime = new Date();
-
-            this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
-		if(this.map.doingPopup) return;
-                this.mapBoundsChanged();
-		this.checkHeatmapReload();
-            });
 
 	    
 	    var boundsAnimation = this.getProperty("boundsAnimation");
@@ -35294,6 +35328,55 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.addMarkerEmbed(marker);
 	    }
         },
+	registerEvents:function() {
+            this.getMap().getMap().events.register("zoomend", this, this.zoomendFunc = ()=>{
+		if(this.callingUpdateUI) return;
+		if(this.lastUpdateTime) {
+		    let diff = (new Date().getTime())-this.lastUpdateTime.getTime()
+		    if(diff<2000) {
+			return
+		    }
+		}
+		if(this.debugZoom) {
+		    console.log("level:" + this.getMap().getMap().getZoom());
+		}
+		//		console.log(this.getLogLabel()+" zoomend:"+this.callingUpdateUI+" " + this.lastUpdateTime);
+		if(this.pointLevelRange || this.glyphLevelRange) {
+		    this.checkLevelRange([this.myFeatureLayer],true);
+		}		
+
+                this.mapBoundsChanged();
+		this.checkHeatmapReload();
+		this.updateHtmlLayers();
+		if(!this.haveAddPoints) {
+		    return;
+		}
+
+		if(this.getHandleCollisions()) {
+		    if(this.lastZoom == this.map.getZoom()) {
+			return;
+		    }
+		    //Wait a bit
+		    if(this.lastCollisionTimeout) {
+			clearTimeout(this.lastCollisionTimeout);
+		    }
+
+		    //		    console.log(this.getLogLabel()+" setting up collision timeout");
+		    this.lastTimeout = setTimeout(()=>{
+			this.haveCalledUpdateUI = false;
+			//			console.log(this.getLogLabel()+" calling updateUI from handleCollisions");
+			this.updateUI();
+			this.lastCollisionTimeout = null;
+		    },1000);
+		}
+		//		console.log(this.getLogLabel()+" finished zoomend");
+            });
+            this.map.getMap().events.register("moveend", this, this.moveendFunc = ()=> {
+		if(this.map.doingPopup) return;
+                this.mapBoundsChanged();
+		this.checkHeatmapReload();
+            });
+	},
         getBounds: function() {
 	    if(this.map)
 		return this.map.getBounds();
@@ -36683,8 +36766,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
             let records = this.records =  this.filterData();
 
-
-
 	    if(this.shapesTypeField && this.shapesField) {
 		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
 		this.loadShapes(records);
@@ -37405,12 +37486,39 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
             let iconField = this.getFieldById(fields, this.getProperty("iconField"));
+
+	    let makeLevelRange = v=>{
+		if(!Utils.isDefined(v)) return null;
+		let toks  = v.split(":");
+		let r = {
+		    min:Utils.stringDefined(toks[0])?+toks[0]:-1,
+		    max:Utils.stringDefined(toks[1])?+toks[1]:100
+		}
+		if(isNaN(r.min)) r.min = -1;
+		if(isNaN(r.max)) r.max = 100;
+		return r;
+	    };
+
+	    this.glyphLevelRange =makeLevelRange(this.getProperty("glyphLevelRange"));
+	    this.pointLevelRange =makeLevelRange(this.getProperty("pointLevelRange"));
+
+	    let glyphs=RamaddaDisplayUtils.getGlyphs(this,fields,records);
+	    let canvasBackground = this.getProperty('canvasBackground');
+	    let canvasBorder = this.getProperty('canvasBorder');
+	    let canvasWidth =this.getCanvasWidth();
+	    let canvasHeight =this.getCanvasHeight();
+	    let glyphSize =this.getProperty("glyphSize","32");
+
+
             let rotateField = this.getFieldById(fields, this.getProperty("rotateField"));	    
 	    let markerIcon = this.getProperty("markerIcon",this.getProperty("pointIcon"));
 	    if(markerIcon && markerIcon.startsWith("/")) {
                 markerIcon =  ramaddaBaseUrl + markerIcon;
 	    }
 	    let usingIcon = markerIcon || iconField;
+	    let showPoint = !usingIcon;
+	    if(glyphs.length>0) showPoint=this.getProperty("showPoint",true);
+
             let iconSize = parseFloat(this.getProperty("iconSize",this.getProperty("radius",32)));
 	    let iconMap = this.getIconMap();
 	    let dfltShape = this.getProperty("defaultShape",null);
@@ -37950,6 +38058,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let mapPoints =recordLayout.features;
 
 		//marker
+
 		if(usingIcon) {
 		    if(iconField) {
 			let tuple = record.getData();
@@ -37962,19 +38071,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(sizeBy.index>=0) {
 			    size = props.pointRadius;
 			}
-			//not sure why this check was here for the collisioninfo
-//			if(!recordLayout.collisionInfo)  {
-			    mapPoint = this.map.createMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
-			    mapPoint.isMarker = true;
-			    mapPoints.push(mapPoint);
-			    this.markers[record.getId()] = mapPoint;
-			    pointsToAdd.push(mapPoint);
-//			}
+			mapPoint = this.map.createMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
+			mapPoint.isMarker = true;
+			mapPoints.push(mapPoint);
+			this.markers[record.getId()] = mapPoint;
+			pointsToAdd.push(mapPoint);
 		    } else  {
 			let attrs = {
 			}
 			if(rotateField) attrs.rotation = record.getValue(rotateField.getIndex());
 			mapPoint = this.map.createMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,iconSize,null,null,attrs);
+			mapPoint.levelRange = this.pointLevelRange;
 			mapPoint.textGetter= textGetter;
 			pointsToAdd.push(mapPoint);
 			mapPoint.isMarker = true;
@@ -37984,8 +38091,43 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 
+		if(glyphs.length>0) {
+		    let cid = HU.getUniqueId("canvas_");
+		    let c = HU.tag("canvas",[CLASS,"", WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
+		    $(document.body).append(c);
+		    let canvas = document.getElementById(cid);
+		    let ctx = canvas.getContext("2d");
 
-		if(!usingIcon || colorByEnabled)  {
+		    if(canvasBackground) {
+			ctx.fillStyle=canvasBackground;
+			ctx.fillRect(0,0,canvasWidth,canvasHeight);
+		    }
+		    if(canvasBorder) {
+			ctx.strokeStyle = canvasBorder;
+			ctx.strokeRect(0,0,canvasWidth,canvasHeight);
+		    }
+		    ctx.strokeStyle ="#000";
+		    ctx.fillStyle="#000";
+		    let pending = [];
+		    glyphs.forEach(glyph=>{
+			let isReady =  glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:record});
+			if(isReady) pending.push(isReady);
+		    });
+		    let img = canvas.toDataURL();
+		    let size = glyphSize;
+		    if(sizeBy.index>=0) {
+			size = props.pointRadius;
+		    }
+		    mapPoint = this.map.createMarker("pt-" + i, point, img, "pt-" + i,null,null,size);
+		    mapPoint.levelRange=this.glyphLevelRange;
+		    mapPoint.isMarker = true;
+		    mapPoints.push(mapPoint);
+		    this.markers[record.getId()] = mapPoint;
+		    pointsToAdd.push(mapPoint);
+		}
+
+
+		if(showPoint || colorByEnabled)  {
 		    if(!props.graphicName)
 			props.graphicName = graphicName;
 		    if(rotateField) props.rotation = record.getValue(rotateField.getIndex());
@@ -37993,6 +38135,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		    if(radius>0) {
 			mapPoint = this.map.createPoint("pt-" + i, point, props, null);
+			mapPoint.levelRange = this.pointLevelRange;
 			pointsToAdd.push(mapPoint);
 			this.markers[record.getId()] = mapPoint;
 			mapPoints.push(mapPoint);
@@ -38036,8 +38179,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 	    times.push(new Date());
-
-
 	    
 	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
@@ -38121,6 +38262,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if (this.getProperty("animationTakeStep", false)) {
 		this.getAnimation().doNext();
 	    }
+
+	    if(this.pointLevelRange || this.glyphLevelRange) {
+		this.checkLevelRange([this.myFeatureLayer],true);
+	    }		
 
 
         },
@@ -48889,8 +49034,6 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CANVAS, properties);
     let myProps = [
 	{label:'Canvas'},
-	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
-	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
 	{p:'canvasStyle',d:"",ex:"",tt:'Canvas CSS style'},
 	{p:'titleTemplate',tt:'Template to show as title'},
 	{p:'topTitleTemplate',tt:'Template to show as top title'},	
@@ -48898,13 +49041,12 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	{p:'iconField',tt:'Icon Field'},
 	{p:'highlightStyle',tt:'Highlight Style'},
 	{p:'unHighlightStyle',tt:'Unhighlight Style'},	
-	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
-	{label:'label glyph',p:"glyph1",ex:'"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"'},
-	{label:'rect glyph', p:"glyph1",ex:'"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"'},
-	{label:'circle glyph',p:"glyph1",ex:'"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100"'},
-	{label:'3dbar glyph', p:"glyph1",ex:'"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100"'},
-	{label:'gauge glyph',p:"glyph1",ex:'"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"'},
     ];
+
+
+    myProps.push(...RamaddaDisplayUtils.getCanvasProps());
+
+
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
@@ -48963,17 +49105,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		html+=div;
 	    });
 	    this.setContents(html);
-	    let glyphs=[];
-	    let cnt = 1;
-	    while(cnt<11) {
-		let attr = this.getProperty("glyph" + (cnt++));
-		if(!attr)
-		    continue;
-		glyphs.push(new Glyph(this,1.0, fields,records,{
-		    canvasWidth:canvasWidth,
-		    canvasHeight: canvasHeight
-		},attr));
-	    }
+	    let glyphs=RamaddaDisplayUtils.getGlyphs(this,fields,records,canvasWidth,canvasHeight);
 	    let opts = {};
 	    let originX = 0;
 	    let originY=this.getPropertyCanvasOrigin()=="center"?canvasHeight/2:canvasHeight;
