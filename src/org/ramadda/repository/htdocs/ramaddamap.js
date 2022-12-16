@@ -414,7 +414,7 @@ function RepositoryMap(mapId, params) {
 	iconSize:null,
 	iconWidth:null,
 	iconHeight:null,
-
+	changeSizeOnSelect:true,
         tickSelectColor: "red",
         tickHoverColor: "blue",
         tickColor: "#888",
@@ -1053,7 +1053,7 @@ RepositoryMap.prototype = {
             });
         };
 	//Do this later
-        setTimeout(callback, 2000);
+        setTimeout(callback, 5000);
 
         if (this.mapHidden) {
             //A hack when we are hidden
@@ -1442,15 +1442,18 @@ RepositoryMap.prototype = {
 	    style.fillColor  = this.params.selectFillColor || highlightStyle.fillColor;
 	} 
 
-	if(Utils.isDefined(style.pointRadius)) {
+	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
 	}
 
 	this.checkMatchStyle(fs,style);
 
-	if(feature.style) {
-	    if(feature.style.externalGraphic) {
-		style = $.extend({},feature.style);
+	//If it is a graphic then just clone the style
+	if(feature.style &&  feature.style.externalGraphic) {
+	    style = $.extend({},feature.style);
+	    //Dim it a bit
+	    style.fillOpacity=0.6;
+	    if(this.params.changeSizeOnSelect) {
 		if(Utils.isDefined(style.graphicHeight))  {
 		    style.graphicHeight*=1.5;
 		    style.graphicYOffset = -style.graphicHeight/ 2;

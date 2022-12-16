@@ -190,6 +190,42 @@ function addGlobalDisplayType(type, front) {
 }
 
 
+var RamaddaDisplayUtils = {
+    getCanvasProps: function() {
+	return [
+	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
+	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
+	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
+	{label:'label glyph',p:"glyph1",ex:'type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}'},
+	{label:'rect glyph', p:"glyph1",ex:'type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100'},
+	{label:'circle glyph',p:"glyph1",ex:'type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	{label:'3dbar glyph', p:"glyph1",ex:'type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field,#sizeByMin:0,#sizeByMax:100'},
+	    {label:'gauge glyph',p:"glyph1",ex:'type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0'}
+	];
+    },
+    getGlyphs:function(display,fields,records, canvasWidth, canvasHeight) {
+	let glyphs=[];
+	let cnt = 1;
+	if(!Utils.isDefined(canvasWidth)) {
+	    canvasWidth = display.getProperty("canvasWidth",100);
+	    canvasHeight = display.getProperty("canvasHeight",100);	    
+	}
+	while(cnt<11) {
+	    let attr = display.getProperty("glyph" + (cnt++));
+	    if(!attr)
+		continue;
+	    glyphs.push(new Glyph(display,1.0, fields,records,{
+		canvasWidth:canvasWidth,
+		canvasHeight: canvasHeight
+	    },attr));
+	}
+	return glyphs;
+    }
+
+}
+
+
+
 function makeDisplayTooltip(header,imgs,text) {
     let h =  "";
     if(header!=null) h +=HU.b(header);
@@ -327,10 +363,6 @@ addGlobalDisplayType({
     helpUrl:true
 
 },true);
-
-
-
-
 
 
 /**
