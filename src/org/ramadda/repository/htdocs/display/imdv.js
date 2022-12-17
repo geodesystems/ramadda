@@ -341,6 +341,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
         myLayer: [],
 	glyphs:[],
 	markers:{},
+	levels: [["","None"],[4,"4 - Most zoomed out"],5,6,7,8,
+		 9,10,11,12,13,14,15,16,17,18,19,[20,"20 - Most zoomed in"]],
 	DOT_STYLE:{
 	    zIndex:1000,
 	    fillColor:'#000',
@@ -387,7 +389,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	handleNewFeature:function(feature,style,mapOptions) {
 	    style = style || feature?.style;
 	    mapOptions = mapOptions??feature?.mapOptions ?? style?.mapOptions;
-	    //	    console.log("new:" +mapOptions.type);
 	    if(feature && feature.style && feature.style.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
@@ -643,14 +644,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				tmpStyle.strokeColor="#ccc";
 				tmpStyle.fillColor = "transparent";
 			    }
+
+			    
 			    $.extend(tmpStyle.mapOptions,attrs);
 			    tmpStyle.mapOptions.entryId = entryId;
 			    tmpStyle.mapOptions.entryType = attrs.entryType;
-			    if(attrs.entryName) {
-				attrs.name  = attrs.entryName;				
-				tmpStyle.label = attrs.entryName;				
-				delete attrs.entryName;
-			    }
 
 
 			    if(glyphType.isMap()) {
@@ -661,13 +659,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    attrs.resourceUrl = resource.url;
 				    if(resource.style) $.extend(tmpStyle,resource.style);
 				}
+
+				
 				let mapOptions = tmpStyle.mapOptions;
 				delete tmpStyle.mapOptions;
 				$.extend(mapOptions,attrs);
 				let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 				mapGlyph.checkMapLayer();
 				return;
+			    } 
+
+			    if(attrs.entryName) {
+				attrs.name  = attrs.entryName;				
+				tmpStyle.label = attrs.entryName;				
+				delete attrs.entryName;
 			    }
+
 			    if(glyphType.isMultiEntry()) {
 				let mapOptions = tmpStyle.mapOptions;
 				$.extend(mapOptions,attrs);
@@ -701,9 +708,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
 				    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,glyphAttrs, style,points);
 
-
 				    mapGlyph.applyEntryGlyphs();
-
 				    this.clearCommands();
 				    mapGlyph.zoomTo();
 				    return
@@ -1004,7 +1009,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	createData:function(mapOptions) {
 	    let displayAttrs = {};
 	    let callback = text=>{
-		//		console.log(text);
 		let ff = text.match(/"filterFields":\"([^\"]+)"/);
 		let regexp = /createDisplay *\( *\"map\" *(.*?)}\);/;
 		regexp = /createDisplay\s*\(\s*\"map\"\s*,\s*({[\s\S]+?\})\);/;				
@@ -1297,6 +1301,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.setVisible(this.jq("visible").is(":checked"),true);
 		mapGlyph.setVisibleLevelRange(this.jq("minlevel").val().trim(),
 					      this.jq("maxlevel").val().trim());
+		mapGlyph.setShowMarkerWhenNotVisible(this.jq('showmarkerwhennotvisible').is(':checked'));
 		this.redraw();
 		this.makeLegend();
 		this.showMapLegend();
@@ -1482,6 +1487,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return {props:props,html:html};
 	},
 	
+	getLevelRangeWidget:function(level,showMarkerToo) {
+	    if(!level) level={};
+	    let visibleCbx =
+		HU.checkbox(this.domId('showmarkerwhennotvisible'),['id',this.domId('showmarkerwhennotvisible')],
+			    showMarkerToo,'Show marker instead');
+	    return  HU.b("Visible between levels:") + HU.space(3) +visibleCbx +'<br>'+
+		HU.select("",[ID,this.domId("minlevel")],this.levels,Utils.isDefined(level.min)?level.min:"",null,true) +
+		" &lt;= level &lt;= " +
+		HU.select("",[ID,this.domId("maxlevel")],this.levels,Utils.isDefined(level.max)?level.max:"")+" " +
+		HU.span(['id',this.domId('currentlevellabel')], "(current level: " + this.getCurrentLevel()+")") +'<br>';
+	},
 	doProperties: function(style, apply,mapGlyph) {
 	    let _this = this;
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
@@ -1521,13 +1537,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let level = mapGlyph.getVisibleLevelRange()??{};
 		html+= HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible(),"Visible")+"<br>";
-		let levels = [["","None"],[4,"4 - Most zoomed out"],5,6,7,8,
-			      9,10,11,12,13,14,15,16,17,18,19,[20,"20 - Most zoomed in"]];
-		layout("Visible between levels:",
-		       HU.select("",[ID,this.domId("minlevel")],levels,Utils.isDefined(level.min)?level.min:"",null,true) +
-		       " &lt;= level &lt;= " +
-		       HU.select("",[ID,this.domId("maxlevel")],levels,Utils.isDefined(level.max)?level.max:"")+" " +
-		       "(current level: " + this.getCurrentLevel()+")");
+		html+=this.getLevelRangeWidget(level,mapGlyph.getShowMarkerWhenNotVisible());
+
 		
 		let domId = this.domId("glyphedit_" + 'popupText');
 		html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 90]);
@@ -2125,6 +2136,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    Utils.isDefined(this.mapProperties.showMousePosition)?this.mapProperties.showMousePosition:false,'Show Mouse Position');		
 	    html+=HU.table(['width','100%'],HU.tr(['valign','top'],HU.tds([],[left,right])));
 
+	    html+=this.getLevelRangeWidget(this.mapProperties.visibleLevelRange,this.mapProperties.showMarkerWhenNotVisible);
+
 	    html+=HU.b('Top Wiki Text:') +'<br>' +
 		HU.textarea('',this.mapProperties.topWikiText??'',['id',this.domId('topwikitext_input'),'rows','6','cols','80']) +"<br>";
 
@@ -2151,6 +2164,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		this.mapProperties.topWikiText = this.jq('topwikitext_input').val();
 		this.mapProperties.bottomWikiText = this.jq('bottomwikitext_input').val();				
+		let min = this.jq("minlevel").val().trim();
+		let max = this.jq("maxlevel").val().trim();
+		if(min=="") min = null;
+		if(max=="") max = null;	
+		this.mapProperties.visibleLevelRange = {min:min,max:max};
+
+		this.mapProperties.showMarkerWhenNotVisible = this.jq('showmarkerwhennotvisible').is(':checked');
+
+
 		this.checkMapProperties();
 		this.makeLegend();
 		close();
@@ -3137,6 +3159,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		this.getMap().getMap().events.register("zoomend", "", () =>{
 		    this.checkVisible();
+		    this.jq('currentlevellabel').html('(current level: ' + this.getCurrentLevel()+')');
+
 		},true);
 	    },500);
 	    this.getMap().featureClickHandler = e=>{
@@ -3748,6 +3772,9 @@ MapGlyph.prototype = {
     jq:function(id) {
 	return jqid(this.domId(id));
     },
+    getIcon: function() {
+	return this.attrs.icon??this.display.getGlyphType(this.getType()).getIcon();
+    },
     putTransientProperty(name,value) {
 	this.transientProperties[name] = value;
     },
@@ -3780,8 +3807,6 @@ MapGlyph.prototype = {
     },
     applyEntryGlyphs:function(args) {
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
-	    console.log("\tno glyphs");
-	    
 	    return;
 	}
 
@@ -4459,6 +4484,7 @@ MapGlyph.prototype = {
 
     applyPropertiesComponent: function() {
 	if(!this.canDoMapStyle()) return;
+	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
 	let colorBy = {
 	    property:this.jq('colorby_property').val(),
 	    min:this.jq('colorby_min').val(),
@@ -4548,9 +4574,12 @@ MapGlyph.prototype = {
 	let numeric = featureInfo.filter(info=>{return info.isNumeric;});
 	let enums = featureInfo.filter(info=>{return info.isEnum;});
 	let colorBy = "";
+	colorBy+=HU.checkbox(this.domId('fillcolors'),['id',this.domId('fillcolors')],
+			     this.attrs.fillColors,'Fill Colors')+'<br>';
+	
 	if(numeric.length) {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return info.property;}));
-	    colorBy=HU.b("Color map")+"<br>";
+	    colorBy+=HU.b("Color map")+"<br>";
 	    colorBy += HU.formTable();
 	    colorBy += HU.formEntry("Property:", HU.select('',['id',this.domId('colorby_property')],numericProperties,colorMap.property));
 	    colorBy += HU.formEntry("Range:",HU.input("",colorMap.min??"", ['id',this.domId('colorby_min'),'size','6','title','min value']) +" -- "+
@@ -4817,6 +4846,7 @@ MapGlyph.prototype = {
 	    this.makeFeatureFilters();
 	}
 
+
 	let style = this.style;
 	let rules = this.getMapStyleRules();
 	if(rules) {
@@ -4845,7 +4875,7 @@ MapGlyph.prototype = {
 	}
 
 
-	
+
 	let attrs = features.length>0?features[0].attributes:{};
 	let keys  = Object.keys(attrs);
 	if(rules && rules.length>0) {
@@ -4911,6 +4941,24 @@ MapGlyph.prototype = {
 		f.style.display='none';
 	    }
 	});
+
+	if(this.attrs.fillColors) {
+	    //	let ct = Utils.getColorTable('googlecharts',true);
+	    let ct = Utils.getColorTable('d3_schemeCategory20',true);	
+	    let cidx=0;
+	    features.forEach((f,idx)=>{
+		f.style = f.style??{};
+		cidx++;
+		if(cidx>=ct.length) cidx=0;
+		f.style.fillColor=ct[cidx]
+//		f.style.fillOpacity= 0.75;
+//		f.style.strokeColor='#000';
+//		f.style.strokeWidth=1;
+//		f.style.strokeOpacity= 0.25;
+
+	    });
+	}
+
 	this.mapLayer.redraw();
     },
 
@@ -5001,6 +5049,12 @@ MapGlyph.prototype = {
     isVisible: function() {
 	return this.attrs.visible??true;
     },
+    setShowMarkerWhenNotVisible:function(v) {
+	this.attrs.showMarkerWhenNotVisible = v;
+    },
+    getShowMarkerWhenNotVisible:function() {
+	return this.attrs.showMarkerWhenNotVisible;
+    },
     getVisibleLevelRange:function() {
 	return this.attrs.visibleLevelRange;
     },
@@ -5015,7 +5069,7 @@ MapGlyph.prototype = {
 	return this.attrs.visible;
     },
     setVisibleLevelRange:function(min,max) {
-	let range = this.getVisibleLevelRange;
+	let range = this.getVisibleLevelRange();
 	let oldMin = range?.min;
 	let oldMax = range?.max;	
 	if(min===oldMin && max===oldMax) return;
@@ -5024,14 +5078,20 @@ MapGlyph.prototype = {
 	this.attrs.visibleLevelRange = {min:min,max:max};
 	this.checkVisible();
     },    
+
     checkVisible: function() {
+	let showMarker = this.getShowMarkerWhenNotVisible();
 	let range = this.getVisibleLevelRange()??{};
+	let displayRange = this.display.mapProperties.visibleLevelRange;
+	if(!range || (displayRange && !Utils.stringDefined(range.min) && !Utils.stringDefined(range.max))) {
+	    range = displayRange;
+	    showMarker  = this.display.mapProperties.showMarkerWhenNotVisible;
+	}
 	let visible=true;
 	let level = this.display.getCurrentLevel();
-	let min = Utils.isDefined(range.min)?+range.min:-1;
-	let max = Utils.isDefined(range.max)?+range.max:10000;
+	let min = Utils.stringDefined(range.min)?+range.min:-1;
+	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	visible =  this.getVisible() && (level>=min && level<=max);
-	//	console.log("current level:" +level,"min:" + min,max,visible);
 	this.features.forEach(feature=>{
 	    if(!feature.style) feature.style = {};
 	    if(visible) {
@@ -5042,6 +5102,25 @@ MapGlyph.prototype = {
 	    
 	    $.extend(feature.style,{display:feature.style.display});
 	});
+
+	if(this.showMarkerMarker) {
+	    if(!this.getVisible() || visible) {
+		this.display.removeFeatures([this.showMarkerMarker]);
+		this.showMarkerMarker = null;
+	    }
+	}
+
+	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
+	    let bounds = this.display.getMap().getFeaturesBounds(this.features,true);
+	    if(bounds) {
+		let center = MapUtils.getCenter(bounds);
+		this.showMarkerMarker = this.display.getMap().createMarker("", center, this.getIcon(), "",
+									   null,null,16,null,null,{});
+		this.display.addFeatures([this.showMarkerMarker]);
+		this.showMarkerMarker.mapGlyph = this;
+	    }
+	}
+
 	if(this.isFixed()) {
 	    if(visible)
 		jqid(this.getId()).show();
@@ -5170,7 +5249,7 @@ MapGlyph.prototype = {
 	$.extend(attrs,displayAttrs);
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
-	let display = this.display.getDisplayManager().createDisplay("map",attrs);
+let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	display.setProperty("showRecordSelection",false);
 
 	display.errorMessageHandler = (display,msg) =>{
@@ -5319,10 +5398,14 @@ MapGlyph.prototype = {
 	    this.display.selectionLayer.removeFeatures(this.selectDots);
 	    this.selectDots= null;
 	}
+
 	if(this.mapLayer) {
-	    this.mapLayer.features.forEach(f=>{
-		f.style = f.originalStyle;
-	    });
+	    /*
+	      Not sure why we had this here as it wipes out all of the styles on maps
+	      this.mapLayer.features.forEach(f=>{
+	      f.style = f.originalStyle;
+	      });
+	    */
 	    this.mapLayer.redraw();
 	}
     },
@@ -5333,6 +5416,10 @@ MapGlyph.prototype = {
 	}
 	if(this.features) {
 	    this.display.removeFeatures(this.features);
+	}
+	if(this.showMarkerMarker) {
+	    this.display.removeFeatures([this.showMarkerMarker]);
+	    this.showMarkerMarker = null;
 	}
 	if(this.selectDots) {
 	    this.display.selectionLayer.removeFeatures(this.selectDots);
