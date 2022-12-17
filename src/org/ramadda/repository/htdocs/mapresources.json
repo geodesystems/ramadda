@@ -26,6 +26,26 @@
 
  {"name":"American Indian Area Geography",
   "type":"geo_geojson",
-  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/2019+Congressional+Districts?entryid=american_indian_area_geography&output=geojson.geojson"}
+  "url":"https://ramadda.org/repository/entry/show/Home/Content/Maps/2019+Congressional+Districts?entryid=american_indian_area_geography&output=geojson.geojson"},
+
+ {"name":"World Rivers",
+  "type":"geo_geojson",
+  "url":"https://ramadda.org/repository/entry/get/world_rivers.geojson?entryid=f6874d99-36f6-4b4b-bd66-4b3d4b2f74f8"},
+
+  {"name":"US Rivers",
+  "type":"geo_geojson",
+   "url":"https://ramadda.org/repository/entry/get/us_rivers.geojson?entryid=561cde22-2923-41df-9df1-6df6279c4587"},
+
+  {"name":"US Railroads",
+  "type":"geo_geojson",
+   "url":"https://ramadda.org/repository/entry/get/us_railroads.geojson?entryid=2487827b-4a0d-4532-9ae3-92c6202bf934"} 
+
+
+ 
+
+
+
+
+
  
 ]
