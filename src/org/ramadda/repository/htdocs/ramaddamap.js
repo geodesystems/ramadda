@@ -57,8 +57,15 @@ var MapUtils =  {
     createPoint: function(lon, lat) {
 	return new OpenLayers.Geometry.Point(RamaddaToFloat(lon), RamaddaToFloat(lat));
     },    
+    getCenter: function(bounds) {
+	return MapUtils.createPoint(bounds.left+(bounds.right-bounds.left)/2,
+				    bounds.bottom+(bounds.top-bounds.bottom)/2);
+
+    },
     createBounds:function (v1, v2, v3, v4) {
-	return new OpenLayers.Bounds(RamaddaToFloat(v1), RamaddaToFloat(v2), RamaddaToFloat(v3), RamaddaToFloat(v4));
+	let bounds =  new OpenLayers.Bounds(RamaddaToFloat(v1), RamaddaToFloat(v2), RamaddaToFloat(v3), RamaddaToFloat(v4));
+	
+	return bounds;
     },
     createPixel:function(x,y) {
 	return new OpenLayers.Pixel(x,y);
@@ -4756,19 +4763,28 @@ RepositoryMap.prototype = {
         }	
 	return this.lines;
     },
-    centerOnFeatures: function(features) {
+    //Get the bounding box of the features
+    getFeaturesBounds: function(features,convertToLatLon) {
+	if(!features) return null;
 	let bounds = MapUtils.createBounds();
 	features.forEach(feature=>{
 	    let fb = feature.geometry.getBounds();
 	    bounds.extend(fb);
 	});
+	if(convertToLatLon) {
+	    bounds = this.transformProjBounds(bounds);
+	}
+
+	return bounds;
+    },
+    centerOnFeatures: function(features) {
+	let bounds = this.getFeaturesBounds(features);
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
-	    var center = bounds.getCenterLonLat();
+	    let center = bounds.getCenterLonLat();
 	    this.setCenter(center);
 	    return;
 	}
-
 	this.zoomToExtent(bounds);
     },
     getHighlightLinesLayer: function() {
