@@ -1366,9 +1366,11 @@ var Utils =  {
     },
     makeLabel: function(s,dontSplitOnCaps) {
         s  = String(s).trim();
-	if(!dontSplitOnCaps)
-	    s = s.replace(/([A-Z])/g," $1");
-        s =  this.camelCase(s.replace(/_/g," "));
+	if(!dontSplitOnCaps) {
+	    s = s.replace(/([a-z]+)([A-Z])/g,"$1 $2");
+	}
+	s = s.replace(/_/g," ");
+        s =  this.camelCase(s);
 	s = s.replace(/  +/g," ");
 	return s;
     },
