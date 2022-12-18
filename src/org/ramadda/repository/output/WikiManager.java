@@ -850,6 +850,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
 	    }
+	    tok = tok.trim();
+	    if(tok.length()>0) {
+		entry = findEntryFromId(request,  entry, wikiUtil, props, tok);
+	    }
+
 	    List<Entry> children = getEntryManager().getChildren(request, entry);
 	    children= EntryUtil.sortEntriesOnDate(children,false);	    
             if (children.size() > 0) {
