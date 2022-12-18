@@ -2980,6 +2980,7 @@ table.dataTable tfoot td {
 }
 
 .display-menu-tab-item {
+    border-radius: 4px;
     display:inline-block;
     border:1px solid #ccc;
     padding:5px;
