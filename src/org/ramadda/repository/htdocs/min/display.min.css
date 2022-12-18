@@ -831,6 +831,7 @@ padding:4px;
 
 
 
+
 .display-menu-charts {
     max-height: 200px;
     overflow-y:auto;
@@ -2977,6 +2978,19 @@ table.dataTable tfoot td {
     max-width:100px;
     overflow-x:hidden;
 }
+
+.display-menu-tab-item {
+    display:inline-block;
+    border:1px solid #ccc;
+    padding:5px;
+    margin-left:5px;
+    margin-right:5px;    
+}
+
+.display-menu-tab-item-on {
+    background:var(--highlight-background);
+}
+
 
 .display-menu-contents {
     display:inline-block;

@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Dec 17 17:11:51 MST 2022";
+var build_date="RAMADDA build date: Sat Dec 17 22:29:16 MST 2022";
 
 
 
@@ -23545,7 +23545,8 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	{label:'Record Menu'},
 	{p:'labelTemplate',d:'${name}'},
 	{p:'menuLabel',ex:''},
-	{p:'showArrows',d:false,ex:true},	
+	{p:'showArrows',d:false,ex:true},
+	{p:'showTabs',d:false,ex:true},		
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
         needsData: function() {
@@ -23573,12 +23574,34 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	},
 
 	updateUI: function() {
+	    let _this = this;
 //	    this.logMsg("updateUI");
 	    this.records = this.filterData();
 	    if(!this.records) return;
 	    let options = [];
 	    let labelTemplate = this.getLabelTemplate();
 	    this.recordToIdx = {};
+	    let showTabs = this.getShowTabs();
+	    if(showTabs) {
+		let tabs = [];
+		this.idToRecord = {};
+		this.records.forEach((record,idx)=>{
+		    let label = this.getRecordHtml(record, null, labelTemplate);
+		    tabs.push(HU.div(['class','display-menu-tab-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-tab-item-on':''),RECORD_ID,record.getId()], label));
+		    this.idToRecord[record.getId()] = record;
+		});
+		this.setContents(Utils.join(tabs,""));
+		let items = this.getContents().find('.display-menu-tab-item');
+		items.click(function() {
+		    if($(this).hasClass('display-menu-tab-item-on')) return;
+		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
+		    items.removeClass('display-menu-tab-item-on');
+		    $(this).addClass('display-menu-tab-item-on');
+		    _this.propagateEventRecordSelection({record: record});
+		});
+		return
+	    }
+
 	    this.records.forEach((record,idx)=>{
 		let label = this.getRecordHtml(record, null, labelTemplate);
 		options.push([idx,label]);
@@ -39767,7 +39790,7 @@ var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYP
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['type_map','geo_geojson','geo_gpx','geo_shapefile'];
-var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:10pt;'];
+var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
     Utils.importJS(ramaddaBaseHtdocs+"/wiki.js");
@@ -40391,6 +40414,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				
 				let mapOptions = tmpStyle.mapOptions;
 				delete tmpStyle.mapOptions;
+				mapOptions.name = attrs.entryName;
 				$.extend(mapOptions,attrs);
 				let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 				mapGlyph.checkMapLayer();
@@ -43963,7 +43987,7 @@ MapGlyph.prototype = {
 	    icon = HU.image(icon,['width','18px']);
 	    if(url && forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
-	    if(forLegend) {
+	    if(forLegend && !this.isMapServer() && !this.isFixed()) {
 		right+=SPACE+
 		    HU.span([CLASS,"ramadda-clickable imdv-legend-item-view",
 			     'glyphid',this.getId(),
@@ -44499,7 +44523,7 @@ MapGlyph.prototype = {
 		filter.minValue = info.min;
 		filter.maxValue = info.max;		
 		filter.type="range";
-		sliders+=HU.b(info.property)+":<br>" +
+		sliders+=HU.b(label)+":<br>" +
 		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??info.min)),
 				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??info.max))) +
 		    HU.div(['slider-min',info.min,'slider-max',info.max,'slider-isint',info.isInt,
@@ -44517,7 +44541,7 @@ MapGlyph.prototype = {
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
 	    };
-	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-trash-can',null,LEGEND_IMAGE_ATTRS));
+	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 	    
 	    widgets = HU.div(['style','max-height:200px;overflow-y:auto;'], widgets);
 	    let toggle = HU.toggleBlockNew('Filters',widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
