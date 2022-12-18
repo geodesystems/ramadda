@@ -5727,11 +5727,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 	},
-	makeFilterWidget:function(label, widget, title) {
+	makeFilterWidget:function(name,label, widget, title) {
 	    if(!label)
 		return HU.div([CLASS,"display-filter-widget"],widget);
-	    return HU.div([CLASS,"display-filter-widget"],this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ") +
-			  widget);
+	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
+	    if(this.getProperty(name+'.filterLabelVertical') || this.getFilterLabelVertical())
+		label = label+'<br>'+widget;							       
+	    else
+		label = label+widget;
+	    return HU.div([CLASS,"display-filter-widget"],label);
 	},
 	makeFilterLabel: function(label,tt,vertical) {
 	    let clazz = "display-filter-label";
