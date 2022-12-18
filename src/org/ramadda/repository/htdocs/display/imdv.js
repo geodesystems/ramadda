@@ -39,7 +39,7 @@ var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYP
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['type_map','geo_geojson','geo_gpx','geo_shapefile'];
-var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:10pt;'];
+var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
     Utils.importJS(ramaddaBaseHtdocs+"/wiki.js");
@@ -663,6 +663,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				
 				let mapOptions = tmpStyle.mapOptions;
 				delete tmpStyle.mapOptions;
+				mapOptions.name = attrs.entryName;
 				$.extend(mapOptions,attrs);
 				let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 				mapGlyph.checkMapLayer();
@@ -4235,7 +4236,7 @@ MapGlyph.prototype = {
 	    icon = HU.image(icon,['width','18px']);
 	    if(url && forLegend)
 		icon = HU.href(url,icon,['target','_entry']);
-	    if(forLegend) {
+	    if(forLegend && !this.isMapServer() && !this.isFixed()) {
 		right+=SPACE+
 		    HU.span([CLASS,"ramadda-clickable imdv-legend-item-view",
 			     'glyphid',this.getId(),
@@ -4771,7 +4772,7 @@ MapGlyph.prototype = {
 		filter.minValue = info.min;
 		filter.maxValue = info.max;		
 		filter.type="range";
-		sliders+=HU.b(info.property)+":<br>" +
+		sliders+=HU.b(label)+":<br>" +
 		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??info.min)),
 				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??info.max))) +
 		    HU.div(['slider-min',info.min,'slider-max',info.max,'slider-isint',info.isInt,
@@ -4789,7 +4790,7 @@ MapGlyph.prototype = {
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
 	    };
-	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-trash-can',null,LEGEND_IMAGE_ATTRS));
+	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 	    
 	    widgets = HU.div(['style','max-height:200px;overflow-y:auto;'], widgets);
 	    let toggle = HU.toggleBlockNew('Filters',widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
