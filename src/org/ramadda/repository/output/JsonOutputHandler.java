@@ -148,9 +148,11 @@ public class JsonOutputHandler extends OutputHandler {
             request.setReturnFilename(IOUtil.stripExtension(group.getName())
                                       + ".json");
         }
+	boolean doSort = true;
         List<Entry> allEntries = new ArrayList<Entry>();
 	String entries = request.getString("entries",null);
 	if(entries!=null) {
+	    doSort=false;
 	    for(String id: Utils.split(entries,",",true,true)) {
 		Entry entry =  getEntryManager().getEntry(request, id);
 		if(entry!=null) allEntries.add(entry);
@@ -169,7 +171,7 @@ public class JsonOutputHandler extends OutputHandler {
         }
         StringBuilder sb = new StringBuilder();
         if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {
-            makePointJson(request, group, allEntries, sb);
+            makePointJson(request, group, allEntries, sb,doSort);
         } else {
             makeJson(request, allEntries, sb);
         }
@@ -253,7 +255,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makePointJson(Request request, Entry mainEntry,
-                              List<Entry> entries, Appendable sb)
+                              List<Entry> entries, Appendable sb,boolean sort)
             throws Exception {
 
         String entryTypes = request.getString("entryTypes", null);
@@ -294,7 +296,8 @@ public class JsonOutputHandler extends OutputHandler {
                 }
             }
         }
-        entries = EntryUtil.sortEntriesOnDate(entries, false);
+	if(sort)
+	    entries = EntryUtil.sortEntriesOnDate(entries, false);
         List<String> fields     = new ArrayList<String>();
         boolean      remote     = request.get("remoteRequest", false);
         boolean      imagesOnly = request.get("imagesOnly", false);
