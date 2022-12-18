@@ -990,12 +990,12 @@ var Utils =  {
         return s;
     },
 
-    parseMap: function(str) {
+    parseMap: function(str,delim1,delim2) {
         if(str==null) return null;
-        var toks = str.split(",");
+        var toks = str.split(delim1??",");
         var map = {};
         for (var i = 0; i < toks.length; i++) {
-            var toks2 = toks[i].split(":");
+            var toks2 = toks[i].split(delim2??":");
             if (toks2.length > 1) {
                 map[toks2[0].trim()] = toks2[1].trim();
             }
