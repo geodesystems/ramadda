@@ -2832,8 +2832,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					    ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
 					    JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
 		} else {
+		    String entries = getProperty(wikiUtil,props,"entries",null);
 		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
 					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+		    if(entries!=null) jsonUrl = HU.url(jsonUrl,"entries",entries);
 		}
 		//If there is an ancestor specified then we use the /search/do url
 		boolean doSearch = getProperty(wikiUtil, props, "doSearch",false);
