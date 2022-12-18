@@ -149,7 +149,13 @@ public class JsonOutputHandler extends OutputHandler {
                                       + ".json");
         }
         List<Entry> allEntries = new ArrayList<Entry>();
-        if (request.get("ancestors", false)) {
+	String entries = request.getString("entries",null);
+	if(entries!=null) {
+	    for(String id: Utils.split(entries,",",true,true)) {
+		Entry entry =  getEntryManager().getEntry(request, id);
+		if(entry!=null) allEntries.add(entry);
+	    }
+	} else   if (request.get("ancestors", false)) {
             allEntries.add(group);
             Entry parent = group.getParentEntry();
             while (parent != null) {
