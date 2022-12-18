@@ -4177,7 +4177,7 @@ RequestMacro.prototype = {
 	    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
 	}
 	if(!widget) return "";
-	return (visible?this.display.makeFilterWidget(label,widget):widget);
+	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
     },
     isMacro: function(id) {
 	return id == this.name;

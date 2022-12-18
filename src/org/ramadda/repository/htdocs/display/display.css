@@ -2902,7 +2902,7 @@ table.dataTable tfoot td {
 }
 
 .imdv-filter-enum {
-    max-width:180px;
+    /*max-width:180px;*/
 }
 
 .imdv-properties-section {
