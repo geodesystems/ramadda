@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Dec 17 11:51:03 MST 2022";
+var build_date="RAMADDA build date: Sat Dec 17 17:11:51 MST 2022";
 
 
 
@@ -9404,11 +9404,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 	},
-	makeFilterWidget:function(label, widget, title) {
+	makeFilterWidget:function(name,label, widget, title) {
 	    if(!label)
 		return HU.div([CLASS,"display-filter-widget"],widget);
-	    return HU.div([CLASS,"display-filter-widget"],this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ") +
-			  widget);
+	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
+	    if(this.getProperty(name+'.filterLabelVertical') || this.getFilterLabelVertical())
+		label = label+'<br>'+widget;							       
+	    else
+		label = label+widget;
+	    return HU.div([CLASS,"display-filter-widget"],label);
 	},
 	makeFilterLabel: function(label,tt,vertical) {
 	    let clazz = "display-filter-label";
@@ -16989,7 +16993,7 @@ RequestMacro.prototype = {
 	    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
 	}
 	if(!widget) return "";
-	return (visible?this.display.makeFilterWidget(label,widget):widget);
+	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
     },
     isMacro: function(id) {
 	return id == this.name;
@@ -41863,11 +41867,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=this.getLevelRangeWidget(this.mapProperties.visibleLevelRange,this.mapProperties.showMarkerWhenNotVisible);
 
 	    html+=HU.b('Top Wiki Text:') +'<br>' +
-		HU.textarea('',this.mapProperties.topWikiText??'',['id',this.domId('topwikitext_input'),'rows','6','cols','80']) +"<br>";
+		HU.textarea('',this.mapProperties.topWikiText??'',['id',this.domId('topwikitext_input'),'rows','4','cols','80']) +"<br>";
 
 	    
 	    html+=HU.b('Bottom Wiki Text:') +'<br>' +
-		HU.textarea('',this.mapProperties.bottomWikiText??'',['id',this.domId('bottomwikitext_input'),'rows','6','cols','80']);
+		HU.textarea('',this.mapProperties.bottomWikiText??'',['id',this.domId('bottomwikitext_input'),'rows','4','cols','80']) +'<br>';
+
+	    let props = this.mapProperties.otherProperties;
+	    if(!props) props="#Examples:\n#legendWidth=400\n#legendLabel=Some label";
+	    html+=HU.b('Other Properties:') +'<br>' +
+		HU.textarea('',props,['title','e.g. legendWidth=400 legendLabel=','id',this.domId('otherproperties_input'),'rows','4','cols','80']);
 	    
 
 	    html  = HU.div(['style','margin:10px;'],html);
@@ -41887,7 +41896,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.mapProperties.showMousePosition = this.jq('showmouseposition').is(':checked');				
 
 		this.mapProperties.topWikiText = this.jq('topwikitext_input').val();
-		this.mapProperties.bottomWikiText = this.jq('bottomwikitext_input').val();				
+		this.mapProperties.bottomWikiText = this.jq('bottomwikitext_input').val();
+		this.mapProperties.otherProperties = this.jq('otherproperties_input').val();		
+		this.parsedMapProperties = null;
+				
 		let min = this.jq("minlevel").val().trim();
 		let max = this.jq("maxlevel").val().trim();
 		if(min=="") min = null;
@@ -42713,6 +42725,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	initMap: function(map) {
 	    SUPER.initMap.call(this)
 	},
+	
+	getMapProperty: function(name,dflt) {
+	    if(!this.parsedMapProperties) {
+		this.parsedMapProperties = Utils.parseMap(this?.mapProperties.otherProperties,"\n","=")??{};
+	    }
+	    let value = this.parsedMapProperties[name];
+	    if(Utils.isDefined(value)) return value;
+	    return  this.getProperty(name,dflt);
+	},
 	makeLegend: function() {
 	    let _this = this;
 	    if(Utils.isDefined(this?.mapProperties?.showLegend) &&
@@ -42729,6 +42750,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let idToGlyph={};
 	    let glyphs = this.getGlyphs();
+	    let legendWidth=parseInt(this.getMapProperty("legendWidth",250));
+	    let labelWidth = legendWidth-18-30-5;
 	    glyphs.forEach((mapGlyph,idx)=>{
 		if(!showShapes && mapGlyph.isShape()) {
 		    return;
@@ -42744,13 +42767,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(!mapGlyph.getVisible()) clazz+=' imdv-legend-label-invisible ';
 		html+=HU.open('div',['class','imdv-legend-item '+(idx==glyphs.length-1?'imdv-legend-item-last':'')+clazz]);
 		html+="\n";
-		let xhtml=HU.table(['border',1,'width','100%','cellpadding','1','cellspacing','1'],
-			       HU.tr([],
-				     "\n"+HU.td(['width','10'],block.header) +
-				     "\n"+HU.td(['style','background:red;width:150px;max-width:150px;','width','150'],label[0]) +
-				     "\n"+HU.td(['align','right','style','padding-right:40px;'],label[1])
-				    ));				     
-		html+="<div style='display: grid; grid-template-columns: 18px 150px 30px;'>" +
+		html+="<div style='display: grid; grid-template-columns: 18px " + labelWidth+"px 30px;'>" +
 		    HU.div([],block.header) +
 		    HU.div([],label[0]) +
 		    HU.div(['style','margin-left:2px;'],label[1])
@@ -42758,8 +42775,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.div(['style','background:#fff;'],block.body);
 		html+=HU.close('div');
 	    });
+	    let legendLabel= this.getMapProperty("legendLabel","");
+	    if(Utils.stringDefined(legendLabel)) {
+		legendLabel=legendLabel.replace(/\\n/,'<br>');
+		html = HU.div([],legendLabel)+html;
+	    }
 	    if(html!="") {
-		html  = HU.div(['class','imdv-legend'],html);
+		html  = HU.div(['class','imdv-legend','style',HU.css('max-width',legendWidth+'px','width',legendWidth+'px')],html);
 	    }
 	    this.jq(ID_LEGEND).html(html);
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
@@ -44455,17 +44477,18 @@ MapGlyph.prototype = {
 	featureInfo.forEach(info=>{
 	    let filter = filters[info.property] = filters[info.property]??{};
 	    let id = Utils.makeId(info.property);
+	    let label = Utils.makeLabel(info.property);
 	    if(info.isString)  {
 		filter.type="string";
-		strings+=HU.b(info.property)+":<br>" +
+		strings+=HU.b(label)+":<br>" +
 		    HU.input("",filter.stringValue??"",['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20]) +"<br>";
 		return
 	    } 
 	    if(info.samples.length)  {
 		filter.type="enum";
 		if(info.samples.length>1) {
-		    enums+=HU.b(info.property)+":<br>" +
-			HU.select("",['style','width:100%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
+		    enums+=HU.b(label)+":<br>" +
+			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
 
 		}
 		return;
@@ -44816,6 +44839,24 @@ MapGlyph.prototype = {
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	visible =  this.getVisible() && (level>=min && level<=max);
+
+	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
+	    let featuresToUse = this.features;
+	    if(!featuresToUse || featuresToUse.length==0) {
+		featuresToUse = this.mapLayer?.features
+	    }		
+	    let bounds = this.display.getMap().getFeaturesBounds(featuresToUse,true);
+	    if(bounds) {
+		let center = MapUtils.getCenter(bounds);
+		this.showMarkerMarker = this.display.getMap().createMarker("", center, this.getIcon(), "",
+									   null,null,16,null,null,{});
+		this.display.addFeatures([this.showMarkerMarker]);
+		this.showMarkerMarker.mapGlyph = this;
+	    }
+	}
+
+
+
 	this.features.forEach(feature=>{
 	    if(!feature.style) feature.style = {};
 	    if(visible) {
@@ -44834,16 +44875,7 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
-	    let bounds = this.display.getMap().getFeaturesBounds(this.features,true);
-	    if(bounds) {
-		let center = MapUtils.getCenter(bounds);
-		this.showMarkerMarker = this.display.getMap().createMarker("", center, this.getIcon(), "",
-									   null,null,16,null,null,{});
-		this.display.addFeatures([this.showMarkerMarker]);
-		this.showMarkerMarker.mapGlyph = this;
-	    }
-	}
+
 
 	if(this.isFixed()) {
 	    if(visible)
