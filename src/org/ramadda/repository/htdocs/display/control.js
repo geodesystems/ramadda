@@ -1042,7 +1042,8 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	{label:'Record Menu'},
 	{p:'labelTemplate',d:'${name}'},
 	{p:'menuLabel',ex:''},
-	{p:'showArrows',d:false,ex:true},	
+	{p:'showArrows',d:false,ex:true},
+	{p:'showTabs',d:false,ex:true},		
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
         needsData: function() {
@@ -1070,12 +1071,34 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	},
 
 	updateUI: function() {
+	    let _this = this;
 //	    this.logMsg("updateUI");
 	    this.records = this.filterData();
 	    if(!this.records) return;
 	    let options = [];
 	    let labelTemplate = this.getLabelTemplate();
 	    this.recordToIdx = {};
+	    let showTabs = this.getShowTabs();
+	    if(showTabs) {
+		let tabs = [];
+		this.idToRecord = {};
+		this.records.forEach((record,idx)=>{
+		    let label = this.getRecordHtml(record, null, labelTemplate);
+		    tabs.push(HU.div(['class','display-menu-tab-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-tab-item-on':''),RECORD_ID,record.getId()], label));
+		    this.idToRecord[record.getId()] = record;
+		});
+		this.setContents(Utils.join(tabs,""));
+		let items = this.getContents().find('.display-menu-tab-item');
+		items.click(function() {
+		    if($(this).hasClass('display-menu-tab-item-on')) return;
+		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
+		    items.removeClass('display-menu-tab-item-on');
+		    $(this).addClass('display-menu-tab-item-on');
+		    _this.propagateEventRecordSelection({record: record});
+		});
+		return
+	    }
+
 	    this.records.forEach((record,idx)=>{
 		let label = this.getRecordHtml(record, null, labelTemplate);
 		options.push([idx,label]);
