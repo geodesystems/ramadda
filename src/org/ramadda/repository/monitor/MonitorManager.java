@@ -645,20 +645,24 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                     : "")));
             sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
                                      HtmlUtils.cssClass("ramadda-td")));
+	    /*
             sb.append(
                 HtmlUtils.href(
-                    HtmlUtils.url(
-				  request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
-                        ARG_MONITOR_ID, monitor.getId()), HtmlUtils.img(
+                    HtmlUtils.url(request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
+				  ARG_MONITOR_ID, monitor.getId(),
+				  HU.title("Edit monitor")), 
+		    HtmlUtils.img(
                             getIconUrl(ICON_EDIT))));
+	    */
+            sb.append(HU.button(HtmlUtils.href(HtmlUtils.url(request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
+							     ARG_MONITOR_ID, monitor.getId()), 
+					       "Edit",HU.title("Edit monitor"))));
             sb.append(HtmlUtils.space(1));
-            sb.append(
-                HtmlUtils.href(
-                    HtmlUtils.url(
-				  request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
-                        ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
-                        monitor.getId()), HtmlUtils.img(
-                            getIconUrl(ICON_DELETE))));
+            sb.append(HU.button(
+				HtmlUtils.href(HtmlUtils.url(
+							     request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
+							     ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
+							     monitor.getId()),  "Delete",HU.title("Delete monitor"))));
             if ( !monitor.isActive()) {
                 sb.append(HtmlUtils.space(1));
                 sb.append(msg("not active"));

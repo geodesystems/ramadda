@@ -2005,13 +2005,10 @@ public class UserManager extends RepositoryManager {
                 HtmlUtils.bold(msg("Log")))));
 
         for (User user : users) {
-            String userEditLink = HtmlUtils.href(
-                                      request.makeUrl(
-                                          getRepositoryBase().URL_USER_EDIT,
-                                          ARG_USER_ID,
-                                          user.getId()), getIconImage(
-                                              ICON_EDIT, "title",
-                                              msg("Edit user")));
+            String userEditLink = HU.button(HtmlUtils.href(request.makeUrl(
+									   getRepositoryBase().URL_USER_EDIT,
+									   ARG_USER_ID,
+									   user.getId()), "Edit", HU.title("Edit user")));
 
             String userProfileLink =
                 HtmlUtils.href(

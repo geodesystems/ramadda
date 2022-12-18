@@ -249,19 +249,17 @@ public class EntryMonitor implements Constants {
                 HtmlUtils.input(
                     MonitorManager.ARG_MONITOR_NAME, getName(),
                     HtmlUtils.SIZE_70)));
-        stateSB.append(
-            HtmlUtils.formEntry(
-                getRepository().msgLabel("Enabled"),
-                HtmlUtils.checkbox(
-                    MonitorManager.ARG_MONITOR_ENABLED, "true",
-                    getEnabled())));
+	HtmlUtils.formEntry(stateSB,
+			    "",
+			    HtmlUtils.labeledCheckbox(
+						      MonitorManager.ARG_MONITOR_ENABLED, "true",
+						      getEnabled(),"Enabled"));
 
-        stateSB.append(
-            HtmlUtils.formEntry(
-                getRepository().msgLabel("Only check new entries"),
-                HtmlUtils.checkbox(
-                    MonitorManager.ARG_MONITOR_ONLYNEW, "true",
-                    getOnlyNew())));
+	HtmlUtils.formEntry(stateSB,"",
+			    HtmlUtils.labeledCheckbox(
+						      MonitorManager.ARG_MONITOR_ONLYNEW, "true",
+						      getOnlyNew(),
+						      "Only check new entries"));
 
         stateSB.append(
             HtmlUtils.formEntry(
@@ -293,9 +291,8 @@ public class EntryMonitor implements Constants {
 
         if ((getLastError() != null) && (getLastError().length() > 0)) {
             StringBuffer errorSB = new StringBuffer();
-            errorSB.append(HtmlUtils.checkbox(ARG_CLEARERROR, "true", true));
-            errorSB.append(" ");
-            errorSB.append(getRepository().msg("Clear error"));
+            errorSB.append(HtmlUtils.labeledCheckbox(ARG_CLEARERROR, "true", true,
+						    "Clear error"));
             errorSB.append(HtmlUtils.pre(getLastError()));
             sb.append(
                 HtmlUtils.makeShowHideBlock(
@@ -466,8 +463,7 @@ public class EntryMonitor implements Constants {
         boolean doNot  = ((filter == null)
                           ? false
                           : filter.getDoNot());
-        String notCbx = HtmlUtils.checkbox(what + "_not", "true", doNot)
-                        + HtmlUtils.space(1) + getRepository().msg("Not");
+        String notCbx = " " +HtmlUtils.labeledCheckbox(what + "_not", "true", doNot, "Not");
 
         if (what.equals(ARG_FILESUFFIX)) {
             List<String> suffixes = ((filter == null)
