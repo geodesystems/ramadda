@@ -13,6 +13,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
@@ -129,22 +130,22 @@ public class YouTubeSearchProvider extends SearchProvider {
             throws Exception {
 
         List<Entry> entries = new ArrayList<Entry>();
-        String      url     = URL;
-        url = HtmlUtils.url(url, ARG_API_KEY, getApiKey(), ARG_Q,
-                            request.getString(ARG_TEXT, ""));
-        System.err.println(getName() + " search url:" + url);
-        InputStream is   = getInputStream(url);
-        String      json = IOUtil.readContents(is);
-        IOUtil.close(is);
-        //        System.out.println("xml:" + json);
-        JSONObject obj = new JSONObject(new JSONTokener(json));
-        if ( !obj.has("items")) {
-            System.err.println(
-                "YouTube SearchProvider: no items field in json:" + json);
+        URL  url     =  new URL(HtmlUtils.url(URL, ARG_API_KEY, getApiKey(), ARG_Q,
+					      request.getString(ARG_TEXT, "")));
+	//        System.err.println(getName() + " search url:" + url);
+	IO.Result result = IO.doGetResult(url);
+	if(result.getError()) {
+	    String message  = JsonUtil.readValue(result.getResult(),
+						 "error.message",result.getResult());
+	    getLogManager().logError(getName()+":" + message);
+	    return entries;
+	}
+        JSONObject obj = new JSONObject(new JSONTokener(result.getResult()));
+        if (!obj.has("items")) {
+	    getLogManager().logError("YouTube SearchProvider: no items field in json:" + result.getResult());
 
             return entries;
         }
-
 
         JSONArray searchResults = obj.getJSONArray("items");
         Entry     parent        = getSynthTopLevelEntry();
