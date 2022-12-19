@@ -859,6 +859,17 @@ public class JsonUtil {
     }
 
 
+    /*
+      return the string denoted by path. Catch and ignore any errors
+     */
+    public static String readValue(String json, String path, String dflt) {
+	try {
+	    return readValue(new JSONObject(json),path, dflt);
+	} catch(Throwable thr) {
+	    return dflt;
+	}
+    }
+
     /**
      * _more_
      *

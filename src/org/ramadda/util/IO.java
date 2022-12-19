@@ -1042,11 +1042,9 @@ public class IO {
             return new Result(sb.toString());
         } catch (Throwable exc) {
             String error = readError(connection);
-            System.err.println("Error reading URL:" + url + "\ncode:"
-                               + connection.getResponseCode());
-            System.err.println("Error:" + error);
-            System.err.println("Fields:" + connection.getHeaderFields());
-
+	    //            System.err.println("Error reading URL:" + url + "\ncode:"  + connection.getResponseCode());
+	    //            System.err.println("Error:" + error);
+	    //            System.err.println("Fields:" + connection.getHeaderFields());
             return new Result(error, connection.getResponseCode(), true, exc);
             //            System.err.println(connection.getContent());
         }
