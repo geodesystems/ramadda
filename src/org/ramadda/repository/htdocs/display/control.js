@@ -1043,7 +1043,9 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	{p:'labelTemplate',d:'${name}'},
 	{p:'menuLabel',ex:''},
 	{p:'showArrows',d:false,ex:true},
-	{p:'showTabs',d:false,ex:true},		
+	{p:'showButtons',d:false,ex:true},
+	{p:'buttonStyle',d:''},
+	{p:'buttonStyleOn',d:''},	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
         needsData: function() {
@@ -1078,22 +1080,29 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    let options = [];
 	    let labelTemplate = this.getLabelTemplate();
 	    this.recordToIdx = {};
-	    let showTabs = this.getShowTabs();
-	    if(showTabs) {
+	    let showButtons = this.getShowButtons();
+	    if(showButtons) {
+		let buttonStyle = this.getButtonStyle();
+		let buttonStyleOn = this.getButtonStyleOn();		
 		let tabs = [];
 		this.idToRecord = {};
 		this.records.forEach((record,idx)=>{
 		    let label = this.getRecordHtml(record, null, labelTemplate);
-		    tabs.push(HU.div(['class','display-menu-tab-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-tab-item-on':''),RECORD_ID,record.getId()], label));
+		    let style = buttonStyle;
+		    if(idx==0) style+=buttonStyleOn;
+		    tabs.push(HU.div(['class','display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),'style',style,RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;
 		});
 		this.setContents(Utils.join(tabs,""));
-		let items = this.getContents().find('.display-menu-tab-item');
+		let items = this.getContents().find('.display-menu-button-item');
 		items.click(function() {
-		    if($(this).hasClass('display-menu-tab-item-on')) return;
+		    if($(this).hasClass('display-menu-button-item-on')) return;
 		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
-		    items.removeClass('display-menu-tab-item-on');
-		    $(this).addClass('display-menu-tab-item-on');
+		    items.removeClass('display-menu-button-item-on');
+		    items.attr('style',buttonStyle);		    
+		    items.removeClass('display-menu-button-item-on');
+		    $(this).addClass('display-menu-tab-button-on');
+		    $(this).attr('style',buttonStyle+buttonStyleOn);
 		    _this.propagateEventRecordSelection({record: record});
 		});
 		return

@@ -2979,7 +2979,7 @@ table.dataTable tfoot td {
     overflow-x:hidden;
 }
 
-.display-menu-tab-item {
+.display-menu-button-item {
     border-radius: 4px;
     display:inline-block;
     border:1px solid #ccc;
@@ -2988,7 +2988,7 @@ table.dataTable tfoot td {
     margin-right:5px;    
 }
 
-.display-menu-tab-item-on {
+.display-menu-button-item-on {
     background:var(--highlight-background);
 }
 
