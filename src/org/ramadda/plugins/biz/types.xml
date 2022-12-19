@@ -52,19 +52,12 @@ date.nowrap=true
 <br>
 
 {{description wikify="true"}}
-
 {{tree details="false"}}
-
 <p><br>
-
 Data courtesy of the <a href="{{resource  url=true}}">Federal Reserve Economic Data</a> system.
-
 -section
-
 ]]>
-
 </wiki>
-
   </type>
 
 
@@ -84,10 +77,9 @@ Data courtesy of the <a href="{{resource  url=true}}">Federal Reserve Economic D
      <column name="frequency" type="enumeration"  label="Frequency"  values="A:Annual,M:Monthly" showinform="false"/>
      <column name="units" type="string"  label="Units"  showinform="false"/>
      <column name="seasonal_adjustment" type="enumeration"  values="NSA:Not Seasonally Adjusted" label="Seasonal Adjustment"  showinform="false"/>
-     <wiki_inner><![CDATA[
-+section # title="FRED Time Series: {{name}}"
-<br>
-{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true"}}
+     <wiki><![CDATA[
++section  title="FRED Time Series: {{name}}"
+{{display_linechart  showMenu=true height="200" width="100%"  layoutHere="true"}}
 <div style="margin:20px;max-height:300px;overflow-y:auto;">
 {{description wikify="true"}}
 </div>
@@ -97,18 +89,14 @@ Data courtesy of the <a href="{{resource  url=true}}">Federal Reserve Economic D
 -col
 +col-md-4
 <div style="text-align:right;">
-<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+:button {{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false Download CSV
 </div>
 -col
 -row
-
 -section
-
 ]]>
-
-</wiki_inner>
-
-  </type>
+</wiki>
+</type>
 
 
 
