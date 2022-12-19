@@ -1256,13 +1256,16 @@ public class PointOutputHandler extends RecordOutputHandler {
             throws Exception {
 
 
+	String returnFileName = entry.getName();
         Result result = null;
         //Make a RecordVisitor for each point product type
         if (formats.contains(OUTPUT_CSV.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
             visitors.add(makeCsvVisitor(request, entry, pointEntries, null,
                                         null, jobInfo.getJobId()));
         }
         if (formats.contains(OUTPUT_IDVCSV.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
             final boolean[] haveLat = { false };
 
             CsvVisitor.HeaderPrinter headerPrinter =
@@ -1345,6 +1348,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                         jobInfo.getJobId()));
         }
         if (formats.contains(OUTPUT_JSON.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".json");
             if ( !asynch) {
                 String tail = IOUtil.stripExtension(entry.getName());
                 request.setReturnFilename(tail + ".json");
@@ -1357,6 +1361,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         if (formats.contains(OUTPUT_NC.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".nc");
             visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
                                            jobInfo.getJobId()));
         }
@@ -1365,6 +1370,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                            getBounds(request, pointEntries)));
         }
         if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".csv");
             visitors.add(makeLatLonAltCsvVisitor(request, entry,
                     pointEntries, jobInfo.getJobId()));
         }
@@ -1374,6 +1380,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         if (formats.contains(OUTPUT_NC.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".nc");
             visitors.add(makeNcVisitor(request, entry, pointEntries,
                                        jobInfo.getJobId()));
 
@@ -1386,6 +1393,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         //Tracks just do them
         if (formats.contains(OUTPUT_KML_TRACK.getId())) {
+	    if(!asynch) request.setReturnFilename(returnFileName+".kml");
             result = outputEntryKmlTrack(request, entry, pointEntries,
                                          jobInfo.getJobId());
         }
@@ -2968,7 +2976,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         Result result = outputEntry(request, OUTPUT_PRODUCT, entry);
         String csv    = new String(bos.toByteArray());
         IOUtil.close(bos);
-
         return csv;
     }
 
