@@ -76,7 +76,7 @@ public class PlosSearchProvider extends SearchProvider {
     private static final String ID = "plos";
 
     /** _more_ */
-    private static final String URL = "http://api.plos.org/search";
+    private static final String URL = "https://api.plos.org/search";
 
     /** _more_ */
     public static final String ARG_Q = "q";
@@ -154,7 +154,7 @@ public class PlosSearchProvider extends SearchProvider {
     public List<Entry> getEntries(Request request, SearchInfo searchInfo)
             throws Exception {
 
-        //    http://api.plos.org/search?q=title:%22Ten%20Simple%20Rules%22&api_key=2ifY1fYfC9xz33odffyX
+        //    https://api.plos.org/search?q=title:%22Ten%20Simple%20Rules%22&api_key=2ifY1fYfC9xz33odffyX
         String      searchText = request.getString(ARG_TEXT, "");
         List<Entry> entries    = new ArrayList<Entry>();
         String      max        = request.getString("max", "100");
@@ -183,7 +183,7 @@ public class PlosSearchProvider extends SearchProvider {
             "plosmedicine", ".*pcbi.*", "ploscompbiol", ".*pntd.*", "plosntds"
         };
         /*
-          http://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1002252
+          https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1002252
          */
         /*<response>
   <result
@@ -218,7 +218,7 @@ public class PlosSearchProvider extends SearchProvider {
             String        url      = null;
             for (int i = 0; i < sites.length; i += 2) {
                 if (id.matches(sites[i])) {
-                    url = "http://journals.plos.org/" + sites[i + 1]
+                    url = "https://journals.plos.org/" + sites[i + 1]
                           + "/article?id=" + id;
                 }
             }

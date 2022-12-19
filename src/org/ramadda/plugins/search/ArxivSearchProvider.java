@@ -64,7 +64,7 @@ public class ArxivSearchProvider extends SearchProvider {
      */
     @Override
     public String getSiteUrl() {
-        return "http://www.arxiv.org";
+        return "https://www.arxiv.org";
     }
 
 
@@ -107,7 +107,7 @@ public class ArxivSearchProvider extends SearchProvider {
         List<Entry> entries = new ArrayList<Entry>();
         String url = URL
                      + HtmlUtils.urlEncode(request.getString(ARG_TEXT, ""));
-        System.err.println(getName() + " search url:" + url);
+	//        System.err.println(getName() + " search url:" + url);
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is = connection.getInputStream();
