@@ -4906,13 +4906,14 @@ public class Utils extends IO {
 					 int cnt) {
 	String s = o.toString();
 	List<String> toks = new ArrayList<String>();
+	int delimLength = delimiter.length();
 	for (int i = 0; i < cnt - 1; i++) {
 	    int idx = s.indexOf(delimiter);
 	    if (idx < 0) {
 		break;
 	    }
 	    toks.add(s.substring(0, idx));
-	    s = s.substring(idx + 1);
+	    s = s.substring(idx + delimLength);
 	}
 	if (s.length() > 0) {
 	    toks.add(s);
