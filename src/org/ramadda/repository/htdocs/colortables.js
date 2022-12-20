@@ -95,7 +95,7 @@ $.extend(Utils,{
                 showRange: false,
                 height: "20px"
             });
-            ct = HtmlUtils.div([STYLE,HU.css('width','150px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
+            ct = HtmlUtils.div([STYLE,HU.css('width','400px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
             if(wikiEditor) {
                 var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
                 item = HtmlUtils.onClick(call,ct);
@@ -191,6 +191,8 @@ $.extend(Utils,{
         } else {
             for (var i = ct.length-1; i>=0;i=i-options.stride) nums.push(i);
         }
+
+        let tdw = (100 / nums.length) + "%";
         nums.forEach((i,idx)=>{
             var extra = "";
             let val = min + step * i;
@@ -217,7 +219,7 @@ $.extend(Utils,{
                 }
                 let fg = Utils.getForegroundColor(ct[i]);
                 if(options.horizontal) 
-                    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
+                    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, tdw], HtmlUtils.div(attrs, label||""));
                 else
                     html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
             }
@@ -237,7 +239,7 @@ $.extend(Utils,{
 
 
         if (colorToString!=null) {
-            let tdw = 100 / ct.length + "%";
+            let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
             let colCnt =0;
             let bin ={};
