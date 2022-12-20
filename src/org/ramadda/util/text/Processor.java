@@ -2573,6 +2573,7 @@ public abstract class Processor extends SeesvOperator {
 
             String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
             String displayFormat = getDbProp("table", "displayFormat", (String)null);
+            String numberFormat = getDbProp("table", "numberFormat", (String)null);
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col   = row1.getValues().get(colIdx);
                 String colId = makeID(col);
@@ -2739,6 +2740,11 @@ public abstract class Processor extends SeesvOperator {
 								 fmt}));
 	   
                 }
+
+		String numFmt = getDbProp(colId, "numberFormat", numberFormat);
+		if(numFmt!=null) 
+		    attrs.append(XmlUtil.attrs(new String[] { "numberFormat",
+								 numFmt}));
 
                 StringBuffer inner = new StringBuffer();
                 boolean isindex = "true".equals(getDbProp(colId, "isindex",
