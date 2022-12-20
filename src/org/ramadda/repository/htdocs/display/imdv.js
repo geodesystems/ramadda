@@ -2986,7 +2986,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let label =  mapGlyph.getLabel(true,true);
-		
 		let body = HU.div(['style','margin-left:10px;'],mapGlyph.getLegendBody());
 		let block = HU.toggleBlockNew("",body,mapGlyph.getLegendVisible(),
 					      {separate:true,headerStyle:'display:inline-block;',
@@ -4282,10 +4281,16 @@ MapGlyph.prototype = {
 	return label;
     },
     initLegendBody:function() {
+	let _this = this;
 	if(this.isMultiEntry() && this.entries) {
 	    this.showMultiEntries();
 	}
-	let _this = this;
+	if(this.showFeatureTableId) {
+	    $('#'+ this.showFeatureTableId).click(function() {
+		_this.showFeaturesTable($(this));
+	    });
+	}
+
 	this.jq('image_opacity_slider').slider({		
 	    min: 0,
 	    max: 1,
@@ -4324,9 +4329,27 @@ MapGlyph.prototype = {
 	return text;
     },
 	
+
+    showFeatureProperty:function(p) {
+	return !['objectid','shapestlength','globalid'].includes(p.toLowerCase());
+    },
+
+
     getLegendBody:function() {
 	let body = '';
-	body+=HU.center(this.display.makeGlyphButtons(this,true));
+	let buttons = this.display.makeGlyphButtons(this,true);
+	
+	if(this.isMap()) {
+	    this.showFeatureTableId = HU.getUniqueId('btn');
+	    if(buttons!=null) buttons = HU.space(1)+buttons;
+	    buttons =  HU.span(['id',this.showFeatureTableId,'title','Show features table','class','ramadda-clickable xramadda-button'],
+			      HU.getIconImage('fas fa-table')) +buttons;
+
+
+	}
+	if(buttons!='')
+	    body+=HU.center(buttons);
+
 	if(this.attrs.mapStyleRules) {
 	    let rulesLegend = "";
 	    let lastProperty="";
@@ -4334,12 +4357,17 @@ MapGlyph.prototype = {
 		if(!Utils.stringDefined(rule.property)) return;
 
 		let propOp = rule.property+rule.type;
-		if(lastProperty!=propOp)
-		    rulesLegend+= HU.b(Utils.makeLabel(rule.property))+rule.type+"<br>";
+		if(lastProperty!=propOp) {
+		    if(rulesLegend!="") rulesLegend+='</table>';
+		    let type = rule.type;
+		    if(type=='==') type='=';
+		    type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+		    rulesLegend+= HU.b(Utils.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
+		}
 		lastProperty  = propOp;
 		let label = rule.value;
 		label   = HU.span(['style','font-size:9pt;'],label);
-		let item = HU.space(2)+ label+": ";
+		let item = '<tr><td>' + HU.space(2)+ label+":</td><td align=right>";
 		let style = "display:inline-block;width:16px;height:16px;";
 		rule.style.split("\n").forEach(line=>{
 		    line  = line.trim();
@@ -4348,11 +4376,12 @@ MapGlyph.prototype = {
 		    if(toks[0]=="fillColor") style+=HU.css("background",toks[1]);
 		    else if(toks[0]=="strokeColor") style+=HU.css("border","1px solid " +toks[1]);
 		});
-		item+=HU.div(['style',style],"");
+		item+=HU.div(['style',style],"")+'</td></tr>';
 		rulesLegend+=HU.div([],item);
 	    });
 	    if(rulesLegend!="")
-		body+=HU.toggleBlock("Legend",rulesLegend,true);
+		rulesLegend+= '</table>';
+	    body+=HU.toggleBlock('Legend',rulesLegend,true);
 	}
 
 	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl)) {
@@ -4640,6 +4669,46 @@ MapGlyph.prototype = {
 
     },
 
+    getFeaturesTable:function(id) {
+	let columns;
+	let table = HU.openTag('table',['style','','id',id,'table-ordering','true','table-searching','true','table-height','400px','class','stripe rowborder ramadda-table'])
+	this.featureTableMap = {};
+	this.mapLayer.features.forEach((feature,idx)=>{
+	    let attrs = feature.attributes;
+	    if(columns==null) {
+		columns = Object.keys(attrs).filter(c=>{
+		    return this.showFeatureProperty(c);
+		});
+		table+='<thead><tr>';
+		columns.forEach(column=>{
+		    table+=HU.tag('th',[],Utils.makeLabel(column));
+		});
+		table+='</tr></thead><tbody>';
+	    }
+	    this.featureTableMap[idx] =feature;
+	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', idx,'class','imdv-feature-table-row ramadda-clickable']);
+	    columns.forEach(column=>{
+		table+=HU.tag('td',[],attrs[column]);
+	    });
+	});
+
+	table+='</tbody>';
+	return table;
+    },
+
+    showFeaturesTable:function(anchor) {
+	let tableId = HU.getUniqueId("table");
+	let table =this.getFeaturesTable(tableId);
+	let html =  HU.div(['style','margin:5px;width:1000px;overflow-x:scroll;'],table);
+	let dialog = HU.makeDialog({content:html,title:this.name,header:true,my:"left top",at:"left bottom",draggable:true,anchor:anchor});
+	
+	HU.formatTable('#'+tableId);
+	let _this = this;
+	dialog.find('.imdv-feature-table-row').click(function() {
+	    let feature = _this.featureTableMap[$(this).attr('featureidx')];
+	    _this.display.getMap().centerOnFeatures([feature]);
+	});
+    },
     getPropertiesComponent: function(content) {
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.mapLayer.features[0].attributes;
@@ -4845,10 +4914,17 @@ MapGlyph.prototype = {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
+		if($("#"+this.andZoomId).is(':checked')) {
+		    this.zoomTo();
+		}
 	    };
 	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 	    
+	    this.andZoomId = HU.getUniqueId("andzoom");
 	    widgets = HU.div(['style','max-height:200px;overflow-y:auto;'], widgets);
+	    widgets = HU.checkbox(this.andZoomId,['id',this.andZoomId],false,"Zoom on change") + widgets;
+
+	    
 	    let toggle = HU.toggleBlockNew('Filters',widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
 	    this.jq('mapfilters').html(HU.div(['style','margin-right:10px;'],HU.leftRightTable(toggle.header,clearAll))+toggle.body);
 	    HU.initToggleBlock(this.jq('mapfilters'),(id,visible)=>{this.setFiltersVisible(visible);});
