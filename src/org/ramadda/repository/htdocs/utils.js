@@ -5121,23 +5121,32 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     toggleBlock: function(label, contents, visible, args) {
         let opts = {
-            headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable",
-            headerStyle:""
+            headerClass:'ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable',
+            headerStyle:'',
+	    orientation:'h',
+	    imgopen:'fas fa-caret-down',
+	    imgclosed:'fas fa-caret-right',	    
         };
+
         if(args) $.extend(opts, args);
-        let id = Utils.getUniqueId("block_");
-        let imgid = id + "_img";
-        let img1 = "fas fa-caret-down";
-        let img2 = "fas fa-caret-right";        
-        let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
-        let click = "HtmlUtils.toggleBlockVisibility(" + clickArgs + ");";
+	let horizontal = opts.orientation=='horizontal';
+	if(horizontal)
+	    opts.headerStyle+= 'line-height:1px;';
+        let id = Utils.getUniqueId('block_');
+        let imgid = id + '_img';
+        let img1 = opts.imgopen;
+        let img2 = opts.imgclosed;
+        let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ',');
+        let click = 'HtmlUtils.toggleBlockVisibility(' + clickArgs + ');';
         let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
-        let header = HtmlUtils.div([STYLE,opts.headerStyle,"class", opts.headerClass, "onClick", click],  img +  " " + label);
-        let style = (visible ? "display:block;visibility:visible" : "display:none;");
-        let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
+        let header = HtmlUtils.div([STYLE,opts.headerStyle,'class', opts.headerClass, 'onClick', click],  img +  ' ' + label);
+        let style = (visible ? 'display:block;visibility:visible' : 'display:none;');
+        let body = HtmlUtils.div(['class', 'hideshowblock', 'id', id, 'style', style],
                                  contents);
 	if(opts.separate)
 	    return {header:header,body:body,id:id};
+	if(horizontal)
+	    return HU.hbox([header,body]);
         return header + body;
     },
     toggleBlockNew: function(label, contents, visible, args) {
