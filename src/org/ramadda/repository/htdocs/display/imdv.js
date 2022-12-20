@@ -1,5 +1,5 @@
 /**
-   Copyright 2008-2022 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -1285,31 +1285,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.checkImage();
 		}
 
+
+		//xxxxx
 		mapGlyph.applyStyle(style);
-
-		//Make sure we do this after we set the above style properties
-		mapGlyph.setName(this.jq("mapglyphname").val());
-		if(mapGlyph.isEntry()) {
-		    mapGlyph.setUseEntryName(this.jq("useentryname").is(":checked"));
-		    mapGlyph.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
-		    mapGlyph.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
-		    let glyphs = this.jq("entryglyphs").val();
-		    mapGlyph.setEntryGlyphs(glyphs);
-		    mapGlyph.applyEntryGlyphs();
-		}
-		
-
-		mapGlyph.setVisible(this.jq("visible").is(":checked"),true);
-		mapGlyph.setVisibleLevelRange(this.jq("minlevel").val().trim(),
-					      this.jq("maxlevel").val().trim());
-		mapGlyph.setShowMarkerWhenNotVisible(this.jq('showmarkerwhennotvisible').is(':checked'));
+		mapGlyph.applyPropertiesDialog(style);
 		this.redraw();
 		this.makeLegend();
 		this.showMapLegend();
-
-
-
-
 	    };
 	},
 	doEdit: function(mapGlyph) {
@@ -1502,7 +1484,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doProperties: function(style, apply,mapGlyph) {
 	    let _this = this;
 	    style = style || mapGlyph?mapGlyph.getStyle():style;
-	    let html="";
 	    let props;
 	    let buttons = "";
 	    buttons+="<center>";
@@ -1517,33 +1498,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    buttons +=HU.div([CLASS,"display-button","command",ID_CANCEL], "Cancel");	   
 	    buttons+="</center>";
 	    let content =[];
-	    let layout = (lbl,widget)=>{
-		html+=HU.b(lbl)+"<br>"+widget+"<br>";
-	    }
 	    if(mapGlyph) {
-		let nameWidget = HU.input("",mapGlyph.getName(),['id',this.domId('mapglyphname'),'size','40']);
-		if(mapGlyph.isEntry()) {
-		    nameWidget+="<br>" +HU.checkbox(this.domId("useentryname"),[],mapGlyph.getUseEntryName(),"Use name from entry");
-		    nameWidget+=HU.space(3) +HU.checkbox(this.domId("useentrylocation"),[],mapGlyph.getUseEntryLocation(),"Use location from entry");
-		}
-		layout("Name:",nameWidget);
-		if(mapGlyph.isEntry()) {
-		    layout("Glyphs:</b> <a target=_help href=https://ramadda.org/repository/userguide/imdv.html#glyphs>Help</a><b>",
-			   HU.textarea("",mapGlyph.getEntryGlyphs()??"",[ID,this.domId("entryglyphs"),"rows",5,"cols", 90]));
-		    /*
-		      glyph1="type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100"
-		      glyph2="type:label,pos:sw,dx:25,dy:0,label:${atmos_temp}"
-		    */
-		}
-
-		let level = mapGlyph.getVisibleLevelRange()??{};
-		html+= HU.checkbox(this.domId("visible"),[],mapGlyph.getVisible(),"Visible")+"<br>";
-		html+=this.getLevelRangeWidget(level,mapGlyph.getShowMarkerWhenNotVisible());
-
-		
-		let domId = this.domId("glyphedit_" + 'popupText');
-		html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 90]);
-		content.push(["Properties",html]);
+		mapGlyph.addToPropertiesDialog(content,style);
 	    }
 	    let blocks;
 	    if(mapGlyph&&mapGlyph.isData()) {
@@ -1585,7 +1541,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(mapGlyph) {
 		mapGlyph.getPropertiesComponent(content);
 	    }
-	    html = buttons;
+	    let html = buttons;
 	    content.forEach((tuple,idx)=>{
 		html+=HU.toggleBlock(HU.b(tuple[0]),HU.div(['class','imdv-properties-section'],tuple[1]),idx==0);
 	    });
@@ -3155,9 +3111,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
         initDisplay: function(embedded) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
-	    let legend = HU.div(['id',this.domId(ID_LEGEND)]);
-	    this.jq(ID_LEFT).html(legend);
-	    
+   
 	    this.myLayer = this.map.createFeatureLayer("Annotation Features",false,null,{rendererOptions: {zIndexing: true}});
 	    this.selectionLayer = this.map.createFeatureLayer("Selection",false,null,{rendererOptions: {zIndexing: true}});	    
 	    this.selectionLayer.setZIndex(1000)
@@ -3300,6 +3254,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		doPopup(text);
 		return false;
 	    };
+
+	    let legend = HU.div(['id',this.domId(ID_LEGEND)]);
+	    /*
+	      Don't do this for now since if we have set the Show legend property=false that isn't set yet
+	    legend = HU.toggleBlock("",legend,true,{orientation:'horizontal',
+						    imgopen:'fa-solid fa-angles-down',
+						    imgclosed:'fa-solid fa-angles-right',						    
+						   });
+	    */
+	    this.jq(ID_LEFT).html(legend);
+
+
 
 	    this.jq(ID_HEADER0).append(HU.div([ID,this.domId("topwikitext")]));
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.domId("bottomwikitext")]));	    
@@ -3824,6 +3790,63 @@ MapGlyph.prototype = {
 	    return this.transientProperties.mapglyphs;
 	return null;
     },
+    addToPropertiesDialog:function(content,style) {
+	let html="";
+	let layout = (lbl,widget)=>{
+	    html+=HU.b(lbl)+"<br>"+widget+"<br>";
+	}
+	let nameWidget = HU.input("",this.getName(),['id',this.display.domId('mapglyphname'),'size','40']);
+	if(this.isEntry()) {
+	    nameWidget+="<br>" +HU.checkbox(this.display.domId("useentryname"),[],this.getUseEntryName(),"Use name from entry");
+	    nameWidget+=HU.space(3) +HU.checkbox(this.display.domId("useentrylocation"),[],this.getUseEntryLocation(),"Use location from entry");
+	}
+	layout("Name:",nameWidget);
+	if(this.isEntry()) {
+	    layout("Glyphs:</b> <a target=_help href=https://ramadda.org/repository/userguide/imdv.html#glyphs>Help</a><b>",
+		   HU.textarea("",this.getEntryGlyphs()??"",[ID,this.display.domId("entryglyphs"),"rows",5,"cols", 90]));
+	    /*
+	      glyph1="type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100"
+	      glyph2="type:label,pos:sw,dx:25,dy:0,label:${atmos_temp}"
+	    */
+	}
+
+	let level = this.getVisibleLevelRange()??{};
+	html+= HU.checkbox(this.display.domId("visible"),[],this.getVisible(),"Visible")+"<br>";
+	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
+	
+	let domId = this.display.domId("glyphedit_" + 'popupText');
+	html+=HU.b("Popup Text:") +"<br>" + HU.textarea("",style.popupText??"",[ID,domId,"rows",5,"cols", 90]);
+	if(this.isMultiEntry()) {
+	    html+='<br>';
+	    html+= HU.checkbox(this.display.domId("showmultidata"),[],this.getShowMultiData(),'Show entry data');
+	}
+
+	content.push(["Properties",html]);
+    },
+    applyPropertiesDialog:function(style) {
+	let jq = name=>{
+	    return this.display.jq(name);
+	}
+	if(this.isMultiEntry()) {
+	    this.setShowMultiData(jq("showmultidata").is(':checked'));
+	}
+	//Make sure we do this after we set the above style properties
+	this.setName(jq("mapglyphname").val());
+	if(this.isEntry()) {
+	    this.setUseEntryName(jq("useentryname").is(":checked"));
+	    this.setUseEntryLabel(jq("useentrylabel").is(":checked"));
+	    this.setUseEntryLocation(jq("useentrylocation").is(":checked"));
+	    let glyphs = jq("entryglyphs").val();
+	    this.setEntryGlyphs(glyphs);
+	    this.applyEntryGlyphs();
+	}
+	
+
+	this.setVisible(jq("visible").is(":checked"),true);
+	this.setVisibleLevelRange(jq("minlevel").val().trim(),
+				      jq("maxlevel").val().trim());
+	this.setShowMarkerWhenNotVisible(jq('showmarkerwhennotvisible').is(':checked'));
+    },
     applyEntryGlyphs:function(args) {
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
 	    return;
@@ -3937,7 +3960,6 @@ MapGlyph.prototype = {
 	    if(!skip)
 		lines.push(line);
 	});
-
 
 
 	lines.forEach(line=>{
@@ -4305,6 +4327,34 @@ MapGlyph.prototype = {
     getLegendBody:function() {
 	let body = '';
 	body+=HU.center(this.display.makeGlyphButtons(this,true));
+	if(this.attrs.mapStyleRules) {
+	    let rulesLegend = "";
+	    let lastProperty="";
+	    this.attrs.mapStyleRules.forEach(rule=>{
+		if(!Utils.stringDefined(rule.property)) return;
+
+		let propOp = rule.property+rule.type;
+		if(lastProperty!=propOp)
+		    rulesLegend+= HU.b(Utils.makeLabel(rule.property))+rule.type+"<br>";
+		lastProperty  = propOp;
+		let label = rule.value;
+		label   = HU.span(['style','font-size:9pt;'],label);
+		let item = HU.space(2)+ label+": ";
+		let style = "display:inline-block;width:16px;height:16px;";
+		rule.style.split("\n").forEach(line=>{
+		    line  = line.trim();
+		    if(line=="") return;
+		    let toks = line.split(":");
+		    if(toks[0]=="fillColor") style+=HU.css("background",toks[1]);
+		    else if(toks[0]=="strokeColor") style+=HU.css("border","1px solid " +toks[1]);
+		});
+		item+=HU.div(['style',style],"");
+		rulesLegend+=HU.div([],item);
+	    });
+	    if(rulesLegend!="")
+		body+=HU.toggleBlock("Legend",rulesLegend,true);
+	}
+
 	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl)) {
 	    let v = this.isImage()?this.style.imageOpacity:this.style.opacity;
 	    body += 
@@ -4322,7 +4372,7 @@ MapGlyph.prototype = {
 	let colorMap = this.attrs.colorBy ??{};
 	if(Utils.stringDefined(colorMap.property)) {
 	    let div = this.getColorTableDisplay(colorMap.colorTable,colorMap.min,colorMap.max,true);
-	    body+=HU.center(colorMap.property)+HU.center(div);
+	    body+=HU.center(Utils.makeLabel(colorMap.property))+HU.center(div);
 	}	
 
 	//Put the placeholder here for map sliders
@@ -4376,6 +4426,12 @@ MapGlyph.prototype = {
     },    
     isMultiEntry:function() {
 	return this.getType()==GLYPH_MULTIENTRY;
+    },
+    getShowMultiData:function() {
+	return this.attrs.showmultidata;
+    },
+    setShowMultiData:function(v) {
+	this.attrs.showmultidata = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined) {
 	this.style.legendUrl = legendUrl;
@@ -4532,7 +4588,7 @@ MapGlyph.prototype = {
             height: "20px",
 	    showRange:showRange
         });
-        return  HtmlUtils.div([STYLE,HU.css('width','200px'),TITLE,a,"X"+CLASS, "ramadda-colortable-select","colortable",a],display);
+        return  HtmlUtils.div([STYLE,HU.css('width','400px'),TITLE,a,"X"+CLASS, "ramadda-colortable-select","colortable",a],display);
     },
     initPropertiesComponent: function(dialog) {
 	let _this = this;
@@ -4604,8 +4660,8 @@ MapGlyph.prototype = {
 	    colorBy += HU.formEntry("Range:",HU.input("",colorMap.min??"", ['id',this.domId('colorby_min'),'size','6','title','min value']) +" -- "+
 				    HU.input("",colorMap.max??"", ['id',this.domId('colorby_max'),'size','6','title','max value']));
 	    colorBy += HU.hidden('',colorMap.colorTable||'blues',['id',this.domId('colorby_colortable')]);
-	    colorBy+=HU.formEntry("Color table:", HU.hbox([HU.div(['style',HU.css(),'id',this.domId('colorby_colortable_label')]),
-							   Utils.getColorTablePopup(null,null,"Select")]));
+	    colorBy+=HU.formEntry("Color table:", HU.div(['style',HU.css(),'id',this.domId('colorby_colortable_label')])+
+				  Utils.getColorTablePopup(null,null,"Select"));
 	    colorBy+="</table>";
 	}
 	let properties=Utils.mergeLists([['','Select']],featureInfo.map(info=>{return info.property;}));
@@ -5384,13 +5440,19 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 		let style = $.extend({},this.style);
 		style.externalGraphic = e.getIconUrl();
 		style.strokeWidth=1;
-		style.strokeColor="red";
+		style.strokeColor="transparent";
+		/*
 		let bgstyle = $.extend({},style);
 		bgstyle = $.extend(bgstyle,{externalGraphic:ramaddaBaseUrl+"/images/white.png"});
 		bgstyle.label = null;
 		let bgpt = MapUtils.createPoint(pt.x,pt.y);
 		let bg = MapUtils.createVector(bgpt,null,bgstyle);
-		if(this.style.showLabels) {
+		bg.noSelect = true;
+		//		bg.mapGlyph=this;
+		//		bg.entryId = e.getId();
+		this.features.push(bg);
+		*/
+		if(style.showLabels) {
 		    let label  =e.getName();
 		    let toks = Utils.split(label," ",true,true);
 		    if(toks.length>1) {
@@ -5406,13 +5468,20 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 		    style.label=null;
 		}
 		let marker = MapUtils.createVector(pt,null,style);
-		bg.noSelect = true;
-		//		bg.mapGlyph=this;
-		//		bg.entryId = e.getId();
+		let attrs = {name:e.getName(),
+			     entryglyphs:e.mapglyphs,
+			     entryId:e.getId()
+			    };
+		//xxxx
+//		if(Utils.stringDefined(this.attrs.entryglyphs))
+		let mapGlyph = new MapGlyph(this.display,GLYPH_MARKER, attrs, marker,style);
 		marker.mapGlyph = this;
 		marker.entryId = e.getId();
-		this.features.push(bg);
+		if(this.getShowMultiData()) {
+		    mapGlyph.applyEntryGlyphs();
+		}
 		this.features.push(marker);
+		//xxxxx
 	    });
 	    this.display.addFeatures(this.features);
 	    this.checkVisible();
