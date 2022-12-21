@@ -4952,12 +4952,9 @@ public class TypeHandler extends RepositoryManager {
                         String prefix = "";
                         if (getTypeProperty("form.description.showwiki",
                                             true)) {
-                            String cbxLabel = HU.tag("label",
-                                                  HU.attrs("for", cbxId),
-                                                  img);
-                            String cbx = HtmlUtils.checkbox(ARG_ISWIKI,
+                            String cbx = HtmlUtils.labeledCheckbox(ARG_ISWIKI,
                                              "true", isTextWiki,
-                                             HtmlUtils.id(cbxId)) + cbxLabel;
+								  HtmlUtils.id(cbxId), img);
                             cbx = HU.span(cbx,
                                           HU.cssClass("ramadda-clickable")
                                           + HU.title("Wikify text"));
@@ -5080,12 +5077,11 @@ public class TypeHandler extends RepositoryManager {
                         }
                         String download = !showDownload
                                           ? ""
-                                          : HtmlUtils.space(1)
-                                            + HtmlUtils
-                                                .checkbox(
-                                                    ARG_RESOURCE_DOWNLOAD) + HtmlUtils
-                                                        .space(1) + msg(
-                                                            "Download");
+                                          : HU.space(1)
+                                            + HU.labeledCheckbox(
+								 ARG_RESOURCE_DOWNLOAD,
+								 "true",false,
+								 "Download");
                         String formContent = HtmlUtils.input(ARG_URL, url,
                                                  size) + "&nbsp;" + download;
                         tabTitles.add(urlLabel);
