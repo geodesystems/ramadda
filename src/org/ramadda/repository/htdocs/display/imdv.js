@@ -2694,15 +2694,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doMakeMapGlyphs:function() {
 	    let externalGraphic = this.getExternalGraphic();
 	    if(!externalGraphic.startsWith(ramaddaBaseUrl)) externalGraphic = ramaddaBaseUrl+externalGraphic;
-/*
-	    new GlyphType(this,GLYPH_MARKER,"Marker",
-			  {strokeWidth:0, 
-			   fillColor:"transparent",
-			   externalGraphic: externalGraphic,
-			   pointRadius:this.getPointRadius(10)},
-			  MyPoint,
-			  {icon:ramaddaBaseUrl+"/map/marker-blue.png"});
-*/
 	    new GlyphType(this,GLYPH_MARKER,"Marker",
 			  {label : "label",
 			   externalGraphic: externalGraphic,
@@ -3987,10 +3978,11 @@ MapGlyph.prototype = {
 	ctx.strokeStyle ="#000";
 	ctx.fillStyle="#000";
 	let pending = [];
+	let records = data.getRecords();
 	glyphs.forEach(glyph=>{
 	    //if its an image glyph then the image might not be loaded so the call returns a
 	    //isReady function that we keep checking until it is ready
-	    let isReady =  glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:data.getRecords()[0]});
+	    let isReady =  glyph.draw({}, canvas, ctx, 0,canvasHeight,{record:records[records.length-1]});
 	    if(isReady) pending.push(isReady);
 	});
 
