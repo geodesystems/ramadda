@@ -11,14 +11,23 @@ The Grid Subset Monitor allows  a site administrator to automatically create a s
 created grid data file using RAMADDA's <a href="https://ramadda.org/repository/userguide/monitors.html">monitor facility</a>.
 :p
 When logged in to RAMADDA go the Admin-&gt;Monitors page and select New Grid Subset Action.
-Specify the Data range, etc. In the Search Criteria section specify ...
+In the Search Criteria section specify what grid entries are to be matched on.
 For example, if you are adding Gridded Data to a particular folder
 called Models you can specify the Grid Subset Action is applied to new Gridded File entries
-under that folder. In the action you specify the target folder to add the new subsetted grid
+under the Models folder.
+:p
+In the Actions  section specify the target folder to add the new subsetted grid
 file under and a set of subset arguments. To specify the subset arguments go to an example
 of one of the source grid files and choose the Subset Grid view. Specify your subset, e.g., spatial
 bounds, time range, parameters, etc. Then at the bottom of the page click on the 
-<span><i class="fas fa-earth-americas"></i></span> link. This copies to your clipboard the arguments. You can then go to your  Grid Subset Action and paste the arguments into the form field.
+<span><i class="fas fa-earth-americas"></i></span> link. This copies to your clipboard the arguments.
+You can then go to your  Grid Subset Action and paste the arguments into the form field.
+If you want all of the grid fields to be added and don't want to select all of them with the checkboxes
+in the  Grid Subset form then add "allvars=true" to your Grid Subset Arguments.
+
+:p
+Now, if everything works whenever a new gridded file is added to RAMADDA that matches your search criteria
+the subset will be applied and a new file will be created.
 
 
 
