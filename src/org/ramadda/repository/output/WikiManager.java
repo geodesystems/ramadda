@@ -1331,7 +1331,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             List<String> toks = Utils.splitUpTo(src, "::", 2);
             if (toks.size() == 2) {
                 src        = toks.get(0);
-                attachment = toks.get(1).substring(1);
+                attachment = toks.get(1);
             }
         }
         src = src.trim();
