@@ -89,6 +89,7 @@ public class HarvesterManager extends RepositoryManager {
     /** _more_ */
     List<TwoFacedObject> harvesterTypes = new ArrayList<TwoFacedObject>();
 
+    private boolean haveInited= false;
 
     /**
      * _more_
@@ -208,7 +209,7 @@ public class HarvesterManager extends RepositoryManager {
      */
     public void initHarvestersInThread() throws Exception {
 	//Sleep a bit before we start up
-	Misc.sleepSeconds(30);
+	Misc.sleepSeconds(15);
         List<String> harvesterFiles =
             getRepository().getResourcePaths(PROP_HARVESTERS);
         boolean okToStart =
@@ -307,6 +308,9 @@ public class HarvesterManager extends RepositoryManager {
                 Misc.run(harvester, "run");
             }
         }
+
+	haveInited= true;	
+
     }
 
 
@@ -381,6 +385,7 @@ public class HarvesterManager extends RepositoryManager {
         }
 
 
+
         sb.append(HtmlUtils.sectionOpen(null, false));
         sb.append(HtmlUtils.h2("Create new harvester"));
         request.formPostWithAuthToken(sb, URL_HARVESTERS_NEW);
@@ -420,6 +425,9 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(HtmlUtils.formTableClose());
 
         sb.append(HtmlUtils.sectionClose());
+
+
+
 
         return getAdmin().makeResult(request, msg("New Harvester"), sb);
 
@@ -635,20 +643,23 @@ public class HarvesterManager extends RepositoryManager {
 
             return new Result(request.makeUrl(URL_HARVESTERS_LIST));
         }
+	if(!haveInited) {
+	    sb.append(getPageHandler().showDialogNote("Harvesters have not been initialized yet"));
+	} else {
+	    //        sb.append(msgHeader("Harvesters"));
+	    request.formPostWithAuthToken(sb, URL_HARVESTERS_NEW);
+	    sb.append(HtmlUtils.sectionOpen(null, false));
+	    sb.append(HtmlUtils.submit(msg("New Harvester")));
+	    sb.append(HtmlUtils.formClose());
 
-        //        sb.append(msgHeader("Harvesters"));
-        request.formPostWithAuthToken(sb, URL_HARVESTERS_NEW);
-        sb.append(HtmlUtils.sectionOpen(null, false));
-        sb.append(HtmlUtils.submit(msg("New Harvester")));
-        sb.append(HtmlUtils.formClose());
-
-        if (request.exists(ARG_MESSAGE)) {
-            sb.append(
-                getPageHandler().showDialogNote(
-                    request.getString(ARG_MESSAGE, "")));
-        }
-	sb.append(HU.center(getLogLink()));
-        makeHarvestersList(request, harvesters, sb);
+	    if (request.exists(ARG_MESSAGE)) {
+		sb.append(
+			  getPageHandler().showDialogNote(
+							  request.getString(ARG_MESSAGE, "")));
+	    }
+	    sb.append(HU.center(getLogLink()));
+	    makeHarvestersList(request, harvesters, sb);
+	}
         sb.append(HtmlUtils.sectionClose());
 
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);

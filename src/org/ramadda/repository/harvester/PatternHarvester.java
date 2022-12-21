@@ -169,6 +169,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     private int totalAddedEntries = 0;    
 
+    private List<String> otherMsgs = new ArrayList<String>();
+
+
 
     /** _more_ */
     private long lastRunTime = 0;
@@ -669,6 +672,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	if(totalAddedEntries>0) {
 	    entryMsg.add("Created " + totalAddedEntries +" new entries");
 	}
+	entryMsg.addAll(otherMsgs);
+
+
         List<FileWrapper> rootDirs = getRootDirs();
 
 
@@ -746,6 +752,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	nonUniqueCnt  = 0;
         newEntryCnt = 0;
 	totalAddedEntries=0;
+	otherMsgs = new ArrayList<String>();
 	dirMap = new HashSet<FileWrapper>();
         status = new StringBuffer("Looking for initial directory listing");
         long tt1 = System.currentTimeMillis();
@@ -954,7 +961,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 continue;
             }
 
-            FileWrapper[] files = dirInfo.getFile().listFiles();
+            FileWrapper[] files = dirInfo.getFile().doListFiles();
             dirInfo.clearAddedFiles();
             if ((files == null) || (files.length == 0)) {
                 logHarvesterInfo("Directory:" + dirInfo.getFile() + " * no files *");
@@ -986,10 +993,13 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 //time diff threshold = 1 minute
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
-
-                    logHarvesterInfo("Skipping recently modified file:" + f
-                                     + " milliseconds since modified:"
-                                     + (now - fileTime));
+		    int diff = (int)((now-fileTime)/1000.0);
+		    String message = "Skipping recently modified file: " + f
+			+ " seconds since modified:"
+			+ diff;
+		    String htmlMessage=message+"<br>Ready to harvest in " + (FILE_CHANGED_TIME_THRESHOLD_MS/1000-diff)  +" seconds";
+		    otherMsgs.add(htmlMessage);
+                    logHarvesterInfo(message);
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
                     continue;

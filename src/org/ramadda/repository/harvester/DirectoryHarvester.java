@@ -210,7 +210,7 @@ public class DirectoryHarvester extends Harvester {
             group = getEntryManager().makeNewGroup(parentGroup, name,
                     getUser(), fileInfoEntry);
         }
-        FileWrapper[] files = dir.listFiles();
+        FileWrapper[] files = dir.doListFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
                 walkTree(files[i], group, entriesMap);

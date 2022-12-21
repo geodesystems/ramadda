@@ -205,7 +205,7 @@ public class HarvesterFile extends FileInfo {
                 long oldTime = fileInfo.getTime();
                 if (fileInfo.hasChanged()) {
                     //                    System.err.println("Changed:" + fileInfo);
-                    FileWrapper[] files = fileInfo.getFile().listFiles();
+                    FileWrapper[] files = fileInfo.getFile().doListFiles();
                     for (int i = 0; i < files.length; i++) {
                         if (files[i].lastModified() > oldTime) {
                             //                            System.err.println("    " + files[i].getName());
