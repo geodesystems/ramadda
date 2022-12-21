@@ -169,7 +169,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     private int totalAddedEntries = 0;    
 
-    private List<String> otherMsgs = new ArrayList<String>();
 
 
 
@@ -741,6 +740,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      * @param timestamp _more_
      * @throws Exception _more_
      */
+    @Override
     protected void runInner(int timestamp) throws Exception {
         logHarvesterInfo("******************* Starting ****************");
         if ( !canContinueRunning(timestamp)) {
@@ -796,6 +796,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             long t1 = System.currentTimeMillis();
             logHarvesterInfo("Start scanning");
             printTab = "\t";
+	    resetStatus();
             harvestEntries((cnt == 0), timestamp, entriesMap);
             printTab = "";
             logHarvesterInfo("Done scanning");
@@ -809,8 +810,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 break;
             }
 
-            status.append("Done... sleeping for " + getSleepMinutes()
-                          + " minutes<br>");
+            status.append("Done. Sleeping until: "); 
             logHarvesterInfo("Sleeping for " + getSleepMinutes()
                              + " minutes");
             doPause();
@@ -927,7 +927,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         //Initialize the list of entry ids for post-processing
         idList = new ArrayList<String[]>();
 
-
         List<Entry>         needToAdd = new ArrayList<Entry>();
         List<HarvesterFile> tmpDirs   = new ArrayList<HarvesterFile>(dirs);
         entryCnt    = 0;
@@ -947,6 +946,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         Request request              = getRequest();
         //Iterate by size because we can add new dirs to the list
+	boolean anyChanged = false;
         for (int fileIdx = 0; fileIdx < tmpDirs.size(); fileIdx++) {
             printTab = "\t";
             HarvesterFile dirInfo = tmpDirs.get(fileIdx);
@@ -958,9 +958,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
             boolean directoryChanged = dirInfo.hasChanged();
             if (checkIfDirHasChanged && !firstTime && !directoryChanged) {
+		logHarvesterInfo("Directory:"  + dirInfo.getFile() +" has not changed");
                 continue;
             }
 
+	    anyChanged = true;
             FileWrapper[] files = dirInfo.getFile().doListFiles();
             dirInfo.clearAddedFiles();
             if ((files == null) || (files.length == 0)) {
@@ -1085,7 +1087,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
                 return;
             }
-        }
+	}
+
+	if(!anyChanged) {
+	    status.append("No directories changed<br>");
+	}
 
         if (needToAdd.size() > 0) {
             addEntries(needToAdd, timestamp, entriesMap);

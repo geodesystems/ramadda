@@ -262,6 +262,8 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     protected StringBuffer status = new StringBuffer();
 
+    protected List<String> otherMsgs = new ArrayList<String>();
+
     /** _more_ */
     protected String currentStatus = "";
 
@@ -1145,6 +1147,7 @@ public abstract class Harvester extends RepositoryManager {
      */
     public void resetStatus() {
         status        = new StringBuffer();
+	otherMsgs = new ArrayList<String>();
         currentStatus = "";
     }
 
@@ -1195,17 +1198,18 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
+
     /**
      * _more_
      */
     protected void doPause() {
         double minutes = getSleepMinutes();
         if (minutes < 1) {
+	    status.append(new Date((long)(new Date().getTime()+1000 * 60 * minutes)));
             Misc.sleep((long) (1000 * 60 * minutes));
-
             return;
         }
-        Misc.pauseEvery((int) minutes);
+        Utils.pauseEvery((int) minutes,status);
     }
 
     /**
