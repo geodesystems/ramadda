@@ -323,7 +323,6 @@ public abstract class FileWrapper {
 
 
         /**
-         
          *
          * @param file _more_
          */
@@ -363,6 +362,18 @@ public abstract class FileWrapper {
             return false;
         }
 
+	/**
+	 * @return _more_
+	 */
+	@Override
+	public long lastModified() {
+	    return theFile.lastModified();
+	}
+
+
+	public long length() {
+	    return theFile.length();
+	}
         /**
           * @return _more_
          */

@@ -7,7 +7,7 @@ package org.ramadda.util;
 
 
 import java.io.File;
-
+import java.util.Date;
 
 
 /**
@@ -128,7 +128,6 @@ public class FileInfo {
     public boolean hasChanged() {
         if ( !hasInitialized) {
             doInit();
-
             return true;
         }
         long newTime      = file.lastModified();
@@ -152,7 +151,6 @@ public class FileInfo {
         time      = newTime;
         size      = newSize;
         fileCount = newFileCount;
-
         return changed;
     }
 
@@ -228,6 +226,11 @@ public class FileInfo {
         return title;
     }
 
-
+    public static void main(String[]args) throws Exception {
+	File dir = new File(args[0]);
+	System.err.println("modified:" + new Date(dir.lastModified()));
+	ucar.unidata.util.Misc.sleepSeconds(10);
+	System.err.println("modified:" + new Date(dir.lastModified()));
+    }
 
 }
