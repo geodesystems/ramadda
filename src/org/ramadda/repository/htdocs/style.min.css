@@ -266,8 +266,8 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 }
 
 .ramadda-menu-divider {
-    margin-top:4px;
-    margin-bottom:4px;    
+    margin-top:2px;
+    margin-bottom:2px;    
     border-bottom:1px solid #ccc;
 }
 .ramadda-menu-button.bold {
@@ -1826,6 +1826,16 @@ mapheader {
     border-bottom:var(--basic-border);
 }
 
+
+thin_hr,.ramadda-thin-hr {
+    margin-top:0px;
+    margin-bottom:0px;
+    border-top:var(--basic-border);
+    height:1px;
+    display:block;
+}
+
+
 .ramadda-section-line  {
     border-bottom:var(--basic-border);
 }
@@ -1835,13 +1845,6 @@ mapheader {
     margin-bottom:5px;
 }
 
-thin_hr,.ramadda-thin-hr {
-    margin-top:0px;
-    margin-bottom:0px;
-    border-top:var(--basic-border);
-    height:1px;
-    display:block;
-}
 
 
 .ramadda-documentation  {
