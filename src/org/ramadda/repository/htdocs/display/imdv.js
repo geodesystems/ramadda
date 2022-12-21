@@ -711,7 +711,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 				    mapGlyph.applyEntryGlyphs();
 				    this.clearCommands();
-				    mapGlyph.zoomTo();
+				    mapGlyph.moveTo();
 				    return
 				}
 			    }
@@ -1483,7 +1483,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doProperties: function(style, apply,mapGlyph) {
 	    let _this = this;
-	    style = style || mapGlyph?mapGlyph.getStyle():style;
+	    style = style ?? mapGlyph?mapGlyph.getStyle():style;
 	    let props;
 	    let buttons = "";
 	    buttons+="<center>";
@@ -1589,8 +1589,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.addIconSelection(icons);
 	    }
 
-
-
 	    dialog.find('.ramadda-slider').each(function() {
 		let min = $(this).attr('slider-min');
 		let max = $(this).attr('slider-max');
@@ -1622,10 +1620,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		apply = () =>{
 		    let style = {};
 		    props.forEach(prop=>{
-			let value = this.jq(prop).val();
+			let value = this.jq('glyphedit_'+prop).val();
 			this.setProperty(prop, value);
 			if(prop == "externalGraphic") {
-			    if(!value.startsWith(ramaddaBaseUrl))
+			    value = this.jq('externalGraphic_image').val();
+			    if(value && !value.startsWith(ramaddaBaseUrl))
 				value = ramaddaBaseUrl+  value;
 			}
 			style[prop] = value;
@@ -2178,10 +2177,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html +=this.menuItem(this.domId(ID_SAVE),"Save",'S');
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
-	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...",'L');
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
+	    html+='<div class=ramadda-menu-divider></div>';
+	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");
+	    html+='<div class=ramadda-menu-divider></div>';
 	    html+= HU.href(ramaddaBaseUrl+'/userguide/imdv.html','Help',['target','_help']);
 	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
@@ -2306,23 +2307,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	showEditMenu: function(button) {
-	    let html = [[ID_CUT,"Cut",'X'],[ID_COPY,"Copy",'C'],[ID_PASTE,"Paste",'V'],null,
-			[ID_SELECTOR,"Select"],
-			[ID_SELECT_ALL,"Select All",'A'],			
+	    let html = [[ID_CUT,'Cut','X'],[ID_COPY,'Copy','C'],[ID_PASTE,'Paste','V'],null,
+			[ID_SELECTOR,'Select'],
+			[ID_SELECT_ALL,'Select All','A'],			
 			null,
-			[ID_MOVER,"Move",'M'],
-			[ID_RESHAPE,"Reshape"],
-			[ID_RESIZE,"Resize"],
-			[ID_ROTATE,"Rotate"],			
+			[ID_MOVER,'Move','M'],
+			[ID_RESHAPE,'Reshape'],
+			[ID_RESIZE,'Resize'],
+			[ID_ROTATE,'Rotate'],			
 			null,
-			[ID_TOFRONT,"To Front","F"],
-			[ID_TOBACK,"To Back","B"],
+			[ID_TOFRONT,'To Front','F'],
+			[ID_TOBACK,'To Back','B'],
 			null,
-			[ID_EDIT,"Edit Properties",'P']].reduce((prev,tuple)=>{
-			    prev = prev || "";
-			    if(!tuple) return prev+ HU.div([CLASS,"ramadda-menu-divider"]);						
+			[ID_EDIT,'Edit Properties','P']].reduce((prev,tuple)=>{
+			    prev = prev || '';
+			    if(!tuple) return prev+ HU.div([CLASS,'ramadda-menu-divider']);						
 			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
-			},"");
+			},'');
 	    
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
 	    this.jq(ID_CUT).click(()=>{
@@ -2637,7 +2638,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 			this.mapProperties = json.mapProperties||this.mapProperties||{};
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
-			    _this.getMap().getMap().zoomTo(zoomLevel);
+			    _this.getMap().setZoom(zoomLevel);
 			}
 			if(bounds) {
 			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
@@ -2935,7 +2936,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.showMessage(msg);
 	},
 	getCurrentLevel: function() {
-	    return this.getMap().getMap().getZoom();
+	    return this.getMap().getZoom();
 	},
 	checkVisible:function() {
 	    this.getGlyphs().forEach(mapGlyph=>{
@@ -3021,7 +3022,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
-		mapGlyph.zoomTo();
+		mapGlyph.moveTo(event.shiftKey);
 	    });
 	    
 
@@ -3055,7 +3056,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return
 		}
 		if(event.altKey || event.metaKey) {
-		    mapGlyph.zoomTo();
+		    mapGlyph.moveTo();
 		    return;
 		}
 		mapGlyph.setVisible(!mapGlyph.getVisible(),true);
@@ -3685,7 +3686,7 @@ GlyphType.prototype = {
 		if(newStyle) {
 		    for(a in _this.getStyle()) {
 			if(!Utils.isDefined(newStyle[a])) {
-			    newStyle[a] = _this.getStyle()[s];
+			    newStyle[a] = _this.getStyle()[a];
 			}
 		    }
 		    if(feature.style && feature.style.label)
@@ -4137,7 +4138,7 @@ MapGlyph.prototype = {
     getStyle: function() {
 	return this.style;
     },
-    zoomTo: function() {
+    moveTo: function(andZoomIn) {
 	if(this.isMultiEntry() && this.entries) {
 	    let bounds = null;
 	    this.entries.forEach(entry=>{
@@ -4160,24 +4161,20 @@ MapGlyph.prototype = {
 
 	if(this.features.length) {
 	    this.display.getMap().centerOnFeatures(this.features);
-	    return;
-	}
-	if(this.mapLayer) {
+	} else if(this.mapLayer) {
 	    this.display.getMap().zoomToLayer(this.mapLayer);
-	    return
-	}
-	if(this.displayInfo?.display) {
+	} else	if(this.displayInfo?.display) {
 	    if(this.displayInfo.display.myFeatureLayer && (
 		!Utils.isDefined(this.displayInfo.display.layerVisible) ||
 		    this.displayInfo.display.layerVisible)) {
 		
 		this.display.getMap().zoomToLayer(this.displayInfo.display.myFeatureLayer);
-		return
-	    }
-	    if(this.displayInfo.display.pointBounds) {
+	    } else  if(this.displayInfo.display.pointBounds) {
 		this.display.getMap().zoomToExtent(this.display.getMap().transformLLBounds(this.displayInfo.display.pointBounds));
-		return;
 	    }
+	}
+	if(andZoomIn) {
+	    this.display.getMap().setZoom(16);
 	}
 
     },
@@ -4253,7 +4250,7 @@ MapGlyph.prototype = {
 		right+=SPACE+
 		    HU.span([CLASS,"ramadda-clickable imdv-legend-item-view",
 			     'glyphid',this.getId(),
-			     TITLE,"Zoom to",],
+			     TITLE,"Click:Move to; Shift-click:Zoom in",],
 			    HU.getIconImage("fas fa-binoculars",[],LEGEND_IMAGE_ATTRS));
 	    }
 	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
@@ -4907,7 +4904,7 @@ MapGlyph.prototype = {
 		this.display.featureHasBeenChanged = true;
 		this.applyMapStyle(true);
 		if($("#"+this.andZoomId).is(':checked')) {
-		    this.zoomTo();
+		    this.moveTo();
 		}
 	    };
 	    let clearAll = HU.div(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
@@ -5242,6 +5239,7 @@ MapGlyph.prototype = {
 	    if(!featuresToUse || featuresToUse.length==0) {
 		featuresToUse = this.mapLayer?.features
 	    }		
+
 	    let bounds = this.display.getMap().getFeaturesBounds(featuresToUse,true);
 	    if(bounds) {
 		let center = MapUtils.getCenter(bounds);
@@ -5251,7 +5249,6 @@ MapGlyph.prototype = {
 		this.showMarkerMarker.mapGlyph = this;
 	    }
 	}
-
 
 
 	this.features.forEach(feature=>{
@@ -5305,7 +5302,7 @@ MapGlyph.prototype = {
     isShape:function() {
 	if(this.getType()==GLYPH_LABEL) {
 	    if(!Utils.stringDefined(this.style.externalGraphic)) return true;
-	    if(this.style.externalGraphicb && this.style.externalGraphic.endsWith("blank.gif")) return true;
+	    if(this.style.externalGraphic && this.style.externalGraphic.endsWith("blank.gif")) return true;
 	    if(this.style.pointRadius==0) return true;
 	}
 	return GLYPH_TYPES_SHAPES.includes(this.getType());
@@ -5554,7 +5551,7 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	    this.display.addFeatures(this.features);
 	    this.checkVisible();
 	    if(andZoom)
-		this.zoomTo();
+		this.moveTo();
 	    this.showMultiEntries();
 	};
 	entry.getChildrenEntries(callback);
