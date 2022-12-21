@@ -5525,6 +5525,17 @@ public class Utils extends IO {
     }
 
 
+    public static void pauseEvery(int minutesDelta,Appendable msg)  {
+	try {
+        long sleepTime = Misc.getPauseEveryTime(minutesDelta);
+	if(msg!=null) {
+	    msg.append(""+new Date(new Date().getTime()+sleepTime));
+	}
+        Misc.sleep((long) sleepTime);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
 
     /**
      * _more_
