@@ -40,6 +40,7 @@ var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['type_map','geo_geojson','geo_gpx','geo_shapefile'];
 var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
+var BUTTON_IMAGE_ATTRS = ['style','color:#ccc;'];
 
 function RamaddaImdvDisplay(displayManager, id, properties) {
     Utils.importJS(ramaddaBaseHtdocs+"/wiki.js");
@@ -972,7 +973,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let buttons = [];
 	    if(includeEdit) {
 		buttons.push(HU.span([CLASS,"ramadda-clickable",TITLE,"Edit","glyphid",mapGlyph.getId(),"buttoncommand","edit"],
-				     HU.getIconImage("fas fa-cog")));
+				     HU.getIconImage("fas fa-cog",[],BUTTON_IMAGE_ATTRS)));
 	    }
 	    buttons.push(
 		HU.span([CLASS,"ramadda-clickable",TITLE,"To back","glyphid",mapGlyph.getId(),"buttoncommand","toback"],
@@ -980,9 +981,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.span([CLASS,"ramadda-clickable",TITLE,"To front","glyphid",mapGlyph.getId(),"buttoncommand","tofront"],
 			HU.image(Utils.getIcon("shape_move_front.png"))),
 		HU.span([CLASS,"ramadda-clickable",TITLE,"Select","glyphid",mapGlyph.getId(),"buttoncommand",ID_SELECT],
-			HU.getIconImage("fas fa-hand-pointer")),
+			HU.getIconImage("fas fa-hand-pointer",[],BUTTON_IMAGE_ATTRS)),
 		HU.span([CLASS,"ramadda-clickable",TITLE,"Delete","glyphid",mapGlyph.getId(),"buttoncommand",ID_DELETE],
-			HU.getIconImage("fas fa-trash-can"))
+			HU.getIconImage("fas fa-trash-can",[],BUTTON_IMAGE_ATTRS))
 	    );
 	    return Utils.wrap(buttons,"<span style='margin-right:8px;'>","</span>");
 	},
@@ -2838,7 +2839,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {isMap:true,
 			   tooltip:"Select a gpx, geojson or  shapefile map",
-			   icon:ramaddaBaseUrl+"/icons/document-globe.png"});	
+			   icon:ramaddaBaseUrl+"/icons/map.png"});	
 
 
 	    new GlyphType(this,GLYPH_MAPSERVER,"Map Server",
@@ -4332,7 +4333,7 @@ MapGlyph.prototype = {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    buttons =  HU.span(['id',this.showFeatureTableId,'title','Show features table','class','ramadda-clickable xramadda-button'],
-			      HU.getIconImage('fas fa-table')) +buttons;
+			      HU.getIconImage('fas fa-table',[],BUTTON_IMAGE_ATTRS)) +buttons;
 
 
 	}
