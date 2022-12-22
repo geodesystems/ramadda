@@ -9,7 +9,6 @@ var debugPopup = false;
 //This gets set by Java
 var ramaddaMapRegions = null;
 
-
 var RamaddaToFloat = v=>{
     if(v!=null) v=parseFloat(v);
     return v;
@@ -1480,7 +1479,7 @@ RepositoryMap.prototype = {
                 feature.style = feature.originalStyle;
             }
 	    if(debugPopup) console.log("\thave a selectCallback");
-	    layer.selectCallback(layer,event);
+	    layer.selectCallback(layer.feature,layer,event);
         } else {
 	    if(debugPopup) console.log("\tcalling showMarkerPopup");
             this.showMarkerPopup(feature, true);
@@ -2182,14 +2181,12 @@ RepositoryMap.prototype = {
         let style = feature.style || feature.originalStyle || layer.style;
         let p = feature.attributes;
         let out = feature.popupText;
-
-
         if (!out) {
-            if (style && style["balloonStyle"]) {
-                out = style["balloonStyle"];
+            if (style && (style["balloonStyle"] || style["popupText"])) {
+                out = style["balloonStyle"] || style["popupText"];
                 for (let attr in p) {
                     //$[styleid/attr]
-                    let label = attr.replace("_", " ");
+                    let label = Utils.makeLabel(attr);
                     let value = "";
                     if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
                         let o = p[attr];
@@ -2197,7 +2194,8 @@ RepositoryMap.prototype = {
                     } else {
                         value = "" + p[attr];
                     }
-                    out = out.replace("${" + style.id + "/" + attr + "}", value);
+		    let _attr = attr.toLowerCase();
+                    out = out.replace("${" + style.id + "/" + attr + "}", value).replace("${" + attr+"}",value).replace("${" + _attr+"}",value);
                 }
             } else {
 		if(debugPopup) console.log("getFeatureText-using feature attributes");
@@ -2250,7 +2248,6 @@ RepositoryMap.prototype = {
 	    if(debugPopup) console.log("\thas featureSelectHandler");
 	    return;
 	}
-
 
 	if(!this.getDoPopup()) {
 	    return;
@@ -2321,11 +2318,11 @@ RepositoryMap.prototype = {
         let _this = this;
         if (this.getCanSelect(canSelect)) {
             if (selectCallback == null || !Utils.isDefined(selectCallback))
-                selectCallback = function(layer,event) {
+                selectCallback = function(feature,layer,event) {
                     return _this.onFeatureSelect(layer,event)
                 };
             if (unselectCallback == null || !Utils.isDefined(unselectCallback))
-                unselectCallback = function(layer,event) {
+                unselectCallback = function(feature,layer,event) {
                     return _this.onFeatureUnselect(layer,event)
                 };
             layer.selectCallback = selectCallback;
