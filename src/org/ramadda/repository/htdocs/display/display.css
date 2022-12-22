@@ -2912,6 +2912,25 @@ table.dataTable tfoot td {
     margin-left:10px;
 }
 
+.imdv-stylegroup {
+    border-bottom:1px solid transparent;
+    border-top:1px solid transparent;
+}
+
+
+.imdv-stylegroup:hover {
+    background:var(--highlight-background);
+}
+
+
+.imdv-stylegroup-selected {
+    background:var(--highlight-background);
+    border-bottom:1px solid #aaa;
+    border-top:1px solid #aaa;
+}
+
+
+
 .ramadda-imdv-fixed {
     border-radius: 4px;
     position: absolute;
