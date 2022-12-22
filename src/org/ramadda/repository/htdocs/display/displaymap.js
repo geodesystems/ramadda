@@ -1211,10 +1211,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
             if (this.layerEntries) {
-                var selectCallback = function(layer) {
+                var selectCallback = function(feature,layer,event) {
                     _this.handleLayerSelect(layer);
                 }
-                var unselectCallback = function(layer) {
+                var unselectCallback = function(feature,layer,event) {
                     _this.handleLayerUnselect(layer);
                 }
                 var toks = this.layerEntries.split(",");
@@ -1341,7 +1341,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             layer.addFeatures(clonedFeatures);
             this.vectorLayer = layer;
             this.applyVectorMap();
-            this.map.addSelectCallback(layer, this.doDisplayMap(), function(layer) {
+            this.map.addSelectCallback(layer, this.doDisplayMap(), function(feature,layer,event) {
                 _this.mapFeatureSelected(layer);
             });
         },
@@ -1437,11 +1437,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     bounds = null;
                 }
 
-                var selectCallback = function(layer) {
+                var selectCallback = function(feature,layer,event) {
 		    if(debugPopup) this.logMsg("selectCallback");
                     _this.handleLayerSelect(layer);
                 }
-                var unselectCallback = function(layer) {
+                var unselectCallback = function(feature,layer,event) {
                     _this.handleLayerUnselect(layer);
                 }
                 var layer;
