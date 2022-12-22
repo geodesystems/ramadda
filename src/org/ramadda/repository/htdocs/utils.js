@@ -4507,8 +4507,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         html += "</" + tagName + ">";
         return html;
     },
-    openTag: function(tagName, attrs) {
+    openTag: function(tagName, attrs,contents) {
         let html = '<' + tagName + ' ' + this.attrs(attrs) + '>';
+	if(contents!=null) html+=contents;
         return html;
     },
     open: function(tagName, attrs, extra) {
