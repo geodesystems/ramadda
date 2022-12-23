@@ -80,10 +80,11 @@ $.extend(Utils,{
             cnt++;
         }
     },
-    getColorTablePopup: function(wikiEditor, itemize,label) {
+    getColorTablePopup: function(wikiEditor, itemize,label,showToggle) {
         let popup = "<div class=wiki-editor-popup-items>"
         let items = [];
         let item;
+	showToggle = Utils.isDefined(showToggle)?showToggle:true;
         for (a in Utils.ColorTables) {
             if(Utils.ColorTables[a].label) {
                 item = HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
@@ -107,7 +108,8 @@ $.extend(Utils,{
             }
         }
         popup+="</div>";
-        popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], label??"Color Table"),popup);
+	if(showToggle)
+            popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], label??"Color Table"),popup);
         if(itemize) return items;
         return popup;
     },
