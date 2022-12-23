@@ -3760,6 +3760,21 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let col = HtmlUtils.join(args, "<br>");
         return this.div([STYLE,HU.css("display","inline-block")],col);
     },    
+    makeOkCancelDialog:function(anchor,msg,okFunc) {
+	let html = msg+"<br>" +
+	    HU.buttons([HU.div(['action','ok','class','ramadda-button ramadda-clickable'],'OK'),
+			HU.div(['class','ramadda-button ramadda-clickable'],'Cancel')]);				    
+	html = HU.div(['class','ramadda-popup-dialog ramadda-nowrap'],html);
+	let dialog = HU.makeDialog({content:html,header:false,anchor:anchor,my:"left top",at:"left bottom"});
+	dialog.find('.ramadda-clickable').button().click(function() {
+	    if($(this).attr('action')=='ok') {
+		okFunc();
+	    }
+	    dialog.remove();
+	});
+    },
+
+
     leftRight: function(left, right, leftWeight, rightWeight) {
         if (leftWeight == null) leftWeight = "6";
         if (rightWeight == null) rightWeight = "6";
