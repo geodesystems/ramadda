@@ -4225,7 +4225,7 @@ RepositoryMap.prototype = {
 	}
 
 
-	if(!attrs) attrs  = {};
+	attrs  = attrs?? {};
         if (Array.isArray(location)) {
             location = MapUtils.createLonLat(location[0], location[1]);
         }
@@ -4243,7 +4243,6 @@ RepositoryMap.prototype = {
             iconUrl = ramaddaCdn + '/icons/marker.png';
         }
 
-
         let sz = MapUtils.createSize(width,height);
         let calculateOffset = function(width) {
             let offset = MapUtils.createPixel(-(size.w / 2)-xoffset, -(size.h / 2) - yoffset);
@@ -4256,13 +4255,13 @@ RepositoryMap.prototype = {
 	let pt = MapUtils.createPoint(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
 	let style = {
             externalGraphic: iconUrl,
-	    //                graphicHeight: size,
             graphicWidth: size,
             graphicXOffset: xoffset + (-size / 2),
             graphicYOffset: -size / 2,
-	    labelYOffset:-size,
+	    labelYOffset:attrs.labelYOffset??-size,
 	    label:attrs.label
         };
+	if(attrs.fontSize) style.fontSize = attrs.fontSize;
 	if(Utils.isDefined(attrs.rotation)) {
 	    style.rotation = attrs.rotation;
 	}
