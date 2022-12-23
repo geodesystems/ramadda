@@ -8,12 +8,13 @@
     --font-size:12pt;
     --font-family:    "Helvetica Neue", Arial, Helvetica, sans-serif;    
     --basic-border:1px #ddd solid;
-    --highlight-border:1px #aaa solid;
     --nav-color:#000;
     --nav-link-color:#000;
     --highlight-color:#0074D9;
     --hover-color:var(--highlight-color);
+    --highlight-border:1px #aaa solid;
     --highlight-background: #f4f4f4;
+    /*--highlight-background: #C7DEF7;*/
     --header-background:  #eaeaea;
     --href-decoration:none;   
     --href-color: var(--highlight-color);
@@ -450,6 +451,10 @@ i.fa, i.fas,i.fab {
    overflow-y:auto;
    white-space:nowrap;
    margin-bottom:10px;
+}
+
+.ramadda-nowrap {
+    white-space: nowrap;
 }
 
 .ramadda-nav-left-link {
@@ -2910,16 +2915,18 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
-.ramadda-popup,.ramadda-selectdiv {
+.ramadda-popup-dialog, .ramadda-popup,.ramadda-selectdiv {
     position: absolute; 
     border:1px solid #ccc;
     border-radius: 4px;
     z-index:1000;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    background-color : #FFF;
 }
 
-.ramadda-popup, .ramadda-selectdiv {
-    background-color : #FFF;
+.ramadda-popup-dialog {
+    padding:8px;
+    padding-bottom:4px;
 }
 
 
@@ -4592,7 +4599,7 @@ a.toggleblocklabellink:visited {
 }
 
 .entry-toggleblock-label:hover {
-    background-color : #efefef !important;
+    background-color : var(--highlight-border);
     cursor:pointer;
 }
 
