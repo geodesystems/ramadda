@@ -1792,84 +1792,91 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         displayColorTable: function(ct, domId, min, max, args) {
 	    if(!args) args = {};
-	    args.showColorTableDots = this.getProperty("showColorTableDots");
-	    args.decimals = this.getProperty("colorTableDotsDecimals",-1);
-	    args.showRange = this.getProperty("colorTableShowRange");
-	    let labels = this.getProperty("colorTableLabels");
-	    args.labels = labels?labels.split(","):null;
-	    args.labelStyle=this.getProperty("colorTableLabelStyle","font-size:12pt;");
+	    args.showColorTableDots = this.getProperty('showColorTableDots');
+	    args.decimals = this.getProperty('colorTableDotsDecimals',-1);
+	    args.showRange = this.getProperty('colorTableShowRange');
+	    let labels = this.getProperty('colorTableLabels');
+	    args.labels = labels?labels.split(','):null;
+	    args.labelStyle=this.getProperty('colorTableLabelStyle','font-size:12pt;');
 	    args.horizontal= this.getColorTableHorizontal();
-	    args.stride = this.getProperty("showColorTableStride",1);
+	    args.stride = this.getProperty('showColorTableStride',1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
 	    let label = this.getColorTableLabel();
 	    if(label) {
-		if(args.field) label = label.replace("${field}", args.field.getLabel());
+		if(args.field) label = label.replace('${field}', args.field.getLabel());
 		this.jq(domId).prepend(HU.center(label));
 	    }
 	    if(!args || !args.colorByInfo) return;
-	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
+	    this.jq(domId).find('.display-colortable-slice').css('cursor','pointer');
 	    let _this = this;
 	    if(!this.originalColorRange) {
 		this.originalColorRange = [min,max];
 	    }		
-	    this.jq(domId).find(".display-colortable-slice").click(function(e) {
-		let val = $(this).attr("data-value");
-		let popup = HtmlUtils.getTooltip();
-		HtmlUtils.setPopupObject(popup);
-		let html = "";
-		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
-		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
-		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","reset"],"Reset range");
-		html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","ussedata"],"Use data range");		
-		if(_this.getProperty("colorByLog")) {
-		    html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","togglelog"],"Use linear scale");
-		} else {
-		    html += HU.div([CLASS,"ramadda-clickable ramadda-menu-item","what","togglelog"],"Use log scale");
-		}
-		html += Utils.getColorTablePopup();
-		popup.html(html);
-		$(popup).find(".ramadda-colortable-select").click(function() {
-		    let ct = $(this).attr("colortable");
+	    this.jq(domId).find('.display-colortable-slice').click(function(e) {
+		let val = $(this).attr('data-value');
+		let html = '';
+		let items = [];
+		items.push(HU.b('Range: ') +  HU.input('',min,['size',4,'class','colortable-min']) + ' - ' +
+			   HU.input('',max,['size',4,'class','colortable-max']));
+		items.push(HU.div([CLASS,'ramadda-clickable ramadda-menu-item','what','reset'],'Reset range'),
+			   HU.div([CLASS,'ramadda-clickable ramadda-menu-item','what','ussedata'],'Use data range'));
+		items.push(HU.checkbox('colortableuselog',['id','colortableuselog'],
+				       _this.getProperty('colorByLog'),'Use Log Scale'));
+		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
+		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +Utils.getColorTablePopup(null,null,null,false)]);
+		html =HU.div(['style',HU.css('padding','8px')], html);
+		let dialog =  HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
+					     draggable:true,header:true});
+
+		let minInput =dialog.find('.colortable-min');
+		let maxInput =dialog.find('.colortable-max');		
+		minInput.keypress(function(event) {
+		    let keycode = (event.keyCode ? event.keyCode : event.which);
+                    if (keycode!= 13) return;
+		    if(!Utils.isDefined(_this.getProperty('colorByMinOrig'))) {
+			_this.setProperty('colorByMinOrig',_this.getProperty('colorByMin'));
+		    }
+		    _this.setProperty('colorByMin',$(this).val());
+		    _this.setProperty('overrideColorRange', true);
+		    _this.forceUpdateUI();
+		});
+
+		maxInput.keypress(function(event) {
+		    let keycode = (event.keyCode ? event.keyCode : event.which);
+                    if (keycode!= 13) return;
+		    if(!Utils.isDefined(_this.getProperty('colorByMaxOrig'))) {
+			_this.setProperty('colorByMaxOrig',_this.getProperty('colorByMax'));
+		    }
+		    _this.setProperty('colorByMax',$(this).val());
+		    _this.setProperty('overrideColorRange', true);
+		    _this.forceUpdateUI();
+		});
+
+
+		dialog.find('.ramadda-colortable-select').click(function() {
+		    let ct = $(this).attr('colortable');
 		    if(ct) {
-			_this.setProperty("colorTable",ct);
+			_this.setProperty('colorTable',ct);
 			_this.forceUpdateUI();
 		    }		    
 		});
-		popup.show();
-		popup.position({
-                    of: $(this),
-                    my: 'left top',
-                    at: 'left bottom',
-                    collision: "none none"
+		dialog.find('#colortableuselog').change(function() {
+		    _this.setProperty('colorByLog',$(this).is(':checked'));
+		    _this.forceUpdateUI();
 		});
-		popup.find(".ramadda-menu-item").click(function() {
-		    let what = $(this).attr("what");
-		    _this.setProperty("useDataForColorRange", false);
-		    if(what == "reset") {
-			_this.setProperty("colorByMin",_this.getProperty("colorByMinOrig"));
-			_this.setProperty("colorByMax",_this.getProperty("colorByMaxOrig"));
-			_this.setProperty("overrideColorRange", false);
-		    } else  if(what == "ussedata") {
-			_this.setProperty("useDataForColorRange", true);
-		    } else if(what == "togglelog") {
-			if(!_this.getProperty("colorByLog")) 
-			    _this.setProperty("colorByLog",true);
-			else
-			    _this.setProperty("colorByLog",false);
- 		    } else if(what == "setmin") {
-			if(!Utils.isDefined(_this.getProperty("colorByMinOrig"))) {
-			    _this.setProperty("colorByMinOrig",_this.getProperty("colorByMin"));
-			}
-			_this.setProperty("colorByMin",val);
-			_this.setProperty("overrideColorRange", true);
-		    } else {
-			if(!Utils.isDefined(_this.getProperty("colorByMaxOrig"))) {
-			    _this.setProperty("colorByMaxOrig",_this.getProperty("colorByMax"));
-			}
-			_this.setProperty("colorByMax",val);
-			_this.setProperty("overrideColorRange", true);
+		dialog.find('.ramadda-menu-item').button().click(function() {
+		    let what = $(this).attr('what');
+		    _this.setProperty('useDataForColorRange', false);
+		    if(what == 'reset') {
+			_this.setProperty('colorByMin',_this.getProperty('colorByMinOrig'));
+			_this.setProperty('colorByMax',_this.getProperty('colorByMaxOrig'));
+			_this.setProperty('overrideColorRange', false);
+		    } else  if(what == 'ussedata') {
+			_this.setProperty('useDataForColorRange', true);
 		    }
 		    _this.forceUpdateUI();
+		    minInput.val(_this.getProperty('colorByMinOrig')??min);
+		    maxInput.val(_this.getProperty('colorByMaxOrig')??max);
 		});
 	    });
         },
