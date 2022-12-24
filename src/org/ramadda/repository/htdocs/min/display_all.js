@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec 23 13:06:15 MST 2022";
+var build_date="RAMADDA build date: Sat Dec 24 11:34:01 MST 2022";
 
 
 
@@ -82,7 +82,7 @@ $.extend(Utils,{
             cnt++;
         }
     },
-    getColorTablePopup: function(wikiEditor, itemize,label,showToggle) {
+    getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
         let popup = "<div class=wiki-editor-popup-items>"
         let items = [];
         let item;
@@ -98,7 +98,9 @@ $.extend(Utils,{
                 showRange: false,
                 height: "20px"
             });
-            ct = HtmlUtils.div([STYLE,HU.css('width','400px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
+	    let attrs = [STYLE,HU.css('width','400px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a];
+	    if(attr) attrs.push(attr,value);
+            ct = HtmlUtils.div(attrs,ct);
             if(wikiEditor) {
                 var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
                 item = HtmlUtils.onClick(call,ct);
@@ -40123,6 +40125,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return Object.keys(this.markers);
 	},
 
+
+	makeLabel:function(l) {
+	    let _l = l.toLowerCase();
+	    let v = this.getMapProperty(_l+'.label');
+	    if(v) return v;
+	    return MapUtils.makeLabel(l);
+	},
+
+	showFeatureProperty:function(p) {
+	    let _p = p.toLowerCase();
+	    return this.getMapProperty(_p+'.showFeature',true);
+	},
+
 	findGlyph:function(id) {
 	    let glyph;
 	    this.glyphs.every(mapGlyph=>{
@@ -40308,8 +40323,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    h = h/5280;		    
 		}
 
-		msg= "w: " + Utils.formatNumberComma(w) + " " + unit +
-		    " h: " + Utils.formatNumberComma(h) + " " + unit;
+		msg= "W: " + Utils.formatNumberComma(w) + " " + unit +
+		    " H: " + Utils.formatNumberComma(h) + " " + unit;
 	    } else {
 		let segments = "";
 		let total = 0;
@@ -40790,7 +40805,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else if(command=="edit") {
 		    _this.editFeatureProperties(mapGlyph);
 		} else if(command==ID_SELECT) {
-		    _this.selectGlyph(mapGlyph);
+		    if(_this.isFeatureSelected(mapGlyph)) 
+			_this.unselectGlyph(mapGlyph);
+		    else
+			_this.selectGlyph(mapGlyph);
 		} else if(command==ID_DELETE) {
 		    HU.makeOkCancelDialog($(this),"Are you sure you want to delete this glyph?",
 					  ()=>{_this.removeMapGlyphs([mapGlyph]);});
@@ -41158,6 +41176,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 
+	makeColorBar:function(domId) {
+	    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
+	    let bar = "";
+	    let cnt = 0;
+	    colors.forEach(color=>{
+		bar += HU.div(['title',color,'color',color,'widget-id',domId,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
+		cnt++;
+		if(cnt>=10) {
+		    cnt = 0;
+		    bar+="<br>";
+		}
+	    });
+	    bar = HU.div(['style','max-height:150px;overflow-y:auto;border:1px solid #ccc;'],bar);
+	    return bar;
+	},
+	    
+
 	makeStyleForm:function(style,mapGlyph) {
 	    let html = "";
 	    let props;
@@ -41188,11 +41223,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
 
 	    
+	    let strip=null;
+	    let headers = {
+		strokeColor: {label:'Stroke',strip:'stroke'},
+		fillColor: {label:'Fill',strip:'fill'},
+		fontColor: {label:'Font',strip:'font'},
+		labelAlign: {label:'Label',strip:'label'},
+	    };
 	    props.forEach(prop=>{
 		let id = "glyphedit_" + prop;
 		let domId = this.domId(id);
 		if(notProps.includes(prop)) return;
-		let label =  Utils.makeLabel(prop);		
+		let header = headers[prop];
+		if(header) {
+		    strip=header.strip;
+		    html+=HU.tr(['class','formgroupheader'],HU.td(['colspan',2],header.label));
+		}  else if(strip && !prop.startsWith(strip)) {
+		    html+=HU.tr(['class','formgroupheader'],HU.td(['colspan',2],''));
+		    strip = null;
+		}
+		let label = prop;
+		if(strip) label = label.replace(strip,'');
+		label =  Utils.makeLabel(label);		
 		if(prop=="pointRadius") label = "Size";
 		let widget;
 		if(prop=="externalGraphic") {
@@ -41251,23 +41303,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="80";
 			if(prop.indexOf("Color")>=0) {
-			    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
-
-			    let bar = "";
-			    let cnt = 0;
-			    colors.forEach(color=>{
-				bar += HU.div(['title',color,'color',color,'widget-id',domId,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
-				cnt++;
-				if(cnt>=10) {
-				    cnt = 0;
-				    bar+="<br>";
-				}
-			    });
-			    bar = HU.div(['style','max-height:66px;overflow-y:auto;border:1px solid #ccc;'],bar);
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
 			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',v)]) +
 				HU.space(2)+widget;
-			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
+//			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
 			} else if(prop=="labelAlign") {
 			    html +=HU.formTableClose();
 			    html +=HU.formTable();			    
@@ -41436,15 +41475,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }});
 	    });
 
+	    dialog.find('.ramadda-imdv-color').focus(function() {
+		let id = $(this).attr('id');
+		let bar = _this.makeColorBar(id);
+		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:"left top",at:"left bottom"});
+		dialog.find('.ramadda-color-select').click(function(){
+		    let c = $(this).attr('color');
+		    let id = $(this).attr('widget-id');
+		    $("#"+ id).val(c);
+		    $("#"+ id+'_display').css('background',c);
+		    dialog.remove();
+		});
+
+	    });
+
 	    dialog.find('.ramadda-imdv-color').change(function() {
 		let c = $(this).val();
 		let id = $(this).attr('id');
-		$("#"+ id+'_display').css('background',c);
-	    });
-	    dialog.find('.ramadda-color-select').click(function(){
-		let c = $(this).attr('color');
-		let id = $(this).attr('widget-id');
-		$("#"+ id).val(c);
 		$("#"+ id+'_display').css('background',c);
 	    });
 
@@ -41735,6 +41782,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let glyphType = this.getGlyphType(type);
 		if(!glyphType) {
 		    console.log("no type:" + type);
+		    console.dir(this.glyphTypeMap);
 		    return;
 		}
 		let style = $.extend({},glyphType.getStyle());
@@ -41794,6 +41842,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 		    mapGlyph.checkImage(feature);
 		    this.addGlyph(mapGlyph);
+
 		    //If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
 		    if(glyphType.isEntry()) {
 			let callback = (entry)=>{
@@ -42708,14 +42757,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:ramaddaBaseUrl+"/icons/map.png"});	
 
 
-	    if(this.getProperty("hereRoutingEnabled")||this.getProperty("googleRoutingEnabled")) {
 		new GlyphType(this,GLYPH_ROUTE, "Route", {
 		    strokeColor:this.getStrokeColor(),
 		    strokeWidth:this.getStrokeWidth(),
 		    strokeDashstyle:'solid',
 		    strokeOpacity:1,
 		},MyRoute,{icon:ramaddaBaseUrl+"/icons/route.png"});
-	    }
+
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
 			  {strokeColor:"#ccc",
 			   strokeWidth:1,
@@ -42860,7 +42908,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    HU.div([],label[0]) +
 		    HU.div(['style','margin-left:2px;'],label[1])
 		    +"</div>";
-		html+=HU.div(['style','background:#fff;'],block.body);
+		html+=HU.div(['class','imdv-legend-body'],block.body);
 		html+=HU.close('div');
 	    });
 	    let legendLabel= this.getMapProperty("legendLabel","");
@@ -43152,7 +43200,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
 	    }
 
-	    address = HU.div(['style',HU.css('display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
+	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
 		
 	    let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css('display','inline-block','white-space','nowrap','margin-left','10px')],'');
 	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
@@ -44261,9 +44309,6 @@ MapGlyph.prototype = {
     },
 	
 
-    showFeatureProperty:function(p) {
-	return !['objectid','shapestlength','globalid'].includes(p.toLowerCase());
-    },
 
     getLegendBody:function(glyphIdx) {
 	let body = '';
@@ -44273,15 +44318,14 @@ MapGlyph.prototype = {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    buttons =  HU.span(['id',this.showFeatureTableId,'title','Show features table','class','ramadda-clickable'],
 			      HU.getIconImage('fas fa-table',[],BUTTON_IMAGE_ATTRS)) +buttons;
-
-
 	}
 
-	if(this.downloadUrl || this.style?.imageUrl) {
-	    let url = this.downloadUrl ?? this.style?.imageUrl;
+	/** For now don't add this as we can also get it through the entry link below
+	if(this.downloadUrl) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
-	    buttons = HU.href(url,HU.getIconImage('fas fa-download',[],BUTTON_IMAGE_ATTRS),['target','_download','title','Download','class','ramadda-clickable']) +buttons;
+	    buttons = HU.href(this.downloadUrl,HU.getIconImage('fas fa-download',[],BUTTON_IMAGE_ATTRS),['target','_download','title','Download','class','ramadda-clickable']) +buttons;
 	}
+	*/
 
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -44321,15 +44365,15 @@ MapGlyph.prototype = {
 		let rulesLegend = '';
 		let lastProperty='';
 		this.attrs.mapStyleRules.forEach(rule=>{
+		    if(rule.type=='use') return;
 		    if(!Utils.stringDefined(rule.property)) return;
-
 		    let propOp = rule.property+rule.type;
 		    if(lastProperty!=propOp) {
 			if(rulesLegend!='') rulesLegend+='</table>';
 			let type = rule.type;
 			if(type=='==') type='=';
 			type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-			rulesLegend+= HU.b(Utils.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
+			rulesLegend+= HU.b(this.display.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
 		    }
 		    lastProperty  = propOp;
 		    let label = rule.value;
@@ -44371,11 +44415,15 @@ MapGlyph.prototype = {
 	    }
 	};
 
-	let colorMap = this.attrs.colorBy ??{};
-	if(Utils.stringDefined(colorMap.property)) {
-	    let div = this.getColorTableDisplay(colorMap.colorTable,colorMap.min,colorMap.max,true);
-	    body+=HU.center(Utils.makeLabel(colorMap.property))+HU.center(div);
-	}	
+
+	let addColor= (obj,prefix) => {
+	    if(obj && Utils.stringDefined(obj.property)) {
+		let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true);
+		body+=HU.center(prefix+' '+this.display.makeLabel(obj.property))+HU.center(div);
+	    }	
+	};
+	addColor(this.attrs.fillColorBy,'Fill');
+	addColor(this.attrs.strokeColorBy,'Stroke');	
 
 	//Put the placeholder here for map sliders
 	body+=HU.div(['id',this.domId('mapfilters')]);
@@ -44383,27 +44431,16 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
-	if(this.isFixed()) {
-	    //Don't show the text in the legend for fixed glyphs
-//	    item(this.convertText(this.style.text));
-	}
 	item(this.display.getDistances(this.getGeometry(),this.getType()));
-	let text = this.getPopupText();
-	if(text)  {
-	    if(!text.startsWith("<wiki>")) {
-		//Don't show the popup text in the legend
-		//		item(text.replace(/\n/g,"<br>"));
-	    }
-	}
 	if(this.isMultiEntry()) {
 	    item(HU.div(['id',this.domId('multientry')]));
 	}
 
 	if(Utils.stringDefined(this.style.imageUrl)) {
-	    item("<img style='border:1px solid #ccc;' width='150px' src='" +this.style.imageUrl+"'>");
+	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
-	    item("<center><img style='border:1px solid #ccc;' width='150px' src='" +this.style.legendUrl+"'></center>");
+	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 	return body;
     },
@@ -44565,7 +44602,6 @@ MapGlyph.prototype = {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapPointsTemplate(jqid('mappoints_template').val());	    
 
-
 	    let styleGroups = this.getStyleGroups();
 	    let groups = [];
 	    for(let i=0;i<20;i++) {
@@ -44591,14 +44627,23 @@ MapGlyph.prototype = {
 
 	if(!this.canDoMapStyle()) return;
 	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
-	let colorBy = {
-	    property:this.jq('colorby_property').val(),
-	    min:this.jq('colorby_min').val(),
-	    max:this.jq('colorby_max').val(),
-	    colorTable:this.jq('colorby_colortable').val()};		
-	this.attrs.colorBy = colorBy;
+	let getColorBy=(prefix)=>{
+	    return {
+		property:this.jq(prefix +'colorby_property').val(),
+		min:this.jq(prefix +'colorby_min').val(),
+		max:this.jq(prefix +'colorby_max').val(),
+		colorTable:this.jq(prefix +'colorby_colortable').val()};		
+	};
+
+	this.attrs.fillColorBy =  getColorBy('fill');
+	this.attrs.strokeColorBy =  getColorBy('stroke');	
+
 	let rules = [];
 	for(let i=0;i<20;i++) {
+	    if(!Utils.stringDefined(jqid('mapproperty_' + i).val()) &&
+	       !Utils.stringDefined(jqid('mapstyle_' + i).val())) {
+		continue;
+	    }
 	    let rule = {
 		property:jqid('mapproperty_' + i).val(),
 		type:jqid('maptype_' + i).val(),
@@ -44623,29 +44668,38 @@ MapGlyph.prototype = {
     },
     initPropertiesComponent: function(dialog) {
 	let _this = this;
-	let colorMap = this.attrs.colorBy ??{};
-	let decorate = () =>{
-	    let div = this.getColorTableDisplay(this.jq('colorby_colortable').val());
-	    this.jq('colorby_colortable_label').html(div);
+	let decorate = (prefix) =>{
+	    let div = this.getColorTableDisplay(this.jq(prefix+'colorby_colortable').val());
+	    this.jq(prefix+'colorby_colortable_label').html(div);
 	};
-	decorate();
+
+	decorate('fill');
+	decorate('stroke');	
 	dialog.find(".ramadda-colortable-select").click(function() {
+	    let prefix = $(this).attr('prefix');
 	    let ct = $(this).attr("colortable");
-	    _this.jq('colorby_colortable').val(ct);
-	    decorate();
+	    _this.jq(prefix+'colorby_colortable').val(ct);
+	    decorate(prefix);
 	});
-	Utils.displayAllColorTables(this.display.domId('colorby'));
-	dialog.find('#'+this.domId('colorby_property')).change(function() {
-	    let prop =  $(this).val();
-	    _this.featureInfo.every(info=>{
-		if(info.property==prop) {
-		    _this.jq('colorby_min').val(info.min);
-		    _this.jq('colorby_max').val(info.max);		    
-		    return false;
+	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
+	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
+
+
+	let initColor  = prefix=>{
+	    dialog.find('#'+this.domId(prefix+'colorby_property')).change(function() {
+		let prop =  $(this).val();
+		_this.featureInfo.every(info=>{
+		    if(info.property==prop) {
+			_this.jq(prefix+'colorby_min').val(info.min);
+			_this.jq(prefix+'colorby_max').val(info.max);		    
+			return false;
 		}
-		return true;
+		    return true;
+		});
 	    });
-	});
+	};
+	initColor('fill');
+	initColor('stroke');
 
 	dialog.find('[mapproperty_index]').change(function() {
 	    let info = _this.featureInfoMap[$(this).val()];
@@ -44679,11 +44733,11 @@ MapGlyph.prototype = {
 	    let attrs = feature.attributes;
 	    if(columns==null) {
 		columns = Object.keys(attrs).filter(c=>{
-		    return this.showFeatureProperty(c);
+		    return this.display.showFeatureProperty(c);
 		});
 		table+='<thead><tr>';
 		columns.forEach(column=>{
-		    table+=HU.tag('th',['title',column],Utils.makeLabel(column));
+		    table+=HU.tag('th',['title',column],this.display.makeLabel(column));
 		});
 		table+='</tr></thead><tbody>';
 	    }
@@ -44716,86 +44770,88 @@ MapGlyph.prototype = {
 	let attrs = this.mapLayer.features[0].attributes;
 	let featureInfo = this.featureInfo = this.getFeatureInfo();
 	let keys  = Object.keys(featureInfo);
-	let colorMap = this.attrs.colorBy ??{};
 	let numeric = featureInfo.filter(info=>{return info.isNumeric;});
 	let enums = featureInfo.filter(info=>{return info.isEnum;});
-	let colorBy = "";
+	let colorBy = '';
 	colorBy+=HU.checkbox(this.domId('fillcolors'),['id',this.domId('fillcolors')],
 			     this.attrs.fillColors,'Fill Colors')+'<br>';
 	
 	if(numeric.length) {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return info.property;}));
-	    colorBy+=HU.b("Color map")+"<br>";
-	    colorBy += HU.formTable();
-	    colorBy += HU.formEntry("Property:", HU.select('',['id',this.domId('colorby_property')],numericProperties,colorMap.property));
-	    colorBy += HU.formEntry("Range:",HU.input("",colorMap.min??"", ['id',this.domId('colorby_min'),'size','6','title','min value']) +" -- "+
-				    HU.input("",colorMap.max??"", ['id',this.domId('colorby_max'),'size','6','title','max value']));
-	    colorBy += HU.hidden('',colorMap.colorTable||'blues',['id',this.domId('colorby_colortable')]);
-	    colorBy+=HU.formEntry("Color table:", HU.div(['style',HU.css(),'id',this.domId('colorby_colortable_label')])+
-				  Utils.getColorTablePopup(null,null,"Select"));
-	    colorBy+="</table>";
+	    let mapComp = (obj,prefix) =>{
+		let comp = '';
+		comp+=HU.div(['class','formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
+		comp += HU.formEntry('Property:', HU.select('',['id',this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', ['id',this.domId(prefix+'colorby_min'),'size','6','title','min value']) +' -- '+    HU.input('',obj.max??'', ['id',this.domId(prefix+'colorby_max'),'size','6','title','max value']));
+		comp += HU.hidden('',obj.colorTable||'blues',['id',this.domId(prefix+'colorby_colortable')]);
+		comp+=HU.formEntry('Color table:', HU.div(['style',HU.css(),'id',this.domId(prefix+'colorby_colortable_label')])+
+				   Utils.getColorTablePopup(null,null,'Select',true,'prefix',prefix));
+		comp+=HU.close('table');
+		return comp;
+	    };
+	    colorBy+=mapComp(this.attrs.fillColorBy ??{},'fill');
+	    colorBy+=mapComp(this.attrs.strokeColorBy ??{},'stroke');	    
 	}
 	let properties=Utils.mergeLists([['','Select']],featureInfo.map(info=>{return info.property;}));
-	let ex = "";
+	let ex = '';
 	featureInfo.forEach(info=>{
 	    let seen ={};
 	    let list =[];
 	    if(info.isNumeric) {
-		ex+=HU.b(info.property)+": " +  info.min +" - " + info.max+"<br>";
+		ex+=HU.b(info.property)+': ' +  info.min +' - ' + info.max+'<br>';
 	    } else if(info.isEnum) {
-		ex+=HU.b(info.property)+": " +  Utils.join(info.samples,", ") +"<br>";
+		ex+=HU.b(info.property)+': ' +  Utils.join(info.samples,', ') +'<br>';
 	    } else {
-		ex+=HU.b(info.property)+": " +  Utils.join(info.samples,", ") +"<br>";
+		ex+=HU.b(info.property)+': ' +  Utils.join(info.samples,', ') +'<br>';
 	    }
 	});
 	let c = OpenLayers.Filter.Comparison;
-	let operators = [c.EQUAL_TO,c.NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null']];
+	let operators = [c.EQUAL_TO,c.NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null'],['use','Use']];
 	let rulesTable = HU.formTable();
-	let sample = "Samples&#013;";
+	let sample = 'Samples&#013;';
 	for(a in attrs) {
 	    let v = attrs[a]?String(attrs[a]):'';
-	    v = v.replace(/"/g,"").replace(/\n/g," ");
-	    sample+=a+"=" + v+"&#013;";
+	    v = v.replace(/"/g,'').replace(/\n/g,' ');
+	    sample+=a+'=' + v+'&#013;';
 	}
 	rulesTable+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules();
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
-	    let value = rule.value??"";
+	    let value = rule.value??'';
 	    let info = this.featureInfoMap[properties,rule.property];
 	    let title = sample;
 	    let valueInput;
 	    if(info) {
 		if(info.isNumeric)
-		    title=info.min +" - " + info.max;
+		    title=info.min +' - ' + info.max;
 		else if(info.samples.length)
-		    title = Utils.join(info.samples, ", ");
+		    title = Utils.join(info.samples, ', ');
 	    }
 	    if(info?.isEnum) {
-		valueInput = HU.select("",['id','mapvalue_' + index],info.samples,value); 
+		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value); 
 	    } else {
-		valueInput = HU.input("",value,['id','mapvalue_' + index,'size','15']);
+		valueInput = HU.input('',value,['id','mapvalue_' + index,'size','15']);
 	    }
 	    let propSelect =HU.select('',['id','mapproperty_' + index,'mapproperty_index',index],properties,rule.property);
 	    let opSelect =HU.select('',['id','maptype_' + index],operators,rule.type);	    
 	    valueInput =HU.span(['id','mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let styleInput = HU.textarea("",s,['id','mapstyle_' + index,'rows','3','cols','10','title',styleTitle]);
+	    let styleInput = HU.textarea('',s,['id','mapstyle_' + index,'rows','3','cols','30','title',styleTitle]);
 	    rulesTable+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
-	rulesTable += "</table>";
-	let table = HU.b("Style Rules")+HU.div(['class','imdv-properties-section'], rulesTable);
-	content.push(["Map Style Rules", colorBy+table]);
+	rulesTable += '</table>';
+	let table = HU.b('Style Rules')+HU.div(['class','imdv-properties-section'], rulesTable);
+	content.push(['Map Style Rules', colorBy+table]);
 
 
 	let mapPointsRange = 'If the map is zoomed out with a value less than the visibility limit then don\'t show the points' +'<br>'+
-	    'Visiblity limit: ' + HU.select("",[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
-	    HU.span(['class','imdv-currentlevellabel'], "(current level: " + this.display.getCurrentLevel()+")") +'<br>';
+	    HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	    HU.span(['class','imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')') +'<br>';
 	let mapPoints = HU.textarea('',this.getMapPointsTemplate()??'',['id','mappoints_template','rows','3','cols','70','title','Map points template, e.g., ${code}']);
 
-	content.push(['Map Points', mapPointsRange+
-		      'Template to display labels with map:<br>' +mapPoints]);
+	content.push(['Map Labels', mapPointsRange+
+		      HU.b('Label Template:')+'<br>' +mapPoints]);
 
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.openTag('table',['width','100%']);
@@ -44806,15 +44862,15 @@ MapGlyph.prototype = {
 	    let prefix = 'mapstylegroups_' + i;
 	    styleGroupsUI+=HU.tr([],HU.tds([],[
 		HU.input('',group?.label??'',['id',prefix+'_label','size','10']),
-		HU.input('',group?.style.fillColor??'',['id',prefix+'_fillcolor','size','6']),
-		HU.input('',group?.style.strokeColor??'',['id',prefix+'_strokecolor','size','6']),
+		HU.input('',group?.style.fillColor??'',['class','ramadda-imdv-color','id',prefix+'_fillcolor','size','6']),
+		HU.input('',group?.style.strokeColor??'',['class','ramadda-imdv-color','id',prefix+'_strokecolor','size','6']),
 		HU.input('',group?.style.strokeWidth??'',['id',prefix+'_strokewidth','size','6']),				
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag('table');
 	styleGroupsUI = HU.div(['style',HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
-	content.push(["Map Style Groups",styleGroupsUI]);
-	content.push(["Sample Values",ex]);
+	content.push(['Map Style Groups',styleGroupsUI]);
+	content.push(['Sample Values',ex]);
     },
     getStyleGroups: function() {
 	if(!this.attrs.styleGroups) {
@@ -44908,14 +44964,16 @@ MapGlyph.prototype = {
 	let enums = "";
 	let filters = this.attrs.featureFilters = this.attrs.featureFilters ??{};
 	featureInfo.forEach(info=>{
-	    if(this.display.getMapProperty(info.property.toLowerCase()+'.hideFilter',false)) return;
+	    if(!this.display.getMapProperty(info.property.toLowerCase()+'.showFilter',true)) return;
 	    let filter = filters[info.property] = filters[info.property]??{};
 	    let id = Utils.makeId(info.property);
-	    let label = HU.span(['title',info.property],HU.b(Utils.makeLabel(info.property)))
+	    let label = HU.span(['title',info.property],HU.b(this.display.makeLabel(info.property)))
 	    if(info.isString)  {
 		filter.type="string";
+		let attrs =['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20];
+		attrs.push('placeholder',this.display.getMapProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
 		strings+=label+":<br>" +
-		    HU.input("",filter.stringValue??"",['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20]) +"<br>";
+		    HU.input("",filter.stringValue??"",attrs) +"<br>";
 		return
 	    } 
 	    if(info.samples.length)  {
@@ -45048,8 +45106,13 @@ MapGlyph.prototype = {
 
 	let style = this.style;
 	let rules = this.getMapStyleRules();
+	let useRules = [];
 	if(rules) {
 	    rules = rules.filter(rule=>{
+		if(rule.type=='use') {
+		    useRules.push(rule);
+		    return false;
+		}
 		return Utils.stringDefined(rule.property);
 	    });
 	}
@@ -45106,6 +45169,7 @@ MapGlyph.prototype = {
 		}
 		style.label = label;
 		let marker = MapUtils.createVector(pt,null,style);
+		marker.point = pt;
 		feature.mapPoint  = marker;
 		this.mapPoints.push(marker);
 	    });
@@ -45118,12 +45182,21 @@ MapGlyph.prototype = {
 	    this.mapLayer.style = null;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,rules);
 	    features.forEach((f,idx)=>{f.style = null;});
-	} else if(Utils.stringDefined(this.attrs.colorBy?.property)) {
-	    let prop =this.attrs.colorBy.property;
-	    let min =+this.attrs.colorBy.min;
-	    let max =+this.attrs.colorBy.max;
+	} 
+
+	this.mapLayer.style = style;
+	features.forEach((f,idx)=>{
+	    f.style = $.extend({},style);
+	    f.originalStyle = $.extend({},style);			    
+	});
+	
+	let applyColors = (obj,attr)=>{
+	    if(!obj || !Utils.stringDefined(obj?.property))  return;
+	    let prop =obj.property;
+	    let min =+obj.min;
+	    let max =+obj.max;
 	    let range = max-min;
-	    let ct =Utils.getColorTable(this.attrs.colorBy.colorTable,true);
+	    let ct =Utils.getColorTable(obj.colorTable,true);
 	    features.forEach((f,idx)=>{
 		let value = f.attributes[prop];
 		value = this.cleanupFeatureValue(value);
@@ -45133,16 +45206,48 @@ MapGlyph.prototype = {
 		value = +value;
 		let percent = (value-min)/range;
 		let index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
-		f.style = $.extend({},style);
-		f.style.fillColor=ct[index];
+		if(!f.style)
+		    f.style = $.extend({},style);
+		f.style[attr]=ct[index];
 	    });
-	} else {
-	    this.mapLayer.style = style;
-	    features.forEach((f,idx)=>{
-		f.style = $.extend({},style);
-		f.originalStyle = $.extend({},style);			    
+	};
+
+	applyColors(this.attrs.fillColorBy,'fillColor');
+	applyColors(this.attrs.strokeColorBy,'strokeColor');	
+
+	if(useRules.length>0) {
+	    useRules.forEach(rule=>{
+		let styles = [];
+		let styleMap = {};
+		Utils.split(rule.style,'\n',true,true).forEach(s=>{
+		    let toks = [];
+		    let index = s.indexOf(':');
+		    if(index>=0) {
+			toks.push(s.substring(0,index).trim());
+			toks.push(s.substring(index+1).trim());			
+		    }
+		    if(toks.length!=2) return;
+		    styleMap[toks[0].trim()] = toks[1].trim();
+		    styles.push(toks[0].trim());
+		});
+		features.forEach((f,idx)=>{
+		    if(!f.style) {
+			f.style = $.extend({},style);
+		    }
+		    if(!f.attributes) return;
+		    let value=f.attributes[rule.property];
+		    if(!value) return;
+		    styles.forEach(style=>{
+			let v = styleMap[style];
+			v = v.replace("${value}",value);
+			if(v.startsWith('js:')) {
+			    v = eval(v.substring(3));
+			}
+			f.style[style] = v;
+		    });
+		});
 	    });
-	}
+	}	    
 
 
 	let redrawFeatures = false;
@@ -45216,8 +45321,6 @@ MapGlyph.prototype = {
 	    }
 	});
 	this.checkVisible();
-
-
 	this.mapLayer.redraw();
 	if(redrawFeatures) {
 	    this.display.redraw();
@@ -45395,11 +45498,11 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	let setVis = feature=>{
-	    let theVisbile=visible;
-	    if(feature.filtered)theVisbile =false;
+	let setVis = (feature,vis)=>{
+	    if(!Utils.isDefined(vis))  vis=visible;
+	    if(feature.filtered)vis =false;
 	    if(!feature.style) feature.style = {};
-	    if(theVisbile) {
+	    if(vis) {
 		feature.style.display = 'inline';
 	    }  else {
 		feature.style.display = 'none';
@@ -45407,11 +45510,9 @@ MapGlyph.prototype = {
 	    $.extend(feature.style,{display:feature.style.display});
 	};
 
-
-
-	if(this.features)
-	    this.features.forEach(setVis);
-
+	if(this.features) {
+	    this.features.forEach(f=>{setVis(f);});
+	}
 
 	if(this.showMarkerMarker) {
 	    if(!this.getVisible() || visible) {
@@ -45419,7 +45520,6 @@ MapGlyph.prototype = {
 		this.showMarkerMarker = null;
 	    }
 	}
-
 
 
 	if(this.isFixed()) {
@@ -45449,12 +45549,50 @@ MapGlyph.prototype = {
 	    this.displayInfo.display.setVisible(visible);
 	}
 
-	if(Utils.stringDefined(this.getMapPointsRange())) {
-	    if(level<parseInt(this.getMapPointsRange())) visible=false;
+	if(this.mapPoints) {
+	    this.mapPoints.forEach((point,idx)=>{setVis(point,true);});
+	    if(!visible) {
+		this.mapPoints.forEach((point,idx)=>{setVis(point,false);});
+	    } else if(Utils.stringDefined(this.getMapPointsRange())) {
+		if(level<parseInt(this.getMapPointsRange())) {
+		    visible=false;
+		    this.mapPoints.forEach((point,idx)=>{setVis(point,false);});
+		}
+	    } else {
+		let b = new OpenLayers.Bounds();
+		this.mapPoints.forEach(point=>{b.extend(point.point);});
+		let gscr =(x,y)=>{return this.display.getMap().getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
+		let ul = gscr(b.left,b.top);
+		let lr = gscr(b.right,b.bottom);	    	  
+		if(!isNaN(ul.x) && !isNaN(ul.y) && !isNaN(lr.x) && !isNaN(lr.y)) {
+		    //Just guess at a grid cell soze of 30 and 20
+		    let gridW = parseInt((lr.x-ul.x)/40);
+		    let gridH = parseInt((lr.y-ul.y)/20);	    
+		    let grid = Array(gridW+1);
+		    for(let i=0;i<grid.length;i++) {
+			grid[i] = Array.apply(null, Array(gridH+1)).map(function () {});
+		    }
+		    let gridWidth = lr.x-ul.x;
+		    let gridHeight = lr.y-ul.y;
+		    let hideCnt = 0, showCnt=0;
+		    this.mapPoints.forEach((point,idx)=>{
+			let latlon = this.display.getMap().transformProjPoint(point.point);
+			let screenPoint = this.display.getMap().getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(point.point.x,point.point.y));
+
+			let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
+			let indexY = parseInt(gridW*(lr.y-screenPoint.y)/gridHeight);		
+			if(grid[indexX][indexY]) {
+			    hideCnt++;
+			    setVis(point,false);
+			} else {
+			    showCnt++;
+			    grid[indexX][indexY]=true;
+			    setVis(point,true);		    
+			}
+		    });
+		}
+	    }
 	}
-	    
-	if(this.mapPoints) 
-	    this.mapPoints.forEach(setVis);	
 
 
 
@@ -45774,10 +45912,7 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	    }
 	}
     }
-    
-
 }
-
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {

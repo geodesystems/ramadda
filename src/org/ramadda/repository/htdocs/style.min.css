@@ -4509,7 +4509,7 @@ wiki {
     padding-left: 8px;
     padding-bottom: 0px;
     color: #000;
-    background-color : #eee;
+/*    background-color : #eee;*/
     border-bottom: var(--basic-border);
     font-weight: bold;
     border-top-left-radius: 8px;
