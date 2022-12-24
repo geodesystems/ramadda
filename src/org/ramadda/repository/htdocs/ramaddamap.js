@@ -17,8 +17,38 @@ var RamaddaToFloat = v=>{
 
 
 var MapUtils =  {
-    me:"MapUtils",
-    POSITIONMARKERID: "location",
+    me:'MapUtils',
+    POSITIONMARKERID: 'location',
+    LABEL_MAP:{
+	'aiannhr':'Federal Recognition',
+	'mtfcc':'Feature Class',
+	'geoid':  'Geographic ID',
+	'aland':  'Land Area',
+	'awater':  'Water Area',	    
+	'countyfp':  'County FIPS',
+	'statefp':  'State FIPS',
+	'namelsad':  'Name-LSAD',
+	'lsad':'Legal Area Descriptor',
+	'aiannhce':'American Indian Census Code',
+	'aiannhns':'Anerican Indian Standard Code',
+	'classfp':'Class Code',
+	'comptyp':'Component Type',
+	'intptlat':'Latitude',
+	'intptlon':'Longitude',
+	'usps':'USPS State Abbrev.',
+	'ansicode':'ANSI Code',
+	'funcstat':'Functional Status',
+	'drawseq':'Draw Sequence',
+	'cdsessn':'CD Session',
+	'cd115fp':'CD FIPS',
+	'affgeoid':'Amer. Fact Finder ID',
+
+    },
+    makeLabel:function(l) {
+	if(!l) return l;
+	let _l=l.toLowerCase();
+	return  this.LABEL_MAP[_l] ?? Utils.makeLabel(l);
+    },
     stopEvent:function(e) {
 	OpenLayers.Event.stop(e);
     },
@@ -183,7 +213,7 @@ var MapUtils =  {
 	    area = area * 6378137 * 6378137 / 2;
 	    if(area<0) area = -area;
 	    area = MapUtils.squareMetersToSquareFeet(area);
-	    //	    console.log(pts.length +" " + area);
+	    //	    console.log(pts.length +' ' + area);
 	    return area;
 	}
 	return -1;
@@ -2181,12 +2211,46 @@ RepositoryMap.prototype = {
         let style = feature.style || feature.originalStyle || layer.style;
         let p = feature.attributes;
         let out = feature.popupText;
+	let  makeDefaultFeatureText = () =>{
+            let html = "<table>";
+            for (let attr in p) {
+                let label = attr;
+                lclabel = label.toLowerCase();
+                if (lclabel == "objectid" ||
+                    lclabel == "feature_type" ||
+                    lclabel == "shapearea" ||
+                    lclabel == "styleurl" ||
+                    lclabel == "shapelen") continue;
+                if (lclabel == "startdate") label = "Start Date";
+                else if (lclabel == "enddate") label = "End Date";
+                else if (lclabel == "aland") label = "Land Area";
+                else if (lclabel == "awater") label = "Water Area";
+                label = MapUtils.makeLabel(label);
+                html += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + HU.span(['title',attr],label) + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                let value;
+                if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
+                    let o = p[attr];
+                    value = "" + o["value"];
+                } else {
+                    value = "" + p[attr];
+                }
+                if (value.startsWith("http:") || value.startsWith("https:")) {
+                    value = "<a href='" + value + "'>" + value + "</a>";
+                }
+                if (value == "null") continue;
+		html += value;
+                html += "</div></td></tr>";
+            }
+            html += "</table>";
+	    return html;
+	};	
+
         if (!out) {
             if (style && (style["balloonStyle"] || style["popupText"])) {
                 out = style["balloonStyle"] || style["popupText"];
                 for (let attr in p) {
                     //$[styleid/attr]
-                    let label = Utils.makeLabel(attr);
+                    let label = MapUtils.makeLabel(attr);
                     let value = "";
                     if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
                         let o = p[attr];
@@ -2199,39 +2263,12 @@ RepositoryMap.prototype = {
                 }
             } else {
 		if(debugPopup) console.log("getFeatureText-using feature attributes");
-                out = "<table>";
-                for (let attr in p) {
-                    let label = attr;
-                    lclabel = label.toLowerCase();
-                    if (lclabel == "objectid" ||
-                        lclabel == "feature_type" ||
-                        lclabel == "shapearea" ||
-                        lclabel == "styleurl" ||
-                        lclabel == "shapelen") continue;
-                    if (lclabel == "startdate") label = "Start Date";
-                    else if (lclabel == "enddate") label = "End Date";
-                    else if (lclabel == "aland") label = "Land Area";
-                    else if (lclabel == "awater") label = "Water Area";
-                    label = label.replace(/_/g, " ");
-                    label = Utils.camelCase(label);
-                    out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + HU.span(['title',attr],label) + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                    let value;
-                    if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
-                        let o = p[attr];
-                        value = "" + o["value"];
-                    } else {
-                        value = "" + p[attr];
-                    }
-                    if (value.startsWith("http:") || value.startsWith("https:")) {
-                        value = "<a href='" + value + "'>" + value + "</a>";
-                    }
-                    if (value == "null") continue;
-		    out += value;
-                    out += "</div></td></tr>";
-                }
-                out += "</table>";
-            }
+		out = makeDefaultFeatureText();
+	    }		
         }
+	if(out && out.indexOf('${default}')>=0) {
+	    out = out.replace('${default}',makeDefaultFeatureText());
+	}
         return out;
     },
     onFeatureSelect: function(layer,event) {

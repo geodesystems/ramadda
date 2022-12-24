@@ -374,6 +374,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return Object.keys(this.markers);
 	},
 
+
 	findGlyph:function(id) {
 	    let glyph;
 	    this.glyphs.every(mapGlyph=>{
@@ -1986,6 +1987,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let glyphType = this.getGlyphType(type);
 		if(!glyphType) {
 		    console.log("no type:" + type);
+		    console.dir(this.glyphTypeMap);
 		    return;
 		}
 		let style = $.extend({},glyphType.getStyle());
@@ -2959,14 +2961,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:ramaddaBaseUrl+"/icons/map.png"});	
 
 
-	    if(this.getProperty("hereRoutingEnabled")||this.getProperty("googleRoutingEnabled")) {
 		new GlyphType(this,GLYPH_ROUTE, "Route", {
 		    strokeColor:this.getStrokeColor(),
 		    strokeWidth:this.getStrokeWidth(),
 		    strokeDashstyle:'solid',
 		    strokeOpacity:1,
 		},MyRoute,{icon:ramaddaBaseUrl+"/icons/route.png"});
-	    }
+
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
 			  {strokeColor:"#ccc",
 			   strokeWidth:1,
@@ -3403,7 +3404,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
 	    }
 
-	    address = HU.div(['style',HU.css('display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
+	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
 		
 	    let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css('display','inline-block','white-space','nowrap','margin-left','10px')],'');
 	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
@@ -4572,15 +4573,15 @@ MapGlyph.prototype = {
 		let rulesLegend = '';
 		let lastProperty='';
 		this.attrs.mapStyleRules.forEach(rule=>{
+		    if(rule.type=='use') return;
 		    if(!Utils.stringDefined(rule.property)) return;
-
 		    let propOp = rule.property+rule.type;
 		    if(lastProperty!=propOp) {
 			if(rulesLegend!='') rulesLegend+='</table>';
 			let type = rule.type;
 			if(type=='==') type='=';
 			type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-			rulesLegend+= HU.b(Utils.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
+			rulesLegend+= HU.b(MapUtils.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
 		    }
 		    lastProperty  = propOp;
 		    let label = rule.value;
@@ -4622,11 +4623,15 @@ MapGlyph.prototype = {
 	    }
 	};
 
-	let colorMap = this.attrs.colorBy ??{};
-	if(Utils.stringDefined(colorMap.property)) {
-	    let div = this.getColorTableDisplay(colorMap.colorTable,colorMap.min,colorMap.max,true);
-	    body+=HU.center(Utils.makeLabel(colorMap.property))+HU.center(div);
-	}	
+
+	let addColor= (obj,prefix) => {
+	    if(obj && Utils.stringDefined(obj.property)) {
+		let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true);
+		body+=HU.center(prefix+' '+MapUtils.makeLabel(obj.property))+HU.center(div);
+	    }	
+	};
+	addColor(this.attrs.fillColorBy,'Fill');
+	addColor(this.attrs.strokeColorBy,'Stroke');	
 
 	//Put the placeholder here for map sliders
 	body+=HU.div(['id',this.domId('mapfilters')]);
@@ -4816,7 +4821,6 @@ MapGlyph.prototype = {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapPointsTemplate(jqid('mappoints_template').val());	    
 
-
 	    let styleGroups = this.getStyleGroups();
 	    let groups = [];
 	    for(let i=0;i<20;i++) {
@@ -4842,14 +4846,23 @@ MapGlyph.prototype = {
 
 	if(!this.canDoMapStyle()) return;
 	this.attrs.fillColors = this.jq('fillcolors').is(':checked');
-	let colorBy = {
-	    property:this.jq('colorby_property').val(),
-	    min:this.jq('colorby_min').val(),
-	    max:this.jq('colorby_max').val(),
-	    colorTable:this.jq('colorby_colortable').val()};		
-	this.attrs.colorBy = colorBy;
+	let getColorBy=(prefix)=>{
+	    return {
+		property:this.jq(prefix +'colorby_property').val(),
+		min:this.jq(prefix +'colorby_min').val(),
+		max:this.jq(prefix +'colorby_max').val(),
+		colorTable:this.jq(prefix +'colorby_colortable').val()};		
+	};
+
+	this.attrs.fillColorBy =  getColorBy('fill');
+	this.attrs.strokeColorBy =  getColorBy('stroke');	
+
 	let rules = [];
 	for(let i=0;i<20;i++) {
+	    if(!Utils.stringDefined(jqid('mapproperty_' + i).val()) &&
+	       !Utils.stringDefined(jqid('mapstyle_' + i).val())) {
+		continue;
+	    }
 	    let rule = {
 		property:jqid('mapproperty_' + i).val(),
 		type:jqid('maptype_' + i).val(),
@@ -4874,29 +4887,38 @@ MapGlyph.prototype = {
     },
     initPropertiesComponent: function(dialog) {
 	let _this = this;
-	let colorMap = this.attrs.colorBy ??{};
-	let decorate = () =>{
-	    let div = this.getColorTableDisplay(this.jq('colorby_colortable').val());
-	    this.jq('colorby_colortable_label').html(div);
+	let decorate = (prefix) =>{
+	    let div = this.getColorTableDisplay(this.jq(prefix+'colorby_colortable').val());
+	    this.jq(prefix+'colorby_colortable_label').html(div);
 	};
-	decorate();
+
+	decorate('fill');
+	decorate('stroke');	
 	dialog.find(".ramadda-colortable-select").click(function() {
+	    let prefix = $(this).attr('prefix');
 	    let ct = $(this).attr("colortable");
-	    _this.jq('colorby_colortable').val(ct);
-	    decorate();
+	    _this.jq(prefix+'colorby_colortable').val(ct);
+	    decorate(prefix);
 	});
-	Utils.displayAllColorTables(this.display.domId('colorby'));
-	dialog.find('#'+this.domId('colorby_property')).change(function() {
-	    let prop =  $(this).val();
-	    _this.featureInfo.every(info=>{
-		if(info.property==prop) {
-		    _this.jq('colorby_min').val(info.min);
-		    _this.jq('colorby_max').val(info.max);		    
-		    return false;
+	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
+	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
+
+
+	let initColor  = prefix=>{
+	    dialog.find('#'+this.domId(prefix+'colorby_property')).change(function() {
+		let prop =  $(this).val();
+		_this.featureInfo.every(info=>{
+		    if(info.property==prop) {
+			_this.jq(prefix+'colorby_min').val(info.min);
+			_this.jq(prefix+'colorby_max').val(info.max);		    
+			return false;
 		}
-		return true;
+		    return true;
+		});
 	    });
-	});
+	};
+	initColor('fill');
+	initColor('stroke');
 
 	dialog.find('[mapproperty_index]').change(function() {
 	    let info = _this.featureInfoMap[$(this).val()];
@@ -4934,7 +4956,7 @@ MapGlyph.prototype = {
 		});
 		table+='<thead><tr>';
 		columns.forEach(column=>{
-		    table+=HU.tag('th',['title',column],Utils.makeLabel(column));
+		    table+=HU.tag('th',['title',column],MapUtils.makeLabel(column));
 		});
 		table+='</tr></thead><tbody>';
 	    }
@@ -4967,82 +4989,84 @@ MapGlyph.prototype = {
 	let attrs = this.mapLayer.features[0].attributes;
 	let featureInfo = this.featureInfo = this.getFeatureInfo();
 	let keys  = Object.keys(featureInfo);
-	let colorMap = this.attrs.colorBy ??{};
 	let numeric = featureInfo.filter(info=>{return info.isNumeric;});
 	let enums = featureInfo.filter(info=>{return info.isEnum;});
-	let colorBy = "";
+	let colorBy = '';
 	colorBy+=HU.checkbox(this.domId('fillcolors'),['id',this.domId('fillcolors')],
 			     this.attrs.fillColors,'Fill Colors')+'<br>';
 	
 	if(numeric.length) {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return info.property;}));
-	    colorBy+=HU.b("Color map")+"<br>";
-	    colorBy += HU.formTable();
-	    colorBy += HU.formEntry("Property:", HU.select('',['id',this.domId('colorby_property')],numericProperties,colorMap.property));
-	    colorBy += HU.formEntry("Range:",HU.input("",colorMap.min??"", ['id',this.domId('colorby_min'),'size','6','title','min value']) +" -- "+
-				    HU.input("",colorMap.max??"", ['id',this.domId('colorby_max'),'size','6','title','max value']));
-	    colorBy += HU.hidden('',colorMap.colorTable||'blues',['id',this.domId('colorby_colortable')]);
-	    colorBy+=HU.formEntry("Color table:", HU.div(['style',HU.css(),'id',this.domId('colorby_colortable_label')])+
-				  Utils.getColorTablePopup(null,null,"Select"));
-	    colorBy+="</table>";
+	    let mapComp = (obj,prefix) =>{
+		let comp = '';
+		comp+=HU.b('Map value to ' + prefix +' color:')+'<br>' + HU.formTable();
+		comp += HU.formEntry('Property:', HU.select('',['id',this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', ['id',this.domId(prefix+'colorby_min'),'size','6','title','min value']) +' -- '+    HU.input('',obj.max??'', ['id',this.domId(prefix+'colorby_max'),'size','6','title','max value']));
+		comp += HU.hidden('',obj.colorTable||'blues',['id',this.domId(prefix+'colorby_colortable')]);
+		comp+=HU.formEntry('Color table:', HU.div(['style',HU.css(),'id',this.domId(prefix+'colorby_colortable_label')])+
+				   Utils.getColorTablePopup(null,null,'Select',true,'prefix',prefix));
+		comp+=HU.close('table');
+		return comp;
+	    };
+	    colorBy+=mapComp(this.attrs.fillColorBy ??{},'fill');
+	    colorBy+=mapComp(this.attrs.strokeColorBy ??{},'stroke');	    
 	}
 	let properties=Utils.mergeLists([['','Select']],featureInfo.map(info=>{return info.property;}));
-	let ex = "";
+	let ex = '';
 	featureInfo.forEach(info=>{
 	    let seen ={};
 	    let list =[];
 	    if(info.isNumeric) {
-		ex+=HU.b(info.property)+": " +  info.min +" - " + info.max+"<br>";
+		ex+=HU.b(info.property)+': ' +  info.min +' - ' + info.max+'<br>';
 	    } else if(info.isEnum) {
-		ex+=HU.b(info.property)+": " +  Utils.join(info.samples,", ") +"<br>";
+		ex+=HU.b(info.property)+': ' +  Utils.join(info.samples,', ') +'<br>';
 	    } else {
-		ex+=HU.b(info.property)+": " +  Utils.join(info.samples,", ") +"<br>";
+		ex+=HU.b(info.property)+': ' +  Utils.join(info.samples,', ') +'<br>';
 	    }
 	});
 	let c = OpenLayers.Filter.Comparison;
-	let operators = [c.EQUAL_TO,c.NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null']];
+	let operators = [c.EQUAL_TO,c.NOT_EQUAL_TO,c.LESS_THAN,c.GREATER_THAN,c.LESS_THAN_OR_EQUAL_TO,c.GREATER_THAN_OR_EQUAL_TO,[c.BETWEEN,'between'],[c.LIKE,'like'],[c.IS_NULL,'is null'],['use','Use']];
 	let rulesTable = HU.formTable();
-	let sample = "Samples&#013;";
+	let sample = 'Samples&#013;';
 	for(a in attrs) {
 	    let v = attrs[a]?String(attrs[a]):'';
-	    v = v.replace(/"/g,"").replace(/\n/g," ");
-	    sample+=a+"=" + v+"&#013;";
+	    v = v.replace(/"/g,'').replace(/\n/g,' ');
+	    sample+=a+'=' + v+'&#013;';
 	}
 	rulesTable+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules();
 	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
-	    let value = rule.value??"";
+	    let value = rule.value??'';
 	    let info = this.featureInfoMap[properties,rule.property];
 	    let title = sample;
 	    let valueInput;
 	    if(info) {
 		if(info.isNumeric)
-		    title=info.min +" - " + info.max;
+		    title=info.min +' - ' + info.max;
 		else if(info.samples.length)
-		    title = Utils.join(info.samples, ", ");
+		    title = Utils.join(info.samples, ', ');
 	    }
 	    if(info?.isEnum) {
-		valueInput = HU.select("",['id','mapvalue_' + index],info.samples,value); 
+		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value); 
 	    } else {
-		valueInput = HU.input("",value,['id','mapvalue_' + index,'size','15']);
+		valueInput = HU.input('',value,['id','mapvalue_' + index,'size','15']);
 	    }
 	    let propSelect =HU.select('',['id','mapproperty_' + index,'mapproperty_index',index],properties,rule.property);
 	    let opSelect =HU.select('',['id','maptype_' + index],operators,rule.type);	    
 	    valueInput =HU.span(['id','mapvaluewrapper_' + index],valueInput);
 	    let s = Utils.stringDefined(rule.style)?rule.style:'';
-	    let styleInput = HU.textarea("",s,['id','mapstyle_' + index,'rows','3','cols','10','title',styleTitle]);
+	    let styleInput = HU.textarea('',s,['id','mapstyle_' + index,'rows','3','cols','30','title',styleTitle]);
 	    rulesTable+=HU.tr(['valign','top'],HU.tds([],[propSelect,opSelect,valueInput,styleInput]));
 	}
-	rulesTable += "</table>";
-	let table = HU.b("Style Rules")+HU.div(['class','imdv-properties-section'], rulesTable);
-	content.push(["Map Style Rules", colorBy+table]);
+	rulesTable += '</table>';
+	let table = HU.b('Style Rules')+HU.div(['class','imdv-properties-section'], rulesTable);
+	content.push(['Map Style Rules', colorBy+table]);
 
 
 	let mapPointsRange = 'If the map is zoomed out with a value less than the visibility limit then don\'t show the points' +'<br>'+
-	    'Visiblity limit: ' + HU.select("",[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
-	    HU.span(['class','imdv-currentlevellabel'], "(current level: " + this.display.getCurrentLevel()+")") +'<br>';
+	    'Visiblity limit: ' + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	    HU.span(['class','imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')') +'<br>';
 	let mapPoints = HU.textarea('',this.getMapPointsTemplate()??'',['id','mappoints_template','rows','3','cols','70','title','Map points template, e.g., ${code}']);
 
 	content.push(['Map Points', mapPointsRange+
@@ -5064,8 +5088,8 @@ MapGlyph.prototype = {
 	}
 	styleGroupsUI += HU.closeTag('table');
 	styleGroupsUI = HU.div(['style',HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
-	content.push(["Map Style Groups",styleGroupsUI]);
-	content.push(["Sample Values",ex]);
+	content.push(['Map Style Groups',styleGroupsUI]);
+	content.push(['Sample Values',ex]);
     },
     getStyleGroups: function() {
 	if(!this.attrs.styleGroups) {
@@ -5162,7 +5186,7 @@ MapGlyph.prototype = {
 	    if(this.display.getMapProperty(info.property.toLowerCase()+'.hideFilter',false)) return;
 	    let filter = filters[info.property] = filters[info.property]??{};
 	    let id = Utils.makeId(info.property);
-	    let label = HU.span(['title',info.property],HU.b(Utils.makeLabel(info.property)))
+	    let label = HU.span(['title',info.property],HU.b(MapUtils.makeLabel(info.property)))
 	    if(info.isString)  {
 		filter.type="string";
 		strings+=label+":<br>" +
@@ -5299,8 +5323,13 @@ MapGlyph.prototype = {
 
 	let style = this.style;
 	let rules = this.getMapStyleRules();
+	let useRules = [];
 	if(rules) {
 	    rules = rules.filter(rule=>{
+		if(rule.type=='use') {
+		    useRules.push(rule);
+		    return false;
+		}
 		return Utils.stringDefined(rule.property);
 	    });
 	}
@@ -5357,6 +5386,7 @@ MapGlyph.prototype = {
 		}
 		style.label = label;
 		let marker = MapUtils.createVector(pt,null,style);
+		marker.point = pt;
 		feature.mapPoint  = marker;
 		this.mapPoints.push(marker);
 	    });
@@ -5369,12 +5399,21 @@ MapGlyph.prototype = {
 	    this.mapLayer.style = null;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,rules);
 	    features.forEach((f,idx)=>{f.style = null;});
-	} else if(Utils.stringDefined(this.attrs.colorBy?.property)) {
-	    let prop =this.attrs.colorBy.property;
-	    let min =+this.attrs.colorBy.min;
-	    let max =+this.attrs.colorBy.max;
+	} 
+
+	this.mapLayer.style = style;
+	features.forEach((f,idx)=>{
+	    f.style = $.extend({},style);
+	    f.originalStyle = $.extend({},style);			    
+	});
+	
+	let applyColors = (obj,attr)=>{
+	    if(!obj || !Utils.stringDefined(obj?.property))  return;
+	    let prop =obj.property;
+	    let min =+obj.min;
+	    let max =+obj.max;
 	    let range = max-min;
-	    let ct =Utils.getColorTable(this.attrs.colorBy.colorTable,true);
+	    let ct =Utils.getColorTable(obj.colorTable,true);
 	    features.forEach((f,idx)=>{
 		let value = f.attributes[prop];
 		value = this.cleanupFeatureValue(value);
@@ -5384,16 +5423,48 @@ MapGlyph.prototype = {
 		value = +value;
 		let percent = (value-min)/range;
 		let index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
-		f.style = $.extend({},style);
-		f.style.fillColor=ct[index];
+		if(!f.style)
+		    f.style = $.extend({},style);
+		f.style[attr]=ct[index];
 	    });
-	} else {
-	    this.mapLayer.style = style;
-	    features.forEach((f,idx)=>{
-		f.style = $.extend({},style);
-		f.originalStyle = $.extend({},style);			    
+	};
+
+	applyColors(this.attrs.fillColorBy,'fillColor');
+	applyColors(this.attrs.strokeColorBy,'strokeColor');	
+
+	if(useRules.length>0) {
+	    useRules.forEach(rule=>{
+		let styles = [];
+		let styleMap = {};
+		Utils.split(rule.style,'\n',true,true).forEach(s=>{
+		    let toks = [];
+		    let index = s.indexOf(':');
+		    if(index>=0) {
+			toks.push(s.substring(0,index).trim());
+			toks.push(s.substring(index+1).trim());			
+		    }
+		    if(toks.length!=2) return;
+		    styleMap[toks[0].trim()] = toks[1].trim();
+		    styles.push(toks[0].trim());
+		});
+		features.forEach((f,idx)=>{
+		    if(!f.style) {
+			f.style = $.extend({},style);
+		    }
+		    if(!f.attributes) return;
+		    let value=f.attributes[rule.property];
+		    if(!value) return;
+		    styles.forEach(style=>{
+			let v = styleMap[style];
+			v = v.replace("${value}",value);
+			if(v.startsWith('js:')) {
+			    v = eval(v.substring(3));
+			}
+			f.style[style] = v;
+		    });
+		});
 	    });
-	}
+	}	    
 
 
 	let redrawFeatures = false;
@@ -5467,8 +5538,6 @@ MapGlyph.prototype = {
 	    }
 	});
 	this.checkVisible();
-
-
 	this.mapLayer.redraw();
 	if(redrawFeatures) {
 	    this.display.redraw();
@@ -5646,11 +5715,11 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	let setVis = feature=>{
-	    let theVisbile=visible;
-	    if(feature.filtered)theVisbile =false;
+	let setVis = (feature,vis)=>{
+	    if(!Utils.isDefined(vis))  vis=visible;
+	    if(feature.filtered)vis =false;
 	    if(!feature.style) feature.style = {};
-	    if(theVisbile) {
+	    if(vis) {
 		feature.style.display = 'inline';
 	    }  else {
 		feature.style.display = 'none';
@@ -5658,11 +5727,8 @@ MapGlyph.prototype = {
 	    $.extend(feature.style,{display:feature.style.display});
 	};
 
-
-
 	if(this.features)
 	    this.features.forEach(setVis);
-
 
 	if(this.showMarkerMarker) {
 	    if(!this.getVisible() || visible) {
@@ -5670,7 +5736,6 @@ MapGlyph.prototype = {
 		this.showMarkerMarker = null;
 	    }
 	}
-
 
 
 	if(this.isFixed()) {
@@ -5700,12 +5765,50 @@ MapGlyph.prototype = {
 	    this.displayInfo.display.setVisible(visible);
 	}
 
-	if(Utils.stringDefined(this.getMapPointsRange())) {
-	    if(level<parseInt(this.getMapPointsRange())) visible=false;
+	if(this.mapPoints) {
+	    this.mapPoints.forEach((point,idx)=>{setVis(point,true);});
+	    if(!visible) {
+		this.mapPoints.forEach((point,idx)=>{setVis(point,false);});
+	    } else if(Utils.stringDefined(this.getMapPointsRange())) {
+		if(level<parseInt(this.getMapPointsRange())) {
+		    visible=false;
+		    this.mapPoints.forEach((point,idx)=>{setVis(point,false);});
+		}
+	    } else {
+		let b = new OpenLayers.Bounds();
+		this.mapPoints.forEach(point=>{b.extend(point.point);});
+		let gscr =(x,y)=>{return this.display.getMap().getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
+		let ul = gscr(b.left,b.top);
+		let lr = gscr(b.right,b.bottom);	    	  
+		if(!isNaN(ul.x) && !isNaN(ul.y) && !isNaN(lr.x) && !isNaN(lr.y)) {
+		    //Just guess at a grid cell soze of 30 and 20
+		    let gridW = parseInt((lr.x-ul.x)/40);
+		    let gridH = parseInt((lr.y-ul.y)/20);	    
+		    let grid = Array(gridW+1);
+		    for(let i=0;i<grid.length;i++) {
+			grid[i] = Array.apply(null, Array(gridH+1)).map(function () {});
+		    }
+		    let gridWidth = lr.x-ul.x;
+		    let gridHeight = lr.y-ul.y;
+		    let hideCnt = 0, showCnt=0;
+		    this.mapPoints.forEach((point,idx)=>{
+			let latlon = this.display.getMap().transformProjPoint(point.point);
+			let screenPoint = this.display.getMap().getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(point.point.x,point.point.y));
+
+			let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
+			let indexY = parseInt(gridW*(lr.y-screenPoint.y)/gridHeight);		
+			if(grid[indexX][indexY]) {
+			    hideCnt++;
+			    setVis(point,false);
+			} else {
+			    showCnt++;
+			    grid[indexX][indexY]=true;
+			    setVis(point,true);		    
+			}
+		    });
+		}
+	    }
 	}
-	    
-	if(this.mapPoints) 
-	    this.mapPoints.forEach(setVis);	
 
 
 
@@ -6025,10 +6128,7 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	    }
 	}
     }
-    
-
 }
-
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {

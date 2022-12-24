@@ -80,7 +80,7 @@ $.extend(Utils,{
             cnt++;
         }
     },
-    getColorTablePopup: function(wikiEditor, itemize,label,showToggle) {
+    getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
         let popup = "<div class=wiki-editor-popup-items>"
         let items = [];
         let item;
@@ -96,7 +96,9 @@ $.extend(Utils,{
                 showRange: false,
                 height: "20px"
             });
-            ct = HtmlUtils.div([STYLE,HU.css('width','400px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
+	    let attrs = [STYLE,HU.css('width','400px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a];
+	    if(attr) attrs.push(attr,value);
+            ct = HtmlUtils.div(attrs,ct);
             if(wikiEditor) {
                 var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
                 item = HtmlUtils.onClick(call,ct);
