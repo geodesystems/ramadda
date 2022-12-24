@@ -2887,12 +2887,19 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-item {
-    border-top:1px solid #ddd;
+    border-top:1px solid #dadada;
 }
 
+
 .imdv-legend-item-last {
-    border-bottom:1px solid #ddd;
+    border-bottom:1px solid #dadada;
 }
+
+.imdv-legend-body {
+    background:#fff;
+    font-size:90%;
+}
+
 
 .imdv-legend-label {
     user-select:none;

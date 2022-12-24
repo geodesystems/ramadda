@@ -375,6 +375,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 
+	makeLabel:function(l) {
+	    let _l = l.toLowerCase();
+	    let v = this.getMapProperty(_l+'.label');
+	    if(v) return v;
+	    return MapUtils.makeLabel(l);
+	},
+
+	showFeatureProperty:function(p) {
+	    let _p = p.toLowerCase();
+	    return this.getMapProperty(_p+'.showFeature',true);
+	},
+
 	findGlyph:function(id) {
 	    let glyph;
 	    this.glyphs.every(mapGlyph=>{
@@ -560,8 +572,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    h = h/5280;		    
 		}
 
-		msg= "w: " + Utils.formatNumberComma(w) + " " + unit +
-		    " h: " + Utils.formatNumberComma(h) + " " + unit;
+		msg= "W: " + Utils.formatNumberComma(w) + " " + unit +
+		    " H: " + Utils.formatNumberComma(h) + " " + unit;
 	    } else {
 		let segments = "";
 		let total = 0;
@@ -1042,7 +1054,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else if(command=="edit") {
 		    _this.editFeatureProperties(mapGlyph);
 		} else if(command==ID_SELECT) {
-		    _this.selectGlyph(mapGlyph);
+		    if(_this.isFeatureSelected(mapGlyph)) 
+			_this.unselectGlyph(mapGlyph);
+		    else
+			_this.selectGlyph(mapGlyph);
 		} else if(command==ID_DELETE) {
 		    HU.makeOkCancelDialog($(this),"Are you sure you want to delete this glyph?",
 					  ()=>{_this.removeMapGlyphs([mapGlyph]);});
@@ -1410,6 +1425,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 
+	makeColorBar:function(domId) {
+	    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
+	    let bar = "";
+	    let cnt = 0;
+	    colors.forEach(color=>{
+		bar += HU.div(['title',color,'color',color,'widget-id',domId,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
+		cnt++;
+		if(cnt>=10) {
+		    cnt = 0;
+		    bar+="<br>";
+		}
+	    });
+	    bar = HU.div(['style','max-height:150px;overflow-y:auto;border:1px solid #ccc;'],bar);
+	    return bar;
+	},
+	    
+
 	makeStyleForm:function(style,mapGlyph) {
 	    let html = "";
 	    let props;
@@ -1440,11 +1472,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let notProps = ['mapOptions','labelSelect','cursor','display']
 
 	    
+	    let strip=null;
+	    let headers = {
+		strokeColor: {label:'Stroke',strip:'stroke'},
+		fillColor: {label:'Fill',strip:'fill'},
+		fontColor: {label:'Font',strip:'font'},
+		labelAlign: {label:'Label',strip:'label'},
+	    };
 	    props.forEach(prop=>{
 		let id = "glyphedit_" + prop;
 		let domId = this.domId(id);
 		if(notProps.includes(prop)) return;
-		let label =  Utils.makeLabel(prop);		
+		let header = headers[prop];
+		if(header) {
+		    strip=header.strip;
+		    html+=HU.tr(['class','formgroupheader'],HU.td(['colspan',2],header.label));
+		}  else if(strip && !prop.startsWith(strip)) {
+		    html+=HU.tr(['class','formgroupheader'],HU.td(['colspan',2],''));
+		    strip = null;
+		}
+		let label = prop;
+		if(strip) label = label.replace(strip,'');
+		label =  Utils.makeLabel(label);		
 		if(prop=="pointRadius") label = "Size";
 		let widget;
 		if(prop=="externalGraphic") {
@@ -1503,23 +1552,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="80";
 			if(prop.indexOf("Color")>=0) {
-			    let colors = Utils.split("transparent,red,orange,yellow,#fffeec,green,blue,indigo,violet,white,black,IndianRed,LightCoral,Salmon,DarkSalmon,LightSalmon,Crimson,Red,FireBrick,DarkRed,Pink,LightPink,HotPink,DeepPink,MediumVioletRed,PaleVioletRed,LightSalmon,Coral,Tomato,OrangeRed,DarkOrange,Orange,Gold,Yellow,LightYellow,LemonChiffon,LightGoldenrodYellow,PapayaWhip,Moccasin,PeachPuff,PaleGoldenrod,Khaki,DarkKhaki,Lavender,Thistle,Plum,Violet,Orchid,Fuchsia,Magenta,MediumOrchid,MediumPurple,RebeccaPurple,BlueViolet,DarkViolet,DarkOrchid,DarkMagenta,Purple,Indigo,SlateBlue,DarkSlateBlue,MediumSlateBlue,GreenYellow,Chartreuse,LawnGreen,Lime,LimeGreen,PaleGreen,LightGreen,MediumSpringGreen,SpringGreen,MediumSeaGreen,SeaGreen,ForestGreen,Green,DarkGreen,YellowGreen,OliveDrab,Olive,DarkOliveGreen,MediumAquamarine,DarkSeaGreen,LightSeaGreen,DarkCyan,Teal,Aqua,Cyan,LightCyan,PaleTurquoise,Aquamarine,Turquoise,MediumTurquoise,DarkTurquoise,CadetBlue,SteelBlue,LightSteelBlue,PowderBlue,LightBlue,SkyBlue,LightSkyBlue,DeepSkyBlue,DodgerBlue,CornflowerBlue,MediumSlateBlue,RoyalBlue,Blue,MediumBlue,DarkBlue,Navy,MidnightBlue,Cornsilk,BlanchedAlmond,Bisque,NavajoWhite,Wheat,BurlyWood,Tan,RosyBrown,SandyBrown,Goldenrod,DarkGoldenrod,Peru,Chocolate,SaddleBrown,Sienna,Brown,Maroon,White,Snow,HoneyDew,MintCream,Azure,AliceBlue,GhostWhite,WhiteSmoke,SeaShell,Beige,OldLace,FloralWhite,Ivory,AntiqueWhite,Linen,LavenderBlush,MistyRose,Gainsboro,LightGray,Silver,DarkGray,Gray,DimGray,LightSlateGray,SlateGray,DarkSlateGray",",");
-
-			    let bar = "";
-			    let cnt = 0;
-			    colors.forEach(color=>{
-				bar += HU.div(['title',color,'color',color,'widget-id',domId,'class','ramadda-clickable ramadda-color-select ramadda-dot', 'style',HU.css('background',color)]) +HU.space(1);
-				cnt++;
-				if(cnt>=10) {
-				    cnt = 0;
-				    bar+="<br>";
-				}
-			    });
-			    bar = HU.div(['style','max-height:66px;overflow-y:auto;border:1px solid #ccc;'],bar);
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
 			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',v)]) +
 				HU.space(2)+widget;
-			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
+//			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
 			} else if(prop=="labelAlign") {
 			    html +=HU.formTableClose();
 			    html +=HU.formTable();			    
@@ -1688,15 +1724,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }});
 	    });
 
+	    dialog.find('.ramadda-imdv-color').focus(function() {
+		let id = $(this).attr('id');
+		let bar = _this.makeColorBar(id);
+		let dialog = HU.makeDialog({content:bar,header:false,anchor:$(this),my:"left top",at:"left bottom"});
+		dialog.find('.ramadda-color-select').click(function(){
+		    let c = $(this).attr('color');
+		    let id = $(this).attr('widget-id');
+		    $("#"+ id).val(c);
+		    $("#"+ id+'_display').css('background',c);
+		    dialog.remove();
+		});
+
+	    });
+
 	    dialog.find('.ramadda-imdv-color').change(function() {
 		let c = $(this).val();
 		let id = $(this).attr('id');
-		$("#"+ id+'_display').css('background',c);
-	    });
-	    dialog.find('.ramadda-color-select').click(function(){
-		let c = $(this).attr('color');
-		let id = $(this).attr('widget-id');
-		$("#"+ id).val(c);
 		$("#"+ id+'_display').css('background',c);
 	    });
 
@@ -2047,6 +2091,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 		    mapGlyph.checkImage(feature);
 		    this.addGlyph(mapGlyph);
+
 		    //If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
 		    if(glyphType.isEntry()) {
 			let callback = (entry)=>{
@@ -3112,7 +3157,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    HU.div([],label[0]) +
 		    HU.div(['style','margin-left:2px;'],label[1])
 		    +"</div>";
-		html+=HU.div(['style','background:#fff;'],block.body);
+		html+=HU.div(['class','imdv-legend-body'],block.body);
 		html+=HU.close('div');
 	    });
 	    let legendLabel= this.getMapProperty("legendLabel","");
@@ -4513,9 +4558,6 @@ MapGlyph.prototype = {
     },
 	
 
-    showFeatureProperty:function(p) {
-	return !['objectid','shapestlength','globalid'].includes(p.toLowerCase());
-    },
 
     getLegendBody:function(glyphIdx) {
 	let body = '';
@@ -4525,15 +4567,14 @@ MapGlyph.prototype = {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    buttons =  HU.span(['id',this.showFeatureTableId,'title','Show features table','class','ramadda-clickable'],
 			      HU.getIconImage('fas fa-table',[],BUTTON_IMAGE_ATTRS)) +buttons;
-
-
 	}
 
-	if(this.downloadUrl || this.style?.imageUrl) {
-	    let url = this.downloadUrl ?? this.style?.imageUrl;
+	/** For now don't add this as we can also get it through the entry link below
+	if(this.downloadUrl) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
-	    buttons = HU.href(url,HU.getIconImage('fas fa-download',[],BUTTON_IMAGE_ATTRS),['target','_download','title','Download','class','ramadda-clickable']) +buttons;
+	    buttons = HU.href(this.downloadUrl,HU.getIconImage('fas fa-download',[],BUTTON_IMAGE_ATTRS),['target','_download','title','Download','class','ramadda-clickable']) +buttons;
 	}
+	*/
 
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -4581,7 +4622,7 @@ MapGlyph.prototype = {
 			let type = rule.type;
 			if(type=='==') type='=';
 			type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-			rulesLegend+= HU.b(MapUtils.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
+			rulesLegend+= HU.b(this.display.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
 		    }
 		    lastProperty  = propOp;
 		    let label = rule.value;
@@ -4627,7 +4668,7 @@ MapGlyph.prototype = {
 	let addColor= (obj,prefix) => {
 	    if(obj && Utils.stringDefined(obj.property)) {
 		let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true);
-		body+=HU.center(prefix+' '+MapUtils.makeLabel(obj.property))+HU.center(div);
+		body+=HU.center(prefix+' '+this.display.makeLabel(obj.property))+HU.center(div);
 	    }	
 	};
 	addColor(this.attrs.fillColorBy,'Fill');
@@ -4639,27 +4680,16 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
-	if(this.isFixed()) {
-	    //Don't show the text in the legend for fixed glyphs
-//	    item(this.convertText(this.style.text));
-	}
 	item(this.display.getDistances(this.getGeometry(),this.getType()));
-	let text = this.getPopupText();
-	if(text)  {
-	    if(!text.startsWith("<wiki>")) {
-		//Don't show the popup text in the legend
-		//		item(text.replace(/\n/g,"<br>"));
-	    }
-	}
 	if(this.isMultiEntry()) {
 	    item(HU.div(['id',this.domId('multientry')]));
 	}
 
 	if(Utils.stringDefined(this.style.imageUrl)) {
-	    item("<img style='border:1px solid #ccc;' width='150px' src='" +this.style.imageUrl+"'>");
+	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
-	    item("<center><img style='border:1px solid #ccc;' width='150px' src='" +this.style.legendUrl+"'></center>");
+	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 	return body;
     },
@@ -4952,11 +4982,11 @@ MapGlyph.prototype = {
 	    let attrs = feature.attributes;
 	    if(columns==null) {
 		columns = Object.keys(attrs).filter(c=>{
-		    return this.showFeatureProperty(c);
+		    return this.display.showFeatureProperty(c);
 		});
 		table+='<thead><tr>';
 		columns.forEach(column=>{
-		    table+=HU.tag('th',['title',column],MapUtils.makeLabel(column));
+		    table+=HU.tag('th',['title',column],this.display.makeLabel(column));
 		});
 		table+='</tr></thead><tbody>';
 	    }
@@ -4999,7 +5029,7 @@ MapGlyph.prototype = {
 	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return info.property;}));
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
-		comp+=HU.b('Map value to ' + prefix +' color:')+'<br>' + HU.formTable();
+		comp+=HU.div(['class','formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
 		comp += HU.formEntry('Property:', HU.select('',['id',this.domId(prefix+'colorby_property')],numericProperties,obj.property) +HU.space(2)+ HU.b('Range: ') + HU.input('',obj.min??'', ['id',this.domId(prefix+'colorby_min'),'size','6','title','min value']) +' -- '+    HU.input('',obj.max??'', ['id',this.domId(prefix+'colorby_max'),'size','6','title','max value']));
 		comp += HU.hidden('',obj.colorTable||'blues',['id',this.domId(prefix+'colorby_colortable')]);
 		comp+=HU.formEntry('Color table:', HU.div(['style',HU.css(),'id',this.domId(prefix+'colorby_colortable_label')])+
@@ -5065,12 +5095,12 @@ MapGlyph.prototype = {
 
 
 	let mapPointsRange = 'If the map is zoomed out with a value less than the visibility limit then don\'t show the points' +'<br>'+
-	    'Visiblity limit: ' + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
+	    HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 	    HU.span(['class','imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')') +'<br>';
 	let mapPoints = HU.textarea('',this.getMapPointsTemplate()??'',['id','mappoints_template','rows','3','cols','70','title','Map points template, e.g., ${code}']);
 
-	content.push(['Map Points', mapPointsRange+
-		      'Template to display labels with map:<br>' +mapPoints]);
+	content.push(['Map Labels', mapPointsRange+
+		      HU.b('Label Template:')+'<br>' +mapPoints]);
 
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.openTag('table',['width','100%']);
@@ -5081,8 +5111,8 @@ MapGlyph.prototype = {
 	    let prefix = 'mapstylegroups_' + i;
 	    styleGroupsUI+=HU.tr([],HU.tds([],[
 		HU.input('',group?.label??'',['id',prefix+'_label','size','10']),
-		HU.input('',group?.style.fillColor??'',['id',prefix+'_fillcolor','size','6']),
-		HU.input('',group?.style.strokeColor??'',['id',prefix+'_strokecolor','size','6']),
+		HU.input('',group?.style.fillColor??'',['class','ramadda-imdv-color','id',prefix+'_fillcolor','size','6']),
+		HU.input('',group?.style.strokeColor??'',['class','ramadda-imdv-color','id',prefix+'_strokecolor','size','6']),
 		HU.input('',group?.style.strokeWidth??'',['id',prefix+'_strokewidth','size','6']),				
 		Utils.join(group?.indices??[],',')]));
 	}
@@ -5183,14 +5213,16 @@ MapGlyph.prototype = {
 	let enums = "";
 	let filters = this.attrs.featureFilters = this.attrs.featureFilters ??{};
 	featureInfo.forEach(info=>{
-	    if(this.display.getMapProperty(info.property.toLowerCase()+'.hideFilter',false)) return;
+	    if(!this.display.getMapProperty(info.property.toLowerCase()+'.showFilter',true)) return;
 	    let filter = filters[info.property] = filters[info.property]??{};
 	    let id = Utils.makeId(info.property);
-	    let label = HU.span(['title',info.property],HU.b(MapUtils.makeLabel(info.property)))
+	    let label = HU.span(['title',info.property],HU.b(this.display.makeLabel(info.property)))
 	    if(info.isString)  {
 		filter.type="string";
+		let attrs =['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20];
+		attrs.push('placeholder',this.display.getMapProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
 		strings+=label+":<br>" +
-		    HU.input("",filter.stringValue??"",['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20]) +"<br>";
+		    HU.input("",filter.stringValue??"",attrs) +"<br>";
 		return
 	    } 
 	    if(info.samples.length)  {
@@ -5727,8 +5759,9 @@ MapGlyph.prototype = {
 	    $.extend(feature.style,{display:feature.style.display});
 	};
 
-	if(this.features)
-	    this.features.forEach(setVis);
+	if(this.features) {
+	    this.features.forEach(f=>{setVis(f);});
+	}
 
 	if(this.showMarkerMarker) {
 	    if(!this.getVisible() || visible) {
