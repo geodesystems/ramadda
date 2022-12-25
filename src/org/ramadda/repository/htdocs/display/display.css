@@ -2884,12 +2884,22 @@ table.dataTable tfoot td {
     width:200px;
     max-height:400px;
     overflow-y:auto;
+    border-bottom:1px solid #dadada;
 }
+
+.imdv-legend-offset {
+    margin-left:10px;
+}
+
 
 .imdv-legend-item {
     border-top:1px solid #dadada;
 }
 
+.image-legend-item-droppable {
+    background:var(--highlight-background);
+    border-top:1px solid #000;
+}
 
 .imdv-legend-item-last {
     border-bottom:1px solid #dadada;
