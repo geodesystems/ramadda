@@ -363,6 +363,12 @@ var Utils =  {
         });
         return accum;
     },
+    moveBefore: function(list,item1,item2) {
+	list = this.removeItem(list,item2);
+        const index1 = list.indexOf(item1);
+	list.splice(index1, 0, item2); 
+	return list;
+    },
     toFront: function(list,element,isList) {
         const index = list.indexOf(isList?element[0]:element);
         if (index > -1) {
@@ -5597,3 +5603,4 @@ $( document ).ready(function() {
 
 Utils.areDisplaysReady()
 
+//console.log(Utils.moveBefore(['a','b','c'],'b','c'));
