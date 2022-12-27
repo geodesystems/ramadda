@@ -67,7 +67,7 @@ let ImdvUtils = {
 //	console.log(layer.name +" scheduling");
 	layer.redrawPending = true;
 	setTimeout(()=>{
-	    console.log(layer.name +" **** redraw");
+//	    console.log(layer.name +" **** redraw");
 	    layer.redraw();
 	    layer.redrawPending = false;
 	},1)
