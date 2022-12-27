@@ -156,12 +156,11 @@ $.extend(Utils,{
                 if(value=="") value = "&lt;blank&gt;";
                 colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
             });
-
-            
         }
         min = parseFloat(min);
         max = parseFloat(max);
-        let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
+	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots":"");
+        let divargs = [CLASS, clazz];
         if(Utils.isDefined(options.width)) {
             divargs.push(STYLE);
             divargs.push(HU.css(WIDTH, HU.getDimension(String(options.width))));
@@ -189,13 +188,21 @@ $.extend(Utils,{
         }
         var step = (max - min) / ct.length;
         let nums = [];
-        
+	let maxNums = ct.length;
+	if(options.tooltips && options.tooltips.length>0 && options.tooltips.length<ct.length)  {
+	    maxNums = options.tooltips.length;
+	}
         if(!options.showColorTableDots || options.horizontal) {
-            for (var i = 0; i < ct.length; i+=options.stride) nums.push(i);
+            for (var i = 0; i < maxNums; i+=options.stride) nums.push(i);
         } else {
-            for (var i = ct.length-1; i>=0;i=i-options.stride) nums.push(i);
+            for (var i = maxNums-1; i>=0;i=i-options.stride) nums.push(i);
         }
 
+
+	if(options.tooltips) {
+//	    console.log(options.tooltips.length,nums.length);
+	}
+	
         let tdw = (100 / nums.length) + "%";
         nums.forEach((i,idx)=>{
             var extra = "";
@@ -203,18 +210,26 @@ $.extend(Utils,{
             var attrs = [];
             if(options.showColorTableDots) {
                 let val2 = min + step * (i+1);
-                let label = formatter(val)+ "-" + formatter(val2);
+                let label = options.tooltips?options.tooltips[idx]:formatter(val)+ "-" + formatter(val2);
                 let delim = SPACE;
-                if(!options.horizontal)
+                if(!options.horizontal && !options.tooltips)
                     delim="<br>";
-                html += HtmlUtils.span([CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+		if(options.tooltips) {
+                    html += HtmlUtils.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+		} else {
+                    html += HtmlUtils.span([CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+		}
                 if(!options.horizontal)
                     html +="<br>";
             } else {
                 if (options.showRange) {
                     attrs.push(TITLE);
                     attrs.push(formatter(val));
-                }
+                } else if(options.tooltips) {
+		    let tt = options.tooltips[idx];
+		    if(tt)
+			attrs.push(TITLE,tt,'data-title',tt,'foo',tt);
+		}
                 attrs.push(STYLE);
                 attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
                 let label = options.labels?options.labels[idx]:"";
@@ -409,6 +424,27 @@ Utils.ColorTables =  {
     d3_schemeSpectral: {colors: ['#9e0142','#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd','#5e4fa2',]},
 
     categorical: {label:"Categorical"},
+    gpt50: {
+	colors:['rgb(31,119,180)','rgb(174,199,232)','rgb(255,127,14)','rgb(255,187,120)','rgb(44,160,44)','rgb(152,223,138)','rgb(214,39,40)','rgb(255,152,150)','rgb(148,103,189)','rgb(197,176,213)','rgb(140,86,75)','rgb(196,156,148)','rgb(227,119,194)','rgb(247,182,210)','rgb(127,127,127)','rgb(199,199,199)','rgb(188,189,34)','rgb(219,219,141)','rgb(23,190,207)','rgb(158,218,229)','rgb(218,60,60)','rgb(230,197,197)','rgb(3,81,0)','rgb(146,143,143)','rgb(140,0,140)','rgb(153,153,153)','rgb(0,80,90)','rgb(230,143,143)','rgb(0,0,0)','rgb(250,215,215)','rgb(0,100,0)','rgb(78,238,148)','rgb(205,0,90)','rgb(255,228,225)','rgb(139,58,98)','rgb(238,238,238)','rgb(205,92,92)','rgb(75,0,130)','rgb(255,235,205)','rgb(0,0,139)','rgb(139,0,139)','rgb(0,0,255)','rgb(238,130,238)','rgb(0,139,139)','rgb(0,100,0)','rgb(189,183,107)','rgb(139,0,0)','rgb(233,150,122)','rgb(143,188,143)','rgb(72,61,139)']},
+
+    gpt100: {
+	colors: [
+  "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", 
+  "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", 
+  "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", 
+  "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5", 
+  "#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#637939", 
+  "#8ca252", "#b5cf6b", "#cedb9c", "#8c6d31", "#bd9e39", 
+  "#e7ba52", "#e7cb94", "#843c39", "#ad494a", "#d6616b", 
+  "#e7969c", "#7b4173", "#a55194", "#ce6dbd", "#de9ed6", 
+  "#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", 
+  "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476", 
+  "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc", 
+  "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9"
+]
+    },
+
+
     rainbow: {
         colors: ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
     },
@@ -568,7 +604,7 @@ Utils.ColorTables =  {
     dbz_nws: {
         colors: ['rgb(0,0,0)', 'rgb(0,255,255)', 'rgb(135,206,235)', 'rgb(0,0,255)', 'rgb(0,255,0)', 'rgb(50,205,50)', 'rgb(34,139,34)', 'rgb(238,238,0)', 'rgb(238,220,130)', 'rgb(238,118,33)', 'rgb(255,48,48)', 'rgb(176,48,96)', 'rgb(176,48,96)', 'rgb(186,85,211)', 'rgb(255,0,255)', 'rgb(255,255,255)', ]
     },
-    categorical: {label:"Fixed"},
+    fixed: {label:"Fixed"},
     black: {colors:["#000"]},
     white: {colors:["#fff"]},
     red: {colors:["red"]},
