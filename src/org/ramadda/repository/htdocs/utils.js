@@ -2054,6 +2054,14 @@ var Utils =  {
         }
         return false;
     },
+    /** Return the first string that is defined in the arguments */
+    getStringDefined: function(args) {
+	for(let i=0;i<args.length;i++) {
+	    if(Utils.stringDefined(args[i])) return args[i];
+	}
+	return null;
+    },
+
     getDefined: function(v1, v2) {
         if (Utils.isDefined(v1)) return v1;
         return v2;
