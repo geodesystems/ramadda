@@ -1670,6 +1670,7 @@ RepositoryMap.prototype = {
             MapUtils.createSize(width, height), {
                 numZoomLevels: 3,
                 isBaseLayer: theArgs.isBaseLayer,
+		displayOutsideMaxExtent:true,
                 resolutions: this.getMap().layers[0] ? this.getMap().layers[0].resolutions : null,
                 maxResolution: this.getMap().layers[0] ? this.getMap().layers[0].resolutions[0] : null
             }
@@ -2254,7 +2255,7 @@ RepositoryMap.prototype = {
                     let value = "";
                     if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
                         let o = p[attr];
-                        value = "" + o["value"];
+			value = "" + (o?o["value"]:'');
                     } else {
                         value = "" + p[attr];
                     }
