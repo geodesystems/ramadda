@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 27 09:52:27 MST 2022";
+var build_date="RAMADDA build date: Tue Dec 27 10:01:36 MST 2022";
 
 
 
@@ -39854,7 +39854,7 @@ let ImdvUtils = {
 //	console.log(layer.name +" scheduling");
 	layer.redrawPending = true;
 	setTimeout(()=>{
-	    console.log(layer.name +" **** redraw");
+//	    console.log(layer.name +" **** redraw");
 	    layer.redraw();
 	    layer.redrawPending = false;
 	},1)
