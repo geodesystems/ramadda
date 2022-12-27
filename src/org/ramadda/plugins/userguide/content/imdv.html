@@ -49,6 +49,11 @@ The Edit Menu allows you to select glyphs, cut/copy/paste, etc.
 :heading Adding a Map
 The IMDV supports adding a number of map files - GeoJson, GPX and Shapefile.
 First upload the file to RAMADDA as a regular file entry.
+The IMDV entry can act as a folder so you can upload the file under the IMDV or elsewhere
+in your RAMADDA.
+:p
+Next, select New-&gt;Map File and select the
+map file.
 Then from the IMDV New menu, select "Map". The Map Entry selector will be shown:
 Navigated through your RAMADDA entry hierarchy and select the map file.
 [ht::screenshot images/imdv/newmap.png]
@@ -58,11 +63,80 @@ then a Filters area  will shown. These allow you to toggle on/off the map featur
 this state (through the File/Save menu). 
 [ht::screenshot images/imdv/maplegend.png]
 
-Editing this map glyph (with the <i class="fas fa-cog"></i> link) allows you
-to define a set of style rules based on the feature properties.
-If there is numeric features you can specify a color table to provide fill color for the features.
-Here we've defined a set of styles for the OWN_TYPE_NAME property-
-[ht::screenshot images/imdv/mapstyle.png]
+:p
+There are a number of ways to configure the display of the map file.
+Bring up the map settings with the
+<i class="fas fa-cog" style="color:#ccc;"></i> link.
+:p
+The Popup Text can contain arbitrary HTML as well as macros corresponding to the properties in the map file.
+Note: the source names of the source properties are cleaned up and lower-cased to get the property IDs
+used in these settings.
+:p
+e.g.:
+<pre>
+Some HTML text ${some_property} &lt;br&gt;
+Department: ${department}  &lt;br&gt;
+Code: ${code}
+</pre>
+
+The Misc Properties allows you to control what search properties are shown.
+For example, say your map file has a property called "some_property" as well as
+a number of other properties. To turn off showing any filter enter:
+<pre>
+filter.show=false
+</pre>
+
+If you only want to show the filter for the some_property property then enter:
+<pre>
+filter.show=false
+#form:
+#&lt;property name&lt;.filter.show=true
+#e.g.:
+some_property.filter.show=true
+</pre>
+
+The IMDV guesses as to what type of data is a property and provides an appropriate search widget.
+If you want to force the search widget to be a different type you can enter:
+<pre>
+some_property.filter.type=enumeration
+</pre>
+
+Many times the property name is less then useful as a label. You can specify a label with:
+<pre>
+#&lt;property name&lt;.label=some label
+#e.g.:
+some_property.label=A formatted label
+</pre>
+
+The <b>Style</b> section of the settings dialog lets you specify the standard set of map styles, e.g.,
+stroke color, stroke width, fill color, etc. The <b>Map Style Rules</b> section
+allows you to specify
+:p
+With  <b>Fill Colors</b> checked the map polygons will be colored with a set of categorical colors.
+:p
+The <b>Map value to fill color</b> and <b>Map value to stroke color</b> allows you to specify
+a property that is mapped into a colortable. If it is a numeric property then you can also
+specify a min/max range.
+:p
+The <b>Style Rules</b> allows you to specify specific property value tests mapped to a set of styles.
+Mouse over the styles to see the format
+:p
+The <b>Map Labels</b> section allows you to specify a template (similar to the popup text) for a label
+for each polygon.
+:p
+The <b>Map Style Groups</b>  section allows you to specify one or more groups and the corresponding styles
+for those groups. This enables you to "paint" specific polygons in the map.
+These groups will show up in the legend. Selecting a group in the legend and then selecting
+a polygon in the map will add that polygon to the group.
+:p
+For example, in the below map of fire evacuation zones 2 style groups have been created "Evacuation" and
+"Pre-Evacuation". Selecting on one of those groups in the legend allows you to select specific polygons
+in the map to color those polygons.
+
+[ht::screenshot images/imdv/stylegroup.png]
+
+
+
 
 :br
 :heading Adding an Image
@@ -91,9 +165,7 @@ georeferencing  the image can be inexact.
 
 
 
-
-
-:br
+:p
 :heading Adding a Route
 If your RAMADDA is <a href=/repository/userguide/keys.html#otherapis>enabled</a>
 then a Route glyph type will be shown in the New menu.
