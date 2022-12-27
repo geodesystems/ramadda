@@ -73,6 +73,11 @@ The Edit Menu allows you to select glyphs, cut/copy/paste, etc.
 :heading Adding a Map
 The IMDV supports adding a number of map files - GeoJson, GPX and Shapefile.
 First upload the file to RAMADDA as a regular file entry.
+The IMDV entry can act as a folder so you can upload the file under the IMDV or elsewhere
+in your RAMADDA.
+:p
+Next, select New-&gt;Map File and select the
+map file.
 Then from the IMDV New menu, select "Map". The Map Entry selector will be shown:
 Navigated through your RAMADDA entry hierarchy and select the map file.
 <center><span style='display:inline-block'><center><div><a href="images/imdv/newmap.png"><img  src="images/imdv/newmap.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/newmap.png" ></a></div></center></span></center>
@@ -82,11 +87,80 @@ then a Filters area  will shown. These allow you to toggle on/off the map featur
 this state (through the File/Save menu). 
 <center><span style='display:inline-block'><center><div><a href="images/imdv/maplegend.png"><img  src="images/imdv/maplegend.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/maplegend.png" ></a></div></center></span></center>
 
-Editing this map glyph (with the <i class="fas fa-cog"></i> link) allows you
-to define a set of style rules based on the feature properties.
-If there is numeric features you can specify a color table to provide fill color for the features.
-Here we've defined a set of styles for the OWN_TYPE_NAME property-
-<center><span style='display:inline-block'><center><div><a href="images/imdv/mapstyle.png"><img  src="images/imdv/mapstyle.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/mapstyle.png" ></a></div></center></span></center>
+:p
+There are a number of ways to configure the display of the map file.
+Bring up the map settings with the
+<i class="fas fa-cog" style="color:#ccc;"></i> link.
+:p
+The Popup Text can contain arbitrary HTML as well as macros corresponding to the properties in the map file.
+Note: the source names of the source properties are cleaned up and lower-cased to get the property IDs
+used in these settings.
+:p
+e.g.:
+<pre>
+Some HTML text ${some_property} &lt;br&gt;
+Department: ${department}  &lt;br&gt;
+Code: ${code}
+</pre>
+
+The Misc Properties allows you to control what search properties are shown.
+For example, say your map file has a property called "some_property" as well as
+a number of other properties. To turn off showing any filter enter:
+<pre>
+filter.show=false
+</pre>
+
+If you only want to show the filter for the some_property property then enter:
+<pre>
+filter.show=false
+#form:
+#&lt;property name&lt;.filter.show=true
+#e.g.:
+some_property.filter.show=true
+</pre>
+
+The IMDV guesses as to what type of data is a property and provides an appropriate search widget.
+If you want to force the search widget to be a different type you can enter:
+<pre>
+some_property.filter.type=enumeration
+</pre>
+
+Many times the property name is less then useful as a label. You can specify a label with:
+<pre>
+#&lt;property name&lt;.label=some label
+#e.g.:
+some_property.label=A formatted label
+</pre>
+
+The <b>Style</b> section of the settings dialog lets you specify the standard set of map styles, e.g.,
+stroke color, stroke width, fill color, etc. The <b>Map Style Rules</b> section
+allows you to specify
+:p
+With  <b>Fill Colors</b> checked the map polygons will be colored with a set of categorical colors.
+:p
+The <b>Map value to fill color</b> and <b>Map value to stroke color</b> allows you to specify
+a property that is mapped into a colortable. If it is a numeric property then you can also
+specify a min/max range.
+:p
+The <b>Style Rules</b> allows you to specify specific property value tests mapped to a set of styles.
+Mouse over the styles to see the format
+:p
+The <b>Map Labels</b> section allows you to specify a template (similar to the popup text) for a label
+for each polygon.
+:p
+The <b>Map Style Groups</b>  section allows you to specify one or more groups and the corresponding styles
+for those groups. This enables you to "paint" specific polygons in the map.
+These groups will show up in the legend. Selecting a group in the legend and then selecting
+a polygon in the map will add that polygon to the group.
+:p
+For example, in the below map of fire evacuation zones 2 style groups have been created "Evacuation" and
+"Pre-Evacuation". Selecting on one of those groups in the legend allows you to select specific polygons
+in the map to color those polygons.
+
+<center><span style='display:inline-block'><center><div><a href="images/imdv/stylegroup.png"><img  src="images/imdv/stylegroup.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/stylegroup.png" ></a></div></center></span></center>
+
+
+
 
 :br
 :heading Adding an Image
@@ -115,9 +189,7 @@ georeferencing  the image can be inexact.
 
 
 
-
-
-:br
+:p
 :heading Adding a Route
 If your RAMADDA is <a href=/repository/userguide/keys.html#otherapis>enabled</a>
 then a Route glyph type will be shown in the New menu.
@@ -148,7 +220,30 @@ name. If the name of the entry changes then that will be reflected in the map. T
 by bringing up the properties for the entry marker:
 <center><span style='display:inline-block'><center><div><a href="images/imdv/entrymarker2.png"><img  src="images/imdv/entrymarker2.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/entrymarker2.png" ></a></div></center></span></center>
 
+<a name=glyphs></a>
+An entry marker  for an entry that provides point data can also show a display of
+the most recent record in the data directly within the map. e.g.:
+<center><span style='display:inline-block'><center><div><a href="images/imdv/glyphs1.png"><img  src="images/imdv/glyphs1.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/glyphs1.png" ></a></div></center></span></center>
 
+This  is done by specifiy one or more "glyphs"  in the properties for the marker:
+<center><span style='display:inline-block'><center><div><a href="images/imdv/glyphs2.png"><img  src="images/imdv/glyphs2.png"  style='width:80%;padding:4px;margin:8px;'  alt="images/imdv/glyphs2.png" ></a></div></center></span></center>
+
+The first line as shown above specifies the width and height and fill for the canvas.
+<pre>
+width=120;height=100;fill=#efefef;border=#000
+</pre>
+Each successive line specifes the glyphs.
+The glyphs take the same form as the 
+<a href=wikidisplay2.html#canvas>Canvas Display</a> provides. One way to configure the
+glyphs used in the map is to first add a canvas display directly for the source entry as shown below.
+Right clicking in the display_canvas tag brings up a context menu that has examples
+for the different types of glyphs.
+<pre>
+{{display_canvas  canvasWidth=100 canvasHeight=100  lastRecords=1
+glyph1="type:3dbar,pos:sw,dx:10,dy:-5,height:100,width:8,baseHeight:5,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:50"
+glyph2="type:label,font:6pt,pos:ne,dx:90,dy:-90,label:Temp: ${atmos_temp}" 
+}}
+</pre>
 
 
 The Multi Entry allows you to select some Folder in RAMADDA. All of the geolocated children entries
