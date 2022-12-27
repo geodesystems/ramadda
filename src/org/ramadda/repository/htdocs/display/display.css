@@ -1643,8 +1643,13 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-colortable-dot-item {
     margin-right:8px;
+    padding:2px;
     display: inline-block;
 }
+.display-colortable-dot-item-selected {
+    background:#DCDCDC;
+}
+
 .display-colortable-dot {
     height: 16px;
     width: 16px;
@@ -2896,13 +2901,18 @@ table.dataTable tfoot td {
     border-top:1px solid #dadada;
 }
 
-.image-legend-item-droppable {
+.imdv-legend-item-droppable {
     background:var(--highlight-background);
     border-top:1px solid #000;
 }
 
 .imdv-legend-item-last {
     border-bottom:1px solid #dadada;
+}
+
+.imdv-legend-inner {
+    margin-left:5px;
+    margin-bottom:5px;
 }
 
 .imdv-legend-body {
