@@ -3315,12 +3315,27 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 event.stopPropagation();
             });
         }
+	this.popupObjectTime = new Date();
+	console.log('popup time:' +this.popupObjectTime);
+
         return obj;
     },
     hidePopupObject: function(event) {
+	//check for a hide event right after we set the popup object
+	console.log('hide popup last time:' +this.popupObjectTime);
+	if(this.popupObjectTime) {
+	    let now = new Date();
+	    let diff = now.getTime()-this.popupObjectTime.getTime();
+	    console.log('hide popup time:' +now +" diff:" + diff);
+	    //wait a second?
+	    if(diff<1000) {
+		console.log("too soon");
+		return;
+	    }
+	}
+	this.popupObjectTime=null;
+
         if (this.popupObject) {
-	    console.log('hidePopupObject');
-	    console.trace();
             this.popupObject.hide();
             if(this.popupObject.attr("removeonclose")== "true") {
                 this.popupObject.remove();
