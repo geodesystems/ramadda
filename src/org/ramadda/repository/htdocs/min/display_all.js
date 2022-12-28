@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Dec 28 15:12:23 MST 2022";
+var build_date="RAMADDA build date: Wed Dec 28 15:20:57 MST 2022";
 
 
 
@@ -46237,11 +46237,7 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	}
 
 	if(this.mapLayer && this.mapLayer.features) {
-	    this.mapLayer.features.forEach(f=>{
-		if(f.originalStyle)
-		    f.style = f.originalStyle;
-	    });
-	    ImdvUtils.scheduleRedraw(this.mapLayer);
+	    this.applyMapStyle(true);
 	}
 
 	if(this.children) {
