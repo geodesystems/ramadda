@@ -6431,11 +6431,7 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	}
 
 	if(this.mapLayer && this.mapLayer.features) {
-	    this.mapLayer.features.forEach(f=>{
-		if(f.originalStyle)
-		    f.style = f.originalStyle;
-	    });
-	    ImdvUtils.scheduleRedraw(this.mapLayer);
+	    this.applyMapStyle(true);
 	}
 
 	if(this.children) {

@@ -3306,7 +3306,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         if(this.popupObject) {
-            this.hidePopupObject();
+            this.hidePopupObject(null,true);
         }
         this.popupObject = obj;
         if(!this.popupObject.attr("addedMouseListener")) {
@@ -3320,10 +3320,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         return obj;
     },
-    hidePopupObject: function(event) {
+    hidePopupObject: function(event,skipTimeCheck) {
 	//check for a hide event right after we set the popup object
 	console.log('hide popup last time:' +this.popupObjectTime);
-	if(this.popupObjectTime) {
+	if(!skipTimeCheck && this.popupObjectTime) {
 	    let now = new Date();
 	    let diff = now.getTime()-this.popupObjectTime.getTime();
 	    console.log('hide popup time:' +now +" diff:" + diff);
@@ -3901,7 +3901,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     toggleDialogs:{},
     makeDialog: function(args) {
-        HtmlUtils.hidePopupObject();
+        HtmlUtils.hidePopupObject(null,true);
         let opts  = {
             modal:false,
             modalContentsCss:"",
