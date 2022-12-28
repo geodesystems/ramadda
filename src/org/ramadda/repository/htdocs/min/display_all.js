@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 27 19:37:26 MST 2022";
+var build_date="RAMADDA build date: Wed Dec 28 13:50:19 MST 2022";
 
 
 
@@ -42055,6 +42055,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+='<div class=ramadda-menu-divider></div>';
 	    html+= HU.href(ramaddaBaseUrl+'/userguide/imdv.html','Help',['target','_help']);
 	    html  = this.makeMenu(html);
+	    console.log('creating file menu');
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 
 	    this.jq(ID_NAVIGATE).click(function() {
@@ -42167,6 +42168,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    html+="</tr></table>";
 	    html  = this.makeMenu(html);
+	    console.log('creating new menu');
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 	    this.glyphTypes.forEach(g=>{
 		this.jq("menunew_" + g.type).click(function(){
@@ -42197,6 +42199,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
 			},'');
 	    
+	    console.log('creating edit menu');
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
 	    this.jq(ID_CUT).click(()=>{
 		HtmlUtils.hidePopupObject();
