@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Dec 28 13:55:35 MST 2022";
+var build_date="RAMADDA build date: Wed Dec 28 15:04:05 MST 2022";
 
 
 
@@ -23650,7 +23650,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    items.removeClass('display-menu-button-item-on');
 		    items.attr('style',buttonStyle);		    
 		    items.removeClass('display-menu-button-item-on');
-		    $(this).addClass('display-menu-tab-button-on');
+		    $(this).addClass('display-menu-button-button-on');
 		    $(this).attr('style',buttonStyle+buttonStyleOn);
 		    _this.propagateEventRecordSelection({record: record});
 		});
@@ -45325,6 +45325,7 @@ MapGlyph.prototype = {
 	    });
 	}
 
+
 	let featureFilters = this.attrs.featureFilters ??{};
 	let rangeFilters = [];
 	let stringFilters =[];
@@ -45384,6 +45385,15 @@ MapGlyph.prototype = {
 	    this.display.addFeatures(this.mapPoints);
 	}
 
+	//Apply the base style here
+	this.mapLayer.style = style;
+	features.forEach((f,idx)=>{
+	    f.style = $.extend({},style);
+	    f.originalStyle = $.extend({},style);			    
+	});
+
+
+	//Check for any rule based styles
 	let attrs = features.length>0?features[0].attributes:{};
 	let keys  = Object.keys(attrs);
 	if(rules && rules.length>0) {
@@ -45392,12 +45402,8 @@ MapGlyph.prototype = {
 	    features.forEach((f,idx)=>{f.style = null;});
 	} 
 
-	this.mapLayer.style = style;
-	features.forEach((f,idx)=>{
-	    f.style = $.extend({},style);
-	    f.originalStyle = $.extend({},style);			    
-	});
 	
+
 	let applyColors = (obj,attr,strings)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
 	    let prop =obj.property;
