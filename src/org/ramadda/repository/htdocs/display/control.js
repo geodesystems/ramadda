@@ -1120,7 +1120,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    items.removeClass('display-menu-button-item-on');
 		    items.attr('style',buttonStyle);		    
 		    items.removeClass('display-menu-button-item-on');
-		    $(this).addClass('display-menu-tab-button-on');
+		    $(this).addClass('display-menu-button-button-on');
 		    $(this).attr('style',buttonStyle+buttonStyleOn);
 		    _this.propagateEventRecordSelection({record: record});
 		});

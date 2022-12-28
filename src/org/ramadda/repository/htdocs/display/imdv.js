@@ -5519,6 +5519,7 @@ MapGlyph.prototype = {
 	    });
 	}
 
+
 	let featureFilters = this.attrs.featureFilters ??{};
 	let rangeFilters = [];
 	let stringFilters =[];
@@ -5578,6 +5579,15 @@ MapGlyph.prototype = {
 	    this.display.addFeatures(this.mapPoints);
 	}
 
+	//Apply the base style here
+	this.mapLayer.style = style;
+	features.forEach((f,idx)=>{
+	    f.style = $.extend({},style);
+	    f.originalStyle = $.extend({},style);			    
+	});
+
+
+	//Check for any rule based styles
 	let attrs = features.length>0?features[0].attributes:{};
 	let keys  = Object.keys(attrs);
 	if(rules && rules.length>0) {
@@ -5586,12 +5596,8 @@ MapGlyph.prototype = {
 	    features.forEach((f,idx)=>{f.style = null;});
 	} 
 
-	this.mapLayer.style = style;
-	features.forEach((f,idx)=>{
-	    f.style = $.extend({},style);
-	    f.originalStyle = $.extend({},style);			    
-	});
 	
+
 	let applyColors = (obj,attr,strings)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
 	    let prop =obj.property;
