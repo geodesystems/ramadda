@@ -3316,22 +3316,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             });
         }
 	this.popupObjectTime = new Date();
-	console.log('popup time:' +this.popupObjectTime);
-
+//	console.log('popup time:' +this.popupObjectTime);
         return obj;
     },
     hidePopupObject: function(event,skipTimeCheck) {
 	//check for a hide event right after we set the popup object
-	console.log('hide popup last time:' +this.popupObjectTime);
 	if(!skipTimeCheck && this.popupObjectTime) {
 	    let now = new Date();
 	    let diff = now.getTime()-this.popupObjectTime.getTime();
-	    console.log('hide popup time:' +now +" diff:" + diff);
 	    //wait a second?
 	    if(diff<1000) {
-		console.log("too soon");
+		console.log('hide popup time  - too soon - diff:' + diff);
 		return;
 	    }
+	    console.log('hide popup time - ok - diff:' + diff);
 	}
 	this.popupObjectTime=null;
 

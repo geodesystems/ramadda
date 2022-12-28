@@ -2248,7 +2248,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+='<div class=ramadda-menu-divider></div>';
 	    html+= HU.href(ramaddaBaseUrl+'/userguide/imdv.html','Help',['target','_help']);
 	    html  = this.makeMenu(html);
-	    console.log('creating file menu');
+//	    console.log('creating file menu');
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 
 	    this.jq(ID_NAVIGATE).click(function() {
@@ -2361,7 +2361,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    html+="</tr></table>";
 	    html  = this.makeMenu(html);
-	    console.log('creating new menu');
+//	    console.log('creating new menu');
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 	    this.glyphTypes.forEach(g=>{
 		this.jq("menunew_" + g.type).click(function(){
@@ -2392,7 +2392,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    return prev + 	this.menuItem(this.domId(tuple[0]),tuple[1],tuple[2]);
 			},'');
 	    
-	    console.log('creating edit menu');
+//	    console.log('creating edit menu');
 	    this.dialog = HU.makeDialog({content:this.makeMenu(html),anchor:button});
 	    this.jq(ID_CUT).click(()=>{
 		HtmlUtils.hidePopupObject();
@@ -3428,6 +3428,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let control = new OpenLayers.Control();
 	    let callbacks = {
 		keydown: function(event) {
+		    console.log('key down:' + event.key);
 		    HtmlUtils.hidePopupObject();
 		    if(event.key=='Escape') {
 			_this.clearCommands();
@@ -5053,12 +5054,12 @@ MapGlyph.prototype = {
 	    let tt = "";
 	    let value = jqid('mapvalue_' + index).val();
 	    let wrapper = jqid('mapvaluewrapper_' + index);
-	    if(info.isNumeric) {
+	    if(info.isNumeric()) {
 		wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		tt=info.min +" - " + info.max;
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.samples, ", ");
-		if(info.isEnum) {
+		if(info.isEnumeration()) {
 		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value));
 		} else {
 		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
@@ -5115,8 +5116,8 @@ MapGlyph.prototype = {
 	let attrs = this.mapLayer.features[0].attributes;
 	let featureInfo = this.featureInfo = this.getFeatureInfo();
 	let keys  = Object.keys(featureInfo);
-	let numeric = featureInfo.filter(info=>{return info.isNumeric;});
-	let enums = featureInfo.filter(info=>{return info.isEnum;});
+	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
+	let enums = featureInfo.filter(info=>{return info.isEnumeration();});
 	let colorBy = '';
 	colorBy+=HU.checkbox(this.domId('fillcolors'),['id',this.domId('fillcolors')],
 			     this.attrs.fillColors,'Fill Colors')+'<br>';
@@ -5142,9 +5143,9 @@ MapGlyph.prototype = {
 	featureInfo.forEach(info=>{
 	    let seen ={};
 	    let list =[];
-	    if(info.isNumeric) {
+	    if(info.isNumeric()) {
 		ex+=HU.b(info.property)+': ' +  info.min +' - ' + info.max+'<br>';
-	    } else if(info.isEnum) {
+	    } else if(info.isEnumeration()) {
 		ex+=HU.b(info.property)+': ' +  Utils.join(info.samples,', ') +'<br>';
 	    } else {
 		ex+=HU.b(info.property)+': ' +  Utils.join(info.samples,', ') +'<br>';
@@ -5169,12 +5170,12 @@ MapGlyph.prototype = {
 	    let title = sample;
 	    let valueInput;
 	    if(info) {
-		if(info.isNumeric)
+		if(info.isNumeric())
 		    title=info.min +' - ' + info.max;
 		else if(info.samples.length)
 		    title = Utils.join(info.samples, ', ');
 	    }
-	    if(info?.isEnum) {
+	    if(info?.isEnumeration()) {
 		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value); 
 	    } else {
 		valueInput = HU.input('',value,['id','mapvalue_' + index,'size','15']);
@@ -5271,7 +5272,6 @@ MapGlyph.prototype = {
 		min:Number.MAX_VALUE,
 		max:Number.MIN_VALUE,
 		type:'',
-
 		getId:function() {
 		    return this.id;
 		},
@@ -5289,7 +5289,7 @@ MapGlyph.prototype = {
 		isNumeric:function(){return this.getType()=='numeric';},
 		isInt:function() {return this.getType()=='int';},
 		isString:function() {return this.getType()=='string';},
-		isEnum:function() {return this.getType()=='enumeration';},
+		isEnumeration:function() {return this.getType()=='enumeration';},
 		seen:{},
 		samples:[]
 	    });		
@@ -5310,8 +5310,7 @@ MapGlyph.prototype = {
 		    } else {
 			info.type='string';
 		    }
-		}
-		if(!isNaN(value)) {
+		} else if(!isNaN(value)) {
 		    info.type='int';
 		    if(Math.round(value)!=value) {
 			info.type = 'numeric';
@@ -5321,7 +5320,6 @@ MapGlyph.prototype = {
 		}
 	    });
 	});
-
 
 	this.featureInfo = keyInfo;
 	this.featureInfoMap = {};
