@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Dec 28 13:50:19 MST 2022";
+var build_date="RAMADDA build date: Wed Dec 28 13:55:35 MST 2022";
 
 
 
@@ -23619,7 +23619,6 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		this.idToRecord = {};
 		let count = 0;
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
-		console.log('max:'+ maxPerRow);
 		let html = '';
 		if(maxPerRow>=0) {
 		    html=HU.open('div',['style','text-align:center;']);
