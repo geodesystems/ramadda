@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 27 10:01:36 MST 2022";
+var build_date="RAMADDA build date: Tue Dec 27 19:37:26 MST 2022";
 
 
 
@@ -23574,6 +23574,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	{p:'menuLabel',ex:''},
 	{p:'showArrows',d:false,ex:true},
 	{p:'showButtons',d:false,ex:true},
+	{p:'maxPerRow',tt:'When showing buttons how many buttons per row',ex:6},	
 	{p:'buttonStyle',d:''},
 	{p:'buttonStyleOn',d:''},	
     ];
@@ -23616,14 +23617,33 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let buttonStyleOn = this.getButtonStyleOn();		
 		let tabs = [];
 		this.idToRecord = {};
+		let count = 0;
+		let maxPerRow  = this.getProperty('maxPerRow',-1);
+		console.log('max:'+ maxPerRow);
+		let html = '';
+		if(maxPerRow>=0) {
+		    html=HU.open('div',['style','text-align:center;']);
+		}
 		this.records.forEach((record,idx)=>{
+		    if(maxPerRow>=0) {
+			count++;
+			if(count>maxPerRow) {
+			    count=1;
+			    //Add a spacer
+			    tabs.push('<div style=\'margin-top:4px;\'></div>');
+			}
+		    }
 		    let label = this.getRecordHtml(record, null, labelTemplate);
 		    let style = buttonStyle;
 		    if(idx==0) style+=buttonStyleOn;
-		    tabs.push(HU.div(['class','display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),'style',style,RECORD_ID,record.getId()], label));
+		    tabs.push(HU.span(['class','display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),'style',style,RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;
 		});
-		this.setContents(Utils.join(tabs,""));
+		html+=Utils.join(tabs,"");
+		if(maxPerRow>=0) {
+		    html+=HU.close('div');
+		}
+		this.setContents(html);
 		let items = this.getContents().find('.display-menu-button-item');
 		items.click(function() {
 		    if($(this).hasClass('display-menu-button-item-on')) return;
@@ -44131,7 +44151,15 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.features.length) {
+	if(this.children) {
+	    let features = [];
+	    this.children.forEach(child=>{
+		child.collectFeatures(features);
+	    });
+	    if(features.length) {
+		this.display.getMap().centerOnFeatures(features);
+	    }
+	} else 	if(this.features.length) {
 	    this.display.getMap().centerOnFeatures(this.features);
 	} else if(this.mapLayer) {
 	    this.display.getMap().zoomToLayer(this.mapLayer);
@@ -44149,6 +44177,15 @@ MapGlyph.prototype = {
 	    this.display.getMap().setZoom(16);
 	}
 
+    },
+    collectFeatures: function(features) {
+	if(this.children) {
+	    this.children.forEach(child=>{
+		child.collectFeatures(features);
+	    });
+	} else 	if(this.features.length) {
+	    features.push(...this.features);
+	}
     },
     getGeometry: function() {
 	if(this.features.length>0) return this.features[0].geometry;
