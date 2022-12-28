@@ -1089,7 +1089,6 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		this.idToRecord = {};
 		let count = 0;
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
-		console.log('max:'+ maxPerRow);
 		let html = '';
 		if(maxPerRow>=0) {
 		    html=HU.open('div',['style','text-align:center;']);
