@@ -3319,6 +3319,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     hidePopupObject: function(event) {
         if (this.popupObject) {
+	    console.log('hidePopupObject');
+	    console.trace();
             this.popupObject.hide();
             if(this.popupObject.attr("removeonclose")== "true") {
                 this.popupObject.remove();
