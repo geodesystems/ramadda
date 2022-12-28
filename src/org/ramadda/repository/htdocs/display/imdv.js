@@ -4344,7 +4344,15 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.features.length) {
+	if(this.children) {
+	    let features = [];
+	    this.children.forEach(child=>{
+		child.collectFeatures(features);
+	    });
+	    if(features.length) {
+		this.display.getMap().centerOnFeatures(features);
+	    }
+	} else 	if(this.features.length) {
 	    this.display.getMap().centerOnFeatures(this.features);
 	} else if(this.mapLayer) {
 	    this.display.getMap().zoomToLayer(this.mapLayer);
@@ -4362,6 +4370,15 @@ MapGlyph.prototype = {
 	    this.display.getMap().setZoom(16);
 	}
 
+    },
+    collectFeatures: function(features) {
+	if(this.children) {
+	    this.children.forEach(child=>{
+		child.collectFeatures(features);
+	    });
+	} else 	if(this.features.length) {
+	    features.push(...this.features);
+	}
     },
     getGeometry: function() {
 	if(this.features.length>0) return this.features[0].geometry;
