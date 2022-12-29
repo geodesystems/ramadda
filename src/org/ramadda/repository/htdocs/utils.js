@@ -3326,10 +3326,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let diff = now.getTime()-this.popupObjectTime.getTime();
 	    //wait a second?
 	    if(diff<1000) {
-		console.log('hide popup time  - too soon - diff:' + diff);
+//		console.log('hide popup time  - too soon - diff:' + diff);
 		return;
 	    }
-	    console.log('hide popup time - ok - diff:' + diff);
+//	    console.log('hide popup time - ok - diff:' + diff);
 	}
 	this.popupObjectTime=null;
 
@@ -3726,8 +3726,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HtmlUtils.div(["style", style], html);
 
     },
+    makeAccordionHtml(list) {
+	let id = HU.getUniqueId('accordion_');
+	let html = HU.open('div',['class','ui-accordion ui-widget ui-helper-reset','id',id]);
+	html+='\n';
+	list.forEach(item=>{
+	    html+=HU.tag('h3',['class','ui-accordion-header ui-helper-reset ui-corner-top','style','border:0px;background:none;'],
+			 HU.href('#',HU.span(['class','ramadda-clickable'],item.header)));
+	    html+=HU.div(['id',HU.getUniqueId('accordion_'),'class','ramadda-accordion-contents'],item.contents);
+	html+='\n';
+	})
+	html+='\n';
+	html+='</div>';
+	html+='\n';
+	return {id:id,contents:html};
+    },
     makeAccordion: function(id, args) {
-        if(args == null) args = {};
+        if(args == null) args = {heightStyle: "content", collapsible: true, active: 0, decorate: false, animate:200};
 	var icons = {
             header: "iconClosed",    // custom icon class
             activeHeader: "iconOpen" // custom icon class
