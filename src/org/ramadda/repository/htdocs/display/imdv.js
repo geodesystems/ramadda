@@ -1,4 +1,4 @@
-/**
+a/**
    Copyright 2008-2023 Geode Systems LLC
 */
 
@@ -3428,6 +3428,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let control = new OpenLayers.Control();
 	    let callbacks = {
 		keydown: function(event) {
+		    if(event.key=='MediaTrackPrevious') return;
 		    console.log('key down:' + event.key);
 		    HtmlUtils.hidePopupObject();
 		    if(event.key=='Escape') {
