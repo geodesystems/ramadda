@@ -2939,6 +2939,13 @@ table.dataTable tfoot td {
     margin-left:10px;
 }
 
+.imdv-side-help {
+    font-style:italic;
+    max-height:400px;
+    margin-left:10px;
+    overflow-y:auto
+}
+
 .imdv-stylegroup {
     border-bottom:1px solid transparent;
     border-top:1px solid transparent;
