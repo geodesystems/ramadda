@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Dec 28 16:03:27 MST 2022";
+var build_date="RAMADDA build date: Wed Dec 28 19:04:15 MST 2022";
 
 
 
@@ -39804,7 +39804,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 
 
 
-/**
+a/**
    Copyright 2008-2023 Geode Systems LLC
 */
 
@@ -43234,6 +43234,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let control = new OpenLayers.Control();
 	    let callbacks = {
 		keydown: function(event) {
+		    if(event.key=='MediaTrackPrevious') return;
 		    console.log('key down:' + event.key);
 		    HtmlUtils.hidePopupObject();
 		    if(event.key=='Escape') {
