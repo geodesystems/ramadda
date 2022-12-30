@@ -313,8 +313,8 @@ new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${
 new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/tile/mbt/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
 
 new MapLayer('usgs.topo','USGS Topo','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',{attribution:'USGS - The National Map'});
-new MapLayer('google.terrain','Google Maps - Terrain','http://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}');
-new MapLayer('google.satellite','Google Maps - Satellite','http://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}');
+new MapLayer('google.terrain','Google Maps - Terrain','https://mt0.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}');
+new MapLayer('google.satellite','Google Maps - Satellite','https://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}');
 new MapLayer('naip','NAIP Imagery','https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map from Caltopo'});
 new MapLayer('usgs.imagery','USGS Imagery','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
 new MapLayer('esri.shaded','ESRI Shaded Relief','https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}');
@@ -325,9 +325,10 @@ new MapLayer('shadedrelief','Shaded Relief','https://caltopo.com/tile/hs_m315z45
 new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
 new MapLayer('historic','Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map from Caltopo',isOverlay:true});
 new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec'});
-new MapLayer('osm.toner','OSM-Toner','http://a.tile.stamen.com/toner/${z}/${x}/${y}.png');
-new MapLayer('osm.toner.lite','OSM-Toner Lite','http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png');
-new MapLayer('watercolor','Watercolor','http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg');
+new MapLayer('osm.toner','OSM-Toner','https://stamen-tiles.a.ssl.fastly.net/toner/${z}/${x}/${y}.png');
+new MapLayer('osm.toner.lite','OSM-Toner Lite','https://stamen-tiles.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png');
+new MapLayer('cartolight','Carto-Light','https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png');
+new MapLayer('watercolor','Watercolor','https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.png');
 new MapLayer('lightblue','','',{type:'simple'});
 new MapLayer('blue','','',{type:'simple'});
 new MapLayer('white','','',{type:'simple'});
@@ -3048,7 +3049,21 @@ RepositoryMap.prototype = {
 	if(this.params.scrollToZoom) {
 	    //	$("#"+this.mapDivId+"_themap").attr('tabindex','1');
 	    const el = document.querySelector("#"+this.mapDivId+"_themap");
+	    this.checkedBaseLayerDiv = false;
+	    //A big hack. We want to not pass the wheel event up to the main
+	    //view because then not only do we zoom in the map we also scroll
+	    //the page. Howwever, when the layer switcher is popped up
+	    //we want to catch the wheel event so we can scroll
 	    el.onwheel = (event)=>{
+		if(!this.baseLayerDiv) {
+		    let div = $('#'+this.mapDivId).find('.layersDiv');		    
+		    if(div.length>0) {
+			this.baseLayerDiv = div;
+		    }
+		}
+		if(this.baseLayerDiv && this.baseLayerDiv.is(':visible')) {
+		    return;
+		}
 		event.preventDefault();
 	    };
 	}
