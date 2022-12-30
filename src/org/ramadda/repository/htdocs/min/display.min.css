@@ -2887,7 +2887,6 @@ table.dataTable tfoot td {
     min-width:200px;
     max-width:200px;    
     width:200px;
-    max-height:400px;
     overflow-y:auto;
     border-bottom:1px solid #dadada;
 }
@@ -2923,6 +2922,11 @@ table.dataTable tfoot td {
 
 .imdv-legend-label {
     user-select:none;
+}
+
+.imdv-legend-text {
+    max-height:100px;
+    overflow-y:auto;
 }
 
 .imdv-legend-label-invisible {

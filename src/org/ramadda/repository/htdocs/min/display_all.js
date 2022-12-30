@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec 29 20:40:58 MST 2022";
+var build_date="RAMADDA build date: Fri Dec 30 11:57:06 MST 2022";
 
 
 
@@ -40163,6 +40163,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND = 'legend';
     const ID_MAP_PROPERTIES = 'mapproperties';
 
+
+
+
     if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
 	properties.showOpacitySlider=true; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
@@ -42001,7 +42004,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props) props="";
 	    
 
-	    let lines = ['legendWidth=400','legendLabel=Some label','showAddress=true','showFilters=false','showFiltersToggle=false','showButtons=false'];
+	    let lines = ['legendWidth=400','legendLabel=Some label','showAddress=true','filter.show=false','filter.toggle.show=false','showButtons=false'];
 	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
 			  contents:
@@ -42937,7 +42940,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html = HU.div([],legendLabel)+html;
 	    }
 	    if(html!="") {
-		html  = HU.div(['class','imdv-legend','style',HU.css('max-width',legendWidth+'px','width',legendWidth+'px')],html);
+		let height= this.getProperty('height');
+		let css  = HU.css('max-width',legendWidth+'px','width',legendWidth+'px');
+		if(height) css+=HU.css('height',height);
+		let attrs = ['class','imdv-legend','style',css]
+		html  = HU.div(attrs,html);
 	    }
 	    this.jq(ID_LEGEND).html(html);
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
@@ -43808,86 +43815,88 @@ MapGlyph.prototype = {
 	return null;
     },
     addToPropertiesDialog:function(content,style) {
-	let html="";
+	let html='';
 	let layout = (lbl,widget)=>{
-	    html+=HU.b(lbl)+"<br>"+widget+"<br>";
+	    html+=HU.b(lbl)+'<br>'+widget+'<br>';
 	}
-	let nameWidget = HU.input("",this.getName(),['id',this.display.domId('mapglyphname'),'size','40']);
+	let nameWidget = HU.input('',this.getName(),['id',this.domId('mapglyphname'),'size','40']);
 	if(this.isEntry()) {
-	    nameWidget+="<br>" +HU.checkbox(this.display.domId("useentryname"),[],this.getUseEntryName(),"Use name from entry");
-	    nameWidget+=HU.space(3) +HU.checkbox(this.display.domId("useentrylocation"),[],this.getUseEntryLocation(),"Use location from entry");
+	    nameWidget+='<br>' +HU.checkbox(this.domId('useentryname'),[],this.getUseEntryName(),'Use name from entry');
+	    nameWidget+=HU.space(3) +HU.checkbox(this.domId('useentrylocation'),[],this.getUseEntryLocation(),'Use location from entry');
 	}
-	html+=HU.b("Name: ") +nameWidget+'<br>';
+	html+=HU.b('Name: ') +nameWidget+'<br>';
 	if(this.isEntry()) {
-	    layout("Glyphs:</b> <a target=_help href=https://ramadda.org/repository/userguide/imdv.html#glyphs>Help</a><b>",
-		   HU.textarea("",this.getEntryGlyphs()??"",[ID,this.display.domId("entryglyphs"),"rows",5,"cols", 90]));
+	    layout('Glyphs:</b> <a target=_help href=https://ramadda.org/repository/userguide/imdv.html#glyphs>Help</a><b>',
+		   HU.textarea('',this.getEntryGlyphs()??'',[ID,this.domId('entryglyphs'),'rows',5,'cols', 90]));
 	    /*
-	      glyph1="type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100"
-	      glyph2="type:label,pos:sw,dx:25,dy:0,label:${atmos_temp}"
+	      glyph1='type:gauge,color:red,pos:sw,width:50,height:50,dx:20,dy:-30,sizeBy:atmos_temp,sizeByMin:0,sizeByMax:100'
+	      glyph2='type:label,pos:sw,dx:25,dy:0,label:${atmos_temp}'
 	    */
 	}
 
 	let level = this.getVisibleLevelRange()??{};
-	html+= HU.checkbox(this.display.domId("visible"),[],this.getVisible(),"Visible")+"<br>";
+	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')+'<br>';
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 	
-	let domId = this.display.domId("glyphedit_" + 'popupText');
+	let domId = this.display.domId('glyphedit_popupText');
 	let featureInfo = this.getFeatureInfo();
 	let lines = ['${default}'];
 	lines = Utils.mergeLists(['default'],featureInfo.map(info=>{return info.id;}));
 
 	let propsHelp =this.display.makeSideHelp(lines,domId,{prefix:'${',suffix:'}'});
-	html+=HU.leftRightTable(HU.b("Popup Text:"),
+	html+=HU.leftRightTable(HU.b('Popup Text:'),
 				this.getHelp('#popuptext'));
 	let help = 'Add macro:'+ HU.div(['class','imdv-side-help'],propsHelp);
-	html+= HU.hbox([HU.textarea("",style.popupText??"",[ID,domId,"rows",8,"cols", 40]),HU.space(2),help]);
+	html+= HU.hbox([HU.textarea('',style.popupText??'',[ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
+
+	html+=HU.b('Legend Text:') +'<br>' +
+	    HU.textarea('',this.attrs.legendText??'',
+			[ID,this.domId('legendtext'),'rows',4,'cols', 40]);
 	
 	if(this.isMultiEntry()) {
 	    html+='<br>';
-	    html+= HU.checkbox(this.display.domId("showmultidata"),[],this.getShowMultiData(),'Show entry data');
+	    html+= HU.checkbox(this.domId('showmultidata'),[],this.getShowMultiData(),'Show entry data');
 	}
 
-	content.push({header:"Properties",contents:html});
+	content.push({header:'Properties',contents:html});
 
 	html=  this.getHelp('#miscproperties')+'<br>';
-	let miscLines =['showFilters=false',
+	let miscLines =['filter.show=false',
 			'&lt;property&gt;.filter.show=true',
 			'&lt;property&gt;.label=Some label',
-			'showZoomOnChange=false','showFiltersToggle=false'];
-	let miscHelp =this.display.makeSideHelp(miscLines,this.display.domId("miscproperties"),{suffix:'\n'});
+			'filter.zoomonchange.show=false','filter.toggle.show=false'];
+	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),{suffix:'\n'});
 	let ex = 'Add property:' + miscHelp;
 
-	html += HU.hbox([HU.textarea("",this.attrs.properties??"",[ID,this.display.domId("miscproperties"),"rows",6,"cols", 40]),
+	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',6,'cols', 40]),
 			 HU.space(2),ex]);
-	content.push({header:'Miscellaneous Properties',contents:html});
+	content.push({header:'Settings',contents:html});
 
 
     },
     applyPropertiesDialog:function() {
-	let jq = name=>{
-	    return this.display.jq(name);
-	}
 	if(this.isMultiEntry()) {
-	    this.setShowMultiData(jq("showmultidata").is(':checked'));
+	    this.setShowMultiData(this.jq("showmultidata").is(':checked'));
 	}
 	//Make sure we do this after we set the above style properties
-	this.setName(jq("mapglyphname").val());
+	this.setName(this.jq("mapglyphname").val());
+	this.attrs.legendText = this.jq('legendtext').val();
 	if(this.isEntry()) {
-	    this.setUseEntryName(jq("useentryname").is(":checked"));
-	    this.setUseEntryLabel(jq("useentrylabel").is(":checked"));
-	    this.setUseEntryLocation(jq("useentrylocation").is(":checked"));
-	    let glyphs = jq("entryglyphs").val();
+	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
+	    this.setUseEntryLabel(this.jq("useentrylabel").is(":checked"));
+	    this.setUseEntryLocation(this.jq("useentrylocation").is(":checked"));
+	    let glyphs = this.jq("entryglyphs").val();
 	    this.setEntryGlyphs(glyphs);
 	    this.applyEntryGlyphs();
 	}
 	
 
-	this.setVisible(jq("visible").is(":checked"),true);
+	this.setVisible(this.jq("visible").is(":checked"),true);
 	this.parsedProperties = null;
-	this.attrs.properties = jq('miscproperties').val();
-	this.setVisibleLevelRange(jq("minlevel").val().trim(),
-				      jq("maxlevel").val().trim());
-	this.setShowMarkerWhenNotVisible(jq('showmarkerwhennotvisible').is(':checked'));
+	this.attrs.properties = this.jq('miscproperties').val();
+	this.setVisibleLevelRange(this.display.jq("minlevel").val().trim(),
+				      this.display.jq("maxlevel").val().trim());
+	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
     },
     featureSelected:function(feature,layer,event) {
 	if(this.selectedStyleGroup) {
@@ -44483,6 +44492,10 @@ MapGlyph.prototype = {
 	if(buttons!='')
 	    body+=HU.div(['class','imdv-legend-offset'],buttons);
 //	    body+=HU.center(buttons);
+	if(Utils.stringDefined(this.attrs.legendText)) {
+	    let text = this.attrs.legendText.replace(/\n/g,'<br>');
+	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
+	}
 
 	if(this.isMap()) {
 	    let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
@@ -44520,7 +44533,7 @@ MapGlyph.prototype = {
 			let type = rule.type;
 			if(type=='==') type='=';
 			type = type.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-			rulesLegend+= HU.b(this.display.makeLabel(rule.property))+' ' +type+'<br><table width=100%>';
+			rulesLegend+= HU.b(this.makeLabel(rule.property,true))+' ' +type+'<br><table width=100%>';
 		    }
 		    lastProperty  = propOp;
 		    let label = rule.value;
@@ -44955,7 +44968,8 @@ MapGlyph.prototype = {
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.samples, ", ");
 		if(info.isEnumeration()) {
-		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value));
+		    items = info.samples;
+		    wrapper.html(HU.select("",['id','mapvalue_' + index],items,value));
 		} else {
 		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		}
@@ -44970,23 +44984,28 @@ MapGlyph.prototype = {
 	let columns;
 	let table = HU.openTag('table',['style','','id',id,'table-ordering','true','table-searching','true','table-height','400px','class','stripe rowborder ramadda-table'])
 	this.featureTableMap = {};
-	this.mapLayer.features.forEach((feature,idx)=>{
+	this.mapLayer.features.forEach((feature,rowIdx)=>{
 	    let attrs = feature.attributes;
 	    if(columns==null) {
 		columns = Object.keys(attrs).filter(c=>{
 		    return this.display.showFeatureProperty(c);
 		});
 		table+='<thead><tr>';
-		columns.forEach(column=>{
-		    table+=HU.tag('th',['title',column],this.display.makeLabel(column));
+		columns.forEach((column,idx)=>{
+		    table+=HU.tag('th',[],this.makeLabel(column,true));
 		});
 		table+=HU.close('tr','thead','tbody');
 	    }
-	    this.featureTableMap[idx] =feature;
-	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', idx,'class','imdv-feature-table-row ramadda-clickable']);
-	    columns.forEach(column=>{
-		let v = attrs[column];
+	    this.featureTableMap[rowIdx] =feature;
+	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', rowIdx,'class','imdv-feature-table-row ramadda-clickable']);
+	    columns.forEach((column,idx)=>{
+		let v = attrs[column]??'';
 		if(Utils.isDefined(v.value)) v = v.value;
+		v = String(v);
+		//Check for html. Maybe just convert to entities?
+		if(v.indexOf('<')>=0) {
+		    v = Utils.stripTags(v);
+		}
 		table+=HU.tag('td',[],v);
 	    });
 	});
@@ -45186,7 +45205,9 @@ MapGlyph.prototype = {
 		    return this.id;
 		},
 		showFilter: function() {
-		    return _this.getProperty(this.id+'.filter.show',_this.getProperty('filter.show',true));
+		    let v =  _this.getProperty(this.id+'.filter.show',_this.getProperty('filter.show',true));
+//		    console.log(this.id+' ' + v);
+		    return v;
 		},
 		showTable: function() {
 		    return _this.getProperty(this.id+'.table.show',_this.getProperty('table.show',true));
@@ -45248,7 +45269,7 @@ MapGlyph.prototype = {
 	} else {
 	    label =  this.display.makeLabel(l);
 	}
-	if(makeSpan) label = HU.span(['title',l], label);
+	if(makeSpan) label = HU.span(['title','aka:' +id], label);
 	return label;
     },
 
@@ -45276,7 +45297,9 @@ MapGlyph.prototype = {
 	let filters = this.attrs.featureFilters = this.attrs.featureFilters ??{};
 
 	featureInfo.forEach(info=>{
-	    if(!info.showFilter()) return;
+	    if(!info.showFilter()) {
+		return;
+	    }
 	    let filter = filters[info.property] = filters[info.property]??{};
 	    let id = info.getId();
 	    let label = HU.span(['title',info.property],HU.b(this.makeLabel(info.property,true)))
@@ -45291,8 +45314,14 @@ MapGlyph.prototype = {
 	    if(info.samples.length)  {
 		filter.type="enum";
 		if(info.samples.length>1) {
+		    let items = info.samples.map(item=>{
+			return {value:item,label:Utils.makeLabel(item)};
+		    });
+		    items = items.sort((a,b)=>{
+			return a.label.localeCompare(b.label);
+		    });
 		    enums+=label+":<br>" +
-			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
+			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],items,filter.enumValues,50)+"<br>";
 
 		}
 		return;
@@ -45318,6 +45347,7 @@ MapGlyph.prototype = {
 	    sliders = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],sliders);
 	let widgets = enums+sliders+strings;
 
+
 	if(widgets!="") {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
@@ -45326,27 +45356,25 @@ MapGlyph.prototype = {
 		    this.panMapTo();
 		}
 	    };
-	    let clearAll = HU.span(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
+	    let clearAll = HU.span(['style','margin-right:5px;','class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 
 	    this.zoomonchangeid = HU.getUniqueId("andzoom");
 
 	    widgets = HU.div(['style','padding-bottom:5px;max-height:200px;overflow-y:auto;'], widgets);
 	    let filtersHeader ='';
-	    if(this.getProperty('showZoomOnChange',true)) {
+	    if(this.getProperty('filter.zoomonchange.show',true)) {
 		filtersHeader = HU.checkbox(this.zoomonchangeid,['id',this.zoomonchangeid],this.getZoomOnChange(),"Zoom on change");
 	    }
 	    filtersHeader = HU.leftRightTable(filtersHeader, clearAll);
 
-	    if(this.getProperty("showFilters",true)) {
-		if(this.getProperty('showFiltersToggle',true)) {
-		    let toggle = HU.toggleBlockNew('Filters',filtersHeader + widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
-		    this.jq(ID_MAPFILTERS).html(HU.div(['style','margin-right:5px;'],toggle.header+toggle.body));
-		    HU.initToggleBlock(this.jq(ID_MAPFILTERS),(id,visible)=>{this.setFiltersVisible(visible);});
-		} else  {
-		    this.jq(ID_MAPFILTERS).html(HU.div(['style','margin-right:5px;'],filtersHeader  + 
-						       widgets));
-		    this.setFiltersVisible(true);		    
-		}
+	    if(this.getProperty('filter.toggle.show',true)) {
+		let toggle = HU.toggleBlockNew('Filters',filtersHeader + widgets,this.getFiltersVisible(),{separate:true,headerStyle:'display:inline-block;',callback:null});
+		this.jq(ID_MAPFILTERS).html(HU.div(['style','margin-right:5px;'],toggle.header+toggle.body));
+		HU.initToggleBlock(this.jq(ID_MAPFILTERS),(id,visible)=>{this.setFiltersVisible(visible);});
+	    } else  {
+		this.jq(ID_MAPFILTERS).html(HU.div(['style','margin-right:5px;'],filtersHeader  + 
+						   widgets));
+		this.setFiltersVisible(true);		    
 	    }
 
 
