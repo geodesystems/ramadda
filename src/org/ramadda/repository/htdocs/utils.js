@@ -4981,6 +4981,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 label=item[1];
                 item = item[0];
             }
+	    if(item.value) {
+		label = item.label??item.value;
+		item = item.value;
+	    }
 	    let fullLabel  = label;
             if(maxWidth && label.length>maxWidth)
                 label = label.substring(0,maxWidth)+'...';
