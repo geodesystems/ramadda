@@ -554,7 +554,7 @@ function RepositoryMap(mapId, params) {
 	strokeColor:this.params.highlightStrokeColor,
 	strokeWidth:this.params.highlightStrokeWidth,
 	fillColor:this.params.highlightFillColor,
-	fillOpacity:this.params.highlightFillOpacity
+	fillOpacity:this.params.highlightFillOpacity,
     }
 
     if (Utils.isDefined(params.onSelect)) {
@@ -1301,7 +1301,7 @@ RepositoryMap.prototype = {
     },
 
     checkMatchStyle(fs,highlight) {
-	['fillColor','fillOpacity','strokeColor','strokeOpacity','strokeWidth'].forEach(a=>{
+	['pointRadius','fillColor','fillOpacity','strokeColor','strokeOpacity','strokeWidth'].forEach(a=>{
 	    if(highlight[a]=="match") {
 		highlight[a] = fs[a];
 	    }
@@ -1382,6 +1382,13 @@ RepositoryMap.prototype = {
 	}
 	fs = fs ??{};
 	this.checkMatchStyle(fs,highlight);
+	if(fs.pointRadius && !highlight.pointRadius) {
+	    highlight.pointRadius = fs.pointRadius*1.2;
+	}
+	if(fs.externalGraphic && !highlight.externalGraphic) {
+	    highlight.externalGraphic = fs.externalGraphic;
+	    highlight.fillOpacity=1;
+	}	    
 	feature.layer.drawFeature(feature, highlight);
     },
 
