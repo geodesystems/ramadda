@@ -1163,6 +1163,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 
         let url =  "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
+
 	if(this.ramaddaUrl && !this.ramaddaUrl.startsWith("/")) {
 	    let pathname = new URL(this.ramaddaUrl).pathname
 	    let root = this.ramaddaUrl.replace(pathname,"");
@@ -1178,6 +1179,9 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         if (this.entryType) {
             url = url + "&entrytype=" + this.entryType;
         }
+	if(this.props.typeLabel) {
+            url = url + "&typelabel=" + this.props.typeLabel;
+	}
         GuiUtils.loadXML(url, (request,id)=>{_this.handleSelect(request,id)}, this.id);
         return false;
     }
