@@ -4370,30 +4370,7 @@ public class TypeHandler extends RepositoryManager {
         if (didEntries) {
             List<String> typeList = (List<String>) request.get(ARG_TYPE,
                                         new ArrayList());
-            typeList.remove(TYPE_ANY);
-            if (typeList.size() > 0) {
-                List<String> types = new ArrayList<String>();
-                for (String type : typeList) {
-                    TypeHandler typeHandler =
-                        getRepository().getTypeHandler(type);
-                    if (typeHandler == null) {
-                        //Force the bad type
-                        types.add(type);
-
-                        continue;
-                    }
-                    typeHandler.getChildTypes(types);
-                }
-                String typeString;
-                if (request.get(ARG_TYPE_EXCLUDE, false)) {
-                    typeString = "!" + StringUtil.join(",!", types);
-                } else {
-                    typeString = StringUtil.join(",", types);
-                }
-                if ( !Clause.isColumn(clauses, Tables.ENTRIES.COL_TYPE)) {
-                    addOrClause(Tables.ENTRIES.COL_TYPE, typeString, clauses);
-                }
-            }
+	    addTypeClause(request, typeList,clauses);
         }
 
 
@@ -4426,10 +4403,37 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-	public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
+    public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
+    }
+
+    public void addTypeClause(Request request, List<String> typeList,List<Clause>clauses) throws Exception {
+	if(SqlUtil.debug) System.err.println("addTypeClause:" + request+"\n clauses:" + clauses);
+	typeList.remove(TYPE_ANY);
+	if (typeList.size() > 0) {
+	    List<String> types = new ArrayList<String>();
+	    for (String type : typeList) {
+		TypeHandler typeHandler =
+		    getRepository().getTypeHandler(type);
+		if (typeHandler == null) {
+		    //Force the bad type
+		    types.add(type);
+		    continue;
+		}
+		typeHandler.getChildTypes(types);
+	    }
+	    String typeString;
+	    if (request.get(ARG_TYPE_EXCLUDE, false)) {
+		typeString = "!" + StringUtil.join(",!", types);
+	    } else {
+		typeString = StringUtil.join(",", types);
+	    }
+	    if ( !Clause.isColumn(clauses, Tables.ENTRIES.COL_TYPE)) {
+		if(SqlUtil.debug) System.err.println("\taddClause typeString=" + typeString);
+		addOrClause(Tables.ENTRIES.COL_TYPE, typeString, clauses);
+	    }
 	}
-
-
+	if(SqlUtil.debug) System.err.println("\tafter clauses:" + clauses);
+    }
 
 
     /**

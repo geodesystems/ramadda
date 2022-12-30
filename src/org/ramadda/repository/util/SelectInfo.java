@@ -150,7 +150,6 @@ public class SelectInfo implements Constants {
                 }
             } catch (Exception ignore) {}
         }
-	//	System.err.println("Entry:" + entry +" ORDER:" + orderBy);
 
 	hadOrderBy = orderBy!=null;
 
@@ -158,8 +157,10 @@ public class SelectInfo implements Constants {
             orderBy = Constants.ORDERBY_CREATEDATE;
         }
         if (request.defined(Constants.ARG_ASCENDING)) {
-            ascending = Boolean.valueOf(request.defined(Constants.ARG_ASCENDING));
+            ascending = Boolean.valueOf(request.getString(Constants.ARG_ASCENDING,"true"));
         }
+
+	//	System.err.println("Entry:" + entry +" ORDER:" + orderBy +" ascending:" + ascending);
 
     }
 

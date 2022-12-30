@@ -7455,7 +7455,9 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 	List<Clause> clauses = new ArrayList<Clause>();
-        clauses.add(Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+	List<Clause> ors = new ArrayList<Clause>();
+	typeHandler.addTypeClause(request, Utils.split(type,",",true,true),ors);
+	clauses.add(Clause.or(ors));
 	return  getEntriesFromDb(request,  clauses, typeHandler);
     }
 
@@ -7550,9 +7552,11 @@ public class EntryManager extends RepositoryManager {
 	    if(typeHandler==null)
 		typeHandler =  getRepository().getTypeHandler(request);
 	    if(clauses==null) clauses = new ArrayList<Clause>();
+
 	    Statement statement = typeHandler.select(request,
 						     Tables.ENTRIES.COLUMNS, clauses,
 						     order);
+
 	    ResultSet        results;
 	    SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
 
@@ -7587,6 +7591,7 @@ public class EntryManager extends RepositoryManager {
 		getDatabaseManager().closeAndReleaseConnection(statement);
 	    }
 
+	    SqlUtil.debug = false;
 	    if(select.getOrderBy().equals("number")) {
 		//TODO: sort
 		//	    String pattern = "number:" + mtd[0].getAttr4();

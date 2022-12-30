@@ -1018,6 +1018,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                List<Entry> children)
             throws Exception {
 
+
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
         boolean       isImage    = Misc.equals(selectType, "image");
@@ -1034,6 +1035,40 @@ public class HtmlOutputHandler extends OutputHandler {
         //If we have a localeid that means this is the first call
         if (localeId != null) {
             firstCall = true;
+	}
+
+        if (firstCall) {
+	    String type = request.getString(ARG_ENTRYTYPE,null);
+	    if(type!=null)  {
+		String typeLabel = request.getString("typelabel",Utils.makeLabel(type));
+		Request newRequest = new Request(getRepository(), request.getUser());
+		newRequest.put(Constants.ARG_ORDERBY, Constants.ORDERBY_CREATEDATE);
+		newRequest.put(Constants.ARG_ASCENDING,"false");
+		List<Entry> byType =   getEntryManager().getEntriesWithType(newRequest, type);
+		if(byType.size()>0) {
+		    boolean didOne = false;
+		    for(Entry entry: byType) {
+			String link = getSelectLink(request, entry, seen, target);
+			if (link.length() == 0) {
+			    continue;
+			}
+			if ( !didOne) {
+			    sb.append(HU.center(HU.b(typeLabel)));
+			    HU.open(sb, "div", HU.cssClass("ramadda-select-block  ramadda-select-inner"));
+			}
+			didOne = true;
+			sb.append(link);
+		    }		    
+		    if (didOne) {
+			HU.close(sb, "div");
+			sb.append(sectionDivider);
+		    }
+		}
+	    }
+	}
+
+
+	if(localeId!=null) {
             Entry localeEntry = getEntryManager().getEntry(request, localeId);
             if (localeEntry != null) {
                 if (target.endsWith("_fieldname")) {
