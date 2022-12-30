@@ -1042,6 +1042,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	    if(type!=null)  {
 		String typeLabel = request.getString("typelabel",Utils.makeLabel(type));
 		Request newRequest = new Request(getRepository(), request.getUser());
+		newRequest.put(Constants.ARG_MAX, "100");
 		newRequest.put(Constants.ARG_ORDERBY, Constants.ORDERBY_CREATEDATE);
 		newRequest.put(Constants.ARG_ASCENDING,"false");
 		List<Entry> byType =   getEntryManager().getEntriesWithType(newRequest, type);
