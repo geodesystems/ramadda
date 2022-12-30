@@ -447,7 +447,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    try {
 		error = new JSONObject(error).getString("description");
 	    } catch(Exception ignore) {}
-	    getLogManager().logError("PurpleAir: Error reading PurpleAir for site:" + id+" error:" +error);
+	    getLogManager().logError("PurpleAir: Error reading PurpleAir for site:" + id+" entry:" + entry.getName() +" id:" + entry.getId() +" error:" +error);
 	    throw new RuntimeException("Error accessing PurpleAir API for site:" + id+" error:" + error);
 	}
 
