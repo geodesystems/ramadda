@@ -357,6 +357,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND = 'legend';
     const ID_MAP_PROPERTIES = 'mapproperties';
 
+
+
+
     if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
 	properties.showOpacitySlider=true; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
@@ -3131,7 +3134,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html = HU.div([],legendLabel)+html;
 	    }
 	    if(html!="") {
-		html  = HU.div(['class','imdv-legend','style',HU.css('max-width',legendWidth+'px','width',legendWidth+'px')],html);
+		let height= this.getProperty('height');
+		let css  = HU.css('max-width',legendWidth+'px','width',legendWidth+'px');
+		if(height) css+=HU.css('height',height);
+		let attrs = ['class','imdv-legend','style',css]
+		html  = HU.div(attrs,html);
 	    }
 	    this.jq(ID_LEGEND).html(html);
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
@@ -5155,7 +5162,8 @@ MapGlyph.prototype = {
 	    }  else  if(info.samples.length) {
 		tt = Utils.join(info.samples, ", ");
 		if(info.isEnumeration()) {
-		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value));
+		    items = info.samples;
+		    wrapper.html(HU.select("",['id','mapvalue_' + index],items,value));
 		} else {
 		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		}
@@ -5500,8 +5508,14 @@ MapGlyph.prototype = {
 	    if(info.samples.length)  {
 		filter.type="enum";
 		if(info.samples.length>1) {
+		    let items = info.samples.map(item=>{
+			return {value:item,label:Utils.makeLabel(item)};
+		    });
+		    items = items.sort((a,b)=>{
+			return a.label.localeCompare(b.label);
+		    });
 		    enums+=label+":<br>" +
-			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
+			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],items,filter.enumValues,50)+"<br>";
 
 		}
 		return;
@@ -5536,7 +5550,7 @@ MapGlyph.prototype = {
 		    this.panMapTo();
 		}
 	    };
-	    let clearAll = HU.span(['class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
+	    let clearAll = HU.span(['style','margin-right:5px;','class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 
 	    this.zoomonchangeid = HU.getUniqueId("andzoom");
 
