@@ -3101,6 +3101,8 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-select-block {
     max-height:150px;
     overflow-y:auto;
+    max-width:500px;
+    overflow-x:auto;
 }
 
 .ramadda-select-inner {
