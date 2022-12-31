@@ -2910,7 +2910,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 							   org.ramadda.util.text.Row row) {
 		    try {
 			myCnt++;
-			if(myCnt%10==0) System.err.println("count:" + myCnt);
+			if(myCnt%100==0) System.err.println("count:" + myCnt);
 			Object[] values = tableHandler.makeEntryValueArray();
 			cnt[0]++;
 			initializeValueArray(request, null, values);
