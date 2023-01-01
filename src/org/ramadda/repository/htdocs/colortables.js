@@ -192,16 +192,11 @@ $.extend(Utils,{
 	if(options.tooltips && options.tooltips.length>0 && options.tooltips.length<ct.length)  {
 	    maxNums = options.tooltips.length;
 	}
-        if(!options.showColorTableDots || options.horizontal) {
+        if(!options.showColorTableDots || options.horizontal || options.tooltips) {
             for (var i = 0; i < maxNums; i+=options.stride) nums.push(i);
         } else {
             for (var i = maxNums-1; i>=0;i=i-options.stride) nums.push(i);
         }
-
-
-	if(options.tooltips) {
-//	    console.log(options.tooltips.length,nums.length);
-	}
 	
         let tdw = (100 / nums.length) + "%";
         nums.forEach((i,idx)=>{
