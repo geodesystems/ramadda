@@ -145,6 +145,7 @@ var Utils =  {
             if(dragLeave) dragLeave(event);
         });
 
+
         target.on('drop', (event) => {
             target.removeClass("ramadda-drop-active");
             event.stopPropagation();
@@ -153,7 +154,15 @@ var Utils =  {
             for (let i=0; i<files.length;i++) {
                 let file  = files[i];
                 if(!file) continue;
-                if(type &&!file.type.match(type)) continue;
+                if(type) {
+		    if(typeof type == 'string') {
+			if(!file.type.match(type)) {
+			    continue;
+			}
+		    } else {
+			if(!type(file)) continue;
+		    }
+		}
                 let reader = new FileReader();
                 reader.onload = (onloadEvent) => {
                     if(drop) drop(onloadEvent,file,onloadEvent.target.result,true);
@@ -1702,6 +1711,21 @@ var Utils =  {
                         if(t.attrs["camelcase"]) {
                             value = Utils.camelCase(String(value), true);
                         }
+                        if(t.attrs["trim"]) {
+			    if(value.length>t.attrs["trim"]) {
+				value = value.substring(0,t.attrs["trim"]);
+				if(t.attrs["ellipsis"]) value+="...";
+			    }
+			}
+                        if(t.attrs["replace"]) {
+			    let rep = t.attrs["replace"];
+			    if(rep=="_space_") rep = " ";
+			    let s = t.attrs["with"] ?? " ";
+			    if(s=="_nl_") s="\n";
+			    else if(s=="\\n") s="\n";			    
+			    let re = new RegExp(rep,"g");
+                            value = value.replace(re,s);
+			}
                         if(t.attrs["suffix"]) {
                             value = value+t.attrs["suffix"];
                         }
