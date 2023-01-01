@@ -236,7 +236,64 @@ var MapUtils =  {
 	for(a in this.symbols)  {
 	    OpenLayers.Renderer.symbol[a] = this.symbols[a];
 	}
+    },
+    gridFilter:function(map,features,args) {
+	let opts = {
+	    cellWidth:40,
+	    cellHeight:20
+	}
+	if(args) $.extend(opts,args);
+	let b = new OpenLayers.Bounds();
+	let cnt = 0;
+	features.forEach(feature=>{
+	    if(!feature.geometry) return;
+	    let gb = feature.geometry.getBounds();
+	    b.extend(gb);
+	    return;
+	    console.dir(gb);
+	    if(feature.point) {
+		cnt++;
+		b.extend(feature.point);
+	    }
+	});
+//	console.log(features.length,cnt)
+	let gscr =(x,y)=>{return map.getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
+	let ul = gscr(b.left,b.top);
+	let lr = gscr(b.right,b.bottom);	    	  
+	if(!isNaN(ul.x) && !isNaN(ul.y) && !isNaN(lr.x) && !isNaN(lr.y)) {
+	    let setVis = (feature,vis)=>{
+		if(vis) {
+		    feature.style.display = 'inline';
+		}  else {
+		    feature.style.display = 'none';
+		}
+	    };
+	    let gridW = parseInt((lr.x-ul.x)/opts.cellWidth);
+	    let gridH = parseInt((lr.y-ul.y)/opts.cellHeight);	    
+	    let grid = Array(gridW+1);
+	    for(let i=0;i<grid.length;i++) {
+		grid[i] = Array.apply(null, Array(gridH+1)).map(function () {});
+	    }
+	    let gridWidth = lr.x-ul.x;
+	    let gridHeight = lr.y-ul.y;
+	    let hideCnt = 0, showCnt=0;
+	    features.forEach((feature,idx)=>{
+		let center = feature.geometry.getBounds().getCenterLonLat();
+		let screenPoint = map.getMap().getViewPortPxFromLonLat(center);
+		let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
+		let indexY = parseInt(gridW*(lr.y-screenPoint.y)/gridHeight);		
+		if(grid[indexX][indexY]) {
+		    hideCnt++;
+		    setVis(feature,false);
+		} else {
+		    showCnt++;
+		    grid[indexX][indexY]=true;
+		    setVis(feature,true);		    
+		}
+	    });
+	}
     }
+    
 }
 
 
@@ -435,7 +492,7 @@ function RepositoryMap(mapId, params) {
 	highlightStrokeColor:"red",
 	highlightFillColor:"blue",	
 	highlightStrokeWidth:2,
-	highlightFillOpacity:0.1,
+	highlightFillOpacity:1,
 
 	selectStrokeColor:null,
 	selectStrokeOpacity:null,
@@ -557,6 +614,8 @@ function RepositoryMap(mapId, params) {
 	fillColor:this.params.highlightFillColor,
 	fillOpacity:this.params.highlightFillOpacity,
     }
+
+
 
     if (Utils.isDefined(params.onSelect)) {
         this.onSelect = params.onSelect;
@@ -1013,7 +1072,6 @@ RepositoryMap.prototype = {
 	}
 	if(bounds.left == bounds.right || bounds.top == bounds.bottom) {
 	    bounds = this.transformProjBounds(bounds);
-	    console.log("centered:"  + bounds);
 	    var center = bounds.getCenterLonLat();
 	    this.setCenter(center);
 	    return;
@@ -1233,6 +1291,10 @@ RepositoryMap.prototype = {
         this.getMap().updateSize();
         this.centerOnMarkers(this.dfltBounds);
     },
+    addPopup:function(popup) {
+        this.currentPopup = popup;
+	this.getMap().addPopup(popup);
+    },
     makePopup: function(projPoint, text, props) {
 	if(debugPopup)
 	    console.log("makePopup");
@@ -1293,6 +1355,19 @@ RepositoryMap.prototype = {
 
 
 
+    applyHighlightStyle:function(opts) {
+	['highlightStrokeColor','highlightStrokeWidth',
+	 'highlightFillColor', 'highlightFillOpacity'].forEach(a=>{
+	     if(Utils.isDefined(opts[a])) {
+		 let  v= opts[a];
+		 this.params[a] = v;
+		 let _a = a.replace('highlight','');
+		 _a = _a.substring(0,1).toLowerCase()+_a.substring(1);
+		 this.highlightStyle[_a] = v;
+	     }
+	 });
+    },
+
     getLayerHighlightStyle:function(layer) {
 	let highlightStyle = $.extend({},this.highlightStyle);
 	if(layer.highlightStyle) {
@@ -1328,7 +1403,8 @@ RepositoryMap.prototype = {
 			this.highlightPopup.autoSize=true;
 			this.highlightPopup.keepInMap=true;
 			this.highlightPopup.padding=0;
-			this.getMap().addPopup(this.highlightPopup);
+
+			this.addPopup(this.highlightPopup);
 		    }
 		}
 	    }
@@ -1363,6 +1439,8 @@ RepositoryMap.prototype = {
 
         }
     },
+
+
     unhighlightFeature:function(feature) {
 	if(feature.originalStyle) {
 	    feature.style = feature.originalStyle;
@@ -1376,7 +1454,7 @@ RepositoryMap.prototype = {
 	let layer = feature.layer;
 	let highlight = highlightStyle??this.getLayerHighlightStyle(layer);
 	if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
-	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4);
+	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4)??highlight.fillColor;
 	}
 	if(!Utils.isDefined(highlight.fillOpacity)) {
 	    highlight.fillOpacity = 0.3;
@@ -1440,8 +1518,6 @@ RepositoryMap.prototype = {
 
 	this.closePopup();
         HtmlUtils.hidePopupObject();
-
-
 
         if (layer.canSelect === false) return;
         if (layer && layer.selectedFeature) {
@@ -2307,6 +2383,7 @@ RepositoryMap.prototype = {
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
+	    this.currentPopup = null;
         }
 
 	let location = null;
@@ -2323,8 +2400,7 @@ RepositoryMap.prototype = {
         let popup = this.makePopup(location,out);
         feature.popup = popup;
         popup.feature = feature;
-        this.getMap().addPopup(popup);
-        this.currentPopup = popup;
+        this.addPopup(popup);
     },
 
     onFeatureUnselect:  function(layer) {
@@ -2707,12 +2783,12 @@ RepositoryMap.prototype = {
         }
 	let highlightStyle = {};
 	$.extend(highlightStyle, this.highlightStyle);
-
 	for(a in highlightStyle) {
 	    let prop = String(a);
 	    prop = "highlight" + prop.substring(0,1).toUpperCase() + prop.substring(1);
 	    highlightStyle[a] = this.getLayerProperty(layer, prop,  idx,name,  highlightStyle[a]);
 	}
+
 	layer.highlightStyle = highlightStyle;
 	if(this.getLayerProperty(layer, "noHighlight", idx,name, false)) {
 	    layer.noHighlight = true;
@@ -3062,6 +3138,10 @@ RepositoryMap.prototype = {
 		    }
 		}
 		if(this.baseLayerDiv && this.baseLayerDiv.is(':visible')) {
+		    return;
+		}
+
+		if(this.currentPopup && this.currentPopup.div) {
 		    return;
 		}
 		event.preventDefault();
@@ -5055,11 +5135,9 @@ RepositoryMap.prototype = {
         let popup = this.makePopup( projPoint,div,props);
         marker.popupText = popup;
         popup.marker = marker;
-        this.getMap().addPopup(popup);
+        this.addPopup(popup);
 	jqid(uid).html(markerText);
 	if(debugPopup) console.log("\tmade popup");
-
-        this.currentPopup = popup;
 
         if (inputProps.chartType) {
             this.popupChart(marker.inputProps);
