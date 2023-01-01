@@ -1276,10 +1276,13 @@ public class EntryManager extends RepositoryManager {
 	    String fileContents = request.getString("file",(String) null);
 	    String fileName = request.getString("filename",(String) null);	
 	    String fileType = request.getString("filetype","");
-	    TypeHandler typeHandler = findDefaultTypeHandler(fileName);
-	    //	    System.err.println("file:" + fileName +" type: " + fileType);
-	    //	    System.err.println("contents:" + fileContents.substring(0,100));
-	    
+	    TypeHandler typeHandler = null;
+	    if(fileType.length()>0) {
+		typeHandler = getRepository().getTypeHandler(fileType);
+	    }
+	    if(typeHandler==null) {
+		typeHandler = findDefaultTypeHandler(fileName);
+	    }
 	    File tmpFile; 
 	    try {
 		tmpFile = getStorageManager().decodeFileContents(request,fileName, fileContents);
@@ -1303,7 +1306,7 @@ public class EntryManager extends RepositoryManager {
 					  typeHandler, null);
 	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE);
 
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"type",newEntry.getTypeHandler().getType(), "geturl",
 							  url)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	} catch(Exception exc) {
