@@ -249,12 +249,6 @@ var MapUtils =  {
 	    if(!feature.geometry) return;
 	    let gb = feature.geometry.getBounds();
 	    b.extend(gb);
-	    return;
-	    console.dir(gb);
-	    if(feature.point) {
-		cnt++;
-		b.extend(feature.point);
-	    }
 	});
 //	console.log(features.length,cnt)
 	let gscr =(x,y)=>{return map.getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
@@ -277,6 +271,7 @@ var MapUtils =  {
 	    let gridWidth = lr.x-ul.x;
 	    let gridHeight = lr.y-ul.y;
 	    let hideCnt = 0, showCnt=0;
+
 	    features.forEach((feature,idx)=>{
 		let center = feature.geometry.getBounds().getCenterLonLat();
 		let screenPoint = map.getMap().getViewPortPxFromLonLat(center);
@@ -291,6 +286,7 @@ var MapUtils =  {
 		    setVis(feature,true);		    
 		}
 	    });
+//	    console.log('grid filter show:' + showCnt +' hide:' + hideCnt);
 	}
     }
     
@@ -489,10 +485,10 @@ function RepositoryMap(mapId, params) {
 	layerFillColor:"#ccc",
 	layerFillOpacity:0.3,	
 
-	highlightStrokeColor:"red",
-	highlightFillColor:"blue",	
+	highlightStrokeColor:"#000",
+	highlightFillColor:"match",	
 	highlightStrokeWidth:2,
-	highlightFillOpacity:1,
+	highlightFillOpacity:0.75,
 
 	selectStrokeColor:null,
 	selectStrokeOpacity:null,
@@ -1548,7 +1544,10 @@ RepositoryMap.prototype = {
         layer.selectedFeature = feature;
         layer.selectedFeature.isSelected = true;
 	let fs = feature.style??{};
-	let style = $.extend({},feature.style);
+	let style = {};
+	if(layer.style) $.extend(style, layer.style);
+	$.extend({},feature.style);
+
 	let highlightStyle = this.getLayerHighlightStyle(layer);
 	$.extend(style, {
 	    strokeColor:this.params.selectStrokeColor || highlightStyle.strokeColor,
@@ -1565,6 +1564,7 @@ RepositoryMap.prototype = {
 	if(this.params.changeSizeOnSelect && Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
 	}
+
 
 	this.checkMatchStyle(fs,style);
 

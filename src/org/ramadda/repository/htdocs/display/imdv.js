@@ -3079,10 +3079,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return this.getMap().getZoom();
 	},
 	checkVisible:function() {
+	    let features =[];
 	    this.getGlyphs().forEach(mapGlyph=>{
 		mapGlyph.checkVisible();
+		if(mapGlyph.getFilterable()) {
+		    features.push(...mapGlyph.getAllFeatures());
+		}
 	    });
-//	    MapUtils.gridFilter(this.getMap(), this.myLayer.features);
+	    MapUtils.gridFilter(this.getMap(), features);
 	},
 	initMap: function(map) {
 	    SUPER.initMap.call(this)
@@ -4494,6 +4498,16 @@ MapGlyph.prototype = {
     },	
     getId:function() {
 	return this.id;
+    },
+    getFilterable: function() {
+	return false;
+	return this.attrs.filterable??true;
+    },
+    getAllFeatures: function() {
+	let features=[];
+	if(this.features) features.push(...this.features);
+	if(this.mapLayer) features.push(...this.mapLayer.features);
+	return features;
     },
     getFeatures: function() {
 	return this.features;
