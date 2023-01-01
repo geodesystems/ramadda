@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec 30 11:57:06 MST 2022";
+var build_date="RAMADDA build date: Sat Dec 31 19:09:38 MST 2022";
 
 
 
@@ -194,16 +194,11 @@ $.extend(Utils,{
 	if(options.tooltips && options.tooltips.length>0 && options.tooltips.length<ct.length)  {
 	    maxNums = options.tooltips.length;
 	}
-        if(!options.showColorTableDots || options.horizontal) {
+        if(!options.showColorTableDots || options.horizontal || options.tooltips) {
             for (var i = 0; i < maxNums; i+=options.stride) nums.push(i);
         } else {
             for (var i = maxNums-1; i>=0;i=i-options.stride) nums.push(i);
         }
-
-
-	if(options.tooltips) {
-//	    console.log(options.tooltips.length,nums.length);
-	}
 	
         let tdw = (100 / nums.length) + "%";
         nums.forEach((i,idx)=>{
@@ -9116,7 +9111,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div(['id',this.domId(ID_DISPLAY_CONTAINER),CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
+            html += HU.div(['id',this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -39844,9 +39839,10 @@ var GLYPH_MAPSERVER = 'mapserver'
 
 var GLYPH_DATA = 'data';
 var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
+var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
-var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile'];
+var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
 var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = ['style','color:#ccc;'];
 
@@ -39867,13 +39863,10 @@ let ImdvUtils = {
     //we're updating the map
     scheduleRedraw:function(layer,feature) {
 	if(layer.redrawPending) {
-//	    console.log(layer.name +' pending');
 	    return;
 	}
-//	console.log(layer.name +' scheduling');
 	layer.redrawPending = true;
 	setTimeout(()=>{
-//	    console.log(layer.name +' **** redraw');
 	    layer.redraw();
 	    layer.redrawPending = false;
 	},1)
@@ -42045,8 +42038,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.mapProperties.visibleLevelRange = {min:min,max:max};
 
 		this.mapProperties.showMarkerWhenNotVisible = this.jq('showmarkerwhennotvisible').is(':checked');
-
-
 		this.checkMapProperties();
 		this.makeLegend();
 	    };
@@ -42068,13 +42059,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.mapProperties=this.mapProperties??{};
 	    this.checkOpacitySlider();
 	    this.checkTopWiki();
-	    if(this.getMap()) {
-		this.getMap().setGraticulesVisible(this.mapProperties.showGraticules);
-		if(this.mapProperties.showMousePosition)
-		    this.getMap().initMousePositionReadout();
-		else
-		    this.getMap().destroyMousePositionReadout();		
-	    }
+	    if(!this.getMap()) return;
+	    this.getMap().applyHighlightStyle(this.getOtherProperties());
+	    this.getMap().setGraticulesVisible(this.mapProperties.showGraticules);
+	    if(this.mapProperties.showMousePosition)
+		this.getMap().initMousePositionReadout();
+	    else
+		this.getMap().destroyMousePositionReadout();		
 	},
 	
 
@@ -42548,6 +42539,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    }				     
 			}
 			this.mapProperties = json.mapProperties||this.mapProperties||{};
+			this.getMap().applyHighlightStyle(this.getOtherProperties());
 			if(zoomLevel>=0 && Utils.isDefined(zoomLevel)) {
 			    _this.getMap().setZoom(zoomLevel);
 			}
@@ -42891,16 +42883,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getGlyphs().forEach(mapGlyph=>{
 		mapGlyph.checkVisible();
 	    });
+//	    MapUtils.gridFilter(this.getMap(), this.myLayer.features);
 	},
 	initMap: function(map) {
 	    SUPER.initMap.call(this)
 	},
 	
-	getMapProperty: function(name,dflt) {
+	getOtherProperties: function() {
 	    if(!this.parsedMapProperties) {
 		this.parsedMapProperties = Utils.parseMap(this?.mapProperties.otherProperties,"\n","=")??{};
 	    }
-	    let value = this.parsedMapProperties[name];
+	    return this.parsedMapProperties;
+	},
+
+	getMapProperty: function(name,dflt) {
+	    let value = this.getOtherProperties()[name];
 	    
 	    if(Utils.isDefined(value)) {
 		if(value==="true") return true;
@@ -43293,10 +43290,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  (event,item,result) =>{
 				      let entryId = this.getProperty('entryId') || this.entryId;
 				      Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
-					  this.setCommand('image',{url:data.geturl});
+					  if(MAP_TYPES.includes(data.type)) {
+					      let glyphType = this.getGlyphType(GLYPH_MAP);
+					      let style = $.extend({},glyphType.getStyle());
+					      let attrs = {
+						  entryId:data.entryid,
+						  type:glyphType.type,
+						  name:data.name,
+						  entryType:data.type,
+					      }
+					      let mapGlyph = this.handleNewFeature(null,style,attrs);
+					      mapGlyph.checkMapLayer();
+					      return;
+					  } else {
+					      this.setCommand('image',{url:data.geturl});
+					  }
 				      });
 				  },
-				  'image.*');
+				  (file)=>{
+				      if(file.type.match('image.*')) return true;
+				      if(file.name.match('.*\.(geojson|gpx|zip|kml|kmz)')) return true;
+				      return false;
+
+				  }
+				 );
 
 	    this.jq(ID_MAP).css('caret-color','transparent');
 
@@ -43731,6 +43748,32 @@ MapGlyph.prototype = {
     jq:function(id) {
 	return jqid(this.domId(id));
     },
+    getElevations:async function(points,callback,update) {
+	let elevations = points.map(()=>{return 0;});
+	let ok = true;
+	let count=0;
+	for(let i=0;i<points.length;i++) {
+	    if(!ok) break;
+	    let point = points[i];
+	    let url = "https://nationalmap.gov/epqs/pqs.php?x="
+		+ point.x + "&y=" + point.y
+                + "&units=feet&output=json";
+//	    console.log('url:'+ url);
+            await  $.getJSON(url, (data)=> {
+		let elevation = data?.USGS_Elevation_Point_Query_Service?.Elevation_Query?.Elevation;
+		elevations[i]= elevation;
+		count++;
+		if(update)
+		    ok = update(count,points.length);
+//		console.log("elevation #" + elevations.length+"/" + points.length+": " + elevation);
+	    }).fail((data)=>{
+		console.log('Failed to find elevation');
+		console.dir(data);
+		elevations.push(NaN);
+	    });
+	}
+	callback(elevations,ok);
+    },
     getIcon: function() {
 	return this.attrs.icon??this.display.getGlyphType(this.getType()).getIcon();
     },
@@ -43836,8 +43879,23 @@ MapGlyph.prototype = {
 
 	let level = this.getVisibleLevelRange()??{};
 	html+= HU.checkbox(this.domId('visible'),[],this.getVisible(),'Visible')+'<br>';
+
+
 	html+=this.display.getLevelRangeWidget(level,this.getShowMarkerWhenNotVisible());
 	
+	/*
+	let elevButtons = [];
+	if(this.isOpenLine()|| this.mapLayer) {
+	    elevButtons.push(HU.span(['style','margin-top:4px;','id',this.domId('makeelevations'),'class','ramadda-clickable'],'Add elevations'));
+	    elevButtons.push(HU.span(['style','margin-top:4px;','id',this.domId('clearelevations'),'class','ramadda-clickable'],'Clear elevations'));
+	    elevButtons.push(HU.span(['id',this.domId('elevationslabel')],''));	    
+	}
+
+	if(elevButtons.length) {
+	    html+= Utils.wrap(elevButtons,HU.open('span',['style',HU.css('margin-right','8px')]),'</span>');
+	}
+*/
+
 	let domId = this.display.domId('glyphedit_popupText');
 	let featureInfo = this.getFeatureInfo();
 	let lines = ['${default}'];
@@ -43874,7 +43932,31 @@ MapGlyph.prototype = {
 
 
     },
-    applyPropertiesDialog:function() {
+    addElevations:async function(update,done) {
+	let pts;
+	if(this.mapLayer) {
+	    pts = [];
+	    let features= this.mapLayer.features;
+	    features.forEach((feature,idx)=>{
+		let pt = feature.geometry.getCentroid();
+		pts.push(this.display.getMap().transformProjPoint(pt))
+	    });
+	    console.dir(pts);
+	} else {
+	    pts = this.display.getLatLonPoints(this.getGeometry());
+	}
+	let callback = (points)=>{
+	    this.attrs.elevations = points;
+	    this.features[0].elevations = points;
+	    done();
+	};
+	await this.getElevations(pts,callback,update);
+    },
+
+
+    applyPropertiesDialog: function() {
+
+
 	if(this.isMultiEntry()) {
 	    this.setShowMultiData(this.jq("showmultidata").is(':checked'));
 	}
@@ -44846,7 +44928,7 @@ MapGlyph.prototype = {
 
 	if(this.isMap()) {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
-	    this.setMapPointsTemplate(jqid('mappoints_template').val());	    
+	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
 
 	    let styleGroups = this.getStyleGroups();
 	    let groups = [];
@@ -44919,6 +45001,35 @@ MapGlyph.prototype = {
     },
     initPropertiesComponent: function(dialog) {
 	let _this = this;
+	let clearElevations = this.jq('clearelevations');
+	clearElevations.button().click(function(){
+	    _this.attrs.elevations = null;
+	    $(this).attr('disabled','disabled');
+	    $(this).addClass('ramadda-button-disabled');
+	});
+	if(!this.attrs.elevations) {
+	    this.jq('clearelevations').prop('disabled',true);
+	}
+
+	this.jq('makeelevations').button().click(function(){
+	    $(this).html('Fetching elevations');
+	    let callback =(count,total)=>{
+		$(this).html('Processed ' + count + ' of ' + total);
+		return true;
+	    }
+	    let done = ()=>{
+		clearElevations.removeClass('ramadda-button-disabled');
+		clearElevations.attr('disabled',null);
+		$(this).html('Done');
+		setTimeout(()=>{
+		    $(this).html('Add elevations');
+		},3000);
+
+	    }
+	    _this.addElevations(callback,done)
+	});
+
+
 	let decorate = (prefix) =>{
 	    let div = this.getColorTableDisplay(this.jq(prefix+'colorby_colortable').val(),NaN,NaN,false);
 	    this.jq(prefix+'colorby_colortable_label').html(div);
@@ -44966,10 +45077,9 @@ MapGlyph.prototype = {
 		wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		tt=info.min +" - " + info.max;
 	    }  else  if(info.samples.length) {
-		tt = Utils.join(info.samples, ", ");
+		tt = Utils.join(info.getSamplesLabels(), ", ");
 		if(info.isEnumeration()) {
-		    items = info.samples;
-		    wrapper.html(HU.select("",['id','mapvalue_' + index],items,value));
+		    wrapper.html(HU.select("",['id','mapvalue_' + index],info.samples,value));
 		} else {
 		    wrapper.html(HU.input("",value,['id','mapvalue_' + index,'size','15']));
 		}
@@ -45013,13 +45123,41 @@ MapGlyph.prototype = {
 	table+=HU.close('tbody');
 	return table;
     },
+    downloadFeaturesTable:function(id) {
+	let columns;
+	let csv='';
+	this.mapLayer.features.forEach((feature,rowIdx)=>{
+	    let attrs = feature.attributes;
+	    if(columns==null) {
+		columns = Object.keys(attrs).filter(c=>{
+		    return this.display.showFeatureProperty(c);
+		});
+		let rows = columns.map((column,idx)=>{ return this.makeLabel(column,false);});
+		csv+=Utils.join(rows,',');
+		csv+='\n';
+	    }
+	    let rows = columns.map((column,idx)=>{
+		let v = attrs[column]??'';
+		if(Utils.isDefined(v.value)) v = v.value;
+		return  String(v).replace(/\n/g,'_nl_');
+	    });
+	    csv+=Utils.join(rows,',');
+	    csv+='\n';
+	});
+	Utils.makeDownloadFile('features.csv',csv);
+    },
 
     showFeaturesTable:function(anchor) {
 	let tableId = HU.getUniqueId("table");
 	let table =this.getFeaturesTable(tableId);
-	let html =  HU.div(['style',HU.css('margin','5px','width','1000px','overflow-x','scroll')],table);
+	let html =  HU.div(['id',this.domId('downloadfeatures'),'class','ramadda-clickable'],'Download Table') +
+	    HU.div(['style',HU.css('margin','5px','width','1000px','overflow-x','scroll')],table);
+	html = HU.div(['style','margin:5px;'], html);
 	let dialog = HU.makeDialog({content:html,title:this.name,header:true,my:'left top',at:'left bottom',draggable:true,anchor:anchor});
 	
+	this.jq('downloadfeatures').button().click(()=>{
+	    this.downloadFeaturesTable();
+	});
 	HU.formatTable('#'+tableId);
 	let _this = this;
 	dialog.find('.imdv-feature-table-row').click(function() {
@@ -45072,9 +45210,9 @@ MapGlyph.prototype = {
 	    if(info.isNumeric()) {
 		line =  info.min +' - ' + info.max;
 	    } else if(info.isEnumeration()) {
-		line =  Utils.join(info.samples,', ');
+		line =  Utils.join(info.getSamplesValues(),', ');
 	    } else {
-		line =  Utils.join(info.samples,', ');
+		line =  Utils.join(info.getSamplesValues(),', ');
 	    }
 	    ex+=label+': ' + line +'<br>';
 	});
@@ -45100,7 +45238,7 @@ MapGlyph.prototype = {
 		if(info.isNumeric())
 		    title=info.min +' - ' + info.max;
 		else if(info.samples.length)
-		    title = Utils.join(info.samples, ', ');
+		    title = Utils.join(info.getSamplesLabels(), ', ');
 	    }
 	    if(info?.isEnumeration()) {
 		valueInput = HU.select('',['id','mapvalue_' + index],info.samples,value); 
@@ -45122,7 +45260,7 @@ MapGlyph.prototype = {
 	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span(['class','imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
 					       this.getHelp('#map_labels'));
-	let mapPoints = HU.textarea('',this.getMapPointsTemplate()??'',['id','mappoints_template','rows','6','cols','40','title','Map points template, e.g., ${code}']);
+	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',['id','mappoints_template','rows','6','cols','40','title','Map points template, e.g., ${code}']);
 
 	let propsHelp =this.display.makeSideHelp(helpLines,'mappoints_template',{prefix:'${',suffix:'}'});
 	mapPoints = HU.hbox([mapPoints,HU.space(2),'Add property:' + propsHelp]);
@@ -45222,7 +45360,14 @@ MapGlyph.prototype = {
 		isString:function() {return this.getType()=='string';},
 		isEnumeration:function() {return this.getType()=='enumeration';},
 		seen:{},
-		samples:[]
+		samples:[],
+		getSamplesLabels:function() {
+		    return this.samples.map(sample=>{return sample.label;});
+		},
+		getSamplesValues:function() {
+		    return this.samples.map(sample=>{return sample.value;});
+		}		
+
 	    });		
 	});
 
@@ -45255,6 +45400,14 @@ MapGlyph.prototype = {
 	this.featureInfo = keyInfo;
 	this.featureInfoMap = {};
 	keyInfo.forEach(info=>{
+	    if(info.samples.length) {
+		let items = info.samples.map(item=>{
+		    return {value:item,label:Utils.makeLabel(item)};
+		});
+		info.samples =  items.sort((a,b)=>{
+		    return a.label.localeCompare(b.label);
+		});
+	    }
 	    this.featureInfoMap[info.property] = info;
 	});
 	return keyInfo;
@@ -45314,14 +45467,8 @@ MapGlyph.prototype = {
 	    if(info.samples.length)  {
 		filter.type="enum";
 		if(info.samples.length>1) {
-		    let items = info.samples.map(item=>{
-			return {value:item,label:Utils.makeLabel(item)};
-		    });
-		    items = items.sort((a,b)=>{
-			return a.label.localeCompare(b.label);
-		    });
 		    enums+=label+":<br>" +
-			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],items,filter.enumValues,50)+"<br>";
+			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],info.samples,filter.enumValues,50)+"<br>";
 
 		}
 		return;
@@ -45494,21 +45641,22 @@ MapGlyph.prototype = {
 	    feature.featureIndex = idx;
 	});
 
-	if(this.mapPoints) {
-	    this.display.removeFeatures(this.mapPoints);
-	    this.mapPoints = null;
+	if(this.mapLabels) {
+	    this.display.removeFeatures(this.mapLabels);
+	    this.mapLabels = null;
 	}
-	if(Utils.stringDefined(this.getMapPointsTemplate())) {
-	    this.mapPoints = [];
+	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
+	    this.mapLabels = [];
 	    let markerStyle = 	$.extend({},this.style);
-	    let template = this.getMapPointsTemplate().replace(/\\n/g,'\n');
-	    
+	    let template = this.getMapLabelsTemplate().replace(/\\n/g,'\n');
+	    let macros = Utils.tokenizeMacros(template);
 	    features.forEach((feature,idx)=>{
 		let pt = feature.geometry.getCentroid(); 
 		let style = $.extend({},markerStyle);
 		let label = template;
 		let p = feature.attributes;
 		if(p) {
+		    let attrs={};
                     for (let attr in p) {
 			let value;
 			if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
@@ -45521,16 +45669,17 @@ MapGlyph.prototype = {
                             value = "" + p[attr];
 			}
 			let _attr = attr.toLowerCase();
-			label  =label.replace("${" + attr+"}",value).replace("${" + _attr+"}",value);
+			attrs[attr] = attrs[_attr] = value;			
                     }
+		    label = macros.apply(attrs);
 		}
 		style.label = label;
 		let marker = MapUtils.createVector(pt,null,style);
 		marker.point = pt;
 		feature.mapPoint  = marker;
-		this.mapPoints.push(marker);
+		this.mapLabels.push(marker);
 	    });
-	    this.display.addFeatures(this.mapPoints);
+	    this.display.addFeatures(this.mapLabels);
 	}
 
 	//Apply the base style here
@@ -45550,8 +45699,6 @@ MapGlyph.prototype = {
 	    features.forEach((f,idx)=>{f.style = null;});
 	} 
 
-	
-
 	let applyColors = (obj,attr,strings)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
 	    let prop =obj.property;
@@ -45562,8 +45709,7 @@ MapGlyph.prototype = {
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
 		if(isNaN(+value)) {
-		    let idx = strings.indexOf(value);
-		    if(idx<0) {
+		    if(!strings.includes(value)) {
 			strings.push(value);
 		    }
 		} else {
@@ -45583,7 +45729,9 @@ MapGlyph.prototype = {
 		obj.min = min;
 		obj.max = max;		
 	    }
-
+	    strings = strings.sort((a,b)=>{
+		return a.localeCompare(b);
+	    });
 
 	    let range = max-min;
 	    features.forEach((f,idx)=>{
@@ -45594,7 +45742,6 @@ MapGlyph.prototype = {
 		let index;
 		if(obj.isEnumeration) {
 		    index = (strings.indexOf(value)%ct.length);
-//		    console.log(value+": " + index+" "+ strings.indexOf(value) +' '+ct.length);
 		} else {
 		    value = +value;
 		    let percent = (value-min)/range;
@@ -45612,7 +45759,6 @@ MapGlyph.prototype = {
 	
 	applyColors(this.attrs.fillColorBy,'fillColor',fillStrings);
 	applyColors(this.attrs.strokeColorBy,'strokeColor',strokeStrings);	
-
 	let addColor= (obj,prefix, strings) => {
 	    if(obj && Utils.stringDefined(obj.property)) {
 		let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings);
@@ -45646,10 +45792,15 @@ MapGlyph.prototype = {
 			    }
 			});
 
-			dots.click(function() {
+			dots.click(function(event) {
+			    let meta = event.metaKey || event.ctrlKey;
 			    let label = $(this).attr('label');
 			    let selected = $(this).hasClass('display-colortable-dot-item-selected');
 			    let option = select.find('option[value="' +label+'"]');
+			    if(!meta) {
+				select.find('option').prop('selected',null);
+				dots.removeClass('display-colortable-dot-item-selected');
+			    }				
 			    if(!selected) {
 				$(this).addClass('display-colortable-dot-item-selected');
 				option.prop('selected','selected');
@@ -45885,11 +46036,11 @@ MapGlyph.prototype = {
 	this.attrs.mapPointsRange  = v;
 	return this;
     },    
-    getMapPointsTemplate:function() {
-	return this.attrs.mapPointsTemplate;
+    getMapLabelsTemplate:function() {
+	return this.attrs.mapLabelsTemplate;
     },
-    setMapPointsTemplate:function(v) {
-	this.attrs.mapPointsTemplate = v;
+    setMapLabelsTemplate:function(v) {
+	this.attrs.mapLabelsTemplate = v;
 	return this;
     },	   
 
@@ -46013,48 +46164,17 @@ MapGlyph.prototype = {
 	    this.displayInfo.display.setVisible(visible);
 	}
 
-	if(this.mapPoints) {
-	    this.mapPoints.forEach((point,idx)=>{setVis(point,true);});
+	if(this.mapLabels) {
+	    this.mapLabels.forEach((point,idx)=>{setVis(point,true);});
 	    if(!visible) {
-		this.mapPoints.forEach((point,idx)=>{setVis(point,false);});
+		this.mapLabels.forEach((point,idx)=>{setVis(point,false);});
 	    } else if(Utils.stringDefined(this.getMapPointsRange())) {
 		if(level<parseInt(this.getMapPointsRange())) {
 		    visible=false;
-		    this.mapPoints.forEach((point,idx)=>{setVis(point,false);});
+		    this.mapLabels.forEach((point,idx)=>{setVis(point,false);});
 		}
 	    } else {
-		let b = new OpenLayers.Bounds();
-		this.mapPoints.forEach(point=>{b.extend(point.point);});
-		let gscr =(x,y)=>{return this.display.getMap().getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
-		let ul = gscr(b.left,b.top);
-		let lr = gscr(b.right,b.bottom);	    	  
-		if(!isNaN(ul.x) && !isNaN(ul.y) && !isNaN(lr.x) && !isNaN(lr.y)) {
-		    //Just guess at a grid cell soze of 30 and 20
-		    let gridW = parseInt((lr.x-ul.x)/40);
-		    let gridH = parseInt((lr.y-ul.y)/20);	    
-		    let grid = Array(gridW+1);
-		    for(let i=0;i<grid.length;i++) {
-			grid[i] = Array.apply(null, Array(gridH+1)).map(function () {});
-		    }
-		    let gridWidth = lr.x-ul.x;
-		    let gridHeight = lr.y-ul.y;
-		    let hideCnt = 0, showCnt=0;
-		    this.mapPoints.forEach((point,idx)=>{
-			let latlon = this.display.getMap().transformProjPoint(point.point);
-			let screenPoint = this.display.getMap().getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(point.point.x,point.point.y));
-
-			let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
-			let indexY = parseInt(gridW*(lr.y-screenPoint.y)/gridHeight);		
-			if(grid[indexX][indexY]) {
-			    hideCnt++;
-			    setVis(point,false);
-			} else {
-			    showCnt++;
-			    grid[indexX][indexY]=true;
-			    setVis(point,true);		    
-			}
-		    });
-		}
+		MapUtils.gridFilter(this.getMap(), this.mapLabels);
 	    }
 	}
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
@@ -46248,6 +46368,9 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
     isClosed: function() {
 	return GLYPH_TYPES_CLOSED.includes(this.type);
     },
+    isOpenLine:function() {
+	return GLYPH_TYPES_LINES_OPEN.includes(this.type);
+    },
     addEntries: function(andZoom) {
 	let entryId = this.getEntryId();
         let entry =  new Entry({
@@ -46360,7 +46483,6 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 
 	}
 
-
 	pointCount+=this.display.selectFeatures(this,this.getFeatures(),maxPoints);
 	this.display.selectionLayer.addFeatures(this.selectDots,{silent:true});
 	if(!dontRedraw) {
@@ -46398,8 +46520,8 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	if(this.isFixed()) {
 	    jqid(this.getId()).remove();
 	}
-	if(this.mapPoints) {
-	    this.display.removeFeatures(this.mapPoints);
+	if(this.mapLabels) {
+	    this.display.removeFeatures(this.mapLabels);
 	}
 	if(this.features) {
 	    this.display.removeFeatures(this.features);

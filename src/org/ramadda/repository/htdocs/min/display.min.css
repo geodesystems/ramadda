@@ -2882,7 +2882,7 @@ table.dataTable tfoot td {
     border:1px solid #000;
 }
 
-
+    
 .imdv-legend {
     min-width:200px;
     max-width:200px;    
@@ -2944,8 +2944,9 @@ table.dataTable tfoot td {
 }
 
 .imdv-side-help {
+    width:100%;
     font-style:italic;
-    max-height:400px;
+    max-height:150px;
     margin-left:10px;
     overflow-y:auto
 }
