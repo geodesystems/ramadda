@@ -587,10 +587,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    target.append(HU.div([CLASS,"ramadda-dnd-target-files",ID,fileInputId+"_dnd_files"]));
 	    let files=$("#" +fileInputId+"_dnd_files");
 	    Utils.initDragAndDrop(target,
-				  event=>{
-				  },
-				  event=>{
-				  },
+				  event=>{},
+				  event=>{},
 				  (event,item,result,wasDrop) =>{
 				      fileDrop.cnt++;
 				      let name = item.name;
@@ -648,7 +646,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	let data = new FormData();
 	data.append("filename",fileName);
-	data.append("filetype",file.type);
+	//A hack for shapefiles
+	if(file.type=='application/zip') 
+	    data.append("filetype",'geo_shapefile');
+	else
+	    data.append("filetype",file.type);
 	data.append("group",entryId);
 	data.append("description",desc);
 	data.append("file", result);
