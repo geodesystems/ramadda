@@ -4993,6 +4993,10 @@ a.wiki-link-noexist {
     background: none;
 }
 
+.ui-accordion-header a {
+    color:#000 !important;
+}
+
 .ui-accordion .ui-state-default {
     background:transparent;
 }
