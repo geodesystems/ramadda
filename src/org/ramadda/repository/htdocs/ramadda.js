@@ -1350,9 +1350,9 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
 }
 
 
-function toggleVisibility(id, style) {
+function toggleVisibility(id, style,anim) {
     let display = $("#" + id).css('display');
-    $("#" + id).toggle();
+    $("#" + id).toggle(anim);
     return display != 'block';
 }
 
