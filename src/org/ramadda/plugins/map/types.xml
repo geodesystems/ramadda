@@ -100,7 +100,7 @@ mapVar="gpxMap${entryid}" }}
 
 
   <type name="geo_shapefile"  description="Shapefile"   super="type_point" handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="shapefile_display,shapefile_color,map_displaymap">
-     <property name="icon" value="/icons/map.png"/>
+     <property name="icon" value="/icons/mapfile.png"/>
      <property name="upload.zip" value="true"/>
 <wiki>
 <![CDATA[
@@ -166,7 +166,7 @@ mapVar="gpxMap${entryid}" }}
 
 
   <type name="map"  description="Map"  >
-     <property name="icon" value="/icons/map.png"/>
+     <property name="icon" value="/icons/mapfile.png"/>
      <column name="maptype" label="Map Type" type="enumerationplus" cansearch="true" values="file:/org/ramadda/plugins/map/maptypes.txt" showinhtml="true"/>
 
      <column name="country" label="Country" type="enumerationplus" cansearch="true" showinhtml="true"/>
@@ -196,7 +196,7 @@ mapVar="gpxMap${entryid}" }}
 
 
   <type name="geo_geojson"  description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
-     <property name="icon" value="/icons/map.png"/>
+     <property name="icon" value="/icons/mapfile.png"/>
 <wiki>
 <![CDATA[
 +section title={{name}}
@@ -224,7 +224,7 @@ mapVar="gpxMap${entryid}" }}
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-{{display_imdv height="calc(100vh - 150px)"  showBounds=false  
+{{display_imdv height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false  
 }}
 -section
 ]]>
