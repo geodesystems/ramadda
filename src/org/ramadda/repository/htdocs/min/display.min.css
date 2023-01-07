@@ -1493,6 +1493,7 @@ svg > g > g:last-child { pointer-events: none }
     background-color : #fffeec;
     padding-left:10px;
     padding-right:10px;
+    z-index:10000;
 }
 
 
@@ -2986,6 +2987,7 @@ table.dataTable tfoot td {
     background-color : var(--color-mellow-yellow);
     right:10px;
     top:5px;
+    z-index:1000;
 }
 
 .ramadda-imdv-message3 {
@@ -2995,6 +2997,7 @@ table.dataTable tfoot td {
     position: absolute;
     right:10px;
     bottom:5px;
+    z-index:1000;
 }
 
 
