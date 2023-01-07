@@ -278,6 +278,7 @@ public class PointTypeHandler extends RecordTypeHandler {
     public void addToSelectMenu(Request request, Entry entry,
                                 StringBuilder sb, String type, String target)
             throws Exception {
+	if(!type.equals("fieldname")) return;
         PointOutputHandler poh =
             (PointOutputHandler) getRecordOutputHandler();
         PointEntry recordEntry = (PointEntry) poh.doMakeEntry(request, entry);
