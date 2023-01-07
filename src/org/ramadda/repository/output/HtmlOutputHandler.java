@@ -436,7 +436,20 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    private void addToSelectMenu(Request request, Entry entry, StringBuilder sb) throws Exception {
+	if (entry.isImage()) {
+	    String url = getImageUrl(request, entry, true);
+	    sb.append(HU.img(url,"",HU.attr("width","200px")));
+	    return;
+	} 
+	List<String> urls = new ArrayList<String>();
+	getMetadataManager().getThumbnailUrls(request, entry, urls);
+	if (urls.size() > 0) {
+	    sb.append(HU.img(urls.get(0),"",HU.attr("width","200px")));
+	}
 
+
+    }
 
     /**
      * _more_
@@ -469,6 +482,9 @@ public class HtmlOutputHandler extends OutputHandler {
             entry.getTypeHandler().addToSelectMenu(request, entry, sb, type,
                     target);
 
+	    if(sb.length()==0) {
+		addToSelectMenu(request, entry, sb);
+	    }
             return makeAjaxResult(request, sb.toString());
         }
 
@@ -1996,7 +2012,8 @@ public class HtmlOutputHandler extends OutputHandler {
             String        target = request.getString(ATTR_TARGET, "");
             String        type   = request.getString(ARG_SELECTTYPE, "");
             group.getTypeHandler().addToSelectMenu(request, group, sb, type,
-                    target);
+						   target);
+
             if (sb.length() > 0) {
                 return makeAjaxResult(request, sb.toString());
             }
