@@ -1634,7 +1634,6 @@ var Utils =  {
 			}
 
 
-
                         if(t.attrs["youtube"]) {
                             if(value.trim().length==0) return null;
 			    s+=Utils.embedYoutube(value, t.attrs);
@@ -4330,8 +4329,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     formatTable: function(id, args, callback) {
-        HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +"/lib/datatables/src/jquery.dataTables.min.css"],
-                                [ramaddaCdn + "/lib/datatables/src/jquery.dataTables.min.js"],
+        HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +'/lib/datatables-1.13.1/datatables.min.css'],
+                                [ramaddaCdn + '/lib/datatables-1.13.1/datatables.min.js'],
                                 id,()=>{
                                     $(id).each(function() {
                                         if($.fn.dataTable.isDataTable(this)) {
@@ -5005,7 +5004,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 label=item[1];
                 item = item[0];
             }
-	    if(item.value) {
+	    if(Utils.isDefined(item.value)) {
 		label = item.label??item.value;
 		item = item.value;
 	    }
@@ -5186,9 +5185,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
     },
     toggleBlockListeners:{},
-    toggleBlockVisibility:function(id, imgid, showimg, hideimg) {
+    toggleBlockVisibility:function(id, imgid, showimg, hideimg,anim) {
 	let visible = true;
-	if (toggleVisibility(id, 'block')) {
+	if (toggleVisibility(id, 'block',anim)) {
             if(HU.isFontAwesome(showimg)) {
 		$("#" + imgid).html(HU.makeToggleImage(showimg));
             } else {
@@ -5207,7 +5206,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    HtmlUtils.toggleBlockListeners[id](id,visible);
 	}
     },
-    toggleBlock: function(label, contents, visible, args) {
+    toggleBlock: function(label, contents, visible, args,result) {
         let opts = {
             headerClass:'ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable',
             headerStyle:'',
@@ -5222,15 +5221,24 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    opts.headerStyle+= 'line-height:1px;';
         let id = Utils.getUniqueId('block_');
         let imgid = id + '_img';
+	if(result) {
+	    result.id = id;
+	    result.imgid = imgid;
+	}
         let img1 = opts.imgopen;
         let img2 = opts.imgclosed;
-        let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ',');
+        let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2),opts.animated], ',');
         let click = 'HtmlUtils.toggleBlockVisibility(' + clickArgs + ');';
         let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
         let header = HtmlUtils.div([STYLE,opts.headerStyle,'class', opts.headerClass, 'onClick', click],  img +  ' ' + label);
         let style = (visible ? 'display:block;visibility:visible' : 'display:none;');
         let body = HtmlUtils.div(['class', 'hideshowblock', 'id', id, 'style', style],
                                  contents);
+
+	if(opts.listener)
+	    HtmlUtils.toggleBlockListeners[id] = opts.listener;
+
+
 	if(opts.separate)
 	    return {header:header,body:body,id:id};
 	if(horizontal)
