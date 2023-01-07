@@ -239,8 +239,8 @@ var MapUtils =  {
     },
     gridFilter:function(map,features,args) {
 	let opts = {
-	    cellWidth:40,
-	    cellHeight:20
+	    cellWidth:80,
+	    cellHeight:40
 	}
 	if(args) $.extend(opts,args);
 	let b = new OpenLayers.Bounds();
@@ -288,7 +288,46 @@ var MapUtils =  {
 	    });
 //	    console.log('grid filter show:' + showCnt +' hide:' + hideCnt);
 	}
-    }
+    },
+    makeDefaultFeatureText:function (attrs,columns,labelGetter) {
+	if(!columns) columns  = Object.keys(attrs);
+        let html = "<table>";
+	columns.forEach(attr=>{
+            let lclabel = attr.toLowerCase();
+            if (lclabel == "objectid" ||
+                lclabel == "feature_type" ||
+                lclabel == "shapearea" ||
+                lclabel == "styleurl" ||
+                lclabel == "shapelen") return;
+
+            let label;
+	    if(labelGetter)
+		label = labelGetter(attr);
+	    if(!Utils.isDefined(label))
+		label = MapUtils.makeLabel(attr);
+            if (lclabel == "startdate") label = "Start Date";
+            else if (lclabel == "enddate") label = "End Date";
+            else if (lclabel == "aland") label = "Land Area";
+            else if (lclabel == "awater") label = "Water Area";
+            html += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + HU.span(['title',attr],label) + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+            let value;
+            if (attrs[attr] != null && (typeof attrs[attr] == 'object' || typeof attrs[attr] == 'Object')) {
+                let o = attrs[attr];
+                value = "" + o["value"];
+            } else {
+                value = "" + attrs[attr];
+            }
+            if (value.startsWith("http:") || value.startsWith("https:")) {
+                value = "<a href='" + value + "'>" + value + "</a>";
+            }
+            if (value == "null") return;
+	    html += value;
+            html += "</div></td></tr>";
+        });
+        html += "</table>";
+	return html;
+    }	
+    
     
 }
 
@@ -1119,7 +1158,7 @@ RepositoryMap.prototype = {
 	//	$("#" + this.mapDivId).html(html);
 	$("#" + this.mapDivId).html(theMap);
 
-	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
+	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:40%;"],""));
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("label"), "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("toolbar"), "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
 
@@ -1601,9 +1640,9 @@ RepositoryMap.prototype = {
 	
 
         if (center) {
-            var geometry = feature.geometry;
+            let geometry = feature.geometry;
             if (geometry) {
-                var bounds = geometry.getBounds();
+                let bounds = geometry.getBounds();
                 if (bounds) {
                     this.zoomToExtent(bounds);
                     this.getMap().setCenter(bounds.getCenterLonLat());
@@ -1680,7 +1719,7 @@ RepositoryMap.prototype = {
     },    
     checkLayerOrder: function() {
 	let base = this.numberOfBaseLayers;
-	var debug = false;
+	let debug = false;
 	if(debug)
 	    console.log("layer order");
 	this.nonSelectLayers.forEach(layer=>{
@@ -2285,6 +2324,13 @@ RepositoryMap.prototype = {
 		return text;
 	    }
 	}
+	if(layer.textGetter) {
+	    let text= layer.textGetter(feature);
+	    if(text) {
+		if(debugPopup) console.log("getFeatureText-layer has textGetter");
+		return text;
+	    }
+	}
 	if(this.textGetter) {
 	    let text= this.textGetter(layer,feature);
 	    if(text) {
@@ -2296,40 +2342,6 @@ RepositoryMap.prototype = {
         let style = feature.style || feature.originalStyle || layer.style;
         let p = feature.attributes;
         let out = feature.popupText;
-	let  makeDefaultFeatureText = () =>{
-            let html = "<table>";
-            for (let attr in p) {
-                let label = attr;
-                lclabel = label.toLowerCase();
-                if (lclabel == "objectid" ||
-                    lclabel == "feature_type" ||
-                    lclabel == "shapearea" ||
-                    lclabel == "styleurl" ||
-                    lclabel == "shapelen") continue;
-                if (lclabel == "startdate") label = "Start Date";
-                else if (lclabel == "enddate") label = "End Date";
-                else if (lclabel == "aland") label = "Land Area";
-                else if (lclabel == "awater") label = "Water Area";
-                label = MapUtils.makeLabel(label);
-                html += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + HU.span(['title',attr],label) + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                let value;
-                if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
-                    let o = p[attr];
-                    value = "" + o["value"];
-                } else {
-                    value = "" + p[attr];
-                }
-                if (value.startsWith("http:") || value.startsWith("https:")) {
-                    value = "<a href='" + value + "'>" + value + "</a>";
-                }
-                if (value == "null") continue;
-		html += value;
-                html += "</div></td></tr>";
-            }
-            html += "</table>";
-	    return html;
-	};	
-
         if (!out) {
             if (style && (style["balloonStyle"] || style["popupText"])) {
                 out = style["balloonStyle"] || style["popupText"];
@@ -2348,16 +2360,17 @@ RepositoryMap.prototype = {
                 }
             } else {
 		if(debugPopup) console.log("getFeatureText-using feature attributes");
-		out = makeDefaultFeatureText();
+		out = MapUtils.makeDefaultFeatureText(p);
 	    }		
-        }
+	}
 	if(out && out.indexOf('${default}')>=0) {
-	    out = out.replace('${default}',makeDefaultFeatureText());
+	    out = out.replace('${default}',MapUtils.makeDefaultFeatureText(p));
 	}
         return out;
     },
     onFeatureSelect: function(layer,event) {
 	if(debugPopup) console.log("\tonFeatureSelect");
+//	console.trace();
 	let _this = this;
         if (this.onSelect) {
             func = window[this.onSelect];
