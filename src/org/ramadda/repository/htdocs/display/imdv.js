@@ -3475,7 +3475,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let toggleListener = (id,vis)=>{
 		this.mapProperties.mapLegendOpen = vis;
 	    };
-	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'style','display:none;background:#fff;z-index: 500;position:absolute;left:50px;top:15px;'],
+	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'class','imdv-legend-map-wrapper','style','display:none;background:#fff;z-index: 500;position:absolute;left:50px;top:15px;'],
 				  HU.toggleBlock('Legend' + HU.space(2),HU.div(['id',this.domId(ID_LEGEND_MAP)]),
 						 Utils.isDefined(this.mapProperties.mapLegendOpen)?this.mapProperties.mapLegendOpen:true,
 						 {animated:300,listener:toggleListener},toggleResult));
