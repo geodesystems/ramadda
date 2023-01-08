@@ -3358,8 +3358,9 @@ public class Request implements Constants, Cloneable {
      * @param name _more_
      * @param value _more_
      */
-    public void setHeader(String name, String value) {
+    public Request setHeader(String name, String value) {
         httpServletResponse.setHeader(name, value);
+	return this;
     }
 
     /**
