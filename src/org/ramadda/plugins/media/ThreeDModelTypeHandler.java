@@ -197,21 +197,19 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
 	List<String> models = new ArrayList<String>();
 	String[] jsImports = new String[]{
-	    ".gltf",  "//unpkg.com/three/examples/js/loaders/GLTFLoader.js",
-	    ".fbx","//unpkg.com/three/examples/js/loaders/FBXLoader.js",
-	    ".3ds","//unpkg.com/three/examples/js/loaders/TDSLoader.js",
-	    ".obj","//unpkg.com/three/examples/js/loaders/OBJLoader.js",			    
-	    ".dae","//unpkg.com/three/examples/js/loaders/ColladaLoader.js"};
-
+	    ".gltf","//unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js",
+	    ".fbx","//unpkg.com/three@0.126.0/examples/js/loaders/FBXLoader.js",
+	    ".3ds","//unpkg.com/three@0.126.0/examples/js/loaders/TDSLoader.js",
+	    ".obj","//unpkg.com/three@0.126.0/examples/js/loaders/OBJLoader.js",
+	    ".dae","//unpkg.com/three@0.126.0/examples/js/loaders/ColladaLoader.js"};
 
 
         StringBuilder sb = new StringBuilder();
-
         if (request.getExtraProperty("3dmodeljs") == null) {
             for (String js : new String[] {
                 "//unpkg.com/fflate",
                 "//cdn.jsdelivr.net/npm/fflate/umd/index.js",
-                "//unpkg.com/three",
+                "//unpkg.com/three@0.126.0",
                 getRepository().getHtdocsUrl("/lib/three/controls/OrbitControls.js")
 		}) {
                 HU.importJS(sb, js);
