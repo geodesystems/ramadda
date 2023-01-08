@@ -35,3 +35,25 @@ div.olControlMousePosition {
 }
 
 
+.olAlphaImg {
+    cursor: pointer;
+}
+
+.olControlLayerSwitcher  {
+    
+}
+
+.olControlLayerSwitcher .layersDiv {
+    padding-left:0px;
+    padding-right:0px;    
+    background:#5991BD !important;
+    background:#fff !important;
+    background:#eee !important;        
+    border:1px solid #aaa;
+    color: #444;
+}
+
+.baseLayersDiv {
+    border-bottom:1px solid #000;
+}
+
