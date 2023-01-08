@@ -583,6 +583,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		} else {
 		    InputStream bis = result.getInputStream();
 		    request.setReturnFilename(entry.getName()+".csv");
+		    request.setHeader("Cache-Control","no-cache, no-store, must-revalidate").setHeader("Pragma","no-cache").setHeader("Expires","0");
+
 		    return new Result(bis,"text/csv");
 		}
 	    } catch(Exception exc) {
