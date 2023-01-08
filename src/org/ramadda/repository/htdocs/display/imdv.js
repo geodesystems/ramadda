@@ -421,6 +421,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return MapUtils.makeLabel(l);
 	},
 
+	setLastDroppedTime:function(date) {
+	    this.lastDroppedTime = date;
+	},
 	showFeatureProperty:function(p) {
 	    let _p = p.toLowerCase();
 	    return this.getMapProperty(_p+'.showFeature',true);
@@ -689,6 +692,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		tmpStyle.text = text;
 		if(glyphType.isGroup()) {
 		    tmpStyle.externalGraphic = glyphType.getIcon();
+		    mapOptions.name = text;
 		}
 		this.clearCommands();
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,tmpStyle);
@@ -3255,7 +3259,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    this.initGlyphButtons(this.jq(ID_LEGEND));
-
 	    items.tooltip({
 		content: function () {
 		    let title =  $(this).prop('title');
@@ -3267,6 +3270,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    }	    );
 	    items.click(function(event) {
+		//If we have recently been dragging and dropping the glyphs then don't
+		//handle the click
+		if(_this.lastDroppedTime) {
+		    let now = new Date();
+		    if(now.getTime()-_this.lastDroppedTime.getTime()<2000) {
+			return
+		    }
+		}
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
@@ -4994,14 +5005,22 @@ MapGlyph.prototype = {
 
 	let _this = this;
 	if(this.display.canEdit()) {
+	    let label = jqid(this.getId()).find('.imdv-legend-label');
+	    //Set the last dropped time so we don't also handle this as a setVisibility click
+	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
 	    jqid(this.getId()).draggable({
+		start: notify,
+		drag: notify,
+		stop: notify,
 		containment:this.display.domId(ID_LEGEND),
 		revert: true
 	    });
-	    jqid(this.getId()).droppable( {
+	    //Only drop on the legend label
+	    label.droppable( {
 		hoverClass: 'imdv-legend-item-droppable',
 		accept:'.imdv-legend-item',
 		drop: function(event,ui){
+		    notify();
 		    let draggedGlyph = _this.display.findGlyph(ui.draggable.attr('id'));
 		    if(!draggedGlyph) {
 			console.log('Could not find dragged glyph');
@@ -6667,7 +6686,8 @@ MapGlyph.prototype = {
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
 let display = this.display.getDisplayManager().createDisplay("map",attrs);
-	display.setProperty("showRecordSelection",false);
+	//Not sure why we do this since we can't integrate charts with map record selection
+	//	display.setProperty("showRecordSelection",false);
 
 	display.errorMessageHandler = (display,msg) =>{
 	    this.display.setErrorMessage(msg,5000);
