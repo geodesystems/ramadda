@@ -1,3 +1,59 @@
-.ramadda-map-message{position:absolute;top:10px;left:100px;background:#FFFEEC;z-index:1000;border:var(--basic-border);padding:5px;}
-.olLayerDiv canvas{pointer-events:none;}.olLayerGoogleCopyright{}.olControlAttribution{bottom:0px;}
-div.olControlMousePosition{font-size:1em;font-weight:bold;}.olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint{visibility:hidden;}.olAlphaImg{cursor:pointer;}.olControlLayerSwitcher{}.olControlLayerSwitcher.layersDiv{padding-left:0px;padding-right:0px;background:#5991BD!important;background:#fff!important;background:#eee!important;border:1px solid#aaa;color:#444;}.baseLayersDiv{border-bottom:1px solid#000;}
+
+.ramadda-map-message {
+    position:absolute;
+    top:10px;
+    left:100px;
+    background:#FFFEEC;
+    z-index:1000;
+    border:var(--basic-border);
+    padding:5px;
+}
+
+/* Add this so when we show a graticule it doesn't pick up the mouse clicks */
+.olLayerDiv canvas {
+    pointer-events:none;
+}
+
+.olLayerGoogleCopyright {
+/*jeffmc: use display:none to fix the mouse controls not responding
+    top:-1000px;
+    display: none;
+*/
+}
+
+.olControlAttribution {
+    bottom: 0px;
+} 
+
+div.olControlMousePosition {
+ font-size: 1em;
+ font-weight:bold;
+}
+
+.olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
+   visibility:hidden;
+}
+
+
+.olAlphaImg {
+    cursor: pointer;
+}
+
+.olControlLayerSwitcher  {
+    
+}
+
+.olControlLayerSwitcher .layersDiv {
+    padding-left:0px;
+    padding-right:0px;    
+    background:#5991BD !important;
+    background:#fff !important;
+    background:#eee !important;        
+    border:1px solid #aaa;
+    color: #444;
+}
+
+.baseLayersDiv {
+    border-bottom:1px solid #000;
+}
+

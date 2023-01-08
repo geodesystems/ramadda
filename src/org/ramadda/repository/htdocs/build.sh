@@ -44,7 +44,11 @@ ${jsminify} ${dir}/lib/openlayers/v2/OpenLayers.debug.js > ${dir}/lib/openlayers
 
 
 cp  ${dir}/style.css  ${dir}/style.min.css
-${cssminify} ${dir}/ramaddamap.css > ${dest}/ramaddamap.min.css
+
+#Don't minify ramaddamap.css as it breaks some things
+#${cssminify} ${dir}/ramaddamap.css > ${dest}/ramaddamap.min.css
+cp  ${dir}/ramaddamap.css  ${dest}/ramaddamap.min.css
+
 ##don't minify the display.css as it screws up how jquery styles are overridden
 #${cssminify} ${dir}/display/display.css > ${dest}/display.min.css
 cp ${dir}/display/display.css  ${dest}/display.min.css
