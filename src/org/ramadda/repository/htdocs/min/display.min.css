@@ -2897,8 +2897,14 @@ table.dataTable tfoot td {
 }
 
 
+.imdv-legend-map-wrapper {
+    border:var(--basic-border);
+    border-radius: 4px;
+}
+
+
 .imdv-legend-item {
-    border-top:1px solid #dadada;
+    border-top:var(--basic-border);
 }
 
 .imdv-legend-item-droppable {
@@ -2907,7 +2913,7 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-item-last {
-    border-bottom:1px solid #dadada;
+    border-bottom:var(--basic-border);
 }
 
 .imdv-legend-inner {

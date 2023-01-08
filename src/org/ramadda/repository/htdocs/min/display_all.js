@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jan  7 13:09:05 MST 2023";
+var build_date="RAMADDA build date: Sat Jan  7 22:47:23 MST 2023";
 
 
 
@@ -43276,7 +43276,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let toggleListener = (id,vis)=>{
 		this.mapProperties.mapLegendOpen = vis;
 	    };
-	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'style','display:none;background:#fff;z-index: 500;position:absolute;left:50px;top:15px;'],
+	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'class','imdv-legend-map-wrapper','style','display:none;background:#fff;z-index: 500;position:absolute;left:50px;top:15px;'],
 				  HU.toggleBlock('Legend' + HU.space(2),HU.div(['id',this.domId(ID_LEGEND_MAP)]),
 						 Utils.isDefined(this.mapProperties.mapLegendOpen)?this.mapProperties.mapLegendOpen:true,
 						 {animated:300,listener:toggleListener},toggleResult));
