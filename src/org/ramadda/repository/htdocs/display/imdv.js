@@ -5434,56 +5434,100 @@ MapGlyph.prototype = {
 
 
 
-
-
     getFeaturesTable:function(id) {
 	let columns  =this.getFeatureInfo().filter(info=>{
 	    return info.showTable();
 	});
-	let table = HU.openTag('table',['id',id,'table-ordering','true','table-searching','true','table-height','400px','class','stripe rowborder ramadda-table'])
+	let table;
 	this.featureTableMap = {};
+
 	let featureInfo = this.getFeatureInfo();
+	let rowCnt=0;
+	let stats;
 	this.mapLayer.features.forEach((feature,rowIdx)=>{
+	    if(Utils.isDefined(feature.isVisible) && !feature.isVisible) {
+		return
+	    }
 	    let attrs = feature.attributes;
-	    if(rowIdx==0) {
+	    let first = rowCnt++==0;
+	    if(first) {
+		table = HU.openTag('table',['id',id,'table-ordering','true','table-searching','true','table-height','400px','class','stripe rowborder ramadda-table'])
 		table+='<thead><tr>';
+		stats = [];
 		columns.forEach((column,idx)=>{
 		    table+=HU.tag('th',[],column.getLabel(true));
+		    stats.push({total:0,count:0,min:0,max:0});
 		});
 		table+=HU.close('tr','thead','tbody');
 	    }
 	    this.featureTableMap[rowIdx] =feature;
 	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', rowIdx,'class','imdv-feature-table-row ramadda-clickable']);
 	    columns.forEach((column,idx)=>{
+		let stat =  stats[idx];
 		let v = attrs[column.property]??'';
 		if(Utils.isDefined(v.value)) v = v.value;
-		v = String(v);
-		//Check for html. Maybe just convert to entities?
-		if(v.indexOf('<')>=0) {
-		    v = Utils.stripTags(v);
+		let nv = +v;
+		let sv = String(v);
+		let isNumber = false;
+		if(sv!='' && !isNaN(nv)) {
+		    isNumber=true;
+		    stat.count++;
+		    stat.min = first?nv:Math.min(nv, stat.min);
+		    stat.max = first?nv:Math.max(nv, stat.max);		    
+		    stat.total+=nv;
 		}
-		table+=HU.tag('td',[],v);
+		//Check for html. Maybe just convert to entities?
+		if(sv.indexOf('<')>=0) {
+		    sv = Utils.stripTags(sv);
+		}
+		table+=HU.tag('td',['style',isNumber?'text-align:right':'','align',isNumber?'right':'left'],sv);
 	    });
 	});
+	if(stats) {
+	    table+='<tfoot><tr>';
+	    let fmt = (label,amt) =>{
+		return HU.tr(HU.td(['style','text-align:right','align','right'],HU.b(label)) +
+			     HU.td(['style','text-align:right','align','right'],Utils.formatNumberComma(amt)));
+	    };
+	    columns.forEach((column,idx)=>{
+		let stat =  stats[idx];
+		table+='<td align=right>';
+		if(stat.count!=0) {
+		    let inner = '<table>';
+		    inner +=
+			fmt('Total:', stat.total) +
+			fmt('Min:', stat.min) +
+			fmt('Max:', stat.max) +
+			fmt('Avg:', stat.total/stat.count);
+		    inner+='</table>';
+		    table+=inner;
+		}
+		table+='</td>';
+	    });
+	    table+='</tr></tfoot>';
+	    table+=HU.close('tbody');
+	}
 
-	table+=HU.close('tbody');
 	return table;
     },
     downloadFeaturesTable:function(id) {
 	let columns;
 	let csv='';
 	this.mapLayer.features.forEach((feature,rowIdx)=>{
+	    if(Utils.isDefined(feature.isVisible) && !feature.isVisible) {
+		return;
+	    }
 	    let attrs = feature.attributes;
 	    if(columns==null) {
-		columns = Object.keys(attrs).filter(c=>{
-		    return this.display.showFeatureProperty(c);
+		columns  =this.getFeatureInfo().filter(info=>{
+		    return info.showTable();
 		});
-		let rows = columns.map((column,idx)=>{ return this.makeLabel(column,false);});
+		let rows = columns.map((column,idx)=>{ return column.getLabel();});
 		csv+=Utils.join(rows,',');
 		csv+='\n';
 	    }
 	    let rows = columns.map((column,idx)=>{
-		let v = attrs[column]??'';
+		let v = attrs[column.property]??'';
 		if(Utils.isDefined(v.value)) v = v.value;
 		return  String(v).replace(/\n/g,'_nl_');
 	    });
@@ -5493,22 +5537,37 @@ MapGlyph.prototype = {
 	Utils.makeDownloadFile('features.csv',csv);
     },
 
-    showFeaturesTable:function(anchor) {
+    updateFeaturesTable:function() {
+	if(!this.featuresTableDialog) return;
 	let tableId = HU.getUniqueId("table");
 	let table =this.getFeaturesTable(tableId);
-	let html =  HU.div(['id',this.domId('downloadfeatures'),'class','ramadda-clickable'],'Download Table') +
-	    HU.div(['style',HU.css('margin','5px','max-width','1000px','overflow-x','scroll')],table);
-	html = HU.div(['style','margin:5px;'], html);
-	let dialog = HU.makeDialog({content:html,title:this.name,header:true,my:'left top',at:'left bottom',draggable:true,anchor:anchor});
-	
-	this.jq('downloadfeatures').button().click(()=>{
-	    this.downloadFeaturesTable();
-	});
+	let html='';
+	if(!table) {
+	    html += HU.div(['style','width:200px;margin:10px;'],'No data');
+	} else {
+	    html +=  
+		HU.div(['style',HU.css('margin','5px','max-width','1000px','overflow-x','scroll')],table);
+	    html = HU.div(['style','margin:5px;'], html);
+	}
+	this.jq('featurestable').html(html);
 	HU.formatTable('#'+tableId,{scrollX:true});
 	let _this = this;
-	dialog.find('.imdv-feature-table-row').click(function() {
+	this.featuresTableDialog.find('.imdv-feature-table-row').click(function() {
 	    let feature = _this.featureTableMap[$(this).attr('featureidx')];
 	    _this.display.getMap().centerOnFeatures([feature]);
+	});
+    },
+    showFeaturesTable:function(anchor) {
+	if(this.featuresTableDialog)
+	    this.featuresTableDialog.remove();
+	let html =  HU.div(['id',this.domId('downloadfeatures'),'class','ramadda-clickable'],'Download Table');
+	html+=HU.div(['id',this.domId('featurestable')]);
+	html = HU.div(['style','margin:10px;'], html);
+	this.featuresTableDialog = HU.makeDialog({content:html,title:this.name,header:true,my:'left top',at:'left bottom',draggable:true,anchor:anchor});
+	
+	this.updateFeaturesTable();
+	this.jq('downloadfeatures').button().click(()=>{
+	    this.downloadFeaturesTable();
 	});
     },
     getHelp:function(url,label) {
@@ -5879,7 +5938,9 @@ MapGlyph.prototype = {
 		if($("#"+this.zoomonchangeid).is(':checked')) {
 		    this.panMapTo();
 		}
+		this.updateFeaturesTable();
 	    };
+
 	    let clearAll = HU.span(['style','margin-right:5px;','class','ramadda-clickable','title','Clear Filters','id',this.domId('filters_clearall')],HU.getIconImage('fas fa-eraser',null,LEGEND_IMAGE_ATTRS));
 
 	    this.zoomonchangeid = HU.getUniqueId("andzoom");
@@ -5910,6 +5971,7 @@ MapGlyph.prototype = {
 		this.display.featureChanged();
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
+		this.updateFeaturesTable();
 	    });
 	    this.jq(ID_MAPFILTERS).find('.imdv-filter-string').keypress(function(event) {
 		let keycode = (event.keyCode ? event.keyCode : event.which);
@@ -6283,6 +6345,8 @@ MapGlyph.prototype = {
 		f.mapPoint.filtered =false;
 	    }
 
+	    f.isVisible  = visible;
+	    
 	    if(!visible) {
 		if(!f.style) f.style={};
 		f.style.display='none';
