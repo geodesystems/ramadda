@@ -1,6 +1,8 @@
-var build_date="RAMADDA build date: Sun Jan  8 17:15:34 MST 2023";
+var build_date="RAMADDA build date: Sun Jan  8 17:45:31 MST 2023";
 
-
+/*
+ * Copyright (c) 2008-2023 Geode Systems LLC
+ */
 
 $.extend(Utils,{
     smoothColorTable: function(a,steps) {
@@ -610,7 +612,7 @@ Utils.ColorTables =  {
 };
 
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 function AreaWidget(display) {
@@ -3691,7 +3693,7 @@ Glyph.prototype = {
 
 }
 /**
-   Copyright 2008-2022 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -12109,7 +12111,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 
 
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -12837,7 +12839,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2020 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 const FILTER_ALL = "-all-";
@@ -17231,7 +17233,7 @@ function makeInlineData(display, src) {
     return  new PointData(src, fields, records,"#" + src);
 }
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -21393,7 +21395,7 @@ function OrgchartDisplay(displayManager, id, properties) {
     });
 }
 /*
-  Copyright 2008-2021 Geode Systems LLC
+  Copyright 2008-2023 Geode Systems LLC
 */
 
 const DISPLAY_SLIDES = "slides";
@@ -22524,7 +22526,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -23696,7 +23698,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 
 
 /**
-Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 const DISPLAY_NOTEBOOK = "notebook";
@@ -26392,7 +26394,7 @@ function NotebookChunk(cell, props) {
     this.initChunk(props);
 }
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -27838,7 +27840,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     })
 }
 /*
-  Copyright 2008-2021 Geode Systems LLC
+  Copyright 2008-2023 Geode Systems LLC
 */
 
 const DISPLAY_WORDCLOUD = "wordcloud";
@@ -30428,7 +30430,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 
 
 /**
-Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -34100,7 +34102,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 
 
 /**
-Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -34171,8 +34173,9 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
             this.jq(ID_CLICK).html("Click again");
         }
     });
-}/**
-   Copyright 2008-2021 Geode Systems LLC
+}
+/**
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -46763,13 +46766,11 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	this.setParentGlyph(null);
 
 	if(this.children) {
-	    this.children.forEach(child=>{
+	    let tmp = [...this.children];
+	    tmp.forEach(child=>{
 		child.doRemove();
 	    });
 	}
-
-
-	
     }
 }
 
@@ -46780,7 +46781,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 }
 
 /*
-  Copyright 2008-2021 Geode Systems LLC
+  Copyright 2008-2023 Geode Systems LLC
 */
 
 const DISPLAY_GRAPH = "graph";
@@ -51405,7 +51406,7 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -53215,7 +53216,7 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
@@ -54444,7 +54445,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
     });
 }
 /**
-Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 
