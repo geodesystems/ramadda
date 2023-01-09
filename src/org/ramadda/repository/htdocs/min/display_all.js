@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan  8 20:05:10 MST 2023";
+var build_date="RAMADDA build date: Mon Jan  9 12:09:06 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43849,6 +43849,7 @@ var ID_MAPLEGEND = 'maplegend';
 
 MapGlyph.prototype = {
     CLASS_NAME:'MapGlyph',
+    animationInfo:{},
     domId:function(id) {
 	return this.getId() +'_'+this.display.domId(id);
     },
@@ -45236,8 +45237,6 @@ MapGlyph.prototype = {
 
     },
 
-
-
     getFeaturesTable:function(id) {
 	let columns  =this.getFeatureInfo().filter(info=>{
 	    return info.showTable();
@@ -45268,13 +45267,14 @@ MapGlyph.prototype = {
 	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', rowIdx,'class','imdv-feature-table-row ramadda-clickable']);
 	    columns.forEach((column,idx)=>{
 		let stat =  stats[idx];
-		let v = attrs[column.property]??'';
+		let v= this.getFeatureValue(feature,column.property);
+//		let v = attrs[column.property]??'';
 		if(Utils.isDefined(v.value)) v = v.value;
+//		console.dir(column.property,v,attrs[column.property]);
 		let nv = +v;
 		let sv = String(v);
-		let isNumber = false;
-		if(sv!='' && !isNaN(nv)) {
-		    isNumber=true;
+		let isNumber = column.isNumeric();
+		if(isNumber && sv!='' && !isNaN(nv)) {
 		    stat.count++;
 		    stat.min = first?nv:Math.min(nv, stat.min);
 		    stat.max = first?nv:Math.max(nv, stat.max);		    
@@ -45367,7 +45367,11 @@ MapGlyph.prototype = {
 	let html =  HU.div(['id',this.domId('downloadfeatures'),'class','ramadda-clickable'],'Download Table');
 	html+=HU.div(['id',this.domId('featurestable')]);
 	html = HU.div(['style','margin:10px;'], html);
-	this.featuresTableDialog = HU.makeDialog({content:html,title:this.name,header:true,my:'left top',at:'left bottom',draggable:true,anchor:anchor});
+	this.featuresTableDialog =
+	    HU.makeDialog({content:html,title:this.name,header:true,draggable:true,
+			   my:'left top',
+			   at:'left bottom',
+			   anchor:anchor});
 	
 	this.updateFeaturesTable();
 	this.jq('downloadfeatures').button().click(()=>{
@@ -45551,7 +45555,8 @@ MapGlyph.prototype = {
 		    return this.id;
 		},
 		getProperty:function(prop,dflt) {
-		    return   _this.getProperty(this.id+'.' + prop,dflt);
+		    let v =    _this.getProperty(this.id+'.' + prop,dflt);
+		    return v;
 		},
 		show: function() {
 		    return  this.getProperty('show',_this.getProperty('feature.show',true));
@@ -45567,7 +45572,7 @@ MapGlyph.prototype = {
 		},				
 
 		getType:function() {
-		    return this.getProperty('filter.type',this.type);
+		    return this.getProperty('type',this.type);
 		},
 		getLabel:function(addSpan) {
 		    let label  =this.getProperty('label');
@@ -45576,7 +45581,7 @@ MapGlyph.prototype = {
 		    return label;
 		},
 
-		isNumeric:function(){return this.getType()=='numeric';},
+		isNumeric:function(){return this.isInt() || this.getType()=='numeric';},
 		isInt:function() {return this.getType()=='int';},
 		isString:function() {return this.getType()=='string';},
 		isEnumeration:function() {return this.getType()=='enumeration';},
@@ -45677,14 +45682,17 @@ MapGlyph.prototype = {
     },
     makeFeatureFilters:function() {
 	let _this = this;
+	let first = "";
 	let sliders = "";
 	let strings = "";
 	let enums = "";
 	let filters = this.attrs.featureFilters = this.attrs.featureFilters ??{};
+	this.filterInfo = {};
 	this.getFeatureInfo().forEach(info=>{
 	    if(!info.showFilter()) {
 		return;
 	    }
+	    this.filterInfo[info.id] = info;
 	    let filter = filters[info.property] = filters[info.property]??{};
 	    let id = info.getId();
 	    let label = HU.span(['title',info.property],HU.b(info.getLabel()));
@@ -45692,8 +45700,9 @@ MapGlyph.prototype = {
 		filter.type="string";
 		let attrs =['filter-property',info.property,'class','imdv-filter-string','id',this.domId('string_'+ id),'size',20];
 		attrs.push('placeholder',this.getProperty(info.property.toLowerCase()+'.filterPlaceholder',''));
-		strings+=label+":<br>" +
+		let string=label+":<br>" +
 		    HU.input("",filter.stringValue??"",attrs) +"<br>";
+		if(info.getProperty('filter.first')) first+=string; else strings+=string;
 		return
 	    } 
 	    if(info.samples.length)  {
@@ -45708,31 +45717,51 @@ MapGlyph.prototype = {
 			    label = '&lt;blank&gt;' +' (' + info.seen[sample.value]+')';
 			return {value:sample.value,label:label}
 		    });
-		    enums+=label+":<br>" +
+		    let line=label+":<br>" +
 			HU.select("",['style','width:90%;','filter-property',info.property,'class','imdv-filter-enum','id',this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,5)],options,filter.enumValues,50)+"<br>";
+		    if(info.getProperty('filter.first')) first+=line; else enums+=line;
 		}
 		return;
 	    }
 
 
 	    if((info.isNumeric() || info.isInt()) && (info.min<info.max)) {
-		filter.minValue = info.min;
-		filter.maxValue = info.max;		
+		let min = info.getProperty('filter.min',info.min);
+		let max = info.getProperty('filter.max',info.max);		
+		filter.minValue = min;
+		filter.maxValue = max;
 		filter.type="range";
-		sliders+=HU.b(label)+":<br>" +
-		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??info.min)),
-				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??info.max))) +
-		    HU.div(['slider-min',info.min,'slider-max',info.max,'slider-isint',info.isInt(),
+
+
+		let line =
+		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??min)),
+				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??max)));
+		let slider =  HU.div(['slider-min',min,'slider-max',max,'slider-isint',info.isInt(),
 			    'slider-value-min',filter.min??info.min,'slider-value-max',filter.max??info.max,
-			    'filter-property',info.property,'class','imdv-filter-slider',
-			    STYLE,HU.css("display","inline-block","width","100%")],"")+"<br>";			    
+				      'filter-property',info.property,'feature-id',info.id,'class','imdv-filter-slider',
+				      'style',HU.css("display","inline-block","width","100%")],"");
+		if(info.getProperty('filter.animate',false)) {
+		    line+=HU.table(['width','100%'],
+				   HU.tr([],
+					 HU.td(['width','18px'],HU.span(['feature-id',info.id,'class','imdv-filter-play ramadda-clickable','title','Play'],HU.getIconImage('fas fa-play'))) +
+					 HU.td([],slider)));
+		} else {
+		    line+=slider;
+		}
+
+
+		line =  HU.b(label)+":<br>" +line;
+		if(info.getProperty('filter.first')) first+=line; else sliders+=line;
 	    }
 	});
 
 
-	if(sliders!="")
+	if(sliders!='')
 	    sliders = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],sliders);
-	let widgets = enums+sliders+strings;
+	if(first!='')
+	    first = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],first);	    
+
+	let widgets = first+enums+sliders+strings;
 
 
 	if(widgets!="") {
@@ -45797,7 +45826,28 @@ MapGlyph.prototype = {
 		update();
 	    });
 
-	    this.jq(ID_MAPFILTERS).find('.imdv-filter-slider').each(function() {
+	    let sliderMap = {};
+	    let sliders = this.jq(ID_MAPFILTERS).find('.imdv-filter-slider');
+	    sliders.each(function() {
+		let theFeatureId = $(this).attr('feature-id');
+		let onSlide = function( event, ui, force) {
+		    let id = theFeatureId;
+		    let filter = filters[id]??{};
+		    filter.min = +ui.values[0];
+		    filter.max = +ui.values[1];			    
+		    filter.property=id;
+		    _this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
+		    _this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
+		    if(force) {
+			update();
+			return
+		    }
+		    if(!_this.sliderThrottle) 
+			_this.sliderThrottle=Utils.throttle(()=>{
+			    update();
+			},1000);
+		    _this.sliderThrottle();
+		};
 		let min = +$(this).attr('slider-min');
 		let max = +$(this).attr('slider-max');
 		let isInt = $(this).attr('slider-isint')=="true";
@@ -45809,28 +45859,69 @@ MapGlyph.prototype = {
 		    if(range>10)
 			step = Math.max(1,Math.floor(range/100));		    
 		}
+		sliderMap[$(this).attr('feature-id')] = {
+		    slider:   $(this),
+		    slide:onSlide,
+		    min:min,
+		    max:max,
+		    step:step
+		}
+
 		$(this).slider({		
 		    min: parseFloat(min),
 		    max: parseFloat(max),
 		    step:step,
 		    values:[+$(this).attr('slider-value-min'),+$(this).attr('slider-value-max')],
-		    slide: function( event, ui ) {
-			let key = $(this).attr('filter-property');
-			let id = Utils.makeId(key);
-			let filter = filters[key]??{};
-			filter.min = +ui.values[0];
-			filter.max = +ui.values[1];			    
-			filter.property=key;
-			_this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
-			_this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
-
-			if(!_this.sliderThrottle) 
-			    _this.sliderThrottle=Utils.throttle(()=>{
-				update();
-			    },1000);
-			_this.sliderThrottle();
-		    }});
+		    slide: onSlide});
 	    });
+
+	    this.jq(ID_MAPFILTERS).find('.imdv-filter-play').click(function() {
+		let playing = $(this).attr('playing');
+		let info = _this.filterInfo[$(this).attr('feature-id')];
+		if(!info) return;
+		let animation = _this.animationInfo[info.id];
+		if(!animation) {
+		    _this.animationInfo[info.id] = animation  = {};
+		}
+		let sliderInfo = sliderMap[info.id];
+		if(!sliderInfo) return;
+		let slider = sliderInfo.slider;
+		if(Utils.isDefined(playing) && playing==='true') {
+		    $(this).html(HU.getIconImage('fas fa-play'));
+		    $(this).attr('playing',false);
+		    if(animation.timeout) {
+			clearTimeout(animation.timeout);
+			animation.timeout = null;
+		    }
+		} else {
+		    $(this).html(HU.getIconImage('fas fa-stop'));
+		    $(this).attr('playing',true);
+		    let step = (_values) =>{
+			let values = _values?? slider.slider('values');
+			if(values[1]>=sliderInfo.max) {
+			    $(this).html(HU.getIconImage('fas fa-play'));
+			    $(this).attr('playing',false);			    
+			    return;
+			}
+			values = [values[0],values[1]];
+			let stepSize = parseFloat(info.getProperty('filter.animate.step',sliderInfo.step*2));
+			values[1]=Math.min(sliderInfo.max,values[1]+stepSize);
+			slider.slider('values',values);
+			sliderInfo.slide({},{values:values},true);
+			animation.timeout = setTimeout(step,info.getProperty('filter.animate.sleep',1000));
+		    };
+		    let values = slider.slider('values');
+		    //If at the end then set to the start
+		    if(values[1]>=sliderInfo.max) {
+			values[1] = values[0];
+			step(values);
+		    } else {
+			step();
+		    }
+		}
+
+	    });
+
 	}
     },
     handleMapLoaded: function(map,layer) {
