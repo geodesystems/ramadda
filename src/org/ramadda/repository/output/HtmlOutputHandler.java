@@ -1048,9 +1048,12 @@ public class HtmlOutputHandler extends OutputHandler {
                    HU.style("padding:0px;margin:0px;margin-bottom:0px;"));
 
         boolean firstCall = false;
+
+	Entry localeEntry = null;
         //If we have a localeid that means this is the first call
         if (localeId != null) {
             firstCall = true;
+            localeEntry = getEntryManager().getEntry(request, localeId);
 	}
 
         if (firstCall) {
@@ -1062,60 +1065,56 @@ public class HtmlOutputHandler extends OutputHandler {
 		newRequest.put(Constants.ARG_ORDERBY, Constants.ORDERBY_CREATEDATE);
 		newRequest.put(Constants.ARG_ASCENDING,"false");
 		List<Entry> byType =   getEntryManager().getEntriesWithType(newRequest, type);
-		if(byType.size()>0) {
-		    boolean didOne = false;
-		    for(Entry entry: byType) {
-			String link = getSelectLink(request, entry, seen, target);
-			if (link.length() == 0) {
-			    continue;
-			}
-			if ( !didOne) {
-			    sb.append(HU.center(HU.b(typeLabel)));
-			    HU.open(sb, "div", HU.cssClass("ramadda-select-block  ramadda-select-inner"));
-			}
-			didOne = true;
-			sb.append(link);
-		    }		    
-		    if (didOne) {
-			HU.close(sb, "div");
-			sb.append(sectionDivider);
+		boolean didOne = false;
+		for(Entry entry: byType) {
+		    String link = getSelectLink(request, entry, seen, target);
+		    if (link.length() == 0) {
+			continue;
 		    }
+		    if (!didOne) {
+			sb.append(HU.center(HU.b(typeLabel)));
+			HU.open(sb, "div", HU.cssClass("ramadda-select-block  ramadda-select-inner"));
+		    }
+		    didOne = true;
+		    sb.append(link);
+		}		    
+		if (didOne) {
+		    HU.close(sb, "div");
+		    sb.append(sectionDivider);
 		}
 	    }
 	}
 
 
-	if(localeId!=null) {
-            Entry localeEntry = getEntryManager().getEntry(request, localeId);
-            if (localeEntry != null) {
-                if (target.endsWith("_fieldname")) {
-                    String type = request.getString(ATTR_TYPE, "");
-                    sb.append(getSelectLink(request, localeEntry, seen,
-                                            target));
-                }
-                if ( !localeEntry.isGroup()) {
-                    localeEntry = getEntryManager().getParent(request,
-                            localeEntry);
-                }
-                if (localeEntry != null) {
-                    sb.append(HU.open("div",
-                                      HU.cssClass("ramadda-select-block ramadda-select-inner")));
-                    Entry grandParent = getEntryManager().getParent(request,
-                                            localeEntry);
-                    String indent = "";
-                    if (grandParent != null) {
-                        sb.append(getSelectLink(request, grandParent, seen,
-                                target));
-                    }
-                    sb.append(indent);
-                    sb.append(getSelectLink(request, localeEntry, seen,
-                                            target));
-                    localeId = localeEntry.getId();
-                    sb.append(HU.close("div"));
-                    sb.append(sectionDivider);
-                }
-            }
-        }
+	if (localeEntry != null) {
+	    if (target.endsWith("_fieldname")) {
+		String type = request.getString(ATTR_TYPE, "");
+		sb.append(getSelectLink(request, localeEntry, seen,
+					target));
+	    }
+	    if ( !localeEntry.isGroup()) {
+		localeEntry = getEntryManager().getParent(request,
+							  localeEntry);
+	    }
+	    if (localeEntry != null) {
+		sb.append(HU.open("div",
+				  HU.cssClass("ramadda-select-block ramadda-select-inner")));
+		Entry grandParent = getEntryManager().getParent(request,
+								localeEntry);
+		String indent = "";
+		if (grandParent != null) {
+		    sb.append(getSelectLink(request, grandParent, seen,
+					    target));
+		}
+		sb.append(indent);
+		sb.append(getSelectLink(request, localeEntry, seen,
+					target));
+		localeId = localeEntry.getId();
+		sb.append(HU.close("div"));
+		sb.append(sectionDivider);
+	    }
+	}
+
 
         if (request.get("firstclick", false)) {
             firstCall = true;
