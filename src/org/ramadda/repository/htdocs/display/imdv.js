@@ -6034,7 +6034,7 @@ MapGlyph.prototype = {
 		    filter.property=id;
 		    _this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
 		    _this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
-		    if(force) {
+		    if(force || _this.getProperty(id+'.filter.live')) {
 			update();
 			return
 		    }
