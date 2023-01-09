@@ -1,4 +1,6 @@
-
+/*
+ * Copyright (c) 2008-2023 Geode Systems LLC
+ */
 
 $.extend(Utils,{
     smoothColorTable: function(a,steps) {

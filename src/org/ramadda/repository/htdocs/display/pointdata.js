@@ -1,5 +1,5 @@
 /**
-   Copyright 2008-2020 Geode Systems LLC
+   Copyright 2008-2023 Geode Systems LLC
 */
 
 const FILTER_ALL = "-all-";

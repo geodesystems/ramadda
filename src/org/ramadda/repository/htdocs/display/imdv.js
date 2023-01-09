@@ -6962,13 +6962,11 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	this.setParentGlyph(null);
 
 	if(this.children) {
-	    this.children.forEach(child=>{
+	    let tmp = [...this.children];
+	    tmp.forEach(child=>{
 		child.doRemove();
 	    });
 	}
-
-
-	
     }
 }
 

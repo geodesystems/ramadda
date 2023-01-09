@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Geode Systems LLC
+ * Copyright (c) 2008-2023 Geode Systems LLC
  */
 
 var imageDoFirst = 1;
