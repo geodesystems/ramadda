@@ -2209,6 +2209,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				HU.input('',this.getMapProperty('legendWidth',''),['id',this.domId('legendwidth'),'size','4']));
 				
 	    right+=HU.formTableClose();
+	    right+=HU.checkbox(this.domId('showbasemapselect'), [],
+			       this.getMapProperty('showBaseMapSelect'),'Show Base Map Select');
+
+
 	    
 	    basic=HU.table([],HU.tr(['valign','top'],HU.td([],basic) + HU.td(['width','50%'], right)));
 	    basic+='<p>';
@@ -2258,7 +2262,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.mapProperties.showMousePosition = this.jq('showmouseposition').is(':checked');
 		this.mapProperties.showAddress = this.jq('showaddress').is(':checked');								
 		this.mapProperties.legendPosition=this.jq('legendposition').val();
-		this.mapProperties.legendWidth=this.jq('legendwidth').val();		
+		this.mapProperties.legendWidth=this.jq('legendwidth').val();
+		this.mapProperties.showBaseMapSelect=this.jq('showbasemapselect').is(':checked');
 		this.mapProperties.topWikiText = this.jq('topwikitext_input').val();
 		this.mapProperties.bottomWikiText = this.jq('bottomwikitext_input').val();
 		this.mapProperties.otherProperties = this.jq('otherproperties_input').val();		
@@ -3202,7 +3207,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let showShapes = this.getMapProperty('showShapes',true);
 	    let legendWidth=parseInt(this.getMapProperty("legendWidth",250));
 	    let legendLabel= this.getMapProperty("legendLabel","");
-	    let html = "";
+	    let html = '';
+	    if(this.getMapProperty('showBaseMapSelect')) {
+		html+=HU.div(['style','margin-bottom:4px;','class','imdv-legend-offset'], HU.b('Base Map: ') +this.getBaseLayersSelect());
+	    }
+
+
 	    let idToGlyph={};
 	    let glyphs = this.getGlyphs();
 	    if(this.getMapProperty('showAddress',false)) {
@@ -3253,6 +3263,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    
 
 
+	    this.initBaseLayersSelect();
 	    this.getGlyphs().forEach((mapGlyph,idx)=>{
 		mapGlyph.initLegend();
 	    });

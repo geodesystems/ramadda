@@ -202,6 +202,32 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
+	getBaseLayersSelect:function() {
+	    if(this.map.baseLayers) {
+		let items = [];
+		let on = false;
+		for(a in this.map.baseLayers) {
+		    let layer = this.map.baseLayers[a];
+		    if(!layer.isBaseLayer) continue;
+		    if(layer.getVisibility()) on = a;
+		    items.push([a,layer.name]);
+		}
+		return  HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],  HU.select("",[ID,this.domId("baselayers")],items,on));
+	    }
+	    return '';
+	},
+	initBaseLayersSelect:function() {
+	    let _this = this;
+	    this.jq("baselayers").change(function() {
+		let on = $(this).val();
+		for(let id in _this.map.baseLayers) {
+		    if(id==on) {
+			_this.map.getMap().setBaseLayer(_this.map.baseLayers[id]);
+			break;
+		    }
+		}
+	    });
+	},
 	checkLevelRange:function(layers, redraw) {
 	    if(!layers) layers=[this.getMap().getMarkersLayer()];
 	    if(this.debugZoom) console.log("features:");
@@ -2350,17 +2376,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    if(this.getShowBaseLayersSelect()) {
-		if(this.map.baseLayers) {
-		    let items = [];
-		    let on = false;
-		    for(a in this.map.baseLayers) {
-			let layer = this.map.baseLayers[a];
-			if(!layer.isBaseLayer) continue;
-			if(layer.getVisibility()) on = a;
-			items.push([a,layer.name]);
-		    }
-		    html += HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],  HU.select("",[ID,this.domId("baselayers")],items,on));
-		}
+		html+=this.getBaseLayersSelect();
 	    }
 
 	    if(this.getProperty("showVectorLayerToggle",false)) {
@@ -2452,15 +2468,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	initHeader2:function() {
 	    let _this = this;
-	    this.jq("baselayers").change(function() {
-		let on = $(this).val();
-		for(let id in _this.map.baseLayers) {
-		    if(id==on) {
-			_this.map.getMap().setBaseLayer(_this.map.baseLayers[id]);
-			break;
-		    }
-		}
-	    });
+	    this.initBaseLayersSelect();
 
 
 	    this.getProperty("locations","").split(",").forEach(url=>{
