@@ -4343,6 +4343,14 @@ public class EntryManager extends RepositoryManager {
         String path = entry.getResource().getPath();
         String mimeType = getRepository().getMimeTypeFromSuffix(
 								IOUtil.getFileExtension(path));
+
+	if(!stringDefined(mimeType) || mimeType.equals("unknown")) {
+	    //If we can't determine  the mime type from the path then sometimes the typehandler
+	    //will have one from the types.xml file
+	    mimeType = entry.getTypeHandler().getMimeType();
+	}
+
+
 	logEntryActivity(request, entry,"download");
 	
         boolean isImage = Utils.isImage(path);
@@ -4380,8 +4388,24 @@ public class EntryManager extends RepositoryManager {
             request.setReturnFilename(fileName, inline);
 
             int response = Result.RESPONSE_OK;
-            InputStream inputStream =
-                getStorageManager().getFileInputStream(file);
+            InputStream inputStream;
+
+	    if (entry.getResource().isUrl()) {
+		String url = entry.getResource().getPath();
+		if ( !url.startsWith("http:") && !url.startsWith("https:")) {
+		    throw new IllegalArgumentException("Can't get a non-http url:" +url);
+		}
+		URLConnection connection = new URL(url).openConnection();
+		//		inputStream         = connection.getInputStream();
+		//		System.err.println("C:" + IOUtil.readContents(inputStream));
+		//		connection = new URL(url).openConnection();
+		inputStream         = connection.getInputStream();
+		Result result = new Result(BLANK, inputStream, mimeType);
+		result.setResponseCode(response);
+		return result;
+	    } 
+	    inputStream = getStorageManager().getFileInputStream(file);
+
 
             String range = (String) request.getHttpHeaderArgs().get("Range");
 
@@ -4413,8 +4437,7 @@ public class EntryManager extends RepositoryManager {
             result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(
 			      getRepository().getProperty("ramadda.http.cachefile", false));
-
-            return result;
+	    return result;
         }
 
     }
