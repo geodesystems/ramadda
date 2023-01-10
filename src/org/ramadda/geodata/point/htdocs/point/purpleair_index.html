@@ -1,6 +1,18 @@
 <html>
 <title>Purple Air</title>
 <body>
++css
+.myimg {
+text-align:center;
+border:1px solid #ccc;
+margin-top:5px;
+margin-bottom:10px;
+display: block;
+margin-left: auto;
+margin-right: auto;
+}
+-css
+
 +section
 
   
@@ -42,7 +54,7 @@ through your Purple Air account.
 :p
 Alternatively, you can access IDs for any public sensor from the map at <a href="https://map.purpleair.com/">https://map.purpleair.com/</a>. Click  on the sensor of interest and you should see the below popup.
 Hover over the "Get This widget" link to see the ID in the embed HTML, e.g. 112686, or in the Download Data link.
-<center><img src=purpleair/purpleair_popup.png width=200></center>
+<img class=myimg src=purpleair/purpleair_popup.png width=200>
 :p
 
 When a new Purple Air Sensor entry is created RAMADDA will fetch the metadata for the sensor, 
@@ -60,10 +72,10 @@ entry in RAMADDA in the private key field just entry "myprivatekey".
 <p>
 
 The default display for a Purple Air Sensor entry is shown below. Note, initially there is no data but over time the data will be fetched from the API. 
-<center><img border=1 src=purpleair/purpleair_entry.png width=600></center>
+<img class=myimg  src=purpleair/purpleair_entry.png width=600>
 :p
 If you want to stop fetching then, go the Edit page for the entry  and set Active to No.
-<center><img border=1 src=purpleair/purpleair_edit.png width=600></center>
+<img class=myimg  src=purpleair/purpleair_edit.png width=600>
 
 :p
 :lheading Select Fields
@@ -124,14 +136,14 @@ visual_range, visual_range_a, visual_range_b
 There are 2 ways to show a map of Purple Air sensor entries.
 Assuming you have a folder that holds the entries of interest (e.g., Test Purple Air)
 the default display of that folder will look like:
-<center><img border=1 src=purpleair/purpleairlist.png width=600></center>
+<img class=myimg  src=purpleair/purpleairlist.png width=600>
 
 To have the folder just show a map go and edit the folder, click on the "wiki display" checkbox, and enter the below
 wiki text.
-<center><img border=1 src=purpleair/wikiedit.png width=600></center>
+<img class=myimg  src=purpleair/wikiedit.png width=600>
 
 This will give a map view of the children entries:
-<center><img border=1 src=purpleair/purpleairmap.png width=600></center>
+<img class=myimg  src=purpleair/purpleairmap.png width=600>
 
 
 :p
@@ -142,26 +154,23 @@ In another folder go to the <i>File-&gt;Pick a Type...</i> menu and look for "In
 under the GIS Data list.
 :p
 Once created select "Multi Entry" under the New menu:
-<center><img border=1 src=purpleair/imdvnew.png width=600></center>
-:br
+<img class=myimg  src=purpleair/imdvnew.png width=600>
 Choose the folder that holds your Purple Air sensor entries. You should
 end up with something like:
-<center><img border=1 src=purpleair/imdv1.png width=600></center>
-:br
+<img class=myimg  src=purpleair/imdv1.png width=600>
 Click on the settings  icon (<i class="fas fa-cog" style="color:#ccc;"></i>) to bring up the
 settings dialog for this multi entry, select "Show entry data" and press OK
-<center><img border=1 src=purpleair/imdv2.png width=600></center>
-:br
+<img class=myimg  src=purpleair/imdv2.png width=600>
 The Purple Air entries in the map will now show a color-coded circle with the
 latest PM2.5 measure:
-<center><img border=1 src=purpleair/imdv3.png width=600></center>
-
-You can also annotate the IMDV map and add other instruments, map layers, etc. e.g.:
-<center><img border=1 src=purpleair/imdv4.png width=600></center>
-
-
-
-
+<img class=myimg  src=purpleair/imdv3.png width=600>
+You can also annotate the IMDV map and add other instruments, map layers, etc.
+For example, below shows a number of individual Purple Air sensors and CR1000 data logger entries. These are created with the  New-&&gt;Entry Marker menu.
+<img class=myimg  src=purpleair/imdv4.png width=600>
+The color bar at the bottom is created with wiki text in the Footer property for the IMDV map.
+Open the main Properties dialog with IMDV File-&gt;Properties menu.
+Add the below wiki text to the Bottom Wiki Text field:
+<img class=myimg  src=purpleair/imdv4.png width=600>
 -section
 </body>
 </html>
