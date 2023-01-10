@@ -5474,9 +5474,9 @@ MapGlyph.prototype = {
 	    table+=HU.openTag('tr',['title','Click to zoom to','featureidx', rowIdx,'class','imdv-feature-table-row ramadda-clickable']);
 	    columns.forEach((column,idx)=>{
 		let stat =  stats[idx];
-		let v= this.getFeatureValue(feature,column.property);
+		let v= this.getFeatureValue(feature,column.property)??'';
 //		let v = attrs[column.property]??'';
-		if(Utils.isDefined(v.value)) v = v.value;
+		if(v && Utils.isDefined(v.value)) v = v.value;
 //		console.dir(column.property,v,attrs[column.property]);
 		let nv = +v;
 		let sv = String(v);
