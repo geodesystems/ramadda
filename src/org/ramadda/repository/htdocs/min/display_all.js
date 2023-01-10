@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan  9 18:33:43 MST 2023";
+var build_date="RAMADDA build date: Mon Jan  9 19:04:13 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -44767,13 +44767,31 @@ MapGlyph.prototype = {
 		    label   = HU.span(['style','font-size:9pt;'],label);
 		    let item = '<tr><td width=16px>';
 		    let style = boxStyle;
+		    let lineWidth;
+		    let lineStyle;
+		    let lineColor;
 		    rule.style.split('\n').forEach(line=>{
 			line  = line.trim();
 			if(line=='') return;
 			let toks = line.split(':');
 			if(toks[0]=='fillColor') style+=HU.css('background',toks[1]);
-			else if(toks[0]=='strokeColor') style+=HU.css('border','1px solid ' +toks[1]);
+			else if(toks[0]=='strokeColor') lineColor = toks[1];
+			else if(toks[0]=='strokeWidth') lineWidth = toks[1];			
+			else if(toks[0]=='strokeDashstyle') {
+			    if(['dot','dashdot'].includes(toks[1])) {
+				lineStyle = "dotted";
+			    } else  if(toks[1].indexOf("dash")>=0) {
+				lineStyle = "dashed";
+			    }
+			}
+	    
 		    });
+
+		    if(lineColor || lineColor||lineWidth) {
+			style+=HU.css('border',HU.getDimension(lineWidth??'1px')+ ' ' + (lineStyle??'solid') + ' ' +
+				      (lineColor??'black'));
+		    }
+
 		    item+=HU.div(['style',style],'')+'</td>';
 		    item += '</td><td>'+ label+'</td></tr>';
 		    rulesLegend+=HU.div([],item);
@@ -45459,7 +45477,7 @@ MapGlyph.prototype = {
 	}
 	rulesTable+=HU.tr([],HU.tds(['style','font-weight:bold;'],['Property','Operator','Value','Style']));
 	let rules = this.getMapStyleRules();
-	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;';
+	let styleTitle = 'e.g.:&#013;fillColor:red&#013;fillOpacity:0.5&#013;strokeColor:blue&#013;strokeWidth:1&#013;strokeDashstyle:solid|dot|dash|dashdot|longdash|longdashdot';
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
 	    let value = rule.value??'';
