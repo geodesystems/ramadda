@@ -239,8 +239,8 @@ var MapUtils =  {
     },
     gridFilter:function(map,features,args) {
 	let opts = {
-	    cellWidth:80,
-	    cellHeight:40
+	    cellWidth:60,
+	    cellHeight:30
 	}
 	if(args) $.extend(opts,args);
 	let b = new OpenLayers.Bounds();
