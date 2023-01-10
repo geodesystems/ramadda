@@ -196,6 +196,18 @@ public class Seesv implements SeesvCommands {
     }
 
 
+    public Seesv(String[]args,InputStream input, OutputStream output) throws Exception {
+	this(args);
+	this.inputStream = input;
+        this.outputStream = output;
+    }	
+
+    public Seesv(List<String> args,InputStream input, OutputStream output) throws Exception {
+        this.args = args;
+	this.inputStream = input;
+        this.outputStream = output;
+    }
+
     /**
      * _more_
      *
@@ -5694,6 +5706,9 @@ public class Seesv implements SeesvCommands {
 	Seesv.setTmpCacheDir(new File("."));
 	IO.setCacheDir(new File("."));
 	Seesv seesv = new Seesv(args);
+	//	FileOutputStream fos = 	new FileOutputStream("test.csv");	
+	//	Seesv seesv = new Seesv(args, new FileInputStream("lines.csv"),fos);
+
 	seesv.commandLine  = true;
 	seesv.setSeesvContext(new SeesvContext() {
 		public List<Class> getClasses() {
