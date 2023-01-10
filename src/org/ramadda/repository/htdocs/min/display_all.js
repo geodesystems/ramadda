@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan  9 20:38:42 MST 2023";
+var build_date="RAMADDA build date: Tue Jan 10 13:32:37 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40173,7 +40173,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
     if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
-	properties.showOpacitySlider=true; 
+	properties.showOpacitySlider=false; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
