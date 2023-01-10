@@ -361,7 +361,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
     if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
-	properties.showOpacitySlider=true; 
+	properties.showOpacitySlider=false; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
