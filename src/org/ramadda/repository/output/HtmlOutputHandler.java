@@ -481,8 +481,12 @@ public class HtmlOutputHandler extends OutputHandler {
             String        type   = request.getString(ARG_SELECTTYPE, "");
             entry.getTypeHandler().addToSelectMenu(request, entry, sb, type,
                     target);
-
 	    if(sb.length()==0) {
+		//Add the parent link for ease of navigation
+		Entry parent = entry.getParentEntry();
+		if (parent != null) {
+		    sb.append(getSelectLink(request, parent, new HashSet(), target, "../"));
+		}
 		addToSelectMenu(request, entry, sb);
 	    }
             return makeAjaxResult(request, sb.toString());
@@ -1033,7 +1037,6 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getSelectXml(Request request, Entry group,
                                List<Entry> children)
             throws Exception {
-
 
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
