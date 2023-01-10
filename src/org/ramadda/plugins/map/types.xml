@@ -3,7 +3,9 @@
 
   <type name="type_map"  foruser="false"/>
 
-  <type name="geo_kml"  super="type_map" description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
+  <type name="geo_kml"  super="type_map"
+	mimetype="application/vnd.google-earth.kml+xml"
+	description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
      <property name="icon" value="/icons/kml.png"/>
      <column name="showmap" label="Show Map" type="boolean" showinhtml="false" default="true"/>
      <wiki><![CDATA[
@@ -40,7 +42,7 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
   </type>
 
 
-  <type name="geo_gpx"  super="type_point" description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
+  <type name="geo_gpx"  mimetype="application/json" super="type_point" description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
     <property name="icon" value="/map/tracks.png"/>
      <xproperty name="point.initialize" value="false"/>
      <column name="distance" label="Distance" type="double" cansearch="true" showinhtml="true" databaseDefault="-1"/>
@@ -195,7 +197,7 @@ mapVar="gpxMap${entryid}" }}
 </type>
 
 
-  <type name="geo_geojson"  description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
+  <type name="geo_geojson"  mimetype="application/json" description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
      <property name="icon" value="/icons/mapfile.png"/>
 <wiki>
 <![CDATA[
