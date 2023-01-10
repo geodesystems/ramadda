@@ -566,8 +566,8 @@ function RepositoryMap(mapId, params) {
 
 	doPopup:true,
 	doPopupSlider:false,
-	popupWidth:200, 
-	popupHeight:200,	
+	popupWidth:400, 
+	popupHeight:250,	
 	popupSliderRight:false,
 	doSelect:true,
         enableDragPan: true,
