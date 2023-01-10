@@ -15,6 +15,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.text.Seesv;
 
 import org.w3c.dom.*;
 
@@ -585,7 +586,29 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		    request.setReturnFilename(entry.getName()+".csv");
 		    request.setHeader("Cache-Control","no-cache, no-store, must-revalidate").setHeader("Pragma","no-cache").setHeader("Expires","0");
 
-		    return new Result(bis,"text/csv");
+		    //		    if(true) return  new Result(bis,"text/csv");
+
+		    PipedInputStream      in   = new PipedInputStream();
+		    PipedOutputStream     out  = new PipedOutputStream(in);
+		    final Seesv seesv = new Seesv(new String[]{"-sort","time_stamp","-p"},
+					    bis,out);		    
+
+
+		    Result theResult = new Result(in,"text/csv");
+		    Misc.run(new Runnable() {
+			    public void run()  {
+				try {
+				    seesv.run(null);
+				} catch(Exception exc) {
+				    System.err.println("Error:" + exc);
+				    exc.printStackTrace();
+				    throw new RuntimeException(exc);
+				}
+			    }
+			});
+
+
+		    return theResult;
 		}
 	    } catch(Exception exc) {
 		messageSB.append(getPageHandler().showDialogError("An error has occurred: " + exc));
