@@ -279,6 +279,9 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String iconPath;
 
+    private String mimeType = "";
+
+
     /** _more_ */
     private String category = CATEGORY_DEFAULT;
 
@@ -472,9 +475,11 @@ public class TypeHandler extends RepositoryManager {
             priority    = Utils.getAttributeOrTag(node, "priority", 999);
             description = Utils.getAttributeOrTag(node, "description", "");
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN,
-                    (String) null);
+						  (String) null);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", "");
             help     = Utils.getAttributeOrTag(node, "help", "");
+            mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", "unknown");	    
+
             String tmp = Utils.getAttributeOrTag(node,
                              PROP_FIELD_FILE_PATTERN, (String) null);
 
@@ -7974,6 +7979,10 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getHelp() {
         return help;
+    }
+
+    public String getMimeType() {
+	return mimeType;
     }
 
     /**
