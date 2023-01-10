@@ -1,7 +1,7 @@
 <html>
 <title>Purple Air</title>
 <body>
-<div class="ramadda-section">
++section
 
   
 <center><h2>Purple Air Data</h2></center>
@@ -42,7 +42,7 @@ through your Purple Air account.
 :p
 Alternatively, you can access IDs for any public sensor from the map at <a href="https://map.purpleair.com/">https://map.purpleair.com/</a>. Click  on the sensor of interest and you should see the below popup.
 Hover over the "Get This widget" link to see the ID in the embed HTML, e.g. 112686, or in the Download Data link.
-<center><img src=purpleair_popup.png width=200></center>
+<center><img src=purpleair/purpleair_popup.png width=200></center>
 :p
 
 When a new Purple Air Sensor entry is created RAMADDA will fetch the metadata for the sensor, 
@@ -60,10 +60,10 @@ entry in RAMADDA in the private key field just entry "myprivatekey".
 <p>
 
 The default display for a Purple Air Sensor entry is shown below. Note, initially there is no data but over time the data will be fetched from the API. 
-<center><img border=1 src=purpleair_entry.png width=600></center>
+<center><img border=1 src=purpleair/purpleair_entry.png width=600></center>
 :p
 If you want to stop fetching then, go the Edit page for the entry  and set Active to No.
-<center><img border=1 src=purpleair_edit.png width=600></center>
+<center><img border=1 src=purpleair/purpleair_edit.png width=600></center>
 
 :p
 :lheading Select Fields
@@ -120,11 +120,45 @@ visual_range, visual_range_a, visual_range_b
 10.0_um_count 10.0_um_count_a, 10.0_um_count_b
 </pre>
 
+:lheading Creating a map view
+There are 2 ways to show a map of Purple Air sensor entries.
+Assuming you have a folder that holds the entries of interest (e.g., Test Purple Air)
+the default display of that folder will look like:
+<center><img border=1 src=purpleair/purpleairlist.png width=600></center>
+
+To have the folder just show a map go and edit the folder, click on the "wiki display" checkbox, and enter the below
+wiki text.
+<center><img border=1 src=purpleair/wikiedit.png width=600></center>
+
+This will give a map view of the children entries:
+<center><img border=1 src=purpleair/purpleairmap.png width=600></center>
+
+
+A richer map display can be created with the 
+<a href="../userguide/imdv.html">Integrated Map Data Viewer (IMDV)</a> display component.
+In another folder go to the <i>File-&gt;Pick a Type...</i> menu and look for "Integrated Map Data"
+under the GIS Data list.
+:p
+Once created select "Multi Entry" under the New menu:
+<center><img border=1 src=purpleair/imdvnew.png></center>
+
+Choose the folder that holds your Purple Air sensor entries. You should
+end up with something like:
+<center><img border=1 src=purpleair/imdv1.png width=600></center>
+
+Click on the <i class="fas fa-cog" style="color:#ccc;"></i> icon to bring up the
+settings dialog, select "Show entry data" and press OK
+<center><img border=1 src=purpleair/imdv2.png width=600></center>
+
+The Purple Air entries in the map will now show a color-coded circle with the
+latest PM2.5 measure:
+<center><img border=1 src=purpleair/imdv3.png width=600></center>
 
 
 
 
-</div>
+
+-section
 </body>
 </html>
 
