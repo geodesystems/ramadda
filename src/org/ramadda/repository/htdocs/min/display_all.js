@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan  9 19:04:13 MST 2023";
+var build_date="RAMADDA build date: Mon Jan  9 19:29:52 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -42500,6 +42500,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(layer.mapGlyph) {
 		    layer.mapGlyph.handleMapLoaded(map,layer);
 		}
+		this.makeLegend()
 	    }
 	    switch(opts.entryType) {
 	    case 'latlonimage': 
@@ -44027,7 +44028,7 @@ MapGlyph.prototype = {
 */
 
 	let domId = this.display.domId('glyphedit_popupText');
-	let featureInfo = this.getFeatureInfo();
+	let featureInfo = this.getFeatureInfoList();
 	let lines = ['${default}'];
 	lines = Utils.mergeLists(['default'],featureInfo.map(info=>{return info.id;}));
 
@@ -44051,7 +44052,7 @@ MapGlyph.prototype = {
 	html=  this.getHelp('#miscproperties')+'<br>';
 	let miscLines =['filter.show=false',
 			'filter.zoomonchange.show=false','filter.toggle.show=false'];
-	this.getFeatureInfo().forEach(info=>{
+	this.getFeatureInfoList().forEach(info=>{
 	    miscLines.push({line:info.id+'.show=true',title:info.property});
 	    miscLines.push({line:info.id+'.label=',title:info.property});	    
 	});
@@ -44585,6 +44586,7 @@ MapGlyph.prototype = {
 	    }
 	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
 	}
+
 	if(forLegend) {
 	    label = HU.div(['title',theLabel+'<br>Click to toggle visibility<br>Shift-click to select','style',HU.css('xmax-width','150px','overflow-x','hidden','white-space','nowrap')], label);	    
 	}
@@ -44663,6 +44665,10 @@ MapGlyph.prototype = {
 	}
 	let label =  this.getLabel(true,true);
 	let body = HU.div(['class','imdv-legend-inner'],this.getLegendBody());
+	if(this.isMap() && !this.mapLoaded) {
+	    body = HU.div(['class','imdv-legend-inner'],'Loading...');
+	}
+
 	if(this.isGroup()) {
 	    let child="";
 	    this.getChildren().forEach(mapGlyph=>{
@@ -45275,13 +45281,13 @@ MapGlyph.prototype = {
     },
 
     getFeaturesTable:function(id) {
-	let columns  =this.getFeatureInfo().filter(info=>{
+	let columns  =this.getFeatureInfoList().filter(info=>{
 	    return info.showTable();
 	});
 	let table;
 	this.featureTableMap = {};
 
-	let featureInfo = this.getFeatureInfo();
+	let featureInfo = this.getFeatureInfoList();
 	let rowCnt=0;
 	let stats;
 	this.mapLayer.features.forEach((feature,rowIdx)=>{
@@ -45360,7 +45366,7 @@ MapGlyph.prototype = {
 	    }
 	    let attrs = feature.attributes;
 	    if(columns==null) {
-		columns  =this.getFeatureInfo().filter(info=>{
+		columns  =this.getFeatureInfoList().filter(info=>{
 		    return info.showTable();
 		});
 		let rows = columns.map((column,idx)=>{ return column.getLabel();});
@@ -45422,7 +45428,7 @@ MapGlyph.prototype = {
     getPropertiesComponent: function(content) {
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.mapLayer.features[0].attributes;
-	let featureInfo = this.featureInfo = this.getFeatureInfo();
+	let featureInfo = this.featureInfo = this.getFeatureInfoList();
 	let keys  = Object.keys(featureInfo);
 	let numeric = featureInfo.filter(info=>{return info.isNumeric();});
 	let enums = featureInfo.filter(info=>{return info.isEnumeration();});
@@ -45570,7 +45576,7 @@ MapGlyph.prototype = {
 	if(!Utils.isDefined(value)) return null;
 	return  this.cleanupFeatureValue(value);
     },
-    getFeatureInfo:function() {
+    getFeatureInfoList:function() {
 	if(this.featureInfo) return this.featureInfo;
 	if(!this.mapLayer?.features) return [];
 	let features= this.mapLayer.features;
@@ -45688,7 +45694,14 @@ MapGlyph.prototype = {
 	});
 	return this.featureInfo;
     },
+    getFeatureInfo:function(property) {
+	this.getFeatureInfoList();
+	if(this.featureInfoMap) return this.featureInfoMap[property];
+	return null;
+    },
     makeLabel:function(l,makeSpan) {
+	let info = this.getFeatureInfo(l);
+	if(info) return info.getLabel(makeSpan);
 	let id = Utils.makeId(l);
 	let label = l;
 	if(id=='shapestlength') {
@@ -45725,7 +45738,7 @@ MapGlyph.prototype = {
 	let enums = "";
 	let filters = this.attrs.featureFilters = this.attrs.featureFilters ??{};
 	this.filterInfo = {};
-	this.getFeatureInfo().forEach(info=>{
+	this.getFeatureInfoList().forEach(info=>{
 	    if(!info.showFilter()) {
 		return;
 	    }
@@ -45989,7 +46002,7 @@ MapGlyph.prototype = {
 	if(template.indexOf('${default}')>=0) {
 	    let columns = [];
 	    let labelMap = {};
-	    this.getFeatureInfo().forEach(info=>{
+	    this.getFeatureInfoList().forEach(info=>{
 		if(info.showPopup()) {
 		    columns.push(info.property);
 		    labelMap[info.property] = info.getLabel();
