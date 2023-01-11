@@ -107,7 +107,9 @@ fields="latitude,longitude,alt.*|elev.*"}}
     <property name="form.location.show" value="true"/>
     <property name="form.properties.show" value="false"/>
     <property name="map.chart.fields" value="temperature,pm2.5"/>          
-     <column  name="sensor_id"  label="Sensor ID" type="string"/>
+    <column  name="sensor_id"  label="Sensor ID" type="string"
+	     showinformfirst="true"
+	     postfix="&lt;thin_hr&gt;" help="Enter the sensor ID:"/>
      <column  name="private_key"  label="Private Key"  type="password"/>
      <column  name="active"  label="Active"  type="boolean" default="true"/>     
      <column  name="fields"  label="Fields"  type="enumeration" values="short:Short,all:All"
