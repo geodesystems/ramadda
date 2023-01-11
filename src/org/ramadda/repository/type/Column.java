@@ -164,11 +164,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
+
     /** _more_ */
     public static final String ATTR_LOOKUPDB = "lookupdb";
 
     /** _more_ */
     public static final String ATTR_HELP = "help";
+    public static final String ATTR_POSTFIX = "postfix";    
 
     /** _more_ */
     public static final String ATTR_SORT_ORDER = "sortOrder";
@@ -328,11 +330,12 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean isMediaUrl = false;
 
 
-    /** _more_ */
-    private String suffix;
+
+    private String suffix;    
 
     /** _more_ */
     private String help;
+    private String postFix;    
 
     private String searchHelp;
 
@@ -517,6 +520,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
+        postFix = Utils.getAttributeOrTag(element, ATTR_POSTFIX, (String) null);	
         searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
 
 	//	if(Utils.stringDefined(suffix))
@@ -2657,6 +2661,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             formBuffer.append(typeHandler.formEntry(request,
                     getLabel() + ":", widget));
         }
+	if(Utils.stringDefined(postFix)) {
+	    formBuffer.append("<tr><td colspan=2>" + postFix+"</td></tr>");
+	}
         formBuffer.append("\n");
     }
 
@@ -4190,6 +4197,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     public String getHelp() {
         return help;
     }
+
+    public String getPostFix() {
+        return postFix;
+    }    
 
 
 
