@@ -41022,6 +41022,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         var r = parseFloat(node.getAttributeNS(null, "r"));
         var widthFactor = 1;
         var pos;
+
         if (node._geometryClass == "OpenLayers.Geometry.Point" && r) {
             node.style.visibility = "";
             if (style.graphic === false) {
@@ -41109,8 +41110,13 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
                 }
             }
         }
-        
-        if (options.isFilled) {
+
+	//Jeffmc - add to handle fill patterns
+	if(style.fillPattern && style.fillPattern!='' && window.olGetPatternId) {
+	    let id = window.olGetPatternId(this, style.fillPattern,style.strokeColor,style.fillColor);
+            node.setAttributeNS(null, "fill", 'url(#' + id+')');
+            node.setAttributeNS(null, "fill-opacity", style.strokeOpacity);
+	} else    if (options.isFilled) {
             node.setAttributeNS(null, "fill", style.fillColor);
             node.setAttributeNS(null, "fill-opacity", style.fillOpacity);
         } else {
@@ -41991,6 +41997,7 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         if (title) {
             node.title = title;
         } 
+
 
         if (node._geometryClass === "OpenLayers.Geometry.Point") {
             if (style.externalGraphic) {
