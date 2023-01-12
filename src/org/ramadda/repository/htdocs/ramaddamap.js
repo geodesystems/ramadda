@@ -1943,6 +1943,7 @@ RepositoryMap.prototype = {
             pointRadius: props.pointRadius,
             fillOpacity: props.fillOpacity,
             fillColor: props.fillColor,
+	    fillPattern: props.fillPattern,
             fill: props.fill,
             strokeColor: props.strokeColor,
             strokeWidth: props.strokeWidth

@@ -1340,6 +1340,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    this.addGlyph(newOnes);
 	},
+
 	initSideHelp:function(dialog) {
 	    dialog.find('.imdv-property').click(function(){
 		let value = $(this).attr('value');
@@ -1358,6 +1359,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props.suffix) props.suffix='';	    
 	    let help = '';
 	    lines.forEach((line)=>{
+		if(line.info) {
+		    help+=HU.div(['class','ramadda-clickable imdv-property-popup','target',target,
+				  'info-id',line.info], line.title);
+		    return;
+		}
 		let attrs = ['class','ramadda-clickable imdv-property','target',target];
 		if(line.title) {
 		    attrs.push('title',line.title);
@@ -1597,6 +1603,62 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.select("",['id',domId],items,v);			
 			} else if(prop=="showLabels") {
 			    widget = HU.checkbox(domId,[],v);
+			} else if(prop=='fillPattern') {
+			    let patterns = [
+				'',
+				'circles-1',
+				'circles-2',
+				'circles-3',
+				'circles-4',
+				'circles-5',
+				'circles-6',
+				'circles-7',
+				'circles-8',
+				'circles-9',
+				'diagonal-stripe-1',
+				'diagonal-stripe-2',
+				'diagonal-stripe-3',
+				'diagonal-stripe-4',
+				'diagonal-stripe-5',
+				'diagonal-stripe-6',
+				'dots-1',
+				'dots-2',
+				'dots-3',
+				'dots-4',
+				'dots-5',
+				'dots-6',
+				'dots-7',
+				'dots-8',
+				'dots-9',
+				'horizontal-stripe-1',
+				'horizontal-stripe-2',
+				'horizontal-stripe-3',
+				'horizontal-stripe-4',
+				'horizontal-stripe-5',
+				'horizontal-stripe-6',
+				'horizontal-stripe-7',
+				'horizontal-stripe-8',
+				'horizontal-stripe-9',
+				'vertical-stripe-1',
+				'vertical-stripe-2',
+				'vertical-stripe-3',
+				'vertical-stripe-4',
+				'vertical-stripe-5',
+				'vertical-stripe-6',
+				'vertical-stripe-7',
+				'vertical-stripe-8',
+				'vertical-stripe-9',
+				'crosshatch',
+				'houndstooth',
+				'lightstripe',
+				'smalldot',
+				'verticalstripe',
+				'whitecarbon'];
+			    let opts = patterns.map(p=>{
+				if(p=='') return {value:'',label:'None'};
+				return {value:p,label:p};
+			    });
+			    widget =  HU.select("",['id',domId],opts,v);			
 			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Offset")>=0 || prop=="rotation") {
 			    let isRotation = prop=="rotation";
 			    if(!Utils.isDefined(v)) {
@@ -1706,6 +1768,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
 	    HU.makeAccordion('#'+accord.id);
+	    if(mapGlyph)
+		mapGlyph.initSideHelp(dialog);
 	    this.initSideHelp(dialog);
 
 
@@ -2940,7 +3004,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',			      
 			   strokeLinecap: 'butt',
 			   fillColor:"transparent",
-			   fillOpacity:1.0},
+			   fillOpacity:1.0,
+			   fillPattern:''},
 			  MyPolygon,
 			  {icon:ramaddaBaseUrl+"/icons/polygon.png"});
 
@@ -2959,7 +3024,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',
 			   strokeLinecap: 'butt',
 			   fillColor:"transparent",
-			   fillOpacity:1.0},
+			   fillOpacity:1.0,fillPattern:''},
 			  MyPolygon,
 			  {freehand:true,icon:ramaddaBaseUrl+"/icons/freehandclosed.png"});
 
@@ -2969,7 +3034,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',
 			   strokeOpacity:1,
 			   fillColor:"transparent",
-			   fillOpacity:1.0},
+			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:4,irregular:true,
 			   icon:ramaddaBaseUrl+"/icons/rectangle.png"});
@@ -2979,7 +3044,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',
 			   strokeOpacity:1,
 			   fillColor:"transparent",
-			   fillOpacity:1.0},
+			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:45,sides:40,icon:ramaddaBaseUrl+"/icons/ellipse.png"});
 
@@ -2989,7 +3054,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',
 			   strokeOpacity:1,
 			   fillColor:"transparent",
-			   fillOpacity:1.0},
+			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
 			   icon:ramaddaBaseUrl+"/icons/triangle.png"});				
@@ -2999,7 +3064,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',
 			   strokeOpacity:1,
 			   fillColor:"transparent",
-			   fillOpacity:1.0},
+			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
 			   icon:ramaddaBaseUrl+"/icons/hexagon.png"});		
@@ -3012,6 +3077,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeOpacity:1,
 			   fillColor:"transparent",
 			   fillOpacity:1.0,
+			   fillPattern:'',
 			   pointRadius:3,
 			   externalGraphic:'',
 			   fontColor: this.getProperty("labelFontColor","#000"),
@@ -4067,6 +4133,43 @@ MapGlyph.prototype = {
     getFixedId: function() {
 	return this.domId('_fixed');
     },
+    initSideHelp:function(dialog) {
+	let _this = this;
+	dialog.find('.imdv-property-popup').click(function() {
+	    let id  = $(this).attr('info-id');
+	    let target  = $(this).attr('target');	    
+	    let info = _this.getFeatureInfo(id);
+	    if(!info) return;
+	    let html = HU.b(info.getLabel());
+	    let items =   ['show=true','label=','filter.first=true']
+	    if(info.isNumeric()) {
+		items.push('filter.min=0',
+			   'filter.max=100',
+			   'filter.animate=true',
+			   'filter.animate.step=1',
+			   'filter.animate.sleep=100',
+			   'filter.live=true');
+	    }
+
+	    items.forEach(item=>{
+		let label = item.replace('=.*','');
+		html+=HU.div(['style','margin-left:10px;', 'class','ramadda-menu-item ramadda-clickable','item',item],item);
+	    });
+
+	    html = HU.div(['style','margin-left:10px;margin-right:10px;'],html);
+	    let dialog =  HU.makeDialog({content:html, anchor:$(this)});
+	    dialog.find('.ramadda-clickable').click(function() {
+		dialog.remove();
+		let item = $(this).attr('item');
+		let line = info.id+'.' + item+'\n';
+		let textComp = GuiUtils.getDomObject(target);
+		if(textComp) {
+		    insertAtCursor('', textComp.obj, line);
+		}
+	    });
+	});
+    },
+
     getElevations:async function(points,callback,update) {
 	let elevations = points.map(()=>{return 0;});
 	let ok = true;
@@ -4241,8 +4344,8 @@ MapGlyph.prototype = {
 	let miscLines =['filter.show=false',
 			'filter.zoomonchange.show=false','filter.toggle.show=false'];
 	this.getFeatureInfoList().forEach(info=>{
-	    miscLines.push({line:info.id+'.show=true',title:info.property});
-	    miscLines.push({line:info.id+'.label=',title:info.property});	    
+//	    miscLines.push({line:info.id+'.show=true',title:info.property});
+	    miscLines.push({info:info.id,title:info.getLabel()});	    
 	});
 
 	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),{suffix:'\n'});
@@ -4250,9 +4353,7 @@ MapGlyph.prototype = {
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',6,'cols', 40]),
 			 HU.space(2),ex]);
-	content.push({header:'Settings',contents:html});
-
-
+	content.push({header:'Feature Flags',contents:html});
     },
     addElevations:async function(update,done) {
 	let pts;
@@ -4853,9 +4954,6 @@ MapGlyph.prototype = {
 	}
 	let label =  this.getLabel(true,true);
 	let body = HU.div(['class','imdv-legend-inner'],this.getLegendBody());
-	if(this.isMap() && !this.mapLoaded) {
-	    body = HU.div(['class','imdv-legend-inner'],'Loading...');
-	}
 
 	if(this.isGroup()) {
 	    let child="";
@@ -4918,6 +5016,14 @@ MapGlyph.prototype = {
 	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
 	}
 
+	if(this.isMap() && !this.mapLoaded) {
+	    if(this.isVisible()) 
+		body += HU.div(['class','imdv-legend-inner'],'Loading...');
+	    return body;
+	}
+
+
+
 	if(this.isMap()) {
 	    let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
 	    let legend = '';
@@ -4964,14 +5070,34 @@ MapGlyph.prototype = {
 		    let lineWidth;
 		    let lineStyle;
 		    let lineColor;
+		    let svg;
+		    let havePattern = rule.style.indexOf('fillPattern')>=0;
+		    let fillColor,strokeColor;
 		    rule.style.split('\n').forEach(line=>{
 			line  = line.trim();
 			if(line=='') return;
 			let toks = line.split(':');
-			if(toks[0]=='fillColor') style+=HU.css('background',toks[1]);
-			else if(toks[0]=='strokeColor') lineColor = toks[1];
-			else if(toks[0]=='strokeWidth') lineWidth = toks[1];			
-			else if(toks[0]=='strokeDashstyle') {
+			if(toks[0]=='fillColor') {
+			    fillColor  = toks[1];
+			} else if(toks[0]=='strokeColor') {
+			    strokeColor = toks[1];
+			}
+		    });
+
+		    rule.style.split('\n').forEach(line=>{
+			line  = line.trim();
+			if(line=='') return;
+			let toks = line.split(':');
+			if(toks[0]=='fillColor') {
+			    if(!havePattern)
+				style+=HU.css('background',toks[1]);
+			} else if(toks[0]=='strokeColor') {
+			    lineColor = toks[1];
+			} else if(toks[0]=='strokeWidth') lineWidth = toks[1];			
+			else if(toks[0]=='fillPattern') {
+			    let svg = window.olGetSvgPattern(toks[1].trim(),strokeColor??this.style.strokeColor,fillColor??this.style.fillColor);
+			    style+='background-image: url(\''+ svg.url+'\');background-repeat: repeat;';
+			} else if(toks[0]=='strokeDashstyle') {
 			    if(['dot','dashdot'].includes(toks[1])) {
 				lineStyle = "dotted";
 			    } else  if(toks[1].indexOf("dash")>=0) {
@@ -4986,7 +5112,8 @@ MapGlyph.prototype = {
 				      (lineColor??'black'));
 		    }
 
-		    item+=HU.div(['style',style],'')+'</td>';
+		    let div=HU.div(['class','circles-1','style',style],'');
+		    item+=div+'</td>';
 		    item += '</td><td>'+ label+'</td></tr>';
 		    rulesLegend+=HU.div([],item);
 		});
@@ -5108,7 +5235,6 @@ MapGlyph.prototype = {
 		_this.applyStyle(_this.style);
 	    }});
 	
-//	this.applyMapStyle();
 	this.makeFeatureFilters();
 	if(this.isGroup()) {
 	    this.getChildren().forEach(mapGlyph=>{mapGlyph.initLegend();});
@@ -5627,7 +5753,7 @@ MapGlyph.prototype = {
 
 	numeric = featureInfo;
 	if(numeric.length) {
-	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return info.property;}));
+	    let numericProperties=Utils.mergeLists([['','Select']],numeric.map(info=>{return {value:info.property,label:info.getLabel()};}));
 	    let mapComp = (obj,prefix) =>{
 		let comp = '';
 		comp+=HU.div(['class','formgroupheader'], 'Map value to ' + prefix +' color')+ HU.formTable();
@@ -5642,7 +5768,8 @@ MapGlyph.prototype = {
 	    colorBy+=mapComp(this.attrs.strokeColorBy ??{},'stroke');	    
 	}
 
-	let properties=Utils.mergeLists([['','Select']],featureInfo.map(info=>{return info.property;}));
+	let properties=Utils.mergeLists([['','Select']],featureInfo.map(info=>{
+	    return {value:info.property,label:info.getLabel()};}));
 	let ex = '';
 	let helpLines = [];
 	featureInfo.forEach(info=>{
@@ -5675,7 +5802,7 @@ MapGlyph.prototype = {
 	for(let index=0;index<20;index++) {
 	    let rule = index<rules.length?rules[index]:{};
 	    let value = rule.value??'';
-	    let info = this.featureInfoMap[properties,rule.property];
+	    let info = this.featureInfoMap[rule.property];
 	    let title = sample;
 	    let valueInput;
 	    if(info) {
@@ -5879,6 +6006,7 @@ MapGlyph.prototype = {
 		});
 	    }
 	    this.featureInfoMap[info.property] = info;
+	    this.featureInfoMap[info.id] = info;	    
 	});
 	return this.featureInfo;
     },
@@ -6285,13 +6413,16 @@ MapGlyph.prototype = {
 	});
 
 
+
 	//Check for any rule based styles
 	let attrs = features.length>0?features[0].attributes:{};
 	let keys  = Object.keys(attrs);
 	if(rules && rules.length>0) {
 	    this.mapLayer.style = null;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,rules);
-	    features.forEach((f,idx)=>{f.style = null;});
+	    features.forEach((f,idx)=>{
+		f.style = null;
+	    });
 	} 
 
 	let applyColors = (obj,attr,strings)=>{
@@ -6429,6 +6560,7 @@ MapGlyph.prototype = {
 		    styleMap[toks[0].trim()] = toks[1].trim();
 		    styles.push(toks[0].trim());
 		});
+
 		features.forEach((f,idx)=>{
 		    if(!f.style) {
 			f.style = $.extend({},style);
@@ -6439,7 +6571,12 @@ MapGlyph.prototype = {
 			let v = styleMap[style];
 			v = v.replace("${value}",value);
 			if(v.startsWith('js:')) {
-			    v = eval(v.substring(3));
+			    v = v.substring(3);
+			    try {
+				v = eval(v);
+			    } catch(err) {
+				console.error('Error evaluating style rule:' + v);
+			    }
 			}
 			f.style[style] = v;
 		    });
@@ -7175,3 +7312,108 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
 }
 
+
+
+/*
+  this is a hook that OL calls to handle fillPatterns
+  list of patterns from https://iros.github.io/patternfills/sample_svg.html
+  and is generated with /bin/svgs.tcl
+*/
+window.olGetPatternId = function(ol,p,stroke,fill) {
+    if(!ol.defs) {
+        ol.defs = ol.createDefs();
+    }
+    if(!ol.idToSvgId) {
+	ol.idToSvgId={};
+    }
+    stroke = stroke||'#000';
+    fill = fill||'transparent';
+    let id = p+'_'+stroke +'_'+fill;
+    if(ol.idToSvgId[id]) return ol.idToSvgId[id];
+    p = window.olGetSvgPattern(p,stroke,fill);
+
+    if(!window.olPatternBaseId) window.olPatternBaseId = 1;
+    let svgId = 'pattern_'+(window.olPatternBaseId++);
+    let patternNode = ol.nodeFactory(null, "pattern");
+    patternNode.setAttributeNS(null, "id",svgId);
+    patternNode.setAttributeNS(null, "width",p.width);
+    patternNode.setAttributeNS(null, "height",p.height);
+    patternNode.setAttributeNS(null, "patternUnits","userSpaceOnUse");
+    let imageNode = ol.nodeFactory(null, "image");
+    patternNode.appendChild(imageNode);
+    imageNode.setAttributeNS(null, "x",0);	    
+    imageNode.setAttributeNS(null, "y",0);
+    imageNode.setAttributeNS(null, "width",p.width);
+    imageNode.setAttributeNS(null, "height",p.height);
+    imageNode.setAttributeNS(null, "href",p.url);
+    ol.defs.appendChild(patternNode);
+    ol.idToSvgId[id] = svgId;
+    return svgId;
+};
+
+
+window.olGetSvgPattern = function(p,stroke,fill) {
+    stroke = stroke||'#000';
+    fill = fill||'transparent';
+    let patterns = {
+	"diagonal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/></svg> "},
+	"diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
+	"diagonal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/></svg>"},
+	"diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='1'/></svg>"},
+	"diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='2'/></svg>"},
+	"diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='3'/></svg>"},
+	"subtle-patch":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' /></svg>"},
+	"whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='#eeeeee'/><g id='c'><rect width='3' height='3' fill='#e6e6e6'/><rect y='1' width='3' height='2' fill='#d8d8d8'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
+	"crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='#fff'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='#aaa'/></svg> "},
+	"houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='#aaa' fill='#aaa' stroke-width='1'/></svg> "},
+	"verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='#fff'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
+	"smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='#fff'/><rect width='1' height='1' fill='#ccc'/></svg>"},
+	"lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='white'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='#888' stroke-width='1'/></svg>"},
+	"vertical-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='10' fill='<%= foreground %>' /></svg>"},
+	"vertical-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='10' fill='<%= foreground %>' /></svg>"},
+	"circles-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='3.5' cy='3.5' r='3.5' fill='<%= foreground %>'/></svg> "},
+	"circles-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='4' cy='4' r='4' fill='<%= foreground %>'/></svg>"},
+	"circles-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='3' cy='3' r='3' fill='<%= foreground %>'/></svg> "},
+	"circles-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='2.5' cy='2.5' r='2.5' fill='<%= foreground %>'/></svg>"},
+	"circles-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='1' cy='1' r='1' fill='<%= foreground %>'/></svg>"},
+	"circles-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='2' cy='2' r='2' fill='<%= foreground %>'/></svg>"},
+	"circles-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='1.5' cy='1.5' r='1.5' fill='<%= foreground %>'/></svg> "},
+	"circles-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='5' cy='5' r='5' fill='<%= foreground %>'/></svg>"},
+	"circles-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><circle cx='4.5' cy='4.5' r='4.5' fill='<%= foreground %>'/></svg>"},
+	"horizontal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='6' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='7' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='5' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='4' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='1' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='3' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='2' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='9' fill='<%= foreground %>' /></svg>"},
+	"horizontal-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='10' height='8' fill='<%= foreground %>' /></svg>"},
+	"dots-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='8' fill='<%= foreground %>' /></svg>"},
+	"dots-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='9' fill='<%= foreground %>' /></svg>"},
+	"dots-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='4' height='4' fill='<%= foreground %>' /></svg>"},
+	"dots-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='5' height='5' fill='<%= foreground %>' /></svg>"},
+	"dots-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='7' fill='<%= foreground %>' /></svg>"},
+	"dots-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='6' height='6' fill='<%= foreground %>' /></svg>"},
+	"dots-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='2' height='2' fill='<%= foreground %>' /></svg>"},
+	"dots-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='3' height='3' fill='<%= foreground %>' /></svg> "},
+	"dots-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='1' height='1' fill='<%= foreground %>' /></svg>"},
+    }
+
+    p=patterns[p] ??patterns['diagonal-stripe-1'];
+    let svg = p.svg.replace(/<%= *background *%>/g,fill).replace(/<%= *foreground *%>/g,stroke);
+    let prefix = 'data:image/svg+xml;base64,';
+    let url  = prefix+btoa(svg);
+    return {
+	width:p.width,
+	height:p.height,
+	url:url
+    }
+};

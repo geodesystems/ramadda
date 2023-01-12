@@ -2921,6 +2921,9 @@ a.btn-primary:link, a.btn-primary  {
     font-size:var(--font-size);
 }
 
+.ramadda-popup-menu {
+    margin:10px;
+}
 
 .ramadda-popup-dialog, .ramadda-popup,.ramadda-selectdiv {
     position: absolute; 

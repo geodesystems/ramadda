@@ -2952,7 +2952,6 @@ table.dataTable tfoot td {
 
 .imdv-side-help {
     width:100%;
-    font-style:italic;
     max-height:150px;
     margin-left:10px;
     overflow-y:auto
@@ -3071,3 +3070,9 @@ table.dataTable tfoot td {
     background:transparent !important;
 }
 
+
+
+.circles-1 {
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSJ3aGl0ZSIgLz4KICA8Y2lyY2xlIGN4PSIxIiBjeT0iMSIgcj0iMSIgZmlsbD0iYmxhY2siLz4KPC9zdmc+");
+  background-repeat: repeat;
+}
