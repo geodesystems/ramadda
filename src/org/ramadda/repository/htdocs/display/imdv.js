@@ -1477,6 +1477,65 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	    
 
+	getFillPatternSelect:function(domId,v) {
+	    let patterns = [
+		'',
+		'circles-1',
+		'circles-2',
+		'circles-3',
+		'circles-4',
+		'circles-5',
+		'circles-6',
+		'circles-7',
+		'circles-8',
+		'circles-9',
+		'diagonal-stripe-1',
+		'diagonal-stripe-2',
+		'diagonal-stripe-3',
+		'diagonal-stripe-4',
+		'diagonal-stripe-5',
+		'diagonal-stripe-6',
+		'dots-1',
+		'dots-2',
+		'dots-3',
+		'dots-4',
+		'dots-5',
+		'dots-6',
+		'dots-7',
+		'dots-8',
+		'dots-9',
+		'horizontal-stripe-1',
+		'horizontal-stripe-2',
+		'horizontal-stripe-3',
+		'horizontal-stripe-4',
+		'horizontal-stripe-5',
+		'horizontal-stripe-6',
+		'horizontal-stripe-7',
+		'horizontal-stripe-8',
+		'horizontal-stripe-9',
+		'vertical-stripe-1',
+		'vertical-stripe-2',
+		'vertical-stripe-3',
+		'vertical-stripe-4',
+		'vertical-stripe-5',
+		'vertical-stripe-6',
+		'vertical-stripe-7',
+		'vertical-stripe-8',
+		'vertical-stripe-9',
+		'crosshatch',
+		'houndstooth',
+		'lightstripe',
+		'smalldot',
+		'verticalstripe',
+		'whitecarbon'];
+	    let opts = patterns.map(p=>{
+		if(p=='') return {value:'',label:'None'};
+		return {value:p,label:p};
+	    });
+	    return  HU.select("",['id',domId],opts,v);
+	},
+
+
 	makeStyleForm:function(style,mapGlyph) {
 	    let html = "";
 	    let props;
@@ -1495,8 +1554,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 //		if(mapGlyph && mapGlyph.getType()==GLYPH_MARKER) {props = ["pointRadius","externalGraphic"];} 
 	    } else {
 		props = ['strokeColor','strokeWidth','strokeDashstyle','strokeOpacity',
-			 'fillColor','fillOpacity',
-			 'pointRadius','externalGraphic','imageOpacity','fontSize','fontWeight','fontStyle','fontFamily','labelAlign','labelXOffset','labelYOffset'];
+			 'fillColor','fillOpacity','fillPattern',
+			 'pointRadius','externalGraphic','graphicName',
+			 'imageOpacity','fontSize','fontWeight','fontStyle','fontFamily','labelAlign','labelXOffset','labelYOffset'];
 	    }
 
 	    
@@ -1555,7 +1615,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let size = "20";
 		    if(prop=="label") {
 			size="80";
-			widget =  HU.textarea("",v,[ID,domId,"rows",5,"cols", 60]);
+			widget =  HU.textarea("",v,[ID,domId,"rows",3,"cols", 60]);
 			if(mapGlyph.isEntry()) {
 			    widget+="<br>" +HU.checkbox(this.domId("useentrylabel"),[],mapGlyph.getUseEntryLabel(),"Use label from entry");
 			}
@@ -1603,63 +1663,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.select("",['id',domId],items,v);			
 			} else if(prop=="showLabels") {
 			    widget = HU.checkbox(domId,[],v);
-			} else if(prop=='fillPattern') {
-			    let patterns = [
-				'',
-				'circles-1',
-				'circles-2',
-				'circles-3',
-				'circles-4',
-				'circles-5',
-				'circles-6',
-				'circles-7',
-				'circles-8',
-				'circles-9',
-				'diagonal-stripe-1',
-				'diagonal-stripe-2',
-				'diagonal-stripe-3',
-				'diagonal-stripe-4',
-				'diagonal-stripe-5',
-				'diagonal-stripe-6',
-				'dots-1',
-				'dots-2',
-				'dots-3',
-				'dots-4',
-				'dots-5',
-				'dots-6',
-				'dots-7',
-				'dots-8',
-				'dots-9',
-				'horizontal-stripe-1',
-				'horizontal-stripe-2',
-				'horizontal-stripe-3',
-				'horizontal-stripe-4',
-				'horizontal-stripe-5',
-				'horizontal-stripe-6',
-				'horizontal-stripe-7',
-				'horizontal-stripe-8',
-				'horizontal-stripe-9',
-				'vertical-stripe-1',
-				'vertical-stripe-2',
-				'vertical-stripe-3',
-				'vertical-stripe-4',
-				'vertical-stripe-5',
-				'vertical-stripe-6',
-				'vertical-stripe-7',
-				'vertical-stripe-8',
-				'vertical-stripe-9',
-				'crosshatch',
-				'houndstooth',
-				'lightstripe',
-				'smalldot',
-				'verticalstripe',
-				'whitecarbon'];
-			    let opts = patterns.map(p=>{
+			} else if(prop=='graphicName') {
+			    label = 'Graphic';
+			    let g = ['','circle', 'square', 'star', 'x', 'cross', 'triangle',
+				     'lightning','rectangle','church','_x','arrow','plane','arrow'];
+			    let opts = g.map(p=>{
 				if(p=='') return {value:'',label:'None'};
 				return {value:p,label:p};
 			    });
 			    widget =  HU.select("",['id',domId],opts,v);			
-			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Offset")>=0 || prop=="rotation") {
+			} else if(prop=='fillPattern') {
+			    widget = this.getFillPatternSelect(domId,v);
+			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Offset")>=0 || prop=="rotation" || prop=='pointRadius') {
 			    let isRotation = prop=="rotation";
 			    if(!Utils.isDefined(v)) {
 				v=isRotation?0:1;
@@ -1761,17 +1776,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.getPropertiesComponent(content);
 	    }
 	    let html = buttons;
-	    let accord= HU.makeAccordionHtml(content);
-	    html+=accord.contents;
+	    let accord;
+	    if(mapGlyph) {
+		    accord= HU.makeAccordionHtml(content);
+		html+=accord.contents;
+	    } else {
+		html+=HU.center(HU.b('Default Style')) + content[0].contents;
+	    }
 	    html+=buttons;
 	    html  = HU.div(['style',HU.css('min-width','700px','min-height','400px'),CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
-	    HU.makeAccordion('#'+accord.id);
+	    if(accord) 
+		HU.makeAccordion('#'+accord.id);
 	    if(mapGlyph)
 		mapGlyph.initSideHelp(dialog);
 	    this.initSideHelp(dialog);
-
 
 	    dialog.find('.ramadda-icons-recent').click(function() {
 		let textarea = $(this).attr('textarea');
@@ -1853,6 +1873,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let style = {};
 		    props.forEach(prop=>{
 			let value = this.jq('glyphedit_'+prop).val();
+			if(!Utils.stringDefined(value)) {
+			    this.setProperty(prop, null);
+			    return;
+			}
 			this.setProperty(prop, value);
 			if(prop == "externalGraphic") {
 			    value = this.jq('externalGraphic_image').val();
@@ -2952,13 +2976,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {icon:ramaddaBaseUrl+"/icons/map/marker-blue.png"});
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
-			  {strokeWidth:this.getProperty("strokeWidth",2), 
-			   strokeDashstyle:'solid',
-			   fillColor:"transparent",
-			   fillOpacity:1,
-			   strokeColor:this.getStrokeColor(),
+			  {graphicName:'circle',
+			   pointRadius:10,
+			   strokeColor:'blue',
+			   strokeWidth:1,
 			   strokeOpacity:1,
-			   pointRadius:this.getPointRadius(4)},
+			   strokeDashstyle:'solid',
+			   fillColor:"blue",
+			   fillOpacity:1,
+			   rotation:0,
+			   fontColor: this.getProperty("labelFontColor","#000"),
+			   fontSize: this.getFontSize(),
+			   fontFamily: this.getFontFamily(),
+			   fontWeight: this.getFontWeight(),
+			   fontStyle: this.getFontStyle(),
+			   label:'',
+			   labelAlign: this.getProperty("labelAlign","cb"),
+			   labelXOffset: this.getProperty("labelXOffset","0"),
+			   labelYOffset: this.getProperty("labelYOffset","14"),
+			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+			  },
 			  MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
@@ -3078,8 +3116,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillColor:"transparent",
 			   fillOpacity:1.0,
 			   fillPattern:'',
-			   pointRadius:3,
+			   pointRadius:6,
 			   externalGraphic:'',
+			   graphicName:'',
 			   fontColor: this.getProperty("labelFontColor","#000"),
 			   fontSize: this.getFontSize(),
 			   fontFamily: this.getFontFamily(),
@@ -3087,7 +3126,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fontStyle: this.getFontStyle(),
 			   labelAlign: 'cm',
 			   labelXOffset: '0',
-			   labelYOffset: '0',
+			   labelYOffset: '10',
 			   labelOutlineColor:'#fff',
 			   labelOutlineWidth: '0'},
 			  MyEntryPoint,
@@ -4149,7 +4188,9 @@ MapGlyph.prototype = {
 			   'filter.animate.step=1',
 			   'filter.animate.sleep=100',
 			   'filter.live=true');
+
 	    }
+	    items.push('colortable.select=true');
 
 	    items.forEach(item=>{
 		let label = item.replace('=.*','');
@@ -4871,7 +4912,7 @@ MapGlyph.prototype = {
 		    HU.span([CLASS,'ramadda-clickable imdv-legend-item-view',
 			     'glyphid',this.getId(),
 			     TITLE,'Click:Move to; Shift-click:Zoom in',],
-			    HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS));
+			    HU.getIconImage('fas fa-magnifying-glass',[],LEGEND_IMAGE_ATTRS));
 	    }
 	    label = HU.span(['style','margin-right:5px;'], icon)  + label;
 	}
@@ -4946,6 +4987,9 @@ MapGlyph.prototype = {
     },
 	
 
+    getLegendDiv:function() {
+	return this.jq('legend_');
+    },
     makeLegend:function(opts) {
 	opts = opts??{};
 	let html = '';
@@ -4971,7 +5015,7 @@ MapGlyph.prototype = {
 	    opts.idToGlyph[this.getId()] = this;
 	let clazz = "";
 	if(!this.getVisible()) clazz+=' imdv-legend-label-invisible ';
-	html+=HU.open('div',['id',this.getId(),'class','imdv-legend-item '+clazz]);
+	html+=HU.open('div',['id',this.domId('legend_'),'glyphid',this.getId(),'class','imdv-legend-item '+clazz]);
 	html+=HU.div(['style','display: flex;'],HU.div(['style','margin-right:4px;'],block.header)+
 		     HU.div(['style','width:80%;'], label[0])+
 		     HU.div([],label[1]));
@@ -4981,6 +5025,36 @@ MapGlyph.prototype = {
 	return html;
     },
 
+    getLegendStyle:function(style) {
+	style = $.extend(this.style,style??{});
+	let s = '';
+	let lineColor;
+	let lineStyle;
+	let lineWidth;
+	if(Utils.stringDefined(style.fillPattern)) {
+	    let svg = window.olGetSvgPattern(style.fillPattern,
+					     style.strokeColor,style.fillColor);
+	    s+='background-image: url(\''+ svg.url+'\');background-repeat: repeat;';
+	}  else if(style.fillColor) {
+	    s+=HU.css('background',style.fillColor);
+	} 
+	if(Utils.stringDefined(style.strokeColor)) 
+	    lineColor = style.strokeColor;
+	if(Utils.stringDefined(style.strokeWidth)) 
+	    lineWidth = style.strokeWidth;
+	if(Utils.stringDefined(style.strokeDashstyle)) {
+	    if(['dot','dashdot'].includes(style.strokeDashstyle)) {
+		lineStyle = "dotted";
+	    } else  if(style.strokeDashstyle.indexOf("dash")>=0) {
+		lineStyle = "dashed";
+	    }
+	}
+	if(lineColor || lineColor||lineWidth) {
+	    s+=HU.css('border',HU.getDimension(lineWidth??'1px')+ ' ' + (lineStyle??'solid') + ' ' +
+		      (lineColor??'black'));
+	}
+	return s;
+    },
     getLegendBody:function() {
 	let body = '';
 	let buttons = this.display.makeGlyphButtons(this,true);
@@ -5016,26 +5090,20 @@ MapGlyph.prototype = {
 	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
 	}
 
-	if(this.isMap() && !this.mapLoaded) {
-	    if(this.isVisible()) 
-		body += HU.div(['class','imdv-legend-inner'],'Loading...');
-	    return body;
-	}
-
-
-
 	if(this.isMap()) {
+	    if(!this.mapLoaded) {
+		if(this.isVisible()) 
+		    body += HU.div(['class','imdv-legend-inner'],'Loading...');
+		return body;
+	    }
+
 	    let boxStyle = 'display:inline-block;width:14px;height:14px;margin-right:4px;';
 	    let legend = '';
 	    let styleLegend='';
 	    this.getStyleGroups().forEach((group,idx)=>{
 		styleLegend+=HU.openTag('table',['width','100%']);
 		styleLegend+= HU.openTag('tr',['title',this.display.canEdit()?'Select style':'','class',CLASS_IMDV_STYLEGROUP +(this.display.canEdit()?' ramadda-clickable':''),'index',idx]);
-		let style = boxStyle;
-		if(group.style.fillColor)
-		    style+=HU.css('background',group.style.fillColor);
-		if(group.style.strokeColor)
-		    style+=HU.css('border','1px solid ' +group.style.strokeColor);		
+		let style = boxStyle + this.getLegendStyle(group.style);
 		styleLegend+=HU.tag('td',['width','18px'],
 				    HU.div(['style', style]));
 		styleLegend +=HU.tag('td',[], group.label);
@@ -5066,52 +5134,21 @@ MapGlyph.prototype = {
 		    let label = rule.value;
 		    label   = HU.span(['style','font-size:9pt;'],label);
 		    let item = '<tr><td width=16px>';
-		    let style = boxStyle;
 		    let lineWidth;
 		    let lineStyle;
 		    let lineColor;
 		    let svg;
 		    let havePattern = rule.style.indexOf('fillPattern')>=0;
 		    let fillColor,strokeColor;
+		    let styleObj = {};
 		    rule.style.split('\n').forEach(line=>{
 			line  = line.trim();
 			if(line=='') return;
 			let toks = line.split(':');
-			if(toks[0]=='fillColor') {
-			    fillColor  = toks[1];
-			} else if(toks[0]=='strokeColor') {
-			    strokeColor = toks[1];
-			}
+			styleObj[toks[0]] = toks[1];
 		    });
 
-		    rule.style.split('\n').forEach(line=>{
-			line  = line.trim();
-			if(line=='') return;
-			let toks = line.split(':');
-			if(toks[0]=='fillColor') {
-			    if(!havePattern)
-				style+=HU.css('background',toks[1]);
-			} else if(toks[0]=='strokeColor') {
-			    lineColor = toks[1];
-			} else if(toks[0]=='strokeWidth') lineWidth = toks[1];			
-			else if(toks[0]=='fillPattern') {
-			    let svg = window.olGetSvgPattern(toks[1].trim(),strokeColor??this.style.strokeColor,fillColor??this.style.fillColor);
-			    style+='background-image: url(\''+ svg.url+'\');background-repeat: repeat;';
-			} else if(toks[0]=='strokeDashstyle') {
-			    if(['dot','dashdot'].includes(toks[1])) {
-				lineStyle = "dotted";
-			    } else  if(toks[1].indexOf("dash")>=0) {
-				lineStyle = "dashed";
-			    }
-			}
-	    
-		    });
-
-		    if(lineColor || lineColor||lineWidth) {
-			style+=HU.css('border',HU.getDimension(lineWidth??'1px')+ ' ' + (lineStyle??'solid') + ' ' +
-				      (lineColor??'black'));
-		    }
-
+		    let style = boxStyle +this.getLegendStyle(styleObj);
 		    let div=HU.div(['class','circles-1','style',style],'');
 		    item+=div+'</td>';
 		    item += '</td><td>'+ label+'</td></tr>';
@@ -5141,6 +5178,8 @@ MapGlyph.prototype = {
 	    }
 	};
 
+
+	body+=HU.div(['id',this.domId('legendcolortableprops')]);
 	body+=HU.div(['id',this.domId('legendcolortable_fill')]);
 	body+=HU.div(['id',this.domId('legendcolortable_stroke')]);	
 	body+=HU.div(['id',this.domId(ID_MAPLEGEND)]);
@@ -5168,10 +5207,10 @@ MapGlyph.prototype = {
 
 	let _this = this;
 	if(this.display.canEdit()) {
-	    let label = jqid(this.getId()).find('.imdv-legend-label');
+	    let label = this.getLegendDiv().find('.imdv-legend-label');
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
 	    let notify = ()=>{_this.display.setLastDroppedTime(new Date());};
-	    jqid(this.getId()).draggable({
+	    this.getLegendDiv().draggable({
 		start: notify,
 		drag: notify,
 		stop: notify,
@@ -5184,7 +5223,7 @@ MapGlyph.prototype = {
 		accept:'.imdv-legend-item',
 		drop: function(event,ui){
 		    notify();
-		    let draggedGlyph = _this.display.findGlyph(ui.draggable.attr('id'));
+		    let draggedGlyph = _this.display.findGlyph(ui.draggable.attr('glyphid'));
 		    if(!draggedGlyph) {
 			console.log('Could not find dragged glyph');
 			return;
@@ -5236,6 +5275,71 @@ MapGlyph.prototype = {
 	    }});
 	
 	this.makeFeatureFilters();
+	if(this.isMap() && this.mapLoaded) {
+	    let addColor= (obj,prefix, strings) => {
+		if(obj && Utils.stringDefined(obj.property)) {
+		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings);
+		    let html = HU.b(HU.center(this.makeLabel(obj.property,true)));
+		    if(obj.isEnumeration) {
+			html+=HU.div(['style','max-height:150px;overflow-y:auto;'],div);
+		    } else {
+			html+=HU.center(div);
+		    }
+
+		    this.jq('legendcolortable_'+prefix.toLowerCase()).html(html);
+		    this.initColorTableDots(obj,this.jq('legendcolortable_'+prefix.toLowerCase()));
+
+		    if(obj.isEnumeration) {
+			if(!this.extraFilter) this.extraFilter = {};
+			let slices =jqid(this.domId('legendcolortable_'+ prefix.toLowerCase())).find('.display-colortable-slice'); 
+			slices.css('cursor','pointer');
+			slices.click(function() {
+			    let ct = Utils.ColorTables[obj.colorTable];
+			    let html = Utils.getColorTableDisplay(ct, 0,0, {
+				tooltips:strings,
+				showColorTableDots:true,
+				horizontal:false,
+				showRange: false,
+			    });
+			    html = HU.div(['style','max-height:200px;overflow-y:auto;margin:2px;'], html);
+			    let dialog = HU.makeDialog({content:html,title:HU.div(['style','margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),header:true,my:"left top",at:"left bottom",draggable:true,anchor:$(this)});
+			    _this.initColorTableDots(obj, dialog);
+			});
+		    }
+		}	
+	    };
+
+	    let ctProps = [];
+	    this.getFeatureInfoList().forEach(info=>{
+		if(!info.isColorTableSelect()) return;
+		ctProps.push(info);
+	    });
+
+	    if(ctProps.length>1) {
+		let menu = HU.select('',['id',this.domId('colortableproperty')],
+				     ctProps.map(info=>{return {
+					 value:info.id,label:info.getLabel()}}),this.attrs.fillColorBy.property);
+		this.jq('legendcolortableprops').html(HU.b('Color by: ') + menu);
+		this.jq('colortableproperty').change(()=>{
+		    let val = this.jq('colortableproperty').val();
+		    let info = this.getFeatureInfo(val);
+		    if(!info) return;
+		    $.extend(this.attrs.fillColorBy,{
+			property:info.id,
+			min:info.min,
+			max:info.max});
+		    this.applyMapStyle();
+		    this.display.makeLegend();
+		});
+	    }
+	    if(this.getProperty('showColorTableLegend',true)) {
+		addColor(this.attrs.fillColorBy,'Fill',this.fillStrings);
+		addColor(this.attrs.strokeColorBy,'Stroke',this.strokeStrings);
+	    }
+	}	
+
+
+
 	if(this.isGroup()) {
 	    this.getChildren().forEach(mapGlyph=>{mapGlyph.initLegend();});
 	}
@@ -5452,7 +5556,8 @@ MapGlyph.prototype = {
 		if(Utils.stringDefined(value=jqid(prefix+'_fillcolor').val())) group.style.fillColor = value;
 		if(Utils.stringDefined(value=jqid(prefix+'_fillopacity').val())) group.style.fillOpacity = value;
 		if(Utils.stringDefined(value=jqid(prefix+'_strokecolor').val())) group.style.strokeColor = value;
-		if(Utils.stringDefined(value=jqid(prefix+'_strokewidth').val())) group.style.strokeWidth = value;		
+		if(Utils.stringDefined(value=jqid(prefix+'_strokewidth').val())) group.style.strokeWidth = value;
+		if(Utils.stringDefined(value=jqid(prefix+'_fillpattern').val())) group.style.fillPattern = value;
 		groups.push(group);
 	    }
 	    this.attrs.styleGroups = groups;
@@ -5495,6 +5600,8 @@ MapGlyph.prototype = {
 	}
         let display = Utils.getColorTableDisplay(ct,  min??0, max??1, {
 	    tooltips:strings,
+	    showColorTableDots:isEnum&& strings.length<=15,
+	    horizontal:!isEnum || strings.length>15,
 	    showRange: false,
             height: "20px",
 	    showRange:showRange
@@ -5549,7 +5656,6 @@ MapGlyph.prototype = {
 	});
 	Utils.displayAllColorTables(this.display.domId('fillcolorby'));
 	Utils.displayAllColorTables(this.display.domId('strokecolorby'));
-
 
 	let initColor  = prefix=>{
 	    dialog.find('#'+this.domId(prefix+'colorby_property')).change(function() {
@@ -5843,7 +5949,7 @@ MapGlyph.prototype = {
 					      this.getHelp('#adding_a_map'));
 	styleGroupsUI+=HU.openTag('table',['width','100%']);
 	styleGroupsUI+=HU.tr([],HU.tds([],
-				       ['Group','Fill','Opacity','Stroke','Width','Features']));
+				       ['Group','Fill','Opacity','Stroke','Width','Pattern','Features']));
 	for(let i=0;i<20;i++) {
 	    let group = styleGroups[i];
 	    let prefix = 'mapstylegroups_' + i;
@@ -5852,7 +5958,8 @@ MapGlyph.prototype = {
 		HU.input('',group?.style.fillColor??'',['class','ramadda-imdv-color','id',prefix+'_fillcolor','size','6']),
 		HU.input('',group?.style.fillOpacity??'',['title','0-1','id',prefix+'_fillopacity','size','2']),		
 		HU.input('',group?.style.strokeColor??'',['class','ramadda-imdv-color','id',prefix+'_strokecolor','size','6']),
-		HU.input('',group?.style.strokeWidth??'',['id',prefix+'_strokewidth','size','6']),				
+		HU.input('',group?.style.strokeWidth??'',['id',prefix+'_strokewidth','size','6']),
+		this.display.getFillPatternSelect(prefix+'_fillpattern',group?.style.fillPattern??''),
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag('table');
@@ -5928,6 +6035,9 @@ MapGlyph.prototype = {
 		showPopup: function() {
 		    return this.getProperty('popup.show',_this.getProperty('popup.show',this.show()));
 		},				
+		isColorTableSelect: function() {
+		    return this.getProperty('colortable.select',_this.getProperty('colortable.select',false));
+		},
 
 		getType:function() {
 		    return this.getProperty('type',this.type);
@@ -5994,6 +6104,7 @@ MapGlyph.prototype = {
 		}
 	    });
 	});
+
 
 	this.featureInfoMap = {};
 	this.featureInfo.forEach(info=>{
@@ -6090,14 +6201,14 @@ MapGlyph.prototype = {
 		return;
 	    }
 
-
 	    if((info.isNumeric() || info.isInt()) && (info.min<info.max)) {
 		let min = info.getProperty('filter.min',info.min);
 		let max = info.getProperty('filter.max',info.max);		
 		filter.minValue = min;
 		filter.maxValue = max;
+		if(isNaN(filter.min)) filter.min = min;
+		if(isNaN(filter.max)) filter.max = max;
 		filter.type="range";
-
 
 		let line =
 		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??min)),
@@ -6128,8 +6239,6 @@ MapGlyph.prototype = {
 	    first = HU.div(['style',HU.css('margin-left','10px','margin-right','20px')],first);	    
 
 	let widgets = first+enums+sliders+strings;
-
-
 	if(widgets!="") {
 	    let update = () =>{
 		this.display.featureHasBeenChanged = true;
@@ -6147,8 +6256,12 @@ MapGlyph.prototype = {
 	    widgets = HU.div(['style','padding-bottom:5px;max-height:200px;overflow-y:auto;'], widgets);
 	    let filtersHeader ='';
 	    if(this.getProperty('filter.zoomonchange.show',true)) {
-		filtersHeader = HU.checkbox(this.zoomonchangeid,['id',this.zoomonchangeid],this.getZoomOnChange(),"Zoom on change");
+		filtersHeader = HU.checkbox(this.zoomonchangeid,
+					    ['title','Zoom on change','id',this.zoomonchangeid],
+					    this.getZoomOnChange(),
+					    HU.span(['title','Zoom on change','style','margin-left:12px;'], HU.getIconImage('fas fa-binoculars',[],LEGEND_IMAGE_ATTRS)));
 	    }
+	    filtersHeader+=HU.span(['id',this.domId('filters_count')],Utils.isDefined(this.visibleFeatures)?'#'+this.visibleFeatures:'');
 	    filtersHeader = HU.leftRightTable(filtersHeader, clearAll);
 
 	    if(this.getProperty('filter.toggle.show',true)) {
@@ -6199,19 +6312,21 @@ MapGlyph.prototype = {
 		let onSlide = function( event, ui, force) {
 		    let id = theFeatureId;
 		    let filter = filters[id]??{};
-		    filter.min = +ui.values[0];
-		    filter.max = +ui.values[1];			    
+		    if(ui.handleIndex==0)
+			filter.min = ui.value;
+		    else
+			filter.max = ui.value;
 		    filter.property=id;
 		    _this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
 		    _this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
-		    if(force || _this.getProperty(id+'.filter.live')) {
+		    if(force ||_this.getProperty('filter.live') ||  _this.getProperty(id+'.filter.live')) {
 			update();
 			return
 		    }
 		    if(!_this.sliderThrottle) 
 			_this.sliderThrottle=Utils.throttle(()=>{
 			    update();
-			},1000);
+			},500);
 		    _this.sliderThrottle();
 		};
 		let min = +$(this).attr('slider-min');
@@ -6232,13 +6347,17 @@ MapGlyph.prototype = {
 		    max:max,
 		    step:step
 		}
-
-		$(this).slider({		
+		//Round the step
+//		if(step>10) step=parseInt(step);
+		let args = {
+		    range:true,
 		    min: parseFloat(min),
 		    max: parseFloat(max),
 		    step:step,
-		    values:[+$(this).attr('slider-value-min'),+$(this).attr('slider-value-max')],
-		    slide: onSlide});
+		    values:[parseFloat($(this).attr('slider-value-min')),
+			    parseFloat($(this).attr('slider-value-max'))],
+		    slide: onSlide};
+		$(this).slider(args);		
 	    });
 
 	    this.jq(ID_MAPFILTERS).find('.imdv-filter-play').click(function() {
@@ -6333,6 +6452,41 @@ MapGlyph.prototype = {
 	return template;
     },
 
+    initColorTableDots:function(obj, dialog) {
+	let _this  = this;
+	let dots = dialog.find('.display-colortable-dot-item');
+	dots.css({cursor:'pointer',title:'Click to show legend'});
+	dots.addClass('ramadda-clickable');
+	let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
+	select.find('option').each(function() {
+	    if($(this).prop('selected')) {
+		let value = $(this).prop('title');
+		let dot = dialog.find('.display-colortable-dot-item[label="' +value+'"]');
+		dot.addClass('display-colortable-dot-item-selected');
+	    }
+	});
+
+	dots.click(function(event) {
+	    let meta = event.metaKey || event.ctrlKey;
+	    let label = $(this).attr('label');
+	    let selected = $(this).hasClass('display-colortable-dot-item-selected');
+	    let option = select.find('option[value="' +label+'"]');
+	    if(!meta) {
+		select.find('option').prop('selected',null);
+		dots.removeClass('display-colortable-dot-item-selected');
+	    }				
+	    if(!selected) {
+		$(this).addClass('display-colortable-dot-item-selected');
+		option.prop('selected','selected');
+	    } else {
+		$(this).removeClass('display-colortable-dot-item-selected');
+		option.prop('selected',null);
+	    }
+	    select.trigger('change');
+	});
+    },
+    
+
     applyMapStyle:function(skipLegendUI) {
 	let _this = this;
 	//If its a map then set the style on the map features
@@ -6362,6 +6516,14 @@ MapGlyph.prototype = {
 	let enumFilters =[];	
 	for(a in featureFilters) {
 	    let filter= featureFilters[a];
+	    if(!filter.property) {
+		continue;
+	    }
+	    let info =this.getFeatureInfo(filter.property);
+	    if(!info) {
+		continue;
+	    }
+	    if(info && !info.showFilter()) continue;
 	    if(filter.type=="string") {
 		if(Utils.stringDefined(filter.stringValue)) stringFilters.push(filter);
 	    } else if(filter.type=="enum") {
@@ -6480,69 +6642,13 @@ MapGlyph.prototype = {
 	};
 
 
-	let fillStrings = [];
-	let strokeStrings = [];		
+	this.fillStrings = [];
+	this.strokeStrings = [];		
 	
-	applyColors(this.attrs.fillColorBy,'fillColor',fillStrings);
-	applyColors(this.attrs.strokeColorBy,'strokeColor',strokeStrings);	
-	let addColor= (obj,prefix, strings) => {
-	    if(obj && Utils.stringDefined(obj.property)) {
-		let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings);
-		div = HU.center(this.makeLabel(obj.property,true))+HU.center(div);
+	applyColors(this.attrs.fillColorBy,'fillColor',this.fillStrings);
+	applyColors(this.attrs.strokeColorBy,'strokeColor',this.strokeStrings);	
 
-		this.jq('legendcolortable_'+prefix.toLowerCase()).html(div);
-		if(obj.isEnumeration) {
-		    if(!this.extraFilter) this.extraFilter = {};
-		    let slices =jqid(this.domId('legendcolortable_'+ prefix.toLowerCase())).find('.display-colortable-slice'); 
-		    slices.css('cursor','pointer');
-		    slices.click(function() {
-			let ct = Utils.ColorTables[obj.colorTable];
-			let html = Utils.getColorTableDisplay(ct, 0,0, {
-			    tooltips:strings,
-			    showColorTableDots:true,
-			    horizontal:false,
-			    showRange: false,
-			});
-			html = HU.div(['style','max-height:200px;overflow-y:auto;margin:2px;'], html);
-			let dialog = HU.makeDialog({content:html,title:HU.div(['style','margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),header:true,my:"left top",at:"left bottom",draggable:true,anchor:$(this)});
-			let dots = dialog.find('.display-colortable-dot-item');
-			dots.css({cursor:'pointer',title:'Click to show legend'});
-			dots.addClass('ramadda-clickable');
-			let select = jqid(_this.domId('enum_'+ Utils.makeId(obj.property)));
 
-			select.find('option').each(function() {
-			    if($(this).prop('selected')) {
-				let value = $(this).prop('title');
-				let dot = dialog.find('.display-colortable-dot-item[label="' +value+'"]');
-				dot.addClass('display-colortable-dot-item-selected');
-			    }
-			});
-
-			dots.click(function(event) {
-			    let meta = event.metaKey || event.ctrlKey;
-			    let label = $(this).attr('label');
-			    let selected = $(this).hasClass('display-colortable-dot-item-selected');
-			    let option = select.find('option[value="' +label+'"]');
-			    if(!meta) {
-				select.find('option').prop('selected',null);
-				dots.removeClass('display-colortable-dot-item-selected');
-			    }				
-			    if(!selected) {
-				$(this).addClass('display-colortable-dot-item-selected');
-				option.prop('selected','selected');
-			    } else {
-				$(this).removeClass('display-colortable-dot-item-selected');
-				option.prop('selected',null);
-			    }
-			    select.trigger('change');
-			});
-		    });
-		}
-	    }	
-	};
-
-	addColor(this.attrs.fillColorBy,'Fill',fillStrings);
-	addColor(this.attrs.strokeColorBy,'Stroke',strokeStrings);	
 
 	
 	if(useRules.length>0) {
@@ -6585,13 +6691,18 @@ MapGlyph.prototype = {
 	}	    
 
 
+	this.visibleFeatures = 0;
+
 	let redrawFeatures = false;
+	let max =-1;
 	features.forEach((f,idx)=>{
 	    let visible = true;
 	    rangeFilters.every(filter=>{
 		let value=this.getFeatureValue(f,filter.property);
 		if(Utils.isDefined(value)) {
+		    max = Math.max(max,value);
 		    visible = value>=filter.min && value<=filter.max;
+//		    if(value>1000) console.log(filter.property,value,visible,filter.min,filter.max);
 		}
 		return visible;
 	    });
@@ -6613,6 +6724,9 @@ MapGlyph.prototype = {
 		});
 	    }		
 
+
+	    if(visible) this.visibleFeatures++;
+
 	    if(f.mapPoint) {
 		f.mapPoint.filtered =false;
 	    }
@@ -6629,6 +6743,10 @@ MapGlyph.prototype = {
 		}
 	    }
 	});
+
+
+	this.jq('filters_count').html('#' + this.visibleFeatures);
+
 
 	if(this.attrs.fillColors) {
 	    //	let ct = Utils.getColorTable('googlecharts',true);
@@ -6650,6 +6768,7 @@ MapGlyph.prototype = {
 		indexToGroup[index] = group;
 	    });
 	});
+
 
 	features.forEach((f,idx)=>{
 	    let group = indexToGroup[idx];
@@ -6788,6 +6907,7 @@ MapGlyph.prototype = {
     getVisibleLevelRange:function() {
 	return this.attrs.visibleLevelRange;
     },
+
     setVisible:function(visible,callCheck) {
 	this.attrs.visible = visible;
 	if(this.children) {
@@ -6799,8 +6919,7 @@ MapGlyph.prototype = {
 	if(callCheck)
 	    this.checkVisible();
 	this.checkMapLayer();
-
-	let legend = jqid(this.getId());
+	let legend = this.getLegendDiv();
 	if(this.getVisible()) 
 	    legend.removeClass('imdv-legend-label-invisible');
 	else
