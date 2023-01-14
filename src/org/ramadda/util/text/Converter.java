@@ -5166,7 +5166,7 @@ public abstract class Converter extends Processor {
         public ColumnNewer(List<String> indices, String delimiter,
                            String name) {
             super(indices);
-            this.delimiter = delimiter;
+            this.delimiter = delimiter.replaceAll("_nl_","\n");
             this.name      = name;
         }
 
