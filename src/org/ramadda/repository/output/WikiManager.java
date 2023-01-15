@@ -7355,6 +7355,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public String getWikiImageUrl(WikiUtil wikiUtil, String src,
                                   Hashtable props) {
         try {
+
 	    if(src.startsWith("/") || HU.isFontAwesome(src)) return src;
             Entry   entry      = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
@@ -7366,7 +7367,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 List<String> toks = Utils.splitUpTo(src, "::", 2);
                 if (toks.size() == 2) {
                     src        = toks.get(0);
-                    attachment = toks.get(1).substring(1);
+                    attachment = toks.get(1);
                 }
             }
             if ((src.length() == 0) || entry.getName().equals(src)) {
@@ -7395,6 +7396,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 if (metadataType == null) {
                     continue;
                 }
+
                 String url = metadataType.getDisplayImageUrl(request,
 							     srcEntry, metadata, attachment);
                 if (url != null) {
