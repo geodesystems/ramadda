@@ -427,6 +427,14 @@ Add an output that shows up in the list of tools/services for an entry
     </type>
     
 
+    <type
+	xforuser="false"
+       name="Entry Votes"
+       id="content.votes">
+      <element name="File" datatype="file" thumbnail="false" istitle="true"/>
+    </type>
+
+
 </handler>
 
 
