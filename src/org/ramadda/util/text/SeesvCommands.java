@@ -164,6 +164,7 @@ public interface SeesvCommands {
     public static final String CMD_COPYIF="-copyif";
     public static final String CMD_COPYCOLUMNS="-copycolumns";
     public static final String CMD_FILLDOWN="-filldown";
+    public static final String CMD_FILLACROSS="-fillacross";    
     public static final String CMD_UNFILL="-unfill";
     public static final String CMD_PRIORPREFIX="-priorprefix";
     public static final String CMD_CASE="-case";

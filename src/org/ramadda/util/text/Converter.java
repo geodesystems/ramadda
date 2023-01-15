@@ -1917,7 +1917,7 @@ public abstract class Converter extends Processor {
 
                 id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
-							  "\"", "_").replaceAll("%", "_").replaceAll(
+							  "\"", "_").replaceAll("%", "percent").replaceAll(
 												     "\'", "_").replaceAll("/+", "_").replaceAll(
 																		 "\\.", "_").replaceAll("_+_", "_").replaceAll(
 																							       "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
@@ -7062,6 +7062,50 @@ public abstract class Converter extends Processor {
             return row;
         }
     }
+
+    public static class FillAcross extends Converter {
+
+        /**  */
+        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
+	    String>();
+
+	private HashSet<Integer> rows;
+
+        /**
+         * @param cols _more_
+         */
+        public FillAcross(List<String> cols,List<Integer> rows) {
+            super(cols);
+	    this.rows = new HashSet<Integer>();
+	    this.rows.addAll(rows);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(!rows.contains(rowCnt++)) return row;
+            List<Integer> indices = getIndices(ctx);
+	    String lastValue="";
+            for (int col : indices) {
+		if(!row.indexOk(col)) continue;
+                String v = row.getString(col);
+                v = v.trim();
+                if (v.length() == 0) {
+		    row.set(col,lastValue);
+		} else {
+		    lastValue = v;
+                }
+            }
+
+            return row;
+        }
+    }
+
+
 
     /**
      * Class description

@@ -2301,6 +2301,12 @@ public class Seesv implements SeesvCommands {
 		"Fill down with last non-null value",
 		ARG_LABEL,"Fill Down",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_FILLACROSS,
+		"Fill across with last non-null value",
+		ARG_LABEL,"Fill Across",
+		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg("rows",   "One or more rows. -1 to the end. e.g., 0-3,5,10,-1",
+                        ATTR_TYPE, TYPE_ROWS)),		
         new Cmd(CMD_UNFILL,
 		"Set following cells to blank if the same as previous cell",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
@@ -4792,6 +4798,12 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.FillDown(getCols(args.get(++i))));
 		return i;
 	    });
+
+	defineFunction(CMD_FILLACROSS,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.FillAcross(getCols(args.get(++i)),Utils.getNumbers(args.get(++i))));
+		return i;
+	    });	
+
 	defineFunction(CMD_UNFILL, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Unfill(getCols(args.get(++i))));
 		return i;
