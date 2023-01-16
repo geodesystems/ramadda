@@ -1669,7 +1669,8 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public synchronized Result processEntryVote(Request request) throws Exception {
+    private Object VOTE_MUTEX=new Object();
+    public Result processEntryVote(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
@@ -1677,49 +1678,50 @@ public class EntryManager extends RepositoryManager {
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	
-	List<Metadata> metadataList =
-	    getMetadataManager().findMetadata(request, entry,
-					      new String[]{"content.votes"},
-							  false);
-	String json;
-	File f;
-	if(metadataList!=null && metadataList.size()>0) {
-	    f = getMetadataManager().getFile(request, entry,
-					     metadataList.get(0), 1);
-	    json = getStorageManager().readFile(f.toString());
-	    System.err.println("JSON:" + json);
-	} else {
-	    json = "{}";
-            f = getStorageManager().getTmpFile(request, "votes.json");
-            IOUtil.writeFile(f, json);
-            f = new File(getStorageManager().moveToEntryDir(entry,
-							    f).getName());
-            getMetadataManager().addMetadata(
-					     entry,
-					     new Metadata(
-							  getRepository().getGUID(), entry.getId(),
-							  "content.votes", false, f.toString(), "", "", "",""));
-            getEntryManager().updateEntry(null, entry);
-	    System.err.println("NEW JSON:" + json);
-	}
-	if(request.defined("key") && request.defined("vote")) {
-	    String key = request.getString("key","");
-	    String vote = request.getString("vote","");	        	    
-	    JSONObject obj = new JSONObject(json);
-	    JSONObject keyObj = obj.optJSONObject(key);
-	    if(keyObj==null) {
-		keyObj = new JSONObject();
-		obj.put(key,keyObj);	    
-		keyObj.put("yes",0);
-		keyObj.put("no",0);		
+	synchronized(VOTE_MUTEX) {
+	    List<Metadata> metadataList =
+		getMetadataManager().findMetadata(request, entry,
+						  new String[]{"content.votes"},
+						  false);
+	    String json;
+	    File f;
+	    if(metadataList!=null && metadataList.size()>0) {
+		f = getMetadataManager().getFile(request, entry,
+						 metadataList.get(0), 1);
+		json = getStorageManager().readFile(f.toString());
+		System.err.println("JSON:" + json);
+	    } else {
+		json = "{}";
+		f = getStorageManager().getTmpFile(request, "votes.json");
+		IOUtil.writeFile(f, json);
+		f = new File(getStorageManager().moveToEntryDir(entry,
+								f).getName());
+		getMetadataManager().addMetadata(entry,
+						 new Metadata(getRepository().getGUID(), entry.getId(),
+							      "content.votes", false, f.toString(), "", "", "",""));
+		getEntryManager().updateEntry(null, entry);
+		System.err.println("NEW JSON:" + json);
 	    }
-	    keyObj.put(vote,keyObj.optInt(vote,0)+1);
-	    json = obj.toString();
-            IOUtil.writeFile(f,json);
-	    sb.append(JsonUtil.map(Utils.makeList("ok", "true")));
-	    return new Result("", sb, JsonUtil.MIMETYPE);
+
+	    if(request.defined("key") && request.defined("vote")) {
+		String key = request.getString("key","");
+		String vote = request.getString("vote","");	        	    
+		JSONObject obj = new JSONObject(json);
+		JSONObject keyObj = obj.optJSONObject(key);
+		if(keyObj==null) {
+		    keyObj = new JSONObject();
+		    obj.put(key,keyObj);	    
+		    keyObj.put("yes",0);
+		    keyObj.put("no",0);		
+		}
+		keyObj.put(vote,keyObj.optInt(vote,0)+1);
+		json = obj.toString();
+		IOUtil.writeFile(f,json);
+		sb.append(JsonUtil.map(Utils.makeList("ok", "true")));
+		return new Result("", sb, JsonUtil.MIMETYPE);
+	    }
+	    return new Result("", new StringBuilder(json), JsonUtil.MIMETYPE);	
 	}
-	return new Result("", new StringBuilder(json), JsonUtil.MIMETYPE);	
     }
 
 
