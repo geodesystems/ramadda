@@ -39,8 +39,30 @@ a.display-container {
 }
 
 
+.display-htmltable-category {
+    font-weight:bold;
+}
+
+.display-htmltable-category-row {
+    background:#fff !important;
+    background:#3D85C6 !important;
+    color:#fff;
+}
+
+.display-htmltable-category-cell {
+    border-bottom:1px solid #000 !important;
+}
+
 .display-htmltable-row:hover {
     background:var(--highlight-background) !important;
+}
+
+.display-htmltable-td {
+    position:relative;
+}
+
+.display-polltable-field:hover {
+    cursor:pointer;
 }
 
 .display-tooltip {
@@ -2923,7 +2945,7 @@ table.dataTable tfoot td {
 
 .imdv-legend-body {
     background:#fff;
-    font-size:90%;
+    font-size:80%;
 }
 
 

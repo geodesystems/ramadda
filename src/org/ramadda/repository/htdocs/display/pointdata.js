@@ -1740,9 +1740,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		fieldId:this.getFieldId()
 	    };
 
-
-
-
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterLive",false)) {
 		let widgetId = this.getFilterId(this.getId());
 		let widget = $("#" + widgetId);

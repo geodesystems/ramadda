@@ -1401,6 +1401,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:'fieldsPatterns',ex:'comma separated list of regexp patterns to match on fields to display'},
+	{p:'prefixFields',tt:'Field to always add to the beginning of the list'},
 	{p:'showMenu',ex:true},	      
 	{p:'showTitle',ex:true},
 	{p:'showEntryIcon',ex:true},
@@ -1804,7 +1805,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let label = this.getColorTableLabel();
 	    if(label) {
 		if(args.field) label = label.replace('${field}', args.field.getLabel());
-		this.jq(domId).prepend(HU.center(label));
+		if(args.showColorTableDots)
+		    this.jq(domId).prepend(HU.center(label));
+		else
+		    this.jq(domId).append(HU.center(label));		
 	    }
 	    if(!args || !args.colorByInfo) return;
 	    this.jq(domId).find('.display-colortable-slice').css('cursor','pointer');
@@ -2790,6 +2794,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.addFieldsCheckboxes(fields);
         },
         getSelectedFields: function(dfltList) {
+	    let prefixFields = this.getProperty('prefixFields');
 	    let debug = displayDebug.getSelectedFields;
 //	    debug =true;
 	    if(debug)
@@ -2848,7 +2853,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
 	    //	    console.log("fields:" + this.lastSelectedFields);
-	    return Utils.cloneList(this.lastSelectedFields??[]);
+
+	    let result =  Utils.cloneList(this.lastSelectedFields??[]);
+	    if(prefixFields) {
+		let p  =this.getFieldsByIds(null, prefixFields);
+		if(p.length) result = [...p,...result];
+	    }
+	    return result;
+
         },
         getSelectedFieldsInner: function(dfltList) {
             if (this.debugSelected) {
@@ -5508,8 +5520,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getDisplayTitle: function(title) {
             if (!title) title = this.title != null ? this.title : "";
-            var text = title;
-            var fields = this.lastSelectedFields;
+            let text = title;
+            let fields = this.lastSelectedFields;
             if (fields && fields.length > 0)
                 text = text.replace("{field}", fields[0].getLabel());
             else
@@ -5530,11 +5542,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.writeHtml(ID_TITLE, text);
         },
         getTitle: function(showMenuButton) {
-            var prefix = "";
+            let prefix = "";
             if (showMenuButton && this.hasEntries()) {
                 prefix = this.getEntryMenuButton(this.getEntries()[0]) + " ";
             }
-            var title = this.getProperty(ATTR_TITLE);
+	    
+            let title = this.getProperty('titleTemplate', this.getProperty(ATTR_TITLE));
             if (title != null) {
                 return prefix + title;
             }
@@ -5986,8 +5999,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(Utils.stringDefined(field.getGroup())) {
 			label = field.getGroup()+"-" + label;
 		    }
-		    let suffix1=" &uarr;";
-		    let suffix2=" &darr;";
+		    let suffix1=this.getProperty('sortSuffixUp',' _uparrow_').replace('_uparrow_','&uarr;');
+		    
+		    let suffix2=this.getProperty('sortSuffixDown',' _downarrow_').replace('_downarrow_','&darr;');
 		    if(field.isFieldString()) {
 			suffix1 = "A-Z";
 			suffix2 = "Z-A";
@@ -6094,7 +6108,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    }
 	    
-
 
             let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
 	    let fieldMap = {};

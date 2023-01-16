@@ -360,7 +360,11 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    } else {
 		selectedFields = null;
 	    }
-            let fields =   this.getData().getRecordFields();
+            let fields;
+	    if(this.getProperty('displayFields'))
+		fields =this.getFieldsByIds(null, this.getProperty("displayFields", "", true));
+	    else
+		fields = this.getData().getRecordFields();
 	    if(this.getNumericOnly()) {
 		fields  = fields.filter(f=>{
 		    return f.isFieldNumeric();

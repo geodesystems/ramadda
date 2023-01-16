@@ -1099,6 +1099,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
 	    let debugRows = 4;
+	    debugRows=20
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
