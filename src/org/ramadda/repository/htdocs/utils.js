@@ -3813,7 +3813,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     buttons:function(args) {
-	let buttons = Utils.wrap(args,"<div style='display:inline-block;margin-right:4px;'>","</div>");
+	let buttons = Utils.wrap(args,"<div style='display:inline-block;margin-right:6px;'>","</div>");
 	return HU.div(['class','ramadda-button-bar'], buttons);
     },
     hbox: function(args) {
