@@ -1608,6 +1608,7 @@ public class StorageManager extends RepositoryManager implements PointFile
                                    String fileContents)
             throws Exception {
         File tmpFile = getTmpFile(request, fileName);
+	System.err.println("S:" + tmpFile);
         //data:image/png;...
         String  fileType = "text/plain";
         boolean isBase64 = false;

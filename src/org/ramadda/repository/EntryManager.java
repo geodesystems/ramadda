@@ -1245,8 +1245,6 @@ public class EntryManager extends RepositoryManager {
 		tuple = new Object[]{0,0,0};
 		events.put(date,tuple);
 	    }
-	    System.err.println(date);
-	    
 	    sb.append(HU.col(HU.href(url+"&"+HU.arg(ARG_DELETE,activity),HU.getIconImage("fas fa-trash-alt",HU.attr("title","Clear these events")))));
 	    sb.append(HU.col(sdf.format(date)));
 	    sb.append(HU.col(activity));
@@ -1298,7 +1296,7 @@ public class EntryManager extends RepositoryManager {
 		sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Unable to write file:" + fileName)));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
-	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
+	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,tmpFile.getName());
 	    
 	    String name = fileName.replaceAll("_", " ");
 	    name = IOUtil.stripExtension(name);
