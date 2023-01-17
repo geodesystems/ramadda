@@ -239,5 +239,14 @@ $PASSWORD
 cp ${KEYSTORE} ${RAMADDA_HOME}
 
 echo "Certificate created and stored in ${RAMADDA_HOME}"
-echo "Don't forget to retart your RAMADDA"
+
+ask   "Do you want to restart RAMADDA? [y|n]"  "y"
+if [ "$response" != "y" ]; then
+    echo "OK, don't forget to restart RAMADDA"
+    exit
+fi
+
+echo "OK, calling service ramadda start"
+service ramadda start
+
 
