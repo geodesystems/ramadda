@@ -292,6 +292,18 @@ var MapUtils =  {
     makeDefaultFeatureText:function (attrs,columns,labelGetter) {
 	if(!columns) columns  = Object.keys(attrs);
         let html = "<table>";
+	let first = [];
+	let middle = [];
+	let last = [];
+	columns.forEach(attr=>{
+	    let _attr = attr.toLowerCase();
+	    if(_attr=='latitude' || _attr=='lat'|| _attr=='longitude' || _attr=='lon' || _attr=='long')
+		last.push(attr);
+	    else if(_attr=='name') first.push(attr);
+	    else middle.push(attr);
+	});
+
+	columns = Utils.mergeLists(first,middle,last);
 	columns.forEach(attr=>{
             let lclabel = attr.toLowerCase();
             if (lclabel == "objectid" ||
