@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class Feature {
         new DecimalFormat("#,##0.#");
 
     /** _more_ */
-    public static final DecimalFormat intFormat = new DecimalFormat("#,###");
+    public static final DecimalFormat intFormat = new DecimalFormat("####");
 
     /** _more_ */
     public static final DecimalFormat plainFormat =
@@ -361,8 +362,8 @@ public class Feature {
                                     .PROP_SCHEMADATA) != null)) {
             String schemaId = featureProperties.get(
                                   FeatureCollection.PROP_SCHEMAID).toString();
-            Hashtable<String, Object> data =
-                (Hashtable<String,
+            LinkedHashMap<String, Object> data =
+                (LinkedHashMap<String,
                            Object>) featureProperties.get(
                                FeatureCollection.PROP_SCHEMADATA);
             Element xdata = KmlUtil.makeElement(placemark,
@@ -420,8 +421,8 @@ public class Feature {
             JsonUtil.attr(sb, "id", JsonUtil.quote(getId()));
         }
         if ((featureProperties != null) && !featureProperties.isEmpty()) {
-            Hashtable<String, Object> data =
-                (Hashtable<String,
+            LinkedHashMap<String, Object> data =
+                (LinkedHashMap<String,
                            Object>) featureProperties.get(
                                FeatureCollection.PROP_SCHEMADATA);
             if (data != null) {

@@ -27,6 +27,7 @@ import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -318,8 +319,8 @@ public class FeatureCollection {
                 featureProps.put(FeatureCollection.PROP_SCHEMANAME,
                                  schemaName);
                 featureProps.put(FeatureCollection.PROP_SCHEMAID, schemaId);
-                Hashtable<String, Object> schemaData =
-                    new Hashtable<String, Object>(fieldDatum.size());
+                LinkedHashMap<String, Object> schemaData =
+                    new LinkedHashMap<String, Object>(fieldDatum.size());
                 for (int j = 0; j < fieldDatum.size(); j++) {
                     // since shapefile parser makes no distinction between ints & doubles, this hack will fix that.
                     Object data = fieldDatum.get(j).getData(i);
@@ -334,7 +335,6 @@ public class FeatureCollection {
                 featureProps.put(FeatureCollection.PROP_SCHEMADATA,
                                  schemaData);
             }
-
 
             Feature feature = new Feature(name, geom, featureProps,
                                           collectionProps);
