@@ -51,33 +51,33 @@ $.extend(Utils,{
     },
     displayAllColorTables: function(domId) {
         var cnt = 0;
-        var html = "<table width=50% >";
-        var code = "";
+        var html = '<table width=50% >';
+        var code = '';
         for (a in this.ColorTables) {
             if(this.ColorTables[a].label) {
-                html += HU.tr([],HU.td(["width","10%"],"<br>" + HU.h3(this.ColorTables[a].label)));
+                html += HU.tr([],HU.td(['width','10%'],'<br>' + HU.h3(this.ColorTables[a].label)));
                 continue;
             }
-            code +="new ColorTable(\"" + a +"\",\"" + a +"\", new String[]{\n";
+            code +='new ColorTable(\'' + a +'\',\'' + a +'\', new String[]{\n';
             for(var i=0;i<this.ColorTables[a].colors.length;i++) {
-                code +="\"" + this.ColorTables[a].colors[i]+"\",";
+                code +='\'' + this.ColorTables[a].colors[i]+'\',';
             }
-            code += "});\n";
+            code += '});\n';
 
-            html += HU.tr([],HU.td(["width","10%"],HtmlUtils.b(a)) +HU.td([], HtmlUtils.div(["id", domId + "_" + cnt, "style", "width:100%;"], "")));
+            html += HU.tr([],HU.td(['width','10%'],HtmlUtils.b(a)) +HU.td([], HtmlUtils.div(['id', domId + '_' + cnt, 'style', 'width:100%;'], '')) + HU.td(['align','right'],HU.space(2)+this.ColorTables[a].colors.length));
             cnt++;
         }  
-        html+="</table>";
-        //        Utils.makeDownloadFile("colortables.java",code);
-        $("#" + domId).html(html);
+        html+='</table>';
+        //        Utils.makeDownloadFile('colortables.java',code);
+        $('#' + domId).html(html);
         cnt = 0;
         for (a in this.ColorTables) {
             if(this.ColorTables[a].label) {
                 continue;
             }
-            this.displayColorTable(this.ColorTables[a], domId + "_" + cnt, 0, 1, {
+            this.displayColorTable(this.ColorTables[a], domId + '_' + cnt, 0, 1, {
                 showRange: false,
-                height: "20px"
+                height: '20px'
             });
             cnt++;
         }
