@@ -1015,6 +1015,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'barLabelInside',ex:'false'},
         {p:'barStyle',ex:'background:red;',tt:'Bar style'},			
 	{p:'tableHeaderStyle'},
+	{p:'tableCellStyle'},	
 	{p:'showAddRow',ex:'true'},
     ];
 
@@ -1141,6 +1142,12 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(!colorRowBy || !colorRowBy.isEnabled()) {
 		html+=HU.cssTag('.display-htmltable-row:hover {background:var(--highlight-background) !important;');
 	    }
+
+	    if(this.getProperty('tableCellStyle')) {
+		html+=HU.cssTag('.display-htmltable-td {' +
+				this.getProperty('tableCellStyle')+'}');
+	    }
+
 
 
 	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
@@ -1542,11 +1549,11 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    return this.pollFields.includes(field);
 	},
 	makeColumn:function(record,field,attrs,v) {
-	    if(this.isPollField(field.getId())) {
-		v = HU.div(['style',HU.css('overflow-y','auto','max-height',this.cellsToggled?TOGGLED_CSS:'500px'),'class','display-polltable-field'],v);
+	    if(!this.isPollField(field.getId())) {
+		return SUPER.makeColumn.call(this,record,field,attrs,v);
 	    }
-	    let c = SUPER.makeColumn.call(this,record,field,attrs,v);
-	    return c;
+	    v = HU.div(['style',HU.css('overflow-y','auto','max-height',this.cellsToggled?TOGGLED_CSS:'500px'),'class','display-polltable-field','record-id',record.getId()],v);
+	    return HU.td([],v);
 	},
 	filterData: function(records, fields, args) {
 	    records = SUPER.filterData.call(this,records,fields,args);
@@ -1578,7 +1585,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 			if(upvotes)
 			    record.setValue(upvotes.getIndex(),yes);
 			if(downvotes)
-			    record.setValue(downvotes.getIndex(),yes);			
+			    record.setValue(downvotes.getIndex(),no);			
 		    }
 		});
 
@@ -1621,12 +1628,13 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    });
 	    pollFields.click(function() {
 		let toggled = $(this).attr('toggled')??'false';
+		let items = $(this).closest('tr').find('.display-polltable-field');
 		if(toggled==='false') {
-		    $(this).css('max-height',TOGGLED_CSS);
-		    $(this).attr('toggled',true);
+		    items.css('max-height',TOGGLED_CSS);
+		    items.attr('toggled',true);
 		} else {
-		    $(this).css('max-height','500px');
-		    $(this).attr('toggled',false);
+		    items.css('max-height','500px');
+		    items.attr('toggled',false);
 		}
 	    });
 
@@ -1664,17 +1672,17 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
             this.jq(ID_DISPLAY_CONTENTS).find('td').each(function() {
 		if(!$(this).attr('field-id'))return;
 		let field =$(this).attr('field-id');
-
 		if(!_this.isPollField(field)) {
 		    return
 		}
 		let c = $(this).html().trim();
 		if(c=='') return
 		let record =$(this).attr('record-index');		
+		$(this).append('zzz');
 		$(this).append(HU.div(['style','height:2em']));
 		let contents = HU.leftRightTable(HU.div(['field-id',field,'record-index',record,'vote','yes','class','vote ramadda-clickable','title','Vote yes'],HU.getIconImage('fa-regular fa-thumbs-up')),
 						 HU.div(['field-id',field,'record-index',record,'vote','no','class','vote ramadda-clickable','title','Vote no'],HU.getIconImage('fa-regular fa-thumbs-down')));
-		$(this).append(HU.div(['field-id',field,'record-index',record,'class','display-polltable-block','style','border-top:1px solid #888;position:absolute;right:0px;left:10px;bottom:0px;'],contents));
+		$(this).append(HU.div(['field-id',field,'record-index',record,'class','display-polltable-block','style','flex-:1;background:green;border-top:1px solid #888;xxposition:absolute;right:0px;left:10px;bottom:0px;'],contents));
 	    });
 
             this.jq(ID_DISPLAY_CONTENTS).find('.vote').click(function() {

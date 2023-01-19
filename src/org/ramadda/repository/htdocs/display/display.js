@@ -2013,16 +2013,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    tmp.push(colors[i]);
 		colors = tmp;
 	    }
-	    if(this.getProperty("colorTablePruneLeft")) {
+	    if(this.getProperty('colorTablePruneLeft')) {
 		let tmp = [];
-		for(let i=+this.getProperty("colorTablePruneLeft");i<colors.length;i++) {
+		for(let i=+this.getProperty('colorTablePruneLeft');i<colors.length;i++) {
 		    tmp.push(colors[i]);
 		}
 		colors = tmp;
 	    }
-	    if(this.getProperty("colorTablePruneRight")) {
+	    if(this.getProperty('colorTablePruneRight')) {
 		let tmp = [];
-		let d = +this.getProperty("colorTablePruneRight");
+		let d = +this.getProperty('colorTablePruneRight');
 		for(let i=0;i<colors.length-d;i++) {
 		    tmp.push(colors[i]);
 		}
@@ -2032,7 +2032,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         getColorByColors: function(records, dfltColorTable) {
-            var colorBy = this.getProperty("colorBy");
+            var colorBy = this.getProperty('colorBy');
             if (!colorBy) {
                 return null;
             }
@@ -2042,10 +2042,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var obj = this.getColumnValues(records, colorByField);
             var colors = this.getColorTable();
-            if (!colors) colors = Utils.getColorTable(dfltColorTable || "blue_white_red");
+            if (!colors) colors = Utils.getColorTable(dfltColorTable || 'blue_white_red');
             if (!colors) return null;
-            var min = parseFloat(this.getProperty("colorByMin", obj.min));
-            var max = parseFloat(this.getProperty("colorByMax", obj.max));
+            var min = parseFloat(this.getProperty('colorByMin', obj.min));
+            var max = parseFloat(this.getProperty('colorByMax', obj.max));
             if (colors.colors) colors = colors.colors;
             var range = max - min;
             var colorValues = [];
@@ -2064,39 +2064,39 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
 	getDefaultGridByArgs: function() {
-	    let doHeatmap=this.getProperty("doHeatmap",false);
+	    let doHeatmap=this.getProperty('doHeatmap',false);
 	    let args =  {
 		display:this,
-		shape:this.getProperty("cellShape","rect"),
-		color: this.getProperty("cellColor","blue"),
-		stroke: !this.getProperty("cellFilled",true),
-		cellSize: this.getProperty("cellSize",doHeatmap?0:4),
-		cellSizeH: this.getProperty("cellSizeH",20),
-		cellSizeHBase: this.getProperty("cellSizeHBase",0),
-		cell3D:this.getProperty("cell3D",false),
-		cellShowText:this.getProperty("cellShowText",false),
-		cellLabels:Utils.split(this.getProperty("cellLabels")),
-		cellFonts:Utils.split(this.getProperty("cellFonts")),
-		cellLabelColors:Utils.split(this.getProperty("cellLabelColor")),
-		cellLabelPositions:Utils.split(this.getProperty("cellLabelPositions")),
-		cellLabelOffsetsX:Utils.split(this.getProperty("cellLabelOffsetsX")),
-		cellLabelOffsetsY:Utils.split(this.getProperty("cellLabelOffsetsY")),
+		shape:this.getProperty('cellShape','rect'),
+		color: this.getProperty('cellColor','blue'),
+		stroke: !this.getProperty('cellFilled',true),
+		cellSize: this.getProperty('cellSize',doHeatmap?0:4),
+		cellSizeH: this.getProperty('cellSizeH',20),
+		cellSizeHBase: this.getProperty('cellSizeHBase',0),
+		cell3D:this.getProperty('cell3D',false),
+		cellShowText:this.getProperty('cellShowText',false),
+		cellLabels:Utils.split(this.getProperty('cellLabels')),
+		cellFonts:Utils.split(this.getProperty('cellFonts')),
+		cellLabelColors:Utils.split(this.getProperty('cellLabelColor')),
+		cellLabelPositions:Utils.split(this.getProperty('cellLabelPositions')),
+		cellLabelOffsetsX:Utils.split(this.getProperty('cellLabelOffsetsX')),
+		cellLabelOffsetsY:Utils.split(this.getProperty('cellLabelOffsetsY')),
 		doHeatmap:doHeatmap,
-		operator:this.getProperty("hm.operator",this.getProperty("hmOperator","count")),
-		filter:this.getProperty("hm.filter",this.getProperty("hmFilter"))
+		operator:this.getProperty('hm.operator',this.getProperty('hmOperator','count')),
+		filter:this.getProperty('hm.filter',this.getProperty('hmFilter'))
 	    };
-	    args.cellSizeX = +this.getProperty("cellSizeX",args.cellSize);
-	    args.cellSizeY = +this.getProperty("cellSizeY",args.cellSize);
+	    args.cellSizeX = +this.getProperty('cellSizeX',args.cellSize);
+	    args.cellSizeY = +this.getProperty('cellSizeY',args.cellSize);
 	    return args;
 	},
 	getIconMap: function() {
 	    var iconMap;
-	    var iconMapProp = this.getProperty("iconMap");
+	    var iconMapProp = this.getProperty('iconMap');
 	    if (iconMapProp) {
-                var toks = iconMapProp.split(",");
+                var toks = iconMapProp.split(',');
 		iconMap = {};
                 for (var i = 0; i < toks.length; i++) {
-		    var toks2 = toks[i].split(":");
+		    var toks2 = toks[i].split(':');
 		    if (toks2.length > 1) {
                         iconMap[toks2[0]] = toks2[1];
 		    }
@@ -2107,19 +2107,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy) {
             let pointData = this.getData();
             if (pointData == null) return null;
-	    if(this.getProperty("colorByAllRecords")) {
+	    if(this.getProperty('colorByAllRecords')) {
 		records = pointData.getRecords();
 	    }
 	    let fields = pointData.getRecordFields();
 	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
 	},
 	getColorByMap: function(prop) {
-	    prop = this.getProperty(prop||"colorByMap");
+	    prop = this.getProperty(prop||'colorByMap');
 	    this.debugGetProperty=false;
 	    return Utils.parseMap(prop);
         },
         toString: function() {
-            return  this.type + " - " + this.getId();
+            return  this.type + ' - ' + this.getId();
         },
         getType: function() {
             return this.type;
@@ -3101,6 +3101,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return result;
 		});
 	    }
+
 
 
 	    if(this.getProperty("sortHighlight")) {
