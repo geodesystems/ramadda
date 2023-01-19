@@ -987,6 +987,19 @@ var Utils =  {
 	    return (value - vmin) / vdelta;
 	})
     },
+
+    /** if v is 'true' or 'false' then return true or false
+	else return v;
+    */
+    getProperty:function(v) {
+	if(Utils.isDefined(v)) {
+	    v = String(v);
+	    if(v==='true') return true;
+	    if(v==='false') return false;		
+	    return v;
+	}
+	return null;
+    },
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
