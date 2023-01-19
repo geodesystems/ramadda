@@ -39416,7 +39416,7 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         if(drawResult === false) {
             return false;
         }
-         
+      
         node = drawResult.node;
         
         // Insert the node into the indexer so it can show us where to
@@ -39522,6 +39522,7 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
                     options.isFilled = false;
                     options.isStroked = false;
                 }
+
                 drawn = this.drawPoint(node, geometry);
                 break;
             case "OpenLayers.Geometry.LineString":
@@ -39674,6 +39675,15 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         if (outline) {
             this.textRoot.removeChild(outline);
         }
+
+	//jeffmc: remove the textbackground element
+        var bg = document.getElementById(featureId + "_textbackground");
+        if (bg) {
+            this.vectorRoot.removeChild(bg);
+        }
+
+
+
     },
 
     /**
@@ -41111,6 +41121,8 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
             }
         }
 
+
+
 	//Jeffmc - add to handle fill patterns
 	if(style.fillPattern && style.fillPattern!='' && window.olGetPatternId) {
 	    let id = window.olGetPatternId(this, style.fillPattern,style.strokeColor,style.fillColor);
@@ -41440,6 +41452,8 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         var suffix = (drawOutline)?this.LABEL_OUTLINE_SUFFIX:this.LABEL_ID_SUFFIX;
         var label = this.nodeFactory(featureId + suffix, "text");
 
+
+
         label.setAttributeNS(null, "x", x);
         label.setAttributeNS(null, "y", -y);
 
@@ -41513,6 +41527,28 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
                 label.appendChild(tspan);
             }
         }
+
+
+	//jeffmc: add a background rectangle
+	if(style.textBackgroundFillColor !="" || style.textBackgroundStrokeColor !="") {
+	    let bbox = label.getBBox();
+	    let bg = this.nodeFactory(featureId + '_textbackground', 'rect');
+	    let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
+	    bg.setAttribute("x", bbox.x-pad);
+	    bg.setAttribute("y", bbox.y-pad);
+	    bg.setAttribute("width", bbox.width+pad*2);
+	    bg.setAttribute("height", bbox.height+pad*2);
+	    let bgStyle = "";
+	    bgStyle+="fill:" +(style.textBackgroundFillColor??"transparent")+";";
+	    if(style.textBackgroundStrokeColor!="") bgStyle+="stroke:" +style.textBackgroundStrokeColor+";";	    
+	    if(style.textBackgroundStrokeWidth>0)
+		bgStyle+="stroke-width:" + style.textBackgroundStrokeWidth+";";
+	    if(!isNaN(style.textBackgroundFillOpacity))
+		bgStyle+="fill-opacity:" + style.textBackgroundFillOpacity+";";
+	    bg.setAttribute("style", bgStyle);
+	    this.vectorRoot.appendChild(bg);
+	}
+
 
         if (!label.parentNode) {
             this.textRoot.appendChild(label);
