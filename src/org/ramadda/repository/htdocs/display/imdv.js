@@ -1573,6 +1573,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		fillColor: {label:'Fill',strip:'fill'},
 		fontColor: {label:'Font',strip:'font'},
 		labelAlign: {label:'Label',strip:'label'},
+		textBackgroundFillColor: {label:'Text Background',strip:'textBackground'},		
 	    };
 	    props.forEach(prop=>{
 		let id = "glyphedit_" + prop;
@@ -1645,12 +1646,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			widget = HU.select("",['id',domId],["normal","italic"],v);			
 		    } else {
 			if(props == "pointRadius") label="Size";
-			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
+			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="80";
 			if(prop.indexOf("Color")>=0) {
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
-			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',v)]) +
+			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
 				HU.space(2)+widget;
 //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
 			} else if(prop=="labelAlign") {
@@ -1674,7 +1675,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.select("",['id',domId],opts,v);			
 			} else if(prop=='fillPattern') {
 			    widget = this.getFillPatternSelect(domId,v);
-			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Offset")>=0 || prop=="rotation" || prop=='pointRadius') {
+			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Padding")>=0 || prop.indexOf("Offset")>=0 || prop=="rotation" || prop=='pointRadius') {
 			    let isRotation = prop=="rotation";
 			    if(!Utils.isDefined(v)) {
 				v=isRotation?0:1;
@@ -2787,13 +2788,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    case 'geo_gpx': 
 		return this.getMap().addGpxLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
 		break;
+	    case 'geo_shapefile_fips': 
+	    case 'geo_shapefile': 
+		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=geojson.geojson&formap=true';
+		//fall thru to geojson
+
 	    case 'geo_geojson': 
 		return this.getMap().addGeoJsonLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback,andZoom,errorCallback);
 		break;		
+
+		/*
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
 		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
-		//fall thru to kml
+		*/
+
 	    case 'geo_kml': 
 		let loadCallback2 = (map,layer)=>{
 		    if(layer.features) {layer.features.forEach(f=>{f.style = style;});}
@@ -2968,10 +2977,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   labelYOffset: this.getProperty("labelYOffset","14"),
 			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
 			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-
 			   strokeWidth:0,
 			   fillColor:'transparent',
 			   labelSelect:true,
+			   textBackgroundFillColor:'',
+			   textBackgroundFillOpacity:1.0,
+			   textBackgroundStrokeColor:'',
+			   textBackgroundStrokeWidth:1,			   			   
+			   textBackgroundPadding:2
 			  }, MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/map/marker-blue.png"});
 
@@ -3128,7 +3141,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   labelXOffset: '0',
 			   labelYOffset: '10',
 			   labelOutlineColor:'#fff',
-			   labelOutlineWidth: '0'},
+			   labelOutlineWidth: '0',
+			   textBackgroundFillColor:'',
+			   textBackgroundFillOpacity:1.0,
+			   textBackgroundStrokeColor:'',
+			   textBackgroundStrokeWidth:1,			   			   
+			   textBackgroundPadding:2},
 			  MyEntryPoint,
 			  {isMap:true,
 			   tooltip:"Select a gpx, geojson or  shapefile map",
@@ -3268,13 +3286,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	getMapProperty: function(name,dflt) {
-	    if(this.mapProperties[name]) return this.mapProperties[name];
+	    if(Utils.isDefined(this.mapProperties[name])) {
+		return this.mapProperties[name];
+	    }
 	    let value = this.getOtherProperties()[name];
-	    
 	    if(Utils.isDefined(value)) {
-		if(value==="true") return true;
-		if(value==="false") return false;		
-		return value;
+		return Utils.getProperty(value);
 	    }
 	    return  this.getProperty(name,dflt);
 	},
@@ -3631,11 +3648,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let address =
 		HU.span(['style',HU.css('position','relative')], 
-			HU.div(['style','display:inline-block;','id',this.domId(ID_ADDRESS_CLEAR),'title','Clear','class','ramadda-clickable'],HU.getIconImage('fa-solid fa-xmark',[],['style','color:#ccc;'])) +
+			HU.div(['style','display:inline-block;','id',this.domId(ID_ADDRESS_CLEAR),'title','Clear','class','ramadda-clickable'],HU.getIconImage('fa-solid fa-eraser',[],['style','color:#ccc;'])) +
 		' ' +
 			HU.div(['id',this.domId(ID_ADDRESS_WAIT),'style',HU.css('position','absolute','right','0px',
 										'display','inline-block','margin-right','2px','width','20px')])+
-			HU.input('','',['id',this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','30']));
+			HU.input('','',['id',this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
 
 	    if(this.canEdit()) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
@@ -5026,7 +5043,7 @@ MapGlyph.prototype = {
     },
 
     getLegendStyle:function(style) {
-	style = $.extend(this.style,style??{});
+	style = $.extend($.extend({},this.style),style??{});
 	let s = '';
 	let lineColor;
 	let lineStyle;
@@ -5236,7 +5253,6 @@ MapGlyph.prototype = {
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
 
 	    rows.click(function() {
-		console.log('click');
 		if($(this).hasClass(CLASS_IMDV_STYLEGROUP_SELECTED)) {
 		    $(this).removeClass(CLASS_IMDV_STYLEGROUP_SELECTED);
 		    _this.selectedStyleGroup = null;
@@ -5537,7 +5553,6 @@ MapGlyph.prototype = {
 	if(this.isMap()) {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
-
 	    let styleGroups = this.getStyleGroups();
 	    let groups = [];
 	    for(let i=0;i<20;i++) {
@@ -6149,10 +6164,7 @@ MapGlyph.prototype = {
 	    }
 	    let v = this.parsedProperties[key];
 	    if(v) {
-		v = String(v);
-		if(v==='true') return true;
-		if(v==='false') return false;		
-		return v;
+		return Utils.getProperty(v);
 	    }
 	}
 	return this.display.getMapProperty(key,dflt);
@@ -6169,8 +6181,12 @@ MapGlyph.prototype = {
 	    if(!info.showFilter()) {
 		return;
 	    }
-	    this.filterInfo[info.id] = info;
-	    let filter = filters[info.property] = filters[info.property]??{};
+	    this.filterInfo[info.property] = info;
+	    if(!filters[info.property]) filters[info.property]= {};
+	    let filter = filters[info.property];
+	    if(!Utils.isDefined(filter.min) || isNaN(filter.min)) filter.min = info.min;
+	    if(!Utils.isDefined(filter.max) || isNaN(filter.max)) filter.max = info.max;	    
+	    filter.property =  info.property;
 	    let id = info.getId();
 	    let label = HU.span(['title',info.property],HU.b(info.getLabel()));
 	    if(info.isString())  {
@@ -6310,12 +6326,18 @@ MapGlyph.prototype = {
 	    sliders.each(function() {
 		let theFeatureId = $(this).attr('feature-id');
 		let onSlide = function( event, ui, force) {
-		    let id = theFeatureId;
+		    let featureInfo = _this.getFeatureInfo(theFeatureId);
+		    let id = featureInfo.property;
 		    let filter = filters[id]??{};
-		    if(ui.handleIndex==0)
-			filter.min = ui.value;
-		    else
-			filter.max = ui.value;
+		    if(ui.animValues) {
+			filter.min = ui.animValues[0];
+			filter.max = ui.animValues[1];			
+		    } else {
+			if(ui.handleIndex==0)
+			    filter.min = ui.value;
+			else
+			    filter.max = ui.value;
+		    }
 		    filter.property=id;
 		    _this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
 		    _this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
@@ -6392,7 +6414,7 @@ MapGlyph.prototype = {
 			let stepSize = parseFloat(info.getProperty('filter.animate.step',sliderInfo.step*2));
 			values[1]=Math.min(sliderInfo.max,values[1]+stepSize);
 			slider.slider('values',values);
-			sliderInfo.slide({},{values:values},true);
+			sliderInfo.slide({},{animValues:values},true);
 			animation.timeout = setTimeout(step,info.getProperty('filter.animate.sleep',1000));
 		    };
 		    let values = slider.slider('values');
@@ -6509,7 +6531,6 @@ MapGlyph.prototype = {
 	    });
 	}
 
-
 	let featureFilters = this.attrs.featureFilters ??{};
 	let rangeFilters = [];
 	let stringFilters =[];
@@ -6557,7 +6578,7 @@ MapGlyph.prototype = {
 	    let template = this.getMapLabelsTemplate().replace(/\\n/g,'\n');
 	    let macros = Utils.tokenizeMacros(template);
 	    features.forEach((feature,idx)=>{
-		let pt = feature.geometry.getCentroid(); 
+		let pt = feature.geometry.getCentroid(true); 
 		let style = $.extend({},markerStyle);
 		style.label = this.applyMacros(template, feature.attributes,macros);
 		let marker = MapUtils.createVector(pt,null,style);
@@ -6770,9 +6791,11 @@ MapGlyph.prototype = {
 	});
 
 
+
 	features.forEach((f,idx)=>{
 	    let group = indexToGroup[idx];
 	    if(group) {
+		f.style = $.extend({},f.style);
 		$.extend(f.style,group.style)
 	    }
 	});
