@@ -8661,6 +8661,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		//                HU.cssLink(sb, css);
 		sb.append("\n");
 		for(String js: new String[]{"/colortables.js",
+					    //"/esdlcolortables.js",
 					    "/display/pointdata.js", 
 					    "/display/widgets.js",
 					    "/display/display.js",
