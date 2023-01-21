@@ -1,16 +1,12 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
-// Copyright (c) 2008-2021 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util.geo;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
