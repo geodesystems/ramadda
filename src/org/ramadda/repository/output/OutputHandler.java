@@ -1258,6 +1258,9 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 				"icon",HU.squote(getPageHandler().getIconUrl(request, entry)),
                                 "isGroup", "" + isGroup, "isImage",
                                 "" + isImage);
+	if(entry.isFile()) {
+	    Utils.add(attrs, "filename",JsonUtil.quote(IOUtil.getFileTail(entry.getResource().getPath())));
+	}
 	if(entry.isGeoreferenced()) {
 	    Utils.add(attrs, "isGeo","true");
 	    if(entry.hasAreaDefined()) {
