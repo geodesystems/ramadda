@@ -237,6 +237,20 @@ var MapUtils =  {
 	    OpenLayers.Renderer.symbol[a] = this.symbols[a];
 	}
     },
+    isFeatureVisible:function(feature) {
+	if(!feature.style) return true;
+	return feature.style.display!='none';
+    },
+    setFeatureVisible:function(feature, vis) {
+	if(!feature.style) feature.style = {};
+	if(vis) {
+	    feature.style.display = 'inline';
+	}  else {
+	    feature.style.display = 'none';
+	}
+	$.extend(feature.style,{display:feature.style.display});
+    },
+
     gridFilter:function(map,features,args) {
 	let opts = {
 	    cellWidth:60,
@@ -250,7 +264,6 @@ var MapUtils =  {
 	    let gb = feature.geometry.getBounds();
 	    b.extend(gb);
 	});
-//	console.log(features.length,cnt)
 	let gscr =(x,y)=>{return map.getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
 	let ul = gscr(b.left,b.top);
 	let lr = gscr(b.right,b.bottom);	    	  
@@ -273,6 +286,7 @@ var MapUtils =  {
 	    let hideCnt = 0, showCnt=0;
 
 	    features.forEach((feature,idx)=>{
+		if(!this.isFeatureVisible(feature)) return
 		let center = feature.geometry.getBounds().getCenterLonLat();
 		let screenPoint = map.getMap().getViewPortPxFromLonLat(center);
 		let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
