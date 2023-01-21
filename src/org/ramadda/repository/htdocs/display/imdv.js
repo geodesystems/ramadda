@@ -47,6 +47,20 @@ var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 
 let ImdvUtils = {
+    applyFeatureStyle:function(feature,style) {
+	if(!feature.style) {
+	    feature.style=style;
+	    return;
+	}
+	let geom = feature?.geometry?.CLASS_NAME;
+	if(geom=='OpenLayers.Geometry.Point' && Utils.stringDefined(feature.style.externalGraphic)) {
+	    for(a in style) {
+		//TODO:
+	    }
+	} else {
+	    feature.style= style;
+	}
+    },
     findGlyph:function(list, id) {
 	if(!list) return null;
 	let glyph;
@@ -129,7 +143,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let rw = b.right-b.left;
 		//		b.right = aspect1*(rh) + b.left
 		b.bottom = b.top-aspect2*rw;
-	    }
+n	    }
 	    this.lastBounds = b;
 	    if(isNaN(b.bottom)) b.bottom = b.top;
 	    if(isNaN(b.top)) b.top= b.bottom;	    
@@ -708,19 +722,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(glyphType.isMapServer()) {
 		let html = '';
 		let form = (label,name,size)=>{
-		    if(name=='predefined') {
-			let ids =Utils.mergeLists([''],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
-			html+=HU.formEntry(label+':',HU.select('',['id',this.domId(name)],ids,this.cache[name]));
-		    } else {
-			html+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
-		    }
+		    html+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
 		}
 		let args = [
 		    ['Name','servername'],
 		    ['Server URL','serverurl'],
 		    ['WMS Layer','wmslayer','20'],
-		    ['Legend URL','maplegend'],
-		    ['Or Predefined','predefined']
+		    ['Legend URL','maplegend']
 		];
 		html+= 'Enter either a TMS server URL or a WMS server URL with a layer name<br>';
 		this.cache = this.cache??{};
@@ -729,10 +737,28 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    form(a[0],a[1],a[2]);
 		});
 		html+='</table>';
-		html+=HU.div(['style',HU.css('text-align','center','padding-bottom','8px','margin-bottom','8px','border-bottom','1px solid #ccc')], HU.div([CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-			     HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel'));
-		html=HU.div(['style','margin:10px;'], html);
+		let contents = [];
+		let ids =Utils.mergeLists([''],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
+		let predefined =  HU.b('Predefined:')+HU.space(2) +HU.select('',['id',this.domId('predefined')],ids,this.cache['predefined']);
+		html+='<p>Or select a pre-defined layer:<br>' + predefined;
+		let buttons = HU.buttons([
+		    HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
+		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		html+=buttons;
+		contents.push({header:"WMS/WMTS Server",contents:html});
+
+		let esdl = '';
+		esdl+=HU.div(['id',this.domId('esdldialog')],'Loading...');
+		contents.push({header:'ESDL Data Cube Layers',contents:esdl});
+
+		let accord = HU.makeAccordionHtml(contents)
+		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], accord.contents);
+
 		let dialog = HU.makeDialog({content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
+		HU.makeAccordion('#'+accord.id);
+
+		this.initEsdlSelect(dialog);
+
 		let cancel = ()=>{
 		    dialog.remove();
 		}
@@ -754,8 +780,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.setMapServerUrl(url,this.jq('wmslayer').val().trim(),this.jq('maplegend').val().trim(),predefined);
 		    mapGlyph.checkMapServer();
 		    this.addGlyph(mapGlyph);
-		    this.clearCommands();
 		    this.clearMessage2(1000);
+
 		    dialog.remove();
 		}
 		dialog.find('.ramadda-button-ok').button().click(ok);
@@ -995,6 +1021,86 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	initEsdlSelect:function(dialog) {
+	    if(!this.esdlDatasets) {
+		let url = 'https://api.earthsystemdatalab.net/api/datasets?details=1';
+		$.getJSON(url, data=>{
+		    this.esdlDatasets = data;
+		    this.initEsdlSelect(dialog);
+		}).fail(err=>{
+		    console.error('Failed loading ESDL datasets:' + err);
+		});
+		return;
+	    }
+	    let html = '';
+	    let selects = [];
+	    let map = {}
+	    this.esdlDatasets.datasets.forEach((dataset,idx)=>{
+		let variables  = {};
+		map[''+idx] = variables;
+//		console.log(key,dataset);
+		if(!dataset.variables) return;
+		html+=HU.b(dataset.title)+':<br>';
+		let items = [{label:'Select Variable',value:''}];
+		dataset.variables.forEach(v=>{
+		    variables[v.id] =v;
+		    items.push({label:v.title,value:v.id});
+		});
+		let selectId = HU.getUniqueId('select_');
+		selects.push(selectId);
+		html+=HU.space(3) +HU.b("Variable: ") +
+		    HU.select("",['id',selectId,'dataset',idx],items);
+		html+='<p>';
+	    });
+	    html+= HU.buttons([
+		HU.div([CLASS,'ramadda-button-ok-esdl display-button'], 'OK'),
+		HU.div([CLASS,'ramadda-button-cancel-esdl display-button'], 'Cancel')]);
+
+	    let esdlDialog=this.jq('esdldialog');
+	    esdlDialog.html(html);
+	    esdlDialog.find('.ramadda-button-ok-esdl').button().click(()=>{
+		let variable;
+		selects.every(sid=>{
+		    let id = jqid(sid).val();
+		    if(Utils.stringDefined(id)) {
+			variable = map[jqid(sid).attr('dataset')][id];
+			return false;
+		    }
+		    return true;
+		});
+		dialog.remove();
+		if(variable) {
+		    let url = variable.tileUrl;
+		    url = url.replace('http:','https:');
+		    url=HU.url(url,['crs','EPSG:3857','vmin',variable.colorBarMin,'vmax',variable.colorBarMax,'cbar',variable.colorBarName,'time','2016-08-16T00:00:00Z']);
+		    /***
+		    let r = s=>{
+			return s.replace('https://api.earthsystemdatalab.net/api/datasets/deep-esdl~esdc-8d-0.25deg-1x720x1440-3.0.1.zarr/vars','');
+		    }
+		    console.log({url1:r('https://api.earthsystemdatalab.net/api/datasets/deep-esdl~esdc-8d-0.25deg-1x720x1440-3.0.1.zarr/vars/precipitation_era5/tiles2/2/1/0?crs=EPSG%3A3857&vmin=0&vmax=1&cbar=viridis&time=2016-08-16T00%3A00%3A00Z'),
+				 url2:r(url)});
+		    ***/
+		    delete variable.htmlRepr;
+
+		    console.log(variable);
+		    let mapOptions = {name:variable.title,
+				      variable:variable};
+		    this.clearCommands();
+		    mapOptions.icon = ramaddaBaseUrl+'/icons/xcube.png';
+		    mapOptions.type=GLYPH_MAPSERVER;
+		    let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, mapOptions, null,{});
+		    mapGlyph.setMapServerUrl(url,'','','');
+		    mapGlyph.checkMapServer();
+		    this.addGlyph(mapGlyph);
+		    this.clearMessage2(1000);
+		}
+	    });
+	    esdlDialog.find('.ramadda-button-cancel-esdl').button().click(()=>{
+		dialog.remove();
+	    });
+
+	},
+
 	createMapMarker:function(glyphType, glyphAttrs,style,points,andAdd) {
 	    let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Point', style, points);
 	    feature.style = style;
@@ -1573,7 +1679,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		fillColor: {label:'Fill',strip:'fill'},
 		fontColor: {label:'Font',strip:'font'},
 		labelAlign: {label:'Label',strip:'label'},
-		textBackgroundFillColor: {label:'Text Background',strip:'textBackground'},		
+		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
 	    };
 	    props.forEach(prop=>{
 		let id = "glyphedit_" + prop;
@@ -1644,6 +1750,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			widget = HU.select("",['id',domId],["normal","bold","lighter","bolder","100","200","300","400","500","600","700","800","900"],v);
  		    } else if(prop=="fontStyle") {
 			widget = HU.select("",['id',domId],["normal","italic"],v);			
+		    } else if(prop=='textBackgroundShape') {
+			widget = HU.select('',['id',domId],['rectangle','circle','ellipse'],v);
 		    } else {
 			if(props == "pointRadius") label="Size";
 			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
@@ -1675,7 +1783,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    widget =  HU.select("",['id',domId],opts,v);			
 			} else if(prop=='fillPattern') {
 			    widget = this.getFillPatternSelect(domId,v);
-			} else if(prop.indexOf("Width")>=0 || prop.indexOf("Padding")>=0 || prop.indexOf("Offset")>=0 || prop=="rotation" || prop=='pointRadius') {
+			} else if(prop.indexOf('Radius')>=0 ||
+				  prop.indexOf("Width")>=0 ||
+				  prop.indexOf("Padding")>=0 ||
+				  prop.indexOf("Offset")>=0 ||
+				  prop=="rotation") {
 			    let isRotation = prop=="rotation";
 			    if(!Utils.isDefined(v)) {
 				v=isRotation?0:1;
@@ -2805,9 +2917,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    case 'geo_kml': 
 		let loadCallback2 = (map,layer)=>{
-		    if(layer.features) {layer.features.forEach(f=>{f.style = style;});}
+		    if(layer.features) {
+			layer.features.forEach(f=>{
+			    ImdvUtils.applyFeatureStyle(f,style);
+			});
+		    }
 		    loadCallback(map,layer);
 		};
+		url =  ramaddaBaseUrl+"/entry/show?entryid=" + opts.entryId +"&output=kml.doc&converthref=true";
+
 		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback2,andZoom,errorCallback);
 		return layer;
 	    default:
@@ -2980,11 +3098,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeWidth:0,
 			   fillColor:'transparent',
 			   labelSelect:true,
-			   textBackgroundFillColor:'',
-			   textBackgroundFillOpacity:1.0,
 			   textBackgroundStrokeColor:'',
 			   textBackgroundStrokeWidth:1,			   			   
-			   textBackgroundPadding:2
+			   textBackgroundFillColor:'',
+			   textBackgroundFillOpacity:1.0,
+			   textBackgroundPadding:2,
+			   textBackgroundShape:'rectangle',
+			   textBackgroundRadius:0
 			  }, MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/map/marker-blue.png"});
 
@@ -3120,7 +3240,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {snapAngle:90,sides:6,
 			   icon:ramaddaBaseUrl+"/icons/hexagon.png"});		
 
-
 	    new GlyphType(this,GLYPH_MAP,"Map File",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
@@ -3142,11 +3261,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   labelYOffset: '10',
 			   labelOutlineColor:'#fff',
 			   labelOutlineWidth: '0',
-			   textBackgroundFillColor:'',
-			   textBackgroundFillOpacity:1.0,
 			   textBackgroundStrokeColor:'',
 			   textBackgroundStrokeWidth:1,			   			   
-			   textBackgroundPadding:2},
+			   textBackgroundFillColor:'',
+			   textBackgroundFillOpacity:1.0,
+			   textBackgroundPadding:2,
+			   textBackgroundShape:'rectangle',
+			   textBackgroundRadius:0
+			  },
 			  MyEntryPoint,
 			  {isMap:true,
 			   tooltip:"Select a gpx, geojson or  shapefile map",
@@ -5420,8 +5542,12 @@ MapGlyph.prototype = {
     setShowMultiData:function(v) {
 	this.attrs.showmultidata = v;
     },
-    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined) {
+    setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
 	this.style.legendUrl = legendUrl;
+	this.attrs.mapServerUrl = url;
+	this.attrs.wmsLayer = wmsLayer;
+	this.attrs.predefinedLayer = predefined;
+	this.mapServerOptions = mapOptions;
 
 	if(Utils.stringDefined(predefined)) {
 	    if(!Utils.stringDefined(this.attrs.name)) {
@@ -5447,9 +5573,7 @@ MapGlyph.prototype = {
 	}
 
 
-	this.attrs.mapServerUrl = url;
-	this.attrs.wmsLayer = wmsLayer;
-	this.attrs.predefinedLayer = predefined;
+
     },
     getAttributes: function() {
 	return this.attrs;
@@ -5503,8 +5627,8 @@ MapGlyph.prototype = {
 	    } else if(Utils.stringDefined(url)) {
 		//Convert malformed TMS url
 		url = url.replace(/\/{/g,"/${");
+//		console.log(url);
 		this.mapServerLayer =  this.display.getMap().createXYZLayer(this.getName(), url);
-		console.log(url)
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
 		if(mapLayer) {
@@ -6432,9 +6556,41 @@ MapGlyph.prototype = {
 	}
     },
     handleMapLoaded: function(map,layer) {
+	//Check if there are any KML ground overlays
+	//TODO: limit the number we add?
+	if(layer?.protocol?.format?.groundOverlays) {
+	    let format = layer.protocol.format;
+	    let text=(node,tag)=>{
+		let child = format.getElementsByTagNameNS(node,'*',tag);
+		if(!child.length) return null;
+		return child[0].innerHTML;
+	    };
+	    this.imageLayers=[];
+	    format.groundOverlays.forEach(go=>{
+		let icons = format.getElementsByTagNameNS(go,'*','Icon');
+		let ll = format.getElementsByTagNameNS(go,'*','LatLonBox');
+		if(!icons.length || !ll.length) return;
+		ll =ll[0];
+		let name = text(go,'name');
+		let url = text(icons[0],'href');
+		if(!url) return;
+		url = url.replace(/&amp;/g,'&');
+		let north = text(ll,'north');
+		let south = text(ll,'south');
+		let east = text(ll,'east');
+		let west = text(ll,'west');			    
+		let layer = this.getMap().addImageLayer(name,name,'',url,true,
+							north,west,south,east);
+		this.imageLayers.push(layer);
+	    });
+	}
+
+
 	this.mapLoaded = true;
 	this.makeFeatureFilters();
 	this.applyMapStyle();
+
+
     },
     applyMacros:function(template, attributes, macros) {
 	if(!macros) macros =  Utils.tokenizeMacros(template);
@@ -6567,34 +6723,13 @@ MapGlyph.prototype = {
 	    this.mapLabels = null;
 	}
 
-	//Add the map labels at the end after we call checkVisible
-	let needToAddMapLabels = false;
-	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
-	    needToAddMapLabels = true;
-	    this.mapLabels = [];
-	    let markerStyle = 	$.extend({},this.style);
-	    markerStyle.pointRadius=0;
-	    markerStyle.externalGraphic = null;
-	    let template = this.getMapLabelsTemplate().replace(/\\n/g,'\n');
-	    let macros = Utils.tokenizeMacros(template);
-	    features.forEach((feature,idx)=>{
-		let pt = feature.geometry.getCentroid(true); 
-		let style = $.extend({},markerStyle);
-		style.label = this.applyMacros(template, feature.attributes,macros);
-		let marker = MapUtils.createVector(pt,null,style);
-		marker.point = pt;
-		feature.mapPoint  = marker;
-		this.mapLabels.push(marker);
-	    });
-	}
 
 	//Apply the base style here
 	this.mapLayer.style = style;
 	features.forEach((f,idx)=>{
-	    f.style = $.extend({},style);
+	    ImdvUtils.applyFeatureStyle(f, $.extend({},style));
 	    f.originalStyle = $.extend({},style);			    
 	});
-
 
 
 	//Check for any rule based styles
@@ -6669,9 +6804,6 @@ MapGlyph.prototype = {
 	applyColors(this.attrs.fillColorBy,'fillColor',this.fillStrings);
 	applyColors(this.attrs.strokeColorBy,'strokeColor',this.strokeStrings);	
 
-
-
-	
 	if(useRules.length>0) {
 	    useRules.forEach(rule=>{
 		let styles = [];
@@ -6711,9 +6843,28 @@ MapGlyph.prototype = {
 	    });
 	}	    
 
+	//Add the map labels at the end after we call checkVisible
+	let needToAddMapLabels = false;
+	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
+	    needToAddMapLabels = true;
+	    this.mapLabels = [];
+	    let markerStyle = 	$.extend({},this.style);
+	    markerStyle.pointRadius=0;
+	    markerStyle.externalGraphic = null;
+	    let template = this.getMapLabelsTemplate().replace(/\\n/g,'\n');
+	    let macros = Utils.tokenizeMacros(template);
+	    features.forEach((feature,idx)=>{
+		let pt = feature.geometry.getCentroid(true); 
+		let labelStyle = $.extend({},markerStyle);
+		labelStyle.label = this.applyMacros(template, feature.attributes,macros);
+		let mapLabel = MapUtils.createVector(pt,null,labelStyle);
+		mapLabel.point = pt;
+		feature.mapLabel  = mapLabel;
+		this.mapLabels.push(mapLabel);
+	    });
+	}
 
 	this.visibleFeatures = 0;
-
 	let redrawFeatures = false;
 	let max =-1;
 	features.forEach((f,idx)=>{
@@ -6745,23 +6896,12 @@ MapGlyph.prototype = {
 		});
 	    }		
 
-
 	    if(visible) this.visibleFeatures++;
-
-	    if(f.mapPoint) {
-		f.mapPoint.filtered =false;
-	    }
-
 	    f.isVisible  = visible;
-	    
-	    if(!visible) {
-		if(!f.style) f.style={};
-		f.style.display='none';
-		if(f.mapPoint) {
-		    redrawFeatures = true;
-		    f.mapPoint.style.display='none';
-		    f.mapPoint.filtered =true;
-		}
+	    MapUtils.setFeatureVisible(f,visible);
+	    if(f.mapLabel) {
+		redrawFeatures = true;
+		MapUtils.setFeatureVisible(f.mapLabel,visible);
 	    }
 	});
 
@@ -6799,6 +6939,21 @@ MapGlyph.prototype = {
 		$.extend(f.style,group.style)
 	    }
 	});
+
+
+	this.mapLayer.features.forEach(f=>{
+	    if(f.style && f.style.fillPattern && !Utils.stringDefined(f.style.fillColor)) {
+		f.style.fillColor='transparent'
+	    }
+	});
+
+
+
+
+
+
+
+
 	this.checkVisible();
 
 	if(needToAddMapLabels) {
@@ -6823,6 +6978,7 @@ MapGlyph.prototype = {
 		ImdvUtils.scheduleRedraw(this.getMapServerLayer());
 	    }
 	}
+
 
 	this.features.forEach(feature=>{
 	    if(feature.style) {
@@ -6995,14 +7151,7 @@ MapGlyph.prototype = {
 
 	let setVis = (feature,vis)=>{
 	    if(!Utils.isDefined(vis))  vis=visible;
-	    if(feature.filtered)vis =false;
-	    if(!feature.style) feature.style = {};
-	    if(vis) {
-		feature.style.display = 'inline';
-	    }  else {
-		feature.style.display = 'none';
-	    }
-	    $.extend(feature.style,{display:feature.style.display});
+	    MapUtils.setFeatureVisible(feature, vis);
 	};
 
 	if(this.features) {
@@ -7025,13 +7174,16 @@ MapGlyph.prototype = {
 	if(this.getMapLayer()) {
 	    this.getMapLayer().setVisibility(visible);
 	}
+	if(this.imageLayers) {
+	    this.imageLayers.forEach(layer=>{layer.setVisibility(visible);})
+	}
 	if(this.getMapServerLayer()) {
 	    this.getMapServerLayer().setVisibility(visible);
 	}	
 
 	if(this.selectDots && this.selectDots.length>0) {
 	    this.selectDots.forEach(dot=>{
-		dot.style.display = visible?'inline':'none';
+		MapUtils.setVisible(dot,visible);
 	    });
 	    ImdvUtils.scheduleRedraw(this.display.selectionLayer);
 	}
@@ -7043,13 +7195,12 @@ MapGlyph.prototype = {
 	}
 
 	if(this.mapLabels && this.mapLoaded) {
-	    this.mapLabels.forEach((point,idx)=>{setVis(point,true);});
 	    if(!visible) {
-		this.mapLabels.forEach((point,idx)=>{setVis(point,false);});
+		this.mapLabels.forEach(mapLabel=>{setVis(mapLabel,false);});
 	    } else if(Utils.stringDefined(this.getMapPointsRange())) {
 		if(level<parseInt(this.getMapPointsRange())) {
 		    visible=false;
-		    this.mapLabels.forEach((point,idx)=>{setVis(point,false);});
+		    this.mapLabels.forEach(mapLabel=>{setVis(mapLabel,false);});
 		}
 	    } else {
 		MapUtils.gridFilter(this.getMap(), this.mapLabels);
@@ -7425,6 +7576,11 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	    this.display.getMap().removeLayer(this.getMapLayer());
 	    this.setMapLayer(null);
 	}
+	if(this.imageLayers) {
+	    this.imageLayers.forEach(layer=>{this.display.getMap().removeLayer(layer);})
+	    this.imageLayers = [];
+	}
+
 	if(this.getMapServerLayer()) {
 	    this.display.getMap().removeLayer(this.getMapServerLayer());
 	    this.setMapServerLayer(null);
@@ -7473,7 +7629,6 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
     let id = p+'_'+stroke +'_'+fill;
     if(ol.idToSvgId[id]) return ol.idToSvgId[id];
     p = window.olGetSvgPattern(p,stroke,fill);
-
     if(!window.olPatternBaseId) window.olPatternBaseId = 1;
     let svgId = 'pattern_'+(window.olPatternBaseId++);
     let patternNode = ol.nodeFactory(null, "pattern");
