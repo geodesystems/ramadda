@@ -74,6 +74,11 @@ public class ZipFileOutputHandler extends OutputHandler {
         addType(OUTPUT_LIST);
     }
 
+    public ZipFileOutputHandler(Repository repository, Element element,boolean skip)
+            throws Exception {
+        super(repository, element);
+    }
+
 
 
     /**
