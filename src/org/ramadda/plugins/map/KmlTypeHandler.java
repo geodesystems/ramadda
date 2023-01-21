@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.io.*;
 import java.util.List;
 import java.util.zip.*;
 
@@ -150,6 +151,30 @@ public class KmlTypeHandler extends GenericTypeHandler {
         return kmlRoot;
     }
 
+
+    public static InputStream readDoc(Repository repository, Entry entry)
+            throws Exception {
+        String  path    = entry.getFile().toString();
+        if (path.toLowerCase().endsWith(".kmz")) {
+            ZipInputStream zin =
+                new ZipInputStream(
+                    repository.getStorageManager().getFileInputStream(path));
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                String name = ze.getName().toLowerCase();
+                if (name.toLowerCase().endsWith(".kml")) {
+		    return zin;
+                }
+            }
+            IOUtil.close(zin);
+	    return null;
+        } else {
+            return repository.getStorageManager().getInputStream(
+								 entry.getFile().toString());
+        }
+
+    }
+    
 
     /**
      * _more_

@@ -9,6 +9,7 @@ package org.ramadda.plugins.map;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 
 import org.ramadda.util.geo.KmlUtil;
 
@@ -22,6 +23,7 @@ import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.xml.XmlUtil;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -33,7 +35,8 @@ import java.util.List;
  *
  *
  */
-public class KmlEntryOutputHandler extends OutputHandler {
+public class KmlEntryOutputHandler extends ZipFileOutputHandler {
+    public static final KmlUtil KU=null;
 
 
     /** Map output type */
@@ -45,6 +48,14 @@ public class KmlEntryOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_KMZ_IMAGE =
         new OutputType("Display as HTML", "kml.image", OutputType.TYPE_VIEW,
                        "", ICON_KML);
+
+    public static final OutputType OUTPUT_KML_EXTRACT =
+        new OutputType("Display as HTML", "kml.extract", OutputType.TYPE_ACTION,
+                       "", ICON_KML);
+
+    public static final OutputType OUTPUT_KML_DOC =
+        new OutputType("Display as HTML", "kml.doc", OutputType.TYPE_ACTION,
+                       "", ICON_KML);    
 
 
 
@@ -59,8 +70,10 @@ public class KmlEntryOutputHandler extends OutputHandler {
      */
     public KmlEntryOutputHandler(Repository repository, Element element)
             throws Exception {
-        super(repository, element);
+        super(repository, element,true);
         addType(OUTPUT_KML_HTML);
+        addType(OUTPUT_KML_EXTRACT);
+        addType(OUTPUT_KML_DOC);		
     }
 
 
@@ -99,10 +112,18 @@ public class KmlEntryOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+        if (outputType.equals(OUTPUT_KML_EXTRACT)) {
+            return outputKmlExtract(request, entry);
+	}
+
+        if (outputType.equals(OUTPUT_KML_DOC)) {
+            return outputKmlDoc(request, entry);
+	}
+	
+
         if (outputType.equals(OUTPUT_KML_HTML)) {
             return outputKmlHtml(request, entry);
         }
-
 
         return null;
     }
@@ -131,12 +152,18 @@ public class KmlEntryOutputHandler extends OutputHandler {
 
             return new Result("KML/KMZ Error", sb);
         }
+        getPageHandler().entrySectionOpen(request, entry, sb, "KML Display");
+	sb.append("<ul>");
         walkTree(request, entry, sb, root);
-
+	sb.append("</ul>");
+        getPageHandler().entrySectionClose(request, entry, sb);
         Result result = new Result("", sb);
 
         return result;
     }
+
+
+
 
     /**
      * _more_
@@ -149,27 +176,39 @@ public class KmlEntryOutputHandler extends OutputHandler {
     private void walkTree(Request request, Entry entry, StringBuffer sb,
                           Element node) {
         String tagName = node.getTagName();
-        if (tagName.equals(KmlUtil.TAG_KML)) {
+        if (tagName.equals(KU.TAG_KML)) {
             walkChildren(request, entry, sb, node);
-
             return;
         }
 
-        if (tagName.equals(KmlUtil.TAG_FOLDER)
-                || tagName.equals(KmlUtil.TAG_DOCUMENT)
-                || tagName.equals(KmlUtil.TAG_TOUR)) {
+        if (tagName.equals(KU.TAG_FOLDER)
+                || tagName.equals(KU.TAG_DOCUMENT)
+                || tagName.equals(KU.TAG_TOUR)) {
             //TODO: encode the text
             sb.append("<li> ");
             appendName(node, sb, tagName);
             sb.append("<ul>");
             walkChildren(request, entry, sb, node);
             sb.append("</ul>");
-        } else if (tagName.equals(KmlUtil.TAG_PLACEMARK)) {
+        } else if (tagName.equals(KU.TAG_PLACEMARK)) {
             sb.append("<li> ");
             appendName(node, sb, tagName);
-        } else if (tagName.equals(KmlUtil.TAG_GROUNDOVERLAY)) {
+        } else if (tagName.equals(KU.TAG_GROUNDOVERLAY)) {
             sb.append("<li> ");
-            appendName(node, sb, tagName);
+	    Element iconNode = XmlUtil.findChild(node,KU.TAG_ICON);
+	    if(iconNode!=null) {
+		String href = XmlUtil.getGrandChildText(iconNode, KU.TAG_HREF,null);
+		if(href!=null) {
+		    String name = IOUtil.getFileTail(href);
+		    appendName(node, sb, tagName);
+		    String url = repository.URL_ENTRY_SHOW + "/" + name;
+		    url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
+					ARG_FILE, href, ARG_OUTPUT,
+					OUTPUT_LIST.getId());
+		    sb.append("<br>");
+		    sb.append(HU.image(url,HU.attr("width","500px")));
+		}
+	    }
         } else {
             //            sb.append("<li> ");
             //            sb.append(tagName);
@@ -185,9 +224,9 @@ public class KmlEntryOutputHandler extends OutputHandler {
      */
     private void appendName(Node node, StringBuffer sb, String tagName) {
         sb.append(tagName + ": ");
-        sb.append(XmlUtil.getGrandChildText(node, KmlUtil.TAG_NAME, tagName));
+        sb.append(XmlUtil.getGrandChildText(node, KU.TAG_NAME, tagName));
         String desc = XmlUtil.getGrandChildText(node,
-                          KmlUtil.TAG_DESCRIPTION, null);
+                          KU.TAG_DESCRIPTION, null);
         if (desc != null) {
             sb.append(HtmlUtils.div(desc,
                                     HtmlUtils.cssClass("kml-description")));
@@ -214,7 +253,41 @@ public class KmlEntryOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result outputKmlExtract(Request request, Entry entry)
+            throws Exception {
+	String href=request.getString(ARG_FILE,"");
+	return fetchFile(request, entry, href);
+    }
 
+
+    private Result outputKmlDoc(Request request, Entry entry)
+            throws Exception {
+	InputStream inputStream = KmlTypeHandler.readDoc(getRepository(), entry);
+	if(request.get("converthref",false)) {
+	    String kml  = IO.readInputStream(inputStream);
+	    String url =  getRepository().getUrlBase()+"/entry/show?entryid=" + entry.getId() +"&output=kml.extract&" + ARG_FILE+"=";
+	    url = url.replace("&","&amp;");
+	    kml = kml.replaceAll("<href>(.*?)</href>",
+				 "<href>" + url +"$1</href>");
+			      
+	    //	    System.err.println(kml);
+	    InputStream tmp = inputStream;
+	    inputStream = new ByteArrayInputStream(kml.getBytes());
+	    tmp.close();
+	}
+	return new Result(inputStream,"application/vnd.google-earth.kml+xml");
+    }
+    
 
 
 
