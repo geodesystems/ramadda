@@ -8546,6 +8546,7 @@ OpenLayers.Renderer = OpenLayers.Class({
                 } else {
                     this.calculateFeatureDx(bounds, worldBounds);
                 }
+
                 var rendered = this.drawGeometry(feature.geometry, style, feature.id);
                 if(style.display != "none" && style.label && rendered !== false) {
 
@@ -40066,6 +40067,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
             }
             return;
         }
+
         switch (geometry.CLASS_NAME) {
             case "OpenLayers.Geometry.Point":
                 this.drawPoint(geometry, style, featureId);
@@ -41529,32 +41531,67 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         }
 
 
-	//jeffmc: add a background rectangle
-	if(style.textBackgroundFillColor !="" || style.textBackgroundStrokeColor !="") {
-	    let bbox = label.getBBox();
-	    let bg = this.nodeFactory(featureId + '_textbackground', 'rect');
-	    let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
-	    bg.setAttribute("x", bbox.x-pad);
-	    bg.setAttribute("y", bbox.y-pad);
-	    bg.setAttribute("width", bbox.width+pad*2);
-	    bg.setAttribute("height", bbox.height+pad*2);
-	    let bgStyle = "";
-	    bgStyle+="fill:" +(style.textBackgroundFillColor??"transparent")+";";
-	    if(style.textBackgroundStrokeColor!="") bgStyle+="stroke:" +style.textBackgroundStrokeColor+";";	    
-	    if(style.textBackgroundStrokeWidth>0)
-		bgStyle+="stroke-width:" + style.textBackgroundStrokeWidth+";";
-	    if(!isNaN(style.textBackgroundFillOpacity))
-		bgStyle+="fill-opacity:" + style.textBackgroundFillOpacity+";";
-	    bg.setAttribute("style", bgStyle);
-	    this.vectorRoot.appendChild(bg);
-	}
-
-
+	//check if we draw a background
+	//returns true if the label.bbox.width==0
+	let needRedo = this.checkBackground(style,label,featureId);
         if (!label.parentNode) {
             this.textRoot.appendChild(label);
+	    if(needRedo) {
+		let bbox = label.getBBox();
+		this.textRoot.removeChild(label);
+		this.checkBackground(style,label,featureId,bbox);
+		this.textRoot.appendChild(label);
+	    }
         }
     },
     
+    //jeffmc: add a background rectangle
+    checkBackground(style,label,featureId,bbox) {
+	if(style.textBackgroundFillColor !="" || style.textBackgroundStrokeColor !="") {
+	    bbox = bbox??label.getBBox();
+	    if(bbox.width==0 || bbox.height==0) {
+		return true;
+	    }
+	    let shape = 'rect';
+	    if(style.textBackgroundShape=='circle') shape='circle'
+	    else if(style.textBackgroundShape=='ellipse') shape='ellipse'	    
+	    let bg = this.nodeFactory(featureId + '_textbackground', shape);
+	    let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
+	    let bgStyle = "";
+	    bgStyle+="fill:" +((style.textBackgroundFillColor=='' || !style.textBackgroundFillColor)?"transparent":style.textBackgroundFillColor)+";";
+	    if(style.textBackgroundStrokeColor!="") bgStyle+="stroke:" +style.textBackgroundStrokeColor+";";	    
+	    if(style.textBackgroundStrokeWidth>=0)
+		bgStyle+="stroke-width:" + style.textBackgroundStrokeWidth+";";
+	    if(!isNaN(style.textBackgroundFillOpacity))
+		bgStyle+="fill-opacity:" + style.textBackgroundFillOpacity+";";
+
+	    if(shape=='circle') {
+		bg.setAttribute("cx", bbox.x+bbox.width/2);
+		bg.setAttribute("cy", bbox.y+bbox.height/2);
+		bg.setAttribute("r", (bbox.width/2)+(+pad));
+	    } else   if(shape=='ellipse') {
+		bg.setAttribute("cx", bbox.x+bbox.width/2);
+		bg.setAttribute("cy", bbox.y+bbox.height/2);
+		bg.setAttribute("rx", (bbox.width/2)+(+pad));
+		bg.setAttribute("ry", (bbox.height/2)+(+pad));	    	    				
+	    } else {
+		bg.setAttribute("x", bbox.x-pad);
+		bg.setAttribute("y", bbox.y-pad);
+		bg.setAttribute("width", bbox.width+pad*2);
+		bg.setAttribute("height", bbox.height+pad*2);
+		if(style.textBackgroundRadius) {
+		    bg.setAttribute("rx", style.textBackgroundRadius);
+		}
+
+	    }
+	    bg.setAttribute("style", bgStyle);
+	    this.vectorRoot.appendChild(bg);
+	}
+	return false;
+    },
+
+
+
     /** 
      * Method: getComponentString
      * 
@@ -55046,6 +55083,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
             }
         }
         
+
         var drawn = this.renderer.drawFeature(feature, style);
         //TODO remove the check for null when we get rid of Renderer.SVG
         if (drawn === false || drawn === null) {
@@ -61030,7 +61068,8 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
 
         // Loop through the following node types in this order and
         // process the nodes found 
-        var types = ["Link", "NetworkLink", "Style", "StyleMap", "Placemark"];
+	//jeffmc: add GroundOverlay
+        var types = ["Link", "NetworkLink", "Style", "StyleMap", "Placemark","GroundOverlay"];
         for(var i=0, len=types.length; i<len; ++i) {
             var type = types[i];
 
@@ -61042,6 +61081,11 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
             }
 
             switch (type.toLowerCase()) {
+	    case "groundoverlay":
+		if(!this.groundOverlays) this.groundOverlays = [];
+		this.groundOverlays.push(...nodes);
+		break;
+
 
                 // Fetch external links 
                 case "link":
@@ -61134,7 +61178,6 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
             var style = this.parseStyle(nodes[i]);
             if(style) {
                 var styleName = (options.styleBaseUrl || "") + "#" + style.id;
-                
                 this.styles[styleName] = style;
             }
         }
@@ -61362,7 +61405,6 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
         if (id && style) {
             style.id = id;
         }
-
         return style;
     },
 
@@ -61424,7 +61466,6 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
             var featureNode = nodes[i];
             var feature = this.parseFeature.apply(this,[featureNode]) ;
             if(feature) {
-
                 // Create reference to styleUrl 
                 if (this.extractStyles && feature.attributes &&
                     feature.attributes.styleUrl) {
