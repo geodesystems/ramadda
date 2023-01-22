@@ -4999,6 +4999,10 @@ a.wiki-link-noexist {
     background: none;
 }
 
+.ui-helper-reset, .ui-accordion .ui-accordion-header {
+    font-size:var(--font-size);
+}
+
 .ui-accordion-header a {
     color:#000 !important;
 }
