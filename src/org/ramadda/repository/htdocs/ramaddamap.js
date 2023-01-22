@@ -44,6 +44,13 @@ var MapUtils =  {
 	'affgeoid':'Amer. Fact Finder ID',
 
     },
+    properties:{},
+    addMapProperty:function(key,prop) {
+	this.properties[key] = prop;
+    },
+    getMapProperty:function(key,dflt) {
+	return this.properties[key]??dflt;
+    },
     makeLabel:function(l) {
 	if(!l) return l;
 	let _l=l.toLowerCase();
