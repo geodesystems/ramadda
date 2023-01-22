@@ -73,6 +73,7 @@ let ImdvUtils = {
     //We use this to call redraw so we don't have to keep track of when to redraw when
     //we're updating the map
     scheduleRedraw:function(layer,feature) {
+	if(!layer) return;
 	if(layer.redrawPending) {
 	    return;
 	}
@@ -143,7 +144,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let rw = b.right-b.left;
 		//		b.right = aspect1*(rh) + b.left
 		b.bottom = b.top-aspect2*rw;
-n	    }
+	    }
 	    this.lastBounds = b;
 	    if(isNaN(b.bottom)) b.bottom = b.top;
 	    if(isNaN(b.top)) b.top= b.bottom;	    
@@ -1079,16 +1080,13 @@ n	    }
 		if(variable) {
 		    let url = variable.tileUrl;
 		    url = url.replace('http:','https:');
-		    url=HU.url(url,['crs','EPSG:3857','vmin',variable.colorBarMin,'vmax',variable.colorBarMax,'time','2016-08-16T00:00:00Z'])+'&cbar={colorbar}';
-		    /***
-		    let r = s=>{
-			return s.replace('https://api.earthsystemdatalab.net/api/datasets/deep-esdl~esdc-8d-0.25deg-1x720x1440-3.0.1.zarr/vars','');
-		    }
-		    console.log({url1:r('https://api.earthsystemdatalab.net/api/datasets/deep-esdl~esdc-8d-0.25deg-1x720x1440-3.0.1.zarr/vars/precipitation_era5/tiles2/2/1/0?crs=EPSG%3A3857&vmin=0&vmax=1&cbar=viridis&time=2016-08-16T00%3A00%3A00Z'),
-				 url2:r(url)});
-		    ***/
-		    delete variable.htmlRepr;
+		    let d  = new Date('2016-08-16T00:00:00Z');
+		    let s = d.format('isoDateTime');
+		    console.log(""+d);
+		    console.log("S:"+s);
 
+		    url=HU.url(url,['crs','EPSG:3857','time',s??'2016-08-16T00:00:00Z'])+'&cbar={colorbar}&vmin={vmin}&vmax={vmax}';
+		    delete variable.htmlRepr;
 		    console.log(variable);
 		    let mapOptions = {name:variable.title,
 				      variable:variable};
@@ -1767,7 +1765,7 @@ n	    }
 			if(props == "pointRadius") label="Size";
 			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
 			else if(prop=="fontFamily") size="60";
-			else if(prop.toLowerCase().indexOf('url')>=0) size="80";
+			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
 			if(prop.indexOf("Color")>=0) {
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
 			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
@@ -2544,7 +2542,7 @@ n	    }
 	    html+=div;
 	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...",'L');
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
-	    html+= this.menuItem(this.domId(ID_REFRESH),"Refresh");	    
+//	    html+= this.menuItem(this.domId(ID_REFRESH),"Refresh");	    
 	    html+=div;
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");
@@ -3476,6 +3474,12 @@ n	    }
 	    } else {
 		this.jq(ID_ADDRESS).hide();
 	    }
+	    let baseIndex = 100;
+	    glyphs.forEach((mapGlyph,idx)=>{
+		baseIndex = mapGlyph.setLayerLevel(baseIndex);
+	    });
+	    this.getMap().checkLayerOrder();
+
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
@@ -3604,9 +3608,7 @@ n	    }
 	    this.selectionLayer.setZIndex(1001)
 	    this.myLayer.setZIndex(1000)	    
 	    this.selectionLayer.canSelect = false;
-	    if(this.getProperty('layerIndex')) {
-		this.myLayer.ramaddaLayerIndex = +this.getProperty('layerIndex');
-	    }
+	    //Always on top
 	    this.myLayer.ramaddaLayerIndex = 1001;
 	    this.icon = '/icons/map/marker-blue.png';
 	    this.glyphTypes=[];
@@ -4472,6 +4474,7 @@ MapGlyph.prototype = {
     },
     addToStyleDialog:function(style) {
 	if(this.isMapServer() && this.attrs.variable) {
+	    console.log(this.attrs.variable);
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
 	}	    
 	return '';
@@ -5064,7 +5067,8 @@ MapGlyph.prototype = {
 	let glyphType = this.display.getGlyphType(this.getType());
 	let right = '';
 	if(addDecorator) {
-	    right+=this.getDecoration(true);
+	    //For now don't add the decoration (the graphic indicator)
+//	    right+=this.getDecoration(true);
 	}
 
 	if(glyphType) {
@@ -5157,6 +5161,28 @@ MapGlyph.prototype = {
     getLegendDiv:function() {
 	return this.jq('legend_');
     },
+    setLayerLevel:function(level) {
+	if(this.getMapLayer()) {
+	    this.getMapLayer().ramaddaLayerIndex=level++;
+	}
+	if(this.imageLayers) {
+	    this.imageLayers.forEach(obj=>{
+		if(obj.layer) {
+		    obj.layer.ramaddaLayerIndex=level++;
+		}
+	    });
+	}
+	if(this.image) {
+	    this.image.ramaddaLayerIndex=level++;
+	}
+
+	if(this.isGroup()) {
+	    this.getChildren().forEach(mapGlyph=>{
+		level = mapGlyph.setLayerLevel(level);
+	    });
+	}
+	return level;
+    },
     makeLegend:function(opts) {
 	opts = opts??{};
 	let html = '';
@@ -5166,6 +5192,22 @@ MapGlyph.prototype = {
 	let label =  this.getLabel(true,true);
 	let body = HU.div(['class','imdv-legend-inner'],this.getLegendBody());
 
+	if(this.imageLayers) {
+	    let cbx='';
+	    if(this.getMapLayer() && this.getMapLayer().features.length) {
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid','main','class','imdv-imagelayer-checkbox'],
+					   this.isImageLayerVisible({id:'main'}),
+					   'Main Layer'));
+	    }
+	    this.imageLayerMap = {};
+	    this.imageLayers.forEach(obj=>{
+		this.imageLayerMap[obj.id] = obj;
+		cbx+=HU.div([],HU.checkbox(Utils.getUniqueId(''),['imageid',obj.id,'class','imdv-imagelayer-checkbox'],
+					   this.isImageLayerVisible(obj),
+					   obj.name));
+	    });
+	    body+=HU.div(['class','imdv-legend-offset'],cbx);
+	}
 	if(this.isGroup()) {
 	    let child="";
 	    this.getChildren().forEach(mapGlyph=>{
@@ -5371,8 +5413,18 @@ MapGlyph.prototype = {
 	return body;
     },
     initLegend:function() {
-
 	let _this = this;
+
+	if(this.imageLayers) {
+	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
+		let visible = $(this).is(':checked');
+		let id = $(this).attr('imageid');
+		let obj = _this.imageLayerMap[id]??{id:id};
+		_this.setImageLayerVisible(obj,visible);
+	    });
+	}
+
+
 	if(this.display.canEdit()) {
 	    let label = this.getLegendDiv().find('.imdv-legend-label');
 	    //Set the last dropped time so we don't also handle this as a setVisibility click
@@ -5612,7 +5664,9 @@ MapGlyph.prototype = {
 	    mapLayer.mapGlyph = this;
 	    mapLayer.textGetter = (feature)=>{
 		let text  = this.getPopupText();
-		if(!Utils.isDefined(text) || !feature.attributes) return null;
+		if(text=='none') return null;
+		if(!Utils.stringDefined(text)) text = '${default}';
+		if(!feature.attributes) return null;
 		return this.applyMacros(text, feature.attributes);
 	    };
 	}
@@ -5643,6 +5697,8 @@ MapGlyph.prototype = {
 	url = url.replace(/\/{/g,"/${");
 	if(this.attrs.variable) {
 	    url = url.replace(/\{colorbar\}/,this.attrs.variable.colorBarName);
+	    url = url.replace(/\{vmin\}/,this.attrs.variable.colorBarMin);
+	    url = url.replace(/\{vmax\}/,this.attrs.variable.colorBarMax);	    	    
 	}
 	return url;
     },
@@ -5961,9 +6017,7 @@ MapGlyph.prototype = {
 	    columns.forEach((column,idx)=>{
 		let stat =  stats[idx];
 		let v= this.getFeatureValue(feature,column.property)??'';
-//		let v = attrs[column.property]??'';
 		if(v && Utils.isDefined(v.value)) v = v.value;
-//		console.dir(column.property,v,attrs[column.property]);
 		let nv = +v;
 		let sv = String(v);
 		let isNumber = column.isNumeric();
@@ -5977,6 +6031,7 @@ MapGlyph.prototype = {
 		if(sv.indexOf('<')>=0) {
 		    sv = Utils.stripTags(sv);
 		}
+		sv=column.format(sv);
 		table+=HU.tag('td',['style',isNumber?'text-align:right':'','align',isNumber?'right':'left'],sv);
 	    });
 	});
@@ -6249,8 +6304,9 @@ MapGlyph.prototype = {
 		getId:function() {
 		    return this.id;
 		},
-		getProperty:function(prop,dflt) {
-		    let v =    _this.getProperty(this.id+'.' + prop,dflt);
+		getProperty:function(prop,dflt,checkGlyph) {
+		    if(checkGlyph) dflt=_this.getProperty(prop,dflt);
+		    let v =   _this.getProperty(this.id+'.' + prop,dflt);
 		    return v;
 		},
 		show: function() {
@@ -6279,6 +6335,15 @@ MapGlyph.prototype = {
 		    return label;
 		},
 
+		format:function(value) {
+		    if(this.isNumeric()) {
+			let decimals = this.getProperty('format.decimals',null,true);
+			if(Utils.isDefined(decimals)&&!isNaN(value)) {
+			    value = Utils.trimDecimals(value,decimals);
+			}
+		    }
+		    return value;
+		},
 		isNumeric:function(){return this.isInt() || this.getType()=='numeric';},
 		isInt:function() {return this.getType()=='int';},
 		isString:function() {return this.getType()=='string';},
@@ -6657,6 +6722,7 @@ MapGlyph.prototype = {
 		return child[0].innerHTML;
 	    };
 	    this.imageLayers=[];
+	    let cnt=0;
 	    format.groundOverlays.forEach(go=>{
 		let icons = format.getElementsByTagNameNS(go,'*','Icon');
 		let ll = format.getElementsByTagNameNS(go,'*','LatLonBox');
@@ -6670,18 +6736,21 @@ MapGlyph.prototype = {
 		let south = text(ll,'south');
 		let east = text(ll,'east');
 		let west = text(ll,'west');			    
-		let layer = this.getMap().addImageLayer(name,name,'',url,true,
-							north,west,south,east);
-		this.imageLayers.push(layer);
+		let obj = {
+		    id:'groundoverlay_'+(cnt++),
+		    url:url,
+		    name:name+' IMAGE',
+		    north:north,west:west,south:south,east:east
+		}
+		this.imageLayers.push(obj);
+		//We might have a bunch of overlays so don't add them if there are lots
+		this.isImageLayerVisible(obj,cnt<=3);
 	    });
 	}
-
 
 	this.mapLoaded = true;
 	this.makeFeatureFilters();
 	this.applyMapStyle();
-
-
     },
     applyMacros:function(template, attributes, macros) {
 	if(!macros) macros =  Utils.tokenizeMacros(template);
@@ -6706,17 +6775,26 @@ MapGlyph.prototype = {
 	if(template.indexOf('${default}')>=0) {
 	    let columns = [];
 	    let labelMap = {};
+	    let infoMap = {};
 	    this.getFeatureInfoList().forEach(info=>{
+		infoMap[info.property] = info;
 		if(info.showPopup()) {
 		    columns.push(info.property);
 		    labelMap[info.property] = info.getLabel();
 		}
 	    });
+	    let formatter = (attr,value)=>{
+		let info = infoMap[attr];
+		if(info) {
+		    value = info.format(value);
+		}
+		return value;
+	    };
 	    let labelGetter = attr=>{
 		return labelMap[attr];
 	    }
 	    template = template.replace('${default}',MapUtils.makeDefaultFeatureText(attributes,columns,
-										     labelGetter));
+										     formatter,labelGetter));
 	}
 	return template;
     },
@@ -6816,6 +6894,7 @@ MapGlyph.prototype = {
 
 
 	//Apply the base style here
+	
 	this.mapLayer.style = style;
 	features.forEach((f,idx)=>{
 	    ImdvUtils.applyFeatureStyle(f, $.extend({},style));
@@ -6992,6 +7071,7 @@ MapGlyph.prototype = {
 	    MapUtils.setFeatureVisible(f,visible);
 	    if(f.mapLabel) {
 		redrawFeatures = true;
+		f.mapLabel.isFiltered=!visible;
 		MapUtils.setFeatureVisible(f.mapLabel,visible);
 	    }
 	});
@@ -7262,11 +7342,15 @@ MapGlyph.prototype = {
 	    else
 		jqid(this.getFixedId()).hide();
 	}
-	if(this.getMapLayer()) {
+	if(this.getMapLayer() && !this.imageLayers) {
 	    this.getMapLayer().setVisibility(visible);
 	}
 	if(this.imageLayers) {
-	    this.imageLayers.forEach(layer=>{layer.setVisibility(visible);})
+	    this.imageLayers.forEach(obj=>{
+		let imageVisible = visible && this.isImageLayerVisible(obj);
+		if(obj.layer)
+		    obj.layer.setVisibility(imageVisible);
+	    })
 	}
 	if(this.getMapServerLayer()) {
 	    this.getMapServerLayer().setVisibility(visible);
@@ -7274,7 +7358,7 @@ MapGlyph.prototype = {
 
 	if(this.selectDots && this.selectDots.length>0) {
 	    this.selectDots.forEach(dot=>{
-		MapUtils.setVisible(dot,visible);
+		MapUtils.setFeatureVisible(dot,visible);
 	    });
 	    ImdvUtils.scheduleRedraw(this.display.selectionLayer);
 	}
@@ -7294,6 +7378,11 @@ MapGlyph.prototype = {
 		    this.mapLabels.forEach(mapLabel=>{setVis(mapLabel,false);});
 		}
 	    } else {
+		//If the label wasn't filtered then turn them all on
+		this.mapLabels.forEach(mapLabel=>{
+		    if(!mapLabel.isFiltered)
+			setVis(mapLabel,true);
+		});
 		MapUtils.gridFilter(this.getMap(), this.mapLabels);
 	    }
 	}
@@ -7301,10 +7390,35 @@ MapGlyph.prototype = {
 	if(this.children) {
 	    this.children.forEach(child=>{child.checkVisible();});
 	}
-
-
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
     },    
+    setImageLayerVisible:function(obj,visible) {
+	this.isImageLayerVisible(obj,true,visible);
+	if(obj.layer) obj.layer.setVisibility(visible);
+    },
+    isImageLayerVisible:function(obj,create,visible) {
+	if(!this.attrs.imageLayerState) {
+	    this.attrs.imageLayerState = {};
+	}
+	let state=this.attrs.imageLayerState[obj.id];
+	if(!state) {
+	    state = this.attrs.imageLayerState[obj.id] = {
+		visible:true
+	    }
+	}
+	if(Utils.isDefined(visible)) state.visible=visible;
+	if(obj.id=='main') {
+	    if(this.getMapLayer()) this.getMapLayer().setVisibility(visible);
+	    return
+	}
+	if(state.visible && create)  {
+	    obj.layer =this.getMap().addImageLayer(obj.name,obj.name,'',obj.url,true,
+						   obj.north,obj.west,obj.south,obj.east);
+	    
+	    this.display.makeLegend();
+	}
+	return state.visible;
+    },
     isShape:function() {
 	if(this.getType()==GLYPH_LABEL) {
 	    if(!Utils.stringDefined(this.style.externalGraphic)) return true;
@@ -7668,7 +7782,10 @@ let display = this.display.getDisplayManager().createDisplay("map",attrs);
 	    this.setMapLayer(null);
 	}
 	if(this.imageLayers) {
-	    this.imageLayers.forEach(layer=>{this.display.getMap().removeLayer(layer);})
+	    this.imageLayers.forEach(obj=>{
+		if(obj.layer)
+		    this.display.getMap().removeLayer(obj.layer);
+	    })
 	    this.imageLayers = [];
 	}
 
