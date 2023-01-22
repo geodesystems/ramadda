@@ -100,6 +100,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     /**  */
     private StringBuilder extraJS = new StringBuilder();
 
+    private boolean addedExtra = false;
+    
     /**
      * Create a new MapManager for the repository
      *
@@ -108,6 +110,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     public MapManager(Repository repository) {
         super(repository);
     }
+
 
 
 
@@ -315,6 +318,16 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         defaultMapLayer = getRepository().getProperty(PROP_MAP_DEFAULTLAYER,
 						      "osm");
         mapLayers = getRepository().getProperty(PROP_MAP_LAYERS, null);
+
+	if(!addedExtra) {
+	    addedExtra = true;
+	    String esdl = getRepository().getProperty("ramadda.datacube.servers",null);
+	    if(esdl!=null) {
+		addExtraMapJS("MapUtils.addMapProperty('datacubeservers','" + esdl+"');\n");
+	    }
+
+	}
+
     }
 
     /**
