@@ -183,7 +183,6 @@ var MapUtils =  {
 	return new OpenLayers.Layer.Vector(name,attrs);
     },    
     createProjection: function(name) {
-
 	return new OpenLayers.Projection(name);
     },
     distance: function(lat1,lon1,lat2,lon2) {
@@ -310,9 +309,9 @@ var MapUtils =  {
 //	    console.log('grid filter show:' + showCnt +' hide:' + hideCnt);
 	}
     },
-    makeDefaultFeatureText:function (attrs,columns,labelGetter) {
+    makeDefaultFeatureText:function (attrs,columns,valueFormatter,labelGetter) {
 	if(!columns) columns  = Object.keys(attrs);
-        let html = "<table>";
+        let html = '<table>';
 	let first = [];
 	let middle = [];
 	let last = [];
@@ -327,37 +326,38 @@ var MapUtils =  {
 	columns = Utils.mergeLists(first,middle,last);
 	columns.forEach(attr=>{
             let lclabel = attr.toLowerCase();
-            if (lclabel == "objectid" ||
-                lclabel == "feature_type" ||
-                lclabel == "shapearea" ||
-                lclabel == "styleurl" ||
-                lclabel == "shapelen") return;
+            if (lclabel == 'objectid' ||
+                lclabel == 'feature_type' ||
+                lclabel == 'shapearea' ||
+                lclabel == 'styleurl' ||
+                lclabel == 'shapelen') return;
 
             let label;
 	    if(labelGetter)
 		label = labelGetter(attr);
 	    if(!Utils.isDefined(label))
 		label = MapUtils.makeLabel(attr);
-            if (lclabel == "startdate") label = "Start Date";
-            else if (lclabel == "enddate") label = "End Date";
-            else if (lclabel == "aland") label = "Land Area";
-            else if (lclabel == "awater") label = "Water Area";
-            html += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + HU.span(['title',attr],label) + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+            if (lclabel == 'startdate') label = 'Start Date';
+            else if (lclabel == 'enddate') label = 'End Date';
+            else if (lclabel == 'aland') label = 'Land Area';
+            else if (lclabel == 'awater') label = 'Water Area';
+            html += '<tr valign=top><td align=right><div style=\'margin-right:5px;margin-bottom:3px;\'><b>' + HU.span(['title',attr],label) + ':</b></div></td><td><div style=\'margin-right:5px;margin-bottom:3px;\'>';
             let value;
             if (attrs[attr] != null && (typeof attrs[attr] == 'object' || typeof attrs[attr] == 'Object')) {
                 let o = attrs[attr];
-                value = "" + o["value"];
+                value = '' + o['value'];
             } else {
-                value = "" + attrs[attr];
+                value = '' + attrs[attr];
             }
-            if (value.startsWith("http:") || value.startsWith("https:")) {
-                value = "<a href='" + value + "'>" + value + "</a>";
+            if (value.startsWith('http:') || value.startsWith('https:')) {
+                value = '<a href=\'' + value + '\'>' + value + '</a>';
             }
-            if (value == "null") return;
+            if (value == 'null') return;
+	    if(valueFormatter) value = valueFormatter(attr,value);
 	    html += value;
-            html += "</div></td></tr>";
+            html += '</div></td></tr>';
         });
-        html += "</table>";
+        html += '</table>';
 	return html;
     }	
     
@@ -429,6 +429,7 @@ var map_default_layer = 'osm';
 new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
 			  '//c.tile.openstreetmap.org/${z}/${x}/${y}.png']);
+
 new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',{isForMap:true});
 new MapLayer('google.roads','Google Maps - Roads','https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}');
 new MapLayer('google.hybrid','Google Maps - Hybrid','https://mt0.google.com/vt/lyrs=y&hl=en&x=${x}&y=${y}&z=${z}');
@@ -1521,6 +1522,7 @@ RepositoryMap.prototype = {
         feature.style = null;
 	let layer = feature.layer;
 	let highlight = highlightStyle??this.getLayerHighlightStyle(layer);
+
 	if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
 	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4)??highlight.fillColor;
 	}
@@ -1529,6 +1531,14 @@ RepositoryMap.prototype = {
 	}
 	fs = fs ??{};
 	this.checkMatchStyle(fs,highlight);
+	if(Utils.stringDefined(fs.externalGraphic) && !Utils.stringDefined(highlight.externalGraphic)) {
+	    highlight.externalGraphic = fs.externalGraphic;
+	    if(fs.graphicWidth) 
+		highlight.graphicWidth = fs.graphicWidth*1.3;
+	    if(fs.graphicHeight) 
+		highlight.graphicHeight = fs.graphicHeight*1.3;	    
+	}
+
 	if(fs.pointRadius && !highlight.pointRadius) {
 	    highlight.pointRadius = fs.pointRadius*1.2;
 	}
@@ -1751,57 +1761,71 @@ RepositoryMap.prototype = {
 	this.checkLayerOrder();
     },    
     checkLayerOrder: function() {
-	let base = this.numberOfBaseLayers;
+	//Offset a bunch from the base
+	let base = this.numberOfBaseLayers+100;
 	let debug = false;
-	if(debug)
-	    console.log("layer order");
-	this.nonSelectLayers.forEach(layer=>{
-	    if(debug)
-		console.log("\tnonselect:" + layer.name +" " + base);
-	    this.getMap().setLayerIndex(layer, base++);		
-	});
-	this.loadedLayers.forEach(layer=>{
-	    if(debug)
-		console.log("\tloaded:" + layer.name +" " + base);
-	    this.getMap().setLayerIndex(layer, base++);		
-	});
-	this.externalLayers.forEach(layer=>{
+	let max = 0;
+	//debug=true
+	if(debug)   console.log("***** layer order");
+	let changed = false;
+	let setIndex=layer=>{
+	    let index;
 	    if(layer.ramaddaLayerIndex) {
-		if(debug)
-		    console.log("\texternal:" + layer.name +" " + layer.ramaddaLayerIndex);
-		this.getMap().setLayerIndex(layer, layer.ramaddaLayerIndex);
-	    } else {
-		if(debug)
-		    console.log("\texternal:" + layer.name +" " + base);
-		this.getMap().setLayerIndex(layer, base++);
+		index=layer.ramaddaLayerIndex;
+ 	    } else {
+		index=base++;
 	    }
-	});
+	    if(!changed)
+		changed = layer.theIndex!=index;
+	    if(debug) console.log('\t' + layer.name +' ramadda:' + layer.ramaddaLayerIndex +' old:' + layer.theIndex +' ' + index+' ' +changed);
+	    layer.theIndex = index;
+//	    this.getMap().setLayerIndex(layer, index);		
+	    base=Math.max(base,index);
+	};
+	this.nonSelectLayers.forEach(setIndex);
+	this.loadedLayers.forEach(setIndex);
+	this.externalLayers.forEach(setIndex);
 	if (this.boxes) {
-	    if(debug)
-		console.log("\tboxes");
-            this.getMap().setLayerIndex(this.boxes, base++);
+	    if(debug)console.log("\tboxes");
+	    setIndex(this.boxes);
 	}
 	if (this.lines) {
-	    if(debug)
-		console.log("\tlines");
-            this.getMap().setLayerIndex(this.lines, base++);
+	    if(debug)console.log("\tlines");
+	    setIndex(this.lines);
 	}
         if (this.circles) {
-	    if(debug)
-		console.log("\tcircles");
-            this.getMap().setLayerIndex(this.circles, base++);
+	    if(debug)console.log("\tcircles");
+	    setIndex(this.circles);
 	}
 	if (this.markers) {
-	    if(debug)
-		console.log("\tmarkers");
-            this.getMap().setLayerIndex(this.markers, base++);
+	    if(debug)console.log("\tmarkers");
+	    setIndex(this.markers);
 	}
 	if (this.labelLayer) {
-	    if(debug)
-		console.log("\tlabel");
-	    this.getMap().setLayerIndex(this.labelLayer, base++);
+	    if(debug)console.log("\tlabel");
+	    setIndex(this.labelLayer);
 	}
-	//            this.getMap().resetLayersZIndex();
+
+	if(changed) {
+	    this.getMap().layers.sort((l1,l2)=>{
+		if(!Utils.isDefined(l1.theIndex)) {
+		    if(Utils.isDefined(l2.theIndex))
+			return -1;
+		    else
+			return 1;
+		}
+		if(!Utils.isDefined(l2.theIndex)) {
+		    if(Utils.isDefined(l1.theIndex))
+			return 1;
+		    else
+			return -1;
+		}
+		return l1.theIndex-l2.theIndex;
+	    });
+	    if(debug)
+		console.log("reset z");
+	    this.getMap().resetLayersZIndex();
+	}
     },
 
     addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
@@ -2394,7 +2418,11 @@ RepositoryMap.prototype = {
                 }
             } else {
 		if(debugPopup) console.log("getFeatureText-using feature attributes");
-		out = MapUtils.makeDefaultFeatureText(p);
+		if(layer.textGetter) {
+		    out= layer.textGetter(feature);
+		} else {
+		    out = MapUtils.makeDefaultFeatureText(p);
+		}
 	    }		
 	}
 	if(out && out.indexOf('${default}')>=0) {
