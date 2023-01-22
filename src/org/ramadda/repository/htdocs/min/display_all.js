@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jan 21 12:43:30 MST 2023";
+var build_date="RAMADDA build date: Sat Jan 21 17:37:57 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40388,9 +40388,12 @@ n	    }
 		html+=buttons;
 		contents.push({header:"WMS/WMTS Server",contents:html});
 
-		let esdl = '';
-		esdl+=HU.div(['id',this.domId('esdldialog')],'Loading...');
-		contents.push({header:'ESDL Data Cube Layers',contents:esdl});
+		let dataCubeServers=  MapUtils.getMapProperty('datacubeservers');
+		if(dataCubeServers) {
+		    let esdl = '';
+		    esdl+=HU.div(['id',this.domId('esdldialog')],'Loading...');
+		    contents.push({header:'ESDL Data Cube Layers',contents:esdl});
+		}
 
 		let accord = HU.makeAccordionHtml(contents)
 		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], accord.contents);
@@ -40398,7 +40401,9 @@ n	    }
 		let dialog = HU.makeDialog({content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		HU.makeAccordion('#'+accord.id);
 
-		this.initEsdlSelect(dialog);
+		if(dataCubeServers) {
+		    this.initEsdlSelect(dialog);
+		}
 
 		let cancel = ()=>{
 		    dialog.remove();
@@ -40663,8 +40668,10 @@ n	    }
 	},
 	
 	initEsdlSelect:function(dialog) {
+	    //TODO: handle multiple servers
+	    let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
 	    if(!this.esdlDatasets) {
-		let url = 'https://api.earthsystemdatalab.net/api/datasets?details=1';
+		let url = dataCubeServers[0]+'/datasets?details=1';
 		$.getJSON(url, data=>{
 		    this.esdlDatasets = data;
 		    this.initEsdlSelect(dialog);
@@ -40713,7 +40720,7 @@ n	    }
 		if(variable) {
 		    let url = variable.tileUrl;
 		    url = url.replace('http:','https:');
-		    url=HU.url(url,['crs','EPSG:3857','vmin',variable.colorBarMin,'vmax',variable.colorBarMax,'cbar',variable.colorBarName,'time','2016-08-16T00:00:00Z']);
+		    url=HU.url(url,['crs','EPSG:3857','vmin',variable.colorBarMin,'vmax',variable.colorBarMax,'time','2016-08-16T00:00:00Z'])+'&cbar={colorbar}';
 		    /***
 		    let r = s=>{
 			return s.replace('https://api.earthsystemdatalab.net/api/datasets/deep-esdl~esdc-8d-0.25deg-1x720x1440-3.0.1.zarr/vars','');
@@ -41288,6 +41295,10 @@ n	    }
 	    let props;
 	    let values = {};
 	    html +=HU.formTable();
+	    if(mapGlyph) {
+		html+=(mapGlyph.addToStyleDialog(style)??'');
+	    }
+
 	    if(style) {
 		props = [];
 		let isImage = style.imageUrl;
@@ -44100,6 +44111,13 @@ MapGlyph.prototype = {
 	    return this.transientProperties.mapglyphs;
 	return null;
     },
+    addToStyleDialog:function(style) {
+	if(this.isMapServer() && this.attrs.variable) {
+	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
+	}	    
+	return '';
+    },
+
     addToPropertiesDialog:function(content,style) {
 	let html='';
 	let layout = (lbl,widget)=>{
@@ -44222,6 +44240,16 @@ MapGlyph.prototype = {
 	this.setVisibleLevelRange(this.display.jq("minlevel").val().trim(),
 				      this.display.jq("maxlevel").val().trim());
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
+
+	if(this.isMapServer()  && this.attrs.variable) {
+	    if(this.currentColorbar!=this.attrs.variable.colorBarName) {
+		this.attrs.variable.colorBarName = this.currentColorbar;
+		this.mapServerLayer.url = this.getMapServerUrl();
+		this.mapServerLayer.redraw();
+	    }
+	}
+
+
     },
     featureSelected:function(feature,layer,event) {
 //	console.log('imdv.featureSelected');
@@ -45250,6 +45278,20 @@ MapGlyph.prototype = {
 	    this.applyMapStyle();
 	}
     },
+    getMapServerUrl:function() {
+	let url=this.attrs.mapServerUrl;
+	//Convert malformed TMS url
+	url = url.replace(/\/{/g,"/${");
+	if(this.attrs.variable) {
+	    url = url.replace(/\{colorbar\}/,this.attrs.variable.colorBarName);
+	}
+	return url;
+    },
+
+    createMapServer:function() {
+	this.mapServerLayer =  this.display.getMap().createXYZLayer(this.getName(), this.getMapServerUrl());
+    },
+	
     checkMapServer:function(andZoom) {
 	if(!this.isMapServer()) return;
 	if(this.mapServerLayer==null) {
@@ -45266,10 +45308,7 @@ MapGlyph.prototype = {
 		    opacity:1.0
 		});
 	    } else if(Utils.stringDefined(url)) {
-		//Convert malformed TMS url
-		url = url.replace(/\/{/g,"/${");
-//		console.log(url);
-		this.mapServerLayer =  this.display.getMap().createXYZLayer(this.getName(), url);
+		this.createMapServer();
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
 		let mapLayer = RAMADDA_MAP_LAYERS_MAP[this.attrs.predefinedLayer];
 		if(mapLayer) {
@@ -45390,8 +45429,60 @@ MapGlyph.prototype = {
 //	if(ct.colors.length>20)   attrs.push(STYLE,HU.css('width','400px'));
         return  HtmlUtils.div(attrs,display);
     },
+    initColorTables: function(currentColorbar) {
+	if(!currentColorbar)
+	    this.currentColorbar=this.attrs.variable.colorBarName;
+	currentColorbar = currentColorbar??this.attrs.variable.colorBarName;
+	let items = [];
+	let image;
+	let html = '';
+	this.display.colorbars.forEach(coll=>{
+	    let cat=coll[0];
+	    html+=HU.b(cat)+'<br>';
+	    coll[2].forEach(c=>{
+		let name = c[0];
+		let url = 'data:image/png;base64,' + c[1];
+		html+=HU.image(url,['class','ramadda-clickable','colorbar',name, 'height','20px','width','256px','title',name]);
+		html+='<br>';
+		if(name==currentColorbar) {
+		    image = c[1];
+		}
+	    });
+	});
+	let url = image?('data:image/png;base64,' + image):null;
+	this.jq('colortableproperties').html(HU.div(['id',this.domId('colortable'),'class','ramadda-clickable','title','Click to select color bar'],
+						    url? HU.image(url,['height','20px','width','256px']):'No image'));
+
+	let _this = this;
+	html = HU.div(['style','margin:8px;max-height:200px;overflow-y:auto;'], html);
+	this.jq('colortable').click(function() {
+	    let colorSelect = HU.makeDialog({content:html,
+					     my:'left top',
+					     at:'left bottom',
+					     anchor:$(this)});
+	    colorSelect.find('img').click(function() {
+		_this.currentColorbar = $(this).attr('colorbar');
+		colorSelect.remove();
+		_this.initColorTables(_this.currentColorbar);
+	    });
+	});
+    },
     initPropertiesComponent: function(dialog) {
 	let _this = this;
+	if(this.isMapServer() && this.attrs.variable) {
+	    if(!this.display.colorbars) {
+		let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
+		let url = dataCubeServers[0]+'/colorbars';
+		$.getJSON(url, (data)=> {
+		    this.display.colorbars = data;
+		    this.initColorTables();
+		});
+	    } else {
+		this.initColorTables();
+	    }
+	}	    	
+
+
 	let clearElevations = this.jq('clearelevations');
 	clearElevations.button().click(function(){
 	    _this.attrs.elevations = null;
