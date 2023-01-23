@@ -281,18 +281,13 @@ var MapUtils =  {
 	let ul = gscr(b.left,b.top);
 	let lr = gscr(b.right,b.bottom);	    	  
 	if(!isNaN(ul.x) && !isNaN(ul.y) && !isNaN(lr.x) && !isNaN(lr.y)) {
-	    let setVis = (feature,vis)=>{
-		if(vis) {
-		    feature.style.display = 'inline';
-		}  else {
-		    feature.style.display = 'none';
-		}
-	    };
 	    let gridW = parseInt((lr.x-ul.x)/opts.cellWidth);
 	    let gridH = parseInt((lr.y-ul.y)/opts.cellHeight);	    
 	    let grid = Array(gridW+1);
+//	    console.log("w:"+gridW," h:"+gridH,lr.y,ul.y,opts.cellHeight);
+
 	    for(let i=0;i<grid.length;i++) {
-		grid[i] = Array.apply(null, Array(gridH+1)).map(function () {});
+		grid[i] = Array.apply(null, Array(gridH+1)).map(function () {return false});
 	    }
 	    let gridWidth = lr.x-ul.x;
 	    let gridHeight = lr.y-ul.y;
@@ -303,16 +298,17 @@ var MapUtils =  {
 		let center = feature.geometry.getBounds().getCenterLonLat();
 		let screenPoint = map.getMap().getViewPortPxFromLonLat(center);
 		let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
-		let indexY = parseInt(gridW*(lr.y-screenPoint.y)/gridHeight);		
+		let indexY = parseInt(gridH*(lr.y-screenPoint.y)/gridHeight);		
 		if(grid[indexX][indexY]) {
 		    hideCnt++;
-		    setVis(feature,false);
+		    MapUtils.setFeatureVisible(feature,false);
 		} else {
 		    showCnt++;
 		    grid[indexX][indexY]=true;
-		    setVis(feature,true);		    
+		    MapUtils.setFeatureVisible(feature,true);		    
 		}
 	    });
+//	    for(let i=0;i<grid.length;i++) {console.table(...grid[i]); }
 //	    console.log('grid filter show:' + showCnt +' hide:' + hideCnt);
 	}
     },
@@ -1820,7 +1816,14 @@ RepositoryMap.prototype = {
 	}
 
 	if(changed) {
-	    this.getMap().layers.sort((l1,l2)=>{
+	    let nonBaseLayers = this.getMap().layers.filter(layer=>{
+		return !layer.isBaseLayer;
+	    });
+	    let baseLayers = this.getMap().layers.filter(layer=>{
+		return layer.isBaseLayer;
+	    });	    
+
+	    nonBaseLayers.sort((l1,l2)=>{
 		if(!Utils.isDefined(l1.theIndex)) {
 		    if(Utils.isDefined(l2.theIndex))
 			return -1;
@@ -1835,6 +1838,8 @@ RepositoryMap.prototype = {
 		}
 		return l1.theIndex-l2.theIndex;
 	    });
+	    baseLayers.push(...nonBaseLayers);
+	    this.getMap().layers = baseLayers;
 	    if(debug)
 		console.log("reset z");
 	    this.getMap().resetLayersZIndex();
@@ -1847,6 +1852,7 @@ RepositoryMap.prototype = {
             forSelect: false,
             addBox: true,
             isBaseLayer: false,
+	    alwaysInRange:true
         };
         if (args)
             $.extend(theArgs, args);
@@ -1863,6 +1869,7 @@ RepositoryMap.prototype = {
             MapUtils.createSize(width, height), {
                 numZoomLevels: 3,
                 isBaseLayer: theArgs.isBaseLayer,
+		alwaysInRange:theArgs.alwaysInRange,
 		displayOutsideMaxExtent:true,
                 resolutions: this.getMap().layers[0] ? this.getMap().layers[0].resolutions : null,
                 maxResolution: this.getMap().layers[0] ? this.getMap().layers[0].resolutions[0] : null
