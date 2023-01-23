@@ -1072,7 +1072,12 @@ a.ramadda-menubar-button:hover {
     background:#fff;
 }
 
-
+.ramadda-expandable-link span i {
+    color:#ddd;
+}
+.ramadda-expandable-link span i:hover {
+    color: var(--hover-color);
+}
 
 
 .ramadda-component {
