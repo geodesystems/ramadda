@@ -45,6 +45,13 @@ var MapUtils =  {
 
     },
     properties:{},
+    extendBounds:function(b1,b2) {
+	if(b1) {
+	    if(b2) b1.extend(b2);
+	    return b1;
+	}
+	return b2;
+    },
     addMapProperty:function(key,prop) {
 	this.properties[key] = prop;
     },
@@ -1117,11 +1124,17 @@ RepositoryMap.prototype = {
 	    console.log("setZoom");
         this.getMap().zoomTo(zoom);
     },
-    zoomToLayer:function(layer) {
-        if (layer)
-            return;
-        let bounds = layer.getDataExtent();
-        if (bounds == null) return;
+    zoomToLayer:  function(layer,scale)  {
+        let dataBounds = this.getLayerVisbileExtent(layer);
+	if(!dataBounds)
+	    dataBounds = layer.extent;
+        if (dataBounds) {
+	    if(scale)
+		dataBounds = dataBounds.scale(parseFloat(scale),dataBounds.getCenterPixel());
+            this.zoomToExtent(dataBounds, false);
+	}
+    },
+    zoomToBounds:function(bounds) {
         this.getMap().setCenter(bounds.getCenterLonLat());
         this.zoomToExtent(bounds);
     },
@@ -4341,7 +4354,6 @@ RepositoryMap.prototype = {
 	}
     },
 
-    
     getLayerVisbileExtent: function(layer) {
         let maxExtent = null;
         let features = layer.features;
@@ -4362,16 +4374,6 @@ RepositoryMap.prototype = {
         return maxExtent;
     },
 
-    zoomToLayer:  function(layer,scale)  {
-        let dataBounds = this.getLayerVisbileExtent(layer);
-	if(!dataBounds)
-	    dataBounds = layer.extent;
-        if (dataBounds) {
-	    if(scale)
-		dataBounds = dataBounds.scale(parseFloat(scale),dataBounds.getCenterPixel());
-            this.zoomToExtent(dataBounds, false);
-	}
-    },
 
     animateViewToBounds:  function(bounds, ob,steps) {
 	if(!Utils.isDefined(steps)) steps = 1;
