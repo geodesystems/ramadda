@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan 23 00:26:11 MST 2023";
+var build_date="RAMADDA build date: Mon Jan 23 10:53:04 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -39687,6 +39687,11 @@ var BUTTON_IMAGE_ATTRS = ['style','color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 
+var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
+			  'filter.zoomonchange.show=false',
+			  'filter.toggle.show=false','showButtons=false'];
+
+
 let ImdvUtils = {
     applyFeatureStyle:function(feature,style) {
 	if(!feature.style) {
@@ -41111,6 +41116,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props.suffix) props.suffix='';	    
 	    let help = '';
 	    lines.forEach((line)=>{
+		if(line=='<hr>') {
+		    help+='<thin_hr>';
+		    return
+		}
 		if(line.info) {
 		    help+=HU.div(['class','ramadda-clickable imdv-property-popup','target',target,
 				  'info-id',line.info], line.title);
@@ -42084,7 +42093,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!props) props="";
 	    
 
-	    let lines = ['legendLabel=Some label','filter.show=false','filter.toggle.show=false','showButtons=false'];
+	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS];
 	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
 			  contents:
@@ -43971,7 +43980,8 @@ MapGlyph.prototype = {
 	    let html = HU.b(info.getLabel());
 	    let items =   ['show=true','label=','filter.first=true']
 	    if(info.isNumeric()) {
-		items.push('filter.min=0',
+		items.push('format.decimals=0',
+			   'filter.min=0',
 			   'filter.max=100',
 			   'filter.animate=true',
 			   'filter.animate.step=1',
@@ -44179,8 +44189,8 @@ MapGlyph.prototype = {
 	content.push({header:'Properties',contents:html});
 
 	html=  this.getHelp('#miscproperties')+'<br>';
-	let miscLines =['filter.show=false',
-			'filter.zoomonchange.show=false','filter.toggle.show=false'];
+	let miscLines =[...IMDV_PROPERTY_HINTS];
+	miscLines.push('<hr>');
 	this.getFeatureInfoList().forEach(info=>{
 //	    miscLines.push({line:info.id+'.show=true',title:info.property});
 	    miscLines.push({info:info.id,title:info.getLabel()});	    
@@ -46579,6 +46589,7 @@ MapGlyph.prototype = {
 	if(rules && rules.length>0) {
 	    this.mapLayer.style = null;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,rules);
+	    console.dir(rules);
 	    features.forEach((f,idx)=>{
 		f.style = null;
 	    });
