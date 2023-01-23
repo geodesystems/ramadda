@@ -3399,11 +3399,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let features =[];
 	    this.getGlyphs().forEach(mapGlyph=>{
 		mapGlyph.checkVisible();
-//		if(mapGlyph.getFilterable()) {
-//		    features.push(...mapGlyph.getAllFeatures());
-//		}
 	    });
-//	    MapUtils.gridFilter(this.getMap(), features);
 	},
 	initMap: function(map) {
 	    SUPER.initMap.call(this)
@@ -5181,6 +5177,10 @@ MapGlyph.prototype = {
 		}
 	    });
 	}
+	if(this.mapServerLayer) {
+	    this.mapServerLayer.ramaddaLayerIndex=level++;
+	}
+
 	if(this.image) {
 	    this.image.ramaddaLayerIndex=level++;
 	}
@@ -5488,25 +5488,35 @@ MapGlyph.prototype = {
 	    });
 	}
 
+	let setOpacity = (event,ui) =>{
+	    if(this.isMapServer())
+		this.style.opacity = ui.value;
+	    else if(this.image || this.imageLayers) {
+		this.style.imageOpacity = ui.value;
+		if(this.image)
+		    this.image.setOpacity(this.style.imageOpacity);
+		if(this.imageLayers)
+		    this.imageLayers.forEach(obj=>{
+			if(obj.layer)
+			    obj.layer.setOpacity(this.style.imageOpacity);
+		    });
+	    }
+	    this.applyStyle(this.style);
+	}
+
+
 	this.jq('image_opacity_slider').slider({		
 	    min: 0,
 	    max: 1,
 	    step:0.01,
+
 	    value:this.jq('image_opacity_slider').attr('slider-value'),
+
+	    slide:function(event,ui) {
+		setOpacity(event,ui);
+	    },
 	    stop: function( event, ui ) {
-		if(_this.isMapServer())
-		    _this.style.opacity = ui.value;
-		else if(_this.image || _this.imageLayers) {
-		    _this.style.imageOpacity = ui.value;
-		    if(_this.image)
-			_this.image.setOpacity(_this.style.imageOpacity);
-		    if(_this.imageLayers)
-			_this.imageLayers.forEach(obj=>{
-			    if(obj.layer)
-				obj.layer.setOpacity(_this.style.imageOpacity);
-			});
-		}
-		_this.applyStyle(_this.style);
+		setOpacity(event,ui);
 	    }});
 	
 	this.makeFeatureFilters();
@@ -6771,9 +6781,11 @@ MapGlyph.prototype = {
     },
     applyMacros:function(template, attributes, macros) {
 	if(!macros) macros =  Utils.tokenizeMacros(template);
+	let infos = this.getFeatureInfoList();
 	if(attributes) {
 	    let attrs={};
-            for (let attr in attributes) {
+	    infos.forEach(info=>{
+		let attr=info.property;
 		let value;
 		if (typeof attributes[attr] == 'object' || typeof attributes[attr] == 'Object') {
                     let o = attributes[attr];
@@ -6784,16 +6796,17 @@ MapGlyph.prototype = {
 		} else {
                     value = "" + attributes[attr];
 		}
+		value = info.format(value);
 		let _attr = attr.toLowerCase();
 		attrs[attr] = attrs[_attr] = value;			
-	    }
+	    });
 	    template = macros.apply(attrs);
 	}
 	if(template.indexOf('${default}')>=0) {
 	    let columns = [];
 	    let labelMap = {};
 	    let infoMap = {};
-	    this.getFeatureInfoList().forEach(info=>{
+	    infos.forEach(info=>{
 		infoMap[info.property] = info;
 		if(info.showPopup()) {
 		    columns.push(info.property);
@@ -7400,7 +7413,12 @@ MapGlyph.prototype = {
 		    if(!mapLabel.isFiltered)
 			setVis(mapLabel,true);
 		});
-		MapUtils.gridFilter(this.getMap(), this.mapLabels);
+		let args ={};
+		if(this.getProperty('mapLabelGridWidth'))
+		    args.cellWidth = +this.getProperty('mapLabelGridWidth');
+		if(this.getProperty('mapLabelGridHeight'))
+		    args.cellHeight = +this.getProperty('mapLabelGridHeight');		
+		MapUtils.gridFilter(this.getMap(), this.mapLabels,args);
 	    }
 	}
 
