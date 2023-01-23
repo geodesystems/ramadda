@@ -4989,7 +4989,16 @@ MapGlyph.prototype = {
 	} else 	if(this.features.length) {
 	    this.display.getMap().centerOnFeatures(this.features);
 	} else if(this.mapLayer) {
-	    this.display.getMap().zoomToLayer(this.mapLayer);
+	    let bounds = this.mapLayer.getVisibility()?this.mapLayer.getDataExtent():null;
+	    if(this.imageLayers) {
+		this.imageLayers.forEach(obj=>{
+		    if(!obj.layer || !obj.layer.getVisibility()) return;
+		    bounds = MapUtils.extendBounds(bounds,
+						   this.getMap().getLayerVisbileExtent(obj.layer)||obj.layer.extent);
+		});
+	    }
+	    if(bounds)
+		this.display.getMap().zoomToBounds(bounds);
 	} else	if(this.displayInfo?.display) {
 	    if(this.displayInfo.display.myFeatureLayer && (
 		!Utils.isDefined(this.displayInfo.display.layerVisible) ||
