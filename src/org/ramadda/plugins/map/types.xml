@@ -226,8 +226,10 @@ mapVar="gpxMap${entryid}" }}
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
++expandable
 {{display_imdv height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false  
 }}
+-expandable
 -section
 ]]>
 </wiki>
