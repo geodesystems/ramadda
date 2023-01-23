@@ -255,7 +255,11 @@ var MapUtils =  {
 	return feature.style.display!='none';
     },
     setFeatureVisible:function(feature, vis) {
-	if(!feature.style) feature.style = {};
+	if(!feature.style) {
+	    //No need to add a style if it is visible
+	    if(vis) return;
+	    feature.style = feature.layer?$.extend({},feature.layer.style):{};
+	}
 	if(vis) {
 	    feature.style.display = 'inline';
 	}  else {
@@ -561,7 +565,7 @@ function RepositoryMap(mapId, params) {
 	layerFillColor:"#ccc",
 	layerFillOpacity:0.3,	
 
-	highlightStrokeColor:"#000",
+	highlightStrokeColor:"red",
 	highlightFillColor:"match",	
 	highlightStrokeWidth:2,
 	highlightFillOpacity:0.75,
@@ -1540,6 +1544,7 @@ RepositoryMap.prototype = {
 	}
 	fs = fs ??{};
 	this.checkMatchStyle(fs,highlight);
+	if(fs.strokeWidth) highlight.strokeWidth = (+fs.strokeWidth)+1;
 	if(Utils.stringDefined(fs.externalGraphic) && !Utils.stringDefined(highlight.externalGraphic)) {
 	    highlight.externalGraphic = fs.externalGraphic;
 	    if(fs.graphicWidth) 
