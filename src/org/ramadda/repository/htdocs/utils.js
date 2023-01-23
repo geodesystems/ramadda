@@ -4695,7 +4695,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     makeExpandable:function(selector,fullScreen) {
-        let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
+        let icon =HtmlUtils.getIconImage("fas fa-expand-arrows-alt",['class','ramaddda-clickable'],['xstyle','color:#ccc;']);
         let id = HtmlUtils.getUniqueId();
         let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
         $(selector).append(html);
@@ -4715,30 +4715,28 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if(expanded) {
                 icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
                 $(this).attr("title","Expand");
-                $(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height",
-                                                                                                                         "").css("z-index","").css("background",origBackground?origBackground:"");
+                $(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height", "").css("z-index","").css("background",origBackground?origBackground:"");
                 btn.css("display","none");
                 $(selector).find(".ramadda-expandable-target").each(function() {
                     $(this).attr("isexpanded","false");
-                    $(this).css("height",$(this).attr("original-height"));
+//                    $(this).css("height",$(this).attr("original-height"));
+                    $(this).attr("style",$(this).attr("original-style"));		    
                 });
             } else {
                 let h = $(window).height();
                 icon  = HtmlUtils.getIconImage("fa-compress-arrows-alt");
                 let top = $(selector).offset().top;
                 $(this).attr("title","Contract");
-
                 if(fullScreen) {
                     let target  = $(selector).find(".ramadda-expandable");
                     target.css("background","#fff");
                     HtmlUtils.makeFullScreen(target.get(0));
                     return
                 }               
-
-
                 $(selector).css("left","50px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
                 $(selector).find(".ramadda-expandable-target").each(function() {
-                    $(this).attr("original-height",$(this).css("height"));
+//                    $(this).attr("original-height",$(this).css("height"));
+		    $(this).attr('original-style',$(this).attr('style'));
                     $(this).attr("isexpanded","true");
                     let height = $(this).attr("expandable-height");
                     if(!height) if(height==-1) return;
