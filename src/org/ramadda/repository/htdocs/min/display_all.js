@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan 22 15:13:34 MST 2023";
+var build_date="RAMADDA build date: Sun Jan 22 17:34:22 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -45014,8 +45014,10 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl)) {
-	    let v = this.isImage()?this.style.imageOpacity:this.style.opacity;
+
+	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl) || this.imageLayers) {
+	    let v = (this.imageLayers||this.isImage())?this.style.imageOpacity:this.style.opacity;
+	    if(!Utils.isDefined(v)) v = 1;
 	    body += 
 		HU.center(
 		    HU.div(['title','Set image opacity','slider-min',0,'slider-max',1,'slider-value',v,
@@ -45126,9 +45128,15 @@ MapGlyph.prototype = {
 	    stop: function( event, ui ) {
 		if(_this.isMapServer())
 		    _this.style.opacity = ui.value;
-		else if(_this.image) {
+		else if(_this.image || _this.imageLayers) {
 		    _this.style.imageOpacity = ui.value;
-		    _this.image.setOpacity(_this.style.imageOpacity);
+		    if(_this.image)
+			_this.image.setOpacity(_this.style.imageOpacity);
+		    if(_this.imageLayers)
+			_this.imageLayers.forEach(obj=>{
+			    if(obj.layer)
+				obj.layer.setOpacity(_this.style.imageOpacity);
+			});
 		}
 		_this.applyStyle(_this.style);
 	    }});
@@ -46380,7 +46388,7 @@ MapGlyph.prototype = {
 		let obj = {
 		    id:'groundoverlay_'+(cnt++),
 		    url:url,
-		    name:name+' IMAGE',
+		    name:name,
 		    north:north,west:west,south:south,east:east
 		}
 		this.imageLayers.push(obj);
@@ -47056,6 +47064,8 @@ MapGlyph.prototype = {
 	    obj.layer =this.getMap().addImageLayer(obj.name,obj.name,'',obj.url,true,
 						   obj.north,obj.west,obj.south,obj.east);
 	    
+	    if(Utils.isDefined(this.style.imageOpacity))
+		obj.layer.setOpacity(this.style.imageOpacity);
 	    this.display.makeLegend();
 	}
 	return state.visible;
