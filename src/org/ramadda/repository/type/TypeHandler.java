@@ -3027,12 +3027,6 @@ public class TypeHandler extends RepositoryManager {
                 ));
             }
 
-            links.add(
-                new Link(
-                    request.entryUrl(
-                        getMetadataManager().URL_METADATA_FORM,
-                        entry), ICON_METADATA_EDIT, "Edit Properties",
-                                OutputType.TYPE_EDIT));
 
             if ((request.getUser() != null)
                     && !request.getUser().getAnonymous()) {
@@ -3048,9 +3042,18 @@ public class TypeHandler extends RepositoryManager {
 
             List<String> metadataTypes =
                 entry.getTypeHandler().getMetadataTypes();
-            if (metadataTypes.size() > 0) {
+	    //	    if (metadataTypes.size() > 0) {
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
-            }
+		//            }
+
+            links.add(
+                new Link(
+                    request.entryUrl(
+                        getMetadataManager().URL_METADATA_FORM,
+                        entry), ICON_METADATA_EDIT, "Edit Properties",
+                                OutputType.TYPE_EDIT));
+	    
+
 
             links.add(
                 new Link(
