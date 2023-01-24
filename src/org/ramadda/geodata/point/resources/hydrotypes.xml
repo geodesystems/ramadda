@@ -43,6 +43,14 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
 </wiki>
   </type>
 
+  <!--
+      Look for data at
+      https://data.usbr.gov/time-series/search?v=1
+      Look at the location details, e.g
+      https://data.usbr.gov/location/3540
+      The 3540 is the RISE ID entry attribute
+      If specified the location and other metadata are extracted
+  -->
   <type name="type_hydro_usbr_rise"  super="type_point_hydro" description="USBR RISE Hyrdo"
 	handler="org.ramadda.geodata.point.RiseTypeHandler">
      <property name="icon" value="/point/rise.png"/>
