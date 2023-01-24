@@ -1599,12 +1599,7 @@ public abstract class Converter extends Processor {
             }
 
             for (int i = 0; i < row.size(); i++) {
-                String col = ((String) row.get(i).toString()).trim();
-            }
-
-
-            for (int i = 0; i < row.size(); i++) {
-                String col = ((String) row.get(i).toString()).trim();
+                String col = row.getString(i);
                 col = col.replaceAll("\n", " ");
                 if (asPoint) {
                     if (i > 0) {
@@ -1845,11 +1840,10 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             boolean debug = Misc.equals(props.get("debug"), "true");
-            //      debug = true;
             rowCnt++;
             if (rowCnt > 2) {
                 if (debug) {
-                    System.err.println("addHeader data row:" + row);
+		    //                    System.err.println("addHeader data row:" + row);
                 }
 
                 return row;
@@ -1903,7 +1897,7 @@ public abstract class Converter extends Processor {
 
                 Object osample = row.getValues().get(i);
                 if (osample == null) {
-                    continue;
+		    osample = "";
                 }
                 String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
