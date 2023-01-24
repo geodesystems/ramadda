@@ -23,6 +23,7 @@ var GLYPH_CIRCLE = 'circle';
 var GLYPH_TRIANGLE = 'triangle';
 var GLYPH_HEXAGON = 'hexagon';
 var GLYPH_LINE = 'line';
+var GLYPH_RINGS = 'rings';
 var GLYPH_ROUTE = 'route';
 var GLYPH_POLYLINE = 'polyline';
 var GLYPH_FREEHAND = 'freehand';
@@ -163,7 +164,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     MyPoint = OpenLayers.Class(OpenLayers.Handler.Point, {
 	finalize: function(cancel) {
 	    OpenLayers.Handler.Point.prototype.finalize.apply(this,arguments);
-	    if(!cancel)this.display.handleNewFeature(this.display.getNewFeature());
+	    if(!cancel) {
+		this.display.handleNewFeature(this.display.getNewFeature());
+	    }
 	},
     });
 
@@ -463,7 +466,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
 	    this.addGlyph(mapGlyph);
-	    mapGlyph.applyEntryGlyphs();
+	    mapGlyph.glyphCreated();
 	    this.clearMessage2(1000);
 	    return mapGlyph;
 	},
@@ -553,6 +556,31 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		clear();
 		window.alert('Failed to find address');
 	    });
+	},
+
+	makeRangeRings:function(center,radii,style) {
+	    let rings = [];
+	    radii.forEach(km=>{
+		let skm = String(km).trim();
+		if(skm.endsWith('m')) {
+		    km = 1.60934*parseFloat(skm.replace('m',''));
+		} else if (skm.endsWith('ft')) {
+		    km = 0.0003048*parseFloat(skm.replace('ft',''));
+		}
+		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
+		let p2 = Utils.reverseBearing(p1,180,km);
+		if(p2==null) {
+		    console.error("Could not create range rings with center:",center);
+		    return null;
+		}
+		p1 = this.getMap().transformLLPoint(p1);
+		p2 = this.getMap().transformLLPoint(p2);
+		let dist = Utils.distance(p1.lon,p1.lat,p2.lon,p2.lat);
+		let ring = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
+									    dist, 100,0);
+		rings.push(MapUtils.createVector(ring,null,style??{strokeWidth:2,strokeColor:'blue',fillColor:'transparent'}));
+	    });
+	    return rings;
 	},
 
 	showDistances:function(geometry, glyphType,fadeOut) {
@@ -1583,6 +1611,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.getImage().setOpacity(style.imageOpacity);
 		    mapGlyph.checkImage();
 		}
+
 
 		mapGlyph.applyStyle(style);
 
@@ -2711,7 +2740,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	showNewMenu: function(button) {
 	    let _this = this;
 	    let html ="<table><tr valign=top>";
-	    let tmp = Utils.splitList(this.glyphTypes,this.glyphTypes.length/4);
+	    let tmp = Utils.splitList(this.glyphTypes,this.glyphTypes.length/3);
 	    tmp.forEach(glyphTypes=>{
 		html+="<td>&nbsp;</td>";
 		html+="<td>";
@@ -3178,7 +3207,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
 			  {graphicName:'circle',
-			   pointRadius:10,
+			   pointRadius:6,
 			   strokeColor:'blue',
 			   strokeWidth:1,
 			   strokeOpacity:1,
@@ -3200,6 +3229,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  },
 			  MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
+	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
+			  {strokeColor:'blue',
+			   strokeWidth:2,
+			   fillColor:"transparent",
+			   pointRadius:6,
+			  },
+			  MyPoint,
+			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
+
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
 		text:"",
 		right:"50%",
@@ -4256,10 +4294,14 @@ GlyphType.prototype = {
     isRoute: function() {
 	return this.type == GLYPH_ROUTE;
     },
+    isRings: function() {
+	return this.type == GLYPH_RINGS;
+    },    
     isIcon:  function() {
 	return this.getStyle().externalGraphic!=null;
     },	
     applyStyle: function(style,forAll) {
+
 	for(a in style) {
 	    if(forAll && this.type ==GLYPH_LABEL) {
 		//		    if(a=="pointRadius") continue;
@@ -4360,6 +4402,12 @@ function MapGlyph(display,type,attrs,feature,style) {
 	if(!Utils.isDefined(this.attrs.useentrylabel))
 	    this.attrs.useentrylabel = true;	
     }
+
+    if(this.isRings()) {
+	this.checkRings();
+    }
+
+
 }
 
 
@@ -4529,6 +4577,11 @@ MapGlyph.prototype = {
 	return null;
     },
     addToStyleDialog:function(style) {
+	if(this.isRings()) {
+	    if(!this.attrs.radii) this.attrs.radii = [5,10,15,20,25];
+	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.attrs.radii,','),
+							['id',this.domId('radii'),'size','20'])+' km');
+	}
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
 	}	    
@@ -4665,8 +4718,10 @@ MapGlyph.prototype = {
 		this.mapServerLayer.redraw();
 	    }
 	}
-
-
+	if(this.isRings()) {
+	    this.attrs.radii=Utils.split(this.jq('radii').val()??'',',',true,true);
+	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
+	}
     },
     featureSelected:function(feature,layer,event) {
 	//	console.log('imdv.featureSelected');
@@ -4694,6 +4749,9 @@ MapGlyph.prototype = {
     },
     featureUnselected:function(feature,layer,event) {
 	//	this.display.getMap().onFeatureSelect(feature.layer,event)
+    },
+    glyphCreated:function() {
+	this.applyEntryGlyphs();
     },
     applyEntryGlyphs:function(args) {
 	if(!Utils.stringDefined(this.getEntryGlyphs(true))) {
@@ -5004,10 +5062,20 @@ MapGlyph.prototype = {
 	this.display.removeFeatures(this.features);
 	this.features = [];
     },
-    addFeature: function(feature,andClear) {
+    addFeatures: function(features,andClear,addToDisplay) {
 	if(andClear) this.clearFeatures();
-	this.features.push(feature);
-	feature.mapGlyph = this;
+	this.features.push(...features);
+	features.forEach(feature=>{
+	    feature.mapGlyph = this;   
+	});
+
+	if(addToDisplay) {
+	    this.display.addFeatures(features);
+	}
+    },
+
+    addFeature: function(feature,andClear) {
+	this.addFeatures([feature],andClear);
     },
     getStyle: function() {
 	return this.style;
@@ -5048,6 +5116,10 @@ MapGlyph.prototype = {
 	    });
 	} else 	if(this.features && this.features.length) {
 	    bounds = this.display.getMap().getFeaturesBounds(this.features);
+	    if(this.rings) {
+		bounds = MapUtils.extendBounds(bounds,
+					       this.display.getMap().getFeaturesBounds(this.rings));
+	    }
 	} if(this.isMapServer()) {
 	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		let attrs = this.getDatacubeAttrs();
@@ -5884,6 +5956,9 @@ MapGlyph.prototype = {
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
+    isRings:function() {
+	return this.getType()==GLYPH_RINGS;
+    },    
     isMapServer:function() {
 	return this.getType()==GLYPH_MAPSERVER;
     },    
@@ -7149,6 +7224,7 @@ MapGlyph.prototype = {
 	    this.makeFeatureFilters();
 	}
 
+
 	let style = this.style;
 	let rules = this.getMapStyleRules();
 	let useRules = [];
@@ -7406,9 +7482,6 @@ MapGlyph.prototype = {
 		indexToGroup[index] = group;
 	    });
 	});
-
-
-
 	features.forEach((f,idx)=>{
 	    let group = indexToGroup[idx];
 	    if(group) {
@@ -7417,35 +7490,47 @@ MapGlyph.prototype = {
 	    }
 	});
 
-
 	this.mapLayer.features.forEach(f=>{
 	    if(f.style && f.style.fillPattern && !Utils.stringDefined(f.style.fillColor)) {
 		f.style.fillColor='transparent'
 	    }
 	});
-
-
-
-
-
-
-
-
 	this.checkVisible();
-
 	if(needToAddMapLabels) {
 	    this.display.addFeatures(this.mapLabels);
 	}	    
-
 	ImdvUtils.scheduleRedraw(this.mapLayer);
 	if(redrawFeatures) {
 	    this.display.redraw();
 	}
-
     },
 
+    checkRings:function(points) {
+	if(!this.features[0]){
+	    console.log("range rings has no features");
+	    return
+	}
+
+	let style = $.extend({},this.features[0].style);
+	style.strokeColor='transparent';
+	this.features[0].style = style;
+
+	let pt = this.features[0].geometry.getCentroid();
+	let center = this.display.getMap().transformProjPoint(pt)
+
+	if(this.rings) this.display.removeFeatures(this.rings);
+	if(!this.attrs.radii) this.attrs.radii = [5,10,15,20,25];
+	this.rings = this.display.makeRangeRings(center,this.attrs.radii,this.style);
+	if(this.rings) {
+	    this.rings.forEach(ring=>{
+		ring.mapGlyph=this;
+	    });
+	    this.display.addFeatures(this.rings);
+	}		
+    },
     applyStyle:function(style) {
 	this.style = style;
+
 	this.applyMapStyle();
 	if(this.getMapServerLayer()) {
 	    if(Utils.isDefined(style.opacity)) {
@@ -7465,12 +7550,23 @@ MapGlyph.prototype = {
 	if(this.isFixed()) {
 	    this.addFixed();
 	}
+	if(this.isRings()){
+	    this.checkRings();
+	}
+
 	this.display.featureChanged(true);
     },
     move:function(dx,dy) {
 	if(this.getUseEntryLocation()) {
 	    this.setUseEntryLocation(false);
 	}
+	if(this.rings){
+	    this.rings.forEach(feature=>{
+		feature.geometry.move(dx,dy);
+		feature.layer.drawFeature(feature);
+	    });
+	}
+
 	this.features.forEach(feature=>{
 	    feature.geometry.move(dx,dy);
 	    feature.layer.drawFeature(feature);
@@ -8075,6 +8171,9 @@ MapGlyph.prototype = {
 	}
 	if(this.features) {
 	    this.display.removeFeatures(this.features);
+	}
+	if(this.rings) {
+	    this.display.removeFeatures(this.rings);
 	}
 	if(this.showMarkerMarker) {
 	    this.display.removeFeatures([this.showMarkerMarker]);
