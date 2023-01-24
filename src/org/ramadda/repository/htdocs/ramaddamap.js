@@ -5002,14 +5002,14 @@ RepositoryMap.prototype = {
     getFeaturesBounds: function(features,convertToLatLon) {
 	if(!features) return null;
 	let bounds = MapUtils.createBounds();
-	features.forEach(feature=>{
-	    let fb = feature.geometry.getBounds();
-	    bounds.extend(fb);
+	features.forEach((feature,idx)=>{
+	    if(MapUtils.isFeatureVisible(feature)) {
+		bounds = MapUtils.extendBounds(bounds, feature.geometry.getBounds());
+	    }
 	});
 	if(convertToLatLon) {
 	    bounds = this.transformProjBounds(bounds);
 	}
-
 	return bounds;
     },
     centerOnFeatures: function(features) {
