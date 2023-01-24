@@ -4387,7 +4387,7 @@ MapGlyph.prototype = {
 	    let info = _this.getFeatureInfo(id);
 	    if(!info) return;
 	    let html = HU.b(info.getLabel());
-	    let items =   ['show=true','label=','filter.first=true']
+	    let items =   ['show=true','label=','filter.first=true','type=enum']
 	    if(info.isNumeric()) {
 		items.push('format.decimals=0',
 			   'filter.min=0',
@@ -5043,7 +5043,6 @@ MapGlyph.prototype = {
 	}
 
 	if(this.children) {
-	    let features = [];
 	    this.children.forEach(child=>{
 		bounds =  MapUtils.extendBounds(bounds,child.getBounds());
 	    });
@@ -5056,7 +5055,9 @@ MapGlyph.prototype = {
 		bounds= this.display.getMap().transformLLBounds(bounds);
 	    }
 	} else if(this.getMapLayer()) {
-	    bounds = this.getMapLayer().getVisibility()?this.getMapLayer().getDataExtent():null;
+	    if(this.getMapLayer().getVisibility()) {
+		bounds =  this.display.getMap().getFeaturesBounds(this.getMapLayer().features);
+	    }
 	    if(this.imageLayers) {
 		this.imageLayers.forEach(obj=>{
 		    if(!obj.layer || !obj.layer.getVisibility()) return;
@@ -6879,6 +6880,9 @@ MapGlyph.prototype = {
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
 		this.updateFeaturesTable();
+		if($("#"+this.zoomonchangeid).is(':checked')) {
+		    this.panMapTo();
+		}
 	    });
 	    this.jq(ID_MAPFILTERS).find('.imdv-filter-string').keypress(function(event) {
 		let keycode = (event.keyCode ? event.keyCode : event.which);
