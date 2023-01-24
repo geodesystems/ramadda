@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jan 24 11:10:19 MST 2023";
+var build_date="RAMADDA build date: Tue Jan 24 12:48:01 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40200,7 +40200,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 
-	makeRangeRings:function(center,radii,style) {
+	makeRangeRings:function(center,radii,style,angle) {
 	    style = style??{};
 	    let rings = [];
 	    let labelStyle = {labelAlign:style.labelAlign??'lt',
@@ -40221,7 +40221,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    km = skm.replace('km','');
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
-		let p2 = Utils.reverseBearing(p1,90+45,km);
+		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
 		if(p2==null) {
 		    console.error("Could not create range rings with center:",center);
 		    return null;
@@ -44252,7 +44252,7 @@ MapGlyph.prototype = {
     getRadii:function() {
 	if(!this.attrs.radii) {
 	    let level = this.display.getCurrentLevel();
-	    console.log("level:" + level);
+//	    console.log("level:" + level);
 	    let r = (size,unit) =>{
 		let s =[];
 		for(let i=1;i<=5;i++) {
@@ -44284,10 +44284,11 @@ MapGlyph.prototype = {
     },
     addToStyleDialog:function(style) {
 	if(this.isRings()) {
-
-	    console.log(this.getRadii());
 	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
-							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2m (miles), 100ft');
+							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2m (miles), 100ft') +
+		HU.formEntry('Ring label angle:',
+			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
+				 'id',this.domId('rangeringangle'),'size',4]));
 	}
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
@@ -44427,6 +44428,7 @@ MapGlyph.prototype = {
 	}
 	if(this.isRings()) {
 	    this.attrs.radii=Utils.split(this.jq('radii').val()??'',',',true,true);
+	    this.attrs.rangeRingAngle=this.jq('rangeringangle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
 	}
     },
@@ -47226,10 +47228,11 @@ MapGlyph.prototype = {
 	let center = this.display.getMap().transformProjPoint(pt)
 
 	if(this.rings) this.display.removeFeatures(this.rings);
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style);
+	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle);
 	if(this.rings) {
 	    this.rings.forEach(ring=>{
 		ring.mapGlyph=this;
+		MapUtils.setFeatureVisible(ring,this.isVisible());
 	    });
 	    this.display.addFeatures(this.rings);
 	}		
@@ -47371,6 +47374,13 @@ MapGlyph.prototype = {
 	if(this.children) {
 	    this.children.forEach(child=>{
 		child.setVisible(visible, callCheck);
+	    });
+	}
+
+
+	if(this.rings) {
+	    this.rings.forEach(feature=>{
+		MapUtils.setFeatureVisible(feature,visible);
 	    });
 	}
 
