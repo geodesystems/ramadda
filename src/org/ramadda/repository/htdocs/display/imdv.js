@@ -4473,7 +4473,7 @@ MapGlyph.prototype = {
 	return null;
     },
     addToStyleDialog:function(style) {
-	if(this.isMapServer() && this.attrs.variable) {
+	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
 	}	    
 	return '';
@@ -4602,9 +4602,9 @@ MapGlyph.prototype = {
 				  this.display.jq("maxlevel").val().trim());
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
 
-	if(this.isMapServer()  && this.attrs.variable) {
-	    if(this.currentColorbar!=this.attrs.variable.colorBarName) {
-		this.attrs.variable.colorBarName = this.currentColorbar;
+	if(this.isMapServer()  && this.getDatacubeVariable()) {
+	    if(this.currentColorbar!=this.getDatacubeVariable().colorBarName) {
+		this.getDatacubeVariable().colorBarName = this.currentColorbar;
 		this.mapServerLayer.url = this.getMapServerUrl();
 		this.mapServerLayer.redraw();
 	    }
@@ -4994,8 +4994,8 @@ MapGlyph.prototype = {
 	} else 	if(this.features && this.features.length) {
 	    bounds = this.display.getMap().getFeaturesBounds(this.features);
 	} if(this.isMapServer()) {
-	    if(this.attrs.variable && Utils.isDefined(this.attrs.variable.attrs.geospatial_lat_min)) {
-		let attrs = this.attrs.variable.attrs
+	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
+		let attrs = this.getDatacubeAttrs();
 		bounds= MapUtils.createBounds(attrs.geospatial_lon_min, attrs.geospatial_lat_min, attrs.geospatial_lon_max, attrs.geospatial_lat_max);
 		bounds= this.display.getMap().transformLLBounds(bounds);
 	    }
@@ -5069,7 +5069,7 @@ MapGlyph.prototype = {
     },
     hasBounds:function() {
 	if(this.isMapServer()) {
-	    if(this.attrs.variable && Utils.isDefined(this.attrs.variable.attrs.geospatial_lat_min)) {
+	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		return true;
 	    }
 	    return false;
@@ -5409,9 +5409,8 @@ MapGlyph.prototype = {
 
 
 	let showAnimation = false;
-	if(this.isMapServer() && this.attrs.variable && this.attrs.variable.dims && this.attrs.variable.shape &&
-	   this.attrs.variable?.attrs?.time_coverage_start) {
-	    let v = this.attrs.variable;
+	if(this.isMapServer() && this.getDatacubeVariable() && this.getDatacubeVariable().dims && this.getDatacubeVariable().shape && this.getDatacubeAttr('time_coverage_start')) {
+	    let v = this.getDatacubeVariable();
 	    body+='Time: ' + HU.span(['id',this.domId('time_current')],this.getCurrentTimeStep()??'')+'<br>';
 	    let idx=v.dims.indexOf('time');
 	    let numTimes = v.shape[idx];
@@ -5581,7 +5580,7 @@ MapGlyph.prototype = {
 	let getStep = ()=>{
 	    let min =  +this.jq('time_slider').attr('slider-min');
 	    let max= +this.jq('time_slider').attr('slider-max');
-	    let temp = this.attrs.variable?.attrs?.temporal_resolution
+	    let temp = this.getDatacubeAttr('temporal_resolution');
 	    let msPerDay = 1000*60*60*24;
 	    if(temp) {
 		let match = temp.match(/(\d+)D/);
@@ -5913,8 +5912,8 @@ MapGlyph.prototype = {
 	let url=this.attrs.mapServerUrl;
 	//Convert malformed TMS url
 	url = url.replace(/\/{/g,"/${");
-	if(this.attrs.variable) {
-	    let variable = this.attrs.variable;
+	if(this.getDatacubeVariable()) {
+	    let variable = this.getDatacubeVariable();
 	    url = url.replace(/\{colorbar\}/,variable.colorBarName);
 	    url = url.replace(/\{vmin\}/,variable.colorBarMin);
 	    url = url.replace(/\{vmax\}/,variable.colorBarMax);	    	    
@@ -5926,12 +5925,22 @@ MapGlyph.prototype = {
 	return url;
     },
 
+    getDatacubeVariable:function() {
+	return  this.attrs.variable;
+    },
+    getDatacubeAttrs:function() {
+	return this.getDatacubeVariable()?.attrs;
+    },
+    getDatacubeAttr:function(attr) {
+	let attrs =  this.getDatacubeAttrs();
+	return attrs?attrs[attr]:null;
+    },    
     getCurrentTimeStep:function() {
 	if(Utils.isDefined(this.attrs.currentTimeStep)) {
 	    return  this.formatDate(new Date(this.attrs.currentTimeStep));
 	}
-	if(!variable.attrs.time_coverage_end) return null;		
-	return this.formatDate(new Date(variable.attrs.time_coverage_end));		
+	if(!this.getDatacubeAttr('time_coverage_end')) return null;		
+	return this.formatDate(new Date(this.getDatacubeAttr('time_coverage_end')));
     },
 
     formatDate: function(date) {
@@ -6080,8 +6089,8 @@ MapGlyph.prototype = {
     },
     initColorTables: function(currentColorbar) {
 	if(!currentColorbar)
-	    this.currentColorbar=this.attrs.variable.colorBarName;
-	currentColorbar = currentColorbar??this.attrs.variable.colorBarName;
+	    this.currentColorbar=this.getDatacubeVariable()?.colorBarName;
+	currentColorbar = currentColorbar??this.getDatacubeVariable()?.colorBarName;
 	let items = [];
 	let image;
 	let html = '';
@@ -6118,7 +6127,7 @@ MapGlyph.prototype = {
     },
     initPropertiesComponent: function(dialog) {
 	let _this = this;
-	if(this.isMapServer() && this.attrs.variable) {
+	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    if(!this.display.colorbars) {
 		let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
 		let url = dataCubeServers[0]+'/colorbars';
