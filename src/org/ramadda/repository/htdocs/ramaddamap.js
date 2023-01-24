@@ -1461,7 +1461,11 @@ RepositoryMap.prototype = {
     checkMatchStyle(fs,highlight) {
 	['pointRadius','fillColor','fillOpacity','strokeColor','strokeOpacity','strokeWidth'].forEach(a=>{
 	    if(highlight[a]=="match") {
-		highlight[a] = fs[a];
+		if(Utils.stringDefined(fs[a]))
+		    highlight[a] = fs[a];
+		else {
+		    highlight[a]='transparent';
+		}
 	    }
 	});
     },
@@ -1534,16 +1538,19 @@ RepositoryMap.prototype = {
         feature.originalStyle = feature.style;
         feature.style = null;
 	let layer = feature.layer;
-	let highlight = highlightStyle??this.getLayerHighlightStyle(layer);
+	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
+
 
 	if(highlight.fillColor!="transparent" && highlight.fillColor!="match" && feature.originalStyle) {
 	    highlight.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlight.fillColor,0.4)??highlight.fillColor;
 	}
+
 	if(!Utils.isDefined(highlight.fillOpacity)) {
 	    highlight.fillOpacity = 0.3;
 	}
 	fs = fs ??{};
 	this.checkMatchStyle(fs,highlight);
+
 	if(fs.strokeWidth) highlight.strokeWidth = (+fs.strokeWidth)+1;
 	if(Utils.stringDefined(fs.externalGraphic) && !Utils.stringDefined(highlight.externalGraphic)) {
 	    highlight.externalGraphic = fs.externalGraphic;
@@ -1553,6 +1560,7 @@ RepositoryMap.prototype = {
 		highlight.graphicHeight = fs.graphicHeight*1.3;	    
 	}
 
+
 	if(fs.pointRadius && !highlight.pointRadius) {
 	    highlight.pointRadius = fs.pointRadius*1.2;
 	}
@@ -1560,6 +1568,8 @@ RepositoryMap.prototype = {
 	    highlight.externalGraphic = fs.externalGraphic;
 	    highlight.fillOpacity=1;
 	}	    
+
+
 	feature.layer.drawFeature(feature, highlight);
     },
 
