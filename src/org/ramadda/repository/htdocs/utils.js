@@ -226,6 +226,26 @@ var Utils =  {
     toDegrees:function(radians) {
         return radians * 180 / Math.PI;
     },
+    distance:function(x1,y1,x2,y2) {
+	return Math.hypot(x2-x1, y2-y1);
+    },
+    //Originally from https://stackoverflow.com/questions/2637023/how-to-calculate-the-latlng-of-a-point-a-certain-distance-away-from-another
+    reverseBearing: function(pt,brng, distKm) {
+	distKm = distKm / 6371;  
+	brng = Utils.toRadians(brng);
+	var lat1 = Utils.toRadians(pt.lat);
+	var lon1 = Utils.toRadians(pt.lon);
+	var lat2 = Math.asin(Math.sin(lat1) * Math.cos(distKm) + 
+                             Math.cos(lat1) * Math.sin(distKm) * Math.cos(brng));
+
+	var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(distKm) *
+                                     Math.cos(lat1), 
+                                     Math.cos(distKm) - Math.sin(lat1) *
+                                     Math.sin(lat2));
+	if (isNaN(lat2) || isNaN(lon2)) return null;
+	return MapUtils.createLonLat(Utils.toDegrees(lon2),Utils.toDegrees(lat2));
+    },
+
     //Get degrees bearing from p1 to p2. north =0,east=90, south=180,west=270
     getBearing:function(p1,p2) {
         let lat1 = Utils.toRadians(p1.lat);
@@ -325,7 +345,7 @@ var Utils =  {
 	let regexp = new RegExp('\\\\' + delim,"g");
 	s = s.replace(regexp,'_HIDEDELIM_');
 	if(this.debug) console.log(s);
-//	console.log(s);
+	//	console.log(s);
         s.split(delim).forEach((tok)=>{
             tok = tok.replace(/_comma_/g,",");
 	    tok = tok.replace(/_HIDEDELIM_/g,delim);
@@ -968,8 +988,8 @@ var Utils =  {
 	let lines = Utils.split(err.stack,"\n",true,true);
 	for(let i=1;i<cnt&& i<lines.length;i++) {
 	    let line = lines[i];
-//	    s+=line+"\n";
-//	    continue;
+	    //	    s+=line+"\n";
+	    //	    continue;
 	    line= Utils.split(line,"@");
 	    let match = line[1].match(/\/([^/]+)$/);
 	    s = s+"  "+line[0]+":" + match[1].replace(/:[^:]+$/,"")+"\n";
@@ -978,7 +998,7 @@ var Utils =  {
     },
     /*
       normalize the vec arg of numbers to 0...1
-     */
+    */
     normalize:function(vec) {
 	let vmin = Math.min(...vec);
 	let vmax = Math.max(...vec);
@@ -1258,12 +1278,12 @@ var Utils =  {
         }
     },
     dateOptions:{
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
     },
     formatDate: function(date, options, args) {
         if(true) return this.formatDateWithFormat(date,"yyyy-mm-dd HH:MM");
@@ -1568,9 +1588,9 @@ var Utils =  {
 			    if(t.attrs['localTime']) {
 				let offset  = new Date().getTimezoneOffset()*60*1000;
 				value = new Date(value.getTime()-offset)
-//				suffix = " " +  Intl.DateTimeFormat().resolvedOptions().timeZone;
-//				console.log(value.toTimeString(undefined, { xtimeZoneName: 'short' }));
-//				console.log(value.toTimeString());
+				//				suffix = " " +  Intl.DateTimeFormat().resolvedOptions().timeZone;
+				//				console.log(value.toTimeString(undefined, { xtimeZoneName: 'short' }));
+				//				console.log(value.toTimeString());
 				
 			    }
                             return  Utils.formatDateWithFormat(value,t.attrs['format']||opts.dateFormat) +suffix;
@@ -1603,7 +1623,7 @@ var Utils =  {
                                 if(includeValue) return HU.row([["width","1%"],value],bar);
                                 return bar;
 
-                                              
+                                
                             }
                         }
 
@@ -2043,7 +2063,7 @@ var Utils =  {
         if(this.numberToString==null) {
             this.numberToString = new Intl.NumberFormat('fullwide',{ useGrouping: false });
         }
-//      let s = value.toLocaleString('fullwide', { useGrouping: false });
+	//      let s = value.toLocaleString('fullwide', { useGrouping: false });
         let s = this.numberToString.format(value);
         let v =  Number(Math.round(s+'e'+decimals)+'e-'+decimals);
         if(debug)
@@ -2338,11 +2358,11 @@ var Utils =  {
                     });
                     snippetPopup.fadeIn(250);
 		},750)
-		}, function() {
-		    clearTimeout(timeOut);
-		    if(snippetPopup)
-			snippetPopup.hide();
-                });
+	    }, function() {
+		clearTimeout(timeOut);
+		if(snippetPopup)
+		    snippetPopup.hide();
+            });
         });
 
         let pageTitle = $(parent+".ramadda-page-title");
@@ -2447,7 +2467,7 @@ var Utils =  {
         Utils.searchLastInput = input.val();
         input.keyup(e=> {
             let keyCode = e.keyCode || e.which;
-//          console.log("k:" + keyCode);
+	    //          console.log("k:" + keyCode);
             if (keyCode == 27) {
                 closer();
                 return;
@@ -2534,7 +2554,7 @@ var Utils =  {
 
     searchPopup:function(id,anchor) {
         anchor = id;
-//      anchor = anchor || id;
+	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
         let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
         form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
@@ -3312,10 +3332,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     input.val($(this).attr("suggest"));
                 });
             }).fail(
-                    err=>{
-                        console.log("suggest call failed:" + url +"\n" + err)
-                        console.dir(err);
-                    });
+                err=>{
+                    console.log("suggest call failed:" + url +"\n" + err)
+                    console.dir(err);
+                });
         });
     },
     getTooltip: function() {
@@ -3352,7 +3372,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             });
         }
 	this.popupObjectTime = new Date();
-//	console.log('popup time:' +this.popupObjectTime);
+	//	console.log('popup time:' +this.popupObjectTime);
         return obj;
     },
     hidePopupObject: function(event,skipTimeCheck) {
@@ -3362,10 +3382,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let diff = now.getTime()-this.popupObjectTime.getTime();
 	    //wait a second?
 	    if(diff<1000) {
-//		console.log('hide popup time  - too soon - diff:' + diff);
+		//		console.log('hide popup time  - too soon - diff:' + diff);
 		return;
 	    }
-//	    console.log('hide popup time - ok - diff:' + diff);
+	    //	    console.log('hide popup time - ok - diff:' + diff);
 	}
 	this.popupObjectTime=null;
 
@@ -3688,10 +3708,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         bc.jBreadCrumb({
             previewWidth: w,
-//          maxFinalElementLength:400,
-//          minFinalElementLength:10,
+	    //          maxFinalElementLength:400,
+	    //          minFinalElementLength:10,
             easing:'easeOutQuad',
-//            easing: 'swing',
+	    //            easing: 'swing',
             //(sic)
             beginingElementsToLeaveOpen: begin,
             endElementsToLeaveOpen:end
@@ -3770,7 +3790,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    html+=HU.tag('h3',['class','ui-accordion-header ui-helper-reset ui-corner-top','style','border:0px;background:none;'],
 			 HU.href('#',HU.span(['class','ramadda-clickable'],item.header)));
 	    html+=HU.div(['id',HU.getUniqueId('accordion_'),'class','ramadda-accordion-contents'],item.contents);
-	html+='\n';
+	    html+='\n';
 	})
 	html+='\n';
 	html+='</div>';
@@ -3975,7 +3995,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(args) {
             if(args.at=="") delete args.at;
             if(args.my=="") delete args.my;
-//          console.log(JSON.stringify(args,null,2));
+	    //          console.log(JSON.stringify(args,null,2));
             $.extend(opts, args);
         }
 
@@ -4021,7 +4041,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     html = "No html provided";
                 }
             } 
-    
+	    
         }
         let id = HtmlUtils.getUniqueId();
         if(opts.header) {
@@ -4071,7 +4091,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 at: opts.at,
                 collision:opts.fit?"fit fit":null
             });
-//          console.log(opts.my +" " + opts.at);
+	    //          console.log(opts.my +" " + opts.at);
         }
 
 
@@ -4719,7 +4739,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 btn.css("display","none");
                 $(selector).find(".ramadda-expandable-target").each(function() {
                     $(this).attr("isexpanded","false");
-//                    $(this).css("height",$(this).attr("original-height"));
+		    //                    $(this).css("height",$(this).attr("original-height"));
                     $(this).attr("style",$(this).attr("original-style"));		    
                 });
             } else {
@@ -4735,7 +4755,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }               
                 $(selector).css("left","50px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
                 $(selector).find(".ramadda-expandable-target").each(function() {
-//                    $(this).attr("original-height",$(this).css("height"));
+		    //                    $(this).attr("original-height",$(this).css("height"));
 		    $(this).attr('original-style',$(this).attr('style'));
                     $(this).attr("isexpanded","true");
                     let height = $(this).attr("expandable-height");
@@ -4930,7 +4950,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             }
             if(item.id=="formurl") return;
-//            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
+	    //            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
             var values = [];
             if (item.type == "select-multiple" && item.selectedOptions) {
                 for (a in item.selectedOptions) {
@@ -5097,11 +5117,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 					//menus that are hidden
 					setTimeout(()=>{
 					    let cnt = 0;
-//					    console.log("before selectBoxIt call");
+					    //					    console.log("before selectBoxIt call");
 					    $(selector).selectBoxIt(opts);
-//					    console.log("after selectBoxIt call");
+					    //					    console.log("after selectBoxIt call");
 					},2);
-					});
+				    });
 	});
     },
     valueDefined: function(value) {
@@ -5154,7 +5174,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(args) $.extend(opts,args);
         if(opts.src) {
             message = $("#" + opts.src).html();
-    
+	    
         }
         if(message == null || message.trim()=="") return;
         message=  HU.div([STYLE,"margin:10px;"], message);
@@ -5179,7 +5199,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         };
 
         container.click( (event) => {
-//          closer();
+	    //          closer();
         }); 
         $("#"+ closeId).click(() =>{
             closer();
@@ -5688,4 +5708,3 @@ $( document ).ready(function() {
 
 Utils.areDisplaysReady()
 
-//console.log(Utils.moveBefore(['a','b','c'],'b','c'));
