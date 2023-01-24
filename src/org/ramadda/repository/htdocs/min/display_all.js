@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan 23 22:29:30 MST 2023";
+var build_date="RAMADDA build date: Tue Jan 24 00:01:09 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -39639,7 +39639,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 
 
 
-/**
+a/**
    Copyright 2008-2023 Geode Systems LLC
 */
 
@@ -40388,9 +40388,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let dataCubeServers=  MapUtils.getMapProperty('datacubeservers');
 		if(dataCubeServers) {
-		    let esdl = '';
-		    esdl+=HU.div(['id',this.domId('esdldialog')],'Loading...');
-		    contents.push({header:'ESDL Data Cube Layers',contents:esdl});
+		    let datacube = '';
+		    datacube+=HU.div(['id',this.domId('datacubedialog')],'Loading...');
+		    contents.push({header:'Data Cube Layers',contents:datacube});
 		}
 
 		let accord = HU.makeAccordionHtml(contents)
@@ -40400,7 +40400,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.makeAccordion('#'+accord.id);
 
 		if(dataCubeServers) {
-		    this.initEsdlSelect(dialog);
+		    this.initDatacubeSelect(dialog);
 		}
 
 		let cancel = ()=>{
@@ -40468,6 +40468,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			delete tmpStyle.mapOptions;
 			mapOptions.name = attrs.entryName;
 			$.extend(mapOptions,attrs);
+			console.dir(mapOptions);
+			console.dir(tmpStyle);			
 			let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 			mapGlyph.checkMapLayer();
 			this.clearCommands();
@@ -40665,30 +40667,47 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
-	initEsdlSelect:function(dialog) {
+	initDatacubeSelect:function(dialog) {
 	    //TODO: handle multiple servers
 	    let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
-	    if(!this.esdlDatasets) {
-		this.esdlDatasets = [];
+	    if(!this.datacubeDatasets) {
+		let loadedCnt =0;
+		this.datacubeDatasets = [];
 		dataCubeServers.forEach(server=>{
 		    let url = server+'/datasets?details=1';
 		    $.getJSON(url, data=>{
+			loadedCnt++;
 			if(data.datasets) {
-			    this.esdlDatasets.push(...data.datasets);
-			    this.initEsdlSelect(dialog);
+			    data.datasets.forEach(dataset=>{
+				this.datacubeDatasets.push({server:server,
+							    dataset:dataset});
+			    });
+			    if(loadedCnt==dataCubeServers.length)
+				this.initDatacubeSelect(dialog);
 			}
 		    }).fail(err=>{
-			console.error('Failed loading ESDL datasets:' + err);
+			loadedCnt++;
+			if(loadedCnt==dataCubeServers.length)
+			    this.initDatacubeSelect(dialog);
+			console.error('Failed loading datacube datasets:' + err);
 		    });
 		});
 		return;
 	    }
-	    let html = '';
+	    let html = HU.formTable();
 	    let selects = [];
-	    let map = {}
-	    this.esdlDatasets.forEach((dataset,idx)=>{
+	    let variableMap = {}
+	    let idToMaps = {}	    
+	    let selectStyle='max-width:300px;overflow-x:hidden;'
+	    let lastServer;
+	    this.datacubeDatasets.forEach((serverInfo,idx)=>{
+		if(lastServer!=serverInfo.server) {
+		    lastServer = serverInfo.server;
+		    html+=HU.tr(HU.td(['colspan','2','class','ramadda-form-header'],serverInfo.server));
+		}
+		let dataset = serverInfo.dataset;
 		let variables  = {};
-		map[''+idx] = variables;
+		variableMap[''+idx] = variables;
 		//		console.log(key,dataset);
 		if(!dataset.variables) return;
 		let items = [{label:'Select Variable',value:''}];
@@ -40698,28 +40717,62 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		let selectId = HU.getUniqueId('select_');
 		selects.push(selectId);	
-		html+=HU.b(dataset.title)+':' +HU.space(2) +
-		    HU.select("",['style','max-width:400px;overflow-x:hidden;','id',selectId,'dataset',idx],items);
-		html+='<p>';
+		html+=HU.formEntry(dataset.title+':',
+				   HU.select("",['style',selectStyle,'id',selectId,'dataset',idx],items));
+		if(dataset.placeGroups) {
+		    let maps=[{value:'',label:'Select'}];
+		    dataset.placeGroups.forEach((group,idx)=>{
+			let url = serverInfo.server+'/places/' + group.id
+			let uid  = Utils.getUniqueId('map');
+			idToMaps[uid] = {label:group.title,value:group.id,url:url};
+			maps.push({label:group.title,value:uid});
+		    });
+		    if(maps.length>1) {
+			let selectId = HU.getUniqueId('mapselect_');
+			selects.push(selectId);	
+			html+=HU.formEntry("Maps:",
+					   HU.select("",['ismap','true','style',selectStyle,'id',selectId],maps));
+		    }
+		}
 	    });
+	    html+='</table>';
 	    html = HU.div(['style','auto;max-height:400px;overflow-y:auto;'], html);
 	    html+= HU.buttons([
-		HU.div([CLASS,'ramadda-button-ok-esdl display-button'], 'OK'),
-		HU.div([CLASS,'ramadda-button-cancel-esdl display-button'], 'Cancel')]);
+		HU.div([CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
+		HU.div([CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
 
-	    let esdlDialog=this.jq('esdldialog');
-	    esdlDialog.html(html);
-	    esdlDialog.find('.ramadda-button-ok-esdl').button().click(()=>{
+	    let datacubeDialog=this.jq('datacubedialog');
+	    datacubeDialog.html(html);
+	    datacubeDialog.find('.ramadda-button-ok-datacube').button().click(()=>{
 		let variable;
+		let mapInfo
 		selects.every(sid=>{
-		    let id = jqid(sid).val();
+		    let select=jqid(sid);
+		    let id = select.val();
 		    if(Utils.stringDefined(id)) {
-			variable = map[jqid(sid).attr('dataset')][id];
+			if(select.attr('ismap')) {
+			    mapInfo  = idToMaps[id];
+			} else {
+			    variable=variableMap[select.attr('dataset')][id];
+			}
 			return false;
 		    }
 		    return true;
 		});
 		dialog.remove();
+		if(mapInfo) {
+		    let glyphType = this.getGlyphType(GLYPH_MAP);
+		    let attrs = {
+			type:GLYPH_MAP,
+			entryType:'geo_geojson',
+			icon:'/repository/icons/mapfile.png',
+			name:mapInfo.label,
+			resourceUrl:mapInfo.url,
+		    }
+		    let mapGlyph = this.handleNewFeature(null,glyphType.getStyle(),attrs);
+		    mapGlyph.checkMapLayer();
+		    return
+		}		    
 		if(variable) {
 		    let url = variable.tileUrl;
 		    url = url.replace('http:','https:');
@@ -40737,7 +40790,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.clearMessage2(1000);
 		}
 	    });
-	    esdlDialog.find('.ramadda-button-cancel-esdl').button().click(()=>{
+	    datacubeDialog.find('.ramadda-button-cancel-datacube').button().click(()=>{
 		dialog.remove();
 	    });
 
@@ -42521,7 +42574,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let url;
 	    if(opts.resourceUrl) {
 		//For now proxy the request through our ramadda
-		url =   ramaddaBaseUrl+'/proxy?url=' + encodeURIComponent(opts.resourceUrl);
+		if(opts.resourceUrl.indexOf('ramadda.org')>=0)
+		    url =   ramaddaBaseUrl+'/proxy?url=' + encodeURIComponent(opts.resourceUrl);
+		else
+		    url =   opts.resourceUrl;
 	    } else {
 		url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
 	    }
