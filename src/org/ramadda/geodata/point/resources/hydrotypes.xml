@@ -45,22 +45,22 @@ csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM
 
   <type name="type_hydro_usbr_rise"  super="type_point_hydro" description="USBR RISE Hyrdo"
 	handler="org.ramadda.geodata.point.RiseTypeHandler">
-
      <property name="icon" value="/point/rise.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.date.show" value="false"/>
      <property name="form.properties.show" value="false"/>
      <column  name="rise_id"  label="RISE ID" type="string"/>
      <column  name="location_type"  label="Location Type" type="enumerationplus"/>     
- <property name="record.properties">
+<property name="record.properties">
 csvcommands1=-skiplines,7,-notpattern,0,includes:SERIES\,QUERY\,DOWNLOAD\,SITE\,Location
-csvcommands2=-notpattern,2,includes:[,-lengthgreater,0
+csvcommands2=-notpattern,2,includes:[\,(,-lengthgreater,0
 csvcommands3=0,-set,datetime_utc,0,datetime
-csvcommands4=-notcolumns,location\,units\,aggregation\,timestep\,resulttype\,timestep,-makefields,parameter,result
-csvcommands5=datetime,,-decimate,1,7
-csvcommands6=-change,datetime,.*(....-..-..).*,$1,-addheader
-csvcommands7=datetime.type date datetime.format yyyy-MM-dd,-print
-  </property>
+csvcommands4=-set,7,0,timestep2,-notcolumns
+csvcommands5=location\,units\,aggregation\,timestep\,resulttype\,timestep2,-notpattern,parameter,^$,-makefields
+csvcommands6=parameter,result,datetime, ,-decimate
+csvcommands7=1,7,-change,datetime,.*(....-..-..).*
+csvcommands8=$1,-addheader,datetime.type date datetime.format yyyy-MM-dd,-print
+</property>
 <wiki>
 <![CDATA[
 +section  title="RISE Data:  {{name}}"
@@ -76,7 +76,7 @@ csvcommands7=datetime.type date datetime.format yyyy-MM-dd,-print
 -col
 +col-md-4
 {{map}}
-{{properties decorate=true metadata.types="enum_tag"  includeTitle="false"}}
+{{properties message="" decorate=true metadata.types="enum_tag"  includeTitle="false"}}
 <table class="formtable">
      {{field name="altitude"  row.label="Altitude:"}}
      {{field name="location_type"  row.label="Type:"}}
