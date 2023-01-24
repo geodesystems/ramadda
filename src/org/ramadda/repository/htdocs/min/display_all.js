@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jan 24 02:57:48 MST 2023";
+var build_date="RAMADDA build date: Tue Jan 24 11:10:19 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40103,6 +40103,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	handleNewFeature:function(feature,style,mapOptions) {
 	    style = style || feature?.style;
 	    mapOptions = mapOptions??feature?.mapOptions ?? style?.mapOptions;
+	    mapOptions = $.extend({},mapOptions);
 	    if(feature && feature.style && feature.style.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
@@ -40200,16 +40201,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeRangeRings:function(center,radii,style) {
+	    style = style??{};
 	    let rings = [];
+	    let labelStyle = {labelAlign:style.labelAlign??'lt',
+			      fontSize:style.fontSize??'10pt',
+			      fontColor:style.fontColor??'#000'};
+	    for(a in style) {
+		if(a.indexOf('label')>=0|| a.indexOf('font')>=0 || a.indexOf('textBackground')>=0) {
+		    labelStyle[a] = style[a];
+		}
+	    }
 	    radii.forEach(km=>{
 		let skm = String(km).trim();
 		if(skm.endsWith('m')) {
 		    km = 1.60934*parseFloat(skm.replace('m',''));
 		} else if (skm.endsWith('ft')) {
 		    km = 0.0003048*parseFloat(skm.replace('ft',''));
+		} else if (skm.endsWith('km')) {
+		    km = skm.replace('km','');
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
-		let p2 = Utils.reverseBearing(p1,180,km);
+		let p2 = Utils.reverseBearing(p1,90+45,km);
 		if(p2==null) {
 		    console.error("Could not create range rings with center:",center);
 		    return null;
@@ -40220,6 +40232,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let ring = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
 									    dist, 100,0);
 		rings.push(MapUtils.createVector(ring,null,style??{strokeWidth:2,strokeColor:'blue',fillColor:'transparent'}));
+
+		p2 = MapUtils.createPoint(p2.lon,p2.lat);
+		let s = $.extend({},labelStyle);
+		s.label=skm;
+		let label = MapUtils.createVector(p2,null,s);
+		rings.push(label);
 	    });
 	    return rings;
 	},
@@ -40295,7 +40313,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    segments+= d +' ' + unit +' ';
 		}
 		let unit = 'feet';
-		if(total>5280) {
+		if(total>3500) {
 		    unit = 'miles';
 		    total = total/5280;
 		}
@@ -42875,6 +42893,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeWidth:2,
 			   fillColor:"transparent",
 			   pointRadius:6,
+			   rotation:0,
+			   fontColor: this.getProperty("labelFontColor","#000"),
+			   fontSize: this.getFontSize(),
+			   fontFamily: this.getFontFamily(),
+			   fontWeight: this.getFontWeight(),
+			   fontStyle: this.getFontStyle(),
+			   labelAlign:'lt',
+			   textBackgroundStrokeColor:'',
+			   textBackgroundStrokeWidth:1,			   			   
+			   textBackgroundFillColor:'',
+			   textBackgroundFillOpacity:1.0,
+			   textBackgroundPadding:2,
+			   textBackgroundShape:'rectangle',
+			   textBackgroundRadius:0
 			  },
 			  MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
@@ -44217,11 +44249,45 @@ MapGlyph.prototype = {
 	    return this.transientProperties.mapglyphs;
 	return null;
     },
+    getRadii:function() {
+	if(!this.attrs.radii) {
+	    let level = this.display.getCurrentLevel();
+	    console.log("level:" + level);
+	    let r = (size,unit) =>{
+		let s =[];
+		for(let i=1;i<=5;i++) {
+		    s.push((size*i)+unit);
+		}
+		this.attrs.radii = s;
+		return s;
+	    }
+	    if(level>=19) return r(25,'ft');
+	    if(level>=18) return r(50,'ft');
+	    if(level>=17) return r(75,'ft');	    
+	    if(level>=16) return r(150,'ft');
+	    if(level>=15) return r(250,'ft');	    
+	    if(level>=14) return r(500,'ft');
+	    if(level>=13) return r(1500,'ft');
+	    if(level>=12) return r(0.5,'m');
+	    if(level>=11) return r(1,'m');
+	    if(level>=10) return r(2,'m');
+	    if(level>=9) return r(2.5,'m');	    	    	    
+	    if(level>=8) return r(5,'m');
+	    if(level>=7) return r(10,'m');
+	    if(level>=6) return r(25,'m');
+	    if(level>=5) return r(50,'m');
+	    if(level>=4) return r(100,'m');	    	    	    	    
+	    if(level>=3) return r(250,'m');	    	    	    	    
+	    return	 r(500,'m');
+	}
+	return this.attrs.radii;
+    },
     addToStyleDialog:function(style) {
 	if(this.isRings()) {
-	    if(!this.attrs.radii) this.attrs.radii = [5,10,15,20,25];
-	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.attrs.radii,','),
-							['id',this.domId('radii'),'size','20'])+' km');
+
+	    console.log(this.getRadii());
+	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
+							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2m (miles), 100ft');
 	}
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
@@ -47160,8 +47226,7 @@ MapGlyph.prototype = {
 	let center = this.display.getMap().transformProjPoint(pt)
 
 	if(this.rings) this.display.removeFeatures(this.rings);
-	if(!this.attrs.radii) this.attrs.radii = [5,10,15,20,25];
-	this.rings = this.display.makeRangeRings(center,this.attrs.radii,this.style);
+	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style);
 	if(this.rings) {
 	    this.rings.forEach(ring=>{
 		ring.mapGlyph=this;
