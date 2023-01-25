@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jan 24 17:10:07 MST 2023";
+var build_date="RAMADDA build date: Wed Jan 25 00:39:16 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40030,7 +40030,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:'strokeColor',d:'blue'},
 	{p:'strokeWidth',d:2},
 	{p:'pointRadius',d:10},
-	{p:'externalGraphic',d:'/map/marker-blue.png'},
+	{p:'externalGraphic',d:'/map/blue-dot.png'},
 	{p:'fontSize',d:'12px'},
 	{p:'fontWeight',d:'normal'},
 	{p:'fontStyle',d:'normal'},	
@@ -40200,7 +40200,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 
-	makeRangeRings:function(center,radii,style,angle) {
+	makeRangeRings:function(center,radii,style,angle,ringStyle) {
 	    style = style??{};
 	    let rings = [];
 	    let labelStyle = {labelAlign:style.labelAlign??'lt',
@@ -40211,7 +40211,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    labelStyle[a] = style[a];
 		}
 	    }
-	    radii.forEach(km=>{
+	    for(let idx=radii.length-1;idx>=0;idx--) {
+		let km =radii[idx];
+		if(km==null) continue;
 		let skm = String(km).trim();
 		if(skm.endsWith('m')) {
 		    km = 1.60934*parseFloat(skm.replace('m',''));
@@ -40223,7 +40225,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
 		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
 		if(p2==null) {
-		    console.error("Could not create range rings with center:",center);
+		    console.error("Could not create range rings with center:",center,p2,km);
 		    return null;
 		}
 		p1 = this.getMap().transformLLPoint(p1);
@@ -40231,14 +40233,35 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let dist = Utils.distance(p1.lon,p1.lat,p2.lon,p2.lat);
 		let ring = OpenLayers.Geometry.Polygon.createRegularPolygon({x:p1.lon,y:p1.lat},
 									    dist, 100,0);
-		rings.push(MapUtils.createVector(ring,null,style??{strokeWidth:2,strokeColor:'blue',fillColor:'transparent'}));
+		let _style = $.extend({},style??{strokeWidth:2,strokeColor:'blue',fillColor:'transparent'});
+		if(ringStyle['*']) {
+		    $.extend(_style,ringStyle['*']);
+		}
+		if(idx==2*(parseInt(idx/2))) {
+		    if(ringStyle['even']) {
+			$.extend(_style,ringStyle['even']);
+		    }
+		} else {
+		    if(ringStyle['odd']) {
+			$.extend(_style,ringStyle['odd']);
+		    }
+		}
+		if(ringStyle && ringStyle[idx+1]) {
+		    $.extend(_style,ringStyle[idx+1]);
+		}
+		if(idx==radii.length-1 && ringStyle['N']) {
+		    $.extend(_style,ringStyle['N']);
+		}
+
+		rings.push(MapUtils.createVector(ring,null,_style));
+
 
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
 		s.label=skm;
 		let label = MapUtils.createVector(p2,null,s);
 		rings.push(label);
-	    });
+	    }
 	    return rings;
 	},
 
@@ -40439,6 +40462,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    contents.push({header:'Data Cube Layers',contents:datacube});
 		}
 
+		let stac = HU.input('','',['id',this.domId('stac_catalog'),'placeholder','STAC Catalog URL','size','60']);
+		stac+=HU.div(['id',this.domId('stac_output')]);
+		contents.push({header:'STAC - Spatial Temporal Asses Catalogs',contents: stac});
+
+
+
 		let accord = HU.makeAccordionHtml(contents)
 		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], accord.contents);
 
@@ -40449,6 +40478,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.initDatacubeSelect(dialog);
 		}
 
+		this.initStac(dialog);
 		let cancel = ()=>{
 		    dialog.remove();
 		}
@@ -40514,7 +40544,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			delete tmpStyle.mapOptions;
 			mapOptions.name = attrs.entryName;
 			$.extend(mapOptions,attrs);
-			console.dir(mapOptions);
 			console.dir(tmpStyle);			
 			let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 			mapGlyph.checkMapLayer();
@@ -40713,6 +40742,17 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	initStac:function(dialog) {
+	    let _this = this;
+	    this.jq('stac_catalog').keypress(function(event){
+		let keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode == 13) {
+		    let url = $(this).val();
+		    console.log(url);
+		}
+	    });
+
+	},
 	initDatacubeSelect:function(dialog) {
 	    //TODO: handle multiple servers
 	    let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
@@ -42862,7 +42902,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   textBackgroundShape:'rectangle',
 			   textBackgroundRadius:0
 			  }, MyPoint,
-			  {icon:ramaddaBaseUrl+"/icons/map/marker-blue.png"});
+			  {icon:ramaddaBaseUrl+"/map/blue-dot.png"});
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
 			  {graphicName:'circle',
@@ -42887,7 +42927,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
 			  },
 			  MyPoint,
-			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
+			  {icon:ramaddaBaseUrl+"/icons/dots/blue.png"});
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
 			  {strokeColor:'blue',
 			   strokeWidth:2,
@@ -43192,6 +43232,62 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    return  this.getProperty(name,dflt);
 	},
+	makeLegendDroppable:function(droppedOnGlyph,label,notify) {
+	    notify = notify?? (()=>{this.setLastDroppedTime(new Date());});
+	    label.droppable( {
+		hoverClass: 'imdv-legend-item-droppable',
+		accept:'.imdv-legend-item',
+		drop: (event,ui)=>{
+		    notify();
+		    let draggedGlyph = this.findGlyph(ui.draggable.attr('glyphid'));
+		    if(!draggedGlyph) {
+			console.log('Could not find dragged glyph');
+			return;
+		    }
+		    this.handleDroppedGlyph(draggedGlyph,droppedOnGlyph);
+		}
+	    });
+	},
+	handleDroppedGlyph:function(draggedGlyph,droppedOnGlyph) {
+	    let debug = false;
+	    if(this.handleDropTimeout) {
+		if(debug)	    console.log('clearing pending drop');
+		clearTimeout(this.handleDropTimeout);
+	    }
+	    this.handleDropTimeout = setTimeout(()=>{
+		if(debug)	    console.log(this.name +' handleDrop');
+		this.handleDropTimeout = null;
+		this.removeMapGlyph(draggedGlyph);
+		draggedGlyph.setParentGlyph(null);
+		if(droppedOnGlyph) {
+		    if(droppedOnGlyph.isGroup()) {
+			if(debug)		console.log('landed on group');
+			droppedOnGlyph.addChildGlyph(draggedGlyph);
+			draggedGlyph.changeOrder(false);
+		    } else {
+			if(droppedOnGlyph.getParentGlyph()) {
+			    if(debug) console.log('landed on glyph in a group');
+			    droppedOnGlyph.getParentGlyph().addChildGlyph(draggedGlyph);
+			    this.moveGlyphBefore(droppedOnGlyph, 
+						 draggedGlyph,
+						 droppedOnGlyph.getParentGlyph().getChildren());
+			} else {
+			    this.moveGlyphBefore(droppedOnGlyph, draggedGlyph);
+			}
+		    }
+		} else {
+		    draggedGlyph.setParentGlyph(null);
+		    Utils.removeItem(this.getGlyphs(),draggedGlyph);
+		    this.getGlyphs().push(draggedGlyph);
+		    draggedGlyph.changeOrder(false);
+		    this.featureChanged();
+		    this.redraw();
+		}
+		this.handleGlyphsChanged();
+		this.redraw();
+	    },1);
+	},
+
 	makeLegend: function() {
 	    let _this = this;
 	    let legendPosition = this.getMapProperty('legendPosition','left');
@@ -43249,6 +43345,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
+	    html+=HU.div(['id',this.domId('dropend'),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -43264,6 +43361,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_LEGEND).html(html);
 
+	    this.makeLegendDroppable(null,this.jq('dropend'),null);
 
 	    HU.initToggleBlock(this.jq(ID_LEGEND),(id,visible,element)=>{
 		let mapGlyph = idToGlyph[element.attr('map-glyph-id')];
@@ -44288,7 +44386,10 @@ MapGlyph.prototype = {
 							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2m (miles), 100ft') +
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
-				 'id',this.domId('rangeringangle'),'size',4]));
+				 'id',this.domId('rangeringangle'),'size',4])) +
+		HU.formEntryTop('Ring Styles',
+				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',['id',this.domId('rangeringstyle'),'rows',5,'cols', 40]),
+					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
 	}
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
@@ -44429,6 +44530,7 @@ MapGlyph.prototype = {
 	if(this.isRings()) {
 	    this.attrs.radii=Utils.split(this.jq('radii').val()??'',',',true,true);
 	    this.attrs.rangeRingAngle=this.jq('rangeringangle').val();
+	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
 	}
     },
@@ -45355,20 +45457,8 @@ MapGlyph.prototype = {
 		containment:this.display.domId(ID_LEGEND),
 		revert: true
 	    });
+	    this.display.makeLegendDroppable(this,label,notify);
 	    //Only drop on the legend label
-	    label.droppable( {
-		hoverClass: 'imdv-legend-item-droppable',
-		accept:'.imdv-legend-item',
-		drop: function(event,ui){
-		    notify();
-		    let draggedGlyph = _this.display.findGlyph(ui.draggable.attr('glyphid'));
-		    if(!draggedGlyph) {
-			console.log('Could not find dragged glyph');
-			return;
-		    }
-		    _this.handleDroppedGlyph(draggedGlyph);
-		}
-	    });
 
 	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
 	    let rows = jqid('glyphstyle_'+this.getId()).find('.' + CLASS_IMDV_STYLEGROUP);
@@ -45616,34 +45706,6 @@ MapGlyph.prototype = {
 	if(this.isGroup()) {
 	    this.getChildren().forEach(mapGlyph=>{mapGlyph.initLegend();});
 	}
-    },
-    handleDroppedGlyph:function(draggedGlyph) {
-	let debug = false;
-	if(this.display.handleDropTimeout) {
-	    if(debug)	    console.log('clearing pending drop');
-	    clearTimeout(this.display.handleDropTimeout);
-	}
-	this.display.handleDropTimeout = setTimeout(()=>{
-	    if(debug)	    console.log(this.name +' handleDrop');
-	    this.display.handleDropTimeout = null;
-	    draggedGlyph.display.removeMapGlyph(draggedGlyph);
-	    draggedGlyph.setParentGlyph(null);
-	    if(this.isGroup()) {
-		if(debug)		console.log('landed on group');
-		this.addChildGlyph(draggedGlyph);
-		draggedGlyph.changeOrder(false);
-	    } else {
-		if(this.getParentGlyph()) {
-		    if(debug)		    console.log('landed on glyph in a group');
-		    this.getParentGlyph().addChildGlyph(draggedGlyph);
-		    this.display.moveGlyphBefore(this, draggedGlyph,this.getParentGlyph().getChildren());
-		} else {
-		    this.display.moveGlyphBefore(this, draggedGlyph);
-		}
-	    }
-	    this.display.handleGlyphsChanged();
-	    this.display.redraw();
-	},1);
     },
 
     convertPopupText:function(text) {
@@ -46522,11 +46584,17 @@ MapGlyph.prototype = {
     },
 
     getProperty:function(key,dflt) {
+	let debug = false;
+	if(debug)
+	    console.log("KEY:" + key);
 	if(this.attrs.properties) {
 	    if(!this.parsedProperties) {
 		this.parsedProperties = Utils.parseMap(this.attrs.properties,"\n","=")??{};
 	    }
+
 	    let v = this.parsedProperties[key];
+	    if(debug) console.log("V:" + v);
+	    if(debug) console.log("PROPS:",this.parsedProperties);	    
 	    if(v) {
 		return Utils.getProperty(v);
 	    }
@@ -46546,6 +46614,7 @@ MapGlyph.prototype = {
 		return;
 	    }
 	    this.filterInfo[info.property] = info;
+	    this.filterInfo[info.getId()] = info;	    
 	    if(!filters[info.property]) filters[info.property]= {};
 	    let filter = filters[info.property];
 	    if(!Utils.isDefined(filter.min) || isNaN(filter.min)) filter.min = info.min;
@@ -46586,10 +46655,9 @@ MapGlyph.prototype = {
 		let max = info.getProperty('filter.max',info.max);		
 		filter.minValue = min;
 		filter.maxValue = max;
-		if(isNaN(filter.min)) filter.min = min;
-		if(isNaN(filter.max)) filter.max = max;
+		if(isNaN(filter.min)||filter.min<min) filter.min = min;
+		if(isNaN(filter.max) || filter.max>max) filter.max = max;
 		filter.type="range";
-
 		let line =
 		    HU.leftRightTable(HU.div(['id',this.domId('slider_min_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.min??min)),
 				      HU.div(['id',this.domId('slider_max_'+ id),'style','max-width:50px;overflow-x:auto;'],Utils.formatNumber(filter.max??max)));
@@ -46705,10 +46773,11 @@ MapGlyph.prototype = {
 			else
 			    filter.max = ui.value;
 		    }
+
 		    filter.property=id;
-		    _this.jq('slider_min_'+ id).html(Utils.formatNumber(filter.min));
-		    _this.jq('slider_max_'+ id).html(Utils.formatNumber(filter.max));			    
-		    if(force ||_this.getProperty('filter.live') ||  _this.getProperty(id+'.filter.live')) {
+		    _this.jq('slider_min_'+ featureInfo.getId()).html(Utils.formatNumber(filter.min));
+		    _this.jq('slider_max_'+ featureInfo.getId()).html(Utils.formatNumber(filter.max));			    
+		    if(force ||_this.getProperty('filter.live') ||  _this.getProperty(featureInfo.getId()+'.filter.live')) {
 			update();
 			return
 		    }
@@ -47228,7 +47297,19 @@ MapGlyph.prototype = {
 	let center = this.display.getMap().transformProjPoint(pt)
 
 	if(this.rings) this.display.removeFeatures(this.rings);
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle);
+	let ringStyle = {};
+	if(this.attrs.rangeRingStyle) {
+	    //0,fillColor:red,strokeColor:blue
+	    Utils.split(this.attrs.rangeRingStyle,'\n',true,true).forEach(line=>{
+		let toks = line.split(',');
+		ringStyle[toks[0]] = {};
+		for(let i=1;i<toks.length;i++) {
+		    let toks2 = toks[i].split(':');
+		    ringStyle[toks[0]][toks2[0]] = toks2[1];
+		}
+	    });
+	}
+	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle);
 	if(this.rings) {
 	    this.rings.forEach(ring=>{
 		ring.mapGlyph=this;
@@ -47819,7 +47900,6 @@ MapGlyph.prototype = {
     select:function(maxPoints,dontRedraw) {
 	if(!Utils.isDefined(maxPoints)) maxPoints = 20;
 	if(this.isSelected()) {
-	    console.log('already selected');
 	    return;
 	}
 	this.selected = true;
