@@ -3782,20 +3782,39 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HtmlUtils.div(["style", style], html);
 
     },
+    makeTabs(list) {
+	let id = HU.getUniqueId('tabs_');
+	let html=HU.open('div',['id',id]);
+	html+='\n';
+	html+='<ul>\n';
+	list.forEach((tab,idx)=>{
+	    html+=HU.tag('li',[], HU.href('#' + id +'-'+(idx+1),tab.label??tab.header));
+	    html+='\n';
+	});
+	html+='</ul>\n';
+	list.forEach((tab,idx)=>{
+	    html+=HU.div(['id',id+'-'+(idx+1)], tab.contents);
+	    html+='\n';
+	});
+	html+='</div>';
+	return {
+	    contents:html,
+	    init:()=>{
+		$("#" +id ).tabs();
+	    }};
+    },
     makeAccordionHtml(list) {
 	let id = HU.getUniqueId('accordion_');
 	let html = HU.open('div',['class','ui-accordion ui-widget ui-helper-reset','id',id]);
-	html+='\n';
 	list.forEach(item=>{
 	    html+=HU.tag('h3',['class','ui-accordion-header ui-helper-reset ui-corner-top','style','border:0px;background:none;'],
-			 HU.href('#',HU.span(['class','ramadda-clickable'],item.header)));
+			 HU.href('#',HU.span(['class','ramadda-clickable'],item.header??item.label)));
 	    html+=HU.div(['id',HU.getUniqueId('accordion_'),'class','ramadda-accordion-contents'],item.contents);
-	    html+='\n';
 	})
-	html+='\n';
 	html+='</div>';
-	html+='\n';
-	return {id:id,contents:html};
+	return {id:id,contents:html,init:()=>{
+	    HU.makeAccordion('#'+id);
+	}};
     },
     makeAccordion: function(id, args) {
         if(args == null) args = {heightStyle: "content", collapsible: true, active: 0, decorate: false, animate:200};
