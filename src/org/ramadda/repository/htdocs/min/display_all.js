@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan 25 23:41:46 MST 2023";
+var build_date="RAMADDA build date: Thu Jan 26 09:57:03 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40015,7 +40015,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 
-
     if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
 	properties.showOpacitySlider=false; 
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_IMDV,  properties);
@@ -40432,9 +40431,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.mapServerDialog.show();
 		    return;
 		}
-		let html = '';
+		let wmtHtml = '';
 		let form = (label,name,size)=>{
-		    html+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
+		    wmtHtml+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
 		}
 		let args = [
 		    ['Name','servername'],
@@ -40442,17 +40441,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    ['WMS Layer','wmslayer','20'],
 		    ['Legend URL','maplegend']
 		];
-		html+= 'Enter either a TMS server URL or a WMS server URL with a layer name<br>';
+
 		this.cache = this.cache??{};
-		html +=  HU.formTable();
+		wmtHtml +=  HU.formTable();
 		args.forEach(a=>{
 		    form(a[0],a[1],a[2]);
 		});
-		html+='</table>';
+		wmtHtml+='</table>';
 		let contents = [];
-		let ids =Utils.mergeLists([''],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
-		let predefined =  HU.b('Predefined:')+HU.space(2) +HU.select('',['id',this.domId('predefined')],ids,this.cache['predefined']);
-		html+='<p>Or select a pre-defined layer:<br>' + predefined;
+		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
+		let predefined =  HU.select('',['id',this.domId('predefined')],ids,this.cache['predefined']);	
+		let html = 'Pre-defined layer: ' + predefined;
+		html+='<p>Or enter either a TMS/WMS server URL with a layer name:';
+		html+=wmtHtml;
 		let buttons = HU.buttons([
 		    HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
@@ -40464,7 +40465,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let stac = HU.div(['id',this.domId('stac_contents')]);
 		contents.push({label:'STAC',contents: stac});
-
 
 		let tabs = HU.makeTabs(contents)
 		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
@@ -41560,15 +41560,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    style.cursor = 'pointer';
 		}
 		if(mapGlyph.getImage()) {
+		    if(mapGlyph.getImage().imageHook) {
+			mapGlyph.getImage().imageHook();
+		    }
 		    mapGlyph.getImage().setOpacity(style.imageOpacity);
 		    mapGlyph.checkImage();
 		}
 
-
 		mapGlyph.applyStyle(style);
-
-
-
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
@@ -41698,7 +41697,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let isImage = style.imageUrl;
 		for(a in style) {
 		    if(isImage) {
-			if(a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
+			if(a!='transform' && a!='rotation' && a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
 		    }
 		    props.push(a);
 		    values[a] = style[a];
@@ -43392,7 +43391,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  {strokeColor:"#ccc",
 			   strokeWidth:1,
 			   imageOpacity:this.getImageOpacity(1),
-			   fillColor:"transparent"},
+			   fillColor:"transparent",
+			   rotation:0,
+			   transform:''},
 			  ImageHandler,
 			  {tooltip:"Select an image entry to display",
 			   snapAngle:90,sides:4,irregular:true,isImage:true,
@@ -43604,7 +43605,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.div(['style','margin-bottom:4px;','class','imdv-legend-offset'], HU.b('Base Map: ') +this.getBaseLayersSelect());
 	    }
 
-
 	    let idToGlyph={};
 	    let glyphs = this.getGlyphs();
 	    if(this.getMapProperty('showAddress',false)) {
@@ -43621,7 +43621,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
-	    html+=HU.div(['id',this.domId('dropend'),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
+	    if(glyphs.length)
+		html+=HU.div(['id',this.domId('dropend'),'class','imdv-legend-item','style','width:100%;height:1em;'],'');
 
 	    if(Utils.stringDefined(legendLabel)) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
@@ -45682,6 +45683,13 @@ MapGlyph.prototype = {
 			    ID,this.domId('image_opacity_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 	}
 
+	if(this.display.canEdit() && Utils.stringDefined(this.style.imageUrl)) {
+	    body+='Rotation:';
+	    body += HU.center(
+		HU.div(['title','Set image rotation','slider-min',0,'slider-max',360,'slider-value',this.style.rotation??0,
+			ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
+	}
+
 
 
 	let item = i=>{
@@ -45768,13 +45776,21 @@ MapGlyph.prototype = {
 	    });
 	}
 
+	let setRotation = (event,ui) =>{
+	    this.style.rotation = ui.value; 
+	    if(this.image && this.image.imageHook) {
+		this.image.imageHook();
+	    }
+	}
 	let setOpacity = (event,ui) =>{
 	    if(this.isMapServer())
 		this.style.opacity = ui.value;
 	    else if(this.image || this.imageLayers) {
 		this.style.imageOpacity = ui.value;
-		if(this.image)
+		if(this.image) {
 		    this.image.setOpacity(this.style.imageOpacity);
+		    console.log(''+this.image.setOpacity);
+		}
 		if(this.imageLayers)
 		    this.imageLayers.forEach(obj=>{
 			if(obj.layer)
@@ -45906,6 +45922,19 @@ MapGlyph.prototype = {
 	    stop: ( event, ui )=> {
 		timeSliderStop(ui.value);
 	    }});
+
+	this.jq('image_rotation_slider').slider({
+	    min: 0,
+	    max: 360,
+	    step:1,
+	    value:this.jq('image_rotation_slider').attr('slider-value'),
+	    slide:function(event,ui) {
+		setRotation(event,ui);
+	    },
+	    stop: function( event, ui ) {
+		setRotation(event,ui);
+	    }});
+
 
 	this.jq('image_opacity_slider').slider({		
 	    min: 0,
@@ -47282,6 +47311,7 @@ MapGlyph.prototype = {
 	let _this = this;
 	//If its a map then set the style on the map features
 	if(!this.mapLayer || !this.mapLoaded) return;
+
 	let features= this.mapLayer.features;
 	if(!features) return
 	if(!skipLegendUI && this.canDoMapStyle()) {
@@ -47671,8 +47701,10 @@ MapGlyph.prototype = {
 	return this.display.getMap();
     },
     checkImage:function(feature) {
-	if(this.image && Utils.isDefined(this.image.opacity)) {
-	    this.style.imageOpacity=this.image.opacity;
+	if(this.image) {
+	    if(Utils.isDefined(this.image.opacity)) {
+		this.style.imageOpacity=this.image.opacity;
+	    }
 	}
 	if(!this.style.imageUrl) return;
 	let geometry = this.getGeometry() || feature?.geometry;
@@ -47688,8 +47720,29 @@ MapGlyph.prototype = {
 	} else {
 	    b = this.getMap().transformProjBounds(b);
 	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
-	    if(Utils.isDefined(this.style.imageOpacity))
+	    this.image.imageHook = (image)=> {
+		let transform='';
+		if(Utils.stringDefined(this.style.transform)) 
+		    transform = this.style.transform;
+		if(this.style.rotation>0)
+		    transform += ' rotate(' + this.style.rotation +'deg)';
+
+		if(!Utils.stringDefined(transform))  transform=null;
+		var childNodes = this.image.div.childNodes;
+		for(var i = 0, len = childNodes.length; i < len; ++i) {
+                    var element = childNodes[i].firstChild || childNodes[i];
+                    var lastChild = childNodes[i].lastChild;
+                    if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
+			element = lastChild.parentNode;
+                    }
+		    element.style.transform=transform;
+//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
+		}
+	    }
+	    this.image.imageHook();
+	    if(Utils.isDefined(this.style.imageOpacity)) {
 		this.image.setOpacity(this.style.imageOpacity);
+	    }
 	}
     },
     getDisplayAttrs: function() {
