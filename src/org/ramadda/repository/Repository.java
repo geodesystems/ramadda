@@ -51,7 +51,12 @@ import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
 
+import java.awt.Image;
 
+import java.awt.Toolkit;
+import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.*;
 import org.ramadda.repository.server.RepositoryServlet;
 
 import org.ramadda.repository.type.Column;
@@ -6028,6 +6033,32 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result("", sb);
     }
 
+
+
+    public Result processTiffToPng(Request request) throws Exception {
+	String file = request.getString("url","");
+	//	String file = "/Users/jeffmc/test.tif";
+	System.err.println("TIFF Proxy:" + file);
+	final BufferedImage tif = ImageIO.read(getStorageManager().getInputStream(file));
+	final PipedInputStream      in   = new PipedInputStream();
+	final PipedOutputStream     out  = new PipedOutputStream(in);
+	Result theResult = new Result(in,"image/png");
+	request.setReturnFilename(IOUtil.stripExtension(IO.getFileTail(file))+".png");
+	Misc.run(new Runnable() {
+		public void run()  {
+		    try {
+			ImageIO.write(tif, "png", out);
+			out.close();
+		    } catch(Exception exc) {
+			IOUtil.close(in);
+			IOUtil.close(out);
+			System.err.println("Error:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
+	return theResult;
+    }
 
 
     /**
