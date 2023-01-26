@@ -31553,6 +31553,11 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
             this.imageReloadAttempts = 0;
             this.setImgSrc(this.url);
         }
+
+	//jeffmc: add this so we can transform the image
+	if(this.layer.imageHook) {
+	    this.layer.imageHook(this);
+	}
     },
     
     /**
@@ -51748,6 +51753,7 @@ OpenLayers.Layer.Google = OpenLayers.Class(
             }
             this.opacity = opacity;
         }
+
         // Though this layer's opacity may not change, we're sharing a container
         // and need to update the opacity for the entire container.
         if (this.getVisibility()) {
@@ -56238,7 +56244,6 @@ OpenLayers.Layer.Image = OpenLayers.Class(OpenLayers.Layer, {
      * {<OpenLayers.Layer.Image>} An exact copy of this layer
      */
     clone: function(obj) {
-        
         if(obj == null) {
             obj = new OpenLayers.Layer.Image(this.name,
                                                this.url,
