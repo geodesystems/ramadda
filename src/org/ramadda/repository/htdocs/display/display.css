@@ -2916,6 +2916,9 @@ table.dataTable tfoot td {
 }
 
 
+.imdv-stac-item {
+    margin:4px;
+}
 .imdv-legend-map-wrapper {
     border:var(--basic-border);
     border-radius: 4px;
