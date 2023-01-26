@@ -1206,6 +1206,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let images = '';
 		    let other = '';
 		    Object.keys(data.assets).forEach((key,idx)=>{
+			//limit the number
+			if(idx>200) return;
 			let asset = data.assets[key];
 			if(!Utils.stringDefined(asset.href)) return;
 			if(table=='') {
@@ -1216,7 +1218,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let label = asset.name??asset.title??key;
 			let link = HU.href(asset.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',asset.href,'target','_stactarget','class','ramadda-clickable']);
 			if(asset.type&& asset.type.indexOf('image')>=0) {
-			    console.dir(asset);
 			    images+=HU.tr(HU.td(['width','10%','nowrap','true'], HU.div(['class','imdv-stac-item'],HU.span(['asset-id',key,'class','imdv-stac-asset'], 'Add Image')))+
 					  HU.td(link));
 			} else {
@@ -3277,9 +3278,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(north<-90) {
 		    [south,west,north,east] = opts.bbox;		    
 		}
-//		console.log(opts.bbox);
-		console.log("north:" +north+" west:" +west +" south:" +south +" east:" + east);
-//		console.log(url);
+//		console.log("north:" +north+" west:" +west +" south:" +south +" east:" + east);
 		let ilayer =  this.getMap().addImageLayer('', opts.name,"",url,true,
 							 north,west,south,east, iw,ih);
 		ilayer.mapGlyph = mapGlyph;
