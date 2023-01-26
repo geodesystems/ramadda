@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan 25 00:39:16 MST 2023";
+var build_date="RAMADDA build date: Wed Jan 25 20:41:15 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40428,6 +40428,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 
 	    if(glyphType.isMapServer()) {
+		if(this.mapServerDialog) {
+		    this.mapServerDialog.show();
+		    return;
+		}
 		let html = '';
 		let form = (label,name,size)=>{
 		    html+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
@@ -40462,16 +40466,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    contents.push({header:'Data Cube Layers',contents:datacube});
 		}
 
-		let stac = HU.input('','',['id',this.domId('stac_catalog'),'placeholder','STAC Catalog URL','size','60']);
-		stac+=HU.div(['id',this.domId('stac_output')]);
-		contents.push({header:'STAC - Spatial Temporal Asses Catalogs',contents: stac});
+		let stac = HU.div(['id',this.domId('stac_contents')]);
+		contents.push({header:'STAC - Spatial Temporal Assets Catalogs',contents: stac});
 
 
 
 		let accord = HU.makeAccordionHtml(contents)
 		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], accord.contents);
 
-		let dialog = HU.makeDialog({content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
+		let dialog = this.mapServerDialog = HU.makeDialog({remove:false,content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
+		//We don't want to remove the dialog, just show it
+		dialog.remove= () =>{
+		    dialog.hide();
+		}
 		HU.makeAccordion('#'+accord.id);
 
 		if(dataCubeServers) {
@@ -40480,7 +40487,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		this.initStac(dialog);
 		let cancel = ()=>{
-		    dialog.remove();
+		    dialog.hide();
 		}
 		let ok = ()=>{
 		    args.forEach(a=>{
@@ -40506,7 +40513,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		dialog.find('.ramadda-button-ok').button().click(ok);
 		dialog.find('.ramadda-button-cancel').button().click(()=>{
-		    dialog.remove();
+		    dialog.hide();
 		});
 		return;
 	    }
@@ -40670,11 +40677,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=HU.div(['id',this.domId('recenticons')]);
 		html+=HU.div(['id',this.domId('icons')]);
 		html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
-		let dialog = HU.makeDialog({content:html,title:'Marker',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
+		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
+
+		let closeDialog = () =>{
+		    dialog.remove();
+		}
 
 		this.addIconSelection(this.jq('icons'));
 		let cancel = ()=>{
-		    dialog.remove();
+		    closeDialog();
 		}
 		let ok = ()=>{
 		    let doIcon = this.lastIncludeIcon  = this.jq('includeicon').is(':checked');
@@ -40687,7 +40698,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			tmpStyle.labelYOffset='12';
 		    }
 		    let text = this.jq('labeltext').val();
-		    dialog.remove();
+		    closeDialog();
 		    //			    if(!Utils.stringDefined(text)) return;
 		    this.lastText = text;
 		    tmpStyle.label = text;
@@ -40698,7 +40709,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		dialog.find('.ramadda-button-ok').button().click(ok);
 		dialog.find('.ramadda-button-cancel').button().click(()=>{
-		    dialog.remove();
+		    closeDialog();
 		});
 		return;
 	    }
@@ -40743,15 +40754,198 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	initStac:function(dialog) {
-	    let _this = this;
-	    this.jq('stac_catalog').keypress(function(event){
-		let keycode = (event.keyCode ? event.keyCode : event.which);
-                if (keycode == 13) {
-		    let url = $(this).val();
-		    console.log(url);
-		}
-	    });
+	    let load;
+	    let stac= HU.div(['id',this.domId('stac_top')]) +
+		HU.div(['id',this.domId('stac_output')]);
+	    this.jq('stac_contents').html(stac);
+	    let catalogUrl = ramaddaBaseUrl+'/resources/staccatalog.json';
+	    let topLinks = [{value:catalogUrl,label:'RAMADDA Stac Catalog'}];
+	    let seenStacUrls = {};
+	    seenStacUrls[catalogUrl]=true;
+	    let makeTop=(current)=>{ 
+		let input = this.jq('stac_input').val()??'';
+		let top = HU.table(HU.tr([],HU.td(HU.span(['id',this.domId('stac_go')],'Load:') + HU.space(1))+
+					 HU.td(HU.input('',input,['id',this.domId('stac_input'),'style','width:500px;','xsize','60']))+
+					 HU.td(HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),['target','_stacindex','title','Look for catatalogs on stacindex.org'])))+
+				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))) +
+				   HU.tr([],HU.td(HU.div(['id',this.domId('stac_back_div')]))+HU.td(HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('stac_url')],topLinks,current,100))) +
+				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))));
 
+		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;'], top);
+		this.jq('stac_top').html(top);
+		this.jq('stac_url').change(()=>{
+		    let url = this.jq('stac_url').val();
+		    if(Utils.stringDefined(url)) {
+			load(url);
+		    }
+		});
+		this.jq('stac_input').keypress((event)=>{
+                    if (event.which == 13) {
+			let url = this.jq('stac_input').val();
+			if(!Utils.stringDefined(url)) {
+			    return;
+			}
+			load(url);
+		    }
+		});
+		this.jq('stac_go').button().click(()=>{
+		    let url = this.jq('stac_input').val();
+		    if(!Utils.stringDefined(url)) {
+			url = this.jq('stac_url').val();
+		    }
+		    if(!Utils.stringDefined(url)) {
+			return;
+		    }
+		    load(url);
+		});
+	    };
+	    makeTop();
+
+	    let _this = this;
+	    let showStac=(data,url)=>{
+		console.dir(data);
+		let html = '';
+		this.jq('stac_back_div').html(HU.div(['id',this.domId('stac_back')],'Back&nbsp;'));
+		if(data.title) {
+		    let title = data.title+HU.space(1) + HU.href(url,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
+		    html+=HU.center(HU.b(title));
+		}
+		if(data.description) {
+		    let desc = Utils.stripTags(data.description);
+//		    console.log('BEFORE:'+desc);
+		    desc = desc.replace(/[\n\s*\n]\n+/g,'\n').trim();
+//		    console.log("AFTER:" +desc);
+		    desc = desc.replace(/[\n\n]+/g,'\n').replace(/\n/g,'<br>');
+		    html+=HU.div(['class','boxquote','style','max-width:600px;overflow-z:auto;max-height:100px;overflow-y:auto;'],desc);
+		}
+		let linksHtml1 ='';
+		let linksHtml2 ='';		
+		if(data.links) {
+		    let cnt = 0;
+		    data.links.forEach(link=>{
+			if(!Utils.stringDefined(link.href) ||link.rel=='self') return;
+			let label = link.title;
+			if(!label)
+			    label  = link.href.replace(/.*\/([^\/]+$)/,"$1");
+			let href = HU.href(link.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' '+label+' ('+link.rel+')',['target','_stactarget','class','ramadda-clickable']);
+
+			let isJson;
+			if(Utils.stringDefined(link.type)) {
+			    isJson  = link.type == 'application/json' || link.type == 'application/geo+json';
+			} else {
+			    //Some guess work
+			    if(link.rel)
+				isJson = ['next','search','parent','root','child','items','search'].includes(link.rel);
+			    if(!isJson) isJson = link.href.endsWith('json');
+			}
+
+			if(!isJson) {
+			    linksHtml2+=HU.tr(HU.td(['width','10%','nowrap','true'],'')+HU.td(href));
+			} else {
+			    linksHtml1+=HU.tr(HU.td(['width','10%','nowrap','true'],
+					     HU.div(['title',link.href,'class','imdv-stac-item'],HU.span(['link',link.href,'class','imdv-stac-link'], 'Load'))) +
+					     HU.td(href));
+			}
+
+		    });
+		}
+
+		let assetsHtml = '';
+		if(data.assets) {
+		    let table='';
+		    let images = '';
+		    let other = '';
+		    Object.keys(data.assets).forEach((key,idx)=>{
+			let asset = data.assets[key];
+			if(!Utils.stringDefined(asset.href)) return;
+			if(table=='') {
+			    table+=HU.b('Assets: ')+'note: the IMDV does not handle all projections. Try the thumbnail<br>';
+			    table +='<table width=100%>';
+			}
+
+			let label = asset.name??asset.title??key;
+			let link = HU.href(asset.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',asset.href,'target','_stactarget','class','ramadda-clickable']);
+			if(asset.type&& asset.type.indexOf('image')>=0) {
+			    console.dir(asset);
+			    images+=HU.tr(HU.td(['width','10%','nowrap','true'], HU.div(['class','imdv-stac-item'],HU.span(['asset-id',key,'class','imdv-stac-asset'], 'Add Image')))+
+					  HU.td(link));
+			} else {
+			    other+=HU.tr(HU.td('')+ HU.td(link));
+			}
+		    });
+		    table+=images;
+		    table+=other;
+		    table+'</table>';
+		    assetsHtml=table;
+		}
+		let linksHtml = linksHtml1+linksHtml2;
+		if(linksHtml!='') {
+		    html+=HU.b('Links:<br>');
+		    linksHtml=HU.table(linksHtml);
+		    if(assetsHtml!='') 
+			html+=HU.div(['style','max-height:5em;overflow-y:auto;'], linksHtml);
+		    else
+			html+= linksHtml;		    
+		}
+
+		html+=assetsHtml;
+
+
+
+		html=HU.div(['style','max-height:300px;overflow-y:auto;'], html);
+		this.jq('stac_output').html(html);
+		this.jq('stac_back').button().click(()=>{
+		    if(!this.currentStacUrl) return;
+		    let index = topLinks.findIndex(item=>{return item.value==this.currentStacUrl});
+		    console.log("IUNDEX:" + index);
+		    console.log(this.currentStacUrl);
+		    console.log(topLinks);
+		    if(index>0) {
+			load(topLinks[index-1].value);
+		    }
+		});
+		this.jq('stac_output').find('.imdv-stac-link').button().click(function() {
+		    load($(this).attr('link'));
+		});
+		this.jq('stac_output').find('.imdv-stac-asset').button().click(function() {
+		    if(!data.bbox) return;
+		    let asset =  data.assets[$(this).attr('asset-id')];
+		    let url = asset.href;
+		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
+			url =   ramaddaBaseUrl+'/tifftopng?url=' + encodeURIComponent(url);
+		    }
+		    let attrs = {
+			type:GLYPH_MAP,
+			entryType:'stacimage',
+			icon:'/repository/icons/mapfile.png',
+			name:asset.name??asset.title,
+			bbox:data.bbox,
+			resourceUrl:url
+		    }
+		    let mapGlyph = _this.handleNewFeature(null,{},attrs);
+		    mapGlyph.checkMapLayer();
+		});
+	    };
+	    load = (url) =>{
+		console.log('stac url:'+url);
+		if(!Utils.stringDefined(url)) return;
+		this.currentStacUrl = url
+		this.jq('stac_url').val(url);
+		let _this = this;
+		this.jq('stac_output').html('Loading...');
+		$.getJSON(url, data=>{
+		    if(!seenStacUrls[url]) {
+			seenStacUrls[url]=true;
+			topLinks.push({value:url,label:data.title??url});
+			makeTop(url);
+		    }
+		    showStac(data,url);
+		}).fail(err=>{
+		    this.jq('stac_output').html('Load failed. URL: ' + url);
+		});
+	    }
+
+	    load(catalogUrl);
 	},
 	initDatacubeSelect:function(dialog) {
 	    //TODO: handle multiple servers
@@ -40845,7 +41039,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    return true;
 		});
-		dialog.remove();
+		dialog.hide();
 		if(mapInfo) {
 		    let glyphType = this.getGlyphType(GLYPH_MAP);
 		    let attrs = {
@@ -40877,7 +41071,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	    datacubeDialog.find('.ramadda-button-cancel-datacube').button().click(()=>{
-		dialog.remove();
+		dialog.hide();
 	    });
 
 	},
@@ -42688,6 +42882,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.makeLegend()
 	    }
 	    switch(opts.entryType) {
+	    case 'stacimage': 
+		//TODO: handle the 3d bbox with 6 values
+		let west,south,east,north;
+		if(opts.bbox.length==4)
+		    [west,south,east,north] = opts.bbox;
+		else
+		    [west, south, lowest, east, north, highest] = opts.bbox;		    
+		let iw = 2048;
+		let ih = 1024;
+		//sanity check for bad bbox
+		if(north<-90) {
+		    [south,west,north,east] = opts.bbox;		    
+		}
+//		console.log(opts.bbox);
+		console.log("north:" +north+" west:" +west +" south:" +south +" east:" + east);
+//		console.log(url);
+		let ilayer =  this.getMap().addImageLayer('', opts.name,"",url,true,
+							 north,west,south,east, iw,ih);
+		ilayer.mapGlyph = mapGlyph;
+		mapGlyph.handleMapLoaded(this.getMap(),ilayer);
+		this.getMap().zoomToLayer(ilayer);
+		return ilayer;
+		
 	    case 'latlonimage': 
 		let w = 2048;
 		let h = 1024;
@@ -44940,6 +45157,12 @@ MapGlyph.prototype = {
 	} else if(this.getMapLayer()) {
 	    if(this.getMapLayer().getVisibility()) {
 		bounds =  this.display.getMap().getFeaturesBounds(this.getMapLayer().features);
+		if(!bounds) {
+		    if(this.getMapLayer().maxExtent) {
+			let e = this.getMapLayer().maxExtent;
+			bounds = MapUtils.createBounds(e.left,e.bottom,e.right,e.top);
+		    }
+		}
 	    }
 	    if(this.imageLayers) {
 		this.imageLayers.forEach(obj=>{
@@ -46998,6 +47221,7 @@ MapGlyph.prototype = {
 	//If its a map then set the style on the map features
 	if(!this.mapLayer || !this.mapLoaded) return;
 	let features= this.mapLayer.features;
+	if(!features) return
 	if(!skipLegendUI && this.canDoMapStyle()) {
 	    this.makeFeatureFilters();
 	}
@@ -47043,9 +47267,11 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	features.forEach((feature,idx)=>{
-	    feature.featureIndex = idx;
-	});
+	if(features) {
+	    features.forEach((feature,idx)=>{
+		feature.featureIndex = idx;
+	    });
+	}
 
 	if(this.mapLabels) {
 	    this.display.removeFeatures(this.mapLabels);
@@ -47056,10 +47282,12 @@ MapGlyph.prototype = {
 	//Apply the base style here
 	
 	this.mapLayer.style = style;
-	features.forEach((f,idx)=>{
-	    ImdvUtils.applyFeatureStyle(f, $.extend({},style));
-	    f.originalStyle = $.extend({},style);			    
-	});
+	if(features) {
+	    features.forEach((f,idx)=>{
+		ImdvUtils.applyFeatureStyle(f, $.extend({},style));
+		f.originalStyle = $.extend({},style);			    
+	    });
+	}
 
 
 	//Check for any rule based styles
