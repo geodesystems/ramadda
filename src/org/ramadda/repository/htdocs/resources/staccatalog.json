@@ -1,0 +1,81 @@
+{
+
+    "title": "RAMADDA STAC Catalog",
+    "type": "Catalog",
+    "id": "ramadda-catalog",
+    "stac_version": "1.0.0",
+    "description": "Top-level catalog of STAC catalogs.",
+    "links": [
+
+{"title":"Google Earth Engine",
+"href": "https://earthengine-stac.storage.googleapis.com/catalog/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"Google Earth Engine for Open EO",
+"href": "https://earthengine-stac.storage.googleapis.com/catalog/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"NASA ISERV Science Operation Center",
+"href": "https://nasa-iserv.s3-us-west-2.amazonaws.com/catalog/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"NASA CMR",
+"href": "https://cmr.earthdata.nasa.gov/stac",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"ESA Open Science Catalog",
+"href": "https://eoepca.github.io/open-science-catalog-metadata/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"Digital Earth Africa",
+"href": "https://explorer.digitalearth.africa/stac/",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"Digital Earth Australia",
+"href": "https://explorer.sandbox.dea.ga.gov.au/stac/",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"Microsoft Planetary Computer",
+"href": "https://planetarycomputer.microsoft.com/api/stac/v1",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"Monthly Mosaic of Sentinel 2 Images for Catalonia",
+"href": "https://datacloud.icgc.cat/stac-catalog/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"OpenTopography Data Catalog",
+"href": "https://portal.opentopography.org/stac/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"SPOT Orthoimages of Canada",
+"href": "https://spot-canada-ortho.s3.amazonaws.com/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"World Bank - Light Every Night",
+"href": "https://globalnightlight.s3.amazonaws.com/VIIRS_npp_catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"California Forest Observatory",
+"href": "https://storage.googleapis.com/cfo-public/catalog.json",
+"rel": "child", "type": "application/json"
+}
+,
+{"title":"Astrea Earth OnDemand geospatial imagery query and analysis tool",
+"href": "https://eod-catalog-svc-prod.astraea.earth/",
+"rel": "child", "type": "application/json"
+}
+],
+"stac_extensions": []
+}
