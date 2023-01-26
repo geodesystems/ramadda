@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan 25 22:45:10 MST 2023";
+var build_date="RAMADDA build date: Wed Jan 25 23:41:46 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40755,14 +40755,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    seenStacUrls[catalogUrl]=true;
 	    let makeTop=(current)=>{ 
 		let input = this.jq('stac_input').val()??'';
-		let top = HU.table(HU.tr([],HU.td(HU.span(['id',this.domId('stac_go')],'Load:') + HU.space(1))+
-					 HU.td(HU.input('',input,['id',this.domId('stac_input'),'style','width:500px;','xsize','60']))+
-					 HU.td(HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),['target','_stacindex','title','Look for catatalogs on stacindex.org'])))+
-				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))) +
-				   HU.tr([],HU.td(HU.div(['id',this.domId('stac_back_div')]))+HU.td(HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('stac_url')],stacLinks,current,100))) +
-				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))));
+		let plus = HU.span(['id',this.domId('stac_add'),'class','ramadda-clickable','title','Add a STAC catalog URL'],HU.getIconImage('fas fa-plus'));
+		let back  = HU.span(['id',this.domId('stac_back'),'class','ramadda-clickable','title','Go back'],HU.getIconImage('fas fa-rotate-left'));
 
-		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;'], top);
+		let top = back +' ' + plus+' '+HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('stac_url')],stacLinks,current,100);
+		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:6px;'], top);
 		this.jq('stac_top').html(top);
 		this.jq('stac_url').change(()=>{
 		    let url = this.jq('stac_url').val();
@@ -40779,6 +40776,45 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			load(url);
 		    }
 		});
+		this.jq('stac_back').click(()=>{
+		    if(!this.currentStacUrl) return;
+		    let index = stacLinks.findIndex(item=>{return item.value==this.currentStacUrl});
+		    if(index>0) {
+			load(stacLinks[index-1].value);
+		    }
+		});
+
+
+		this.jq('stac_add').click(function() {
+		    let link = HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),['target','_stacindex','title','Look for catatalogs on stacindex.org']);
+		    let input = HU.input('','',['id',_this.domId('stac_add_url'),'style','width:400px;'])+' ' +link;
+		    let html = HU.b('STAC  Catalog URL: ') + input;
+		    html+= HU.buttons([
+			HU.div([CLASS,'stac-add-ok display-button'], 'OK'),
+			HU.div([CLASS,'stac-add-cancel display-button'], 'Cancel')]);
+		    html=HU.div(['style','margin:5px;margin-top:10px;'],html);
+		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
+
+		    _this.jq('stac_add_url').keypress((event)=>{
+			if (event.which == 13) {
+			    let url = _this.jq('stac_add_url').val();
+			    if(Utils.stringDefined(url))
+				load(url);
+			    dialog.remove();
+			}
+		    });
+		    dialog.find('.display-button').button().click(function() {
+			if($(this).hasClass('stac-add-ok')) {
+			    let url = _this.jq('stac_add_url').val();
+			    if(Utils.stringDefined(url))
+				load(url);
+			}
+			dialog.remove();
+		    });
+		});
+
+
+
 		this.jq('stac_go').button().click(()=>{
 		    let url = this.jq('stac_input').val();
 		    if(!Utils.stringDefined(url)) {
@@ -40796,7 +40832,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let showStac=(data,url)=>{
 //		console.dir(data);
 		let html = '';
-		this.jq('stac_back_div').html(HU.div(['id',this.domId('stac_back')],'Back&nbsp;'));
 		if(data.title) {
 		    let title = data.title+HU.space(1) + HU.href(url,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
 		    html+=HU.center(HU.b(title));
@@ -40858,7 +40893,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			let label = asset.name??asset.title??key;
 			let link = HU.href(asset.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',asset.href,'target','_stactarget','class','ramadda-clickable']);
-			if(asset.type&& asset.type.indexOf('image')>=0) {
+			let isImage = asset.type&& asset.type.indexOf('image')>=0;
+
+			if(asset.href.endsWith('ovr')) isImage= false;
+			if(isImage) {
 			    images+=HU.tr(HU.td(['width','10%','nowrap','true'], HU.div(['class','imdv-stac-item'],HU.span(['asset-id',key,'class','imdv-stac-asset'], 'Add Image')))+
 					  HU.td(link));
 			} else {
@@ -40883,16 +40921,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=assetsHtml;
 		html=HU.div(['style','max-height:300px;overflow-y:auto;'], html);
 		this.jq('stac_output').html(html);
-		this.jq('stac_back').button().click(()=>{
-		    if(!this.currentStacUrl) return;
-		    let index = stacLinks.findIndex(item=>{return item.value==this.currentStacUrl});
-		    console.log("IUNDEX:" + index);
-		    console.log(this.currentStacUrl);
-		    console.log(stacLinks);
-		    if(index>0) {
-			load(stacLinks[index-1].value);
-		    }
-		});
 		this.jq('stac_output').find('.imdv-stac-link').button().click(function() {
 		    load($(this).attr('link'));
 		});
@@ -40934,6 +40962,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	},
 	initDatacube:function(dialog) {
+	    let _this = this;
 	    let datacube= HU.div(['id',this.domId('datacube_top')]) +
 		HU.div(['id',this.domId('datacube_output')]);
 	    this.jq('datacube_contents').html(datacube);
@@ -40946,42 +40975,50 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let makeTop=(current)=>{ 
 		let input = this.jq('datacube_input').val()??'';
-		let top = HU.table(HU.tr([],HU.td(HU.span(['id',this.domId('datacube_go')],'Load:') + HU.space(1))+
-					 HU.td(HU.input('',input,['id',this.domId('datacube_input'),'style','width:500px;','xsize','60']))) +
-				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))) +
-				   HU.tr([],HU.td(HU.div(['id',this.domId('datacube_back_div')]))+HU.td(HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('datacube_url')],datacubeLinks,current,100))) +
-				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))));
-
-		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;'], top);
+		let plus = HU.span(['id',this.domId('datacube_add'),'class','ramadda-clickable','title','Add a Data Cube server URL'],HU.getIconImage('fas fa-plus'));
+		let top =plus +' ' +HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('datacube_url')],datacubeLinks,current,100);
+		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:6px;'], top);
 		this.jq('datacube_top').html(top);
+
+		this.jq('datacube_add').click(function() {
+		    let input = HU.input('','',['id',_this.domId('datacube_add_url'),'style','width:400px;']);
+		    let html = HU.b('DATACUBE  Catalog URL: ') + input;
+		    html+= HU.buttons([
+			HU.div([CLASS,'datacube-add-ok display-button'], 'OK'),
+			HU.div([CLASS,'datacube-add-cancel display-button'], 'Cancel')]);
+		    html=HU.div(['style','margin:5px;margin-top:10px;'],html);
+		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
+
+		    let add = ()=>{
+			let url = _this.jq('datacube_add_url').val();
+			if(Utils.stringDefined(url)) {
+			    load(url);
+			    if(!datacubeLinks.includes(url)) {
+				datacubeLinks.push(url);
+				makeTop(url);
+			    }
+			}
+			dialog.remove();
+		    }
+		    _this.jq('datacube_add_url').keypress((event)=>{
+			if (event.which == 13) {
+			    add();
+			}
+		    });
+		    dialog.find('.display-button').button().click(function() {
+			if($(this).hasClass('datacube-add-ok')) {
+			    add();
+			}
+			dialog.remove();
+		    });
+		});
+
+
 		this.jq('datacube_url').change(()=>{
 		    let url = this.jq('datacube_url').val();
 		    if(Utils.stringDefined(url)) {
 			load(url);
 		    }
-		});
-		this.jq('datacube_input').keypress((event)=>{
-                    if (event.which == 13) {
-			let url = this.jq('datacube_input').val();
-			if(!Utils.stringDefined(url)) {
-			    return;
-			}
-			if(!datacubeLinks.includes(url)) {
-			    datacubeLinks.push(url);
-			    makeTop(url);
-			}
-			load(url);
-		    }
-		});
-		this.jq('datacube_go').button().click(()=>{
-		    let url = this.jq('datacube_input').val();
-		    if(!Utils.stringDefined(url)) {
-			url = this.jq('datacube_url').val();
-		    }
-		    if(!Utils.stringDefined(url)) {
-			return;
-		    }
-		    load(url);
 		});
 	    };
 	    makeTop();
