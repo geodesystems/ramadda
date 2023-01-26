@@ -816,34 +816,25 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 		html+=buttons;
-		contents.push({header:"WMS/WMTS Server",contents:html});
+		contents.push({label:'WMS/WMTS',contents:html});
 
-		let dataCubeServers=  MapUtils.getMapProperty('datacubeservers');
-		if(dataCubeServers) {
-		    let datacube = '';
-		    datacube+=HU.div(['id',this.domId('datacubedialog')],'Loading...');
-		    contents.push({header:'Data Cube Layers',contents:datacube});
-		}
+		let datacube = HU.div(['id',this.domId('datacube_contents')],'Loading...');
+		contents.push({label:'Data Cubes',contents:datacube});
 
 		let stac = HU.div(['id',this.domId('stac_contents')]);
-		contents.push({header:'STAC - Spatial Temporal Assets Catalogs',contents: stac});
+		contents.push({label:'STAC',contents: stac});
 
 
-
-		let accord = HU.makeAccordionHtml(contents)
-		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], accord.contents);
+		let tabs = HU.makeTabs(contents)
+		html=HU.div(['style','min-width:600px;min-height:400px;margin:10px;'], tabs.contents);
 
 		let dialog = this.mapServerDialog = HU.makeDialog({remove:false,content:html,title:'Map Server',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 		//We don't want to remove the dialog, just show it
 		dialog.remove= () =>{
 		    dialog.hide();
 		}
-		HU.makeAccordion('#'+accord.id);
-
-		if(dataCubeServers) {
-		    this.initDatacubeSelect(dialog);
-		}
-
+		tabs.init();
+		this.initDatacube(dialog);
 		this.initStac(dialog);
 		let cancel = ()=>{
 		    dialog.hide();
@@ -1118,7 +1109,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.div(['id',this.domId('stac_output')]);
 	    this.jq('stac_contents').html(stac);
 	    let catalogUrl = ramaddaBaseUrl+'/resources/staccatalog.json';
-	    let topLinks = [{value:catalogUrl,label:'RAMADDA Stac Catalog'}];
+	    let stacLinks = [{value:'',label:'Select'}, {value:catalogUrl,label:'RAMADDA Stac Catalog'}];
 	    let seenStacUrls = {};
 	    seenStacUrls[catalogUrl]=true;
 	    let makeTop=(current)=>{ 
@@ -1127,7 +1118,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					 HU.td(HU.input('',input,['id',this.domId('stac_input'),'style','width:500px;','xsize','60']))+
 					 HU.td(HU.href('https://stacindex.org/catalogs',HU.getIconImage('fas fa-binoculars'),['target','_stacindex','title','Look for catatalogs on stacindex.org'])))+
 				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))) +
-				   HU.tr([],HU.td(HU.div(['id',this.domId('stac_back_div')]))+HU.td(HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('stac_url')],topLinks,current,100))) +
+				   HU.tr([],HU.td(HU.div(['id',this.domId('stac_back_div')]))+HU.td(HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('stac_url')],stacLinks,current,100))) +
 				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))));
 
 		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;'], top);
@@ -1162,7 +1153,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let _this = this;
 	    let showStac=(data,url)=>{
-		console.dir(data);
+//		console.dir(data);
 		let html = '';
 		this.jq('stac_back_div').html(HU.div(['id',this.domId('stac_back')],'Back&nbsp;'));
 		if(data.title) {
@@ -1248,19 +1239,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		html+=assetsHtml;
-
-
-
 		html=HU.div(['style','max-height:300px;overflow-y:auto;'], html);
 		this.jq('stac_output').html(html);
 		this.jq('stac_back').button().click(()=>{
 		    if(!this.currentStacUrl) return;
-		    let index = topLinks.findIndex(item=>{return item.value==this.currentStacUrl});
+		    let index = stacLinks.findIndex(item=>{return item.value==this.currentStacUrl});
 		    console.log("IUNDEX:" + index);
 		    console.log(this.currentStacUrl);
-		    console.log(topLinks);
+		    console.log(stacLinks);
 		    if(index>0) {
-			load(topLinks[index-1].value);
+			load(stacLinks[index-1].value);
 		    }
 		});
 		this.jq('stac_output').find('.imdv-stac-link').button().click(function() {
@@ -1286,7 +1274,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 	    };
 	    load = (url) =>{
-		console.log('stac url:'+url);
 		if(!Utils.stringDefined(url)) return;
 		this.currentStacUrl = url
 		this.jq('stac_url').val(url);
@@ -1295,7 +1282,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		$.getJSON(url, data=>{
 		    if(!seenStacUrls[url]) {
 			seenStacUrls[url]=true;
-			topLinks.push({value:url,label:data.title??url});
+			stacLinks.push({value:url,label:data.title??url});
 			makeTop(url);
 		    }
 		    showStac(data,url);
@@ -1303,136 +1290,170 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.jq('stac_output').html('Load failed. URL: ' + url);
 		});
 	    }
-
-	    load(catalogUrl);
 	},
-	initDatacubeSelect:function(dialog) {
-	    //TODO: handle multiple servers
-	    let dataCubeServers=  MapUtils.getMapProperty('datacubeservers','').split(',');
-	    if(!this.datacubeDatasets) {
-		let loadedCnt =0;
-		this.datacubeDatasets = [];
-		dataCubeServers.forEach(server=>{
-		    let url = server+'/datasets?details=1';
-		    $.getJSON(url, data=>{
-			loadedCnt++;
-			if(data.datasets) {
-			    data.datasets.forEach(dataset=>{
-				this.datacubeDatasets.push({server:server,
-							    dataset:dataset});
-			    });
-			    if(loadedCnt==dataCubeServers.length)
-				this.initDatacubeSelect(dialog);
-			}
-		    }).fail(err=>{
-			loadedCnt++;
-			if(loadedCnt==dataCubeServers.length)
-			    this.initDatacubeSelect(dialog);
-			console.error('Failed loading datacube datasets:' + err);
-		    });
-		});
-		return;
-	    }
-	    let html = HU.formTable();
-	    let selects = [];
-	    let variableMap = {}
-	    let idToMaps = {}	    
-	    let selectStyle='max-width:300px;overflow-x:hidden;'
-	    let lastServer;
-	    this.datacubeDatasets.forEach((serverInfo,idx)=>{
-		if(lastServer!=serverInfo.server) {
-		    lastServer = serverInfo.server;
-		    html+=HU.tr(HU.td(['colspan','2','class','ramadda-form-header'],serverInfo.server));
-		}
-		let dataset = serverInfo.dataset;
-		let variables  = {};
-		variableMap[''+idx] = variables;
-		//		console.log(key,dataset);
-		if(!dataset.variables) return;
-		let items = [{label:'Select Variable',value:''}];
-		dataset.variables.forEach(v=>{
-		    variables[v.id] =v;
-		    items.push({label:v.title,value:v.id});
-		});
-		let selectId = HU.getUniqueId('select_');
-		selects.push(selectId);	
-		html+=HU.formEntry(dataset.title+':',
-				   HU.select("",['style',selectStyle,'id',selectId,'dataset',idx],items));
-		if(dataset.placeGroups) {
-		    let maps=[{value:'',label:'Select'}];
-		    dataset.placeGroups.forEach((group,idx)=>{
-			let url = serverInfo.server+'/places/' + group.id
-			let uid  = Utils.getUniqueId('map');
-			idToMaps[uid] = {label:group.title,value:group.id,url:url};
-			maps.push({label:group.title,value:uid});
-		    });
-		    if(maps.length>1) {
-			let selectId = HU.getUniqueId('mapselect_');
-			selects.push(selectId);	
-			html+=HU.formEntry("Maps:",
-					   HU.select("",['ismap','true','style',selectStyle,'id',selectId],maps));
-		    }
-		}
-	    });
-	    html+='</table>';
-	    html = HU.div(['style','auto;max-height:400px;overflow-y:auto;'], html);
-	    html+= HU.buttons([
-		HU.div([CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
-		HU.div([CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
+	initDatacube:function(dialog) {
+	    let datacube= HU.div(['id',this.domId('datacube_top')]) +
+		HU.div(['id',this.domId('datacube_output')]);
+	    this.jq('datacube_contents').html(datacube);
 
-	    let datacubeDialog=this.jq('datacubedialog');
-	    datacubeDialog.html(html);
-	    datacubeDialog.find('.ramadda-button-ok-datacube').button().click(()=>{
-		let variable;
-		let mapInfo
-		selects.every(sid=>{
-		    let select=jqid(sid);
-		    let id = select.val();
-		    if(Utils.stringDefined(id)) {
-			if(select.attr('ismap')) {
-			    mapInfo  = idToMaps[id];
-			} else {
-			    variable=variableMap[select.attr('dataset')][id];
-			}
-			return false;
-		    }
-		    return true;
-		});
-		dialog.hide();
-		if(mapInfo) {
-		    let glyphType = this.getGlyphType(GLYPH_MAP);
-		    let attrs = {
-			type:GLYPH_MAP,
-			entryType:'geo_geojson',
-			icon:'/repository/icons/mapfile.png',
-			name:mapInfo.label,
-			resourceUrl:mapInfo.url,
-		    }
-		    let mapGlyph = this.handleNewFeature(null,glyphType.getStyle(),attrs);
-		    mapGlyph.checkMapLayer();
-		    return
-		}		    
-		if(variable) {
-		    let url = variable.tileUrl;
-		    url = url.replace('http:','https:');
-		    url=HU.url(url,['crs','EPSG:3857'])+'&cbar={colorbar}&vmin={vmin}&vmax={vmax}&time={time}';
-		    delete variable.htmlRepr;
-		    let mapOptions = {name:variable.title,
-				      variable:variable};
-		    this.clearCommands();
-		    mapOptions.icon = ramaddaBaseUrl+'/icons/xcube.png';
-		    mapOptions.type=GLYPH_MAPSERVER;
-		    let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, mapOptions, null,{});
-		    mapGlyph.setMapServerUrl(url,'','','');
-		    mapGlyph.checkMapServer();
-		    this.addGlyph(mapGlyph);
-		    this.clearMessage2(1000);
-		}
-	    });
-	    datacubeDialog.find('.ramadda-button-cancel-datacube').button().click(()=>{
-		dialog.hide();
+	    let load;
+	    let datacubeLinks = [{value:'',label:'Select'}];
+	    MapUtils.getMapProperty('datacubeservers','').split(',').forEach(c=>{
+		datacubeLinks.push(c);
 	    });
 
+	    let makeTop=(current)=>{ 
+		let input = this.jq('datacube_input').val()??'';
+		let top = HU.table(HU.tr([],HU.td(HU.span(['id',this.domId('datacube_go')],'Load:') + HU.space(1))+
+					 HU.td(HU.input('',input,['id',this.domId('datacube_input'),'style','width:500px;','xsize','60']))) +
+				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))) +
+				   HU.tr([],HU.td(HU.div(['id',this.domId('datacube_back_div')]))+HU.td(HU.select("",['style','max-width:500px;overflow:none;','id',this.domId('datacube_url')],datacubeLinks,current,100))) +
+				   HU.tr([],HU.td(HU.div(['style','height:5px;'],''))));
+
+		top = HU.div(['style','border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;'], top);
+		this.jq('datacube_top').html(top);
+		this.jq('datacube_url').change(()=>{
+		    let url = this.jq('datacube_url').val();
+		    if(Utils.stringDefined(url)) {
+			load(url);
+		    }
+		});
+		this.jq('datacube_input').keypress((event)=>{
+                    if (event.which == 13) {
+			let url = this.jq('datacube_input').val();
+			if(!Utils.stringDefined(url)) {
+			    return;
+			}
+			if(!datacubeLinks.includes(url)) {
+			    datacubeLinks.push(url);
+			    makeTop(url);
+			}
+			load(url);
+		    }
+		});
+		this.jq('datacube_go').button().click(()=>{
+		    let url = this.jq('datacube_input').val();
+		    if(!Utils.stringDefined(url)) {
+			url = this.jq('datacube_url').val();
+		    }
+		    if(!Utils.stringDefined(url)) {
+			return;
+		    }
+		    load(url);
+		});
+	    };
+	    makeTop();
+	    let showDatacube=(data,baseUrl)=>{
+		let html='';
+		html += HU.formTable();
+		let selects = [];
+		let variableMap = {}
+		let idToMaps = {}	    
+		let selectStyle='max-width:300px;overflow-x:hidden;'
+		data.datasets.forEach((dataset,idx)=>{
+		    let variables  = {};
+		    variableMap[''+idx] = variables;
+		    if(!dataset.variables) return;
+		    let items = [{label:'Select Variable',value:''}];
+		    dataset.variables.forEach(v=>{
+			variables[v.id] =v;
+			items.push({label:v.title,value:v.id});
+		    });
+		    let selectId = HU.getUniqueId('select_');
+		    selects.push(selectId);	
+		    html+=HU.formEntry(dataset.title+':',
+				       HU.select("",['style',selectStyle,'id',selectId,'dataset',idx],items));
+		    if(dataset.placeGroups) {
+			let maps=[{value:'',label:'Select'}];
+			dataset.placeGroups.forEach((group,idx)=>{
+			    let url = baseUrl+'/places/' + group.id
+			    let uid  = Utils.getUniqueId('map');
+			    idToMaps[uid] = {label:group.title,value:group.id,url:url};
+			    maps.push({label:group.title,value:uid});
+			});
+			if(maps.length>1) {
+			    let selectId = HU.getUniqueId('mapselect_');
+			    selects.push(selectId);	
+			    html+=HU.formEntry("Maps:",
+					       HU.select("",['ismap','true','style',selectStyle,'id',selectId],maps));
+			}
+		    }
+		});
+		html+='</table>';
+		html = HU.div(['style','auto;max-height:400px;overflow-y:auto;'], html);
+		html+= HU.buttons([
+		    HU.div([CLASS,'ramadda-button-ok-datacube display-button'], 'OK'),
+		    HU.div([CLASS,'ramadda-button-cancel-datacube display-button'], 'Cancel')]);
+		
+		let datacubeDialog=this.jq('datacube_output');
+		datacubeDialog.html(html);
+		datacubeDialog.find('.ramadda-button-ok-datacube').button().click(()=>{
+		    let variable;
+		    let mapInfo
+		    selects.every(sid=>{
+			let select=jqid(sid);
+			let id = select.val();
+			if(Utils.stringDefined(id)) {
+			    if(select.attr('ismap')) {
+				mapInfo  = idToMaps[id];
+			    } else {
+				variable=variableMap[select.attr('dataset')][id];
+			    }
+			    return false;
+			}
+			return true;
+		    });
+		    dialog.hide();
+		    if(mapInfo) {
+			let glyphType = this.getGlyphType(GLYPH_MAP);
+			let attrs = {
+			    type:GLYPH_MAP,
+			    entryType:'geo_geojson',
+			    icon:'/repository/icons/mapfile.png',
+			    name:mapInfo.label,
+			    resourceUrl:mapInfo.url,
+			}
+			let mapGlyph = this.handleNewFeature(null,glyphType.getStyle(),attrs);
+			mapGlyph.checkMapLayer();
+			return
+		    }		    
+		    if(variable) {
+			let url = variable.tileUrl;
+			url = url.replace('http:','https:');
+			url=HU.url(url,['crs','EPSG:3857'])+'&cbar={colorbar}&vmin={vmin}&vmax={vmax}&time={time}';
+			delete variable.htmlRepr;
+			let mapOptions = {name:variable.title,
+					  variable:variable};
+			this.clearCommands();
+			mapOptions.icon = ramaddaBaseUrl+'/icons/xcube.png';
+			mapOptions.type=GLYPH_MAPSERVER;
+			let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, mapOptions, null,{});
+			mapGlyph.setMapServerUrl(url,'','','');
+			mapGlyph.checkMapServer();
+			this.addGlyph(mapGlyph);
+			this.clearMessage2(1000);
+		    }
+		});
+		datacubeDialog.find('.ramadda-button-cancel-datacube').button().click(()=>{
+		    dialog.hide();
+		});
+	    };
+
+	    load = (url) => {
+		if(!Utils.stringDefined(url)) return;
+		let baseUrl = url
+		//https://api.earthsystemdatalab.net/api/datasets?details=1
+		if(url.indexOf('/api/datasets')<0) {
+		    url = url +'/datasets?details=1';
+		}
+		this.jq('datacube_output').html('Loading...');
+		console.log(url);
+		$.getJSON(url, data=>{
+		    showDatacube(data,baseUrl);
+		}).fail(err=>{
+		    console.error('Failed loading datacube datasets:' + err);
+		});
+	    };
 	},
 
 	createMapMarker:function(glyphType, glyphAttrs,style,points,andAdd) {
@@ -2237,7 +2258,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let html = buttons;
 	    let accord;
 	    if(mapGlyph) {
-		accord= HU.makeAccordionHtml(content);
+		accord= HU.makeTabs(content);
 		html+=accord.contents;
 	    } else {
 		html+=HU.center(HU.b('Default Style')) + content[0].contents;
@@ -2247,7 +2268,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
 	    if(accord) 
-		HU.makeAccordion('#'+accord.id);
+		accord.init();
 	    if(mapGlyph)
 		mapGlyph.initSideHelp(dialog);
 	    this.initSideHelp(dialog);
@@ -2789,7 +2810,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 });
 	    
 
-	    let accord = HU.makeAccordionHtml(accords);
+//	    let accord = HU.makeAccordionHtml(accords);
+	    let accord = HU.makeTabs(accords);	    
 	    let html = buttons + accord.contents;
 	    html  = HU.div(['style','min-width:700px;min-height:300px;margin:10px;'],html);
 	    let anchor = this.jq(ID_MENU_FILE);
@@ -2797,7 +2819,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					my:'left top',at:'left bottom',draggable:true,anchor:anchor});
 
 	    this.initSideHelp(dialog);
-	    HU.makeAccordion('#'+accord.id);
+	    accord.init();
+//	    HU.makeAccordion('#'+accord.id);
 	    let close=()=>{
 		dialog.hide();
 		dialog.remove();
@@ -5047,7 +5070,7 @@ MapGlyph.prototype = {
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',6,'cols', 40]),
 			 HU.space(2),ex]);
-	content.push({header:'Feature Flags',contents:html});
+	content.push({header:'Flags',contents:html});
     },
     addElevations:async function(update,done) {
 	let pts;
@@ -6944,7 +6967,7 @@ MapGlyph.prototype = {
 	}
 	rulesTable += '</table>';
 	let table = HU.b('Style Rules')+HU.div(['class','imdv-properties-section'], rulesTable);
-	content.push({header:'Map Style Rules', contents:colorBy+table});
+	content.push({header:'Style Rules', contents:colorBy+table});
 
 
 	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
@@ -6954,8 +6977,7 @@ MapGlyph.prototype = {
 
 	let propsHelp =this.display.makeSideHelp(helpLines,'mappoints_template',{prefix:'${',suffix:'}'});
 	mapPoints = HU.hbox([mapPoints,HU.space(2),'Add property:' + propsHelp]);
-	content.push({header:'Map Labels',
-		      contents:mapPointsRange+  HU.b('Label Template:')+'<br>' +mapPoints});
+
 
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.leftRightTable('',
@@ -6977,7 +6999,11 @@ MapGlyph.prototype = {
 	}
 	styleGroupsUI += HU.closeTag('table');
 	styleGroupsUI = HU.div(['style',HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
-	content.push({header:'Map Style Groups',contents:styleGroupsUI});
+
+	content.push({header:'Style Groups',contents:styleGroupsUI});
+	content.push({header:'Labels',
+		      contents:mapPointsRange+  HU.b('Label Template:')+'<br>' +mapPoints});
+
 	content.push({header:'Sample Values',contents:ex});
     },
     getStyleGroups: function() {
