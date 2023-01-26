@@ -3127,8 +3127,8 @@ a.btn-primary:link, a.btn-primary  {
 
 .boxquote {
     font-style:italic;
-    margin-top:1em;
-    margin-bottom:1em;    
+    margin-top:0.5em;
+    margin-bottom:0.5em;    
     padding:4pt;
     border  :var(--basic-border);
     background-color:#EFFFFF;
