@@ -296,7 +296,7 @@ public class PageHandler extends RepositoryManager {
 
 
     /**  */
-    String searchImg = HU.faIcon("fa-search", "title", "Search", "class",
+    String searchImg = HU.faIcon("ramadda-header-icon fas fa-search", "title", "Search", "class",
                                  "ramadda-user-menu-image", "id",
                                  "searchlink");
 
@@ -311,7 +311,7 @@ public class PageHandler extends RepositoryManager {
      */
     public PageHandler(Repository repository) {
         super(repository);
-        popupImage = HU.faIcon("fa-cog", "title",
+        popupImage = HU.faIcon("ramadda-header-icon fas fa-cog", "title",
                                "Login, user settings, help", "class",
                                "ramadda-user-menu-image");
         popupImage = HtmlUtils.div(popupImage,
