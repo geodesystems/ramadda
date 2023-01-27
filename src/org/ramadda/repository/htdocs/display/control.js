@@ -724,7 +724,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
             return true;
 	},
 	updateUI: function() {
-	    let label = this.getPropertyCsvLabel("Download Data");
+	    let label = this.getCsvLabel("Download Data");
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
 	    let iconSize = this.getIconSize();
