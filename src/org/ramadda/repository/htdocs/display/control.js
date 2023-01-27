@@ -360,32 +360,34 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    } else {
 		selectedFields = null;
 	    }
-            let fields;
-	    if(this.getProperty('displayFields'))
-		fields =this.getFieldsByIds(null, this.getProperty("displayFields", "", true));
-	    else
-		fields = this.getData().getRecordFields();
-	    if(this.getNumericOnly()) {
-		fields  = fields.filter(f=>{
-		    return f.isFieldNumeric();
-		});
-	    }
-	    if(this.getReverseFields()) {
-		let tmp = [];
-		fields.forEach(f=>{
-		    tmp.unshift(f);
-		});
-		fields=tmp;
-	    }
-	    if(!this.getIncludeLatLon()) {
-		fields = fields.filter(f=>{
-		    return !f.isFieldGeo();
-		});
-	    }
-	    if(this.getSortFields(true)) {
-		fields = fields.sort((f1,f2)=>{
-		    return f1.getDescription().localeCompare(f2.getDescription());
-		});
+            let fields = this.fields;
+	    if(!fields) {
+		if(this.getProperty('displayFields'))
+		    fields =this.getFieldsByIds(null, this.getProperty("displayFields", "", true));
+		else
+		    fields = this.getData().getRecordFields();
+		if(this.getNumericOnly()) {
+		    fields  = fields.filter(f=>{
+			return f.isFieldNumeric();
+		    });
+		}
+	    	if(this.getReverseFields()) {
+		    let tmp = [];
+		    fields.forEach(f=>{
+			tmp.unshift(f);
+		    });
+		    fields=tmp;
+		}
+		if(!this.getIncludeLatLon()) {
+		    fields = fields.filter(f=>{
+			return !f.isFieldGeo();
+		    });
+		}
+		if(this.getSortFields(true)) {
+		    fields = fields.sort((f1,f2)=>{
+			return f1.getDescription().localeCompare(f2.getDescription());
+		    });
+		}
 	    }
 	    this.fields	     = fields;
 	    this.fieldsMap={};
@@ -434,7 +436,49 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    if(selectable) {
 		let _this = this;
 		let fieldBoxes = this.find(".display-fields-field");
+		fieldBoxes.draggable({
+		    stop: function() {
+		    },
+		    containment:this.domId(ID_DISPLAY_CONTENTS),
+		    revert: true
+		});
+		fieldBoxes.droppable( {
+		    hoverClass: 'display-fields-droppable',
+		    accept:'.display-fields-field',
+		    drop: function(event,ui) {
+			let draggedId = ui.draggable.attr('field-id');
+			let targetId = $(this).attr('field-id');			
+			let draggedField = _this.fields.find(f=>{
+			    if(f.getId()==draggedId) return f;
+			    return null;
+			});
+			let targetField = _this.fields.find(f=>{
+			    if(f.getId()==targetId) return f;
+			    return null;
+			});			
+			if(!draggedField) {
+			    console.log('could not find dragged field:' + draggedId);
+			    return
+			}
+			if(!targetField) {
+			    console.log('could not find target field:' + targetId);
+			    return
+			}
+			
+			Utils.moveBefore(_this.fields,targetField,draggedField);
+			_this.printFields();
+			_this.updateUI();
+			_this.handleFieldSelect();
+		    }
+		});
+
+
 		fieldBoxes.click(function(event) {
+		    if(event.metaKey) {
+			_this.printFields();
+			return
+		    }
+
 		    let shift = event.shiftKey ;
 		    let selected  = $(this).attr("field-selected")=="true";
 		    selected = !selected;
@@ -454,30 +498,52 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			}
 
 		    }
-		    let selectedFields = [];
-		    fieldBoxes.each(function(){
-			let selected  = $(this).attr("field-selected")=="true";
-			if(selected) {
-			    let id = $(this).attr("field-id");
-			    let field = _this.fieldsMap[id];
-			    if(field) selectedFields.push(field);
-			}
-		    });
-		    _this.selectedMap = {};
-		    selectedFields.forEach(f=>{
-			_this.selectedMap[f.getId()] = true;
-		    });
-		    
-		    setTimeout(()=>{
-			if(_this.getFilterSelect()) {
-			    _this.propagateEvent(DisplayEvent.filterFieldsSelected, selectedFields);
-			} else {
-			    _this.propagateEvent(DisplayEvent.fieldsSelected, selectedFields);
-			}
-		    },20);
+		    _this.handleFieldSelect();
 		});
 	    }
-	}});
+	},
+	printFields:function() {
+	    let out=this.fields.reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'fields=');
+	    out+='\n\n';
+	    out+=this.getActiveFields().reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'displayFields=');
+	    Utils.copyToClipboard(out);
+	    console.log(out);
+	},
+	getActiveFields:function() {
+	    let _this=this;
+	    let fieldBoxes = this.find(".display-fields-field");
+	    let isSelected = {};
+	    let selectedFields = [];
+	    fieldBoxes.each(function(){
+		let selected  = $(this).attr("field-selected")=="true";
+		if(selected) {
+		    let id = $(this).attr("field-id");
+		    let field = _this.fieldsMap[id];
+		    if(field) isSelected[field.getId()]=true;
+		}
+	    });
+	    this.fields.forEach(f=>{
+		if(isSelected[f.getId()]) selectedFields.push(f);
+	    });
+
+	    _this.selectedMap = {};
+	    selectedFields.forEach(f=>{
+		_this.selectedMap[f.getId()] = true;
+	    });
+	    return selectedFields;
+	},
+	handleFieldSelect:function() {
+	    let _this = this;
+	    let selectedFields  = this.getActiveFields();
+	    setTimeout(()=>{
+		if(_this.getFilterSelect()) {
+		    _this.propagateEvent(DisplayEvent.filterFieldsSelected, selectedFields);
+		} else {
+		    _this.propagateEvent(DisplayEvent.fieldsSelected, selectedFields);
+		}
+	    },20);
+	}	
+});
 }
 
 
