@@ -13,6 +13,7 @@ foreach item {
     {"Google Earth Engine"  "https://earthengine-stac.storage.googleapis.com/catalog/catalog.json"}
     {"Google Earth Engine for Open EO" "https://earthengine-stac.storage.googleapis.com/catalog/catalog.json"}
     {"NASA ISERV Science Operation Center"  "https://nasa-iserv.s3-us-west-2.amazonaws.com/catalog/catalog.json"} 
+    {"Earth Search" https://earth-search.aws.element84.com/v0}
     {"NASA CMR" https://cmr.earthdata.nasa.gov/stac}
     {"ESA Open Science Catalog"  "https://eoepca.github.io/open-science-catalog-metadata/catalog.json"} 
     {"Digital Earth Africa"  "https://explorer.digitalearth.africa/stac/"}

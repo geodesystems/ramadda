@@ -22,6 +22,11 @@
 "rel": "child", "type": "application/json"
 }
 ,
+{"title":"Earth Search",
+"href": "https://earth-search.aws.element84.com/v0",
+"rel": "child", "type": "application/json"
+}
+,
 {"title":"NASA CMR",
 "href": "https://cmr.earthdata.nasa.gov/stac",
 "rel": "child", "type": "application/json"
