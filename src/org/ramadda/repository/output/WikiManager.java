@@ -3098,12 +3098,14 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             String        template       = null;
             int           columns        = -1;
             int           width          = -1;	    
-	    String style =null;
             List<String>  headers        = null;
             String        headerProp     = null;
             String        footerProp     = null;
             String        headerTemplate = null;
             List<Entry>   entries        = null;
+	    String style = null;
+	    String layout = getProperty(wikiUtil, props, "_layout","table");
+	    String gridBoxWidth= getProperty(wikiUtil, props, "_gridboxwidth","250px");
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
@@ -3125,6 +3127,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                     footerProp = value;
                 } else if (key.equals("_columns")) {
                     columns = Integer.parseInt(value);
+                } else if (key.equals("_layout")) {
+                    layout = value;
+                } else if (key.equals("_gridboxwidth")) {
+                    gridBoxWidth = value;		    
                 } else if (key.equals("_width")) {
                     width = Integer.parseInt(value);
                 } else if (key.equals("_style")) {
@@ -3151,6 +3157,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		    }
                 }
             }
+
+	    boolean grid = layout.equals("grid");
 
             if (headerProp == null) {
                 headerProp = getProperty(wikiUtil, props, "_header",
@@ -3181,7 +3189,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (headerProp != null) {
                 buff.append(headerProp);
             }
-            if (columns > 0) {
+	    if(grid) {
+		columns=0;
+                buff.append("\n<div class=ramadda-grid>\n");
+	    } else if (columns > 0) {
                 buff.append("\n<table width=100%><tr valign=top>\n");
             }
             int    colCnt   = 0;
@@ -3229,7 +3240,9 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 }
 		if(debug) 
 		    System.err.println("p5:" + _props.get("chartHeight"));
-                if (columns > 0) {
+		if(grid) {
+		    buff.append("\n<div class=ramadda-grid-component style='width:" + HU.makeDim(gridBoxWidth,null)+";display:inline-block;'>\n");
+		} else if (columns > 0) {
                     colCnt++;
                     if (colCnt > columns) {
                         buff.append("</tr><tr valign=top>");
@@ -3284,13 +3297,17 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 		if(style!=null) 
                     buff.append("\n</div>");
-                if (columns > 0) {
+		if(grid) {
+		    buff.append("\n</div>\n");
+		} else if (columns > 0) {
                     buff.append("</td>");
                 } else if(width>0) {
                     buff.append("</div>");
 		}
             }
-            if (columns > 0) {
+	    if(grid) {
+                buff.append("</div>\n");
+	    } else  if (columns > 0) {
                 buff.append("</tr></table>\n");
             }
 
