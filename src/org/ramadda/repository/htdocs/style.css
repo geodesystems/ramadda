@@ -1092,8 +1092,8 @@ a.ramadda-menubar-button:hover {
     vertical-align:top;
     display:flex;
     flex-wrap: wrap;
+    justify-content:center;
 }
-
  
 .ramadda-grid-1 {
     grid-template-columns: 1fr;
@@ -1124,6 +1124,13 @@ a.ramadda-menubar-button:hover {
     padding:10px;
     padding-bottom:6px;
     padding-top:6px;
+    text-align:left;
+}
+
+.ramadda-grid-component {
+    display:inline-block;
+/*    flex-grow:1;*/
+    vertical-align:top;
     text-align:left;
 }
 
