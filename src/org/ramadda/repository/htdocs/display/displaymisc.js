@@ -1004,6 +1004,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'linkField'},
 	{p:'categoryField'},
 	{p:'colorRowBy'},
+	{p:'colorFullRow',d:true,tt:'If doing color row by do we color the full row or just the start'},	
+	{p:'colorHeaderLabel',tt:'Label for the color header'},
+	{p:'colorHeaderTemplate',tt:'Template to show in row color header'},
+	{p:'colorHeaderStyle',tt:'CSS for color header. defaults to rotated text'},	
         {p:'showBar',ex:'true',tt:'Default show bar'},
         {p:'&lt;field&gt;.nowrap',ex:'true',tt:"Don't wrap the column"},
         {p:'&lt;field&gt;.width',ex:'30%',tt:"Column width"},
@@ -1041,7 +1045,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(!aggByField) {
 		let attrs=[...tdAttrs];
 		attrs.push('field-id',field.getId(),'record-id',record.getId(),'record-index',record.rowIndex);
-		
+	
 		return this.makeColumn(record,field,attrs,v);
 	    }
 	    if(field.getId() != aggByField.getId()) {
@@ -1115,6 +1119,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 	    
 	    let colorRowBy;
+	    let colorFullRow = this.getColorFullRow();
+	    let colorHeaderTemplate = this.getColorHeaderTemplate();
+	    let colorHeaderStyle = this.getColorHeaderStyle('font-weight:bold;margin-top:10px;margin-bottom:10px;writing-mode: vertical-lr; -ms-writing-mode: tb-rl; transform: rotate(180deg);');
+
 	    if(this.getProperty('colorRowBy')) {
 		let c =this.getProperty('colorRowBy');
 		let tmp =   this.getFieldById(null, c);
@@ -1181,8 +1189,18 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 	    let header1="<tr  valign=top>\n"
 	    let header2="<tr  valign=top>\n"	    
-	    if(includeIdx) header1+=HU.th(HU.div([],""));
-	    if(includeIdx) header2+=HU.th(HU.div([],""));	    
+	    //Add the place holder for the colored rows
+	    if(colorRowBy && !colorFullRow) {
+		header1+=HU.th(HU.div(['style','width:10px;'],this.getColorHeaderLabel()));
+		header2+=HU.th(HU.div(['style','width:10px;'],this.getColorHeaderLabel()));
+	    }
+
+
+	    if(includeIdx) {
+		header1+=HU.th(HU.div([],""));
+		header2+=HU.th(HU.div([],""));
+	    }
+
 	    let headerStyle = this.getTableHeaderStyle("")+"text-align:center;";
 	    let fieldMap = {}
 	    let sortFields = this.getProperty("sortFields");
@@ -1278,6 +1296,17 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		let columns = [];
 
 //		html+="<td>#" + recordIdx": </td>";		
+		//Add the place holder for the colored rows
+		if(colorRowBy && !colorFullRow) {
+		    let color =  colorRowBy.getColorFromRecord(record);
+		    let label = '';
+		    if(colorHeaderTemplate) {
+			label = this.getRecordHtml(record, null, colorHeaderTemplate);
+			label = HU.div(['style',colorHeaderStyle], label);
+		    }
+		    columns.push(HU.td(['class','display-td display-htmltable-td','style','background:' + color+';width:10px;'],label));
+		}
+
 		if(includeIdx) columns.push(HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1))));
 		if(includeDate) {
 		    columns.push(HU.td([],this.formatDate(r.getDate())));
@@ -1418,10 +1447,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}		
 
 		let rowStyle = '';
-		if(colorRowBy) {
+		if(colorRowBy && colorFullRow) {
 		    let color =  colorRowBy.getColorFromRecord(record);
-		    if(color)
-			rowStyle+=HU.css('background',color);
+		    if(color)rowStyle+=HU.css('background',color);
 		}
 		if(record.isAggregate)
 		    html+=HU.openTag('tr',['style',rowStyle,'aggregateRow',aggId,'style',HU.css("font-weight","550"), 'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
@@ -1533,6 +1561,12 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 }
 
 function RamaddaPolltableDisplay(displayManager, id, properties) {
+    const ID_VOTE_STATS = 'votesstats';
+    const ID_SHOW_VOTES = 'showvotes';
+    const ID_TOGGLE_CELLS = 'togglecells';	    	    
+
+
+
     const SUPER =  new RamaddaHtmltableDisplay(displayManager, id, properties,'polltable');
     let myProps = [
 	{label:'Poll Table'},
@@ -1553,11 +1587,15 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		return SUPER.makeColumn.call(this,record,field,attrs,v);
 	    }
 	    v = HU.div(['style',HU.css('overflow-y','auto','max-height',this.cellsToggled?TOGGLED_CSS:'500px'),'class','display-polltable-field','record-id',record.getId()],v);
-	    return HU.td([],v);
+	    return HU.td(attrs,v);
 	},
-	filterData: function(records, fields, args) {
-	    records = SUPER.filterData.call(this,records,fields,args);
-	    if(!records) return null;
+	measureCont:function(yes,no) {
+	    if(no>0 && yes>0 && yes+no>7 ) {
+		return 1/(yes/no);
+	    }
+	    return 0;
+	},
+	sortRecords: function(records, sortFields) {
 	    if(this.votingData) {
 		let recordToVotes = {};
 		Object.keys(this.votingData).forEach(key=>{
@@ -1567,31 +1605,36 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    }
 		    recordToVotes[recordIndex].push(this.votingData[key]);
 		});
-		let upvotes,downvotes; 
+		let upvotes,downvotes,controversial; 
 		records.forEach((record,idx) =>{
 		    if(!upvotes) {
 			record.getFields().forEach(f=>{
 			    if(f.getId()=='upvotes') upvotes = f;
 			    else if(f.getId()=='downvotes') downvotes = f;
+			    else if(f.getId()=='controversial') controversial = f;			    
 			});
 		    }
 		    if(recordToVotes[idx]) {
 			let yes = 0;
 			let no = 0;
+			let maxCont=0;
 			recordToVotes[idx].forEach(vote=>{
 			    yes+=vote.yes;
 			    no+=vote.no;			    
+			    let cont = this.measureCont(vote.yes,vote.no);
+			    maxCont = Math.max(maxCont,cont);
 			});
+
 			if(upvotes)
 			    record.setValue(upvotes.getIndex(),yes);
 			if(downvotes)
-			    record.setValue(downvotes.getIndex(),no);			
+			    record.setValue(downvotes.getIndex(),no);
+			record.setValue(controversial.getIndex(),maxCont);						
 		    }
 		});
 
 	    }
-
-	    return records;
+	    return SUPER.sortRecords.call(this,records,sortFields);
 	},
 	updateUI: function() {
 	    if(!this.votingData) {
@@ -1601,18 +1644,15 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    this.updateUI();
 		});
 	    }
-
-
 	    let _this = this;
-	    const ID_SHOW_VOTES = 'showvotes';
-	    const ID_TOGGLE_CELLS = 'togglecells';	    	    
             SUPER.updateUI.call(this);
 	    if(!Utils.isDefined(this.cellsToggled)) {
 		this.cellsToggled = false;
 	    }
-
-	    let buttons = HU.buttons([HU.span(['id',this.domId(ID_TOGGLE_CELLS)],this.cellsToggled?'Expand Cells':'Toggle Cells'),
-				      HU.span(['id',this.domId(ID_SHOW_VOTES)],'Show Votes')]);				      
+	    let buttons = HU.buttons([HU.div(['style','min-width:130px;','id',this.domId(ID_TOGGLE_CELLS)],this.cellsToggled?'Expand Cells':'Toggle Cells'),
+				      HU.div(['style','min-width:130px;','id',this.domId(ID_SHOW_VOTES)],'Show Votes'),
+				      HU.span(['id',this.domId(ID_VOTE_STATS),'style','display:inline-block;min-width:300px'],''),				      
+				     ]);				      
 	    this.jq(ID_HEADER0).html(HU.center(buttons));
 	    let pollFields = this.getContents().find('.display-polltable-field');
 	    this.jq(ID_TOGGLE_CELLS).button().click(()=>{
@@ -1639,36 +1679,18 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    });
 
 	    this.jq(ID_SHOW_VOTES).button().click(()=>{
-		let blocks = this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-block');
-
-		if(_this.showingVotes) {
-		    _this.showingVotes=false;
-		    this.jq(ID_SHOW_VOTES).html('Show Votes');
-		    _this.updateUI();
-		    return;
-		}
-		this.jq(ID_SHOW_VOTES).html('Clear');
-		_this.showingVotes=true;
-		let id = _this.getProperty("entryId", "");
-		let url = ramaddaBaseUrl + "/entry/vote?entryid=" + id;
-		$.getJSON(url, function(data) {
-		    blocks.each(function() {
-			let field =$(this).attr('field-id');
-			let record =$(this).attr('record-index');		
-			let key = record+'--'+field;
-			let voteObj = data[key];
-			let yes = '--', no = '--';
-			if(voteObj) {
-			    yes = voteObj.yes??yes;
-			    no = voteObj.no??no;				
-			}
-			$(this).html(yes+' ' + no);
-		    });
-		}).fail(function(data) {
-		    alert('An error occurred');
-		});
+		this.showingVotes=!this.showingVotes;
+		this.applyShowVotes();
 	    });
 	    let entry  =this.getProperty('entryId');
+	    this.applyShowVotes();
+	    this.addVotes();
+
+	},
+	addVotes:function() {
+	    let _this = this;
+            this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-block').remove();
+            this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-padding').remove();	    
             this.jq(ID_DISPLAY_CONTENTS).find('td').each(function() {
 		if(!$(this).attr('field-id'))return;
 		let field =$(this).attr('field-id');
@@ -1678,37 +1700,145 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		let c = $(this).html().trim();
 		if(c=='') return
 		let record =$(this).attr('record-index');		
-		$(this).append('zzz');
-		$(this).append(HU.div(['style','height:2em']));
+		$(this).append(HU.div(['style','height:2em','class','display-polltable-padding']));
 		let contents = HU.leftRightTable(HU.div(['field-id',field,'record-index',record,'vote','yes','class','vote ramadda-clickable','title','Vote yes'],HU.getIconImage('fa-regular fa-thumbs-up')),
 						 HU.div(['field-id',field,'record-index',record,'vote','no','class','vote ramadda-clickable','title','Vote no'],HU.getIconImage('fa-regular fa-thumbs-down')));
-		$(this).append(HU.div(['field-id',field,'record-index',record,'class','display-polltable-block','style','flex-:1;background:green;border-top:1px solid #888;xxposition:absolute;right:0px;left:10px;bottom:0px;'],contents));
+		$(this).append(HU.div(['field-id',field,'record-index',record,'class','display-polltable-block','style','border-top:1px solid #ccc;position:absolute;right:0px;left:10px;bottom:0px;'],contents));
 	    });
 
             this.jq(ID_DISPLAY_CONTENTS).find('.vote').click(function() {
 		let thumb= $(this);
 		let vote =$(this).attr('vote');
-		if(!Utils.isDefined(vote)) return;
+//		if(!Utils.isDefined(vote)) return;
 		let field =$(this).attr('field-id');
 		let record =$(this).attr('record-index');		
 		let id = _this.getProperty("entryId", "");
 		let url = ramaddaBaseUrl + "/entry/vote?entryid=" + id;
 		let key = record+'--'+field;
 		url = HU.url(url,['key',key,'vote',vote]);
-		console.log(url);
-		var jqxhr = $.getJSON(url, function(data) {
+		$.getJSON(url, function(data) {
 		    if(!data.ok) {
-			alert('An error occurred:' + data);
+			console.log('An error occurred:' + data);
 		    } 
-		    thumb.attr('vote',null);
-		    thumb.html('--');
+//		    thumb.attr('vote',null);
+//		    thumb.html('--');
 		}).fail(function(data) {
 		    alert('An error occurred');
 		});
 	    });
+	    
 
+	},
+	applyShowVotes:function () {
+	    let _this = this;
+	    let padding = this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-padding');
+	    if(!this.showingVotes) {
+		padding.css('height','2em');
+		this.jq(ID_SHOW_VOTES).html('Show Votes');
+		this.addVotes();
+		this.jq(ID_VOTE_STATS).html('');
+		return;
+	    }
+//	    this.jq(ID_VOTE_STATS).show();
+//	    padding.css('height','4em');
+	    this.jq(ID_SHOW_VOTES).html('Hide Votes');
+	    let id = this.getProperty("entryId", "");
+	    let url = ramaddaBaseUrl + "/entry/vote?entryid=" + id;
+	    $.getJSON(url, function(data) {
+		this.votingData = data;
+		let blocks = _this.jq(ID_DISPLAY_CONTENTS).find('.display-polltable-block');
+		let statsYes;
+		let statsNo;		
+		Object.keys(data).forEach(key=>{
+		    let d = data[key]
+		    if(Utils.isDefined(d.yes)) {
+			if(!statsYes)
+			    statsYes={min:d.yes,max:d.yes,total:0}
+			statsYes.min = Math.min(statsYes.min, d.yes);
+			statsYes.max = Math.max(statsYes.max, d.yes);			
+			statsYes.total+=d.yes;
+		    }
+		    if(Utils.isDefined(d.no)) {
+			if(!statsNo)
+			    statsNo={min:d.no,max:d.no,total:0}
+			statsNo.min = Math.min(statsNo.min, d.no);
+			statsNo.max = Math.max(statsNo.max, d.no);			
+			statsNo.total+=d.no;
+		    }		    
+		});
+		let stats = '';
+		if(statsYes) {
+		    stats +='Total yes votes: ' + statsYes.total;
+		    statsYes.range = statsYes.max-statsYes.min;
+		}
+		if(statsNo) {
+		    stats +=HU.space(2)+'Total no votes: ' + statsNo.total;
+		    statsNo.range = statsNo.max-statsNo.min;
+		}
+		_this.jq(ID_VOTE_STATS).html(stats)
+
+
+//		console.log(statsYes);		console.log(statsNo);		
+		let ct = Utils.getColorTable('plotly_reds',true);
+		let getContColor = (yes,no,cont) =>{
+		    let c;
+		    let p=-1;
+		    if(cont<1) {
+			p =(cont-0.5)/.5;
+		    } else {
+			p =(1.5-cont)/.5;
+		    }
+		    if(p>-1) {
+			let idx=Math.min(ct.length-1,Math.max(0,parseInt(p*ct.length)))
+//			console.log(yes,no,cont,p,idx,c);
+			c=ct[idx];
+		    }
+		    return c;
+		}
+		blocks.each(function() {
+		    let field =$(this).attr('field-id');
+		    let record =$(this).attr('record-index');		
+		    let key = record+'--'+field;
+		    let voteObj = data[key];
+		    let yes = 0, no = 0;
+		    if(voteObj) {
+			yes = voteObj.yes??yes;
+			no = voteObj.no??no;				
+		    } 
+		    let percentYes = 0;
+		    if(statsYes) {
+			if(statsYes.total>0)
+			    percentYes = parseInt(100*(yes/statsYes.total));
+			else
+			    percentYes = 100
+		    }
+		    if(statsNo) {
+			if(statsNo.total>0)
+			    percentNo = parseInt(100*(no/statsNo.total));
+			else
+			    percentNo = 100
+		    }		    
+		    let label = '<table cellpadding=0 cellspacing=0 border=0 width=100%>';
+		    let style = 'padding:0px !important;padding-right:4px !important;font-size:9pt;';
+		    let cont = _this.measureCont(yes,no);
+		    let c = getContColor(yes,no,cont);
+		    if(c) {
+			style+=HU.css('color',c);
+		    }
+//		    if(cont>=0.8) style+=HU.css('background','red');		    
+//		    if(yes>0 && no>0)console.log(yes,no,cont)
+		    label += HU.tr(HU.td(['width','5px','style',style,'align','right'], 'Yes:')+HU.td(['style',style], yes+' (' + percentYes+'%)'));
+		    label += HU.tr(HU.td(['width','5px','style',style,'align','right'], 'No:')+HU.td(['style',style], no+' (' + percentNo+'%)'));
+//		    label += HU.tr(HU.td(['width','5px','style',style,'align','right'], 'cont:')+HU.td(['style',style], cont));		    
+		    label+='</table>'
+		    $(this).html(label);
+		});
+	    }).fail(function(data) {
+		alert('An error occurred');
+	    });
 
 	}
+	
 
     });
 }
@@ -1877,8 +2007,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                         top: py + "%"
                     }, sleep, "linear");
                 }
-
-            }
+	    }
             let _this = this;
             if (!this.haveStepped) {
                 this.canvas.find(".display-tnse-mark").click(function(e) {
@@ -2460,7 +2589,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	{p:'useId ',ex:' true',tt:'Use field id instead of label'},
 	{p:'useIdTop',ex:'true',tt:'Use field id for top header'},
 	{p:'useIdSide ',ex:'true',tt:'Use field id for side header'},
-	{p:'labelStyle',ex:'',tt:'CSS style for labels'}
+	{p:'labelStyle',ex:'',tt:'CSS style for labels'},
+	{p:'sideHeadingStyle'}
 
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -2633,8 +2763,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 let label = useIdTop ? field.getId() : this.getFieldLabel(field);
                 if (short) label = "";
 		label = label.replace(/\/ +/g,"/").replace(/ +\//g,"/");
-		
-		label = HU.span([STYLE,labelStyle], label);
+		label = HU.div(['class','display-correlation-header',STYLE,labelStyle], label);
 
                 html += HU.td(["colfield", field.getId(), "align","center","width",width],
 			      HU.div([CLASS, "display-correlation-heading display-correlation-heading-top"], label));
@@ -2647,14 +2776,15 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             colorByMax = parseFloat(this.colorByMax);
 	    if(colors) colors =  this.addAlpha(colors,0.5);
 
+	    let sideHeadingStyle=this.getSideHeadingStyle('');
             for (let fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
                 let field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 let label = useIdSide ? field1.getId() : this.getFieldLabel(field1);
 		label.replace(/ /g, SPACE);
-		label = HU.span([STYLE,labelStyle], label);
+		label = HU.div(['class','display-correlation-header',STYLE,labelStyle], label);
                 html += HU.open(TR, ["valign","center"]);
-		html += HU.td(["rowfield",field1.getId(),CLASS, "display-correlation-heading"],  HU.div([CLASS, "display-correlation-heading-side"], label));
+		html += HU.td(["rowfield",field1.getId(),CLASS, "display-correlation-heading"],  HU.div(['style',sideHeadingStyle,CLASS, "display-correlation-heading-side"], label));
                 let rowName = this.getFieldLabel(field1);
                 for (let fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     let field2 = fields[fieldIdx2];
