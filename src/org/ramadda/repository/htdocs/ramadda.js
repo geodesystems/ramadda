@@ -646,9 +646,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	let data = new FormData();
 	data.append("filename",fileName);
-	//A hack for shapefiles
+	//A hack for shapefiles and geojson
 	if(file.type=='application/zip') 
 	    data.append("filetype",'geo_shapefile');
+	else if(file.type=='application/json') 
+	    data.append("filetype",'geo_geojson');	
 	else
 	    data.append("filetype",file.type);
 	data.append("group",entryId);

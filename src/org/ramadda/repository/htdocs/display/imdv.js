@@ -4381,9 +4381,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  },
 				  (file)=>{
 				      if(file.type.match('image.*')) return true;
-				      if(file.name.match('.*\.(geojson|gpx|zip|kml|kmz)')) return true;
+				      if(file.name.match('.*\.(json|geojson|gpx|zip|kml|kmz)')) return true;
 				      return false;
-
 				  }
 				 );
 
