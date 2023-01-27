@@ -3080,6 +3080,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let sortField = sortFields[i];
 			let v1 = row1[sortField.getIndex()];
 			let v2 = row2[sortField.getIndex()];
+//			console.log(v1,v2);
 			if(sortField.isNumeric() || sortField.isFieldDate()) {
 			    if(isNaN(v1) && isNaN(v2)) {
 				result= 0;
@@ -3102,6 +3103,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
+	    /*
+	    console.log("results " + sortFields);
+	    records.forEach(record=>{
+		let row1 = this.getDataValues(record);
+		let sortField = sortFields[0];
+		console.log(row1[1] +' '+ row1[sortField.getIndex()]);
+		});
+		*/
 
 
 	    if(this.getProperty("sortHighlight")) {
