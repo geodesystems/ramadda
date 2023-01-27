@@ -868,7 +868,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 
-
 	    if(glyphType.isImage() || glyphType.isEntry()||glyphType.isMultiEntry() || glyphType.isMap() || glyphType.isData()) {
 		let callback = (entryId,imageUrlOrEntryAttrs,resourceId) =>{
 		    let attrs = {};
@@ -901,7 +900,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			delete tmpStyle.mapOptions;
 			mapOptions.name = attrs.entryName;
 			$.extend(mapOptions,attrs);
-			console.dir(tmpStyle);			
 			let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
 			mapGlyph.checkMapLayer();
 			this.clearCommands();
@@ -1298,8 +1296,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			bbox:data.bbox,
 			resourceUrl:url
 		    }
-		    let mapGlyph = _this.handleNewFeature(null,{},attrs);
-		    mapGlyph.checkMapLayer();
+		    let mapGlyph = _this.handleNewFeature(null,{rotation:0,transform:''},attrs);
+		    mapGlyph.checkMapLayer(true);
 		});
 	    };
 	    load = (url) =>{
@@ -2710,7 +2708,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.loadJson(jsonObject);
 		return mapGlyph;
 	    }
-	    if(glyphType.isMap()) {
+	    if(glyphType.isMap()) { 
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		mapGlyph.checkMapLayer(false);
 		return mapGlyph;
@@ -3316,10 +3314,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 //		console.log("north:" +north+" west:" +west +" south:" +south +" east:" + east);
 		let ilayer =  this.getMap().addImageLayer('', opts.name,"",url,true,
-							 north,west,south,east, iw,ih);
+							  north,west,south,east, iw,ih,{},loadCallback);
 		ilayer.mapGlyph = mapGlyph;
+		mapGlyph.initImageLayer(ilayer);
 		mapGlyph.handleMapLoaded(this.getMap(),ilayer);
-		this.getMap().zoomToLayer(ilayer);
+		if(andZoom)
+		    this.getMap().zoomToLayer(ilayer);
 		return ilayer;
 		
 	    case 'latlonimage': 
@@ -6031,7 +6031,7 @@ MapGlyph.prototype = {
 
 
 
-	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl) || this.imageLayers) {
+	if(this.isMapServer() || Utils.stringDefined(this.style.imageUrl) || this.imageLayers || this.image) {
 	    let v = (this.imageLayers||this.isImage())?this.style.imageOpacity:this.style.opacity;
 	    if(!Utils.isDefined(v)) v = 1;
 	    if(showAnimation)
@@ -6042,7 +6042,7 @@ MapGlyph.prototype = {
 			    ID,this.domId('image_opacity_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 	}
 
-	if(this.display.canEdit() && Utils.stringDefined(this.style.imageUrl)) {
+	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
 	    body+='Rotation:';
 	    body += HU.center(
 		HU.div(['title','Set image rotation','slider-min',0,'slider-max',360,'slider-value',this.style.rotation??0,
@@ -6148,7 +6148,6 @@ MapGlyph.prototype = {
 		this.style.imageOpacity = ui.value;
 		if(this.image) {
 		    this.image.setOpacity(this.style.imageOpacity);
-		    console.log(''+this.image.setOpacity);
 		}
 		if(this.imageLayers)
 		    this.imageLayers.forEach(obj=>{
@@ -8079,31 +8078,35 @@ MapGlyph.prototype = {
 	} else {
 	    b = this.getMap().transformProjBounds(b);
 	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
-	    this.image.imageHook = (image)=> {
-		let transform='';
-		if(Utils.stringDefined(this.style.transform)) 
-		    transform = this.style.transform;
-		if(this.style.rotation>0)
-		    transform += ' rotate(' + this.style.rotation +'deg)';
-
-		if(!Utils.stringDefined(transform))  transform=null;
-		var childNodes = this.image.div.childNodes;
-		for(var i = 0, len = childNodes.length; i < len; ++i) {
-                    var element = childNodes[i].firstChild || childNodes[i];
-                    var lastChild = childNodes[i].lastChild;
-                    if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
-			element = lastChild.parentNode;
-                    }
-		    element.style.transform=transform;
-//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
-		}
-	    }
+	    this.initImageLayer(this.image);
 	    this.image.imageHook();
 	    if(Utils.isDefined(this.style.imageOpacity)) {
 		this.image.setOpacity(this.style.imageOpacity);
 	    }
 	}
     },
+    initImageLayer:function(image) {
+	this.image = image;
+	image.imageHook = (image)=> {
+	    let transform='';
+	    if(Utils.stringDefined(this.style.transform)) 
+		transform = this.style.transform;
+	    if(this.style.rotation>0)
+		transform += ' rotate(' + this.style.rotation +'deg)';
+
+	    if(!Utils.stringDefined(transform))  transform=null;
+	    var childNodes = this.image.div.childNodes;
+	    for(var i = 0, len = childNodes.length; i < len; ++i) {
+                var element = childNodes[i].firstChild || childNodes[i];
+                var lastChild = childNodes[i].lastChild;
+                if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
+		    element = lastChild.parentNode;
+                }
+		element.style.transform=transform;
+		//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
+	    }
+	}
+    },	
     getDisplayAttrs: function() {
 	return this.attrs.displayAttrs;
     },
@@ -8682,15 +8685,18 @@ MapGlyph.prototype = {
 	    this.selectDots = null;
 	}
 
+	if(this.getMapLayer()) {
+	    this.display.getMap().removeLayer(this.getMapLayer());
+	    this.image =null;
+	    this.setMapLayer(null);
+	}
+
 	if(this.getImage()) {
 	    this.display.getMap().removeLayer(this.getImage());
 	    this.image =null;
 	}
 
-	if(this.getMapLayer()) {
-	    this.display.getMap().removeLayer(this.getMapLayer());
-	    this.setMapLayer(null);
-	}
+
 	if(this.imageLayers) {
 	    this.imageLayers.forEach(obj=>{
 		if(obj.layer)
