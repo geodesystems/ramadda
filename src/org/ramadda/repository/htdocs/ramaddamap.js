@@ -1861,7 +1861,7 @@ RepositoryMap.prototype = {
 	}
     },
 
-    addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
+    addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args,loadCallback) {
         let _this = this;
         let theArgs = {
             forSelect: false,
@@ -1890,6 +1890,11 @@ RepositoryMap.prototype = {
                 maxResolution: this.getMap().layers[0] ? this.getMap().layers[0].resolutions[0] : null
             }
         );
+        image.events.on({
+            "loadend": function(e) {
+		if(loadCallback) loadCallback(_this,image);
+	    }});
+
 	image.id = layerId;
         image.latLonBounds = latLonBounds;
         //        image.setOpacity(0.5);
