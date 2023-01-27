@@ -1652,6 +1652,14 @@ var Utils =  {
                             }
                         }
 
+
+                        if(t.attrs["nan"]!==null) {
+			    if(isNaN(value)) {
+				value = t.attrs["nan"];
+			    }
+			}
+
+
                         if(t.attrs["positiveTemplate"] || t.attrs["negativeTemplate"]) {
                             value = +value;
                             if(value>=0) {
@@ -1665,7 +1673,6 @@ var Utils =  {
                                 value = t.attrs["negativeTemplate"].replace("${value}",value);
                             }
 			}
-
 
                         if(t.attrs["youtube"]) {
                             if(value.trim().length==0) return null;
