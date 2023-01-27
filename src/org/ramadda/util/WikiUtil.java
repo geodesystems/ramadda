@@ -94,7 +94,8 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable<String, String> myVars = new Hashtable<String,String>();
 
-    private Hashtable<String, String> macros;
+    private Hashtable<String, String> rawMacros;
+    private Hashtable<String, String> macros;    
     
 
     private Hashtable<String,String> templates=  new Hashtable<String,String>();
@@ -945,9 +946,13 @@ public class WikiUtil {
                     if (macros != null) {
                         for (java.util.Enumeration keys = macros.keys();
                                 keys.hasMoreElements(); ) {
-                            Object key   = keys.nextElement();
+                            String key   = (String)keys.nextElement();
                             String value = (String)macros.get(key);
-			    line = Utils.replaceAll(line,"${" + key + "}",   value);
+			    key ="${" + key + "}";
+			    if(line.indexOf(key)>=0) {
+				value = wikify(value, handler);
+				line = Utils.replaceAll(line,key,   value);
+			    }
                         }
                     }
                     if (globalProperties != null) {
@@ -1182,13 +1187,46 @@ public class WikiUtil {
 
                 if (tline.startsWith("-macro")) {
 		    String macro = currentVarValue.toString();
-		    macro = wikify(macro, handler);
-		    if(macros == null) macros = new Hashtable<String,String>();    
+		    if(macros == null) {
+			macros = new Hashtable<String,String>();
+			rawMacros = new Hashtable<String,String>();
+		    }
+		    rawMacros.put(currentVar,macro);
+		    //		    macro = wikify(macro, handler);
                     macros.put(currentVar, macro);
                     currentVar      = null;
                     currentVarValue = null;
                     continue;
                 }
+
+		if(tline.startsWith(":process ")) {
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
+		    if(toks.size()<=1) {
+			wikiError(buff,"Bad :process tag");
+			continue;
+		    }
+		    if(rawMacros==null) {
+			wikiError(buff,"No macros defined");
+			continue;
+		    }
+		    String proc = toks.get(1);
+		    Hashtable props = HU.parseHtmlProperties(toks.size()>2?toks.get(2):"");
+		    String macro =  rawMacros.get(proc);
+		    if(macro==null) {
+			wikiError(buff, "Could not find macro:" + proc);
+			continue;
+		    }
+		    for (java.util.Enumeration keys = props.keys();
+			 keys.hasMoreElements(); ) {
+			String key   = (String)keys.nextElement();
+			String value = (String)props.get(key);
+			macro = macro.replace("${" + key+"}",value);
+		    }
+		    macro = wikify(macro, handler);
+		    buff.append(macro);
+		    continue;
+		}
+
 
                 if (currentVar != null) {
                     currentVarValue.append(line);
@@ -1377,13 +1415,16 @@ public class WikiUtil {
                     String       value = ((toks.size() > 2)
                                           ? toks.get(2)
                                           : "");
-		    if(macros == null) macros = new Hashtable<String,String>();    
+		    if(macros == null) {
+			rawMacros = new Hashtable<String,String>();
+			macros = new Hashtable<String,String>();
+		    }
 		    value = value.replace("\\n","\n");
-		    value =  wikify(value,handler);
+                    rawMacros.put(var.trim(), value.trim());
+		    //		    value =  wikify(value,handler);
                     macros.put(var.trim(), value.trim());
                     continue;
                 }
-
 
 
 
