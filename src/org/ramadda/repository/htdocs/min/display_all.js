@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jan 27 09:07:59 MST 2023";
+var build_date="RAMADDA build date: Fri Jan 27 10:14:44 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -23085,7 +23085,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
             return true;
 	},
 	updateUI: function() {
-	    let label = this.getPropertyCsvLabel("Download Data");
+	    let label = this.getCsvLabel("Download Data");
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
 	    let iconSize = this.getIconSize();
