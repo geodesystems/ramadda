@@ -253,6 +253,11 @@ a.display-container {
 }
 
 
+.display-correlation-header {
+    line-height:1.3em !important;
+    font-size:80%;
+    padding:2px;
+}
 
 
 .display-correlation-cell  {
@@ -2864,6 +2869,7 @@ table.dataTable tfoot td {
     border:1px solid #ccc;
 }
 
+
 .display-fields-field-selectable {
     cursor:pointer;
 }
@@ -2883,6 +2889,13 @@ table.dataTable tfoot td {
 .display-fields-field:hover {
     background:var(--highlight-background);
 }
+
+.display-fields-droppable {
+    border:1px solid #000 !important;
+    background:#ccc;
+}
+
+
 
 .tl-slide-content-container {
     vertical-align:top !important;
