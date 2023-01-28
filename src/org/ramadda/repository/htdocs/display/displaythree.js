@@ -105,6 +105,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
         {label:'3D Globe Attributes'},
 	{p:"globeWidth",d:800},
 	{p:"globeHeight",d:400},
+	{p:"globeStyle",d:'',tt:'css for globe'},	
 	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|world-boundaries.png|caida.jpg|white.png|lightblue.png|black.png"},
 	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
 	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
@@ -144,6 +145,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'labelDotRadius',d:0.1},
 	{p:'labelResolution',d:3},
 	{p:'labelIncludeDot',d:true},		
+	{p:'labelAltitude',d:0.01},		
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
@@ -252,33 +254,42 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		return radius;
 	    }
 
-	    let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields"));
+
+	    let labels = this.getProperty("labelFields");
+	    if(labels=="{colorby}") labels=this.getProperty('colorBy');
+	    let labelFields = this.getFieldsByIds(null, labels);
 	    if(labelFields && labelFields.length) {
+		let labelSize = +this.getLabelSize(1.0);
 		let labelData = [];
 		let labelColor = this.getLabelColor();
 		records.forEach((record,idx)=>{
 		    let label = "";
 		    labelFields.forEach((f,idx) =>{
 			if(idx>0) label+=" ";
-			label+=f.getValue(record);
+			let s = String(f.getValue(record));
+			if(s=='NaN') s  = '--';
+			label+=s;
 		    });
-		    labelData.push({
+		    let d = {
 			record:record,
 			label: label,
 			lat:record.getLatitude(),
 			lng:record.getLongitude(),
 			color:labelColor
-		    });
+		    };
+		    d.labelSize=labelSize;
+		    labelData.push(d);
 		});
 		this.globe.labelsData(labelData)
 		    .labelLat(d => d.lat)
 		    .labelLng(d => d.lng)
+		    .labelAltitude(this.getLabelAltitude())
 		    .labelText(d => d.label)
 		    .labelColor(d => d.color)
+		    .labelIncludeDot(this.getLabelIncludeDot())
 		    .labelDotRadius(this.getLabelDotRadius())
-		    .labelSize(this.getLabelSize())		
+		    .labelSize('labelSize')		
 		    .labelResolution(this.getLabelResolution());
-		this.globe.labelIncludeDot(this.getLabelIncludeDot());
 	    }
 
 	    let polygonField = this.getFieldById(null, this.getProperty("polygonField"));
@@ -526,10 +537,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let _this = this;
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
 	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
+	    let w  = parseInt(this.getGlobeWidth());
+	    let h = parseInt(this.getGlobeHeight());
+
 	    let globe = HU.div([STYLE,HU.css("position","relative")],
 			       pos +
 			       popup +
-			       HU.div([ID, this.domId(ID_GLOBE)]));
+			       HU.div(['style',HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
 	    this.setContents(html);
@@ -553,9 +567,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    //Initial example code from https://github.com/vasturiano/three-globe
 
 	    let domGlobe = document.getElementById(this.domId(ID_GLOBE));
-	    let w  = this.getGlobeWidth();
-	    let h = this.getGlobeHeight();
-
 	    this.globe = Globe()(domGlobe);	    	    
 	    this.globe.onGlobeReady(()=>this.addLights());
 	    this.globe.width(w);
@@ -798,7 +809,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 		if(nameField) {
 		    let tooltip = this.getProperty("tooltip");
-		    if(tooltip) {
+		    if(Utils.stringDefined(tooltip)) {
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
 			    let html =  this.getRecordHtml(f.record);
@@ -848,6 +859,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let coords = this.globe.getCoords(args.record.getLatitude(),args.record.getLongitude());
 	    if(this.selectedObjects) {
 		this.selectedObjects.forEach(object=>{
+		    if(!object.material) return;
 		    object.material.color.setHex(object.__oldcolor);
 		});
 	    }
@@ -857,6 +869,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.selectedObjects = objects;
 	    if(!objects) return;
 	    objects.forEach(object=>{
+		if(!object.material) return
 		object.__oldcolor =  object.material.color.getHex();
 		object.material.color.setRGB(1,0,0);
 	    });
