@@ -865,6 +865,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-callout {
+    line-height:1.75em;
     display:inline-block;
     width:100%;
     border:var(--basic-border);
