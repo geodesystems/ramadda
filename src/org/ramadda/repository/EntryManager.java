@@ -1421,6 +1421,13 @@ public class EntryManager extends RepositoryManager {
             StringBuilder titleCrumbs = new StringBuilder();
             String crumbs = getPageHandler().getEntryHeader(request,
 							    entryForHeader, titleCrumbs);
+
+	    
+	    String url = getEntryUrl(request, entry); 
+	    result.putProperty(PROP_ENTRY_NAME, entry.getName());
+	    result.putProperty(PROP_ENTRY_URL, url);
+
+
             result.putProperty(PROP_ENTRY_HEADER, crumbs);
             result.putProperty(PROP_ENTRY_BREADCRUMBS,
                                titleCrumbs.toString());

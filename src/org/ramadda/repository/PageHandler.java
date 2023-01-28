@@ -118,6 +118,9 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_SEARCH_URL = "search.url";
 
+    public static final String MACRO_ENTRY_NAME = "entry.name";
+    public static final String MACRO_ENTRY_URL = "entry.url";    
+
     /** html template macro */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
@@ -597,10 +600,8 @@ public class PageHandler extends RepositoryManager {
 
 
 
-
-
-
         String template = htmlTemplate.getTemplate();
+
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  (String) null);
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
@@ -743,6 +744,10 @@ public class PageHandler extends RepositoryManager {
             result.getTitle(), MACRO_BOTTOM, bottom, MACRO_SEARCH_URL,
             getSearchManager().getSearchUrl(request), MACRO_CONTENT, content,
             MACRO_ENTRY_HEADER, entryHeader, MACRO_HEADER, header,
+	    MACRO_ENTRY_NAME,
+	    (String) result.getProperty(PROP_ENTRY_NAME,  "RAMADDA"),
+	    MACRO_ENTRY_URL,  
+	    (String) result.getProperty(PROP_ENTRY_URL,  getRepository().getUrlBase()),
             MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
             entryBreadcrumbs, MACRO_IMPORTS, imports, MACRO_HEADFINAL, "",
             MACRO_ROOT, repository.getUrlBase(),

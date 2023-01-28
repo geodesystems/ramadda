@@ -1719,6 +1719,9 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
 
+    public static final String PROP_ENTRY_NAME = "ramadda.entryname";
+    public static final String PROP_ENTRY_URL = "ramadda.entryurl";            
+
     /** _more_ */
     public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";
 
