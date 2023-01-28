@@ -3415,17 +3415,14 @@ label {
 
 
 .ramadda-breadcrumbs-menu {
-    padding-right: 5px;
+    padding-right: 0px;
 }
 
 .ramadda-breadcrumbs-menu-button {
-    padding:0px;
+    display:block;
+    padding:2px;
     margin:0px;
-    padding-left:2px;
-    padding-right:2px;
-    padding-top:1px;    
-    padding-bottom:1px;    
-    border: 1px #ccc solid;
+    border: 1px #ddd solid;
     background-color:#fff;    
 }
 

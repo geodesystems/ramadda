@@ -1720,7 +1720,8 @@ public interface Constants {
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
 
     public static final String PROP_ENTRY_NAME = "ramadda.entryname";
-    public static final String PROP_ENTRY_URL = "ramadda.entryurl";            
+    public static final String PROP_ENTRY_URL = "ramadda.entryurl";
+    public static final String PROP_ENTRY_MENU = "ramadda.menu";                
 
     /** _more_ */
     public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";

@@ -1418,24 +1418,15 @@ public class EntryManager extends RepositoryManager {
             String entryFooter = getPageHandler().entryFooter(request,
 							      entryForHeader);
 
-            StringBuilder titleCrumbs = new StringBuilder();
+            StringBuilder menu = new StringBuilder();
+            StringBuilder titleCrumbs = new StringBuilder();	    
             String crumbs = getPageHandler().getEntryHeader(request,
 							    entryForHeader, titleCrumbs);
-
-	    
 	    String url = getEntryUrl(request, entry); 
 	    result.putProperty(PROP_ENTRY_NAME, entry.getName());
 	    result.putProperty(PROP_ENTRY_URL, url);
-
-
             result.putProperty(PROP_ENTRY_HEADER, crumbs);
-            result.putProperty(PROP_ENTRY_BREADCRUMBS,
-                               titleCrumbs.toString());
-
-            //FOR NOW - 
-            //            result.putProperty(PROP_ENTRY_HEADER, "");
-            //            result.putProperty(PROP_ENTRY_BREADCRUMBS, crumbs);
-
+            result.putProperty(PROP_ENTRY_BREADCRUMBS, titleCrumbs.toString());
             result.putProperty(PROP_ENTRY_FOOTER, entryFooter);
 
             List<Metadata> metadataList =

@@ -735,6 +735,7 @@ public class PageHandler extends RepositoryManager {
 			  HU.clazz("ramadda-user-menu"));
 
 
+
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
@@ -2613,7 +2614,6 @@ public class PageHandler extends RepositoryManager {
             request = getRepository().getTmpRequest(entry);
         }
 
-
         PageStyle    pageStyle    = request.getPageStyle(entry);
         OutputType   output       = OutputHandler.OUTPUT_HTML;
         int          length       = 0;
@@ -2625,10 +2625,9 @@ public class PageHandler extends RepositoryManager {
                     HU.img(getIconUrl(request, entry)) + " "
                     + getEntryDisplayName(entry));
 
-        StringBuilder popup  = new StringBuilder();
         String        menuId = HU.getUniqueId("menulink");
         String menuLinkImg =
-            HU.div(HU.img("fas fa-caret-down"),
+            HU.span(HU.img("fas fa-caret-down"),
                    HU.attr("id", menuId) + HU.attr("title", "Entry menu")
                    + HU.cssClass(
                        "ramadda-breadcrumbs-menu-button ramadda-clickable"));
@@ -2688,11 +2687,10 @@ public class PageHandler extends RepositoryManager {
                 sb.append("</td></tr></table>");
             }
             sb.append("</div>");
-            sb.append(popup);
             header = sb.toString();
         } else {
             if ( !request.isAnonymous()) {
-                header = menuLink + popup;
+                header = menuLink;
             }
         }
         title.append(StringUtil.join(BREADCRUMB_SEPARATOR_PAD, titleList));
