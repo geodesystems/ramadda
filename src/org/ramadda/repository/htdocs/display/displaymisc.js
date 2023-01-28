@@ -2,6 +2,7 @@
   Copyright 2008-2023 Geode Systems LLC
 */
 
+
 const DISPLAY_GRAPH = "graph";
 const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
@@ -2731,6 +2732,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 								  index: 0
 							      });
         },
+	getCellLabel(row,col) {
+	    return   this.getProperty('label.' + row.getId() +'.' +
+				      col.getId());
+	},
 	makeTable: function() {
             let dataList = this.getStandardData(null, {
                 includeIndex: false
@@ -2844,11 +2849,18 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     let label = value;
 		    if(fieldIdx1==fieldIdx2) label = SPACE;
                     if (!showValue || short) label = SPACE;
+		    let align = "right";
+		    let cellLabel =  this.getCellLabel(field1, field2);
+		    if(cellLabel) {
+			label = HU.span(['class','display-correlation-celllabel'],cellLabel);
+			align="left";
+		    }
+
 		    let cellContents = "";
 		    if(ok) {
 			cellContents = HU.div([CLASS, "display-correlation-element", TITLE, "&rho;(" + rowName + "," + colName + ") = " + value], label);
 		    }
-                    html += HU.td(["colfield", field2.getId(), "rowfield",field1.getId(), CLASS,"display-correlation-cell","align", "right", STYLE,style], cellContents);
+                    html += HU.td(["colfield", field2.getId(), "rowfield",field1.getId(), CLASS,"display-correlation-cell","align", align, STYLE,style], cellContents);
                 }
                 html += HU.close(TR);
             }
@@ -2858,9 +2870,19 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let selectedRow;
 	    let selectedCol;
-	    this.jq(ID_TABLE).find("td").click(function() {
+	    this.jq(ID_TABLE).find("td").click(function(event) {
 		let rowField = _this.getFieldById(null, $(this).attr("rowfield"));
 		let colField = _this.getFieldById(null, $(this).attr("colfield"));
+		if(event.shiftKey && _this.canEdit()) {
+		    let label = prompt("Label:",  _this.getCellLabel(rowField, colField));
+		    if(label) {
+			let msg = 'label.' +rowField.getId() +'.' + colField.getId()+'=\"' + label +'\"';
+			console.log('Copied to clipboard:');
+			console.log(msg);
+			Utils.copyToClipboard(msg);
+		    }
+		}
+
 		let tds = _this.jq(ID_TABLE).find("td");
 		if(rowField) {
 		    tds.removeClass("display-correlation-row-cell-highlight");
