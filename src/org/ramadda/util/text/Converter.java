@@ -1901,20 +1901,31 @@ public abstract class Converter extends Processor {
                 }
                 String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
-                col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
-							       "^3").replaceAll("\n", " ");
-                String id = col.replaceAll("°"," ").replaceAll("\\([^\\)]+\\)", "").replaceAll(
-											       "\\?", "").replaceAll("\\$", "").replaceAll(
-																	   ",", "_").replaceAll(
-																				"-", "_").trim().toLowerCase().replaceAll(
-																									  " ", "_").replaceAll(":", "_");
+                col = Utils.replaceAll(col,
+				       "\u00B5", "u",
+				       "\u00B3", "^3",
+				       "\n", " ");
+                String id = Utils.replaceAll(col,"°"," ",
+					     "\\([^\\)]+\\)", "",
+					     "\\?", "",
+					     "\\$", "",
+					     ",", "_",
+					     "-", "_").trim().toLowerCase().replaceAll(" ", "_").replaceAll(":", "_");
 
-                id = id.replaceAll("<", "_").replaceAll(">", "_");
-                id = id.replaceAll("\\+", "_").replaceAll(
-							  "\"", "_").replaceAll("%", "percent").replaceAll(
-												     "\'", "_").replaceAll("/+", "_").replaceAll(
-																		 "\\.", "_").replaceAll("_+_", "_").replaceAll(
-																							       "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
+                id = Utils.replaceAll(id,"<", "_",
+				      ">", "_",
+				      "\\+", "_",
+				      "\"", "_",
+				      "\\$", "_",
+				      "&", "_",
+				      "%", "_",
+				      "\'", "_",
+				      "/+", "_",
+				      "\\.", "_",
+				      "_+_", "_",
+				      "_+$", "",
+				      "^_+", "",
+				      "\\^", "_");
 
                 id = Seesv.getDbProp(props, id, i, "id", id);
 
@@ -6324,9 +6335,9 @@ public abstract class Converter extends Processor {
             }
 	    String v = template;
 	    for(int i=0;i<row.size();i++) {	    
-		v = Utils.replaceAll(v,"${" + header.get(i) +"}", row.getString(i));
-		v = Utils.replaceAll(v,"${" + _header.get(i) +"}", row.getString(i));
-		v = Utils.replaceAll(v,"${" + i +"}", row.getString(i));
+		v = Utils.replace(v,"${" + header.get(i) +"}", row.getString(i),
+				  "${" + _header.get(i) +"}", row.getString(i),
+				  "${" + i +"}", row.getString(i));
 	    }
 	    row.add(v);
             return row;
@@ -7174,7 +7185,9 @@ public abstract class Converter extends Processor {
             if (rowCnt++ == 0) {
                 Row newRow = new Row();
                 for (int i = 0; i < row.size(); i++) {
-                    newRow.add(Utils.makeID(row.getString(i)));
+		    String id = Utils.makeID(row.getString(i));
+		    System.err.println(row.getString(i) +"=" +id);
+                    newRow.add(id);
                 }
 
                 return newRow;
