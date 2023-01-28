@@ -272,6 +272,9 @@ a.display-container {
 }
 
 
+.display-correlation-celllabel {
+    font-size:80%;
+}
 
 .display-correlation-row-cell-highlight  {
   border-top:1px #000 solid;
