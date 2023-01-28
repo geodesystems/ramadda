@@ -8416,7 +8416,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         }
         anotherDivId = anotherDivId.replace("$entryid", entry.getId());
 
-	String style = "position:relative;";
+	String style = "position:relative;" + getProperty(wikiUtil, props, "outerDisplayStyle","");
         HU.div(sb, "",
                HU.clazz("display-container") + HU.id(anotherDivId)
                + HU.style(style));
