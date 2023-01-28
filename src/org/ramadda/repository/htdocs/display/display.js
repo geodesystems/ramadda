@@ -5831,6 +5831,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let numDecimals = Math.max(2,Math.max(smin.length,smax.length));
 		let minValue = parseFloat(min.val());
 		let maxValue = parseFloat(max.val());
+		if(minValue==parseInt(minValue) && maxValue==parseInt(maxValue))
+		    numDecimals = 0;
+
 		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
 		let popup = HtmlUtils.getTooltip();
 		popup.html(html);
