@@ -2344,11 +2344,12 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             if (getProperty(wikiUtil, props, "link", false)) {
 		//In case we are making a snapshot we use the overrideurl
 		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
+		String linkStyle = getProperty(wikiUtil, props, "linkStyle", "");
 		if(url!=null && url.equals("#"))  {
 		} else if(url==null) {
 		    url = getEntryManager().getEntryUrl(request, entry);
 		}
-                name = HU.href(url, name, HU.cssClass("ramadda-clickable"));
+                name = HU.href(url, name, HU.cssClass("ramadda-clickable")+HU.style(linkStyle));
             }
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
