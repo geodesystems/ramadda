@@ -951,7 +951,7 @@ public class WikiUtil {
 			    key ="${" + key + "}";
 			    if(line.indexOf(key)>=0) {
 				value = wikify(value, handler);
-				line = Utils.replaceAll(line,key,   value);
+				line = line.replace(key,   value);
 			    }
                         }
                     }
@@ -1262,7 +1262,7 @@ public class WikiUtil {
 			    for(NamedList<String> l: repeatList) {
 				String key = l.getName();
 				String value = i<l.getList().size()?(String)l.getList().get(i):l.getList().get(l.getList().size()-1);
-				s = Utils.replaceAll(s,"${" + key +"}",value);
+				s = s.replace("${" + key +"}",value);
 			    }
 			    buff.append(s);
 			}
