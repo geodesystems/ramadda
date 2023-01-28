@@ -309,6 +309,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{p:"showFieldDetails",ex:true},
 	{p:"showPopup",d:true,ex:false,tt:"Popup the selector"},	
 	{p:"numericOnly",ex:true},
+	{p: "selectLabel",tt:"Label to use for the button"},
 	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
 	{p: "filterSelectLabel",tt:"Label to use for the button"}	
     ];
@@ -423,14 +424,15 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let fhtml = Utils.wrap(fs,"","");
 	    html += fhtml;
 
+	    let label = this.getSelectLabel(this.getFilterSelect()?this.getFilterSelectLabel("Select Filter Fields"):"Select fields");
 	    if(this.getShowPopup()) {
-		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)],this.getFilterSelect()?this.getFilterSelectLabel("Select Filter Fields"):"Select fields") +
+		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)], label) +
 		    HU.div([ID,this.domId(ID_POPUP),STYLE,"display:none;max-height:300px;overflow-y:auto;width:600px;"], html);
 	    }
 	    this.setContents(html);
 	    if(this.getShowPopup()) {
 		this.jq(ID_POPUP_BUTTON).button().click(()=>{
-		    HU.makeDialog({contentId:this.domId(ID_POPUP),inPlace:true,anchor:this.domId(ID_POPUP_BUTTON),draggable:true,header:true,sticky:true});
+		    this.fieldsDialog = HU.makeDialog({contentId:this.domId(ID_POPUP),title:label,inPlace:true,anchor:this.domId(ID_POPUP_BUTTON),draggable:true,header:true,sticky:true});
 		});
 	    }
 	    if(selectable) {
@@ -478,7 +480,6 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			_this.printFields();
 			return
 		    }
-
 		    let shift = event.shiftKey ;
 		    let selected  = $(this).attr("field-selected")=="true";
 		    selected = !selected;
@@ -513,7 +514,9 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	},
 	getActiveFields:function() {
 	    let _this=this;
-	    let fieldBoxes = this.find(".display-fields-field");
+	    let fieldBoxes = (this.fieldsDialog&&this.fieldsDialog.length)?
+		this.fieldsDialog.find(".display-fields-field"):
+		this.find(".display-fields-field");
 	    let isSelected = {};
 	    let selectedFields = [];
 	    fieldBoxes.each(function(){
