@@ -731,8 +731,8 @@ public class PageHandler extends RepositoryManager {
 				   arg("animate", false)));
 	if(extra.length()>0)
 	    pageLinks.add(extra.toString());
-        menuHtml = HU.div(Utils.wrap(pageLinks, "<span class=ramadda-page-link>", "</span>"),
-			  HU.clazz("ramadda-user-menu"));
+        menuHtml = HU.span(Utils.wrap(pageLinks, "<span class=ramadda-page-link>", "</span>"),
+			   HU.clazz("ramadda-user-menu"));
 
 
 
