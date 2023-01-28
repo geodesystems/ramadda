@@ -2921,9 +2921,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().showOpacitySlider(visible);
 
 	},
-	canEdit:function() {
-	    return this.getProperty("canEdit");
-	},
 	showFileMenu: function(button) {
 	    let _this = this;
 	    let html ="";
