@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jan 27 19:33:26 MST 2023";
+var build_date="RAMADDA build date: Sat Jan 28 10:28:59 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4041,6 +4041,9 @@ function DisplayThing(argId, argProperties) {
 	    var v = this.getProperty(PROP_SHOW_MENU, dflt);
 	    return v;
         },
+	canEdit:function() {
+	    return this.getProperty("canEdit");
+	},
         getShowTitle: function() {
             if (this.getProperty("showTitle")) {
 		return this.getProperty("showTitle");
@@ -4422,7 +4425,7 @@ function DisplayThing(argId, argProperties) {
 	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
-            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
+            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"),false,true);
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    let titleTemplate = this.getProperty("titleTemplate");	    
@@ -6643,7 +6646,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return records;
 	},
-        getFieldById: function(fields, id,debug) {
+        getFieldById: function(fields, id,debug,ignore) {
 	    //Support one arg
 	    if(debug)
 		console.log("getFieldById:" + id);
@@ -6721,6 +6724,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    if(debug)
 		console.log("\tgot:" + theField);
+	    if(!theField && !ignore) {
+		console.log("missing id:" + id +' for display:' + this.type);
+//		console.trace();
+	    }
+	    
             return theField;
         },
 
@@ -22864,9 +22872,11 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    }
 	},
 	printFields:function() {
-	    let out=this.fields.reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'fields=');
-	    out+='\n\n';
-	    out+=this.getActiveFields().reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'displayFields=');
+	    if(!this.canEdit()) return;
+	    let out=this.fields.reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'fields=\"');
+	    out+='\"\n\n';
+	    out+=this.getActiveFields().reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'displayFields=\"');
+	    out+='\"\n';
 	    Utils.copyToClipboard(out);
 	    console.log(out);
 	},
@@ -42637,9 +42647,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.getMap().showOpacitySlider(visible);
 
 	},
-	canEdit:function() {
-	    return this.getProperty("canEdit");
-	},
 	showFileMenu: function(button) {
 	    let _this = this;
 	    let html ="";
@@ -48560,6 +48567,7 @@ window.olGetSvgPattern = function(p,stroke,fill) {
   Copyright 2008-2023 Geode Systems LLC
 */
 
+
 const DISPLAY_GRAPH = "graph";
 const DISPLAY_TREE = "tree";
 const DISPLAY_TIMELINE = "timeline";
@@ -51289,6 +51297,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 								  index: 0
 							      });
         },
+	getCellLabel(row,col) {
+	    return   this.getProperty('label.' + row.getId() +'.' +
+				      col.getId());
+	},
 	makeTable: function() {
             let dataList = this.getStandardData(null, {
                 includeIndex: false
@@ -51402,11 +51414,18 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     let label = value;
 		    if(fieldIdx1==fieldIdx2) label = SPACE;
                     if (!showValue || short) label = SPACE;
+		    let align = "right";
+		    let cellLabel =  this.getCellLabel(field1, field2);
+		    if(cellLabel) {
+			label = HU.span(['class','display-correlation-celllabel'],cellLabel);
+			align="left";
+		    }
+
 		    let cellContents = "";
 		    if(ok) {
 			cellContents = HU.div([CLASS, "display-correlation-element", TITLE, "&rho;(" + rowName + "," + colName + ") = " + value], label);
 		    }
-                    html += HU.td(["colfield", field2.getId(), "rowfield",field1.getId(), CLASS,"display-correlation-cell","align", "right", STYLE,style], cellContents);
+                    html += HU.td(["colfield", field2.getId(), "rowfield",field1.getId(), CLASS,"display-correlation-cell","align", align, STYLE,style], cellContents);
                 }
                 html += HU.close(TR);
             }
@@ -51416,9 +51435,19 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let selectedRow;
 	    let selectedCol;
-	    this.jq(ID_TABLE).find("td").click(function() {
+	    this.jq(ID_TABLE).find("td").click(function(event) {
 		let rowField = _this.getFieldById(null, $(this).attr("rowfield"));
 		let colField = _this.getFieldById(null, $(this).attr("colfield"));
+		if(event.shiftKey && _this.canEdit()) {
+		    let label = prompt("Label:",  _this.getCellLabel(rowField, colField));
+		    if(label) {
+			let msg = 'label.' +rowField.getId() +'.' + colField.getId()+'=\"' + label +'\"';
+			console.log('Copied to clipboard:');
+			console.log(msg);
+			Utils.copyToClipboard(msg);
+		    }
+		}
+
 		let tds = _this.jq(ID_TABLE).find("td");
 		if(rowField) {
 		    tds.removeClass("display-correlation-row-cell-highlight");
