@@ -503,9 +503,11 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    }
 	},
 	printFields:function() {
-	    let out=this.fields.reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'fields=');
-	    out+='\n\n';
-	    out+=this.getActiveFields().reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'displayFields=');
+	    if(!this.canEdit()) return;
+	    let out=this.fields.reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'fields=\"');
+	    out+='\"\n\n';
+	    out+=this.getActiveFields().reduce((v,f,idx)=>{return v+(idx==0?'':',')+f.getId()},'displayFields=\"');
+	    out+='\"\n';
 	    Utils.copyToClipboard(out);
 	    console.log(out);
 	},
