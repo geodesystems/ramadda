@@ -534,6 +534,9 @@ function DisplayThing(argId, argProperties) {
 	    var v = this.getProperty(PROP_SHOW_MENU, dflt);
 	    return v;
         },
+	canEdit:function() {
+	    return this.getProperty("canEdit");
+	},
         getShowTitle: function() {
             if (this.getProperty("showTitle")) {
 		return this.getProperty("showTitle");
@@ -915,7 +918,7 @@ function DisplayThing(argId, argProperties) {
 	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
-            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
+            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"),false,true);
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    let titleTemplate = this.getProperty("titleTemplate");	    
@@ -3136,7 +3139,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return records;
 	},
-        getFieldById: function(fields, id,debug) {
+        getFieldById: function(fields, id,debug,ignore) {
 	    //Support one arg
 	    if(debug)
 		console.log("getFieldById:" + id);
@@ -3214,6 +3217,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    if(debug)
 		console.log("\tgot:" + theField);
+	    if(!theField && !ignore) {
+		console.log("missing id:" + id +' for display:' + this.type);
+//		console.trace();
+	    }
+	    
             return theField;
         },
 
