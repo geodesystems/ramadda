@@ -1242,6 +1242,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 	    if(includeGeo) header1+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
 	    if(includeGeo) header2+=HU.th(HU.div(headerAttrs,"")) + HU.th([],HU.div(headerAttrs,""));	    
+	    if(colorRowBy && !colorFullRow) {
+		header1+=HU.th(['width','width:5px;'],'');
+		header2+=HU.th(['width','width:5px;'],'');		
+	    }
+
 	    header1+="</tr>\n";
 	    header2+="</tr>\n";	    
 	    html+=header1;
@@ -1288,8 +1293,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    aggId = HU.getUniqueId("agg_")
 		    aggIds.push(aggId);
 		}
-
-
 
 
 		let clazz = (recordIdx%2)?"ramadda-row-odd":"ramadda-row-even";
@@ -1433,6 +1436,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		if(includeGeo) {
 		    columns.push(HU.td([],record.getLatitude()),HU.td([],record.getLongitude()));
 		}
+		if(colorRowBy && !colorFullRow) {
+		    let color =  colorRowBy.getColorFromRecord(record);
+		    columns.push(HU.td(['width','5px','class','display-td display-htmltable-td','style','background:' + color+';'],''));
+		}
+
 
 		if(categoryField) {
 		    let c = categoryField.getValue(record);
@@ -1459,6 +1467,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		else
 		    html+=HU.openTag('tr',['style',rowStyle,"aggregateId", aggId,'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
 				
+		if(colorRowBy && colorFullRow) {
+		    let color =  colorRowBy.getColorFromRecord(record);
+		    if(color)rowStyle+=HU.css('background',color);
+		}
 		html+=Utils.join(columns,'');
 		html+="</tr>\n";
 		return true;
@@ -1776,6 +1788,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    stats +=HU.space(2)+'Total no votes: ' + statsNo.total;
 		    statsNo.range = statsNo.max-statsNo.min;
 		}
+//		stats+=HU.span(['style','color:#BF282B'],' [Controversial]');
 		_this.jq(ID_VOTE_STATS).html(stats)
 
 
