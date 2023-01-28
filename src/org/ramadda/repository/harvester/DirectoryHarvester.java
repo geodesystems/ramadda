@@ -207,7 +207,7 @@ public class DirectoryHarvester extends Harvester {
         Entry group = getEntryManager().findEntryFromName(getRequest(), null,
 							  parentGroup.getFullName() + "/" + name);
         if (group == null) {
-            group = getEntryManager().makeNewGroup(parentGroup, name,
+            group = getEntryManager().makeNewGroup(getRequest(),parentGroup, name,
                     getUser(), fileInfoEntry);
         }
         FileWrapper[] files = dir.doListFiles();

@@ -137,7 +137,7 @@ public class MbTypeHandler extends GenericTypeHandler {
         for (String attr :
                 StringUtil.split(XmlUtil.getGrandChildText(fileInfo,
                     MbUtil.TAG_ATTRIBUTES), ",", true, true)) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(), "enum_tag",

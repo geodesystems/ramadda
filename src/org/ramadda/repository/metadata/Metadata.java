@@ -98,6 +98,8 @@ public class Metadata implements Constants {
     /** _more_ */
     public static final int PRIORITY_UNDEFINED = 0;
 
+    private MetadataType metadataType;
+
     /** _more_ */
     private Entry entry;
 
@@ -1168,6 +1170,24 @@ public class Metadata implements Constants {
         return markedForDelete;
     }
 
+
+    /**
+       Set the MetadataType property.
+
+       @param value The new value for MetadataType
+    **/
+    public void setMetadataType (MetadataType value) {
+	metadataType = value;
+    }
+
+    /**
+       Get the MetadataType property.
+
+       @return The MetadataType
+    **/
+    public MetadataType getMetadataType () {
+	return metadataType;
+    }
 
 
 

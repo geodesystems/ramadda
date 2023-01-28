@@ -28,6 +28,7 @@ public interface DataTypes {
 
     /** _more_ */
     public static final String DATATYPE_PASSWORD = "password";
+    public static final String DATATYPE_API_KEY = "apikey";    
 
     /** _more_ */
     public static final String DATATYPE_CLOB = "clob";

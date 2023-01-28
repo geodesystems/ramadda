@@ -793,7 +793,7 @@ public class JsonOutputHandler extends OutputHandler {
 
         if (request.get(ARG_METADATA, true)) {
             List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
+                getMetadataManager().getMetadata(request,entry);
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
                     MetadataType metadataType =
@@ -801,7 +801,9 @@ public class JsonOutputHandler extends OutputHandler {
                     if (metadataType == null) {
                         continue;
                     }
-
+		    if(!metadataType.getCanView()) {
+			continue;
+		    }
                     List<String> mapItems   = new ArrayList<String>();
                     List<String> valueItems = new ArrayList<String>();
                     JsonUtil.quoteAttr(mapItems, "id", metadata.getId());

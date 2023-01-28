@@ -116,7 +116,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
         String slideCount = (String) entry.getAndRemoveTransientProperty(
                                 Office.SLIDE_COUNT.getName());
         if (Utils.stringDefined(slideCount)) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(), "property",
@@ -126,7 +126,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
         String wordCount = (String) entry.getAndRemoveTransientProperty(
                                Office.WORD_COUNT.getName());
         if (Utils.stringDefined(wordCount)) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(), "property",
@@ -136,7 +136,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
         String pageCount = (String) entry.getAndRemoveTransientProperty(
                                Office.PAGE_COUNT.getName());
         if (Utils.stringDefined(pageCount)) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(), "property",
@@ -149,7 +149,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
                             Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
             seen.add(author);
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
@@ -161,7 +161,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
                                 Office.LAST_AUTHOR.getName());
         if (Utils.stringDefined(lastAuthor) && !seen.contains(lastAuthor)) {
             seen.add(lastAuthor);
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
@@ -176,7 +176,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
                 DublinCore.PUBLISHER.getName());
         }
         if (Utils.stringDefined(publisher)) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),

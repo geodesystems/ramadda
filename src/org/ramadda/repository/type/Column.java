@@ -3719,7 +3719,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (fullName == null) {
             fullName = getTableName() + "." + name;
         }
-
         return fullName;
     }
 

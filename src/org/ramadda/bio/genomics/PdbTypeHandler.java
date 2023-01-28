@@ -110,7 +110,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
                     remarks.add(remark);
                 }
             } else if (line.startsWith("EXPDATA ")) {
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(), "bio_method", true,
                                      line.substring("EXPDATA ".length()), "",
@@ -142,7 +142,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
 
         for (StringBuilder compound : compounds) {
             Hashtable<String, String> map = getMap(compound);
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
@@ -153,7 +153,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
 
         for (StringBuilder source : sources) {
             Hashtable<String, String> map = getMap(source);
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
@@ -164,7 +164,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
         }
 
         for (String word : authors) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(), "bio_author",
@@ -173,7 +173,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
 
 
         for (String word : keywords) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),

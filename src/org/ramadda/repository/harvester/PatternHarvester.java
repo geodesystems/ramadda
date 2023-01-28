@@ -1345,7 +1345,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			    }
 			};
 
-                    group = getEntryManager().makeNewGroup(parentGroup, name,
+                    group = getEntryManager().makeNewGroup(request,parentGroup, name,
 							   getUser(), template, groupType, initializer);
 
 
@@ -1829,7 +1829,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 String newThumbFile =
                     getStorageManager().copyToEntryDir(entry, thumbnail,
 						       jpegFile).getName();
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
 						 new Metadata(getRepository().getGUID(),
 							      entry.getId(),
 							      ContentMetadataHandler.TYPE_THUMBNAIL,

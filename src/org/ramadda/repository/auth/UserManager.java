@@ -1647,7 +1647,7 @@ public class UserManager extends RepositoryManager {
                 if ( !Utils.stringDefined(name)) {
                     name = newUser.getId();
                 }
-                Entry home = getEntryManager().makeNewGroup(parent, name,
+                Entry home = getEntryManager().makeNewGroup(request,parent, name,
                                  newUser, null, TypeHandler.TYPE_HOMEPAGE);
                 msg.append("A home folder has been created for you: ");
                 String homeUrl =

@@ -466,7 +466,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         List<Metadata> metadataList =
-            getMetadataManager().getMetadata(parentEntry);
+            getMetadataManager().getMetadata(request,parentEntry);
         //Prune out the aliases
         if (metadataList != null) {
             List<Metadata> tmp = new ArrayList<Metadata>();

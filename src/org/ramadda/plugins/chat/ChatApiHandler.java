@@ -131,7 +131,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             IOUtil.writeFile(f, json);
             String theFile = getStorageManager().moveToEntryDir(entry,
                                  f).getName();
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(), "chat_file",

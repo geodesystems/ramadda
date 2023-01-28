@@ -1512,7 +1512,7 @@ public class Gtfs implements Constants {
     public static void addAlias(Request request, Entry entry, String alias)
             throws Exception {
         alias = alias.replaceAll(" ", "_");
-        request.getRepository().getMetadataManager().addMetadata(entry,
+        request.getRepository().getMetadataManager().addMetadata(request,entry,
                 new Metadata(request.getRepository().getGUID(),
                              entry.getId(),
                              ContentMetadataHandler.TYPE_ALIAS, false,
@@ -2001,7 +2001,7 @@ public class Gtfs implements Constants {
                                          Metadata.DFLT_ATTR,
                                          Metadata.DFLT_EXTRA);
                         request.getRepository().getMetadataManager()
-                            .addMetadata(newEntry, dirMetadata);
+                            .addMetadata(request,newEntry, dirMetadata);
                     }
                 }
             }

@@ -268,7 +268,7 @@ public class PlosSearchProvider extends SearchProvider {
                         new Metadata(getRepository().getGUID(),
                                      newEntry.getId(), "metadata_author",
                                      false, author, null, null, null, null);
-                    getMetadataManager().addMetadata(newEntry, metadata);
+                    getMetadataManager().addMetadata(request,newEntry, metadata);
                 }
             }
 

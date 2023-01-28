@@ -154,7 +154,7 @@ public class RedditSearchProvider extends SearchProvider {
                     new Metadata(getRepository().getGUID(), newEntry.getId(),
                                  ContentMetadataHandler.TYPE_THUMBNAIL,
                                  false, thumbnail, "image", null, null, null);
-                getMetadataManager().addMetadata(newEntry, metadata);
+                getMetadataManager().addMetadata(request,newEntry, metadata);
             }
 
             getEntryManager().cacheSynthEntry(newEntry);

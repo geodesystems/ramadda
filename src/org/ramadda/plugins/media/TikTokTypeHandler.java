@@ -134,7 +134,7 @@ public class TikTokTypeHandler extends MediaTypeHandler {
         String title =  tags.get(0);
 	tags.remove(0);
 	for(String tag: tags) {
-	    getMetadataManager().addMetadataTag(entry, tag);
+	    getMetadataManager().addMetadataTag(request,entry, tag);
 	}
 	entry.setName(title);
 	String thumbnail = json.optString("thumbnail_url");

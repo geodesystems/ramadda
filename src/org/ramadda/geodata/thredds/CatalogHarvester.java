@@ -528,10 +528,11 @@ public class CatalogHarvester extends Harvester {
                 break;
             }
         }
+	Request request = getRequest();
 
 
         if (group == null) {
-            group = getEntryManager().makeNewGroup(parent, name, getUser());
+            group = getEntryManager().makeNewGroup(request,parent, name, getUser());
             List<Metadata> metadataList = new ArrayList<Metadata>();
             CatalogOutputHandler.collectMetadata(repository, metadataList,
                     node);
@@ -592,6 +593,7 @@ public class CatalogHarvester extends Harvester {
                               String name)
             throws Exception {
 
+	Request request = getRequest();
         URL catalogUrl = new URL(catalogUrlPath);
         Element serviceNode = CatalogUtil.findServiceNodeForDataset(node,
                                   false, (download
@@ -701,7 +703,7 @@ public class CatalogHarvester extends Harvester {
         metadataList.add(makeImportMetadata(entry.getId(), catalogUrlPath));
         for (Metadata metadata : metadataList) {
             metadata.setEntryId(entry.getId());
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
         }
 
         if (isOpendap && (getAddMetadata() || getAddShortMetadata())) {

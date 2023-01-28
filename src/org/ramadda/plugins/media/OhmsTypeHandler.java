@@ -174,10 +174,10 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             }
         }
 
-        addProperties(entry, root, "gps_text", "content.location");
-        addProperties(entry, root, "keywords",
+        addProperties(request,entry, root, "gps_text", "content.location");
+        addProperties(request,entry, root, "keywords",
                       ContentMetadataHandler.TYPE_KEYWORD);
-        addProperties(entry, root, "subjects", "content.subject");
+        addProperties(request,entry, root, "subjects", "content.subject");
 
         Bounds bounds = null;
         for (Object o : XmlUtil.findDescendants(root, "gps")) {
@@ -328,7 +328,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void addProperties(Entry entry, Element root, String prop,
+    private void addProperties(Request request,Entry entry, Element root, String prop,
                                String metadata)
             throws Exception {
         HashSet<String> seen     = new HashSet<String>();
@@ -341,7 +341,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
                     continue;
                 }
                 seen.add(word);
-                getMetadataManager().addMetadata(entry, metadata, word);
+                getMetadataManager().addMetadata(request,entry, metadata, word);
             }
         }
     }

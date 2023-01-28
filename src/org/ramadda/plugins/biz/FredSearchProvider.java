@@ -186,7 +186,7 @@ public class FredSearchProvider extends SearchProvider {
                         new Metadata(getRepository().getGUID(),
                                      newEntry.getId(), "property", false,
                                      attr, v, null, null, null);
-                    getMetadataManager().addMetadata(newEntry, metadata);
+                    getMetadataManager().addMetadata(request,newEntry, metadata);
                 }
 
             }

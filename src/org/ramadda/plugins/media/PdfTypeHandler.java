@@ -109,7 +109,7 @@ public class PdfTypeHandler extends GenericTypeHandler {
         String author =
             (String) entry.getTransientProperty(Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),

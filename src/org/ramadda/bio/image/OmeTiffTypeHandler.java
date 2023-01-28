@@ -120,7 +120,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
         //        System.err.println("XML:\n" + xml);
 
         try {
-            processXml(xml, entry);
+            processXml(request,xml, entry);
         } catch (Exception exc) {
             getLogManager().logError("OmeTiff:" + exc);
         }
@@ -134,7 +134,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void processXml(String xml, Entry entry) throws Exception {
+    private void processXml(Request request,String xml, Entry entry) throws Exception {
 
 
         Element root         = root = XmlUtil.getRoot(xml);
@@ -143,7 +143,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
 
         if (experiment != null) {
             Element ref = XmlUtil.findChild(experiment, "ExperimenterRef");
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
@@ -163,7 +163,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
 
             //For extra metadata we put it into a hash
             mapToExtra.put(5, XmlUtil.getAttribute(experimenter, "ID", ""));
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),

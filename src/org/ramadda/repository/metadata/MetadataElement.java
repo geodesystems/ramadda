@@ -329,6 +329,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return dataType.equals(DATATYPE_FILE);
     }
 
+    public String getValueForExport(Request request, Entry entry,
+				    Metadata metadata) 
+            throws Exception {
+        if (dataType.equals(DATATYPE_API_KEY) || dataType.equals(DATATYPE_PASSWORD)) {
+	    return null;
+	}
+	int    index = this.getIndex();
+	String value = metadata.getAttr(index);
+	return value;
+    }
+
+
+
     /**
      * _more_
      *
@@ -352,6 +365,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         if ((value == null) || dataType.equals(DATATYPE_SKIP)) {
             return null;
         }
+
+        if (dataType.equals(DATATYPE_API_KEY) || dataType.equals(DATATYPE_PASSWORD)) {
+	    //	    boolean canEdit = getAccessManager().canDoEdit(request, entry);
+	    return null;
+	}
+
 
         if (dataType.equals(DATATYPE_FILE)) {
             //Don't show thumbnails
@@ -672,6 +691,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return "" + value;
         }
 
+        if (getDataType().equals(DATATYPE_API_KEY)) {
+	    if(request.get(arg+"_regenerate",false)) {
+		return Utils.getGuid();
+	    }
+	    return request.getString(arg,"");
+	}
+
+
         if (getDataType().equals(DATATYPE_ENTRY)) {
             return request.getString(arg + "_hidden", "");
         }
@@ -914,6 +941,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_ENTRY)) {
             return getRepository().getEntryManager().getEntryFormSelect(
                 request, entry, arg, value);
+        } else if (dataType.equals(DATATYPE_API_KEY)) {
+	    String uid = HU.getUniqueId("apikey");
+	    if(!Utils.stringDefined(value)) value=Utils.getGuid();
+	    String regen =  HtmlUtils.labeledCheckbox(arg+"_regenerate", "true",false,"Regenerate");
+            return regen +HU.space(3) + HU.b("Key: ") +"<i>" + value+"</i>" +
+		HtmlUtils.hidden(arg, value);
         } else if (dataType.equals(DATATYPE_INT)) {
             return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
         } else if (dataType.equals(DATATYPE_DOUBLE)) {

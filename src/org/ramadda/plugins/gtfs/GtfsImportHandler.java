@@ -955,7 +955,7 @@ public class GtfsImportHandler extends ImportHandler {
                     values[GtfsAgencyTypeHandler.IDX_LANGUAGE]  = lang;
 
                     if (Utils.stringDefined(timezone)) {
-                        getMetadataManager().addMetadata(
+                        getMetadataManager().addMetadata(request,
                             entry,
                             new Metadata(
                                 request.getRepository().getGUID(),

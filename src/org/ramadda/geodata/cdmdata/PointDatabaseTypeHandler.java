@@ -442,7 +442,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                            connection);
             //            connection.commit();
             //            connection.setAutoCommit(true);
-            getEntryManager().addAttachment(
+            getEntryManager().addAttachment(request,
                 entry, new File(entry.getResource().getPath()), false);
             entry.setResource(new Resource());
         } catch (Exception exc) {
@@ -940,7 +940,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             //            connection.setAutoCommit(false);
             insertData(request, entry, metadata, fdp, connection, true);
             //            connection.commit();
-            getEntryManager().addAttachment(entry, file, true);
+            getEntryManager().addAttachment(request,entry, file, true);
             for (PointDataMetadata pdm : metadata) {
                 pdm.enumeratedValues = null;
             }

@@ -139,7 +139,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
                             : ContentMetadataHandler.TYPE_ATTACHMENT), false,
                                 fileName, null, null, null, null);
 
-                    getMetadataManager().addMetadata(entry, metadata);
+                    getMetadataManager().addMetadata(request,entry, metadata);
                 }
             }
         } catch (Exception exc) {

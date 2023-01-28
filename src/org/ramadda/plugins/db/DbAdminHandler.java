@@ -15,6 +15,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 
@@ -214,6 +215,54 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         return true;
     }
 
+
+    public Result processUploadData(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	//44cc70be-fcdb-4488-8775-f7aed132b672
+
+	String id  = request.getString("instrument_id","");
+	//Use the admin request because we do our own access checking
+	Request adminRequest = getRepository().getAdminRequest();
+	Entry entry = getEntryManager().getEntry(adminRequest,id);
+	if(entry==null) {
+	    sb.append(JsonUtil.map("error",JsonUtil.quote("Cannot find entry:" + id)));
+	    return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	}
+	if(!(entry.getTypeHandler() instanceof DbTypeHandler)) {
+	    sb.append(JsonUtil.map("error",JsonUtil.quote("Entry is not a database:" + id)));
+	    return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	}
+	String key = request.getString("key",null);
+	if(key==null) {
+	    sb.append(JsonUtil.map("error",JsonUtil.quote("No api key provided")));
+	    return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	}
+
+
+
+	DbTypeHandler dbt = (DbTypeHandler) entry.getTypeHandler();
+        Object[]      values   = dbt.getValues(entry, (String)null);
+        dbt.initializeValueArray(request, null, values);
+	List<Column> columns =dbt.getDbInfo().getColumnsToUse(); 
+	for (Column column : columns) {
+	    String v = request.getString(column.getName(),null);
+	    if(v!=null) {
+		adminRequest.put(column.getEditArg(),v);
+	    }
+	    System.err.println(column.getName()+"=" +v);
+	}
+
+        for (Column column : columns) {
+            column.setValue(adminRequest, entry, values);
+        }
+
+	for(Object o:values) {
+	    System.err.println("O:" + o);
+	}
+
+        dbt.doStore(entry, values, true);
+	return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+    }
 
     /**
      *

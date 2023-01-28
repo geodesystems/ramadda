@@ -1382,7 +1382,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
         if ((attachment != null) && attachment.equals("*")) {
             attachment = null;
         }
-        for (Metadata metadata : getMetadataManager().getMetadata(srcEntry)) {
+        for (Metadata metadata : getMetadataManager().getMetadata(request,srcEntry)) {
             MetadataType metadataType =
                 getMetadataManager().findType(metadata.getType());
             if (metadataType == null) {
@@ -1809,7 +1809,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             IOUtil.writeFile(f, notebook);
             String theFile = getStorageManager().moveToEntryDir(entry,
 								f).getName();
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
 					     entry,
 					     new Metadata(
 							  getRepository().getGUID(), entry.getId(),
@@ -7408,7 +7408,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 attachment = null;
             }
             for (Metadata metadata :
-		     getMetadataManager().getMetadata(srcEntry)) {
+		     getMetadataManager().getMetadata(request,srcEntry)) {
                 MetadataType metadataType =
                     getMetadataManager().findType(metadata.getType());
                 if (metadataType == null) {

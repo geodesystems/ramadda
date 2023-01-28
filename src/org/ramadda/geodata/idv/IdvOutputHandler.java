@@ -1654,7 +1654,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                              request.getString(ARG_SAVE_NAME,
                                                  ""), args, fileName, "", "");
             getMetadataManager().insertMetadata(metadata);
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
 
             return new Result(
                 request.entryUrl(

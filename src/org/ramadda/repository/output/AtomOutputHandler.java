@@ -226,7 +226,7 @@ public class AtomOutputHandler extends OutputHandler {
             List<Metadata> inheritedMetadata =
                 getMetadataManager().getInheritedMetadata(request, entry);
             List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
+                getMetadataManager().getMetadata(request,entry);
             List<MetadataHandler> metadataHandlers =
                 repository.getMetadataManager().getMetadataHandlers();
             for (Metadata metadata : metadataList) {

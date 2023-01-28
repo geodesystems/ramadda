@@ -1716,7 +1716,7 @@ public class TypeHandler extends RepositoryManager {
         parentEntry.setUser(getUserManager().getLocalFileUser());
         //Add metadata to hide the menubar
 
-        getMetadataManager().addMetadata(
+        getMetadataManager().addMetadata(getRepository().getAdminRequest(),
             parentEntry,
             new Metadata(
                 getRepository().getGUID(), parentEntry.getId(),
@@ -3942,7 +3942,7 @@ public class TypeHandler extends RepositoryManager {
             for (String url :
                     Utils.extractPatterns(contents,
                                           "(https?://[^\"' \\),]+)")) {
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
                                      ContentMetadataHandler.TYPE_URL, false,
@@ -4130,7 +4130,7 @@ public class TypeHandler extends RepositoryManager {
                 Metadata metadata = new Metadata(getRepository().getGUID(),
                                         entry.getId(), mtype, false,
                                         fileName, null, null, null, null);
-                getMetadataManager().addMetadata(entry, metadata);
+                getMetadataManager().addMetadata(request,entry, metadata);
             }
         } else if (target.equals(TARGET_SIBLING)
                    || target.equals(TARGET_CHILD)) {
@@ -7634,7 +7634,7 @@ public class TypeHandler extends RepositoryManager {
             SqlUtil.readString(
                 getRepository().getDatabaseManager().getIterator(stmt), 1);
         long t3 = System.currentTimeMillis();
-	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
+	//	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
         set = new HashSet();
         set.addAll(Misc.toList(values));
         columnEnumValues.put(key, set);

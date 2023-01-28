@@ -172,37 +172,37 @@ public class DifImporter extends ImportHandler {
         values[0] = id;
 
 
-        addMetadata(entry, difRoot, DifUtil.TAG_Keyword,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Keyword,
                     DifMetadataHandler.TYPE_KEYWORD);
-        addMetadata(entry, difRoot, DifUtil.TAG_ISO_Topic_Category,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_ISO_Topic_Category,
                     DifMetadataHandler.TYPE_ISO_TOPIC_CATEGORY);
-        addMetadata(entry, difRoot, DifUtil.TAG_Originating_Center,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Originating_Center,
                     DifMetadataHandler.TYPE_ORIGINATING_CENTER);
-        addMetadata(entry, difRoot, DifUtil.TAG_Data_Set_Language,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Data_Set_Language,
                     DifMetadataHandler.TYPE_DATA_SET_LANGUAGE);
-        addMetadata(entry, difRoot, DifUtil.TAG_Reference,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Reference,
                     DifMetadataHandler.TYPE_REFERENCE);
-        addMetadata(entry, difRoot, DifUtil.TAG_Distribution,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Distribution,
                     DifMetadataHandler.TYPE_DISTRIBUTION,
                     DifUtil.TAGS_Distribution);
-        addMetadata(entry, difRoot, DifUtil.TAG_Related_URL,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Related_URL,
                     DifMetadataHandler.TYPE_RELATED_URL,
                     DifUtil.TAGS_Related_URL);
-        addMetadata(entry, difRoot, DifUtil.TAG_Project,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Project,
                     DifMetadataHandler.TYPE_PROJECT, DifUtil.TAGS_Project);
-        addMetadata(entry, difRoot, DifUtil.TAG_Parameters,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Parameters,
                     DifMetadataHandler.TYPE_PARAMETERS,
                     DifUtil.TAGS_Parameters);
-        addMetadata(entry, difRoot, DifUtil.TAG_Data_Set_Citation,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Data_Set_Citation,
                     DifMetadataHandler.TYPE_DATA_SET_CITATION,
                     DifUtil.TAGS_Data_Set_Citation);
-        addMetadata(entry, difRoot, DifUtil.TAG_Sensor_Name,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Sensor_Name,
                     DifMetadataHandler.TYPE_INSTRUMENT,
                     DifUtil.TAGS_Sensor_Name);
-        addMetadata(entry, difRoot, DifUtil.TAG_Source_Name,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Source_Name,
                     DifMetadataHandler.TYPE_PLATFORM,
                     DifUtil.TAGS_Source_Name);
-        addMetadata(entry, difRoot, DifUtil.TAG_Location,
+        addMetadata(request,entry, difRoot, DifUtil.TAG_Location,
                     DifMetadataHandler.TYPE_LOCATION, DifUtil.TAGS_Location);
 
 
@@ -299,7 +299,7 @@ public class DifImporter extends ImportHandler {
                                          ""), Metadata.DFLT_EXTRA);
             metadata.setAttr(5, XmlUtil.getGrandChildText(node,
                     DifUtil.TAG_Email, ""));
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
 
         }
 
@@ -323,7 +323,7 @@ public class DifImporter extends ImportHandler {
      *
      * @throws Exception _more_
      */
-    private void addMetadata(Entry entry, Element difRoot, String tag,
+    private void addMetadata(Request request,Entry entry, Element difRoot, String tag,
                              String metadataId)
             throws Exception {
         for (Element node :
@@ -336,7 +336,7 @@ public class DifImporter extends ImportHandler {
                                              Metadata.DFLT_ATTR,
                                              Metadata.DFLT_ATTR,
                                              Metadata.DFLT_EXTRA);
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
         }
     }
 
@@ -353,7 +353,7 @@ public class DifImporter extends ImportHandler {
      *
      * @throws Exception _more_
      */
-    private void addMetadata(Entry entry, Element difRoot, String tag,
+    private void addMetadata(Request request,Entry entry, Element difRoot, String tag,
                              String metadataId, String[] subTags)
             throws Exception {
         for (Element node :
@@ -365,7 +365,7 @@ public class DifImporter extends ImportHandler {
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(), metadataId,
                                              values);
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
         }
     }
 

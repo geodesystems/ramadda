@@ -657,7 +657,7 @@ public class PointTypeHandler extends RecordTypeHandler {
          *                        DFLT_INHERITED, sb[0].toString(),
          *                        sb[1].toString(), sb[2].toString(),
          *                        sb[3].toString(), Metadata.DFLT_EXTRA);
-         *       getMetadataManager().addMetadata(entry, polygonMetadata,
+         *       getMetadataManager().addMetadata(request,entry, polygonMetadata,
          *               false);
          *   }
          * }
@@ -711,7 +711,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                                  (unit != null)
                                  ? unit
                                  : "", "", Metadata.DFLT_EXTRA);
-                getMetadataManager().addMetadata(entry, fieldMetadata, false);
+                getMetadataManager().addMetadata(getRepository().getAdminRequest(),entry, fieldMetadata, false);
             }
         }
 

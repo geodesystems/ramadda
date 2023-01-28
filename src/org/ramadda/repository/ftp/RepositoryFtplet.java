@@ -569,7 +569,7 @@ public class RepositoryFtplet extends DefaultFtplet {
 
         EntryManager entryManager = getEntryManager();
 
-        entryManager.makeNewGroup(group, ftpRequest.getArgument(),
+        entryManager.makeNewGroup(request,group, ftpRequest.getArgument(),
                                   request.getUser());
         session.write(
             new DefaultFtpReply(
@@ -683,7 +683,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                                "Not implemented");
         }
 
-        getEntryManager().makeNewGroup(group, ftpRequest.getArgument(),
+        getEntryManager().makeNewGroup(request,group, ftpRequest.getArgument(),
                                        request.getUser());
         session.write(
             new DefaultFtpReply(
@@ -735,7 +735,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                                "Not implemented");
         }
 
-        getEntryManager().makeNewGroup(group, ftpRequest.getArgument(),
+        getEntryManager().makeNewGroup(request,group, ftpRequest.getArgument(),
                                        request.getUser());
         session.write(
             new DefaultFtpReply(

@@ -85,14 +85,14 @@ public class RiseTypeHandler extends PointTypeHandler {
             if (attrs.has("locationRegionNames")) {
                 JSONArray a = attrs.getJSONArray("locationRegionNames");
                 for (int i = 0; i < a.length(); i++) {
-                    getMetadataManager().addMetadataTag(entry,
+                    getMetadataManager().addMetadataTag(request,entry,
                             "Region: " + a.getString(i));
                 }
             }
             if (attrs.has("locationTags")) {
                 JSONArray a = attrs.getJSONArray("locationTags");
                 for (int i = 0; i < a.length(); i++) {
-                    getMetadataManager().addMetadataTag(entry,
+                    getMetadataManager().addMetadataTag(request,entry,
                             "Location: "
                             + a.getJSONObject(i).getString("tag"));
                 }

@@ -163,6 +163,10 @@ public class JsonUtil {
         return row.toString();
     }
 
+    public static String map(Object... values) {
+	return map(Utils.arrayToList(values));
+    }
+
 
     /**
      * _more_

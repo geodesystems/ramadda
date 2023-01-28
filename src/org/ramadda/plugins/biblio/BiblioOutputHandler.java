@@ -229,7 +229,7 @@ public class BiblioOutputHandler extends OutputHandler implements BiblioConstant
         appendTag(sb, TAG_BIBLIO_URL, values[idx++]);
 
 
-        List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         if (metadataList != null) {
             boolean firstMetadata = true;
             for (Metadata metadata : metadataList) {

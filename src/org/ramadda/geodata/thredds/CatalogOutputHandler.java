@@ -295,7 +295,7 @@ public class CatalogOutputHandler extends OutputHandler {
     public void addMetadata(Request request, Entry entry,
                             CatalogInfo catalogInfo, Element datasetNode)
             throws Exception {
-        List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {

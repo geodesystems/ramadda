@@ -1025,7 +1025,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         List<Metadata> savedSearchMetadata =
-            getMetadataManager().getMetadata(entry, METADATA_SAVEDSEARCH);
+            getMetadataManager().getMetadata(request,entry, METADATA_SAVEDSEARCH);
         if (savedSearchMetadata.size() > 0) {
             String searchId = request.getString(ARG_DB_SEARCHID, "");
             headerToks = new ArrayList<String>();
@@ -2510,7 +2510,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                              entry.getId(),
                                              METADATA_SAVEDSEARCH, false,
                                              name, args, null, null, null);
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
             request.put(ARG_DB_SEARCHID, metadata.getId());
             getEntryManager().updateEntry(request, entry);
         }
@@ -2519,7 +2519,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (request.exists(ARG_DB_SEARCHID)) {
             List<Metadata> savedSearchMetadata =
-                getMetadataManager().getMetadata(entry, METADATA_SAVEDSEARCH);
+                getMetadataManager().getMetadata(request,entry, METADATA_SAVEDSEARCH);
             String id = request.getString(ARG_DB_SEARCHID, "");
             for (Metadata m : savedSearchMetadata) {
                 if (m.getId().equals(id)) {

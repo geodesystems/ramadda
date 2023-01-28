@@ -184,7 +184,7 @@ public class DifOutputHandler extends OutputHandler {
         }
 
 
-        List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {

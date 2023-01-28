@@ -836,7 +836,7 @@ public class PointFormHandler extends RecordFormHandler {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
-        List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         boolean didMetadata = map.addSpatialMetadata(entry, metadataList);
         if ( !didMetadata) {
             map.addBox(entry,

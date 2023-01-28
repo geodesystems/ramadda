@@ -200,7 +200,7 @@ public class IIIFImportHandler extends ImportHandler {
 				v1=null;
 			    }
 			    if(v1!=null) {
-				getRepository().getMetadataManager().addMetadata(album,
+				getRepository().getMetadataManager().addMetadata(request,album,
 										 mtype,
 										 v1,v2);
 			    }

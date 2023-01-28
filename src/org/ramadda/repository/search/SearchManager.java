@@ -729,7 +729,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 	//	try {
-        for (Metadata metadata : getMetadataManager().getMetadata(entry)) {
+        for (Metadata metadata : getMetadataManager().getMetadata(request,entry)) {
 	    MetadataType type = getMetadataManager().getType(metadata);
 	    if(type==null) {
 		//		System.err.println("Null type:" + entry.getName() +"  "+ metadata);
@@ -768,7 +768,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		List<String> keywords = getKeywords(request, entry, fileCorpus);
 		if(keywords!=null && keywords.size()>0) {
 		    for(String word:keywords) {
-			getMetadataManager().addMetadata(
+			getMetadataManager().addMetadata(request,
 							 entry,
 							 new Metadata(
 								      getRepository().getGUID(), entry.getId(),

@@ -359,7 +359,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             entry.setName(name);
         }
         String alias = "purpleair_" + Utils.makeID(name);
-        getMetadataManager().addMetadataAlias(entry, alias);
+	getMetadataManager().addMetadataAlias(request,entry, alias);
         entry.setLatitude(sensor.data.getDouble("latitude"));
         entry.setLongitude(sensor.data.getDouble("longitude"));
         entry.setAltitude(sensor.data.getDouble("altitude"));

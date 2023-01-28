@@ -314,7 +314,7 @@ public class WolframSearchProvider extends SearchProvider {
                                      ContentMetadataHandler.TYPE_THUMBNAIL,
                                      false, imgUrl, "image", null, null,
                                      null);
-                    getMetadataManager().addMetadata(newEntry, metadata);
+                    getMetadataManager().addMetadata(request,newEntry, metadata);
                     desc.append(XmlUtil.toString(img, false));
                     desc.append(HtmlUtils.br());
                 }

@@ -721,7 +721,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
         boolean              tags   = request.get("tags", false);
-        List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         if (metadataList.size() == 0) {
             return result;
         }

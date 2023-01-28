@@ -175,7 +175,7 @@ public class MetadataHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void processMetadataXml(Entry entry, Element node,
+    public void processMetadataXml(Request request,Entry entry, Element node,
                                    Hashtable fileMap, boolean internal)
             throws Exception {
         forUser = XmlUtil.getAttribute(node, ATTR_FORUSER, true);
@@ -229,7 +229,7 @@ public class MetadataHandler extends RepositoryManager {
                 internal)) {
             return;
         }
-        getMetadataManager().addMetadata(entry, metadata);
+        getMetadataManager().addMetadata(request,entry, metadata);
     }
 
     /**
@@ -516,6 +516,9 @@ public class MetadataHandler extends RepositoryManager {
             return;
         }
 
+	if(!type.getCanView()) return;
+
+
         Document doc = node.getOwnerDocument();
         Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
                                    new String[] {
@@ -524,7 +527,7 @@ public class MetadataHandler extends RepositoryManager {
         });
         for (MetadataElement element : type.getChildren()) {
             int    index = element.getIndex();
-            String value = metadata.getAttr(index);
+            String value = element.getValueForExport(request, entry, metadata);
             if (value == null) {
                 continue;
             }

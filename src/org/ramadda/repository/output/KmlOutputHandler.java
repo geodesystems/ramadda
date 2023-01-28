@@ -331,7 +331,7 @@ public class KmlOutputHandler extends OutputHandler {
 
                 if (isImage) {
                     List<Metadata> metadataList =
-                        getMetadataManager().getMetadata(entry);
+                        getMetadataManager().getMetadata(request,entry);
                     for (Metadata metadata : metadataList) {
                         if (metadata.getType().equals(
                                 JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {

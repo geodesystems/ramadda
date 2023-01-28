@@ -159,7 +159,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                          ContentMetadataHandler.TYPE_ATTACHMENT, false,
                          attachment, null, null, null, null);
 
-        getMetadataManager().addMetadata(entry, metadata);
+        getMetadataManager().addMetadata(request,entry, metadata);
         getStorageManager().deleteFile(entry.getFile());
         entry.getResource().setPath(newFile.toString());
 

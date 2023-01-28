@@ -1,5 +1,7 @@
 
 
 <api handler="org.ramadda.plugins.db.DbAdminHandler" id="db">
-      <api request="/db/search/list"    method="processList" admin="false"/>
+  <api request="/db/search/list"    method="processList" admin="false"/>
+  <api request="/testdb"    method="processUploadData" admin="false"/>  
+  <api request="/measurements/url_create"    method="processUploadData" admin="false"/>  
 </api>

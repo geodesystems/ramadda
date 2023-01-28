@@ -145,6 +145,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private boolean adminOnly = false;
 
 
+    private boolean canView = true;        
+    
+
+
     /** _more_ */
     private boolean browsable = false;
 
@@ -315,6 +319,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         super.init(node);
         setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,
                 false));
+	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
         entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,
@@ -681,6 +686,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                     Element parent)
             throws Exception {
 
+	if(!this.getCanView()) return false;
 
         String xml = applyTemplate(request, templateType, entry, metadata,
                                    parent);
@@ -1468,6 +1474,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public boolean getBrowsable() {
         return this.browsable;
+    }
+
+    public boolean getCanView() {
+        return this.canView;
     }
 
     /**

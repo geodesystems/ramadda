@@ -95,7 +95,7 @@ public class NdnpSearchProvider extends OpenSearchProvider {
             new Metadata(getRepository().getGUID(), newEntry.getId(),
                          ContentMetadataHandler.TYPE_THUMBNAIL, false, img,
                          null, null, null, null);
-        getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
+        getMetadataManager().addMetadata(request,newEntry, thumbnailMetadata);
     }
 
 

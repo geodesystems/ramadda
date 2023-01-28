@@ -5,5 +5,10 @@
       <element id="name" name="Name" />
       <element id="search_args" name="Search ARGS" />
     </type>
+
+    <type id="db_api_key" name="API Key" foruser="true" canexport="false" canview="false">
+      <element id="key" name="Key" datatype="apikey"/>
+    </type>    
+
   </handler>
 </metadata>

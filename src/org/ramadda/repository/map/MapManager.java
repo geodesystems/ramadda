@@ -1230,7 +1230,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             boolean hasPolygon   = false;
             if (entry.getTypeHandler().shouldShowPolygonInMap()) {
                 List<Metadata> metadataList =
-                    getMetadataManager().getMetadata(entry,
+                    getMetadataManager().getMetadata(request,entry,
 						     MetadataHandler.TYPE_SPATIAL_POLYGON);
                 for (Metadata metadata : metadataList) {
                     List<double[]> points   = new ArrayList<double[]>();
@@ -2022,7 +2022,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             boolean addMarker = true;
             String  idBase    = entry.getId();
             List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
+                getMetadataManager().getMetadata(request,entry);
 
             boolean rectOK = true;
             if (detailed) {

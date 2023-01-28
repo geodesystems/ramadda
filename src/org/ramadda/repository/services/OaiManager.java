@@ -971,7 +971,7 @@ public class OaiManager extends RepositoryManager {
      */
     private void addMetadata(Request request, Entry entry, Element node)
             throws Exception {
-        List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+        List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {

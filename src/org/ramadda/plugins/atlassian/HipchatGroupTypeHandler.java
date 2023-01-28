@@ -408,7 +408,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
                 String title = JsonUtil.readValue(link, "video.title", null);
                 //                System.err.println("url:" + url + " " + title + " thumb:"  + thumbnailUrl);
                 //TODO:add this as metadata
-                getMetadataManager().addMetadata(messageEntry,
+                getMetadataManager().addMetadata(request,messageEntry,
                         new Metadata(getRepository().getGUID(),
                                      messageEntry.getId(),
                                      ContentMetadataHandler.TYPE_URL, false,
@@ -420,7 +420,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
                                      ContentMetadataHandler.TYPE_THUMBNAIL,
                                      false, thumbnailUrl, null, null, null,
                                      null);
-                    getMetadataManager().addMetadata(messageEntry,
+                    getMetadataManager().addMetadata(request,messageEntry,
                             thumbnailMetadata);
                 }
             }

@@ -493,7 +493,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
                                       Metadata.DFLT_EXTRA));
         for (Metadata metadata : metadataList) {
             metadata.setEntryId(entry.getId());
-            getMetadataManager().addMetadata(entry, metadata);
+            getMetadataManager().addMetadata(request,entry, metadata);
         }
 
         Date now = new Date();

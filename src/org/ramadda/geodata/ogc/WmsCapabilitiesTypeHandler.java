@@ -144,7 +144,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
             entry.setDescription(XmlUtil.getGrandChildText(service,
                     WmsUtils.TAG_ABSTRACT, entry.getDescription()));
         }
-        addMetadata(entry, service);
+        addMetadata(request,entry, service);
 
         String getMapUrl = XmlUtil.getAttribute(onlineResource, "xlink:href");
         if (getMapUrl.indexOf("?") < 0) {
@@ -443,8 +443,8 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception on badness
      */
-    private void addMetadata(Entry entry, Element service) throws Exception {
-        addKeywords(entry, service);
+    private void addMetadata(Request request,Entry entry, Element service) throws Exception {
+        addKeywords(request,entry, service);
         String person = getText(service,
                                 xpath(WmsUtils.TAG_CONTACTINFORMATION,
                                       WmsUtils.TAG_CONTACTPERSONPRIMARY,
@@ -461,7 +461,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                           WmsUtils.TAG_CONTACTELECTRONICMAILADDRESS), "");
 
         if (person != null) {
-            getMetadataManager().addMetadata(
+            getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
@@ -480,7 +480,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception on badness
      */
-    private void addKeywords(Entry entry, Element service) throws Exception {
+    private void addKeywords(Request request,Entry entry, Element service) throws Exception {
         Element keyWords = XmlUtil.findChild(service,
                                              WmsUtils.TAG_KEYWORDLIST);
         if (keyWords != null) {
@@ -488,7 +488,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                                 WmsUtils.TAG_KEYWORD);
             for (int i = 0; i < children.size(); i++) {
                 String text = XmlUtil.getChildText((Element) children.get(i));
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(), "content.keyword", true,
                                      text, "", "", "", ""));

@@ -290,7 +290,7 @@ public class EntryManager extends RepositoryManager {
 
         //Make the top group if needed
         if (topEntry == null) {
-            topEntry = makeNewGroup(null, GROUP_TOP,
+            topEntry = makeNewGroup(getRepository().getAdminRequest(),null, GROUP_TOP,
                                     getUserManager().getDefaultUser());
             getAccessManager().initTopEntry(topEntry);
         }
@@ -1692,7 +1692,7 @@ public class EntryManager extends RepositoryManager {
 		IOUtil.writeFile(f, json);
 		f = new File(getStorageManager().moveToEntryDir(entry,
 								f).getName());
-		getMetadataManager().addMetadata(entry,
+		getMetadataManager().addMetadata(request,entry,
 						 new Metadata(getRepository().getGUID(), entry.getId(),
 							      "content.votes", false, f.toString(), "", "", "",""));
 		getEntryManager().updateEntry(null, entry);
@@ -2911,7 +2911,7 @@ public class EntryManager extends RepositoryManager {
 	    List<String> tags = request.get(ARG_TAGS,new ArrayList<String>());
 	    //Check for deleted metadata. This input gets set in ramadda.js
 	    for(Entry e: entries) {
-		List<Metadata> existingMetadata = getMetadataManager().getMetadata(e);
+		List<Metadata> existingMetadata = getMetadataManager().getMetadata(request,e);
 		for(Metadata mtd: existingMetadata) {
 		    if(request.getString("metadata_state_" + mtd.getId(),"").equals("delete")) {
 			mtd.setMarkedForDelete(true);
@@ -2923,7 +2923,7 @@ public class EntryManager extends RepositoryManager {
 		tag = tag.trim();
 		if(tag.length()==0) continue;
 		for(Entry e: entries) {
-		    getMetadataManager().addMetadata(
+		    getMetadataManager().addMetadata(request,
 						     e,
 						     new Metadata(getRepository().getGUID(), e.getId(),
 							      "enum_tag", false, tag, "", "", "", ""),true);
@@ -4024,7 +4024,7 @@ public class EntryManager extends RepositoryManager {
 						     request.getString(
 								       ARG_CONTRIBUTION_FROMEMAIL, ""));
         String user = fromName;
-        getMetadataManager().addMetadata(
+        getMetadataManager().addMetadata(request,
 					 entry,
 					 new Metadata(
 						      getRepository().getGUID(), entry.getId(),
@@ -5085,7 +5085,7 @@ public class EntryManager extends RepositoryManager {
 
 	List<Metadata> newMetadata = new ArrayList<Metadata>();
 	for (Metadata oldMetadata :
-		 getMetadataManager().getMetadata(oldEntry)) {
+		 getMetadataManager().getMetadata(request,oldEntry)) {
 	    newMetadata.add(
 			    getMetadataManager().copyMetadata(
 							      oldEntry, newEntry, oldMetadata));
@@ -6419,14 +6419,14 @@ public class EntryManager extends RepositoryManager {
             for (Element entryChild : (List<Element>) entryChildren) {
                 String tag = entryChild.getTagName();
                 if (tag.equals("tag")) {
-                    getMetadataManager().addMetadata(entry,
+                    getMetadataManager().addMetadata(request,entry,
 						     new Metadata(getRepository().getGUID(),
 								  entry.getId(), "enum_tag", true,
 								  XmlUtil.getChildText(entryChild),
 								  "", "", "", ""));
 
                 } else if (tag.equals(TAG_METADATA)) {
-                    getMetadataManager().processMetadataXml(entry,
+                    getMetadataManager().processMetadataXml(request,entry,
 							    entryChild, files, internal);
                 } else if (tag.equals(TAG_DESCRIPTION)) {}
                 else {
@@ -6465,7 +6465,7 @@ public class EntryManager extends RepositoryManager {
 		}
 
 		
-		newEntry = makeNewGroup(pathEntry, parentName,request.getUser(),
+		newEntry = makeNewGroup(request,pathEntry, parentName,request.getUser(),
 					null,parentType);
 	    }
 	    pathEntry  = newEntry;
@@ -6832,11 +6832,11 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addAttachment(Entry entry, File file, boolean andInsert)
+    public void addAttachment(Request request,Entry entry, File file, boolean andInsert)
 	throws Exception {
         String theFile = getStorageManager().moveToEntryDir(entry,
 							    file).getName();
-        getMetadataManager().addMetadata(
+        getMetadataManager().addMetadata(request,
 					 entry,
 					 new Metadata(
 						      getRepository().getGUID(), entry.getId(),
@@ -9046,7 +9046,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             Hashtable extra = new Hashtable();
-            getMetadataManager().getMetadata(theEntry);
+            getMetadataManager().getMetadata(request,theEntry);
 	    long t1= System.currentTimeMillis();
             boolean changed =
                 getMetadataManager().addInitialMetadata(request, theEntry,
@@ -9380,7 +9380,7 @@ public class EntryManager extends RepositoryManager {
                 }
             }
             if (theChild == null) {
-                theChild = makeNewGroup(group, tok, user);
+                theChild = makeNewGroup(request,group, tok, user);
             }
             group = theChild;
         }
@@ -9755,7 +9755,7 @@ public class EntryManager extends RepositoryManager {
                 if ( !createIfNeeded) {
                     return null;
                 }
-                currentEntry = makeNewGroup(currentEntry, childName, request.getUser(),
+                currentEntry = makeNewGroup(request,currentEntry, childName, request.getUser(),
                                             null, (lastOne
 						   ? lastGroupType
 						   : groupType), initializer);
@@ -9798,9 +9798,9 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry makeNewGroup(Entry parent, String name, User user)
+    public Entry makeNewGroup(Request request,Entry parent, String name, User user)
 	throws Exception {
-        return makeNewGroup(parent, name, user, null);
+        return makeNewGroup(request,parent, name, user, null);
     }
 
 
@@ -9817,7 +9817,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry makeNewGroup(Entry parent, String name, User user,
+    public Entry makeNewGroup(Request request,Entry parent, String name, User user,
                               Entry template)
 	throws Exception {
         String groupType = TypeHandler.TYPE_GROUP;
@@ -9825,7 +9825,7 @@ public class EntryManager extends RepositoryManager {
             groupType = template.getTypeHandler().getType();
         }
 
-        return makeNewGroup(parent, name, user, template, groupType);
+        return makeNewGroup(request,parent, name, user, template, groupType);
     }
 
 
@@ -9843,10 +9843,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry makeNewGroup(Entry parent, String name, User user,
+    public Entry makeNewGroup(Request request,Entry parent, String name, User user,
                               Entry template, String type)
 	throws Exception {
-        return makeNewGroup(parent, name, user, template, type, null);
+        return makeNewGroup(request,parent, name, user, template, type, null);
     }
 
     /**
@@ -9863,7 +9863,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry makeNewGroup(Entry parent, String name, User user,
+    public Entry makeNewGroup(Request request,Entry parent, String name, User user,
                               Entry template, String type,
                               EntryInitializer initializer)
 	throws Exception {
@@ -9880,7 +9880,7 @@ public class EntryManager extends RepositoryManager {
         group.setDate(date.getTime());
         if (template != null) {
             group.initWith(template, true);
-            getRepository().getMetadataManager().initNewEntry(group,
+            getRepository().getMetadataManager().initNewEntry(request,group,
 							      initializer);
         }
         group.setParentEntry(parent);

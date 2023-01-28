@@ -332,7 +332,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             if (keywords != null) {
                 for (String word :
                         StringUtil.split(keywords, ",", true, true)) {
-                    getMetadataManager().addMetadata(entry,
+                    getMetadataManager().addMetadata(request,entry,
                             new Metadata(getRepository().getGUID(),
                                          entry.getId(),
                                          ContentMetadataHandler.TYPE_KEYWORD,
@@ -345,7 +345,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             String urlName = XmlUtil.getGrandChildText(root,
                                  GpxUtil.TAG_URLNAME, "");
             if (url != null) {
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
                                      ContentMetadataHandler.TYPE_URL, false,
@@ -356,7 +356,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             String author = XmlUtil.getGrandChildText(root,
                                 GpxUtil.TAG_AUTHOR, null);
             if (author != null) {
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
                                      ContentMetadataHandler.TYPE_AUTHOR,
@@ -368,7 +368,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             String email = XmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
                                null);
             if (email != null) {
-                getMetadataManager().addMetadata(entry,
+                getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
                                      ContentMetadataHandler.TYPE_EMAIL,
