@@ -2614,19 +2614,28 @@ public class Utils extends IO {
                                 String delimiter) {
         label = stripTags(label);
         label = label.trim().toLowerCase();
-	label = label.replaceAll(":", delimiter).replaceAll("&", delimiter).replaceAll(" ", delimiter).replaceAll("\\.", delimiter).replaceAll(
-																	       "\n", delimiter);
-	label = label.replaceAll("\\(", delimiter).replaceAll("\\)", delimiter).replaceAll("\\?", delimiter);
-	label = label.replaceAll("[\"'`]+", "").trim();
+	label = Utils.replaceAll(label,
+				 ":", delimiter,
+				 "&", delimiter,
+				 " ", delimiter,
+				 "\\.", delimiter,
+				 "\n", delimiter,
+				 "\\(", delimiter,
+				 "\\)", delimiter,
+				 "\\?", delimiter,
+				 "[\"'`]+", "").trim();
 	//        label = label.replaceAll("\\([^\\)]+\\)", "XXX");
 
-        label = label.replaceAll("-", delimiter);
-        label = label.replaceAll(",", delimiter);
-        label = label.replaceAll("/", delimiter);
-        label = label.replaceAll("%", "");	
-        label = label.replaceAll("__+", delimiter);
-        label = label.replaceAll("[\\{\\}=]+", delimiter);
-        label = label.replaceAll("_$", "");
+        label = Utils.replaceAll(label,
+				 "-", delimiter,
+				 ",", delimiter,
+				 "/", delimiter,
+				 "\\$",delimiter,
+				 "%", delimiter,	
+				 "__+", delimiter,
+				 "[\\{\\}=]+", delimiter,
+				 "_$", "");
+
         if (forCode && Pattern.matches("^[0-9]+.*", label)) {
             label = delimiter + label;
         }
@@ -4321,9 +4330,19 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static String replaceAll(String s, String pattern, String value) {
-        return s.replace(pattern, value);
+    public static String replace(String s, String...args) {
+	for(int i=0;i<args.length;i+=2) {
+	    s = s.replace(args[i],args[i+1]);
+	}
+	return s;
     }
+
+    public static String replaceAll(String s, String...args) {
+	for(int i=0;i<args.length;i+=2) {
+	    s = s.replaceAll(args[i],args[i+1]);
+	}
+	return s;
+    }    
 
     /**
      * _more_
