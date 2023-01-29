@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan 29 15:49:54 MST 2023";
+var build_date="RAMADDA build date: Sun Jan 29 15:56:39 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -50117,14 +50117,16 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		dom.append(HU.div([ID,id]));
 		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
 	    });
-	    colorRowBy.forEach((cb,idx)=>{
-		if(idx>0)
-		    dom.append(HU.div(['style','border-bottom:1px solid #ccc']));
+	    if(colorRowBy) {
+		colorRowBy.forEach((cb,idx)=>{
+		    if(idx>0)
+			dom.append(HU.div(['style','border-bottom:1px solid #ccc']));
 		    idx = (colorBarCnt++);
-		let id = this.domId(ID_COLORTABLE+idx);
-		dom.append(HU.div([ID,id]));
-		cb.colorBy.displayColorTable(null,true,ID_COLORTABLE+idx);
-	    });	    
+		    let id = this.domId(ID_COLORTABLE+idx);
+		    dom.append(HU.div([ID,id]));
+		    cb.colorBy.displayColorTable(null,true,ID_COLORTABLE+idx);
+		});
+	    }
 
 	    let headers =  this.find(".display-table-header");
 	    headers.click(function() {
