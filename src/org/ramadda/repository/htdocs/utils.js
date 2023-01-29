@@ -3876,9 +3876,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
         });
     },
-    buttons:function(args) {
+    buttons:function(args,clazz) {
 	let buttons = Utils.wrap(args,"<div style='display:inline-block;margin-right:6px;'>","</div>");
-	return HU.div(['class','ramadda-button-bar'], buttons);
+	return HU.div(['class',clazz??'ramadda-button-bar'], buttons);
     },
     hbox: function(args) {
         let row = HtmlUtils.openTag("tr", ["valign", "top"]);
