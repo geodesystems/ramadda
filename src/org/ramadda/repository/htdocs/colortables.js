@@ -180,6 +180,7 @@ $.extend(Utils,{
             html +='<tr>';
         }
         let formatter = n=>{
+	    if(isNaN(n)) return '';
             if(options.decimals>=0)
                 return number_format(n,options.decimals);
             return  this.formatNumberComma(n);
