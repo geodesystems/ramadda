@@ -573,10 +573,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let km =radii[idx];
 		if(km==null) continue;
 		let skm = String(km).trim();
-		if(skm.endsWith('m')) {
-		    km = 1.60934*parseFloat(skm.replace('m',''));
+		if(skm.endsWith('mi')) {
+		    km = 1.60934*parseFloat(skm.replace('mi',''));
 		} else if (skm.endsWith('ft')) {
 		    km = 0.0003048*parseFloat(skm.replace('ft',''));
+		} else if (skm.endsWith('m')) {
+		    km = parseFloat(skm.replace('m',''))/1000;
 		} else if (skm.endsWith('km')) {
 		    km = skm.replace('km','');
 		}
@@ -1106,8 +1108,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let stac= HU.div(['id',this.domId('stac_top')]) +
 		HU.div(['id',this.domId('stac_output')]);
 	    this.jq('stac_contents').html(stac);
-	    let catalogUrl = ramaddaBaseUrl+'/resources/staccatalog.json';
-	    let stacLinks = [{value:'',label:'Select'}, {value:catalogUrl,label:'RAMADDA Stac Catalog'}];
+	    let catalogUrl = ramaddaBaseUrl+'/resources/stac_catalogs.json';
+	    let stacLinks = [{value:'',label:'Select'}, {value:catalogUrl,label:'Stac Catalogs'},
+			     {value:ramaddaBaseUrl+'/resources/pc_catalog.json',label:'Planet Earth Catalogs'}];
 	    let seenStacUrls = {};
 	    seenStacUrls[catalogUrl]=true;
 	    let makeTop=(current)=>{ 
@@ -1187,12 +1190,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let _this = this;
 	    let showStac=(data,url)=>{
-//		console.dir(data);
-		let html = '';
-		if(data.title) {
-		    let title = data.title+HU.space(1) + HU.href(url,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
-		    html+=HU.center(HU.b(title));
+		//is it the stac_catalogs.json
+		if(Array.isArray(data)) {
+		    data = {
+			title:'Stac Catalogs',
+			links:data
+		    }
 		}
+		    
+		console.dir(data);
+		let html = '';
+		let title = (data.title??url)+HU.space(1) + HU.href(url,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
+		html+=HU.center(HU.b(title));
 		if(data.description) {
 		    let desc = Utils.stripTags(data.description);
 //		    console.log('BEFORE:'+desc);
@@ -1206,27 +1215,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(data.links) {
 		    let cnt = 0;
 		    data.links.forEach(link=>{
-			if(!Utils.stringDefined(link.href) ||link.rel=='self') return;
+			let url = link.href??link.url??link.link;
+			if(!Utils.stringDefined(url) ||link.rel=='self') return;
 			let label = link.title;
 			if(!label)
-			    label  = link.href.replace(/.*\/([^\/]+$)/,"$1");
-			let href = HU.href(link.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' '+label+' ('+link.rel+')',['target','_stactarget','class','ramadda-clickable']);
+			    label  = url.replace(/.*\/([^\/]+$)/,"$1");
+			let href = HU.href(url,HU.getIconImage('fas fa-link',[],['title',link.summary??'','style','font-size:9pt;'])+' '+label+(link.rel?' ('+link.rel+')':''),['target','_stactarget','class','ramadda-clickable']);
 
 			let isJson;
-			if(Utils.stringDefined(link.type)) {
+			if(Utils.isDefined(link.variables)) {
+			    isJson = true;
+			} else if(Utils.stringDefined(link.type)) {
 			    isJson  = link.type == 'application/json' || link.type == 'application/geo+json';
 			} else {
 			    //Some guess work
 			    if(link.rel)
 				isJson = ['next','search','parent','root','child','items','search'].includes(link.rel);
-			    if(!isJson) isJson = link.href.endsWith('json');
+			    if(!isJson) isJson = url.endsWith('json');
 			}
 
 			if(!isJson) {
 			    linksHtml2+=HU.tr(HU.td(['width','10%','nowrap','true'],'')+HU.td(href));
 			} else {
 			    linksHtml1+=HU.tr(HU.td(['width','10%','nowrap','true'],
-					     HU.div(['title',link.href,'class','imdv-stac-item'],HU.span(['link',link.href,'class','imdv-stac-link'], 'Load'))) +
+					     HU.div(['title',url,'class','imdv-stac-item'],HU.span(['link',url,'class','imdv-stac-link'], 'Load'))) +
 					     HU.td(href));
 			}
 
@@ -1239,6 +1251,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let images = '';
 		    let other = '';
 		    Object.keys(data.assets).forEach((key,idx)=>{
+			console.log(key)
 			//limit the number
 			if(idx>200) return;
 			let asset = data.assets[key];
@@ -1250,7 +1263,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			let label = asset.name??asset.title??key;
 			let link = HU.href(asset.href,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;'])+' ' +label +' ('+ asset.type+')',['title',asset.href,'target','_stactarget','class','ramadda-clickable']);
-			let isImage = asset.type&& asset.type.indexOf('image')>=0;
+			let type= asset.type??asset.media_type;
+			let isImage = type&& type.indexOf('image')>=0;
 
 			if(asset.href.endsWith('ovr')) isImage= false;
 			if(isImage) {
@@ -1282,7 +1296,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    load($(this).attr('link'));
 		});
 		this.jq('stac_output').find('.imdv-stac-asset').button().click(function() {
-		    if(!data.bbox) return;
+		    let bbox=data.bbox;
+		    if(!data.bbox) {
+			console.dir(data);
+			bbox = data?.extent?.spatial?.bbox;
+			if(bbox) {
+			    bbox=bbox[0];
+			    if(bbox) bbox = [bbox[0],bbox[3],bbox[2],bbox[1]];
+			}
+		    }
+		    if(!bbox) {
+			alert('No bbox found');
+			return
+		    }
 		    let asset =  data.assets[$(this).attr('asset-id')];
 		    let url = asset.href;
 		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
@@ -1293,7 +1319,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			entryType:'stacimage',
 			icon:'/repository/icons/mapfile.png',
 			name:asset.name??asset.title,
-			bbox:data.bbox,
+			bbox:bbox,
 			resourceUrl:url
 		    }
 		    let mapGlyph = _this.handleNewFeature(null,{rotation:0,transform:''},attrs);
@@ -1314,6 +1340,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    showStac(data,url);
 		}).fail(err=>{
+//		    console.dir(err);
+		    JSON.parse(err.responseText)
 		    this.jq('stac_output').html('Load failed. URL: ' + url);
 		});
 	    }
@@ -3303,6 +3331,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    [west,south,east,north] = opts.bbox;
 		else
 		    [west, south, lowest, east, north, highest] = opts.bbox;		    
+		console.log("BBOX:" + west,south,east,north);
 		let iw = 2048;
 		let ih = 1024;
 		//sanity check for bad bbox
@@ -4998,24 +5027,24 @@ MapGlyph.prototype = {
 	    if(level>=15) return r(250,'ft');	    
 	    if(level>=14) return r(500,'ft');
 	    if(level>=13) return r(1500,'ft');
-	    if(level>=12) return r(0.5,'m');
-	    if(level>=11) return r(1,'m');
-	    if(level>=10) return r(2,'m');
-	    if(level>=9) return r(2.5,'m');	    	    	    
-	    if(level>=8) return r(5,'m');
-	    if(level>=7) return r(10,'m');
-	    if(level>=6) return r(25,'m');
-	    if(level>=5) return r(50,'m');
-	    if(level>=4) return r(100,'m');	    	    	    	    
-	    if(level>=3) return r(250,'m');	    	    	    	    
-	    return	 r(500,'m');
+	    if(level>=12) return r(0.5,'mi');
+	    if(level>=11) return r(1,'mi');
+	    if(level>=10) return r(2,'mi');
+	    if(level>=9) return r(2.5,'mi');	    	    	    
+	    if(level>=8) return r(5,'mi');
+	    if(level>=7) return r(10,'mi');
+	    if(level>=6) return r(25,'mi');
+	    if(level>=5) return r(50,'mi');
+	    if(level>=4) return r(100,'mi');	    	    	    	    
+	    if(level>=3) return r(250,'mi');	    	    	    	    
+	    return	 r(500,'mi');
 	}
 	return this.attrs.radii;
     },
     addToStyleDialog:function(style) {
 	if(this.isRings()) {
 	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
-							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2m (miles), 100ft') +
+							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
 				 'id',this.domId('rangeringangle'),'size',4])) +
@@ -8837,3 +8866,5 @@ window.olGetSvgPattern = function(p,stroke,fill) {
 	url:url
     }
 };
+
+

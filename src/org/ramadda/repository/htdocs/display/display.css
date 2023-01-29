@@ -46,6 +46,7 @@ a.display-container {
 .display-htmltable-category-row {
     background:#fff !important;
     background:#3D85C6 !important;
+    background:#3F99C6 !important;
     color:#fff;
 }
 
@@ -214,6 +215,7 @@ a.display-container {
 .display-filter-label {
     max-width:300px;
     overflow-x:auto;
+    font-weight:600;
 }
 
 .display-header-vertical .display-filter-label {

@@ -1122,7 +1122,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let colorRowBy;
 	    let colorFullRow = this.getColorFullRow();
 	    let colorHeaderTemplate = this.getColorHeaderTemplate();
-	    let colorHeaderStyle = this.getColorHeaderStyle('font-weight:bold;margin-top:10px;margin-bottom:10px;writing-mode: vertical-lr; -ms-writing-mode: tb-rl; transform: rotate(180deg);');
+	    let colorHeaderStyle = this.getColorHeaderStyle('font-weight:bold;margin-right:20px;margin-top:10px;margin-bottom:10px;writing-mode: vertical-lr; -ms-writing-mode: tb-rl; transform: rotate(180deg);');
 
 	    if(this.getProperty('colorRowBy')) {
 		let c =this.getProperty('colorRowBy');
@@ -1243,8 +1243,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    if(includeGeo) header1+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
 	    if(includeGeo) header2+=HU.th(HU.div(headerAttrs,"")) + HU.th([],HU.div(headerAttrs,""));	    
 	    if(colorRowBy && !colorFullRow) {
-		header1+=HU.th(['width','width:5px;'],'');
-		header2+=HU.th(['width','width:5px;'],'');		
+		header1+=HU.th(['width','width:10px;'],'');
+		header2+=HU.th(['width','width:10px;'],'');		
 	    }
 
 	    header1+="</tr>\n";
@@ -1322,10 +1322,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 
 		fields.forEach((f,idx)=>{
-
-
-		    let value = d[f.getIndex()]
-		    let sv =  this.formatFieldValue(f,record,String(value));
+		    let svalue = String(d[f.getIndex()]);
+		    let sv =  this.formatFieldValue(f,record,svalue);
 		    if(maxLength>0 && sv.length>maxLength && f.isString()) {
 			if(!record.isAggregate) {
 			    sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
@@ -1398,7 +1396,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    tdAttrs.push("class","display-td display-htmltable-td");		    
 		    let attrs = colAttrs[f.getId()];
 		    if(attrs) tdAttrs = Utils.mergeLists(tdAttrs,attrs);
-
+		    if(svalue.trim().length==0)
+			tdAttrs.push('nullvalue','true');
 		    if(colorBy) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg =  Utils.getForegroundColor(color);
@@ -1438,7 +1437,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 		if(colorRowBy && !colorFullRow) {
 		    let color =  colorRowBy.getColorFromRecord(record);
-		    columns.push(HU.td(['width','5px','class','display-td display-htmltable-td','style','background:' + color+';'],''));
+		    columns.push(HU.td(['width','10px','class','display-td display-htmltable-td','style','background:' + color+';'],''));
 		}
 
 
@@ -1603,8 +1602,11 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    return HU.td(attrs,v);
 	},
 	measureCont:function(yes,no) {
-	    if(no>0 && yes>0 && yes+no>7 ) {
-		return 1/(yes/no);
+	    if(no>0 && yes>0 && yes+no>10 ) {
+		let diff= Math.abs(yes-no);
+		let p = diff/(yes+no);
+//		console.log(yes,no," DIFF:" + diff,p,1-p);
+		return 1-p;
 	    }
 	    return 0;
 	},
@@ -1642,7 +1644,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 			    record.setValue(upvotes.getIndex(),yes);
 			if(downvotes)
 			    record.setValue(downvotes.getIndex(),no);
-			record.setValue(controversial.getIndex(),maxCont);						
+			record.setValue(controversial.getIndex(),maxCont);
 		    }
 		});
 
@@ -1710,8 +1712,9 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		if(!_this.isPollField(field)) {
 		    return
 		}
+
 		let c = $(this).html().trim();
-		if(c=='') return
+		if(c=='' || $(this).attr('nullvalue')==='true') return
 		let record =$(this).attr('record-index');		
 		$(this).append(HU.div(['style','height:2em','class','display-polltable-padding']));
 		let contents = HU.leftRightTable(HU.div(['field-id',field,'record-index',record,'vote','yes','class','vote ramadda-clickable','title','Vote yes'],HU.getIconImage('fa-regular fa-thumbs-up')),
@@ -1722,7 +1725,9 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
             this.jq(ID_DISPLAY_CONTENTS).find('.vote').click(function() {
 		let thumb= $(this);
 		let vote =$(this).attr('vote');
-//		if(!Utils.isDefined(vote)) return;
+		if(!Utils.isDefined(vote)) {
+		    return;
+		}
 		let field =$(this).attr('field-id');
 		let record =$(this).attr('record-index');		
 		let id = _this.getProperty("entryId", "");
@@ -1733,8 +1738,10 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    if(!data.ok) {
 			console.log('An error occurred:' + data);
 		    } 
-//		    thumb.attr('vote',null);
-//		    thumb.html('--');
+		    if(!_this.canEdit()) {
+			thumb.attr('vote',null);
+			thumb.html('--');
+		    }
 		}).fail(function(data) {
 		    alert('An error occurred');
 		});
@@ -1788,23 +1795,12 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    stats +=HU.space(2)+'Total no votes: ' + statsNo.total;
 		    statsNo.range = statsNo.max-statsNo.min;
 		}
-//		stats+=HU.span(['style','color:#BF282B'],' [Controversial]');
 		_this.jq(ID_VOTE_STATS).html(stats)
-
-
-//		console.log(statsYes);		console.log(statsNo);		
 		let ct = Utils.getColorTable('plotly_reds',true);
 		let getContColor = (yes,no,cont) =>{
 		    let c;
-		    let p=-1;
-		    if(cont<1) {
-			p =(cont-0.5)/.5;
-		    } else {
-			p =(1.5-cont)/.5;
-		    }
-		    if(p>-1) {
-			let idx=Math.min(ct.length-1,Math.max(0,parseInt(p*ct.length)))
-//			console.log(yes,no,cont,p,idx,c);
+		    if(cont>0.5) {
+			let idx=Math.min(ct.length-1,Math.max(0,parseInt(cont*ct.length)))
 			c=ct[idx];
 		    }
 		    return c;
@@ -1820,6 +1816,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 			no = voteObj.no??no;				
 		    } 
 		    let percentYes = 0;
+		    let percentNo=0;
 		    if(statsYes) {
 			if(statsYes.total>0)
 			    percentYes = parseInt(100*(yes/statsYes.total));
@@ -1839,11 +1836,8 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 		    if(c) {
 			style+=HU.css('color',c);
 		    }
-//		    if(cont>=0.8) style+=HU.css('background','red');		    
-//		    if(yes>0 && no>0)console.log(yes,no,cont)
 		    label += HU.tr(HU.td(['width','5px','style',style,'align','right'], 'Yes:')+HU.td(['style',style], yes+' (' + percentYes+'%)'));
 		    label += HU.tr(HU.td(['width','5px','style',style,'align','right'], 'No:')+HU.td(['style',style], no+' (' + percentNo+'%)'));
-//		    label += HU.tr(HU.td(['width','5px','style',style,'align','right'], 'cont:')+HU.td(['style',style], cont));		    
 		    label+='</table>'
 		    $(this).html(label);
 		});
