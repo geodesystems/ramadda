@@ -899,6 +899,9 @@ PointRecord.prototype =  {
 	this.data.map((v,idx)=>{newRecord.data[idx] = v;});
 	return newRecord;
     },
+    getRowIndex: function() {
+	return this.rowIndex;
+    },
     isHighlight: function(display) {
 	if(!this.highlightForDisplay) this.highlightForDisplay={};
 	return this.highlightForDisplay[display];
@@ -2101,14 +2104,18 @@ function RecordFilter(display,filterFieldId, properties) {
 		    dfltValueMax = parseFloat(tmpMax);
 		}
 
-                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-type",this.getFieldType(),"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
-		widget += "-";
-                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-type",this.getFieldType(),"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",this.getId()]);
-	    } else if(this.getFieldType() == "date") {
-                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",this.getId()]) +"-" +
-		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",this.getId()]);
-		this.dateIds.push(widgetId+"_date1");
-		this.dateIds.push(widgetId+"_date2");
+		let size = this.getProperty(this.getId()+'.filterWidgetSize',
+					    this.getProperty('filterWidgetSize', '60px'));
+		minStyle+=HU.css('width',size);
+		maxStyle+=HU.css('width',size);
+                widget = HtmlUtils.input('',dfltValueMin,[STYLE,minStyle,'data-type',this.getFieldType(),'data-min',min,'class','display-filter-range display-filter-input', 'id',widgetId+'_min','xsize',3,'fieldId',this.getId()]);
+		widget += '-';
+                widget += HtmlUtils.input('',dfltValueMax,[STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,'class','display-filter-range display-filter-input', 'id',widgetId+'_max','xsize',3,'fieldId',this.getId()]);
+	    } else if(this.getFieldType() == 'date') {
+                widget =HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date1','fieldId',this.getId()]) +'-' +
+		    HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date2','fieldId',this.getId()]);
+		this.dateIds.push(widgetId+'_date1');
+		this.dateIds.push(widgetId+'_date2');
             } else {
 		let dfltValue = this.getPropertyFromUrl(this.getId() +".filterValue","");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
