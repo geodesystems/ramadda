@@ -1715,7 +1715,8 @@ public class EntryManager extends RepositoryManager {
 		json = obj.toString();
 		IOUtil.writeFile(f,json);
 		sb.append(JsonUtil.map(Utils.makeList("ok", "true")));
-		return new Result("", sb, JsonUtil.MIMETYPE);
+		if(!request.get("returnvotes",false))
+		    return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	    return new Result("", new StringBuilder(json), JsonUtil.MIMETYPE);	
 	}
