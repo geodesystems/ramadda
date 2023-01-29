@@ -1201,8 +1201,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    //Add the place holder for the colored rows
 	    if(colorRowBy && !colorFullRow) {
 		colorRowBy.forEach(c=>{
-		    header1+=HU.th(HU.div(['style','width:10px;'],c.label));
-		    header2+=HU.th(HU.div(['style','width:10px;'],c.label));		    
+		    header1+=HU.th(['style','max-width:16px;width:16px;'],HU.div([],c.label));
+		    header2+=HU.th(['style','max-width:16px;width:16px;'],HU.div([],c.label));		    
 		});
 	    }
 
@@ -1316,7 +1316,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    label = this.getRecordHtml(record, null, template);
 			    label = HU.div(['style',colorHeaderStyle], label);
 			}
-			columns.push(HU.td(['class','display-td display-htmltable-td','style','border-right:1px solid #444;background:' + color+';width:10px;'],label));
+			columns.push(HU.td(['class','display-td display-htmltable-td','style','width:16px;max-width:16px;border-right:1px solid #444;background:' + color+';width:10px;'],label));
 		    });
 		}
 
@@ -1506,6 +1506,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    });
 	    let dom = this.jq(ID_COLORTABLE);
 	    let colorBarCnt = 0;
+	    dom.html('');
 	    cbs.forEach((cb,idx)=>{
 		idx = (colorBarCnt++);
 		let id = this.domId(ID_COLORTABLE+idx);
@@ -1515,7 +1516,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    colorRowBy.forEach((cb,idx)=>{
 		if(idx>0)
 		    dom.append(HU.div(['style','border-bottom:1px solid #ccc']));
-		    
 		    idx = (colorBarCnt++);
 		let id = this.domId(ID_COLORTABLE+idx);
 		dom.append(HU.div([ID,id]));

@@ -1331,7 +1331,7 @@ ColorByInfo.prototype = {
 	if(!this.getProperty("showColorTable",true)) return;
 	if(this.compareFields.length>0) {
 	    var legend = "";
-	    this.compareFields.map((f,idx)=>{
+	    this.compareFields.forEach((f,idx)=>{
 		legend += HtmlUtils.div([STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
