@@ -1685,8 +1685,10 @@ public class EntryManager extends RepositoryManager {
 		f = getMetadataManager().getFile(request, entry,
 						 metadataList.get(0), 1);
 		json = getStorageManager().readFile(f.toString());
-		System.err.println("JSON:" + json);
 	    } else {
+		if ( !getAccessManager().canDoEdit(request, entry)) {
+		    return new Result("", new StringBuilder(JsonUtil.map("error",JsonUtil.quote("No vote file available"))), JsonUtil.MIMETYPE);	
+		}
 		json = "{}";
 		f = getStorageManager().getTmpFile(request, "votes.json");
 		IOUtil.writeFile(f, json);
@@ -1696,7 +1698,6 @@ public class EntryManager extends RepositoryManager {
 						 new Metadata(getRepository().getGUID(), entry.getId(),
 							      "content.votes", false, f.toString(), "", "", "",""));
 		getEntryManager().updateEntry(null, entry);
-		System.err.println("NEW JSON:" + json);
 	    }
 
 	    if(request.defined("key") && request.defined("vote")) {
