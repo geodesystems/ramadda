@@ -1805,7 +1805,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty('showColorTableStride',1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
-	    let label = this.getColorTableLabel();
+	    let label = this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
 	    if(label) {
 		if(args.field) label = label.replace('${field}', args.field.getLabel());
 		if(args.showColorTableDots)
@@ -2108,12 +2108,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return iconMap;
 	},
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy) {
-            let pointData = this.getData();
-            if (pointData == null) return null;
 	    if(this.getProperty('colorByAllRecords')) {
-		records = pointData.getRecords();
+		records = this.getRecords();
 	    }
-	    let fields = pointData.getRecordFields();
+	    if(!records) return null;
+	    let fields = this.getFields();
 	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
 	},
 	getColorByMap: function(prop) {
@@ -3049,6 +3048,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return [];
 	},
+
+	    
 	sortRecords: function(records, sortFields) {
 	    if(this.getSortOnDate()) {
 		records.sort(function(a, b) {
@@ -3106,15 +3107,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
+	    
 	    /*
 	    console.log("results " + sortFields);
 	    records.forEach(record=>{
 		let row1 = this.getDataValues(record);
 		let sortField = sortFields[0];
-		console.log(row1[1] +' '+ row1[sortField.getIndex()]);
+		console.log('\t'+row1[1] +' '+ row1[sortField.getIndex()]);
 		});
-		*/
-
+	    */
+	    
 
 	    if(this.getProperty("sortHighlight")) {
 		records = Utils.cloneList(records);
@@ -3344,10 +3346,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	makeTree: function(records) {
 	    if(records==null)  {
-		let pointData = this.getData();
-                if (pointData == null) return null;
-                records = pointData.getRecords();
+		records = this.getRecords();
             }
+	    if(records==null)  return;
 	    let treeTemplate = this.getProperty("treeTemplate");
 	    let treeTooltip = this.getProperty("treeTooltip");
 	    let roots = [];
@@ -3551,6 +3552,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	filterDataPhase2:function(records) {
 	    return records;
 	},
+
 	filterData: function(records, fields, args) {
 	    if(this.recordListOverride) {
 		return this.recordListOverride;
@@ -3610,23 +3612,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            let pointData = this.getData();
-            if (!records) {
-                if (pointData == null) {
-		    if(debug) this.logMsg("\tno data");
-		    return null;
-		}
-                records = pointData.getRecords();
-            }
+            if (!records)  records =this.getRecords();
             if (!records) {
 		return null;
 	    }
-
-
             if (!fields) {
-                fields = pointData.getRecordFields();
+                fields = this.getFields();
             }
             if(opts.doGroup || this.requiresGrouping()) {
+		let pointData = this.getData();
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
@@ -5909,8 +5903,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let pointData = this.getData();
             if (pointData == null) return;
-            let fields= pointData.getRecordFields();
-            let records = pointData.getRecords();
+            let fields= this.getFields();
+            let records = this.getRecords();
 	    records = this.sortRecords(records);
 	    let header2="";
 	    //	    header2 +=HU.div([ID,this.getDomId("test")],"test");
