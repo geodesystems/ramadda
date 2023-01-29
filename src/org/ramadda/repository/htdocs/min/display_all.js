@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan 29 11:07:44 MST 2023";
+var build_date="RAMADDA build date: Sun Jan 29 15:49:54 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -182,6 +182,7 @@ $.extend(Utils,{
             html +='<tr>';
         }
         let formatter = n=>{
+	    if(isNaN(n)) return '';
             if(options.decimals>=0)
                 return number_format(n,options.decimals);
             return  this.formatNumberComma(n);
@@ -1757,7 +1758,7 @@ ColorByInfo.prototype = {
 	if(!this.getProperty("showColorTable",true)) return;
 	if(this.compareFields.length>0) {
 	    var legend = "";
-	    this.compareFields.map((f,idx)=>{
+	    this.compareFields.forEach((f,idx)=>{
 		legend += HtmlUtils.div([STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
@@ -49804,8 +49805,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    //Add the place holder for the colored rows
 	    if(colorRowBy && !colorFullRow) {
 		colorRowBy.forEach(c=>{
-		    header1+=HU.th(HU.div(['style','width:10px;'],c.label));
-		    header2+=HU.th(HU.div(['style','width:10px;'],c.label));		    
+		    header1+=HU.th(['style','max-width:16px;width:16px;'],HU.div([],c.label));
+		    header2+=HU.th(['style','max-width:16px;width:16px;'],HU.div([],c.label));		    
 		});
 	    }
 
@@ -49919,7 +49920,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    label = this.getRecordHtml(record, null, template);
 			    label = HU.div(['style',colorHeaderStyle], label);
 			}
-			columns.push(HU.td(['class','display-td display-htmltable-td','style','border-right:1px solid #444;background:' + color+';width:10px;'],label));
+			columns.push(HU.td(['class','display-td display-htmltable-td','style','width:16px;max-width:16px;border-right:1px solid #444;background:' + color+';width:10px;'],label));
 		    });
 		}
 
@@ -50109,6 +50110,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    });
 	    let dom = this.jq(ID_COLORTABLE);
 	    let colorBarCnt = 0;
+	    dom.html('');
 	    cbs.forEach((cb,idx)=>{
 		idx = (colorBarCnt++);
 		let id = this.domId(ID_COLORTABLE+idx);
@@ -50118,7 +50120,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    colorRowBy.forEach((cb,idx)=>{
 		if(idx>0)
 		    dom.append(HU.div(['style','border-bottom:1px solid #ccc']));
-		    
 		    idx = (colorBarCnt++);
 		let id = this.domId(ID_COLORTABLE+idx);
 		dom.append(HU.div([ID,id]));
