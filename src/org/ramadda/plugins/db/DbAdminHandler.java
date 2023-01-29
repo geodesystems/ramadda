@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.db;
@@ -29,6 +29,7 @@ import java.lang.reflect.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -37,7 +38,7 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
-        DbConstants {
+								DbConstants {
 
     /** _more_ */
     public static final String TAG_TABLES = "tables";
@@ -122,8 +123,8 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         Element root = XmlUtil.getRoot(pluginFile, getClass());
         if (root == null) {
             System.err.println(
-                "DbAdminHandler.init - xml is null for plugin file:"
-                + pluginFile);
+			       "DbAdminHandler.init - xml is null for plugin file:"
+			       + pluginFile);
 
             return false;
         }
@@ -133,11 +134,11 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
             String  tableId   = XmlUtil.getAttribute(tableNode, ATTR_ID);
             Class handlerClass =
                 Misc.findClass(XmlUtil.getAttribute(tableNode, ATTR_HANDLER,
-                    "org.ramadda.plugins.db.DbTypeHandler"));
+						    "org.ramadda.plugins.db.DbTypeHandler"));
             //            System.err.println("class:" + handlerClass);
             Constructor ctor = Utils.findConstructor(handlerClass,
-                                   new Class[] { Repository.class,
-                    String.class, tableNode.getClass(), String.class });
+						     new Class[] { Repository.class,
+							 String.class, tableNode.getClass(), String.class });
             if (ctor == null) {
                 System.err.println("failed to get ctor:"
                                    + handlerClass.getName() + " "
@@ -149,9 +150,9 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 
             DbTypeHandler typeHandler =
                 (DbTypeHandler) ctor.newInstance(new Object[] {
-                    getRepository(),
-                    tableId, tableNode,
-                    XmlUtil.getAttribute(tableNode, ATTR_NAME) });
+			getRepository(),
+			tableId, tableNode,
+			XmlUtil.getAttribute(tableNode, ATTR_NAME) });
 
 
             TypeHandler baseTypeHandler =
@@ -163,33 +164,33 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
             Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                             new String[] {
-                "name", DbTypeHandler.COL_DBID, Column.ATTR_ISINDEX, "true",
-                Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
-                Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
-            });
+						"name", DbTypeHandler.COL_DBID, Column.ATTR_ISINDEX, "true",
+						Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
+						Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
+					    });
             Element userNode = XmlUtil.create(TAG_COLUMN, tableNode,
-                                   new String[] {
-                "name", DbTypeHandler.COL_DBUSER,
-                //Column.ATTR_ISINDEX, "true",
-                Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
-                Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
-            });
+					      new String[] {
+						  "name", DbTypeHandler.COL_DBUSER,
+						  //Column.ATTR_ISINDEX, "true",
+						  Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
+						  Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
+					      });
 
             Element createDateNode = XmlUtil.create(TAG_COLUMN, tableNode,
-                                         new String[] {
-                "name", DbTypeHandler.COL_DBCREATEDATE,
-                //Column.ATTR_ISINDEX,  "true", 
-                Column.ATTR_TYPE, "datetime", Column.ATTR_SHOWINFORM, "false",
-                Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
-            });
+						    new String[] {
+							"name", DbTypeHandler.COL_DBCREATEDATE,
+							//Column.ATTR_ISINDEX,  "true", 
+							Column.ATTR_TYPE, "datetime", Column.ATTR_SHOWINFORM, "false",
+							Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
+						    });
 
             Element propsNode = XmlUtil.create(TAG_COLUMN, tableNode,
-                                    new String[] {
-                "name", DbTypeHandler.COL_DBPROPS, Column.ATTR_ISINDEX,
-                "false", Column.ATTR_SIZE, "5000", Column.ATTR_TYPE, "string",
-                Column.ATTR_SHOWINFORM, "false", 
-		Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
-            });
+					       new String[] {
+						   "name", DbTypeHandler.COL_DBPROPS, Column.ATTR_ISINDEX,
+						   "false", Column.ATTR_SIZE, "5000", Column.ATTR_TYPE, "string",
+						   Column.ATTR_SHOWINFORM, "false", 
+						   Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
+					       });
 
 
             columnNodes.add(0, propsNode);
@@ -216,52 +217,111 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
     }
 
 
-    public Result processUploadData(Request request) throws Exception {
+    private Result handleApiError(Request request, String msg, String...args) throws Exception {
 	StringBuilder sb = new StringBuilder();
-	//44cc70be-fcdb-4488-8775-f7aed132b672
+	List<String> values = new ArrayList<String>();
+	values.add("error");
+	values.add(JsonUtil.quote(msg));
+	for(int i=0;i<args.length;i+=2) {
+	    values.add(args[i]);
+	    values.add(JsonUtil.quote(args[i+1]));
+	}
+	sb.append(JsonUtil.map(values));
 
-	String id  = request.getString("instrument_id","");
+	return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+    }
+
+
+    public Result processUploadData(Request request) throws Exception {
+	//44cc70be-fcdb-4488-8775-f7aed132b672
+	String id  = request.getString("instrument_id",null);
+	if(id==null) id = request.getString(ARG_ENTRYID,null);
+	if(id==null) {
+	    return handleApiError(request, "No ID provided");
+	}
 	//Use the admin request because we do our own access checking
 	Request adminRequest = getRepository().getAdminRequest();
 	Entry entry = getEntryManager().getEntry(adminRequest,id);
 	if(entry==null) {
-	    sb.append(JsonUtil.map("error",JsonUtil.quote("Cannot find entry:" + id)));
-	    return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	    return handleApiError(request,"Cannot find entry:" + id);
 	}
 	if(!(entry.getTypeHandler() instanceof DbTypeHandler)) {
-	    sb.append(JsonUtil.map("error",JsonUtil.quote("Entry is not a database:" + id)));
-	    return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	    return handleApiError(request, "Entry is not a database:" + id);
 	}
 	String key = request.getString("key",null);
 	if(key==null) {
-	    sb.append(JsonUtil.map("error",JsonUtil.quote("No api key provided")));
-	    return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	    return handleApiError(request,"No api key provided");
 	}
 
+	String keyValue = getRepository().getProperty("db.apikey." + key,(String) null);
+	if(keyValue==null) {
+	    return handleApiError(request, "Invalid API key:" + key);
+	}
+	boolean ok = false;
+
+	//If there is no value set on the property then this api key can write anywhere
+	keyValue = keyValue.trim();
+	if(keyValue.length()==0) {
+	    ok = true;
+	} else {
+	    //If there is a value then it is a comma separated list of entry IDs of which
+	    //this entry has to be one of those IDs or it has to have an ancestor entry
+	    List<String> ids = Utils.split(keyValue,",",true,true);
+	    ok = checkAccess(request, entry, ids);
+	}
+
+	if(!ok) {
+	    return handleApiError(request,"Incorrect access");
+	}
 
 
 	DbTypeHandler dbt = (DbTypeHandler) entry.getTypeHandler();
         Object[]      values   = dbt.getValues(entry, (String)null);
         dbt.initializeValueArray(request, null, values);
 	List<Column> columns =dbt.getDbInfo().getColumnsToUse(); 
+	boolean didOne = false;
+
 	for (Column column : columns) {
 	    String v = request.getString(column.getName(),null);
 	    if(v!=null) {
 		adminRequest.put(column.getEditArg(),v);
+		didOne=true;
+		System.err.println(column.getName()+"=" +v);
 	    }
-	    System.err.println(column.getName()+"=" +v);
 	}
 
-        for (Column column : columns) {
-            column.setValue(adminRequest, entry, values);
-        }
-
-	for(Object o:values) {
-	    System.err.println("O:" + o);
+	if(!didOne) {
+	    StringBuilder params = new StringBuilder();
+	    for (Column column : columns) {
+		if(params.length()>0) params.append(",");
+		params.append(column.getName());
+	    }
+	    return handleApiError(request,"No parameters provider",
+				  "parameters", params.toString());
 	}
 
-        dbt.doStore(entry, values, true);
-	return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	try {
+	    for (Column column : columns) {
+		column.setValue(adminRequest, entry, values);
+	    }
+	    //	for(Object o:values) {System.err.println("VALUE:" + o);}
+	    dbt.doStore(entry, values, true);
+	} catch(Exception exc) {
+	    getLogManager().logError("Error handling /db/upload on entry:" + entry.getName(),exc);
+	    return handleApiError(request,exc.getMessage());
+	}
+	StringBuilder sb = new StringBuilder();
+	sb.append(JsonUtil.map("ok",JsonUtil.quote("Values added")));
+	return new Result("", sb, JsonUtil.MIMETYPE);
+    }
+
+    private boolean  checkAccess(Request request, Entry entry, List<String>ids) {
+	if(entry==null) return false;
+	for(String id: ids) {
+	    if(entry.getId().equals(id)) return true;
+	}
+	return checkAccess(request, entry.getParentEntry(), ids);
+
     }
 
     /**
@@ -281,17 +341,17 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
             sb.append("No databases found");
         }
         String searchFrom = request.getString("sourceName", "") + ";"
-                            + request.getString("column", "") + ";"
-                            + request.getString("widgetId", "") + ";"
-                            + request.getString("otherColumn", "");
+	    + request.getString("column", "") + ";"
+	    + request.getString("widgetId", "") + ";"
+	    + request.getString("otherColumn", "");
 
         if (entries.size() == 1) {
             return new Result(
-                HtmlUtils.url(
-                    request.makeUrl(getRepository().URL_ENTRY_SHOW),
-                    new String[] { ARG_ENTRYID,
-                                   entries.get(0).getId(), ARG_SEARCH_FROM,
-                                   searchFrom }));
+			      HtmlUtils.url(
+					    request.makeUrl(getRepository().URL_ENTRY_SHOW),
+					    new String[] { ARG_ENTRYID,
+							   entries.get(0).getId(), ARG_SEARCH_FROM,
+							   searchFrom }));
         }
         sb.append(HtmlUtils.formTable());
         List<TwoFacedObject> items = new ArrayList<TwoFacedObject>();
