@@ -813,7 +813,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
 			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
-			    html = HU.div([CLASS,"display-three-globe-popup"], html);
+			    html = HU.div([CLASS,"display-three-globe-popup",'style',this.getProperty('popupStyle','')], html);
 			    return html;
 			});
 		    }
@@ -1206,7 +1206,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    console.log("Could not find record");
 		    return;
 		}
-		console.log("record:" + record);
 		this.propagateEventRecordSelection({record: record})
 		if(this.getDoPopup()) {
 		    let html = this.getRecordHtml(record);
