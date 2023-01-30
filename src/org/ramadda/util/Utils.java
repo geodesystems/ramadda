@@ -2528,6 +2528,25 @@ public class Utils extends IO {
     }
 
 
+    private final static Pattern LTRIM = Pattern.compile("^\\s+");
+    public static String ltrim(String s) {
+	return LTRIM.matcher(s).replaceAll("");
+    }
+
+    /**
+       split the string and trim each line
+     */
+    public static String trimLinesLeft(String s) {
+	if(s==null) return null;
+	StringBuilder sb  =new StringBuilder();
+	for(String line: split(s,"\n",false,false)) {
+	    line = ltrim(line);
+	    sb.append(line);
+	    sb.append("\n");
+	}
+	return sb.toString();
+    }
+
     /**
      * _more_
      *
