@@ -713,13 +713,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	},
 	showRecord: function(record) {
 	    if(this.getDoPopup()) {
-		let html = this.getRecordHtml(record);
+		let html = this.getRecordHtml(record,null,this.getProperty("tooltip"));
 		this.jq(ID_POPUP).html(html);
 		this.jq(ID_POPUP).show(1000);
 		return;
 	    }
 	    if(this.getSelectedDiv()) {
-		let html = this.getRecordHtml(record);
+		let html = this.getRecordHtml(record,null,this.getProperty("tooltip"));
 		$("#" + this.getSelectedDiv()).html(html);
 	    }
 	},
@@ -812,7 +812,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    if(Utils.stringDefined(tooltip)) {
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
-			    let html =  this.getRecordHtml(f.record);
+			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
 			    html = HU.div([CLASS,"display-three-globe-popup"], html);
 			    return html;
 			});
