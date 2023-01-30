@@ -9,45 +9,45 @@
 
     <wiki>
       <![CDATA[
-+section title={{name}}
-{{description wikify=true}}
-+center
-{{display_menu 
-entryTypes=type_point
-doEntries=true
-setEntry.acceptGroup=month
-setEntry.shareGroup=file
-showArrows=true
-menuLabel="Select File:"
-noun=File
-template="${name}"
-}}
-{{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
--center
-<table width=100% border=0 cellpadding=10>
-<tr valign=top>
-<td width=1%>
-{{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
-width=185px height=65vh
-loadingMessage="" 
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-numericOnly=true asList=true
-showPopup=false decorate=true
-}}
-</td><td>
-{{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-height=60vh padRight=true chartLeft="80" chartRight="80"
-addTooltip=false useMultipleAxes=true
-}}
-</tr></td></table>
-----
-:heading Files
-{{tree}}
--section
-]]>
-</wiki>
-</type>
+	       +section title={{name}}
+	       {{description wikify=true}}
+	       +center
+	       {{display_menu 
+	       entryTypes=type_point
+	       doEntries=true
+	       setEntry.acceptGroup=month
+	       setEntry.shareGroup=file
+	       showArrows=true
+	       menuLabel="Select File:"
+	       noun=File
+	       template="${name}"
+	       }}
+	       {{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
+	       -center
+	       <table width=100% border=0 cellpadding=10>
+	       <tr valign=top>
+	       <td width=1%>
+	       {{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
+	       width=185px height=65vh
+	       loadingMessage="" 
+	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+	       numericOnly=true asList=true
+	       showPopup=false decorate=true
+	       }}
+	       </td><td>
+	       {{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
+	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+	       height=60vh padRight=true chartLeft="80" chartRight="80"
+	       addTooltip=false useMultipleAxes=true
+	       }}
+	       </tr></td></table>
+	       ----
+	       :heading Files
+	       {{tree}}
+	       -section
+      ]]>
+    </wiki>
+  </type>
 
 
   <type name="type_point_collection_collection"  description="Point Collection Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
@@ -116,21 +116,20 @@ addTooltip=false useMultipleAxes=true
   <type name="type_point"  description="Point Data" includeInSearch="true" handler="org.ramadda.data.services.PointTypeHandler"   foruser="false" priority="1">
     <property name="icon" value="/icons/chart.png"/>
     <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
-    <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"/>
+    <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinform="false" showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"/>
   </type>
 
 
 
-
-<type name="point_text"  description="RAMADDA CSV Data"  super="type_point" priority="1"
-      help="RAMADDA's CSV format"> 
-  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-  <property name="record.properties">
-<![CDATA[
-isRAMADDAPointData=true
-]]>
-</property>
-</type>
+  <type name="point_text"  description="RAMADDA CSV Data"  super="type_point" priority="1"
+	help="RAMADDA's CSV format"> 
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="record.properties">
+      <![CDATA[
+	       isRAMADDAPointData=true
+      ]]>
+    </property>
+  </type>
 
   
 
@@ -180,25 +179,22 @@ isRAMADDAPointData=true
   </type>
 
   <type name="type_point_json"  super="type_point" description="JSON Data"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="icon" value="/icons/json.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
- <property name="record.properties">
-csvcommands1=-json,,
-  </property>
-<wiki>
-<![CDATA[
-+section  title={{name}}
-{{description wikify=true}}
-+row
-+col-md-12
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display_htmltable showTitle="false" layoutHere="false"}}
--col
--row
-]]>
-</wiki>
-</type>
-
-
-
+    <property name="icon" value="/icons/json.png"/>
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+    <property name="record.properties">
+      csvcommands1=-json,,
+    </property>
+    <wiki>
+      <![CDATA[
+	       +section  title={{name}}
+	       {{description wikify=true}}
+	       +row
+	       +col-md-12
+	       {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+	       {{display_htmltable showTitle="false" layoutHere="false"}}
+	       -col
+	       -row
+      ]]>
+    </wiki>
+  </type>
 </types>
