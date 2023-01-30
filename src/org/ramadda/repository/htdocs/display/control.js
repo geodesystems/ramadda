@@ -734,50 +734,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let useIcon = this.getPropertyUseIcon(true);
 	    let iconSize = this.getIconSize();
 	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",null,[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
-	    /*
-	    if(!Utils.isAnonymous() && this.getDoSave()) {
-		label+=SPACE2 +HU.span([ID,this.domId("save"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-save")) +SPACE +HU.span([ID,this.domId("savelabel")]);
-	    }
-	    */
 	    this.setContents(HU.div([],label));
-	    /*
-	    if(!Utils.isAnonymous() && this.getDoSave()) {
-		let _this  = this;
-		this.jq("save").click(()=>{
-		    if(!confirm("Are you sure you want to change the file?")) return;
-		    let records = this.filterData();
-		    let fields = this.getData().getRecordFields();
-		    let csv = DataUtils.getCsv(fields, records);
-		    let data = new FormData();
-		    data.append("file",csv);
-		    data.append("entryid",this.getProperty("entryId"));
-		    jQuery.ajax({
-			url: ramaddaBaseUrl+"/entry/setfile",
-			data: data,
-			cache: false,
-			contentType: false,
-			processData: false,
-			method: 'POST',
-			type: 'POST',
-			success: function(data){
-			    if(data.message)
-				_this.jq("savelabel").html(data.message);
-			    else if(data.error)
-				_this.jq("savelabel").html(data.error);			    
-			    else
-				console.log("response:" + JSON.stringify(data));
-			    setTimeout(()=>{
-				_this.jq("savelabel").html("&nbsp;");
-			    },3000);
-			},
-			fail: function(data) {
-			    _this.jq("savelabel").html("An error occurred:" + data);			    
-			    console.log("An error occurred:" + data);			    
-			}
-		    });
-		});
-	    }
-*/
 	    if(useIcon) {
 		this.jq("csv").click(() => {
 		    this.doDownload();
