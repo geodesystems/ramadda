@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan 30 09:11:04 MST 2023";
+var build_date="RAMADDA build date: Mon Jan 30 09:28:44 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -9509,8 +9509,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enums.push([field.getId(),field.getLabel(this)]);
 		});
 		let selected = colorBy?colorBy.getId():"";
+		let label = this.makeFilterLabel(this.getProperty("colorByLabel", "Color by:&nbsp;"));
 		header2 += HU.span([CLASS,filterClass],
-				   this.makeFilterLabel(this.getProperty("colorByLabel", "Color by: ")) + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
+				   label+ HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected,20))+SPACE;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
