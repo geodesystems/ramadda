@@ -90,7 +90,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
     public Result getHtmlDisplay(Request request, Entry parent,  Entries children) 
             throws Exception {
         if ( !getEntryManager().canAddTo(request, parent)) {
-            return null;
+	    //            return null;
         }
 
         List<String> titles   = new ArrayList<String>();
@@ -856,7 +856,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
     private String getBulkForm(Request request, Entry entry)
             throws Exception {
         if ( !getEntryManager().canAddTo(request, entry)) {
-            return null;
+	    //            return null;
         }
 
         StringBuffer sb = new StringBuffer();
