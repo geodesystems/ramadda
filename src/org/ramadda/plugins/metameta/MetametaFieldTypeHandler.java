@@ -216,6 +216,7 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
         if (Utils.stringDefined(enums)
                 && (type.equals(DataTypes.DATATYPE_ENUMERATION)
                     || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS))) {
+	    enums = enums.trim();
             if (enums.startsWith("file:")) {
                 attrs.append(XmlUtil.attr("values", enums.trim()));
             } else {

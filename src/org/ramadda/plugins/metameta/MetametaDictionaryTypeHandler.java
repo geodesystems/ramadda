@@ -463,6 +463,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         boolean first = xml.length() == 0;
         if (first) {
             xml.append(XmlUtil.openTag("tables", ""));
+	    xml.append("\n");
+	    xml.append("<!-- This is a generated plugin that defines a database.\nCopy it into the plugins directory in your RAMADDA home directory -->\n");
         }
         String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
         String handlerClass = (String) getEntryValue(parent,
@@ -472,26 +474,55 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         String    icon  = Misc.getProperty(props, "icon", "/db/tasks.gif");
         props.remove("icon");
 
+
         if ( !Utils.stringDefined(shortName)) {
             shortName = parent.getName();
         }
         if ( !Utils.stringDefined(handlerClass)) {
             handlerClass = "org.ramadda.plugins.db.DbTypeHandler";
         }
+	String tableAttrs = XmlUtil.attrs("id", shortName, "name",
+					  parent.getName(), ATTR_HANDLER,
+					  handlerClass, "icon", icon);
+	
+	String tmp;
+	for(String prop:new String[]{"cansearch","canlist"}) {
+	    if((tmp = Misc.getProperty(props, prop, (String) null))!=null) {
+		tableAttrs+=XmlUtil.attrs(prop,tmp);
+		props.remove(prop);
+	    }
+	}
+
+        xml.append(XmlUtil.openTag("table", tableAttrs));
+	
 
 
-        xml.append(XmlUtil.openTag("table",
-                                   XmlUtil.attrs("id", shortName, "name",
-                                       parent.getName(), ATTR_HANDLER,
-                                       handlerClass, "icon", icon)));
+	xml.append("\n");
+        String  wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
+	if(Utils.stringDefined(wikiText)) {
+	    xml.append("\n");
+            xml.append(XmlUtil.tag("wiki", "", XmlUtil.getCdata(wikiText)));
+            xml.append("\n");
+	}
+
+        String  basetype = (String) getEntryValue(parent,  INDEX_BASETYPE);
+	if(Utils.stringDefined(basetype)) {
+	    xml.append("<!-- The base type defined the columns and properties for the entry type -->\n");
+	    xml.append("<basetype>\n");
+	    xml.append(basetype.trim());
+	    xml.append("</basetype>\n");
+
+	}
 
 
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = (String) props.get(key);
             xml.append(propertyTag(key, value));
+	    xml.append("\n");
         }
 
+	xml.append("<!-- These are the columns of the database -->\n");
         for (Entry recordFieldEntry : children) {
             MetametaFieldTypeHandler field =
                 (MetametaFieldTypeHandler) recordFieldEntry.getTypeHandler();

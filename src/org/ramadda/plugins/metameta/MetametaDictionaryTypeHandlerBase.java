@@ -87,6 +87,10 @@ public abstract class MetametaDictionaryTypeHandlerBase extends MetametaGroupTyp
     /** _more_ */
     public static final int INDEX_WIKI_TEXT = INDEX_BASE + 7;
 
+
+    /** _more_ */
+    public static final int INDEX_BASETYPE = INDEX_BASE + 8;
+    
     /** _more_ */
     public static final String FIELD_WIKI_TEXT = "wiki_text";
 

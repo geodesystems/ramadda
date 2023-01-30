@@ -1,26 +1,46 @@
-<types supercategory="Science and Education"><type  name="type_metameta_collection"  description="Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" category="Software and Services" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/databases.png" /><property  name="category"  value="Admin" /></type>
+<types supercategory="Science and Education">
+  <type  name="type_metameta_collection"  description="Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" category="Software and Services" >
+    <property  name="form.date.show"  value="false" />
+    <property  name="form.area.show"  value="false" />
+    <property  name="form.resource.show"  value="false" />
+    <property  name="form.tags.show"  value="false" />
+    <property  name="icon"  value="/metameta/databases.png" />
+  <property  name="category"  value="Admin" /></type>
+
 <type  name="type_metameta_dictionary"  category="Software and Services" description="Metadata Dictionary"  handler="org.ramadda.plugins.metameta.MetametaDictionaryTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
-<column  name="dictionary_type"  label="Type"  type="enumeration"  default="entry"  cansearch="true" ><values><![CDATA[entry=Entry
+<column  name="dictionary_type"  label="Type"  type="enumeration"  default="entry"  cansearch="true" >
+<values>
+<![CDATA[entry=Entry
 database=DB Database
 datafile=Point Datafile
 metadata=Metadata
-
 ]]></values>
 </column>
-<column  name="short_name"  label="Short Name"  type="string"  cansearch="true"  size="200" ></column>
+<column  name="short_name"  label="Short Name"  type="string"  cansearch="true"  size="200" >
+  <help><![CDATA[  
+  This is the type name. It should be prefixed with "type_" because it is used to create a database table.
+  ]]></help>
+</column>
 <column  name="super_type"  label="Super Type"  type="string"  cansearch="true"  size="200" ></column>
 <column  name="isgroup"  label="Is Group"  type="boolean"  cansearch="true" ></column>
 <column  name="handler_class"  label="Handler Class"  type="string"  cansearch="true"  size="200" ></column>
-<column  name="properties"  label="Properties"  type="string"  rows="5"  cansearch="true"  size="1000" ></column>
-<column  name="wiki_text"  label="Wiki Text"  type="string"  rows="10"  cansearch="true"  size="2000" ></column>
-<property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/database_table.png" /><property  name="category"  value="Admin" />
-
-
-
-
-
-
-
+<column  name="properties"  label="Properties"  type="string"  rows="5"  cansearch="true"  size="1000" >
+<suffix><![CDATA[
+e.g. icon=/path/to/icon.png<br>
+]]></suffix>
+</column>
+<column  name="wiki_text"  label="Wiki Text"  type="string"  rows="10"  columns="80" cansearch="true"  size="10000" changetype="true"></column>
+<column  name="basetype"  label="Base Type XML"  type="clob"  rows="10"  columns="80" cansearch="false">
+  <help><![CDATA[
+  The base type are the columns and other properties for this entry type, e.g. site_id
+  ]]></help>
+</column>
+<property  name="form.tags.show"  value="false" />
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+<property  name="icon"  value="/metameta/database_table.png" />
+<property  name="category"  value="Admin" />
 </type>
 <type  name="type_metameta_field"  category="Software and Services" description="Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
 <column  name="field_id"  label="Field ID"  type="string"  columns="80"  cansearch="true"  size="200" ></column>
