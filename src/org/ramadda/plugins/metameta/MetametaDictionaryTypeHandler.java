@@ -119,6 +119,10 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
         StringBuilder html = new StringBuilder();
         getPageHandler().entrySectionOpen(request, parent, html, null);
+
+	html.append(getWikiManager().wikifyEntry(request, parent, parent.getDescription()));
+	
+
         html.append(OutputHandler.makeTabs(titles, contents, false));
         getPageHandler().entrySectionClose(request, parent, html);
 
