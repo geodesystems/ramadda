@@ -25,6 +25,7 @@ const DISPLAY_SPARKLINE = "sparkline";
 const DISPLAY_POINTIMAGE = "pointimage";
 const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
+const DISPLAY_SELECTEDRECORDS = "selectedrecords";
 const DISPLAY_DATEGRID = "dategrid";
 
 addGlobalDisplayType({
@@ -134,6 +135,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_TABLE,
     tooltip: makeDisplayTooltip(null,"fieldtable.png"),
+});
+addGlobalDisplayType({
+    type: DISPLAY_SELECTEDRECORDS,
+    label: "Selected Records",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip("Display selected records in a table")
 });
 addGlobalDisplayType({
     type: DISPLAY_TREE,
@@ -1165,8 +1174,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 				this.getProperty('tableCellStyle')+'}');
 	    }
 
-
-
 	    html +=HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
 	    headerAttrs = [];
@@ -1615,7 +1622,7 @@ function RamaddaPolltableDisplay(displayManager, id, properties) {
 	    if(!this.isPollField(field.getId())) {
 		return SUPER.makeColumn.call(this,record,field,attrs,v);
 	    }
-	    v = HU.div(['style',HU.css('overflow-y','auto','max-height',this.cellsToggled?TOGGLED_CSS:'500px'),'class','display-polltable-field','record-id',record.getId()],v);
+	    v = HU.div(['style',HU.css('overflow-y','auto','max-height',this.cellsToggled?TOGGLED_CSS:'500px'),'class','display-polltable-field','data-record-id',record.getId()],v);
 	    return HU.td(attrs,v);
 	},
 	measureCont:function(yes,no) {
@@ -2707,6 +2714,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             }
 	    let _this  = this;
 	    let html = "";
+	    if(this.getProperty("showDownload",true)) {
+		html+=HU.div(['id',this.domId('download')],'Download Correlation Table');
+	    }
 	    this.range = {
 		low:{
 		    min:this.getProperty("range.low.min",-1),
@@ -2732,6 +2742,14 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    }
 	    html +=HU.div([ID,this.domId(ID_TABLE)]);
             this.setContents(html);
+	    this.jq('download').button().click(()=>{
+		let c='';
+		this.csv.forEach(row=>{
+		    c+=Utils.join(row,',');
+		    c+='\n';
+		});
+		Utils.makeDownloadFile(this.getProperty('downloadFile','correlation.csv'),c);
+	    });
 	    this.makeTable();
 	    if(this.getShowSelectSlider()) {
 		this.jq(ID_SLIDER_LOW).slider({
@@ -2801,6 +2819,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    if(fields.length>8) {
 		html+=HU.openTag("div",[STYLE,HU.css('font-size','75%')]);
 	    }
+	    this.csv =[];
             html += HU.open(TABLE, ["cellspacing","0","cellpadding", "0", "border", "0", CLASS, "display-correlation", "width", "100%"]);
             let col1Width = 10 + "%";
             let width = 90 / fieldCnt + "%";
@@ -2812,9 +2831,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let useIdTop = this.getProperty("useIdTop", useId);
             let useIdSide = this.getProperty("useIdSide", useId);
 	    let labelStyle = this.getProperty("labelStyle","");
+	    let row;
+	    this.csv.push(row=[]);
 	    fields.forEach(field=>{
                 if (!field.isFieldNumeric() || field.isFieldGeo()) return;
                 let label = useIdTop ? field.getId() : this.getFieldLabel(field);
+		row.push(label);
                 if (short) label = "";
 		label = label.replace(/\/ +/g,"/").replace(/ +\//g,"/");
 		label = HU.div(['class','display-correlation-header',STYLE,labelStyle], label);
@@ -2832,9 +2854,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 
 	    let sideHeadingStyle=this.getSideHeadingStyle('');
             for (let fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
+		this.csv.push(row=[]);
                 let field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 let label = useIdSide ? field1.getId() : this.getFieldLabel(field1);
+		row.push(label);
 		label.replace(/ /g, SPACE);
 		label = HU.div(['class','display-correlation-header',STYLE,labelStyle], label);
                 html += HU.open(TR, ["valign","center"]);
@@ -2896,6 +2920,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     }
                     let value = r.toFixed(3);
                     let label = value;
+		    row.push(value);
 		    if(fieldIdx1==fieldIdx2) label = SPACE;
                     if (!showValue || short) label = SPACE;
 		    let align = "right";
@@ -3691,7 +3716,6 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    } else {
 		html += HU.open(TABLE, [CLASS, "stripe nowrap ramadda-table", ID, this.domId("percentchange")]);
 		html += HU.open(THEAD, []);
-		html += "\n";
 		html += HU.tr([], HU.th([STYLE,HU.css('text-align','center')], this.getProperty("fieldLabel", "Field")) + HU.th([STYLE,HU.css('text-align','center')], label1) + HU.th([STYLE,HU.css('text-align','center')], label2)
 			      + HU.th([STYLE,HU.css('text-align','center')], "Percent Change"));
 		html += HU.close(THEAD);
@@ -4662,6 +4686,147 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
     });
 }
 
+
+function RamaddaSelectedrecordsDisplay(displayManager, id, properties) {
+    const ID_RECORDS = "selectedrecords";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SELECTEDRECORDS, properties);
+    let myProps = [
+	{label:'Selected Records'},
+	{p:'labelField',ex:'field'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    if(!this.recordList) {
+		this.recordList=[];
+	    }
+	    if(this.recordList.length==0) {
+		this.setContents('');
+		return;
+	    }
+	    let records = this.recordList;
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
+	    if(fields==null) return;
+	    if(fields.length==0) 
+		fields = this.getFields();
+	    if(fields==null) return;
+	    let notFields = this.getFieldsByIds(null,this.getProperty("notFields"));
+	    if(notFields) {
+		let not = {};
+		notFields.forEach(f=>{not[f.getId()]=true;});
+		fields=fields.filter(f=>{
+		    return !not[f.getId()];
+		});
+
+	    }
+	    let labelField = this.getFieldById(null, this.getLabelField());
+	    let html ='';
+	    html+=HU.div(['id',this.domId('download')],"Download Data");
+	    html+=HU.openTag('table',[CLASS,"ramadda-table stripe row-border", 'xwidth','100%',ID,this.domId(ID_RECORDS)]);
+	    this.idToRecord = {};
+	    this.csv =[];
+	    if(labelField) {
+		let row = [];
+		this.csv.push(row);
+		html+=HU.open('thead');
+		row.push("Field");
+		html+=HU.th(['align','center'],'Field');
+
+		records.forEach(record=>{
+		    this.idToRecord[record.getId()] = record;
+		    let v = labelField.getValue(record);
+		    row.push(v);
+		    let div = HU.div(['class','ramadda-clickable display-selectedrecords-header',
+				      'title','Click to remove','data-record-id',record.getId()],
+				     v);
+		    html+=HU.th(['align','center'],div);
+		});
+		html+=HU.close('thead');
+	    }
+	    html+=HU.open('tbody');
+	    fields.forEach((f,idx)=>{
+		if(labelField && labelField.getId()==f.getId()) return;
+		html+=HU.open('tr');
+		let row = [];
+		this.csv.push(row);
+		records.forEach((record,idx) =>{
+		    if(idx==0) {
+			row.push(f.getLabel());
+			html+=HU.td(['width','20%'], HU.b(f.getLabel()));
+		    }
+		    let attrs=[];
+		    let v = f.getValue(record);
+		    row.push(v);
+		    if(!isNaN(v)) attrs.push('align','right');
+		    else if(String(v)==="NaN") {
+			v="--";
+			attrs.push('align','right');			
+		    }			
+		    html+=HU.td(attrs,v);
+		});
+		html+=HU.close('tr');		
+	    });
+	    html += HU.close(TBODY,TABLE);
+	    this.setContents(html); 
+	    this.jq('download').button().click(()=>{
+		let c='';
+		this.csv.forEach(row=>{
+		    c+=Utils.join(row,',');
+		    c+='\n';
+		});
+		Utils.makeDownloadFile(this.getProperty('downloadFile','data.csv'),c);
+	    });
+
+
+	    let opts ={};
+	    if(this.getProperty("tableHeight")) {
+		opts.scrollY = this.getProperty("tableHeight");
+	    }
+	    let _this = this;
+	    let initTable = ()=>{
+		//Look for headers. There are doubles because of DataTables
+		let headers =_this.getContents().find('.display-selectedrecords-header');
+		headers.click(function() {
+		    //For some reason the div is the parent
+		    let div = $(this).parent();		    
+		    //A bit of a hack. For some reason the element can't access the record-id attribute
+		    //So we parse it out from the html
+		    let recordId = div.attr('data-record-id');
+		    if(!recordId) {
+			let match  = div.html().match(/data-record-id="(.*)"/);
+			if(match) {
+			    recordId = match[1];
+			}
+		    }
+		    if(!recordId) return;
+		    let record = _this.idToRecord[recordId];
+		    if(!record) return;
+		    if(_this.seenRecords)
+			delete _this.seenRecords[record.getId()];
+	 	    _this.recordList= Utils.removeItem(_this.recordList,record);
+		    _this.updateUI();
+		});
+	    };
+            HU.formatTable("#" + this.domId(ID_RECORDS), opts,initTable);
+	},
+
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(!this.seenRecords)
+		this.seenRecords={};
+	    if(!this.recordList) 
+		this.recordList=[];
+	    if(this.seenRecords[args.record.getId()]) return;
+	    this.seenRecords[args.record.getId()]=true;
+	    this.recordList.push(args.record);
+	    this.updateUI();
+	}
+	
+    });
+}
+		     
 
 
 function RamaddaDotstackDisplay(displayManager, id, properties) {
