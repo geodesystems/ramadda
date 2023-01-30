@@ -1536,6 +1536,7 @@ var Utils =  {
                     console.dir(attrs);
             }
 
+
             let token = {id:String(cnt++), attrs:attrs,tag:tag,macro:macro};
             tokens.push(token);
             tokenMap[tag] = token;
@@ -1557,6 +1558,7 @@ var Utils =  {
                 apply: function(source, debug, handler) {
                     //              if(debug) console.log("macro:" + JSON.stringify(source,null,2));
                     let cnt = 0;
+
                     let tokenFunc = t=>{
                         let value = source[t.tag];
                         let s = "";
@@ -1657,13 +1659,11 @@ var Utils =  {
                             }
                         }
 
-
-                        if(t.attrs["nan"]!==null) {
+                        if(Utils.isDefined(t.attrs["nan"])) {
 			    if(isNaN(value)) {
 				value = t.attrs["nan"];
 			    }
 			}
-
 
                         if(t.attrs["positiveTemplate"] || t.attrs["negativeTemplate"]) {
                             value = +value;
