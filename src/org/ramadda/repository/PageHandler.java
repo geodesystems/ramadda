@@ -1863,7 +1863,7 @@ public class PageHandler extends RepositoryManager {
         return HU.div(
             msg(h),
             HU.cssClass(
-                "ramadda-page-heading ramadda-page-heading-left" /*CSS_CLASS_HEADING_1*/));
+                "ramadda-page-heading-bg" /*CSS_CLASS_HEADING_1*/));
     }
 
 
