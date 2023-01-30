@@ -4400,8 +4400,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                                         if($.fn.dataTable.isDataTable(this)) {
                                             return;
                                         }
-                                        HtmlUtils.formatTableInner($(this),args);
-                                        if(callback) callback($(this));
+                                        let table = HtmlUtils.formatTableInner($(this),args);
+                                        if(callback) callback($(this),table);
                                     });
                                 });
     },
@@ -4435,6 +4435,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             if (!sh.endsWith("px")) options.scrollY += "px";
         }
         table.DataTable(options);
+	return table;
     },
 
     th: function(attrs, inner) {
