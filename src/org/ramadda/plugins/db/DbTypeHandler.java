@@ -212,6 +212,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 dfltOrder.add(toks);
             }
         }
+        String wikiTemplate  = XmlUtil.getGrandChildText(tableNode, "wiki",(String) null);
+	if(wikiTemplate!=null) setWikiTemplate(wikiTemplate);
+
         searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel",
                 XmlUtil.getGrandChildText(tableNode, "searchForLabel",
                                           searchForLabel));
@@ -254,8 +257,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         List<Element> nodes = new ArrayList<Element>();
         nodes.add(node);
-        super.initTypeHandler(root);
-        super.initColumns(nodes);
+	super.initTypeHandler(root);
+	//Don't call this for now since I don't think it is needed and if we have a basetype defined
+	//for this db then it breaks things
+	//        super.initColumns(nodes);
         this.setDescription(desc);
         List props = XmlUtil.findChildren(tableNode, TAG_PROPERTY);
         for (int j = 0; j < props.size(); j++) {
@@ -596,10 +601,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
+    /***
     public String getTableName() {
         return "properties_" + super.getTableName();
     }
-
+    */
 
 
     /**
@@ -790,6 +796,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
 
+
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
             StringBuilder sb = new StringBuilder();
@@ -799,6 +806,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return new Result(getTitle(request, entry), sb);
         }
+
+
+	String template =  getWikiTemplate(request,  entry);
+	if( Utils.stringDefined(template)) {
+	    return null;
+	}
 
 
         Hashtable props = getProperties(entry);
@@ -1417,9 +1430,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return new Result("", sb);
         }
 
-
         String  view      = getWhatToShow(request);
-
         boolean doGroupBy = isGroupBy(request);
         if (view.equals(VIEW_SEARCH)) {
             return handleSearchForm(request, entry);
@@ -1535,6 +1546,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         return Utils.stringDefined(request.getString(ARG_GROUPBY, ""));
     }
+
+    public StringBuilder getInnerEntryContent(Entry entry, Request request,
+            TypeHandler typeHandler, OutputType output,
+            boolean showDescription, boolean showResource,
+            boolean linkToDownload, Hashtable props)
+            throws Exception {
+	StringBuilder sb = super.getInnerEntryContent(entry, request,
+						      typeHandler, output,
+						      showDescription, showResource,
+						      linkToDownload, props);
+	
+
+
+        DbInfo              dbInfo     = getDbInfo();
+	String url =request.getAbsoluteUrl("/db/upload?entryid=" + entry.getId());
+	for(Column c:dbInfo.getColumnsToUse()) {
+	    url+="&" +c.getName()+"=0.0";
+	}
+	url+="&key=HIDDEN";
+	sb.append(HU.formEntry("Upload URL:",url));
+	return sb;
+    }
+
 
     /**
      * _more_
@@ -1732,7 +1766,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         super.addToEntryForm(request, formBuffer, parentEntry, entry,
                              formInfo);
         Hashtable props = getProperties(entry);
-
 
         if (entry != null) {
             addToEditForm(request, entry, formBuffer);

@@ -160,6 +160,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
             typeHandler.setParentTypeHandler(baseTypeHandler);
             baseTypeHandler.addChildTypeHandler(typeHandler);
 
+
             List<Element> columnNodes =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
             Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
@@ -199,17 +200,24 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
             columnNodes.add(0, idNode);
 
 
+
+
             List<Element> templates =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_TEMPLATE);
             for (Element element : templates) {
                 typeHandler.addTemplate(new DbTemplate(element));
             }
 
-
-
             //            System.out.println("\tDb:" + typeHandler);
             getRepository().addTypeHandler(tableId, typeHandler, true);
             typeHandler.initDbColumns(columnNodes);
+
+	    Element baseType = XmlUtil.findChild(tableNode,"basetype");	    
+	    if(baseType!=null) {
+		baseType.setAttribute("name",tableId);
+		typeHandler.initTypeHandler(baseType);
+		typeHandler.initGenericTypeHandler(baseType);
+	    }	    
 
         }
 
