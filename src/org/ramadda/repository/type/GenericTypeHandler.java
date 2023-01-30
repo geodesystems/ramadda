@@ -179,8 +179,9 @@ public class GenericTypeHandler extends TypeHandler {
         Statement statement = getDatabaseManager().createStatement();
         colNames.add(COL_ID);
         StringBuilder tableDef = new StringBuilder("CREATE TABLE "
-                                     + getTableName() + " (\n");
+						   + getTableName() + " (\n");
 
+	if(debug) System.err.println("Generic type:" + getTableName());
         tableDef.append(COL_ID + " varchar(200))");
         try {
             getDatabaseManager().executeAndClose(tableDef.toString());

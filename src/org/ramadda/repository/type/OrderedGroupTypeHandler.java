@@ -135,13 +135,13 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
         for (Entry entry : entries) {
             sb.append("<tr valign=top><td>");
             if (cnt > 0) {
-                sb.append(HtmlUtils.submitImage(getIconUrl(ICON_UPARROW),
+                sb.append(HtmlUtils.submitImage(getIconUrl("/icons/updart.gif"),
                         ARG_MOVE_UP + "." + entry.getId(), msg("Move up"),
                         ""));
             }
             sb.append("</td><td>");
             if (cnt < entries.size() - 1) {
-                sb.append(HtmlUtils.submitImage(getIconUrl(ICON_DOWNARROW),
+                sb.append(HtmlUtils.submitImage(getIconUrl("/icons/downdart.gif"),
                         ARG_MOVE_DOWN + "." + entry.getId(),
                         msg("Move down"), ""));
             }

@@ -90,6 +90,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
 
+    public static boolean debug = false;
+
     public static final int COPY_LIMIT = 5000;
 
     /** _more_ */
@@ -268,7 +270,7 @@ public class TypeHandler extends RepositoryManager {
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
 
     /** _more_ */
-    private String description;
+    private String description="";
 
     /** _more_ */
     private String editHelp = "";
@@ -279,7 +281,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String iconPath;
 
-    private String mimeType = "";
+    private String mimeType = "unknown";
 
 
     /** _more_ */
@@ -368,7 +370,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private int priority;
+    private int priority=999;
 
 
     /**  */
@@ -460,29 +462,26 @@ public class TypeHandler extends RepositoryManager {
 
         try {
             displayTemplatePath = Utils.getAttributeOrTag(node,
-                    "displaytemplate", (String) null);
-
-            category = Utils.getAttributeOrTag(node, ATTR_CATEGORY,
-                    (String) null);
+                    "displaytemplate", displayTemplatePath);
+	    
+            category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, category);
             if (category == null) {
                 category = XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
-                        CATEGORY_DEFAULT);
+							CATEGORY_DEFAULT);
             }
             iconPath = XmlUtil.getAttributeFromTree(node, "icon",
-                    (String) null);
+						    iconPath);
             superCategory = XmlUtil.getAttributeFromTree(node,
-                    ATTR_SUPERCATEGORY, superCategory);
-            priority    = Utils.getAttributeOrTag(node, "priority", 999);
-            description = Utils.getAttributeOrTag(node, "description", "");
-            filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN,
-						  (String) null);
-            editHelp = Utils.getAttributeOrTag(node, "edithelp", "");
-            help     = Utils.getAttributeOrTag(node, "help", "");
-            mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", "unknown");	    
+							 ATTR_SUPERCATEGORY, superCategory);
+            priority    = Utils.getAttributeOrTag(node, "priority", priority);
+            description = Utils.getAttributeOrTag(node, "description", description);
+            filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
+            editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
+            help     = Utils.getAttributeOrTag(node, "help", help);
+            mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
             String tmp = Utils.getAttributeOrTag(node,
                              PROP_FIELD_FILE_PATTERN, (String) null);
-
             if (tmp != null) {
                 this.fieldPatternNames = new ArrayList<String>();
                 this.filePattern = Utils.extractPatternNames(tmp,
@@ -493,28 +492,20 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-            wikiTemplate = Utils.getAttributeOrTag(node, ATTR_WIKI,
-                    (String) null);
-
+            wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
 	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
 	    for (int i = 0; i < wikis.size(); i++) {
 		Element wiki = (Element) wikis.get(i);
 		String tag =XmlUtil.getAttribute(wiki,"tag");
 		String text = XmlUtil.getChildText(wiki);
 		if(text!=null)
-		    wikiText.put(tag,text);
+		    wikiText.put(tag,Utils.trimLinesLeft(text));
 		else
 		    System.err.println("No text in wiki tag:" + XmlUtil.toString(wiki));
 	    }
 
-            wikiTemplateInner = Utils.getAttributeOrTag(node,
-                    ATTR_WIKI_INNER, (String) null);
-
-
-            defaultChildrenEntries = Utils.getAttributeOrTag(node,
-                    TAG_CHILDREN, (String) null);
-
-
+            wikiTemplateInner = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI_INNER, wikiTemplateInner));
+            defaultChildrenEntries = Utils.getAttributeOrTag(node,TAG_CHILDREN, defaultChildrenEntries);
             List actionNodes = XmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
                 Element actionNode = (Element) actionNodes.get(i);
@@ -527,7 +518,6 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
-
             List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
             for (int i = 0; i < metadataNodes.size(); i++) {
                 Element metadataNode = (Element) metadataNodes.get(i);
@@ -538,7 +528,7 @@ public class TypeHandler extends RepositoryManager {
             }
 
             List serviceNodes = XmlUtil.findChildren(node,
-                                    Service.TAG_SERVICE);
+						     Service.TAG_SERVICE);
             for (int i = 0; i < serviceNodes.size(); i++) {
                 Element serviceNode = (Element) serviceNodes.get(i);
                 services.add(new Service(getRepository(), serviceNode));
@@ -554,7 +544,7 @@ public class TypeHandler extends RepositoryManager {
 
 
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
-                    ATTR_CHILDTYPES, ""));
+							     ATTR_CHILDTYPES, ""));
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
                     ? ""
                     : type));
@@ -563,9 +553,8 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
-
             includeInSearch = Utils.getAttributeOrTag(node,
-                    "includeInSearch", false);
+						      "includeInSearch", includeInSearch);
 
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
@@ -954,6 +943,11 @@ public class TypeHandler extends RepositoryManager {
     public String getWikiTemplateInner() {
         return wikiTemplateInner;
     }
+
+    public void  setWikiTemplate(String wiki) {
+	wikiTemplate=wiki;
+    }
+
 
     /**
      * _more_
@@ -4461,7 +4455,6 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         try {
-
             addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
                                   this,true);
             addBasicToEntryForm(request, sb, parentEntry, entry, formInfo,
