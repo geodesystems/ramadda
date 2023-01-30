@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jan 30 08:45:21 MST 2023";
+var build_date="RAMADDA build date: Mon Jan 30 09:11:04 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -56328,13 +56328,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	},
 	showRecord: function(record) {
 	    if(this.getDoPopup()) {
-		let html = this.getRecordHtml(record);
+		let html = this.getRecordHtml(record,null,this.getProperty("tooltip"));
 		this.jq(ID_POPUP).html(html);
 		this.jq(ID_POPUP).show(1000);
 		return;
 	    }
 	    if(this.getSelectedDiv()) {
-		let html = this.getRecordHtml(record);
+		let html = this.getRecordHtml(record,null,this.getProperty("tooltip"));
 		$("#" + this.getSelectedDiv()).html(html);
 	    }
 	},
@@ -56427,8 +56427,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    if(Utils.stringDefined(tooltip)) {
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
-			    let html =  this.getRecordHtml(f.record);
-			    html = HU.div([CLASS,"display-three-globe-popup"], html);
+			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
+			    html = HU.div([CLASS,"display-three-globe-popup",'style',this.getProperty('popupStyle','')], html);
 			    return html;
 			});
 		    }
@@ -56821,7 +56821,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    console.log("Could not find record");
 		    return;
 		}
-		console.log("record:" + record);
 		this.propagateEventRecordSelection({record: record})
 		if(this.getDoPopup()) {
 		    let html = this.getRecordHtml(record);
