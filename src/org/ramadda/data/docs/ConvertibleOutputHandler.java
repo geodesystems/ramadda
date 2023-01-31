@@ -672,14 +672,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 request.ensureAdmin();
                 for (String file : csvUtil.getNewFiles()) {
                     if (file.endsWith("db.xml")) {
-                        try {
-                            getRepository().getPluginManager().installPlugin(
-                                file, true);
-                            getRepository().clearCache();
-                        } catch (Exception exc) {
-                            //Clean up the mess
-                            throw exc;
-                        }
+			getRepository().getPluginManager().installPlugin(file, true);
+			getRepository().clearCache();
                     }
                 }
             }
