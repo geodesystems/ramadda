@@ -938,6 +938,8 @@ public class WikiUtil {
             String text = chunk.buff.toString();
             text = applyPatterns(handler, headings, text);
 	    boolean skipping = false;
+	    int avatarCount=0;
+	    String bubbleAfter = null;
 	    
 
             for (String line : text.split("\n")) {
@@ -3023,6 +3025,31 @@ public class WikiUtil {
 
                     continue;
                 }
+
+
+                if (tline.startsWith("+bubble")) {
+		    Hashtable props = getProps.apply(tline);
+		    boolean right = tline.indexOf("-right")>=0;
+		    String bubbleClass =  tline.indexOf("-right")>=0?
+			"ramadda-bubble-right":"ramadda-bubble-left";
+		    bubbleAfter= null;
+		    if(Utils.getProperty(props,"avatar",false)) {
+			avatarCount++;
+			if(avatarCount>8) avatarCount=1;
+			bubbleAfter = HU.div(HU.image(getHandler().getHtdocsUrl("/avatars/avatar" + avatarCount+".png"),"width","40"),
+					     HU.cssClass(right?"ramadda-bubble-from-right":
+							 "ramadda-bubble-from-left"));
+		    }
+		    buff.append(HU.open("div",HU.cssClass(bubbleClass)));
+		    continue;
+		}
+
+                if (tline.startsWith("-bubble")) {
+		    buff.append(HU.close("div"));
+		    if(bubbleAfter!=null) buff.append(bubbleAfter);
+		    bubbleAfter=null;
+		    continue;
+		}
 
 
                 if (tline.startsWith("+row")) {
