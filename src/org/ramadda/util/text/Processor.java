@@ -2544,8 +2544,10 @@ public abstract class Processor extends SeesvOperator {
             List<Row> samples = new ArrayList<Row>();
             samples.add(row);
             boolean[] isNumeric = new boolean[row1.getValues().size()];
+            boolean[] isInt = new boolean[row1.getValues().size()];	    
             for (int i = 0; i < isNumeric.length; i++) {
                 isNumeric[i] = false;
+                isInt[i] = false;		
             }
 
             for (Row sample : samples) {
@@ -2554,9 +2556,14 @@ public abstract class Processor extends SeesvOperator {
                         colIdx++) {
                     Object value = sample.getValues().get(colIdx);
                     try {
-                        Double.parseDouble(value.toString());
+			double d = Double.parseDouble(value.toString());
                         //                        System.err.println("OK: " + row1.getValues().get(colIdx));
                         isNumeric[colIdx] = true;
+			if(d == (int) d) {
+			    isInt[colIdx]=true;
+			} else {
+			    isInt[colIdx]=false;
+			}
                     } catch (Exception ignore) {}
                 }
             }
@@ -2597,9 +2604,10 @@ public abstract class Processor extends SeesvOperator {
 
 
 
-                boolean isNumber = isNumeric[colIdx];
                 String  type     = getDbProp("table", "type", "string");
-                if (isNumber) {
+                if (isInt[colIdx]) {
+		    type="int";
+		} else if (isNumeric[colIdx]) {
                     type = "double";
                 }
 
