@@ -2867,7 +2867,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
-			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", ATTR_ROWS, "6")),
+			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs\n\tyesreallynukethewholedb true - this double checks", ATTR_ROWS, "6")),
         new Cmd(CMD_DBPROPS, "Print to stdout props for db generation",
 		ARG_LABEL,"Print DB Properties",
 		new Arg("id pattern"),
