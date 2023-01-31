@@ -3473,9 +3473,12 @@ public class Seesv implements SeesvCommands {
 		Dictionary<String, String> props =  parseProps(args.get(++i));
 		ctx.putProperty("installPlugin", ""+(Utils.equals(props.get("-install"),"true") || Utils.equals(props.get("install"),
 														"true")));
-		ctx.putProperty("nukeDb", ""+(Utils.equals(props.get("-nukedb"), "true")
+		ctx.putProperty("nukedb", ""+(Utils.equals(props.get("-nukedb"), "true")
 					      || Utils.equals(props.get("nukedb"),
 							      "true")));
+		ctx.putProperty("yesreallynukethewholedb", ""+(Utils.equals(props.get("-yesreallynukethewholedb"), "true")
+					      || Utils.equals(props.get("yesreallynukethewholedb"),
+							      "true")));		
 		ctx.addProcessor(dbXml =  new Processor.DbXml(ctx,props));
 		ctx.setMaxRows(30);
 		return i;
