@@ -658,7 +658,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
             }
             newFiles.addAll(csvUtil.getNewFiles());
             if (Misc.equals("true",
-                            csvUtil.getContext().getProperty("nukeDb"))) {
+                            csvUtil.getContext().getProperty("nukedb")) &&
+		Misc.equals("true",
+                            csvUtil.getContext().getProperty("yesreallynukethewholedb"))) {
                 request.ensureAdmin();
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
