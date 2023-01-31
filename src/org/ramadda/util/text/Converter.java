@@ -167,6 +167,57 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class FileNamePattern extends Converter {
+
+	List<String> names;
+	List<String> values;	
+	String pattern;
+
+        /**
+         *
+         * @param ctx _more_
+         * @param cols _more_
+         */
+        public FileNamePattern(TextReader ctx, String pattern, String names) {
+	    this.names = Utils.split(names,",",true,true);
+	    this.pattern=pattern;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(values==null) {
+		String file = ctx.getInputFile();
+		values= new ArrayList<String>();
+		String[] matches=Utils.findPatterns(file,pattern);
+		if(matches==null) throw new RuntimeException("No match on file name:" + file +" using pattern:" + pattern);
+		for(String m: matches)
+		    values.add(m);
+
+	    }
+		
+	    if(rowCnt++==0) {
+		row.addAll(names);
+	    } else {
+		row.addAll(values);
+	    }
+	    return row;
+        }
+    }
+
+
+
+
     public static class Editor extends Converter {
 	private Row header;
 

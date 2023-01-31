@@ -1878,7 +1878,10 @@ public class Seesv implements SeesvCommands {
 		new Arg("files","*.csv")),
         new Cmd(CMD_CHOP, "Write out last N lines. include the header",
 		new Arg("numlines","Number of lines to leave"),
-		new Arg("file","*.csv")),		
+		new Arg("file","*.csv")),
+        new Cmd(CMD_FILENAMEPATTERN, "Extract strings from the file name and add them as new columns",
+                new Arg("pattern", "Pattern to match", ATTR_TYPE, TYPE_PATTERN),
+		new Arg("columnnames","Comma separated list of column names")),
         /** *  Filter * */
         new Category("Filter"),
         new Cmd(CMD_SKIPLINES, "Skip number of raw lines.",
@@ -3352,6 +3355,13 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Downloader(ctx, this, args.get(++i), args.get(++i)));
 		return i;
 	    });	
+
+	defineFunction(CMD_FILENAMEPATTERN,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.FileNamePattern(ctx, args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+
 
 	defineFunction(new String[]{"-c",CMD_COLUMNS},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSelector(ctx, getCols(args.get(++i))));

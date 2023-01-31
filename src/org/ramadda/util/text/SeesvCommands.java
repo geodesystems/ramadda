@@ -133,6 +133,7 @@ public interface SeesvCommands {
     public static final String CMD_SHIFT="-shift";
     public static final String CMD_SLICE="-slice";
     public static final String CMD_ADDCELL="-addcell";
+    public static final String CMD_FILENAMEPATTERN="-filenamepattern";
     public static final String CMD_DELETECELL="-deletecell";
     public static final String CMD_APPENDROWS="-appendrows";
     public static final String CMD_MERGEROWS="-mergerows";
