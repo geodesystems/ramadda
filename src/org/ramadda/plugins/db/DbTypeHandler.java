@@ -796,7 +796,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
 
-
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
             StringBuilder sb = new StringBuilder();
@@ -807,11 +806,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return new Result(getTitle(request, entry), sb);
         }
 
-
+	
 	String template =  getWikiTemplate(request,  entry);
 	if( Utils.stringDefined(template)) {
 	    return null;
 	}
+	String desc = entry.getDescription();
+	if (Utils.stringDefined(desc)) {
+	    if (isWikiText(desc)) {
+		return null;
+	    }
+	}
+
+
 
 
         Hashtable props = getProperties(entry);
@@ -2525,7 +2532,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public Result handleSearch(Request request, Entry entry)
             throws Exception {
-
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         if (canEdit && request.exists(ARG_DB_DOSAVESEARCH)) {
             request.remove(ARG_DB_DOSAVESEARCH);
@@ -2545,7 +2551,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.put(ARG_DB_SEARCHID, metadata.getId());
             getEntryManager().updateEntry(request, entry);
         }
-
 
 
         if (request.exists(ARG_DB_SEARCHID)) {
