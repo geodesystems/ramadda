@@ -2173,7 +2173,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     public void assembleWhereClause(Request request, List<Clause> where,
                                     Appendable searchCriteria)
             throws Exception {
-
         boolean[] fromFile  = { false };
         String    searchArg = getSearchArg();
         boolean   doNegate  = false;
@@ -2294,6 +2293,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     south, east);
 
         } else if (isNumeric()) {
+
             String expr = request.getEnum(searchArg + "_expr", "", "",
                                           EXPR_EQUALS, EXPR_LE, EXPR_GE,
                                           EXPR_BETWEEN, "&lt;=", "&gt;=");
@@ -2301,38 +2301,44 @@ public class Column implements DataTypes, Constants, Cloneable {
             double from  = request.get(searchArg + "_from", Double.NaN);
             double to    = request.get(searchArg + "_to", Double.NaN);
             double value = request.get(searchArg, Double.NaN);
-
             if (isType(DATATYPE_PERCENTAGE)) {
                 from  = from / 100.0;
                 to    = to / 100.0;
                 value = value / 100.0;
             }
-            if ((from == from) && (to != to)) {
-                to = value;
-            } else if ((from != from) && (to == to)) {
-                from = value;
-            } else if ((from != from) && (to != to)) {
-                from = value;
-                to   = value;
-            }
-            if (from == from) {
-                if (expr.equals("")) {
-                    expr = EXPR_EQUALS;
-                }
+
+	    if (Double.isNaN(from) && Double.isNaN(to)) {
+		if (!Double.isNaN(value)) {
+		    if (expr.equals(EXPR_EQUALS) || expr.equals("")) {
+			where.add(Clause.eq(getFullName(), value));
+		    } else if (expr.equals(EXPR_LE)) {
+			where.add(Clause.le(getFullName(), value));
+		    } else if (expr.equals(EXPR_GE)) {
+			where.add(Clause.ge(getFullName(), value));
+		    } else {
+			throw new IllegalArgumentException("Unknown expression:"
+							   + expr);
+		    }
+		}
+            } else if(!Double.isNaN(from) || !Double.isNaN(to)) {
                 if (expr.equals(EXPR_EQUALS)) {
                     where.add(Clause.eq(getFullName(), from));
                 } else if (expr.equals(EXPR_LE)) {
-                    where.add(Clause.le(getFullName(), from));
+		    if(!Double.isNaN(from))
+			where.add(Clause.le(getFullName(), from));
                 } else if (expr.equals(EXPR_GE)) {
-                    where.add(Clause.ge(getFullName(), from));
-                } else if (expr.equals(EXPR_BETWEEN)) {
-                    where.add(Clause.ge(getFullName(), from));
-                    where.add(Clause.le(getFullName(), to));
+		    if(!Double.isNaN(from))
+			where.add(Clause.ge(getFullName(), from));
+                } else if (expr.equals(EXPR_BETWEEN) || expr.equals("")) {
+		    if(!Double.isNaN(from))
+			where.add(Clause.ge(getFullName(), from));
+		    if(!Double.isNaN(to))
+			where.add(Clause.le(getFullName(), to));
                 } else if (expr.length() > 0) {
                     throw new IllegalArgumentException("Unknown expression:"
                             + expr);
                 }
-            }
+	    }
         } else if (isType(DATATYPE_BOOLEAN)) {
             if (request.defined(searchArg)) {
                 where.add(Clause.eq(columnName, (request.get(searchArg, true)
