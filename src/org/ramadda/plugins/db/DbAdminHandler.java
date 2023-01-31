@@ -119,7 +119,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         if ( !pluginFile.endsWith("db.xml")) {
             return false;
         }
-        //        System.out.println("DbAdminHandler.init - plugin file:" + pluginFile);
+	//	System.out.println("DbAdminHandler.init - plugin file:" + pluginFile);
         Element root = XmlUtil.getRoot(pluginFile, getClass());
         if (root == null) {
             System.err.println(
@@ -236,7 +236,9 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 	}
 	sb.append(JsonUtil.map(values));
 
-	return new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+	Result result = new Result("", new StringBuilder(sb), JsonUtil.MIMETYPE);
+        result.setResponseCode(Result.RESPONSE_BADRREQUEST);
+	return result;
     }
 
 
@@ -292,9 +294,9 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 	for (Column column : columns) {
 	    String v = request.getString(column.getName(),null);
 	    if(v!=null) {
-		adminRequest.put(column.getEditArg(),v);
+		column.setValue(entry, values,v);
+		//		adminRequest.put(column.getEditArg(),v);
 		didOne=true;
-		System.err.println(column.getName()+"=" +v);
 	    }
 	}
 
@@ -309,10 +311,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 	}
 
 	try {
-	    for (Column column : columns) {
-		column.setValue(adminRequest, entry, values);
-	    }
-	    //	for(Object o:values) {System.err.println("VALUE:" + o);}
 	    dbt.doStore(entry, values, true);
 	} catch(Exception exc) {
 	    getLogManager().logError("Error handling /db/upload on entry:" + entry.getName(),exc);
