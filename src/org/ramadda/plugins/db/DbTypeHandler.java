@@ -1569,9 +1569,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo              dbInfo     = getDbInfo();
 	String url =request.getAbsoluteUrl("/db/upload?entryid=" + entry.getId());
 	for(Column c:dbInfo.getColumnsToUse()) {
-	    url+="&" +c.getName()+"=0.0";
+	    url+="&amp;" +c.getName()+"=0.0";
 	}
-	url+="&key=HIDDEN";
+	url+="&amp;key=HIDDEN";
 	sb.append(HU.formEntry("Upload URL:",url));
 	return sb;
     }
