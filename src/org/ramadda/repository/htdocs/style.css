@@ -3178,54 +3178,71 @@ label {
     background: #FFFFCC;
 }
 
-.ramadda-bubble {
+.ramadda-bubble,.ramadda-bubble-right,.ramadda-bubble-left {
   position:relative;
   padding:10px;
   color:#333;
-/* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+  background-color : #FFF;
+  border:1px solid #ccc;
+  border-radius: 4px;
+  z-index:1000;
+  box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+  -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
   border-radius:10px;
 }
 
-.ramadda-bubble:before {
+.ramadda-bubble:before,.ramadda-bubble-right:before, .ramadda-bubble-left:before {
   content:"";
   position:absolute;
-  bottom:-18px; /* value = - border-top-width - border-bottom-width */
-  left:40px; /* controls horizontal position */
-
-/*top right bottom left*/
+  bottom:-18px; 
   border-width:18px 16px 0px 16px;
-
   border-style:solid;
   border-color:#ccc transparent;
-  /* reduce the damage in FF3.0 */
   display:block;
   width:0;
 }
 
-.ramadda-bubble-from {
+.ramadda-bubble-right:before {
+    right:40px;
+}
+
+.ramadda-bubble-left:before {
+    left:40px;
+}
+
+.ramadda-bubble-from,.ramadda-bubble-from-right,.ramadda-bubble-from-left {
+    text-align:right;
     margin-top:10px;
-    margin-left:70px;
     margin-bottom:5px;
 }
 
+.ramadda-bubble-from-right {
+    text-align:right;
+    margin-right:70px;
+}
+
+.ramadda-bubble-from-left {
+    text-align:left;
+    margin-left:70px;
+}
+
 /* creates the smaller  triangle */
-.ramadda-bubble:after {
+.ramadda-bubble:after,.ramadda-bubble-right:after,.ramadda-bubble-left:after {
   content:"";
   position:absolute;
-/*top right bottom left*/
   border-width:18px 15px 0px 15px;
-
-/* value = - border-top-width - border-bottom-width */
   bottom:-16px; 
-
-/* value = (:before left) + (:before border-left) - (:after border-left) */
-  left:41px; 
-
   border-style:solid;
   border-color:#fff transparent;
-  /* reduce the damage in FF3.0 */
   display:block;
   width:0;
+}
+
+.ramadda-bubble-right:after {
+  right:41px; 
+}
+.ramadda-bubble-left:after {
+  left:41px; 
 }
 
 
