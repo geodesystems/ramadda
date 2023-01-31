@@ -43,6 +43,8 @@ public class Result {
     /** _more_ */
     public static final int RESPONSE_BLOCKED = 777;
 
+    public static final int RESPONSE_BADRREQUEST = 400;    
+
     /** HTML mime type */
     public static final String TYPE_HTML = "text/html";
 
