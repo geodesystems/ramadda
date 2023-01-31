@@ -2741,7 +2741,7 @@ public abstract class Processor extends SeesvOperator {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
                             searchRows }));
                 }
-                if (type.equals("date")) {
+                if (type.equals("date") || type.equals("datetime")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",
                             getDbProp(colId, "format", format) }));
 		    String fmt = getDbProp(colId, "displayFormat", displayFormat);
@@ -2799,13 +2799,11 @@ public abstract class Processor extends SeesvOperator {
                     writer.println(XmlUtil.tag("column", attrs.toString()));
                 }
             }
-
-            writer.println(XmlUtil.closeTag("table"));
-            writer.println("</tables>");
+            writer.print(XmlUtil.closeTag("table"));
+            writer.print(XmlUtil.closeTag("tables"));	    
             writer.flush();
-
-            return row;
-
+	    writer.close();
+            return null;
         }
     }
 
