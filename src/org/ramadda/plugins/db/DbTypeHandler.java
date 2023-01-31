@@ -5137,6 +5137,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
+	if(!Utils.getProperty(props,"addRequestFields",false)) {
+	    return super.getUrlForWiki(request, entry, tag, props, displayProps);
+	}
+
         String       all                = "";
         String       prefix             = "request.";
         DbInfo       dbInfo             = getDbInfo();
@@ -5201,9 +5205,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throw new RuntimeException(exc);
         }
         //      System.err.println("getWiki:" + recordProps);
-
-
-
 
         boolean includeAll = true;
         for (Column column : columns) {
