@@ -2603,12 +2603,13 @@ public abstract class Processor extends SeesvOperator {
                 }
 
 
-
-                String  type     = getDbProp("table", "type", "string");
-                if (isInt[colIdx]) {
-		    type="int";
-		} else if (isNumeric[colIdx]) {
-                    type = "double";
+                String  type     = getDbProp("table", "type", null);
+		if(type==null) {
+		    if (isInt[colIdx]) {
+			type="int";
+		    } else if (isNumeric[colIdx]) {
+			type = "double";
+		    }
                 }
 
                 StringBuilder attrs     = new StringBuilder();
@@ -2685,6 +2686,7 @@ public abstract class Processor extends SeesvOperator {
                 }
 
                 String tmp = getDbProp(colId, "type", type);
+		if(tmp==null) tmp="string";
                 if (tmp.length() == 0) {
                     tmp = type;
                 }
