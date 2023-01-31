@@ -4154,9 +4154,13 @@ RequestMacro.prototype = {
 		} else {
 		    values = Utils.mergeLists([[VALUE_NONE,"--"]],values);
 		}
+		let v = this.dflt;
+		if(!Utils.stringDefined(v)) {
+		    v = VALUE_NONE;
+		}
 		if(debug)
 		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
-		widget = HU.select("",attrs,values,this.dflt,30);
+		widget = HU.select("",attrs,values,v,30);
 	    }
 	} else if(this.type=="numeric") {
 	    let minId = this.display.getDomId(this.getId()+"_min");
@@ -4236,13 +4240,12 @@ RequestMacro.prototype = {
 	    let max = this.display.jq(this.getId()+"_max").val()||"";
 	    this.dflt_min = min;
 	    this.dflt_max = max;
-	    if(min!="")
+	    if(Utils.stringDefined(min))
 		url = url +"&" + HU.urlArg(this.urlarg+"_from",min);
-	    if(max!="")
+	    if(Utils.stringDefined(max))
 		url = url +"&" + HU.urlArg(this.urlarg+"_to",max);
 	    this.display.setProperty("request." +this.name+"_min.default",min);
 	    this.display.setProperty("request." +this.name+"_max.default",max);
-
 	} else if(this.type=="date") {
 	    let from = this.display.jq(this.getId()+"_from").val()||"";
 	    let to = this.display.jq(this.getId()+"_to").val()||"";
@@ -4258,7 +4261,6 @@ RequestMacro.prototype = {
 	} else if(this.type=="enumeration") {
 	    let value = this.getValue();
 	    if(!Array.isArray(value)) {value=[value];}
-
 	    if(value[0] == "_all_" || value[0] == "_none_" || value[0] == VALUE_NONE) return url;
 	    if(value.length>0) {
 		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
@@ -4278,6 +4280,7 @@ RequestMacro.prototype = {
 			arg =this.multitemplate.replace(/\${value}/,arg);
 		    }
 		    url = url +"&" + HU.urlArg(this.urlarg,arg);
+		console.log("URL0:" + url);
 		} else {
 		    values.forEach(v=>{
 			url = url +"&" + HU.urlArg(this.urlarg,v);
@@ -4288,10 +4291,11 @@ RequestMacro.prototype = {
 	} else {
 	    let value = this.getValue();
 	    this.dflt  = value;
-	    if(value!="") {
+	    if(Utils.stringDefined(value)) {
 		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
 		url = url.replace(regexp,"");
 		url = url +"&" + HU.urlArg(this.urlarg,value);
+		console.log("URL2:" + url);
 	    }
 	}
 	return  url;
