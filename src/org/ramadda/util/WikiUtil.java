@@ -2936,7 +2936,7 @@ public class WikiUtil {
                     buff.append("${" + headingsNav + "}");
 		    if(Utils.getProperty(headingsProps,"fixed",false)) {
 			navId = HU.getUniqueId("nav");
-			buff.append(HU.open("div",HU.style("border-top:var(--basic-border);padding-bottom:200px;max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";overflow-y:auto") +HU.attrs("id",navId)));
+			buff.append(HU.open("div",HU.style("border-top:var(--basic-border);padding-bottom:400px;max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";overflow-y:auto") +HU.attrs("id",navId)));
 		    }
                     continue;
                 }
