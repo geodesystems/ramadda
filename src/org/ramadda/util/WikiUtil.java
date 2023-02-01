@@ -940,7 +940,8 @@ public class WikiUtil {
 	    boolean skipping = false;
 	    int avatarCount=0;
 	    String bubbleAfter = null;
-	    
+	    String xmlId =null;
+
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -971,8 +972,6 @@ public class WikiUtil {
 
                 String tline = line.trim();
 
-
-
                 if (tline.equals("+skip")) {
 		    skipping =true;
 		    continue;
@@ -988,6 +987,36 @@ public class WikiUtil {
 		if(skipping) {
 		    continue;
 		}
+
+                if (tline.startsWith("+xml")) {
+		    Hashtable props = getProps.apply(tline);
+		    xmlId = HU.getUniqueId("xml_");
+		    String attrs = HU.attrs("id",xmlId);
+		    if(Utils.getProperty(props,"addCopy",true)) attrs+=HU.attrs("add-copy","true");
+		    if(Utils.getProperty(props,"addDownload",true)) {
+			attrs+=HU.attrs("add-download","true");
+			attrs+=HU.attrs("download-file",Utils.getProperty(props,"downloadFile","download.xml"));			
+		    }
+		    buff.append(HU.open("div",HU.style("position:relative;")+attrs));
+		    buff.append(HU.open("pre"));
+		    continue;
+		}
+
+                if (tline.startsWith("-xml")) {
+		    buff.append("</pre>\n");
+		    buff.append("</div>\n");		    
+		    HU.script(buff,"Utils.addCopyLink('" +xmlId+"');");
+		    xmlId=null;
+		    continue;
+		}
+
+		if(xmlId!=null) {
+		    line = Utils.replace(line,"&","&amp;","<","&lt;",">","&gt;");
+		    buff.append(line);
+		    buff.append("\n");
+		    continue;
+		}
+
 
                 if (tline.startsWith("+if")) {
 		    ifBuffer = new StringBuilder();
