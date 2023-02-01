@@ -2698,6 +2698,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    mapOptions.id = jsonObject.id;
 	    let type = jsonObject.type||mapOptions.type;
+	    //for backwards compatabity
+	    if(type=='label') {
+		mapOptions.type = type =GLYPH_MARKER;
+
+	    }
 	    let glyphType = this.getGlyphType(type);
 	    if(!glyphType) {
 		console.log("no type:" + type);
