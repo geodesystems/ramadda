@@ -318,6 +318,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 	}
 	StringBuilder sb = new StringBuilder();
 	sb.append(JsonUtil.map("ok",JsonUtil.quote("Values added")));
+	sb.append("\n");
 	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 

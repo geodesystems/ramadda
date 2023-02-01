@@ -248,6 +248,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         //Initialize this type handler with a string blob
         Element root = XmlUtil.getRoot("<type></type>");
+        XmlUtil.create("action", root, new String[] {"name","searchform","label","Search Form","icon","fas fa-search"});
+
+
         root.setAttribute(ATTR_SUPER, "type_point");
         Element node = XmlUtil.create("column", root, new String[] {
             "name", "contents", Column.ATTR_TYPE, "clob", Column.ATTR_SIZE,
@@ -811,10 +814,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	if( Utils.stringDefined(template)) {
 	    return null;
 	}
-	String desc = entry.getDescription();
-	if (Utils.stringDefined(desc)) {
-	    if (isWikiText(desc)) {
-		return null;
+	
+	if(!request.defined(ARG_WHAT) && !request.defined(ARG_DB_VIEW) && !request.defined(ARG_DB_ENTRY)) {
+	    String desc = entry.getDescription();
+	    if (Utils.stringDefined(desc)) {
+		if (isWikiText(desc)) {
+		    return null;
+		}
 	    }
 	}
 
@@ -839,7 +845,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         List<String> colNames = tableHandler.getColumnNames();
         String       view     = getWhatToShow(request);
-
         if (request.exists(ARG_DB_EDITFORM)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
@@ -894,7 +899,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (request.exists(ARG_DB_SEARCHFORM)) {
             return handleSearchForm(request, entry);
         }
-
 
 
         if (request.exists(ARG_DB_SEARCH) || isEmbedded(request) ) {
@@ -1023,8 +1027,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         if (Utils.stringDefined(entry.getDescription())) {
-            sb.append(getWikiManager().wikifyEntry(request, entry,
-                    entry.getDescription()));
+	    //only include the description if it is just regular text and not the wiki text override
+	    if (!isWikiText(entry.getDescription())) {
+		sb.append(getWikiManager().wikifyEntry(request, entry,
+						       entry.getDescription()));
+	    }
         }
 
         List<String> headerToks = new ArrayList<String>();
@@ -1574,6 +1581,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	url+="&amp;key=HIDDEN";
 	sb.append(HU.formEntry("Upload URL:",url));
 	return sb;
+    }
+
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        String action = request.getString("action", "");
+	if(action.equals("searchform")) {
+	    return getEntryManager().addEntryHeader(request, entry,handleSearchForm(request, entry));
+	}
+	return super.processEntryAction(request,entry);
     }
 
 
