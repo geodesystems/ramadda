@@ -297,6 +297,32 @@ var Utils =  {
         });
         return b3;
     },
+    addCopyLink:function(id) {
+	let contents=jqid(id).html();
+	contents = contents.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
+	let div = jqid(id);
+	div.css('position','relative');
+	let copyId = id+"_copy";
+	let downloadId = id+"_download";	
+	let pos = 10;
+	if(div.attr('add-copy')=='true') {
+	    let copy = HU.div(['id',copyId,TITLE,"Copy to clipboard", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-clipboard"));
+	    pos+=20;
+	    jqid(id).append(copy);
+	}
+	if(div.attr('add-download')=='true') {
+	    let download = HU.div(['id',downloadId,TITLE,"Download", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-download"));
+
+	    jqid(id).append(download);
+	}	
+	jqid(copyId).click(()=>{
+	    Utils.copyToClipboard(contents);
+	    alert("OK, result is copied");
+	});
+	jqid(downloadId).click(()=>{
+	    Utils.makeDownloadFile(div.attr('download-file')??'download.txt',contents);
+	});	
+    },
     copyToClipboard:function(text) {
         var $temp = $("<textarea></textarea>");
         $("body").append($temp);
