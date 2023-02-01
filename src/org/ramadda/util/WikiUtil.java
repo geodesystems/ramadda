@@ -132,7 +132,7 @@ public class WikiUtil {
 
     /** _more_          */
     List headings2 = new ArrayList();
-
+    private String navId = null;
 
 
     /**
@@ -941,7 +941,6 @@ public class WikiUtil {
 	    int avatarCount=0;
 	    String bubbleAfter = null;
 	    String xmlId =null;
-
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -2925,6 +2924,7 @@ public class WikiUtil {
                     headingsProps = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
+
                     if (what.equals(":navleft")) {
                         headingsProps.put("navleft", "true");
                     } else if (what.equals(":navlist")) {
@@ -2934,6 +2934,10 @@ public class WikiUtil {
                     }
                     headingsNav = "heading_" + HU.blockCnt++;
                     buff.append("${" + headingsNav + "}");
+		    if(Utils.getProperty(headingsProps,"fixed",false)) {
+			navId = HU.getUniqueId("nav");
+			buff.append(HU.open("div",HU.style("max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";overflow-y:auto") +HU.attrs("id",navId)));
+		    }
                     continue;
                 }
 
@@ -3341,6 +3345,9 @@ public class WikiUtil {
             }
         }
 
+	if(navId!=null) {
+	    sb.append(HU.close("div"));
+	}
         s = sb.toString();
 
 
@@ -3389,7 +3396,7 @@ public class WikiUtil {
                              + level;
                 }
                 String href = HU.mouseClickHref((left?"HtmlUtils.navLinkClicked('":"HtmlUtils.scrollToAnchor('")
-						+ id + "',-50)", label,
+						+ id + "',-50,"+(navId==null?"null":"'" + navId+"'")+")", label,
 						HU.attrs("class", clazz,"id",id+"_href"));
                 if (left) {
                     href = HU.div(href,
