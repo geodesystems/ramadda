@@ -5133,6 +5133,11 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_TOURL,0,(ctx,args,i) -> {
+		ctx.addProcessor(new DataSink.ToUrl());
+		return i;
+	    });
+	
 
 
 	defineFunction(CMD_TOJSON,0,(ctx,args,i) -> {

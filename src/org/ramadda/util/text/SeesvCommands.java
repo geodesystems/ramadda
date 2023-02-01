@@ -299,6 +299,7 @@ public interface SeesvCommands {
     public static final String CMD_EDIT="-edit";
     public static final String CMD_COLS="-cols";
     public static final String CMD_STATS="-stats";
+    public static final String CMD_TOURL="-tourl";
     public static final String CMD_TORECORD="-torecord";
     public static final String CMD_TOXML="-toxml";
     public static final String CMD_TOJSON="-tojson";

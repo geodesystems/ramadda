@@ -626,6 +626,65 @@ public abstract class DataSink extends Processor implements Cloneable,SeesvPlugi
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class ToUrl extends Processor {
+	List<String> ids;
+
+
+        /**
+         * _more_
+         *
+         */
+        public ToUrl() {
+        }
+
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
+            PrintWriter writer = ctx.getWriter();
+	    writer.flush();
+	    writer.close();
+	}
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (rowCnt++ == 0) {
+		ids= new ArrayList<String>();
+		for(Object id:row.getValues()) {
+		    ids.add(makeID(id.toString()));
+		}
+                return row;
+            }
+
+            PrintWriter writer = ctx.getWriter();
+	    for(int i=0;i<ids.size();i++) {
+		if(row.indexOk(i)) {
+		    if(i>0)writer.print("&");
+		    writer.print(HU.arg(ids.get(i),row.getString(i)));
+		}
+	    }
+	    writer.println("");
+            return row;
+        }
+
+    }
+    
+
 
 
 
