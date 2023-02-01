@@ -4470,15 +4470,25 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     attrSelect:function(name,value) {
         return  "[" + name+"=\"" + value +"\"]";
     },
-    scrollToAnchor:function(aid,offset) {
+    scrollToAnchor:function(aid,offset,containerId) {
         if(!Utils.isDefined(offset)) offset=-50;
         var aTag = $("a[name='"+ aid +"']");
         if(!offset) offset=0;
         offset = +offset;
         //Offset a bit
         Utils.scrollToAnchorTime = new Date();
-        $('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
-        location.hash = aid;
+	if(containerId) {
+	    let container = jqid(containerId);
+	    let scrollTo = aTag;
+	    // Or you can animate the scrolling:
+	    container.animate({
+		scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+	    },1000);
+	} else {
+            $('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
+            location.hash = aid;
+	}
+
     },
     scrollVisible: function(contents, child, animate) {
         if(child.length==0 || contents.length==0)  return;
