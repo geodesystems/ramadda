@@ -1862,7 +1862,7 @@ RepositoryMap.prototype = {
     },
 
     addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args,loadCallback) {
-        let _this = this;
+	let _this = this;
         let theArgs = {
             forSelect: false,
             addBox: true,

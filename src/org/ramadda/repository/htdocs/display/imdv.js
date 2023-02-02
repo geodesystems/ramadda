@@ -94,7 +94,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     this.mapProperties = {};
     Utils.importJS(ramaddaBaseHtdocs+'/wiki.js');
     if(!MAP_RESOURCES) {
-        $.getJSON(ramaddaBaseUrl+'/mapresources.json', data=>{
+        $.getJSON(Ramadda.getUrl('/mapresources.json'), data=>{
 	    MAP_RESOURCES_MAP={};
 	    MAP_RESOURCES = data;
 	    MAP_RESOURCES.forEach((r,idx)=>{MAP_RESOURCES_MAP[idx] = r;});
@@ -103,7 +103,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	});
     }
     ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
-	CLASS_NAME:'IMDV',
+	CLASS_NAME:'IMDV Image Handler',
 	initialize: function(control, callbacks, options) {
 	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
 	    this.display = options.display;
@@ -243,7 +243,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.display.setCommandCursor();
 	    };
 
-	    let url = ramaddaBaseUrl+'/map/getroute?entryid='+this.display.getProperty('entryId');
+	    let url = Ramadda.getUrl('/map/getroute?entryid='+this.display.getProperty('entryId'));
 	    this.finishedWithRoute = true;
 	    this.display.showProgress('Creating route...');
 	    this.makingRoute = true;
@@ -459,9 +459,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return;
 	},
 	handleNewFeature:function(feature,style,mapOptions) {
-	    style = style || feature?.style;
-	    mapOptions = mapOptions??feature?.mapOptions ?? style?.mapOptions;
-	    mapOptions = $.extend({},mapOptions);
+	    style = Utils.clone({},style?? (feature?.style) ?? {});
+	    mapOptions = Utils.clone({},mapOptions??feature?.mapOptions ?? style?.mapOptions);
+	    delete style.mapOptions;
 	    if(feature && feature.style && feature.style.mapOptions)
 		delete feature.style.mapOptions;
 	    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
@@ -494,7 +494,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	
 	gotoAddress:function(widget,address) {
-            let url = ramaddaBaseUrl + '/geocode?query=' + encodeURIComponent(address);
+            let url = Ramadda.getUrl('/geocode?query=' + encodeURIComponent(address));
 	    let add = loc=> {
 		if(this.addresses == null)this.addresses=[];
 		let pt = MapUtils.createLonLat(loc.longitude, loc.latitude);
@@ -517,7 +517,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		let addIt = this.jq(ID_ADDRESS_ADD).is(':checked');
 		let points = [loc.latitude,loc.longitude];
-		style.externalGraphic=ramaddaBaseUrl +(addIt?'/icons/map/marker-blue.png':'/icons/map/marker.png');
+		style.externalGraphic=Ramadda.getUrl(addIt?'/icons/map/marker-blue.png':'/icons/map/marker.png');
 		let mapGlyph = this.createMapMarker(GLYPH_MARKER,{type:GLYPH_MARKER,name:loc.name}, style,points,addIt)
 		if(!addIt)
 		    this.addresses.push(mapGlyph);
@@ -573,14 +573,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let km =radii[idx];
 		if(km==null) continue;
 		let skm = String(km).trim();
-		if(skm.endsWith('mi')) {
-		    km = 1.60934*parseFloat(skm.replace('mi',''));
-		} else if (skm.endsWith('ft')) {
-		    km = 0.0003048*parseFloat(skm.replace('ft',''));
-		} else if (skm.endsWith('m')) {
-		    km = parseFloat(skm.replace('m',''))/1000;
-		} else if (skm.endsWith('km')) {
-		    km = skm.replace('km','');
+		if(skm.endsWith(UNIT_MILES)) {
+		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
+		} else if (skm.endsWith(UNIT_FT)) {
+		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
+		} else if (skm.endsWith(UNIT_M)) {
+		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
+		} else if (skm.endsWith(UNIT_KM)) {
+		    km = skm.replace(UNIT_KM,'');
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
 		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
@@ -654,7 +654,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let acres;
 
 	    if(!glyphType) return '';
-	    let distancePrefix = 'Total distance: ';
+	    let distancePrefix = 'Distance: ';
 
 	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX || glyphType == GLYPH_POLYGON || glyphType == GLYPH_TRIANGLE || glyphType == GLYPH_FREEHAND_CLOSED || glyphType==GLYPH_IMAGE) {
 		area = MapUtils.calculateArea(pts);
@@ -670,15 +670,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		msg = '';
 		let w = MapUtils.distance(pts[0].y,pts[0].x,pts[1].y,pts[1].x);
 		let h = MapUtils.distance(pts[1].y,pts[1].x,pts[2].y,pts[2].x);		
-		let unit = 'ft';
+		let unit = UNIT_FT;
 		if(w>5280 || h>5280) {
-		    unit = 'm';
+		    unit = UNIT_MILES;
 		    w = w/5280;
 		    h = h/5280;		    
 		}
-
-		msg= 'W: ' + Utils.formatNumberComma(w) + ' ' + unit +
-		    ' H: ' + Utils.formatNumberComma(h) + ' ' + unit;
+		msg= 'W: ' + Utils.formatNumberComma(w,1) + ' ' + unit +
+		    ' H: ' + Utils.formatNumberComma(h,1) + ' ' + unit;
 	    } else {
 		let segments = '';
 		let total = 0;
@@ -687,29 +686,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let pt2 = pts[i+1];		
 		    let d = MapUtils.distance(pt1.y,pt1.x,pt2.y,pt2.x);
 		    total+=d;
-		    let unit = 'feet';
+		    let unit = UNIT_FT;
 		    if(d>5280) {
-			unit = 'miles';
+			unit = UNIT_MILES;
 			d = d/5280;
 		    }
 		    d = Utils.formatNumberComma(d);
 		    segments+= d +' ' + unit +' ';
 		}
-		let unit = 'feet';
+		let unit = UNIT_FT;
 		if(total>3500) {
-		    unit = 'miles';
+		    unit = UNIT_MILES;
 		    total = total/5280;
 		}
 		msg = distancePrefix + Utils.formatNumberComma(total) +' ' + unit;
 		if(pts.length>2 && pts.length<6)  {
-		    msg+='<br>Segments:' + segments;
+//		    msg+='<br>Segments:' + segments;
 		}
 		if(pts.length<=1) msg='';
 	    }
 	    if(!justDistance&&area>0) {
-		unit='ft';
+		unit=UNIT_FT;
 		if(area>MapUtils.squareFeetInASquareMile) {
-		    unit = 'miles';
+		    unit = UNIT_MILES;
 		    area = area/MapUtils.squareFeetInASquareMile;
 		    msg+=   '<br>' +
 			'Area: ' + Utils.formatNumber(area) +' sq ' + unit;
@@ -761,23 +760,22 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    args = args ??{};
 	    this.setCommandCursor();
 	    let styleMap = MapUtils.createStyleMap({'default':{}});
-	    let tmpStyle = {};
-	    $.extend(tmpStyle,glyphType.getStyle());
-	    tmpStyle.mapOptions = {
+	    let tmpStyle = Utils.clone({},glyphType.getStyle());
+	    let tmpMapOptions =  tmpStyle.mapOptions = {
 		type:glyphType.type
 	    }
 	    if(glyphType.isFixed() || glyphType.isGroup()) {
 		let text = prompt(glyphType.isFixed()?'Text:':'Name:');
 		if(!text) return
-		let mapOptions = tmpStyle.mapOptions;
-		delete tmpStyle.mapOptions;
-		tmpStyle.text = text;
+		let style = Utils.clone({},tmpStyle);
+		let mapOptions = Utils.clone({},tmpMapOptions);
+		style.text = text;
 		if(glyphType.isGroup()) {
-		    tmpStyle.externalGraphic = glyphType.getIcon();
+		    style.externalGraphic = glyphType.getIcon();
 		    mapOptions.name = text;
 		}
 		this.clearCommands();
-		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,tmpStyle);
+		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		this.addGlyph(mapGlyph);
 		this.clearMessage2(1000);
 		this.clearCommands();
@@ -851,11 +849,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			alert('Please enter a map server');
 			return;
 		    }
-		    let mapOptions = tmpStyle.mapOptions;
+		    let style = Utils.clone({},tmpStyle);
+		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    mapOptions.name = this.jq('servername').val().trim();
-		    delete tmpStyle.mapOptions;
 		    this.clearCommands();
-		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,tmpStyle);
+		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		    mapGlyph.setMapServerUrl(url,this.jq('wmslayer').val().trim(),this.jq('maplegend').val().trim(),predefined);
 		    mapGlyph.checkMapServer();
 		    this.addGlyph(mapGlyph);
@@ -879,15 +877,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    } else {
 			attrs = imageUrlOrEntryAttrs;
 		    }
+		    let style = Utils.clone({},tmpStyle);
+		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
+
 		    if(glyphType.isImage()) {
-			tmpStyle.strokeColor='#ccc';
-			tmpStyle.fillColor = 'transparent';
+			style.strokeColor='#ccc';
+			style.fillColor = 'transparent';
 		    } else {
-			$.extend(tmpStyle.mapOptions,attrs);
+			$.extend(mapOptions,attrs);
 		    }
-		    tmpStyle.mapOptions.entryId = entryId;
-		    tmpStyle.mapOptions.entryType = attrs.entryType;
+		    mapOptions.entryId = entryId;
+		    mapOptions.entryType = attrs.entryType;
 
 		    if(glyphType.isMap()) {
 			if(resourceId) {
@@ -895,14 +896,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    attrs.name = resource.name;
 			    attrs.entryType = resource.type;
 			    attrs.resourceUrl = resource.url;
-			    if(resource.style) $.extend(tmpStyle,resource.style);
+			    if(resource.style) $.extend(style,resource.style);
 			}
 
-			let mapOptions = tmpStyle.mapOptions;
-			delete tmpStyle.mapOptions;
 			mapOptions.name = attrs.entryName;
 			$.extend(mapOptions,attrs);
-			let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
+			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.checkMapLayer();
 			this.clearCommands();
 			return;
@@ -911,25 +910,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    //Hacky, gotta clean up all of this
 		    if(attrs.entryName && !glyphType.isImage()) {
 			attrs.name  = attrs.entryName;				
-			tmpStyle.label = attrs.entryName;				
+			style.label = attrs.entryName;				
 			delete attrs.entryName;
 		    }
 
 		    if(glyphType.isMultiEntry()) {
-			let mapOptions = tmpStyle.mapOptions;
-			$.extend(mapOptions,attrs);
-			delete tmpStyle.mapOptions;
 			this.clearCommands();
-			let mapGlyph = this.handleNewFeature(null,tmpStyle,mapOptions);
+			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.addEntries(true);
 			this.clearCommands();
 			return
 		    }
 
 		    if(glyphType.isData()) {
-			let mapOptions = tmpStyle.mapOptions;
-			$.extend(mapOptions,attrs);
-			delete tmpStyle.mapOptions;
 			this.clearCommands();
 			this.createData(mapOptions);
 			this.clearCommands();
@@ -938,14 +931,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    if(glyphType.isEntry() && (Utils.isDefined(attrs.latitude) || Utils.isDefined(attrs.north))) {
 			if(confirm('Do you want to use this entry\'s location?')) {
-			    let style = $.extend({},tmpStyle);
+			    style = $.extend({},style);
 			    style.externalGraphic =attrs.icon;
-			    let glyphAttrs = tmpStyle.mapOptions;
-			    delete tmpStyle.mapOptions;
-			    $.extend(glyphAttrs,attrs);
-			    glyphAttrs.useentrylocation = true;
+			    mapOptions.useentrylocation = true;
 			    let points = Utils.isDefined(attrs.latitude)?[attrs.latitude,attrs.longitude]:[attrs.north,attrs.west];
-			    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,glyphAttrs, style,points,true);
+			    let mapGlyph = this.createMapMarker(GLYPH_ENTRY,mapOptions, style,points,true);
 			    mapGlyph.applyEntryGlyphs();
 			    this.clearCommands();
 			    mapGlyph.panMapTo();
@@ -954,15 +944,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			let url = imageUrl??ramaddaBaseUrl +'/entry/get?entryid=' + entryId;
+			let url = imageUrl??Ramadda.getUrl('/entry/get?entryid=' + entryId);
 			this.lastImageUrl = url;
-			tmpStyle.imageUrl = url;
+			style.imageUrl = url;
 		    } else if(attrs.icon) {
-			tmpStyle.externalGraphic = attrs.icon;
+			style.externalGraphic = attrs.icon;
 		    }
-		    tmpStyle.mapOptions.entryId = entryId;
-		    tmpStyle.mapOptions.name = attrs.name;			    
-		    cmd.handler.style = tmpStyle;
+		    mapOptions.entryId = entryId;
+		    mapOptions.name = attrs.name;			    
+		    cmd.handler.style = style;
+		    style.mapOptions = Utils.clone({},mapOptions);
 		    cmd.handler.layerOptions.styleMap=styleMap;
 		    this.showCommandMessage(glyphType.isImage()?'Click and drag to create image':'New Entry Marker');
 		    cmd.activate();
@@ -1038,21 +1029,23 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    closeDialog();
 		}
 		let ok = ()=>{
+		    let style = Utils.clone({},tmpStyle);
+		    style.mapOptions = Utils.clone({},tmpMapOptions);
 		    let doIcon = this.lastIncludeIcon  = this.jq('includeicon').is(':checked');
 		    if(!doIcon) {
-			tmpStyle.externalGraphic=icon_blank;
+			style.externalGraphic=icon_blank;
 		    } else {
 			this.lastIcon = this.jq('externalGraphic').val();
-			tmpStyle.externalGraphic = this.lastIcon;
-			tmpStyle.labelAlign='cb';
-			tmpStyle.labelYOffset='12';
+			style.externalGraphic = this.lastIcon;
+			style.labelAlign='cb';
+			style.labelYOffset='12';
 		    }
 		    let text = this.jq('labeltext').val();
 		    closeDialog();
 		    //			    if(!Utils.stringDefined(text)) return;
 		    this.lastText = text;
-		    tmpStyle.label = text;
-		    cmd.handler.style = tmpStyle;
+		    style.label = text;
+		    cmd.handler.style = style;
 		    cmd.handler.layerOptions.styleMap=styleMap;
 		    this.showCommandMessage('New Marker');
 		    cmd.activate();
@@ -1063,9 +1056,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		return;
 	    }
-	    cmd.handler.style = tmpStyle;
+	    cmd.handler.style = Utils.clone({},tmpStyle);
 	    cmd.handler.layerOptions.styleMap=styleMap;
-
 	    let message = glyphType?'New ' + glyphType.getName():cmd.message??'';
 
 	    if(glyphType.isRoute()) {
@@ -1108,9 +1100,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let stac= HU.div(['id',this.domId('stac_top')]) +
 		HU.div(['id',this.domId('stac_output')]);
 	    this.jq('stac_contents').html(stac);
-	    let catalogUrl = ramaddaBaseUrl+'/resources/stac_catalogs.json';
+	    let catalogUrl = Ramadda.getUrl('/resources/stac_catalogs.json');
 	    let stacLinks = [{value:'',label:'Select'}, {value:catalogUrl,label:'Stac Catalogs'},
-			     {value:ramaddaBaseUrl+'/resources/pc_catalog.json',label:'Planet Earth Catalogs'}];
+			     {value:Ramadda.getUrl('/resources/pc_catalog.json'),label:'Planet Earth Catalogs'}];
 	    let seenStacUrls = {};
 	    seenStacUrls[catalogUrl]=true;
 	    let makeTop=(current)=>{ 
@@ -1197,16 +1189,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			links:data
 		    }
 		}
-		    
+		
 		console.dir(data);
 		let html = '';
 		let title = (data.title??url)+HU.space(1) + HU.href(url,HU.getIconImage('fas fa-link',[],['style','font-size:9pt;']),['target','_stac']);
 		html+=HU.center(HU.b(title));
 		if(data.description) {
 		    let desc = Utils.stripTags(data.description);
-//		    console.log('BEFORE:'+desc);
+		    //		    console.log('BEFORE:'+desc);
 		    desc = desc.replace(/[\n\s*\n]\n+/g,'\n').trim();
-//		    console.log("AFTER:" +desc);
+		    //		    console.log("AFTER:" +desc);
 		    desc = desc.replace(/[\n\n]+/g,'\n').replace(/\n/g,'<br>');
 		    html+=HU.div(['class','boxquote','style','max-width:600px;overflow-z:auto;max-height:100px;overflow-y:auto;'],desc);
 		}
@@ -1238,8 +1230,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    linksHtml2+=HU.tr(HU.td(['width','10%','nowrap','true'],'')+HU.td(href));
 			} else {
 			    linksHtml1+=HU.tr(HU.td(['width','10%','nowrap','true'],
-					     HU.div(['title',url,'class','imdv-stac-item'],HU.span(['link',url,'class','imdv-stac-link'], 'Load'))) +
-					     HU.td(href));
+						    HU.div(['title',url,'class','imdv-stac-item'],HU.span(['link',url,'class','imdv-stac-link'], 'Load'))) +
+					      HU.td(href));
 			}
 
 		    });
@@ -1312,7 +1304,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let asset =  data.assets[$(this).attr('asset-id')];
 		    let url = asset.href;
 		    if(asset.type&& asset.type.indexOf('image/tiff')>=0) {
-			url =   ramaddaBaseUrl+'/tifftopng?url=' + encodeURIComponent(url);
+			url =   Ramadda.getUrl('/tifftopng?url=' + encodeURIComponent(url));
 		    }
 		    let attrs = {
 			type:GLYPH_MAP,
@@ -1340,7 +1332,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    showStac(data,url);
 		}).fail(err=>{
-//		    console.dir(err);
+		    //		    console.dir(err);
 		    JSON.parse(err.responseText)
 		    this.jq('stac_output').html('Load failed. URL: ' + url);
 		});
@@ -1489,7 +1481,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			let mapOptions = {name:variable.title,
 					  variable:variable};
 			this.clearCommands();
-			mapOptions.icon = ramaddaBaseUrl+'/icons/xcube.png';
+			mapOptions.icon = Ramadda.getUrl('/icons/xcube.png');
 			mapOptions.type=GLYPH_MAPSERVER;
 			let mapGlyph = new MapGlyph(this,GLYPH_MAPSERVER, mapOptions, null,{});
 			mapGlyph.setMapServerUrl(url,'','','');
@@ -1651,7 +1643,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    dr=/\"data\"\s*:\s*new\s*PointData\s*\((.*?)\)/g;
 		    match  = inner.match(dr);
 		    if(match) {
-			let re = new RegExp("\"(" + ramaddaBaseUrl+"[^\"]+)\"");
+			let re = new RegExp("\"(" + Ramadda.getBaseUrl()+"[^\"]+)\"");
 			match = match[0].match(re);
 			if(match) 
 			    pointDataUrl = match[1];
@@ -1697,7 +1689,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let error = text=>{
 		alert("An error occurred:" + text);
 	    };	    
-	    let url = ramaddaBaseUrl+"/getwiki";
+	    let url = Ramadda.getUrl("/getwiki");
 	    $.post(url,{
 		entryid:mapOptions.entryId},
 		   callback).fail(error);
@@ -2424,8 +2416,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			this.setProperty(prop, value);
 			if(prop == "externalGraphic") {
 			    value = this.jq('externalGraphic_image').val();
-			    if(value && !value.startsWith(ramaddaBaseUrl))
-				value = ramaddaBaseUrl+  value;
+			    if(value && Ramadda.isRamaddaUrl(value))
+				value = Ramadda.getUrl(value);
 			}
 			style[prop] = value;
 		    });
@@ -2563,7 +2555,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		authtoken:this.getProperty("authToken"),
 		response:"json"
 	    }
-	    let url = ramaddaBaseUrl +"/entry/change";
+	    let url = Ramadda.getUrl("/entry/change");
             $.post(url, args, (result) => {
 		if(result.entries && result.entries.length) {
 		    this.setProperty("entryId",result.entries[0]);
@@ -2589,7 +2581,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let json = this.makeJson();
-	    let url = ramaddaBaseUrl +"/entry/setfile"; 
+	    let url = Ramadda.getUrl("/entry/setfile"); 
             let args = {
                 entryid: this.getProperty("entryId"),
 		"file": json,
@@ -2618,7 +2610,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doImport: function() {
 	    let callback = (entryId) =>{
-		let url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
+		let url = Ramadda.getUrl("/entry/get?entryid=" + entryId);
 		this.showProgress("Importing map...");
 		let finish = ()=>{
 		    this.display.clearMessage2();
@@ -2881,7 +2873,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 });
 	    
 
-//	    let accord = HU.makeAccordionHtml(accords);
+	    //	    let accord = HU.makeAccordionHtml(accords);
 	    let accord = HU.makeTabs(accords);	    
 	    let html = buttons + accord.contents;
 	    html  = HU.div(['style','min-width:700px;min-height:300px;margin:10px;'],html);
@@ -2891,7 +2883,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    this.initSideHelp(dialog);
 	    accord.init();
-//	    HU.makeAccordion('#'+accord.id);
+	    //	    HU.makeAccordion('#'+accord.id);
 	    let close=()=>{
 		dialog.hide();
 		dialog.remove();
@@ -2973,7 +2965,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Style...");
 	    html+= this.menuItem(this.domId(ID_MAP_PROPERTIES),"Properties...");
 	    html+=div;
-	    html+= HU.href(ramaddaBaseUrl+'/userguide/imdv.html','Help',['target','_help']);
+	    html+= HU.href(Ramadda.getUrl('/userguide/imdv.html'),'Help',['target','_help']);
 	    html  = this.makeMenu(html);
 	    //	    console.log('creating file menu');
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
@@ -3086,7 +3078,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+="<td>&nbsp;</td>";
 		html+="<td>";
 		glyphTypes.forEach(glyphType=>{
-		    let icon = glyphType.options.icon||ramaddaBaseUrl+"/map/marker-blue.png";
+		    let icon = glyphType.options.icon||Ramadda.getUrl("/map/marker-blue.png");
 		    let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
 		    if(glyphType.getTooltip())
 			label = HU.span(['title',glyphType.getTooltip()],label);
@@ -3112,7 +3104,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			[ID_SELECTOR,'Select'],
 			[ID_SELECT_ALL,'Select All','A'],			
 			null,
-			[ID_MOVER,'Move','M'],
+			[ID_MOVER,'Move',UNIT_M],
 			[ID_RESHAPE,'Reshape'],
 			[ID_RESIZE,'Resize'],
 			[ID_ROTATE,'Rotate'],			
@@ -3304,11 +3296,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(opts.resourceUrl) {
 		//For now proxy the request through our ramadda
 		if(opts.resourceUrl.indexOf('ramadda.org')>=0)
-		    url =   ramaddaBaseUrl+'/proxy?url=' + encodeURIComponent(opts.resourceUrl);
+		    url =   Ramadda.getUrl('/proxy?url=' + encodeURIComponent(opts.resourceUrl));
 		else
 		    url =   opts.resourceUrl;
 	    } else {
-		url = ramaddaBaseUrl +"/entry/get?entryid="+opts.entryId;
+		url = Ramadda.getUrl("/entry/get?entryid="+opts.entryId);
 	    }
 	    mapGlyph.setDownloadUrl(url);
 	    let selectCallback = (feature,layer,event)=>{
@@ -3344,7 +3336,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(north<-90) {
 		    [south,west,north,east] = opts.bbox;		    
 		}
-//		console.log("north:" +north+" west:" +west +" south:" +south +" east:" + east);
+		//		console.log("north:" +north+" west:" +west +" south:" +south +" east:" + east);
 		let ilayer =  this.getMap().addImageLayer('', opts.name,"",url,true,
 							  north,west,south,east, iw,ih,{},loadCallback);
 		ilayer.mapGlyph = mapGlyph;
@@ -3364,7 +3356,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		break;
 	    case 'geo_shapefile_fips': 
 	    case 'geo_shapefile': 
-		url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=geojson.geojson&formap=true';
+		url = Ramadda.getUrl('/entry/show?entryid=' + opts.entryId+'&output=geojson.geojson&formap=true');
 		//fall thru to geojson
 
 	    case 'geo_geojson': 
@@ -3374,7 +3366,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		/*
 		  case 'geo_shapefile_fips': 
 		  case 'geo_shapefile': 
-		  url = ramaddaBaseUrl+'/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true';
+		  url = Ramadda.getUrl('/entry/show?entryid=' + opts.entryId+'&output=shapefile.kml&formap=true'0;
 		*/
 
 	    case 'geo_kml': 
@@ -3386,7 +3378,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    loadCallback(map,layer);
 		};
-		url =  ramaddaBaseUrl+"/entry/show?entryid=" + opts.entryId +"&output=kml.doc&converthref=true";
+		url =  Ramadda.getUrl("/entry/show?entryid=" + opts.entryId +"&output=kml.doc&converthref=true");
 
 		let layer =  this.getMap().addKMLLayer(opts.name,url,true, selectCallback, unselectCallback,style,loadCallback2,andZoom,errorCallback);
 		return layer;
@@ -3400,7 +3392,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    //Pass in true=skipParent
 	    let url = this.getProperty("fileUrl",null,false,true);
 	    if(!url && entryId)
-		url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
+		url = Ramadda.getUrl("/entry/get?entryid=" + entryId);
 	    if(!url) return;
 	    this.showProgress("Loading map...");
 	    let finish = ()=>{
@@ -3520,7 +3512,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	doMakeMapGlyphs:function() {
 	    let externalGraphic = this.getExternalGraphic();
-	    if(!externalGraphic.startsWith(ramaddaBaseUrl)) externalGraphic = ramaddaBaseUrl+externalGraphic;
+	    if(!Ramadda.isRamaddaUrl(externalGraphic)) externalGraphic = Ramadda.getUrl(externalGraphic);
 	    new GlyphType(this,GLYPH_GROUP,"Group",
 			  {externalGraphic: externalGraphic,
 			   pointRadius:this.getPointRadius(10),
@@ -3541,7 +3533,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  },
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
-			   icon:ramaddaBaseUrl+"/icons/chart_organisation.png"});
+			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});
 	    new GlyphType(this,GLYPH_MARKER,"Marker",
 			  {label : "label",
 			   externalGraphic: externalGraphic,
@@ -3568,7 +3560,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   textBackgroundShape:'rectangle',
 			   textBackgroundRadius:0
 			  }, MyPoint,
-			  {icon:ramaddaBaseUrl+"/map/blue-dot.png"});
+			  {icon:Ramadda.getUrl("/map/blue-dot.png")});
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
 			  {graphicName:'circle',
@@ -3593,7 +3585,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
 			  },
 			  MyPoint,
-			  {icon:ramaddaBaseUrl+"/icons/dots/blue.png"});
+			  {icon:Ramadda.getUrl("/icons/dots/blue.png")});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
 		text:"",
 		right:"50%",
@@ -3609,7 +3601,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },
 			  MyEntryPoint,
 			  {isFixed:true, tooltip:'Add fixed text',
-			   icon:ramaddaBaseUrl+"/icons/sticky-note-text.png"});			    
+			   icon:Ramadda.getUrl("/icons/sticky-note-text.png")});			    
 
 	    new GlyphType(this,GLYPH_LINE, "Line",
 			  {strokeColor:this.getStrokeColor(),
@@ -3620,7 +3612,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  },
 			  MyPath,
 			  {maxVertices:2,
-			   icon:ramaddaBaseUrl+"/icons/line.png"});		
+			   icon:Ramadda.getUrl("/icons/line.png")});		
 	    new GlyphType(this,GLYPH_POLYLINE, "Polyline",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
@@ -3629,7 +3621,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeLinecap: 'butt'
 			  },
 			  MyPath,
-			  {icon:ramaddaBaseUrl+"/icons/polyline.png"});
+			  {icon:Ramadda.getUrl("/icons/polyline.png")});
 	    new GlyphType(this,GLYPH_POLYGON, "Polygon",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
@@ -3640,7 +3632,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillOpacity:1.0,
 			   fillPattern:''},
 			  MyPolygon,
-			  {icon:ramaddaBaseUrl+"/icons/polygon.png"});
+			  {icon:Ramadda.getUrl("/icons/polygon.png")});
 
 	    new GlyphType(this,GLYPH_FREEHAND,"Freehand",
 			  {strokeColor:this.getStrokeColor(),
@@ -3649,7 +3641,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeDashstyle:'solid',
 			   strokeLinecap: 'butt'},
 			  MyPath,
-			  {freehand:true,icon:ramaddaBaseUrl+"/icons/freehand.png"});
+			  {freehand:true,icon:Ramadda.getUrl("/icons/freehand.png")});
 	    new GlyphType(this,GLYPH_FREEHAND_CLOSED,"Closed",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
@@ -3659,7 +3651,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillColor:"transparent",
 			   fillOpacity:1.0,fillPattern:''},
 			  MyPolygon,
-			  {freehand:true,icon:ramaddaBaseUrl+"/icons/freehandclosed.png"});
+			  {freehand:true,icon:Ramadda.getUrl("/icons/freehandclosed.png")});
 
 	    new GlyphType(this,GLYPH_BOX, "Box",
 			  {strokeColor:this.getStrokeColor(),
@@ -3670,7 +3662,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:4,irregular:true,
-			   icon:ramaddaBaseUrl+"/icons/rectangle.png"});
+			   icon:Ramadda.getUrl("/icons/rectangle.png")});
 	    new GlyphType(this,GLYPH_CIRCLE, "Circle",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
@@ -3679,7 +3671,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillColor:"transparent",
 			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
-			  {snapAngle:45,sides:40,icon:ramaddaBaseUrl+"/icons/ellipse.png"});
+			  {snapAngle:45,sides:40,icon:Ramadda.getUrl("/icons/ellipse.png")});
 
 	    new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
 			  {strokeColor:this.getStrokeColor(),
@@ -3690,7 +3682,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
-			   icon:ramaddaBaseUrl+"/icons/triangle.png"});				
+			   icon:Ramadda.getUrl("/icons/triangle.png")});				
 	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			  {strokeColor:this.getStrokeColor(),
 			   strokeWidth:this.getStrokeWidth(),
@@ -3700,7 +3692,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   fillOpacity:1.0,fillPattern:''},
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
-			   icon:ramaddaBaseUrl+"/icons/hexagon.png"});		
+			   icon:Ramadda.getUrl("/icons/hexagon.png")});		
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
 			  {strokeColor:'blue',
 			   strokeWidth:2,
@@ -3722,7 +3714,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   textBackgroundRadius:0
 			  },
 			  MyPoint,
-			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
+			  {icon:Ramadda.getUrl("/icons/dot.png")});
 
 
 
@@ -3758,7 +3750,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {isMap:true,
 			   tooltip:"Select a gpx, geojson or  shapefile map",
-			   icon:ramaddaBaseUrl+"/icons/mapfile.png"});	
+			   icon:Ramadda.getUrl("/icons/mapfile.png")});	
 
 
 	    new GlyphType(this,GLYPH_MAPSERVER,"Map Server",
@@ -3769,7 +3761,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {isMapServer:true,
 			   tooltip:"Provide a Web Map Service URL",
-			   icon:ramaddaBaseUrl+"/icons/drive-globe.png"});	
+			   icon:Ramadda.getUrl("/icons/drive-globe.png")});	
 
 
 	    new GlyphType(this,GLYPH_ROUTE, "Route", {
@@ -3777,7 +3769,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		strokeWidth:this.getStrokeWidth(),
 		strokeDashstyle:'solid',
 		strokeOpacity:1,
-	    },MyRoute,{icon:ramaddaBaseUrl+"/icons/route.png"});
+	    },MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
 
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
 			  {strokeColor:"#ccc",
@@ -3789,10 +3781,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  ImageHandler,
 			  {tooltip:"Select an image entry to display",
 			   snapAngle:90,sides:4,irregular:true,isImage:true,
-			   icon:ramaddaBaseUrl+"/icons/imageicon.png"}
+			   icon:Ramadda.getUrl("/icons/imageicon.png")}
 			 );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
-			  {externalGraphic: ramaddaBaseUrl +"/icons/entry.png",
+			  {externalGraphic: Ramadda.getUrl("/icons/entry.png"),
 			   pointRadius:12,
 			   label:"label",
 			   fontColor: this.getProperty("labelFontColor","#000"),
@@ -3809,7 +3801,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {tooltip:"Add an entry as a marker",
 			   isEntry:true,
-			   icon:ramaddaBaseUrl+"/icons/entry.png"});
+			   icon:Ramadda.getUrl("/icons/entry.png")});
 	    new GlyphType(this,GLYPH_MULTIENTRY,"Multi Entry",
 			  {showLabels:true,
 			   pointRadius:12,
@@ -3825,13 +3817,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
 			   isMultiEntry:true,
-			   icon:ramaddaBaseUrl+"/icons/sitemap.png"});
+			   icon:Ramadda.getUrl("/icons/sitemap.png")});
 
 	    new GlyphType(this,GLYPH_DATA,"Data",
 			  {},
 			  MyEntryPoint,
 			  {isData:true, tooltip:'Select a map data entry to display',
-			   icon:ramaddaBaseUrl+"/icons/chart.png"});
+			   icon:Ramadda.getUrl("/icons/chart.png")});
 
 
 	},
@@ -4351,6 +4343,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(this.canEdit()) {
 		address = address +' ' +HU.checkbox(this.domId(ID_ADDRESS_ADD),['id',this.domId(ID_ADDRESS_ADD),'title','Add marker to map'],false);
 	    }
+	    address=HU.span(['style','margin-right:5px'], address);
 
 	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
 	    
@@ -4418,7 +4411,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_LEGEND_MAP_WRAPPER).remove();
 	    let legendPosition = this.getMapProperty('mapLegendPosition',{left:'50px',top:'20px'});
 	    let legendStyle = '';
-//	    ['left','top','right','bottom'].forEach(pos=>{
+	    //	    ['left','top','right','bottom'].forEach(pos=>{
 	    ['left','top'].forEach(pos=>{
 		if(legendPosition[pos]) {
 		    legendStyle+=HU.css(pos,legendPosition[pos]);
@@ -4437,7 +4430,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		//so if right or bottom were set then those get nuked
 		//because the drag drags left/top
 		start:function() {
-//		    inner.attr('style','position:absolute;');
+		    //		    inner.attr('style','position:absolute;');
 		},
 		stop:function() {
 		    let top = inner.position().top;
@@ -4453,7 +4446,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let set = (which,v) =>{
 			v =  Math.max(0,(parseInt(v)))+'px';
 			pos[which] =v;
-//			inner.css(pos,v);
+			//			inner.css(pos,v);
 		    }
 		    if(top<ph-bottom) set('top',top);
 		    else set('bottom',(ph-bottom));
@@ -4890,6 +4883,14 @@ GlyphType.prototype = {
 
 
 function MapGlyph(display,type,attrs,feature,style) {
+    if(!type) {
+	console.log("no type");
+	console.trace();
+	return
+    }
+    if(style.mapOptions) {
+	delete style.mapOptions;
+    }
     this.transientProperties = {};
 
     let glyphType = display.getGlyphType(type);
@@ -5096,7 +5097,7 @@ MapGlyph.prototype = {
     getRadii:function() {
 	if(!this.attrs.radii) {
 	    let level = this.display.getCurrentLevel();
-//	    console.log("level:" + level);
+	    //	    console.log("level:" + level);
 	    let r = (size,unit) =>{
 		let s =[];
 		for(let i=1;i<=5;i++) {
@@ -5105,24 +5106,24 @@ MapGlyph.prototype = {
 		this.attrs.radii = s;
 		return s;
 	    }
-	    if(level>=19) return r(25,'ft');
-	    if(level>=18) return r(50,'ft');
-	    if(level>=17) return r(75,'ft');	    
-	    if(level>=16) return r(150,'ft');
-	    if(level>=15) return r(250,'ft');	    
-	    if(level>=14) return r(500,'ft');
-	    if(level>=13) return r(1500,'ft');
-	    if(level>=12) return r(0.5,'mi');
-	    if(level>=11) return r(1,'mi');
-	    if(level>=10) return r(2,'mi');
-	    if(level>=9) return r(2.5,'mi');	    	    	    
-	    if(level>=8) return r(5,'mi');
-	    if(level>=7) return r(10,'mi');
-	    if(level>=6) return r(25,'mi');
-	    if(level>=5) return r(50,'mi');
-	    if(level>=4) return r(100,'mi');	    	    	    	    
-	    if(level>=3) return r(250,'mi');	    	    	    	    
-	    return	 r(500,'mi');
+	    if(level>=19) return r(25,UNIT_FT);
+	    if(level>=18) return r(50,UNIT_FT);
+	    if(level>=17) return r(75,UNIT_FT);	    
+	    if(level>=16) return r(150,UNIT_FT);
+	    if(level>=15) return r(250,UNIT_FT);	    
+	    if(level>=14) return r(500,UNIT_FT);
+	    if(level>=13) return r(1500,UNIT_FT);
+	    if(level>=12) return r(0.5,UNIT_MILES);
+	    if(level>=11) return r(1,UNIT_MILES);
+	    if(level>=10) return r(2,UNIT_MILES);
+	    if(level>=9) return r(2.5,UNIT_MILES);	    	    	    
+	    if(level>=8) return r(5,UNIT_MILES);
+	    if(level>=7) return r(10,UNIT_MILES);
+	    if(level>=6) return r(25,UNIT_MILES);
+	    if(level>=5) return r(50,UNIT_MILES);
+	    if(level>=4) return r(100,UNIT_MILES);	    	    	    	    
+	    if(level>=3) return r(250,UNIT_MILES);	    	    	    	    
+	    return	 r(500,UNIT_MILES);
 	}
 	return this.attrs.radii;
     },
@@ -5333,7 +5334,7 @@ MapGlyph.prototype = {
 	    console.log("\tno glyphs-2");
 	    return;
 	}
-	let url = ramaddaBaseUrl + "/entry/data?record.last=1&max=1&entryid=" + opts.entryId;
+	let url = Ramadda.getUrl("/entry/data?record.last=1&max=1&entryid=" + opts.entryId);
 	let pointData = new PointData("",  null,null,url,
 				      {entryId:opts.entryId});
 	let callback = (data)=>{
@@ -6169,17 +6170,15 @@ MapGlyph.prototype = {
 			ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 	}
 
-
-
-	let item  = (i,checkInMap,addDecoration) => {
-	    if(Utils.stringDefined(i)) {	
-		if(checkInMap && showInMapLegend) {
-		    if(addDecoration) {
-			i = HU.hbox([this.getDecoration(true),i]);
-		    }
-		    inMapLegend+=i;
-		} else {
-		    body+=HU.div(['class','imdv-legend-body-item'], i);
+	let item  = (content,checkInMap,addDecoration) => {
+	    if(checkInMap && showInMapLegend) {
+		if(addDecoration && Utils.stringDefined(content)) {
+		    content = HU.hbox([this.getDecoration(true),content]);
+		}
+		inMapLegend+=HU.div(['style','max-width:200px'],content);
+	    } else {
+		if(Utils.stringDefined(content)) {	
+		    body+=HU.div(['class','imdv-legend-body-item'], content);
 		}
 	    }
 	};
@@ -6202,6 +6201,9 @@ MapGlyph.prototype = {
 	    item(HU.div(['id',this.domId('multientry')]));
 	}
 
+	if(this.isShape()) {
+	    item('',true,true);
+	}
 	if(Utils.stringDefined(this.style.imageUrl)) {
 	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
@@ -6279,8 +6281,10 @@ MapGlyph.prototype = {
 
 	let setRotation = (event,ui) =>{
 	    this.style.rotation = ui.value; 
-	    if(this.image && this.image.imageHook) {
-		this.image.imageHook();
+	    if(this.image) {
+		if(this.image.imageHook) {
+		    this.image.imageHook();
+		}
 	    }
 	}
 	let setOpacity = (event,ui) =>{
@@ -6712,6 +6716,7 @@ MapGlyph.prototype = {
     setImage:function(image) {
 	this.image = image;
 	this.image.mapGlyph = this;
+	this.initImageLayer(this.image);
     },     
     hasMapFeatures: function() {
 	if(!this.isMap() || !this?.mapLayer?.features || this.mapLayer.features.length==0) return false;
@@ -7085,7 +7090,7 @@ MapGlyph.prototype = {
     },
     getHelp:function(url,label) {
 	if(url.startsWith('#')) url = '/userguide/imdv.html' + url;
-	return HU.href(ramaddaBaseUrl+url,HU.getIconImage(icon_help) +' ' +(label??'Help'),['target','_help']);
+	return HU.href(Ramadda.getUrl(url),HU.getIconImage(icon_help) +' ' +(label??'Help'),['target','_help']);
     },
     getPropertiesComponent: function(content) {
 	if(!this.canDoMapStyle()) return;
@@ -8235,7 +8240,6 @@ MapGlyph.prototype = {
 		transform = this.style.transform;
 	    if(this.style.rotation>0)
 		transform += ' rotate(' + this.style.rotation +'deg)';
-
 	    if(!Utils.stringDefined(transform))  transform=null;
 	    var childNodes = this.image.div.childNodes;
 	    for(var i = 0, len = childNodes.length; i < len; ++i) {
@@ -8547,7 +8551,7 @@ MapGlyph.prototype = {
 	displayAttrs.doInitCenter = andZoom??false;
 	this.attrs.displayAttrs = displayAttrs;
 	let entryId = this.getEntryId();
-	let pointDataUrl = displayAttrs.pointDataUrl ||ramaddaBaseUrl+"/entry/data?max=50000&entryid=" + entryId;
+	let pointDataUrl = displayAttrs.pointDataUrl ||Ramadda.getUrl("/entry/data?max=50000&entryid=" + entryId);
 	let pointData = new PointData(this.attrs.name,  null,null,
 				      pointDataUrl,
 				      {entryId:entryId});
@@ -8568,7 +8572,7 @@ MapGlyph.prototype = {
 		     "divid":divId,
 		     "bottomDiv":bottomDivId,			 
 		     "data":pointData,
-		     "fileUrl":ramaddaBaseUrl+"/entry/get?entryid=" + entryId+"&fileinline=true"};
+		     "fileUrl":Ramadda.getUrl("/entry/get?entryid=" + entryId+"&fileinline=true")};
 	$.extend(attrs,displayAttrs);
 	attrs = $.extend({},attrs);
 	attrs.name=this.getName();
@@ -8685,7 +8689,7 @@ MapGlyph.prototype = {
 		style.strokeColor="transparent";
 		/*
 		  let bgstyle = $.extend({},style);
-		  bgstyle = $.extend(bgstyle,{externalGraphic:ramaddaBaseUrl+"/images/white.png"});
+		  bgstyle = $.extend(bgstyle,{externalGraphic:Ramadda.getUrl("/images/white.png")});
 		  bgstyle.label = null;
 		  let bgpt = MapUtils.createPoint(pt.x,pt.y);
 		  let bg = MapUtils.createVector(bgpt,null,bgstyle);

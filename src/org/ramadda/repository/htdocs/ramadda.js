@@ -9,8 +9,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     contents:{},
     currentRamaddaBase:null,
 
+    getBaseUrl:function() {
+	return ramaddaBaseUrl;
+    },
+    isRamaddaUrl:function(url) {
+	return url.startsWith(ramaddaBaseUrl);
+    },
+    getUrl:function(url) {
+	return ramaddaBaseUrl+url;
+    },
     getEntryUrl:function(entryId) {
-	return ramaddaBaseUrl+"/entry/show?entryid=" + entryId;
+	return Ramadda.getUrl("/entry/show?entryid=" + entryId);
     },
 
     fileDrops:{
@@ -20,7 +29,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	args.entryid = entryId;
 	args.authtoken = authtoken;
 	args.response = "json";
-	let url = ramaddaBaseUrl +"/entry/change";
+	let url = Ramadda.getUrl("/entry/change");
         $.post(url, args, (result) => {
 	    if(success) {
 		success(result);
@@ -122,7 +131,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let attrs = ['id',innerId,'class',classPrefix];
 	html+=HU.open("div",attrs);
 	if(props.showForm) {
-	    html+=HU.open('form',['method','post','action',ramaddaBaseUrl+'/entry/getentries']);
+	    html+=HU.open('form',['method','post','action',Ramadda.getUrl('/entry/getentries')]);
 	    let form = HU.checkbox("",['style',HU.css('margin-left','3px'), 'title','Toggle all','id',id+'_form_cbx'],false);
 	    let actions = [["","Apply action"]];
 	    props.actions.forEach(action=>{
@@ -258,7 +267,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
 		    if(col.id=="type") {
-			v = HU.href(ramaddaBaseUrl+"/search/type/" + entry.getType().id,v,["title","Search for entries of type " + v]);
+			v = HU.href(Ramadda.getUrl("/search/type/" + entry.getType().id),v,["title","Search for entries of type " + v]);
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
@@ -322,7 +331,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entry = entryMap[entryId];
 	    $(this).attr('filled',true);
 	    $(this).attr('open',true);	    
-	    let url = ramaddaBaseUrl +'/entry/show?output=json&includeproperties=false&includedescription=false&includeservices=false&children=true&entryid='+entryId;
+	    let url = Ramadda.getUrl('/entry/show?output=json&includeproperties=false&includedescription=false&includeservices=false&children=true&entryid='+entryId);
             $.getJSON(url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
@@ -345,8 +354,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 					    ' ' + HU.href(url,HU.getIconImage('fas fa-download')));
 		    }
 		    
-		    table+=HU.formEntry('Kind:',HU.href(ramaddaBaseUrl+'/search/type/' + entry.getType().id,entry.typeName,['title','Search for entries of type ' + entry.typeName]));
-		    let searchUrl = ramaddaBaseUrl+'/search/type/' + entry.getType().id+'?user_id='+ entry.creator+'&search.submit=true';
+		    table+=HU.formEntry('Kind:',HU.href(Ramadda.getUrl('/search/type/' + entry.getType().id),entry.typeName,['title','Search for entries of type ' + entry.typeName]));
+		    let searchUrl = Ramadda.getUrl('/search/type/' + entry.getType().id+'?user_id='+ entry.creator+'&search.submit=true');
 		    let created = HU.href(searchUrl,entry.creator,
 					  ['title','Search for entries of this type created by ' + entry.creator]);
 		    table+=HU.formEntry('Created by:',created);
@@ -388,7 +397,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    let entry = entryMap[$(this).attr('entryid')];
 	    if(!entry) return;
             eventX = GuiUtils.getEventX(event);
-            let url = ramaddaBaseUrl + "/entry/show?entryid=" + entry.getId() + "&output=metadataxml";
+            let url = Ramadda.getUrl("/entry/show?entryid=" + entry.getId() + "&output=metadataxml");
 	    let handleTooltip = function(request) {
 		let xmlDoc = request.responseXML.documentElement;
 		text = getChildText(xmlDoc);
@@ -491,7 +500,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!Utils.entryDragInfo) return;
 	    $(this).css("background", "");
 	    if(isTarget($(this))) {
-		let url =  ramaddaBaseUrl+'/entry/getentries?output=' + $(this).attr('target-type');
+		let url =  Ramadda.getUrl('/entry/getentries?output=' + $(this).attr('target-type'));
 		Utils.entryDragInfo.getIds().split(',').forEach(id=>{
 		    url+='&selentry=' + id;
 		});
@@ -503,7 +512,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(!entry) return;
 	    if(Utils.entryDragInfo.hasEntry(entry)) return;
 	    if(!Utils.entryDragInfo.hasEntry(entry)) {
-		url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entry.getId();
+		url = Ramadda.getUrl("/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entry.getId());
 		document.location = url;
 	    }
 	});
@@ -518,7 +527,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    HtmlUtils.hidePopupObject();
 	    let val = $(this).val();
 	    if(val=="") return;
-	    let url = HU.getUrl(ramaddaBaseUrl +"/metadata/suggest",["value",val.trim()]);
+	    let url = HU.getUrl(Ramadda.getUrl("/metadata/suggest"),["value",val.trim()]);
 	    let input = $(this);
 	    $.getJSON(url, data=>{
 		if(data.length==0) return;
@@ -631,7 +640,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     handleDropEvent:function(event,file, result,entryId,callback) {
 	let isImage= file.type.match('^image.*');
-	let url = ramaddaBaseUrl +"/entry/addfile";
+	let url = Ramadda.getUrl("/entry/addfile");
 	let desc = "";
 	let name = file.name;
 	if(!name) {
@@ -716,7 +725,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(html) {
 	    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
 	} else {
-	    let url = ramaddaBaseUrl +"/entry/menu?entryid=" + entryId;
+	    let url = Ramadda.getUrl("/entry/menu?entryid=" + entryId);
             $.ajax({
                 url: url,
                 dataType: 'text',
@@ -1038,7 +1047,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         //Don't pick up clicks on the left side
         if (eventX - position.left < 150) return;
         this.lastClick = eventX;
-        let url = ramaddaBaseUrl + "/entry/show?entryid=" + entryId + "&output=metadataxml";
+        let url = Ramadda.getUrl("/entry/show?entryid=" + entryId + "&output=metadataxml");
         if (this.showDetails) {
             url += "&details=true";
         } else {
@@ -1175,7 +1184,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             url = this.ramaddaUrl + url;
 	} else {
 	    Ramadda.currentRamaddaBase = null;
-	    url = ramaddaBaseUrl+url;
+	    url = Ramadda.getUrl(url);
 	}
         if (this.localeId) {
             url = url + "&localeid=" + this.localeId;
