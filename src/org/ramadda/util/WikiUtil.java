@@ -3083,7 +3083,9 @@ public class WikiUtil {
 		    }
 		    String style=Utils.getProperty(props,"style","");
 		    String width = Utils.getProperty(props,"width",null);
-		    if(width!=null) style+="width:" + HU.makeDim(width,"px")+";";
+		    String outerStyle="";
+		    if(width!=null) outerStyle+="width:" + HU.makeDim(width,"px")+";";
+		    buff.append(HU.open("div",HU.style(outerStyle)));
 		    buff.append(HU.open("div",HU.cssClass(balloonClass)+HU.style(style)));
 		    continue;
 		}
@@ -3091,6 +3093,7 @@ public class WikiUtil {
                 if (tline.startsWith("-balloon")) {
 		    buff.append(HU.close("div"));
 		    if(balloonAfter!=null) buff.append(balloonAfter);
+		    buff.append(HU.close("div"));		    
 		    balloonAfter=null;
 		    continue;
 		}
