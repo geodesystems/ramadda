@@ -1,0 +1,71 @@
+<wiki>
+<title>Data Tables Upload API</title>
++section title="Data Tables Upload API"
+<link rel="stylesheet" type="text/css" href="dbstyle.css" title="Style">
+
+RAMADDA provides an upload API for each Data Tables entry.
+The general form of the API is:
+<pre>
+https://hostname/db/upload?entryid=&lt;entry id&gt;&amp;&lt;param1&gt;=0.0&amp;&lt;param2&gt;=0.0&amp;key=HIDDEN
+</pre>
+where param1, param2, etc are the column names as specified above.
+One can view the example API for an entry
+through the  Information page (from the entry menu).
+For the instrument example above the upload URL is of the form:
+<pre>
+https://hostname/db/upload?entryid=5da1c7c8-57c2-4102-acfe-c02e1aa1d4e5&temp=0.0&rh=0.0&key=HIDDEN
+</pre>
+
+Note: if the target DB entry has an alias, e.g. "site1", then that alias can be used in the API:
+<pre>
+https://hostname/db/upload?entryid=site1&temp=0.0&rh=0.0&key=HIDDEN
+</pre>
+
+Note: for compatability with the <a href="https://earthcubeprojects-chords.github.io/chords-docs/">CHORDS</a> system
+the below API is also provided:
+<pre>
+https://hostname/measurements/url_create?instrument_id=5da1c7c8-57c2-4102-acfe-c02e1aa1d4e5&temp=0.0&rh=0.0&key=HIDDEN
+</pre>
+
+
+The key is an API key. These are defined by a site administrator in either a .properties file installed
+in the RAMADDA home directory or through the Admin-&gt;Site and Contact Information-&gt;Extra Properties section.
+The API keys are of the form:
+<pre>
+db.apikey.&lt;some API key&gt;=&lt;comma separated list of entry ids&gt;
+db.apikey.&lt;some other API key&gt;=&lt;comma separated list of entry ids&gt;
+</pre>
+
+The above example would permit uploads to the DB entry with ID ff29d75c-8baf-4b17-b121-6c0e10eb9c60 or, the
+entry ID could be an ancestor entry of the target DB entry.  This allows for upload access to a group of DB
+entries.
+
+
++callout-info
+It is strongly encouraged to have the API key (e.g. "some_unique_password") be hard to guess.
+-callout-info
+
++callout-info
+Note: if no entry IDs are specified then the API key is valid for <em>any</em> entry.
+-callout-info
+
+
+For example with the key defintion:
+<pre>
+db.apikey.some_unique_password=ff29d75c-8baf-4b17-b121-6c0e10eb9c60,d3016687-af06-4f06-acb5-d41bf19b8c33
+db.apikey.some_other_password=ff29d75c-8baf-4b17-b121-6c0e10eb9c60
+</pre>
+
+
+The below URLs should work with the above API key definition:
+<pre>
+https://hostname/db/upload?entryid=ff29d75c-8baf-4b17-b121-6c0e10eb9c60&temp=0.0&rh=0.0&key=some_unique_password
+https://hostname/db/upload?entryid=d3016687-af06-4f06-acb5-d41bf19b8c33&temp=0.0&rh=0.0&key=some_unique_password
+Or with the alternate URL:
+https://hostname/measurements/url_create?instrument_id=ff29d75c-8baf-4b17-b121-6c0e10eb9c60&temp=0.0&rh=0.0&key=some_other_password  
+</pre>
+
+A JSON object is returned with either an error or an ok result.
+
+
+-section
