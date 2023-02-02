@@ -7030,12 +7030,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			);
 
 
-        Utils.appendAll(tags3,
-                        l.call( "Callout", "+callout_nl__nl_", "-callout"),
-                        l.call( "Callout info", "+callout-info_nl__nl_", "-callout"),
-                        l.call( "Callout tip", "+callout-tip_nl__nl_", "-callout"),
-                        l.call( "Callout question", "+callout-question_nl__nl_", "-callout"),
-                        l.call( "Callout warning", "+callout-warning_nl__nl_", "-callout"));
+
 
 
         Utils.appendAll(tags3, l.call( "Note", "+note style=\"\" _nl__nl_", "-note"));
@@ -7164,14 +7159,28 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         StringBuilder misc1 = new StringBuilder();
         StringBuilder misc2 = new StringBuilder();
-        StringBuilder misc3 = new StringBuilder();		
+        StringBuilder misc3 = new StringBuilder();
+        StringBuilder misc4 = new StringBuilder();			
+        Utils.appendAll(misc4,
+                        l.call( "Callout", "+callout_nl__nl_", "-callout"),
+                        l.call( "Callout info", "+callout-info_nl__nl_", "-callout"),
+                        l.call( "Callout tip", "+callout-tip_nl__nl_", "-callout"),
+                        l.call( "Callout question", "+callout-question_nl__nl_", "-callout"),
+                        l.call( "Callout warning", "+callout-warning_nl__nl_", "-callout"),
+                        l.call( "Text Bubble", "+bubble-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-bubble"),
+                        l.call( "Skip", "+skip_nl__nl_", "-skip"));
 	Utils.appendAll(misc3,
-			l.call( "Macro", ":macro name value", ""),
+			l.call( "Macro", ":macro name value_nl_${name}_nl_", ""),
+			l.call( "Template", "+template template_name_nl_... ${var1} ... ${var2}_nl_", "-template"),
+			l.call( "Apply template", "+apply template_name_nl_:var var1 Some value_nl_+var var2_nl_Some other value_nl_..._nl_-var_nl_", "-apply"),
+			l.call( "Inline apply", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
 			l.call( "CSS", "+css_newline_", "-css"),
 			l.call( "PRE", "+pre_newline_", "-pre"),
+                        l.call( "Xml", "+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
 			l.call( "Javascript", "+js_newline_", "-js"),
 			l.call( "Code", "```_newline__newline_", "```"),
-			l.call( "Property", "{{property name=value", "}}"));	
+			l.call( "Property", "{{property name=value", "}}"));
+
         Utils.appendAll(misc1,
 			l.call( "Title", ":title {{name link=true}}", ""),
 			l.call( "Heading", ":heading your heading", ""),
@@ -7197,7 +7206,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	
 
         String textButton = makeButton.apply("Misc",
-					     HU.hbox(misc1, misc2,misc3));
+					     HU.hbox(misc1, misc2,misc3,misc4));
 
         String entriesButton = makeButton.apply("Entries",
 						makeTagsMenu(entry,textAreaId));
