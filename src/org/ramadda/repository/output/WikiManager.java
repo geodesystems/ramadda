@@ -7167,7 +7167,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                         l.call( "Callout tip", "+callout-tip_nl__nl_", "-callout"),
                         l.call( "Callout question", "+callout-question_nl__nl_", "-callout"),
                         l.call( "Callout warning", "+callout-warning_nl__nl_", "-callout"),
-                        l.call( "Text Bubble", "+bubble-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-bubble"),
+                        l.call( "Text Balloon", "+balloon-left avatar=true #width=400px #style=\"background:#fffeec;\"_nl__nl_", "-balloon"),
                         l.call( "Skip", "+skip_nl__nl_", "-skip"));
 	Utils.appendAll(misc3,
 			l.call( "Macro", ":macro name value_nl_${name}_nl_", ""),

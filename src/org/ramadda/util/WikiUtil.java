@@ -939,7 +939,7 @@ public class WikiUtil {
             text = applyPatterns(handler, headings, text);
 	    boolean skipping = false;
 	    int avatarCount=0;
-	    String bubbleAfter = null;
+	    String balloonAfter = null;
 	    String xmlId =null;
 
             for (String line : text.split("\n")) {
@@ -3068,30 +3068,30 @@ public class WikiUtil {
                 }
 
 
-                if (tline.startsWith("+bubble")) {
+                if (tline.startsWith("+balloon")) {
 		    Hashtable props = getProps.apply(tline);
 		    boolean right = tline.indexOf("-right")>=0;
-		    String bubbleClass =  tline.indexOf("-right")>=0?
-			"ramadda-bubble-right":"ramadda-bubble-left";
-		    bubbleAfter= null;
+		    String balloonClass =  tline.indexOf("-right")>=0?
+			"ramadda-balloon-right":"ramadda-balloon-left";
+		    balloonAfter= null;
 		    if(Utils.getProperty(props,"avatar",false)) {
 			avatarCount++;
 			if(avatarCount>8) avatarCount=1;
-			bubbleAfter = HU.div(HU.image(getHandler().getHtdocsUrl("/avatars/avatar" + avatarCount+".png"),"width","40"),
-					     HU.cssClass(right?"ramadda-bubble-from-right":
-							 "ramadda-bubble-from-left"));
+			balloonAfter = HU.div(HU.image(getHandler().getHtdocsUrl("/avatars/avatar" + avatarCount+".png"),"width","40"),
+					     HU.cssClass(right?"ramadda-balloon-from-right":
+							 "ramadda-balloon-from-left"));
 		    }
 		    String style=Utils.getProperty(props,"style","");
 		    String width = Utils.getProperty(props,"width",null);
 		    if(width!=null) style+="width:" + HU.makeDim(width,"px")+";";
-		    buff.append(HU.open("div",HU.cssClass(bubbleClass)+HU.style(style)));
+		    buff.append(HU.open("div",HU.cssClass(balloonClass)+HU.style(style)));
 		    continue;
 		}
 
-                if (tline.startsWith("-bubble")) {
+                if (tline.startsWith("-balloon")) {
 		    buff.append(HU.close("div"));
-		    if(bubbleAfter!=null) buff.append(bubbleAfter);
-		    bubbleAfter=null;
+		    if(balloonAfter!=null) buff.append(balloonAfter);
+		    balloonAfter=null;
 		    continue;
 		}
 

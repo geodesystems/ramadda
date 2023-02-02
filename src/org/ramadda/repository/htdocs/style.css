@@ -3178,7 +3178,7 @@ label {
     background: #FFFFCC;
 }
 
-.ramadda-bubble,.ramadda-bubble-right,.ramadda-bubble-left {
+.ramadda-balloon,.ramadda-balloon-right,.ramadda-balloon-left {
   position:relative;
   padding:10px;
   color:#333;
@@ -3191,7 +3191,7 @@ label {
   border-radius:10px;
 }
 
-.ramadda-bubble:before,.ramadda-bubble-right:before, .ramadda-bubble-left:before {
+.ramadda-balloon:before,.ramadda-balloon-right:before, .ramadda-balloon-left:before {
   content:"";
   position:absolute;
   bottom:-18px; 
@@ -3202,32 +3202,32 @@ label {
   width:0;
 }
 
-.ramadda-bubble-right:before {
+.ramadda-balloon-right:before {
     right:40px;
 }
 
-.ramadda-bubble-left:before {
+.ramadda-balloon-left:before {
     left:40px;
 }
 
-.ramadda-bubble-from,.ramadda-bubble-from-right,.ramadda-bubble-from-left {
+.ramadda-balloon-from,.ramadda-balloon-from-right,.ramadda-balloon-from-left {
     text-align:right;
     margin-top:10px;
     margin-bottom:5px;
 }
 
-.ramadda-bubble-from-right {
+.ramadda-balloon-from-right {
     text-align:right;
     margin-right:70px;
 }
 
-.ramadda-bubble-from-left {
+.ramadda-balloon-from-left {
     text-align:left;
     margin-left:70px;
 }
 
 /* creates the smaller  triangle */
-.ramadda-bubble:after,.ramadda-bubble-right:after,.ramadda-bubble-left:after {
+.ramadda-balloon:after,.ramadda-balloon-right:after,.ramadda-balloon-left:after {
   content:"";
   position:absolute;
   border-width:18px 15px 0px 15px;
@@ -3238,10 +3238,10 @@ label {
   width:0;
 }
 
-.ramadda-bubble-right:after {
+.ramadda-balloon-right:after {
   right:41px; 
 }
-.ramadda-bubble-left:after {
+.ramadda-balloon-left:after {
   left:41px; 
 }
 
