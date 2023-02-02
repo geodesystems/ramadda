@@ -31,6 +31,13 @@ var icon_blank = ramaddaCdn + "/icons/blank.gif";
 var icon_menu = ramaddaCdn + "/icons/menu.png";
 var icon_trash =  "fas fa-trash-alt";
 
+var UNIT_FT='ft';
+var UNIT_MILES='mi';
+var UNIT_KM='km';
+var UNIT_M='m';
+
+
+
 function noop() {}
 
 function addHandler(obj, id) {
@@ -65,6 +72,14 @@ var Utils =  {
 	if(!Utils.isDefined(window[id])) {
 	    window[id] = what;
 	}
+    },
+    clone:function() {
+	let first =  $.extend({},arguments[0]);
+	for(let i=1;i<arguments.length;i++) {
+	    if(arguments[i])
+		first = $.extend(first,arguments[i]);
+	}
+	return first;
     },
     throttle:function(f, delay) {
 	let timer = 0;
@@ -2042,7 +2057,7 @@ var Utils =  {
             toggle.html("Show More " + HU.getIconImage("fas fa-sort-down"));                    
         }
     },
-    formatNumberComma: function(number) {
+    formatNumberComma: function(number,decimals,debug) {
         if(!Utils.isDefined(number)) {
             return "NA";
         }           
@@ -2053,18 +2068,21 @@ var Utils =  {
             return wholeFormatted;
         } else {
             let a = Math.abs(number);
-            let decimals = 0;
-            if(a>=9999)
-                decimals = 0;
-            else if(a>=999)
-                decimals = 1;
-            else if(a>=99)
-                decimals = 2;
-            else if(a>=9)
-                decimals = 3;
-            else
-                decimals = 4
+	    if(!Utils.isDefined(decimals)) {
+		if(a>=9999)
+                    decimals = 0;
+		else if(a>=999)
+                    decimals = 1;
+		else if(a>=99)
+                    decimals = 2;
+		else if(a>=9)
+                    decimals = 3;
+		else
+                    decimals = 4
+	    }
             let x =  number_format(number,decimals);
+	    if(debug)
+		console.log(number,decimals,x);
             return x;
             //      return wholeFormatted +"." + String(Utils.formatNumber(rem)).replace("0\.","");
         }
@@ -4783,9 +4801,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     makeExpandable:function(selector,fullScreen) {
-        let icon =HtmlUtils.getIconImage("fas fa-expand-arrows-alt",['class','ramaddda-clickable'],['xstyle','color:#ccc;']);
+        let icon =HtmlUtils.getIconImage("fas fa-expand-arrows-alt",['class','ramaddda-clickable'],[]);
         let id = HtmlUtils.getUniqueId();
-        let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
+        let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:0px;top:0px;margin-top:0px;"],icon);
         $(selector).append(html);
         let btn = $("#"+id);
         let expandNow = $(selector).hasClass("ramadda-expand-now");
