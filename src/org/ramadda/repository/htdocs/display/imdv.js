@@ -47,7 +47,7 @@ var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
-			  'filter.toggle.show=false','showButtons=false'];
+			  'filter.toggle.show=false','showButtons=false','showLegendInMap=true'];
 
 
 let ImdvUtils = {
@@ -371,8 +371,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_LEGEND_MAP_WRAPPER = 'legend_map_wrapper';
     const ID_LEGEND_MAP = 'legend_map';            
     const ID_MAP_PROPERTIES = 'mapproperties';
-
-
+    //Set these so the glyphs can access them
+    this.ID_LEGEND_MAP = ID_LEGEND_MAP;
 
     if(!Utils.isDefined(properties.showOpacitySlider)&&!Utils.isDefined(getGlobalDisplayProperty('showOpacitySlider'))) 
 	properties.showOpacitySlider=false; 
@@ -1564,6 +1564,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    return mapOptions;
 	},
 	initGlyphButtons:function(dom) {
+	    if(!dom) return;
 	    let _this = this;
 	    dom.find('[buttoncommand]').click(function(event) {
 		event.preventDefault();
@@ -2682,6 +2683,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
 		if(mapGlyph) this.addGlyph(mapGlyph,true);
 	    });
+	    if(this.getMapProperty('mapLegendPosition')) {
+		this.createMapLegendWrapper();
+	    }
 	    this.clearFeatureChanged();
 	    this.checkMapProperties();
 	    this.makeLegend();
@@ -2820,17 +2824,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let buttons = HU.buttons([HU.div([CLASS,'ramadda-button-apply display-button'], 'Apply'),
 				      HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 				      HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
-	    let cbxs = [HU.checkbox(this.domId('usercanedit'),[],
-				    Utils.isDefined(this.mapProperties.userCanEdit)?this.mapProperties.userCanEdit:false,'User Can Edit'),
-			HU.checkbox(this.domId('showopacityslider'),[],
-				    Utils.isDefined(this.mapProperties.showOpacitySlider)?this.mapProperties.showOpacitySlider:this.getShowOpacitySlider(),'Show Opacity Slider'),
-			HU.checkbox(this.domId('showgraticules'),[],
-				    Utils.isDefined(this.mapProperties.showGraticules)?this.mapProperties.showGraticules:false,'Show Lat/Lon Lines'),
-			HU.checkbox(this.domId('showmouseposition'), [],
-				    Utils.isDefined(this.mapProperties.showMousePosition)?this.mapProperties.showMousePosition:false,'Show Mouse Position'),
-			HU.checkbox(this.domId('showaddress'), [],
-				    Utils.isDefined(this.mapProperties.showAddress)?this.mapProperties.showAddress:false,'Show Address')			
-		       ];
+	    let cbxs = [
+		HU.checkbox(this.domId('usercanedit'),[],
+			    this.getMapProperty('userCanEdit',false),'User Can Edit'),
+		HU.checkbox(this.domId('showopacityslider'),[],
+			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
+		HU.checkbox(this.domId('showgraticules'),[],
+			    this.getMapProperty('showGraticules',false),'Show Lat/Lon Lines'),
+		HU.checkbox(this.domId('showmouseposition'), [],
+			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
+		HU.checkbox(this.domId('showaddress'), [],
+			    this.getMapProperty('showAddress',false),'Show Address')			
+	    ];
 	    let basic = '';
 	    basic+=Utils.join(cbxs,'<br>');
 
@@ -2852,23 +2857,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    
 	    basic=HU.table([],HU.tr(['valign','top'],HU.td([],basic) + HU.td(['width','50%'], right)));
 	    basic+='<p>';
-	    basic+=this.getLevelRangeWidget(this.mapProperties.visibleLevelRange,this.mapProperties.showMarkerWhenNotVisible);
-
-
+	    basic+=this.getLevelRangeWidget(this.getMapProperty('visibleLevelRange'),
+					    this.getMapProperty('showMarkerWhenNotVisible'));
 
 	    accords.push({header:'Basic', contents:basic});
 	    accords.push({header:'Header/Footer',
 			  contents:
 			  HU.b('Top Wiki Text:') +'<br>' +
-			  HU.textarea('',this.mapProperties.topWikiText??'',['id',this.domId('topwikitext_input'),'rows','4','cols','80']) +"<br>" +
+			  HU.textarea('',this.getMapProperty('topWikiText',''),
+				      ['id',this.domId('topwikitext_input'),'rows','4','cols','80']) +"<br>" +
 			  HU.b('Bottom Wiki Text:') +'<br>' +
-			  HU.textarea('',this.mapProperties.bottomWikiText??'',['id',this.domId('bottomwikitext_input'),'rows','4','cols','80']) +'<br>'
+			  HU.textarea('',this.getMapProperty('bottomWikiText',''),
+				      ['id',this.domId('bottomwikitext_input'),'rows','4','cols','80']) +'<br>'
 			 });
 
-	    let props = this.mapProperties.otherProperties;
-	    if(!props) props="";
-	    
-
+	    let props = this.getMapProperty('otherProperties','');
 	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS];
 	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
@@ -2894,26 +2897,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.remove();
 	    }
 	    let apply = ()=>{
-		this.mapProperties.userCanEdit = this.jq('usercanedit').is(':checked');
-		this.mapProperties.showOpacitySlider = this.jq('showopacityslider').is(':checked');
-		this.mapProperties.showGraticules = this.jq('showgraticules').is(':checked');
-		this.mapProperties.showMousePosition = this.jq('showmouseposition').is(':checked');
-		this.mapProperties.showAddress = this.jq('showaddress').is(':checked');								
-		this.mapProperties.legendPosition=this.jq('legendposition').val();
-		this.mapProperties.legendWidth=this.jq('legendwidth').val();
-		this.mapProperties.showBaseMapSelect=this.jq('showbasemapselect').is(':checked');
-		this.mapProperties.topWikiText = this.jq('topwikitext_input').val();
-		this.mapProperties.bottomWikiText = this.jq('bottomwikitext_input').val();
-		this.mapProperties.otherProperties = this.jq('otherproperties_input').val();		
+		this.setMapProperty('userCanEdit', this.jq('usercanedit').is(':checked'),
+				    'showOpacitySlider', this.jq('showopacityslider').is(':checked'),
+				    'showGraticules',this.jq('showgraticules').is(':checked'),
+				    'showMousePosition', this.jq('showmouseposition').is(':checked'),
+				    'showAddress', this.jq('showaddress').is(':checked'),
+				    'legendPosition',this.jq('legendposition').val(),
+				    'legendWidth',this.jq('legendwidth').val(),
+				    'showBaseMapSelect',this.jq('showbasemapselect').is(':checked'),
+				    'topWikiText', this.jq('topwikitext_input').val(),
+				    'bottomWikiText', this.jq('bottomwikitext_input').val(),
+				    'otherProperties', this.jq('otherproperties_input').val());		
 		this.parsedMapProperties = null;
-		
 		let min = this.jq("minlevel").val().trim();
 		let max = this.jq("maxlevel").val().trim();
 		if(min=="") min = null;
 		if(max=="") max = null;	
-		this.mapProperties.visibleLevelRange = {min:min,max:max};
-
-		this.mapProperties.showMarkerWhenNotVisible = this.jq('showmarkerwhennotvisible').is(':checked');
+		this.setMapProperty('visibleLevelRange', {min:min,max:max},
+				    'showMarkerWhenNotVisible', this.jq('showmarkerwhennotvisible').is(':checked'));
 		this.checkMapProperties();
 		this.makeLegend();
 	    };
@@ -2937,8 +2938,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.checkTopWiki();
 	    if(!this.getMap()) return;
 	    this.getMap().applyHighlightStyle(this.getOtherProperties());
-	    this.getMap().setGraticulesVisible(this.mapProperties.showGraticules);
-	    if(this.mapProperties.showMousePosition)
+	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'));
+	    if(this.getMapProperty('showMousePosition'))
 		this.getMap().initMousePositionReadout();
 	    else
 		this.getMap().destroyMousePositionReadout();		
@@ -2947,8 +2948,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	checkOpacitySlider:function() {
 	    let visible;
-	    if(Utils.isDefined(this?.mapProperties.showOpacitySlider))
-		visible = this.mapProperties.showOpacitySlider;
+	    if(Utils.isDefined(this.getMapProperty('showOpacitySlider')))
+		visible = this.getMapProperty('showOpacitySlider');
 	    else
 		visible = this.getShowOpacitySlider(true);
 	    this.getMap().showOpacitySlider(visible);
@@ -3453,8 +3454,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			//Check the map legend
 			if(this.mapLegendToggleId) {
-			    if(Utils.isDefined(this.mapProperties.mapLegendOpen)) {
-				if(!this.mapProperties.mapLegendOpen) {
+			    if(Utils.isDefined(this.getMapProperty('mapLegendOpen'))) {
+				if(!this.getMapProperty('mapLegendOpen')) {
 				    $("#" + this.mapLegendToggleId).css('display','none');
 				}
 			    }
@@ -3593,29 +3594,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  },
 			  MyPoint,
 			  {icon:ramaddaBaseUrl+"/icons/dots/blue.png"});
-	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
-			  {strokeColor:'blue',
-			   strokeWidth:2,
-			   fillColor:"transparent",
-			   pointRadius:6,
-			   rotation:0,
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign:'lt',
-			   textBackgroundStrokeColor:'',
-			   textBackgroundStrokeWidth:1,			   			   
-			   textBackgroundFillColor:'',
-			   textBackgroundFillOpacity:1.0,
-			   textBackgroundPadding:2,
-			   textBackgroundShape:'rectangle',
-			   textBackgroundRadius:0
-			  },
-			  MyPoint,
-			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
-
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
 		text:"",
 		right:"50%",
@@ -3723,6 +3701,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
 			   icon:ramaddaBaseUrl+"/icons/hexagon.png"});		
+	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
+			  {strokeColor:'blue',
+			   strokeWidth:2,
+			   fillColor:"transparent",
+			   pointRadius:6,
+			   rotation:0,
+			   fontColor: this.getProperty("labelFontColor","#000"),
+			   fontSize: this.getFontSize(),
+			   fontFamily: this.getFontFamily(),
+			   fontWeight: this.getFontWeight(),
+			   fontStyle: this.getFontStyle(),
+			   labelAlign:'lt',
+			   textBackgroundStrokeColor:'',
+			   textBackgroundStrokeWidth:1,			   			   
+			   textBackgroundFillColor:'',
+			   textBackgroundFillOpacity:1.0,
+			   textBackgroundPadding:2,
+			   textBackgroundShape:'rectangle',
+			   textBackgroundRadius:0
+			  },
+			  MyPoint,
+			  {icon:ramaddaBaseUrl+"/icons/dot.png"});
+
+
 
 	    new GlyphType(this,GLYPH_MAP,"Map File",
 			  {strokeColor:this.getStrokeColor(),
@@ -3884,20 +3886,30 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 	getOtherProperties: function() {
 	    if(!this.parsedMapProperties) {
-		this.parsedMapProperties = Utils.parseMap(this?.mapProperties.otherProperties,"\n","=")??{};
+		this.parsedMapProperties = Utils.parseMap(this.mapProperties.otherProperties,"\n","=")??{};
 	    }
 	    return this.parsedMapProperties;
 	},
 
-	getMapProperty: function(name,dflt) {
-	    if(Utils.isDefined(this.mapProperties[name])) {
-		return this.mapProperties[name];
+	setMapProperty:function() {
+	    for(let i=0;i<arguments.length;i+=2) {
+		this.mapProperties[arguments[i]]=arguments[i+1];
 	    }
+	},
+	getMapProperty: function(name,dflt) {
+	    let debug=false;
 	    let value = this.getOtherProperties()[name];
 	    if(Utils.isDefined(value)) {
+		if(debug) console.log('p1:'+ value);
 		return Utils.getProperty(value);
 	    }
-	    return  this.getProperty(name,dflt);
+	    if(Utils.isDefined(value=this.mapProperties[name])) {
+		if(debug) console.log('p2:'+ value);
+		return value;
+	    }
+	    value=  this.getProperty(name,dflt);
+	    if(debug) console.log('p3:'+ value);
+	    return value;
 	},
 	makeLegendDroppable:function(droppedOnGlyph,label,notify) {
 	    notify = notify?? (()=>{this.setLastDroppedTime(new Date());});
@@ -3955,48 +3967,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    },1);
 	},
 
+	getShowLegendInMap() {
+	    return  this.getMapProperty('legendPosition','left')=='map';
+	},
 	makeLegend: function() {
 	    let _this = this;
 	    let legendPosition = this.getMapProperty('legendPosition','left');
-	    let legendContainer;
 	    let leftLegend = this.jq(ID_LEGEND_LEFT);
 	    let mapLegend = this.jq(ID_LEGEND_MAP_WRAPPER);	    
 	    let rightLegend = this.jq(ID_LEGEND_RIGHT);
-	    if(legendPosition=='left') {
-		legendContainer=leftLegend;
-		mapLegend.hide();
-		rightLegend.hide();
-	    } else   if(legendPosition=='right') {
-		legendContainer=rightLegend;
-		mapLegend.hide();
-		leftLegend.hide();
-	    } else   if(legendPosition=='map') {
-		legendContainer = this.jq(ID_LEGEND_MAP);
-		mapLegend.show();
-		leftLegend.hide();
-		rightLegend.hide();
-	    } else {
-		mapLegend.hide();
-		leftLegend.hide();
-		rightLegend.hide();
-	    }
-
+	    this.jq(ID_LEGEND).remove();
 	    //Remove the old one
 	    this.jq(ID_LEGEND).remove();
-	    if(!legendContainer) return;
-
-	    legendContainer.show();
-	    legendContainer.html(HU.div(['id',this.domId(ID_LEGEND)],''));
 	    let showShapes = this.getMapProperty('showShapes',true);
-	    let legendWidth=parseInt(this.getMapProperty("legendWidth",250));
+	    let legendWidth=this.getMapProperty("legendWidth",'200px');
+	    if(!Utils.stringDefined(legendWidth)) legendWidth='200px';
 	    let legendLabel= this.getMapProperty("legendLabel","");
+	    let idToGlyph={};
+	    let glyphs = this.getGlyphs();
 	    let html = '';
 	    if(this.getMapProperty('showBaseMapSelect')) {
 		html+=HU.div(['style','margin-bottom:4px;','class','imdv-legend-offset'], HU.b('Base Map: ') +this.getBaseLayersSelect());
 	    }
 
-	    let idToGlyph={};
-	    let glyphs = this.getGlyphs();
 	    if(this.getMapProperty('showAddress',false)) {
 		this.jq(ID_ADDRESS).show();
 	    } else {
@@ -4008,6 +4001,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	    this.getMap().checkLayerOrder();
 
+	    this.inMapLegend='';
 	    glyphs.forEach((mapGlyph,idx)=>{
 		html+=mapGlyph.makeLegend({idToGlyph:idToGlyph});
 	    });
@@ -4018,15 +4012,54 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
 		html = HU.div([],legendLabel)+html;
 	    }
+	    let inMap  =(legendPosition=='map');
 	    if(html!="") {
 		let height= this.getProperty('height');
 		let legendHeight= this.getProperty('legendHeight',height);		
-		let css  = HU.css('max-width',legendWidth+'px','width',legendWidth+'px');
-		if(height) css+=HU.css('height',legendHeight);
+		let css  = HU.css('max-width',HU.getDimension(legendWidth),'width',HU.getDimension(legendWidth));
+		if(height && !inMap) css+=HU.css('height',legendHeight);
 		let attrs = ['class','imdv-legend','style',css]
 		html  = HU.div(attrs,html);
 	    }
-	    this.jq(ID_LEGEND).html(html);
+
+	    if(inMap) {
+		this.inMapLegend = html;
+	    }
+	    this.jq(ID_LEGEND_MAP_WRAPPER).html('');
+	    if(this.inMapLegend!='' || inMap) {
+		let inMapLegend=HU.div(['id',this.domId(ID_LEGEND_MAP)],this.inMapLegend);
+		let toggleResult = {};
+		let toggleListener = (id,vis)=>{
+		    this.setMapProperty('mapLegendOpen',vis);
+		};
+
+		inMapLegend=HU.toggleBlock('Legend' + HU.space(2),inMapLegend,
+					   this.getMapProperty('mapLegendOpen',true),
+					   {animated:300,listener:toggleListener},toggleResult);
+		if(inMap) {
+		    inMapLegend = HU.div(['id',this.domId(ID_LEGEND)], inMapLegend);
+		}
+		this.jq(ID_LEGEND_MAP_WRAPPER).html(inMapLegend);
+		this.mapLegendToggleId = toggleResult.id;
+	    } 
+
+
+	    let legendContainer;
+	    if(legendPosition=='left') {
+		legendContainer=leftLegend;
+	    } else   if(legendPosition=='right') {
+		legendContainer=rightLegend;
+	    } else   if(legendPosition=='map') {
+		legendContainer = this.jq(ID_LEGEND_MAP_WRAPPER);
+	    } else {
+	    }
+
+
+	    if(legendContainer && !inMap) {
+		legendContainer.show();
+		legendContainer.html(HU.div(['id',this.domId(ID_LEGEND)],''));
+		this.jq(ID_LEGEND).html(html);
+	    }
 
 	    this.makeLegendDroppable(null,this.jq('dropend'),null);
 
@@ -4036,7 +4069,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 
 
-	    this.jq(ID_LEGEND).find('.imdv-legend-item-edit').click(function(event) {
+	    if(!legendContainer) {
+		return;
+	    }
+	    legendContainer.find('.imdv-legend-item-edit').click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
@@ -4044,23 +4080,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		_this.editFeatureProperties(mapGlyph);
 	    });
 
-	    this.jq(ID_LEGEND).find('.imdv-legend-item-view').click(function(event) {
+	    legendContainer.find('.imdv-legend-item-view').click(function(event) {
 		event.stopPropagation();
 		let id = $(this).attr('glyphid');
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
 		mapGlyph.panMapTo(event.shiftKey);
 	    });
-	    
-
 
 	    this.initBaseLayersSelect();
 	    this.getGlyphs().forEach((mapGlyph,idx)=>{
 		mapGlyph.initLegend();
 	    });
+	    this.initGlyphButtons(legendContainer);
 
-	    let items = this.jq(ID_LEGEND).find('.imdv-legend-label');
-	    this.initGlyphButtons(this.jq(ID_LEGEND));
+	    let items = legendContainer.find('.imdv-legend-label');
 	    items.tooltip({
 		content: function () {
 		    let title =  $(this).prop('title');
@@ -4095,6 +4129,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 
+	addToMapLegend:function(glyph,contents) {
+	    this.inMapLegend +=contents;
+	},
 	checkTopWiki:function() {
 	    /*
 	      if(this.canEdit())
@@ -4113,8 +4150,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    };
 
-	    wiki("topwikitext",this.mapProperties?.topWikiText);
-	    wiki("bottomwikitext",this.mapProperties?.bottomWikiText);	    
+	    wiki("topwikitext",this.getMapProperty('topWikiText'));
+	    wiki("bottomwikitext",this.getMapProperty('bottomWikiText'));	    
 
 
 	},
@@ -4125,7 +4162,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return userCanEdit;
 	    //Is logged in user
 	    if(this.getProperty("canEdit")) return true;
-	    return this.mapProperties?.userCanEdit;
+	    return this.getMapProperty('userCanEdit');
 	},
 
         initDisplay: function(embedded) {
@@ -4282,18 +4319,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	      imgclosed:'fa-solid fa-angles-right',						    
 	      });
 	    */
-	    let toggleResult = {};
-	    let toggleListener = (id,vis)=>{
-		this.mapProperties.mapLegendOpen = vis;
-	    };
-	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'class','imdv-legend-map-wrapper','style','display:none;background:#fff;z-index: 500;position:absolute;left:50px;top:15px;'],
-				  HU.toggleBlock('Legend' + HU.space(2),HU.div(['id',this.domId(ID_LEGEND_MAP)]),
-						 Utils.isDefined(this.mapProperties.mapLegendOpen)?this.mapProperties.mapLegendOpen:true,
-						 {animated:300,listener:toggleListener},toggleResult));
-	    this.mapLegendToggleId = toggleResult.id;
-	    let inner = $(innerDiv);
-	    this.jq(ID_MAP_CONTAINER).append(inner);
-	    inner.draggable();
+
+	    this.createMapLegendWrapper();
+
 	    let legendLeft = HU.div(['id',this.domId(ID_LEGEND_LEFT),'style','display:none']);
 	    this.jq(ID_LEFT).html(legendLeft);
 	    let legendRight = HU.div(['id',this.domId(ID_LEGEND_RIGHT),'style','display:none']);
@@ -4383,6 +4411,58 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.loadMap();
 	    }
 	},
+
+
+	createMapLegendWrapper:function() {
+	    let _this = this;
+	    this.jq(ID_LEGEND_MAP_WRAPPER).remove();
+	    let legendPosition = this.getMapProperty('mapLegendPosition',{left:'50px',top:'20px'});
+	    let legendStyle = '';
+//	    ['left','top','right','bottom'].forEach(pos=>{
+	    ['left','top'].forEach(pos=>{
+		if(legendPosition[pos]) {
+		    legendStyle+=HU.css(pos,legendPosition[pos]);
+		}
+	    });
+
+	    //gotta have this here or else the draggable sets it to relative
+	    legendStyle+=HU.css('position','absolute');
+	    let innerDiv = HU.div(['id',this.domId(ID_LEGEND_MAP_WRAPPER),'class','imdv-legend-map-wrapper','style',legendStyle]);
+	    let inner = $(innerDiv);
+	    this.jq(ID_MAP_CONTAINER).append(inner);
+	    let haveCleared = false;
+	    inner.draggable({
+		containment:this.jq(ID_MAP_CONTAINER),
+		//A bit tricky - we clear all the style when we start dragging
+		//so if right or bottom were set then those get nuked
+		//because the drag drags left/top
+		start:function() {
+//		    inner.attr('style','position:absolute;');
+		},
+		stop:function() {
+		    let top = inner.position().top;
+		    let left = inner.position().left;		    
+		    let bottom = top+inner.height();
+		    let right = left+inner.width();		    
+		    let pw = inner.parent().width();
+		    let ph = inner.parent().height();		    
+		    let pos = _this.mapProperties.mapLegendPosition = {};
+		    pos.left = inner.css('left');		    
+		    pos.top = inner.css('top');
+		    return
+		    let set = (which,v) =>{
+			v =  Math.max(0,(parseInt(v)))+'px';
+			pos[which] =v;
+//			inner.css(pos,v);
+		    }
+		    if(top<ph-bottom) set('top',top);
+		    else set('bottom',(ph-bottom));
+		    if(left<pw-right) set('left',left);
+		    else set('right',pw-right);
+		}
+	    });
+	},
+
 
 	makeControls:function() {
 	    let _this = this;
@@ -5709,7 +5789,7 @@ MapGlyph.prototype = {
 	let right = '';
 	if(addDecorator) {
 	    //For now don't add the decoration (the graphic indicator)
-	    //	    right+=this.getDecoration(true);
+	    //right+=this.getDecoration(true);
 	}
 
 	if(glyphType) {
@@ -5911,6 +5991,8 @@ MapGlyph.prototype = {
 	return s;
     },
     getLegendBody:function() {
+	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
+	let inMapLegend='';
 	let body = '';
 	let buttons = this.display.makeGlyphButtons(this,true);
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
@@ -5945,6 +6027,7 @@ MapGlyph.prototype = {
 	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
 	}
 
+
 	if(this.isMap()) {
 	    if(!this.mapLoaded) {
 		if(this.isVisible()) 
@@ -5966,9 +6049,13 @@ MapGlyph.prototype = {
 		styleLegend+='</table>'
 	    });
 
+
 	    if(styleLegend!='') {
 		styleLegend=HU.div(['id','glyphstyle_' + this.getId()], styleLegend);
-		legend+=styleLegend;
+		if(showInMapLegend)
+		    inMapLegend+=styleLegend;
+		else
+		    legend+=styleLegend;
 	    }
 
 	    if(this.attrs.mapStyleRules) {
@@ -6015,7 +6102,10 @@ MapGlyph.prototype = {
 		}
 	    }
 	    if(legend!='') {
-		body+=HU.toggleBlock('Legend',legend,true);
+		if(showInMapLegend)
+		    inMapLegend+=legend;
+		else
+		    body+=HU.toggleBlock('Legend',legend,true);
 	    }
 	}
 
@@ -6081,9 +6171,16 @@ MapGlyph.prototype = {
 
 
 
-	let item = i=>{
-	    if(Utils.stringDefined(i)) {
-		body+=HU.div(['class','imdv-legend-body-item'], i);
+	let item  = (i,checkInMap,addDecoration) => {
+	    if(Utils.stringDefined(i)) {	
+		if(checkInMap && showInMapLegend) {
+		    if(addDecoration) {
+			i = HU.hbox([this.getDecoration(true),i]);
+		    }
+		    inMapLegend+=i;
+		} else {
+		    body+=HU.div(['class','imdv-legend-body-item'], i);
+		}
 	    }
 	};
 
@@ -6099,7 +6196,8 @@ MapGlyph.prototype = {
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
 	}
-	item(this.display.getDistances(this.getGeometry(),this.getType()));
+	let distances = this.display.getDistances(this.getGeometry(),this.getType());
+	item(distances,true,true);
 	if(this.isMultiEntry()) {
 	    item(HU.div(['id',this.domId('multientry')]));
 	}
@@ -6110,6 +6208,20 @@ MapGlyph.prototype = {
 	if(Utils.stringDefined(this.style.legendUrl)) {
 	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
+
+	this.jq('maplegend').remove();
+	if(inMapLegend!='') {
+	    inMapLegend=
+		HU.div(['title',this.getName(),'style','white-space:nowrap;max-width:150px;overflow-x:hidden'],HU.b(this.getName())) +
+		inMapLegend;
+
+	    inMapLegend = HU.div(['style','border-bottom:var(--basic-border);padding:4px;','id',this.domId('maplegend')], inMapLegend);
+	    this.display.addToMapLegend(this,inMapLegend);
+	}
+	
+
+
+
 	return body;
     },
     initLegend:function() {
@@ -8227,10 +8339,10 @@ MapGlyph.prototype = {
     checkVisible: function() {
 	let showMarker = this.getShowMarkerWhenNotVisible();
 	let range = this.getVisibleLevelRange()??{};
-	let displayRange = this.display?.mapProperties.visibleLevelRange;
+	let displayRange = this.display.getMapProperty('visibleLevelRange');
 	if(!range || (displayRange && !Utils.stringDefined(range.min) && !Utils.stringDefined(range.max))) {
 	    range = displayRange;
-	    showMarker  = this.display.mapProperties.showMarkerWhenNotVisible;
+	    showMarker  = this.display.getMapProperty('showMarkerWhenNotVisible');
 	}
 	let visible=true;
 	let level = this.display.getCurrentLevel();
