@@ -2933,9 +2933,15 @@ table.dataTable tfoot td {
 .imdv-stac-item {
     margin:4px;
 }
+
 .imdv-legend-map-wrapper {
-    border:var(--basic-border);
-    border-radius: 4px;
+    position:absolute;
+    border:1px solid #aaa;
+    border-radius: 6px;
+    border-radius:var(--default-radius);    
+
+    background:#fff;
+    z-index:500;
 }
 
 
