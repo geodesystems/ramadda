@@ -1167,6 +1167,17 @@ public class WikiUtil {
 		    continue;
 		}
 
+		if(tline.startsWith(":apply")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
+		    if(toks.size()<2) {
+                        wikiError(buff, "Error: no template specified");
+			continue;
+		    }
+		    applyTemplateName = toks.get(1);
+		    applyTemplateVars =  HU.parseHtmlProperties(toks.size()>2?toks.get(2):"");
+		    tline = "-apply";
+		}
+
 		if(tline.startsWith("-apply")) {
 		    if(applyTemplateName==null) {
                         wikiError(buff, "Error: no template specified");
@@ -1190,6 +1201,7 @@ public class WikiUtil {
 			template = template.replace("${" + key +"}",value);
 		    }
 		    //		    System.err.println("after T:" + template);
+		    template = wikify(template, handler);
 		    buff.append(template);
 		    applyTemplateVars = null;
 		    applySB = null;
@@ -1201,7 +1213,6 @@ public class WikiUtil {
 		    applySB.append("\n");
 		    continue;
 		}
-
 
 
 
@@ -2981,11 +2992,8 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+flow")) {
-                    buff.append(
-                        HU.open(
-                            HU.TAG_DIV,
-                            HU.style(
-                                "display:inline-block;vertical-align:top;")));
+		    buff.append(HU.open(HU.TAG_DIV,
+					HU.style("display:inline-block;vertical-align:top;")));
 
                     continue;
                 }
@@ -3073,7 +3081,10 @@ public class WikiUtil {
 					     HU.cssClass(right?"ramadda-bubble-from-right":
 							 "ramadda-bubble-from-left"));
 		    }
-		    buff.append(HU.open("div",HU.cssClass(bubbleClass)));
+		    String style=Utils.getProperty(props,"style","");
+		    String width = Utils.getProperty(props,"width",null);
+		    if(width!=null) style+="width:" + HU.makeDim(width,"px")+";";
+		    buff.append(HU.open("div",HU.cssClass(bubbleClass)+HU.style(style)));
 		    continue;
 		}
 
