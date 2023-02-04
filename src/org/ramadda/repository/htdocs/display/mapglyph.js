@@ -172,27 +172,7 @@ MapGlyph.prototype = {
 	    }
 	    obj.style = style;
 	}
-	let geom = this.getGeometry();
-	if(geom) {
-	    obj.geometryType=geom.CLASS_NAME;
-	    let points = obj.points=[];
-	    let vertices  = geom.getVertices();
-	    let  p =d=>{
-		return Utils.trimDecimals(d,6);
-	    };
-	    if(this.getImage()) {
-		let b = this.getMap().transformProjBounds(geom.getBounds());
-		points.push(p(b.top),p(b.left),
-			    p(b.top),p(b.right),
-			    p(b.bottom),p(b.right),
-			    p(b.bottom),p(b.left));				    
-	    } else {
-		vertices.forEach(vertex=>{
-		    let pt = vertex.clone().transform(this.getMap().sourceProjection, this.getMap().displayProjection);
-		    points.push(p(pt.y),p(pt.x));
-		});
-	    }
-	}
+	this.getPoints(obj);
 	if(this.children) {
 	    let childrenJson=[];
 	    this.children.forEach(child=>{
@@ -203,6 +183,29 @@ MapGlyph.prototype = {
 	return obj;
     },	
 
+    getPoints:function(obj) {
+	let geom = this.getGeometry();
+	if(!geom) return null;
+	obj.geometryType=geom.CLASS_NAME;
+	let points = obj.points=[];
+	let vertices  = geom.getVertices();
+	let  p =d=>{
+	    return Utils.trimDecimals(d,6);
+	};
+	if(this.getImage()) {
+	    let b = this.getMap().transformProjBounds(geom.getBounds());
+	    points.push(p(b.top),p(b.left),
+			p(b.top),p(b.right),
+			p(b.bottom),p(b.right),
+			p(b.bottom),p(b.left));				    
+	} else {
+	    vertices.forEach(vertex=>{
+		let pt = vertex.clone().transform(this.getMap().sourceProjection, this.getMap().displayProjection);
+		points.push(p(pt.y),p(pt.x));
+	    });
+	}
+	return points;
+    },
 
     isMultiEntry:  function() {
 	return this.type == GLYPH_MULTIENTRY;
@@ -261,6 +264,13 @@ MapGlyph.prototype = {
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
 	}	    
+
+	if(this.isStraightLine()) {
+	    return HU.formEntry('',HU.checkbox(this.domId('usegreatcircle'),[],this.attrs.useGreatCircle,
+					       'Use great circle'));
+
+	}
+
 	return '';
     },
 
@@ -736,6 +746,42 @@ MapGlyph.prototype = {
     getFeatures: function() {
 	return this.features;
     },
+    convertToGreatCircle:function() {
+	if(!MapUtils.loadTurf(()=>{this.convertToGreatCircle();})) {
+	    return;
+	}
+	
+	let obj = {};
+	if(!this.attrs.originalPoints) {
+	    this.attrs.originalPoints = this.getPoints({});
+	    console.log('getting orig ');
+	}
+	let pts = this.attrs.originalPoints;
+	if(!pts || pts.length==0) return;
+	let type = this.getGeometry().CLASS_NAME;
+	let newPts = [];
+	this.attrs.useGreatCircle = !this.attrs.useGreatCircle;
+	if(!this.attrs.useGreatCircle) {
+	    newPts = pts;
+	}  else {
+	    let total=0;
+	    for(let i=0;i<pts.length-2;i+=2) {
+		var start = turf.point([pts[i+1],pts[i+0]]);
+		var end = turf.point([pts[i+3], pts[i+2]]);
+		var options = {units: 'miles'};
+		total+= turf.distance(start, end, options);
+		var greatCircle = turf.greatCircle(start, end);
+		let coords = greatCircle.geometry.coordinates;
+		coords.forEach(pair=>{
+		    newPts.push(pair[1],pair[0]);
+		});
+	    }
+//	    console.log('d:' + total);
+	}
+	let feature = this.display.makeFeature(this.getMap(),type,this.style,newPts);
+	this.addFeatures([feature],true,true);
+    },
+
     clearFeatures: function() {
 	this.display.removeFeatures(this.features);
 	this.features = [];
@@ -1856,6 +1902,15 @@ MapGlyph.prototype = {
     },
 
     applyPropertiesComponent: function() {
+	if(this.isStraightLine()) {
+	    let v = this.jq('usegreatcircle').is(':checked');
+	    if(v!=this.attrs.useGreatCircle) {
+		//This toggles it
+		this.convertToGreatCircle();
+	    }
+	}
+
+
 	if(this.isMap()) {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
@@ -3793,6 +3848,9 @@ MapGlyph.prototype = {
     },
     isOpenLine:function() {
 	return GLYPH_TYPES_LINES_OPEN.includes(this.type);
+    },
+    isStraightLine:function() {
+	return GLYPH_TYPES_LINES_STRAIGHT.includes(this.type);
     },
     addEntries: function(andZoom) {
 	let entryId = this.getEntryId();

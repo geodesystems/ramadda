@@ -39,6 +39,7 @@ var GLYPH_DATA = 'data';
 var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
 var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
+var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
 var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
@@ -577,10 +578,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
 		} else if (skm.endsWith(UNIT_FT)) {
 		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
-		} else if (skm.endsWith(UNIT_M)) {
-		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
 		} else if (skm.endsWith(UNIT_KM)) {
 		    km = skm.replace(UNIT_KM,'');
+		} else if (skm.endsWith(UNIT_M)) {
+		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
+		} else {
+		    //console.log('unknown unit:' + skm);
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
 		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
@@ -916,6 +919,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    if(glyphType.isMultiEntry()) {
 			this.clearCommands();
+			mapOptions.name = mapOptions.entryName?? attrs.entryName;
+			delete mapOptions['entryName']
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.addEntries(true);
 			this.clearCommands();
@@ -2674,7 +2679,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	loadAnnotationJson: function(mapJson,map) {
 //	    this.voroni();
-
 
 
 	    let glyphs = mapJson.glyphs||[];

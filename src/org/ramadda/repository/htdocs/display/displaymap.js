@@ -203,17 +203,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
-        loadTurf: function(callback) {
-	    if(!window.turf) {
-		if(!this.loadingTurf) {
-		    let url = ramaddaCdn+"/lib/turf.min.js";
-		    this.loadingTurf=true;
-		    Utils.loadScript(url,callback);
-		}
-		return false;
-	    }
-	    return true;
-	},
 	makeTurfBounds:function(bounds,padding) {
 	    if(Utils.isDefined(padding)) {
 		let w = bounds.east-bounds.west;
@@ -3342,7 +3331,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         makeVoronoi: function(records, fields, points,bounds) {
-	    if(!this.loadTurf(()=>{this.makeVoronoi(records, fields, points,bounds);})) {
+	    if(!MapUtils.loadTurf(()=>{this.makeVoronoi(records, fields, points,bounds);})) {
 		return;
 	    }
 
@@ -3391,7 +3380,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         makeHexmap: function(records, fields, points,bounds) {
-	    if(!this.loadTurf(()=>{this.makeHexmap(records, fields, points,bounds);})) {
+	    if(!MapUtils.loadTurf(()=>{this.makeHexmap(records, fields, points,bounds);})) {
 		return;
 	    }
 
