@@ -45,6 +45,18 @@ var MapUtils =  {
 
     },
     properties:{},
+    loadTurf: function(callback) {
+	if(!window.turf) {
+	    if(!this.loadingTurf) {
+		let url = ramaddaCdn+"/lib/turf.min.js";
+		this.loadingTurf=true;
+		Utils.loadScript(url,callback);
+	    }
+	    return false;
+	}
+	return true;
+    },
+
     extendBounds:function(b1,b2) {
 	if(b1) {
 	    if(b2) b1.extend(b2);
