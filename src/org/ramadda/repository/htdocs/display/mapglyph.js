@@ -256,7 +256,7 @@ MapGlyph.prototype = {
 							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
-				 'id',this.domId('rangeringangle'),'size',4])) +
+				 'id',this.domId('rangeringangle'),'size',4]) +' Leave blank to not show labels') +
 		HU.formEntryTop('Ring Styles',
 				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',['id',this.domId('rangeringstyle'),'rows',5,'cols', 40]),
 					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));

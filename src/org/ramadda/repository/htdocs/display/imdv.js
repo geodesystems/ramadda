@@ -560,6 +560,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeRangeRings:function(center,radii,style,angle,ringStyle) {
+	    if(angle=='') angle = NaN;
 	    style = style??{};
 	    let rings = [];
 	    let labelStyle = {labelAlign:style.labelAlign??'lt',
@@ -586,7 +587,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    //console.log('unknown unit:' + skm);
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
-		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
+		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)&& !isNaN(angle)?angle:90+45,km);
 		if(p2==null) {
 		    console.error("Could not create range rings with center:",center,p2,km);
 		    return null;
@@ -617,11 +618,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		rings.push(MapUtils.createVector(ring,null,_style));
-
-
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
-		s.label=skm;
+		if(!isNaN(angle)) 
+		    s.label=skm;
 		let label = MapUtils.createVector(p2,null,s);
 		rings.push(label);
 	    }
