@@ -6214,10 +6214,15 @@ MapGlyph.prototype = {
 	};
 
 
+	let colorTableLegend ='';
 	body+=HU.div(['id',this.domId('legendcolortableprops')]);
-	body+=HU.div(['id',this.domId('legendcolortable_fill')]);
-	body+=HU.div(['id',this.domId('legendcolortable_stroke')]);	
-	body+=HU.div(['id',this.domId(ID_MAPLEGEND)]);
+	colorTableLegend+=HU.div(['id',this.domId('legendcolortable_fill')]);
+	colorTableLegend+=HU.div(['id',this.domId('legendcolortable_stroke')]);	
+	colorTableLegend+=HU.div(['id',this.domId(ID_MAPLEGEND)]);
+	if(showInMapLegend)
+	    inMapLegend+=colorTableLegend;
+	else
+	    body+=colorTableLegend;
 
 	//Put the placeholder here for map filters
 	body+=HU.div(['id',this.domId(ID_MAPFILTERS)]);
