@@ -1770,8 +1770,9 @@ RepositoryMap.prototype = {
             this.getMap().addLayer(layer);
 	    if(nonSelectable)
 		this.nonSelectLayers.push(layer);
-
-            this.checkLayerOrder();
+	    else
+		this.loadedLayers.push(layer);
+	    this.checkLayerOrder();
         } else {
             this.initialLayers.push(layer);
         }
@@ -1788,6 +1789,7 @@ RepositoryMap.prototype = {
 	//Offset a bunch from the base
 	let base = this.numberOfBaseLayers+100;
 	let debug = false;
+//	debug = true;
 	let max = 0;
 	//debug=true
 	if(debug)   console.log("***** layer order");
@@ -3036,21 +3038,27 @@ RepositoryMap.prototype = {
 	//	console.log(l);
 
 
-	this.graticule = MapUtils.createGraticule({
+	return;
+	this.graticule= this.createGraticule({
+	    strokeColor: "#888",
+	    strokeWidth: 2,
+	    strokeOpacity: 0.5
+	});
+        this.getMap().addControl(this.graticule);
+    },
+    createGraticule:function(style) {
+	return MapUtils.createGraticule({
             layerName: "Lat/Lon Lines",
-	    lineSymbolizer: {
-		strokeColor: "#888",
-		strokeWidth: 1,
-		strokeOpacity: 0.2
-	    },
+	    lineSymbolizer: style,
 	    xautoActivate:false,
             numPoints: 2,
             labelled: true,
-            visible: this.params.showLatLonLines===true
+            visible: this.params.showLatLonLines===true,
+	    //Pass this because the default Canvas renderer can't render dash style
+	    renderers: ['VML', 'SVG']		
         });
-
-        this.getMap().addControl(this.graticule);
     },
+
 
     makeMapLayer:function(mapLayer) {
 	let layer;
@@ -3093,15 +3101,23 @@ RepositoryMap.prototype = {
         }
 	return null;
     },
-    setGraticulesVisible:function(visible) {
+    setGraticulesVisible:function(visible,style) {
+	this.params.showLatLonLines=visible;
 	if(this.graticule) {
+	    if(style) {
+		this.graticule.gratLayer.visibility = visible;
+		this.graticule.deactivate();
+		this.graticule.gratLayer.redraw();
+		this.getMap().removeControl(this.graticule);
+		this.graticule = this.createGraticule(style);
+		this.getMap().addControl(this.graticule);
+	    }
 	    this.graticule.gratLayer.visibility = visible;
 	    if(!visible)
 		this.graticule.deactivate();
 	    else
 		this.graticule.activate();	    
 	    this.graticule.gratLayer.redraw();
-
 	}
     },
     addBaseLayer: function(layer) {
