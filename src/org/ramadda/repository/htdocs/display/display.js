@@ -1805,7 +1805,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty('showColorTableStride',1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
-	    let label = this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
+	    let label = args.label ?? this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
 	    if(label) {
 		if(args.field) label = label.replace('${field}', args.field.getLabel());
 		if(args.showColorTableDots)
@@ -1942,6 +1942,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(names && !Array.isArray(names)) {
 		names  = [names];
 	    }
+	    if(names) {
+		names =names.filter(name=>{
+		    return name!=null;
+		});
+	    }
+
 	    if(names && justColors && this.dynamicProperties && names.includes("colorTable")) {
 		let ct;
 		let gotOne = false;
@@ -2107,13 +2113,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy) {
+	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy,props) {
 	    if(this.getProperty('colorByAllRecords')) {
 		records = this.getRecords();
 	    }
 	    if(!records) return null;
 	    let fields = this.getFields();
-	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
+	    return new ColorByInfo(this, fields??[], records, prop,colorByMapProp, defaultColorTable, propPrefix,null,props,lastColorBy);
 	},
 	getColorByMap: function(prop) {
 	    prop = this.getProperty(prop||'colorByMap');
