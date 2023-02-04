@@ -3385,6 +3385,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		f.textGetter  = textGetter;
 	    });
 	    this.voronoiLayer.redraw();
+            if (colorBy.isEnabled()) {
+		colorBy.displayColorTable();
+	    }
 	},
 
         makeHexmap: function(records, fields, points,bounds) {
