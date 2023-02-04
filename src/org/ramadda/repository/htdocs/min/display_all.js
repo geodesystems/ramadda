@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb  4 09:15:49 MST 2023";
+var build_date="RAMADDA build date: Sat Feb  4 09:26:38 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40522,6 +40522,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 	makeRangeRings:function(center,radii,style,angle,ringStyle) {
+	    if(angle=='') angle = NaN;
 	    style = style??{};
 	    let rings = [];
 	    let labelStyle = {labelAlign:style.labelAlign??'lt',
@@ -40548,7 +40549,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    //console.log('unknown unit:' + skm);
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
-		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
+		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)&& !isNaN(angle)?angle:90+45,km);
 		if(p2==null) {
 		    console.error("Could not create range rings with center:",center,p2,km);
 		    return null;
@@ -40579,11 +40580,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 
 		rings.push(MapUtils.createVector(ring,null,_style));
-
-
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
-		s.label=skm;
+		if(!isNaN(angle)) 
+		    s.label=skm;
 		let label = MapUtils.createVector(p2,null,s);
 		rings.push(label);
 	    }
@@ -45298,7 +45298,7 @@ MapGlyph.prototype = {
 							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
-				 'id',this.domId('rangeringangle'),'size',4])) +
+				 'id',this.domId('rangeringangle'),'size',4]) +' Leave blank to not show labels') +
 		HU.formEntryTop('Ring Styles',
 				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',['id',this.domId('rangeringstyle'),'rows',5,'cols', 40]),
 					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
