@@ -1068,6 +1068,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	let seen= {};
 	this.dates = [];
 	records.forEach(r=>{
+	    let date = r.getDate();
+	    if(!date) return;
 	    let year = r.getDate().getUTCFullYear();
 	    if(!seen[year]) {
 		seen[year] = true;
@@ -1144,7 +1146,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
 
-    let colors = defaultColorTable || this.display.getColorTable(true,[colorByAttr +".colorTable","colorTable"]);
+    let colors = defaultColorTable || this.display.getColorTable(true,[this.properties.colorTableProperty,
+								       colorByAttr +".colorTable",
+								       "colorTable"]);
     if(!colors && colorByAttr) {
 	let c = this.display.getProperty(colorByAttr +".colors");
 	if(c) colors = c.split(",");
@@ -1319,7 +1323,7 @@ ColorByInfo.prototype = {
 	return dflt;
     },
     isEnabled: function() {
-	return this.enabled;
+	return this.enabled ||this.getDoCount();
     },
     getField: function() {
 	return this.field;
@@ -1365,6 +1369,7 @@ ColorByInfo.prototype = {
 		return a.value.toString().localeCompare(b.value.toString());
 	    });
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		label:this.getDoCount()?'Count':null,
 		field: this.field,
 		colorByInfo:this,
 		width:width,
@@ -1419,36 +1424,59 @@ ColorByInfo.prototype = {
 	let perc = this.getValuePercent(v);
 	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
     },
-    getColorFromRecord: function(record, dflt, checkHistory) {
+    getDoCount:function() {
+	return this.doCount;
+    },
+    setDoCount:function(min,max) {
+	this.doCount = true;
+        this.minValue = min;
+	this.maxValue = max;
+	this.range = this.maxValue-this.minValue;
+	this.origMinValue=min;
+	this.origMaxValue=max;
+    },
+    getColorFromRecord: function(record, dflt, checkHistory,debug) {
 	if(!this.initDisplayCalled)   this.initDisplay();
-
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
 
+	if(!Array.isArray(record)) record=[record];
 	if(this.colorThresholdField && this.display.selectedRecord) {
 	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
-	    let v2=record.getValue(this.colorThresholdField.getIndex());
+	    let v2=record[0].getValue(this.colorThresholdField.getIndex());
 	    if(v2>v) return this.aboveColor;
 	    else return this.belowColor;
 	}
 
-	if (this.index >= 0) {
-	    let value = record.getData()[this.index];
+	if (this.index >= 0 || this.getDoCount()) {
+	    let value;
+	    if(record.length>1) {
+		let total = 0;
+		record.forEach(r=>{
+		    total+= r.getData()[this.index];
+		});
+		value = total/record.length;
+	    } else {
+		value= record[0].getData()[this.index];
+	    }
+	    value = this.getDoCount()?record.length:value;
 	    return  this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
-		value = record.getTime().getHours();
+		value = record[0].getTime().getHours();
 	    }  else {
-		value = record.getTime().getTime();
+		value = record[0].getTime().getTime();
 	    }
 //	    console.log(value);
-	    return  this.getColor(value, record,checkHistory);
+	    return  this.getColor(value, record[0],checkHistory);
 	} 
 	if(this.fieldValue == "year") {
-	    let value = record.getDate().getUTCFullYear();
-	    return this.getColor(value, record);
+	    if(record[0].getDate()) {
+		let value = record[0].getDate().getUTCFullYear();
+		return this.getColor(value, record[0]);
+	    }
 	}
 	return dflt;
     },
@@ -1468,7 +1496,6 @@ ColorByInfo.prototype = {
     },
 
     getColorInner: function(value, pointRecord,debug) {
-//	debug=true;
 //	if(debug) console.log(value);
 	if(!this.initDisplayCalled)   this.initDisplay();
 
@@ -1496,7 +1523,6 @@ ColorByInfo.prototype = {
             }
         } else {
             let v = value;
-
 	    if(this.stringMap) {
 		let color = this.stringMap[value];
 		if(!Utils.isDefined(color)) {
@@ -1514,6 +1540,7 @@ ColorByInfo.prototype = {
                 v = this.colorByFunc(v);
             }
             percent = this.range?(v - this.minValue) / this.range:0.5;
+//	    console.log(this.display.getName(),v,percent,this.range,this.minValue);
 //	    if(tmp>3 && tmp<6)
 //		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
         }

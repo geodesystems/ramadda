@@ -924,6 +924,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    if(glyphType.isData()) {
 			this.clearCommands();
+			mapOptions.name = mapOptions.entryName?? attrs.entryName;
+			delete mapOptions['entryName']
 			this.createData(mapOptions);
 			this.clearCommands();
 			return;
@@ -2296,11 +2298,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		let displayAttrs = mapGlyph.getDisplayAttrs();
 		let attrs = "";
-		for(a in displayAttrs) {
-		    if(Utils.isDefined(displayAttrs[a])) {
-			attrs+=a+"="+ displayAttrs[a]+"\n";
+		Object.keys(displayAttrs).sort().forEach(key=>{
+		    if(Utils.isDefined(displayAttrs[key])) {
+			attrs+=key+"="+ displayAttrs[key]+"\n";
 		    }
-		}
+		});
 		let textarea = HU.textarea("",attrs,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		content.push({header:"Display Properties", contents: HU.hbox([textarea, menuBar])});
 	    } else {
@@ -2623,7 +2625,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			finish();
 			if(data=="") data="[]";
 			let json = JSON.parse(data);
-			this.loadAnnotationJson(json,this.map,this.myLayer);
+			this.loadAnnotationJson(json,this.map);
 			this.featureChanged(true);
 		    }
 		}).fail(err=>{
@@ -2669,7 +2671,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    return  JSON.stringify(json);
 	},
-	loadAnnotationJson: function(mapJson,map,layer) {
+
+	loadAnnotationJson: function(mapJson,map) {
+//	    this.voroni();
+
+
+
 	    let glyphs = mapJson.glyphs||[];
 	    glyphs.forEach(jsonObject=>{
 		let mapGlyph = this.makeGlyphFromJson(jsonObject);
@@ -2717,7 +2724,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		style.cursor = 'pointer';
 	    }
 	    if(glyphType.isData()) {
-		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions);
+		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions,null,style);
 		mapGlyph.addData(mapOptions.displayAttrs,false);
 		return mapGlyph;
 	    }
@@ -2822,7 +2829,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.checkbox(this.domId('showopacityslider'),[],
 			    this.getMapProperty('showOpacitySlider',this.getShowOpacitySlider()),'Show Opacity Slider'),
 		HU.checkbox(this.domId('showgraticules'),[],
-			    this.getMapProperty('showGraticules',false),'Show Lat/Lon Lines'),
+			    this.getMapProperty('showGraticules',false),'Show Graticules'),
 		HU.checkbox(this.domId('showmouseposition'), [],
 			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
 		HU.checkbox(this.domId('showaddress'), [],
@@ -2864,12 +2871,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 });
 
 	    let props = this.getMapProperty('otherProperties','');
-	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS];
+	    let lines = ['legendLabel=Some label',...IMDV_PROPERTY_HINTS,
+			'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
 	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
 			  contents:
 			  HU.hbox([
-			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','40']),HU.space(2),help])
+			      HU.textarea('',props,['id',this.domId('otherproperties_input'),'rows','8','cols','60']),HU.space(2),help])
 			 });
 	    
 
@@ -2930,7 +2938,27 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.checkTopWiki();
 	    if(!this.getMap()) return;
 	    this.getMap().applyHighlightStyle(this.getOtherProperties());
-	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'));
+
+	    let gratStyle = this.getMapProperty('graticuleStyle');
+	    if(Utils.stringDefined(gratStyle)) {
+		try {
+		    let tmp = {};
+		    gratStyle.split(",").forEach(tok=>{
+			let toks =tok.split(":");
+			if(toks.length==2) {
+			    let prop = toks[0].trim();
+			    let v =toks[1].trim();
+			    if(prop=='strokeWidth') v = parseInt(v);
+			    tmp[prop] = v;
+			}
+		    });
+		    gratStyle=tmp;
+		} catch(err) {
+		    console.log("Error parsing graticule style:" + gratStyle +"\n\terror:" + err);
+		    gratStyle;
+		}
+	    }
+	    this.getMap().setGraticulesVisible(this.getMapProperty('showGraticules'),gratStyle);
 	    if(this.getMapProperty('showMousePosition'))
 		this.getMap().initMousePositionReadout();
 	    else
@@ -3443,6 +3471,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    }				     
 			}
 			this.mapProperties = json.mapProperties||this.mapProperties||{};
+			this.parsedMapProperties= null;
 
 			//Check the map legend
 			if(this.mapLegendToggleId) {
@@ -3451,7 +3480,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				    $("#" + this.mapLegendToggleId).css('display','none');
 				}
 			    }
-
 			}
 
 			this.getMap().applyHighlightStyle(this.getOtherProperties());
@@ -3462,7 +3490,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    _this.map.getMap().setCenter(bounds.getCenterLonLat());
 			}
 			try {
-			    this.loadAnnotationJson(json,_this.map,_this.myLayer);
+			    this.loadAnnotationJson(json,_this.map);
 			} catch(err) {
 			    this.handleError(err);
 			}
@@ -4888,6 +4916,8 @@ function MapGlyph(display,type,attrs,feature,style) {
 	console.trace();
 	return
     }
+    if(!style)
+	console.trace();
     if(style.mapOptions) {
 	delete style.mapOptions;
     }

@@ -155,6 +155,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     
     displayDefineMembers(this, myProps, {
         mapBoundsSet: false,
+	extraLayers:[],
         initDisplay: function() {
 //	    if(displayDebug.initMap) console.log(this.getLogLabel()+".initDisplay");
             SUPER.initDisplay.call(this);
@@ -202,6 +203,45 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
+        loadTurf: function(callback) {
+	    if(!window.turf) {
+		if(!this.loadingTurf) {
+		    let url = ramaddaCdn+"/lib/turf.min.js";
+		    this.loadingTurf=true;
+		    Utils.loadScript(url,callback);
+		}
+		return false;
+	    }
+	    return true;
+	},
+	makeTurfBounds:function(bounds,padding) {
+	    if(Utils.isDefined(padding)) {
+		let w = bounds.east-bounds.west;
+		let h = bounds.north - bounds.south;
+		return [bounds.west-padding*w, bounds.south-padding*h, bounds.east+padding*w, bounds.north+padding*h];
+	    }
+	    return [bounds.west, bounds.south, bounds.east, bounds.north];
+	},
+	createGeoJsonLayer:function(name,geojson,layer) {
+	    if(layer) {
+		layer.removeFeatures(layer.features);
+	    } else {
+		layer = MapUtils.createLayerVector(name,
+						   {projection: this.getMap().getMap().displayProjection});
+		this.getMap().addLayer(layer);
+		layer.ramaddaLayerIndex = 100;
+		if(Utils.isDefined(this.layerVisible) && !this.layerVisible)
+		    layer.setVisibility(false);
+	    }
+            let format= new OpenLayers.Format.GeoJSON({});
+	    let features = format.read(geojson);
+	    let strategy = new OpenLayers.Strategy.Fixed();
+	    strategy.layer= layer;
+	    strategy.merge({features:features});
+	    this.extraLayers.push(layer);
+	    return layer;
+	},
+
 	getBaseLayersSelect:function() {
 	    if(this.map.baseLayers) {
 		let items = [];
@@ -620,7 +660,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         geojsonLayerName: "",
         theMap: null,
 	layerVisible:true
-	
     });
 
 
@@ -758,6 +797,34 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:0,dy:0,height:30,width:6,baseHeight:5,sizeBy:field"},
 	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 
+	{label:'Hex map, Voronoi, etc'},
+	{p:'mapType',ex:'hex or triangle or square or voronoi',tt:'Create a hex or triangle or square or voronoi map'},
+	{p:'doHexmap',ex:'true',tt:'Create a hexmap'},
+	{p:'doTrianglemap',ex:'true',tt:'Create a triangle map'},		
+	{p:'doSquaremap',ex:'true',tt:'Create a square map'},		
+	{p:'hexmapShowCount',ex:'true',tt:'Display the count'},
+	{p:'hexmapUseFullBounds',d:true,tt:'When filtering is the original fill bounds used'},
+	{p:'hexmapPadding',tt:'Percent to bad out the bounding box',d:0.05},
+	{p:'hexmapCellSide',tt:'How many on a side',d:25},
+	{p:'hexmapUnits',tt:'Side units',d:'miles'},
+	{p:'hexmapStrokeColor',d:'blue'},
+	{p:'hexmapStrokeWidth',d:1},
+	{p:'hexmapStrokeOpacity',d:1.0},
+	{p:'hexmapStrokeDashstyle',d:'solid'},
+	{p:'hexmapFillColor',d:'transparent'},
+	{p:'hexmapFillOpacity',d:1.0},	
+	{p:'hexmapColorBy',tt:'Field id to color the hexmap by'},
+	{p:'hexmapEmptyStrokeColor'},
+	{p:'hexmapEmptyStrokeWidth'},
+	{p:'hexmapEmptyFillColor'},
+	{p:'doVoronoi',ex:'true',tt:'Create  voronoi polygons'},
+	{p:'voronoiColorBy',tt:'Field id to color the hexmap by'},
+	{p:'voronoiStrokeColor',d:'blue'},
+	{p:'voronoiStrokeWidth',d:1},
+	{p:'voronoiStrokeOpacity',d:1},	
+	{p:'voronoiStrokeDashstyle',d:'solid'},
+	{p:'voronoiFillColor',d:'transparent'},
+	{p:'voronoiFillOpacity',d:1.0},	
 	{label:'Heatmap'},
 	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image'},
 	{p:'hmShowPoints',ex:'true',tt:'Also show the map points'},
@@ -968,19 +1035,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
-	removeHeatmapLayers: function() {
- 	    if(this.heatmapLayers) {
-		try {
-		    this.heatmapLayers.every(layer=>{
-			layer.destroy();
-			this.map.removeLayer(layer,true);
-			return true;
-		    });
-		} catch(exc) {
-		    console.log(exc);
-		}
-		this.heatmapLayers = null;
+	removeExtraLayers: function() {
+	    try {
+		this.extraLayers.every(layer=>{
+		    layer.destroy();
+		    this.map.removeLayer(layer,true);
+		    return true;
+		});
+	    } catch(exc) {
+		console.log(exc);
 	    }
+	    this.extraLayers = [];
+	    this.heatmapLayers = [];
+	    this.voronoiLayer=null;
+	    this.hexmapLayer=null;
 	},
 
 	toString: function() {
@@ -1003,7 +1071,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	removeFeatures: function() {
 	    this.removeFeatureLayer();
-	    this.removeHeatmapLayers();
+	    this.removeExtraLayers();
 	},
 
 
@@ -1025,11 +1093,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //TODO: have my own labelLayer
 	    if(this.map.labelLayer)
 		this.map.labelLayer.setVisibility(visible);
- 	    if(this.heatmapLayers) {
-		this.heatmapLayers.forEach(layer=>{
-		    layer.setVisibility(visible);
-		});
-	    }
+	    this.extraLayers.forEach(layer=>{
+		layer.setVisibility(visible);
+	    });
 
 	},
 
@@ -1343,7 +1409,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
         },
         cloneLayer: function(layer) {
-	    console.log("CLONE LAYER:"  + layer.name);
             let _this = this;
             this.map.hideLoadingImage();
             layer = layer.clone();
@@ -2665,6 +2730,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
+
+
 	    if(this.updateUICallback) {
 		clearTimeout(this.updateUICallback);
 		this.updateUICallback = null;
@@ -2688,6 +2755,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug) console.log("\tno data");
                 return;
             }
+
+
 
 	    if(this.getShowTableOfContents(false)) {
 		this.makeToc(records);
@@ -2749,7 +2818,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	updateUIInner: function(args, pointData, records, debug) {
 	    let _this = this;
-
 	    let t1= new Date();
 	    debug = debug || displayDebug.displayMapUpdateUI;
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
@@ -2806,6 +2874,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(!this.getProperty("makeDisplay",true)) {
 		return;
+	    }
+	    if(!this.fullBounds) {
+		this.fullBounds = {};
+		RecordUtil.getPoints(this.getRecords(), this.fullBounds);
 	    }
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
@@ -2975,18 +3047,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
- 	    if(this.heatmapLayers) {
-		try {
-		    this.heatmapLayers.every(layer=>{
-			this.map.removeLayer(layer);
-			return true;
-		    });
-		} catch(exc) {
-		    console.log(exc);
-		}
-	    }
-
+	    this.removeExtraLayers();
 	    this.heatmapLayers = [];
+	    this.extraLayers = [];	    
 	    if(records.length==0) {
 		this.errorMessage = this.getNoDataMessage();
 		this.setMessage(this.errorMessage);
@@ -3058,6 +3121,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(value.getTime)
 			layer.date = value;
 		}
+		this.extraLayers.push(layer);
 		this.heatmapLayers.push(layer);
 	    });
 	    if(this.getHmShowGroups(true) && this.heatmapLayers.length>1 && !this.getAnimationEnabled()) {
@@ -3117,7 +3181,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
 		    this.reloadHeatmap = true;
-		    this.removeHeatmapLayers();
+		    this.removeExtraLayers();
 		    this.haveCalledUpdateUI = false;
 		    this.updateUI();
 		});
@@ -3275,7 +3339,173 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.showColorTable(colorBy);
 	    }
 	},
+
+
+        makeVoronoi: function(records, fields, points,bounds) {
+	    if(!this.loadTurf(()=>{this.makeVoronoi(records, fields, points,bounds);})) {
+		return;
+	    }
+
+	    let options = {
+		bbox: this.makeTurfBounds(bounds)
+	    };
+	    let geojsonPoints = [];
+	    let dups = {};
+	    let vpoints = [];
+	    points.forEach((p,idx)=>{
+		let record = records[idx];
+		let key =p.x+'_'+p.y;
+		if(dups[key]) return;
+		dups[key] = true;
+		geojsonPoints.push(turf.point([p.x,p.y]));
+		vpoints.push({point:p,record:record});
+	    });
+	    let collection = turf.featureCollection(geojsonPoints);
+//	    let points = turf.randomPoint(1000, options);
+	    let  voronoiPolygons= turf.voronoi(collection, options);
+	    this.voronoiLayer =this.createGeoJsonLayer('Voronoi',voronoiPolygons,this.voronoiLayer);
+            let colorBy = this.getColorByInfo(records,'voronoiColorBy',null,null,null,this.lastColorBy);
+	    this.lastColorBy = colorBy;
+	    let textGetter = this.getTextGetter(fields);
+	    let style = {
+		strokeColor:this.getVoronoiStrokeColor(),
+		strokeWidth:this.getVoronoiStrokeWidth(),
+		strokeDashstyle:this.getVoronoiStrokeDashstyle(),
+		fillColor:this.getVoronoiFillColor(),
+		fillOpacity:this.getVoronoiFillOpacity()		
+	    }
+	    this.voronoiLayer.features.forEach((f,idx)=>{
+		let record = vpoints[idx].record;
+		let s =Utils.clone({},style);
+		if(colorBy.isEnabled()) {
+		    s.fillColor= colorBy.getColorFromRecord(record);
+		}
+		f.style=s;
+		f.record  =record;
+		f.textGetter  = textGetter;
+	    });
+	    this.voronoiLayer.redraw();
+	},
+
+        makeHexmap: function(records, fields, points,bounds) {
+	    if(!this.loadTurf(()=>{this.makeHexmap(records, fields, points,bounds);})) {
+		return;
+	    }
+
+	    let bbox =  this.makeTurfBounds(this.getHexmapUseFullBounds()?this.fullBounds:bounds,this.getHexmapPadding());
+	    let cellSide = this.getHexmapCellSide();
+	    let options = {units: this.getHexmapUnits()};
+	    let hexgrid;
+	    let mapType = this.getProperty('mapType');
+	    if(this.getDoTrianglemap() || mapType=='triangle') {
+		hexgrid = turf.triangleGrid(bbox, cellSide, options);
+	    } else if(this.getDoSquaremap() || mapType=='square') {
+		hexgrid = turf.squareGrid(bbox, cellSide, options);
+	    } else {
+		hexgrid = turf.hexGrid(bbox, cellSide, options);
+	    }
+
+	    let vpoints = [];
+//	    console.time('x');
+	    let yes= 0, no=0;
+
+	    points.forEach((p,idx)=>{
+		let record = records[idx];
+		var pts = turf.points([[p.x,p.y]]);
+		let isIn = false;
+		hexgrid.features.every((feature,fidx)=>{
+		    if(!feature.searchWithin) {
+			let coords = feature.geometry.coordinates[0];
+			feature.searchWithin = turf.polygon([coords]);
+			feature.bbox = turf.bbox(feature.searchWithin);
+			feature.records=[];
+		    }
+		    if(p.x>=feature.bbox[0] && p.x<= feature.bbox[2] &&
+		       p.y>=feature.bbox[1] && p.y<=feature.bbox[3]) {
+			let ptsWithin = turf.pointsWithinPolygon(pts,feature.searchWithin);
+			if(ptsWithin.features.length>0) {
+			    isIn = true;
+			    feature.records.push(record);
+			    return false;
+			}
+		    }
+		    return true;
+		});
+		if(isIn) yes++;
+		else no++;
+	    });
+	    let maxCount = -1,minCount=-1;
+	    hexgrid.features.forEach((feature,fidx)=>{
+		if(feature.records && feature.records.length>0) {
+		    maxCount=maxCount==-1?feature.records.length:Math.max(maxCount, feature.records.length);
+		    minCount=minCount==-1?feature.records.length:Math.min(minCount, feature.records.length);		    
+		}
+	    });
+//	    console.timeEnd('x');
+//	    console.log("yes:" + yes +" no:" + no);
+	    this.hexmapLayer =this.createGeoJsonLayer('Hexmap',hexgrid,this.hexmapLayer);
+
+            let colorBy = this.getColorByInfo(records,'hexmapColorBy',null,null,null,
+					      this.lastColorBy,
+					      {colorTableProperty:'hexmapColorTable'});
+	    if(this.getHexmapShowCount()) {
+		colorBy.setDoCount(minCount,maxCount);
+	    }
+	    this.lastColorBy = colorBy;
+	    let textGetter = this.getTextGetter(fields);
+	    let style = {
+		strokeColor:this.getHexmapStrokeColor(),
+		strokeDashstyle:this.getHexmapStrokeDashstyle(),
+		strokeWidth:this.getHexmapStrokeWidth(),
+		fillColor:this.getHexmapFillColor('transparent'),
+		fillOpacity:this.getHexmapFillOpacity()				
+	    }
+	    let emptyStyle = {
+		strokeColor:this.getHexmapEmptyStrokeColor(style.strokeColor),
+		strokeWidth:this.getHexmapEmptyStrokeWidth(style.strokeWidth),
+		fillColor:this.getHexmapEmptyFillColor(style.fillColor),
+		fillOpacity:this.getHexmapFillOpacity()						
+	    }
+	    this.hexmapLayer.features.forEach((f,idx)=>{
+		let records=hexgrid.features[idx].records;
+		let s = (records && records.length>0)?style:emptyStyle;
+		s = Utils.clone({},s);
+		if(records && records.length>0 && colorBy.isEnabled()) {
+		    s.fillColor= colorBy.getColorFromRecord(records);
+		} 
+		f.records  =records;
+		f.style=s;
+		f.textGetter  = textGetter;
+	    });
+	    this.hexmapLayer.redraw();
+            if (colorBy.isEnabled()) {
+		colorBy.displayColorTable();
+	    }
+
+	},
+	
+
+
         addPoints: function(records, fields, points,bounds,debug) {
+	    let mapType = this.getProperty('mapType');
+	    if(mapType=='voronoi' || this.getProperty('doVoronoi',false)) {
+		this.makeVoronoi(records,fields,points,bounds);
+		if(!this.getShowPoints())
+		    return;
+	    }
+	    if(mapType=='hex' ||
+	       mapType=='triangle' ||
+	       mapType=='square' ||
+	       this.getDoHexmap() ||
+	       this.getDoTrianglemap() ||
+	       this.getDoSquaremap()) {
+		this.makeHexmap(records,fields,points,bounds);
+		if(!this.getShowPoints())
+		    return;
+	    }	    
+
+
+
 	    if(this.getDoGridPoints()|| this.getDoHeatmap(false)) {
 		let showMarkers = this.showMarkers;
 		if(this.getHmShowPoints() || this.getShowPoints()) {
@@ -3550,22 +3780,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    	highlightSize = MapUtils.createSize(highlightWidth,highlightHeight);
 	    }
 
-
 	    let addedPoints = [];
-	    let textGetter = this.textGetter = f=>{
-		if(f.record) {
-		    if(!Utils.stringDefined(tooltip)) {
-			if(debugPopup) console.log("No tooltip");
-			return null;
-		    }
-		    let text =   this.getRecordHtml(f.record, fields, tooltip);
-		    if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);
-		    if(text=="") return "BLANK";
-		    return text;
-		}
-		if(debugPopup) console.log("textGetter: no record");
-		return null;
-	    };
+	    let textGetter = this.getTextGetter(fields);
+
 	    let highlightGetter = f=>{
 		if(f.record) {
                     return   HU.div([STYLE,HU.css('background','#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
@@ -3854,7 +4071,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
-			theColor =  colorBy.getColorFromRecord(record, theColor);
+			theColor =  colorBy.getColorFromRecord(record, theColor,false);
 //			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
@@ -4181,6 +4398,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         },
+
+	getTextGetter:function(fields) {
+	    let tooltip = this.getProperty("tooltip");
+	    return  this.textGetter = f=>{
+		if(!Utils.stringDefined(tooltip)) {
+		    if(debugPopup) console.log("No tooltip");
+		    return null;
+		}
+
+		let records;
+		if(f.record) records = [f.record];
+		else records = f.records;
+		if(!records || records.length==0) return null;
+		let text ='';
+		records.forEach((record,idx)=>{
+		    if(idx>0) text+='<thin_hr/>';
+		    text +=   this.getRecordHtml(record, fields, tooltip);
+		});
+		if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);
+		if(text=="") return null;
+		return text;
+	    };
+	},
+
 
         addLabels:function(records, fields) {
 	    let limit = this.getLabelLimit(1000);
