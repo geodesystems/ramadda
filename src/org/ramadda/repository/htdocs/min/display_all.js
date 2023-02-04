@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb  4 07:40:08 MST 2023";
+var build_date="RAMADDA build date: Sat Feb  4 09:15:49 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -34296,17 +34296,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
-        loadTurf: function(callback) {
-	    if(!window.turf) {
-		if(!this.loadingTurf) {
-		    let url = ramaddaCdn+"/lib/turf.min.js";
-		    this.loadingTurf=true;
-		    Utils.loadScript(url,callback);
-		}
-		return false;
-	    }
-	    return true;
-	},
 	makeTurfBounds:function(bounds,padding) {
 	    if(Utils.isDefined(padding)) {
 		let w = bounds.east-bounds.west;
@@ -37435,7 +37424,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         makeVoronoi: function(records, fields, points,bounds) {
-	    if(!this.loadTurf(()=>{this.makeVoronoi(records, fields, points,bounds);})) {
+	    if(!MapUtils.loadTurf(()=>{this.makeVoronoi(records, fields, points,bounds);})) {
 		return;
 	    }
 
@@ -37484,7 +37473,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         makeHexmap: function(records, fields, points,bounds) {
-	    if(!this.loadTurf(()=>{this.makeHexmap(records, fields, points,bounds);})) {
+	    if(!MapUtils.loadTurf(()=>{this.makeHexmap(records, fields, points,bounds);})) {
 		return;
 	    }
 
@@ -40012,6 +40001,7 @@ var GLYPH_DATA = 'data';
 var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
 var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
+var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
 var LEGEND_IMAGE_ATTRS = ['style','color:#ccc;font-size:9pt;'];
@@ -40550,10 +40540,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
 		} else if (skm.endsWith(UNIT_FT)) {
 		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
-		} else if (skm.endsWith(UNIT_M)) {
-		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
 		} else if (skm.endsWith(UNIT_KM)) {
 		    km = skm.replace(UNIT_KM,'');
+		} else if (skm.endsWith(UNIT_M)) {
+		    km = parseFloat(skm.replace(UNIT_M,''))/1000;
+		} else {
+		    //console.log('unknown unit:' + skm);
 		}
 		let p1 = MapUtils.createLonLat(center.lon??center.x, center.lat??center.y);
 		let p2 = Utils.reverseBearing(p1,Utils.isDefined(angle)?angle:90+45,km);
@@ -40889,6 +40881,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    if(glyphType.isMultiEntry()) {
 			this.clearCommands();
+			mapOptions.name = mapOptions.entryName?? attrs.entryName;
+			delete mapOptions['entryName']
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.addEntries(true);
 			this.clearCommands();
@@ -42647,7 +42641,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	loadAnnotationJson: function(mapJson,map) {
 //	    this.voroni();
-
 
 
 	    let glyphs = mapJson.glyphs||[];
@@ -45221,27 +45214,7 @@ MapGlyph.prototype = {
 	    }
 	    obj.style = style;
 	}
-	let geom = this.getGeometry();
-	if(geom) {
-	    obj.geometryType=geom.CLASS_NAME;
-	    let points = obj.points=[];
-	    let vertices  = geom.getVertices();
-	    let  p =d=>{
-		return Utils.trimDecimals(d,6);
-	    };
-	    if(this.getImage()) {
-		let b = this.getMap().transformProjBounds(geom.getBounds());
-		points.push(p(b.top),p(b.left),
-			    p(b.top),p(b.right),
-			    p(b.bottom),p(b.right),
-			    p(b.bottom),p(b.left));				    
-	    } else {
-		vertices.forEach(vertex=>{
-		    let pt = vertex.clone().transform(this.getMap().sourceProjection, this.getMap().displayProjection);
-		    points.push(p(pt.y),p(pt.x));
-		});
-	    }
-	}
+	this.getPoints(obj);
 	if(this.children) {
 	    let childrenJson=[];
 	    this.children.forEach(child=>{
@@ -45252,6 +45225,29 @@ MapGlyph.prototype = {
 	return obj;
     },	
 
+    getPoints:function(obj) {
+	let geom = this.getGeometry();
+	if(!geom) return null;
+	obj.geometryType=geom.CLASS_NAME;
+	let points = obj.points=[];
+	let vertices  = geom.getVertices();
+	let  p =d=>{
+	    return Utils.trimDecimals(d,6);
+	};
+	if(this.getImage()) {
+	    let b = this.getMap().transformProjBounds(geom.getBounds());
+	    points.push(p(b.top),p(b.left),
+			p(b.top),p(b.right),
+			p(b.bottom),p(b.right),
+			p(b.bottom),p(b.left));				    
+	} else {
+	    vertices.forEach(vertex=>{
+		let pt = vertex.clone().transform(this.getMap().sourceProjection, this.getMap().displayProjection);
+		points.push(p(pt.y),p(pt.x));
+	    });
+	}
+	return points;
+    },
 
     isMultiEntry:  function() {
 	return this.type == GLYPH_MULTIENTRY;
@@ -45310,6 +45306,13 @@ MapGlyph.prototype = {
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div(['id',this.domId('colortableproperties')]));
 	}	    
+
+	if(this.isStraightLine()) {
+	    return HU.formEntry('',HU.checkbox(this.domId('usegreatcircle'),[],this.attrs.useGreatCircle,
+					       'Use great circle'));
+
+	}
+
 	return '';
     },
 
@@ -45785,6 +45788,42 @@ MapGlyph.prototype = {
     getFeatures: function() {
 	return this.features;
     },
+    convertToGreatCircle:function() {
+	if(!MapUtils.loadTurf(()=>{this.convertToGreatCircle();})) {
+	    return;
+	}
+	
+	let obj = {};
+	if(!this.attrs.originalPoints) {
+	    this.attrs.originalPoints = this.getPoints({});
+	    console.log('getting orig ');
+	}
+	let pts = this.attrs.originalPoints;
+	if(!pts || pts.length==0) return;
+	let type = this.getGeometry().CLASS_NAME;
+	let newPts = [];
+	this.attrs.useGreatCircle = !this.attrs.useGreatCircle;
+	if(!this.attrs.useGreatCircle) {
+	    newPts = pts;
+	}  else {
+	    let total=0;
+	    for(let i=0;i<pts.length-2;i+=2) {
+		var start = turf.point([pts[i+1],pts[i+0]]);
+		var end = turf.point([pts[i+3], pts[i+2]]);
+		var options = {units: 'miles'};
+		total+= turf.distance(start, end, options);
+		var greatCircle = turf.greatCircle(start, end);
+		let coords = greatCircle.geometry.coordinates;
+		coords.forEach(pair=>{
+		    newPts.push(pair[1],pair[0]);
+		});
+	    }
+//	    console.log('d:' + total);
+	}
+	let feature = this.display.makeFeature(this.getMap(),type,this.style,newPts);
+	this.addFeatures([feature],true,true);
+    },
+
     clearFeatures: function() {
 	this.display.removeFeatures(this.features);
 	this.features = [];
@@ -46905,6 +46944,15 @@ MapGlyph.prototype = {
     },
 
     applyPropertiesComponent: function() {
+	if(this.isStraightLine()) {
+	    let v = this.jq('usegreatcircle').is(':checked');
+	    if(v!=this.attrs.useGreatCircle) {
+		//This toggles it
+		this.convertToGreatCircle();
+	    }
+	}
+
+
 	if(this.isMap()) {
 	    this.setMapPointsRange(jqid('mappoints_range').val());
 	    this.setMapLabelsTemplate(jqid('mappoints_template').val());	    
@@ -48842,6 +48890,9 @@ MapGlyph.prototype = {
     },
     isOpenLine:function() {
 	return GLYPH_TYPES_LINES_OPEN.includes(this.type);
+    },
+    isStraightLine:function() {
+	return GLYPH_TYPES_LINES_STRAIGHT.includes(this.type);
     },
     addEntries: function(andZoom) {
 	let entryId = this.getEntryId();
