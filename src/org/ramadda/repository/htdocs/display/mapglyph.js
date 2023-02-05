@@ -750,11 +750,9 @@ MapGlyph.prototype = {
 	if(!MapUtils.loadTurf(()=>{this.convertToGreatCircle();})) {
 	    return;
 	}
-	
 	let obj = {};
 	if(!this.attrs.originalPoints) {
 	    this.attrs.originalPoints = this.getPoints({});
-	    console.log('getting orig ');
 	}
 	let pts = this.attrs.originalPoints;
 	if(!pts || pts.length==0) return;
@@ -3708,21 +3706,60 @@ MapGlyph.prototype = {
 		toggleLabel=match[1];
 		text = text.replace(regexp,"").trim();
 	    }
-	} else {
-	    text = this.convertText(text);
-	}
+	} 
 
+	let initFixed = () =>{
+	    let _this=this;
+	    let height  = jqid(id).height();
+	    jqid(id).draggable({
+		containment:this.display.domId(ID_MAP),
+		start: function (event, ui) {
+                    $(this).css({
+			height:(height+10)+'px',
+                        right: "auto",
+                        top: "auto"
+                    });
+		},
+		stop:function() {
+		    let div= $(this);
+		    let top = div.position().top;
+		    let left = div.position().left;		    
+		    let bottom = top+div.height();
+		    let right = left+div.width();		    
+		    let pw = div.parent().width();
+		    let ph = div.parent().height();		    
+		    let pos =  _this.style;
+		    ['top','bottom','left','right'].forEach(p=>{
+			pos[p]='';
+		    });
+		    let set = (which,v) =>{
+			v =  Math.max(0,(parseInt(v)))+'px';
+			pos[which] =v;
+			div.css(pos,v);
+		    }
+		    if(top<ph-bottom) set('top',top);
+		    else set('bottom',(ph-bottom));
+		    if(left<pw-right) set('left',left);
+		    else set('right',pw-right);
+		},
+		revert: false
+	    });
+	}
 	if(text.startsWith("<wiki>")) {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
 		wiki = HU.div(['style','max-height:300px;overflow-y:auto;'],wiki);
-		jqid(id).html(wiki)});
+		jqid(id).html(wiki);
+		initFixed();
+	    });
 	} else {
+	    text = this.convertText(text);
 	    text = text.replace(/\n/g,"<br>");
 	    if(toggleLabel)
 		text = HU.toggleBlock(toggleLabel+SPACE2, text,false);
 	    jqid(id).html(text);
+	    initFixed();
 	}
     },
 
