@@ -1,6 +1,6 @@
 
 
-function MapGlyph(display,type,attrs,feature,style) {
+function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
 	console.log("no type");
 	console.trace();
@@ -24,15 +24,55 @@ function MapGlyph(display,type,attrs,feature,style) {
 	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
-
-
     this.display = display;
     this.type = type;
     this.features = [];
     this.attrs = attrs;
     this.style = style??{};
     this.id = attrs.id ?? HU.getUniqueId("glyph_");
-    if(feature) this.addFeature(feature);
+
+
+    if(fromJson) {
+	let feature;
+	if(this.isStraightLine()) {
+	    this.checkLineType(json.points);
+	} else {
+	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, this.style,
+					       json.points);
+	}
+	if(feature) {
+	    this.addFeature(feature);
+	    feature.style = style;
+	    this.display.addFeatures([feature]);
+	    this.checkImage(feature);
+	    //If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
+	    let glyphType = this.display.getGlyphType(this.type);
+	    if(glyphType.isEntry()) {
+		let callback = (entry)=>{
+		    //the mapglyphs are defined by the type
+		    this.putTransientProperty("mapglyphs", entry.mapglyphs);
+		    if(this.getUseEntryName()) 
+			this.setName(entry.getName());
+		    if(this.getUseEntryLabel())
+			this.style.label= entry.getName();
+		    if(this.getUseEntryLocation() && entry.hasLocation()) {
+			let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
+						       [entry.getLatitude(), entry.getLongitude()]);
+			feature.style = this.style;
+			this.addFeature(feature,true);
+			this.addFeatures([feature]);
+		    }
+
+		    this.applyEntryGlyphs();
+		    this.applyMapStyle();
+		    this.display.redraw(this);
+		    this.display.makeLegend();
+		};
+		getRamadda().getEntry(mapOptions.entryId, callback);
+	    }
+	}
+    }
+
 
     if(this.isEntry()) {
 	if(!Utils.isDefined(this.attrs.useentryname))
@@ -266,9 +306,14 @@ MapGlyph.prototype = {
 	}	    
 
 	if(this.isStraightLine()) {
-	    return HU.formEntry('',HU.checkbox(this.domId('usegreatcircle'),[],this.attrs.useGreatCircle,
-					       'Use great circle'));
-
+	    return HU.formEntry('Line type:',
+				HU.select('',['id',this.domId('linetype')],[
+				    {value:'straight',label:'Straight'},
+				    {value:'stepped',label:'Stepped'},
+				    {value:'curve',label:'Curve'},
+				    {value:'greatcircle',label:'Great Circle'}],
+					  this.attrs.lineType)) +
+		HU.formEntry('',HU.checkbox(this.domId('adddots'),['id',this.domId('adddots')],this.attrs.addDots,'Add dots'));
 	}
 
 	return '';
@@ -746,39 +791,90 @@ MapGlyph.prototype = {
     getFeatures: function() {
 	return this.features;
     },
-    convertToGreatCircle:function() {
-	if(!MapUtils.loadTurf(()=>{this.convertToGreatCircle();})) {
-	    return;
-	}
-	let obj = {};
-	if(!this.attrs.originalPoints) {
-	    this.attrs.originalPoints = this.getPoints({});
-	}
-	let pts = this.attrs.originalPoints;
-	if(!pts || pts.length==0) return;
-	let type = this.getGeometry().CLASS_NAME;
-	let newPts = [];
-	this.attrs.useGreatCircle = !this.attrs.useGreatCircle;
-	if(!this.attrs.useGreatCircle) {
-	    newPts = pts;
-	}  else {
-	    let total=0;
-	    for(let i=0;i<pts.length-2;i+=2) {
-		var start = turf.point([pts[i+1],pts[i+0]]);
-		var end = turf.point([pts[i+3], pts[i+2]]);
-		var options = {units: 'miles'};
-		total+= turf.distance(start, end, options);
-		var greatCircle = turf.greatCircle(start, end);
-		let coords = greatCircle.geometry.coordinates;
-		coords.forEach(pair=>{
-		    newPts.push(pair[1],pair[0]);
-		});
+    checkLineType:function(points) {
+	if(this.attrs.lineType=='greatcircle' || this.attrs.lineType=='curve') {
+	    if(!MapUtils.loadTurf(()=>{this.checkLineType(points);})) {
+		return;
 	    }
-//	    console.log('d:' + total);
 	}
-	let feature = this.display.makeFeature(this.getMap(),type,this.style,newPts);
-	this.addFeatures([feature],true,true);
+	if(!this.attrs.originalPoints) {
+	    this.attrs.originalPoints = points??this.getPoints({});
+	}
+	let pts = points??this.attrs.originalPoints;
+	if(!pts || pts.length==0) return;
+	let newPts = [];
+	let getPoints = f=>{
+	    let p=[];
+	    let coords = f.geometry.coordinates;
+	    coords.forEach(pair=>{
+		p.push(pair[1],pair[0]);
+	    });
+	    return p;
+	};
+	let latlon=(pts,i) =>{
+	    return [pts[i+0], pts[i+1]];
+	}
+	if(this.attrs.lineType=='stepped') {
+	    let mid = (v1,v2)=>{
+		return v1+(v2-v1)/2;
+	    };
+	    for(let i=0;i<pts.length-2;i+=2) {
+		let [lat1,lon1] = latlon(pts,i);
+		let [lat2,lon2] = latlon(pts,i+2);				
+		newPts.push(lat1,lon1);
+		newPts.push(lat1,mid(lon1,lon2));
+		newPts.push(lat2,mid(lon1,lon2));		
+		newPts.push(lat2,lon2);
+	    }
+	} else if(this.attrs.lineType=='greatcircle') {
+	    let options = {units: 'miles'};
+	    for(let i=0;i<pts.length-2;i+=2) {
+		let [lat1,lon1] = latlon(pts,i);
+		let [lat2,lon2] = latlon(pts,i+2);				
+		let start = turf.point([lon1,lat1]);
+		let end = turf.point([lon2,lat2]);
+		newPts.push(...getPoints(turf.greatCircle(start, end)));
+	    }
+	} else if(this.attrs.lineType=='curve') {
+	    let tmp = [];
+	    for(let i=0;i<pts.length;i+=2) {
+		tmp.push([pts[i+1],pts[i]]);
+	    }
+	    var line = turf.lineString(tmp);
+	    newPts = getPoints(turf.bezierSpline(line));
+	} else  {
+	    newPts = pts;
+	    this.attrs.originalPoints=null;
+	}
+	console.log(newPts);
+	this.addLine(newPts);
     },
+
+    addLine: function(pts) {
+	let features=[];
+	let stride = 2;
+	if(pts.length>20)
+	    stride=parseInt(pts.length/10);
+	let type = 'OpenLayers.Geometry.LineString';
+	let feature = this.display.makeFeature(this.getMap(),type,this.style,pts);
+	features.push(feature);
+	if(this.attrs.addDots) {
+	    let pointStyle  = Utils.clone({},this.style);
+	    pointStyle.pointRadius=this.style.dotSize??2;
+	    pointStyle.fillColor=this.style.dotColor??this.style.fillColor;
+	    console.log('add dots',pointStyle);
+	    let addPoint= (lat,lon)=>{
+		features.push(this.display.makeFeature(this.getMap(),'OpenLayers.Geometry.Point',pointStyle,
+						       [lat,lon]));
+	    }
+	    addPoint(pts[0],pts[1]);
+	    for(let i=2;i<pts.length-2;i+=stride) {
+		addPoint(pts[i],pts[i+1]);
+	    }
+	    addPoint(pts[pts.length-2],pts[pts.length-1]);
+	}
+	this.addFeatures(features,true,true);
+    },	
 
     clearFeatures: function() {
 	this.display.removeFeatures(this.features);
@@ -1901,10 +1997,19 @@ MapGlyph.prototype = {
 
     applyPropertiesComponent: function() {
 	if(this.isStraightLine()) {
-	    let v = this.jq('usegreatcircle').is(':checked');
-	    if(v!=this.attrs.useGreatCircle) {
-		//This toggles it
-		this.convertToGreatCircle();
+	    let changed = false;
+	    let dots=  this.jq('adddots').is(':checked');
+	    if(dots!=this.attrs.addDots) {
+		this.attrs.addDots= dots;
+		changed=true;
+	    }
+	    let v = this.jq('linetype').val();
+	    if(v!=this.attrs.lineType) {
+		changed=true;
+		this.attrs.lineType = v;
+	    }
+	    if(changed) {
+		this.checkLineType();
 	    }
 	}
 
@@ -3735,7 +3840,7 @@ MapGlyph.prototype = {
 		    let set = (which,v) =>{
 			v =  Math.max(0,(parseInt(v)))+'px';
 			pos[which] =v;
-			div.css(pos,v);
+//			div.css(pos,v);
 		    }
 		    if(top<ph-bottom) set('top',top);
 		    else set('bottom',(ph-bottom));

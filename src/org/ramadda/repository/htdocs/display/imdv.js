@@ -2108,6 +2108,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		strokeColor: {label:'Stroke',strip:'stroke'},
 		fillColor: {label:'Fill',strip:'fill'},
 		fontColor: {label:'Font',strip:'font'},
+		dotSize: {label:'Line Dots',strip:'dot'},
 		labelAlign: {label:'Label',strip:'label'},
 		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
 	    };
@@ -2763,40 +2764,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		console.log("Unknown glyph:" + mapOptions.type);
 		return null;
 	    }
-	    
-	    let feature = this.makeFeature(this.getMap(),jsonObject.geometryType, style, points);
-	    if(feature) {
-		feature.style = style;
-		this.addFeatures([feature]);
-		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
-		mapGlyph.checkImage(feature);
-		//If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
-		if(glyphType.isEntry()) {
-		    let callback = (entry)=>{
-			//the mapglyphs are defined by the type
-			mapGlyph.putTransientProperty("mapglyphs", entry.mapglyphs);
-			if(mapGlyph.getUseEntryName()) 
-			    mapGlyph.setName(entry.getName());
-			if(mapGlyph.getUseEntryLabel())
-			    mapGlyph.style.label= entry.getName();
-			if(mapGlyph.getUseEntryLocation() && entry.hasLocation()) {
-			    let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", mapGlyph.style,
-							   [entry.getLatitude(), entry.getLongitude()]);
-			    feature.style = mapGlyph.style;
-			    mapGlyph.addFeature(feature,true);
-			    this.addFeatures([feature]);
-			}
 
-			mapGlyph.applyEntryGlyphs();
-			mapGlyph.applyMapStyle();
-			this.redraw(mapGlyph);
-			this.makeLegend();
-		    };
-
-		    getRamadda().getEntry(mapOptions.entryId, callback);
-		}
+	    try {
+		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style,true,jsonObject);
 		return mapGlyph;
-	    } 
+	    } catch(err) {
+		console.log("ERROR:" + err);
+	    }
+
 	    console.log("Couldn't make feature:" + mapOptions.type);
 	    return null;
 	},
@@ -3641,6 +3616,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeOpacity:1,
 			   strokeDashstyle:'solid',
 			   strokeLinecap: 'butt',
+			   dotSize:2,
+			   dotColor:'blue'
 			  },
 			  MyPath,
 			  {maxVertices:2,
@@ -3650,7 +3627,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeWidth:this.getStrokeWidth(),
 			   strokeOpacity:1,
 			   strokeDashstyle:'solid',			      
-			   strokeLinecap: 'butt'
+			   strokeLinecap: 'butt',
+			   dotSize:2,
+			   dotColor:'blue'
 			  },
 			  MyPath,
 			  {icon:Ramadda.getUrl("/icons/polyline.png")});
