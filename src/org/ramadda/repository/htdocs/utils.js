@@ -701,7 +701,6 @@ var Utils =  {
     },
     loadScriptInfo:{},
     loadScript:function( url, callback, noCache ) {
-        let script = document.createElement( "script" )
         let key = "js:" + url;
         let info = Utils.loadScriptInfo[key];
         if(!info) {
@@ -713,8 +712,12 @@ var Utils =  {
         }
         if(callback)
             info.callbacks.push(callback);
-        if(info.loading) return false;
+        if(info.loading) {
+	    return false;
+	}
         info.loading = true;
+
+        let script = document.createElement( "script" )
         script.type = "text/javascript";
         if(script.readyState) {  // only required for IE <9
             script.onreadystatechange = function() {
