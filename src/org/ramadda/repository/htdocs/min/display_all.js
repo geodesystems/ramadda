@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb  4 09:26:38 MST 2023";
+var build_date="RAMADDA build date: Mon Feb  6 10:05:47 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40842,10 +40842,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    } else {
 			attrs = imageUrlOrEntryAttrs;
 		    }
-		    let style = Utils.clone({},tmpStyle);
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
 
+		    let style = Utils.clone({},tmpStyle);
 		    if(glyphType.isImage()) {
 			style.strokeColor='#ccc';
 			style.fillColor = 'transparent';
@@ -40854,6 +40854,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    mapOptions.entryId = entryId;
 		    mapOptions.entryType = attrs.entryType;
+		    attrs.name = attrs.entryName;
+		    delete attrs.entryName;
 
 		    if(glyphType.isMap()) {
 			if(resourceId) {
@@ -40864,7 +40866,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(resource.style) $.extend(style,resource.style);
 			}
 
-			mapOptions.name = attrs.entryName;
 			$.extend(mapOptions,attrs);
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.checkMapLayer();
@@ -40874,9 +40875,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    //Hacky, gotta clean up all of this
 		    if(attrs.entryName && !glyphType.isImage()) {
-			attrs.name  = attrs.entryName;				
 			style.label = attrs.entryName;				
-			delete attrs.entryName;
 		    }
 
 		    if(glyphType.isMultiEntry()) {
@@ -40895,6 +40894,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			delete mapOptions['entryName']
 			this.createData(mapOptions);
 			this.clearCommands();
+			return;
+		    }
+
+		    if(glyphType.isImage() && Utils.isDefined(attrs.north) &&
+		       Utils.isDefined(attrs.west) &&
+		       Utils.isDefined(attrs.south) &&
+		       Utils.isDefined(attrs.east)) {
+			style.strokeColor='transparent';
+			let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Polygon', style,
+						       [attrs.north,attrs.west,attrs.north, attrs.east,
+							attrs.south,attrs.east,
+							attrs.south, attrs.west]);
+			attrs.type = GLYPH_IMAGE;
+			style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			let mapGlyph = new  MapGlyph(this, GLYPH_IMAGE,attrs,feature,style);
+			mapGlyph.checkImage(feature);
+			this.addGlyph(mapGlyph);
+			mapGlyph.panMapTo();
 			return;
 		    }
 
@@ -40965,7 +40982,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
-		let entryType = glyphType.isImage()?'type_image':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
+		let entryType = glyphType.isImage()?'type_image,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		this.selector = selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
@@ -41870,8 +41887,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	getFeaturePropertyApply:function() {
 	    return (mapGlyph, props)=>{
-		mapGlyph.applyPropertiesComponent();
-		mapGlyph.applyPropertiesDialog();
 		this.featureChanged();	    
 		let style = {};
 		if(mapGlyph.isData()) {
@@ -41891,8 +41906,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			style[prop] = v;
 		    });
 		}
-
 		if(style.externalGraphic && !style.externalGraphic.startsWith('data:')) mapGlyph.attrs.icon=style.externalGraphic;
+		if(Utils.stringDefined(style.popupText)) {
+		    style.cursor = 'pointer';
+		} else {
+		    style.cursor = 'pointer';
+		}
 
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
@@ -41901,11 +41920,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.addEntries();
 		}
 
-		if(Utils.stringDefined(style.popupText)) {
-		    style.cursor = 'pointer';
-		} else {
-		    style.cursor = 'pointer';
-		}
+		mapGlyph.applyPropertiesComponent(style);
+		mapGlyph.applyPropertiesDialog();
+
+
 		if(mapGlyph.getImage()) {
 		    if(mapGlyph.getImage().imageHook) {
 			mapGlyph.getImage().imageHook();
@@ -41972,56 +41990,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 
 	getFillPatternSelect:function(domId,v) {
-	    let patterns = [
-		'',
-		'circles-1',
-		'circles-2',
-		'circles-3',
-		'circles-4',
-		'circles-5',
-		'circles-6',
-		'circles-7',
-		'circles-8',
-		'circles-9',
-		'diagonal-stripe-1',
-		'diagonal-stripe-2',
-		'diagonal-stripe-3',
-		'diagonal-stripe-4',
-		'diagonal-stripe-5',
-		'diagonal-stripe-6',
-		'dots-1',
-		'dots-2',
-		'dots-3',
-		'dots-4',
-		'dots-5',
-		'dots-6',
-		'dots-7',
-		'dots-8',
-		'dots-9',
-		'horizontal-stripe-1',
-		'horizontal-stripe-2',
-		'horizontal-stripe-3',
-		'horizontal-stripe-4',
-		'horizontal-stripe-5',
-		'horizontal-stripe-6',
-		'horizontal-stripe-7',
-		'horizontal-stripe-8',
-		'horizontal-stripe-9',
-		'vertical-stripe-1',
-		'vertical-stripe-2',
-		'vertical-stripe-3',
-		'vertical-stripe-4',
-		'vertical-stripe-5',
-		'vertical-stripe-6',
-		'vertical-stripe-7',
-		'vertical-stripe-8',
-		'vertical-stripe-9',
-		'crosshatch',
-		'houndstooth',
-		'lightstripe',
-		'smalldot',
-		'verticalstripe',
-		'whitecarbon'];
+	    let patterns = ['',...Object.keys(IMDV_PATTERNS).sort()];
 	    let opts = patterns.map(p=>{
 		if(p=='') return {value:'',label:'None'};
 		return {value:p,label:p};
@@ -42070,6 +42039,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		strokeColor: {label:'Stroke',strip:'stroke'},
 		fillColor: {label:'Fill',strip:'fill'},
 		fontColor: {label:'Font',strip:'font'},
+		dotSize: {label:'Line Dots',strip:'dot'},
 		labelAlign: {label:'Label',strip:'label'},
 		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
 	    };
@@ -42090,6 +42060,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		label =  Utils.makeLabel(label);		
 		if(prop=="pointRadius") label = "Size";
 		let widget;
+		let extra ='';
 		if(prop=="externalGraphic") {
 		    label="Marker"
 		    let options = "";
@@ -42106,6 +42077,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 		} else {
+
 		    let v = values[prop];
 		    if(!Utils.isDefined(v) && prop!="wikiText") {
 			let propFunc = "get" + prop[0].toUpperCase()+prop.substring(1);
@@ -42146,9 +42118,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			widget = HU.select('',['id',domId],['rectangle','circle','ellipse'],v);
 		    } else {
 			if(props == "pointRadius") label="Size";
-			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
+			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity" || prop=='dotSize') size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
+			else if(prop=='transform') {
+			    size="60";
+			    extra = HU.space(2) +HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',['target','_help']);
+			}
 			if(prop.indexOf("Color")>=0) {
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
 			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
@@ -42186,7 +42162,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    } else if(v==="") {
 				v=isRotation?0:1;
 			    }
-			    let min  = prop.indexOf("Offset")>=0?0:0;
+			    let min  = isRotation?-360:(prop.indexOf("Offset")>=0?0:0);
 			    let max = isRotation?360:50;
 			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
 				
@@ -42201,7 +42177,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-		html+=HU.formEntry(label+":",widget);
+		html+=HU.formEntry(label+":",widget+extra);
 		html+='\n';
 	    });
 	    html+="</table>";
@@ -42725,40 +42701,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		console.log("Unknown glyph:" + mapOptions.type);
 		return null;
 	    }
-	    
-	    let feature = this.makeFeature(this.getMap(),jsonObject.geometryType, style, points);
-	    if(feature) {
-		feature.style = style;
-		this.addFeatures([feature]);
-		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, feature,style);
-		mapGlyph.checkImage(feature);
-		//If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
-		if(glyphType.isEntry()) {
-		    let callback = (entry)=>{
-			//the mapglyphs are defined by the type
-			mapGlyph.putTransientProperty("mapglyphs", entry.mapglyphs);
-			if(mapGlyph.getUseEntryName()) 
-			    mapGlyph.setName(entry.getName());
-			if(mapGlyph.getUseEntryLabel())
-			    mapGlyph.style.label= entry.getName();
-			if(mapGlyph.getUseEntryLocation() && entry.hasLocation()) {
-			    let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", mapGlyph.style,
-							   [entry.getLatitude(), entry.getLongitude()]);
-			    feature.style = mapGlyph.style;
-			    mapGlyph.addFeature(feature,true);
-			    this.addFeatures([feature]);
-			}
 
-			mapGlyph.applyEntryGlyphs();
-			mapGlyph.applyMapStyle();
-			this.redraw(mapGlyph);
-			this.makeLegend();
-		    };
-
-		    getRamadda().getEntry(mapOptions.entryId, callback);
-		}
+	    try {
+		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style,true,jsonObject);
 		return mapGlyph;
-	    } 
+	    } catch(err) {
+		this.handleError("Error creating glyph",err);
+		console.log(err);
+	    }
+	    
+
 	    console.log("Couldn't make feature:" + mapOptions.type);
 	    return null;
 	},
@@ -43603,6 +43555,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeOpacity:1,
 			   strokeDashstyle:'solid',
 			   strokeLinecap: 'butt',
+			   dotSize:3,
+			   dotStrokeColor:'blue',
+			   dotStrokeWidth:1,			   
+			   dotFillColor:'blue'			   
 			  },
 			  MyPath,
 			  {maxVertices:2,
@@ -43612,7 +43568,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeWidth:this.getStrokeWidth(),
 			   strokeOpacity:1,
 			   strokeDashstyle:'solid',			      
-			   strokeLinecap: 'butt'
+			   strokeLinecap: 'butt',
+			   dotSize:3,
+			   dotStrokeColor:'blue',
+			   dotStrokeWidth:1,			   
+			   dotFillColor:'blue'			   
 			  },
 			  MyPath,
 			  {icon:Ramadda.getUrl("/icons/polyline.png")});
@@ -43839,6 +43799,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.showMessage(msg,-1);
 	},
 	showMessage:function(msg,clearTime)  {
+	    if(msg!='')
+		msg = HU.div(['class','imdv-message-inner'],msg);
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	    if(this.messageErase) clearTimeout(this.messageErase);
@@ -44341,7 +44303,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
 	    
-	    let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css('display','inline-block','white-space','nowrap','margin-left','10px')],'');
+	    let message = HU.div([ID,this.domId(ID_MESSAGE),'class','imdv-message']);
 	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
 	    if(this.canEdit()) {
 		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
@@ -44611,7 +44573,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		_this.featureChanged();
 	    };
-	    let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+	    let mover =  this.addControl(ID_MOVER,"Click &amp; drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
 		moveFeature: function(pixel) {
 		    let mapGlyph = this.feature.mapGlyph;
 		    if(!mapGlyph) {
@@ -44643,10 +44605,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.theDisplay.clearMessage2(1000);
 		},
 		dragVertex: function(vertex, pixel) {
+		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
 		    this.theDisplay.checkSelected(this.feature.mapGlyph);
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image && this.feature.type!=GLYPH_BOX && !this.feature?.mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
+			if(this.feature.mapGlyph) {
+			    this.feature.mapGlyph.vertexDragged(this.feature,vertex,pixel);
+			}
 			return;
 		    }
 		    let v  = this.feature.geometry.getVertices();
@@ -44972,18 +44938,18 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
 
 var IMDV_PATTERNS = {
     "diagonal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/></svg> "},
-    "diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
     "diagonal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/></svg>"},
-    "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='1'/></svg>"},
-    "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='2'/></svg>"},
-    "diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='3'/></svg>"},
+    "diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
+    "diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='4'/></svg>"},
+    "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/></svg>"},
+    "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/></svg>"},
     "subtle-patch":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' /></svg>"},
-    "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='#eeeeee'/><g id='c'><rect width='3' height='3' fill='#e6e6e6'/><rect y='1' width='3' height='2' fill='#d8d8d8'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
-    "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='#fff'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='#aaa'/></svg> "},
-    "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='#aaa' fill='#aaa' stroke-width='1'/></svg> "},
-    "verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='#fff'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
-    "smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='#fff'/><rect width='1' height='1' fill='#ccc'/></svg>"},
-    "lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='white'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='#888' stroke-width='1'/></svg>"},
+    "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
+    "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/></svg> "},
+    "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/></svg> "},
+    "verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='<%= foreground %>'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
+    "smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><rect width='1' height='1' fill='<%= foreground %>'/></svg>"},
+    "lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='<%= foreground %>' stroke-width='1'/></svg>"},
     "vertical-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' /></svg>"},
     "vertical-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' /></svg>"},
     "vertical-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' /></svg>"},
@@ -45042,7 +45008,7 @@ window.olGetSvgPattern = function(p,stroke,fill) {
 
 
 
-function MapGlyph(display,type,attrs,feature,style) {
+function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
 	console.log("no type");
 	console.trace();
@@ -45066,22 +45032,63 @@ function MapGlyph(display,type,attrs,feature,style) {
 	mapGlyphs = mapGlyphs.replace(/\\n/g,"\n");
 	this.putTransientProperty("mapglyphs", mapGlyphs);
     }
-
-
     this.display = display;
     this.type = type;
     this.features = [];
     this.attrs = attrs;
     this.style = style??{};
     this.id = attrs.id ?? HU.getUniqueId("glyph_");
-    if(feature) this.addFeature(feature);
-
     if(this.isEntry()) {
 	if(!Utils.isDefined(this.attrs.useentryname))
 	    this.attrs.useentryname = true;
 	if(!Utils.isDefined(this.attrs.useentrylabel))
 	    this.attrs.useentrylabel = true;	
     }
+
+
+    if(fromJson) {
+	if(this.isStraightLine()) {
+	    this.checkLineType(json.points);
+	} else {
+	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, this.style,
+					       json.points);
+	}
+    }
+    if(feature) {
+	this.addFeature(feature);
+	feature.style = style;
+	this.display.addFeatures([feature]);
+    }
+    if(fromJson) {
+	if(this.isImage()) {
+	    this.checkImage(feature);
+	}
+
+	//If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
+	if(this.isEntry()) {
+	    let callback = (entry)=>{
+		//the mapglyphs are defined by the type
+		this.putTransientProperty("mapglyphs", entry.mapglyphs);
+		if(this.getUseEntryName()) 
+		    this.setName(entry.getName());
+		if(this.getUseEntryLabel())
+		    this.style.label= entry.getName();
+		if(this.getUseEntryLocation() && entry.hasLocation()) {
+		    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
+						   [entry.getLatitude(), entry.getLongitude()]);
+		    feature.style = this.style;
+		    this.addFeature(feature,true,true);
+		}
+
+		this.applyEntryGlyphs();
+		this.applyMapStyle();
+		this.display.redraw(this);
+		this.display.makeLegend();
+	    };
+	    getRamadda().getEntry(this.attrs.entryId, callback);
+	}
+    }
+
 
     if(this.isRings()) {
 	this.checkRings();
@@ -45214,7 +45221,7 @@ MapGlyph.prototype = {
 	    }
 	    obj.style = style;
 	}
-	this.getPoints(obj);
+	obj.points = this.getPoints(obj);
 	if(this.children) {
 	    let childrenJson=[];
 	    this.children.forEach(child=>{
@@ -45226,6 +45233,7 @@ MapGlyph.prototype = {
     },	
 
     getPoints:function(obj) {
+	if(this.attrs.originalPoints) return this.attrs.originalPoints;
 	let geom = this.getGeometry();
 	if(!geom) return null;
 	obj.geometryType=geom.CLASS_NAME;
@@ -45308,9 +45316,14 @@ MapGlyph.prototype = {
 	}	    
 
 	if(this.isStraightLine()) {
-	    return HU.formEntry('',HU.checkbox(this.domId('usegreatcircle'),[],this.attrs.useGreatCircle,
-					       'Use great circle'));
-
+	    return HU.formEntry('Line type:',
+				HU.select('',['id',this.domId('linetype')],[
+				    {value:'straight',label:'Straight'},
+				    {value:'stepped',label:'Stepped'},
+				    {value:'curve',label:'Curve'},
+				    {value:'greatcircle',label:'Great Circle'}],
+					  this.attrs.lineType)) +
+		HU.formEntry('',HU.checkbox(this.domId('adddots'),['id',this.domId('adddots')],this.attrs.addDots,'Add dots'));
 	}
 
 	return '';
@@ -45788,41 +45801,104 @@ MapGlyph.prototype = {
     getFeatures: function() {
 	return this.features;
     },
-    convertToGreatCircle:function() {
-	if(!MapUtils.loadTurf(()=>{this.convertToGreatCircle();})) {
-	    return;
-	}
-	
-	let obj = {};
-	if(!this.attrs.originalPoints) {
-	    this.attrs.originalPoints = this.getPoints({});
-	    console.log('getting orig ');
-	}
-	let pts = this.attrs.originalPoints;
-	if(!pts || pts.length==0) return;
-	let type = this.getGeometry().CLASS_NAME;
-	let newPts = [];
-	this.attrs.useGreatCircle = !this.attrs.useGreatCircle;
-	if(!this.attrs.useGreatCircle) {
-	    newPts = pts;
-	}  else {
-	    let total=0;
-	    for(let i=0;i<pts.length-2;i+=2) {
-		var start = turf.point([pts[i+1],pts[i+0]]);
-		var end = turf.point([pts[i+3], pts[i+2]]);
-		var options = {units: 'miles'};
-		total+= turf.distance(start, end, options);
-		var greatCircle = turf.greatCircle(start, end);
-		let coords = greatCircle.geometry.coordinates;
-		coords.forEach(pair=>{
-		    newPts.push(pair[1],pair[0]);
-		});
+    checkLineType:function(points) {
+	if(this.attrs.lineType=='greatcircle' || this.attrs.lineType=='curve') {
+	    if(!MapUtils.loadTurf(()=>{
+		this.checkLineType(points);
+	    })) {
+		return;
 	    }
-//	    console.log('d:' + total);
 	}
-	let feature = this.display.makeFeature(this.getMap(),type,this.style,newPts);
-	this.addFeatures([feature],true,true);
+
+	if(!this.attrs.originalPoints) {
+	    this.attrs.originalPoints = points??this.getPoints({});
+	}
+	let pts = points??this.attrs.originalPoints;
+	if(!pts || pts.length==0) return;
+	let newPts = [];
+	let getPoints = f=>{
+	    let p=[];
+	    let coords = f.geometry.coordinates;
+	    coords.forEach(pair=>{
+		p.push(pair[1],pair[0]);
+	    });
+	    return p;
+	};
+	let latlon=(pts,i) =>{
+	    return [pts[i+0], pts[i+1]];
+	}
+	isDraggable = true;
+	if(this.attrs.lineType=='stepped') {
+	    isDraggable = false;
+	    let mid = (v1,v2)=>{
+		return v1+(v2-v1)/2;
+	    };
+	    for(let i=0;i<pts.length-2;i+=2) {
+		let [lat1,lon1] = latlon(pts,i);
+		let [lat2,lon2] = latlon(pts,i+2);				
+		newPts.push(lat1,lon1);
+		newPts.push(lat1,mid(lon1,lon2));
+		newPts.push(lat2,mid(lon1,lon2));		
+		newPts.push(lat2,lon2);
+	    }
+	} else if(this.attrs.lineType=='greatcircle') {
+	    isDraggable = false;
+	    let options = {units: 'miles'};
+	    for(let i=0;i<pts.length-2;i+=2) {
+		let [lat1,lon1] = latlon(pts,i);
+		let [lat2,lon2] = latlon(pts,i+2);				
+		let start = turf.point([lon1,lat1]);
+		let end = turf.point([lon2,lat2]);
+		newPts.push(...getPoints(turf.greatCircle(start, end)));
+	    }
+	} else if(this.attrs.lineType=='curve') {
+	    isDraggable = false;
+	    let tmp = [];
+	    for(let i=0;i<pts.length;i+=2) {
+		tmp.push([pts[i+1],pts[i]]);
+	    }
+	    var line = turf.lineString(tmp);
+	    newPts = getPoints(turf.bezierSpline(line));
+	} else  {
+	    newPts = pts;
+	    this.attrs.originalPoints=null;
+	}
+	this.addLine(newPts, isDraggable);
     },
+
+    addLine: function(pts,isDraggable) {
+	let features=[];
+	let stride = 2;
+	if(pts.length>20)
+	    stride=parseInt(pts.length/10);
+	let type = 'OpenLayers.Geometry.LineString';
+	let feature = this.display.makeFeature(this.getMap(),type,this.style,pts);
+	feature.isDraggable =isDraggable;
+	features.push(feature);
+	if(this.attrs.addDots) {
+	    let dotStyle  = {
+		strokeWidth:Utils.isDefined(this.style.dotStrokeWidth)?
+		    this.style.dotStrokeWidth:1,
+		pointRadius:this.style.dotSize??3,
+		strokeColor: this.style.dotStrokeColor||this.style.strokeColor,
+		fillColor: this.style.dotFillColor||this.style.strokeColor,		
+	    }
+	    let addPoint= (lat,lon)=>{
+		let feature = this.display.makeFeature(this.getMap(),'OpenLayers.Geometry.Point',dotStyle,
+						       [lat,lon]);
+		features.push(feature);
+		feature.fixedStyle = true;
+		feature.style=dotStyle;
+		feature.isDraggable = false;
+	    }
+	    addPoint(pts[0],pts[1]);
+	    for(let i=2;i<pts.length-2;i+=stride) {
+		addPoint(pts[i],pts[i+1]);
+	    }
+	    addPoint(pts[pts.length-2],pts[pts.length-1]);
+	}
+	this.addFeatures(features,true,true);
+    },	
 
     clearFeatures: function() {
 	this.display.removeFeatures(this.features);
@@ -45840,8 +45916,8 @@ MapGlyph.prototype = {
 	}
     },
 
-    addFeature: function(feature,andClear) {
-	this.addFeatures([feature],andClear);
+    addFeature: function(feature,andClear,addToDisplay) {
+	this.addFeatures([feature],andClear,addToDisplay);
     },
     getStyle: function() {
 	return this.style;
@@ -46374,7 +46450,7 @@ MapGlyph.prototype = {
 	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
 	    body+='Rotation:';
 	    body += HU.center(
-		HU.div(['title','Set image rotation','slider-min',0,'slider-max',360,'slider-value',this.style.rotation??0,
+		HU.div(['title','Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
 			ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 	}
 
@@ -46641,7 +46717,7 @@ MapGlyph.prototype = {
 	    }});
 
 	this.jq('image_rotation_slider').slider({
-	    min: 0,
+	    min: -360,
 	    max: 360,
 	    step:1,
 	    value:this.jq('image_rotation_slider').attr('slider-value'),
@@ -46943,12 +47019,26 @@ MapGlyph.prototype = {
 	return true;
     },
 
-    applyPropertiesComponent: function() {
+    applyPropertiesComponent: function(newStyle) {
+	let oldStyle = this.style;
+	this.style=newStyle;
 	if(this.isStraightLine()) {
-	    let v = this.jq('usegreatcircle').is(':checked');
-	    if(v!=this.attrs.useGreatCircle) {
-		//This toggles it
-		this.convertToGreatCircle();
+	    let changed = false;
+	    let dots=  this.jq('adddots').is(':checked');
+	    if(dots!=this.attrs.addDots) {
+		this.attrs.addDots= dots;
+		changed=true;
+	    }
+	    Object.keys(newStyle).forEach(key=>{
+		if(key.indexOf('dot')>=0 && oldStyle[key]!=newStyle[key]) changed=true;
+	    });
+	    let v = this.jq('linetype').val();
+	    if(v!=this.attrs.lineType) {
+		changed=true;
+		this.attrs.lineType = v;
+	    }
+	    if(changed) {
+		this.checkLineType();
 	    }
 	}
 
@@ -48367,7 +48457,6 @@ MapGlyph.prototype = {
     },
     applyStyle:function(style) {
 	this.style = style;
-
 	this.applyMapStyle();
 	if(this.getMapServerLayer()) {
 	    if(Utils.isDefined(style.opacity)) {
@@ -48380,7 +48469,7 @@ MapGlyph.prototype = {
 
 
 	this.features.forEach(feature=>{
-	    if(feature.style) {
+	    if(feature.style && !feature.fixedStyle) {
 		$.extend(feature.style,style);
 	    }
 	});	    
@@ -48393,7 +48482,22 @@ MapGlyph.prototype = {
 
 	this.display.featureChanged(true);
     },
+    
+    vertexDragged:function(feature,vertex,pixel) {
+    },
     move:function(dx,dy) {
+	let pts = this.attrs.originalPoints;
+	if(pts) {
+	    //Run through the points, txfm to proj, move, txfm to latlon
+	    for(let i=0;i<pts.length;i+=2) {
+		let pt = MapUtils.createPoint(pts[i+1], pts[i]);
+		pt = this.getMap().transformLLPoint(pt);
+		pt.x+=dx; pt.y+=dy;
+		pt = this.getMap().transformProjPoint(pt);
+		pts[i] = pt.y;
+		pts[i+1] = pt.x;
+	    }
+	}
 	if(this.getUseEntryLocation()) {
 	    this.setUseEntryLocation(false);
 	}
@@ -48427,26 +48531,32 @@ MapGlyph.prototype = {
     getMap:function() {
 	return this.display.getMap();
     },
-    checkImage:function(feature) {
+    checkImage:function(feature,bounds) {
 	if(this.image) {
 	    if(Utils.isDefined(this.image.opacity)) {
 		this.style.imageOpacity=this.image.opacity;
 	    }
 	}
-	if(!this.style.imageUrl) return;
-	let geometry = this.getGeometry() || feature?.geometry;
-	if(!geometry) {
-	    console.log("no image geometry");
+	if(!this.style.imageUrl) {
+	    console.log('no image url');
 	    return;
 	}
-	this.display.clearBounds(geometry);
-	let b = geometry.getBounds();
+	if(!bounds) {
+	    let geometry = this.getGeometry() || feature?.geometry;
+	    if(!geometry) {
+		console.log("no image geometry");
+		return;
+	    }
+	    this.display.clearBounds(geometry);
+	    bounds = geometry.getBounds();
+	    bounds = this.getMap().transformProjBounds(bounds);
+	}
 	if(this.image) {
-	    this.image.extent = b;
-	    this.image.moveTo(b,true,true);
+	    bounds = this.getMap().transformLLBounds(bounds);
+	    this.image.extent = bounds;
+	    this.image.moveTo(bounds,true,true);
 	} else {
-	    b = this.getMap().transformProjBounds(b);
-	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
+	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  bounds.top,bounds.left,bounds.bottom,bounds.right);
 	    this.initImageLayer(this.image);
 	    this.image.imageHook();
 	    if(Utils.isDefined(this.style.imageOpacity)) {
@@ -48460,7 +48570,7 @@ MapGlyph.prototype = {
 	    let transform='';
 	    if(Utils.stringDefined(this.style.transform)) 
 		transform = this.style.transform;
-	    if(this.style.rotation>0)
+	    if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
 		transform += ' rotate(' + this.style.rotation +'deg)';
 	    if(!Utils.stringDefined(transform))  transform=null;
 	    var childNodes = this.image.div.childNodes;
@@ -48750,21 +48860,60 @@ MapGlyph.prototype = {
 		toggleLabel=match[1];
 		text = text.replace(regexp,"").trim();
 	    }
-	} else {
-	    text = this.convertText(text);
-	}
+	} 
 
+	let initFixed = () =>{
+	    let _this=this;
+	    let height  = jqid(id).height();
+	    jqid(id).draggable({
+		containment:this.display.domId(ID_MAP),
+		start: function (event, ui) {
+                    $(this).css({
+			height:(height+10)+'px',
+                        right: "auto",
+                        top: "auto"
+                    });
+		},
+		stop:function() {
+		    let div= $(this);
+		    let top = div.position().top;
+		    let left = div.position().left;		    
+		    let bottom = top+div.height();
+		    let right = left+div.width();		    
+		    let pw = div.parent().width();
+		    let ph = div.parent().height();		    
+		    let pos =  _this.style;
+		    ['top','bottom','left','right'].forEach(p=>{
+			pos[p]='';
+		    });
+		    let set = (which,v) =>{
+			v =  Math.max(0,(parseInt(v)))+'px';
+			pos[which] =v;
+//			div.css(pos,v);
+		    }
+		    if(top<ph-bottom) set('top',top);
+		    else set('bottom',(ph-bottom));
+		    if(left<pw-right) set('left',left);
+		    else set('right',pw-right);
+		},
+		revert: false
+	    });
+	}
 	if(text.startsWith("<wiki>")) {
 	    this.display.wikify(text,null,wiki=>{
 		if(toggleLabel)
 		    wiki = HU.toggleBlock(toggleLabel+SPACE2, wiki,false);
 		wiki = HU.div(['style','max-height:300px;overflow-y:auto;'],wiki);
-		jqid(id).html(wiki)});
+		jqid(id).html(wiki);
+		initFixed();
+	    });
 	} else {
+	    text = this.convertText(text);
 	    text = text.replace(/\n/g,"<br>");
 	    if(toggleLabel)
 		text = HU.toggleBlock(toggleLabel+SPACE2, text,false);
 	    jqid(id).html(text);
+	    initFixed();
 	}
     },
 
