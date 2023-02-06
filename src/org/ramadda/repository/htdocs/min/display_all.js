@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb  6 10:05:47 MST 2023";
+var build_date="RAMADDA build date: Mon Feb  6 11:24:59 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40991,9 +40991,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let input =  HU.textarea('',this.lastText??'',[ID,this.domId('labeltext'),'rows',3,'cols', 40]);
 		let html =  HU.formTable();
 		html += HU.formEntryTop('Label:',input);
+		let prop = 'externalGraphic';
 		let icon = this.lastIcon || tmpStyle.externalGraphic;
-		let icons = HU.image(icon,['id',this.domId('externalGraphic_image')]) +
-		    HU.hidden('',icon,['id',this.domId('externalGraphic')]);
+		let icons = HU.image(icon,['id',this.domId(prop+'_image')]) +
+		    HU.hidden('',icon,['id',this.domId(prop)]);
 		if(!Utils.isDefined(this.lastIncludeIcon)) this.lastIncludeIcon = true;
 		html += HU.formEntry('',HU.checkbox(this.domId('includeicon'),[],this.lastIncludeIcon,'Include Icon')+' ' + icons);
 		html+='</table>';
@@ -41002,7 +41003,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		html+=HU.b('Select Icon');
 		html+=HU.div(['id',this.domId('recenticons')]);
-		html+=HU.div(['id',this.domId('icons')]);
+		html+=HU.div(['id',this.domId('icons'),'icon-property',prop]);
 		html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
 		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
@@ -41894,7 +41895,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		} else if(props) {
 		    props.forEach(prop=>{
 			let id = 'glyphedit_' + prop;
-			if(prop=='externalGraphic') id ='externalGraphic';
+			if(prop.toLowerCase().indexOf('externalgraphic')>=0) 
+			    id =prop;
 			if(prop=='labelSelect') return;
 			let v = this.jq(id).val();
 			if(prop=='label') {
@@ -42061,17 +42063,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(prop=="pointRadius") label = "Size";
 		let widget;
 		let extra ='';
-		if(prop=="externalGraphic") {
+		if(prop=="externalGraphic" || prop.indexOf('ExternalGraphic')>=0) {
 		    label="Marker"
 		    let options = "";
 		    let graphic = values[prop];
 		    if(!Utils.isDefined(graphic))
 			graphic = this.getExternalGraphic();
-		    widget = HU.hidden("",graphic,['id',this.domId('externalGraphic')]) +
+		    let div = HU.div(['class','imdv-icons',
+				'style','margin-left:5px;display:inline-block;',
+				'icon-property',prop,
+				      'id',this.domId(prop+"_icons")],'Loading...');
+		    widget = HU.hidden("",graphic,['id',this.domId(prop)]) +
 			'<table><tr valign=top><td width=1%>' +
-			HU.image(graphic,['width','24px','id',this.domId('externalGraphic_image')]) +
+			HU.image(graphic,['width','24px','id',this.domId(prop+'_image')]) +
 			'</td><td>' +
-			HU.div(['style','margin-left:5px;display:inline-block;','id',this.domId("externalGraphic_icons")],'Loading...') +
+			div +
 			"</td></tr></table>";
 		    
 
@@ -42309,7 +42315,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.initPropertiesComponent(dialog);
 		this.initGlyphButtons(dialog);
 	    }
-	    let icons =dialog.find("#" + this.domId("externalGraphic_icons"));
+	    let icons =dialog.find('.imdv-icons');
 	    if(icons.length>0) {
 		this.addIconSelection(icons);
 	    }
@@ -42408,6 +42414,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	addIconSelection:function(icons, callback) {
 	    let _this = this;
 	    let used = this.getUsedMarkers();
+	    let prop = icons.attr('icon-property');
 	    if(used.length>0) {
 		let html = HU.b("Recent: ");
 		used.forEach(icon=>{
@@ -42417,8 +42424,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq('recenticons').html(html);
 		this.jq('recenticons').find('.ramadda-icons-recent').click(function(){
 		    let icon = $(this).attr('icon');
-		    _this.jq("externalGraphic_image").attr('src',icon);
-		    _this.jq("externalGraphic").val(icon);			
+		    _this.jq(prop+"_image").attr('src',icon);
+		    _this.jq(prop).val(icon);			
 		    if(callback) callback(icon);
 		});
 	    }
@@ -42437,15 +42444,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		html+="</div>";
 		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		html = HU.input("","",['id',this.domId('externalGraphic_search'),'placeholder','Search','size','30']) +"<br>"+
+		html = HU.input("","",['id',this.domId(prop+'_search'),'placeholder','Search','size','30']) +"<br>"+
 		    html;
 		icons.html(html);
 		let _this = this;
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
 		    let src = $(this).attr('src');
-		    _this.jq("externalGraphic_image").attr('src',src);
-		    _this.jq("externalGraphic").val(src);			
+		    _this.jq(prop+"_image").attr('src',src);
+		    _this.jq(prop).val(src);			
 		    if(callback) callback(src);
 		});
 		let cats = icons.find('.ramadda-imdv-image-category');
@@ -42484,7 +42491,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 
 		};
-		jqid(this.domId('externalGraphic_search')).keyup(function() {
+		jqid(this.domId(prop+'_search')).keyup(function() {
 		    search($(this).val());
 		});
 	    });
@@ -43558,7 +43565,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   dotSize:3,
 			   dotStrokeColor:'blue',
 			   dotStrokeWidth:1,			   
-			   dotFillColor:'blue'			   
+			   dotFillColor:'blue',
+			   dotExternalGraphic:''			   
 			  },
 			  MyPath,
 			  {maxVertices:2,
@@ -43572,7 +43580,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   dotSize:3,
 			   dotStrokeColor:'blue',
 			   dotStrokeWidth:1,			   
-			   dotFillColor:'blue'			   
+			   dotFillColor:'blue',
+			   dotExternalGraphic:''
 			  },
 			  MyPath,
 			  {icon:Ramadda.getUrl("/icons/polyline.png")});
@@ -45008,14 +45017,22 @@ window.olGetSvgPattern = function(p,stroke,fill) {
 
 
 
+var LINETYPE_STRAIGHT='straight';
+var LINETYPE_GREATCIRCLE='greatcircle';
+var LINETYPE_CURVE='curve';
+var LINETYPE_STEPPED='stepped';        
+var ID_ADDDOTS = 'adddots';
+var ID_LINETYPE = 'linetype';
+
+
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
+
     if(!type) {
-	console.log("no type");
+	console.log("no type given for MapGlyph");
 	console.trace();
 	return
     }
-    if(!style)
-	console.trace();
+    style = style??{};
     if(style.mapOptions) {
 	delete style.mapOptions;
     }
@@ -45036,7 +45053,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     this.type = type;
     this.features = [];
     this.attrs = attrs;
-    this.style = style??{};
+    this.style = style;
     this.id = attrs.id ?? HU.getUniqueId("glyph_");
     if(this.isEntry()) {
 	if(!Utils.isDefined(this.attrs.useentryname))
@@ -45190,11 +45207,21 @@ MapGlyph.prototype = {
 	return this.transientProperties[name];
     },    
     clone: function() {
-	let style = $.extend({},this.style);
-	let attrs = $.extend({},this.attrs);
+	let style = Utils.clone(this.style);
+	let attrs = Utils.clone(this.attrs);
 	let cloned =  new MapGlyph(this.display, this.type,attrs,null,style);
+	//give it a new ID
+	cloned.id = HU.getUniqueId("glyph_");
+	//clone the features and their styles
 	let features = this.features.map(f=>{
 	    f = f.clone();
+	    if(f.style) {
+		if(f.style.fixed) {
+		    f.style = Utils.clone(f.style);
+		} else {
+		    f.style = style;
+		}
+	    }
 	    f.layer=this.display.myLayer;
 	    f.mapGlyph = cloned;
 	    return f;
@@ -45317,13 +45344,13 @@ MapGlyph.prototype = {
 
 	if(this.isStraightLine()) {
 	    return HU.formEntry('Line type:',
-				HU.select('',['id',this.domId('linetype')],[
-				    {value:'straight',label:'Straight'},
-				    {value:'stepped',label:'Stepped'},
-				    {value:'curve',label:'Curve'},
-				    {value:'greatcircle',label:'Great Circle'}],
+				HU.select('',['id',this.domId(ID_LINETYPE)],[
+				    {value:LINETYPE_STRAIGHT,label:'Straight'},
+				    {value:LINETYPE_STEPPED,label:'Stepped'},
+				    {value:LINETYPE_CURVE,label:'Curve'},
+				    {value:LINETYPE_GREATCIRCLE,label:'Great Circle'}],
 					  this.attrs.lineType)) +
-		HU.formEntry('',HU.checkbox(this.domId('adddots'),['id',this.domId('adddots')],this.attrs.addDots,'Add dots'));
+		HU.formEntry('',HU.checkbox(this.domId(ID_ADDDOTS),['id',this.domId(ID_ADDDOTS)],this.attrs.addDots,'Add dots'));
 	}
 
 	return '';
@@ -45802,7 +45829,7 @@ MapGlyph.prototype = {
 	return this.features;
     },
     checkLineType:function(points) {
-	if(this.attrs.lineType=='greatcircle' || this.attrs.lineType=='curve') {
+	if(this.attrs.lineType==LINETYPE_GREATCIRCLE || this.attrs.lineType==LINETYPE_CURVE) {
 	    if(!MapUtils.loadTurf(()=>{
 		this.checkLineType(points);
 	    })) {
@@ -45828,7 +45855,7 @@ MapGlyph.prototype = {
 	    return [pts[i+0], pts[i+1]];
 	}
 	isDraggable = true;
-	if(this.attrs.lineType=='stepped') {
+	if(this.attrs.lineType==LINETYPE_STEPPED) {
 	    isDraggable = false;
 	    let mid = (v1,v2)=>{
 		return v1+(v2-v1)/2;
@@ -45841,7 +45868,7 @@ MapGlyph.prototype = {
 		newPts.push(lat2,mid(lon1,lon2));		
 		newPts.push(lat2,lon2);
 	    }
-	} else if(this.attrs.lineType=='greatcircle') {
+	} else if(this.attrs.lineType==LINETYPE_GREATCIRCLE) {
 	    isDraggable = false;
 	    let options = {units: 'miles'};
 	    for(let i=0;i<pts.length-2;i+=2) {
@@ -45851,7 +45878,7 @@ MapGlyph.prototype = {
 		let end = turf.point([lon2,lat2]);
 		newPts.push(...getPoints(turf.greatCircle(start, end)));
 	    }
-	} else if(this.attrs.lineType=='curve') {
+	} else if(this.attrs.lineType==LINETYPE_CURVE) {
 	    isDraggable = false;
 	    let tmp = [];
 	    for(let i=0;i<pts.length;i+=2) {
@@ -45882,6 +45909,9 @@ MapGlyph.prototype = {
 		pointRadius:this.style.dotSize??3,
 		strokeColor: this.style.dotStrokeColor||this.style.strokeColor,
 		fillColor: this.style.dotFillColor||this.style.strokeColor,		
+	    }
+	    if(Utils.stringDefined(this.style.dotExternalGraphic)) {
+		dotStyle.externalGraphic = this.style.dotExternalGraphic;
 	    }
 	    let addPoint= (lat,lon)=>{
 		let feature = this.display.makeFeature(this.getMap(),'OpenLayers.Geometry.Point',dotStyle,
@@ -47024,7 +47054,7 @@ MapGlyph.prototype = {
 	this.style=newStyle;
 	if(this.isStraightLine()) {
 	    let changed = false;
-	    let dots=  this.jq('adddots').is(':checked');
+	    let dots=  this.jq(ID_ADDDOTS).is(':checked');
 	    if(dots!=this.attrs.addDots) {
 		this.attrs.addDots= dots;
 		changed=true;
@@ -47032,7 +47062,7 @@ MapGlyph.prototype = {
 	    Object.keys(newStyle).forEach(key=>{
 		if(key.indexOf('dot')>=0 && oldStyle[key]!=newStyle[key]) changed=true;
 	    });
-	    let v = this.jq('linetype').val();
+	    let v = this.jq(ID_LINETYPE).val();
 	    if(v!=this.attrs.lineType) {
 		changed=true;
 		this.attrs.lineType = v;
