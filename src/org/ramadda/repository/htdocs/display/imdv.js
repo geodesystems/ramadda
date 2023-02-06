@@ -1029,9 +1029,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let input =  HU.textarea('',this.lastText??'',[ID,this.domId('labeltext'),'rows',3,'cols', 40]);
 		let html =  HU.formTable();
 		html += HU.formEntryTop('Label:',input);
+		let prop = 'externalGraphic';
 		let icon = this.lastIcon || tmpStyle.externalGraphic;
-		let icons = HU.image(icon,['id',this.domId('externalGraphic_image')]) +
-		    HU.hidden('',icon,['id',this.domId('externalGraphic')]);
+		let icons = HU.image(icon,['id',this.domId(prop+'_image')]) +
+		    HU.hidden('',icon,['id',this.domId(prop)]);
 		if(!Utils.isDefined(this.lastIncludeIcon)) this.lastIncludeIcon = true;
 		html += HU.formEntry('',HU.checkbox(this.domId('includeicon'),[],this.lastIncludeIcon,'Include Icon')+' ' + icons);
 		html+='</table>';
@@ -1040,7 +1041,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		
 		html+=HU.b('Select Icon');
 		html+=HU.div(['id',this.domId('recenticons')]);
-		html+=HU.div(['id',this.domId('icons')]);
+		html+=HU.div(['id',this.domId('icons'),'icon-property',prop]);
 		html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
 		let dialog =  HU.makeDialog({content:html,title:'Marker',header:true,my:'left top',at:'left bottom',draggable:true,anchor:this.jq(ID_MENU_NEW)});
 
@@ -1932,7 +1933,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		} else if(props) {
 		    props.forEach(prop=>{
 			let id = 'glyphedit_' + prop;
-			if(prop=='externalGraphic') id ='externalGraphic';
+			if(prop.toLowerCase().indexOf('externalgraphic')>=0) 
+			    id =prop;
 			if(prop=='labelSelect') return;
 			let v = this.jq(id).val();
 			if(prop=='label') {
@@ -2099,17 +2101,21 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(prop=="pointRadius") label = "Size";
 		let widget;
 		let extra ='';
-		if(prop=="externalGraphic") {
+		if(prop=="externalGraphic" || prop.indexOf('ExternalGraphic')>=0) {
 		    label="Marker"
 		    let options = "";
 		    let graphic = values[prop];
 		    if(!Utils.isDefined(graphic))
 			graphic = this.getExternalGraphic();
-		    widget = HU.hidden("",graphic,['id',this.domId('externalGraphic')]) +
+		    let div = HU.div(['class','imdv-icons',
+				'style','margin-left:5px;display:inline-block;',
+				'icon-property',prop,
+				      'id',this.domId(prop+"_icons")],'Loading...');
+		    widget = HU.hidden("",graphic,['id',this.domId(prop)]) +
 			'<table><tr valign=top><td width=1%>' +
-			HU.image(graphic,['width','24px','id',this.domId('externalGraphic_image')]) +
+			HU.image(graphic,['width','24px','id',this.domId(prop+'_image')]) +
 			'</td><td>' +
-			HU.div(['style','margin-left:5px;display:inline-block;','id',this.domId("externalGraphic_icons")],'Loading...') +
+			div +
 			"</td></tr></table>";
 		    
 
@@ -2347,7 +2353,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.initPropertiesComponent(dialog);
 		this.initGlyphButtons(dialog);
 	    }
-	    let icons =dialog.find("#" + this.domId("externalGraphic_icons"));
+	    let icons =dialog.find('.imdv-icons');
 	    if(icons.length>0) {
 		this.addIconSelection(icons);
 	    }
@@ -2446,6 +2452,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	addIconSelection:function(icons, callback) {
 	    let _this = this;
 	    let used = this.getUsedMarkers();
+	    let prop = icons.attr('icon-property');
 	    if(used.length>0) {
 		let html = HU.b("Recent: ");
 		used.forEach(icon=>{
@@ -2455,8 +2462,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.jq('recenticons').html(html);
 		this.jq('recenticons').find('.ramadda-icons-recent').click(function(){
 		    let icon = $(this).attr('icon');
-		    _this.jq("externalGraphic_image").attr('src',icon);
-		    _this.jq("externalGraphic").val(icon);			
+		    _this.jq(prop+"_image").attr('src',icon);
+		    _this.jq(prop).val(icon);			
 		    if(callback) callback(icon);
 		});
 	    }
@@ -2475,15 +2482,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		html+="</div>";
 		html = HU.div(['style',HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
-		html = HU.input("","",['id',this.domId('externalGraphic_search'),'placeholder','Search','size','30']) +"<br>"+
+		html = HU.input("","",['id',this.domId(prop+'_search'),'placeholder','Search','size','30']) +"<br>"+
 		    html;
 		icons.html(html);
 		let _this = this;
 		let images = icons.find('.ramadda-imdv-image');
 		images.click(function() {
 		    let src = $(this).attr('src');
-		    _this.jq("externalGraphic_image").attr('src',src);
-		    _this.jq("externalGraphic").val(src);			
+		    _this.jq(prop+"_image").attr('src',src);
+		    _this.jq(prop).val(src);			
 		    if(callback) callback(src);
 		});
 		let cats = icons.find('.ramadda-imdv-image-category');
@@ -2522,7 +2529,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    });
 
 		};
-		jqid(this.domId('externalGraphic_search')).keyup(function() {
+		jqid(this.domId(prop+'_search')).keyup(function() {
 		    search($(this).val());
 		});
 	    });
@@ -3596,7 +3603,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   dotSize:3,
 			   dotStrokeColor:'blue',
 			   dotStrokeWidth:1,			   
-			   dotFillColor:'blue'			   
+			   dotFillColor:'blue',
+			   dotExternalGraphic:''			   
 			  },
 			  MyPath,
 			  {maxVertices:2,
@@ -3610,7 +3618,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   dotSize:3,
 			   dotStrokeColor:'blue',
 			   dotStrokeWidth:1,			   
-			   dotFillColor:'blue'			   
+			   dotFillColor:'blue',
+			   dotExternalGraphic:''
 			  },
 			  MyPath,
 			  {icon:Ramadda.getUrl("/icons/polyline.png")});
