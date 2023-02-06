@@ -3018,6 +3018,18 @@ table.dataTable tfoot td {
 
 
 
+.imdv-message-inner {
+    display:inline-block;
+    white-space:nowrap;
+    margin-left:10px;
+    margin-bottom:2px;
+    background:var(--color-mellow-yellow);
+    padding:2px;
+    padding-left:6px;
+    padding-right:6px;    
+    border: var(--basic-border);
+}
+
 .ramadda-imdv-fixed {
     border-radius: 4px;
     position: absolute;

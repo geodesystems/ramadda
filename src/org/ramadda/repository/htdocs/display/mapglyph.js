@@ -30,56 +30,57 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     this.attrs = attrs;
     this.style = style??{};
     this.id = attrs.id ?? HU.getUniqueId("glyph_");
-
-
-    if(fromJson) {
-	let feature;
-	if(this.isStraightLine()) {
-	    this.checkLineType(json.points);
-	} else {
-	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, this.style,
-					       json.points);
-	}
-	if(feature) {
-	    this.addFeature(feature);
-	    feature.style = style;
-	    this.display.addFeatures([feature]);
-	    this.checkImage(feature);
-	    //If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
-	    let glyphType = this.display.getGlyphType(this.type);
-	    if(glyphType.isEntry()) {
-		let callback = (entry)=>{
-		    //the mapglyphs are defined by the type
-		    this.putTransientProperty("mapglyphs", entry.mapglyphs);
-		    if(this.getUseEntryName()) 
-			this.setName(entry.getName());
-		    if(this.getUseEntryLabel())
-			this.style.label= entry.getName();
-		    if(this.getUseEntryLocation() && entry.hasLocation()) {
-			let feature = this.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
-						       [entry.getLatitude(), entry.getLongitude()]);
-			feature.style = this.style;
-			this.addFeature(feature,true);
-			this.addFeatures([feature]);
-		    }
-
-		    this.applyEntryGlyphs();
-		    this.applyMapStyle();
-		    this.display.redraw(this);
-		    this.display.makeLegend();
-		};
-		getRamadda().getEntry(mapOptions.entryId, callback);
-	    }
-	}
-    }
-
-
     if(this.isEntry()) {
 	if(!Utils.isDefined(this.attrs.useentryname))
 	    this.attrs.useentryname = true;
 	if(!Utils.isDefined(this.attrs.useentrylabel))
 	    this.attrs.useentrylabel = true;	
     }
+
+
+    if(fromJson) {
+	if(this.isStraightLine()) {
+	    this.checkLineType(json.points);
+	} else {
+	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, this.style,
+					       json.points);
+	}
+    }
+    if(feature) {
+	this.addFeature(feature);
+	feature.style = style;
+	this.display.addFeatures([feature]);
+    }
+    if(fromJson) {
+	if(this.isImage()) {
+	    this.checkImage(feature);
+	}
+
+	//If its an entry then fetch the entry info from the repository and use the updated lat/lon and name
+	if(this.isEntry()) {
+	    let callback = (entry)=>{
+		//the mapglyphs are defined by the type
+		this.putTransientProperty("mapglyphs", entry.mapglyphs);
+		if(this.getUseEntryName()) 
+		    this.setName(entry.getName());
+		if(this.getUseEntryLabel())
+		    this.style.label= entry.getName();
+		if(this.getUseEntryLocation() && entry.hasLocation()) {
+		    let feature = this.display.makeFeature(this.getMap(),"OpenLayers.Geometry.Point", this.style,
+						   [entry.getLatitude(), entry.getLongitude()]);
+		    feature.style = this.style;
+		    this.addFeature(feature,true,true);
+		}
+
+		this.applyEntryGlyphs();
+		this.applyMapStyle();
+		this.display.redraw(this);
+		this.display.makeLegend();
+	    };
+	    getRamadda().getEntry(this.attrs.entryId, callback);
+	}
+    }
+
 
     if(this.isRings()) {
 	this.checkRings();
@@ -212,7 +213,7 @@ MapGlyph.prototype = {
 	    }
 	    obj.style = style;
 	}
-	this.getPoints(obj);
+	obj.points = this.getPoints(obj);
 	if(this.children) {
 	    let childrenJson=[];
 	    this.children.forEach(child=>{
@@ -224,6 +225,7 @@ MapGlyph.prototype = {
     },	
 
     getPoints:function(obj) {
+	if(this.attrs.originalPoints) return this.attrs.originalPoints;
 	let geom = this.getGeometry();
 	if(!geom) return null;
 	obj.geometryType=geom.CLASS_NAME;
@@ -793,10 +795,13 @@ MapGlyph.prototype = {
     },
     checkLineType:function(points) {
 	if(this.attrs.lineType=='greatcircle' || this.attrs.lineType=='curve') {
-	    if(!MapUtils.loadTurf(()=>{this.checkLineType(points);})) {
+	    if(!MapUtils.loadTurf(()=>{
+		this.checkLineType(points);
+	    })) {
 		return;
 	    }
 	}
+
 	if(!this.attrs.originalPoints) {
 	    this.attrs.originalPoints = points??this.getPoints({});
 	}
@@ -814,7 +819,9 @@ MapGlyph.prototype = {
 	let latlon=(pts,i) =>{
 	    return [pts[i+0], pts[i+1]];
 	}
+	isDraggable = true;
 	if(this.attrs.lineType=='stepped') {
+	    isDraggable = false;
 	    let mid = (v1,v2)=>{
 		return v1+(v2-v1)/2;
 	    };
@@ -827,6 +834,7 @@ MapGlyph.prototype = {
 		newPts.push(lat2,lon2);
 	    }
 	} else if(this.attrs.lineType=='greatcircle') {
+	    isDraggable = false;
 	    let options = {units: 'miles'};
 	    for(let i=0;i<pts.length-2;i+=2) {
 		let [lat1,lon1] = latlon(pts,i);
@@ -836,6 +844,7 @@ MapGlyph.prototype = {
 		newPts.push(...getPoints(turf.greatCircle(start, end)));
 	    }
 	} else if(this.attrs.lineType=='curve') {
+	    isDraggable = false;
 	    let tmp = [];
 	    for(let i=0;i<pts.length;i+=2) {
 		tmp.push([pts[i+1],pts[i]]);
@@ -846,26 +855,33 @@ MapGlyph.prototype = {
 	    newPts = pts;
 	    this.attrs.originalPoints=null;
 	}
-	console.log(newPts);
-	this.addLine(newPts);
+	this.addLine(newPts, isDraggable);
     },
 
-    addLine: function(pts) {
+    addLine: function(pts,isDraggable) {
 	let features=[];
 	let stride = 2;
 	if(pts.length>20)
 	    stride=parseInt(pts.length/10);
 	let type = 'OpenLayers.Geometry.LineString';
 	let feature = this.display.makeFeature(this.getMap(),type,this.style,pts);
+	feature.isDraggable =isDraggable;
 	features.push(feature);
 	if(this.attrs.addDots) {
-	    let pointStyle  = Utils.clone({},this.style);
-	    pointStyle.pointRadius=this.style.dotSize??2;
-	    pointStyle.fillColor=this.style.dotColor??this.style.fillColor;
-	    console.log('add dots',pointStyle);
+	    let dotStyle  = {
+		strokeWidth:Utils.isDefined(this.style.dotStrokeWidth)?
+		    this.style.dotStrokeWidth:1,
+		pointRadius:this.style.dotSize??3,
+		strokeColor: this.style.dotStrokeColor||this.style.strokeColor,
+		fillColor: this.style.dotFillColor||this.style.strokeColor,		
+	    }
 	    let addPoint= (lat,lon)=>{
-		features.push(this.display.makeFeature(this.getMap(),'OpenLayers.Geometry.Point',pointStyle,
-						       [lat,lon]));
+		let feature = this.display.makeFeature(this.getMap(),'OpenLayers.Geometry.Point',dotStyle,
+						       [lat,lon]);
+		features.push(feature);
+		feature.fixedStyle = true;
+		feature.style=dotStyle;
+		feature.isDraggable = false;
 	    }
 	    addPoint(pts[0],pts[1]);
 	    for(let i=2;i<pts.length-2;i+=stride) {
@@ -892,8 +908,8 @@ MapGlyph.prototype = {
 	}
     },
 
-    addFeature: function(feature,andClear) {
-	this.addFeatures([feature],andClear);
+    addFeature: function(feature,andClear,addToDisplay) {
+	this.addFeatures([feature],andClear,addToDisplay);
     },
     getStyle: function() {
 	return this.style;
@@ -1426,7 +1442,7 @@ MapGlyph.prototype = {
 	if(this.display.canEdit() && (this.image || Utils.stringDefined(this.style.imageUrl))) {
 	    body+='Rotation:';
 	    body += HU.center(
-		HU.div(['title','Set image rotation','slider-min',0,'slider-max',360,'slider-value',this.style.rotation??0,
+		HU.div(['title','Set image rotation','slider-min',-360,'slider-max',360,'slider-value',this.style.rotation??0,
 			ID,this.domId('image_rotation_slider'),'class','ramadda-slider',STYLE,HU.css('display','inline-block','width','90%')],''));
 	}
 
@@ -1693,7 +1709,7 @@ MapGlyph.prototype = {
 	    }});
 
 	this.jq('image_rotation_slider').slider({
-	    min: 0,
+	    min: -360,
 	    max: 360,
 	    step:1,
 	    value:this.jq('image_rotation_slider').attr('slider-value'),
@@ -1995,7 +2011,9 @@ MapGlyph.prototype = {
 	return true;
     },
 
-    applyPropertiesComponent: function() {
+    applyPropertiesComponent: function(newStyle) {
+	let oldStyle = this.style;
+	this.style=newStyle;
 	if(this.isStraightLine()) {
 	    let changed = false;
 	    let dots=  this.jq('adddots').is(':checked');
@@ -2003,6 +2021,9 @@ MapGlyph.prototype = {
 		this.attrs.addDots= dots;
 		changed=true;
 	    }
+	    Object.keys(newStyle).forEach(key=>{
+		if(key.indexOf('dot')>=0 && oldStyle[key]!=newStyle[key]) changed=true;
+	    });
 	    let v = this.jq('linetype').val();
 	    if(v!=this.attrs.lineType) {
 		changed=true;
@@ -3428,7 +3449,6 @@ MapGlyph.prototype = {
     },
     applyStyle:function(style) {
 	this.style = style;
-
 	this.applyMapStyle();
 	if(this.getMapServerLayer()) {
 	    if(Utils.isDefined(style.opacity)) {
@@ -3441,7 +3461,7 @@ MapGlyph.prototype = {
 
 
 	this.features.forEach(feature=>{
-	    if(feature.style) {
+	    if(feature.style && !feature.fixedStyle) {
 		$.extend(feature.style,style);
 	    }
 	});	    
@@ -3454,7 +3474,22 @@ MapGlyph.prototype = {
 
 	this.display.featureChanged(true);
     },
+    
+    vertexDragged:function(feature,vertex,pixel) {
+    },
     move:function(dx,dy) {
+	let pts = this.attrs.originalPoints;
+	if(pts) {
+	    //Run through the points, txfm to proj, move, txfm to latlon
+	    for(let i=0;i<pts.length;i+=2) {
+		let pt = MapUtils.createPoint(pts[i+1], pts[i]);
+		pt = this.getMap().transformLLPoint(pt);
+		pt.x+=dx; pt.y+=dy;
+		pt = this.getMap().transformProjPoint(pt);
+		pts[i] = pt.y;
+		pts[i+1] = pt.x;
+	    }
+	}
 	if(this.getUseEntryLocation()) {
 	    this.setUseEntryLocation(false);
 	}
@@ -3488,26 +3523,32 @@ MapGlyph.prototype = {
     getMap:function() {
 	return this.display.getMap();
     },
-    checkImage:function(feature) {
+    checkImage:function(feature,bounds) {
 	if(this.image) {
 	    if(Utils.isDefined(this.image.opacity)) {
 		this.style.imageOpacity=this.image.opacity;
 	    }
 	}
-	if(!this.style.imageUrl) return;
-	let geometry = this.getGeometry() || feature?.geometry;
-	if(!geometry) {
-	    console.log("no image geometry");
+	if(!this.style.imageUrl) {
+	    console.log('no image url');
 	    return;
 	}
-	this.display.clearBounds(geometry);
-	let b = geometry.getBounds();
+	if(!bounds) {
+	    let geometry = this.getGeometry() || feature?.geometry;
+	    if(!geometry) {
+		console.log("no image geometry");
+		return;
+	    }
+	    this.display.clearBounds(geometry);
+	    bounds = geometry.getBounds();
+	    bounds = this.getMap().transformProjBounds(bounds);
+	}
 	if(this.image) {
-	    this.image.extent = b;
-	    this.image.moveTo(b,true,true);
+	    bounds = this.getMap().transformLLBounds(bounds);
+	    this.image.extent = bounds;
+	    this.image.moveTo(bounds,true,true);
 	} else {
-	    b = this.getMap().transformProjBounds(b);
-	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
+	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  bounds.top,bounds.left,bounds.bottom,bounds.right);
 	    this.initImageLayer(this.image);
 	    this.image.imageHook();
 	    if(Utils.isDefined(this.style.imageOpacity)) {
@@ -3521,7 +3562,7 @@ MapGlyph.prototype = {
 	    let transform='';
 	    if(Utils.stringDefined(this.style.transform)) 
 		transform = this.style.transform;
-	    if(this.style.rotation>0)
+	    if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
 		transform += ' rotate(' + this.style.rotation +'deg)';
 	    if(!Utils.stringDefined(transform))  transform=null;
 	    var childNodes = this.image.div.childNodes;

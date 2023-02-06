@@ -880,10 +880,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    } else {
 			attrs = imageUrlOrEntryAttrs;
 		    }
-		    let style = Utils.clone({},tmpStyle);
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
 
+		    let style = Utils.clone({},tmpStyle);
 		    if(glyphType.isImage()) {
 			style.strokeColor='#ccc';
 			style.fillColor = 'transparent';
@@ -892,6 +892,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    mapOptions.entryId = entryId;
 		    mapOptions.entryType = attrs.entryType;
+		    attrs.name = attrs.entryName;
+		    delete attrs.entryName;
 
 		    if(glyphType.isMap()) {
 			if(resourceId) {
@@ -902,7 +904,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    if(resource.style) $.extend(style,resource.style);
 			}
 
-			mapOptions.name = attrs.entryName;
 			$.extend(mapOptions,attrs);
 			let mapGlyph = this.handleNewFeature(null,style,mapOptions);
 			mapGlyph.checkMapLayer();
@@ -912,9 +913,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 		    //Hacky, gotta clean up all of this
 		    if(attrs.entryName && !glyphType.isImage()) {
-			attrs.name  = attrs.entryName;				
 			style.label = attrs.entryName;				
-			delete attrs.entryName;
 		    }
 
 		    if(glyphType.isMultiEntry()) {
@@ -933,6 +932,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			delete mapOptions['entryName']
 			this.createData(mapOptions);
 			this.clearCommands();
+			return;
+		    }
+
+		    if(glyphType.isImage() && Utils.isDefined(attrs.north) &&
+		       Utils.isDefined(attrs.west) &&
+		       Utils.isDefined(attrs.south) &&
+		       Utils.isDefined(attrs.east)) {
+			style.strokeColor='transparent';
+			let feature = this.makeFeature(this.getMap(),'OpenLayers.Geometry.Polygon', style,
+						       [attrs.north,attrs.west,attrs.north, attrs.east,
+							attrs.south,attrs.east,
+							attrs.south, attrs.west]);
+			attrs.type = GLYPH_IMAGE;
+			style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			let mapGlyph = new  MapGlyph(this, GLYPH_IMAGE,attrs,feature,style);
+			mapGlyph.checkImage(feature);
+			this.addGlyph(mapGlyph);
+			mapGlyph.panMapTo();
 			return;
 		    }
 
@@ -1003,7 +1020,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
-		let entryType = glyphType.isImage()?'type_image':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
+		let entryType = glyphType.isImage()?'type_image,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		this.selector = selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
@@ -1908,8 +1925,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	getFeaturePropertyApply:function() {
 	    return (mapGlyph, props)=>{
-		mapGlyph.applyPropertiesComponent();
-		mapGlyph.applyPropertiesDialog();
 		this.featureChanged();	    
 		let style = {};
 		if(mapGlyph.isData()) {
@@ -1929,8 +1944,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			style[prop] = v;
 		    });
 		}
-
 		if(style.externalGraphic && !style.externalGraphic.startsWith('data:')) mapGlyph.attrs.icon=style.externalGraphic;
+		if(Utils.stringDefined(style.popupText)) {
+		    style.cursor = 'pointer';
+		} else {
+		    style.cursor = 'pointer';
+		}
 
 		if(mapGlyph.isData()) {
 		    let displayAttrs = this.parseDisplayAttrs(this.jq('displayattrs').val());
@@ -1939,11 +1958,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapGlyph.addEntries();
 		}
 
-		if(Utils.stringDefined(style.popupText)) {
-		    style.cursor = 'pointer';
-		} else {
-		    style.cursor = 'pointer';
-		}
+		mapGlyph.applyPropertiesComponent(style);
+		mapGlyph.applyPropertiesDialog();
+
+
 		if(mapGlyph.getImage()) {
 		    if(mapGlyph.getImage().imageHook) {
 			mapGlyph.getImage().imageHook();
@@ -2010,56 +2028,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	
 
 	getFillPatternSelect:function(domId,v) {
-	    let patterns = [
-		'',
-		'circles-1',
-		'circles-2',
-		'circles-3',
-		'circles-4',
-		'circles-5',
-		'circles-6',
-		'circles-7',
-		'circles-8',
-		'circles-9',
-		'diagonal-stripe-1',
-		'diagonal-stripe-2',
-		'diagonal-stripe-3',
-		'diagonal-stripe-4',
-		'diagonal-stripe-5',
-		'diagonal-stripe-6',
-		'dots-1',
-		'dots-2',
-		'dots-3',
-		'dots-4',
-		'dots-5',
-		'dots-6',
-		'dots-7',
-		'dots-8',
-		'dots-9',
-		'horizontal-stripe-1',
-		'horizontal-stripe-2',
-		'horizontal-stripe-3',
-		'horizontal-stripe-4',
-		'horizontal-stripe-5',
-		'horizontal-stripe-6',
-		'horizontal-stripe-7',
-		'horizontal-stripe-8',
-		'horizontal-stripe-9',
-		'vertical-stripe-1',
-		'vertical-stripe-2',
-		'vertical-stripe-3',
-		'vertical-stripe-4',
-		'vertical-stripe-5',
-		'vertical-stripe-6',
-		'vertical-stripe-7',
-		'vertical-stripe-8',
-		'vertical-stripe-9',
-		'crosshatch',
-		'houndstooth',
-		'lightstripe',
-		'smalldot',
-		'verticalstripe',
-		'whitecarbon'];
+	    let patterns = ['',...Object.keys(IMDV_PATTERNS).sort()];
 	    let opts = patterns.map(p=>{
 		if(p=='') return {value:'',label:'None'};
 		return {value:p,label:p};
@@ -2129,6 +2098,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		label =  Utils.makeLabel(label);		
 		if(prop=="pointRadius") label = "Size";
 		let widget;
+		let extra ='';
 		if(prop=="externalGraphic") {
 		    label="Marker"
 		    let options = "";
@@ -2145,6 +2115,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 		} else {
+
 		    let v = values[prop];
 		    if(!Utils.isDefined(v) && prop!="wikiText") {
 			let propFunc = "get" + prop[0].toUpperCase()+prop.substring(1);
@@ -2185,9 +2156,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			widget = HU.select('',['id',domId],['rectangle','circle','ellipse'],v);
 		    } else {
 			if(props == "pointRadius") label="Size";
-			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity") size="4";
+			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity" || prop=='dotSize') size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
+			else if(prop=='transform') {
+			    size="60";
+			    extra = HU.space(2) +HU.href('https://developer.mozilla.org/en-US/docs/Web/CSS/transform','Help',['target','_help']);
+			}
 			if(prop.indexOf("Color")>=0) {
 			    widget =  HU.input("",v,['class','ramadda-imdv-color',ID,domId,"size",8]);
 			    widget =  HU.div(['id',domId+'_display','class','ramadda-dot', 'style',HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
@@ -2225,7 +2200,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    } else if(v==="") {
 				v=isRotation?0:1;
 			    }
-			    let min  = prop.indexOf("Offset")>=0?0:0;
+			    let min  = isRotation?-360:(prop.indexOf("Offset")>=0?0:0);
 			    let max = isRotation?360:50;
 			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
 				
@@ -2240,7 +2215,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-		html+=HU.formEntry(label+":",widget);
+		html+=HU.formEntry(label+":",widget+extra);
 		html+='\n';
 	    });
 	    html+="</table>";
@@ -2769,8 +2744,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style,true,jsonObject);
 		return mapGlyph;
 	    } catch(err) {
-		console.log("ERROR:" + err);
+		this.handleError("Error creating glyph",err);
+		console.log(err);
 	    }
+	    
 
 	    console.log("Couldn't make feature:" + mapOptions.type);
 	    return null;
@@ -3616,8 +3593,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeOpacity:1,
 			   strokeDashstyle:'solid',
 			   strokeLinecap: 'butt',
-			   dotSize:2,
-			   dotColor:'blue'
+			   dotSize:3,
+			   dotStrokeColor:'blue',
+			   dotStrokeWidth:1,			   
+			   dotFillColor:'blue'			   
 			  },
 			  MyPath,
 			  {maxVertices:2,
@@ -3628,8 +3607,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   strokeOpacity:1,
 			   strokeDashstyle:'solid',			      
 			   strokeLinecap: 'butt',
-			   dotSize:2,
-			   dotColor:'blue'
+			   dotSize:3,
+			   dotStrokeColor:'blue',
+			   dotStrokeWidth:1,			   
+			   dotFillColor:'blue'			   
 			  },
 			  MyPath,
 			  {icon:Ramadda.getUrl("/icons/polyline.png")});
@@ -3856,6 +3837,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.showMessage(msg,-1);
 	},
 	showMessage:function(msg,clearTime)  {
+	    if(msg!='')
+		msg = HU.div(['class','imdv-message-inner'],msg);
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
 	    if(this.messageErase) clearTimeout(this.messageErase);
@@ -4358,7 +4341,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    address = HU.div(['style',HU.css('white-space','nowrap','display','none','position','relative'),'id',this.domId(ID_ADDRESS)], address);	    
 	    
-	    let message = HU.div([ID,this.domId(ID_MESSAGE),STYLE,HU.css('display','inline-block','white-space','nowrap','margin-left','10px')],'');
+	    let message = HU.div([ID,this.domId(ID_MESSAGE),'class','imdv-message']);
 	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'), ID,this.domId(ID_MAP)+'_header']);
 	    if(this.canEdit()) {
 		menuBar= HU.table(['id',this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
@@ -4628,7 +4611,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		_this.featureChanged();
 	    };
-	    let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+	    let mover =  this.addControl(ID_MOVER,"Click &amp; drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
 		moveFeature: function(pixel) {
 		    let mapGlyph = this.feature.mapGlyph;
 		    if(!mapGlyph) {
@@ -4660,10 +4643,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    this.theDisplay.clearMessage2(1000);
 		},
 		dragVertex: function(vertex, pixel) {
+		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
 		    this.theDisplay.checkSelected(this.feature.mapGlyph);
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image && this.feature.type!=GLYPH_BOX && !this.feature?.mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
+			if(this.feature.mapGlyph) {
+			    this.feature.mapGlyph.vertexDragged(this.feature,vertex,pixel);
+			}
 			return;
 		    }
 		    let v  = this.feature.geometry.getVertices();
@@ -4989,18 +4976,18 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
 
 var IMDV_PATTERNS = {
     "diagonal-stripe-1":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='1'/></svg> "},
-    "diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
     "diagonal-stripe-2":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='2'/></svg>"},
-    "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='1'/></svg>"},
-    "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='2'/></svg>"},
-    "diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= foreground %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= background %>' stroke-width='3'/></svg>"},
+    "diagonal-stripe-3":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='3'/></svg>"},
+    "diagonal-stripe-4":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='4'/></svg>"},
+    "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/></svg>"},
+    "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/></svg>"},
     "subtle-patch":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' /></svg>"},
-    "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='#eeeeee'/><g id='c'><rect width='3' height='3' fill='#e6e6e6'/><rect y='1' width='3' height='2' fill='#d8d8d8'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
-    "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='#fff'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='#aaa'/></svg> "},
-    "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='#aaa' fill='#aaa' stroke-width='1'/></svg> "},
-    "verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='#fff'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
-    "smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='#fff'/><rect width='1' height='1' fill='#ccc'/></svg>"},
-    "lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='white'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='#888' stroke-width='1'/></svg>"},
+    "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
+    "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/></svg> "},
+    "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/></svg> "},
+    "verticalstripe":{width:6,height:49,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='6' height='49'><rect width='3' height='50' fill='<%= foreground %>'/><rect x='3' width='1' height='50' fill='#ccc'/></svg> "},
+    "smalldot":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><rect width='1' height='1' fill='<%= foreground %>'/></svg>"},
+    "lightstripe":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>'/><path d='M0 5L5 0ZM6 4L4 6ZM-1 1L1 -1Z' stroke='<%= foreground %>' stroke-width='1'/></svg>"},
     "vertical-stripe-8":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='8' height='10' fill='<%= foreground %>' /></svg>"},
     "vertical-stripe-9":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='9' height='10' fill='<%= foreground %>' /></svg>"},
     "vertical-stripe-7":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>' /><rect x='0' y='0' width='7' height='10' fill='<%= foreground %>' /></svg>"},
