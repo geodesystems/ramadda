@@ -47,11 +47,8 @@ var MapUtils =  {
     properties:{},
     loadTurf: function(callback) {
 	if(!window.turf) {
-	    if(!this.loadingTurf) {
-		let url = ramaddaCdn+"/lib/turf.min.js";
-		this.loadingTurf=true;
-		Utils.loadScript(url,callback);
-	    }
+	    let url = ramaddaCdn+"/lib/turf.min.js";
+	    Utils.loadScript(url,callback);
 	    return false;
 	}
 	return true;
