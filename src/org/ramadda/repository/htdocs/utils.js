@@ -73,8 +73,13 @@ var Utils =  {
 	    window[id] = what;
 	}
     },
+    /**
+       make and return a clopy copy of any objects given as arguments
+       this can handle null args
+     */
     clone:function() {
-	let first =  $.extend({},arguments[0]);
+	if(arguments.length==0) return {};
+	let first =  arguments[0]?$.extend({},arguments[0]):{};
 	for(let i=1;i<arguments.length;i++) {
 	    if(arguments[i])
 		first = $.extend(first,arguments[i]);
@@ -3820,7 +3825,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (!window["uniqueCnt"]) {
             window["uniqueCnt"] = new Date().getTime();
         }
-        var cnt = window["uniqueCnt"]++;
+        let cnt = window["uniqueCnt"]++;
         return (prefix||"id_") + cnt;
     },
     inset: function(html, top, left, bottom, right) {
