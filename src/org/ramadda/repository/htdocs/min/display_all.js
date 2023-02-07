@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb  6 11:24:59 MST 2023";
+var build_date="RAMADDA build date: Tue Feb  7 12:39:28 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40844,7 +40844,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    attrs.entryId = entryId;
-
 		    let style = Utils.clone({},tmpStyle);
 		    if(glyphType.isImage()) {
 			style.strokeColor='#ccc';
@@ -40854,9 +40853,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    mapOptions.entryId = entryId;
 		    mapOptions.entryType = attrs.entryType;
-		    attrs.name = attrs.entryName;
+		    attrs.name = attrs.name??attrs.entryName;
 		    delete attrs.entryName;
-
 		    if(glyphType.isMap()) {
 			if(resourceId) {
 			    let resource  =MAP_RESOURCES_MAP[resourceId];
@@ -40874,8 +40872,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    } 
 
 		    //Hacky, gotta clean up all of this
-		    if(attrs.entryName && !glyphType.isImage()) {
-			style.label = attrs.entryName;				
+		    if(attrs.name && !glyphType.isImage()) {
+			style.label = attrs.name;				
 		    }
 
 		    if(glyphType.isMultiEntry()) {
@@ -40947,7 +40945,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		};
 
 		if(args.url) {
-		    callback(null, args.url);
+		    if(args.entryId)
+			callback(args.entryId,args);
+		    else
+			callback(null, args.url);
 		    return;
 		}
 		
@@ -42010,6 +42011,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		html+=(mapGlyph.addToStyleDialog(style)??'');
 	    }
 
+	    let isGroup = mapGlyph?mapGlyph.isGroup():false;
 	    if(style) {
 		props = [];
 		let isImage = style.imageUrl;
@@ -42046,15 +42048,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		textBackgroundStrokeColor: {label:'Text Background',strip:'textBackground'},		
 	    };
 	    props.forEach(prop=>{
+		let shared = true;
 		let id = "glyphedit_" + prop;
 		let domId = this.domId(id);
 		if(notProps.includes(prop)) return;
 		let header = headers[prop];
 		if(header) {
 		    strip=header.strip;
-		    html+=HU.tr(['class','formgroupheader'],HU.td(['colspan',2],header.label));
+		    html+=HU.tr([],HU.td(['colspan',2],HU.div(['class','imdv-form-header'],header.label)));
 		}  else if(strip && !prop.startsWith(strip)) {
-		    html+=HU.tr(['class','formgroupheader'],HU.td(['colspan',2],''));
+		    html+=HU.tr([],HU.td(['colspan',2],''));
 		    strip = null;
 		}
 		let label = prop;
@@ -42064,26 +42067,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let widget;
 		let extra ='';
 		if(prop=="externalGraphic" || prop.indexOf('ExternalGraphic')>=0) {
+//		    shared = false;
 		    label="Marker"
 		    let options = "";
 		    let graphic = values[prop];
 		    if(!Utils.isDefined(graphic))
 			graphic = this.getExternalGraphic();
+		    domId = this.domId(prop);
 		    let div = HU.div(['class','imdv-icons',
 				'style','margin-left:5px;display:inline-block;',
 				'icon-property',prop,
 				      'id',this.domId(prop+"_icons")],'Loading...');
-		    widget = HU.hidden("",graphic,['id',this.domId(prop)]) +
+		    widget = HU.hidden("",graphic,['id',domId]) +
 			'<table><tr valign=top><td width=1%>' +
 			HU.image(graphic,['width','24px','id',this.domId(prop+'_image')]) +
 			'</td><td>' +
 			div +
 			"</td></tr></table>";
-		    
-
-
 		} else {
-
 		    let v = values[prop];
 		    if(!Utils.isDefined(v) && prop!="wikiText") {
 			let propFunc = "get" + prop[0].toUpperCase()+prop.substring(1);
@@ -42123,7 +42124,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    } else if(prop=='textBackgroundShape') {
 			widget = HU.select('',['id',domId],['rectangle','circle','ellipse'],v);
 		    } else {
-			if(props == "pointRadius") label="Size";
+			if(prop == "pointRadius") {
+			    label="Size";
+			} 
 			if(prop=="textBackgroundFillOpacity" || prop=="textBackgroundPadding" || prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="imageOpacity" || prop=='dotSize') size="4";
 			else if(prop=="fontFamily") size="60";
 			else if(prop.toLowerCase().indexOf('url')>=0) size="60";
@@ -42170,7 +42173,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    }
 			    let min  = isRotation?-360:(prop.indexOf("Offset")>=0?0:0);
 			    let max = isRotation?360:50;
-			    widget =  HU.input("",v,[ID,domId,"size",4])+HU.space(4) +
+			    let size = 4;
+			    if(prop.indexOf("Offset")>=0) size=8;
+			    widget =  HU.input("",v,[ID,domId,"size",size])+HU.space(4) +
 				
 			    HU.div(['slider-min',min,'slider-max',max,'slider-step',1,'slider-value',v,'slider-id',domId,ID,domId+'_slider','class','ramadda-slider',STYLE,HU.css("display","inline-block","width","200px")],"");
 
@@ -42183,11 +42188,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-		html+=HU.formEntry(label+":",widget+extra);
+		let suffix='';
+		if(isGroup && shared) {
+		    suffix=HU.span(['title','Apply this style to children glyphs',
+				    'class','ramadda-clickable imdv-style-suffix','widget-id',domId,'property',prop],HU.getIconImage('fas fa-folder-tree'));
+		}
+		html+=HU.formEntry(label+":",widget+suffix+extra);
 		html+='\n';
 	    });
 	    html+="</table>";
-	    html = HU.div([STYLE,HU.css("max-height","350px","overflow-y","scroll","margin-bottom","5px")], html);
+	    html = HU.div(['class','imdv-form',STYLE,HU.css("max-height","350px","overflow-y","scroll","margin-bottom","5px")], html);
 	    return {props:props,html:html};
 	},
 	
@@ -42280,6 +42290,19 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		mapGlyph.initSideHelp(dialog);
 	    this.initSideHelp(dialog);
 
+	    dialog.find('.imdv-style-suffix').click(function() {
+		let prop = $(this).attr('property');
+		let id = $(this).attr('widget-id');
+		let value = jqid(id).val();
+		if(!value) {
+		    value = jqid(id+'_image').val();
+		    console.log(prop,id,value);
+		}
+
+		if(prop && value) {
+		    mapGlyph.applyStyleToChildren(prop,value);
+		}
+	    });
 	    dialog.find('.ramadda-icons-recent').click(function() {
 		let textarea = $(this).attr('textarea');
 		let icon = '<img src=' + $(this).attr('icon')+'>';
@@ -43466,77 +43489,75 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	doMakeMapGlyphs:function() {
 	    let externalGraphic = this.getExternalGraphic();
 	    if(!Ramadda.isRamaddaUrl(externalGraphic)) externalGraphic = Ramadda.getUrl(externalGraphic);
-	    new GlyphType(this,GLYPH_GROUP,"Group",
-			  {externalGraphic: externalGraphic,
-			   pointRadius:this.getPointRadius(10),
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign: this.getProperty("labelAlign","cb"),
-			   labelXOffset: this.getProperty("labelXOffset","0"),
-			   labelYOffset: this.getProperty("labelYOffset","14"),
-			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+	    let textBackgroundStyle={
+		textBackgroundStrokeColor:'',
+		textBackgroundStrokeWidth:1,			   			   
+		textBackgroundFillColor:'',
+		textBackgroundFillOpacity:1.0,
+		textBackgroundPadding:2,
+		textBackgroundShape:'rectangle',
+		textBackgroundRadius:0};
 
-			   strokeWidth:0,
-			   fillColor:'transparent',
-			   labelSelect:true,
-			  },
+
+	    let textStyle = {
+		fontColor: this.getProperty("labelFontColor","#000"),
+		fontSize: this.getFontSize(),
+		fontFamily: this.getFontFamily(),
+		fontWeight: this.getFontWeight(),
+		fontStyle: this.getFontStyle(),
+		labelAlign: this.getProperty("labelAlign","cb"),
+		labelXOffset: this.getProperty("labelXOffset","0"),
+		labelYOffset: this.getProperty("labelYOffset","14"),
+		labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+		labelOutlineWidth: this.getProperty("labelOutlineWidth","0")};
+
+	    let lineStyle = {strokeColor:this.getStrokeColor(),
+			     strokeWidth:this.getStrokeWidth(),
+			     strokeOpacity:1,
+			     strokeDashstyle:'solid',
+			     strokeLinecap: 'butt'};
+	    
+	    let dotStyle = {dotSize:3,
+			    dotStrokeColor:'blue',
+			    dotStrokeWidth:1,			   
+			    dotFillColor:'blue',
+			    dotExternalGraphic:''};
+	    
+	    new GlyphType(this,GLYPH_GROUP,"Group",
+			  Utils.clone(
+			      {externalGraphic: externalGraphic,
+			       pointRadius:this.getPointRadius(10)},
+			      lineStyle,
+			      textStyle,
+			      {fillColor:'transparent',
+				  labelSelect:true},
+			      textBackgroundStyle), 
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
 			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});
 	    new GlyphType(this,GLYPH_MARKER,"Marker",
-			  {label : "label",
-			   externalGraphic: externalGraphic,
-			   pointRadius:this.getPointRadius(10),
-			   rotation:0,
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign: this.getProperty("labelAlign","cb"),
-			   labelXOffset: this.getProperty("labelXOffset","0"),
-			   labelYOffset: this.getProperty("labelYOffset","14"),
-			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-			   strokeWidth:0,
-			   fillColor:'transparent',
-			   labelSelect:true,
-			   textBackgroundStrokeColor:'',
-			   textBackgroundStrokeWidth:1,			   			   
-			   textBackgroundFillColor:'',
-			   textBackgroundFillOpacity:1.0,
-			   textBackgroundPadding:2,
-			   textBackgroundShape:'rectangle',
-			   textBackgroundRadius:0
-			  }, MyPoint,
+			  Utils.clone({label : "label",
+				       externalGraphic: externalGraphic,
+				       pointRadius:this.getPointRadius(10),
+				       rotation:0,
+				       label:''},
+				      textStyle,
+				      {fillColor:'transparent',
+				       labelSelect:true},textBackgroundStyle), 
+			  MyPoint,
 			  {icon:Ramadda.getUrl("/map/blue-dot.png")});
 
 	    new GlyphType(this,GLYPH_POINT,"Point",
-			  {graphicName:'circle',
-			   pointRadius:6,
-			   strokeColor:'blue',
-			   strokeWidth:1,
-			   strokeOpacity:1,
-			   strokeDashstyle:'solid',
-			   fillColor:"blue",
-			   fillOpacity:1,
-			   rotation:0,
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   label:'',
-			   labelAlign: this.getProperty("labelAlign","cb"),
-			   labelXOffset: this.getProperty("labelXOffset","0"),
-			   labelYOffset: this.getProperty("labelYOffset","14"),
-			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-			  },
+			  Utils.clone(
+			      {graphicName:'circle',
+			       pointRadius:6},
+			      lineStyle,
+			      {
+			       fillColor:"blue",
+			       fillOpacity:1,
+			       rotation:0,
+			       label:''},
+			      textStyle),
 			  MyPoint,
 			  {icon:Ramadda.getUrl("/icons/dots/blue.png")});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
@@ -43557,159 +43578,83 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:Ramadda.getUrl("/icons/sticky-note-text.png")});			    
 
 	    new GlyphType(this,GLYPH_LINE, "Line",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeOpacity:1,
-			   strokeDashstyle:'solid',
-			   strokeLinecap: 'butt',
-			   dotSize:3,
-			   dotStrokeColor:'blue',
-			   dotStrokeWidth:1,			   
-			   dotFillColor:'blue',
-			   dotExternalGraphic:''			   
-			  },
+			  Utils.clone(lineStyle, dotStyle),
 			  MyPath,
 			  {maxVertices:2,
 			   icon:Ramadda.getUrl("/icons/line.png")});		
 	    new GlyphType(this,GLYPH_POLYLINE, "Polyline",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeOpacity:1,
-			   strokeDashstyle:'solid',			      
-			   strokeLinecap: 'butt',
-			   dotSize:3,
-			   dotStrokeColor:'blue',
-			   dotStrokeWidth:1,			   
-			   dotFillColor:'blue',
-			   dotExternalGraphic:''
-			  },
+			  Utils.clone(lineStyle,dotStyle),
 			  MyPath,
 			  {icon:Ramadda.getUrl("/icons/polyline.png")});
 	    new GlyphType(this,GLYPH_POLYGON, "Polygon",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeOpacity:1,
-			   strokeDashstyle:'solid',			      
-			   strokeLinecap: 'butt',
-			   fillColor:"transparent",
-			   fillOpacity:1.0,
-			   fillPattern:''},
+			  Utils.clone(lineStyle,
+				      {fillColor:"transparent",
+				       fillOpacity:1.0,
+				       fillPattern:''}),
 			  MyPolygon,
 			  {icon:Ramadda.getUrl("/icons/polygon.png")});
 
 	    new GlyphType(this,GLYPH_FREEHAND,"Freehand",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeOpacity:1,
-			   strokeDashstyle:'solid',
-			   strokeLinecap: 'butt'},
+			  Utils.clone(lineStyle),			  
 			  MyPath,
 			  {freehand:true,icon:Ramadda.getUrl("/icons/freehand.png")});
 	    new GlyphType(this,GLYPH_FREEHAND_CLOSED,"Closed",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeOpacity:1,
-			   strokeDashstyle:'solid',
-			   strokeLinecap: 'butt',
-			   fillColor:"transparent",
-			   fillOpacity:1.0,fillPattern:''},
+			  Utils.clone(lineStyle,
+				      {fillColor:"transparent",
+				       fillOpacity:1.0,fillPattern:''}),
 			  MyPolygon,
 			  {freehand:true,icon:Ramadda.getUrl("/icons/freehandclosed.png")});
 
 	    new GlyphType(this,GLYPH_BOX, "Box",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeDashstyle:'solid',
-			   strokeOpacity:1,
-			   fillColor:"transparent",
-			   fillOpacity:1.0,fillPattern:''},
+			  Utils.clone(lineStyle,{
+			      fillColor:"transparent",
+			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:4,irregular:true,
 			   icon:Ramadda.getUrl("/icons/rectangle.png")});
 	    new GlyphType(this,GLYPH_CIRCLE, "Circle",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeDashstyle:'solid',
-			   strokeOpacity:1,
-			   fillColor:"transparent",
-			   fillOpacity:1.0,fillPattern:''},
+			  Utils.clone(lineStyle,{
+			      fillColor:"transparent",
+			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:45,sides:40,icon:Ramadda.getUrl("/icons/ellipse.png")});
 
 	    new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeDashstyle:'solid',
-			   strokeOpacity:1,
-			   fillColor:"transparent",
-			   fillOpacity:1.0,fillPattern:''},
+			  Utils.clone(lineStyle,{
+			      fillColor:"transparent",
+			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:10,sides:3,
 			   icon:Ramadda.getUrl("/icons/triangle.png")});				
 	    new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeDashstyle:'solid',
-			   strokeOpacity:1,
-			   fillColor:"transparent",
-			   fillOpacity:1.0,fillPattern:''},
+			  Utils.clone(lineStyle,{
+			      fillColor:"transparent",
+			      fillOpacity:1.0,fillPattern:''}),
 			  MyRegularPolygon,
 			  {snapAngle:90,sides:6,
 			   icon:Ramadda.getUrl("/icons/hexagon.png")});		
 	    new GlyphType(this,GLYPH_RINGS,"Range Rings",
-			  {strokeColor:'blue',
-			   strokeWidth:2,
-			   fillColor:"transparent",
-			   pointRadius:6,
-			   rotation:0,
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign:'lt',
-			   textBackgroundStrokeColor:'',
-			   textBackgroundStrokeWidth:1,			   			   
-			   textBackgroundFillColor:'',
-			   textBackgroundFillOpacity:1.0,
-			   textBackgroundPadding:2,
-			   textBackgroundShape:'rectangle',
-			   textBackgroundRadius:0
-			  },
+			  Utils.clone(lineStyle,
+				      {fillColor:"transparent",
+				      pointRadius:6,
+				      rotation:0},
+				      textStyle,
+				      textBackgroundStyle),
 			  MyPoint,
 			  {icon:Ramadda.getUrl("/icons/dot.png")});
 
 
 
 	    new GlyphType(this,GLYPH_MAP,"Map File",
-			  {strokeColor:this.getStrokeColor(),
-			   strokeWidth:this.getStrokeWidth(),
-			   strokeDashstyle:'solid',			      
-			   strokeOpacity:1,
-			   fillColor:"transparent",
-			   fillOpacity:1.0,
-			   fillPattern:'',
-			   pointRadius:6,
-			   externalGraphic:'',
-			   graphicName:'',
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign: 'cm',
-			   labelXOffset: '0',
-			   labelYOffset: '10',
-			   labelOutlineColor:'#fff',
-			   labelOutlineWidth: '0',
-			   textBackgroundStrokeColor:'',
-			   textBackgroundStrokeWidth:1,			   			   
-			   textBackgroundFillColor:'',
-			   textBackgroundFillOpacity:1.0,
-			   textBackgroundPadding:2,
-			   textBackgroundShape:'rectangle',
-			   textBackgroundRadius:0
-			  },
+			  Utils.clone(lineStyle,
+				      {fillColor:"transparent",
+				       fillOpacity:1.0,
+				       fillPattern:'',
+				       pointRadius:6,
+				       externalGraphic:'',
+				       graphicName:''},
+				      textStyle,
+				      textBackgroundStyle),
 			  MyEntryPoint,
 			  {isMap:true,
 			   tooltip:"Select a gpx, geojson or  shapefile map",
@@ -43726,13 +43671,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   tooltip:"Provide a Web Map Service URL",
 			   icon:Ramadda.getUrl("/icons/drive-globe.png")});	
 
-
-	    new GlyphType(this,GLYPH_ROUTE, "Route", {
-		strokeColor:this.getStrokeColor(),
-		strokeWidth:this.getStrokeWidth(),
-		strokeDashstyle:'solid',
-		strokeOpacity:1,
-	    },MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
+	    new GlyphType(this,GLYPH_ROUTE, "Route",
+			  Utils.clone(lineStyle),						    
+			  MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
 
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
 			  {strokeColor:"#ccc",
@@ -43747,47 +43688,29 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:Ramadda.getUrl("/icons/imageicon.png")}
 			 );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
-			  {externalGraphic: Ramadda.getUrl("/icons/entry.png"),
-			   pointRadius:12,
-			   label:"label",
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign: this.getProperty("labelAlign","cb"),
-			   labelXOffset: this.getProperty("labelXOffset","0"),
-			   labelYOffset: this.getProperty("labelYOffset","14"),
-			   labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-			   labelOutlineWidth: this.getProperty("labelOutlineWidth","0")
-			  },
+			  Utils.clone(
+			      {externalGraphic: Ramadda.getUrl("/icons/entry.png"),
+			       pointRadius:12,
+			       label:"label"},
+			      textStyle),
 			  MyEntryPoint,
 			  {tooltip:"Add an entry as a marker",
 			   isEntry:true,
 			   icon:Ramadda.getUrl("/icons/entry.png")});
 	    new GlyphType(this,GLYPH_MULTIENTRY,"Multi Entry",
-			  {showLabels:true,
-			   pointRadius:12,
-			   fontColor: this.getProperty("labelFontColor","#000"),
-			   fontSize: this.getFontSize(),
-			   fontFamily: this.getFontFamily(),
-			   fontWeight: this.getFontWeight(),
-			   fontStyle: this.getFontStyle(),
-			   labelAlign: this.getProperty("labelAlign","cb"),
-			   labelXOffset: this.getProperty("labelXOffset","0"),
-			   labelYOffset: this.getProperty("labelYOffset","14")
-			  },
+			  Utils.clone(
+			      {showLabels:true,
+			       pointRadius:12},
+			      textStyle),
 			  MyEntryPoint,
 			  {tooltip:"Display children entries of selected entry",
 			   isMultiEntry:true,
 			   icon:Ramadda.getUrl("/icons/sitemap.png")});
 
-	    new GlyphType(this,GLYPH_DATA,"Data",
-			  {},
+	    new GlyphType(this,GLYPH_DATA,"Data", {},
 			  MyEntryPoint,
 			  {isData:true, tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getUrl("/icons/chart.png")});
-
 
 	},
 	clearMessage2:function(time) {
@@ -44431,20 +44354,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  (event,item,result) =>{
 				      let entryId = this.getProperty('entryId') || this.entryId;
 				      Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
+
+					  name = name??data.name;
 					  if(MAP_TYPES.includes(data.type)) {
 					      let glyphType = this.getGlyphType(GLYPH_MAP);
 					      let style = $.extend({},glyphType.getStyle());
 					      let attrs = {
 						  entryId:data.entryid,
 						  type:glyphType.type,
-						  name:data.name,
+						  name:name,
 						  entryType:data.type,
 					      }
 					      let mapGlyph = this.handleNewFeature(null,style,attrs);
 					      mapGlyph.checkMapLayer();
 					      return;
 					  } else {
-					      this.setCommand('image',{url:data.geturl});
+					      this.setCommand(GLYPH_IMAGE,{url:data.geturl,
+									   entryId:data.entryid,
+									   name:name});
 					  }
 				      });
 				  },
@@ -45063,11 +44990,13 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     }
 
 
+    //Get the style with the macros applied
+    style = this.getStyle(true);
     if(fromJson) {
 	if(this.isStraightLine()) {
 	    this.checkLineType(json.points);
 	} else {
-	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, this.style,
+	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, style,
 					       json.points);
 	}
     }
@@ -45259,6 +45188,17 @@ MapGlyph.prototype = {
 	return obj;
     },	
 
+    applyStyleToChildren:function(prop,value) {
+	if(!this.children) return;
+	this.children.forEach(child=>{
+	    if(child.style) {
+		child.style[prop] = value;
+		child.applyStyle(child.style);
+		child.applyStyleToChildren(prop,value);
+		this.display.redraw(child);
+	    }
+	});
+    },
     getPoints:function(obj) {
 	if(this.attrs.originalPoints) return this.attrs.originalPoints;
 	let geom = this.getGeometry();
@@ -45949,7 +45889,28 @@ MapGlyph.prototype = {
     addFeature: function(feature,andClear,addToDisplay) {
 	this.addFeatures([feature],andClear,addToDisplay);
     },
-    getStyle: function() {
+    getStyle: function(applyMacros) {
+	if(applyMacros) {
+	    let tmpStyle = this.style??{};
+	    if(Utils.stringDefined(tmpStyle.labelYOffset) || Utils.stringDefined(tmpStyle.labelXOffset)) {
+		tmpStyle=Utils.clone(tmpStyle);
+		let a = v=>{
+		    v= String(v??'');
+		    let r = tmpStyle.pointRadius;
+		    if(isNaN(r)) r=0;
+		    v = v.replace(/\${size}/g,r).replace(/\${size2}/g,r/2);
+		    try {
+			v = eval(v);
+		    } catch(err) {
+			console.log('error applying macro:' +err);
+		    }
+		    return v;
+		}
+		tmpStyle.labelXOffset = a(tmpStyle.labelXOffset);
+		tmpStyle.labelYOffset = a(tmpStyle.labelYOffset);
+	    }	
+	    return tmpStyle;
+	}
 	return this.style;
     },
     panMapTo: function(andZoomIn) {
@@ -48497,10 +48458,10 @@ MapGlyph.prototype = {
 	    }
 	}
 
-
+	let tmpStyle= this.getStyle(true);
 	this.features.forEach(feature=>{
 	    if(feature.style && !feature.fixedStyle) {
-		$.extend(feature.style,style);
+		$.extend(feature.style,tmpStyle);
 	    }
 	});	    
 	if(this.isFixed()) {
