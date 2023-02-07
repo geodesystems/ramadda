@@ -46,11 +46,13 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     }
 
 
+    //Get the style with the macros applied
+    style = this.getStyle(true);
     if(fromJson) {
 	if(this.isStraightLine()) {
 	    this.checkLineType(json.points);
 	} else {
-	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, this.style,
+	    feature = this.display.makeFeature(this.display.getMap(),json.geometryType, style,
 					       json.points);
 	}
     }
@@ -242,6 +244,17 @@ MapGlyph.prototype = {
 	return obj;
     },	
 
+    applyStyleToChildren:function(prop,value) {
+	if(!this.children) return;
+	this.children.forEach(child=>{
+	    if(child.style) {
+		child.style[prop] = value;
+		child.applyStyle(child.style);
+		child.applyStyleToChildren(prop,value);
+		this.display.redraw(child);
+	    }
+	});
+    },
     getPoints:function(obj) {
 	if(this.attrs.originalPoints) return this.attrs.originalPoints;
 	let geom = this.getGeometry();
@@ -932,7 +945,28 @@ MapGlyph.prototype = {
     addFeature: function(feature,andClear,addToDisplay) {
 	this.addFeatures([feature],andClear,addToDisplay);
     },
-    getStyle: function() {
+    getStyle: function(applyMacros) {
+	if(applyMacros) {
+	    let tmpStyle = this.style??{};
+	    if(Utils.stringDefined(tmpStyle.labelYOffset) || Utils.stringDefined(tmpStyle.labelXOffset)) {
+		tmpStyle=Utils.clone(tmpStyle);
+		let a = v=>{
+		    v= String(v??'');
+		    let r = tmpStyle.pointRadius;
+		    if(isNaN(r)) r=0;
+		    v = v.replace(/\${size}/g,r).replace(/\${size2}/g,r/2);
+		    try {
+			v = eval(v);
+		    } catch(err) {
+			console.log('error applying macro:' +err);
+		    }
+		    return v;
+		}
+		tmpStyle.labelXOffset = a(tmpStyle.labelXOffset);
+		tmpStyle.labelYOffset = a(tmpStyle.labelYOffset);
+	    }	
+	    return tmpStyle;
+	}
 	return this.style;
     },
     panMapTo: function(andZoomIn) {
@@ -3480,10 +3514,10 @@ MapGlyph.prototype = {
 	    }
 	}
 
-
+	let tmpStyle= this.getStyle(true);
 	this.features.forEach(feature=>{
 	    if(feature.style && !feature.fixedStyle) {
-		$.extend(feature.style,style);
+		$.extend(feature.style,tmpStyle);
 	    }
 	});	    
 	if(this.isFixed()) {

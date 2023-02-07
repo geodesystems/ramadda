@@ -2917,6 +2917,19 @@ table.dataTable tfoot td {
 }
 
     
+.imdv-style-suffix {
+    margin-left:4px;
+    margin-right:4px;
+}
+.imdv-form-header {
+    font-weight:bold;
+    margin-top:6px;
+    background:#efefef;
+    padding-top:2px;
+    padding-left:8px;
+    border-bottom:var(--basic-border);
+}
+
 .imdv-legend {
     min-width:200px;
     max-width:200px;    
