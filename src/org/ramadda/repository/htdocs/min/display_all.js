@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb  7 12:39:28 MST 2023";
+var build_date="RAMADDA build date: Tue Feb  7 12:44:44 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -43530,7 +43530,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			      lineStyle,
 			      textStyle,
 			      {fillColor:'transparent',
-				  labelSelect:true},
+			       labelSelect:true},
 			      textBackgroundStyle), 
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
@@ -43557,7 +43557,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			       fillOpacity:1,
 			       rotation:0,
 			       label:''},
-			      textStyle),
+			      textStyle,textBackgroundStyle),
 			  MyPoint,
 			  {icon:Ramadda.getUrl("/icons/dots/blue.png")});
 	    new GlyphType(this,GLYPH_FIXED,"Fixed Text", {
