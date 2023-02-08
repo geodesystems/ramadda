@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  8 14:08:30 MST 2023";
+var build_date="RAMADDA build date: Wed Feb  8 14:53:30 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40578,7 +40578,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 
-	makeRangeRings:function(center,radii,style,angle,ringStyle) {
+	makeRangeRings:function(center,radii,style,angle,ringStyle,labels) {
 	    if(angle=='') angle = NaN;
 	    style = style??{};
 	    let rings = [];
@@ -40596,6 +40596,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let skm = String(km).trim();
 		if(skm.endsWith(UNIT_MILES)) {
 		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
+		} else if(skm.endsWith(UNIT_NM)) {
+		    km = 1.852*parseFloat(skm.replace(UNIT_NM,''));
 		} else if (skm.endsWith(UNIT_FT)) {
 		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
 		} else if (skm.endsWith(UNIT_KM)) {
@@ -40639,8 +40641,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		rings.push(MapUtils.createVector(ring,null,_style));
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
-		if(!isNaN(angle)) 
-		    s.label=skm;
+		if(!isNaN(angle)) {
+		    if(labels && idx<labels.length) {
+			s.label = labels[idx].replace("${distance}",skm);
+		    } else {
+			s.label=skm;
+		    }
+		}
 		let label = MapUtils.createVector(p2,null,s);
 		rings.push(label);
 	    }
@@ -45313,6 +45320,9 @@ MapGlyph.prototype = {
 	if(this.isRings()) {
 	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
 							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
+		HU.formEntry('Rings Labels:',HU.input('',this.attrs.rangeRingLabels??'',
+						      ['id',this.domId('rangeringlabels'),'size','40'])+' e.g., Label 1 ${distance}, Label 2, ..., Label N ${distance}') +
+
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
 				 'id',this.domId('rangeringangle'),'size',4]) +' Leave blank to not show labels') +
@@ -45470,6 +45480,7 @@ MapGlyph.prototype = {
 	}
 	if(this.isRings()) {
 	    this.attrs.radii=Utils.split(this.jq('radii').val()??'',',',true,true);
+	    this.attrs.rangeRingLabels =this.jq('rangeringlabels').val();
 	    this.attrs.rangeRingAngle=this.jq('rangeringangle').val();
 	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
@@ -48570,7 +48581,8 @@ MapGlyph.prototype = {
 		}
 	    });
 	}
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle);
+	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,
+						 Utils.split(this.attrs.rangeRingLabels??'',',',true,true));
 	if(this.rings) {
 	    this.rings.forEach(ring=>{
 		ring.mapGlyph=this;
