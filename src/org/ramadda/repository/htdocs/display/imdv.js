@@ -626,7 +626,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let s = $.extend({},labelStyle);
 		if(!isNaN(angle)) {
 		    if(labels && idx<labels.length) {
-			s.label = labels[idx].replace("${distance}",skm);
+			s.label = labels[idx].replace("${d}",skm);
 		    } else {
 			s.label=skm;
 		    }
