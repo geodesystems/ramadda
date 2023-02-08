@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  8 14:53:30 MST 2023";
+var build_date="RAMADDA build date: Wed Feb  8 15:00:37 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40643,7 +40643,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let s = $.extend({},labelStyle);
 		if(!isNaN(angle)) {
 		    if(labels && idx<labels.length) {
-			s.label = labels[idx].replace("${distance}",skm);
+			s.label = labels[idx].replace("${d}",skm);
 		    } else {
 			s.label=skm;
 		    }
@@ -45320,8 +45320,10 @@ MapGlyph.prototype = {
 	if(this.isRings()) {
 	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
 							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
-		HU.formEntry('Rings Labels:',HU.input('',this.attrs.rangeRingLabels??'',
-						      ['id',this.domId('rangeringlabels'),'size','40'])+' e.g., Label 1 ${distance}, Label 2, ..., Label N ${distance}') +
+		HU.formEntryTop('Rings Labels:',
+				HU.hbox([HU.input('',this.attrs.rangeRingLabels??'',
+						  ['id',this.domId('rangeringlabels'),'size','40']),
+					 'Use ${d} macro for the distance e.g.:<br> Label 1 ${d}, ..., Label N ${d}  '])) +
 
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
@@ -48581,8 +48583,10 @@ MapGlyph.prototype = {
 		}
 	    });
 	}
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,
-						 Utils.split(this.attrs.rangeRingLabels??'',',',true,true));
+	let labels = [];
+	if(Utils.stringDefined(this.attrs.rangeRingLabels))
+	    labels = Utils.split(this.attrs.rangeRingLabels);
+	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,labels);
 	if(this.rings) {
 	    this.rings.forEach(ring=>{
 		ring.mapGlyph=this;
