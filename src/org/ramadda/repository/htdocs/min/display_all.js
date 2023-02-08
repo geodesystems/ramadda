@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  8 06:15:58 MST 2023";
+var build_date="RAMADDA build date: Wed Feb  8 06:33:44 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -48630,7 +48630,7 @@ MapGlyph.prototype = {
 	let rotatedPoints=points.map(p=>{
 	    return Utils.rotate(c.x, c.y, p.x,p.y, rotation.angle);
 	});
-	if(applyRotationFromFeature) this.style.rotation = rotation.angle
+	if(applyRotationFromFeature) this.style.rotation = rotation.angle-180
 	bounds= MapUtils.createBoundsFromPoints(rotatedPoints);
 	if(this.image) {
 	    this.image.extent = bounds;
