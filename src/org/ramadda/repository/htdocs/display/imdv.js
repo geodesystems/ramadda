@@ -122,6 +122,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
                 box.style.strokeColor = 'transparent';
 		let mapGlyph =this.display.handleNewFeature(box,this.style);
 		mapGlyph.setImage(image);
+//		mapGlyph.checkImage(null,true);
+		mapGlyph.setRotation(mapGlyph.style.rotation);
 		box.mapGlyph = mapGlyph;
                 this.display.myLayer.redraw(box);
 		this.display.clearCommands();
@@ -2055,7 +2057,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let isImage = style.imageUrl;
 		for(a in style) {
 		    if(isImage) {
-			if(a!='transform' && a!='rotation' && a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
+//			if(a!='transform' && a!='rotation' && a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
 		    }
 		    props.push(a);
 		    values[a] = style[a];
@@ -2719,7 +2721,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let glyphType = this.getGlyphType(type);
 	    if(!glyphType) {
 		console.log("no type:" + type);
-		console.dir(this.glyphTypeMap);
 		return null;
 	    }
 	    let style = $.extend({},glyphType.getStyle());
@@ -2972,7 +2973,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=div;
 	    html+= this.menuItem(this.domId(ID_IMPORT),"Import")
 	    html+=div;
-	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...",'L');
+	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...");
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
 	    //	    html+= this.menuItem(this.domId(ID_REFRESH),"Refresh");	    
 	    html+=div;
@@ -3714,17 +3715,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
 
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
-			  {strokeColor:"#ccc",
-			   strokeWidth:1,
-			   imageOpacity:this.getImageOpacity(1),
-			   fillColor:"transparent",
-			   rotation:0,
-			   transform:''},
-			  ImageHandler,
-			  {tooltip:"Select an image entry to display",
-			   snapAngle:90,sides:4,irregular:true,isImage:true,
-			   icon:Ramadda.getUrl("/icons/imageicon.png")}
-			 );
+			  Utils.clone({},
+				      {imageOpacity:this.getImageOpacity(1)},
+				      lineStyle,
+				      {rotation:0,
+				       transform:''}),
+				      ImageHandler,
+				      {tooltip:"Select an image entry to display",
+				       snapAngle:90,sides:4,irregular:true,isImage:true,
+				       icon:Ramadda.getUrl("/icons/imageicon.png")}
+				     );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
 			  Utils.clone(
 			      {externalGraphic: Ramadda.getUrl("/icons/entry.png"),
@@ -4322,6 +4322,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let cmds = '';
 	    this.jq(ID_COMMANDS).html(cmds);
+	    this.jq(ID_MAP).keydown(function(event){
+		if(!event.ctrlKey) return;
+		_this.getSelected().forEach(glyph=>{
+		    glyph.handleKeyDown(event);
+		});
+		event.preventDefault();
+	    });
 	    this.jq(ID_MAP).mouseover(function(){
 		$(this).focus();
 	    });
@@ -4429,7 +4436,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let callbacks = {
 		keydown: function(event) {
 		    if(event.key=='MediaTrackPrevious') return;
-		    //		    console.log('key down:' + event.key);
 		    HtmlUtils.hidePopupObject();
 		    if(event.key=='Escape') {
 			_this.clearCommands();
@@ -4460,17 +4466,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    case 'c': 
 			_this.doCopy();
 			break;
-		    case 'f': 
-			_this.changeOrder(true);
-			break;
-		    case 'b': 
-			_this.changeOrder(false);
-			break;			    			    
 		    case 'm':
 			_this.setCommand(ID_MOVER);
-			break;
-		    case 'l':
-			_this.listFeatures();
 			break;
 		    case 's': 
 			_this.doSave();
@@ -4554,12 +4551,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.log('no map glyph');
 			return;
 		    }
+		    if(!mapGlyph.isSelected()) mapGlyph.select();
 		    let selected = _this.getSelected();
-		    if(selected.length==0) {
-			selected = [mapGlyph];
-		    } else if(!selected.includes(mapGlyph)) {
-			selected.push(mapGlyph);
-		    }
 		    let res = this.map.getResolution();
 		    let dx = res * (pixel.x - this.lastPixel.x);
 		    let dy = res * (this.lastPixel.y - pixel.y);
@@ -4567,12 +4560,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			mapGlyph.move(dx,dy);
 		    });
 		    this.lastPixel = pixel;
+		    _this.featureChanged();	    
 		},
 		onDrag: function(feature, pixel) {
 		}
 	    }));
 
 	    let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
+		dragStart: function() {
+		    OpenLayers.Control.ModifyFeature.prototype.dragStart.apply(this, arguments);
+		},
 		dragComplete: function() {
 		    OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
 		    this.theDisplay.featureChanged();	    
@@ -4580,7 +4577,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		},
 		dragVertex: function(vertex, pixel) {
 		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
-		    this.theDisplay.checkSelected(this.feature.mapGlyph);
+		    let mapGlyph = this.feature.mapGlyph;
+		    if(mapGlyph) {
+			if(!mapGlyph.isSelected()) mapGlyph.select();
+		    }
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image && this.feature.type!=GLYPH_BOX && !this.feature?.mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
@@ -4626,6 +4626,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					   'select');
 		    this.layer.drawFeature(vertex);
 		    if(this.feature.mapGlyph) {
+			if(this.mode==OpenLayers.Control.ModifyFeature.ROTATE) {
+			    if(this.feature.mapGlyph.isImage()) {
+				this.feature.style={strokeColor:'red',strokeWidth:4,fillColor:'transparent'};
+				let rotation = Utils.getRotation(v);
+				this.feature.mapGlyph.style.rotation = rotation.angle;
+			    }
+			} 
 			imageChecker(this.feature);
 		    }
 		}
@@ -4640,16 +4647,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
-		    console.log('on drag');
+		    //console.log('on drag');
 		    imageChecker(feature);},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 	    let rotator = new MyMover(this.myLayer, {
 		theDisplay:this,
-		onDrag: function(feature, pixel) {
-		    imageChecker(feature);},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.ROTATE});		
+
 	    this.addControl(ID_RESIZE,"Click to resize",resizer);
 	    this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
 	    this.addControl(ID_ROTATE,"Click to rotate",rotator);		
