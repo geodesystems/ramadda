@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb  7 12:44:44 MST 2023";
+var build_date="RAMADDA build date: Wed Feb  8 06:15:58 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40084,6 +40084,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
                 box.style.strokeColor = 'transparent';
 		let mapGlyph =this.display.handleNewFeature(box,this.style);
 		mapGlyph.setImage(image);
+//		mapGlyph.checkImage(null,true);
+		mapGlyph.setRotation(mapGlyph.style.rotation);
 		box.mapGlyph = mapGlyph;
                 this.display.myLayer.redraw(box);
 		this.display.clearCommands();
@@ -42017,7 +42019,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let isImage = style.imageUrl;
 		for(a in style) {
 		    if(isImage) {
-			if(a!='transform' && a!='rotation' && a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
+//			if(a!='transform' && a!='rotation' && a!="imageUrl" && a!="imageOpacity" && a!="popupText") continue;
 		    }
 		    props.push(a);
 		    values[a] = style[a];
@@ -42681,7 +42683,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let glyphType = this.getGlyphType(type);
 	    if(!glyphType) {
 		console.log("no type:" + type);
-		console.dir(this.glyphTypeMap);
 		return null;
 	    }
 	    let style = $.extend({},glyphType.getStyle());
@@ -42934,7 +42935,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=div;
 	    html+= this.menuItem(this.domId(ID_IMPORT),"Import")
 	    html+=div;
-	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...",'L');
+	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features...");
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands","Esc");
 	    //	    html+= this.menuItem(this.domId(ID_REFRESH),"Refresh");	    
 	    html+=div;
@@ -43676,17 +43677,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			  MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
 
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
-			  {strokeColor:"#ccc",
-			   strokeWidth:1,
-			   imageOpacity:this.getImageOpacity(1),
-			   fillColor:"transparent",
-			   rotation:0,
-			   transform:''},
-			  ImageHandler,
-			  {tooltip:"Select an image entry to display",
-			   snapAngle:90,sides:4,irregular:true,isImage:true,
-			   icon:Ramadda.getUrl("/icons/imageicon.png")}
-			 );
+			  Utils.clone({},
+				      {imageOpacity:this.getImageOpacity(1)},
+				      lineStyle,
+				      {rotation:0,
+				       transform:''}),
+				      ImageHandler,
+				      {tooltip:"Select an image entry to display",
+				       snapAngle:90,sides:4,irregular:true,isImage:true,
+				       icon:Ramadda.getUrl("/icons/imageicon.png")}
+				     );
 	    new GlyphType(this,GLYPH_ENTRY,"Entry Marker",
 			  Utils.clone(
 			      {externalGraphic: Ramadda.getUrl("/icons/entry.png"),
@@ -44284,6 +44284,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    let cmds = '';
 	    this.jq(ID_COMMANDS).html(cmds);
+	    this.jq(ID_MAP).keydown(function(event){
+		if(!event.ctrlKey) return;
+		_this.getSelected().forEach(glyph=>{
+		    glyph.handleKeyDown(event);
+		});
+		event.preventDefault();
+	    });
 	    this.jq(ID_MAP).mouseover(function(){
 		$(this).focus();
 	    });
@@ -44391,7 +44398,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let callbacks = {
 		keydown: function(event) {
 		    if(event.key=='MediaTrackPrevious') return;
-		    //		    console.log('key down:' + event.key);
 		    HtmlUtils.hidePopupObject();
 		    if(event.key=='Escape') {
 			_this.clearCommands();
@@ -44422,17 +44428,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    case 'c': 
 			_this.doCopy();
 			break;
-		    case 'f': 
-			_this.changeOrder(true);
-			break;
-		    case 'b': 
-			_this.changeOrder(false);
-			break;			    			    
 		    case 'm':
 			_this.setCommand(ID_MOVER);
-			break;
-		    case 'l':
-			_this.listFeatures();
 			break;
 		    case 's': 
 			_this.doSave();
@@ -44516,12 +44513,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.log('no map glyph');
 			return;
 		    }
+		    if(!mapGlyph.isSelected()) mapGlyph.select();
 		    let selected = _this.getSelected();
-		    if(selected.length==0) {
-			selected = [mapGlyph];
-		    } else if(!selected.includes(mapGlyph)) {
-			selected.push(mapGlyph);
-		    }
 		    let res = this.map.getResolution();
 		    let dx = res * (pixel.x - this.lastPixel.x);
 		    let dy = res * (this.lastPixel.y - pixel.y);
@@ -44529,12 +44522,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			mapGlyph.move(dx,dy);
 		    });
 		    this.lastPixel = pixel;
+		    _this.featureChanged();	    
 		},
 		onDrag: function(feature, pixel) {
 		}
 	    }));
 
 	    let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
+		dragStart: function() {
+		    OpenLayers.Control.ModifyFeature.prototype.dragStart.apply(this, arguments);
+		},
 		dragComplete: function() {
 		    OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
 		    this.theDisplay.featureChanged();	    
@@ -44542,7 +44539,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		},
 		dragVertex: function(vertex, pixel) {
 		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
-		    this.theDisplay.checkSelected(this.feature.mapGlyph);
+		    let mapGlyph = this.feature.mapGlyph;
+		    if(mapGlyph) {
+			if(!mapGlyph.isSelected()) mapGlyph.select();
+		    }
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image && this.feature.type!=GLYPH_BOX && !this.feature?.mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
@@ -44588,6 +44588,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					   'select');
 		    this.layer.drawFeature(vertex);
 		    if(this.feature.mapGlyph) {
+			if(this.mode==OpenLayers.Control.ModifyFeature.ROTATE) {
+			    if(this.feature.mapGlyph.isImage()) {
+				this.feature.style={strokeColor:'red',strokeWidth:4,fillColor:'transparent'};
+				let rotation = Utils.getRotation(v);
+				this.feature.mapGlyph.style.rotation = rotation.angle;
+			    }
+			} 
 			imageChecker(this.feature);
 		    }
 		}
@@ -44602,16 +44609,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
-		    console.log('on drag');
+		    //console.log('on drag');
 		    imageChecker(feature);},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 	    let rotator = new MyMover(this.myLayer, {
 		theDisplay:this,
-		onDrag: function(feature, pixel) {
-		    imageChecker(feature);},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.ROTATE});		
+
 	    this.addControl(ID_RESIZE,"Click to resize",resizer);
 	    this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
 	    this.addControl(ID_ROTATE,"Click to rotate",rotator);		
@@ -44951,7 +44957,6 @@ var LINETYPE_STEPPED='stepped';
 var ID_ADDDOTS = 'adddots';
 var ID_LINETYPE = 'linetype';
 
-
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 
     if(!type) {
@@ -45173,7 +45178,6 @@ MapGlyph.prototype = {
 	    style = $.extend({},style);
 	    if(this.getImage() && Utils.isDefined(this.getImage().opacity)) {
 		style.imageOpacity=this.getImage().opacity;
-		style.strokeColor="transparent";
 	    }
 	    obj.style = style;
 	}
@@ -45181,6 +45185,7 @@ MapGlyph.prototype = {
 	if(this.children) {
 	    let childrenJson=[];
 	    this.children.forEach(child=>{
+		if(child.isEphemeral) return;
 		childrenJson.push(child.makeJson());
 	    });
 	    obj.children = childrenJson;
@@ -45209,7 +45214,7 @@ MapGlyph.prototype = {
 	let  p =d=>{
 	    return Utils.trimDecimals(d,6);
 	};
-	if(this.getImage()) {
+	if(false && this.getImage()) {
 	    let b = this.getMap().transformProjBounds(geom.getBounds());
 	    points.push(p(b.top),p(b.left),
 			p(b.top),p(b.right),
@@ -45889,6 +45894,33 @@ MapGlyph.prototype = {
     addFeature: function(feature,andClear,addToDisplay) {
 	this.addFeatures([feature],andClear,addToDisplay);
     },
+    handleKeyDown:function(event) {
+	if(event.key=='o' || event.key=='O') {
+	    if(this.isImage() && this.image) {
+		let delta = event.key=='o'?-0.05:0.05;
+		let op =parseFloat(Utils.isDefined(this.style.imageOpacity)?this.style.imageOpacity:1);
+		op = Math.max(Math.min(op+delta,1),0);
+		this.style.imageOpacity = op;
+		this.image.setOpacity(op);
+	    }
+	    return;
+	}
+	if(event.key=='v') {
+	    this.setVisible(!this.getVisible(),true);
+	    return
+	}
+	if(event.key=='r' || event.key=='l' || event.key=='R' || event.key=='L') {
+	    if(this.isImage() && this.image) {
+		let delta = 0.5;
+		if(event.key=='l') delta=-0.5;
+		else if(event.key=='R') delta=5;
+		else if(event.key=='L') delta=-5;
+		this.setRotation(this.style.rotation +delta);
+		this.unselect();
+		this.select();
+	    }
+	}
+    },
     getStyle: function(applyMacros) {
 	if(applyMacros) {
 	    let tmpStyle = this.style??{};
@@ -46560,12 +46592,7 @@ MapGlyph.prototype = {
 	}
 
 	let setRotation = (event,ui) =>{
-	    this.style.rotation = ui.value; 
-	    if(this.image) {
-		if(this.image.imageHook) {
-		    this.image.imageHook();
-		}
-	    }
+	    this.setRotation(ui.value);
 	}
 	let setOpacity = (event,ui) =>{
 	    if(this.isMapServer())
@@ -48115,6 +48142,27 @@ MapGlyph.prototype = {
     },
     
 
+    addFillImage:function(features) {
+	features.forEach((feature,idx)=>{
+	    if(!Utils.stringDefined(feature?.attributes.fillimage)) return;
+	    let points =this.getFeaturePoints(feature);
+	    if(!points || points.length!=5) return;
+	    let tmp = [];
+	    points.forEach(p=>{
+		let pt = MapUtils.createPoint(p.x,p.y);
+		pt = this.getMap().transformProjPoint(pt);
+		tmp.push(pt.y,pt.x);
+	    });
+	    points = tmp;
+	    let style = {strokeColor:'transparent',imageUrl:feature.attributes.fillimage};
+	    let mapGlyph = new MapGlyph(this.display,GLYPH_IMAGE,{type:GLYPH_IMAGE},null,style,
+					true,{geometryType:'OpenLayers.Geometry.LineString',points:points});
+	    this.addChildGlyph(mapGlyph);
+	    mapGlyph.isEphemeral = true;
+	    mapGlyph.checkImage(feature,true);
+	});
+    },
+
     applyMapStyle:function(skipLegendUI) {
 	let _this = this;
 	//If its a map then set the style on the map features
@@ -48126,7 +48174,10 @@ MapGlyph.prototype = {
 	    this.makeFeatureFilters();
 	}
 
-
+	//Check for fillimage
+	if(features.length>0 && features[0].attributes?.fillimage) {
+	    this.addFillImage(features);
+	}
 	let style = this.style;
 	let rules = this.getMapStyleRules();
 	let useRules = [];
@@ -48522,38 +48573,77 @@ MapGlyph.prototype = {
     getMap:function() {
 	return this.display.getMap();
     },
-    checkImage:function(feature,bounds) {
+    setRotation:function(angle) {
+	this.style.rotation =angle;
+	if(!this.image) return;
+	if(this.image && this.image.imageHook) {
+	    this.image.imageHook();
+	}
+	let feature = this.features[0];
+	if(!feature) return
+	let points =this.getFeaturePoints(feature);
+	if(!points) {
+	    console.log("MapGlyph.setRotation: no points");
+	    return;
+	}
+	let ext = this.image.extent;
+	let c  =ext.getCenterPixel();
+	[[ext.left,ext.top],[ext.right,ext.top],[ext.right,ext.bottom],[ext.left,ext.bottom],[ext.left,ext.top]].forEach((tuple,idx)=>{
+	    let x = tuple[0];
+	    let y = tuple[1];		
+	    let r = Utils.rotate(c.x, c.y, x, y, this.style.rotation,true);
+	    points[idx].x=r.x;
+	    points[idx].y=r.y;	    
+	});
+	this.display.redraw(this);
+    },
+    getFeaturePoints:function(feature) {
+	if(!feature || !feature.geometry) return null;
+	let components = feature.geometry.components;
+	if(components[0]&&components[0].components) return components[0].components;
+	return components;
+    },
+    checkImage:function(feature,applyRotationFromFeature) {
 	if(this.image) {
 	    if(Utils.isDefined(this.image.opacity)) {
 		this.style.imageOpacity=this.image.opacity;
 	    }
 	}
 	if(!this.style.imageUrl) {
-	    console.log('no image url');
+	    console.log('MapGlyph.checkImage: no image url');
 	    return;
 	}
-	if(!bounds) {
-	    let geometry = this.getGeometry() || feature?.geometry;
-	    if(!geometry) {
-		console.log("no image geometry");
-		return;
-	    }
-	    this.display.clearBounds(geometry);
-	    bounds = geometry.getBounds();
-	    bounds = this.getMap().transformProjBounds(bounds);
+	feature = feature??this.features[0];
+	if(!feature) {
+	    console.log('MapGlyph.checkImage: no feature');
+	    return
+
 	}
+	let points =this.getFeaturePoints(feature);
+	if(!points) {
+	    console.log('MapGlyph.checkImage: no points');
+	    return
+	}
+	let bounds = MapUtils.createBoundsFromPoints(points);
+	let rotation = Utils.getRotation(points);
+	let c  =bounds.getCenterPixel();	
+	let rotatedPoints=points.map(p=>{
+	    return Utils.rotate(c.x, c.y, p.x,p.y, rotation.angle);
+	});
+	if(applyRotationFromFeature) this.style.rotation = rotation.angle
+	bounds= MapUtils.createBoundsFromPoints(rotatedPoints);
 	if(this.image) {
-	    bounds = this.getMap().transformLLBounds(bounds);
 	    this.image.extent = bounds;
 	    this.image.moveTo(bounds,true,true);
 	} else {
+	    bounds = this.getMap().transformProjBounds(bounds);
 	    this.image=  this.getMap().addImageLayer(this.getName(),this.getName(),"",this.style.imageUrl,true,  bounds.top,bounds.left,bounds.bottom,bounds.right);
 	    this.initImageLayer(this.image);
-	    this.image.imageHook();
 	    if(Utils.isDefined(this.style.imageOpacity)) {
 		this.image.setOpacity(this.style.imageOpacity);
 	    }
 	}
+	this.setRotation(this.style.rotation);
     },
     initImageLayer:function(image) {
 	this.image = image;
@@ -48564,14 +48654,15 @@ MapGlyph.prototype = {
 	    if(Utils.isDefined(this.style.rotation) && this.style.rotation!=0)
 		transform += ' rotate(' + this.style.rotation +'deg)';
 	    if(!Utils.stringDefined(transform))  transform=null;
-	    var childNodes = this.image.div.childNodes;
-	    for(var i = 0, len = childNodes.length; i < len; ++i) {
-                var element = childNodes[i].firstChild || childNodes[i];
-                var lastChild = childNodes[i].lastChild;
+	    let childNodes = this.image.div.childNodes;
+	    for(let i = 0, len = childNodes.length; i < len; ++i) {
+                let element = childNodes[i].firstChild || childNodes[i];
+                let lastChild = childNodes[i].lastChild;
                 if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
 		    element = lastChild.parentNode;
                 }
-		element.style.transform=transform;
+		if(element.style)
+		    element.style.transform=transform;
 		//                    OpenLayers.Util.modifyDOMElement(element, null, null, null, null, null, null, null);
 	    }
 	}
@@ -49138,8 +49229,16 @@ MapGlyph.prototype = {
 	let image = this.getImage();
 	if(image) {
 	    let ext = image.extent;
+	    let c  =ext.getCenterPixel();
 	    [[ext.left,ext.top],[ext.right,ext.top],[ext.left,ext.bottom],[ext.right,ext.bottom]].forEach(tuple=>{
-                let pt = MapUtils.createPoint(tuple[0],tuple[1]);
+		let x = tuple[0];
+		let y = tuple[1];		
+		//Rotate the dots
+		if(this.style.rotation) {
+		    let r = Utils.rotate(c.x, c.y, x, y, this.style.rotation,true);
+		    x = r.x; y=r.y;
+		}
+                let pt = MapUtils.createPoint(x,y);
 		let dot = MapUtils.createVector(pt,null,this.display.DOT_STYLE);	
 		this.selectDots.push(dot);
 	    });
