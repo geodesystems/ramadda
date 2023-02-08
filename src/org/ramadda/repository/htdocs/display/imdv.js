@@ -561,7 +561,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 
-	makeRangeRings:function(center,radii,style,angle,ringStyle) {
+	makeRangeRings:function(center,radii,style,angle,ringStyle,labels) {
 	    if(angle=='') angle = NaN;
 	    style = style??{};
 	    let rings = [];
@@ -579,6 +579,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let skm = String(km).trim();
 		if(skm.endsWith(UNIT_MILES)) {
 		    km = 1.60934*parseFloat(skm.replace(UNIT_MILES,''));
+		} else if(skm.endsWith(UNIT_NM)) {
+		    km = 1.852*parseFloat(skm.replace(UNIT_NM,''));
 		} else if (skm.endsWith(UNIT_FT)) {
 		    km = 0.0003048*parseFloat(skm.replace(UNIT_FT,''));
 		} else if (skm.endsWith(UNIT_KM)) {
@@ -622,8 +624,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		rings.push(MapUtils.createVector(ring,null,_style));
 		p2 = MapUtils.createPoint(p2.lon,p2.lat);
 		let s = $.extend({},labelStyle);
-		if(!isNaN(angle)) 
-		    s.label=skm;
+		if(!isNaN(angle)) {
+		    if(labels && idx<labels.length) {
+			s.label = labels[idx].replace("${distance}",skm);
+		    } else {
+			s.label=skm;
+		    }
+		}
 		let label = MapUtils.createVector(p2,null,s);
 		rings.push(label);
 	    }

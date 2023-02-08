@@ -326,6 +326,9 @@ MapGlyph.prototype = {
 	if(this.isRings()) {
 	    return HU.formEntry('Rings Radii:',HU.input('',Utils.join(this.getRadii(),','),
 							['id',this.domId('radii'),'size','40'])+' e.g., 1km, 2mi (miles), 100ft') +
+		HU.formEntry('Rings Labels:',HU.input('',this.attrs.rangeRingLabels??'',
+						      ['id',this.domId('rangeringlabels'),'size','40'])+' e.g., Label 1 ${distance}, Label 2, ..., Label N ${distance}') +
+
 		HU.formEntry('Ring label angle:',
 			     HU.input('',Utils.isDefined(this.attrs.rangeRingAngle)?this.attrs.rangeRingAngle:90+45,[
 				 'id',this.domId('rangeringangle'),'size',4]) +' Leave blank to not show labels') +
@@ -483,6 +486,7 @@ MapGlyph.prototype = {
 	}
 	if(this.isRings()) {
 	    this.attrs.radii=Utils.split(this.jq('radii').val()??'',',',true,true);
+	    this.attrs.rangeRingLabels =this.jq('rangeringlabels').val();
 	    this.attrs.rangeRingAngle=this.jq('rangeringangle').val();
 	    this.attrs.rangeRingStyle = this.jq('rangeringstyle').val();
 	    if(this.features.length>0) this.features[0].style.strokeColor='transparent';
@@ -3583,7 +3587,8 @@ MapGlyph.prototype = {
 		}
 	    });
 	}
-	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle);
+	this.rings = this.display.makeRangeRings(center,this.getRadii(),this.style,this.attrs.rangeRingAngle,ringStyle,
+						 Utils.split(this.attrs.rangeRingLabels??'',',',true,true));
 	if(this.rings) {
 	    this.rings.forEach(ring=>{
 		ring.mapGlyph=this;

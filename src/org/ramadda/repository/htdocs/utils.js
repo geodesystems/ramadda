@@ -35,6 +35,7 @@ var UNIT_FT='ft';
 var UNIT_MILES='mi';
 var UNIT_KM='km';
 var UNIT_M='m';
+var UNIT_NM='nm';
 
 
 
