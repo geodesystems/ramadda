@@ -3282,11 +3282,48 @@ MapGlyph.prototype = {
 
 	//Apply the base style here
 	
+	let fillProperty = this.getProperty('map.property.fillColor');
+	let fillOpacityProperty = this.getProperty('map.property.fillOpacity');
+	let strokeProperty = this.getProperty('map.property.strokeColor');
+	let labelProperty = this.getProperty('map.property.label');	
+
 	this.mapLayer.style = style;
 	if(features) {
 	    features.forEach((f,idx)=>{
-		ImdvUtils.applyFeatureStyle(f, $.extend({},style));
-		f.originalStyle = $.extend({},style);			    
+		let featureStyle = Utils.clone(style);
+		if(f.attributes) {
+		    if(fillProperty && Utils.stringDefined(f.attributes[fillProperty])) 
+			featureStyle.fillColor=f.attributes[fillProperty];
+		    if(fillOpacityProperty && Utils.stringDefined(f.attributes[fillOpacityProperty]))  
+			featureStyle.fillOpacity=f.attributes[fillOpacityProperty];
+		    if(labelProperty && Utils.stringDefined(f.attributes[labelProperty]))  {
+			let label = f.attributes[labelProperty];
+			if(true || label.indexOf('disproportionate')>=0) {
+			if(label.length>20) {
+			    let tmp = Utils.splitList(label.split(' '),4);
+			    label = '';
+			    tmp.forEach(l=>{
+				label+=Utils.join(l,' ')+'\n'
+			    });
+			}
+//			    label = "hello there\nhow are you\nI am fine"
+			    featureStyle = Utils.clone(featureStyle,{
+				strokeColor:'transparent',
+				textBackgroundFillColor:featureStyle.fillColor,
+				textBackgroundPadding:2,
+				textBackgroundShape:'rectangle',				
+				labelXOffset:4,
+				labelYOffset:-8,
+				labelAlign:'lt',
+				fontSize:'6pt',
+				label:label});
+//			    featureStyle.fillColor = 'transparent'
+			}
+		    }
+
+		}
+		ImdvUtils.applyFeatureStyle(f, featureStyle);
+		f.originalStyle = Utils.clone(style);			    
 	    });
 	}
 
