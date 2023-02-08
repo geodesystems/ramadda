@@ -3680,7 +3680,7 @@ MapGlyph.prototype = {
 	let rotatedPoints=points.map(p=>{
 	    return Utils.rotate(c.x, c.y, p.x,p.y, rotation.angle);
 	});
-	if(applyRotationFromFeature) this.style.rotation = rotation.angle
+	if(applyRotationFromFeature) this.style.rotation = rotation.angle-180
 	bounds= MapUtils.createBoundsFromPoints(rotatedPoints);
 	if(this.image) {
 	    this.image.extent = bounds;
