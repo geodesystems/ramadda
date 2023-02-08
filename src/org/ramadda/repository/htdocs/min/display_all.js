@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  8 11:22:21 MST 2023";
+var build_date="RAMADDA build date: Wed Feb  8 13:41:26 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -34299,6 +34299,14 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 this.updateUICallback = setTimeout(callback, 1);
             }
         },
+	getTurfPoints:function(f) {
+	    let p=[];
+	    let coords = f.geometry.coordinates;
+	    coords.forEach(pair=>{
+		p.push(pair[1],pair[0]);
+	    });
+	    return p;
+	},
 	makeTurfBounds:function(bounds,padding) {
 	    if(Utils.isDefined(padding)) {
 		let w = bounds.east-bounds.west;
@@ -34307,6 +34315,25 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 	    return [bounds.west, bounds.south, bounds.east, bounds.north];
 	},
+	makeFeature:function(map,geometryType, style, points) {
+	    if(points.length>2) {
+		let latLons = [];
+		for(let i=0;i<points.length;i+=2) {
+		    latLons.push(MapUtils.createPoint(points[i+1],points[i]));
+		}
+		if(geometryType=="OpenLayers.Geometry.Polygon") {
+		    map.transformPoints(latLons);
+		    let linearRing = MapUtils.createLinearRing(latLons);
+		    let geom = MapUtils.createPolygon(linearRing);
+		    return MapUtils.createVector(geom,null,style);
+		} else {
+		    return  map.createPolygon("","",latLons,style,null,geometryType=="OpenLayers.Geometry.LineString");
+		}
+	    } 
+	    let point =  MapUtils.createLonLat(points[1], points[0]);
+	    return  map.createPoint("",point,style);
+	},
+
 	createGeoJsonLayer:function(name,geojson,layer) {
 	    if(layer) {
 		layer.removeFeatures(layer.features);
@@ -34845,6 +34872,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:"Map Lines"},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
 	{p:'segmentWidth',d:'1',tt:'Segment line width'},	
+	{p:'useGreatCircle',d:false,ex:'true',tt:'use great circle routes for segments'},
+	{p:'sizeSegments',d:false,ex:'true',tt:'Size the segments based on record value'},	
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
@@ -37704,7 +37733,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let latField2 = this.getFieldById(fields, this.getProperty("latField2"));
             let lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
             let lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
-            let sizeSegments = this.getProperty("sizeSegments", false);
+	    let showSegments = this.getShowSegments(false);
+	    let greatCircle = this.getUseGreatCircle();
+            if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
+		if(!MapUtils.loadTurf(()=>{
+		    this.createPoints(records, fields, points,bounds, debug);		
+		})) {
+		    return;
+		}
+
+	    }
+
+
+            let sizeSegments = this.getSizeSegments();
             let sizeEndPoints = this.getProperty("sizeEndPoints", true);
             let showEndPoints = this.getProperty("showEndPoints", false);
             let endPointSize = parseInt(this.getProperty("endPointSize", "4"));
@@ -37854,7 +37895,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		groups =  RecordUtil.groupBy(records, this, false, groupByField);
 	    
 
-	    let showSegments = this.getShowSegments(false);
+
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
 	    let highlightTemplate = this.getProperty("highlightTemplate");
@@ -38220,7 +38261,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    attrs.strokeLinecap = lineCap;
 		    attrs.strokeColor =   colorBy.getColorFromRecord(record, attrs.strokeColor);
                     attrs.strokeWidth = segmentWidth;
-		    let line = this.map.createLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs);
+		    let line;
+		    if(greatCircle) {
+			let start = turf.point([lon1,lat1]);
+			let end = turf.point([lon2,lat2]);
+			let points = this.getTurfPoints(turf.greatCircle(start, end));
+			let type = 'OpenLayers.Geometry.LineString';
+			line =this.makeFeature(this.getMap(),type,attrs,points);		    
+		    } else {
+			line= this.map.createLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs);
+		    }
 		    featuresToAdd.push(line);
 		    line.record = record;
 		    line.textGetter = textGetter;
@@ -42750,24 +42800,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 
-	makeFeature:function(map,geometryType, style, points) {
-	    if(points.length>2) {
-		let latLons = [];
-		for(let i=0;i<points.length;i+=2) {
-		    latLons.push(MapUtils.createPoint(points[i+1],points[i]));
-		}
-		if(geometryType=="OpenLayers.Geometry.Polygon") {
-		    map.transformPoints(latLons);
-		    let linearRing = MapUtils.createLinearRing(latLons);
-		    let geom = MapUtils.createPolygon(linearRing);
-		    return MapUtils.createVector(geom,null,style);
-		} else {
-		    return  map.createPolygon("","",latLons,style,null,geometryType=="OpenLayers.Geometry.LineString");
-		}
-	    } 
-	    let point =  MapUtils.createLonLat(points[1], points[0]);
-	    return  map.createPoint("",point,style);
-	},
 	doMapProperties:function() {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let accords = [];
@@ -45824,8 +45856,16 @@ MapGlyph.prototype = {
 		let [lat2,lon2] = latlon(pts,i+2);				
 		let start = turf.point([lon1,lat1]);
 		let end = turf.point([lon2,lat2]);
-		newPts.push(...getPoints(turf.greatCircle(start, end)));
+		let circlePts =this.display.getTurfPoints(turf.greatCircle(start, end)); 
+		circlePts.forEach(pair=>{
+		    if(Array.isArray(pair)) {
+			newPts.push(pair[1],pair[0]);
+		    } else {
+			newPts.push(pair);
+		    }
+		});
 	    }
+
 	} else if(this.attrs.lineType==LINETYPE_CURVE) {
 	    isDraggable = false;
 	    let tmp = [];
