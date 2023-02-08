@@ -3892,6 +3892,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let convertPost = this.getProperty("convertDataPost");
 	    if(convertPost) {
+		let pointData = this.getData();
 		let newPointData = new  PointData("pointdata", pointData.getRecordFields(), records,null,{parent:pointData});
 		this.pointData =  new CsvUtil().process(this, newPointData, convertPost);
 		records = this.pointData.getRecords();
