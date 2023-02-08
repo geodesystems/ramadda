@@ -1441,41 +1441,43 @@ ColorByInfo.prototype = {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
 
-	if(!Array.isArray(record)) record=[record];
+	let records = record;
+	if(!Array.isArray(records)) records=[records];
+	else record = records[0];
 	if(this.colorThresholdField && this.display.selectedRecord) {
 	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
-	    let v2=record[0].getValue(this.colorThresholdField.getIndex());
+	    let v2=records[0].getValue(this.colorThresholdField.getIndex());
 	    if(v2>v) return this.aboveColor;
 	    else return this.belowColor;
 	}
 
 	if (this.index >= 0 || this.getDoCount()) {
 	    let value;
-	    if(record.length>1) {
+	    if(records.length>1) {
 		let total = 0;
-		record.forEach(r=>{
+		records.forEach(r=>{
 		    total+= r.getData()[this.index];
 		});
-		value = total/record.length;
+		value = total/records.length;
 	    } else {
-		value= record[0].getData()[this.index];
+		value= records[0].getData()[this.index];
 	    }
-	    value = this.getDoCount()?record.length:value;
+	    value = this.getDoCount()?records.length:value;
 	    return  this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
-		value = record[0].getTime().getHours();
+		value = records[0].getTime().getHours();
 	    }  else {
-		value = record[0].getTime().getTime();
+		value = records[0].getTime().getTime();
 	    }
 //	    console.log(value);
-	    return  this.getColor(value, record[0],checkHistory);
+	    return  this.getColor(value, records[0],checkHistory);
 	} 
 	if(this.fieldValue == "year") {
-	    if(record[0].getDate()) {
-		let value = record[0].getDate().getUTCFullYear();
-		return this.getColor(value, record[0]);
+	    if(records[0].getDate()) {
+		let value = records[0].getDate().getUTCFullYear();
+		return this.getColor(value, records[0]);
 	    }
 	}
 	return dflt;
