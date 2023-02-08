@@ -849,6 +849,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                 tok     = Utils.clip(tok,ENTRY_PREFIX_TYPE);
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
+		tok="";
 	    }
 	    tok = tok.trim();
 	    if(tok.length()>0) {
