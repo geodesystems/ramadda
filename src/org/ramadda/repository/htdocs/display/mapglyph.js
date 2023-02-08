@@ -871,8 +871,16 @@ MapGlyph.prototype = {
 		let [lat2,lon2] = latlon(pts,i+2);				
 		let start = turf.point([lon1,lat1]);
 		let end = turf.point([lon2,lat2]);
-		newPts.push(...getPoints(turf.greatCircle(start, end)));
+		let circlePts =this.display.getTurfPoints(turf.greatCircle(start, end)); 
+		circlePts.forEach(pair=>{
+		    if(Array.isArray(pair)) {
+			newPts.push(pair[1],pair[0]);
+		    } else {
+			newPts.push(pair);
+		    }
+		});
 	    }
+
 	} else if(this.attrs.lineType==LINETYPE_CURVE) {
 	    isDraggable = false;
 	    let tmp = [];

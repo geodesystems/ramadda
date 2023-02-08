@@ -2785,24 +2785,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 
 
-	makeFeature:function(map,geometryType, style, points) {
-	    if(points.length>2) {
-		let latLons = [];
-		for(let i=0;i<points.length;i+=2) {
-		    latLons.push(MapUtils.createPoint(points[i+1],points[i]));
-		}
-		if(geometryType=="OpenLayers.Geometry.Polygon") {
-		    map.transformPoints(latLons);
-		    let linearRing = MapUtils.createLinearRing(latLons);
-		    let geom = MapUtils.createPolygon(linearRing);
-		    return MapUtils.createVector(geom,null,style);
-		} else {
-		    return  map.createPolygon("","",latLons,style,null,geometryType=="OpenLayers.Geometry.LineString");
-		}
-	    } 
-	    let point =  MapUtils.createLonLat(points[1], points[0]);
-	    return  map.createPoint("",point,style);
-	},
 	doMapProperties:function() {
 	    if(!this.mapProperties)this.mapProperties={};
 	    let accords = [];
