@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  8 06:33:44 MST 2023";
+var build_date="RAMADDA build date: Wed Feb  8 11:22:21 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -1868,41 +1868,43 @@ ColorByInfo.prototype = {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
 
-	if(!Array.isArray(record)) record=[record];
+	let records = record;
+	if(!Array.isArray(records)) records=[records];
+	else record = records[0];
 	if(this.colorThresholdField && this.display.selectedRecord) {
 	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
-	    let v2=record[0].getValue(this.colorThresholdField.getIndex());
+	    let v2=records[0].getValue(this.colorThresholdField.getIndex());
 	    if(v2>v) return this.aboveColor;
 	    else return this.belowColor;
 	}
 
 	if (this.index >= 0 || this.getDoCount()) {
 	    let value;
-	    if(record.length>1) {
+	    if(records.length>1) {
 		let total = 0;
-		record.forEach(r=>{
+		records.forEach(r=>{
 		    total+= r.getData()[this.index];
 		});
-		value = total/record.length;
+		value = total/records.length;
 	    } else {
-		value= record[0].getData()[this.index];
+		value= records[0].getData()[this.index];
 	    }
-	    value = this.getDoCount()?record.length:value;
+	    value = this.getDoCount()?records.length:value;
 	    return  this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
-		value = record[0].getTime().getHours();
+		value = records[0].getTime().getHours();
 	    }  else {
-		value = record[0].getTime().getTime();
+		value = records[0].getTime().getTime();
 	    }
 //	    console.log(value);
-	    return  this.getColor(value, record[0],checkHistory);
+	    return  this.getColor(value, records[0],checkHistory);
 	} 
 	if(this.fieldValue == "year") {
-	    if(record[0].getDate()) {
-		let value = record[0].getDate().getUTCFullYear();
-		return this.getColor(value, record[0]);
+	    if(records[0].getDate()) {
+		let value = records[0].getDate().getUTCFullYear();
+		return this.getColor(value, records[0]);
 	    }
 	}
 	return dflt;
@@ -7427,6 +7429,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let convertPost = this.getProperty("convertDataPost");
 	    if(convertPost) {
+		let pointData = this.getData();
 		let newPointData = new  PointData("pointdata", pointData.getRecordFields(), records,null,{parent:pointData});
 		this.pointData =  new CsvUtil().process(this, newPointData, convertPost);
 		records = this.pointData.getRecords();
@@ -48232,11 +48235,48 @@ MapGlyph.prototype = {
 
 	//Apply the base style here
 	
+	let fillProperty = this.getProperty('map.property.fillColor');
+	let fillOpacityProperty = this.getProperty('map.property.fillOpacity');
+	let strokeProperty = this.getProperty('map.property.strokeColor');
+	let labelProperty = this.getProperty('map.property.label');	
+
 	this.mapLayer.style = style;
 	if(features) {
 	    features.forEach((f,idx)=>{
-		ImdvUtils.applyFeatureStyle(f, $.extend({},style));
-		f.originalStyle = $.extend({},style);			    
+		let featureStyle = Utils.clone(style);
+		if(f.attributes) {
+		    if(fillProperty && Utils.stringDefined(f.attributes[fillProperty])) 
+			featureStyle.fillColor=f.attributes[fillProperty];
+		    if(fillOpacityProperty && Utils.stringDefined(f.attributes[fillOpacityProperty]))  
+			featureStyle.fillOpacity=f.attributes[fillOpacityProperty];
+		    if(labelProperty && Utils.stringDefined(f.attributes[labelProperty]))  {
+			let label = f.attributes[labelProperty];
+			if(true || label.indexOf('disproportionate')>=0) {
+			if(label.length>20) {
+			    let tmp = Utils.splitList(label.split(' '),4);
+			    label = '';
+			    tmp.forEach(l=>{
+				label+=Utils.join(l,' ')+'\n'
+			    });
+			}
+//			    label = "hello there\nhow are you\nI am fine"
+			    featureStyle = Utils.clone(featureStyle,{
+				strokeColor:'transparent',
+				textBackgroundFillColor:featureStyle.fillColor,
+				textBackgroundPadding:2,
+				textBackgroundShape:'rectangle',				
+				labelXOffset:4,
+				labelYOffset:-8,
+				labelAlign:'lt',
+				fontSize:'6pt',
+				label:label});
+//			    featureStyle.fillColor = 'transparent'
+			}
+		    }
+
+		}
+		ImdvUtils.applyFeatureStyle(f, featureStyle);
+		f.originalStyle = Utils.clone(style);			    
 	    });
 	}
 
