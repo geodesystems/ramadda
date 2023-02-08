@@ -114,6 +114,16 @@ var MapUtils =  {
 				    bounds.bottom+(bounds.top-bounds.bottom)/2);
 
     },
+    createBoundsFromPoints:function (points) {
+	let left=0,right=0,bottom=0,top=0;
+	points.forEach((p,idx)=>{
+	    left = idx==0?p.x:Math.min(left,p.x);
+	    right = idx==0?p.x:Math.max(right,p.x);
+	    top = idx==0?p.y:Math.max(top,p.y);
+	    bottom = idx==0?p.y:Math.min(bottom,p.y);	    	    	    
+	})
+	return this.createBounds(left,bottom,right,top);
+    },
     createBounds:function (v1, v2, v3, v4) {
 	let bounds =  new OpenLayers.Bounds(RamaddaToFloat(v1), RamaddaToFloat(v2), RamaddaToFloat(v3), RamaddaToFloat(v4));
 	
@@ -471,6 +481,8 @@ new MapLayer('osm.toner','OSM-Toner','https://stamen-tiles.a.ssl.fastly.net/tone
 new MapLayer('osm.toner.lite','OSM-Toner Lite','https://stamen-tiles.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png');
 new MapLayer('cartolight','Carto-Light','https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${y}.png');
 new MapLayer('watercolor','Watercolor','https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.png');
+new MapLayer('moon','Moon','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/${z}/${x}/${y}.png');
+new MapLayer('mars','Mars','https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-1/all/${z}/${x}/${y}.png');
 new MapLayer('lightblue','','',{type:'simple'});
 new MapLayer('blue','','',{type:'simple'});
 new MapLayer('white','','',{type:'simple'});
@@ -3425,6 +3437,7 @@ RepositoryMap.prototype = {
 	}
     },
     handleKeyDown:function(evt) {
+	if(event.ctrlKey) return;
         if (evt.keyCode == 79) {
             if (!this.imageLayersList) return;
 	    if(this.ignoreKeyEvents) return;
