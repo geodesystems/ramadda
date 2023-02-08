@@ -3639,7 +3639,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
 	    let showSegments = this.getShowSegments(false);
 	    let greatCircle = this.getUseGreatCircle();
-            if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
+            if (greatCircle && (
+		showSegments && latField1 && latField2 && lonField1 && lonField2) ||
+		polygonField) {
 		if(!MapUtils.loadTurf(()=>{
 		    this.createPoints(records, fields, points,bounds, debug);		
 		})) {
@@ -4136,7 +4138,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(cidx>=polygonColorTable.length) cidx=0;
 			polygonProps.strokeColor=polygonColorTable[cidx++];
 		    }
-		    let polys = this.map.createPolygonString(s, polygonProps,latlon);
+		    let polys = this.map.createPolygonFromString(s, polygonProps,latlon,null);
 		    polys.forEach(poly=>{
 			poly.textGetter = textGetter;
 			poly.record = record;

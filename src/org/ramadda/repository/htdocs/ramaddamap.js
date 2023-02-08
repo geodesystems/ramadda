@@ -4662,7 +4662,7 @@ RepositoryMap.prototype = {
 	return this.createPolygonFromString(s,polygonProps,latlon,text);
     },
 
-    createPolygonFromString:function(s,polygonProps,latlon,text) {
+    createPolygonFromString:function(s,polygonProps,latlon,text,justPoints) {
 	let delimiter;
 	[";",","].forEach(d=>{
 	    if(s.indexOf(d)>=0) delimiter = d;
@@ -4682,14 +4682,17 @@ RepositoryMap.prototype = {
 		lat2=lon2;
 		lon2=tmp;
 	    }
-	    p.push(MapUtils.createPoint(lon1,lat1));
-	    p.push(MapUtils.createPoint(lon2,lat2));
+	    if(justPoints) {
+		p.push(lon1,lat1,lon2,lat2);
+	    } else {
+		p.push(MapUtils.createPoint(lon1,lat1));
+		p.push(MapUtils.createPoint(lon2,lat2));
+	    }
 	}
+	if(justPoints) return p;
 	let polys = [];
-	//	console.log("p:" + p);
-
 	if(p.length>0)
-	    polys.push(this.createPolygon("polygon", "",p,polygonProps,text));
+	    polys.push(this.createPolygon("polygon", "",p,polygonProps,text,true));
 	return polys;
     },
 
@@ -4997,8 +5000,6 @@ RepositoryMap.prototype = {
                 style[key] = attrs[key];
             }
         }
-	//	points.push(points[0]);
-
 	//for now create a polygon not a linestring
 	let geom;
 	if(makeLineString) {
