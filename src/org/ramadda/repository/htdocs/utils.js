@@ -362,6 +362,37 @@ var Utils =  {
         if(idx<list.length) return list[idx];
         return dflt;
     },
+    //from: https://stackoverflow.com/questions/13002979/how-to-calculate-rotation-angle-from-rectangle-points
+    getRotation:function(coords) {
+	if(coords[0].x) {
+	    let tmp = [];
+	    coords.forEach(c=>{
+		tmp.push(c.x,c.y);
+	    });
+	    coords = tmp;
+	}
+	// Get center as average of top left and bottom right
+	var center = [(coords[0] + coords[4]) / 2,
+                      (coords[1] + coords[5]) / 2];
+
+	// Get differences top left minus bottom left
+	var diffs = [coords[0] - coords[6], coords[1] - coords[7]];
+
+	// Get rotation in degrees
+	var rotation = Math.atan(diffs[0]/diffs[1]) * 180 / Math.PI;
+
+	// Adjust for 2nd & 3rd quadrants, i.e. diff y is -ve.
+	if (diffs[1] < 0) {
+            rotation += 180;
+	    
+	    // Adjust for 4th quadrant
+	    // i.e. diff x is -ve, diff y is +ve
+	} else if (diffs[0] < 0) {
+            rotation += 360;
+	}
+	// return array of [[centerX, centerY], rotation];
+	return {center:center, angle:rotation};
+    },
     rotate:function(cx, cy, x, y, angle,anticlock_wise) {
         if(angle == 0){
             return {x:parseFloat(x), y:parseFloat(y)};
