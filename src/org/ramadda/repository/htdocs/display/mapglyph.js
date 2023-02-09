@@ -3980,10 +3980,19 @@ MapGlyph.prototype = {
 			setVis(mapLabel,true);
 		});
 		let args ={};
+		let fontSize = this.style.fontSize??'12pt';
+		let fontSizeNum =  fontSize.match(/^([0-9]+)($|[^\d]+)/);
+		if(fontSizeNum) fontSizeNum=parseInt(fontSizeNum[1]);
+		else fontSizeNum=12;
+//		console.log('font size:',fontSize,'#'+fontSizeNum);
 		if(this.getProperty('map.label.pixelsperline'))
 		    args.pixelsPerLine = +this.getProperty('map.label.pixelsperline');
+		else
+		    args.pixelsPerLine = fontSizeNum*1.2;
 		if(this.getProperty('map.label.pixelspercharacter'))
 		    args.pixelsPerCharacter = +this.getProperty('map.label.pixelspercharacter');
+		else
+		    args.pixelsPerCharacter = fontSizeNum*1.2;
 		MapUtils.gridFilter(this.getMap(), this.mapLabels,args);
 	    }
 	}

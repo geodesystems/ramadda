@@ -305,23 +305,25 @@ var MapUtils =  {
 		});
 		let center = feature.geometry.getBounds().getCenterLonLat();
 		let screen = map.getMap().getViewPortPxFromLonLat(center);
+		let charWidth = opts.pixelsPerCharacter*maxWidth;
+		let charHeight=opts.pixelsPerLine*lines.length;
 		if(!dim) {
 		    dim={
 			minx:screen.x,
-			maxx:screen.x,
+			maxx:screen.x+charWidth,
 			miny:screen.y,
-			maxy:screen.y						
+			maxy:screen.y+charHeight						
 		    }
 		} else {
 		    dim.minx = Math.min(dim.minx,screen.x);
 		    dim.miny = Math.min(dim.miny,screen.y);
-		    dim.maxx = Math.max(dim.maxx,screen.x);
-		    dim.maxy = Math.max(dim.maxy,screen.y);		    		    
+		    dim.maxx = Math.max(dim.maxx,screen.x+charWidth);
+		    dim.maxy = Math.max(dim.maxy,screen.y+charHeight);		    		    
 		}
 		//4 pixels/character 10 pixels/line
 		feature.labelInfo={
-		    height:opts.pixelsPerLine*lines.length,
-		    width:opts.pixelsPerCharacter*maxWidth,
+		    height:charHeight,
+		    width:charWidth,
 		    center:center,
 		    screen:screen
 		}
@@ -332,15 +334,18 @@ var MapUtils =  {
 	let gridH = parseInt(dim.maxy-dim.miny);	
 	let offsetX = -dim.minx;
 	let offsetY = -dim.miny;	
-	let grid = Array(gridW+1);
+	let grid = Array(gridW);
 	for(let i=0;i<grid.length;i++) {
-	    grid[i] = Array.apply(null, Array(gridH+1)).map(function () {return false});
+	    grid[i] = Array.apply(null, Array(gridH)).map(function () {return false});
 	}
 	features.forEach((feature,idx)=>{
+//	    let debug = feature.style.label.indexOf("Holly")>=0 || feature.style.label.indexOf('Granada')>=0;
+	    let debug = false;
 	    if(!this.isFeatureVisible(feature)) return
 	    let info = feature.labelInfo;
 	    let indexX = parseInt(offsetX+info.screen.x);
 	    let indexY = parseInt(offsetY+info.screen.y);	    
+	    if(debug)  console.log(feature.style.label.substring(0,6),info,indexX,indexY);
 	    let clear = true;
 	    if(indexX+feature.labelInfo.width<0
 	       || indexY+feature.labelInfo.height<0) {
@@ -366,6 +371,7 @@ var MapUtils =  {
 	    if(!clear) {
 		MapUtils.setFeatureVisible(feature,false);
 	    } else {
+//		feature.style.label=indexX+'/' + indexY;
 		MapUtils.setFeatureVisible(feature,true);		    
 	    }
 	});
