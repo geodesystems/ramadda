@@ -6336,8 +6336,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return new Result(xml, MIME_XML);
         }
         StringBuilder sb = new StringBuilder("");
-        sb.append(HtmlUtils.sectionOpen(msg("Repository Information"),
-                                        false));
+        getPageHandler().sectionOpen(request, sb,"Repository Information",false);
         sb.append(HtmlUtils.formTable());
         sb.append(
             HtmlUtils.formEntry(
@@ -6367,8 +6366,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                       "" + getHttpsPort()));
 
         sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.sectionClose());
-
+        getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
 
@@ -6383,7 +6381,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processHttpTest(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("");
-        sb.append(HtmlUtils.sectionOpen(msg("Http Test"), false));
+        getPageHandler().sectionOpen(request, sb,"Http Test",false);
         sb.append(
             "Below is the http header that was received. On reload of this page there should be a 'ramadda_repository_session' cookie.");
         sb.append("<ul>");
@@ -6394,7 +6392,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             sb.append("<li>" + key + "=" + value + "<br>");
         }
         sb.append("</ul>");
-        sb.append(HtmlUtils.sectionClose());
+        getPageHandler().sectionClose(request, sb);
         Result result = new Result("", sb);
 
         return result;
@@ -6412,7 +6410,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processLicense(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("");
-        sb.append(HtmlUtils.sectionOpen(msg("RAMADDA License"), false));
+        getPageHandler().sectionOpen(request, sb,"RAMADDA License",false);	
         String license =
             getStorageManager().readSystemResource(
                 "/org/ramadda/repository/resources/ramadda_license.txt");
@@ -6422,7 +6420,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append("<pre>");
         sb.append(license);
         sb.append("</pre>");
-
+        getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
 
@@ -6440,12 +6438,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processColorTables(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.sectionOpen("Available Color Tables", false));
+        getPageHandler().sectionOpen(request, sb,"Color Tables",false);	
         sb.append(HtmlUtils.div("", "id='colortables'"));
 	sb.append(HtmlUtils.importJS(getHtdocsUrl("/colortables.js")));
 	//sb.append(HtmlUtils.importJS(getHtdocsUrl("/esdlcolortables.js")));	
         sb.append(HtmlUtils.script("Utils.displayAllColorTables('colortables');"));
-        sb.append(HtmlUtils.sectionClose());
+        getPageHandler().sectionClose(request, sb);
         return new Result("", sb);
     }
 
