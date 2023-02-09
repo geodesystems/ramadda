@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb  8 15:00:37 MST 2023";
+var build_date="RAMADDA build date: Thu Feb  9 00:11:42 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -45413,6 +45413,12 @@ MapGlyph.prototype = {
 
 	html=  this.getHelp('#miscproperties')+'<br>';
 	let miscLines =[...IMDV_PROPERTY_HINTS];
+	if(this.isMap()) {
+	    miscLines.push('map.label.maxlength=100','map.label.maxlinelength=15',
+			   'map.label.pixelsperline=10',
+			   'map.label.pixelspercharacter=4');
+	}
+
 	miscLines.push('<hr>');
 	this.getFeatureInfoList().forEach(info=>{
 	    //	    miscLines.push({line:info.id+'.show=true',title:info.property});
@@ -48450,6 +48456,8 @@ MapGlyph.prototype = {
 	//Add the map labels at the end after we call checkVisible
 	let needToAddMapLabels = false;
 	if(Utils.stringDefined(this.getMapLabelsTemplate())) {
+	    let maxLength = parseInt(this.getProperty("map.label.maxlength",1000));
+	    let maxLineLength = parseInt(this.getProperty("map.label.maxlinelength",1000));
 	    needToAddMapLabels = true;
 	    this.mapLabels = [];
 	    let markerStyle = 	$.extend({},this.style);
@@ -48460,7 +48468,27 @@ MapGlyph.prototype = {
 	    features.forEach((feature,idx)=>{
 		let pt = feature.geometry.getCentroid(true); 
 		let labelStyle = $.extend({},markerStyle);
-		labelStyle.label = this.applyMacros(template, feature.attributes,macros);
+		let label = this.applyMacros(template, feature.attributes,macros);
+		if(label.length>maxLength) {
+		    label = label.substring(0,maxLength)+'...';
+		}
+		if(maxLineLength>0) {
+		    let tmp ='';
+		    let cnt = 0;
+		    let lastChar = '';
+		    for(let i=0;i<label.length;i++ ) {
+			let nextChar = label[i];
+			if(cnt++>maxLineLength) {
+			    if(lastChar!=' ' && nextChar!=' ') tmp+='-';
+			    tmp+='\n';
+			    cnt=0;
+			}
+			lastChar = nextChar;
+			tmp+=nextChar;
+		    }
+		    label = tmp.trim();
+		}
+		labelStyle.label = label;
 		let mapLabel = MapUtils.createVector(pt,null,labelStyle);
 		mapLabel.point = pt;
 		feature.mapLabel  = mapLabel;
@@ -48946,10 +48974,10 @@ MapGlyph.prototype = {
 			setVis(mapLabel,true);
 		});
 		let args ={};
-		if(this.getProperty('mapLabelGridWidth'))
-		    args.cellWidth = +this.getProperty('mapLabelGridWidth');
-		if(this.getProperty('mapLabelGridHeight'))
-		    args.cellHeight = +this.getProperty('mapLabelGridHeight');		
+		if(this.getProperty('map.label.pixelsperline'))
+		    args.pixelsPerLine = +this.getProperty('map.label.pixelsperline');
+		if(this.getProperty('map.label.pixelspercharacter'))
+		    args.pixelsPerCharacter = +this.getProperty('map.label.pixelspercharacter');
 		MapUtils.gridFilter(this.getMap(), this.mapLabels,args);
 	    }
 	}
