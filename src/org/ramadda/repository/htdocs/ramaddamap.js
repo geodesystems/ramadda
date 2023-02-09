@@ -289,51 +289,86 @@ var MapUtils =  {
 
     gridFilter:function(map,features,args) {
 	let opts = {
-	    cellWidth:60,
-	    cellHeight:30
+	    pixelsPerLine:10,
+	    pixelsPerCharacter:5
 	}
 	if(args) $.extend(opts,args);
-	let b = new OpenLayers.Bounds();
-	let cnt = 0;
+	let dim;
 	features.forEach(feature=>{
+	    feature.labelInfo=null;
 	    if(!feature.geometry) return;
-	    let gb = feature.geometry.getBounds();
-	    b.extend(gb);
-	});
-	let gscr =(x,y)=>{return map.getMap().getViewPortPxFromLonLat(MapUtils.createLonLat(x,y));};
-	let ul = gscr(b.left,b.top);
-	let lr = gscr(b.right,b.bottom);	    	  
-	if(!isNaN(ul.x) && !isNaN(ul.y) && !isNaN(lr.x) && !isNaN(lr.y)) {
-	    let gridW = parseInt((lr.x-ul.x)/opts.cellWidth);
-	    let gridH = parseInt((lr.y-ul.y)/opts.cellHeight);	    
-	    let grid = Array(gridW+1);
-//	    console.log("w:"+gridW," h:"+gridH,lr.y,ul.y,opts.cellHeight);
-
-	    for(let i=0;i<grid.length;i++) {
-		grid[i] = Array.apply(null, Array(gridH+1)).map(function () {return false});
-	    }
-	    let gridWidth = lr.x-ul.x;
-	    let gridHeight = lr.y-ul.y;
-	    let hideCnt = 0, showCnt=0;
-
-	    features.forEach((feature,idx)=>{
-		if(!this.isFeatureVisible(feature)) return
+	    if(feature.style && feature.style.label) {
+		let lines = feature.style.label.split('\n');
+		let maxWidth=0;
+		lines.forEach(line=>{
+		    maxWidth=Math.max(maxWidth,line.length);
+		});
 		let center = feature.geometry.getBounds().getCenterLonLat();
-		let screenPoint = map.getMap().getViewPortPxFromLonLat(center);
-		let indexX = parseInt(gridW*(screenPoint.x-ul.x)/gridWidth);
-		let indexY = parseInt(gridH*(lr.y-screenPoint.y)/gridHeight);		
-		if(grid[indexX][indexY]) {
-		    hideCnt++;
-		    MapUtils.setFeatureVisible(feature,false);
+		let screen = map.getMap().getViewPortPxFromLonLat(center);
+		if(!dim) {
+		    dim={
+			minx:screen.x,
+			maxx:screen.x,
+			miny:screen.y,
+			maxy:screen.y						
+		    }
 		} else {
-		    showCnt++;
-		    grid[indexX][indexY]=true;
-		    MapUtils.setFeatureVisible(feature,true);		    
+		    dim.minx = Math.min(dim.minx,screen.x);
+		    dim.miny = Math.min(dim.miny,screen.y);
+		    dim.maxx = Math.max(dim.maxx,screen.x);
+		    dim.maxy = Math.max(dim.maxy,screen.y);		    		    
 		}
-	    });
-//	    for(let i=0;i<grid.length;i++) {console.table(...grid[i]); }
-//	    console.log('grid filter show:' + showCnt +' hide:' + hideCnt);
+		//4 pixels/character 10 pixels/line
+		feature.labelInfo={
+		    height:opts.pixelsPerLine*lines.length,
+		    width:opts.pixelsPerCharacter*maxWidth,
+		    center:center,
+		    screen:screen
+		}
+	    }
+	});
+	if(!dim) return;
+	let gridW = parseInt(dim.maxx-dim.minx);
+	let gridH = parseInt(dim.maxy-dim.miny);	
+	let offsetX = -dim.minx;
+	let offsetY = -dim.miny;	
+	let grid = Array(gridW+1);
+	for(let i=0;i<grid.length;i++) {
+	    grid[i] = Array.apply(null, Array(gridH+1)).map(function () {return false});
 	}
+	features.forEach((feature,idx)=>{
+	    if(!this.isFeatureVisible(feature)) return
+	    let info = feature.labelInfo;
+	    let indexX = parseInt(offsetX+info.screen.x);
+	    let indexY = parseInt(offsetY+info.screen.y);	    
+	    let clear = true;
+	    if(indexX+feature.labelInfo.width<0
+	       || indexY+feature.labelInfo.height<0) {
+		//This should never happen
+		clear=false;
+		console.log('skipping:',indexX,indexY);
+	    }  else {
+		indexX = Math.max(0,indexX);
+		indexY = Math.max(0,indexY);		
+		for(let x=indexX;x<indexX+feature.labelInfo.width;x++) {
+		    if(x>=gridW) break;
+		    for(let y=indexY;y<indexY+feature.labelInfo.height;y++) {
+			if(y>=gridH) break;
+			if(grid[x][y]) {
+			    clear = false;
+			} else {
+			    grid[x][y] = true;
+			}
+		    }
+		}
+	    }
+
+	    if(!clear) {
+		MapUtils.setFeatureVisible(feature,false);
+	    } else {
+		MapUtils.setFeatureVisible(feature,true);		    
+	    }
+	});
     },
     makeDefaultFeatureText:function (attrs,columns,valueFormatter,labelGetter) {
 	if(!columns) columns  = Object.keys(attrs);
