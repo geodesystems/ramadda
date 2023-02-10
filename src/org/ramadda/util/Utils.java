@@ -6085,6 +6085,17 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
+	    String fmt = "yyyy-MM-dd'T'HH:mm:ssZ";
+	    System.err.println(fmt);
+	    SimpleDateFormat sdf = new SimpleDateFormat(fmt);
+	    String d = "2021-09-23T13:54:05+0000";
+	    String d2 = "2021-09-23T13:54:05";	    
+	    System.err.println(sdf.parse(d));
+	    return;
+	}
+
+
+	if(true) {
 	    String label = " foo (untis)";
 	    label = label.replaceAll("\\([^\\)]+\\)", "XXX");
 	    System.err.println(label);
