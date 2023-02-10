@@ -155,7 +155,7 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         final PipedOutputStream pos = new PipedOutputStream();
         final PipedInputStream  pis = new PipedInputStream(pos);
         final BridgeIterator bridge = new BridgeIterator(request,
-                                          typeHandler, entry, pos, columns);
+							 typeHandler, entry, pos, columns);
 
         Misc.run(new Runnable() {
             public void run() {
@@ -206,7 +206,7 @@ public class DbRecordFile extends CsvFile implements DbConstants {
             if (column.isNumeric()) {
                 extra += attrChartable();
             } else if (type.equals(RecordField.TYPE_DATE)) {
-                extra += " " + attrFormat("yyyyMMdd'T'HHmmss");
+                extra += " " + attrFormat("yyyy-MM-dd'T'HH:mm:ssZ");
             } else if (column.getName().equals("latitude")) {
                 type = RecordField.TYPE_DOUBLE;
             } else if (column.getName().equals("longitude")) {
@@ -328,10 +328,11 @@ public class DbRecordFile extends CsvFile implements DbConstants {
                             pw.append(str);
                         }
                     } else if (o instanceof Date) {
-
                         Date dttm = (Date) o;
 			//			if(rowCnt<3)  System.err.println("\ttype:date "+ Utils.formatIso(dttm));
-                        pw.append(Utils.formatIso(dttm));
+			String s = Utils.formatIso(dttm);
+			//			System.err.println("\t" +  c + " date:" + o +" formatted:" + s);
+                        pw.append(s);
                     } else {
                         pw.append(o.toString());
                     }
