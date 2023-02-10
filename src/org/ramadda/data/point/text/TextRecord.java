@@ -357,7 +357,6 @@ public class TextRecord extends DataRecord {
      */
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
-
         String line = null;
         if ((tokens != null) && (tokens.length == 0)) {
             System.err.println("TextRecord.read zero length tokens array");
@@ -530,7 +529,6 @@ public class TextRecord extends DataRecord {
                     continue;
                 }
 
-
                 if (field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
                     Date date = parseDate(field, tok);
@@ -604,8 +602,11 @@ public class TextRecord extends DataRecord {
      * @throws Exception _more_
      */
     private Date parseDate(RecordField field, String tok) throws Exception {
+	boolean debug = false;
         tok = tok.trim();
+	    if(debug) System.err.println("parseDate:" + tok);
         if (tok.equals("") || tok.equals("null")) {
+	    if(debug) System.err.println("\tno tok");
             return null;
         }
         //This is where the tok is, e.g.,  hh:mm:ss  and we prepend a base date on it
@@ -613,7 +614,7 @@ public class TextRecord extends DataRecord {
             if (baseDateString != null) {
                 tok = baseDateString + " " + tok;
             } else {
-                //The field has an offset beu there isn't a base date
+                //The field has an offset but there isn't a base date
                 return new Date();
             }
         }
@@ -624,11 +625,11 @@ public class TextRecord extends DataRecord {
             sfmt = "sss";
         }
 
+
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
                 if (tok.indexOf("E") >= 0) {
                     long l = ((long) Double.parseDouble(tok)) * 1000;
-
                     return new Date(l);
                 } else {
                     long l = Long.parseLong(tok);
@@ -652,21 +653,30 @@ public class TextRecord extends DataRecord {
             }
         }
 
+
+
+
+
         Date date   = null;
         int  offset = field.getUtcOffset();
         try {
             date = getDateFormat(field).parse(tok);
+	    if(debug) System.err.println("\tgot:" + date);
         } catch (java.text.ParseException ignore) {
+	    if(debug) System.err.println("\terror:" + ignore);
             //Try to guess
             date = Utils.extractDate(tok);
+	    if(debug)System.err.println("\textract:" + date);
             if (date == null) {
                 //Check for year
                 if (tok.length() == 4) {
                     date = Utils.parseDate(tok);
+		    if(debug)System.err.println("\tyear:" + date);
                 }
                 if (date == null) {
                     //Try tacking on UTC
                     try {
+			if(debug)System.err.println("\ttacking on UTC");
                         date = getDateFormat(field).parse(tok + " UTC");
                     } catch (java.text.ParseException ignoreThisOne) {
                         throw ignore;
@@ -674,12 +684,13 @@ public class TextRecord extends DataRecord {
                 }
             }
         }
+
+	if(debug)System.err.println("\tfinal:" + date);
         if (offset != 0) {
             long millis = date.getTime();
             millis += (-offset * 1000 * 3600);
             date = new Date(millis);
         }
-
         return date;
     }
 
