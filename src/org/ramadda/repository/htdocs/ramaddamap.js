@@ -2,6 +2,8 @@
  * Copyright (c) 2008-2023 Geode Systems LLC
  */
 
+
+
 var debugBounds = false;
 var getMapDebug = false;
 var debugPopup = false;
@@ -45,6 +47,30 @@ var MapUtils =  {
 
     },
     properties:{},
+    testSize:{
+	active:false,
+	out:null,
+	fontUnit:'px',
+	fontSize:3,
+	line:"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\nABCDEFGHIJKLMNOPQRSTUVWXYZABCD",
+	rows:2,
+	seen:{}
+    },
+    handleSize:function(bbox) {
+	if(!this.testSize.active) return;
+	if(!this.testSize.out) {
+	    this.testSize.out='let ' +this.testSize.fontUnit+'Map={';
+	}
+	if(this.testSize.seen[this.testSize.fontSize]) return;
+	this.testSize.seen[this.testSize.fontSize]=true;
+	let line = this.testSize.fontSize+':{x:'+Utils.trimDecimals(bbox.width/this.testSize.line.length,2)+',y:'+Utils.trimDecimals(bbox.height/this.testSize.rows,2)+'},';
+	console.log(line);
+	this.testSize.out+=line+'\n';
+	if(this.testSize.fontSize==24)
+	    Utils.makeDownloadFile(this.testSize.fontUnit+'map.txt',this.testSize.out+'\n};\n');
+    },
+
+
     loadTurf: function(callback) {
 	if(!window.turf) {
 	    let url = ramaddaCdn+"/lib/turf.min.js";
@@ -75,7 +101,7 @@ var MapUtils =  {
     stopEvent:function(e) {
 	OpenLayers.Event.stop(e);
     },
-	
+    
     createGraticule:function(attrs) {
 	return  new OpenLayers.Control.Graticule(attrs);
     },
@@ -245,7 +271,6 @@ var MapUtils =  {
 	    area = area * 6378137 * 6378137 / 2;
 	    if(area<0) area = -area;
 	    area = MapUtils.squareMetersToSquareFeet(area);
-	    //	    console.log(pts.length +' ' + area);
 	    return area;
 	}
 	return -1;
@@ -289,10 +314,87 @@ var MapUtils =  {
 
     gridFilter:function(map,features,args) {
 	let opts = {
-	    pixelsPerLine:10,
-	    pixelsPerCharacter:5
+	    fontSize:'12px',
+	    padding:2
 	}
 	if(args) $.extend(opts,args);
+	let ptMap={4:{x:1.75,y:5.99},
+		   5:{x:2.19,y:7.5},
+		   6:{x:2.63,y:8.99},
+		   7:{x:3.07,y:10.16},
+		   8:{x:3.51,y:11.83},
+		   9:{x:3.94,y:13.25},
+		   10:{x:4.38,y:14.66},
+		   11:{x:4.82,y:16.08},
+		   12:{x:5.26,y:17.5},
+		   13:{x:5.69,y:19.16},
+		   14:{x:6.13,y:20.33},
+		   15:{x:6.56,y:22},
+		   16:{x:7,y:23.41},
+		   17:{x:7.44,y:24.83},
+		   18:{x:7.88,y:26.25},
+		   19:{x:8.31,y:27.66},
+		   20:{x:8.75,y:29.08},
+		   21:{x:9.19,y:30.5},
+		   22:{x:9.62,y:31.91},
+		   23:{x:10.06,y:33.58},
+		   24:{x:10.5,y:34.75}};
+
+	let pxMap={4:{x:1.31,y:4.5},
+		   5:{x:1.64,y:5.62},
+		   6:{x:1.97,y:6.75},
+		   7:{x:2.3,y:7.87},
+		   8:{x:2.63,y:9},
+		   9:{x:2.96,y:10},
+		   10:{x:3.29,y:11.25},
+		   11:{x:3.62,y:12},
+		   12:{x:3.94,y:13.25},
+		   13:{x:4.27,y:14.25},
+		   14:{x:4.6,y:15.24},
+		   15:{x:4.93,y:16.5},
+		   16:{x:5.26,y:17.5},
+		   17:{x:5.58,y:18.75},
+		   18:{x:5.91,y:19.75},
+		   19:{x:6.24,y:21},
+		   20:{x:6.56,y:22},
+		   21:{x:6.89,y:22.75},
+		   22:{x:7.22,y:24},
+		   23:{x:7.55,y:25},
+		   24:{x:7.88,y:26.25}};
+
+	let fontSize = opts.fontSize??'12px';
+	let match =  fontSize.match(/^([0-9]+)($|[^\d]+)/);
+	let fontSizeNum = 12;
+	let fontSizeUnit='px';
+	if(match) {
+	    fontSizeNum=parseInt(match[1]);
+	    fontSizeUnit = match[2];
+	}
+	let sizeMap = pxMap;
+	if(fontSizeUnit=='pt') {
+	    sizeMap = ptMap;
+	}
+	let getDim=()=>{
+	    if(sizeMap[fontSizeNum]) return sizeMap[fontSizeNum];
+	    if(fontSizeNum<4) return sizeMap[4];
+	    return sizeMap[25];
+	}
+	if(!opts.pixelsPerCharacter) {
+	    opts.pixelsPerCharacter =getDim().x*opts.padding;
+	}
+	if(!opts.pixelsPerLine) {
+	    opts.pixelsPerLine =getDim().y*opts.padding;
+	}	
+	//	console.log(opts);
+
+	if(this.testSize.active) {
+	    let fs = ++this.testSize.fontSize;
+	    features.forEach(feature=>{
+		feature.style.fontSize=fs+this.testSize.fontUnit;
+		feature.style.label=this.testSize.line;
+	    });
+	}
+
 	let dim;
 	features.forEach(feature=>{
 	    feature.labelInfo=null;
@@ -303,49 +405,56 @@ var MapUtils =  {
 		lines.forEach(line=>{
 		    maxWidth=Math.max(maxWidth,line.length);
 		});
-		let center = feature.geometry.getBounds().getCenterLonLat();
+		let bounds = feature.geometry.getBounds();
+		let center = bounds.getCenterLonLat();
 		let screen = map.getMap().getViewPortPxFromLonLat(center);
 		let charWidth = opts.pixelsPerCharacter*maxWidth;
 		let charHeight=opts.pixelsPerLine*lines.length;
+		let left = screen.x-charWidth/2;
+		let right = screen.x+charWidth/2;		
+		let top=screen.y;
+		let bottom = screen.y+charHeight;
 		if(!dim) {
 		    dim={
-			minx:screen.x,
-			maxx:screen.x+charWidth,
-			miny:screen.y,
-			maxy:screen.y+charHeight						
+			minx:left,
+			maxx:right,
+			miny:top,
+			maxy:bottom						
 		    }
 		} else {
-		    dim.minx = Math.min(dim.minx,screen.x);
-		    dim.miny = Math.min(dim.miny,screen.y);
-		    dim.maxx = Math.max(dim.maxx,screen.x+charWidth);
-		    dim.maxy = Math.max(dim.maxy,screen.y+charHeight);		    		    
+		    dim.minx = Math.min(dim.minx,left);
+		    dim.maxx = Math.max(dim.maxx,right);
+		    dim.miny = Math.min(dim.miny,top);
+		    dim.maxy = Math.max(dim.maxy,bottom);		    		    
 		}
-		//4 pixels/character 10 pixels/line
 		feature.labelInfo={
 		    height:charHeight,
 		    width:charWidth,
 		    center:center,
-		    screen:screen
+		    left:left,
+		    right:right,
+		    top:top,
+		    bottom:bottom
 		}
 	    }
 	});
 	if(!dim) return;
-	let gridW = parseInt(dim.maxx-dim.minx);
-	let gridH = parseInt(dim.maxy-dim.miny);	
 	let offsetX = -dim.minx;
 	let offsetY = -dim.miny;	
+	let gridW = parseInt(dim.maxx+offsetX);
+	let gridH = parseInt(dim.maxy+offsetY);	
+	//	console.log('GRID:',gridW,gridH,offsetX,offsetY);
 	let grid = Array(gridW);
 	for(let i=0;i<grid.length;i++) {
 	    grid[i] = Array.apply(null, Array(gridH)).map(function () {return false});
 	}
 	features.forEach((feature,idx)=>{
-//	    let debug = feature.style.label.indexOf("Holly")>=0 || feature.style.label.indexOf('Granada')>=0;
 	    let debug = false;
+	    debug = idx==0;
 	    if(!this.isFeatureVisible(feature)) return
 	    let info = feature.labelInfo;
-	    let indexX = parseInt(offsetX+info.screen.x);
-	    let indexY = parseInt(offsetY+info.screen.y);	    
-	    if(debug)  console.log(feature.style.label.substring(0,6),info,indexX,indexY);
+	    let indexX = parseInt(offsetX+info.left);
+	    let indexY = parseInt(offsetY+info.top);	    
 	    let clear = true;
 	    if(indexX+feature.labelInfo.width<0
 	       || indexY+feature.labelInfo.height<0) {
@@ -353,25 +462,32 @@ var MapUtils =  {
 		clear=false;
 		console.log('skipping:',indexX,indexY);
 	    }  else {
+		let coords =[];
 		indexX = Math.max(0,indexX);
 		indexY = Math.max(0,indexY);		
-		for(let x=indexX;x<indexX+feature.labelInfo.width;x++) {
+		for(let x=indexX;clear && x<indexX+feature.labelInfo.width;x++) {
 		    if(x>=gridW) break;
-		    for(let y=indexY;y<indexY+feature.labelInfo.height;y++) {
+		    for(let y=indexY;clear && y<indexY+feature.labelInfo.height;y++) {
 			if(y>=gridH) break;
 			if(grid[x][y]) {
 			    clear = false;
 			} else {
-			    grid[x][y] = true;
+			    //Dont' set them yet because this feature might not be clear from other coords
+			    coords.push([x,y]);
 			}
 		    }
 		}
+		//If clear then set the flags
+		if(clear) {
+		    coords.forEach(coord=>{
+			grid[coord[0]][coord[1]] = true;		    
+		    });
+		}
 	    }
-
+	    if(this.testSize.active) clear =debug;
 	    if(!clear) {
 		MapUtils.setFeatureVisible(feature,false);
 	    } else {
-//		feature.style.label=indexX+'/' + indexY;
 		MapUtils.setFeatureVisible(feature,true);		    
 	    }
 	});
@@ -1851,7 +1967,7 @@ RepositoryMap.prototype = {
 	//Offset a bunch from the base
 	let base = this.numberOfBaseLayers+100;
 	let debug = false;
-//	debug = true;
+	//	debug = true;
 	let max = 0;
 	//debug=true
 	if(debug)   console.log("***** layer order");
@@ -1867,7 +1983,7 @@ RepositoryMap.prototype = {
 		changed = layer.theIndex!=index;
 	    if(debug) console.log('\t' + layer.name +' ramadda:' + layer.ramaddaLayerIndex +' old:' + layer.theIndex +' ' + index+' ' +changed);
 	    layer.theIndex = index;
-//	    this.getMap().setLayerIndex(layer, index);		
+	    //	    this.getMap().setLayerIndex(layer, index);		
 	    base=Math.max(base,index);
 	};
 	this.nonSelectLayers.forEach(setIndex);
@@ -2536,7 +2652,7 @@ RepositoryMap.prototype = {
     },
     onFeatureSelect: function(layer,event) {
 	if(debugPopup) console.log("\tonFeatureSelect");
-//	console.trace();
+	//	console.trace();
 	let _this = this;
         if (this.onSelect) {
             func = window[this.onSelect];
@@ -4442,9 +4558,9 @@ RepositoryMap.prototype = {
         let height = this.getMap().viewPortDiv.offsetHeight;
         let position = MapUtils.createPixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
         this.loadingImage = MapUtils.createImage("loadingimage",
-							position,
-							sz,
-							ramaddaCdn + '/icons/mapprogress.gif');
+						 position,
+						 sz,
+						 ramaddaCdn + '/icons/mapprogress.gif');
         this.loadingImage.style.zIndex = 1010;
         this.getMap().viewPortDiv.appendChild(this.loadingImage);
     },
@@ -5144,7 +5260,7 @@ RepositoryMap.prototype = {
 	    //Set location then do the popup later to allow map to repaint
 	    this.doingPopup = true;
 	    //For some reason if we do this here then the browser hangs
-//	    if(location)this.setCenter(location);
+	    //	    if(location)this.setCenter(location);
 	    setTimeout(()=> {
 		let slider = $("#" +this.mapDivId+"_slider");
 		if(this.params.popupSliderRight) {
@@ -5190,7 +5306,7 @@ RepositoryMap.prototype = {
 
 	//Only do this if we don't have a clickListener
 	if(!Utils.isDefined(this.clickListener)) {
-//	    console.log("showMarkerPopup:" + this.clickListener);
+	    //	    console.log("showMarkerPopup:" + this.clickListener);
 	    if(this.featureSelectHandler && this.featureSelectHandler(marker)) {
 		if(debugPopup) console.log("\tfeatureSelectHandler returned true");
 		return;
