@@ -198,8 +198,8 @@ public class DbRecordFile extends CsvFile implements DbConstants {
             String type    = colType.equals(Column.DATATYPE_INT)
                              ? RecordField.TYPE_INT
                              : column.isNumeric()
-                               ? RecordField.TYPE_DOUBLE
-                               : colType.equals(Column.DATATYPE_DATE)
+		? RecordField.TYPE_DOUBLE
+		: column.isDate()
                                  ? RecordField.TYPE_DATE
                                  : RecordField.TYPE_STRING;
             String extra   = "";
