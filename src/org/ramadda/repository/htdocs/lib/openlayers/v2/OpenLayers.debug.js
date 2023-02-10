@@ -41557,6 +41557,8 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
 	    if(bbox.width==0 || bbox.height==0) {
 		return true;
 	    }
+	    //jeffmc: for collecting dimensions
+//	    MapUtils.handleSize(bbox);
 	    let shape = 'rect';
 	    if(style.textBackgroundShape=='circle') shape='circle'
 	    else if(style.textBackgroundShape=='ellipse') shape='ellipse'	    
