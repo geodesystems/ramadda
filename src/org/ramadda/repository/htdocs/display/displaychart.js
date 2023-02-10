@@ -1093,13 +1093,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return trendlinesInfo;
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
+	    console.trace();
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
 
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
+//	    debug=true
 	    let debugRows = 4;
-	    debugRows=20
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
@@ -1631,8 +1632,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.vAxis = {
                 gridlines: {},
                 minorGridlines: {},		
-                textStyle: {}
+                textStyle: {},
             };
+	    if(this.getProperty("vAxisReverse"))
+		chartOptions.vAxis.direction=-1;
+
 	    chartOptions.hAxis.minValue = this.getProperty("hAxisMinValue");
 	    chartOptions.hAxis.maxValue = this.getProperty("hAxisMaxValue");
 	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
@@ -2080,6 +2084,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
 	{p:'vAxisSharedRange',ex:'true',tt:'use the same max value across all time series'},
+	{p:'vAxisReverse',ex:'true',tt:'Reverse the v axis'},
 	{p:"hAxisFixedRange"},
 	{p:"vAxisSelectedFields",ex:'true',tt:'Use selected fields to find min/max for the range'},
 	{p:"vAxisAllFields",ex:'true',tt:'Use all field values to find min/max for the range'},
