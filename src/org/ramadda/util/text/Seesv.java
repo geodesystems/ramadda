@@ -2581,6 +2581,9 @@ public class Seesv implements SeesvCommands {
                 "Add column that is the delta from the previous step",
                 new Arg("key columns","",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+        new Cmd(CMD_RUNNINGSUM,
+                "Make a running sum of the column values",
+		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
         new Cmd(CMD_OPERATOR,
                 "Apply the operator to the given columns and create new one",
                 new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,TYPE_COLUMNS),
@@ -4657,6 +4660,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.Delta(keyidxs, idxs));
 		return i;
 	    });
+	defineFunction(CMD_RUNNINGSUM, 2,(ctx,args,i) -> {
+		List<String> idxs    = getCols(args.get(++i));
+		ctx.addProcessor(new Converter.RunningSum(idxs));
+		return i;
+	    });	
 
 
 

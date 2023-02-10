@@ -5598,6 +5598,64 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class RunningSum extends Converter {
+
+	Row prevRow;
+
+	Hashtable<Integer,Double> values = new Hashtable<Integer,Double>();
+
+        /**
+         * @param keys _more_
+         * @param indices _more_
+         */
+        public RunningSum(List<String> indices) {
+            super(indices);
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    List<Integer>indices    = getIndices(ctx);
+            if (rowCnt++ == 0) {
+                for (Integer idx : indices) {
+                    int index = idx.intValue();
+                    row.getValues().add("Sum " + row.get(index));
+                }
+                return row;
+            }
+            if (prevRow == null) {
+                prevRow = row;
+                for (int i : indices) {
+                    prevRow.add("0");
+                }
+                return row;
+            }
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if (!row.indexOk(index)) {
+                    continue;
+                }
+                Double total = values.get(index);
+		if(total==null) {
+		    total=new Double(0);
+		}
+                double v2 = parse(row,row.get(index).toString());
+		v2 = v2+total;
+		values.put(index,v2);
+                row.add(v2+"");
+            }
+	    prevRow=row;
+            return row;
+        }
+
+    }
+
+
     /**
      * Class description
      *

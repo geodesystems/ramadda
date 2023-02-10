@@ -391,6 +391,7 @@ public class RowCollector extends Processor {
 		for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
 	    }
 	    for(int i=0;i<indices.size();i++) {
+		if(!row.indexOk(indices.get(i))) continue;
 		double v = Double.parseDouble(row.getString(indices.get(i)));
 		if(Double.isNaN(v)) continue;
 		totals[i]+=v;
