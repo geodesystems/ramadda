@@ -2836,6 +2836,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("inner tag")),
         new Cmd(CMD_TOJSON, "Generate JSON",
 		ARG_LABEL,"To JSON"),
+        new Cmd(CMD_TOURL, "Generate DB publish urls",
+		ARG_LABEL,"To Publish URLS"),
 	new Cmd(CMD_TODB, "Write to Database",
 		ARG_LABEL,"To Database",
 		new Arg("db id",""),
