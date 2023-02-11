@@ -301,7 +301,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         super.initAttributes();
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
 	tesseractPath = getRepository().getProperty("ramadda.tesseract");
-	indexImages = getRepository().getProperty("ramadda.indeximages",true);
+	indexImages = getRepository().getProperty("ramadda.indeximages",false);
         isLuceneEnabled = getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
     }
 
@@ -915,6 +915,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
+    public TikaConfig getTikaConfig() throws Exception {
+	return indexImages?TikaUtil.getConfig():TikaUtil.getConfigNoImage();
+    }
+
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files 
@@ -945,7 +949,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		String      result  = new String(IOUtil.readBytes(is));
 		String imageText = IO.readContents(tmp.toString()+".txt", getClass());
 		long t2= System.currentTimeMillis();
-		//		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
+		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
 		return imageText;
 	    } catch(Exception exc) {
 		getLogManager().logError("Error running tesseract for:" + f.getName(), exc);
@@ -958,7 +962,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
 	    metadataList.add(metadata);
-	    Parser parser = new AutoDetectParser(indexImages?TikaUtil.getConfig():TikaUtil.getConfigNoImage());
+	    Parser parser = new AutoDetectParser(getTikaConfig());
             BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    long t1 = System.currentTimeMillis();
             parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
