@@ -900,6 +900,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    mapOptions.entryId = entryId;
 		    mapOptions.entryType = attrs.entryType;
+		    mapOptions.thumbnailUrl = attrs.thumbnailUrl;
 		    attrs.name = attrs.name??attrs.entryName;
 		    delete attrs.entryName;
 		    if(glyphType.isMap()) {
@@ -952,7 +953,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							attrs.south,attrs.east,
 							attrs.south, attrs.west]);
 			attrs.type = GLYPH_IMAGE;
-			style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			if(!attrs.isImage) {
+			    style.imageUrl = attrs.thumbnailUrl;
+			    if(!style.imageUrl) {
+				alert("Selected entry does not have an image");
+				return;
+			    }
+			} else {
+			    style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			}
 			let mapGlyph = new  MapGlyph(this, GLYPH_IMAGE,attrs,feature,style);
 			mapGlyph.checkImage(feature);
 			this.addGlyph(mapGlyph);
@@ -975,7 +984,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			let url = imageUrl??Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			let url = imageUrl;
+			if(!url) {
+			    if(!attrs.isImage) {
+				url = attrs.thumbnailUrl;
+				if(!url) {
+				    alert("Selected entry does not have an image");
+				    return;
+				}
+			    } else {
+				url = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			    }
+			}
 			this.lastImageUrl = url;
 			style.imageUrl = url;
 		    } else if(attrs.icon) {
@@ -1030,7 +1050,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
-		let entryType = glyphType.isImage()?'type_image,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
+		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		this.selector = selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
