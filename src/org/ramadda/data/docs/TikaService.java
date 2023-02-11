@@ -116,15 +116,15 @@ public class TikaService extends Service {
 
         //      System.out.println("TikaService.extractText:" + entry.getFile());
         Parser parser =
-            new AutoDetectParser(TikaUtil.getConfig());
+            new AutoDetectParser(TikaUtil.getConfigNoImage());
         //Set the max char length to be 5 meg
         BodyContentHandler handler = new BodyContentHandler(5 * 1000 * 1000);
         Metadata           metadata    = new Metadata();
         FileInputStream    inputstream = new FileInputStream(entry.getFile());
         ParseContext       context     = new ParseContext();
-        //      System.err.println("calling parser.parse");
+	//	System.err.println("calling parser.parse");
         parser.parse(inputstream, handler, metadata, context);
-        //      System.err.println("done calling parser.parse");
+	//	System.err.println("done calling parser.parse");
 
         //getting the list of all meta data elements 
         String[] metadataNames = metadata.names();
@@ -135,7 +135,7 @@ public class TikaService extends Service {
             String key   = metadataName + "_" + value;
             if ( !seen.contains(key)) {
                 seen.add(key);
-                //              System.out.println(metadataName + "= " + value);
+		//		System.out.println(metadataName + "= " + value);
                 entry.putTransientProperty(metadataName,
                                            metadata.get(metadataName));
             }
