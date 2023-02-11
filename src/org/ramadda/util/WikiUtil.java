@@ -132,8 +132,6 @@ public class WikiUtil {
 
     /** _more_          */
     List headings2 = new ArrayList();
-    private String navId = null;
-
 
     /**
      * _more_
@@ -529,7 +527,6 @@ public class WikiUtil {
      */
     public String wikify(String text, WikiPageHandler handler) {
         this.handler = handler;
-
         return wikify(text, handler, null);
     }
 
@@ -551,7 +548,6 @@ public class WikiUtil {
             StringBuffer mainBuffer = new StringBuffer();
             this.handler = handler;
             wikify(mainBuffer, text, handler, notTags);
-
             return mainBuffer.toString();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
@@ -737,9 +733,6 @@ public class WikiUtil {
         List      headings      = new ArrayList();
         String    headingsNav   = null;
         Hashtable headingsProps = null;
-
-
-
 	Function<String,Hashtable> getProps = (tline)->{
 	    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 	    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
@@ -811,6 +804,9 @@ public class WikiUtil {
         String           dragId            = null;
         boolean          dragToggle        = false;
         boolean          dragToggleVisible = false;
+
+	String navId = null;
+
 
         String           leftWidth          = "50%";
 	String           middleWidth          = "50%";
@@ -941,6 +937,7 @@ public class WikiUtil {
 	    int avatarCount=0;
 	    String balloonAfter = null;
 	    String xmlId =null;
+  
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -2947,7 +2944,7 @@ public class WikiUtil {
                     buff.append("${" + headingsNav + "}");
 		    if(Utils.getProperty(headingsProps,"fixed",false)) {
 			navId = HU.getUniqueId("nav");
-			buff.append(HU.open("div",HU.style("border-top:var(--basic-border);padding-bottom:400px;max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";overflow-y:auto") +HU.attrs("id",navId)));
+			buff.append(HU.open("div",HU.style("padding-top:4px;border-top:var(--basic-border);padding-bottom:400px;max-height:" + HU.makeDim(Utils.getProperty(headingsProps,"fixedHeight","1000px"),"px")+";overflow-y:auto") +HU.attrs("id",navId)));
 		    }
                     continue;
                 }
@@ -3303,7 +3300,6 @@ public class WikiUtil {
         if (js.length() > 0) {
             HU.script(buff, js.toString());
         }
-
         String s = buff.toString();
         for (int i = 0; i < allTabStates.size(); i++) {
             TabState tabInfo = allTabStates.get(i);
@@ -3317,7 +3313,6 @@ public class WikiUtil {
             int idx1 = s.indexOf(TAG_PREFIX, baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             int idx2 = Utils.findNext(s, idx1, TAG_SUFFIX);
@@ -3358,6 +3353,7 @@ public class WikiUtil {
                 sb.append(value);
             }
         }
+
 
 	if(navId!=null) {
 	    sb.append(HU.close("div"));
