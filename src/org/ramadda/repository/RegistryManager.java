@@ -190,7 +190,7 @@ public class RegistryManager extends RepositoryManager {
             sb.append(HtmlUtils.submit("Cancel", ARG_CANCEL));
             sb.append(HtmlUtils.formClose());
 
-            return getAdmin().makeResult(request, msg("Remote Servers"), sb);
+            return getAdmin().makeResult(request, "RAMADDA-Admin-Remote Servers", sb);
 
         } else if (request.exists(ARG_REGISTRY_RELOAD)) {
             clearRemoteServers();
@@ -314,7 +314,7 @@ public class RegistryManager extends RepositoryManager {
         sb.append(HtmlUtils.sectionClose());
 
 
-        return getAdmin().makeResult(request, msg("Remote Servers"), sb);
+        return getAdmin().makeResult(request, msg("RAMADDA-Admin-Remote Servers"), sb);
 
     }
 
