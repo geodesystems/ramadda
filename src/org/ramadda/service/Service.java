@@ -2406,6 +2406,18 @@ public class Service extends RepositoryManager {
             errMsg = IOUtil.readContents(stderrFile);
         }
         if (Utils.stringDefined(errMsg)) {
+	    boolean ok = true;
+	    //check for just warnings
+	    for(String line:Utils.split(errMsg,"\n",true,true)) {
+		if(!line.toLowerCase().startsWith("warning")) {
+		    ok = false;
+		    break;
+		}
+	    }
+	    if(ok) errMsg = null;
+	}
+
+        if (Utils.stringDefined(errMsg)) {
             if (getOutputToStderr()) {
                 myOutput.append(errMsg);
                 myOutput.append("\n");
@@ -2424,14 +2436,13 @@ public class Service extends RepositoryManager {
                         }
                     } else {
                         //If there is an error then
-                        myOutput.setOk(false);
+			myOutput.setOk(false);
                         myOutput.append(errMsg);
-
                         return myOutput;
                     }
                 }
             }
-        }
+	}
 
         boolean       setResultsFromStdout = true;
 
@@ -2458,7 +2469,7 @@ public class Service extends RepositoryManager {
                         continue;
                     }
                 }
-            }
+	    }
 
             if (output.getShowResults()) {
                 setResultsFromStdout = false;
