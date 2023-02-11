@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb 10 10:16:37 MST 2023";
+var build_date="RAMADDA build date: Sat Feb 11 06:19:52 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40922,6 +40922,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    mapOptions.entryId = entryId;
 		    mapOptions.entryType = attrs.entryType;
+		    mapOptions.thumbnailUrl = attrs.thumbnailUrl;
 		    attrs.name = attrs.name??attrs.entryName;
 		    delete attrs.entryName;
 		    if(glyphType.isMap()) {
@@ -40974,7 +40975,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 							attrs.south,attrs.east,
 							attrs.south, attrs.west]);
 			attrs.type = GLYPH_IMAGE;
-			style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			if(!attrs.isImage) {
+			    style.imageUrl = attrs.thumbnailUrl;
+			    if(!style.imageUrl) {
+				alert("Selected entry does not have an image");
+				return;
+			    }
+			} else {
+			    style.imageUrl = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			}
 			let mapGlyph = new  MapGlyph(this, GLYPH_IMAGE,attrs,feature,style);
 			mapGlyph.checkImage(feature);
 			this.addGlyph(mapGlyph);
@@ -40997,7 +41006,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			let url = imageUrl??Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			let url = imageUrl;
+			if(!url) {
+			    if(!attrs.isImage) {
+				url = attrs.thumbnailUrl;
+				if(!url) {
+				    alert("Selected entry does not have an image");
+				    return;
+				}
+			    } else {
+				url = Ramadda.getUrl('/entry/get?entryid=' + entryId);
+			    }
+			}
 			this.lastImageUrl = url;
 			style.imageUrl = url;
 		    } else if(attrs.icon) {
@@ -41052,7 +41072,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     initCallback:initCallback,
 			     callback:callback,
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
-		let entryType = glyphType.isImage()?'type_image,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
+		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
 		this.selector = selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
@@ -42235,12 +42255,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				  prop.indexOf("Offset")>=0 ||
 				  prop=="rotation") {
 			    let isRotation = prop=="rotation";
+			    let isOffset = prop.indexOf('Offset')>=0;
 			    if(!Utils.isDefined(v)) {
 				v=isRotation?0:1;
 			    } else if(v==="") {
 				v=isRotation?0:1;
 			    }
-			    let min  = isRotation?-360:(prop.indexOf("Offset")>=0?0:0);
+			    let min  = isRotation?-360:(isOffset?-50:0);
 			    let max = isRotation?360:50;
 			    let size = 4;
 			    if(prop.indexOf("Offset")>=0) size=8;
@@ -42335,7 +42356,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		content.push({header:"Display Properties", contents: HU.hbox([textarea, menuBar])});
 	    } else {
 		let r =  this.makeStyleForm(style,mapGlyph);
-		content.push({header:"Style",contents:r.html});
+		let div =
+		    HU.checkbox(this.domId('styledialogactive'),['id',
+								 this.domId('styledialogactive')], false,
+				'Active') +r.html;
+		content.push({header:"Style",contents:HU.div(['id',this.domId('styledialog')],div)});
 		props = r.props;
 	    }
 	    if(mapGlyph) {
@@ -42358,6 +42383,64 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(mapGlyph)
 		mapGlyph.initSideHelp(dialog);
 	    this.initSideHelp(dialog);
+
+	    if(apply==null) {
+		apply = () =>{
+		    let style = {};
+		    props.forEach(prop=>{
+			let value = this.jq('glyphedit_'+prop).val();
+			if(!Utils.stringDefined(value)) {
+			    this.setProperty(prop, null);
+			    return;
+			}
+			this.setProperty(prop, value);
+			if(prop == "externalGraphic") {
+			    value = this.jq('externalGraphic_image').val();
+			    if(value && Ramadda.isRamaddaUrl(value))
+				value = Ramadda.getUrl(value);
+			}
+			style[prop] = value;
+		    });
+		    this.glyphTypes.forEach(g=>{
+			g.applyStyle(style,true);
+		    });
+		}
+	    }
+	    let close = ()=>{
+		this.map.ignoreKeyEvents = false;
+		dialog.hide();
+		dialog.remove();
+	    }
+
+	    let applying =false;
+	    let myApply = (andClose)=>{
+		if(applying) return;
+		applying = true;
+		apply(mapGlyph,props);
+		_this.handleGlyphsChanged();
+		if(andClose)  close();
+		applying = false;
+	    };
+
+	    let ifApply = () =>{
+		if(this.jq('styledialogactive').is(':checked')) {
+		    myApply();
+		}
+	    };
+
+	    this.jq('styledialog').find('select').change(function() {
+		ifApply();
+	    });
+	    this.jq('styledialog').find('input').change(function(event) {
+		if($(this).attr('id')!=_this.domId('styledialogactive')) {
+		    ifApply();
+		}
+	    });
+	    this.jq('styledialog').find('input').keypress(function(event) {
+		if(event.keyCode == 13) {
+		    ifApply();
+		}
+	    });
 
 	    dialog.find('.imdv-style-suffix').click(function() {
 		let prop = $(this).attr('property');
@@ -42424,6 +42507,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    slide: function( event, ui ) {
 			let id = $(this).attr('slider-id');
 			$("#"+ id).val(ui.value);
+			ifApply();
 		    }});
 	    });
 
@@ -42437,6 +42521,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    $("#"+ id).val(c);
 		    $("#"+ id+'_display').css('background',c);
 		    dialog.remove();
+		    ifApply();
 		});
 
 	    });
@@ -42445,45 +42530,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let c = $(this).val();
 		let id = $(this).attr('id');
 		$("#"+ id+'_display').css('background',c);
+		ifApply();
 	    });
 
-	    if(apply==null) {
-		apply = () =>{
-		    let style = {};
-		    props.forEach(prop=>{
-			let value = this.jq('glyphedit_'+prop).val();
-			if(!Utils.stringDefined(value)) {
-			    this.setProperty(prop, null);
-			    return;
-			}
-			this.setProperty(prop, value);
-			if(prop == "externalGraphic") {
-			    value = this.jq('externalGraphic_image').val();
-			    if(value && Ramadda.isRamaddaUrl(value))
-				value = Ramadda.getUrl(value);
-			}
-			style[prop] = value;
-		    });
-		    this.glyphTypes.forEach(g=>{
-			g.applyStyle(style,true);
-		    });
-		}
-	    }
-	    let close = ()=>{
-		this.map.ignoreKeyEvents = false;
-		dialog.hide();
-		dialog.remove();
-	    }
 
-	    let applying =false;
-	    let myApply = (andClose)=>{
-		if(applying) return;
-		applying = true;
-		apply(mapGlyph,props);
-		_this.handleGlyphsChanged();
-		if(andClose)  close();
-		applying = false;
-	    };
 	    dialog.find('.display-button').button().click(function() {
 		let command = $(this).attr("command");
 		switch(command) {
@@ -43298,6 +43348,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.setClipboard(tmp);
 		this.removeMapGlyphs(tmp);
 	    }
+	    this.clearCommands();
 	},
 	doCopy: function() {
 	    if(this.getSelected().length==0) return;
@@ -44589,11 +44640,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dragVertex: function(vertex, pixel) {
 		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
 		    let mapGlyph = this.feature.mapGlyph;
+		    if(!mapGlyph) return;
+
 		    if(mapGlyph) {
 			if(!mapGlyph.isSelected()) mapGlyph.select();
 		    }
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
-		    if(!this.feature.image && this.feature.type!=GLYPH_BOX && !this.feature?.mapGlyph.isImage()) {
+		    if(!this.feature.image &&
+		       this.feature.type!=GLYPH_BOX &&
+		       !this.feature?.mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
 			if(this.feature.mapGlyph) {
 			    this.feature.mapGlyph.vertexDragged(this.feature,vertex,pixel);
@@ -44637,9 +44692,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 					   'select');
 		    this.layer.drawFeature(vertex);
 		    if(this.feature.mapGlyph) {
+			_this.checkSelected(this.feature.mapGlyph);
 			if(this.mode==OpenLayers.Control.ModifyFeature.ROTATE) {
 			    if(this.feature.mapGlyph.isImage()) {
-				this.feature.style={strokeColor:'red',strokeWidth:4,fillColor:'transparent'};
+				this.feature.style={strokeColor:'transparent',fillColor:'transparent'};
 				let rotation = Utils.getRotation(v);
 				this.feature.mapGlyph.style.rotation = rotation.angle;
 			    }
@@ -48658,6 +48714,7 @@ MapGlyph.prototype = {
     },
     
     vertexDragged:function(feature,vertex,pixel) {
+	this.display.checkSelected(this);
     },
     move:function(dx,dy) {
 	let pts = this.attrs.originalPoints;
