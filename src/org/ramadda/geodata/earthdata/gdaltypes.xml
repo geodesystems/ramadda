@@ -19,7 +19,8 @@
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
 +center
-<img onload="HtmlUtils.initLoadingImage(this)" class="ramadda-image-loading" width=50% src="{{root}}/entry/action?action=geotiff.makeimage&entryid={{entryid}}">
+<img onload="HtmlUtils.initLoadingImage(this)" class="ramadda-image-loading"
+width=50% src="{{root}}/entry/action?action=geotiff.makeimage&entryid={{entryid}}">
 -center
 -section
 ]]>
