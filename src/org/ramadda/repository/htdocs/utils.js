@@ -2661,23 +2661,29 @@ var Utils =  {
         form +="</form>";
 
         let linksId = HU.getUniqueId();
+	let searchLink = 
+	    HU.link(ramaddaBaseUrl + '/search/form', 'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')]);
         let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
-                            HU.link(ramaddaBaseUrl + '/search/form', 'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')])  +
-                            " | " +
-                            HU.link(ramaddaBaseUrl + '/search/type', 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
-                            " | " +
-                            HU.link(ramaddaBaseUrl + '/search/browse', 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
+			    searchLink);
+//  +
+//                            " | " +
+//                            HU.link(ramaddaBaseUrl + '/search/type', 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
+//                            " | " +
+//                            HU.link(ramaddaBaseUrl + '/search/browse', 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
 
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
         let html = HU.div([CLASS,"ramadda-search-popup"],form+results);
         let icon = $("#" + id);
-        this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
+        let dialog = this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
         $("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
-        var input = $("#popup_search_input");
+        let input = $("#popup_search_input");
         input.mousedown(function(evt) {
             evt.stopPropagation();
         });
+	input.keydown(function(event) {
+	    if(event.key=='Escape') dialog.remove();
+	});
         Utils.searchSuggestInit('popup_search_input', 'popup_search_here',null, true, resultsId);
         input.focus();
     },

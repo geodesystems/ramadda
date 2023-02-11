@@ -26,8 +26,6 @@
     --default-radius:4px;
     --nav-hover-color:var(--highlight-color);
     --cal-font-size:10pt;
-
-
     --cal-background:#C5E5F5;
     --cal-background:#eaeaea;
     --nav-left-z-index: 50;
@@ -4030,9 +4028,11 @@ snippet-hide {
 
 .ramadda-linksheader {
     color:rgb(59, 69, 78);
-    padding-bottom:5px;    
     text-align: center;
-}
+    border-bottom:var(--basic-border);
+    margin-bottom:8px;
+    padding-bottom: 2px;
+ }
 
 .ramadda-linksheader  a,   .ramadda-linksheader  a:visited, .ramadda-linksheader  a:link  {
     color:rgb(59, 69, 78);
@@ -4040,21 +4040,22 @@ snippet-hide {
 
 .ramadda-linksheader-links {
     display:inline-block;
-    margin-bottom:8px;
-    font-size:130%;
-    padding-bottom: 4px;
+    font-size:120%;
+    padding-bottom: 2px;
 }
 
 .ramadda-linksheader-on, .ramadda-linksheader-off  {
-    margin-left:3px;
-    margin-right:3px;
-    padding: 2px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: 4px;
+    margin-right: 4px;    
 }
 
 .ramadda-linksheader-on {
-    background:var(--highlight-background);
+//    background:var(--highlight-background);
+background:#efefef;
+
 }
 
 

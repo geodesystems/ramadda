@@ -2080,7 +2080,7 @@ public class PageHandler extends RepositoryManager {
 	//add a space after so the whole line can be broken
         HU.div(header,
                StringUtil.join(
-                   "<span class=\"ramadda-separator\">|</span> ",
+                   "<span class=\"ramadda-separator\">|</span>",
                    links), HU.cssClass("ramadda-linksheader-links"));
         header.append("\n");
         sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
