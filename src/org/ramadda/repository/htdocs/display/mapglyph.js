@@ -3659,6 +3659,7 @@ MapGlyph.prototype = {
     },
     
     vertexDragged:function(feature,vertex,pixel) {
+	this.display.checkSelected(this);
     },
     move:function(dx,dy) {
 	let pts = this.attrs.originalPoints;
