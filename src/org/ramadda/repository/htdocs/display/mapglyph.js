@@ -2246,6 +2246,11 @@ MapGlyph.prototype = {
 	});
     },
     initPropertiesComponent: function(dialog) {
+	this.jq('createroute').button().click(()=>{
+	    this.makeGroupRoute();
+	});
+
+
 	let _this = this;
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    if(!this.display.colorbars) {
@@ -2493,7 +2498,39 @@ MapGlyph.prototype = {
 	if(url.startsWith('#')) url = '/userguide/imdv.html' + url;
 	return HU.href(Ramadda.getUrl(url),HU.getIconImage(icon_help) +' ' +(label??'Help'),['target','_help']);
     },
+    getCentroid: function() {
+	if(this.features && this.features.length) {
+	    return  this.features[0].geometry.getCentroid(true);
+	}
+    },
+    makeGroupRoute: function() {
+	let mode = this.display.jq('routetype').val()??'car';
+	let provider = this.display.jq('routeprovider').val();
+	let pts = [];
+	if(this.children) {
+	    this.children.forEach(child=>{
+		let centroid  = child.getCentroid();
+		if(!centroid) return;
+		var lonlat = this.getMap().transformProjPoint(centroid)
+		pts.push(lonlat);
+	    });
+	}
+	if(pts.length==0) {
+	    alert('No points to make route from');
+	    return;
+	}
+	this.display.createRoute(provider,mode,pts);
+    },
     getPropertiesComponent: function(content) {
+	if(this.isGroup() && this.display.isRouteEnabled()) {
+	    let html = this.display.createRouteForm();
+	    let buttons  =HU.div(['id',this.domId('createroute'),CLASS,'display-button'], 'Create Route');
+	    html+=HU.div(['style',HU.css('margin-top','5px')], buttons);
+	    html=HU.div(['style',HU.css('margin','5px')],html);
+	    content.push({header:'Make Route', contents:html});
+	}
+
+
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.mapLayer.features[0].attributes;
 	let featureInfo = this.featureInfo = this.getFeatureInfoList();

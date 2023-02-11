@@ -226,71 +226,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let pts = this.display.getLatLonPoints(line.geometry);
 	    if(pts==null) return;
-	    let xys = [];
-	    pts.forEach(pt=>{
-		xys.push(Utils.trimDecimals(pt.y,6));
-		xys.push(Utils.trimDecimals(pt.x,6));
-	    });
-	    let args = {
-		mode:this.display.routeType??'car',
-		points:Utils.join(xys,',')
-	    };
-	    if(this.display.routeProvider)
-		args.provider = this.display.routeProvider;
-
-	    let reset=  ()=>{
-		this.makingRoute = false;
-		this.finishedWithRoute = false;
-		this.display.clearMessage2();
-		this.display.getMap().clearAllProgress();
-		this.display.setCommandCursor();
-	    };
-
-	    let url = Ramadda.getUrl('/map/getroute?entryid='+this.display.getProperty('entryId'));
-	    this.finishedWithRoute = true;
-	    this.display.showProgress('Creating route...');
-	    this.makingRoute = true;
-	    $.post(url, args,data=>{
-		reset();
-		this.display.myLayer.removeFeatures([line]);
-		if(data.error) {
-		    this.display.handleError(data.error);
-		    return;
-		}
-		if(!data.routes || data.routes.length==0) {
-		    alert('No routes found');
-		    this.display.clearMessage2();
-		    return;
-		}
-		let points = [];
-		let routeData = data.routes[0];
-		if(routeData.overview_polyline) {
-		    let d = googleDecode(routeData.overview_polyline.points);
-		    d.forEach(pair=>{
-			points.push(MapUtils.createPoint(pair[1],pair[0]));
-		    });
-		} else {
-		    routeData.sections.forEach(section=>{
-			let decoded = hereDecode(section.polyline);
-			decoded.polyline.forEach(pair=>{
-			    points.push(MapUtils.createPoint(pair[1],pair[0]));
-			});
-		    });
-		}
-		let  route = this.display.getMap().createPolygon('', '', points, {
-		    strokeWidth:4
-		},null,true);
-		route.style = $.extend({},this.style);
-		route.type=GLYPH_ROUTE;
-		this.display.addFeatures([route]);
-		this.display.handleNewFeature(route,null,{type:GLYPH_ROUTE,routeProvider:this.display.routeProvider,routeType:this.display.routeType});
-		this.display.showDistances(route.geometry,GLYPH_ROUTE,true);
-	    }).fail(err=>{
-		reset();
-		this.display.myLayer.removeFeatures([line]);
-		this.display.clearCommands();
-		this.display.handleError(err);
-	    });
+	    this.display.createRoute(this.display.routeProvider,this.display.routeType,pts,line);
 	},
 	move: function(evt) {
 	    if(this.makingRoute) return;
@@ -458,6 +394,98 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(!dontNotify) this.handleGlyphsChanged();
 	},
 
+	isRouteEnabled:function() {
+	    return (this.getProperty('hereRoutingEnabled') || this.getProperty('googleRoutingEnabled'));
+	},
+	createRouteForm:function() {
+	    let html =  HU.formTable();
+	    if(this.isRouteEnabled()) {
+		let providers = [];
+		if(this.getProperty('googleRoutingEnabled')) providers.push('google');
+		if(this.getProperty('hereRoutingEnabled')) providers.push('here');			
+		html+=HU.formEntry('Provider:', HU.select('',['id',this.domId('routeprovider')],providers,this.routeProvider));
+	    }
+	    html+=HU.formEntry('Route Type:' , HU.select('',['id',this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
+	    html += HU.close(TAG_TABLE);
+	    return html;
+	},
+
+	createRoute:function(provider,mode,pts,line) {
+	    let xys = [];
+	    pts.forEach(pt=>{
+		xys.push(Utils.trimDecimals(pt.y,6));
+		xys.push(Utils.trimDecimals(pt.x,6));
+	    });
+
+
+	    let args = {
+		mode:mode??'car',
+		points:Utils.join(xys,',')
+	    };
+
+	    if(provider)
+		args.provider = provider;
+
+	    let reset=  ()=>{
+		this.makingRoute = false;
+		this.finishedWithRoute = false;
+		this.clearMessage2();
+		this.getMap().clearAllProgress();
+		this.setCommandCursor();
+	    };
+
+	    let url = Ramadda.getUrl('/map/getroute?entryid='+this.getProperty('entryId'));
+	    this.finishedWithRoute = true;
+	    this.showProgress('Creating route...');
+	    this.makingRoute = true;
+	    $.post(url, args,data=>{
+		reset();
+		if(line)
+		    this.myLayer.removeFeatures([line]);
+		if(data.error) {
+		    this.handleError(data.error);
+		    return;
+		}
+		if(!data.routes || data.routes.length==0) {
+		    alert('No routes found');
+		    this.clearMessage2();
+		    return;
+		}
+		let points = [];
+		let routeData = data.routes[0];
+		if(routeData.overview_polyline) {
+		    let d = googleDecode(routeData.overview_polyline.points);
+		    d.forEach(pair=>{
+			points.push(MapUtils.createPoint(pair[1],pair[0]));
+		    });
+		} else {
+		    routeData.sections.forEach(section=>{
+			let decoded = hereDecode(section.polyline);
+			decoded.polyline.forEach(pair=>{
+			    points.push(MapUtils.createPoint(pair[1],pair[0]));
+			});
+		    });
+		}
+		let  route = this.getMap().createPolygon('', '', points, {
+		    strokeWidth:4
+		},null,true);
+		let glyphType = this.getGlyphType(GLYPH_ROUTE);
+		route.style = Utils.clone(glyphType.getStyle());
+		this.addFeatures([route]);
+		let name = null;
+		if(provider)
+		    name ="Route: " + provider  +" - " +mode;
+
+		this.handleNewFeature(route,null,{name:name,type:GLYPH_ROUTE,routeProvider:this.routeProvider,routeType:this.routeType});
+		this.showDistances(route.geometry,GLYPH_ROUTE,true);
+	    }).fail(err=>{
+		reset();
+		if(line)
+		    this.myLayer.removeFeatures([line]);
+		this.clearCommands();
+		this.handleError(err);
+	    });
+	},	    
 	handleEvent:function(event,lonlat) {
 	    return;
 	},
@@ -1116,19 +1144,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let message = glyphType?'New ' + glyphType.getName():cmd.message??'';
 
 	    if(glyphType.isRoute()) {
-		let html =  HU.formTable();
-		if(this.getProperty('hereRoutingEnabled') || this.getProperty('googleRoutingEnabled')) {
-		    let providers = [];
-		    if(this.getProperty('googleRoutingEnabled')) providers.push('google');
-		    if(this.getProperty('hereRoutingEnabled')) providers.push('here');			
-		    html+=HU.formEntry('Provider:', HU.select('',['id',this.domId('routeprovider')],providers,this.routeProvider));
-		}
-		html+=HU.formEntry('Route Type:' , HU.select('',['id',this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
-		html += HU.close(TAG_TABLE);
+		let html = this.createRouteForm();
 		let buttons  =HU.div([CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
 		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
 		html+=HU.div(['style',HU.css('text-align','right','margin-top','5px')], buttons);
-		html=HU.div(['style',HU.css('xmin-width','250px','margin','5px')],html);
+		html=HU.div(['style',HU.css('margin','5px')],html);
 		let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
 		let ok = ()=>{
 		    cmd.handler.finishedWithRoute = false;
@@ -2720,7 +2740,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    let list =[];
             this.getGlyphs().forEach(mapGlyph=>{
-		list.push(mapGlyph.makeJson());
+		let json = mapGlyph.makeJson();
+		list.push(json);
+
 	    });
 	    let latlon = this.getMap().getBounds();
 	    let tbounds =  _this.getMap().transformLLBounds(latlon);
@@ -3751,7 +3773,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			   icon:Ramadda.getUrl("/icons/drive-globe.png")});	
 
 	    new GlyphType(this,GLYPH_ROUTE, "Route",
-			  Utils.clone(lineStyle),						    
+			  Utils.clone(lineStyle),						   
 			  MyRoute,{icon:Ramadda.getUrl("/icons/route.png")});
 
 	    new GlyphType(this,GLYPH_IMAGE, "Image",
