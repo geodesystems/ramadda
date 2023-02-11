@@ -443,14 +443,9 @@ var MapUtils =  {
 	let offsetY = -dim.miny;	
 	let gridW = parseInt(dim.maxx+offsetX);
 	let gridH = parseInt(dim.maxy+offsetY);	
-	//	console.log('GRID:',gridW,gridH,offsetX,offsetY);
-	let grid = Array(gridW);
-	for(let i=0;i<grid.length;i++) {
-	    grid[i] = Array.apply(null, Array(gridH)).map(function () {return false});
-	}
+	let grid={};
 	features.forEach((feature,idx)=>{
 	    let debug = false;
-	    debug = idx==0;
 	    if(!this.isFeatureVisible(feature)) return
 	    let info = feature.labelInfo;
 	    let indexX = parseInt(offsetX+info.left);
@@ -469,7 +464,8 @@ var MapUtils =  {
 		    if(x>=gridW) break;
 		    for(let y=indexY;clear && y<indexY+feature.labelInfo.height;y++) {
 			if(y>=gridH) break;
-			if(grid[x][y]) {
+			let key  = x+'_'+y;
+			if(grid[key]) {
 			    clear = false;
 			} else {
 			    //Dont' set them yet because this feature might not be clear from other coords
@@ -480,7 +476,8 @@ var MapUtils =  {
 		//If clear then set the flags
 		if(clear) {
 		    coords.forEach(coord=>{
-			grid[coord[0]][coord[1]] = true;		    
+			let key  = coord[0]+'_'+coord[1];
+			grid[key] = true;		    
 		    });
 		}
 	    }
