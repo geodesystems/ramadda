@@ -1093,7 +1093,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return trendlinesInfo;
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
-	    console.trace();
 	    this.getPropertyCount=0;
 	    this.getPropertyCounts={};
 
