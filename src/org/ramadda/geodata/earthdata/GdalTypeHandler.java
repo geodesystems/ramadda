@@ -29,8 +29,10 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.io.File;
-
+import java.io.*;
+import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.*;
 
 import java.util.Date;
 import java.util.List;
@@ -87,6 +89,11 @@ Upper Right (    2358.212, 4255884.544) (117d18'28.38"W, 33d56'37.74"N)
 Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         */
 
+        double ulLat  = Double.NaN, ulLon = Double.NaN;
+        double llLat  = Double.NaN, llLon = Double.NaN;
+        double urLat  = Double.NaN, urLon = Double.NaN;
+        double lrLat  = Double.NaN, lrLon = Double.NaN;			
+        double uln  = Double.NaN;	
         double north = Double.NaN;
         double south = Double.NaN;
         double east  = Double.NaN;
@@ -96,6 +103,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
             if (line.indexOf("Upper Left") >= 0) {
                 latlon = getLatLon(line);
                 if (latlon != null) {
+		    ulLat=latlon[1];
+		    ulLon=latlon[0];		    
                     north = ((north != north)
                              ? latlon[1]
                              : Math.max(north, latlon[1]));
@@ -106,6 +115,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
             } else if (line.indexOf("Lower Right") >= 0) {
                 latlon = getLatLon(line);
                 if (latlon != null) {
+		    lrLat=latlon[1];
+		    lrLon=latlon[0];		    
                     south = ((south != south)
                              ? latlon[1]
                              : Math.min(south, latlon[1]));
@@ -116,6 +127,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
             } else if (line.indexOf("Upper Right") >= 0) {
                 latlon = getLatLon(line);
                 if (latlon != null) {
+		    urLat=latlon[1];
+		    urLon=latlon[0];		    
                     north = ((north != north)
                              ? latlon[1]
                              : Math.max(north, latlon[1]));
@@ -126,6 +139,8 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
             } else if (line.indexOf("Lower Left") >= 0) {
                 latlon = getLatLon(line);
                 if (latlon != null) {
+		    llLat=latlon[1];
+		    llLon=latlon[0];		    
                     south = ((south != south)
                              ? latlon[1]
                              : Math.min(south, latlon[1]));
@@ -135,7 +150,13 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                 }
 
             } else {}
-        }
+	}
+	/*
+	System.err.println("ul:" +ulLat +"," + ulLon +
+			   " ur:" +urLat +"," + urLon +
+			   " ll:" +llLat +"," + llLon +
+			   " lr:" +lrLat +"," + lrLon);
+	*/
         if ( !Double.isNaN(north)) {
             entry.setNorth(north);
         }
@@ -217,6 +238,12 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
                               fileName);
         if ( !cachedFile.exists()) {
             try {
+		/*
+		FileOutputStream out = new FileOutputStream(cachedFile);
+		BufferedImage tif = ImageIO.read(getStorageManager().getInputStream(getStorageManager().getEntryResourcePath(entry)));
+		ImageIO.write(tif, "png", out);
+		out.close();
+		*/
                 List<String> commands;
 		if(Utils.stringDefined(translate))
                     commands = (List<String>) Utils.makeList(translate,"-of","PNG",
@@ -229,6 +256,7 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 						      cachedFile.toString());
 		//		System.err.println("geotiff-4:" + Utils.join(commands," "));
                 String[] results = Utils.runCommands(commands);
+		//		System.err.println("done");
                 if (Utils.stringDefined(results[0])) {
                     if (results[0].toLowerCase().indexOf("error") >= 0) {
                         System.err.println("Results running commands:"
