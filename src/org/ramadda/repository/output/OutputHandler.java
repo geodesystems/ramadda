@@ -1274,6 +1274,13 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	    }
 	}
 
+	List<String> urls = new ArrayList<String>();
+	getMetadataManager().getThumbnailUrls(request, entry, urls);
+	if (urls.size() > 0) {
+	    Utils.add(attrs,"thumbnailUrl", JsonUtil.quote(urls.get(0)));
+	}
+
+
 	String mapGlyphs = entry.getTypeHandler().getProperty(entry,"mapglyphs",null);
 	if(mapGlyphs!=null) {
             Utils.add(attrs,  "mapglyphs", JsonUtil.quote(mapGlyphs));
