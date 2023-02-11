@@ -811,19 +811,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	
 	String template =  getWikiTemplate(request,  entry);
-	if( Utils.stringDefined(template)) {
+	if(Utils.stringDefined(template)) {
 	    return null;
 	}
 	
-	if(!request.defined(ARG_WHAT) && !request.defined(ARG_DB_VIEW) && !request.defined(ARG_DB_ENTRY)) {
-	    String desc = entry.getDescription();
-	    if (Utils.stringDefined(desc)) {
-		if (isWikiText(desc)) {
-		    return null;
-		}
+
+	String desc = entry.getDescription();
+	if (desc!=null && isWikiText(desc)) {
+	    if(!request.anyDefined(ARG_DB_CONFIRM,ARG_DB_APPLY,ARG_DB_CREATE,ARG_DB_DELETE,ARG_DB_COPY,ARG_DB_EDIT,ARG_DB_EDITFORM,ARG_MESSAGE,ARG_DB_ACTION,ARG_WHAT,ARG_DB_VIEW,ARG_DB_ENTRY)) {
+		System.err.println("skipping: "  + request);
+		return null;
 	    }
 	}
-
 
 
 
@@ -3187,6 +3186,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result handleNewOrEdit(Request request, Entry entry, String dbid,
                                   boolean fromAnonForm)
             throws Exception {
+	try {
+	    return  handleNewOrEditInner(request, entry,  dbid,
+					 fromAnonForm);
+
+	} catch(Exception exc) {
+	    StringBuilder sb = new StringBuilder();
+	    addViewHeader(request, entry, sb, VIEW_EDIT, null);
+	    sb.append(getPageHandler().showDialogError("An error has occurred: " + exc));
+	    getLogManager().logError("Error creating new data for  DB entry:" + entry, exc);
+	    return new Result(getTitle(request, entry), sb);
+	}	
+    }
+
+    private Result handleNewOrEditInner(Request request, Entry entry, String dbid,
+                                  boolean fromAnonForm)
+            throws Exception {
+
+
+
+
         if (request.exists(ARG_DB_COPY)) {
             dbid = null;
         }
@@ -6175,13 +6194,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     public Result handleEdit(Request request, Entry entry) throws Exception {
+	try {
+	    return handleEditInner(request, entry);
+	} catch(Exception exc) {
+	    StringBuilder sb = new StringBuilder();
+	    addViewHeader(request, entry, sb, VIEW_EDIT, null);
+	    sb.append(getPageHandler().showDialogError("An error has occurred: " + exc));
+	    getLogManager().logError("Error editing DB entry:" + entry, exc);
+	    return new Result(getTitle(request, entry), sb);
+	}
+    }
 
+    private Result handleEditInner(Request request, Entry entry) throws Exception {
         StringBuilder sb = new StringBuilder();
         addViewHeader(request, entry, sb, VIEW_EDIT, null);
         List<Column>         columns = dbInfo.getColumnsToUse();
-
-
-
         List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> ops     = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> tfos1   = new ArrayList<TwoFacedObject>();
