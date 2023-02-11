@@ -1430,6 +1430,14 @@ public class Request implements Constants, Cloneable {
         return result != null;
     }
 
+    public boolean anyDefined(String ...keys) {
+	for(String key: keys) {
+	    if(defined(key)) return true;
+	}
+	return false;
+    }
+
+
     /**
      * _more_
      *
