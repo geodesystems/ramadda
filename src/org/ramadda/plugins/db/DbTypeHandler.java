@@ -3680,7 +3680,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         DbInfo           dbInfo       = getDbInfo();
         List<Column>     columnsToUse = getColumnsToUse(request, true);
+
         SimpleDateFormat sdf          = getDateFormat(request, entry);
+        SimpleDateFormat dateTimeSdf  = getDateTimeFormat(request, entry);
         Hashtable        entryProps   = getProperties(entry);
         StringBuilder    hb           = new StringBuilder();
         if (doForm) {
@@ -4009,7 +4011,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
                 String label = formatTableValue(request, entry, hb, column,
-                                   values, sdf, !forPrint);
+						values, sdf, dateTimeSdf,!forPrint);
                 hb.append("&nbsp;");
 
                 boolean addSelect = (searchColumn != null)
@@ -4455,11 +4457,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public String formatTableValue(Request request, Entry entry,
                                    Appendable sb, Column column,
                                    Object[] values, SimpleDateFormat sdf,
+				   SimpleDateFormat dateTimeSdf,
                                    boolean addLink)
             throws Exception {
         StringBuilder htmlSB = new StringBuilder();
+	//Don't use the sdf if it is datetime
         column.formatValue(request, entry, htmlSB, Column.OUTPUT_HTML,
-                           values, sdf, false);
+                           values, column.isType(column.DATATYPE_DATETIME)?dateTimeSdf:sdf, false);
         String html  = htmlSB.toString();
         String value = null;
         if (column.getCanSearch() && column.isString()) {
@@ -4757,6 +4761,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	//        String           icon          = getMapIcon(request, entry);
         String           icon          = getDbIconUrl("/db/icons/blue-dot.png");
         SimpleDateFormat sdf           = getDateFormat(request, entry);
+        SimpleDateFormat dateTimeSdf           = getDateTimeFormat(request, entry);	
         Column           polygonColumn = getDbInfo().getPolygonColumn();
         //      int rowCnt = 0;
         int entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE, 30);
@@ -4923,7 +4928,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 theSB.append("</div>");
                 //            theSB.append(HtmlUtils.br());
                 String info = getHtml(request, entry, dbid, getColumns(),
-                                      values, sdf);
+                                      values, sdf,dateTimeSdf);
                 String mapInfo = extraLabel + info;
                 mapInfo = mapInfo.replace("\r", " ");
                 mapInfo = mapInfo.replace("\n", " ");
@@ -5068,8 +5073,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     public String getDefaultDateFormatString() {
-        return "yyyy/MM/dd";
+        return "yyyy-MM-dd";
     }
+
+    public String getDefaultDateTimeFormatString() {
+        return "yyyy-MM-dd HH:mm z";
+    }    
+
 
     /**
      * _more_
@@ -5082,6 +5092,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return getDateFormat(request,entry, getDefaultDateFormatString());
     }
 
+    public SimpleDateFormat getDateTimeFormat(Request request, Entry entry) {
+        return getDateFormat(request,entry, getDefaultDateTimeFormatString());
+    }    
+
     /**
      * _more_
      *
@@ -5091,15 +5105,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     public SimpleDateFormat getDateFormat(Request request, Entry entry, String format) {
-        SimpleDateFormat sdf      = new SimpleDateFormat(format);
         String           timezone = getEntryUtil().getTimezone(request,entry);
-        if (timezone != null) {
-            sdf.setTimeZone(TimeZone.getTimeZone(timezone));
-        }
+	return getRepository().getDateHandler().getSDF(format, timezone,false);
 
-        return sdf;
     }
 
+    
 
 
 
@@ -6518,6 +6529,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         SimpleDateFormat sdf = getDateFormat(request,entry);
+        SimpleDateFormat dateTimeSdf = getDateTimeFormat(request,entry);	
         for (Column column : getColumns(true)) {
             if ( !isDataColumn(column)) {
                 continue;
@@ -6526,7 +6538,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 continue;
             }
             StringBuilder tmpSb = new StringBuilder();
-            formatTableValue(request, entry, tmpSb, column, values, sdf,
+            formatTableValue(request, entry, tmpSb, column, values, sdf,dateTimeSdf,
                              true);
             String tmp = tmpSb.toString();
             tmp = tmp.replaceAll("'", "&apos;");
@@ -6713,7 +6725,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     protected String getHtml(Request request, Entry entry, String dbid,
                              List<Column> columns, Object[] values,
-                             SimpleDateFormat sdf)
+                             SimpleDateFormat sdf,SimpleDateFormat dateTimeSdf)
             throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.formTable());
@@ -6727,7 +6739,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
 
             StringBuilder tmpSb = new StringBuilder();
-            formatTableValue(request, entry, tmpSb, column, values, sdf,
+            formatTableValue(request, entry, tmpSb, column, values, sdf,dateTimeSdf,
                              true);
             //            column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values);
             String tmp = tmpSb.toString();

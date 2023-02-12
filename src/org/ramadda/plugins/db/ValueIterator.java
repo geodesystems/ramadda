@@ -123,7 +123,9 @@ public abstract class ValueIterator implements DbConstants {
     DbInfo dbInfo;
 
     /** _more_          */
-    SimpleDateFormat sdf;
+    SimpleDateFormat dateSdf;
+
+    SimpleDateFormat dateTimeSdf;    
 
 
     /** _more_          */
@@ -144,7 +146,8 @@ public abstract class ValueIterator implements DbConstants {
         this.db      = db;
         this.entry   = entry;
         dbInfo       = db.getDbInfo();
-        sdf          = db.getDateFormat(request,entry);
+        dateSdf          = db.getDateFormat(request,entry);
+        dateTimeSdf          = db.getDateTimeFormat(request,entry);	
         forPrint     = request.get(ARG_FOR_PRINT, false);
 	canEdit = db.getAccessManager().canDoEdit(request, entry);
 	embedded = request.isEmbedded();
@@ -579,7 +582,7 @@ public abstract class ValueIterator implements DbConstants {
             String dbid = (String) values[IDX_DBID];
 
             String info = db.getHtml(request, entry, dbid, db.getColumns(),
-                                     values, sdf);
+                                     values, dateSdf,dateTimeSdf);
             sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
             sb.append(XmlUtil.tag(RssUtil.TAG_PUBDATE, "",
                                   rssSdf.format(date)));
@@ -1244,7 +1247,7 @@ public abstract class ValueIterator implements DbConstants {
                 }
 
                 String label = db.formatTableValue(request, entry, sb,
-                                   column, values, sdf, !forPrint);
+						   column, values, dateSdf, dateTimeSdf,!forPrint);
                 sb.append("&nbsp;");
                 boolean addSelect = (searchColumn != null)
                                     && column.getName().equals(searchColumn);
@@ -1443,7 +1446,7 @@ public abstract class ValueIterator implements DbConstants {
             StringBuilder tmp = new StringBuilder();
             for (Column column : columns) {
                 column.formatValue(request, entry, tmp, Column.OUTPUT_HTML,
-                                   values, sdf, false);
+                                   values, dateSdf, false);
 
                 t = t.replace("${" + column.getName() + "}", tmp.toString());
                 tmp.setLength(0);
@@ -1856,7 +1859,7 @@ public abstract class ValueIterator implements DbConstants {
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
-            String label = db.applyTemplate(request, entry, values, sdf,
+            String label = db.applyTemplate(request, entry, values, dateSdf,
 					    db.addressTemplate);
             //Check for long lines
             List<String> lines  = Utils.split(label, "<br>");
@@ -1998,7 +2001,7 @@ public abstract class ValueIterator implements DbConstants {
 					 rowId, rowId);
             String href = HtmlUtils.href(url,
                                          db.getLabel(request, entry,
-						  values, sdf));
+						  values, dateSdf));
             sb.append(HtmlUtils.col("&nbsp;" + href,
                                     HtmlUtils.id(rowId) + event
                                     + HtmlUtils.cssClass("dbcategoryrow")));
@@ -2105,7 +2108,7 @@ public abstract class ValueIterator implements DbConstants {
                                       (String) valuesArray[IDX_DBID])
                          : db.getViewUrl(request, entry,
                                       (String) valuesArray[IDX_DBID]);
-            String label    = db.getLabel(request, entry, valuesArray, sdf);
+            String label    = db.getLabel(request, entry, valuesArray, dateSdf);
             String href     = HtmlUtils.href(url, label);
 
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
