@@ -5198,7 +5198,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     datePickerInit: function(id) {
-        $("#" + id).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });
+        $("#" + id).datepicker({
+	    onSelect:function(d,i) {
+		if(d!==i.lastVal) {
+		    $(this).change();
+		}
+	    },
+	    dateFormat: 'yy-mm-dd',
+	    changeMonth: true,
+	    changeYear: true,
+	    constrainInput:false,
+	    yearRange: '1900:2100'});
     },
     rangeInput: function(name,id) {
         var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div(["id",id]) +"</form>";
