@@ -468,6 +468,11 @@ public class DateHandler extends RepositoryManager {
     }
 
 
+    public SimpleDateFormat getSDF(String format, String timezone) {
+	return getSDF(format, timezone, true);
+    }
+
+
     /**
      * _more_
      *
@@ -476,14 +481,18 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public SimpleDateFormat getSDF(String format, String timezone) {
-        String key;
-        if (timezone != null) {
-            key = format + "-" + timezone;
-        } else {
-            key = format;
-        }
-        SimpleDateFormat sdf = dateFormats.get(key);
+    public SimpleDateFormat getSDF(String format, String timezone,boolean shared) {
+        SimpleDateFormat sdf = null;
+        String key=null;
+	if(shared) {
+	    if (timezone != null) {
+		key = format + "-" + timezone;
+	    } else {
+		key = format;
+	    }
+	    sdf = dateFormats.get(key);
+	}
+
         if (sdf == null) {
             sdf = new SimpleDateFormat();
             sdf.applyPattern(format);
@@ -493,7 +502,9 @@ public class DateHandler extends RepositoryManager {
             } else {
                 sdf.setTimeZone(displayTimeZone);
             }
-            dateFormats.put(key, sdf);
+	    if(shared) {
+		dateFormats.put(key, sdf);
+	    }
         }
 
         return sdf;
