@@ -2509,6 +2509,7 @@ MapGlyph.prototype = {
 	let pts = [];
 	if(this.children) {
 	    this.children.forEach(child=>{
+		if(!child.isVisible()) return;
 		let centroid  = child.getCentroid();
 		if(!centroid) return;
 		var lonlat = this.getMap().transformProjPoint(centroid)

@@ -3742,7 +3742,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      textStyle,
 				      textBackgroundStyle),
 			  MyPoint,
-			  {icon:Ramadda.getUrl("/icons/dot.png")});
+			  {icon:Ramadda.getUrl("/icons/rangerings.png")});
 
 
 

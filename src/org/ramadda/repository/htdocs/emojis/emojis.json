@@ -20,6 +20,7 @@
 {"name":"red-pushpin","image":"/map/red-pushpin.png","category":"Map"},
 {"name":"ylw-pushpin","image":"/map/ylw-pushpin.png","category":"Map"},
 {"name":"POI","image":"/map/POI.png","category":"Map"},
+{"name":"range rings","image":"/icons/rangerings.png","category":"Map"},
 {"name":"arts","image":"/map/arts.png","category":"Map"},
 {"name":"bar","image":"/map/bar.png","category":"Map"},
 {"name":"binocular","image":"/map/binocular.png","category":"Map"},
