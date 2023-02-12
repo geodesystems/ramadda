@@ -344,7 +344,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     border:1px #e1b07e solid;
 }
 
-
 .ramadda-hflow {
     display:inline-block;
 }
@@ -352,6 +351,14 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-nav-top {
     text-align: center;
     font-size:120%;
+}
+
+.ramadda-nav-top-fixed {
+    margin-top:4px;
+    padding-top:4px;
+    border-top:var(--basic-border);
+    padding-bottom:400px;    
+    overflow-y:auto;
 }
 
 .ramadda-tree-link, .ramadda-nav-link {
