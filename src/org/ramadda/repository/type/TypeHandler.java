@@ -285,7 +285,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private String category = CATEGORY_DEFAULT;
+    private String category;
 
     /** _more_ */
     private String superCategory = "";
@@ -452,6 +452,8 @@ public class TypeHandler extends RepositoryManager {
         this.parent = parent;
     }
 
+
+
     /**
      * _more_
      *
@@ -464,21 +466,24 @@ public class TypeHandler extends RepositoryManager {
             displayTemplatePath = Utils.getAttributeOrTag(node,
                     "displaytemplate", displayTemplatePath);
 	    
-            category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, category);
-            if (category == null) {
-                category = XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
-							CATEGORY_DEFAULT);
-            }
             iconPath = XmlUtil.getAttributeFromTree(node, "icon",
 						    iconPath);
-            superCategory = XmlUtil.getAttributeFromTree(node,
-							 ATTR_SUPERCATEGORY, superCategory);
             priority    = Utils.getAttributeOrTag(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
             help     = Utils.getAttributeOrTag(node, "help", help);
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
+
+
+	    superCategory = XmlUtil.getAttributeFromTree(node,
+							 ATTR_SUPERCATEGORY, superCategory);
+
+	    category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, null);
+	    if (category == null) {
+		category = XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
+							CATEGORY_DEFAULT);
+	    }
 
             String tmp = Utils.getAttributeOrTag(node,
                              PROP_FIELD_FILE_PATTERN, (String) null);
