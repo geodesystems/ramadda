@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb 11 17:59:35 MST 2023";
+var build_date="RAMADDA build date: Sun Feb 12 10:27:36 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -9237,7 +9237,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    });
 	    this.writeHeader(ID_REQUEST_PROPERTIES, requestProps);
-	    let macroChange = (macro,value,what)=>{
+	    
+
+	    //Keep track of the values because there can be spurious changes triggered
+	    //when the user clicks in a time range field
+	    let valueMap = {}
+	    let macroChange = (macro,value,what,force)=>{
+		if(what) {
+		    if(!force && value == valueMap[macro.urlarg+'_'+what]) {
+			//console.log('duplicate:' + value);
+			return
+		    }
+		    valueMap[macro.urlarg+'_'+what]  =value;
+		    //console.dir('new value:' + macro.urlarg + ' ' + what +' :' +value+':')
+		}
+
 		if(this.settingMacroValue) return;
 		if(macro.triggerReload) {
 		    this.macroChanged();
@@ -9267,16 +9281,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		macroChange({triggerReload:true});
 	    });
 	    macros.every(macro=>{
-		$("#" + this.getDomId(macro.getId())+"," +
-		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_max")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_from")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_to")).keyup(function(e) {
+		let  keyup =function(e,what,val,force) {
 		      var keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
-			  macroChange(macro, $(this).val());
+			  macroChange(macro, val,what,force);
 		      }
-		  });
+		};
+
+		$("#" + this.getDomId(macro.getId())+"," +
+		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
+		  "#" + this.getDomId(macro.getId()+"_max")).keyup(function(e){
+		      keyup(e,null,$(this).val())});
 		if(macro.type == "bounds") {
 		    this.jq(macro.getId()).change(function(e) {
 			macroChange(macro,$(this).is(':checked'));
@@ -9293,13 +9308,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.jq(macro.getId()+"_max").change(function(e) {
 		    //		    macroChange(macro, $(this).val(),"max");
 		});
-		this.jq(macro.getId()+"_from").change(function(e) {
-		    macroChange(macro, $(this).val(),"from");
-		});
-		this.jq(macro.getId()+"_to").change(function(e) {
-		    macroChange(macro, $(this).val(),"to");
-		});		
+		let from = this.jq(macro.getId()+"_from");
+		let to = this.jq(macro.getId()+"_to");
+		if(from.length) {
+		    //true->force the change
+		    from.keyup(function(e){
+			keyup(e,'from',$(this).val(),true)});
+		    to.keyup(function(e){
+			keyup(e,'to',$(this).val(),true)});		    
 
+
+		    valueMap[macro.urlarg+'_from']  =from.val();
+		    valueMap[macro.urlarg+'_to']  =to.val();		    
+		    from.change(function(e) {
+			macroChange(macro, $(this).val(),"from");
+		    });
+		    to.change(function(e) {
+			macroChange(macro, $(this).val(),"to");
+		    });
+		}
 		return true;
 	    });
 	},
@@ -10581,6 +10608,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setContents(this.getMessage(this.getNoDataMessage()));
 	},
         pointDataLoadFailed: function(data) {
+	    this.dataLoadFailed  =true;
 	    this.clearProgress();
             this.inError = true;
             errorMessage = this.getProperty("errorMessage", null);
@@ -10685,6 +10713,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         pointDataLoaded: function(pointData, url, reload) {
+	    this.dataLoadFailed  =false;
 	    let debug = displayDebug.pointDataLoaded;
 //	    debug = true;
 	    this.clearProgress();
