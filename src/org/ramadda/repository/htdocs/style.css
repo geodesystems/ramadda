@@ -5056,8 +5056,13 @@ a.wiki-link-noexist {
     color:#000 !important;
 }
 
+
 .ui-accordion .ui-state-default {
     background:transparent;
+}
+
+.ui-accordion .ui-tabs-tab {
+    background:#fff;
 }
 
 .ui-accordion .ui-state-default:hover {
