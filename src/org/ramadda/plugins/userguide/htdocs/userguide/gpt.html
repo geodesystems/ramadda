@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>Integration with OpenAI GPT</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=20%>
+<a href="keys.html"><span title="Previous: API Keys and External Services"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="readonly.html"><span title="Next: Read Only Mode"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#gpt.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+</td>
+<td width=60% align=center>
+<div class="ramadda-page-heading"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+<div class="ramadda-page-title"><a href="#">Section 10.5: Integration with OpenAI GPT</a></div>
+</td>
+<td width=20%>&nbsp;</td>
+</tr></table>
+
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+</head>
+<body>
+
++section 
+
+:heading Integration with OpenAI GPT
+RAMADDA uses OpenAI's GPT API for extracting keywords and text summaries for documents
+(PDF, Word, etc). To enable this you will need to register with
+<a href=https://openai.com/api/>OpenAI</a> and obtain an API key. They provide a free tier.
+:p
+Once you obtain the API key add it to a .properties file in your RAMADDA home directory:
+
++pre
+gpt.api.key=&lt;your key&gt;
+-pre
+
+Now, when you go to add a document entry to RAMADDA under the "More..." section select
+Extract keywords and/or Extract Summary. Any keywords extracted will be added as metadata
+and the summary will be pre-prended to the new entry's description.
+:br
+<center><div><a href="images/extract.png"><img  src="images/extract.png" width=500px alt="images/extract.png" ></a></div></center>
+  
+-section
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="keys.html"><span title="Previous: API Keys and External Services"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="readonly.html"><span title="Next: Read Only Mode"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#gpt.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<p>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,21 @@
+[ht::head {Integration with OpenAI GPT}]
++section 
+
+:heading Integration with OpenAI GPT
+RAMADDA uses OpenAI's GPT API for extracting keywords and text summaries for documents
+(PDF, Word, etc). To enable this you will need to register with
+<a href=https://openai.com/api/>OpenAI</a> and obtain an API key. They provide a free tier.
+:p
+Once you obtain the API key add it to a .properties file in your RAMADDA home directory:
+
++pre
+gpt.api.key=&lt;your key&gt;
+-pre
+
+Now, when you go to add a document entry to RAMADDA under the "More..." section select
+Extract keywords and/or Extract Summary. Any keywords extracted will be added as metadata
+and the summary will be pre-prended to the new entry's description.
+:br
+[ht::cimg images/extract.png {} {width=500px}]
+  
+-section
