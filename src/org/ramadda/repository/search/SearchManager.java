@@ -752,7 +752,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		}
 		if(isNew && request.get(ARG_EXTRACT_SUMMARY,false)) {
-		    String summary = callGpt("","tl;dr",fileCorpus);
+		    String summary = callGpt("","Tl;dr",fileCorpus);
 		    if(stringDefined(summary)) {
 			summary = summary.trim().replaceAll("^:+","");
 			entryChanged = true;
@@ -812,6 +812,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
     private String callGpt(String prompt1,String prompt2,StringBuilder corpus) throws Exception {
+	boolean debug = true;
 	String text = corpus.toString();
 	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 	if(text.trim().length()==0) return null;
@@ -831,9 +832,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    gptCorpus.append(tok);
 	    gptCorpus.append(" ");
 	}
-	gptCorpus.append("\n");
+	gptCorpus.append("\n\n");
 	gptCorpus.append(prompt2);
-	String gptText =  gptCorpus.toString().trim();
+	//	if(debug) System.err.println("GPT corpus:" + gptCorpus);
+	String gptText =  gptCorpus.toString();
 	//	    System.err.println("gpt corpus:" + text);
 	String body = JsonUtil.map(Utils.makeList("prompt",
 						  JsonUtil.quote(gptText),
@@ -849,12 +851,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					 "Content-Type","application/json",
 					 "Authorization","Bearer " +gptKey);
 	JSONObject json = new JSONObject(result);
-	//	System.err.println(json);		
+	if(debug)
+	    System.err.println("gpt json:" + json);		
 	if(json.has("choices")) {
 	    JSONArray choices = json.getJSONArray("choices");
 	    if(choices.length()>0) {
 		JSONObject choice= choices.getJSONObject(0);
-		return choice.getString("text");
+		String r = choice.getString("text");
+		//		if(debug) System.err.println("result:" + r);
+		return r;
 	    }
 	}
 	return null;
