@@ -5282,7 +5282,8 @@ public class TypeHandler extends RepositoryManager {
 	if(getSearchManager().summaryExtractionEnabled()) {
 	    addMetadata+=HU.space(2) + HtmlUtils.labeledCheckbox(
 						   ARG_EXTRACT_SUMMARY, "true", false,
-						   "Extract summary");
+						   "Extract summary") + " " +
+		"Note: this sends the file text to <a href=https://openai.com/api/>https://openai.com/api/</a> for processing<br>";
 	}
 
         List datePatterns = new ArrayList();

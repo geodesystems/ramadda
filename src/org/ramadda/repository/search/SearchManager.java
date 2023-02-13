@@ -752,7 +752,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		}
 		if(isNew && request.get(ARG_EXTRACT_SUMMARY,false)) {
-		    String summary = callGpt("","Tl;dr",fileCorpus);
+		    //		    String summary = callGpt("","Tl;dr",fileCorpus,120);
+		    String summary = callGpt("Summarize the following text:","",fileCorpus,120);		    
+
 		    if(stringDefined(summary)) {
 			summary = summary.trim().replaceAll("^:+","");
 			entryChanged = true;
@@ -811,7 +813,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return stringDefined( getRepository().getProperty("gpt.api.key"));
     }
 
-    private String callGpt(String prompt1,String prompt2,StringBuilder corpus) throws Exception {
+    private String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens) throws Exception {
 	boolean debug = true;
 	String text = corpus.toString();
 	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
@@ -841,7 +843,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						  JsonUtil.quote(gptText),
 						  "model",JsonUtil.quote("text-davinci-003"),
 						  "temperature", "0.5",
-						  "max_tokens" ,"60",
+						  "max_tokens" ,""+ tokens,
 						  "top_p", "1.0",
 						  "frequency_penalty", "0.8",
 						  "presence_penalty", "0.0",
@@ -882,7 +884,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<String> keywords = new ArrayList<String>();
-	String result = callGpt("Extract keywords from this text:","Keywords:",fileCorpus);
+	String result = callGpt("Extract keywords from this text:","Keywords:",fileCorpus,60);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
 		if(!keywords.contains(tok)) {
