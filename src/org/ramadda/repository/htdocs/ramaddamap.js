@@ -1280,7 +1280,8 @@ RepositoryMap.prototype = {
 	    if(debugBounds) console.log("setViewToBounds center");
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
-	    //	    console.log(bounds.getCenterLonLat());
+	    if(debugBounds)
+		console.log(bounds.getCenterLonLat());
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomToExtent(projBounds);
         }
@@ -1288,8 +1289,8 @@ RepositoryMap.prototype = {
     setCenter:function(to) {
 	if(debugBounds)
 	    console.log("setCenter");
-	this.getMap().panTo(this.transformLLPoint(to));
-	//        this.getMap().setCenter(this.transformLLPoint(to));
+//	this.getMap().panTo(this.transformLLPoint(to));
+        this.getMap().setCenter(this.transformLLPoint(to));
     },
     getZoom: function() {
 	return this.getMap().getZoom();
