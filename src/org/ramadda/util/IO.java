@@ -1013,18 +1013,30 @@ public class IO {
      */
     public static Result doGetResult(URL url, String... args)
             throws Exception {
+	return getHttpResult("GET",url,null, args);
+    }
+
+    public static Result getHttpResult(String type, URL url, String body, String... args)
+            throws Exception {	
+
         checkFile(url);
         HttpURLConnection connection =
             (HttpURLConnection) url.openConnection();
-        //        connection.setDoOutput(true);
+	if(type.equals("POST")) 
+	    connection.setDoOutput(true);
         //        connection.setDoInput(true);
         //        connection.setInstanceFollowRedirects(false);
-        connection.setRequestMethod("GET");
+        connection.setRequestMethod(type);
         //        connection.setRequestProperty("charset", "utf-8");
         //      System.err.println("header:");
         for (int i = 0; i < args.length; i += 2) {
             //            System.err.println(args[i]+":" + args[i+1]);
             connection.setRequestProperty(args[i], args[i + 1]);
+        }
+        if (body != null) {
+            connection.setRequestProperty("Content-Length",
+                                          Integer.toString(body.length()));
+            connection.getOutputStream().write(body.getBytes("UTF-8"));
         }
         try {
             BufferedReader in = new BufferedReader(
