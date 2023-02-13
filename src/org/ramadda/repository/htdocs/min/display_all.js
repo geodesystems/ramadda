@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb 12 10:27:36 MST 2023";
+var build_date="RAMADDA build date: Mon Feb 13 09:20:34 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -6595,6 +6595,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	sortRecords: function(records, sortFields) {
 	    if(this.getSortOnDate()) {
+		//Clone the list
+		records = Utils.cloneList(records);
 		records.sort(function(a, b) {
 		    if (a.getDate() && b.getDate()) {
 			if (a.getDate().getTime() < b.getDate().getTime()) return -1;
@@ -40276,7 +40278,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    let pts = this.display.getLatLonPoints(line.geometry);
 	    if(pts==null) return;
-	    this.display.createRoute(this.display.routeProvider,this.display.routeType,pts,line);
+	    this.display.createRoute(this.display.routeProvider,this.display.routeType,pts,{line:line});
 	},
 	move: function(evt) {
 	    if(this.makingRoute) return;
@@ -40447,34 +40449,48 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	isRouteEnabled:function() {
 	    return (this.getProperty('hereRoutingEnabled') || this.getProperty('googleRoutingEnabled'));
 	},
-	createRouteForm:function() {
-	    let html =  HU.formTable();
+	createRouteForm:function(addSequence) {
+	    let html='';
 	    if(this.isRouteEnabled()) {
+		html+=HU.formTable();
 		let providers = [];
 		if(this.getProperty('googleRoutingEnabled')) providers.push('google');
 		if(this.getProperty('hereRoutingEnabled')) providers.push('here');			
 		html+=HU.formEntry('Provider:', HU.select('',['id',this.domId('routeprovider')],providers,this.routeProvider));
+		html+=HU.formEntry('Route Type:' , HU.select('',['id',this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
+		if(addSequence) {
+		    if(this.getProperty('hereRoutingEnabled')) {
+			html += HU.formEntry('',HU.checkbox(this.domId('routedosequence'),[],false,
+							    'Calculate best route from locations'));
+		    }
+		}
+		html += HU.close(TAG_TABLE);
+	    } else {
+		html="Routing is not enabled";
 	    }
-	    html+=HU.formEntry('Route Type:' , HU.select('',['id',this.domId('routetype')],['car','bicycle','pedestrian'],this.routeType));
-	    html += HU.close(TAG_TABLE);
+
 	    return html;
 	},
 
-	createRoute:function(provider,mode,pts,line) {
+	createRoute:function(provider,mode,pts,args) {
+	    args = args??{};
+
 	    let xys = [];
 	    pts.forEach(pt=>{
 		xys.push(Utils.trimDecimals(pt.y,6));
 		xys.push(Utils.trimDecimals(pt.x,6));
 	    });
 
-
-	    let args = {
+	    let routeArgs = {
 		mode:mode??'car',
-		points:Utils.join(xys,',')
-	    };
+		points:Utils.join(xys,','),
+		provider:provider
+	    };	    
+	    if(args.doSequence) {
+		routeArgs.dosequence=true;
+	    }	    	    
+	    let url = Ramadda.getUrl('/map/getroute?entryid='+this.getProperty('entryId'));
 
-	    if(provider)
-		args.provider = provider;
 
 	    let reset=  ()=>{
 		this.makingRoute = false;
@@ -40484,38 +40500,92 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.setCommandCursor();
 	    };
 
-	    let url = Ramadda.getUrl('/map/getroute?entryid='+this.getProperty('entryId'));
-	    this.finishedWithRoute = true;
-	    this.showProgress('Creating route...');
-	    this.makingRoute = true;
-	    $.post(url, args,data=>{
+
+
+	    let handleRouteData = data=>{
 		reset();
-		if(line)
-		    this.myLayer.removeFeatures([line]);
+		if(data.errors && data.errors.length) {
+		    alert("An error occurred:" + data.errors[0]);
+		    return;
+		}
+		if(data.error_description) {
+		    alert("An error occurred:" + data.error_description);
+		    return;
+		}
+		if(args.line)
+		    this.myLayer.removeFeatures([args.line]);
 		if(data.error) {
 		    this.handleError(data.error);
 		    return;
 		}
-		if(!data.routes || data.routes.length==0) {
+
+//		console.dir(data);
+
+		let instructions=[];
+		let points = [];
+		if(data.results && data.results.length>0) {
+		    //for the route sequence from here
+		    let result = data.results[0];
+		    if(result.waypoints) {
+			result.waypoints.forEach(pt=>{
+			    points.push(MapUtils.createPoint(pt.lng,pt.lat));
+			});		    
+		    }
+		} else if(data.routes && data.routes.length>0) {
+		    let routeData = data.routes[0];
+//		    console.dir(data);
+		    if(routeData.legs) {
+			routeData.legs.forEach(leg=>{
+			    instructions.push(...leg.steps.map(step=>{
+				return {instr:step.html_instructions,
+					lat:step?.start_location.lat,
+					lon:step?.start_location.lng}
+			    }));
+			});
+		    }
+		    if(routeData.overview_polyline) {
+			let d = googleDecode(routeData.overview_polyline.points);
+			d.forEach(pair=>{
+			    points.push(MapUtils.createPoint(pair[1],pair[0]));
+			});
+		    } else {
+			//from Here
+			routeData.sections.forEach(section=>{
+			    let decoded = hereDecode(section.polyline);
+			    decoded.polyline.forEach(pair=>{
+				points.push(MapUtils.createPoint(pair[1],pair[0]));
+			    });
+			    if(section.actions) {
+				instructions.push(...section.actions.map(action=>{
+				    return {instr:action.instruction,loc:action.start_location}
+				}));
+			    }
+			});
+		    }
+		} else {
+
+		}
+//		console.log(instructions);
+		if(points.length==0) {
 		    alert('No routes found');
 		    this.clearMessage2();
 		    return;
 		}
-		let points = [];
-		let routeData = data.routes[0];
-		if(routeData.overview_polyline) {
-		    let d = googleDecode(routeData.overview_polyline.points);
-		    d.forEach(pair=>{
-			points.push(MapUtils.createPoint(pair[1],pair[0]));
+
+		if(routeArgs.dosequence) {
+		    routeArgs.dosequence=false;
+		    let xys = [];
+		    points.forEach(pt=>{
+			xys.push(Utils.trimDecimals(pt.y,6));
+			xys.push(Utils.trimDecimals(pt.x,6));
 		    });
-		} else {
-		    routeData.sections.forEach(section=>{
-			let decoded = hereDecode(section.polyline);
-			decoded.polyline.forEach(pair=>{
-			    points.push(MapUtils.createPoint(pair[1],pair[0]));
-			});
-		    });
+		    $.post(url, routeArgs,data=>{
+			handleRouteData(data);
+		    }).fail(fail);
+		    return;
 		}
+
+
 		let  route = this.getMap().createPolygon('', '', points, {
 		    strokeWidth:4
 		},null,true);
@@ -40526,15 +40596,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(provider)
 		    name ="Route: " + provider  +" - " +mode;
 
-		this.handleNewFeature(route,null,{name:name,type:GLYPH_ROUTE,routeProvider:this.routeProvider,routeType:this.routeType});
+		this.handleNewFeature(route,null,{name:name,type:GLYPH_ROUTE,routeProvider:this.routeProvider,routeType:this.routeType,instructions:instructions});
 		this.showDistances(route.geometry,GLYPH_ROUTE,true);
-	    }).fail(err=>{
+	    };
+
+	    let fail = err=>{
 		reset();
-		if(line)
-		    this.myLayer.removeFeatures([line]);
+		if(args.line)
+		    this.myLayer.removeFeatures([args.line]);
 		this.clearCommands();
 		this.handleError(err);
-	    });
+	    }
+
+	    this.finishedWithRoute = true;
+	    this.showProgress('Creating route...');
+	    this.makingRoute = true;
+	    $.post(url, routeArgs,data=>{
+		handleRouteData(data);
+	    }).fail(fail);
 	},	    
 	handleEvent:function(event,lonlat) {
 	    return;
@@ -40881,6 +40960,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let wmtHtml = '';
+		wmtHtml+='<br>';
+		wmtHtml+='<br>Or enter either a TMS/WMS server URL with a layer name:';
 		let form = (label,name,size)=>{
 		    wmtHtml+=HU.formEntry(label+':',HU.input('',this.cache[name]??'',['id',this.domId(name),'size',size??'60']));
 		}
@@ -40897,12 +40978,18 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    form(a[0],a[1],a[2]);
 		});
 		wmtHtml+='</table>';
+		wmtHtml+='<br>Or enter Tile JSON URL:';
+		wmtHtml +=  HU.formTable();
+		form("Tile JSON",'tilejson',60);
+		wmtHtml +=  '</table>';
+
 		let contents = [];
 		let ids =Utils.mergeLists([{value:'',label:'Select'}],RAMADDA_MAP_LAYERS.map(l=>{return [l.id,l.name]}));
 		let predefined =  HU.select('',['id',this.domId('predefined')],ids,this.cache['predefined']);	
 		let html = 'Pre-defined layer: ' + predefined;
-		html+='<p>Or enter either a TMS/WMS server URL with a layer name:';
 		html+=wmtHtml;
+
+
 		let buttons = HU.buttons([
 		    HU.div([CLASS,'ramadda-button-ok display-button'], 'OK'),
 		    HU.div([CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
@@ -40929,27 +41016,57 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		let cancel = ()=>{
 		    dialog.hide();
 		}
+		let loadLayer= (args) =>{
+		    args = args??{};
+		    let style = Utils.clone({},tmpStyle);
+		    let mapOptions = Utils.clone({},tmpMapOptions);
+		    mapOptions.bounds=args.bounds;
+		    mapOptions.name = args.name;
+		    this.clearCommands();
+		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
+		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,predefined);
+		    mapGlyph.checkMapServer();
+		    this.addGlyph(mapGlyph);
+		    this.clearMessage2(1000);
+		    dialog.remove();
+		    if(mapGlyph.hasBounds()) {
+			mapGlyph.panMapTo();
+		    }
+		}
 		let ok = ()=>{
 		    args.forEach(a=>{
 			this.cache[a[1]] =  this.jq(a[1]).val().trim();
 		    });
 		    let predefined = this.jq('predefined').val().trim();
-		    let url = this.jq('serverurl').val().trim();
+		    let tileJson = this.jq('tilejson').val();
+		    if(Utils.stringDefined(tileJson)) {
+			$.getJSON(tileJson, (data)=> {
+			    let args = {
+				name:data.name,
+				url:data.tiles[0],
+			    };
+			    if(data.bounds) {
+				args.bounds=data.bounds;
+			    }
+			    loadLayer(args);
+			}).fail((data)=>{
+			    window.alert('Failed to find address');
+			});
+			return;
+		    }
+
+		    let url = this.jq('serverurl').val();
 		    if(!Utils.stringDefined(url) && !Utils.stringDefined(predefined)) {
 			alert('Please enter a map server');
 			return;
 		    }
-		    let style = Utils.clone({},tmpStyle);
-		    let mapOptions = Utils.clone({},tmpMapOptions);
-		    mapOptions.name = this.jq('servername').val().trim();
-		    this.clearCommands();
-		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
-		    mapGlyph.setMapServerUrl(url,this.jq('wmslayer').val().trim(),this.jq('maplegend').val().trim(),predefined);
-		    mapGlyph.checkMapServer();
-		    this.addGlyph(mapGlyph);
-		    this.clearMessage2(1000);
+		    loadLayer({
+			name:this.jq('servername').val(),
+			url:url,
+			layerName:this.jq('wmslayer').val(),
+			legendUrl:this.jq('maplegend').val()
+		    });
 
-		    dialog.remove();
 		}
 		dialog.find('.ramadda-button-ok').button().click(ok);
 		dialog.find('.ramadda-button-cancel').button().click(()=>{
@@ -46122,7 +46239,15 @@ MapGlyph.prototype = {
 	return this.style;
     },
     panMapTo: function(andZoomIn) {
-	let bounds = this.getBounds();
+	let bounds;
+	if(this.attrs.bounds) {
+	    //wsen
+	    let b = this.attrs.bounds;
+	    bounds = MapUtils.createBounds(b[0],b[1],b[2],b[3]);
+	    bounds = this.getMap().transformLLBounds(bounds);
+	}
+	if(!bounds)
+	    bounds = this.getBounds();
 	if(bounds) {
 	    this.display.getMap().zoomToExtent(bounds);
 	}
@@ -46245,11 +46370,13 @@ MapGlyph.prototype = {
     },
     hasBounds:function() {
 	if(this.isMapServer()) {
+	    if(this.attrs.bounds) return true;
 	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		return true;
 	    }
 	    return false;
 	}
+
 	return  !this.isFixed();
     },
     getLabel:function(forLegend,addDecorator) {
@@ -46493,6 +46620,7 @@ MapGlyph.prototype = {
 	    }
 	*/
 
+
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
@@ -46510,7 +46638,6 @@ MapGlyph.prototype = {
 	    let text = this.attrs.legendText.replace(/\n/g,'<br>');
 	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
 	}
-
 
 	if(this.isMap()) {
 	    if(!this.mapLoaded) {
@@ -46699,6 +46826,31 @@ MapGlyph.prototype = {
 	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 
+
+	if(this.isRoute()) {
+	    if(this.attrs.instructions && this.attrs.instructions.length>0) {
+		let instr = '';
+		this.attrs.instructions.forEach(step=>{
+		    let title = '';
+		    let attrs = [];
+		    if(step.lat) {
+			attrs.push('title','Click to view','class','imdv-route-step ramadda-clickable',
+				   'lat',step.lat,
+				   'lon',step.lon);
+		    } else {
+			attrs.push('class','imdv-route-step');
+		    }
+		    instr+=HU.div(attrs, step.instr);
+		});
+		body+=HU.center(HU.b('Directions')) +
+		    HU.div(['style','max-height:200px;overflow-y:auto;'],instr);
+	    }
+	}
+	
+
+
+
+
 	this.jq('maplegend').remove();
 	if(inMapLegend!='') {
 	    inMapLegend=
@@ -46716,6 +46868,27 @@ MapGlyph.prototype = {
     },
     initLegend:function() {
 	let _this = this;
+
+	let steps = this.getLegendDiv().find('.imdv-route-step');
+	steps.click(function(){
+	    let lon = $(this).attr('lon');
+	    let lat = $(this).attr('lat');
+	    if(!Utils.isDefined(lat)) return;
+	    steps.removeClass('imdv-route-step-on');
+	    $(this).addClass('imdv-route-step-on');
+	    if(_this.stepMarker) {
+		_this.display.removeFeatures([_this.stepMarker]);
+	    }
+
+	    _this.getMap().setCenter(MapUtils.createLonLat(lon,lat));
+	    _this.stepMarker = _this.display.makeFeature(_this.getMap(),'OpenLayers.Geometry.Point',
+							 {externalGraphic:'/emojis/1f699.png',
+							  pointRadius:12},
+							[lat,lon]);
+		
+	    _this.display.addFeatures([_this.stepMarker]);
+	});
+
 
 	if(this.imageLayers) {
 	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
@@ -47025,6 +47198,9 @@ MapGlyph.prototype = {
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
+    isRoute:function() {
+	return this.getType()==GLYPH_ROUTE;
+    },    
     isRings:function() {
 	return this.getType()==GLYPH_RINGS;
     },    
@@ -47611,6 +47787,7 @@ MapGlyph.prototype = {
     makeGroupRoute: function() {
 	let mode = this.display.jq('routetype').val()??'car';
 	let provider = this.display.jq('routeprovider').val();
+	let doSequence = this.display.jq('routedosequence').is(':checked');
 	let pts = [];
 	if(this.children) {
 	    this.children.forEach(child=>{
@@ -47625,11 +47802,12 @@ MapGlyph.prototype = {
 	    alert('No points to make route from');
 	    return;
 	}
-	this.display.createRoute(provider,mode,pts);
+	this.display.createRoute(provider,mode,pts,{
+	    doSequence:doSequence});
     },
     getPropertiesComponent: function(content) {
 	if(this.isGroup() && this.display.isRouteEnabled()) {
-	    let html = this.display.createRouteForm();
+	    let html = this.display.createRouteForm(true);
 	    let buttons  =HU.div(['id',this.domId('createroute'),CLASS,'display-button'], 'Create Route');
 	    html+=HU.div(['style',HU.css('margin-top','5px')], buttons);
 	    html=HU.div(['style',HU.css('margin','5px')],html);
@@ -48993,6 +49171,13 @@ MapGlyph.prototype = {
     },
 
     setVisible:function(visible,callCheck) {
+	if(!visible) {
+	    if(this.stepMarker) {
+		this.display.removeFeatures([this.stepMarker]);
+	    }
+	}
+
+
 	this.attrs.visible = visible;
 	if(this.children) {
 	    this.children.forEach(child=>{
@@ -49554,6 +49739,10 @@ MapGlyph.prototype = {
     },
     
     doRemove:function() {
+	if(this.stepMarker) {
+	    this.display.removeFeatures([this.stepMarker]);
+	}
+
 	if(this.isFixed()) {
 	    jqid(this.getFixedId()).remove();
 	}
