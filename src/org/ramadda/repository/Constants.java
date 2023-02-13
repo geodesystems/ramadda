@@ -1030,7 +1030,8 @@ public interface Constants {
     public static final String ARG_METADATA_ADD = "metadata.add";
 
     /**  */
-    public static final String ARG_EXTRACT_TAGS = "extract_tags";
+    public static final String ARG_EXTRACT_KEYWORDS = "extract_keywords";
+    public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
 
     /** _more_ */
     public static final String ARG_FROMHARVESTER = "fromharvester";

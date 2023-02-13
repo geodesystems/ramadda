@@ -5276,9 +5276,14 @@ public class TypeHandler extends RepositoryManager {
                             ARG_METADATA_ADDSHORT, "true", false,
                             "Just spatial/temporal properties") + "<br>"
                                 + HtmlUtils.labeledCheckbox(
-                                    ARG_EXTRACT_TAGS, "true", false,
-                                    "Extract tags");
+                                    ARG_EXTRACT_KEYWORDS, "true", false,
+                                    "Extract keywords");
 
+	if(getSearchManager().summaryExtractionEnabled()) {
+	    addMetadata+=HU.space(2) + HtmlUtils.labeledCheckbox(
+						   ARG_EXTRACT_SUMMARY, "true", false,
+						   "Extract summary");
+	}
 
         List datePatterns = new ArrayList();
         datePatterns.add(new TwoFacedObject("", BLANK));

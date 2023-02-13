@@ -735,16 +735,31 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    StringBuilder fileCorpus = new StringBuilder();
             addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), true, fileCorpus);
 	    corpus.append(fileCorpus);
-	    if(/*isNew && */request!=null && request.get(ARG_EXTRACT_TAGS,false)) {
-		List<String> keywords = getKeywords(request, entry, fileCorpus);
-		if(keywords!=null && keywords.size()>0) {
-		    for(String word:keywords) {
-			getMetadataManager().addMetadata(request,
-							 entry,
-							 new Metadata(
-								      getRepository().getGUID(), entry.getId(),
-								      "content.keyword", false, word, "", "", "", ""),true);
+	    if(/*isNew && */request!=null) {
+		boolean entryChanged = false;
+		if(request.get(ARG_EXTRACT_KEYWORDS,false)) {
+		    List<String> keywords = getKeywords(request, entry, fileCorpus);
+
+		    if(keywords!=null && keywords.size()>0) {
+			for(String word:keywords) {
+			    getMetadataManager().addMetadata(request,
+							     entry,
+							     new Metadata(
+									  getRepository().getGUID(), entry.getId(),
+									  "content.keyword", false, word, "", "", "", ""),true);
+			}
+			entryChanged = true;
 		    }
+		}
+		if(isNew && request.get(ARG_EXTRACT_SUMMARY,false)) {
+		    String summary = callGpt("","tl;dr",fileCorpus);
+		    if(stringDefined(summary)) {
+			summary = summary.trim().replaceAll("^:+","");
+			entryChanged = true;
+			entry.setDescription(summary+"\n"+entry.getDescription());
+		    }
+		}
+		if(entryChanged) {
 		    List<Entry> tmp = new ArrayList<Entry>();
 		    tmp.add(entry);
 		    getEntryManager().updateEntries(request, tmp,false);
@@ -792,6 +807,61 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
+    public boolean summaryExtractionEnabled() {
+	return stringDefined( getRepository().getProperty("gpt.api.key"));
+    }
+
+    private String callGpt(String prompt1,String prompt2,StringBuilder corpus) throws Exception {
+	String text = corpus.toString();
+	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
+	if(text.trim().length()==0) return null;
+	String gptKey = getRepository().getProperty("gpt.api.key");
+	if(gptKey==null) return null;
+	String url = "https://api.openai.com/v1/completions";
+	StringBuilder gptCorpus = new StringBuilder(prompt1);
+	gptCorpus.append("\n");
+	List<String> toks = Utils.split(text," ",true,true);
+	//limit is  4000 tokens or ~3500 words
+	int extraCnt = 0;
+	for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
+	    String tok = toks.get(i);
+	    if(tok.length()>6) {
+		extraCnt+=(int)(tok.length()/6);
+	    }
+	    gptCorpus.append(tok);
+	    gptCorpus.append(" ");
+	}
+	gptCorpus.append("\n");
+	gptCorpus.append(prompt2);
+	String gptText =  gptCorpus.toString().trim();
+	//	    System.err.println("gpt corpus:" + text);
+	String body = JsonUtil.map(Utils.makeList("prompt",
+						  JsonUtil.quote(gptText),
+						  "model",JsonUtil.quote("text-davinci-003"),
+						  "temperature", "0.5",
+						  "max_tokens" ,"60",
+						  "top_p", "1.0",
+						  "frequency_penalty", "0.8",
+						  "presence_penalty", "0.0",
+						  "stop","[\"\\n\"]"));
+	//	    System.err.println(body);
+	String result = IO.doHttpRequest("GET", new URL(url), body,
+					 "Content-Type","application/json",
+					 "Authorization","Bearer " +gptKey);
+	JSONObject json = new JSONObject(result);
+	//	System.err.println(json);		
+	if(json.has("choices")) {
+	    JSONArray choices = json.getJSONArray("choices");
+	    if(choices.length()>0) {
+		JSONObject choice= choices.getJSONObject(0);
+		return choice.getString("text");
+	    }
+	}
+	return null;
+    }
+	
+
+
     private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus) throws Exception {
 	String path = entry.getResource().getPath();
 	if(path==null) return null;
@@ -807,56 +877,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<String> keywords = new ArrayList<String>();
-	String gptKey = getRepository().getProperty("gpt.api.key");
-	String text = fileCorpus.toString();
-	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
-
-	if(gptKey!=null) {
-	    String url = "https://api.openai.com/v1/completions";
-	    StringBuilder gptCorpus = new StringBuilder("Extract keywords from this text:\n");
-	    List<String> toks = Utils.split(text," ",true,true);
-	    //limit is ~1500 words
-	    int extraCnt = 0;
-	    for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
-		String tok = toks.get(i);
-		if(tok.length()>6) {
-		    extraCnt+=(int)(tok.length()/6);
-		}
-		gptCorpus.append(tok);
-		gptCorpus.append(" ");
-	    }
-	    //	    System.err.println("gpt corpus:" + gptCorpus.length());
-	    text =  gptCorpus.toString().trim()+"\nKeywords:";
-	    String body = JsonUtil.map(Utils.makeList("prompt",
-						      JsonUtil.quote(text),
-						      "model",JsonUtil.quote("text-davinci-003"),
-						      "temperature", "0.5",
-						      "max_tokens" ,"60",
-						      "top_p", "1.0",
-						      "frequency_penalty", "0.8",
-						      "presence_penalty", "0.0",
-						      "stop","[\"\\n\"]"));
-	    //	    System.err.println(body);
-	    String result = IO.doHttpRequest("GET", new URL(url), body,
-					     "Content-Type","application/json",
-					     "Authorization","Bearer " +gptKey);
-	    JSONObject json = new JSONObject(result);
-	    //	    System.err.println(json);		
-	    if(json.has("choices")) {
-		JSONArray choices = json.getJSONArray("choices");
-		if(choices.length()>0) {
-		    JSONObject choice= choices.getJSONObject(0);
-		    for(String tok:Utils.split(choice.getString("text"),",",true,true)) {
-			if(!keywords.contains(tok)) {
-			    keywords.add(tok);
-			}
-		    }
-		    System.err.println("keywords:" + keywords);
+	String result = callGpt("Extract keywords from this text:","Keywords:",fileCorpus);
+	if(result!=null) {
+	    for(String tok:Utils.split(result,",",true,true)) {
+		if(!keywords.contains(tok)) {
+		    keywords.add(tok);
 		}
 	    }
+	    System.err.println("gpt keywords:" + keywords);
 	}
 							  
 	if(keywords.size()==0) {
+	    String text = fileCorpus.toString();
+	    text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
 	    List<WordCount> words = new ArrayList<WordCount>();
 	    HashSet stopWords = Utils.getStopWords();
@@ -916,7 +949,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files 
-	if(f.length()>LUCENE_MAX_LENGTH) return null;
+	//	if(f.length()>LUCENE_MAX_LENGTH) return null;
 	//	if(Utils.isImage(f.toString())) return null;
 	if(f.length()==0) return null;
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
@@ -962,7 +995,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    long t2= System.currentTimeMillis();
 	    String corpus = handler.toString();
-	    //	    System.err.println("corpus:" + f.getName() +" time:" + (t2-t1));
+	    //	    System.err.println("corpus:" + f.getName() +" time:" + (t2-t1)+" l:" + corpus.length());
 	    return  corpus;
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
