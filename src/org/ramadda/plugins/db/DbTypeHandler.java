@@ -89,6 +89,8 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
 
+    private static boolean debugQuery  = false;
+
     public static final String ARG_SAMPLE = "sample";
 
     /** _more_ */
@@ -5691,7 +5693,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         int skip = request.get(ARG_SKIP, 0);
         extra = order;
         extra += getDatabaseManager().getLimitString(skip, max);
-
+	if(debugQuery) {
+	    System.err.println("DbTypeHandler.readValues:" + clause +" extra:" + extra);
+	}
         return readValues(request, clause, extra, max, null, iterator);
     }
 
