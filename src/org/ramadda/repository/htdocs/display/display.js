@@ -3058,6 +3058,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	sortRecords: function(records, sortFields) {
 	    if(this.getSortOnDate()) {
+		//Clone the list
+		records = Utils.cloneList(records);
 		records.sort(function(a, b) {
 		    if (a.getDate() && b.getDate()) {
 			if (a.getDate().getTime() < b.getDate().getTime()) return -1;
