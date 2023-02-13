@@ -50,6 +50,7 @@ import ucar.unidata.util.StringUtil;
 import java.awt.geom.Rectangle2D;
 
 import java.io.InputStream;
+import java.net.URL;
 
 import java.util.ArrayList;
 
@@ -646,25 +647,47 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	boolean doingGoogle = googleKey!=null && provider.equals("google");
 	boolean doingHere = hereKey!=null && !doingGoogle;
 
+	request.setReturnFilename("route.json");
+	if(request.get("dosequence",false)) {
+	    String args = HU.args(
+			 "start",
+			 points.get(0) +","+   points.get(1),
+			 "end",points.get(points.size()-2) + "," +  points.get(points.size()-1),
+			 "improveFor","time",
+			 "departure","2014-12-09T09:30:00+01:00",
+			 "mode","fastest;car;traffic:enabled",
+			 "apikey",  hereKey);
+	    if(points.size()>2) {
+		int cnt = 1;
+		for(int i=2;i<points.size()-3;i+=2) {
+		    args +="&destination" + (cnt++)+"=" + points.get(i) +"," + points.get(i+1);
+		}
+	    }
+	    String url = HU.url("https://wps.hereapi.com/v8/findsequence2")+"?"+args;
+	    IO.Result r = IO.doGetResult(new URL(url));
+	    if(r.getError()) {
+		//		System.err.println(r.getResult());
+	    }
+	    return new Result("", new StringBuilder(r.getResult()), JsonUtil.MIMETYPE);
+	}
+
 	if(doingHere) {
 	    String url = HU.url("https://router.hereapi.com/v8/routes",
 				"transportMode",mode,
 				"origin",points.get(0) +","+   points.get(1),
 				"destination",
 				points.get(points.size()-2) + "," +  points.get(points.size()-1),
-				//				"return","polyline,actions,instructions,summary,travelSummary","apikey",  hereKey);
-				"return","polyline","apikey",  hereKey);
+				//"return","polyline,actions,instructions,summary,travelSummary","apikey",  hereKey);
+				"return","polyline,actions,instructions","apikey",  hereKey);
 	    
 	    if(points.size()>2) {
 		for(int i=2;i<points.size()-3;i+=2) {
 		    url +="&via=" + points.get(i) +"," + points.get(i+1);
 		}
 	    }
-	    return request.returnStream("route.json",JsonUtil.MIMETYPE, IO.getInputStream(url));
-	    //	System.err.println(url);
-	    //	    String json = IO.readUrl(url);
-	    //	    System.out.println(json);
-	    //	    return new Result(json, Result.TYPE_JSON);
+
+	    IO.Result r = IO.doGetResult(new URL(url));
+	    return new Result("", new StringBuilder(r.getResult()), JsonUtil.MIMETYPE);
 	}
 
 
