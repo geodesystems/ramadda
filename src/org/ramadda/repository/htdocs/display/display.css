@@ -2942,6 +2942,14 @@ table.dataTable tfoot td {
     margin-left:10px;
 }
 
+.imdv-route-step {
+    border:1px solid transparent;
+    padding:2px;
+}
+
+.imdv-route-step-on, .imdv-route-step:hover  {
+    border:var(--highlight-border);
+}
 
 .imdv-stac-item {
     margin:4px;

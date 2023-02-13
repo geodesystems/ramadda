@@ -1017,7 +1017,15 @@ MapGlyph.prototype = {
 	return this.style;
     },
     panMapTo: function(andZoomIn) {
-	let bounds = this.getBounds();
+	let bounds;
+	if(this.attrs.bounds) {
+	    //wsen
+	    let b = this.attrs.bounds;
+	    bounds = MapUtils.createBounds(b[0],b[1],b[2],b[3]);
+	    bounds = this.getMap().transformLLBounds(bounds);
+	}
+	if(!bounds)
+	    bounds = this.getBounds();
 	if(bounds) {
 	    this.display.getMap().zoomToExtent(bounds);
 	}
@@ -1140,11 +1148,13 @@ MapGlyph.prototype = {
     },
     hasBounds:function() {
 	if(this.isMapServer()) {
+	    if(this.attrs.bounds) return true;
 	    if(this.getDatacubeVariable() && Utils.isDefined(this.getDatacubeAttr('geospatial_lat_min'))) {
 		return true;
 	    }
 	    return false;
 	}
+
 	return  !this.isFixed();
     },
     getLabel:function(forLegend,addDecorator) {
@@ -1388,6 +1398,7 @@ MapGlyph.prototype = {
 	    }
 	*/
 
+
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
@@ -1405,7 +1416,6 @@ MapGlyph.prototype = {
 	    let text = this.attrs.legendText.replace(/\n/g,'<br>');
 	    body += HU.div(['class','imdv-legend-offset imdv-legend-text'],text);
 	}
-
 
 	if(this.isMap()) {
 	    if(!this.mapLoaded) {
@@ -1594,6 +1604,31 @@ MapGlyph.prototype = {
 	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,['style',HU.css('margin-bottom','4px','border','1px solid #ccc','width','150px')]),['target','_image'])));
 	}
 
+
+	if(this.isRoute()) {
+	    if(this.attrs.instructions && this.attrs.instructions.length>0) {
+		let instr = '';
+		this.attrs.instructions.forEach(step=>{
+		    let title = '';
+		    let attrs = [];
+		    if(step.lat) {
+			attrs.push('title','Click to view','class','imdv-route-step ramadda-clickable',
+				   'lat',step.lat,
+				   'lon',step.lon);
+		    } else {
+			attrs.push('class','imdv-route-step');
+		    }
+		    instr+=HU.div(attrs, step.instr);
+		});
+		body+=HU.center(HU.b('Directions')) +
+		    HU.div(['style','max-height:200px;overflow-y:auto;'],instr);
+	    }
+	}
+	
+
+
+
+
 	this.jq('maplegend').remove();
 	if(inMapLegend!='') {
 	    inMapLegend=
@@ -1611,6 +1646,27 @@ MapGlyph.prototype = {
     },
     initLegend:function() {
 	let _this = this;
+
+	let steps = this.getLegendDiv().find('.imdv-route-step');
+	steps.click(function(){
+	    let lon = $(this).attr('lon');
+	    let lat = $(this).attr('lat');
+	    if(!Utils.isDefined(lat)) return;
+	    steps.removeClass('imdv-route-step-on');
+	    $(this).addClass('imdv-route-step-on');
+	    if(_this.stepMarker) {
+		_this.display.removeFeatures([_this.stepMarker]);
+	    }
+
+	    _this.getMap().setCenter(MapUtils.createLonLat(lon,lat));
+	    _this.stepMarker = _this.display.makeFeature(_this.getMap(),'OpenLayers.Geometry.Point',
+							 {externalGraphic:'/emojis/1f699.png',
+							  pointRadius:12},
+							[lat,lon]);
+		
+	    _this.display.addFeatures([_this.stepMarker]);
+	});
+
 
 	if(this.imageLayers) {
 	    this.getLegendDiv().find('.imdv-imagelayer-checkbox').change(function() {
@@ -1920,6 +1976,9 @@ MapGlyph.prototype = {
     isMap:function() {
 	return this.getType()==GLYPH_MAP;
     },
+    isRoute:function() {
+	return this.getType()==GLYPH_ROUTE;
+    },    
     isRings:function() {
 	return this.getType()==GLYPH_RINGS;
     },    
@@ -2506,6 +2565,7 @@ MapGlyph.prototype = {
     makeGroupRoute: function() {
 	let mode = this.display.jq('routetype').val()??'car';
 	let provider = this.display.jq('routeprovider').val();
+	let doSequence = this.display.jq('routedosequence').is(':checked');
 	let pts = [];
 	if(this.children) {
 	    this.children.forEach(child=>{
@@ -2520,11 +2580,12 @@ MapGlyph.prototype = {
 	    alert('No points to make route from');
 	    return;
 	}
-	this.display.createRoute(provider,mode,pts);
+	this.display.createRoute(provider,mode,pts,{
+	    doSequence:doSequence});
     },
     getPropertiesComponent: function(content) {
 	if(this.isGroup() && this.display.isRouteEnabled()) {
-	    let html = this.display.createRouteForm();
+	    let html = this.display.createRouteForm(true);
 	    let buttons  =HU.div(['id',this.domId('createroute'),CLASS,'display-button'], 'Create Route');
 	    html+=HU.div(['style',HU.css('margin-top','5px')], buttons);
 	    html=HU.div(['style',HU.css('margin','5px')],html);
@@ -3888,6 +3949,13 @@ MapGlyph.prototype = {
     },
 
     setVisible:function(visible,callCheck) {
+	if(!visible) {
+	    if(this.stepMarker) {
+		this.display.removeFeatures([this.stepMarker]);
+	    }
+	}
+
+
 	this.attrs.visible = visible;
 	if(this.children) {
 	    this.children.forEach(child=>{
@@ -4449,6 +4517,10 @@ MapGlyph.prototype = {
     },
     
     doRemove:function() {
+	if(this.stepMarker) {
+	    this.display.removeFeatures([this.stepMarker]);
+	}
+
 	if(this.isFixed()) {
 	    jqid(this.getFixedId()).remove();
 	}
