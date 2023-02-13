@@ -727,35 +727,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-
-	//	try {
-        for (Metadata metadata : getMetadataManager().getMetadata(request,entry)) {
-	    MetadataType type = getMetadataManager().getType(metadata);
-	    if(type==null) {
-		//		System.err.println("Null type:" + entry.getName() +"  "+ metadata);
-		continue;
-	    }
-	    for (MetadataElement element : type.getChildren()) {
-		if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
-		    continue;
-		}
-		File f = element.getFile(entry, metadata, element);
-		if(f!=null && f.exists()) {
-		    if(!Utils.isImage(f.toString())) {
-			addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
-		    }
-		}
-	    }
-	    
-
-
-	    if(type.getSearchable()) {
-		corpus.append(metadata.getAttr1().toLowerCase());
-		corpus.append(" ");
-		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
-	    }
-	}
-
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CREATED, entry.getCreateDate()));	
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CHANGED, entry.getChangeDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_START, entry.getStartDate()));
@@ -789,6 +760,32 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
+
+        for (Metadata metadata : getMetadataManager().getMetadata(request,entry)) {
+	    MetadataType type = getMetadataManager().getType(metadata);
+	    if(type==null) {
+		continue;
+	    }
+	    for (MetadataElement element : type.getChildren()) {
+		if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
+		    continue;
+		}
+		File f = element.getFile(entry, metadata, element);
+		if(f!=null && f.exists()) {
+		    if(!Utils.isImage(f.toString())) {
+			addContentField(entry, doc, FIELD_ATTACHMENT, f, false, corpus);
+		    }
+		}
+	    }
+	    if(type.getSearchable()) {
+		corpus.append(metadata.getAttr1().toLowerCase());
+		corpus.append(" ");
+		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
+	    }
+	}
+
+
+
         doc.add(new TextField(FIELD_CORPUS, corpus.toString(),Field.Store.NO));
         writer.addDocument(doc);
     }
@@ -815,14 +812,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
 
 	if(gptKey!=null) {
-	    String url = "https://api.openai.com/v1/engines/davinci/completions";
-	    //		String url = "https://api.openai.com/v1/engines/curie/completions";		
-		
-	    StringBuilder gptCorpus = new StringBuilder("Text: ");
+	    String url = "https://api.openai.com/v1/completions";
+	    StringBuilder gptCorpus = new StringBuilder("Extract keywords from this text:\n");
 	    List<String> toks = Utils.split(text," ",true,true);
 	    //limit is ~1500 words
 	    int extraCnt = 0;
-	    for(int i=0;i<toks.size() && i+extraCnt<1000;i++) {
+	    for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
 		String tok = toks.get(i);
 		if(tok.length()>6) {
 		    extraCnt+=(int)(tok.length()/6);
@@ -830,11 +825,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		gptCorpus.append(tok);
 		gptCorpus.append(" ");
 	    }
-	    System.err.println("gpt corpus:" + gptCorpus.length());
+	    //	    System.err.println("gpt corpus:" + gptCorpus.length());
 	    text =  gptCorpus.toString().trim()+"\nKeywords:";
 	    String body = JsonUtil.map(Utils.makeList("prompt",
 						      JsonUtil.quote(text),
-						      "temperature", "0.3",
+						      "model",JsonUtil.quote("text-davinci-003"),
+						      "temperature", "0.5",
 						      "max_tokens" ,"60",
 						      "top_p", "1.0",
 						      "frequency_penalty", "0.8",
@@ -845,7 +841,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					     "Content-Type","application/json",
 					     "Authorization","Bearer " +gptKey);
 	    JSONObject json = new JSONObject(result);
-	    //		System.err.println(json);		
+	    //	    System.err.println(json);		
 	    if(json.has("choices")) {
 		JSONArray choices = json.getJSONArray("choices");
 		if(choices.length()>0) {
@@ -855,7 +851,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    keywords.add(tok);
 			}
 		    }
-		    System.err.println(keywords);
+		    System.err.println("keywords:" + keywords);
 		}
 	    }
 	}
@@ -895,8 +891,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    keywords.add(word.word);
 		}
 	    }
-
-
 	}
 	return keywords;
     }	
