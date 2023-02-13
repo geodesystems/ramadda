@@ -970,6 +970,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let mapOptions = Utils.clone({},tmpMapOptions);
 		    mapOptions.bounds=args.bounds;
 		    mapOptions.name = args.name;
+		    mapOptions.legendText = args.legendText;
 		    this.clearCommands();
 		    let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		    mapGlyph.setMapServerUrl(args.url,args.layerName,args.legendUrl,predefined);
@@ -993,6 +994,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				name:data.name,
 				url:data.tiles[0],
 			    };
+			    if(data.attribution && data.attribution_link) {
+				args.legendText = HU.href(data.attribution_link,"Courtesy: "+ data.attribution,['target',
+												  '_other']);
+			    }
 			    if(data.bounds) {
 				args.bounds=data.bounds;
 			    }
