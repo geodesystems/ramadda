@@ -1101,13 +1101,13 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
             style+= "max-width:" + HU.makeDim(maxWidth,"px")+";";
         }	
 
-        int    border = getProperty(wikiUtil, props, ATTR_BORDER, -1);
+        String    border = getProperty(wikiUtil, props, ATTR_BORDER, null);
         String bordercolor = getProperty(wikiUtil, props, ATTR_BORDERCOLOR,
                                          "#000");
 
-        if (border > 0 || bordercolor!=null) {
-	    if(border==0) border=1;
-            style += HU.css("border", border + "px solid "  + bordercolor);
+        if (border!=null || bordercolor!=null) {
+	    if(border==null) border="1px solid ";
+            style += HU.css("border", border + " "  + bordercolor);
         }
         String left = getProperty(wikiUtil, props, "left", null);
         if (left != null) {
