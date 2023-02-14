@@ -629,7 +629,7 @@ WikiEditor.prototype = {
 
     doGpt:function() {
 	let html=  "Note: any selected text in the editor will have the prompt applied to it<br>" +
-	    HU.b('Prompt:') + HU.space(1) +HU.input('',this.lastPrompt??'Rephrase the following text:',['style','width:300px;','id',this.domId('gpt-prompt')]) +HU.space(1) +HU.span(['id',this.domId('gpt-call')],'Evaluate') +
+	    HU.b('Prompt:') + HU.space(1) +HU.input('',this.lastPrompt??'Rephrase the following text:',['style','width:500px;','id',this.domId('gpt-prompt')]) +HU.space(1) +HU.span(['id',this.domId('gpt-call')],'Evaluate') +
 	    HU.div(['style','position:relative;'],
 		   HU.textarea('','',['id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
