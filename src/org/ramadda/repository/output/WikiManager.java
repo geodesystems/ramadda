@@ -7119,6 +7119,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
+	if(getSearchManager().isGptEnabled()) {
+	    help.append(HU.href("#", "GPT",
+				HU.attrs("id", textAreaId+"_rewrite")));
+	    help.append("<br>");
+	}
 	help.append(Utils.join("<br>",previewButton, colorButton, wcButton) +"<div class=ramadda-thin-hr></div><b>Help</b><br>");
 
 

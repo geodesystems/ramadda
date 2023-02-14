@@ -5279,7 +5279,7 @@ public class TypeHandler extends RepositoryManager {
                                     ARG_EXTRACT_KEYWORDS, "true", false,
                                     "Extract keywords");
 
-	if(getSearchManager().summaryExtractionEnabled()) {
+	if(getSearchManager().isSummaryExtractionEnabled()) {
 	    addMetadata+=HU.space(2) + HtmlUtils.labeledCheckbox(
 						   ARG_EXTRACT_SUMMARY, "true", false,
 						   "Extract summary") + " " +

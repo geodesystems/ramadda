@@ -360,6 +360,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return isLuceneEnabled;
     }
 
+    public boolean isGptEnabled() {
+	return stringDefined( getRepository().getProperty("gpt.api.key"));
+    }
+
+    public boolean isSummaryExtractionEnabled() {
+	return isGptEnabled();
+    }
+
+
 
     /**
      * _more_
@@ -752,9 +761,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		}
 		if(isNew && request.get(ARG_EXTRACT_SUMMARY,false)) {
-		    //		    String summary = callGpt("","Tl;dr",fileCorpus,120);
-		    String summary = callGpt("Summarize the following text:","",fileCorpus,120);		    
-
+		    String summary = callGpt("Summarize the following text:","",fileCorpus,120,true);
 		    if(stringDefined(summary)) {
 			summary = summary.trim().replaceAll("^:+","");
 			entryChanged = true;
@@ -808,47 +815,67 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public Result processRewrite(Request request)  throws Exception {
+	if(request.isAnonymous()) {
+	    String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
+	    return new Result("", new StringBuilder(json), "text/json");
+	}
 
-    public boolean summaryExtractionEnabled() {
-	return stringDefined( getRepository().getProperty("gpt.api.key"));
+	String text =request.getString("text","");
+	String prompt = request.getString("prompt",
+					  "Rewrite the following text:");
+	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
+	text = callGpt(prompt,"",new StringBuilder(text),1000,false);		    
+	System.err.println(text);
+	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
+	return new Result("", new StringBuilder(json), "text/json");
+	
     }
 
-    private String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens) throws Exception {
+
+    private String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize) throws Exception {
 	boolean debug = true;
+	//	if(debug) System.err.println("corpus:" + corpus);
 	String text = corpus.toString();
-	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
-	if(text.trim().length()==0) return null;
 	String gptKey = getRepository().getProperty("gpt.api.key");
 	if(gptKey==null) return null;
-	String url = "https://api.openai.com/v1/completions";
+
 	StringBuilder gptCorpus = new StringBuilder(prompt1);
-	gptCorpus.append("\n");
-	List<String> toks = Utils.split(text," ",true,true);
-	//limit is  4000 tokens or ~3500 words
-	int extraCnt = 0;
-	for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
-	    String tok = toks.get(i);
-	    if(tok.length()>6) {
-		extraCnt+=(int)(tok.length()/6);
+	gptCorpus.append("\n\n");
+	if(!tokenize) {
+	    gptCorpus.append(text);
+	} else {
+	    text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
+	    if(text.trim().length()==0) return null;	    
+	    List<String> toks = Utils.split(text," ",true,true);
+	    //limit is  4000 tokens or ~3500 words
+	    int extraCnt = 0;
+	    for(int i=0;i<toks.size() && i+extraCnt<3500;i++) {
+		String tok = toks.get(i);
+		if(tok.length()>6) {
+		    extraCnt+=(int)(tok.length()/6);
+		}
+		gptCorpus.append(tok);
+		gptCorpus.append(" ");
 	    }
-	    gptCorpus.append(tok);
-	    gptCorpus.append(" ");
 	}
 	gptCorpus.append("\n\n");
 	gptCorpus.append(prompt2);
-	//	if(debug) System.err.println("GPT corpus:" + gptCorpus);
+	if(debug) System.err.println("tokens:" + tokens +"\n"+"corpus:" + gptCorpus);
 	String gptText =  gptCorpus.toString();
 	//	    System.err.println("gpt corpus:" + text);
 	String body = JsonUtil.map(Utils.makeList("prompt",
 						  JsonUtil.quote(gptText),
 						  "model",JsonUtil.quote("text-davinci-003"),
-						  "temperature", "0.5",
+						  "temperature", "0",
 						  "max_tokens" ,""+ tokens,
-						  "top_p", "1.0",
-						  "frequency_penalty", "0.8",
-						  "presence_penalty", "0.0",
-						  "stop","[\"\\n\"]"));
+						  "top_p", "1.0"));
+						  //"frequency_penalty", "0.8",
+						  //"presence_penalty", "0.0",
+						  //"stop","[\"\\n\"]"));
+
 	//	    System.err.println(body);
+	String url = "https://api.openai.com/v1/completions";
 	String result = IO.doHttpRequest("GET", new URL(url), body,
 					 "Content-Type","application/json",
 					 "Authorization","Bearer " +gptKey);
@@ -884,7 +911,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<String> keywords = new ArrayList<String>();
-	String result = callGpt("Extract keywords from this text:","Keywords:",fileCorpus,60);
+	String result = callGpt("Extract keywords from this text:","Keywords:",fileCorpus,60,true);
 	if(result!=null) {
 	    for(String tok:Utils.split(result,",",true,true)) {
 		if(!keywords.contains(tok)) {

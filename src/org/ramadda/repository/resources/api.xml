@@ -94,6 +94,7 @@
   </group>
 
   <group handler="searchmanager">
+    <api request="/gpt/rewrite"            method="processRewrite" name="Rewrite"/>
       <api request="/search/form"            method="processSearchForm"     name="Search" icon="/icons/magnifier.png"/>
       <api request="/search/do"              method="processEntrySearch"/>
       <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse"/>

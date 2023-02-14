@@ -273,6 +273,10 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	HtmlUtils.hidePopupObject();
 	this.doWordcount();
     });	
+    this.jq("rewrite").click(()=>{
+	HtmlUtils.hidePopupObject();
+	this.doGpt();
+    });	
 }
 
 WikiEditor.prototype = {
@@ -622,6 +626,69 @@ WikiEditor.prototype = {
 	s = Utils.split(s.replace(/[<>\n={}]/g," ")," ",true,true);
 	alert("Approximately " + s.length +" words");
     },
+
+    doGpt:function() {
+	let html=  "Note: any selected text in the editor will have the prompt applied to it<br>" +
+	    HU.b('Prompt:') + HU.space(1) +HU.input('',this.lastPrompt??'Rephrase the following text:',['style','width:300px;','id',this.domId('gpt-prompt')]) +HU.space(1) +HU.span(['id',this.domId('gpt-call')],'Evaluate') +
+	    HU.div(['style','position:relative;'],
+		   HU.textarea('','',['id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
+			   HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])))+
+	    HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true',ID,this.domId("ok")],"Replace"),
+			HU.span(['class','ramadda-dialog-button','append','true',ID,this.domId("ok")],"Append"),
+			HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
+	html = HU.div(['class','ramadda-dialog'],html);
+	let dialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+				    my: "left bottom",     
+				    at: "left+200" +" top-50",
+				    title:"GPT",
+				    header:true,sticky:true,draggable:true,modal:false});	
+
+	let gptText='';
+	let call = () =>{
+	    gptText = this.getEditor().getSelectedText()??'';
+	    this.jq('gpt-loading').show();
+	    let url = RamaddaUtils.getUrl("/gpt/rewrite");
+	    $.post(url,{text:gptText,prompt:this.jq('gpt-prompt').val()},
+		   data=>{
+		       _this.jq('gpt-loading').hide();
+		       if(!Utils.stringDefined(data.result)) {
+			   alert('No result');
+			   return;
+		       }
+		       let result = data.result.trim();
+		       this.jq('rewrite-results').val(result);
+		   }).fail(data=>{
+		       _this.jq('gpt-loading').hide();
+		       alert('Rewrite failed');
+		   });
+	}
+
+
+	this.jq('gpt-prompt').keypress(function(e){
+	    if(e.keyCode == 13) {
+		call();
+	    }
+	});
+	this.jq('gpt-call').button().click(()=>{
+	    call();
+	});
+	let _this = this;
+	dialog.find('.ramadda-dialog-button').button().click(function() {
+	    let val = _this.jq('rewrite-results').val();
+	    if($(this).attr('replace')) {
+		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), val);
+	    } else if ($(this).attr('append')) {
+		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), gptText+'\n'+val.trim());
+	    } else {
+		dialog.remove();
+	    }
+	});
+
+
+
+
+    },    
 
     doColor: function (event) {
 	let html = HU.tag("input",['style',HU.css('width','100px','height','100px'), 'type','color','id',this.domId('color_picker')]);
