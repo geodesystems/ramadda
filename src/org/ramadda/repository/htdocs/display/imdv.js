@@ -3996,6 +3996,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		this.mapProperties[arguments[i]]=arguments[i+1];
 	    }
 	},
+	propertyCache:{
+	},
 	getMapProperty: function(name,dflt) {
 	    let debug=false;
 	    let value = this.getOtherProperties()[name];
@@ -4007,7 +4009,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(debug) console.log('p2:'+ value);
 		return value;
 	    }
-	    value=  this.getProperty(name,dflt);
+	    if(!Utils.isDefined(this.propertyCache[name])) {
+		this.propertyCache[name] = this.getProperty(name,dflt);
+	    }
+	    value=  this.propertyCache[name];
 	    if(debug) console.log('p3:'+ value);
 	    return value;
 	},
@@ -4255,14 +4260,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 	},
+	editState:null,
 	canEdit: function() {
 	    //Is it set in the wiki tag?
-	    let userCanEdit = this.getUserCanEdit(null);
-	    if(Utils.isDefined(userCanEdit))
-		return userCanEdit;
-	    //Is logged in user
-	    if(this.getProperty("canEdit")) return true;
-	    return this.getMapProperty('userCanEdit');
+	    if(!this.editState) {
+		let canEdit = this.getUserCanEdit(null);
+		if(!Utils.isDefined(canEdit))
+		    canEdit = this.getMapProperty('userCanEdit');
+		if(!Utils.isDefined(canEdit))
+		    canEdit = this.getProperty("canEdit");
+		this.editState = {
+		    canEdit:canEdit
+		}
+	    }
+	    return this.editState.canEdit;
 	},
 
         initDisplay: function(embedded) {

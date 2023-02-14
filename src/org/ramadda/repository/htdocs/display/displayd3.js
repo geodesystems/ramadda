@@ -280,13 +280,13 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             //TODO: check for units
             var data ={};
             var dataFields ={};
-            for(var i=0;i<names.length;i++) {
+            for(let i=0;i<names.length;i++) {
                 var obj = names[i];
                 var id = obj.id;
-                var field = this.getFieldById(fields,id);
+                var field = this.getFieldById(fields,id,false,true);
                 if(field == null) {
                     for(var j=0;j<obj.aliases.length;j++) {
-                        field = this.getFieldById(fields,obj.aliases[j]);
+                        field = this.getFieldById(fields,obj.aliases[j],false,true);
                         if(field) break;
                     }
                 }

@@ -2802,8 +2802,8 @@ MapGlyph.prototype = {
 
 		format:function(value) {
 		    if(this.isNumeric()) {
-			let decimals = this.getProperty('format.decimals',null,true);
-			if(Utils.isDefined(decimals)&&!isNaN(value)) {
+			let decimals = this.getProperty('format.decimals',-1,true);
+			if(decimals>=0&&!isNaN(value)) {
 			    value = Utils.trimDecimals(value,decimals);
 			}
 		    }

@@ -3558,6 +3558,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let featuresToAdd = [];
 	    let pointsToAdd = [];	    
 	    
+
+
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
 
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
@@ -3573,6 +3575,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let unhighlightStrokeWidth = this.getProperty("unhighlightStrokeWidth",0);
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
+	    let strokeOpacity = this.getStrokeOpacity();
 	    this.markers = {};
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
@@ -4053,7 +4056,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                 let values = record.getData();
                 let props = {
-		    strokeOpacity:this.getStrokeOpacity(),
+		    strokeOpacity:strokeOpacity,
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,

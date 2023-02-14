@@ -549,7 +549,7 @@ function DisplayThing(argId, argProperties) {
         },
 
         getTimeZone: function() {
-            return this.getProperty("timeZone");
+            return this.getDateProps().timeZone;
         },
         formatDate: function(date, args, useToStringIfNeeded) {
 	    if(!date || !date.getTime) return "";
@@ -562,18 +562,28 @@ function DisplayThing(argId, argProperties) {
                 return "" + date;
             }
         },
-	dateFormat:null,
+	dateProps:null,
+	getDateProps:function() {
+	    if(!this.dateProps) {
+		this.dateProps = {
+		    dateFormat:this.getProperty("dateFormat", this.getProperty("dateFormat2")),
+		    dateSuffix:this.getProperty("dateSuffix"),
+		    timeZone:this.getProperty("timeZone"),
+		    dateFormatDaysAgo:this.getProperty("dateFormatDaysAgo",false)
+		}
+	    }
+	    return this.dateProps;
+	},
         formatDateInner: function(date, args,useToStringIfNeeded) {
-	    if(!this.dateFormat)
-		this.dateFormat =  this.getProperty("dateFormat", this.getProperty("dateFormat2"));
-	    if(!this.dateFormat && useToStringIfNeeded) {
+	    let info = this.getDateProps();
+	    if(!info.dateFormat && useToStringIfNeeded) {
 		return String(date);
 	    }
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
 	    if(date.getTime && isNaN(date.getTime())) return "Invalid date";
-	    if(this.dateFormat) {
-		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
+	    if(info.dateFormat) {
+		let dttm = Utils.formatDateWithFormat(date,info.dateFormat,true);
 		if(dttm) {
 		    return String(dttm);
 		}
@@ -585,7 +595,7 @@ function DisplayThing(argId, argProperties) {
             if (args && !Utils.isDefined(args.suffix))
                 suffix = args.suffix;
             else
-                suffix = this.getProperty("dateSuffix");
+                suffix = info.dateSuffix;
             var timeZone = this.getTimeZone();
             if (!suffix && timeZone) suffix = timeZone;
 	    return Utils.formatDate(date, args?args.options:null, {
@@ -648,10 +658,17 @@ function DisplayThing(argId, argProperties) {
 	macroHook: function(token,value) {
 	    return null;
 	},
+	fieldFormats:{},
 	formatFieldValue:function(f,record,v) {
-	    let template = this.getProperty(f.getId()+".template");
-	    if(template) {
-		let tv = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
+	    let info = this.fieldFormats[f.getId()];
+	    if(!info) {
+		info = {
+		    template: this.getProperty(f.getId()+".template")
+		}
+		this.fieldFormats[f.getId()] = info;
+	    }
+	    if(info.template) {
+		let tv = this.applyRecordTemplate(record,this.getDataValues(record),null, info.template);
 		tv = tv.replace(/\${value}/g, v);
 		v = tv;
 	    }
@@ -1181,35 +1198,43 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
+	formatInfo: {},
         formatNumber: function(number, propPrefix,debug) {
-	    if(!this.getProperty(propPrefix?[propPrefix+".doFormatNumber","doFormatNumber"]:"doFormatNumber",true)) {
+	    propPrefix = propPrefix??'';
+	    let info = this.formatInfo[propPrefix];
+	    if(!info) {
+		info = {
+		    doFormatNumber:this.getProperty(propPrefix?[propPrefix+".doFormatNumber","doFormatNumber"]:"doFormatNumber",true),
+		    fmt:this.getProperty(propPrefix?[propPrefix+".numberTemplate","numberTemplate"]:"numberTemplate"),
+		    scale:this.getProperty(propPrefix?[propPrefix+".formatNumberScale","formatNumberScale"]:"formatNumberScale",1),
+		    decimals:this.getProperty(propPrefix?[propPrefix+".formatNumberDecimals","formatNumberDecimals"]:"formatNumberDecimals",-1),
+		    comma:this.getProperty(propPrefix?[propPrefix+".formatNumberComma","formatNumberComma"]:"formatNumberComma", false),
+                    nanValue: this.getProperty("nanValue", "--")
+		}
+		this.formatInfo[propPrefix] = info;
+	    }
+	    if(!info.doFormatNumber) {
 		return number;
 	    }
 	    if(isNaN(number)) {
-                return this.getProperty("nanValue", "--");
+                return info.nanValue;
 	    }
-	    let f = this.formatNumberInner(number, propPrefix,debug);
-	    let fmt = this.getProperty(propPrefix?[propPrefix+".numberTemplate","numberTemplate"]:"numberTemplate");
-	    if(fmt) f = fmt.replace("${number}", f);
+	    let f = this.formatNumberInner(number, propPrefix,info,debug);
+	    if(info.fmt) f = info.fmt.replace("${number}", f);
 	    f = String(f);
 	    if(f.endsWith(".")) f = f.substring(0,f.length-1);
 	    return f;
 	},
-        formatNumberInner: function(number,propPrefix,debug) {
+        formatNumberInner: function(number,propPrefix,info,debug) {
 	    number = +number;
-	    let scale = this.getProperty(propPrefix?[propPrefix+".formatNumberScale","formatNumberScale"]:"formatNumberScale");
-            if (Utils.isDefined(scale))
-		number = number*scale;
-	    let decimals = this.getProperty(propPrefix?[propPrefix+".formatNumberDecimals","formatNumberDecimals"]:"formatNumberDecimals");
-            if (Utils.isDefined(decimals)) {
-		return number_format(number, decimals);
+	    number = number*info.scale;
+            if (info.decimals>=0) {
+		return number_format(number, info.decimals);
 	    }
-            if (this.getProperty(propPrefix?[propPrefix+".formatNumberComma","formatNumberComma"]:"formatNumberComma", false)) {
-		let result =  Utils.formatNumberComma(number);
-		return result;
+            if (info.comma) {
+		return   Utils.formatNumberComma(number);
 	    }
             return Utils.formatNumber(number,false,debug);
-
         },
         propertyDefined: function(key) {
             return Utils.isDefined(this.getProperty(key));
@@ -1261,7 +1286,13 @@ function DisplayThing(argId, argProperties) {
 
 	    debug|=this.debugGetProperty;
 	    this.getPropertyCount++;
+
 	    this.getPropertyCounts[key]++;
+
+	    if(this.getPropertyCounts[key]==100) {
+		console.log("getProperty high count: " + key);
+		console.trace();
+	    }
 //	    debug = this.getPropertyCounts[key]==1;
 //	    if(debug)
 //		console.log("getProperty:" + key +"  dflt:"+ dflt);
@@ -3149,7 +3180,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return records;
 	},
-        getFieldById: function(fields, id,debug,ignore) {
+        getFieldById: function(fields, id,debug,ignore,foo) {
 	    //Support one arg
 	    if(debug)
 		console.log("getFieldById:" + id);
@@ -3228,7 +3259,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("\tgot:" + theField);
 	    if(!theField && !ignore) {
-		console.log("missing id:" + id +' for display:' + this.type);
+		console.log("missing id:" + id +' for display:' + this.type +" " + ignore);
 //		console.trace();
 	    }
 	    
@@ -7449,6 +7480,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
+	    let defaultIndexName= this.getProperty("indexName", "Index");
 	    if(!args) args = {};
 	    let debug = displayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
@@ -7610,7 +7642,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         } else {
                             if (!props.includeIndexIfDate) {
                                 values.push(rowIdx);
-				indexName = this.getProperty("indexName", "Index");
+				indexName = defaultIndexName;
                             }
                         }
                     }
@@ -7890,7 +7922,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 date = arg;
             }
 	    if(isNaN(date.getUTCFullYear())) return {v:date,f:"NA"};
-	    if(this.getProperty("dateFormatDaysAgo",false)) {
+
+
+	    if(this.getDateProps().dateFormatDaysAgo) {
 		let now = new Date();
 		let diff = Math.round((now.getTime()-date.getTime())/1000/60/60/24);
 		return {v:date,f:diff+" days ago"};
