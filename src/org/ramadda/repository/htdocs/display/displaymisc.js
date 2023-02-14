@@ -1076,7 +1076,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		this.setDisplayMessage("Loading data...");		
 		return;
 	    }
-	    
+//	    console.time('start');
+    
 	    let fancy  = this.getFancy();
             let pointData = this.getPointData();
             let fields = pointData.getRecordFields();
@@ -1267,7 +1268,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 	    html+="</thead><tbody>\n";	    
 	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
-	    let hadSavedState = false;
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
@@ -1288,16 +1288,30 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    let maxLength = this.getMaxLength();
 	    let maxHeight = this.getProperty("maxHeight","200px");
 	    let category;
+	    let fieldProps = {};
+	    fields.forEach(f=>{
+		if(f.isFieldNumeric()) {
+		    let showBar = this.getProperty("showBar",false);
+		    fieldProps[f.getId()] = {
+			isNumeric:true,
+			showBar: this.getProperty(f.getId()+".showBar",showBar),
+			barMin: this.getProperty(f.getId()+".barMin",0),
+			barMax: this.getProperty(f.getId()+".barMax",100),
+			barStyle: this.getProperty(f.getId()+".barStyle",this.getProperty("barStyle",'')),
+			barLabelInside: this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside"))
+		    }
+		}
+	    });
+
+//	    console.time('loop');	    
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
-
 		let d = record.getData();
 		d = d.map(v=>{
 		    if(!v) return v;
 		    if(v.getTime) return this.formatDate(v);
 		    return v;
 		});
-
 
 		//		if(recordIdx>40) return true;
 		let prefix = "";
@@ -1306,12 +1320,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    aggIds.push(aggId);
 		}
 
-
-		let clazz = (recordIdx%2)?"ramadda-row-odd":"ramadda-row-even";
-		clazz = "display-htmltable-row  search-component";
+		let clazz =  "display-htmltable-row  search-component";
 		let columns = [];
-
-//		html+="<td>#" + recordIdx": </td>";		
 		//Add the place holder for the colored rows
 		if(colorRowBy && !colorFullRow) {
 		    colorRowBy.forEach(c=>{
@@ -1327,52 +1337,23 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    });
 		}
 
-		if(includeIdx) columns.push(HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1))));
+		if(includeIdx) {
+		    columns.push(HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1))));
+		}
 		if(includeDate) {
 		    columns.push(HU.td([],this.formatDate(r.getDate())));
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
-		let formatFieldValue=(f,record)=>{
-		}
-
-
 		fields.forEach((f,idx)=>{
-		    let svalue = String(d[f.getIndex()]);
+		    let value = d[f.getIndex()];
+		    let svalue = String(value);
 		    let sv =  this.formatFieldValue(f,record,svalue);
 		    if(maxLength>0 && sv.length>maxLength && f.isString()) {
 			if(!record.isAggregate) {
 			    sv = HU.div([STYLE,"max-height:" + maxHeight+";overflow-y:auto;"],sv);
 			}
 		    }
-		    if(f.canEdit()) {
-			let value = v;
-			if(this.savedState) {
-			    let map  = this.savedState[f.getId()];
-			    if(map) {
-				let savedValue = map[record.rowIndex];
-				if(Utils.isDefined(savedValue)) {
-				    record.data[f.getIndex()] = savedValue;
-				    value = savedValue;
-				    hadSavedState = true;
-				}
-			    }
-			}
-			
-			if(f.getType()=="boolean")  {
-			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
-			} else if(f.isFieldEnumeration()) {
-			    let enums = f.getEnumeratedValues() ||"";
-			    let select = [];
-			    for(a in enums)
-				select.push([a,enums[a]]);
-			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,record.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
-			}  else {
-			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
-
-			}
-		    }
-		    
 		    if(f.getType()=="image") {
 			let url = record.getValue(f.getIndex());
 			sv = HU.image(url,[STYLE,HU.css("width","150px;")]);
@@ -1394,60 +1375,52 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    let color = null;
 		    let foreground="#000";
 		    let tdAttrs = [];
-		    let showBar = this.getProperty("showBar",false);
-		    let barLabelInside = true;		    
-		    let barMin = 0;
-		    let barMax = 100;
-		    let barStyle = "";
-		    if(f.isFieldNumeric()) {
+		    let props = fieldProps[f.getId()]??{};
+		    if(props.isNumeric)
 			tdAttrs = ["align","right"];
-			showBar = this.getProperty(f.getId()+".showBar",showBar);
-			barMin = this.getProperty(f.getId()+".barMin",barMin);
-			barMax = this.getProperty(f.getId()+".barMax",barMax);
-			barStyle = this.getProperty(f.getId()+".barStyle",this.getProperty("barStyle",barStyle));
-			barLabelInside = this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside",barLabelInside));			
-		    } else {
-			showBar = false;
-		    }
 		    tdAttrs.push("class","display-td display-htmltable-td");		    
 		    let attrs = colAttrs[f.getId()];
 		    if(attrs) tdAttrs = Utils.mergeLists(tdAttrs,attrs);
 		    if(svalue.trim().length==0)
 			tdAttrs.push('nullvalue','true');
+
 		    if(colorBy) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg =  Utils.getForegroundColor(color);
 			columns.push(HU.td(Utils.mergeLists(tdAttrs, [STYLE,HU.css('background', color,'color',fg+" !important")]),sv));
-		    } else if(showBar) {
-			let percent = 1-(value-barMin)/(barMax-barMin);
+		    } else if(props.showBar) {
+			let percent = 1-(value-props.barMin)/(props.barMax-props.barMin);
 			percent = (percent*100)+"%";
 			let contents = "";
 			sv = Utils.formatNumberComma(value)+"%";
-			if(barLabelInside) {
+			if(props.barLabelInside) {
 			    contents = HU.div([STYLE,HU.css("padding-left","2px")],sv);
 			    sv = "";
 			}
-			let bar = HU.div([CLASS,"ramadda-bar-inner", STYLE,HU.css("right",percent)+barStyle],contents);
+			let bar = HU.div([CLASS,"ramadda-bar-inner", STYLE,HU.css("right",percent)+props.barStyle],contents);
 			let width = this.getProperty("barLength","100px");
 			let outer = HU.div([CLASS,"ramadda-bar-outer", STYLE,
 					    (width?HU.css("width",HU.getDimension(width)):"")+
 					    HU.css("min-width","100px")+(barLabelInside?HU.css("height","1.5em"):"")],bar);
-			if(barLabelInside) {
+			if(props.barLabelInside) {
 			    columns.push(HU.td([],outer));
 			} else {
 			    columns.push(HU.td([],HU.row([["align","right"],sv],outer)));
 			}
-		    } else if(f.isFieldNumeric()) {
-			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(+sv,f.getId()), tdAttrs);
+		    } else if(props.isNumeric) {
+			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
+//			let td = this.formatNumber(value,f.getId());
+//			let td = value;
+//			columns.push(HU.td(td));
 			columns.push(td);
 		    } else {
 			columns.push(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs));
 		    }
 		    prefix="";
 		});
-		if(hadSavedState) {
-		    this.getPointData().propagateEventDataChanged(this);
-		}
+
+
+
 		if(includeGeo) {
 		    columns.push(HU.td([],record.getLatitude()),HU.td([],record.getLongitude()));
 		}
@@ -1481,18 +1454,21 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    let color =  colorRowBy.getColorFromRecord(record);
 		    if(color)rowStyle+=HU.css('background',color);
 		}
+
+
+
 		html+=Utils.join(columns,'');
 		html+="</tr>\n";
 		return true;
 	    });
-//	    console.log(html);
 	    html+="</tbody>\n";
 	    html+="</table>\n";
 	    if(this.getShowAddRow()) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
 	    }	
+//	    console.timeEnd('loop');
 	    this.setContents(html);
-
+//	    console.time('start2');	    
 	    aggIds.forEach(id=>{
 		$("#"+ id+"_toggle").click(function() {
 		    let open = $(this).attr("toggleopen")=="true";
@@ -1555,6 +1531,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
                 ordering: false,
 		scrollY:this.getScrollY("400px")
 	    };
+
             HU.formatTable("#" + this.domId(ID_TABLE), opts);
 	    if(this.getShowAddRow()) {
 		this.jq("addrow").click(()=>{
@@ -1592,6 +1569,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    handleChange($(this));
 		}
 	    });
+//	    console.timeEnd('start2');	    
+//	    console.timeEnd('start');
 
 	}});
 }
