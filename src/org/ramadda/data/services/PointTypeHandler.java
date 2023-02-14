@@ -785,7 +785,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             if (patterns != null) {
                 List<String> toks = StringUtil.split(patterns, ",");
                 String       time = null;
-		System.err.println("header:" + header);
                 for (String tok : toks) {
                     List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
                     if (toks2.size() != 2) {
