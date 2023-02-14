@@ -46,10 +46,17 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 fields="latitude,longitude,alt.*|elev.*"}}
 -col
 +col-6
-{{display_map height=400px isPath=true radius=2 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
+{{display_map height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
 -col
 -row
-{{display_linechart showMenu=true fields="temp.*|press.*|#"}}
++row tight=true
++col-6
+{{display_linechart showMenu=true fields="temp.*,humidity.*|#" height=200px}}
+-col
++col-6
+{{display_linechart showMenu=true fields=".*speed.*|#" height=200px}}
+-col
+-row 
 :p
 {{display_htmltable}}
 -section
