@@ -2564,8 +2564,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    this.getAnimation().setDateRange(date,date);
 		    }
 		}
-
 	    }
+
             if (!source.getEntries) {
                 return;
             }
@@ -2914,7 +2914,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getSelectedFields: function(dfltList) {
 	    let prefixFields = this.getProperty('prefixFields');
-	    let debug = displayDebug.getSelectedFields;
+	    let debug = displayDebug.getSelectedFields || this.getProperty('debugFields');
 //	    debug =true;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
@@ -3336,11 +3336,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return true;
 	    });
-	    if(debug)
+	    if(debug || displayDebug.getSelectedFields)
 		console.log("\tgot:" + theField);
 	    if(!theField && !ignore) {
-		console.log("missing id:" + id +' for display:' + this.type);
-//		console.trace();
+		if(debug || displayDebug.getSelectedFields || this.getProperty('debugFields')) {
+		    this.logMsg("can't find field field:" + id);
+		    console.log(fields.reduce((acc,f)=>{
+			return acc+' ' + f.getId();
+		    },''));
+		    //		console.trace();
+		}
+
 	    }
 	    
             return theField;
