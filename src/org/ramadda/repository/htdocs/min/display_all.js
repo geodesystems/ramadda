@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 21:30:48 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 21:41:27 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -1407,8 +1407,8 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
         formatAnimationDate: function(date,format,debug) {
-	    let timeZoneOffset =this.display.getProperty("timeZoneOffset");
-	    let timeZone =this.display.getProperty("timeZone");	    
+	    let timeZoneOffset =this.display.getTimeZoneOffset();
+	    let timeZone =this.display.getTimeZone();	    
 	    if(timeZoneOffset) {
 		if(debug) console.log("date before:" + date.toUTCString());
 		date = Utils.createDate(date, -timeZoneOffset);
@@ -4084,10 +4084,6 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return this.getProperty("showTitle", dflt);
         },
-
-        getTimeZone: function() {
-            return this.getDateProps().timeZone;
-        },
         formatDate: function(date, args, useToStringIfNeeded) {
 	    if(!date || !date.getTime) return "";
             try {
@@ -4105,7 +4101,7 @@ function DisplayThing(argId, argProperties) {
 		this.dateProps = {
 		    dateFormat:this.getProperty("dateFormat", this.getProperty("dateFormat2")),
 		    dateSuffix:this.getProperty("dateSuffix"),
-		    timeZone:this.getProperty("timeZone"),
+		    timeZone:this.getTimeZone(),
 		    dateFormatDaysAgo:this.getProperty("dateFormatDaysAgo",false)
 		}
 	    }
@@ -5062,6 +5058,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'dateFormat',canCache:true,
 	 ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'dateFormatDaysAgo',ex:true},
+	{p:'timeZone',canCache:true},
+	{p:'timeZoneOffset',canCache:true,d:0},
 	{p:'doFormatNumber',ex:false},
  	{p:'formatNumberDecimals',ex:0},
 	{p:'formatNumberScale',ex:100},
@@ -7204,12 +7202,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let startDate = this.getProperty("startDate");
 	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
-		this.startDateObject = Utils.createDate(startDate,+this.getProperty("timeZoneOffset",0));
+		this.startDateObject = Utils.createDate(startDate,+this.getTimeZoneOffset());
 		if(debug)
 		    console.log(this.type +" start date:" + startDate + " dttm:" + this.startDateObject.toUTCString());
 	    } 
 	    if(endDate) {
-		this.endDateObject = Utils.createDate(endDate,+this.getProperty("timeZoneOffset",0));
+		this.endDateObject = Utils.createDate(endDate,+this.getTimeZoneOffset());
 		if(debug)
 		    console.log(this.type +"end date:" +this.endDateObject.toUTCString());
 	    } 
@@ -11481,7 +11479,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             if (this.fmt_yyyy) return true;
             var tz = 0;
-            this.timezone = this.getProperty("timezone");
+            this.timezone = this.getTimeZone();
             if (Utils.isDefined(this.timezone)) {
                 tz = parseFloat(this.timezone);
             }
@@ -34978,7 +34976,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',d:false,ex:'false',tt:"Always show markers"},
+	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers"},
 	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out"},
 	{p:'collisionDotColor',ex:'red',tt:"Color of dot drawn at center"},
 	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
@@ -40031,7 +40029,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 	dot: null,
 	display:display,
 	roundPoint:roundPoint,
-	visible: display.getPropertyCollisionFixed(),
+	visible: display.getCollisionFixed(),
 	dot:null,
 	numRecords:numRecords,
 	records:[],
