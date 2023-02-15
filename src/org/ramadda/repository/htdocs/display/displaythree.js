@@ -131,7 +131,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'color',d:'blue',ex:'red'},
 	{p:'showPoints',d:true,ex:'false'},
 	{p:'showSpheres',ex:true},			
-	{p:'pointRadius',d:1,ex:'1'},
+	{p:'pointRadius',d:1,ex:'1',canCache:true},
 	{p:'pointResolution',d:12},
 	{p:'heightField',tt:'field to map height to'},
 	{p:'heightMin',d:0,tt:'min height range that heightField value percent is mapped to'},
@@ -317,7 +317,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			    lat:latField1.getValue(record),
 			    lng:lonField1.getValue(record),
 			    color:color,
-			    radius:this.getPointRadius(0.5),
+			    radius:this.getPointRadius(),
 			    record:record,
 			});
 			pointData.push({
@@ -325,7 +325,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			    lat:latField2.getValue(record),
 			    lng:lonField2.getValue(record),
 			    color:color,
-			    radius:this.getPointRadius(0.5),
+			    radius:this.getPointRadius(),
 			    record:record,
 			});
 		    }
