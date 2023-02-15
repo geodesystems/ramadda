@@ -411,7 +411,7 @@ RamaddaMediaTranscript.prototype = {
 	    pause:()=>{
 		player.pauseVideo();
 	    },
-	    getTime: (cb)=>{cb(player.getCurrentTime());},
+	    getTime: (cb)=>{cb(player.getCurrentTime?player.getCurrentTime():null);},
 	    gotoTime:(seconds)=>{
 		player.seekTo(seconds,true)
 	    }
