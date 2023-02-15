@@ -307,6 +307,16 @@ public abstract class Harvester extends RepositoryManager {
         this.isEditable = true;
     }
 
+    public String getDefaultTypeHandler() throws Exception {
+	return TypeHandler.TYPE_FILE;
+    }
+
+
+    public TypeHandler getTypeHandler() throws Exception {
+	return  getTypeHandler(getDefaultTypeHandler());
+    }
+
+
     /**
      * _more_
      *
@@ -314,10 +324,10 @@ public abstract class Harvester extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public TypeHandler getTypeHandler() throws Exception {
+    public TypeHandler getTypeHandler(String dflt) throws Exception {
         if (typeHandler == null) {
             this.typeHandler =
-                repository.getTypeHandler(TypeHandler.TYPE_FILE);
+                repository.getTypeHandler(dflt);
         }
 
         return typeHandler;
@@ -394,14 +404,13 @@ public abstract class Harvester extends RepositoryManager {
             return user;
         }
         if ((userName == null) || (userName.trim().length() == 0)) {
-            user = repository.getUserManager().getDefaultUser();
+            user = repository.getUserManager().getAdminUser();
         } else {
             user = repository.getUserManager().findUser(userName);
+	    if (user == null) {
+		user = repository.getUserManager().getAdminUser();
+	    }
         }
-        if (user == null) {
-            user = repository.getUserManager().getDefaultUser();
-        }
-
         return user;
     }
 
@@ -500,6 +509,11 @@ public abstract class Harvester extends RepositoryManager {
 	
         groupTemplate = MyXmlUtil.getAttribute(element, ATTR_GROUPTEMPLATE,
                                              groupTemplate);
+
+	//Set this before we get the base group since we need the user
+        this.userName = MyXmlUtil.getAttribute(element, ATTR_USER, userName);
+        this.user     = null;
+
         this.baseGroupId = MyXmlUtil.getAttribute(element, ATTR_BASEGROUP, "");
 
         Entry baseGroup = getBaseGroup();
@@ -518,8 +532,6 @@ public abstract class Harvester extends RepositoryManager {
         this.name     = MyXmlUtil.getAttribute(element, ATTR_NAME, "");
         this.monitor = MyXmlUtil.getAttribute(element, ATTR_MONITOR, monitor);
 
-        this.userName = MyXmlUtil.getAttribute(element, ATTR_USER, userName);
-        this.user     = null;
 
         this.addMetadata = MyXmlUtil.getAttribute(element, ATTR_ADDMETADATA,
                 addMetadata);
