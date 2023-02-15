@@ -374,6 +374,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
         Object[]  values = entry.getTypeHandler().getEntryValues(entry);
+	//Some of the types have an empty values array?
+	if(values.length==0) return null;
         String    propertiesString = (values[IDX_PROPERTIES] != null)
                                      ? values[IDX_PROPERTIES].toString()
                                      : "";
