@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 21:41:27 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 22:35:35 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4439,8 +4439,13 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return fields;
 	},
+	fieldLabelCache:{},
 	getFieldLabel:function(field) {
-	    return  this.getProperty(field.getId()+".label",field.getLabel());
+	    if(this.fieldLabelCache[field.getId()])
+		return this.fieldLabelCache[field.getId()].value;
+	    let value=  this.getProperty(field.getId()+".label",field.getLabel());
+	    this.fieldLabelCache[field.getId()] = {value:value};
+	    return value;
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
@@ -4519,10 +4524,10 @@ function DisplayThing(argId, argProperties) {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
 	    }
+	    let ttf = this.getTooltipFields();
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getTooltipFields(this.getPropertyFields()));
+		fields = this.getFieldsByIds(null,ttf??this.getPropertyFields());
 	    } else {
-		let ttf = this.getTooltipFields();
 		if(ttf) {
 		    fields = this.getFieldsByIds(null,ttf);
 		}
@@ -4749,6 +4754,7 @@ function DisplayThing(argId, argProperties) {
 	    //            this[key] = value;
             this.properties[key] = value;
 	    this.transientProperties[key]  = value;
+	    this.propertiesCache[key] = value;
         },
         getSelfProperty: function(key, dflt) {
             if (this[key] != null) {
@@ -5006,6 +5012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:'fieldsPatterns',ex:'comma separated list of regexp patterns to match on fields to display'},
+	{p:'fieldAliases',canCache:true},
 	{p:'prefixFields',tt:'Field to always add to the beginning of the list'},
 	{p:'showMenu',ex:true},	      
 	{p:'showTitle',ex:true},
@@ -5161,6 +5168,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'acceptEventDataSelection',ex:true,tt:'accept new data coming from other displays'},
 
 	{label:'Convert Data'},
+	{p:'offset1',canCache:true},
+	{p:'offset2',canCache:true},
+	{p:'scale',canCache:true},
+	{p:'unit',canCache:true},			
 	{p:'binDate',ex:'day|month|year',tt:'Bin the dates'},
 	{p:'binType',ex:'count|average|total'},
 	{p:'groupBy',ex:'field',tt:'Group the data'},
@@ -6513,7 +6524,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let aliases= {};
-	    var tmp = this.getProperty("fieldAliases");
+	    var tmp = this.getFieldAliases();
 	    if(tmp) {
 		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
@@ -6793,7 +6804,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return null;
 	    }
 	    let aliases= {};
-	    let tmp = this.getProperty("fieldAliases");
+	    let tmp = this.getFieldAliases();
 	    if(tmp) {
 		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
@@ -13868,12 +13879,12 @@ function makePointData(json, derived, source,url,callback) {
         var recordField = new RecordField(field,source);
         if (recordField.isFieldNumeric()) {
             if (source.getProperty) {
-                var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getProperty("offset1"));
-                var offset2 = source.getProperty(recordField.getId() + ".offset2", source.getProperty("offset2"));
-                var scale = source.getProperty(recordField.getId() + ".scale", source.getProperty("scale"));
+                var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getOffset1());
+                var offset2 = source.getProperty(recordField.getId() + ".offset2", source.getOffset2());
+                var scale = source.getProperty(recordField.getId() + ".scale", source.getScale());
 
                 if (offset1 || offset2 || scale) {
-                    var unit = source.getProperty(recordField.getId() + ".unit", source.getProperty("unit"));
+                    var unit = source.getProperty(recordField.getId() + ".unit", source.getUnit());
                     if (unit) {
                         recordField.unit = unit;
                     }
@@ -17528,14 +17539,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
 	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 
-	{p:'labelInLegend',d:null,ex:'label'},
-	{p:'highlight.labelInLegend',d:null,ex:'label'},
-	{p:'nohighlight.labelInLegend',d:null,ex:'label'},	
-	{p:'some_field.labelInLegend',d:null,ex:'label'},
+	{p:'labelInLegend',ex:'label',canCache:true},
+	{p:'highlight.labelInLegend',d:null,ex:'label',canCache:true},
+	{p:'nohighlight.labelInLegend',d:null,ex:'label',canCache:true},	
+	{p:'some_field.labelInLegend',d:null,ex:'label',canCache:true},
 
-	{p:'seriesType',d:null,ex:'line|area|bars'},
-	{p:'highlight.seriesType',d:null,ex:'line|area|bars'},
-	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars'},	
+	{p:'seriesType',d:null,ex:'line|area|bars',canCache:true},
+	{p:'highlight.seriesType',d:null,ex:'line|area|bars',canCache:true},
+	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars',canCache:true},	
 	{p:'some_field.seriesType',d:null,ex:'line|area|bars'},	
 
 	{p:'pointSize',d:null,ex:'0'},
@@ -17561,12 +17572,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToPan',d:false},	
 
 	{label:'Trendlines'},
-	{p:'showTrendline',d:null,ex:"true"},
-	{p:"trendlineType",ex:"exponential"},
-	{p:"trendlineVisibleInLegend",ex:"true"},
-	{p:"trendlineColor",ex:""},
-	{p:"trendlineLineWidth",ex:"true"},
-	{p:"trendlineOpacity",ex:"0.3"}		    		    		    
+	{p:'showTrendLines',d:null,ex:"true",canCache:true},
+	{p:"trendlineType",ex:"exponential",canCache:true},
+	{p:"trendlineVisibleInLegend",ex:"true",canCache:true},
+	{p:"trendlineColor",ex:"",canCache:true},
+	{p:"trendlineLineWidth",ex:"true",canCache:true},
+	{p:"trendlineOpacity",ex:"0.3",canCache:true}		    		    		    
     ];
     this.debugTimes = false;
 
@@ -17687,7 +17698,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             });
 
             this.jq(ID_TRENDS_CBX).click(function() {
-                _this.showTrendLines = _this.jq(ID_TRENDS_CBX).is(':checked');
+                _this.setProperty('showTrendLines', _this.jq(ID_TRENDS_CBX).is(':checked'));
                 _this.displayData();
 
             });
@@ -17804,7 +17815,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
                 html += HU.checkbox(this.domId(ID_TRENDS_CBX),
 				    [],
-				    this.getProperty("showTrendLines", false)) + "  " + "Show trend line";
+				    this.getShowTrendLines()) + "  " + "Show trend line";
                 html += " ";
                 html += HU.checkbox(this.domId(ID_PERCENT_CBX),
 				    [],
@@ -18232,6 +18243,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    seriesNames.forEach((name,idx)=>{
 		name = name.replace(/\(.*\)/g,"");
+		//check for the formatted label
+		if(name.indexOf('<')>=0) return;
 		let id = Utils.makeId(name);
 		let highlight = highlightMap[id];
 		let s = {
@@ -18313,7 +18326,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let trendlinesInfo = {};
 	    seriesNames.forEach((name,idx)=> {
 		let id = Utils.makeId(name);
-		if(this.getProperty("showTrendline." + id, this.getProperty("showTrendline"))) {
+		if(this.getProperty("showTrendline." + id, this.getShowTrendLines())) {
 		    let s = {
 		    };
 		    trendlinesInfo[idx] = s;
@@ -18999,7 +19012,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.chartDimensions.width = "80%";
             }
 
-            if (this.getProperty("showTrendLines", false)) {
+            if (this.getShowTrendLines()) {
                 chartOptions.trendlines = {
                     0: {
                         type: 'linear',
@@ -19384,7 +19397,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxis.ticks',ex:''},
 	{p:'vAxis.ticks',ex:''},
 	{p:'useMultipleAxes',ex:'true'},
-	{p:'showTrendLines',ex:'true'},
     ];
 
     defineDisplay(this, SUPER, myProps, {
