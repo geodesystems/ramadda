@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 15 00:17:28 MST 2023";
+var build_date="RAMADDA build date: Wed Feb 15 08:35:35 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4104,7 +4104,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    var dflt = false;
             if (this.displayParent != null) {
-		dflt = this.displayParent.getProperty("showChildTitle",dflt);
+		dflt = this.displayParent.getShowChildTitle(dflt);
 	    }
 	    return this.getProperty("showTitle", dflt);
         },
@@ -5039,6 +5039,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'prefixFields',tt:'Field to always add to the beginning of the list'},
 	{p:'showMenu',ex:true},	      
 	{p:'showTitle',ex:true},
+	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
 	{p:'width',doGetter:false,ex:'100%'},
@@ -7507,12 +7508,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)   console.log("filterData-5 #records:" + records.length);
 	    let dataFilters = this.getTheDataFilters();
 	    if(dataFilters.length) {
+//		console.time('filters');
 		records = records.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) {
 			return false;
 		    } 
 		    return true;
 		});
+//		console.timeEnd('filters');
 	    }
 	    if(debug)   console.log("filterData-6 #records:" + records.length);
 	    //	    var t2=  new Date();
@@ -9754,8 +9757,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);
-		header2 +=  HU.checkbox("",[ID,cbxid],f.enabled) +" " +
-		    this.makeFilterLabel(f.label +"&nbsp;&nbsp;")
+		header2 +=  HU.checkbox(cbxid,[ID,cbxid],f.enabled,
+//					this.makeFilterLabel(f.label +"&nbsp;&nbsp;"));
+					f.label +"&nbsp;&nbsp;");
 	    });
 
 	    if(this.getProperty("filterDate")) { 
@@ -35396,7 +35400,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.myFeatureLayerNoSelect = null;
 	    }	    
 	    if(this.labelFeatures) {
-		this.map.labelLayer.removeFeatures(this.labelFeatures);
+		this.map.labelLayer.removeFeatures(this.labelFeatures,{silent:true});
 		this.labelFeatures = null;
 		this.jq("legendid").html("");
 	    }
@@ -37824,11 +37828,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let features = [];
 	    let featuresToAdd = [];
 	    let pointsToAdd = [];	    
-	    
-
-
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
-
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    this.lastColorBy = colorBy;
 	    let cidx=0
@@ -37844,6 +37844,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    let strokeOpacity = this.getStrokeOpacity();
 	    this.markers = {};
+
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
 		let numLocs = 0;
@@ -37862,7 +37863,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    //Just make up some numbers
 		    radiusScale =[10000,2,6000,3,4500,4,3500,5,2600,6,1300,7,800,8,300,9,275,10,250,11,225,12,175,13,125,14,100,15,50,16];
 		}
-		radius=radiusScale[1];
+//		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
 		    if(numLocs<radiusScale[i]) {
 			radius = radiusScale[i+1];
@@ -37870,8 +37871,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 //		console.log("#locs:" + numLocs +" #records:" +records.length + " radius:" + radius);
 	    }
-
 	    radius = Math.min(radius, this.getMaxRadius());
+
+
 
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
