@@ -3373,7 +3373,7 @@ public class PageHandler extends RepositoryManager {
         items.add(0, selector);
         String selected = (typeHandler != null)
                           ? typeHandler.getType()
-                          : "";
+                          : TypeHandler.TYPE_FINDMATCH;
         if (true) {
             return HU.select(ARG_TYPE, items, selected);
         }
