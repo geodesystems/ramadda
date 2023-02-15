@@ -1473,8 +1473,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	recordOk: function(display, record, values) {
             return true;
         },
+	propertyCache:{},
 	getProperty: function(key, dflt) {
-	    return this.display.getProperty(key, dflt);
+	    let value = this.propertyCache[key];
+	    if(value) return value.value;
+	    let v = this.display.getProperty(key, dflt);
+	    this.propertyCache[key] = {value:v};
+	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
 	    return this.display.getPropertyFromUrl(key, dflt);

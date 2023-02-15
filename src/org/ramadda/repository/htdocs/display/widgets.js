@@ -2973,7 +2973,7 @@ Glyph.prototype = {
 	    }
 	    let x2=x+length;
 	    let y2=y;
-	    let arrowLength = opts.display.getProperty('arrowLength',-1);
+	    let arrowLength = opts.display.getArrowLength();
 	    /*
 	      if(opts.angleBy && opts.angleBy.index>=0) {
 	      let perc = opts.angleBy.getValuePercent(v);
@@ -3006,7 +3006,7 @@ Glyph.prototype = {
 	    ctx.beginPath();
 	    ctx.moveTo(x,y);
 	    ctx.lineTo(x2,y2);
-	    ctx.lineWidth=opts.display.getProperty('lineWidth',1);
+	    ctx.lineWidth=opts.display.getLineWidth();
 	    ctx.stroke();
 	    if(arrowLength>0) {
 		ctx.beginPath();

@@ -762,15 +762,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers"},
-	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out"},
-	{p:'collisionDotColor',ex:'red',tt:"Color of dot drawn at center"},
-	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
-	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots"},					
-	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center"},
-	{p:'collisionIcon',ex:'/icons/...',tt:"Use an icon for collisions"},
-	{p:'collisionIconSize',d:16,ex:'16'},
-	{p:'collisionTooltip',ex:'${default}',tt:"Tooltip to use for collision dot"},
+	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers",canCache:true},
+	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out",canCache:true},
+	{p:'collisionDotColor',d:'blue',tt:"Color of dot drawn at center",canCache:true},
+	{p:'collisionDotColorOn',canCache:true},
+	{p:'collisionDotColorOff',canCache:true},		
+	{p:'collisionDotRadius',d:6,tt:"Radius of dot drawn at center",canCache:true},
+	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots",canCache:true},
+				
+	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center",canCache:true},
+	{p:'collisionIcon',ex:'/icons/...',tt:"Use an icon for collisions",canCache:true},
+	{p:'collisionIconSize',d:16,ex:'16',canCache:true},
+	{p:'collisionTooltip',ex:'${default}',tt:"Tooltip to use for collision dot",canCache:true},
 
 
 	{label:"Map Lines"},
@@ -861,6 +864,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'cellSize',ex:'8'},
 	{p:'cellSizeH',ex:'20',tt:'Base value to scale by to get height'},
 	{p:'cellSizeHBase',ex:'0',tt:'Extra height value'},
+	{p:'arrowLength',d:-1,canCache:true},
+	{p:'lineWidth',d:1,canCache:true},	
 	{p:'angleBy',ex:'field',tt:'field for angle of vectors'},
 	{p:'hmOperator',ex:'count|average|min|max'},
 	{p:'hmAnimationSleep',ex:'1000'},
@@ -880,6 +885,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     
     myProps.push({label:'Canvas'});
     myProps.push(...RamaddaDisplayUtils.getCanvasProps());
+    myProps.push(...RamaddaDisplayUtils.sparklineProps);
 
 
     displayDefineMembers(this, myProps, {
@@ -4736,6 +4742,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	{p:'cellHeight',ex:'30'},
 	{p:'showCellLabel',ex:'false'},
     ];
+    myProps.push(...RamaddaDisplayUtils.sparklineProps);
+
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
@@ -5845,7 +5853,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 		return html;
 	    };
 	    let collisionIcon=this.display.getCollisionIcon();
-	    let collisionIconSize=this.display.getCollisionIconSize(16);		
+	    let collisionIconSize=this.display.getCollisionIconSize();		
 	    if(collisionIcon)
 		this.dot = this.display.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], collisionIcon, "", "",null,collisionIconSize,null,null,null,null,false);
 	    else {
@@ -5867,8 +5875,8 @@ function CollisionInfo(display,numRecords, roundPoint) {
 	},
 	getCollisionDotStyle:function(collisionInfo) {
 	    let collisionFixed = this.display.getCollisionFixed();
-	    let dotColor = this.display.getProperty("collisionDotColor","blue");
-	    let dotRadius = this.display.getProperty("collisionDotRadius",6);
+	    let dotColor = this.display.getCollisionDotColor();
+	    let dotRadius = this.display.getCollisionDotRadius();
 	    if(!collisionFixed) {
 		if(this.display.getPropertyCollisionScaleDots(false)) {
 		    let scale = collisionInfo.numRecords/16;
@@ -5878,9 +5886,9 @@ function CollisionInfo(display,numRecords, roundPoint) {
 		} 
 
 		if(collisionInfo.visible)  {
-		    dotColor = this.display.getProperty("collisionDotColorOn",dotColor);
+		    dotColor = this.display.getCollisionDotColorOn()??dotColor;
 		} else {
-		    dotColor = this.display.getProperty("collisionDotColorOff",dotColor);
+		    dotColor = this.display.getCollisionDotColorOff()??dotColor;
 		}
 	    }
 	    return {

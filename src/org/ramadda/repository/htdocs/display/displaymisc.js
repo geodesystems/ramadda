@@ -4185,31 +4185,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	properties.showDisplayBottom = false;
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
-    let myProps = [
-	{label:'Sparkline'},
-	{p:'showDate',ex:'true'},
-	{p:'showMin',ex:'true'},
-	{p:'showMax',ex:'true'},
-	{p:'labelStyle',ex:''},			
-	{p:'sparklineWidth',d:60, canCache:true},
-	{p:'sparklineHeight',d:20, canCache:true},
-	{p:'sparklineLineColor',d:'#000', canCache:true},
-	{p:'sparklineBarColor',d:'MediumSeaGreen', canCache:true},
-	{p:'sparklineCircleColor',d:'#000', canCache:true},
-	{p:'sparklineCircleRadius',d:'1', canCache:true},
-	{p:'sparklineLineWidth',d:'1', canCache:true},
-	{p:'sparklineShowLines',d:true, canCache:true},
-	{p:'sparklineShowBars',d:false, canCache:true},
-	{p:'sparklineShowCircles',d:true, canCache:true},
-	{p:'sparklineShowEndPoints',d:true, canCache:true},
-	{p:'sparklineEndPointRadius',d:2, canCache:true},
-	{p:'sparklineEndPoint1Color',d:'steelblue', canCache:true},
-	{p:'sparklineEndPointRadius',d:'2', canCache:true},
-	{p:'sparklineEndPoint2Color',d:'', canCache:true},
-	{p:'sparklineEndPoint2Color',d:'tomato', canCache:true},
-	{p:'sparklineDoTooltip',d:true, canCache:true},
-    ];
-
+    let myProps = [...RamaddaDisplayUtils.sparklineProps];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	//Overwrite so we just have undecorated text
         getLoadingMessage: function(msg) {
