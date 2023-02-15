@@ -4503,7 +4503,11 @@ RepositoryMap.prototype = {
 
         if (!mymarker && this.imageLayers) {
             mymarker = this.imageLayers[id];
+	    //Handle the id mismatch
+	    if(!mymarker)
+		mymarker=this.imageLayers[id.replace(/_/g,'-')];
         }
+
 
         if (!mymarker) {
             return;
@@ -5414,7 +5418,6 @@ RepositoryMap.prototype = {
 	}	
 
 	if(projPoint==null) {
-	    console.log("No location for feature popup");
 	    if(debugPopup) console.log("\tno projPoint");
 	    return;
 	}
