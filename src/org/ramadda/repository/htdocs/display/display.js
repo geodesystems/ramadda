@@ -571,7 +571,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    var dflt = false;
             if (this.displayParent != null) {
-		dflt = this.displayParent.getProperty("showChildTitle",dflt);
+		dflt = this.displayParent.getShowChildTitle(dflt);
 	    }
 	    return this.getProperty("showTitle", dflt);
         },
@@ -1506,6 +1506,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'prefixFields',tt:'Field to always add to the beginning of the list'},
 	{p:'showMenu',ex:true},	      
 	{p:'showTitle',ex:true},
+	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
 	{p:'width',doGetter:false,ex:'100%'},
