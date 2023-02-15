@@ -1461,8 +1461,12 @@ function RecordFilter(display,filterFieldId, properties) {
 	isFieldMultiEnumeration: function() {
 	    return this.getField().isFieldMultiEnumeration();
 	},
+	fieldType:null,
 	getFieldType: function() {
-	    return this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
+	    if(!this.fieldType) {
+		this.fieldType =  this.display.getProperty(this.getField().getId()+".type",this.getField().getType());
+	    }
+	    return this.fieldType;
 	},
 	getFilterId: function(id) {
 	    return  this.display.getDomId("filterby_" + (id||this.getId()));

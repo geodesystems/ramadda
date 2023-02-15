@@ -17,6 +17,7 @@ let displayMapMarkerIcons = {};
 
 var debugit = false;
 var debugFeatureLinking = false;
+var debugMapTime = false;
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
@@ -758,7 +759,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
-	{p:'unhighlightRadius',ex:'1',tt:'Radius for when records are highlighted with the filters'},
+	{p:'unhighlightRadius',d:-1,ex:'1',tt:'Radius for when records are highlighted with the filters'},
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
@@ -810,7 +811,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	{label:'Map Glyphs'},
-	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars'},
+	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars',canCache:true},
 	{p:'gridWidth',ex:'800',tt:'Width of the canvas'},
 	{label:'label glyph',p:"glyph1",ex:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
 	{label:'rect glyph', p:"glyph1",ex:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
@@ -847,7 +848,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'voronoiFillColor',d:'transparent'},
 	{p:'voronoiFillOpacity',d:1.0},	
 	{label:'Heatmap'},
-	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image'},
+	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image',canCache:true},
 	{p:'hmShowPoints',ex:'true',tt:'Also show the map points'},
 	{p:'hmShowReload',ex:'true',tt:''},
 	{p:'hmShowGroups',ex:'true',tt:''},
@@ -1124,6 +1125,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
 	removeFeatureLayer: function() {
+	    if(debugMapTime)
+		console.time('removeFeatureLayer');
 	    if(this.myFeatureLayer) {
 		this.myFeatureLayer.destroy();
 		this.map.removeLayer(this.myFeatureLayer,true);
@@ -1139,6 +1142,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.labelFeatures = null;
 		this.jq("legendid").html("");
 	    }
+	    if(debugMapTime)
+		console.timeEnd('removeFeatureLayer');
 	    this.myFeatures= null;
 	},
 
@@ -3555,7 +3560,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.createHtmlLayer(records, fields);
 		return;
 	    }
+	    if(debugMapTime)
+		console.time('createPoints');
 	    this.createPoints(records, fields, points, bounds,debug);
+	    if(debugMapTime) {
+		console.timeEnd('createPoints');
+		console.log('#points:' + records.length);
+	    }
 	},
         createPoints: function(records, fields, points,bounds, debug) {
 	    debug = debug ||displayDebug.displayMapAddPoints;
@@ -3576,9 +3587,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let unhighlightFillColor = this.getUnhighlightColor();
 	    let unhighlightStrokeWidth = this.getProperty("unhighlightStrokeWidth",0);
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");
-	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
+	    let unhighlightRadius = this.getUnhighlightRadius();
 	    let strokeOpacity = this.getStrokeOpacity();
 	    this.markers = {};
+
+	    //change the order of the records if we are highlighting
+	    if(highlightRecords) {
+		let tmpRecords = [];
+		let tmpPoints = [];		
+		records.forEach((record,idx)=>{
+		    if(!record.isHighlight(this)) {
+			tmpRecords.push(record);
+			tmpPoints.push(points[idx]);
+		    }
+		});
+		records.forEach((record,idx)=>{
+		    if(record.isHighlight(this)) {
+			tmpRecords.push(record);
+			tmpPoints.push(points[idx]);
+		    }
+		});
+
+		records = tmpRecords;
+		points = tmpPoints;
+	    }
 
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
@@ -4124,8 +4156,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
 
-
-		
 		if(highlightRecords && !record.isHighlight(this)) {
 		    props.fillColor =  unhighlightFillColor;
 		    props.strokeColor =  unhighlightStrokeColor;
@@ -4960,7 +4990,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	{p:'regionField',ex:''},
 	{p:'mapFile',ex:'usmap.json|countries.json',d:"usmap.json"},
 	{p:'mapEntry',tt:'entry id of geojson map file'},
-	{p:'mapFeature',tt:'feature name to match data with'},		
+	{p:'mapFeature',tt:'feature name to match data with',canCache:true},		
 	{p:'valueField',tt:'Field to get the height of each polygon from',ex:''},
 	{p:'skipRegions',ex:'Alaska,Hawaii'},
 	{p:'pruneMissing',ex:'true'},				
@@ -5104,10 +5134,9 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    return this.tooltipDiv;
 	},
 	addEvents:function(polys, idToRecord, tooltipDiv) {
+	    let _this = this;
 	    idToRecord  = idToRecord|| this.idToRecord;
 	    tooltipDiv = tooltipDiv || this.makeTooltipDiv();
-	    let _this = this;
-	    let tooltip = this.getProperty("tooltip");
 	    polys.on('click', function (d, i) {
 		let poly = d3.select(this);
 		let record = idToRecord[poly.attr(RECORD_ID)];
@@ -5121,6 +5150,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		    .attr("lastFill",poly.attr("fill"));
 		poly.attr("stroke",_this.getProperty('highlightStrokeColor','blue')).attr("stroke-width",_this.getProperty('highlightStrokeWidth',1))
 		    .attr("fill",_this.getProperty('highlightFillColor','blue'));
+		let tooltip = _this.getProperty("tooltip");
 		if(!tooltip) return;
 		let regionName = poly.attr("regionName");
 		let tt = null;
@@ -5169,7 +5199,6 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 			    mapFile =ramaddaCdn +"/resources/" + mapFile;
 			}
 		    }
-		    console.log(mapFile);
 		    var jqxhr = $.getJSON(mapFile, (data) =>{
 			this.mapJson = data;
 			this.regionNames=[];
@@ -5253,10 +5282,11 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 		features = this.mapJson.features;
 
 	    this.aliasMap = {};
+	    let mapFeature = this.getMapFeature();
 	    features.forEach(blob=>{
 		let region;
 		if(this.getMapFeature()) {
-		    region = blob.properties[this.getMapFeature()];
+		    region = blob.properties[mapFeature];
 		} else  {
 		    region = blob.properties.name || blob.properties.name_long || blob.properties.NAME || blob.properties.ADMIN;
 		}
@@ -5757,6 +5787,8 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    if(this.imageField == null) {
 		this.imageField =  this.getFieldByType(null, "image");
 	    }
+	    let strokeWidth = this.getStrokeWidth(1);
+	    let strokeColor = this.getStrokeColor("#000");
 	    if(this.imageField==null) {
                 this.displayError("No image fields");
 		return
@@ -5769,7 +5801,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    });
 	    let [width, height] = this.writeMap();
 	    let [svg, scaleX, scaleY] = this.makeSvg(width,height);
-	    var defs = svg.append("defs");
+	    let defs = svg.append("defs");
 	    this.regionNames.forEach((region,idx)=>{
 		let values= this.findValues(region, valueMap);
 		let recordId = values!=null?values.record.getId():"";
@@ -5800,8 +5832,8 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			    return d.map(d=>{return [scaleX(d.x),scaleY(d.y)].join(",");}).join(" ");
 			})
 			.attr(RECORD_ID,recordId)
-		    	.attr("stroke-width",this.getStrokeWidth(1))
-			.attr("stroke",this.getStrokeColor("#000"));
+		    	.attr("stroke-width",strokeWidth)
+			.attr("stroke",strokeColor);
 		    if(values!=null)
 			polys.style("fill", "url(#bgimage"+ uid+")")
 		    else

@@ -1438,7 +1438,7 @@ ColorByInfo.prototype = {
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
-	    return this.display.getProperty("unhighlightColor","#eee");
+	    return this.display.getUnhighlightColor();
 	}
 
 	let records = record;

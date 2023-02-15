@@ -1581,7 +1581,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         {p:'showFilterTags',d: false,canCache:true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
-
+	{p:'unhighlightColor',d:'#eee', canCache:true},
 
 	{p:'headerOrientation',ex:'vertical'},
 	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
@@ -2000,9 +2000,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    });
         },
-	getUnhighlightColor: function() {
-	    return this.getProperty("unhighlightColor","#eee");
-	},
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
 		return this.colorList;
@@ -2418,6 +2415,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(prop.fieldId == "_highlight") {
 		    this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
 		    this.setProperty("filterHighlight", prop.value=="highlight");
+		    this.dfltFilterHighlight = null;
 		} else 	if(Utils.isDefined(prop.value2)) {
 		    $("#" +widgetId+"_min").val(prop.value);
 		    $("#" +widgetId+"_min").attr("data-value", prop.value);
@@ -6208,8 +6206,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let  highlight = this.getFilterHighlight();
-	    if(this.getProperty("showFilterHighlight")) {
-
+	    if(this.getShowFilterHighlight()) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
 		let select =  HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
 		if(hideFilterWidget) {
@@ -6608,6 +6605,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {
 		_this.setProperty("filterHighlight", $(this).val()=="highlight");
+		_this.dfltFilterHighlight = null;
 		_this.haveCalledUpdateUI = false;
 		inputFunc($(this));
 	    });
