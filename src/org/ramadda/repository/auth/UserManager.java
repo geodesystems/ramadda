@@ -669,7 +669,6 @@ public class UserManager extends RepositoryManager {
         if (currentUser != null) {
             return currentUser;
         }
-
         return user;
     }
 
@@ -819,7 +818,6 @@ public class UserManager extends RepositoryManager {
      */
     public User getAdminUser() throws Exception {
         User user = new User("admin", true);
-
         return user;
     }
 
@@ -912,14 +910,15 @@ public class UserManager extends RepositoryManager {
             if (userDefaultIfNotFound) {
                 return getDefaultUser();
             }
-
             return null;
         }
-
-
-        userMap.put(user.getId(), user);
-
+	updateUser(user);
         return user;
+    }
+
+
+    private void updateUser(User user) {
+	if(user!=null) userMap.put(user.getId(), user);
     }
 
 
@@ -1020,8 +1019,7 @@ public class UserManager extends RepositoryManager {
                 user.getTemplate(),  Boolean.valueOf(user.getIsGuest()),
                 user.getPropertiesBlob()
             });
-            userMap.put(user.getId(), user);
-
+	    updateUser(user);
             return;
         }
 
@@ -1284,6 +1282,7 @@ public class UserManager extends RepositoryManager {
                 }
                 applyUserProperties(request, user, true);
             }
+	    updateUser(user);
         }
 
 
@@ -1308,11 +1307,11 @@ public class UserManager extends RepositoryManager {
                 + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
             sb.append(buttons);
             makeUserForm(request, user, sb, true);
-            if (user.canChangePassword()) {
+	    //            if (user.canChangePassword()) {
                 sb.append(HtmlUtils.p());
                 sb.append(RepositoryUtil.header(msgLabel("Password")));
                 makePasswordForm(request, user, sb);
-            }
+		//            }
             sb.append(HtmlUtils.p());
             //            sb.append(buttons);
         }
@@ -3783,6 +3782,11 @@ public class UserManager extends RepositoryManager {
         User         user = request.getUser();
         StringBuffer sb   = new StringBuffer();
         request.ensureAuthToken();
+	if(user.getIsGuest()) {
+	    sb.append(getPageHandler().showDialogWarning("Guest users cannot change settings"));
+	    return new Result("",sb);
+	}
+
         boolean settingsOk = true;
         String  message;
         if (request.exists(ARG_USER_PASSWORD1)) {
@@ -3793,7 +3797,6 @@ public class UserManager extends RepositoryManager {
                         msg("Incorrect passwords")));
                 message = "Incorrect passwords";
             } else {
-                //msg("Your password has been changed");
                 message = "Your password has been changed";
                 addActivity(request, request.getUser(),
                             ACTIVITY_PASSWORD_CHANGE, "");
