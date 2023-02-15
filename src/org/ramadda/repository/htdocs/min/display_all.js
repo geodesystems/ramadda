@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 22:35:35 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 23:16:27 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -2045,19 +2045,16 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
 
-    let lineColor = attrs.lineColor||display.getProperty("sparklineLineColor","#000");
-    let barColor = attrs.barColor ||display.getProperty("sparklineBarColor","MediumSeaGreen");	    
-    let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
-    let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
-    let lineWidth = attrs.lineWidth ||display.getProperty("sparklineLineWidth",1);
+    let lineColor = attrs.lineColor||display.getSparklineLineColor();
+    let barColor = attrs.barColor ||display.getSparklineBarColor();
+    let circleColor = attrs.circleColor ||display.getSparklineCircleColor();
+    let circleRadius = attrs.circleRadius ||display.getSparklineCircleRadius();
+    let lineWidth = attrs.lineWidth ||display.getSparklineLineWidth();
     let defaultShowEndPoints = true;
     let getColor = (d,i,dflt)=>{
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
-    let showBars = attrs.showBars|| display.getProperty("sparklineShowBars",false);
-
-    
-
+    let showBars = attrs.showBars|| display.getSparklineShowBars();
     svg.append('line')
 	.attr('x1',0)
 	.attr('y1', 0)
@@ -2074,7 +2071,6 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	.attr("stroke-width", 1)
     	.attr("stroke", '#ccc');
     
-
 
 
     let getNum = n=>{
@@ -2097,7 +2093,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+    if(attrs.showLines|| display.getSparklineShowLines()) {
 	svg.selectAll('line').data(data).enter().append("line")
 	    .attr('x1', (d,i)=>{return x(i)})
 	    .attr('y1', (d,i)=>{return y(d)})
@@ -2112,7 +2108,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
+    if(attrs.showCircles || display.getSparklineShowCircles()) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
@@ -2123,24 +2119,24 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 
 
 
-    if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
+    if(attrs.showEndpoints || display.getSparklineShowEndPoints(defaultShowEndPoints)) {
 	let fidx=0;
 	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
 	let lidx=data.length-1;
 	while(isNaN(data[lidx]) && lidx>=0) lidx--;	
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
+	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(fidx))
 	    .attr('cy', y(data[fidx]))
-	    .attr('fill', attrs.endPoint1Color || display.getProperty("sparklineEndPoint1Color") || getColor(data[0],0,display.getProperty("sparklineEndPoint1Color",'steelblue')));
+	    .attr('fill', attrs.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
+	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(lidx))
 	    .attr('cy', y(data[lidx]))
-	    .attr('fill', attrs.endPoint2Color || display.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,display.getProperty("sparklineEndPoint2Color",'tomato')));
+	    .attr('fill', attrs.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
     }
     let _display = display;
-    let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
+    let doTooltip = display.getSparklineDoTooltip()  || attrs.doTooltip;
     svg.on("click", function() {
 	let coords = d3.mouse(this);
 	if(records) {
@@ -4496,7 +4492,6 @@ function DisplayThing(argId, argProperties) {
 		    titleField : this.getFieldById(null,this.getProperty("titleField")),
 		    titleTemplate : this.getProperty("titleTemplate"),	    
 		    descField : this.getFieldById(null,this.getProperty("descriptionField")),
-		    link  : linkField?record.getValue(linkField.getIndex()):null,
 		    showDate : this.getProperty("showDate", true),
 		    showImage : this.getProperty("showImage", true),
 		    showMovie : this.getProperty("showMovie", true),	    
@@ -4510,7 +4505,7 @@ function DisplayThing(argId, argProperties) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
 	    let dflt = this.getRecordHtmlProps();
-	    let link  = dflt.link;
+	    let link  =  dflt.linkField?record.getValue(dflt.linkField.getIndex()):null;
             let showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -4776,7 +4771,7 @@ function DisplayThing(argId, argProperties) {
 		    scale:this.getProperty(propPrefix?[propPrefix+".formatNumberScale","formatNumberScale"]:"formatNumberScale",1),
 		    decimals:this.getProperty(propPrefix?[propPrefix+".formatNumberDecimals","formatNumberDecimals"]:"formatNumberDecimals",-1),
 		    comma:this.getProperty(propPrefix?[propPrefix+".formatNumberComma","formatNumberComma"]:"formatNumberComma", false),
-                    nanValue: this.getProperty("nanValue", "--")
+                    nanValue: this.getNanValue()
 		}
 		this.formatInfo[propPrefix] = info;
 	    }
@@ -5071,6 +5066,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  	{p:'formatNumberDecimals',ex:0},
 	{p:'formatNumberScale',ex:100},
 	{p:'numberTemplate',ex:'${number}%'},
+	{p:'nanValue',d:'--',canCache:true},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
 	{label:'Data Requests'},
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
@@ -5086,7 +5082,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
-        {p:'showFilterTags',d: false},
+        {p:'showFilterTags',d: false,canCache:true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
 
@@ -5119,6 +5115,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterPaginate',ex:'true',tt:'Show the record pagination'},
 	{p:'recordSelectFilterFields',tt:'Set the value of other displays filter fields'},
 	{p:'selectFields',ex:'prop:label:field1,...fieldN;prop:....'},
+	{p:'dataFilters',canCache:true},
 	{p:'match value', ex:"dataFilters=\"match(field=field,value=value,label=,enabled=);\"",tt:"Only show records that match"}, 		
 	{p:"not match value",ex:"dataFilters=\"notmatch(field=field,value=value,label=,enabled=);\"",tt:"Only show records that dont match"},
 	{p:'no missing values',ex:'dataFilters=\"nomissing(field=field,label=,enabled=);\"',tt:'Dont show missing values'},
@@ -7155,8 +7152,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return true;
 	},
-	getDataFilters: function(v) {
-	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
+	getTheDataFilters: function(v) {
+	    return DataUtils.getDataFilters(this, v || this.getDataFilters());
 	},
 	dfltFilterHighlight:null,
 	getFilterHighlight: function() {
@@ -7480,7 +7477,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = records.filter(r=>{return r.hasLocation();});
 	    }
 	    if(debug)   console.log("filterData-5 #records:" + records.length);
-	    let dataFilters = this.getDataFilters();
+	    let dataFilters = this.getTheDataFilters();
 	    if(dataFilters.length) {
 		records = records.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) {
@@ -9725,7 +9722,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let dataFilterIds = [];
-	    this.getDataFilters().forEach(f=>{
+	    this.getTheDataFilters().forEach(f=>{
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);
@@ -14494,7 +14491,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!this.getProperty(this.getId()+".showFilterTags",true)) {
 		return false;
 	    }
-	    let tags =  this.getProperty("showFilterTags");
+	    let tags =  this.display.getShowFilterTags();
 	    return tags;
 	},
 	doTagsColor:function() {
@@ -28421,7 +28418,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
 	{p:'highlightOnScroll',ex:'true'},
-	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'}];
+	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'},
+	{p:'colorBackground',d:false, canCache:true}];
 
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -28778,14 +28776,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    rowAttrs["selectCount"] = selected.length;
 		    rowAttrs["totalCount"] = records.length;
 		    rowAttrs[RECORD_INDEX] = rowIdx+1;
-		    let dataFilters = this.getDataFilters();
+		    let dataFilters = this.getTheDataFilters();
 		    this.filters.forEach(f=>{
 			if(!f.isEnabled() || !f.getField) return;
 			rowAttrs["filter." + f.getField().getId()] =  f.getFieldValues();
 		    });
 		    let recordStyle = style;
 		    if(color) {
-			if(this.getProperty("colorBackground",false)) {
+			if(this.getColorBackground()) {
 			    recordStyle = HU.css("background",color) + recordStyle;
 			}
 			rowAttrs["color"] = color;
@@ -53732,7 +53730,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    }  
 	    let colors = this.getColorTable(true);
 	    if (!colors) colors = Utils.getColorTable("blues",true);
-	    let checkers = this.getDataFilters(this.getProperty("dataCheckers"));
+	    let checkers = this.getTheDataFilters(this.getProperty("dataCheckers"));
 	    let cells = {};
 	    let countFields= this.getFieldsByIds(null, this.getProperty("countFields"));
 
@@ -54114,23 +54112,23 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	{p:'showMin',ex:'true'},
 	{p:'showMax',ex:'true'},
 	{p:'labelStyle',ex:''},			
-	{p:'sparklineWidth',d:60},
-	{p:'sparklineHeight',d:20},
-	{p:'sparklineLineColor',ex:'#000'},
-	{p:'sparklineBarColor',ex:'MediumSeaGreen'},
-	{p:'sparklineCircleColor',ex:'#000'},
-	{p:'sparklineCircleRadius',ex:'1'},
-	{p:'sparklineLineWidth',ex:'1'},
-	{p:'sparklineShowLines',ex:'true'},
-	{p:'sparklineShowBars',ex:'true'},
-	{p:'sparklineShowCircles',ex:'true'},
-	{p:'sparklineShowEndPoints',ex:'true'},
-	{p:'sparklineEndPointRadius',ex:'2'},
-	{p:'sparklineEndPoint1Color',ex:''},
-	{p:'sparklineEndPoint1Color',ex:'steelblue'},
-	{p:'sparklineEndPointRadius',ex:'2'},
-	{p:'sparklineEndPoint2Color',ex:''},
-	{p:'sparklineEndPoint2Color',ex:'tomato'},
+	{p:'sparklineWidth',d:60, canCache:true},
+	{p:'sparklineHeight',d:20, canCache:true},
+	{p:'sparklineLineColor',d:'#000', canCache:true},
+	{p:'sparklineBarColor',d:'MediumSeaGreen', canCache:true},
+	{p:'sparklineCircleColor',d:'#000', canCache:true},
+	{p:'sparklineCircleRadius',d:'1', canCache:true},
+	{p:'sparklineLineWidth',d:'1', canCache:true},
+	{p:'sparklineShowLines',d:true, canCache:true},
+	{p:'sparklineShowBars',d:false, canCache:true},
+	{p:'sparklineShowCircles',d:true, canCache:true},
+	{p:'sparklineShowEndPoints',d:true, canCache:true},
+	{p:'sparklineEndPointRadius',d:2, canCache:true},
+	{p:'sparklineEndPoint1Color',d:'steelblue', canCache:true},
+	{p:'sparklineEndPointRadius',d:'2', canCache:true},
+	{p:'sparklineEndPoint2Color',d:'', canCache:true},
+	{p:'sparklineEndPoint2Color',d:'tomato', canCache:true},
+	{p:'sparklineDoTooltip',d:true, canCache:true},
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
