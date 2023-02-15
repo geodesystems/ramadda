@@ -3585,8 +3585,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getDataFilters: function(v) {
 	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
 	},
+	dfltFilterHighlight:null,
 	getFilterHighlight: function() {
-	    return this.getProperty("filterHighlight",false);
+	    if(!this.dfltFilterHighlight) {
+		this.dfltFilterHighlight = {
+		    filterHighlight:this.getProperty("filterHighlight",false)
+		}
+	    }
+	    return this.dfltFilterHighlight.filterHighlight;
 	},
 	getFilterTextMatchers: function() {
 	    let highlight  = [];
