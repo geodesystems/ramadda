@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 15 10:26:56 MST 2023";
+var build_date="RAMADDA build date: Wed Feb 15 15:15:14 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -6097,8 +6097,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    this.getAnimation().setDateRange(date,date);
 		    }
 		}
-
 	    }
+
             if (!source.getEntries) {
                 return;
             }
@@ -6447,7 +6447,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getSelectedFields: function(dfltList) {
 	    let prefixFields = this.getProperty('prefixFields');
-	    let debug = displayDebug.getSelectedFields;
+	    let debug = displayDebug.getSelectedFields || this.getProperty('debugFields');
 //	    debug =true;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
@@ -6869,11 +6869,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return true;
 	    });
-	    if(debug)
+	    if(debug || displayDebug.getSelectedFields)
 		console.log("\tgot:" + theField);
 	    if(!theField && !ignore) {
-		console.log("missing id:" + id +' for display:' + this.type);
-//		console.trace();
+		if(debug || displayDebug.getSelectedFields || this.getProperty('debugFields')) {
+		    this.logMsg("can't find field field:" + id);
+		    console.log(fields.reduce((acc,f)=>{
+			return acc+' ' + f.getId();
+		    },''));
+		    //		console.trace();
+		}
+
 	    }
 	    
             return theField;
@@ -53059,18 +53065,18 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
     let myProps = [
 	{label:'Summary Statistics'},
 	{p:'showDefault',ex:'false'},
-	{p:'showMin',ex:'false'},
-	{p:'showMax',ex:'false'},
-        {p:'showAverage',ex:'false'},
-        {p:'showStd',ex:'false'},
-        {p:'showPercentile',ex:'false'},
-        {p:'showCount',ex:'false'},
-        {p:'showTotal',ex:'false'},
-        {p:'showPercentile',ex:'false'},
-        {p:'showMissing',ex:'false'},
-        {p:'showUnique',ex:'false'},
-        {p:'showType',ex:'false'},
-        {p:'showText',ex:'false'},
+	{p:'showMin',ex:'false',canCache:true},
+	{p:'showMax',ex:'false',canCache:true},
+        {p:'showAverage',ex:'false',canCache:true},
+        {p:'showStd',ex:'false',canCache:true},
+        {p:'showPercentile',ex:'false',canCache:true},
+        {p:'showCount',ex:'false',canCache:true},
+        {p:'showTotal',ex:'false',canCache:true},
+        {p:'showPercentile',ex:'false',canCache:true},
+        {p:'showMissing',ex:'false',canCache:true},
+        {p:'showUnique',ex:'false',canCache:true},
+        {p:'showType',ex:'false',canCache:true},
+        {p:'showText',ex:'false',canCache:true},
 	{p:"sortStatsBy",ex:'min|max|total|average'},
 	{p:"sortStatsAscending",ex:'false'},
 	{p:'doValueSelection',ex:'false'},
