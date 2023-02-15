@@ -646,13 +646,28 @@ function DisplayThing(argId, argProperties) {
 		console.log("html:" + html);
 	    }
         },
+	defaultTemplateProps:null,
+	getDefaultTemplateProps: function() {
+	    if(!this.defaultTemplateProps) {
+		this.defaultTemplateProps = {
+		    iconField: this.getProperty("iconField"),
+		    iconSize: parseFloat(this.getProperty("iconSize",16)),
+		    colorBy:this.getProperty("colorBy"),
+		    colorByMap: this.getColorByMap(),
+		    iconMap: this.getIconMap(),
+		    imageWidth:this.getProperty("imageWidth")
+		}
+	    }
+	    return this.defaultTemplateProps;
+	},
 	getTemplateProps: function(fields) {
+	    let dflt = this.getDefaultTemplateProps();
 	    return {
-		iconField: this.getFieldById(fields, this.getProperty("iconField")),
-		iconSize: parseFloat(this.getProperty("iconSize",16)),
-		iconMap: this.getIconMap(),
-		colorBy:this.getProperty("colorBy"),
-		colorByMap: this.getColorByMap()
+		iconField: this.getFieldById(fields, dflt.iconField),
+		iconSize: dflt.iconSize,
+		colorBy:dflt.colorBy,
+		colorByMap: dflt.colorByMap,
+		iconMap: dflt.iconMap
 	    }
 	},
 	macroHook: function(token,value) {
@@ -682,7 +697,8 @@ function DisplayThing(argId, argProperties) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
-	    if(!macros) macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")});
+	    if(!macros)
+		macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateProps().dateFormat});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
@@ -699,9 +715,9 @@ function DisplayThing(argId, argProperties) {
 		if(width) {
 		    imageAttrs.push("width");
 		    imageAttrs.push(width);
-		} else if(this.getProperty("imageWidth")) {
+		} else if(this.getDefaultTemplateProps().imageWidth) {
 		    imageAttrs.push("width");
-		    imageAttrs.push(this.getProperty("imageWidth")); 
+		    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 		} else  {
 		    imageAttrs.push("width");
 		    imageAttrs.push("300");
@@ -795,9 +811,9 @@ function DisplayThing(argId, argProperties) {
 			if(width) {
 			    imageAttrs.push("width");
 			    imageAttrs.push(width);
-			} else if(this.getProperty("imageWidth")) {
+			} else if(this.getDefaultTemplateProps().imageWidth) {
 			    imageAttrs.push("width");
-			    imageAttrs.push(this.getProperty("imageWidth")); 
+			    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 			} else  {
 			    imageAttrs.push("width");
 			    imageAttrs.push("100%");
@@ -7288,7 +7304,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
 
-	    if(!this.getProperty("dateFormat")) {
+	    
+	    if(!this.getDateProps().dateFormat) {
                 pointData.getRecordFields().forEach(f=>{
 		    if(f.isFieldDate() && f.getId() == "year") {
 			this.setProperty("dateFormat","yyyy");

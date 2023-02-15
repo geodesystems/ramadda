@@ -459,6 +459,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
 	    let imageField = null;
+	    let showBottomLabel = this.getProperty("showBottomLabel",true);
             let records = this.filterData(null,null,{recordOk:record=>{
 		if(imageField == null) imageField = this.getFieldById(null, this.getProperty("imageField"));
 		if(!imageField) {
@@ -569,7 +570,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
 		    galleryLabel = galleryLabel.replace(/"/g,"'");
 		}
-		if(!this.getProperty("showBottomLabel",true))
+		if(!showBottomLabel)
 		    lbl="";
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
