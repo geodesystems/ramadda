@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 21:02:45 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 21:22:43 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4524,20 +4524,20 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
+		fields = this.getFieldsByIds(null,this.getTooltipFields(this.getPropertyFields()));
 	    } else {
-		let ttf = this.getProperty("tooltipFields");
+		let ttf = this.getTooltipFields();
 		if(ttf) {
 		    fields = this.getFieldsByIds(null,ttf);
 		}
 	    }
 
 	    let templateProps = {};
-	    let itemsPerColumn=this.getProperty("itemsPerColumn",50);
+	    let itemsPerColumn=this.getItemsPerColumn();
 
 	    let attrs={};
 	    if(template) {
-		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")}).getAttributes("default")||{};
+		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateFormat()}).getAttributes("default")||{};
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";
@@ -4565,23 +4565,23 @@ function DisplayThing(argId, argProperties) {
 	    }
 
 	    let tooltipNots = {};
-	    this.getProperty("tooltipNotFields","").split(",").forEach(f=>{
+	    this.getTooltipNotFields().split(",").forEach(f=>{
 		tooltipNots[f] = true;
 	    });
 
 	    let rows = [];
 	    let hadDate = false;
 	    let labelColAttrs = [];
-	    if(this.getProperty("labelColumnAttrs")) {
-		labelColAttrs = this.getProperty("labelColumnAttrs").split(",");
+	    if(this.getLabelColumnAttrs()) {
+		labelColAttrs = this.getLabelColumnAttrs().split(",");
 	    } else {
 		labelColAttrs = ["align","right"];
 	    }
-	    let labelWidth = this.getProperty("labelWidth");
+	    let labelWidth = this.getLabelWidth();
 	    fields= this.getSortedFields(fields);
 	    let excludes = props.excludes?props.excludes.split(","):[];
 	    let group = null;
-	    let includeDesc = this.getProperty("includeFieldDescriptionInTooltip",true);
+	    let includeDesc = this.getIncludeFieldDescriptionInTooltip();
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -4707,8 +4707,8 @@ function DisplayThing(argId, argProperties) {
 		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
 	    });
             values += "</tr><table>";
-	    if(this.getProperty("recordHtmlStyle")){
-		values = HU.div([CLASS,"ramadda-shadow-box display-tooltip", STYLE,this.getProperty("recordHtmlStyle")], values);
+	    if(this.getRecordHtmlStyle()){
+		values = HU.div([CLASS,"ramadda-shadow-box display-tooltip", STYLE,this.getRecordHtmlStyle()], values);
 	    }
             return values;
         },
@@ -4980,14 +4980,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
-			if(prop.canCache) {
+			let checkCache = prop.canCache && !dflt;
+			if(checkCache) {
 			    if(this.propertiesCache[prop.p])
-				return this.propertiesCache[prop.p]; 
+				return this.propertiesCache[prop.p].value; 
 			}
 			if(!Utils.isDefined(dflt)) dflt = prop.d;
 			let value =  this.getProperty(prop.p,dflt);
-			if(prop.canCache) {
-			    this.propertiesCache[prop.p] = value; 
+			if(checkCache) {
+			    this.propertiesCache[prop.p] = {value:value}; 
 			}
 			return value;
 		    };
@@ -5019,12 +5020,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltip',doGetter:false,d:'${default}'},
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
-	{p:'includeFieldDescriptionInTooltip'},
+	{p:'tooltipFields',canCache:true},
+	{p:'tooltipNotFields',canCache:true,d:''},	
+	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
+	{p:'recordHtmlStyle',canCache:true},
 	{p:'titleTemplate',doGetter:false,ex:'${field1}',tt:'Template for title in ${default} template display'},	
-	{p:'itemsPerColumn',ex:10,tt:'How many items to show in each column in a tooltip'},
-	{p:'labelColumnAttrs',ex:'align,right',tt:'Attributes of the label column in the record templates'},
-	{p:'labelWidth',ex:'10',tt:'Width of labels the record templates'},	
+	{p:'itemsPerColumn',canCache:true,d:50,tt:'How many items to show in each column in a tooltip'},
+	{p:'labelColumnAttrs',canCache:true,ex:'align,right',tt:'Attributes of the label column in the record templates'},
+	{p:'labelWidth',canCache:true,ex:'10',tt:'Width of labels the record templates'},	
 	{p:'displayStyle',ex:'css styles',tt:'Specify styles for display'},
 	{p:'primaryPage',ex:'true',tt:'Set to true if you only want this display to show in the  primary for the entry '},
 	{p:'title',ex:''},
@@ -5054,7 +5058,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'displayHeaderSide',ex:'left'},
 	{p:'leftSideWidth',ex:'150px'},		
 	{label:'Formatting'},
-	{p:'dateFormat',ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
+	{p:'dateFormat',canCache:true,
+	 ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'dateFormatDaysAgo',ex:true},
 	{p:'doFormatNumber',ex:false},
  	{p:'formatNumberDecimals',ex:0},
