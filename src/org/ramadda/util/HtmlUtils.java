@@ -2695,6 +2695,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         return checkbox(name, value, checked, attrs)
                + /*space(1) +*/ tag("label",
+				    style("margin-left:5px;")+
                                     cssClass("ramadda-clickable")
                                     + attr("for", id), label);
     }
