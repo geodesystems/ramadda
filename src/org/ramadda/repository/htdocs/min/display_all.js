@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 23:16:27 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 23:57:57 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3400,7 +3400,7 @@ Glyph.prototype = {
 	    }
 	    let x2=x+length;
 	    let y2=y;
-	    let arrowLength = opts.display.getProperty('arrowLength',-1);
+	    let arrowLength = opts.display.getArrowLength();
 	    /*
 	      if(opts.angleBy && opts.angleBy.index>=0) {
 	      let perc = opts.angleBy.getValuePercent(v);
@@ -3433,7 +3433,7 @@ Glyph.prototype = {
 	    ctx.beginPath();
 	    ctx.moveTo(x,y);
 	    ctx.lineTo(x2,y2);
-	    ctx.lineWidth=opts.display.getProperty('lineWidth',1);
+	    ctx.lineWidth=opts.display.getLineWidth();
 	    ctx.stroke();
 	    if(arrowLength>0) {
 		ctx.beginPath();
@@ -3724,6 +3724,34 @@ function addGlobalDisplayType(type, front) {
 
 
 var RamaddaDisplayUtils = {
+    sparklineProps:  [
+	{label:'Sparkline'},
+	{p:'showDate',ex:'true'},
+	{p:'showMin',ex:'true'},
+	{p:'showMax',ex:'true'},
+	{p:'labelStyle',ex:''},			
+	{p:'sparklineWidth',d:60, canCache:true},
+	{p:'sparklineHeight',d:20, canCache:true},
+	{p:'sparklineLineColor',d:'#000', canCache:true},
+	{p:'sparklineBarColor',d:'MediumSeaGreen', canCache:true},
+	{p:'sparklineCircleColor',d:'#000', canCache:true},
+	{p:'sparklineCircleRadius',d:'1', canCache:true},
+	{p:'sparklineLineWidth',d:'1', canCache:true},
+	{p:'sparklineShowLines',d:true, canCache:true},
+	{p:'sparklineShowBars',d:false, canCache:true},
+	{p:'sparklineShowCircles',d:true, canCache:true},
+	{p:'sparklineShowEndPoints',d:true, canCache:true},
+	{p:'sparklineEndPointRadius',d:2, canCache:true},
+	{p:'sparklineEndPoint1Color',d:'steelblue', canCache:true},
+	{p:'sparklineEndPointRadius',d:'2', canCache:true},
+	{p:'sparklineEndPoint2Color',d:'', canCache:true},
+	{p:'sparklineEndPoint2Color',d:'tomato', canCache:true},
+	{p:'sparklineDoTooltip',d:true, canCache:true},
+    ],
+
+
+
+
     getCanvasProps: function() {
 	return [
 	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
@@ -14313,8 +14341,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	recordOk: function(display, record, values) {
             return true;
         },
+	propertyCache:{},
 	getProperty: function(key, dflt) {
-	    return this.display.getProperty(key, dflt);
+	    let value = this.propertyCache[key];
+	    if(value) return value.value;
+	    let v = this.display.getProperty(key, dflt);
+	    this.propertyCache[key] = {value:v};
+	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
 	    return this.display.getPropertyFromUrl(key, dflt);
@@ -34986,15 +35019,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers"},
-	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out"},
-	{p:'collisionDotColor',ex:'red',tt:"Color of dot drawn at center"},
-	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
-	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots"},					
-	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center"},
-	{p:'collisionIcon',ex:'/icons/...',tt:"Use an icon for collisions"},
-	{p:'collisionIconSize',d:16,ex:'16'},
-	{p:'collisionTooltip',ex:'${default}',tt:"Tooltip to use for collision dot"},
+	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers",canCache:true},
+	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out",canCache:true},
+	{p:'collisionDotColor',d:'blue',tt:"Color of dot drawn at center",canCache:true},
+	{p:'collisionDotColorOn',canCache:true},
+	{p:'collisionDotColorOff',canCache:true},		
+	{p:'collisionDotRadius',d:6,tt:"Radius of dot drawn at center",canCache:true},
+	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots",canCache:true},
+				
+	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center",canCache:true},
+	{p:'collisionIcon',ex:'/icons/...',tt:"Use an icon for collisions",canCache:true},
+	{p:'collisionIconSize',d:16,ex:'16',canCache:true},
+	{p:'collisionTooltip',ex:'${default}',tt:"Tooltip to use for collision dot",canCache:true},
 
 
 	{label:"Map Lines"},
@@ -35085,6 +35121,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'cellSize',ex:'8'},
 	{p:'cellSizeH',ex:'20',tt:'Base value to scale by to get height'},
 	{p:'cellSizeHBase',ex:'0',tt:'Extra height value'},
+	{p:'arrowLength',d:-1,canCache:true},
+	{p:'lineWidth',d:1,canCache:true},	
 	{p:'angleBy',ex:'field',tt:'field for angle of vectors'},
 	{p:'hmOperator',ex:'count|average|min|max'},
 	{p:'hmAnimationSleep',ex:'1000'},
@@ -35104,6 +35142,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     
     myProps.push({label:'Canvas'});
     myProps.push(...RamaddaDisplayUtils.getCanvasProps());
+    myProps.push(...RamaddaDisplayUtils.sparklineProps);
 
 
     displayDefineMembers(this, myProps, {
@@ -38960,6 +38999,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	{p:'cellHeight',ex:'30'},
 	{p:'showCellLabel',ex:'false'},
     ];
+    myProps.push(...RamaddaDisplayUtils.sparklineProps);
+
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
@@ -40069,7 +40110,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 		return html;
 	    };
 	    let collisionIcon=this.display.getCollisionIcon();
-	    let collisionIconSize=this.display.getCollisionIconSize(16);		
+	    let collisionIconSize=this.display.getCollisionIconSize();		
 	    if(collisionIcon)
 		this.dot = this.display.map.createMarker("dot-" + idx, [this.roundPoint.x,this.roundPoint.y], collisionIcon, "", "",null,collisionIconSize,null,null,null,null,false);
 	    else {
@@ -40091,8 +40132,8 @@ function CollisionInfo(display,numRecords, roundPoint) {
 	},
 	getCollisionDotStyle:function(collisionInfo) {
 	    let collisionFixed = this.display.getCollisionFixed();
-	    let dotColor = this.display.getProperty("collisionDotColor","blue");
-	    let dotRadius = this.display.getProperty("collisionDotRadius",6);
+	    let dotColor = this.display.getCollisionDotColor();
+	    let dotRadius = this.display.getCollisionDotRadius();
 	    if(!collisionFixed) {
 		if(this.display.getPropertyCollisionScaleDots(false)) {
 		    let scale = collisionInfo.numRecords/16;
@@ -40102,9 +40143,9 @@ function CollisionInfo(display,numRecords, roundPoint) {
 		} 
 
 		if(collisionInfo.visible)  {
-		    dotColor = this.display.getProperty("collisionDotColorOn",dotColor);
+		    dotColor = this.display.getCollisionDotColorOn()??dotColor;
 		} else {
-		    dotColor = this.display.getProperty("collisionDotColorOff",dotColor);
+		    dotColor = this.display.getCollisionDotColorOff()??dotColor;
 		}
 	    }
 	    return {
@@ -54106,31 +54147,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	properties.showDisplayBottom = false;
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
-    let myProps = [
-	{label:'Sparkline'},
-	{p:'showDate',ex:'true'},
-	{p:'showMin',ex:'true'},
-	{p:'showMax',ex:'true'},
-	{p:'labelStyle',ex:''},			
-	{p:'sparklineWidth',d:60, canCache:true},
-	{p:'sparklineHeight',d:20, canCache:true},
-	{p:'sparklineLineColor',d:'#000', canCache:true},
-	{p:'sparklineBarColor',d:'MediumSeaGreen', canCache:true},
-	{p:'sparklineCircleColor',d:'#000', canCache:true},
-	{p:'sparklineCircleRadius',d:'1', canCache:true},
-	{p:'sparklineLineWidth',d:'1', canCache:true},
-	{p:'sparklineShowLines',d:true, canCache:true},
-	{p:'sparklineShowBars',d:false, canCache:true},
-	{p:'sparklineShowCircles',d:true, canCache:true},
-	{p:'sparklineShowEndPoints',d:true, canCache:true},
-	{p:'sparklineEndPointRadius',d:2, canCache:true},
-	{p:'sparklineEndPoint1Color',d:'steelblue', canCache:true},
-	{p:'sparklineEndPointRadius',d:'2', canCache:true},
-	{p:'sparklineEndPoint2Color',d:'', canCache:true},
-	{p:'sparklineEndPoint2Color',d:'tomato', canCache:true},
-	{p:'sparklineDoTooltip',d:true, canCache:true},
-    ];
-
+    let myProps = [...RamaddaDisplayUtils.sparklineProps];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	//Overwrite so we just have undecorated text
         getLoadingMessage: function(msg) {
