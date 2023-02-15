@@ -1097,9 +1097,9 @@ function DisplayThing(argId, argProperties) {
 		    if(field.getType() == "image" && value!="") {
 			if(!dflt.showImage) continue;
 			let imageAttrs = [];
-			if(this.getProperty("imageWidth")) {
+			if(this.getImageWidth()) {
 			    imageAttrs.push("width");
-			    imageAttrs.push(this.getProperty("imageWidth")); 
+			    imageAttrs.push(this.getImageWidth());
 			} else  {
 			    imageAttrs.push("width");
 			    imageAttrs.push("200");
@@ -1484,7 +1484,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipFields',canCache:true},
-	{p:'tooltipNotFields',canCache:true,d:''},	
+	{p:'tooltipNotFields',canCache:true,d:''},
+	{p:'imageWidth',canCache:true},		
 	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'recordHtmlStyle',canCache:true},
