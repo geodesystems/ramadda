@@ -39265,9 +39265,16 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         var child;
         var root = this.vectorRoot;
         if (root) {
+	    //jeffmc: clear the innerHTML instead of iterating on the children
+	    //since removing lots of features just dies a slow miserable death
+//	    console.time('map.clear');
+	    root.innerHTML = '';
+	    /*
             while (child = root.firstChild) {
                 root.removeChild(child);
-            }
+		cnt++;
+	    }*/
+//	    console.timeEnd('map.clear');
         }
         root = this.textRoot;
         if (root) {
