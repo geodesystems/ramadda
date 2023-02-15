@@ -2440,6 +2440,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             //The type might accept a .zip file - e.g., shapefiles
+
             if (typeHandler.getTypeProperty("upload.zip", false)) {
                 unzipArchive = false;
             } else {
@@ -2447,6 +2448,7 @@ public class EntryManager extends RepositoryManager {
                                 ? false
                                 : request.get(ARG_FILE_UNZIP, false));
             }
+		
 
             if (serverFile != null) {
                 isFile   = true;
@@ -2511,12 +2513,16 @@ public class EntryManager extends RepositoryManager {
 		String name = request.getString("upload_name_"+i);
 		String contents = request.getString("upload_file_"+i);
 		File tmpFile = getStorageManager().decodeFileContents(request, name, contents);
-		infos.add(new NewEntryInfo(name, tmpFile.toString(), parentEntry));
+		if(request.get(ARG_FILE_UNZIP, false) && tmpFile.toString().endsWith(".zip")) {
+		    unzipResource(request, parentEntry, user, infos,tmpFile.toString());
+		} else {
+		    infos.add(new NewEntryInfo(name, tmpFile.toString(), parentEntry));
+		}
 	    }
-
 
 	    if(hasUpload) {
 		isFile = true;
+		unzipArchive =  request.get(ARG_FILE_UNZIP, false);
 	    } else if (serverFile != null) {
                 if ( !serverFile.exists()) {
                     StringBuilder message =
@@ -2575,67 +2581,8 @@ public class EntryManager extends RepositoryManager {
 		infos.add(new NewEntryInfo(resourceName,resource, parentEntry));
             } else {
                 hasZip = true;
-                Hashtable<String, Entry> nameToGroup = new Hashtable<String,
-		    Entry>();
-                InputStream fis =
-                    getStorageManager().getFileInputStream(resource);
-                OutputStream fos = null;
-                ZipInputStream zin =
-                    getStorageManager().makeZipInputStream(fis);
-                ZipEntry ze = null;
-                try {
-                    while ((ze = zin.getNextEntry()) != null) {
-                        if (ze.isDirectory()) {
-                            continue;
-                        }
-                        String path = ze.getName();
-                        String name = IOUtil.getFileTail(path);
-                        if (name.equals("MANIFEST.MF")) {
-                            continue;
-                        }
-                        //Skip dot files as well
-                        if (name.startsWith(".")) {
-                            continue;
-                        }
-                        Entry parent = parentEntry;
-                        if (request.get(ARG_FILE_PRESERVEDIRECTORY, false)) {
-                            List<String> toks = Utils.split(path, "/",
-							    true, true);
-                            String ancestors = "";
-                            //Remove the file name from the list of tokens
-                            if (toks.size() > 0) {
-                                toks.remove(toks.size() - 1);
-                            }
-                            for (String parentName : toks) {
-                                parentName = parentName.replaceAll("_", " ");
-                                ancestors  = ancestors + "/" + parentName;
-                                Entry group = nameToGroup.get(ancestors);
-                                if (group == null) {
-                                    Request tmpRequest =
-                                        getRepository().getTmpRequest();
-                                    tmpRequest.setUser(user);
-                                    group = findGroupUnder(tmpRequest,
-							   parent, parentName, user);
-                                    nameToGroup.put(ancestors, group);
-                                }
-                                parent = group;
-                            }
-                        }
-                        File f = getStorageManager().getTmpFile(request,
-								name);
-                        fos = getStorageManager().getFileOutputStream(f);
-                        try {
-                            IOUtil.writeTo(zin, fos);
-                        } finally {
-                            IOUtil.close(fos);
-                        }
-			infos.add(new NewEntryInfo(name,f.toString(), parent));
-                    }
-                } finally {
-                    IOUtil.close(fis);
-                    IOUtil.close(zin);
-                }
-            }
+		unzipResource(request, parentEntry, user, infos,resource);
+	    }
 
             if (request.exists(ARG_CANCEL)) {
                 return new Result(
@@ -2648,9 +2595,7 @@ public class EntryManager extends RepositoryManager {
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
 						    createDate);
 
-
             File originalFile = null;
-
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
                 if (isFile && (serverFile == null)) {
@@ -2665,7 +2610,8 @@ public class EntryManager extends RepositoryManager {
 							      originalFile =
 							      new File(theResource)).toString();
                     }
-                }
+		}
+
 
                 //If its an anon upload  or we're unzipping an archive then don't set the name
                 String name = ((forUpload || hasZip)
@@ -3019,6 +2965,71 @@ public class EntryManager extends RepositoryManager {
         }
 
     }
+
+
+    private void unzipResource(Request request, Entry parentEntry, User user,
+			       List<NewEntryInfo> infos,
+			       String resource) throws Exception {
+	Hashtable<String, Entry> nameToGroup = new Hashtable<String,  Entry>();
+	InputStream fis =
+	    getStorageManager().getFileInputStream(resource);
+	OutputStream fos = null;
+	ZipInputStream zin =
+	    getStorageManager().makeZipInputStream(fis);
+	ZipEntry ze = null;
+	try {
+	    while ((ze = zin.getNextEntry()) != null) {
+		if (ze.isDirectory()) {
+		    continue;
+		}
+		String path = ze.getName();
+		String name = IOUtil.getFileTail(path);
+		if (name.equals("MANIFEST.MF")) {
+		    continue;
+		}
+		//Skip dot files as well
+		if (name.startsWith(".")) {
+		    continue;
+		}
+		Entry parent = parentEntry;
+		if (request.get(ARG_FILE_PRESERVEDIRECTORY, false)) {
+		    List<String> toks = Utils.split(path, "/",
+						    true, true);
+		    String ancestors = "";
+		    //Remove the file name from the list of tokens
+		    if (toks.size() > 0) {
+			toks.remove(toks.size() - 1);
+		    }
+		    for (String parentName : toks) {
+			parentName = parentName.replaceAll("_", " ");
+			ancestors  = ancestors + "/" + parentName;
+			Entry group = nameToGroup.get(ancestors);
+			if (group == null) {
+			    Request tmpRequest =
+				getRepository().getTmpRequest();
+			    tmpRequest.setUser(user);
+			    group = findGroupUnder(tmpRequest,
+						   parent, parentName, user);
+			    nameToGroup.put(ancestors, group);
+			}
+			parent = group;
+		    }
+		}
+		File f = getStorageManager().getTmpFile(request,
+							name);
+		fos = getStorageManager().getFileOutputStream(f);
+		try {
+		    IOUtil.writeTo(zin, fos);
+		} finally {
+		    IOUtil.close(fos);
+		}
+		infos.add(new NewEntryInfo(name,f.toString(), parent));
+	    }
+	} finally {
+	    IOUtil.close(fis);
+	    IOUtil.close(zin);
+	}
+    }	
 
 
     private static class NewEntryInfo {
