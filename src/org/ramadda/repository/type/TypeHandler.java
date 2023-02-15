@@ -79,6 +79,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.util.function.BiConsumer;
+
 
 /**
  * Provide the core services around the entry types.
@@ -5266,24 +5268,27 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getFileExtras(Request request, Entry entry)
             throws Exception {
-        String addMetadata =
-            HtmlUtils.labeledCheckbox(
-                ARG_METADATA_ADD, "true",
-                Misc.equals(
-                    getFormDefault(entry, ARG_METADATA_ADD, "false"),
-                    "false"), "Add properties") + HtmlUtils.space(1)
-                        + HtmlUtils.labeledCheckbox(
-                            ARG_METADATA_ADDSHORT, "true", false,
-                            "Just spatial/temporal properties") + "<br>"
-                                + HtmlUtils.labeledCheckbox(
-                                    ARG_EXTRACT_KEYWORDS, "true", false,
-                                    "Extract keywords");
+	String space = HU.space(3);
+        String unzipWidget =
+            HU.labeledCheckbox(ARG_FILE_UNZIP, "true", true, "Unzip archive")+
+	    space +
+            HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY, "true", false,
+                                 "Make folders from archive");
 
+        String addMetadata =
+            HU.labeledCheckbox(ARG_METADATA_ADD, "true",
+			       Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),
+					   "false"), "Add properties") + space+
+	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
+			       "Just spatial/temporal properties");
+
+
+	String extract = HU.labeledCheckbox(ARG_EXTRACT_KEYWORDS, "true", false,
+						   "Extract keywords");
 	if(getSearchManager().isSummaryExtractionEnabled()) {
-	    addMetadata+=HU.space(2) + HtmlUtils.labeledCheckbox(
-						   ARG_EXTRACT_SUMMARY, "true", false,
-						   "Extract summary") + " " +
-		"Note: this sends the file text to <a href=https://openai.com/api/>https://openai.com/api/</a> for processing<br>";
+	    extract+=space + HU.labeledCheckbox(ARG_EXTRACT_SUMMARY, "true", false,
+						"Extract summary") + space +
+		"Note: this sends the file text to <a href=https://openai.com/api/>https://openai.com/api/</a> for processing";
 	}
 
         List datePatterns = new ArrayList();
@@ -5292,50 +5297,54 @@ public class TypeHandler extends RepositoryManager {
             datePatterns.add(DateUtil.DATE_FORMATS[i]);
         }
 
-        String unzipWidget =
-            HU.labeledCheckbox(ARG_FILE_UNZIP, "true", true, "Unzip archive")
-            + HU.space(1)
-            + HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY, "true", false,
-                                 "Make folders from archive");
-        String makeNameWidget = HtmlUtils.labeledCheckbox(ARG_MAKENAME,
+        String makeNameWidget = HU.labeledCheckbox(ARG_MAKENAME,
                                     "true", true, "Make name from filename");
 
         String deleteFileWidget = ((entry != null) && entry.isFile())
-                                  ? HtmlUtils.labeledCheckbox(ARG_DELETEFILE,
+                                  ? HU.labeledCheckbox(ARG_DELETEFILE,
                                       "true", false, "Delete file")
                                   : "";
 
         /*
           String datePatternWidget = msgLabel("Date pattern")
-          + HtmlUtils.space(1)
-          + HtmlUtils.select(ARG_DATE_PATTERN,
+          + HU.space(1)
+          + HU.select(ARG_DATE_PATTERN,
           datePatterns) + " ("
           + msg("Use file name") + ")";
 
         */
 
         String datePatternWidget =
-            msgLabel("Date pattern") + HtmlUtils.space(1)
-            + HtmlUtils.input(ARG_DATE_PATTERN,
+            msgLabel("Date pattern") + HU.space(1)
+            + HU.input(ARG_DATE_PATTERN,
                 request.getString(ARG_DATE_PATTERN,
                     "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
 
 
 
         String extraMore = "";
-
         if ((entry == null) && getType().equals(TYPE_FILE)) {
-            extraMore = HtmlUtils.labeledCheckbox(ARG_TYPE_GUESS, "true",
-                    true, "Figure out the type") + HtmlUtils.br();
+            extraMore = HU.labeledCheckbox(ARG_TYPE_GUESS, "true",
+					   true, "Figure out the type from the file name");
         }
 
 
-        String extras = extraMore + addMetadata + HtmlUtils.br()
-                        + unzipWidget + HtmlUtils.br() + makeNameWidget
-                        + HtmlUtils.br() + deleteFileWidget;
+	StringBuilder extras = new StringBuilder();
 
-        return extras;
+	BiConsumer<String,String> extra = (label,contents)->{
+	    if(contents.length()==0) return;
+	    extras.append(HU.b(label));
+	    extras.append(HU.openInset(0, 30, 0, 0));
+	    extras.append(contents);
+	    extras.append(HU.closeInset());
+	};
 
+	extra.accept("Entry type:",extraMore);
+	extra.accept("Zip Files:",unzipWidget);	
+	extra.accept("Metadata:",addMetadata+HU.br()+extract);
+	extra.accept("Entry name:",makeNameWidget);
+	extras.append(deleteFileWidget);
+        return HU.insetLeft(extras.toString(),30);
     }
 
 
@@ -5454,12 +5463,12 @@ public class TypeHandler extends RepositoryManager {
                     entry, editorId);
             if (label != null) {
                 sb.append("<tr><td colspan=2>");
-                sb.append(HtmlUtils.b(msgLabel(label)));
-                sb.append(HtmlUtils.br());
+                sb.append(HU.b(msgLabel(label)));
+                sb.append(HU.br());
             }
 
-            HtmlUtils.open(sb, "div",
-                           HtmlUtils.attrs("class", "wiki-editor", "style",
+            HU.open(sb, "div",
+                           HU.attrs("class", "wiki-editor", "style",
                                            (visible
                                             ? "display:block;"
                                             : "display:none;"), "id",
@@ -5470,19 +5479,19 @@ public class TypeHandler extends RepositoryManager {
             formInfo.addMaxSizeValidation(label, hiddenId, length);
         }
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        String textWidget = HtmlUtils.div(text,
-                                          HtmlUtils.id(editorId)
-                                          + HtmlUtils.style("height:500px;")
-                                          + HtmlUtils.attr("class",
+        String textWidget = HU.div(text,
+                                          HU.id(editorId)
+                                          + HU.style("height:500px;")
+                                          + HU.attr("class",
                                               "ace_editor"));
-        sb.append(HtmlUtils.hidden(hiddenId, "", HtmlUtils.id(hiddenId)));
+        sb.append(HU.hidden(hiddenId, "", HU.id(hiddenId)));
         if (Utils.stringDefined(sidebar)) {
             sb.append(
-                HtmlUtils.table(
-                    HtmlUtils.row(
-                        HtmlUtils.cols(
-                            new String[] { HtmlUtils.td(textWidget),
-                                           HtmlUtils.td(sidebar,
+                HU.table(
+                    HU.row(
+                        HU.cols(
+                            new String[] { HU.td(textWidget),
+                                           HU.td(sidebar,
                                            " width=10%") }))));
         } else {
             sb.append(textWidget);
@@ -5495,7 +5504,7 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-        sb.append(HtmlUtils.script("new WikiEditor("
+        sb.append(HU.script("new WikiEditor("
                                    + HU.squote((entry == null)
                 ? ""
                 : entry.getId()) + "," + ((formInfo == null)
@@ -5505,7 +5514,7 @@ public class TypeHandler extends RepositoryManager {
                                                 + hiddenId + "');"));
 
         if ( !readOnly) {
-            HtmlUtils.close(sb, "div");
+            HU.close(sb, "div");
         }
 
         if (label != null) {
@@ -5791,38 +5800,38 @@ public class TypeHandler extends RepositoryManager {
         try {
             String name           = (String) request.getString(ARG_TEXT, "");
             String searchMetaData = " ";
-            /*HtmlUtils.checkbox(ARG_SEARCHMETADATA,
+            /*HU.checkbox(ARG_SEARCHMETADATA,
                                         "true",
                                         request.get(ARG_SEARCHMETADATA,
                                         false)) + " "
                                         + msg("Search metadata");*/
 
             String searchExact = " "
-                                 + HtmlUtils.labeledCheckbox(ARG_EXACT, "true",
+                                 + HU.labeledCheckbox(ARG_EXACT, "true",
 							     request.get(ARG_EXACT, false),
 							     "Match exactly");
-            String extra = HtmlUtils.p() + searchExact + searchMetaData;
+            String extra = HU.p() + searchExact + searchMetaData;
             if (getDatabaseManager().supportsRegexp()) {
-                extra = HtmlUtils.labeledCheckbox(
+                extra = HU.labeledCheckbox(
 						  ARG_ISREGEXP, "true",
 						  request.get(ARG_ISREGEXP, false),
 						  "Use regular expression");
 
-                extra = HtmlUtils.makeToggleInline(msg("More..."), extra,
+                extra = HU.makeToggleInline(msg("More..."), extra,
                         false);
             } else {
                 extra = "";
             }
 
             sb.append(formEntry(request, msgLabel("Text"),
-                                HtmlUtils.input(ARG_TEXT, name,
-                                    HtmlUtils.id("searchinput")
-                                    + HtmlUtils.SIZE_50
+                                HU.input(ARG_TEXT, name,
+                                    HU.id("searchinput")
+                                    + HU.SIZE_50
                                     + " autocomplete='off' autofocus ") + " "
                                         + extra));
             sb.append("<div id=searchpopup class=ramadda-popup></div>");
             sb.append(
-                HtmlUtils.script(
+                HU.script(
                     "Utils.searchSuggestInit('searchinput'," + ((type == null)
                     ? "null"
                     : "'" + type + "'") + ");"));
@@ -5910,8 +5919,8 @@ public class TypeHandler extends RepositoryManager {
         //        minDate = "";
         //        maxDate = "";
 
-        StringBuilder basicSB    = new StringBuilder(HtmlUtils.formTable());
-        StringBuilder advancedSB = new StringBuilder(HtmlUtils.formTable());
+        StringBuilder basicSB    = new StringBuilder(HU.formTable());
+        StringBuilder advancedSB = new StringBuilder(HU.formTable());
 
 
 
