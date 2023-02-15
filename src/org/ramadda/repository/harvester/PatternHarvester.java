@@ -318,6 +318,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     }
 
+    @Override
+    public String getDefaultTypeHandler() throws Exception {
+	return TypeHandler.TYPE_FINDMATCH;
+    }
+
 
     /**
      * _more_
@@ -1517,7 +1522,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         boolean isPlaceholder = fileName.equals(FILE_PLACEHOLDER);
-        TypeHandler typeHandler      = getTypeHandler();
+        TypeHandler typeHandler      = getTypeHandler(TypeHandler.TYPE_FINDMATCH);
         TypeHandler typeHandlerToUse = null;
         boolean     isEntryXml       = isEntryXml(filePath);
         Entry       templateEntry    = null;
@@ -1880,7 +1885,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public Entry processFile(TypeHandler type, String filepath,
                              Hashtable<String, Entry> entriesMap)
 	throws Exception {
-        if ( !this.getTypeHandler().equals(type)) {
+        if ( !this.getTypeHandler(TypeHandler.TYPE_FINDMATCH).equals(type)) {
             return null;
         }
         FileWrapper fileWrapper = FileWrapper.createFileWrapper(filepath);
