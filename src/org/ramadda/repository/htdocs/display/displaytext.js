@@ -530,7 +530,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
 	{p:'highlightOnScroll',ex:'true'},
-	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'}];
+	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'},
+	{p:'colorBackground',d:false, canCache:true}];
 
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -887,14 +888,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    rowAttrs["selectCount"] = selected.length;
 		    rowAttrs["totalCount"] = records.length;
 		    rowAttrs[RECORD_INDEX] = rowIdx+1;
-		    let dataFilters = this.getDataFilters();
+		    let dataFilters = this.getTheDataFilters();
 		    this.filters.forEach(f=>{
 			if(!f.isEnabled() || !f.getField) return;
 			rowAttrs["filter." + f.getField().getId()] =  f.getFieldValues();
 		    });
 		    let recordStyle = style;
 		    if(color) {
-			if(this.getProperty("colorBackground",false)) {
+			if(this.getColorBackground()) {
 			    recordStyle = HU.css("background",color) + recordStyle;
 			}
 			rowAttrs["color"] = color;

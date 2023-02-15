@@ -3809,7 +3809,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    }  
 	    let colors = this.getColorTable(true);
 	    if (!colors) colors = Utils.getColorTable("blues",true);
-	    let checkers = this.getDataFilters(this.getProperty("dataCheckers"));
+	    let checkers = this.getTheDataFilters(this.getProperty("dataCheckers"));
 	    let cells = {};
 	    let countFields= this.getFieldsByIds(null, this.getProperty("countFields"));
 
@@ -4191,23 +4191,23 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	{p:'showMin',ex:'true'},
 	{p:'showMax',ex:'true'},
 	{p:'labelStyle',ex:''},			
-	{p:'sparklineWidth',d:60},
-	{p:'sparklineHeight',d:20},
-	{p:'sparklineLineColor',ex:'#000'},
-	{p:'sparklineBarColor',ex:'MediumSeaGreen'},
-	{p:'sparklineCircleColor',ex:'#000'},
-	{p:'sparklineCircleRadius',ex:'1'},
-	{p:'sparklineLineWidth',ex:'1'},
-	{p:'sparklineShowLines',ex:'true'},
-	{p:'sparklineShowBars',ex:'true'},
-	{p:'sparklineShowCircles',ex:'true'},
-	{p:'sparklineShowEndPoints',ex:'true'},
-	{p:'sparklineEndPointRadius',ex:'2'},
-	{p:'sparklineEndPoint1Color',ex:''},
-	{p:'sparklineEndPoint1Color',ex:'steelblue'},
-	{p:'sparklineEndPointRadius',ex:'2'},
-	{p:'sparklineEndPoint2Color',ex:''},
-	{p:'sparklineEndPoint2Color',ex:'tomato'},
+	{p:'sparklineWidth',d:60, canCache:true},
+	{p:'sparklineHeight',d:20, canCache:true},
+	{p:'sparklineLineColor',d:'#000', canCache:true},
+	{p:'sparklineBarColor',d:'MediumSeaGreen', canCache:true},
+	{p:'sparklineCircleColor',d:'#000', canCache:true},
+	{p:'sparklineCircleRadius',d:'1', canCache:true},
+	{p:'sparklineLineWidth',d:'1', canCache:true},
+	{p:'sparklineShowLines',d:true, canCache:true},
+	{p:'sparklineShowBars',d:false, canCache:true},
+	{p:'sparklineShowCircles',d:true, canCache:true},
+	{p:'sparklineShowEndPoints',d:true, canCache:true},
+	{p:'sparklineEndPointRadius',d:2, canCache:true},
+	{p:'sparklineEndPoint1Color',d:'steelblue', canCache:true},
+	{p:'sparklineEndPointRadius',d:'2', canCache:true},
+	{p:'sparklineEndPoint2Color',d:'', canCache:true},
+	{p:'sparklineEndPoint2Color',d:'tomato', canCache:true},
+	{p:'sparklineDoTooltip',d:true, canCache:true},
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {

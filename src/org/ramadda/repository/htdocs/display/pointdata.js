@@ -1651,7 +1651,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!this.getProperty(this.getId()+".showFilterTags",true)) {
 		return false;
 	    }
-	    let tags =  this.getProperty("showFilterTags");
+	    let tags =  this.display.getShowFilterTags();
 	    return tags;
 	},
 	doTagsColor:function() {

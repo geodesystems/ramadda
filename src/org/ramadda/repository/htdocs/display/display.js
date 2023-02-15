@@ -959,7 +959,6 @@ function DisplayThing(argId, argProperties) {
 		    titleField : this.getFieldById(null,this.getProperty("titleField")),
 		    titleTemplate : this.getProperty("titleTemplate"),	    
 		    descField : this.getFieldById(null,this.getProperty("descriptionField")),
-		    link  : linkField?record.getValue(linkField.getIndex()):null,
 		    showDate : this.getProperty("showDate", true),
 		    showImage : this.getProperty("showImage", true),
 		    showMovie : this.getProperty("showMovie", true),	    
@@ -973,7 +972,7 @@ function DisplayThing(argId, argProperties) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
 	    let dflt = this.getRecordHtmlProps();
-	    let link  = dflt.link;
+	    let link  =  dflt.linkField?record.getValue(dflt.linkField.getIndex()):null;
             let showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -1239,7 +1238,7 @@ function DisplayThing(argId, argProperties) {
 		    scale:this.getProperty(propPrefix?[propPrefix+".formatNumberScale","formatNumberScale"]:"formatNumberScale",1),
 		    decimals:this.getProperty(propPrefix?[propPrefix+".formatNumberDecimals","formatNumberDecimals"]:"formatNumberDecimals",-1),
 		    comma:this.getProperty(propPrefix?[propPrefix+".formatNumberComma","formatNumberComma"]:"formatNumberComma", false),
-                    nanValue: this.getProperty("nanValue", "--")
+                    nanValue: this.getNanValue()
 		}
 		this.formatInfo[propPrefix] = info;
 	    }
@@ -1534,6 +1533,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  	{p:'formatNumberDecimals',ex:0},
 	{p:'formatNumberScale',ex:100},
 	{p:'numberTemplate',ex:'${number}%'},
+	{p:'nanValue',d:'--',canCache:true},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
 	{label:'Data Requests'},
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
@@ -1549,7 +1549,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
-        {p:'showFilterTags',d: false},
+        {p:'showFilterTags',d: false,canCache:true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
 
@@ -1582,6 +1582,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterPaginate',ex:'true',tt:'Show the record pagination'},
 	{p:'recordSelectFilterFields',tt:'Set the value of other displays filter fields'},
 	{p:'selectFields',ex:'prop:label:field1,...fieldN;prop:....'},
+	{p:'dataFilters',canCache:true},
 	{p:'match value', ex:"dataFilters=\"match(field=field,value=value,label=,enabled=);\"",tt:"Only show records that match"}, 		
 	{p:"not match value",ex:"dataFilters=\"notmatch(field=field,value=value,label=,enabled=);\"",tt:"Only show records that dont match"},
 	{p:'no missing values',ex:'dataFilters=\"nomissing(field=field,label=,enabled=);\"',tt:'Dont show missing values'},
@@ -3618,8 +3619,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return true;
 	},
-	getDataFilters: function(v) {
-	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
+	getTheDataFilters: function(v) {
+	    return DataUtils.getDataFilters(this, v || this.getDataFilters());
 	},
 	dfltFilterHighlight:null,
 	getFilterHighlight: function() {
@@ -3943,7 +3944,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = records.filter(r=>{return r.hasLocation();});
 	    }
 	    if(debug)   console.log("filterData-5 #records:" + records.length);
-	    let dataFilters = this.getDataFilters();
+	    let dataFilters = this.getTheDataFilters();
 	    if(dataFilters.length) {
 		records = records.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) {
@@ -6188,7 +6189,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let dataFilterIds = [];
-	    this.getDataFilters().forEach(f=>{
+	    this.getTheDataFilters().forEach(f=>{
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);

@@ -1618,19 +1618,16 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
 
-    let lineColor = attrs.lineColor||display.getProperty("sparklineLineColor","#000");
-    let barColor = attrs.barColor ||display.getProperty("sparklineBarColor","MediumSeaGreen");	    
-    let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
-    let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
-    let lineWidth = attrs.lineWidth ||display.getProperty("sparklineLineWidth",1);
+    let lineColor = attrs.lineColor||display.getSparklineLineColor();
+    let barColor = attrs.barColor ||display.getSparklineBarColor();
+    let circleColor = attrs.circleColor ||display.getSparklineCircleColor();
+    let circleRadius = attrs.circleRadius ||display.getSparklineCircleRadius();
+    let lineWidth = attrs.lineWidth ||display.getSparklineLineWidth();
     let defaultShowEndPoints = true;
     let getColor = (d,i,dflt)=>{
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
-    let showBars = attrs.showBars|| display.getProperty("sparklineShowBars",false);
-
-    
-
+    let showBars = attrs.showBars|| display.getSparklineShowBars();
     svg.append('line')
 	.attr('x1',0)
 	.attr('y1', 0)
@@ -1647,7 +1644,6 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	.attr("stroke-width", 1)
     	.attr("stroke", '#ccc');
     
-
 
 
     let getNum = n=>{
@@ -1670,7 +1666,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+    if(attrs.showLines|| display.getSparklineShowLines()) {
 	svg.selectAll('line').data(data).enter().append("line")
 	    .attr('x1', (d,i)=>{return x(i)})
 	    .attr('y1', (d,i)=>{return y(d)})
@@ -1685,7 +1681,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     }
 
 
-    if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
+    if(attrs.showCircles || display.getSparklineShowCircles()) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return getNum(x(i))})
@@ -1696,24 +1692,24 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 
 
 
-    if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
+    if(attrs.showEndpoints || display.getSparklineShowEndPoints(defaultShowEndPoints)) {
 	let fidx=0;
 	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
 	let lidx=data.length-1;
 	while(isNaN(data[lidx]) && lidx>=0) lidx--;	
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
+	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(fidx))
 	    .attr('cy', y(data[fidx]))
-	    .attr('fill', attrs.endPoint1Color || display.getProperty("sparklineEndPoint1Color") || getColor(data[0],0,display.getProperty("sparklineEndPoint1Color",'steelblue')));
+	    .attr('fill', attrs.endPoint1Color || display.getSparklineEndPoint1Color() || getColor(data[0],0,display.getSparklineEndPoint1Color()));
 	svg.append('circle')
-	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
+	    .attr('r', attrs.endPointRadius|| display.getSparklineEndPointRadius())
 	    .attr('cx', x(lidx))
 	    .attr('cy', y(data[lidx]))
-	    .attr('fill', attrs.endPoint2Color || display.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,display.getProperty("sparklineEndPoint2Color",'tomato')));
+	    .attr('fill', attrs.endPoint2Color || display.getSparklineEndPoint2Color()|| getColor(data[data.length-1],data.length-1,display.getSparklineEndPoint2Color()));
     }
     let _display = display;
-    let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
+    let doTooltip = display.getSparklineDoTooltip()  || attrs.doTooltip;
     svg.on("click", function() {
 	let coords = d3.mouse(this);
 	if(records) {
