@@ -209,7 +209,7 @@ public class HarvesterManager extends RepositoryManager {
      */
     public void initHarvestersInThread() throws Exception {
 	//Sleep a bit before we start up
-	Misc.sleepSeconds(15);
+	Misc.sleepSeconds(5);
         List<String> harvesterFiles =
             getRepository().getResourcePaths(PROP_HARVESTERS);
         boolean okToStart =
