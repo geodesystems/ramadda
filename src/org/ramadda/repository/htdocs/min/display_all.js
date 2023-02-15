@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 20:41:36 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 21:02:45 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4484,21 +4484,33 @@ function DisplayThing(argId, argProperties) {
 	    });
 	    return fields;
 	},
+	dfltRecordHtmlProps:null,
+	getRecordHtmlProps:function() {
+	    if(!this.dfltRecordHtmlProps) {
+		let urlField = this.getFieldById(null, this.getProperty("urlField", "url"),false,true);
+		let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
+		this.dfltRecordHtmlProps = {
+		    urlField : urlField,
+		    linkField : linkField,
+		    titleField : this.getFieldById(null,this.getProperty("titleField")),
+		    titleTemplate : this.getProperty("titleTemplate"),	    
+		    descField : this.getFieldById(null,this.getProperty("descriptionField")),
+		    link  : linkField?record.getValue(linkField.getIndex()):null,
+		    showDate : this.getProperty("showDate", true),
+		    showImage : this.getProperty("showImage", true),
+		    showMovie : this.getProperty("showMovie", true),	    
+		    showElevation : this.getProperty("showElevation",false),
+		}
+	    }
+	    return this.dfltRecordHtmlProps;
+	},
         getRecordHtml: function(record, fields, template, props, debug) {
 	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
-            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"),false,true);
-	    let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
-	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
-	    let titleTemplate = this.getProperty("titleTemplate");	    
-	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
-	    let link  = linkField?record.getValue(linkField.getIndex()):null;
-	    let showDate = this.getProperty("showDate", true);
-	    let showImage = this.getProperty("showImage", true);
-	    let showMovie = this.getProperty("showMovie", true);	    
+	    let dflt = this.getRecordHtmlProps();
+	    let link  = dflt.link;
             let showGeo = false;
-            let showElevation = this.getProperty("showElevation",false);
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
@@ -4529,14 +4541,14 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";
-	    if(titleField || titleTemplate) {
+	    if(dflt.titleField || dflt.titleTemplate) {
 		let title="";
-		if(titleTemplate) {
-		    if(!titleTemplate.startsWith("${default")) {
-			title = this.getRecordHtml(record, fields, titleTemplate, {},debug);
+		if(dflt.titleTemplate) {
+		    if(!dflt.titleTemplate.startsWith("${default")) {
+			title = this.getRecordHtml(record, fields, dflt.titleTemplate, {},debug);
 		    }
 		} else {
-		    title = record.getValue(titleField.getIndex());
+		    title = record.getValue(dflt.titleField.getIndex());
 		    if(title.getTime)
 			title = this.formatDate(title);
 		    title = HU.center(HU.h3(title));
@@ -4547,8 +4559,8 @@ function DisplayThing(argId, argProperties) {
 		link = null;
 	    }
 
-	    if(descField) {
-		let desc = record.getValue(descField.getIndex());
+	    if(dflt.descField) {
+		let desc = record.getValue(dflt.descField.getIndex());
 		values+=desc;
 	    }
 
@@ -4586,14 +4598,14 @@ function DisplayThing(argId, argProperties) {
 		    if(attrs[field.getId()+".hide"]) {
 			continue;
 		    }
-		    if(field==titleField || field==descField) continue;
+		    if(field==dflt.titleField || field==dflt.descField) continue;
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
                     if (!field.getForDisplay()) {
 			continue;
 		    }
 		    if(field.isRecordDate()) {
-			if(!showDate || hadDate) {
+			if(!dflt.showDate || hadDate) {
 			    continue;
 			}
 			hadDate = true;
@@ -4620,7 +4632,7 @@ function DisplayThing(argId, argProperties) {
 			value = this.formatDate(value);
 		    }
 		    if(field.getType() == "image" && value!="") {
-			if(!showImage) continue;
+			if(!dflt.showImage) continue;
 			let imageAttrs = [];
 			if(this.getProperty("imageWidth")) {
 			    imageAttrs.push("width");
@@ -4634,7 +4646,7 @@ function DisplayThing(argId, argProperties) {
 			value = HU.image(value,imageAttrs);
 		    }
 		    if(field.getType() == "movie" && value!="") {
-			if(!showMovie) continue;
+			if(!dflt.showMovie) continue;
 			var movieAttrs = [];
 			movieAttrs.push("width");
 			movieAttrs.push("200");
@@ -4672,7 +4684,7 @@ function DisplayThing(argId, argProperties) {
 		    rows.push(row);
                 }
             }
-	    if(!hadDate && showDate) {
+	    if(!hadDate && dflt.showDate) {
 		if(record.hasDate()) {
                     let row = HU.open(TR,['valign','top']);
 		    let label = this.formatRecordLabel("Date");
@@ -4683,7 +4695,7 @@ function DisplayThing(argId, argProperties) {
 		    rows.push(row);
 		}
 	    }
-            if (showElevation && record.hasElevation()) {
+            if (dflt.showElevation && record.hasElevation()) {
                 rows.push(HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
 			       HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
             }
@@ -4957,6 +4969,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
     this._wikiTags  = [];
     
+    this.propertiesCache = {};
     this.defineProperties = function(props) {
 	let tagList = [];
 	props.forEach(prop=>{
@@ -4967,8 +4980,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
+			if(prop.canCache) {
+			    if(this.propertiesCache[prop.p])
+				return this.propertiesCache[prop.p]; 
+			}
 			if(!Utils.isDefined(dflt)) dflt = prop.d;
-			return this.getProperty(prop.p,dflt);
+			let value =  this.getProperty(prop.p,dflt);
+			if(prop.canCache) {
+			    this.propertiesCache[prop.p] = value; 
+			}
+			return value;
 		    };
 		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
 		    if(!this[funcName])
@@ -6812,7 +6833,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("\tgot:" + theField);
 	    if(!theField && !ignore) {
-		console.log("missing id:" + id +' for display:' + this.type +" " + ignore);
+		console.log("missing id:" + id +' for display:' + this.type);
 //		console.trace();
 	    }
 	    
@@ -50434,7 +50455,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'backgroundColor',ex:'#ccc'},
 	{p:'groupField',ex:''},
 	{p:'urlField',ex:''},
-	{p:'timeTo',ex:'year|day|hour|second'},
+	{p:'timeTo',d:'day',ex:'year|day|hour|second',canCache:true},
 //	{p:'justTimeline',ex:"true"},
 	{p:'hideBanner',ex:"true"},
     ];
@@ -50519,7 +50540,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
-	    let timeTo = this.getPropertyTimeTo("day");
+	    let timeTo = this.getTimeTo();
 	    let showYears = this.getProperty("showYears",false);
 	    this.recordToIndex = {};
 	    this.idToRecord = {};
@@ -50597,7 +50618,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timeline.goTo(index);
 	},
 	getDate: function(time) {
-	    let timeTo = this.getPropertyTimeTo("day");
+	    let timeTo = this.getTimeTo();
 	    let dt =  {year: time.getUTCFullYear()};
 	    if(timeTo!="year") {
 		dt.month = time.getUTCMonth()+1;
@@ -51184,7 +51205,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			barMin: this.getProperty(f.getId()+".barMin",0),
 			barMax: this.getProperty(f.getId()+".barMax",100),
 			barStyle: this.getProperty(f.getId()+".barStyle",this.getProperty("barStyle",'')),
-			barLabelInside: this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside"))
+			barLabelInside: this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside")),
+			barLength:this.getProperty('barLength','100px')
 		    }
 		}
 	    });
@@ -51284,10 +51306,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    sv = "";
 			}
 			let bar = HU.div([CLASS,"ramadda-bar-inner", STYLE,HU.css("right",percent)+props.barStyle],contents);
-			let width = this.getProperty("barLength","100px");
+			let width = props.barLength;
 			let outer = HU.div([CLASS,"ramadda-bar-outer", STYLE,
 					    (width?HU.css("width",HU.getDimension(width)):"")+
-					    HU.css("min-width","100px")+(barLabelInside?HU.css("height","1.5em"):"")],bar);
+					    HU.css("min-width","100px")+(props.barLabelInside?HU.css("height","1.5em"):"")],bar);
 			if(props.barLabelInside) {
 			    columns.push(HU.td([],outer));
 			} else {
@@ -51295,9 +51317,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			}
 		    } else if(props.isNumeric) {
 			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
-//			let td = this.formatNumber(value,f.getId());
-//			let td = value;
-//			columns.push(HU.td(td));
 			columns.push(td);
 		    } else {
 			columns.push(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs));
