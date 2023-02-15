@@ -639,12 +639,37 @@ public class PointOutputHandler extends RecordOutputHandler {
 
                 memoryCheck("POINT: memory before:");
                 VisitInfo visitInfo = new VisitInfo(VisitInfo.QUICKSCAN_NO);
+                if (request.defined("startdate")) {
+                    Date dttm = Utils.parseRelativeDate(new Date(),
+                                    request.getString("startdate", ""), 0);
+                    visitInfo.setStartDate(dttm);
+                } else if (request.defined("date_fromdate")) {
+                    Date dttm = Utils.parseRelativeDate(new Date(),
+                                    request.getString("date_fromdate", ""), 0);
+                    visitInfo.setStartDate(dttm);
+                }
+                if (request.defined("enddate")) {
+                    visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
+                            request.getString("enddate", ""), 0));
+                } else  if (request.defined("date_todate")) {
+                    visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
+                            request.getString("date_todate", ""), 0));
+                }
+		System.err.println("date:" + visitInfo.getStartDate() +" " + visitInfo.getEndDate());
+		if(visitInfo.getStartDate() !=null ||  visitInfo.getEndDate()!=null) {
+		    request.remove(ARG_RECORD_LAST);
+		    request.remove(ARG_MAX);
+		}
+				   
                 if (request.defined(ARG_MAX)) {
                     visitInfo.setMax(request.get(ARG_MAX, 5000));
                 }
+
+
                 if (request.defined(ARG_RECORD_LAST)) {
 		    int last = request.get(ARG_RECORD_LAST, -1);
 		    if(last>0) {
+			System.err.println("Last:" + last);
 			visitInfo.setLast(last);
 			//If there wasn't a max set then set it to something larger than the last count in
 			//in case the caching of the count is out of date
@@ -657,15 +682,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (request.defined(ARG_SKIP)) {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
                 }
-                if (request.defined("startdate")) {
-                    Date dttm = Utils.parseRelativeDate(new Date(),
-                                    request.getString("startdate", ""), 0);
-                    visitInfo.setStartDate(dttm);
-                }
-                if (request.defined("enddate")) {
-                    visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
-                            request.getString("enddate", ""), 0));
-                }
+
 
                 getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, visitInfo);

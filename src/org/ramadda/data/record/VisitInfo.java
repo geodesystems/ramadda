@@ -8,6 +8,7 @@ package org.ramadda.data.record;
 
 import java.io.*;
 
+import org.ramadda.util.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -303,6 +304,8 @@ public class VisitInfo {
      */
     public void setMax(int value) {
         max = value;
+	System.err.println("VisitInfo.setMax:" +max+Utils.getStack(10));
+
     }
 
     /**

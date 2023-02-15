@@ -154,6 +154,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
 	    write(COMMA);
         }
         rowCnt++;
+	//	if((rowCnt%1000)==0) System.err.println("cnt:" + rowCnt);
         write(VALUES_OPEN);
         double d = 0;
         int fieldCnt = 0;
