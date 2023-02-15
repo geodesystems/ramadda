@@ -751,6 +751,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 		    if(keywords!=null && keywords.size()>0) {
 			for(String word:keywords) {
+			    word = word.trim();
+			    if(word.length()<=3) continue;
 			    getMetadataManager().addMetadata(request,
 							     entry,
 							     new Metadata(
