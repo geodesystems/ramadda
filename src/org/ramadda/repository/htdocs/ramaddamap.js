@@ -1752,7 +1752,9 @@ RepositoryMap.prototype = {
     closeHighlightPopup: function() {
         if(this.highlightPopup) {
             this.getMap().removePopup(this.highlightPopup);
-            this.highlightPopup.destroy();
+	    try {
+		this.highlightPopup.destroy();
+	    }catch(err) {}
 	    this.highlightPopup  = null;
 	    this.highlightFeature = null;
 	}
@@ -5298,7 +5300,9 @@ RepositoryMap.prototype = {
 
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
-            this.currentPopup.destroy();
+	    try {
+		this.currentPopup.destroy();
+	    } catch(err){}
         }
 
 
