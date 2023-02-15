@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 20:08:19 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 14 20:34:55 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4183,13 +4183,28 @@ function DisplayThing(argId, argProperties) {
 		console.log("html:" + html);
 	    }
         },
+	defaultTemplateProps:null,
+	getDefaultTemplateProps: function() {
+	    if(!this.defaultTemplateProps) {
+		this.defaultTemplateProps = {
+		    iconField: this.getProperty("iconField"),
+		    iconSize: parseFloat(this.getProperty("iconSize",16)),
+		    colorBy:this.getProperty("colorBy"),
+		    colorByMap: this.getColorByMap(),
+		    iconMap: this.getIconMap(),
+		    imageWidth:this.getProperty("imageWidth")
+		}
+	    }
+	    return this.defaultTemplateProps;
+	},
 	getTemplateProps: function(fields) {
+	    let dflt = this.getDefaultTemplateProps();
 	    return {
-		iconField: this.getFieldById(fields, this.getProperty("iconField")),
-		iconSize: parseFloat(this.getProperty("iconSize",16)),
-		iconMap: this.getIconMap(),
-		colorBy:this.getProperty("colorBy"),
-		colorByMap: this.getColorByMap()
+		iconField: this.getFieldById(fields, dflt.iconField),
+		iconSize: dflt.iconSize,
+		colorBy:dflt.colorBy,
+		colorByMap: dflt.colorByMap,
+		iconMap: dflt.iconMap
 	    }
 	},
 	macroHook: function(token,value) {
@@ -4219,7 +4234,8 @@ function DisplayThing(argId, argProperties) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
-	    if(!macros) macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")});
+	    if(!macros)
+		macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateProps().dateFormat});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
@@ -4236,9 +4252,9 @@ function DisplayThing(argId, argProperties) {
 		if(width) {
 		    imageAttrs.push("width");
 		    imageAttrs.push(width);
-		} else if(this.getProperty("imageWidth")) {
+		} else if(this.getDefaultTemplateProps().imageWidth) {
 		    imageAttrs.push("width");
-		    imageAttrs.push(this.getProperty("imageWidth")); 
+		    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 		} else  {
 		    imageAttrs.push("width");
 		    imageAttrs.push("300");
@@ -4332,9 +4348,9 @@ function DisplayThing(argId, argProperties) {
 			if(width) {
 			    imageAttrs.push("width");
 			    imageAttrs.push(width);
-			} else if(this.getProperty("imageWidth")) {
+			} else if(this.getDefaultTemplateProps().imageWidth) {
 			    imageAttrs.push("width");
-			    imageAttrs.push(this.getProperty("imageWidth")); 
+			    imageAttrs.push(this.getDefaultTemplateProps().imageWidth); 
 			} else  {
 			    imageAttrs.push("width");
 			    imageAttrs.push("100%");
@@ -10825,7 +10841,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
 
-	    if(!this.getProperty("dateFormat")) {
+	    
+	    if(!this.getDateProps().dateFormat) {
                 pointData.getRecordFields().forEach(f=>{
 		    if(f.isFieldDate() && f.getId() == "year") {
 			this.setProperty("dateFormat","yyyy");
@@ -21812,6 +21829,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
 	    let imageField = null;
+	    let showBottomLabel = this.getProperty("showBottomLabel",true);
             let records = this.filterData(null,null,{recordOk:record=>{
 		if(imageField == null) imageField = this.getFieldById(null, this.getProperty("imageField"));
 		if(!imageField) {
@@ -21922,7 +21940,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
 		    galleryLabel = galleryLabel.replace(/"/g,"'");
 		}
-		if(!this.getProperty("showBottomLabel",true))
+		if(!showBottomLabel)
 		    lbl="";
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
