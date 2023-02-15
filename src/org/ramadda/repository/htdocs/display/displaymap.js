@@ -5285,7 +5285,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    let mapFeature = this.getMapFeature();
 	    features.forEach(blob=>{
 		let region;
-		if(this.getMapFeature()) {
+		if(mapFeature) {
 		    region = blob.properties[mapFeature];
 		} else  {
 		    region = blob.properties.name || blob.properties.name_long || blob.properties.NAME || blob.properties.ADMIN;
