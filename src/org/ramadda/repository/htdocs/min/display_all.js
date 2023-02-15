@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 14 23:57:57 MST 2023";
+var build_date="RAMADDA build date: Wed Feb 15 00:17:28 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -14342,11 +14342,15 @@ function RecordFilter(display,filterFieldId, properties) {
             return true;
         },
 	propertyCache:{},
-	getProperty: function(key, dflt) {
-	    let value = this.propertyCache[key];
-	    if(value) return value.value;
+	getProperty: function(key, dflt,dontCheckCache) {
+	    if(!dontCheckCache) {
+		let value = this.propertyCache[key];
+		if(value) return value.value;
+	    }
 	    let v = this.display.getProperty(key, dflt);
-	    this.propertyCache[key] = {value:v};
+	    if(!dontCheckCache) {
+		this.propertyCache[key] = {value:v};
+	    }
 	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
@@ -15096,7 +15100,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
-		if(includeAll && !this.getProperty(this.getId() +".filterLabel")) {
+		if(includeAll && !this.getProperty(this.getId() +".filterLabel",null,true)) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
 		let seen = {};
