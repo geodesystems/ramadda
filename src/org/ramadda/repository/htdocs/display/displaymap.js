@@ -762,7 +762,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',d:false,ex:'false',tt:"Always show markers"},
+	{p:'collisionFixed',canCache:true,d:false,ex:'false',tt:"Always show markers"},
 	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out"},
 	{p:'collisionDotColor',ex:'red',tt:"Color of dot drawn at center"},
 	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
@@ -5815,7 +5815,7 @@ function CollisionInfo(display,numRecords, roundPoint) {
 	dot: null,
 	display:display,
 	roundPoint:roundPoint,
-	visible: display.getPropertyCollisionFixed(),
+	visible: display.getCollisionFixed(),
 	dot:null,
 	numRecords:numRecords,
 	records:[],

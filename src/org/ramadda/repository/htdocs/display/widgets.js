@@ -980,8 +980,8 @@ function DisplayAnimation(display, enabled,attrs) {
 	    }
 	},
         formatAnimationDate: function(date,format,debug) {
-	    let timeZoneOffset =this.display.getProperty("timeZoneOffset");
-	    let timeZone =this.display.getProperty("timeZone");	    
+	    let timeZoneOffset =this.display.getTimeZoneOffset();
+	    let timeZone =this.display.getTimeZone();	    
 	    if(timeZoneOffset) {
 		if(debug) console.log("date before:" + date.toUTCString());
 		date = Utils.createDate(date, -timeZoneOffset);

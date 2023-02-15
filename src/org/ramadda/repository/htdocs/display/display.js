@@ -547,10 +547,6 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return this.getProperty("showTitle", dflt);
         },
-
-        getTimeZone: function() {
-            return this.getDateProps().timeZone;
-        },
         formatDate: function(date, args, useToStringIfNeeded) {
 	    if(!date || !date.getTime) return "";
             try {
@@ -568,7 +564,7 @@ function DisplayThing(argId, argProperties) {
 		this.dateProps = {
 		    dateFormat:this.getProperty("dateFormat", this.getProperty("dateFormat2")),
 		    dateSuffix:this.getProperty("dateSuffix"),
-		    timeZone:this.getProperty("timeZone"),
+		    timeZone:this.getTimeZone(),
 		    dateFormatDaysAgo:this.getProperty("dateFormatDaysAgo",false)
 		}
 	    }
@@ -1525,6 +1521,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'dateFormat',canCache:true,
 	 ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'dateFormatDaysAgo',ex:true},
+	{p:'timeZone',canCache:true},
+	{p:'timeZoneOffset',canCache:true,d:0},
 	{p:'doFormatNumber',ex:false},
  	{p:'formatNumberDecimals',ex:0},
 	{p:'formatNumberScale',ex:100},
@@ -3667,12 +3665,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let startDate = this.getProperty("startDate");
 	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
-		this.startDateObject = Utils.createDate(startDate,+this.getProperty("timeZoneOffset",0));
+		this.startDateObject = Utils.createDate(startDate,+this.getTimeZoneOffset());
 		if(debug)
 		    console.log(this.type +" start date:" + startDate + " dttm:" + this.startDateObject.toUTCString());
 	    } 
 	    if(endDate) {
-		this.endDateObject = Utils.createDate(endDate,+this.getProperty("timeZoneOffset",0));
+		this.endDateObject = Utils.createDate(endDate,+this.getTimeZoneOffset());
 		if(debug)
 		    console.log(this.type +"end date:" +this.endDateObject.toUTCString());
 	    } 
@@ -7944,7 +7942,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             if (this.fmt_yyyy) return true;
             var tz = 0;
-            this.timezone = this.getProperty("timezone");
+            this.timezone = this.getTimeZone();
             if (Utils.isDefined(this.timezone)) {
                 tz = parseFloat(this.timezone);
             }
