@@ -294,14 +294,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
 	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 
-	{p:'labelInLegend',d:null,ex:'label'},
-	{p:'highlight.labelInLegend',d:null,ex:'label'},
-	{p:'nohighlight.labelInLegend',d:null,ex:'label'},	
-	{p:'some_field.labelInLegend',d:null,ex:'label'},
+	{p:'labelInLegend',ex:'label',canCache:true},
+	{p:'highlight.labelInLegend',d:null,ex:'label',canCache:true},
+	{p:'nohighlight.labelInLegend',d:null,ex:'label',canCache:true},	
+	{p:'some_field.labelInLegend',d:null,ex:'label',canCache:true},
 
-	{p:'seriesType',d:null,ex:'line|area|bars'},
-	{p:'highlight.seriesType',d:null,ex:'line|area|bars'},
-	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars'},	
+	{p:'seriesType',d:null,ex:'line|area|bars',canCache:true},
+	{p:'highlight.seriesType',d:null,ex:'line|area|bars',canCache:true},
+	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars',canCache:true},	
 	{p:'some_field.seriesType',d:null,ex:'line|area|bars'},	
 
 	{p:'pointSize',d:null,ex:'0'},
@@ -327,12 +327,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToPan',d:false},	
 
 	{label:'Trendlines'},
-	{p:'showTrendline',d:null,ex:"true"},
-	{p:"trendlineType",ex:"exponential"},
-	{p:"trendlineVisibleInLegend",ex:"true"},
-	{p:"trendlineColor",ex:""},
-	{p:"trendlineLineWidth",ex:"true"},
-	{p:"trendlineOpacity",ex:"0.3"}		    		    		    
+	{p:'showTrendLines',d:null,ex:"true",canCache:true},
+	{p:"trendlineType",ex:"exponential",canCache:true},
+	{p:"trendlineVisibleInLegend",ex:"true",canCache:true},
+	{p:"trendlineColor",ex:"",canCache:true},
+	{p:"trendlineLineWidth",ex:"true",canCache:true},
+	{p:"trendlineOpacity",ex:"0.3",canCache:true}		    		    		    
     ];
     this.debugTimes = false;
 
@@ -453,7 +453,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             });
 
             this.jq(ID_TRENDS_CBX).click(function() {
-                _this.showTrendLines = _this.jq(ID_TRENDS_CBX).is(':checked');
+                _this.setProperty('showTrendLines', _this.jq(ID_TRENDS_CBX).is(':checked'));
                 _this.displayData();
 
             });
@@ -570,7 +570,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
                 html += HU.checkbox(this.domId(ID_TRENDS_CBX),
 				    [],
-				    this.getProperty("showTrendLines", false)) + "  " + "Show trend line";
+				    this.getShowTrendLines()) + "  " + "Show trend line";
                 html += " ";
                 html += HU.checkbox(this.domId(ID_PERCENT_CBX),
 				    [],
@@ -998,6 +998,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    seriesNames.forEach((name,idx)=>{
 		name = name.replace(/\(.*\)/g,"");
+		//check for the formatted label
+		if(name.indexOf('<')>=0) return;
 		let id = Utils.makeId(name);
 		let highlight = highlightMap[id];
 		let s = {
@@ -1079,7 +1081,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let trendlinesInfo = {};
 	    seriesNames.forEach((name,idx)=> {
 		let id = Utils.makeId(name);
-		if(this.getProperty("showTrendline." + id, this.getProperty("showTrendline"))) {
+		if(this.getProperty("showTrendline." + id, this.getShowTrendLines())) {
 		    let s = {
 		    };
 		    trendlinesInfo[idx] = s;
@@ -1765,7 +1767,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.chartDimensions.width = "80%";
             }
 
-            if (this.getProperty("showTrendLines", false)) {
+            if (this.getShowTrendLines()) {
                 chartOptions.trendlines = {
                     0: {
                         type: 'linear',
@@ -2150,7 +2152,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'vAxis.ticks',ex:''},
 	{p:'vAxis.ticks',ex:''},
 	{p:'useMultipleAxes',ex:'true'},
-	{p:'showTrendLines',ex:'true'},
     ];
 
     defineDisplay(this, SUPER, myProps, {

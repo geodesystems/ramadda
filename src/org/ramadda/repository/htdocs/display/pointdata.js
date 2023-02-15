@@ -1036,12 +1036,12 @@ function makePointData(json, derived, source,url,callback) {
         var recordField = new RecordField(field,source);
         if (recordField.isFieldNumeric()) {
             if (source.getProperty) {
-                var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getProperty("offset1"));
-                var offset2 = source.getProperty(recordField.getId() + ".offset2", source.getProperty("offset2"));
-                var scale = source.getProperty(recordField.getId() + ".scale", source.getProperty("scale"));
+                var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getOffset1());
+                var offset2 = source.getProperty(recordField.getId() + ".offset2", source.getOffset2());
+                var scale = source.getProperty(recordField.getId() + ".scale", source.getScale());
 
                 if (offset1 || offset2 || scale) {
-                    var unit = source.getProperty(recordField.getId() + ".unit", source.getProperty("unit"));
+                    var unit = source.getProperty(recordField.getId() + ".unit", source.getUnit());
                     if (unit) {
                         recordField.unit = unit;
                     }

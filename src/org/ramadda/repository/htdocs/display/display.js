@@ -902,8 +902,13 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return fields;
 	},
+	fieldLabelCache:{},
 	getFieldLabel:function(field) {
-	    return  this.getProperty(field.getId()+".label",field.getLabel());
+	    if(this.fieldLabelCache[field.getId()])
+		return this.fieldLabelCache[field.getId()].value;
+	    let value=  this.getProperty(field.getId()+".label",field.getLabel());
+	    this.fieldLabelCache[field.getId()] = {value:value};
+	    return value;
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
@@ -982,10 +987,10 @@ function DisplayThing(argId, argProperties) {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
 	    }
+	    let ttf = this.getTooltipFields();
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getTooltipFields(this.getPropertyFields()));
+		fields = this.getFieldsByIds(null,ttf??this.getPropertyFields());
 	    } else {
-		let ttf = this.getTooltipFields();
 		if(ttf) {
 		    fields = this.getFieldsByIds(null,ttf);
 		}
@@ -1212,6 +1217,7 @@ function DisplayThing(argId, argProperties) {
 	    //            this[key] = value;
             this.properties[key] = value;
 	    this.transientProperties[key]  = value;
+	    this.propertiesCache[key] = value;
         },
         getSelfProperty: function(key, dflt) {
             if (this[key] != null) {
@@ -1469,6 +1475,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:'fieldsPatterns',ex:'comma separated list of regexp patterns to match on fields to display'},
+	{p:'fieldAliases',canCache:true},
 	{p:'prefixFields',tt:'Field to always add to the beginning of the list'},
 	{p:'showMenu',ex:true},	      
 	{p:'showTitle',ex:true},
@@ -1624,6 +1631,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'acceptEventDataSelection',ex:true,tt:'accept new data coming from other displays'},
 
 	{label:'Convert Data'},
+	{p:'offset1',canCache:true},
+	{p:'offset2',canCache:true},
+	{p:'scale',canCache:true},
+	{p:'unit',canCache:true},			
 	{p:'binDate',ex:'day|month|year',tt:'Bin the dates'},
 	{p:'binType',ex:'count|average|total'},
 	{p:'groupBy',ex:'field',tt:'Group the data'},
@@ -2976,7 +2987,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let aliases= {};
-	    var tmp = this.getProperty("fieldAliases");
+	    var tmp = this.getFieldAliases();
 	    if(tmp) {
 		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
@@ -3256,7 +3267,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return null;
 	    }
 	    let aliases= {};
-	    let tmp = this.getProperty("fieldAliases");
+	    let tmp = this.getFieldAliases();
 	    if(tmp) {
 		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
