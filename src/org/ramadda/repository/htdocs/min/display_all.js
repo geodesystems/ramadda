@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 15 10:02:20 MST 2023";
+var build_date="RAMADDA build date: Wed Feb 15 10:26:56 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -39552,7 +39552,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	    let mapFeature = this.getMapFeature();
 	    features.forEach(blob=>{
 		let region;
-		if(this.getMapFeature()) {
+		if(mapFeature) {
 		    region = blob.properties[mapFeature];
 		} else  {
 		    region = blob.properties.name || blob.properties.name_long || blob.properties.NAME || blob.properties.ADMIN;
