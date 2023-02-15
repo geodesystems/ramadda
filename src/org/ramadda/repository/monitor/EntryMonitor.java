@@ -155,6 +155,9 @@ public class EntryMonitor implements Constants {
     }
 
 
+
+
+
     /**
      * _more_
      *
@@ -495,7 +498,7 @@ public class EntryMonitor implements Constants {
                                   ? ""
                                   : filter.getValue());
             Entry group =
-                (Entry) getRepository().getEntryManager().getEntry(null, id);
+                (Entry) getRepository().getEntryManager().getEntry(getRequest(), id);
             getRepository().getPageHandler().addEntrySelect(getRequest(),
                     group, ARG_ANCESTOR, sb, "Ancestor Folder", " " + notCbx);
         } else if (what.equals(ARG_AREA)) {
@@ -552,7 +555,7 @@ public class EntryMonitor implements Constants {
             if (group != null) {
                 return group;
             }
-            group = (Entry) getRepository().getEntryManager().getEntry(null,
+            group = (Entry) getRepository().getEntryManager().getEntry(getRequest(),
                     (String) filter.getValue());
             if (group != null) {
                 filter.putProperty("ancestor", group);
@@ -908,7 +911,7 @@ public class EntryMonitor implements Constants {
      */
     public Request getRequest() throws Exception {
         if (request == null) {
-            request = new Request(repository, getUser());
+	    request =  getRepository().getAdminRequest();
         }
 
         return request;
