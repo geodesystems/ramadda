@@ -3975,12 +3975,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)   console.log("filterData-5 #records:" + records.length);
 	    let dataFilters = this.getTheDataFilters();
 	    if(dataFilters.length) {
+//		console.time('filters');
 		records = records.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) {
 			return false;
 		    } 
 		    return true;
 		});
+//		console.timeEnd('filters');
 	    }
 	    if(debug)   console.log("filterData-6 #records:" + records.length);
 	    //	    var t2=  new Date();
@@ -6222,8 +6224,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);
-		header2 +=  HU.checkbox("",[ID,cbxid],f.enabled) +" " +
-		    this.makeFilterLabel(f.label +"&nbsp;&nbsp;")
+		header2 +=  HU.checkbox(cbxid,[ID,cbxid],f.enabled,
+//					this.makeFilterLabel(f.label +"&nbsp;&nbsp;"));
+					f.label +"&nbsp;&nbsp;");
 	    });
 
 	    if(this.getProperty("filterDate")) { 

@@ -1135,7 +1135,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.myFeatureLayerNoSelect = null;
 	    }	    
 	    if(this.labelFeatures) {
-		this.map.labelLayer.removeFeatures(this.labelFeatures);
+		this.map.labelLayer.removeFeatures(this.labelFeatures,{silent:true});
 		this.labelFeatures = null;
 		this.jq("legendid").html("");
 	    }
@@ -3563,11 +3563,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let features = [];
 	    let featuresToAdd = [];
 	    let pointsToAdd = [];	    
-	    
-
-
 	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
-
             let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
 	    this.lastColorBy = colorBy;
 	    let cidx=0
@@ -3583,6 +3579,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    let strokeOpacity = this.getStrokeOpacity();
 	    this.markers = {};
+
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
 		let numLocs = 0;
@@ -3601,7 +3598,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    //Just make up some numbers
 		    radiusScale =[10000,2,6000,3,4500,4,3500,5,2600,6,1300,7,800,8,300,9,275,10,250,11,225,12,175,13,125,14,100,15,50,16];
 		}
-		radius=radiusScale[1];
+//		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
 		    if(numLocs<radiusScale[i]) {
 			radius = radiusScale[i+1];
@@ -3609,8 +3606,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 //		console.log("#locs:" + numLocs +" #records:" +records.length + " radius:" + radius);
 	    }
-
 	    radius = Math.min(radius, this.getMaxRadius());
+
+
 
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
