@@ -947,21 +947,33 @@ function DisplayThing(argId, argProperties) {
 	    });
 	    return fields;
 	},
+	dfltRecordHtmlProps:null,
+	getRecordHtmlProps:function() {
+	    if(!this.dfltRecordHtmlProps) {
+		let urlField = this.getFieldById(null, this.getProperty("urlField", "url"),false,true);
+		let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
+		this.dfltRecordHtmlProps = {
+		    urlField : urlField,
+		    linkField : linkField,
+		    titleField : this.getFieldById(null,this.getProperty("titleField")),
+		    titleTemplate : this.getProperty("titleTemplate"),	    
+		    descField : this.getFieldById(null,this.getProperty("descriptionField")),
+		    link  : linkField?record.getValue(linkField.getIndex()):null,
+		    showDate : this.getProperty("showDate", true),
+		    showImage : this.getProperty("showImage", true),
+		    showMovie : this.getProperty("showMovie", true),	    
+		    showElevation : this.getProperty("showElevation",false),
+		}
+	    }
+	    return this.dfltRecordHtmlProps;
+	},
         getRecordHtml: function(record, fields, template, props, debug) {
 	    props= props??{};
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
-            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"),false,true);
-	    let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
-	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
-	    let titleTemplate = this.getProperty("titleTemplate");	    
-	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
-	    let link  = linkField?record.getValue(linkField.getIndex()):null;
-	    let showDate = this.getProperty("showDate", true);
-	    let showImage = this.getProperty("showImage", true);
-	    let showMovie = this.getProperty("showMovie", true);	    
+	    let dflt = this.getRecordHtmlProps();
+	    let link  = dflt.link;
             let showGeo = false;
-            let showElevation = this.getProperty("showElevation",false);
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
@@ -992,14 +1004,14 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";
-	    if(titleField || titleTemplate) {
+	    if(dflt.titleField || dflt.titleTemplate) {
 		let title="";
-		if(titleTemplate) {
-		    if(!titleTemplate.startsWith("${default")) {
-			title = this.getRecordHtml(record, fields, titleTemplate, {},debug);
+		if(dflt.titleTemplate) {
+		    if(!dflt.titleTemplate.startsWith("${default")) {
+			title = this.getRecordHtml(record, fields, dflt.titleTemplate, {},debug);
 		    }
 		} else {
-		    title = record.getValue(titleField.getIndex());
+		    title = record.getValue(dflt.titleField.getIndex());
 		    if(title.getTime)
 			title = this.formatDate(title);
 		    title = HU.center(HU.h3(title));
@@ -1010,8 +1022,8 @@ function DisplayThing(argId, argProperties) {
 		link = null;
 	    }
 
-	    if(descField) {
-		let desc = record.getValue(descField.getIndex());
+	    if(dflt.descField) {
+		let desc = record.getValue(dflt.descField.getIndex());
 		values+=desc;
 	    }
 
@@ -1049,14 +1061,14 @@ function DisplayThing(argId, argProperties) {
 		    if(attrs[field.getId()+".hide"]) {
 			continue;
 		    }
-		    if(field==titleField || field==descField) continue;
+		    if(field==dflt.titleField || field==dflt.descField) continue;
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
                     if (!field.getForDisplay()) {
 			continue;
 		    }
 		    if(field.isRecordDate()) {
-			if(!showDate || hadDate) {
+			if(!dflt.showDate || hadDate) {
 			    continue;
 			}
 			hadDate = true;
@@ -1083,7 +1095,7 @@ function DisplayThing(argId, argProperties) {
 			value = this.formatDate(value);
 		    }
 		    if(field.getType() == "image" && value!="") {
-			if(!showImage) continue;
+			if(!dflt.showImage) continue;
 			let imageAttrs = [];
 			if(this.getProperty("imageWidth")) {
 			    imageAttrs.push("width");
@@ -1097,7 +1109,7 @@ function DisplayThing(argId, argProperties) {
 			value = HU.image(value,imageAttrs);
 		    }
 		    if(field.getType() == "movie" && value!="") {
-			if(!showMovie) continue;
+			if(!dflt.showMovie) continue;
 			var movieAttrs = [];
 			movieAttrs.push("width");
 			movieAttrs.push("200");
@@ -1135,7 +1147,7 @@ function DisplayThing(argId, argProperties) {
 		    rows.push(row);
                 }
             }
-	    if(!hadDate && showDate) {
+	    if(!hadDate && dflt.showDate) {
 		if(record.hasDate()) {
                     let row = HU.open(TR,['valign','top']);
 		    let label = this.formatRecordLabel("Date");
@@ -1146,7 +1158,7 @@ function DisplayThing(argId, argProperties) {
 		    rows.push(row);
 		}
 	    }
-            if (showElevation && record.hasElevation()) {
+            if (dflt.showElevation && record.hasElevation()) {
                 rows.push(HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
 			       HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
             }
@@ -1420,6 +1432,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
     this._wikiTags  = [];
     
+    this.propertiesCache = {};
     this.defineProperties = function(props) {
 	let tagList = [];
 	props.forEach(prop=>{
@@ -1430,8 +1443,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
+			if(prop.canCache) {
+			    if(this.propertiesCache[prop.p])
+				return this.propertiesCache[prop.p]; 
+			}
 			if(!Utils.isDefined(dflt)) dflt = prop.d;
-			return this.getProperty(prop.p,dflt);
+			let value =  this.getProperty(prop.p,dflt);
+			if(prop.canCache) {
+			    this.propertiesCache[prop.p] = value; 
+			}
+			return value;
 		    };
 		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
 		    if(!this[funcName])
@@ -3275,7 +3296,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("\tgot:" + theField);
 	    if(!theField && !ignore) {
-		console.log("missing id:" + id +' for display:' + this.type +" " + ignore);
+		console.log("missing id:" + id +' for display:' + this.type);
 //		console.trace();
 	    }
 	    

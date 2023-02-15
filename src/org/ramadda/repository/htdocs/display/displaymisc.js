@@ -548,7 +548,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'backgroundColor',ex:'#ccc'},
 	{p:'groupField',ex:''},
 	{p:'urlField',ex:''},
-	{p:'timeTo',ex:'year|day|hour|second'},
+	{p:'timeTo',d:'day',ex:'year|day|hour|second',canCache:true},
 //	{p:'justTimeline',ex:"true"},
 	{p:'hideBanner',ex:"true"},
     ];
@@ -633,7 +633,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
-	    let timeTo = this.getPropertyTimeTo("day");
+	    let timeTo = this.getTimeTo();
 	    let showYears = this.getProperty("showYears",false);
 	    this.recordToIndex = {};
 	    this.idToRecord = {};
@@ -711,7 +711,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timeline.goTo(index);
 	},
 	getDate: function(time) {
-	    let timeTo = this.getPropertyTimeTo("day");
+	    let timeTo = this.getTimeTo();
 	    let dt =  {year: time.getUTCFullYear()};
 	    if(timeTo!="year") {
 		dt.month = time.getUTCMonth()+1;
@@ -1298,7 +1298,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			barMin: this.getProperty(f.getId()+".barMin",0),
 			barMax: this.getProperty(f.getId()+".barMax",100),
 			barStyle: this.getProperty(f.getId()+".barStyle",this.getProperty("barStyle",'')),
-			barLabelInside: this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside"))
+			barLabelInside: this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside")),
+			barLength:this.getProperty('barLength','100px')
 		    }
 		}
 	    });
@@ -1398,10 +1399,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    sv = "";
 			}
 			let bar = HU.div([CLASS,"ramadda-bar-inner", STYLE,HU.css("right",percent)+props.barStyle],contents);
-			let width = this.getProperty("barLength","100px");
+			let width = props.barLength;
 			let outer = HU.div([CLASS,"ramadda-bar-outer", STYLE,
 					    (width?HU.css("width",HU.getDimension(width)):"")+
-					    HU.css("min-width","100px")+(barLabelInside?HU.css("height","1.5em"):"")],bar);
+					    HU.css("min-width","100px")+(props.barLabelInside?HU.css("height","1.5em"):"")],bar);
 			if(props.barLabelInside) {
 			    columns.push(HU.td([],outer));
 			} else {
@@ -1409,9 +1410,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			}
 		    } else if(props.isNumeric) {
 			let td = this.handleColumn(fields,aggByField,f,record,this.formatNumber(value,f.getId()), tdAttrs);
-//			let td = this.formatNumber(value,f.getId());
-//			let td = value;
-//			columns.push(HU.td(td));
 			columns.push(td);
 		    } else {
 			columns.push(this.handleColumn(fields,aggByField,f,record,sv,tdAttrs));
