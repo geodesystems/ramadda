@@ -54,7 +54,7 @@ type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  patt
 <table><tr valign=top>
 <td>{{group groupDiv="cr1000charts" showMenu=true loadingMessage="" noDataMessage=""
 requestFieldsShow=false chartLeft=100 
-dataFilters="lessthan(field=x.*temp.*,value=1000,label=,enabled=true);" 
+dataFilters="lessthan(field=.*temp.*,value=1000,label=,enabled=true);greaterthan(field=.*baro.*,value=0,label=,enabled=true);" 
 headerStyle="text-align:left"
 }}
 :rem Put the blank here but have it be displayed in the targetDiv below
