@@ -3248,6 +3248,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		fields:fields,
 	    };
 	    this.htmlLayer = "";
+	    let fillColor = this.getFillColor("#619FCA");
+	    let strokeColor = this.getStrokeColor("#888");
 	    let w = this.getHtmlLayerWidth(30);
 	    let h = this.getHtmlLayerHeight(15);
 	    let shape = this.getHtmlLayerShape("barchart");
@@ -3321,7 +3323,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			else
 			    $("#" + info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
-			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):this.getFillColor("#619FCA");
+			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):fillColor;
 			var ctx = canvas.getContext("2d");
 			if(idx==1) {
 			    ctx.fillStyle= '#fff';
@@ -3336,7 +3338,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			ctx.arc(cw/2,ch/2, cw/2-2, 0-Math.PI/2, info.data[0]*2 * Math.PI-Math.PI/2);
 			ctx.lineTo(cw/2,ch/2);
 			ctx.closePath();
-			ctx.strokeStyle= this.getStrokeColor("#888");
+			ctx.strokeStyle= strokeColor;
 			ctx.fillStyle= color;
 			ctx.fill();
 			ctx.stroke();
