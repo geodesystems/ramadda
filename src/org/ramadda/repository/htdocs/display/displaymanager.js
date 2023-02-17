@@ -569,7 +569,7 @@ function DisplayManager(argId, argProperties) {
     $("#" + divid).html(html)
     this.initializeEntriesMenu();
 
-    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fa-cog",[TITLE,"Display menu"] )).button({
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[TITLE,"Display menu"],['style','color:#aaa;'] )).button({
 	classes: {
 	    "ui-button": "display-manager-button",
 	}	
