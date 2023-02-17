@@ -335,8 +335,10 @@ a.display-container {
 
 .display-header-span {
     display:inline-block;
+/*  don't set the line height in the header
     display:inline;
     line-height:1.5em;
+*/
 }
 
 .display-header-vertical .display-header-span {
@@ -808,6 +810,17 @@ a.display-container {
     padding:5px;
     padding-left:10px;
     padding-right:10px;
+}
+
+.display-output-message-tight {
+    border-radius: 2px;
+    display:inline-block;
+    text-align:left;
+    border: 1px #aaa solid;
+    background-color : #fffeec;
+    padding:2px;
+    padding-left:4px;
+    padding-right:4px;
 }
 
 
