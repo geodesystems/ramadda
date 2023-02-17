@@ -126,7 +126,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER);
     this.defineProperties([
 	{label:'Entry Search'},
-	{p:'providers',ex:'this,category:.*',tt:'List of search providers'},
+	{p:'providers',ex:'this,category:.*',tt:'List of search providers',canCache:true},
     ]);
 
     this.ramaddas = new Array();
@@ -454,7 +454,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'formWidth',d: '300px'},
         {p:'entriesWidth',d: 0},
 	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
-	{p:'defaultImage',ex:'blank.gif'},
+	{p:'defaultImage',ex:'blank.gif',canCache:true},
         {p:'showDetailsForGroup',d: false},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
@@ -1917,15 +1917,15 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    });
 		}
 		let records = [];
+		let defaultImage = this.getDefaultImage();
+		if(defaultImage) {
+		    if(defaultImage.startsWith("http"))
+			defaultImage = ramaddaBaseUrl+ defaultImage;
+		}
 		let makeData = entries=>{
 		    let records = [];
 		    entries.forEach(entry=>{
 			let tags = this.makeEntryTags(entry,true,"");
-			let defaultImage = this.getDefaultImage();
-			if(defaultImage) {
-			    if(defaultImage.startsWith("http"))
-				defaultImage = ramaddaBaseUrl+ defaultImage;
-			}
 			let data = [entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||defaultImage||"",entry.getIconUrl(),tags,entry.getLatitude(), entry.getLongitude()];
 			if(entryType) {
 			    entryType.getColumns().forEach(column=>{
