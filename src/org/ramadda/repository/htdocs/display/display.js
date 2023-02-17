@@ -14,11 +14,11 @@ var  displayDebug= {
     makeDataTable:false,
     checkSearchBar:false,
     handleNoData:false,
-    pointDataLoaded:false,
     displayMapUpdateUI:false,
     displayMapCreateMap:false,
     displayMapAddPoints:false,
     loadPointJson:false,
+    pointDataLoaded:false,
     groupBy:false,
     gridPoints:false,
     setEntry:false,
@@ -397,7 +397,8 @@ addGlobalDisplayType({
    Base class for all displays oriented things
 */
 function DisplayThing(argId, argProperties) {
-    
+    this.isDisplayThing = true;
+
     if (argProperties == null) {
         argProperties = {};
     }
@@ -1347,8 +1348,8 @@ function DisplayThing(argId, argProperties) {
 	    this.getPropertyCounts[key]++;
 
 	    if(this.getPropertyCounts[key]==100) {
-		console.log("getProperty high count: " + key);
-		console.trace();
+//		console.log("getProperty high count: " + key);
+//		console.trace();
 	    }
 //	    debug = this.getPropertyCounts[key]==1;
 //	    if(debug)
@@ -1570,6 +1571,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
+	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
+	{p:'requestFieldsToggle',d:false,tt:'Put the request fields in a toggle'},
 	{label:'Filter Data'},
 	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
 	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
@@ -3591,57 +3594,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    return  result;
 	},
-	convertPointData: function(pointData) {
-	    let originalPointData = pointData;
-	    let segments = this.getSegments();
-	    if(segments) {
-                let dataList = pointData.getRecords();
-		let newData  =[];
-		let header = [];
-		newData.push(header);
-		var rowIdx = 0; 
-		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
-		segments.forEach((segment,segmentIdx)=>{
-		    var name = segment.name;
-		    header.push(name);
-		    var start = segment.start;
-		    var end = segment.end;
-		    var cnt = 1;
-	    	    for (; rowIdx <dataList.length; rowIdx++) {
-			var record = dataList[rowIdx];
-			if(record.getTime()<start.getTime()) {
-			    continue;
-			}
-			if(record.getTime()>end.getTime()) {
-			    break;
-			}
-			var value = record.getValue(1);
-			let row=null;
-			if(cnt>=newData.length) {
-			    row = [];
-			    for(let sidx=0;sidx<segments.length;sidx++) row.push(NaN);
-			    newData.push(row);
-			} else {
-			    row = newData[cnt];
-			}
-			row[segmentIdx] = value;
-			cnt++;
-		    }
-		});
-		pointData = convertToPointData(newData);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-	    try {
-		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
-	    } catch(exc) {
-		this.handleError("Error:" + exc, exc);
-		return null;
-	    }
-
-
-	    return pointData;
-	},
 	requiresGeoLocation: function() {
 	    return false;
 	},
@@ -4417,6 +4369,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getEntriesTree: function(entries, props) {
             if (!props) props = {};
             let columns = this.getProperty("entryColumns", null);
+	    let showSnippet = this.getProperty('showSnippetInList');
             if (columns != null) {
                 let columnNames = this.getProperty("columnNames", null);
                 if (columnNames != null) {
@@ -4505,7 +4458,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
 		let snippet = "";
 		snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)], entry.getSnippet()||"");
-		if(this.getProperty("showSnippetInList")) {
+		if(showSnippet) {
 		    left+=snippet;
 		    snippet = "";
 		}
@@ -5518,9 +5471,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT),CLASS,"display-header-block"], topLeft);
 
+	    let headerStyle = this.getProperty('headerStyle','');
 	    let h2Separate = this.getAnimationEnabled();
-	    let h1 = 	HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
-	    let h2 = HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
+	    let h1 = 	HU.div(['style',headerStyle,ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
+	    let h2 = HU.div(['style',headerStyle,ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
             let topCenter = HU.div([ID, this.getDomId(ID_TOP),CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
 	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
@@ -5817,22 +5771,55 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.createRequestProperties();
 	},
 	createRequestProperties: function() {
+	    if(this.getProperty('requestFieldsDefault')) {
+		//clear them out
+		this.requestMacros = null;
+		[['requestFields','date,stride,limit'],
+		 ['requestFieldsToggleOpen',true],
+		 ['request.date.type','date'],
+		 ['request.stride.title','Specify a skip factor'],
+		 ['request.stride.includeNone',false],
+		 ['request.stride.type','enumeration'],
+		 ['request.stride.values','0:None,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50,75,100'],
+		 ['request.stride.default',0],
+		 ['request.limit.title','Limit how many records to return'],
+		 ['request.limit.default','20000'],
+		 ['requestFieldsLive',false],
+		 ['requestFieldsToggle',true]].forEach(pair=>{
+		     if(!Utils.isDefined(this.getProperty(pair[0]))) {
+			 this.setProperty(pair[0],pair[1]);
+		     }
+		 });
+	    }		
+
+
 	    let requestProps = "";
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
+	    let live = this.getRequestFieldsLive();
+	    let list = [];
+	    let space = HU.space(2);
+	    if(!live) requestProps+=HU.span(['title','Reload data','style','','class','','id',this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
+
 	    macros.forEach(macro=>{
-		requestProps+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
+		requestProps+=macro.getWidget(macroDateIds);
 		if(macro.isVisible()) {
-		    requestProps+=SPACE2;
+		    requestProps+=space;
 		}
 	    });
-	    this.writeHeader(ID_REQUEST_PROPERTIES, requestProps);
-	    
-
+	    if(this.getRequestFieldsToggle()) {
+		requestProps=HU.toggleBlock(this.getProperty('requestFieldsToggleLabel','Select') + HU.space(3),requestProps,
+					    this.getProperty('requestFieldsToggleOpen',false),
+					    {orientation:'horizontal'});
+	    }
+	    if(!this.getProperty('requestFieldsShow',true)) {
+		requestProps = HU.div(['style','display:none;'], requestProps);
+	    }
+	    this.writeHeader(ID_REQUEST_PROPERTIES, HU.div([],requestProps));
 	    //Keep track of the values because there can be spurious changes triggered
 	    //when the user clicks in a time range field
 	    let valueMap = {}
-	    let macroChange = (macro,value,what,force)=>{
+	    let macroChange = (macro,value,what,force,apply)=>{
 		if(what) {
 		    if(!force && value == valueMap[macro.urlarg+'_'+what]) {
 			//console.log('duplicate:' + value);
@@ -5843,7 +5830,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 		if(this.settingMacroValue) return;
-		if(macro.triggerReload) {
+		if((apply || live) && macro.triggerReload) {
 		    this.macroChanged();
 		    this.reloadData();
 		}
@@ -5860,6 +5847,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingMacroValue = false;
 	    };
 
+	    this.jq('requestapply').button().click(()=>{
+		this.macroChanged();
+		this.reloadData();
+	    });
+
+
+
 	    let sliderFunc = function() {
 		//		macroChangeinputFunc
 	    };
@@ -5874,7 +5868,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let  keyup =function(e,what,val,force) {
 		      var keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
-			  macroChange(macro, val,what,force);
+			  macroChange(macro, val,what,force,true);
 		      }
 		};
 
@@ -6076,7 +6070,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
-
 	    header2 +=  this.getHeader2();
 	    if(this.getProperty("pageRequest",false) || this.getProperty("filterPaginate")) {
 		
@@ -6349,6 +6342,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			       header2);
 	    }
 
+
+	    header2 = HU.leftRightTable(header2,
+					HU.span([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,''],''));
+	    					
 
 	    let headerSide = this.getDisplayHeaderSide();
 	    if(headerSide == "left") 
@@ -7119,26 +7116,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.doingQuickEntrySearch = false;
 
         },
-        addData: async function(pointData) {
-            var records = pointData.getRecords();
-            if (records && records.length > 0) {
-                this.hasElevation = records[0].hasElevation();
-            } else {
-                this.hasElevation = false;
-            }
-	    pointData = this.convertPointData(pointData);
-            this.dataCollection.addData (pointData);
-            var entry = pointData.entry;
-            if (entry == null && pointData.entryId) {
-                await this.getRamadda().getEntry(pointData.entryId, e => {
-                    entry = e
-                });
-            }
-            if (entry) {
-                pointData.entry = entry;
-                this.addEntry(entry);
-            }
-        },
         handleWarning: function(message) {
 	    if(!window.location.hash  || window.location.hash!="#fortest") {
 		console.warn(message);
@@ -7303,10 +7280,80 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });		
 	},
 
+        addData: async function(pointData) {
+            var records = pointData.getRecords();
+            if (records && records.length > 0) {
+                this.hasElevation = records[0].hasElevation();
+            } else {
+                this.hasElevation = false;
+            }
+	    pointData = this.convertPointData(pointData);
+            this.dataCollection.addData (pointData);
+            var entry = pointData.entry;
+            if (entry == null && pointData.entryId) {
+                await this.getRamadda().getEntry(pointData.entryId, e => {
+                    entry = e
+                });
+            }
+            if (entry) {
+                pointData.entry = entry;
+                this.addEntry(entry);
+            }
+        },
+
+	convertPointData: function(pointData) {
+	    let originalPointData = pointData;
+	    let segments = this.getSegments();
+	    if(segments) {
+                let dataList = pointData.getRecords();
+		let newData  =[];
+		let header = [];
+		newData.push(header);
+		var rowIdx = 0; 
+		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
+		segments.forEach((segment,segmentIdx)=>{
+		    var name = segment.name;
+		    header.push(name);
+		    var start = segment.start;
+		    var end = segment.end;
+		    var cnt = 1;
+	    	    for (; rowIdx <dataList.length; rowIdx++) {
+			var record = dataList[rowIdx];
+			if(record.getTime()<start.getTime()) {
+			    continue;
+			}
+			if(record.getTime()>end.getTime()) {
+			    break;
+			}
+			var value = record.getValue(1);
+			let row=null;
+			if(cnt>=newData.length) {
+			    row = [];
+			    for(let sidx=0;sidx<segments.length;sidx++) row.push(NaN);
+			    newData.push(row);
+			} else {
+			    row = newData[cnt];
+			}
+			row[segmentIdx] = value;
+			cnt++;
+		    }
+		});
+		pointData = convertToPointData(newData);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+	    try {
+		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
+	    } catch(exc) {
+		this.handleError("Error:" + exc, exc);
+		return null;
+	    }
+	    return pointData;
+	},
+
         pointDataLoaded: function(pointData, url, reload) {
 	    this.dataLoadFailed  =false;
 	    let debug = displayDebug.pointDataLoaded;
-//	    debug = true;
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
@@ -7329,7 +7376,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(debug) console.log("\tcalling setData");
 		this.dataCollection.setData(pointData);
 	    }
-
 	    let paginate = this.getProperty("filterPaginate");
 	    if(this.getProperty("pageRequest") || paginate) {
 		if(debug) console.log("\tupdating pageRequest");
@@ -7722,8 +7768,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.recordToIndex[record.getId()] = rowCnt;
 		this.indexToRecord[rowCnt] = record;
                 let values = [];
-
-
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
