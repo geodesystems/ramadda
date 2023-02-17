@@ -824,10 +824,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	String text =request.getString("text","");
-	String prompt = request.getString("prompt",
-					  "Rewrite the following text:");
+	String promptPrefix = request.getString("promptprefix",
+						"Rewrite the following text:");
+	String promptSuffix = request.getString("promptsuffix",
+						"");
 	//	text = callGpt("Rewrite the following text:","",new StringBuilder(text),1000,false);		    
-	text = callGpt(prompt,"",new StringBuilder(text),1000,false);		    
+	text = callGpt(promptPrefix,promptSuffix,new StringBuilder(text),1000,false);		    
 	System.err.println(text);
 	String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
 	return new Result("", new StringBuilder(json), "text/json");
