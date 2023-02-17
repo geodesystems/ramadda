@@ -4,6 +4,7 @@
 
 const FILTER_ALL = "-all-";
 
+var xxxCnt = 0;
 
 if (window.pointDataCache == null) {
     window.pointDataCache= {};
@@ -29,6 +30,11 @@ if (window.pointDataCache == null) {
 function getPointDataCache() {
     return window.pointDataCache;
 }
+
+function getPointDataCacheObject(url){
+    return  getPointDataCache()[url];
+}
+
 
 function DataCollection() {
     RamaddaUtil.defineMembers(this, {
@@ -260,7 +266,7 @@ function PointData(name, recordFields, records, url, properties) {
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
 	    let url = this.getUrl();
-            let cacheObject = getPointDataCache()[url];
+            let cacheObject = getPointDataCacheObject(url);
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
@@ -344,10 +350,10 @@ function PointData(name, recordFields, records, url, properties) {
             root.loadPointJson(jsonUrl, display, reload,callback);
         },
 	getCacheObject: function() {
-            let cacheObject = getPointDataCache()[this.getUrl()];
+            let cacheObject = getPointDataCacheObject(this.getUrl());
 	    if(!cacheObject) {
 		let cacheUrl = this.getCacheUrl();
-		if(cacheUrl) cacheObject = getPointDataCache()[cacheUrl];
+		if(cacheUrl) cacheObject = getPointDataCacheObject(cacheUrl);
 	    }
 	    return cacheObject;
 	},
@@ -355,10 +361,7 @@ function PointData(name, recordFields, records, url, properties) {
 	removeFromCache:function(object) {
             let cacheObject = this.getCacheObject();
             if(cacheObject) {
-		let displays = cacheObject.displays;
-		if(displays) {
-		    Utils.removeItem(displays,object);
-		}
+		cacheObject.removeDisplay(object);
 	    }
 	},
 
@@ -386,21 +389,11 @@ function PointData(name, recordFields, records, url, properties) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
 	    let cacheId = this.getCacheUrl();
-            let cacheObject = getPointDataCache()[cacheId];
+            let cacheObject = getPointDataCacheObject(cacheId);
             if (cacheObject == null) {
-                cacheObject = {
-                    pointData: null,
-                    pending: [],
-		    displays:[],
-		    size:0,
-		    url:url,
-		    toString:function() {
-			return "cache:" + (this.pointData==null?" no data ":" data:" +this.pointData.pdcnt +" " + this.pointData.getRecords().length) +" url:" + this.url;
-		    }
-
-                };
+                cacheObject = new PointDataCacheObject(url);
 		if(debug)
-                    console.log("\tcreated cache object: " +cacheId);
+                    console.log("\t**** created cache object: " +cacheId);
                 getPointDataCache()[cacheId] = cacheObject;
             } else {
 		if(cacheObject.pending.indexOf(display)>=0) {
@@ -509,54 +502,52 @@ function PointData(name, recordFields, records, url, properties) {
 		    });
 		    return;
 		}
-		if(debug)
-		    console.log("\tmaking point data");
+//		if(debug)  console.log("\tmaking point data");
 		let t1 = new Date();
-                var newData = makePointData(data, _this.derived, display,_this.url,callback);
+                let newData = makePointData(data, _this.derived, display,_this.url,callback);
 		let t2 = new Date();
-		if(debug)
-		    Utils.displayTimes("makePointData",[t1,t2],true);
-
-		if(debug)
-		    console.log("\tdone making point data #records:" + newData.getRecords().length);
-                pointData = cacheObject.pointData = newData;
-		//                cacheObject.pointData = pointData.initWith(newData);
+		if(debug)   Utils.displayTimes("makePointData #records: " + newData.getRecords().length,[t1,t2],true);
+                let pointData = cacheObject.pointData = newData;
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
-                let tmp = cacheObject.pending;
+                let tmpPending = cacheObject.pending;
 		if(debug) {
-		    console.log("\tcalling pointDataLoaded on  " + tmp.length + " pending displays");
-		    if(cacheObject.displays)
-			console.log("\tcacheObject.displays:" + cacheObject.displays.length)
+		    console.log("\tcalling pointDataLoaded on  " + tmpPending.length + " pending displays");
 		}
-                cacheObject.pending = [];
+                cacheObject.clearPending();
+
 		if(callback) callback(pointData);
 		else {
-                    for (let i = 0; i < tmp.length; i++) {
+                    for (let i = 0; i < tmpPending.length; i++) {
 			if(debug)
-			    console.log("\tcalling pointDataLoaded:" + tmp[i] +" #:" + pointData.getRecords().length);
-			tmp[i].pointDataLoaded(pointData, url, reload);
+			    console.log("\t\t" + tmpPending[i] +" #:" + pointData.getRecords().length);
+//			if(xxxCnt==0)
+			    tmpPending[i].pointDataLoaded(pointData, url, reload);
+			xxxCnt++;
 		    }
                 }
 
 		if(cacheObject.pointData.records && cacheObject.pointData.records.length) {
-		    cacheObject.size = cacheObject.pointData.records.length*cacheObject.pointData.records[0].getData().length;
+		    cacheObject.setSize(cacheObject.pointData.records.length*cacheObject.pointData.records[0].getData().length);
 		}
 
 		let size = 0;
+		let cnt = 0;
 		Object.keys(getPointDataCache()).map(key=>{
-		    size+=getPointDataCache()[key].size;
+		    size+=getPointDataCache()[key].getSize();
+		    cnt++;
 		});
-		if(debug)
-		    console.log("\tcache size:" + size);
+		if(debug) console.log("\tcache size:" + size +" #objects:" + cnt);
 		//Size is just the number of rows*columns
 		if(size>1000000) {
+		    if(debug)
+			console.log('\tclearing cache');
 		    Object.keys(getPointDataCache()).map(key=>{
-			if(getPointDataCache()[key].pending.length==0) {
-			    if(debug)
-				console.log("\tDeleting from cache:" + key);
-			    delete getPointDataCache()[key];
+			let cacheObject = getPointDataCacheObject(key);
+			if(cacheObject.pending.length==0) {
+			    if(debug)console.log("\tdeleting from cache:" + key);
+			    cacheObject.clearData();
 			}
 		    });
 		}
@@ -564,7 +555,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    }
 	    let fullUrl = url;
 	    if(!fullUrl.startsWith("http")) {
-		var base = window.location.protocol + "//" + window.location.host;
+		let base = window.location.protocol + "//" + window.location.host;
 		fullUrl = base+fullUrl;
 	    }
 
@@ -575,11 +566,46 @@ function PointData(name, recordFields, records, url, properties) {
 	    }
 	    display.handleLog("data:" + url);
             Utils.doFetch(url, success,fail,null);	    
-//            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
+	    //$.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
 
     });
     this.setGroupField();
+}
+
+
+function PointDataCacheObject(url) {
+    $.extend(this, {
+        pointData: null,
+        pending: [],
+	displays:[],
+	size:0,
+	url:url,
+	toString:function() {
+	    return "cache:" + (this.pointData==null?" no data ":" data:" +this.pointData.pdcnt +" " + this.pointData.getRecords().length) +" url:" + this.url;
+	}
+    });
+}
+
+PointDataCacheObject.prototype = {
+    getSize:function() {
+	return this.size;
+    },
+    setSize:function(size) {
+	this.size =size;
+    },
+    removeDisplay:function(display) {
+	Utils.removeItem(this.displays,display);
+    },
+    clearPending:function() {
+        this.pending = [];
+    },
+
+    clearData:function() {
+	this.setSize(0);
+	this.pointData = null;
+    }
+
 }
 
 
@@ -600,7 +626,7 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
         equals: function(that) {
             if (that.pointDataList == null) return false;
             if (this.pointDataList.length != that.pointDataList.length) return false;
-            for (var i in this.pointDataList) {
+            for (let i in this.pointDataList) {
                 if (!this.pointDataList[i].equals(that.pointDataList[i])) {
                     return false;
                 }
@@ -608,13 +634,13 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
             return true;
         },
         initData: function() {
-            var pointData1 = this.pointDataList[0];
+            let pointData1 = this.pointDataList[0];
             if (this.pointDataList.length == 1) {
                 this.records = pointData1.getRecords();
                 this.recordFields = pointData1.getRecordFields();
 		console.log("initData:" + this.recordFields.length);
             } else if (this.pointDataList.length > 1) {
-                var results = this.combineData(pointData1, this.pointDataList[1]);
+                let results = this.combineData(pointData1, this.pointDataList[1]);
                 this.records = results.records;
                 this.recordFields = results.recordFields;
 		console.log("initData 2:" + this.recordFields.length);
@@ -624,10 +650,10 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
         },
 
         combineData: function(pointData1, pointData2) {
-            var records1 = pointData1.getRecords();
-            var records2 = pointData2.getRecords();
-            var newRecords = [];
-            var newRecordFields;
+            let records1 = pointData1.getRecords();
+            let records2 = pointData2.getRecords();
+            let newRecords = [];
+            let newRecordFields;
 
             //TODO:  we really need visad here to sample
 
@@ -636,17 +662,17 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
             }
 
             if (this.operation == "average") {
-                for (var recordIdx = 0; recordIdx < records1.length; recordIdx++) {
-                    var record1 = records1[recordIdx];
-                    var record2 = records2[recordIdx];
+                for (let recordIdx = 0; recordIdx < records1.length; recordIdx++) {
+                    let record1 = records1[recordIdx];
+                    let record2 = records2[recordIdx];
                     if (record1.getDate() != record2.getDate()) {
                         console.log("Bad record date:" + record1.getDate() + " " + record2.getDate());
                         break;
                     }
-                    var newRecord = $.extend(true, {}, record1);
-                    var data1 = newRecord.getData();
-                    var data2 = record2.getData();
-                    for (var colIdx = 0; colIdx < data1.length; colIdx++) {
+                    let newRecord = $.extend(true, {}, record1);
+                    let data1 = newRecord.getData();
+                    let data2 = record2.getData();
+                    for (let colIdx = 0; colIdx < data1.length; colIdx++) {
                         data1[colIdx] = (data1[colIdx] + data2[colIdx]) / 2;
                     }
                     newRecords.push(newRecord);
@@ -666,8 +692,8 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
         loadData: function(display) {
             this.display = display;
             this.loadDataCalls = 0;
-            for (var i in this.pointDataList) {
-                var pointData = this.pointDataList[i];
+            for (let i in this.pointDataList) {
+                let pointData = this.pointDataList[i];
                 if (!pointData.hasData()) {
                     this.loadDataCalls++;
                     pointData.loadData(this);
@@ -724,7 +750,7 @@ function RecordField(props, source) {
     }
     RamaddaUtil.defineMembers(this, {
 	clone: function() {
-	    var newField = {};
+	    let newField = {};
 	    $.extend(newField,this);
 	    return newField;
 	},
@@ -801,7 +827,7 @@ function RecordField(props, source) {
             return this.id;
         },
         getTypeLabel: function() {
-            var type = "fa-font";
+            let type = "fa-font";
             if(this.isFieldGeo()) {
                 type="fa-globe";
             } else if(this.isFieldNumeric()) {
@@ -809,7 +835,7 @@ function RecordField(props, source) {
             } else if(this.isFieldEnumeration()) {
                 type="fa-list";
             }
-            var tt = this.getType();
+            let tt = this.getType();
             return  HtmlUtils.span(["title",tt,"class","fa " +type,"style","color:rgb(169, 169, 169);font-size:12pt;"]);
         },
         getUnitLabel: function() {
@@ -893,7 +919,7 @@ function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
 
 PointRecord.prototype =  {
     clone: function() {
-	var newRecord = {};
+	let newRecord = {};
 	$.extend(newRecord,this);
 	newRecord.data = [];
 	this.data.map((v,idx)=>{newRecord.data[idx] = v;});
@@ -960,11 +986,11 @@ PointRecord.prototype =  {
     },
 
     allZeros: function() {
-        var tuple = this.getData();
-        var allZeros = false;
-        var nums = 0;
-        var nonZero = 0;
-        for (var j = 0; j < tuple.length; j++) {
+        let tuple = this.getData();
+        let allZeros = false;
+        let nums = 0;
+        let nonZero = 0;
+        for (let j = 0; j < tuple.length; j++) {
             if (typeof tuple[j] == "number") {
                 nums++;
                 if (!isNaN(tuple[j]) && tuple[j] != 0) {
@@ -1022,30 +1048,30 @@ function makePointData(json, derived, source,url,callback) {
 
     let debug  =false;
     if(debug) console.log("makePointData");
-    var fields = [];
-    var latitudeIdx = -1;
-    var longitudeIdx = -1;
-    var elevationIdx = -1;
-    var dateIdx = -1;
-    var dateIndexes = [];
+    let fields = [];
+    let latitudeIdx = -1;
+    let longitudeIdx = -1;
+    let elevationIdx = -1;
+    let dateIdx = -1;
+    let dateIndexes = [];
 
-    var offsetFields = [];
-    var lastField = null;
-    for (var i = 0; i < json.fields.length; i++) {
-        var field = json.fields[i];
-        var recordField = new RecordField(field,source);
+    let offsetFields = [];
+    let lastField = null;
+    for (let i = 0; i < json.fields.length; i++) {
+        let field = json.fields[i];
+        let recordField = new RecordField(field,source);
         if (recordField.isFieldNumeric()) {
             if (source.getProperty) {
-                var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getOffset1());
-                var offset2 = source.getProperty(recordField.getId() + ".offset2", source.getOffset2());
-                var scale = source.getProperty(recordField.getId() + ".scale", source.getScale());
+                let offset1 = source.getProperty(recordField.getId() + ".offset1", source.getOffset1());
+                let offset2 = source.getProperty(recordField.getId() + ".offset2", source.getOffset2());
+                let scale = source.getProperty(recordField.getId() + ".scale", source.getScale());
 
                 if (offset1 || offset2 || scale) {
-                    var unit = source.getProperty(recordField.getId() + ".unit", source.getUnit());
+                    let unit = source.getProperty(recordField.getId() + ".unit", source.getUnit());
                     if (unit) {
                         recordField.unit = unit;
                     }
-                    var o = {
+                    let o = {
                         offset1: 0,
                         offset2: 0,
                         scale: 1
@@ -1079,11 +1105,11 @@ function makePointData(json, derived, source,url,callback) {
     }
 
     if (derived) {
-        var index = lastField.getIndex() + 1;
-        for (var dIdx = 0; dIdx < derived.length; dIdx++) {
-            var d = derived[dIdx];
-            var label = d.label || d.name;
-            var recordField = new RecordField({
+        let index = lastField.getIndex() + 1;
+        for (let dIdx = 0; dIdx < derived.length; dIdx++) {
+            let d = derived[dIdx];
+            let label = d.label || d.name;
+            let recordField = new RecordField({
                 type: "double",
                 index: (index + dIdx),
                 chartable: true,
@@ -1137,8 +1163,8 @@ function makePointData(json, derived, source,url,callback) {
             }
         }
         if (isArray || (typeof tuple.latitude === 'undefined')) {
-            if (latitudeIdx >= 0)
-                tuple.latitude = values[latitudeIdx];
+            if (latitudeIdx >= 0) 
+               tuple.latitude = values[latitudeIdx];
             else
                 tuple.latitude = NaN;
         }
@@ -1148,33 +1174,33 @@ function makePointData(json, derived, source,url,callback) {
             else
                 tuple.longitude = NaN;
         }
-        for (var j = 0; j < dateIndexes.length; j++) {
+        for (let j = 0; j < dateIndexes.length; j++) {
 	    let index = dateIndexes[j];
 	    let value = values[index];
 	    values[index] = Utils.parseDate(value);
         }
-        for (var col = 0; col < values.length; col++) {
+        for (let col = 0; col < values.length; col++) {
             if(values[col]==null) {
                 values[col] = NaN;
             } 
         }
 
         if (derived) {
-            for (var dIdx = 0; dIdx < derived.length; dIdx++) {
-                var d = derived[dIdx];
+            for (let dIdx = 0; dIdx < derived.length; dIdx++) {
+                let d = derived[dIdx];
                 if (!d.isRow) {
                     continue;
                 }
                 if (!d.compiledFunction) {
-                    var funcParams = [];
-                    var params = (d.columns.indexOf(";") >= 0 ? d.columns.split(";") : d.columns.split(","));
+                    let funcParams = [];
+                    let params = (d.columns.indexOf(";") >= 0 ? d.columns.split(";") : d.columns.split(","));
                     d.fieldsToUse = [];
-                    for (var i = 0; i < params.length; i++) {
-                        var param = params[i].trim();
+                    for (let i = 0; i < params.length; i++) {
+                        let param = params[i].trim();
                         funcParams.push("v" + (i + 1));
-                        var theField = null;
-                        for (var fIdx = 0; fIdx < fields.length; fIdx++) {
-                            var f = fields[fIdx];
+                        let theField = null;
+                        for (let fIdx = 0; fIdx < fields.length; fIdx++) {
+                            let f = fields[fIdx];
                             if (f.getId() == param) {
                                 theField = f;
                                 break;
@@ -1183,8 +1209,8 @@ function makePointData(json, derived, source,url,callback) {
                         d.fieldsToUse.push(theField);
 
                     }
-                    var code = "";
-                    for (var i = 0; i < funcParams.length; i++) {
+                    let code = "";
+                    for (let i = 0; i < funcParams.length; i++) {
                         code += "var v" + (i + 1) + "=args[" + i + "];\n";
                     }
                     let tmpFunc = d["function"];
@@ -1194,11 +1220,11 @@ function makePointData(json, derived, source,url,callback) {
                     //                    console.log("Func:" + d.compiledFunction);
                 }
                 //TODO: compile the function once and call it
-                var args = [];
-                var anyNotNan = false;
-                for (var fIdx = 0; fIdx < d.fieldsToUse.length; fIdx++) {
-                    var f = d.fieldsToUse[fIdx];
-                    var v = NaN;
+                let args = [];
+                let anyNotNan = false;
+                for (let fIdx = 0; fIdx < d.fieldsToUse.length; fIdx++) {
+                    let f = d.fieldsToUse[fIdx];
+                    let v = NaN;
                     if (f != null) {
                         v = values[f.getIndex()];
                         if (v == null) v = NaN;
@@ -1211,7 +1237,7 @@ function makePointData(json, derived, source,url,callback) {
                 //                console.log("anyNot:" + anyNotNan);
                 //                console.log(args);
                 try {
-                    var result = NaN;
+                    let result = NaN;
                     if (anyNotNan) {
                         result = d.compiledFunction(args);
                         if (d.decimals >= 0) {
@@ -1230,10 +1256,10 @@ function makePointData(json, derived, source,url,callback) {
             }
 	}
 
-        for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
-            var field = offsetFields[fieldIdx];
-            var offset = field.offset;
-            var value = values[field.getIndex()];
+        for (let fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
+            let field = offsetFields[fieldIdx];
+            let offset = field.offset;
+            let value = values[field.getIndex()];
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
@@ -1247,9 +1273,9 @@ function makePointData(json, derived, source,url,callback) {
 
 
     if (source != null) {
-        for (var i = 0; i < fields.length; i++) {
-            var field = fields[i];
-            var prefix = "field." + field.getId() + ".";
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            let prefix = "field." + field.getId() + ".";
             if (Utils.isDefined(source[prefix + "unit"])) {
                 field.setUnit(source[prefix + "unit"]);
             }
@@ -1257,14 +1283,14 @@ function makePointData(json, derived, source,url,callback) {
                 field.setLabel(source[prefix + "label"]);
             }
             if (Utils.isDefined(source[prefix + "scale"]) || Utils.isDefined(source[prefix + "offset1"]) || Utils.isDefined(source[prefix + "offset2"])) {
-                var offset1 = Utils.isDefined(source[prefix + "offset1"]) ? parseFloat(source[prefix + "offset1"]) : 0;
-                var offset2 = Utils.isDefined(source[prefix + "offset2"]) ? parseFloat(source[prefix + "offset2"]) : 0;
-                var scale = Utils.isDefined(source[prefix + "scale"]) ? parseFloat(source[prefix + "scale"]) : 1;
-                var index = field.getIndex();
-                for (var rowIdx = 0; rowIdx < pointRecords.length; rowIdx++) {
-                    var record = pointRecords[rowIdx];
-                    var values = record.getData();
-                    var value = values[index];
+                let offset1 = Utils.isDefined(source[prefix + "offset1"]) ? parseFloat(source[prefix + "offset1"]) : 0;
+                let offset2 = Utils.isDefined(source[prefix + "offset2"]) ? parseFloat(source[prefix + "offset2"]) : 0;
+                let scale = Utils.isDefined(source[prefix + "scale"]) ? parseFloat(source[prefix + "scale"]) : 1;
+                let index = field.getIndex();
+                for (let rowIdx = 0; rowIdx < pointRecords.length; rowIdx++) {
+                    let record = pointRecords[rowIdx];
+                    let values = record.getData();
+                    let value = values[index];
                     values[index] = (value + offset1) * scale + offset2;
                 }
             }
@@ -1272,7 +1298,7 @@ function makePointData(json, derived, source,url,callback) {
         }
     }
 
-    var name = json.name;
+    let name = json.name;
     if ((typeof name === 'undefined')) {
         name = "Point Data";
     }
@@ -1342,9 +1368,9 @@ function BoundsFilter(display, properties) {
 		return true;
 	    }
 	    if(record.hasLocation()) {
-		var b = this.bounds;
-		var lat = record.getLatitude();
-		var lon = record.getLongitude();
+		let b = this.bounds;
+		let lat = record.getLatitude();
+		let lon = record.getLongitude();
 		if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
 		    return false;
 	    }
@@ -3985,8 +4011,11 @@ var DataUtils = {
 		label:label,
 		enabled: enabled,
 		expr:expr,
+		getEnabled:function() {
+		    return this.enabled && this.field!=null;
+		},
 		isRecordOk: function(r) {
-		    if(!this.enabled) {
+		    if(!this.getEnabled()) {
 			return true;
 		    }
 		    let value = this.field?r.getValue(this.field.getIndex()):NaN;
@@ -4075,7 +4104,7 @@ function RequestMacro(display, macro) {
 	    values.push(["","All"]);
 	    includeAll = true;
 	}
-	if(this.getProperty("request." + macro+".includeNone",false)) {
+	if(this.getProperty("request." + macro+".includeNone",true)) {
 	    values.push(["","None"]);
 	}
 	Utils.split(enums,",").forEach(tok=>{
@@ -4139,13 +4168,14 @@ RequestMacro.prototype = {
 	let style = visible?"":"display:none;";
 	let widget;
 	let label = this.label;
+	let title = this.getProperty('request.' + this.name+'.title',null);
 	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
 	if(this.type=="bounds") {
-	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,"Reload with current bounds",ID,this.display.getDomId(this.getId())], false, "In bounds");
+	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, "In bounds");
 	    label = null;
 	} else if(this.type=="enumeration") {
  	    if(this.values && this.values.length>0) {
-		let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -4157,7 +4187,6 @@ RequestMacro.prototype = {
 		    values = Utils.mergeLists(first,rest);
 		} else {
 		}
-		
 
 		if(this.multiple) {
 		    attrs.push("multiple");
@@ -4165,7 +4194,7 @@ RequestMacro.prototype = {
 		    attrs.push("size");
 		    attrs.push(Math.min(this.rows,values.length));
 		} else {
-		    values = Utils.mergeLists([[VALUE_NONE,"--"]],values);
+//		    values = Utils.mergeLists([[VALUE_NONE,"--"]],values);
 		}
 		let v = this.dflt;
 		if(!Utils.stringDefined(v)) {
@@ -4178,24 +4207,24 @@ RequestMacro.prototype = {
 	} else if(this.type=="numeric") {
 	    let minId = this.display.getDomId(this.getId()+"_min");
 	    let maxId = this.display.getDomId(this.getId()+"_max");			    
-	    widget = HU.input("","",["data-min", this.dflt_min, STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_min) +
+	    widget = HU.input("","",['title',title??'',"data-min", this.dflt_min, STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_min) +
 		" - " +
-		HU.input("","",["data-max", this.dflt_max, STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_max)
+		HU.input("","",['title',title??'',"data-max", this.dflt_max, STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_max)
 	    label = label+" range";
 	} else if(this.type=="date") {
 	    let fromId = this.display.getDomId(this.getId()+"_from");
 	    let toId = this.display.getDomId(this.getId()+"_to");
 	    dateIds.push(fromId);
 	    dateIds.push(toId);
-	    widget = HU.datePicker("",this.dflt_from,[CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
+	    widget = HU.datePicker("",this.dflt_from,['title',title??'',CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
 		" - " +
-		HU.datePicker("",this.dflt_to,[CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
+		HU.datePicker("",this.dflt_to,['title',title??'',CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
 	    label = label+" range";
 	} else {
 	    let size = "10";
 	    if(this.type=="number")
 		size = "4";
-	    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
+	    widget = HU.input("",this.dflt,['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
 	}
 	if(!widget) return "";
 	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
@@ -4231,9 +4260,9 @@ RequestMacro.prototype = {
 	else if(prop.what == "to")
 	    this.display.jq(id+"_to").val(prop.value);
 	else {
-	    console.log(this.type +" macroChanged:" + prop.value +" " + this.display.jq(id).length);
+//	    console.log(this.type +" macroChanged:" + prop.value +" " + this.display.jq(id).length);
 	    this.display.jq(id).val(prop.value);
-	    console.log("after:" + this.display.jq(id).val());
+//	    console.log("after:" + this.display.jq(id).val());
 	}
     },
     apply: function(url) {
@@ -4308,7 +4337,6 @@ RequestMacro.prototype = {
 		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
 		url = url.replace(regexp,"");
 		url = url +"&" + HU.urlArg(this.urlarg,value);
-		console.log("URL2:" + url);
 	    }
 	}
 	return  url;
