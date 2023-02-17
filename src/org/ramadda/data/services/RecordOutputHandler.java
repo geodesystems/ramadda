@@ -57,6 +57,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     /** _more_ */
     public static final String ARG_SKIP = "skip";
 
+    public static final String ARG_STRIDE = "stride";
+    public static final String ARG_LIMIT = "limit";
+
     /** _more_ */
     public static final String ARG_PARAMETER = "parameter";
 

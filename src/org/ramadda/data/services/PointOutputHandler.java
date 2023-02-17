@@ -655,25 +655,30 @@ public class PointOutputHandler extends RecordOutputHandler {
                     visitInfo.setEndDate(Utils.parseRelativeDate(new Date(),
                             request.getString("date_todate", ""), 0));
                 }
-		System.err.println("date:" + visitInfo.getStartDate() +" " + visitInfo.getEndDate());
 		if(visitInfo.getStartDate() !=null ||  visitInfo.getEndDate()!=null) {
 		    request.remove(ARG_RECORD_LAST);
 		    request.remove(ARG_MAX);
 		}
 				   
-                if (request.defined(ARG_MAX)) {
-                    visitInfo.setMax(request.get(ARG_MAX, 5000));
-                }
-
-
+		int max = -1;
+                if (request.defined(ARG_LIMIT)) {
+                    max = request.get(ARG_LIMIT, 5000);
+		    //If we have a limit and a record.last and then override the record.last with the limit 
+		    if (request.defined(ARG_RECORD_LAST)) {
+			request.put(ARG_RECORD_LAST,""+max);
+		    }
+                } else if (request.defined(ARG_MAX)) {
+                    max= request.get(ARG_MAX, 5000);
+		}
+		if(max>=0) visitInfo.setMax(max);
                 if (request.defined(ARG_RECORD_LAST)) {
 		    int last = request.get(ARG_RECORD_LAST, -1);
 		    if(last>0) {
-			System.err.println("Last:" + last);
 			visitInfo.setLast(last);
 			//If there wasn't a max set then set it to something larger than the last count in
 			//in case the caching of the count is out of date
-			if (!request.defined(ARG_MAX)) {
+			if (max<0) {
+			    System.err.println("SETTING MAX:" + (last+100));
 			    visitInfo.setMax(last+100);
 			}
 		    }
@@ -681,8 +686,12 @@ public class PointOutputHandler extends RecordOutputHandler {
 
                 if (request.defined(ARG_SKIP)) {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
+                } else if (request.defined(ARG_STRIDE)) {
+                    visitInfo.setSkip(request.get(ARG_STRIDE, 0));
                 }
 
+
+		//		System.err.println("date:" + visitInfo.getStartDate() +" " + visitInfo.getEndDate() +" " + visitInfo);
 
                 getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, visitInfo);

@@ -304,8 +304,7 @@ public class VisitInfo {
      */
     public void setMax(int value) {
         max = value;
-	System.err.println("VisitInfo.setMax:" +max+Utils.getStack(10));
-
+	//	System.err.println("VisitInfo.setMax:" +max+Utils.getStack(10));
     }
 
     /**
@@ -398,7 +397,7 @@ public class VisitInfo {
      * @return _more_
      */
     public String toString() {
-        return "visit info: skip =" + skip + " max=" + max + " stop: " + stop;
+        return "visit info: skip =" + skip + " max=" + max + " stop: " + stop +" last:" + last;
     }
 
 
