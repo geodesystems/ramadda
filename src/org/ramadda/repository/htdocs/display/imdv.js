@@ -334,8 +334,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	{p:'fontFamily',d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
 	{p:'imageOpacity',d:1},
 	{p:'userCanEdit',tt:'Set to false to not show menubar, etc for all users'},
-	{p:'showLegendShapes',d:true},	
-	{p:'showMapLegend',d:false},
+	{p:'showLegendShapes',d:true,canCache:true},	
+	{p:'showMapLegend',d:false,canCache:true},
 
     ];
     
