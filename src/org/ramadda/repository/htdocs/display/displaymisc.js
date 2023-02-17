@@ -933,6 +933,22 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+	//Overwrite the display message to put in in the header suffix
+	setDisplayMessage:function(msg) {
+	    if(this.dataLoadFailed) {
+		return;
+	    }
+	    if(!Utils.stringDefined(msg)) {
+		this.jq(ID_HEADER2_SUFFIX).html("").hide();
+		return;
+	    }
+	    this.jq(ID_HEADER2_SUFFIX).show();
+	    this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],msg));
+	},
+	clearDisplayMessage:function() {
+	    this.jq(ID_HEADER2_SUFFIX).hide();
+	},
+
 	updateUI: function() {
 	    let records = this.filterData();
 	    this.setContents("");
