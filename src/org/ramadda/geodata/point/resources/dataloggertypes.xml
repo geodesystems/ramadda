@@ -53,7 +53,7 @@ type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  patt
 {{property lastRecords="20000"}}
 <table><tr valign=top>
 <td>{{group groupDiv="cr1000charts" showMenu=true loadingMessage="" noDataMessage=""
-requestFieldsShow=false
+requestFieldsShow=false chartLeft=100 
 dataFilters="lessthan(field=x.*temp.*,value=1000,label=,enabled=true);" 
 headerStyle="text-align:left"
 }}
@@ -67,8 +67,9 @@ headerStyle="text-align:left"
 </td>
 </tr></table>
 <div id="cr1000charts"></div>
-{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="20000"}}
-{{display_linechart showMenu=true fieldsPatterns=".*press|baro.*" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*temp.*" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*rh.*" lastRecords="20000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*press.*|baro.*" lastRecords="20000"}}
 :br
 ----
 :heading Metadata
