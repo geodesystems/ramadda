@@ -391,6 +391,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.updateUIInner(args);
 	},
 	updateUIInner: function(args) {
+
 	    let debug = false;
 	    if(debug)
 		console.log(this.type+".updateUI")
@@ -690,7 +691,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.setDisplayMessage("Creating display...");
 	    }
 
-
             //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
@@ -706,6 +706,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(debug)
 		    console.log("\tusing last selectedFields:" + selectedFields);
             }
+
 
 
             if (selectedFields == null || selectedFields.length == 0) {
@@ -740,6 +741,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
                 return;
             }
+
+	    /*
+	    for(a in this) {
+		let o = this[a];
+		if(o==null || o.isDisplayThing) continue;
+		let t = typeof o
+		if(t == 'function' || t=='string' || t=='boolean' || t=='number' || t=='undefined') continue;
+		if(Array.isArray(o)) {
+		    if(o.length==0) continue;
+		    console.log(a +  ' array:' + o.length);
+		} else {
+		    console.log(a +  ' ' +t +' ' + Object.keys(o).length);
+		}
+	    }*/
 
             //Check for the skip
             let tmpFields = [];
@@ -790,6 +805,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let t2= new Date();
 	    if(this.debugTimes)
 		Utils.displayTimes("chart.getStandardData",[t1,t2],true);
+
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             if (dataList.length == 0 && !this.userHasSelectedAField) {
@@ -895,6 +911,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.setIsFinished();
                 return;
             }
+
 	    this.setIsFinished();
             let container = this.jq(ID_CHART);
 	    if(this.jq(ID_CHART).is(':visible')) {
@@ -934,11 +951,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	},
         clearChart: function() {
+	    if(this.chart) {
+		this.chart.clearChart();
+		this.chart = null;
+	    }
 	    this.mapCharts(chart=>{
 		if(chart.clearChart) {
 		    chart.clearChart();
 		}
 	    });
+	    this.charts = [];
         },
         setChartSelection: function(index) {
 	    this.mapCharts(chart=>{
@@ -1216,10 +1238,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
-	    let headerStyle= this.getProperty("headerStyle");
-
-
-
+	    let headerStyle= this.getProperty("chartHeaderStyle");
             for (let j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -1992,6 +2011,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 chartOptions.vAxis.maxValue = max;
             }
 
+	    this.clearChart();
 
 	    if(this.getProperty("animation",false,true)) {
 		this.chartOptions.animation = {
@@ -2021,7 +2041,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    ]);
 
 		    let t1 = new Date();
-
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 //		    Utils.displayTimes("chart.draw",[t1,new Date()],true);
 		} catch(err) {
