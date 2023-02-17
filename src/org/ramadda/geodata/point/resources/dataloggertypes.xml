@@ -52,13 +52,19 @@ type:label,pos:s,dx:canvasWidth2,dy:-10,font:36px sans-serif,label:${match  patt
 </div>
 {{property lastRecords="20000"}}
 <table><tr valign=top>
-<td>{{group groupDiv="cr1000charts" showMenu=true loadingMessage=""
+<td>{{group groupDiv="cr1000charts" showMenu=true loadingMessage="" noDataMessage=""
 requestFieldsShow=false
 dataFilters="lessthan(field=x.*temp.*,value=1000,label=,enabled=true);" 
 headerStyle="text-align:left"
-}}</td>
+}}
+:rem Put the blank here but have it be displayed in the targetDiv below
+:rem We do this because we want the download to show first but the blank
+:rem should actually run first so it gets the point data with the request fields
+{{display_blank targetDiv="datalogger_blank_div" requestFieldsDefault=true showMenu=false requestFieldsShow=true loadingMessage="icon_progress Loading data..." noDataMessage="No data available"}}
+</td>
 <td width=20px>{{display_download  iconSize=14px showMenu=false showDateSelect=true lastRecords="20000"}}</td>
-<td>{{display_blank requestFieldsDefault=true showMenu=false requestFieldsShow=true loadingMessage="icon_progress Loading data..."}}</td>
+<td><div id="datalogger_blank_div"></div>
+</td>
 </tr></table>
 <div id="cr1000charts"></div>
 {{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="20000"}}
