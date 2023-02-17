@@ -945,6 +945,12 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    this.jq(ID_HEADER2_SUFFIX).show();
 	    this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],msg));
 	},
+	setNoDataMessage:function(message) {
+	    if(Utils.stringDefined(message)) {
+		this.jq(ID_HEADER2_SUFFIX).show();
+		this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],message));
+	    }
+	},
 	clearDisplayMessage:function() {
 	    this.jq(ID_HEADER2_SUFFIX).hide();
 	},
