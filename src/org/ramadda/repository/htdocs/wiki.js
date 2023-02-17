@@ -629,7 +629,13 @@ WikiEditor.prototype = {
 
     doGpt:function() {
 	let html=  "Note: any selected text in the editor will have the prompt applied to it<br>" +
-	    HU.b('Prompt:') + HU.space(1) +HU.input('',this.lastPrompt??'Rephrase the following text:',['style','width:500px;','id',this.domId('gpt-prompt')]) +HU.space(1) +HU.span(['id',this.domId('gpt-call')],'Evaluate') +
+	    HU.formTable() +
+	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'Rephrase the following text:',
+						   ['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-prefix')])) +
+	    HU.formEntry('Prompt suffix:',
+			 HU.input('',this.lastPromptSuffix??'',['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-suffix')])) +
+	    HU.formTableClose() +
+	    HU.span(['id',this.domId('gpt-call')],'Evaluate') +	    
 	    HU.div(['style','position:relative;'],
 		   HU.textarea('','',['id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
@@ -649,7 +655,10 @@ WikiEditor.prototype = {
 	    gptText = this.getEditor().getSelectedText()??'';
 	    this.jq('gpt-loading').show();
 	    let url = RamaddaUtils.getUrl("/gpt/rewrite");
-	    $.post(url,{text:gptText,prompt:this.jq('gpt-prompt').val()},
+	    $.post(url,{text:gptText,
+			promptprefix:this.lastPromptPrefix=this.jq('gpt-prompt-prefix').val(),
+			promptsuffix:this.lastPromptSuffix=this.jq('gpt-prompt-suffix').val(),
+		       },
 		   data=>{
 		       _this.jq('gpt-loading').hide();
 		       if(!Utils.stringDefined(data.result)) {
@@ -663,9 +672,7 @@ WikiEditor.prototype = {
 		       alert('Rewrite failed');
 		   });
 	}
-
-
-	this.jq('gpt-prompt').keypress(function(e){
+	dialog.find('.wiki-gpt-input').keypress(function(e){
 	    if(e.keyCode == 13) {
 		call();
 	    }
