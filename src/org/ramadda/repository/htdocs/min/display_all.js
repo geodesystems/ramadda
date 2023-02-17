@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb 17 05:25:00 MST 2023";
+var build_date="RAMADDA build date: Fri Feb 17 05:42:08 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -10706,7 +10706,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.dataCollection = new DataCollection();
 		this.dataCollection.setData(pointData);
 	    }
-            this.setContents(this.getMessage(this.getNoDataMessage()));
+	    let message = this.getNoDataMessage();
+	    this.setNoDataMessage(message);
+	},
+	setNoDataMessage:function(message) {
+	    if(Utils.stringDefined(message)) {
+		this.setContents(this.getMessage(this.getNoDataMessage()));
+	    } else {
+		this.setContents('');
+	    }
 	},
         pointDataLoadFailed: function(data) {
 	    this.dataLoadFailed  =true;
@@ -51045,6 +51053,12 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_HEADER2_SUFFIX).show();
 	    this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],msg));
+	},
+	setNoDataMessage:function(message) {
+	    if(Utils.stringDefined(message)) {
+		this.jq(ID_HEADER2_SUFFIX).show();
+		this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],message));
+	    }
 	},
 	clearDisplayMessage:function() {
 	    this.jq(ID_HEADER2_SUFFIX).hide();
