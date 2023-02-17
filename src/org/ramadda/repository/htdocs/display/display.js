@@ -7173,7 +7173,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.dataCollection = new DataCollection();
 		this.dataCollection.setData(pointData);
 	    }
-            this.setContents(this.getMessage(this.getNoDataMessage()));
+	    let message = this.getNoDataMessage();
+	    this.setNoDataMessage(message);
+	},
+	setNoDataMessage:function(message) {
+	    if(Utils.stringDefined(message)) {
+		this.setContents(this.getMessage(this.getNoDataMessage()));
+	    } else {
+		this.setContents('');
+	    }
 	},
         pointDataLoadFailed: function(data) {
 	    this.dataLoadFailed  =true;
