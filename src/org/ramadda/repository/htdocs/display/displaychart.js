@@ -337,7 +337,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     this.debugTimes = false;
 
 
+    this.isGoogleChart = true;
     defineDisplay(this, SUPER, myProps, {
+
 	checkFinished: function() {
 	    return true;
 	},

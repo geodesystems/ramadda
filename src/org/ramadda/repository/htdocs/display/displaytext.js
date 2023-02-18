@@ -830,7 +830,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 
-
 	    let th = Utils.tokenizeMacros(headerTemplate);
 	    let tf = Utils.tokenizeMacros(footerTemplate);
 	    headerTemplate = th.apply(attrs);
@@ -839,6 +838,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(selected.length>0) {
 		contents+= headerTemplate;
 	    }
+
 	    if(template!= "") {
 		let groupByField  =this.getFieldById(null, this.getProperty("groupByField"));
 		let groupDelimiter  = this.getProperty("groupDelimiter"," ");

@@ -106,6 +106,15 @@ a.display-container {
 }
 
 
+.display-filter-container {
+    display:inline-block;
+    padding-bottom:0px;
+}
+
+.display-filter-tab {
+    padding-bottom:0px
+}
+
 .display-filter-items {
 }
 
@@ -334,11 +343,9 @@ a.display-container {
 }
 
 .display-header-span {
-    display:inline-block;
-/*  don't set the line height in the header
-    display:inline;
-    line-height:1.5em;
-*/
+    display:block;
+    line-height:1.25em;
+    text-align:center;
 }
 
 .display-header-vertical .display-header-span {
