@@ -7111,6 +7111,10 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			     "ramadda-menubar-button ramadda-menubar-button-last"));
 
 
+        String findButton =
+	    HU.href("#", "Find",   HU.attrs("id", textAreaId+"_find")); 
+
+
         String wcButton =
 	    HU.href("#", "Word Count",
 		    HU.attrs("id", textAreaId+"_wordcount", "xstyle", "padding:5px;",
@@ -7119,12 +7123,15 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
+	List<String> etcLinks = new ArrayList<String>();
+	Utils.add(etcLinks, findButton, previewButton);
 	if(getSearchManager().isGptEnabled()) {
-	    help.append(HU.href("#", "GPT",
-				HU.attrs("id", textAreaId+"_rewrite")));
-	    help.append("<br>");
+	    etcLinks.add(HU.href("#", "GPT",
+				  HU.attrs("id", textAreaId+"_rewrite")));
 	}
-	help.append(Utils.join("<br>",previewButton, colorButton, wcButton) +"<div class=ramadda-thin-hr></div><b>Help</b><br>");
+	Utils.add(etcLinks,colorButton, wcButton);
+	help.append(Utils.join(etcLinks,"<br>"));
+	help.append("<div class=ramadda-thin-hr></div><b>Help</b><br>");
 
 
 	BiConsumer<String,String> makeHelp = (p,title)->{
