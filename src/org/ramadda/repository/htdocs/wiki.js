@@ -165,6 +165,20 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 }
 
 function  WikiEditor(entryId, formId, id, hidden,argOptions) {
+    if(formId) {
+	//If we are editing then listen for the submit and clear the editorChanged flag
+	//so the
+	$('#' + formId).submit(()=>{
+	    this.editorChanged = false;
+	    return true;
+	});
+	$(window).bind('beforeunload', ()=>{
+	    if(this.editorChanged) {
+		return 'Changes have been made. Are you sure you want to exit?';
+	    }
+	});
+    }
+
     this.entryId  = entryId;
     this.ID_WIKI_PREVIEW = "preview";
     this.ID_WIKI_PREVIEW_INNER = "preview_inner";
@@ -248,6 +262,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	this.handleMouseMove(e);
     });
     this.editor.getSession().on('change', (e)=> {
+	this.editorChanged = true;
 	if(this.previewShown && this.previewLive) {
 	    if(this.previewPending) return;
 	    this.previewPending = setTimeout(()=>{
@@ -257,6 +272,11 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	}
 
     });
+
+
+
+
+
     this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
 
@@ -268,6 +288,10 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.jq("color").click((event)=>{
 	HtmlUtils.hidePopupObject();
 	this.doColor(event);
+    });	
+    this.jq("find").click(()=>{
+	HtmlUtils.hidePopupObject();
+	this.doFind();
     });	
     this.jq("wordcount").click(()=>{
 	HtmlUtils.hidePopupObject();
@@ -619,6 +643,9 @@ WikiEditor.prototype = {
 	$("#" + this.hidden).val(this.getEditor().getValue());
     },
 
+    doFind:function(s) {
+	this.getEditor().execCommand('find');
+    },
     doWordcount:function(s) {
 	if(s==null)
 	    s = this.getEditor().getValue();
@@ -721,12 +748,10 @@ WikiEditor.prototype = {
 	    this.colorDialog.remove();
 	    this.colorDialog = null;
 	};
-	//xxxxx
 	let apply = () =>{
             let pos = this.getEditor().getCursorPosition();
 	    let val = picker.val();
 	    this.insertAtCursor(val);
-	    console.dir(pos);
 	    let Range = ace.require('ace/range').Range;
 	    let range =new Range(pos.row, pos.column, pos.row, pos.column+val.length);
 	    if(this.colorMarker)    this.editor.session.removeMarker(this.colorMarker);
