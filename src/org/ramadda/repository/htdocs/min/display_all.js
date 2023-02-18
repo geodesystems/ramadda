@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb 17 05:42:08 MST 2023";
+var build_date="RAMADDA build date: Sat Feb 18 05:22:15 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -9016,8 +9016,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let header = h1;
 	    if(h2Separate) header+=h2;
 	    top =  header +  top;	    
-
-
 	    let colorTable = HU.div([ID,this.getDomId(ID_COLORTABLE)]);
 	    let rightInner="";
 	    let leftInner="";
@@ -9044,10 +9042,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let sideWidth = "1px";
 	    let centerWidth = "100%";	    
             let contents = this.getContentsDiv();
-	    //display table
-	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
 	    let h0 = 	HU.div([ID,this.getDomId(ID_HEADER0),CLASS,"display-header-block display-header0"], "");
-            let table =   h0+HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
+	    //Gack! We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border	
+            let table =   h0+HU.open('table', [STYLE,this.isGoogleChart?"border:1px solid transparent;":'',CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],top) +HU.td(['width',sideWidth]));
 	    }
@@ -9348,7 +9345,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!this.getProperty('requestFieldsShow',true)) {
 		requestProps = HU.div(['style','display:none;'], requestProps);
 	    }
-	    this.writeHeader(ID_REQUEST_PROPERTIES, HU.div([],requestProps));
+	    if(Utils.stringDefined(requestProps)) {
+		this.writeHeader(ID_REQUEST_PROPERTIES, HU.div([],requestProps));
+	    }
 	    //Keep track of the values because there can be spurious changes triggered
 	    //when the user clicks in a time range field
 	    let valueMap = {}
@@ -9840,7 +9839,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.filters.forEach(filter=>{
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
-			widget = HU.span([ID,this.domId("filtercontainer_" + filter.id)], widget);
+			widget = HU.span(['class','display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
 		    if(filter.group!=null) {
 			if(filter.group!=group && groupHtml!=null) {
 			    searchBar+=HU.toggleBlock(group,groupHtml,false);
@@ -17708,7 +17707,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     this.debugTimes = false;
 
 
+    this.isGoogleChart = true;
     defineDisplay(this, SUPER, myProps, {
+
 	checkFinished: function() {
 	    return true;
 	},
@@ -28866,7 +28867,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 
-
 	    let th = Utils.tokenizeMacros(headerTemplate);
 	    let tf = Utils.tokenizeMacros(footerTemplate);
 	    headerTemplate = th.apply(attrs);
@@ -28875,6 +28875,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(selected.length>0) {
 		contents+= headerTemplate;
 	    }
+
 	    if(template!= "") {
 		let groupByField  =this.getFieldById(null, this.getProperty("groupByField"));
 		let groupDelimiter  = this.getProperty("groupDelimiter"," ");
