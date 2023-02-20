@@ -987,7 +987,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files 
-	//	if(f.length()>LUCENE_MAX_LENGTH) return null;
+	if(f.length()>LUCENE_MAX_LENGTH) return null;
 	//	if(Utils.isImage(f.toString())) return null;
 	if(f.length()==0) return null;
 	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
