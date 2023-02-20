@@ -118,9 +118,11 @@ addGlobalDisplayType({
 //addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 
 
+var ID_PLOT= "plot";
+var ID_PLOTY = "plotly";
+
+
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
-    const ID_PLOT= "plot";
-    const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     //Dynamically load plotly
     RamaddaUtil.inherit(this, SUPER);
@@ -133,7 +135,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         },
 	updateUI:function(args) {
 	    if(!window.Plotly) {
-		let url = ramaddaCdn+"/lib/plotly/plotly-latest.min.js";
+		let url = ramaddaCdn+"/lib/plotly/plotly-2.18.0.min.js";
 		let callback = this.loadingJS?null:   ()=>{
 		    this.updateUI(args);
 		};
@@ -210,7 +212,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 	    this.setContents(html);
 	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
 	    setTimeout(()=>{
-		let plot = Plotly.plot(this.getDomId(ID_PLOT), data, layout,{displayModeBar: false});
+		let plot = Plotly.newPlot(this.getDomId(ID_PLOT), data, layout,{displayModeBar: false});
 		let myPlot = document.getElementById(this.getDomId(ID_PLOT));
 		if(myPlot) {
 		    this.initPlot(plot, myPlot);
@@ -587,7 +589,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let y = this.yField.getValue(record);
             let z = this.zField.getValue(record);	    	    
 	    let update = {'x': [[x]], 'y': [[y]],'z':[[z]]};
-	    Plotly.update(this.plot, update, {}, [1]);
+	    Plotly.update(this.domId(ID_PLOT), update, {}, [1]);
 	}
     });
 }
