@@ -217,9 +217,10 @@ mapVar="gpxMap${entryid}" }}
 </wiki>
    </type>
 
-<type name="geo_imdv"  description="Integrated Map Data"  isgroup="true">
+   <type name="geo_imdv"  description="Integrated Map Data"  isgroup="true"
+	 pattern="(?i).*imdvmap\.json$">
    <property name="form.description.iswiki" value="true"/>
-   <property name="defaultFilename" value="map.json"/>
+   <property name="defaultFilename" value="imdvmap.json"/>
    <property name="convertidsinfile" value="true"/>
    <property name="icon" value="/icons/globe-solid.png"/>
 <wiki>
