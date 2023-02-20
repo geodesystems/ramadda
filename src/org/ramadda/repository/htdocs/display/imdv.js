@@ -5184,3 +5184,62 @@ window.olGetSvgPattern = function(p,stroke,fill) {
 };
 
 
+window.olDrawTextHook= function(renderer,style,label,featureId) {
+    //check if we draw a background
+    //returns true if the label.bbox.width==0
+    let needRedo = olCheckLabelBackground(renderer,style,label,featureId);
+    if (!label.parentNode) {
+        renderer.textRoot.appendChild(label);
+	if(needRedo) {
+	    let bbox = label.getBBox();
+	    renderer.textRoot.removeChild(label);
+	    olCheckLabelBackground(renderer,style,label,featureId,bbox);
+	    renderer.textRoot.appendChild(label);
+	}
+    }
+}
+
+function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
+    if(style.textBackgroundFillColor !="" || style.textBackgroundStrokeColor !="") {
+	bbox = bbox??label.getBBox();
+	if(bbox.width==0 || bbox.height==0) {
+	    return true;
+	}
+	let shape = 'rect';
+	if(style.textBackgroundShape=='circle') shape='circle'
+	else if(style.textBackgroundShape=='ellipse') shape='ellipse'	    
+	let bg = renderer.nodeFactory(featureId + '_textbackground', shape);
+	let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
+	let bgStyle = "";
+	bgStyle+="fill:" +((style.textBackgroundFillColor=='' || !style.textBackgroundFillColor)?"transparent":style.textBackgroundFillColor)+";";
+	if(style.textBackgroundStrokeColor!="") bgStyle+="stroke:" +style.textBackgroundStrokeColor+";";	    
+	if(style.textBackgroundStrokeWidth>=0)
+	    bgStyle+="stroke-width:" + style.textBackgroundStrokeWidth+";";
+	if(!isNaN(style.textBackgroundFillOpacity))
+	    bgStyle+="fill-opacity:" + style.textBackgroundFillOpacity+";";
+
+	if(shape=='circle') {
+	    bg.setAttribute("cx", bbox.x+bbox.width/2);
+	    bg.setAttribute("cy", bbox.y+bbox.height/2);
+	    bg.setAttribute("r", (bbox.width/2)+(+pad));
+	} else   if(shape=='ellipse') {
+	    bg.setAttribute("cx", bbox.x+bbox.width/2);
+	    bg.setAttribute("cy", bbox.y+bbox.height/2);
+	    bg.setAttribute("rx", (bbox.width/2)+(+pad));
+	    bg.setAttribute("ry", (bbox.height/2)+(+pad));	    	    				
+	} else {
+	    bg.setAttribute("x", bbox.x-pad);
+	    bg.setAttribute("y", bbox.y-pad);
+	    bg.setAttribute("width", bbox.width+pad*2);
+	    bg.setAttribute("height", bbox.height+pad*2);
+	    if(style.textBackgroundRadius) {
+		bg.setAttribute("rx", style.textBackgroundRadius);
+	    }
+
+	}
+	bg.setAttribute("style", bgStyle);
+	renderer.vectorRoot.appendChild(bg);
+    }
+    return false;
+}
+
