@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 20 04:02:15 MST 2023";
+var build_date="RAMADDA build date: Mon Feb 20 04:08:32 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -6222,6 +6222,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.div([STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
+	    this.dataLoadFailed = false;
 	    this.startProgress();
 	    this.haveCalledUpdateUI = false;
 	    if(this.getProperty("okToLoadData",true))  {
