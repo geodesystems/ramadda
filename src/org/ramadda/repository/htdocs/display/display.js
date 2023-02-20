@@ -1328,7 +1328,7 @@ function DisplayThing(argId, argProperties) {
 	getPropertyCounts:{},
 	priorProps:{},
         getProperty: function(key, dflt, skipThis, skipParent) {
-	    let debug = false;
+	    let debug = displayDebug.getProperty;
 	    if(!this.getPropertyCounts[key]) {
 		this.getPropertyCounts[key]=0;
 	    }
@@ -1569,10 +1569,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
+	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,limit fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
-	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
 	{p:'requestFieldsToggle',d:false,tt:'Put the request fields in a toggle'},
+	{p:'requestFieldsToggleOpen',d:true,tt:'And leave the toggle open'},
+
+	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
+	{p:'request.&lt;field&gt;.type',tt:'date,number,enumeration'},
+	{p:'request.&lt;field&gt;.type',tt:'date,number,enumeration'},			
+	{p:'request.&lt;field&gt;.values',tt:'Comma separated list of enum values',
+	 d:'0:None,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50,75,100'},
+	{p:'request.&lt;field&gt;.visible',d:true},
+	{p:'request.&lt;field&gt;.default',tt:'Default value'},
+	{p:'request.&lt;field&gt;_from.default',tt:'Default date from'},
+	{p:'request.&lt;field&gt;_to.default',tt:'Default date to'},		
+	{p:'request.&lt;field&gt;.multiple',d:false,tt:'For enums show multiples'},
+	{p:'request.&lt;field&gt;.rows',d:4,tt:'For multiple enums how may rows to show'},
+	{p:'request.&lt;field&gt;.includeNone',d:true,tt:'For enums include the none value'},		
+	{p:'request.&lt;field&gt;.includeAll',d:true,tt:'For enums include the all value'},		
+	{p:'request.&lt;field&gt;.triggerReload',d:true, tt:''},			
+	{p:'request.&lt;field&gt;.title',tt:'Tooltip'},
+	{p:'request.&lt;field&gt;.urlarg',t:'url arg to use'},	
+
 	{label:'Filter Data'},
 	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
 	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
@@ -5749,25 +5768,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.requestMacros;
 	},
 	getRequestMacrosInner: function() {
-	    let macros =[];
-	    let p = this.getProperty("requestFields","");
-	    let e1 = this.getProperty("extraFields1","");
-	    let e2 = this.getProperty("extraFields2","");
-	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-//	    if(p!="")console.log("requestFields=" + p);
-	    list.forEach(macro=>{
-		if(macro=="") return;
-		macros.push(new RequestMacro(this, macro));
-	    });
-	    return macros;
-	},
-	applyRequestProperties: function(props) {
-	    if(!props) return;
-	    this.requestMacros = null;
-	    this.dynamicProperties = props;
-	    this.createRequestProperties();
-	},
-	createRequestProperties: function() {
 	    if(this.getProperty('requestFieldsDefault')) {
 		//clear them out
 		this.requestMacros = null;
@@ -5790,13 +5790,36 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }		
 
 
+
+	    let macros =[];
+	    let p = this.getProperty("requestFields","");
+	    let e1 = this.getProperty("extraFields1","");
+	    let e2 = this.getProperty("extraFields2","");
+	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
+//	    if(p!="")console.log("requestFields=" + p);
+	    list.forEach(macro=>{
+		if(macro=="") return;
+		macros.push(new RequestMacro(this, macro));
+	    });
+	    return macros;
+	},
+	applyRequestProperties: function(props) {
+	    if(!props) return;
+	    this.requestMacros = null;
+	    this.dynamicProperties = props;
+	    this.createRequestProperties();
+	},
+	createRequestProperties: function() {
+
 	    let requestProps = "";
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
 	    let live = this.getRequestFieldsLive();
 	    let list = [];
 	    let space = HU.space(2);
-	    if(!live) requestProps+=HU.span(['title','Reload data','style','','class','','id',this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
+	    if(!live)
+		requestProps+=HU.span(['class','ramadda-button-small',
+				       'title','Reload data','style','','class','','id',this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
 
 	    macros.forEach(macro=>{
 		requestProps+=macro.getWidget(macroDateIds);
@@ -5850,8 +5873,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.macroChanged();
 		this.reloadData();
 	    });
-
-
 
 	    let sliderFunc = function() {
 		//		macroChangeinputFunc

@@ -4117,7 +4117,6 @@ function RequestMacro(display, macro) {
     }
 
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
-    //    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
     if(dflt == null) {
 	if(values && values.length>0  && macroType=="enumeration") {
@@ -4130,6 +4129,8 @@ function RequestMacro(display, macro) {
     if(dflt && macroType=="enumeration") {
 	if(dflt.split)	dflt = dflt.split(",");
     }
+
+    //    console.log(macro +" type:" + macroType +" v:" + values +' values:' + values);
 
     let prefix = this.getProperty("requestPrefix","");
     $.extend(this,{
@@ -4159,23 +4160,23 @@ RequestMacro.prototype = {
 	return this.display.getProperty(prop, dflt);
     },
     isVisible: function() {
-	return  this.getProperty("request." +this.name +".visible",
-				 this.getProperty("macros.visible",true));
+	return  this.getProperty('request.' +this.name +'.visible',
+				 this.getProperty('macros.visible',true));
     },
     getWidget: function(dateIds) {
 	let debug = false;
 	let visible = this.isVisible();
-	let style = visible?"":"display:none;";
+	let style = visible?'':'display:none;';
 	let widget;
 	let label = this.label;
 	let title = this.getProperty('request.' + this.name+'.title',null);
-	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
-	if(this.type=="bounds") {
-	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, "In bounds");
+	if(debug)console.log(this.getId() +'.getWidget:' + label +' type:' + this.type);
+	if(this.type=='bounds') {
+	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, 'In bounds');
 	    label = null;
-	} else if(this.type=="enumeration") {
+	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
-		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -4189,44 +4190,44 @@ RequestMacro.prototype = {
 		}
 
 		if(this.multiple) {
-		    attrs.push("multiple");
+		    attrs.push('multiple');
 		    attrs.push(null);
-		    attrs.push("size");
+		    attrs.push('size');
 		    attrs.push(Math.min(this.rows,values.length));
 		} else {
-//		    values = Utils.mergeLists([[VALUE_NONE,"--"]],values);
+//		    values = Utils.mergeLists([[VALUE_NONE,'--']],values);
 		}
 		let v = this.dflt;
 		if(!Utils.stringDefined(v)) {
 		    v = VALUE_NONE;
 		}
 		if(debug)
-		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
-		widget = HU.select("",attrs,values,v,30);
+		    console.log('\tselect: dflt:' + this.dflt +' values:' + this.values);
+		widget = HU.select('',attrs,values,v,30);
 	    }
-	} else if(this.type=="numeric") {
-	    let minId = this.display.getDomId(this.getId()+"_min");
-	    let maxId = this.display.getDomId(this.getId()+"_max");			    
-	    widget = HU.input("","",['title',title??'',"data-min", this.dflt_min, STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_min) +
-		" - " +
-		HU.input("","",['title',title??'',"data-max", this.dflt_max, STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_max)
-	    label = label+" range";
-	} else if(this.type=="date") {
-	    let fromId = this.display.getDomId(this.getId()+"_from");
-	    let toId = this.display.getDomId(this.getId()+"_to");
+	} else if(this.type=='numeric' || this.type=='number') {
+	    let minId = this.display.getDomId(this.getId()+'_min');
+	    let maxId = this.display.getDomId(this.getId()+'_max');			    
+	    widget = HU.input('','',['title',title??'','data-min', this.dflt_min, STYLE, style, ID,minId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
+		' - ' +
+		HU.input('','',['title',title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
+	    label = label+' range';
+	} else if(this.type=='date') {
+	    let fromId = this.display.getDomId(this.getId()+'_from');
+	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
 	    dateIds.push(toId);
-	    widget = HU.datePicker("",this.dflt_from,['title',title??'',CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
-		" - " +
-		HU.datePicker("",this.dflt_to,['title',title??'',CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
-	    label = label+" range";
+	    widget = HU.datePicker('',this.dflt_from,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]) +
+		' - ' +
+		HU.datePicker('',this.dflt_to,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
+	    label = label+' range';
 	} else {
-	    let size = "10";
-	    if(this.type=="number")
-		size = "4";
-	    widget = HU.input("",this.dflt,['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
+	    let size = '10';
+	    if(this.type=='number')
+		size = '4';
+	    widget = HU.input('',this.dflt,['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
 	}
-	if(!widget) return "";
+	if(!widget) return '';
 	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
     },
     isMacro: function(id) {
@@ -4277,7 +4278,7 @@ RequestMacro.prototype = {
 		    
 		}
 	    }
-	} else if(this.type=="numeric") {
+	} else if(this.type=="numeric" || this.type=='number') {
 	    let min = this.display.jq(this.getId()+"_min").val()||"";
 	    let max = this.display.jq(this.getId()+"_max").val()||"";
 	    this.dflt_min = min;

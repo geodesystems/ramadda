@@ -1918,9 +1918,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
-
 //	    console.log(JSON.stringify(this.chartOptions, null,2));
-	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
 		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
@@ -1976,26 +1974,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let chart = this.makeGoogleChartInner(dataList, this.domId(ID_CHART), props, selectedFields);
 		if(chart) this.charts.push(chart);
 	    }
-	    
-
-	    this.mapCharts(chart=>{
-		google.visualization.events.addListener(chart, 'onmouseout',()=>{
-		    //console.log("mouseout");
-		    //this.setChartSelection(null);
-		});
-	    });
-
-
-
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
-
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) {
 		console.log(this.type+".makeGoogleChart: no chart div found:" + chartId);
 		return;
 	    }
 	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
+	    this.clearChart();
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
@@ -2013,7 +2000,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 chartOptions.vAxis.maxValue = max;
             }
 
-	    this.clearChart();
 
 	    if(this.getProperty("animation",false,true)) {
 		this.chartOptions.animation = {
