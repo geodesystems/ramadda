@@ -64,7 +64,9 @@
      <property name="form.date.show" value="false"/>
 </type>
 
-<type name="type_json"  super="type_convertible" description="Json File" pattern="(?i).*\.(json|json.gz)" handler="org.ramadda.plugins.files.JsonFileTypeHandler" category="Data">
+<type name="type_json"  super="type_convertible" description="Json File"
+      notpattern="(?i).*imdvmap\.json$"
+      pattern="(?i).*\.(json|json.gz)" handler="org.ramadda.plugins.files.JsonFileTypeHandler" category="Data">
      <property name="icon" value="/icons/json.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
