@@ -5781,8 +5781,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		 ['request.stride.default',0],
 		 ['request.limit.title','Limit how many records to return'],
 		 ['request.limit.default','20000'],
-		 ['requestFieldsLive',false],
-		 ['requestFieldsToggle',true]].forEach(pair=>{
+		 ['requestFieldsLive',false]].forEach(pair=>{
 		     if(!Utils.isDefined(this.getProperty(pair[0]))) {
 			 this.setProperty(pair[0],pair[1]);
 		     }
@@ -6361,12 +6360,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2=HU.div([STYLE,"line-height:0;"],
 			       header2);
 	    }
-
-
 	    header2 = HU.leftRightTable(header2,
 					HU.span([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,''],''));
 	    					
-
 	    let headerSide = this.getDisplayHeaderSide();
 	    if(headerSide == "left") 
 		this.jq(ID_LEFT).html(header2);

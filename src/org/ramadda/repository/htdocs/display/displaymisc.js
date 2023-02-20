@@ -938,12 +938,16 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    if(this.dataLoadFailed) {
 		return;
 	    }
+
 	    if(!Utils.stringDefined(msg)) {
 		this.jq(ID_HEADER2_SUFFIX).html("").hide();
 		return;
 	    }
-	    this.jq(ID_HEADER2_SUFFIX).show();
-	    this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],msg));
+	    let header = this.jq(ID_HEADER2_SUFFIX);
+	    if(header.length==0)
+		header = this.jq(ID_HEADER2);
+	    header.show();
+	    header.html(HU.span(['class','display-output-message-tight'],msg));
 	},
 	setNoDataMessage:function(message) {
 	    if(Utils.stringDefined(message)) {
