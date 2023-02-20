@@ -2854,7 +2854,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	doDownload: function() {
 	    let json = this.makeJson();
-	    Utils.makeDownloadFile("map.json",json);
+	    Utils.makeDownloadFile("imdvmap.json",json);
 	},
 	makeJson: function() {
 	    let _this = this;
