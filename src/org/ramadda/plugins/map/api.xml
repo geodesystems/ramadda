@@ -1,5 +1,0 @@
-
-<api handler="org.ramadda.plugins.map.ImdvApiHandler" id="chat">
-     <api request="/imdv/input"           method="processImdvInput"  admin="false"/>
-     <api request="/imdv/output"           method="processImdvOutput"  admin="false"/>
-</api>
