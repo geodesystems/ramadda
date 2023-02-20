@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Feb 18 05:22:15 MST 2023";
+var build_date="RAMADDA build date: Mon Feb 20 03:40:35 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -4861,7 +4861,7 @@ function DisplayThing(argId, argProperties) {
 	getPropertyCounts:{},
 	priorProps:{},
         getProperty: function(key, dflt, skipThis, skipParent) {
-	    let debug = false;
+	    let debug = displayDebug.getProperty;
 	    if(!this.getPropertyCounts[key]) {
 		this.getPropertyCounts[key]=0;
 	    }
@@ -5102,10 +5102,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
+	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,limit fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
-	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
 	{p:'requestFieldsToggle',d:false,tt:'Put the request fields in a toggle'},
+	{p:'requestFieldsToggleOpen',d:true,tt:'And leave the toggle open'},
+
+	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
+	{p:'request.&lt;field&gt;.type',tt:'date,number,enumeration'},
+	{p:'request.&lt;field&gt;.type',tt:'date,number,enumeration'},			
+	{p:'request.&lt;field&gt;.values',tt:'Comma separated list of enum values',
+	 d:'0:None,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50,75,100'},
+	{p:'request.&lt;field&gt;.visible',d:true},
+	{p:'request.&lt;field&gt;.default',tt:'Default value'},
+	{p:'request.&lt;field&gt;_from.default',tt:'Default date from'},
+	{p:'request.&lt;field&gt;_to.default',tt:'Default date to'},		
+	{p:'request.&lt;field&gt;.multiple',d:false,tt:'For enums show multiples'},
+	{p:'request.&lt;field&gt;.rows',d:4,tt:'For multiple enums how may rows to show'},
+	{p:'request.&lt;field&gt;.includeNone',d:true,tt:'For enums include the none value'},		
+	{p:'request.&lt;field&gt;.includeAll',d:true,tt:'For enums include the all value'},		
+	{p:'request.&lt;field&gt;.triggerReload',d:true, tt:''},			
+	{p:'request.&lt;field&gt;.title',tt:'Tooltip'},
+	{p:'request.&lt;field&gt;.urlarg',t:'url arg to use'},	
+
 	{label:'Filter Data'},
 	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
 	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
@@ -9282,25 +9301,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.requestMacros;
 	},
 	getRequestMacrosInner: function() {
-	    let macros =[];
-	    let p = this.getProperty("requestFields","");
-	    let e1 = this.getProperty("extraFields1","");
-	    let e2 = this.getProperty("extraFields2","");
-	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-//	    if(p!="")console.log("requestFields=" + p);
-	    list.forEach(macro=>{
-		if(macro=="") return;
-		macros.push(new RequestMacro(this, macro));
-	    });
-	    return macros;
-	},
-	applyRequestProperties: function(props) {
-	    if(!props) return;
-	    this.requestMacros = null;
-	    this.dynamicProperties = props;
-	    this.createRequestProperties();
-	},
-	createRequestProperties: function() {
 	    if(this.getProperty('requestFieldsDefault')) {
 		//clear them out
 		this.requestMacros = null;
@@ -9323,13 +9323,36 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }		
 
 
+
+	    let macros =[];
+	    let p = this.getProperty("requestFields","");
+	    let e1 = this.getProperty("extraFields1","");
+	    let e2 = this.getProperty("extraFields2","");
+	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
+//	    if(p!="")console.log("requestFields=" + p);
+	    list.forEach(macro=>{
+		if(macro=="") return;
+		macros.push(new RequestMacro(this, macro));
+	    });
+	    return macros;
+	},
+	applyRequestProperties: function(props) {
+	    if(!props) return;
+	    this.requestMacros = null;
+	    this.dynamicProperties = props;
+	    this.createRequestProperties();
+	},
+	createRequestProperties: function() {
+
 	    let requestProps = "";
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
 	    let live = this.getRequestFieldsLive();
 	    let list = [];
 	    let space = HU.space(2);
-	    if(!live) requestProps+=HU.span(['title','Reload data','style','','class','','id',this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
+	    if(!live)
+		requestProps+=HU.span(['class','ramadda-button-small',
+				       'title','Reload data','style','','class','','id',this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
 
 	    macros.forEach(macro=>{
 		requestProps+=macro.getWidget(macroDateIds);
@@ -9383,8 +9406,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.macroChanged();
 		this.reloadData();
 	    });
-
-
 
 	    let sliderFunc = function() {
 		//		macroChangeinputFunc
@@ -17044,7 +17065,6 @@ function RequestMacro(display, macro) {
     }
 
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
-    //    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
     if(dflt == null) {
 	if(values && values.length>0  && macroType=="enumeration") {
@@ -17057,6 +17077,8 @@ function RequestMacro(display, macro) {
     if(dflt && macroType=="enumeration") {
 	if(dflt.split)	dflt = dflt.split(",");
     }
+
+    //    console.log(macro +" type:" + macroType +" v:" + values +' values:' + values);
 
     let prefix = this.getProperty("requestPrefix","");
     $.extend(this,{
@@ -17086,23 +17108,23 @@ RequestMacro.prototype = {
 	return this.display.getProperty(prop, dflt);
     },
     isVisible: function() {
-	return  this.getProperty("request." +this.name +".visible",
-				 this.getProperty("macros.visible",true));
+	return  this.getProperty('request.' +this.name +'.visible',
+				 this.getProperty('macros.visible',true));
     },
     getWidget: function(dateIds) {
 	let debug = false;
 	let visible = this.isVisible();
-	let style = visible?"":"display:none;";
+	let style = visible?'':'display:none;';
 	let widget;
 	let label = this.label;
 	let title = this.getProperty('request.' + this.name+'.title',null);
-	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
-	if(this.type=="bounds") {
-	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, "In bounds");
+	if(debug)console.log(this.getId() +'.getWidget:' + label +' type:' + this.type);
+	if(this.type=='bounds') {
+	    widget = HU.checkbox(this.display.getDomId(this.getId()),[TITLE,title??'Reload with current bounds',ID,this.display.getDomId(this.getId())], false, 'In bounds');
 	    label = null;
-	} else if(this.type=="enumeration") {
+	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
-		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -17116,44 +17138,44 @@ RequestMacro.prototype = {
 		}
 
 		if(this.multiple) {
-		    attrs.push("multiple");
+		    attrs.push('multiple');
 		    attrs.push(null);
-		    attrs.push("size");
+		    attrs.push('size');
 		    attrs.push(Math.min(this.rows,values.length));
 		} else {
-//		    values = Utils.mergeLists([[VALUE_NONE,"--"]],values);
+//		    values = Utils.mergeLists([[VALUE_NONE,'--']],values);
 		}
 		let v = this.dflt;
 		if(!Utils.stringDefined(v)) {
 		    v = VALUE_NONE;
 		}
 		if(debug)
-		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
-		widget = HU.select("",attrs,values,v,30);
+		    console.log('\tselect: dflt:' + this.dflt +' values:' + this.values);
+		widget = HU.select('',attrs,values,v,30);
 	    }
-	} else if(this.type=="numeric") {
-	    let minId = this.display.getDomId(this.getId()+"_min");
-	    let maxId = this.display.getDomId(this.getId()+"_max");			    
-	    widget = HU.input("","",['title',title??'',"data-min", this.dflt_min, STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_min) +
-		" - " +
-		HU.input("","",['title',title??'',"data-max", this.dflt_max, STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_max)
-	    label = label+" range";
-	} else if(this.type=="date") {
-	    let fromId = this.display.getDomId(this.getId()+"_from");
-	    let toId = this.display.getDomId(this.getId()+"_to");
+	} else if(this.type=='numeric' || this.type=='number') {
+	    let minId = this.display.getDomId(this.getId()+'_min');
+	    let maxId = this.display.getDomId(this.getId()+'_max');			    
+	    widget = HU.input('','',['title',title??'','data-min', this.dflt_min, STYLE, style, ID,minId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
+		' - ' +
+		HU.input('','',['title',title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
+	    label = label+' range';
+	} else if(this.type=='date') {
+	    let fromId = this.display.getDomId(this.getId()+'_from');
+	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
 	    dateIds.push(toId);
-	    widget = HU.datePicker("",this.dflt_from,['title',title??'',CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
-		" - " +
-		HU.datePicker("",this.dflt_to,['title',title??'',CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
-	    label = label+" range";
+	    widget = HU.datePicker('',this.dflt_from,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]) +
+		' - ' +
+		HU.datePicker('',this.dflt_to,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
+	    label = label+' range';
 	} else {
-	    let size = "10";
-	    if(this.type=="number")
-		size = "4";
-	    widget = HU.input("",this.dflt,['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
+	    let size = '10';
+	    if(this.type=='number')
+		size = '4';
+	    widget = HU.input('',this.dflt,['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
 	}
-	if(!widget) return "";
+	if(!widget) return '';
 	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);
     },
     isMacro: function(id) {
@@ -17204,7 +17226,7 @@ RequestMacro.prototype = {
 		    
 		}
 	    }
-	} else if(this.type=="numeric") {
+	} else if(this.type=="numeric" || this.type=='number') {
 	    let min = this.display.jq(this.getId()+"_min").val()||"";
 	    let max = this.display.jq(this.getId()+"_max").val()||"";
 	    this.dflt_min = min;
@@ -19288,9 +19310,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
-
 //	    console.log(JSON.stringify(this.chartOptions, null,2));
-	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
 		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
@@ -19346,26 +19366,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let chart = this.makeGoogleChartInner(dataList, this.domId(ID_CHART), props, selectedFields);
 		if(chart) this.charts.push(chart);
 	    }
-	    
-
-	    this.mapCharts(chart=>{
-		google.visualization.events.addListener(chart, 'onmouseout',()=>{
-		    //console.log("mouseout");
-		    //this.setChartSelection(null);
-		});
-	    });
-
-
-
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
-
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) {
 		console.log(this.type+".makeGoogleChart: no chart div found:" + chartId);
 		return;
 	    }
 	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
+	    this.clearChart();
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
@@ -19383,7 +19392,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 chartOptions.vAxis.maxValue = max;
             }
 
-	    this.clearChart();
 
 	    if(this.getProperty("animation",false,true)) {
 		this.chartOptions.animation = {
@@ -45520,6 +45528,65 @@ window.olGetSvgPattern = function(p,stroke,fill) {
     }
 };
 
+
+window.olDrawTextHook= function(renderer,style,label,featureId) {
+    //check if we draw a background
+    //returns true if the label.bbox.width==0
+    let needRedo = olCheckLabelBackground(renderer,style,label,featureId);
+    if (!label.parentNode) {
+        renderer.textRoot.appendChild(label);
+	if(needRedo) {
+	    let bbox = label.getBBox();
+	    renderer.textRoot.removeChild(label);
+	    olCheckLabelBackground(renderer,style,label,featureId,bbox);
+	    renderer.textRoot.appendChild(label);
+	}
+    }
+}
+
+function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
+    if(style.textBackgroundFillColor !="" || style.textBackgroundStrokeColor !="") {
+	bbox = bbox??label.getBBox();
+	if(bbox.width==0 || bbox.height==0) {
+	    return true;
+	}
+	let shape = 'rect';
+	if(style.textBackgroundShape=='circle') shape='circle'
+	else if(style.textBackgroundShape=='ellipse') shape='ellipse'	    
+	let bg = renderer.nodeFactory(featureId + '_textbackground', shape);
+	let pad=!isNaN(style.textBackgroundPadding)?style.textBackgroundPadding:0;
+	let bgStyle = "";
+	bgStyle+="fill:" +((style.textBackgroundFillColor=='' || !style.textBackgroundFillColor)?"transparent":style.textBackgroundFillColor)+";";
+	if(style.textBackgroundStrokeColor!="") bgStyle+="stroke:" +style.textBackgroundStrokeColor+";";	    
+	if(style.textBackgroundStrokeWidth>=0)
+	    bgStyle+="stroke-width:" + style.textBackgroundStrokeWidth+";";
+	if(!isNaN(style.textBackgroundFillOpacity))
+	    bgStyle+="fill-opacity:" + style.textBackgroundFillOpacity+";";
+
+	if(shape=='circle') {
+	    bg.setAttribute("cx", bbox.x+bbox.width/2);
+	    bg.setAttribute("cy", bbox.y+bbox.height/2);
+	    bg.setAttribute("r", (bbox.width/2)+(+pad));
+	} else   if(shape=='ellipse') {
+	    bg.setAttribute("cx", bbox.x+bbox.width/2);
+	    bg.setAttribute("cy", bbox.y+bbox.height/2);
+	    bg.setAttribute("rx", (bbox.width/2)+(+pad));
+	    bg.setAttribute("ry", (bbox.height/2)+(+pad));	    	    				
+	} else {
+	    bg.setAttribute("x", bbox.x-pad);
+	    bg.setAttribute("y", bbox.y-pad);
+	    bg.setAttribute("width", bbox.width+pad*2);
+	    bg.setAttribute("height", bbox.height+pad*2);
+	    if(style.textBackgroundRadius) {
+		bg.setAttribute("rx", style.textBackgroundRadius);
+	    }
+
+	}
+	bg.setAttribute("style", bgStyle);
+	renderer.vectorRoot.appendChild(bg);
+    }
+    return false;
+}
 
 
 
