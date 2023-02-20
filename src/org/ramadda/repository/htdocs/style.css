@@ -344,6 +344,14 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     border:1px #e1b07e solid;
 }
 
+.ramadda-button-small {
+    font-size:9pt;
+    line-height:0px;
+    padding:4px;
+    padding-top:3px;
+    padding-bottom:3px;
+}
+
 .ramadda-hflow {
     display:inline-block;
 }
@@ -3331,8 +3339,6 @@ label {
 
 .ramadda-logo-image {
 }
-
-
 
 .ramadda-image-loading {
   background: url('icons/progressbig.gif') no-repeat;
