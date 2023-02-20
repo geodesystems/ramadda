@@ -184,6 +184,7 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
+    public static final String ATTR_NOTPATTERN = "notpattern";        
 
     /** _more_ */
     public static final String ATTR_WIKI = "wiki";
@@ -304,6 +305,8 @@ public class TypeHandler extends RepositoryManager {
      *   to use for a file
      */
     private String filePattern;
+
+    private String fileNotPattern;    
 
     /**
      *   the field_file_pattern attribute in types.xml. Used when trying to figure out what entry type
@@ -473,6 +476,7 @@ public class TypeHandler extends RepositoryManager {
             priority    = Utils.getAttributeOrTag(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
+            fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
             help     = Utils.getAttributeOrTag(node, "help", help);
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
@@ -2543,6 +2547,14 @@ public class TypeHandler extends RepositoryManager {
             return false;
         }
         //        System.err.println("Pattern:" + filePattern + " name:" + name );
+
+	if(fileNotPattern!=null) {
+            if (name.matches(fileNotPattern)) {
+		return false;
+	    }
+	    
+	}
+
 
         //If the pattern has file delimiters then use the whole path
         if (filePattern.indexOf("/") >= 0) {
