@@ -2689,6 +2689,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.div([STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
+	    this.dataLoadFailed = false;
 	    this.startProgress();
 	    this.haveCalledUpdateUI = false;
 	    if(this.getProperty("okToLoadData",true))  {
