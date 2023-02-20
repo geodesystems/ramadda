@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 20 03:40:35 MST 2023";
+var build_date="RAMADDA build date: Mon Feb 20 04:02:15 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -9314,8 +9314,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		 ['request.stride.default',0],
 		 ['request.limit.title','Limit how many records to return'],
 		 ['request.limit.default','20000'],
-		 ['requestFieldsLive',false],
-		 ['requestFieldsToggle',true]].forEach(pair=>{
+		 ['requestFieldsLive',false]].forEach(pair=>{
 		     if(!Utils.isDefined(this.getProperty(pair[0]))) {
 			 this.setProperty(pair[0],pair[1]);
 		     }
@@ -9894,12 +9893,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2=HU.div([STYLE,"line-height:0;"],
 			       header2);
 	    }
-
-
 	    header2 = HU.leftRightTable(header2,
 					HU.span([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,''],''));
 	    					
-
 	    let headerSide = this.getDisplayHeaderSide();
 	    if(headerSide == "left") 
 		this.jq(ID_LEFT).html(header2);
@@ -51115,12 +51111,16 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    if(this.dataLoadFailed) {
 		return;
 	    }
+
 	    if(!Utils.stringDefined(msg)) {
 		this.jq(ID_HEADER2_SUFFIX).html("").hide();
 		return;
 	    }
-	    this.jq(ID_HEADER2_SUFFIX).show();
-	    this.jq(ID_HEADER2_SUFFIX).html(HU.span(['class','display-output-message-tight'],msg));
+	    let header = this.jq(ID_HEADER2_SUFFIX);
+	    if(header.length==0)
+		header = this.jq(ID_HEADER2);
+	    header.show();
+	    header.html(HU.span(['class','display-output-message-tight'],msg));
 	},
 	setNoDataMessage:function(message) {
 	    if(Utils.stringDefined(message)) {
