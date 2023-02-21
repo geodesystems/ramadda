@@ -130,8 +130,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	let attrs = ['id',innerId,'class',classPrefix];
 	html+=HU.open("div",attrs);
+	let formId;
 	if(props.showForm) {
-	    html+=HU.open('form',['method','post','action',Ramadda.getUrl('/entry/getentries')]);
+	    formId = HU.getUniqueId('form_');
+	    html+=HU.open('form',['id',formId,'method','post','action',Ramadda.getUrl('/entry/getentries')]);
 	    let form = HU.checkbox("",['style',HU.css('margin-left','3px'), 'title','Toggle all','id',id+'_form_cbx'],false);
 	    let actions = [["","Apply action"]];
 	    props.actions.forEach(action=>{
@@ -158,6 +160,14 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	html+='</div>';
 	let main = jqid(id);
 	main.html(html);
+	if(formId) {
+	    jqid(formId).submit(( event ) =>{
+		if(!Utils.stringDefined(jqid(id+'_form_action').val())) {
+		    alert('No action specified');
+		    event.preventDefault();
+		}
+	    });
+	}
 
 	main.find('.entry-list-header-column').click(function() {
 	    let orderby = $(this).attr('orderby');
