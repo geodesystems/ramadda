@@ -2033,11 +2033,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	pasteCount:0,
 	doPaste: function(evt) {
 	    if(!this.clipboard) return;
-	    let newOnes = this.clipboard.map(mapGlyph=>{
+	    let clipboard = this.clipboard;
+	    this.unselectAll();
+	    let newOnes = clipboard.map(mapGlyph=>{
 		return  mapGlyph.clone();
 	    });
 	    for(let i=0;i<newOnes.length;i++) {
-		newOnes[i].type = this.clipboard[i].type;
+		newOnes[i].type = clipboard[i].type;
 	    }
 	    let h = this.map.getMap().getExtent().getHeight();
 	    this.pasteCount++;
@@ -2052,6 +2054,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	    this.addGlyph(newOnes);
+	    newOnes.forEach(mapGlyph=>{
+		this.selectGlyph(mapGlyph);});
 	},
 
 	initSideHelp:function(dialog) {
@@ -4635,10 +4639,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			_this.unselectAll();
 			return;
 		    }
-		    if(event.key=='Backspace') {
-			_this.doCut();
-			return;
-		    }			
 		    if(!event.ctrlKey) return;
 		    switch(event.key) {
 		    case 'a': 
