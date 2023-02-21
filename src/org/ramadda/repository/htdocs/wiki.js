@@ -323,11 +323,13 @@ WikiEditor.prototype = {
 	let what = [];
 	if(isNew) {
 	    if(opts.isImage) what.push("Image");
-	    what.push("Link");
 	    what.push("ID");
-	    what.push("entry=ID");	    
+	    what.push("entry=ID");
+	    what.push("Link");
 	    what.push("Nothing");
 	} else {
+	    what.push("ID");
+	    what.push("entry=ID");	    
 	    what.push("Link");
 	    if(opts.isImage) {
 		what.push("Image");
@@ -344,8 +346,6 @@ WikiEditor.prototype = {
 	    }
 
 	    what.push("Import");	    
-	    what.push("ID");
-	    what.push("entry=ID");	    
 	}
 
 	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
