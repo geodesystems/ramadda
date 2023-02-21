@@ -7256,7 +7256,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					new NamedValue("linkAttributes", buttonClass)));
         }
 
-        Utils.appendAll(buttons, importEntry, displaysButton,  addEntry, 
+        Utils.appendAll(buttons, importEntry, /*addEntry,*/ displaysButton,  
                         fieldLink);
 
         if (entry != null) {
