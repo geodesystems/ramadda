@@ -8,7 +8,7 @@ addGlobalDisplayType({
     type: DISPLAY_IMDV,
     label: 'Integrated Map Data',
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip('Integrated Map Data',[],'Create interactive maps with points, routes, data, etc'),        
+    tooltip: makeDisplayTooltip('Integrated Map Data','imdv.png','Create interactive maps with points, routes, data, etc'),        
 });
 
 var MAP_RESOURCES;

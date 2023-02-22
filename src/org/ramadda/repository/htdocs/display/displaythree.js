@@ -10,7 +10,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "3D Globe",
     requiresData: true,
-    category: CATEGORY_MAPS
+    category: CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip('3D Globe','3dglobe.png','Create interactive 3D globes'),        
 });
 
 const DISPLAY_THREE_GRID = "three_grid";
