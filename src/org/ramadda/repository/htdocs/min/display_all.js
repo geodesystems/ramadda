@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 20 11:36:24 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 21 18:56:05 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -41474,12 +41474,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			let url = imageUrl;
+			let url = imageUrl ?? attrs.url;
 			if(!url) {
 			    if(!attrs.isImage) {
 				url = attrs.thumbnailUrl;
 				if(!url) {
-				    alert("Selected entry does not have an image");
+				    alert("Selected entry does not have an image X");
 				    return;
 				}
 			    } else {
@@ -42375,18 +42375,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	pasteCount:0,
 	doPaste: function(evt) {
 	    if(!this.clipboard) return;
-	    let newOnes = this.clipboard.map(mapGlyph=>{
+	    let clipboard = this.clipboard;
+	    this.unselectAll();
+	    let newOnes = clipboard.map(mapGlyph=>{
 		return  mapGlyph.clone();
 	    });
 	    for(let i=0;i<newOnes.length;i++) {
-		newOnes[i].type = this.clipboard[i].type;
+		newOnes[i].type = clipboard[i].type;
 	    }
 	    let h = this.map.getMap().getExtent().getHeight();
 	    this.pasteCount++;
 	    let delta = (this.pasteCount*0.05)*h;
 	    newOnes.forEach(mapGlyph=>{
 		mapGlyph.move(delta,-delta);
-		//		this.checkImage(feature);
+		mapGlyph.checkImage();
 		if(mapGlyph.isMap()) {
 		    mapGlyph.checkMapLayer();
 		} else if(mapGlyph.isMapServer()) {
@@ -42394,6 +42396,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 	    });
 	    this.addGlyph(newOnes);
+	    newOnes.forEach(mapGlyph=>{
+		this.selectGlyph(mapGlyph);});
 	},
 
 	initSideHelp:function(dialog) {
@@ -44977,10 +44981,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			_this.unselectAll();
 			return;
 		    }
-		    if(event.key=='Backspace') {
-			_this.doCut();
-			return;
-		    }			
 		    if(!event.ctrlKey) return;
 		    switch(event.key) {
 		    case 'a': 
@@ -45086,7 +45086,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.log('no map glyph');
 			return;
 		    }
-		    if(!mapGlyph.isSelected()) mapGlyph.select();
+		    //If it isn't selected then clear any existing selection and select this one
+		    if(!mapGlyph.isSelected()) {
+			_this.unselectAll();
+			mapGlyph.select();
+		    }
 		    let selected = _this.getSelected();
 		    let res = this.map.getResolution();
 		    let dx = res * (pixel.x - this.lastPixel.x);
@@ -50084,7 +50088,15 @@ MapGlyph.prototype = {
 	return pointCount;
     },
     unselect:function() {
-	if(!this.isSelected()) return;
+	if(this.children) {
+	    this.children.forEach(child=>{
+		child.unselect();
+	    });
+	}	
+
+	if(!this.isSelected()) {
+	    return;
+	}	    
 	this.selected = false;
 	if(this.selectDots) {
 	    this.display.selectionLayer.removeFeatures(this.selectDots);
@@ -50094,12 +50106,6 @@ MapGlyph.prototype = {
 	if(this.mapLayer && this.mapLayer.features) {
 	    this.applyMapStyle(true);
 	}
-
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.unselect();
-	    });
-	}	
 
     },
     
