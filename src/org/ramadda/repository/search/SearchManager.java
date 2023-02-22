@@ -787,6 +787,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
+
+
         for (Metadata metadata : getMetadataManager().getMetadata(request,entry)) {
 	    MetadataType type = getMetadataManager().getType(metadata);
 	    if(type==null) {
@@ -1683,9 +1685,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private void entriesMovedInner(Request request,  Entry entry) throws Exception {
 	List<Entry> children = getEntryManager().getChildren(request, entry);
-	//	System.err.println("moved:" + entry +" children:" + children);
 	if(children!=null) {
 	    for(Entry child: children) {
+		if(getEntryManager().isSynthEntry(child.getId())) {
+		    continue;
+		}
 		entriesMovedInner(request, child);
 	    }
 	}
