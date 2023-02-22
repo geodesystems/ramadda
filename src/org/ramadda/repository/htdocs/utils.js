@@ -3482,9 +3482,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(!skipTimeCheck && this.popupObjectTime) {
 	    let now = new Date();
 	    let diff = now.getTime()-this.popupObjectTime.getTime();
-	    //wait a second?
-	    if(diff<1000) {
-		//		console.log('hide popup time  - too soon - diff:' + diff);
+	    //wait half a second?
+	    if(diff<500) {
+//		console.log('hide popup time  - too soon - diff:' + diff);
 		return;
 	    }
 	    //	    console.log('hide popup time - ok - diff:' + diff);
@@ -3492,12 +3492,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	this.popupObjectTime=null;
 
         if (this.popupObject) {
+//	    console.log('close');
             this.popupObject.hide();
             if(this.popupObject.attr("removeonclose")== "true") {
                 this.popupObject.remove();
             }
             this.popupObject = null;
-        }
+        } else {
+//	    console.log('no popup');
+	}
         this.popupTime = new Date();
         if(event) {
             event.stopPropagation();
