@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 21 18:56:05 MST 2023";
+var build_date="RAMADDA build date: Wed Feb 22 04:51:59 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -40350,7 +40350,7 @@ addGlobalDisplayType({
     type: DISPLAY_IMDV,
     label: 'Integrated Map Data',
     category:CATEGORY_MAPS,
-    tooltip: makeDisplayTooltip('Integrated Map Data',[],'Create interactive maps with points, routes, data, etc'),        
+    tooltip: makeDisplayTooltip('Integrated Map Data','imdv.png','Create interactive maps with points, routes, data, etc'),        
 });
 
 var MAP_RESOURCES;
@@ -57225,7 +57225,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "3D Globe",
     requiresData: true,
-    category: CATEGORY_MAPS
+    category: CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip('3D Globe','3dglobe.png','Create interactive 3D globes'),        
 });
 
 const DISPLAY_THREE_GRID = "three_grid";
