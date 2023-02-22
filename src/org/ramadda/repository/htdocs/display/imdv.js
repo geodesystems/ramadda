@@ -1132,12 +1132,12 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 
 		    if(glyphType.isImage()) {
-			let url = imageUrl;
+			let url = imageUrl ?? attrs.url;
 			if(!url) {
 			    if(!attrs.isImage) {
 				url = attrs.thumbnailUrl;
 				if(!url) {
-				    alert("Selected entry does not have an image");
+				    alert("Selected entry does not have an image X");
 				    return;
 				}
 			    } else {
@@ -2046,7 +2046,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let delta = (this.pasteCount*0.05)*h;
 	    newOnes.forEach(mapGlyph=>{
 		mapGlyph.move(delta,-delta);
-		//		this.checkImage(feature);
+		mapGlyph.checkImage();
 		if(mapGlyph.isMap()) {
 		    mapGlyph.checkMapLayer();
 		} else if(mapGlyph.isMapServer()) {
@@ -4744,7 +4744,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.log('no map glyph');
 			return;
 		    }
-		    if(!mapGlyph.isSelected()) mapGlyph.select();
+		    //If it isn't selected then clear any existing selection and select this one
+		    if(!mapGlyph.isSelected()) {
+			_this.unselectAll();
+			mapGlyph.select();
+		    }
 		    let selected = _this.getSelected();
 		    let res = this.map.getResolution();
 		    let dx = res * (pixel.x - this.lastPixel.x);

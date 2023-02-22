@@ -4497,7 +4497,15 @@ MapGlyph.prototype = {
 	return pointCount;
     },
     unselect:function() {
-	if(!this.isSelected()) return;
+	if(this.children) {
+	    this.children.forEach(child=>{
+		child.unselect();
+	    });
+	}	
+
+	if(!this.isSelected()) {
+	    return;
+	}	    
 	this.selected = false;
 	if(this.selectDots) {
 	    this.display.selectionLayer.removeFeatures(this.selectDots);
@@ -4507,12 +4515,6 @@ MapGlyph.prototype = {
 	if(this.mapLayer && this.mapLayer.features) {
 	    this.applyMapStyle(true);
 	}
-
-	if(this.children) {
-	    this.children.forEach(child=>{
-		child.unselect();
-	    });
-	}	
 
     },
     
