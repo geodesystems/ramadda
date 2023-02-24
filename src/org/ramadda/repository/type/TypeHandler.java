@@ -5138,10 +5138,6 @@ public class TypeHandler extends RepositoryManager {
 
 
                     String extras = getFileExtras(request, entry);
-
-
-                    /*datePatternWidget*/
-
                     String extra =
                         HtmlUtils.makeShowHideBlock(msg("More..."), extras,
                             false);
@@ -5311,27 +5307,16 @@ public class TypeHandler extends RepositoryManager {
 
         String makeNameWidget = HU.labeledCheckbox(ARG_MAKENAME,
                                     "true", true, "Make name from filename");
+	String dateFormatWidget = HU.hbox(HU.textArea(ARG_DATE_PATTERN,request.getString(ARG_DATE_PATTERN,""),
+						      5,50),
+					  HU.space(1),
+					  "Date formats to use to extract date from filename. e.g.:" +
+					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy-MM-dd_HHmm"));
 
         String deleteFileWidget = ((entry != null) && entry.isFile())
                                   ? HU.labeledCheckbox(ARG_DELETEFILE,
                                       "true", false, "Delete file")
                                   : "";
-
-        /*
-          String datePatternWidget = msgLabel("Date pattern")
-          + HU.space(1)
-          + HU.select(ARG_DATE_PATTERN,
-          datePatterns) + " ("
-          + msg("Use file name") + ")";
-
-        */
-
-        String datePatternWidget =
-            msgLabel("Date pattern") + HU.space(1)
-            + HU.input(ARG_DATE_PATTERN,
-                request.getString(ARG_DATE_PATTERN,
-                    "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
-
 
 
         String extraMore = "";
@@ -5355,6 +5340,9 @@ public class TypeHandler extends RepositoryManager {
 	extra.accept("Zip Files:",unzipWidget);	
 	extra.accept("Metadata:",addMetadata+HU.br()+extract);
 	extra.accept("Entry name:",makeNameWidget);
+	extra.accept("Date format:",dateFormatWidget);	
+	if(entry==null)
+	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 	extras.append(deleteFileWidget);
         return HU.insetLeft(extras.toString(),30);
     }

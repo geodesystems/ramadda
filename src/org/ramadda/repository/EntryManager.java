@@ -2377,7 +2377,12 @@ public class EntryManager extends RepositoryManager {
 	}
 
 
+	boolean testNew=request.get(ARG_TESTNEW, false);
+	List<String> testLog = new ArrayList<String>();
         boolean     figureOutType = request.get(ARG_TYPE_GUESS, false);
+
+	String datePattern = request.getUnsafeString(ARG_DATE_PATTERN,null);
+	if(!stringDefined(datePattern)) datePattern = null;
 
         List<Entry> entries       = new ArrayList<Entry>();
         String      category      = "";
@@ -2488,22 +2493,10 @@ public class EntryManager extends RepositoryManager {
             }
 
             boolean isGzip = resource.endsWith(".gz");
-
-            // check if it's a zp file
+            // check if it's a zip file
             if (unzipArchive && !resource.toLowerCase().endsWith(".zip")) {
                 unzipArchive = false;
             }
-
-            /*
-	      if (unzipArchive && !resource.toLowerCase().endsWith(".zip")) {
-	      if (!isGzip) {
-	      unzipArchive = false;
-	      }
-	      }
-	      if (isGzip && unzipArchive) {
-	      //TODO: use GZIPInputStream to unzip the file
-	      }
-            */
 
             boolean hasZip = false;
 	    boolean hasUpload = false;
@@ -2514,7 +2507,7 @@ public class EntryManager extends RepositoryManager {
 		String contents = request.getString("upload_file_"+i);
 		File tmpFile = getStorageManager().decodeFileContents(request, name, contents);
 		if(request.get(ARG_FILE_UNZIP, false) && tmpFile.toString().endsWith(".zip")) {
-		    unzipResource(request, parentEntry, user, infos,tmpFile.toString());
+		    unzipResource(request, parentEntry, user, infos,tmpFile.toString(), datePattern, testNew,  testLog);
 		} else {
 		    infos.add(new NewEntryInfo(name, tmpFile.toString(), parentEntry));
 		}
@@ -2581,7 +2574,7 @@ public class EntryManager extends RepositoryManager {
 		infos.add(new NewEntryInfo(resourceName,resource, parentEntry));
             } else {
                 hasZip = true;
-		unzipResource(request, parentEntry, user, infos,resource);
+		unzipResource(request, parentEntry, user, infos,resource, datePattern,testNew,  testLog);
 	    }
 
             if (request.exists(ARG_CANCEL)) {
@@ -2589,6 +2582,7 @@ public class EntryManager extends RepositoryManager {
 				  request.entryUrl(
 						   getRepository().URL_ENTRY_SHOW, parentEntry));
             }
+
 
             String description = getEntryDescription(request, entry);
             Date   createDate  = new Date();
@@ -2598,7 +2592,7 @@ public class EntryManager extends RepositoryManager {
             File originalFile = null;
 	    for(NewEntryInfo info: infos) {
                 String theResource = info.resource;
-                if (isFile && (serverFile == null)) {
+                if (!testNew && isFile && (serverFile == null)) {
                     if (forUpload) {
                         theResource =
                             getStorageManager().moveToAnonymousStorage(
@@ -2644,30 +2638,7 @@ public class EntryManager extends RepositoryManager {
                     }
                 }
 
-                Date[] theDateRange = { dateRange[0], dateRange[1] };
 
-                if (request.defined(ARG_DATE_PATTERN)) {
-                    String format = request.getUnsafeString(ARG_DATE_PATTERN,
-							    BLANK);
-                    String pattern = format;
-                    //swap out any of the date tokens with a decimal regexp
-                    for (String s : new String[] {
-			    "y", "m", "M", "d", "H", "m"
-			}) {
-                        pattern = pattern.replaceAll(s, "_DIGIT_");
-                    }
-                    pattern = pattern.replaceAll("_DIGIT_", "\\\\d");
-                    pattern = ".*(" + pattern + ").*";
-                    Matcher matcher =
-                        Pattern.compile(pattern).matcher(info.name);
-                    if (matcher.find()) {
-                        String dateString = matcher.group(1);
-                        Date dttm = RepositoryUtil.makeDateFormat(
-								  format).parse(dateString);
-                        theDateRange[0] = dttm;
-                        theDateRange[1] = dttm;
-                    } else {}
-                }
 
                 String id           = getRepository().getGUID();
                 String resourceType = Resource.TYPE_UNKNOWN;
@@ -2706,15 +2677,18 @@ public class EntryManager extends RepositoryManager {
                     }
                 }
                 entry = typeHandlerToUse.createEntry(id);
-
-
-
+                Date[] theDateRange = { dateRange[0], dateRange[1] };
                 if (theDateRange[0] == null) {
-                    //Don't try to extract the date from the name of the file
-                    //Its more trouble than worth due to bad matches
-                    //theDateRange[0] = theDateRange[1] =   Utils.extractDate(theResource);
-                }
-
+		    if(datePattern!=null) {
+			Date tmpDate = Utils.extractDate(datePattern, info.name);
+			if(tmpDate!=null) {
+			    theDateRange[0] = tmpDate;
+			    if(testNew) entry.putTransientProperty("dateextract","extracted date from: " + info.name +" date: " + tmpDate);
+			} else {
+			    if(testNew) entry.putTransientProperty("dateextract","failed to extract date from: " + info.name);
+			}
+		    }
+		}
 
                 if (theDateRange[0] == null) {
                     theDateRange[0] = ((theDateRange[1] == null)
@@ -2724,9 +2698,6 @@ public class EntryManager extends RepositoryManager {
                 if (theDateRange[1] == null) {
                     theDateRange[1] = theDateRange[0];
                 }
-
-
-
 
 		if(noName)
 		    entry.putTransientProperty("noname","true");
@@ -2752,8 +2723,10 @@ public class EntryManager extends RepositoryManager {
 
             //Did they upload a new file???
             if (newResourceName != null) {
-                newResourceName = getStorageManager().moveToStorage(request,
-								    new File(newResourceName)).toString();
+		if(!testNew) {
+		    newResourceName = getStorageManager().moveToStorage(request,
+									new File(newResourceName)).toString();
+		}
                 newResourceType = Resource.TYPE_STOREDFILE;
             } else if (serverFile != null) {
                 newResourceName = serverFile.toString();
@@ -2771,9 +2744,11 @@ public class EntryManager extends RepositoryManager {
 										     request, "Error downloading URL")));
 
                     }
-                    newResourceName =
-                        getStorageManager().moveToStorage(request,
-							  newFile).toString();
+		    if(!testNew) {
+			newResourceName =
+			    getStorageManager().moveToStorage(request,
+							      newFile).toString();
+		    }
                     newResourceType = Resource.TYPE_LOCAL_FILE;
                 } else {
                     newResourceName = url;
@@ -2785,7 +2760,7 @@ public class EntryManager extends RepositoryManager {
             if ((newResourceName != null)
 		|| request.get(ARG_DELETEFILE, false)) {
                 //If it was a stored file then remove the old one
-                if (entry.getResource().isStoredFile()) {
+                if (!testNew && entry.getResource().isStoredFile()) {
                     getStorageManager().removeFile(entry.getResource());
                 }
                 if (newResourceName != null) {
@@ -2848,7 +2823,7 @@ public class EntryManager extends RepositoryManager {
 
 
         try {
-            if (newEntry) {
+            if (!testNew && newEntry) {
                 if (request.get(ARG_METADATA_ADD, false)) {
                     addInitialMetadata(request, entries, newEntry, false);
                 } else if (request.get(ARG_METADATA_ADDSHORT, false)) {
@@ -2879,14 +2854,23 @@ public class EntryManager extends RepositoryManager {
 	    }
 
 
-            insertEntries(request, entries, newEntry, false);
-
-
-            if (newEntry) {
-                for (Entry theNewEntry : entries) {
-                    theNewEntry.getTypeHandler().doFinalEntryInitialization(
-									    request, theNewEntry, false);
-                }
+	    if(!testNew) {
+		insertEntries(request, entries, newEntry, false);
+		if (newEntry) {
+		    for (Entry theNewEntry : entries) {
+			theNewEntry.getTypeHandler().doFinalEntryInitialization(
+										request, theNewEntry, false);
+		    }
+		}
+	    } else {
+		for(Entry theEntry: entries) {
+		    String        entryIcon = HU.getIconImage(getPageHandler().getIconUrl(request, theEntry));
+		    String extract = (String) theEntry.getTransientProperty("dateextract");
+		    String message = entryIcon+" new entry: " + theEntry.getName() +"<br>" + HU.space(12) +"type: " + theEntry.getTypeHandler().getLabel();
+		    if(extract!=null)
+			message+="<br>" + HU.space(12)+extract;
+		    testLog.add(message);
+		}
 	    }
         } catch (Exception exc) {
 	    logError("", exc);
@@ -2907,6 +2891,16 @@ public class EntryManager extends RepositoryManager {
             throw exc;
 	}
 
+
+	if(testNew) {
+	    StringBuilder sb = new StringBuilder();
+	    getPageHandler().entrySectionOpen(request, parentEntry, sb,
+					      "Entry test create log");
+	    sb.append(getPageHandler().showDialogNote("No entries were created"));
+	    sb.append(Utils.join(testLog,"<br>"));
+	    getPageHandler().entrySectionClose(request, parentEntry, sb);
+	    return new Result("",sb);
+	}
 
         if (forUpload) {
             entry = (Entry) entries.get(0);
@@ -2969,7 +2963,7 @@ public class EntryManager extends RepositoryManager {
 
     private void unzipResource(Request request, Entry parentEntry, User user,
 			       List<NewEntryInfo> infos,
-			       String resource) throws Exception {
+			       String resource,String datePattern, boolean testNew,List<String>testLog ) throws Exception {
 	Hashtable<String, Entry> nameToGroup = new Hashtable<String,  Entry>();
 	InputStream fis =
 	    getStorageManager().getFileInputStream(resource);
@@ -3009,8 +3003,29 @@ public class EntryManager extends RepositoryManager {
 				getRepository().getTmpRequest();
 			    tmpRequest.setUser(user);
 			    group = findGroupUnder(tmpRequest,
-						   parent, parentName, user);
-			    nameToGroup.put(ancestors, group);
+						   parent, parentName, user,testNew);
+			    if(group!=null) {
+				if(datePattern!=null) {
+				    Date tmpDate = Utils.extractDate(datePattern, parentName);
+				    if(testNew) {
+					if(tmpDate!=null) 
+					    testLog.add("Group: " + parentName +" extracted date: " + tmpDate);
+					else
+					    testLog.add("Group: " + parentName +" failed to extract date");
+				    }
+				    if(tmpDate!=null) {
+					group.setStartDate(tmpDate.getTime());
+					group.setEndDate(tmpDate.getTime());				    
+				    }
+				} else {
+				    testLog.add("Group: " + parentName);
+				}
+				nameToGroup.put(ancestors, group);
+			    } else {
+				if(testNew) {
+				    testLog.add("Failed to create group:" + parentName);
+				}				
+			    }
 			}
 			parent = group;
 		    }
@@ -9379,7 +9394,12 @@ public class EntryManager extends RepositoryManager {
     public Entry findGroupUnder(Request request, Entry group, String name,
                                 User user)
 	throws Exception {
-        //        synchronized (MUTEX_ENTRY) {
+	return findGroupUnder(request, group, name, user, false);
+    }	
+
+    public Entry findGroupUnder(Request request, Entry group, String name,
+                                User user, boolean testNew)
+	throws Exception {	
         List<String> toks = (List<String>) Utils.split(name,
 						       Entry.PATHDELIMITER, true, true);
 
@@ -9393,13 +9413,15 @@ public class EntryManager extends RepositoryManager {
                 }
             }
             if (theChild == null) {
-                theChild = makeNewGroup(request,group, tok, user);
+		if(!testNew) {
+		    theChild = makeNewGroup(request,group, tok, user);
+		} else {
+		    theChild =  new Entry(getRepository().getGroupTypeHandler(),true, tok);
+		}		    
             }
             group = theChild;
         }
-
         return group;
-        //        }
     }
 
 
