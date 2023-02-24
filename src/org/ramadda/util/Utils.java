@@ -1113,6 +1113,54 @@ public class Utils extends IO {
         }
     }
 
+    public static Date extractDate(String input,String name) throws Exception {
+	boolean debug = false;
+	if(input==null) return null;
+	List<String> lines = Utils.split(input,"\n",true,true);
+	if(debug)	System.err.println("extractDate:" + name);
+	for(String format:lines) {
+	    String pattern = format;
+	    if(format.indexOf(":")>=0) {
+		List<String> toks = splitUpTo(format,":",2);
+		pattern  =toks.get(0).trim();
+		format  =toks.get(1).trim();		
+		if(debug) System.err.println("pattern:" + pattern + " format:" + format);
+	    } else {		
+		//swap out any of the date tokens with a decimal regexp
+		for (String s : new String[] {
+			"y", "m", "M", "d", "H", "m"
+		    }) {
+		    pattern = pattern.replaceAll(s, "_DIGIT_");
+		}
+		pattern = pattern.replaceAll("_DIGIT_", "\\\\d");
+		pattern = ".*(" + pattern + ").*";
+		if(debug) System.err.println("pattern:" + pattern);
+	    }
+	    try {
+		Matcher matcher =
+		    Pattern.compile(pattern).matcher(name);
+		if (matcher.find()) {
+		    String dateString = matcher.group(1);
+		    if(debug)
+			System.err.println("\tfound:" + dateString);
+		    try {
+			Date date =  makeDateFormat(format).parse(dateString);
+			//			System.err.println("\tDate:" + date);
+			if(date!=null) return date;
+		    } catch(Exception ignore1) {
+			System.err.println("Error extracting date:" + ignore1);
+		    }
+		} else {
+		    if(debug)
+			System.err.println("\tNot found");
+		}
+	    } catch(Exception ignore2) {
+		System.err.println("Error extracting date:" + ignore2);
+	    }
+	}
+	return null;
+    }
+
 
     /**
      * _more_
