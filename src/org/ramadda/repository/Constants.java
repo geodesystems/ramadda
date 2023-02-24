@@ -1387,6 +1387,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_TEMPLATE = "template";
+    public static final String ARG_TESTNEW = "testnew";
 
     /** _more_ */
     public static final String ARG_USER_TEMPLATE = "usertemplate";
