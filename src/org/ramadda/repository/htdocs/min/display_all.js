@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 22 04:51:59 MST 2023";
+var build_date="RAMADDA build date: Fri Feb 24 05:06:04 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -55887,6 +55887,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let colorBy = this.getColorByInfo(records);
 	    if(colorBy.isEnabled()) {
 		let dataColumn = this.getColumnValues(records, colorBy.getField());
+		//Map the values into a standard 0...1 range
 		marker.line.color = Utils.normalize(dataColumn.values);		    
 		let scale = [];
 		let colors = colorBy.getColors();
