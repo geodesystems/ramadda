@@ -1086,12 +1086,13 @@ var Utils =  {
       normalize the vec arg of numbers to 0...1
     */
     normalize:function(vec) {
-	let vmin = Math.min(...vec);
-	let vmax = Math.max(...vec);
+	let vmin = Math.min(...vec.filter(v=>{return !isNaN(v)}));
+	let vmax = Math.max(...vec.filter(v=>{return !isNaN(v)}));			    
 	let vdelta = vmax - vmin;
 	return vec.map(value => {
+	    if(vdelta==0) return 0;
 	    return (value - vmin) / vdelta;
-	})
+	});
     },
 
     /** if v is 'true' or 'false' then return true or false
