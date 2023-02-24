@@ -46,7 +46,8 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 fields="latitude,longitude,alt.*|elev.*"}}
 -col
 +col-6
-{{display_map height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
+{{display_map tooltip="${default}"
+height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
 -col
 -row
 +row tight=true
