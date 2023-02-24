@@ -484,6 +484,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             let colorBy = this.getColorByInfo(records);
 	    if(colorBy.isEnabled()) {
 		let dataColumn = this.getColumnValues(records, colorBy.getField());
+		//Map the values into a standard 0...1 range
 		marker.line.color = Utils.normalize(dataColumn.values);		    
 		let scale = [];
 		let colors = colorBy.getColors();
