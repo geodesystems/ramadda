@@ -961,8 +961,8 @@ public class LogManager extends RepositoryManager {
      */
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
-        InputStream fis = getStorageManager().getFileInputStream(logFile);
-        try {
+        
+        try(InputStream fis = getStorageManager().getFileInputStream(logFile)) {
             String log      = request.getString(ARG_LOG, "error");
             int    numBytes = request.get(ARG_BYTES, 10000);
             if (numBytes < 0) {
@@ -997,12 +997,13 @@ public class LogManager extends RepositoryManager {
             boolean      didOne       = false;
             StringBuffer stackSB      = null;
             boolean      lastOneBlank = false;
-            for (String line : Utils.split(logString, "\n", false, false)) {
-                if ( !didOne) {
-                    didOne = true;
-
-                    continue;
-                }
+	    List<String> lines = Utils.split(logString, "\n", false, false);
+            for (String line : lines) {
+		//When there are lots of lines then skip the first one since it might be partial
+		if ( !didOne && lines.size()>25) {
+		    didOne = true;
+		    continue;
+		}
                 line = line.trim();
                 if (line.length() == 0) {
                     if (lastOneBlank) {
@@ -1046,11 +1047,7 @@ public class LogManager extends RepositoryManager {
                             stackSB.toString(),
                             HtmlUtils.cssClass(CSS_CLASS_STACK)), false));
             }
-
-            //        sb.append("</pre>");
-        } finally {
-            IOUtil.close(fis);
-        }
+	}
     }
 
 

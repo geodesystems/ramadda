@@ -79,7 +79,7 @@ public abstract class Harvester extends RepositoryManager {
     private static final boolean PRINT_DEBUG = false;
 
     /** _more_ */
-    private final LogManager.LogId LOGID =
+    private static final LogManager.LogId LOGID =
         new LogManager.LogId("org.ramadda.repository.harvester.Harvester");
 
 

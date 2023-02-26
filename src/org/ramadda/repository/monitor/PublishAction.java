@@ -41,8 +41,6 @@ public class PublishAction extends MonitorAction {
     /**  */
     public static final String ARG_PARENTENTRYID = "parententryid";
 
-
-
     /** _more_ */
     private String destRamadda;
 
@@ -70,6 +68,8 @@ public class PublishAction extends MonitorAction {
     public PublishAction(String id) {
         super(id);
     }
+
+
 
 
     /**
@@ -144,7 +144,7 @@ public class PublishAction extends MonitorAction {
         sb.append(HtmlUtils.formEntry("Password:",
 				      HtmlUtils.input(getArgId(ARG_PASSWORD), password,
 						      HtmlUtils.SIZE_40) + " "
-				      + "<br>Use &lt;property&gt; to look up password as a property"));
+				      + "<br>Use &quot;property:&lt;property name&gt;&quot; to look up password as a property"));
         sb.append(
 		  HtmlUtils.formEntry(
 				      "Destination Parent Entry ID:",
@@ -168,43 +168,36 @@ public class PublishAction extends MonitorAction {
                              boolean isNew) {
         try {
             if ( !Utils.stringDefined(destRamadda)) {
-                monitor.getRepository().getLogManager().logError(
-								 "PublishAction: no destination RAMADDA specified");
-
+                monitor.logError(this, "no destination RAMADDA specified");
                 return;
             }
             if ( !Utils.stringDefined(userId)) {
-                monitor.getRepository().getLogManager().logError(
-								 "PublishAction:" + destRamadda + " no user id specified");
+                monitor.logError(this, "Publish to:" + destRamadda + " no user id specified");
 
                 return;
             }
             if ( !Utils.stringDefined(parentEntryId)) {
-                monitor.getRepository().getLogManager().logError(
-								 "PublishAction:" + destRamadda
-								 + " no parent entry id specified");
+                monitor.logError(this,"Publish to:" + destRamadda
+				 + " no parent entry id specified");
 
                 return;
             }
             String password = this.password.trim();
-            if (password.startsWith("<") && password.endsWith(">")) {
-                String key = password.substring(1);
-                key = key.substring(0, key.length() - 1);
+            if (password.startsWith("property:")) {
+                String key = password.substring("property:".length()).trim();
                 password = monitor.getRepository().getProperty(key,
 							       (String) null);
                 if (password == null) {
-                    monitor.getRepository().getLogManager().logError(
-								     "PublishAction:" + destRamadda
-								     + " no password property defined for:" + key);
+                    monitor.logError(this,"Publish to:" + destRamadda
+				     + " no password property defined for:" + key);
 
                     return;
                 }
             }
 
             if ( !Utils.stringDefined(password)) {
-                monitor.getRepository().getLogManager().logError(
-								 "PublishAction:" + destRamadda
-								 + " no password specified");
+                monitor.logError(this,"Publish to:" + destRamadda
+				 + " no password specified");
 
                 return;
             }
@@ -223,8 +216,7 @@ public class PublishAction extends MonitorAction {
             String id =
                 RepositoryClient.importToRamadda(new URL(destRamadda),
 						 userId, password, parentEntryId, getPathTemplate(),file.toString());
-            monitor.getRepository().getLogManager().logInfo(
-							    "PublishAction: published to:" + destRamadda + " id:" + id);
+            monitor.logInfo(this, "published to:" + destRamadda + " id:" + id);
         } catch (Exception exc) {
             monitor.handleError("Error handling Publish Action", exc);
         }

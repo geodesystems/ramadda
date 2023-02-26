@@ -43,6 +43,11 @@ public class EntryMonitor implements Constants {
 
 
     /** _more_ */
+    public static final LogManager.LogId LOGID =
+        new LogManager.LogId("org.ramadda.repository.monitor.Monitor");
+
+
+    /** _more_ */
     public static final String ARG_CLEARERROR = "monitor_clearerror";
 
     /** _more_ */
@@ -199,6 +204,17 @@ public class EntryMonitor implements Constants {
         return sb.toString();
     }
 
+    public void logInfo(MonitorAction action, String message) {
+        getRepository().getLogManager().logInfo(LOGID, getName() + ": "  + message);
+    }
+
+    public void logError(MonitorAction action, String message) {
+	logError(action, message,null);
+    }
+    public void logError(MonitorAction action, String message,Exception exc) {	
+        getRepository().getLogManager().logError(LOGID, getName() + ": "  + message,exc);
+    }
+    
 
     /**
      * _more_
@@ -668,17 +684,9 @@ public class EntryMonitor implements Constants {
         lastError = message + "<br>" + exc + "<br>" + ((exc != null)
                 ? LogUtil.getStackTrace(exc)
                 : "");
-        getRepository().getLogManager().logError(message, exc);
+        logError(null, message, exc);
     }
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
-    protected void logInfo(String message) {
-        getRepository().getLogManager().logInfo(message);
-    }
 
     /**
      * _more_

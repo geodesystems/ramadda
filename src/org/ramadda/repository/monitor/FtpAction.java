@@ -239,7 +239,7 @@ public class FtpAction extends MonitorAction {
             boolean ok = ftpClient.storeUniqueFile(filename, is);
             is.close();
             if (ok) {
-                monitor.logInfo("Wrote file:" + directory + " " + filename);
+                monitor.logInfo(this, "Wrote file:" + directory + " " + filename);
             } else {
                 monitor.handleError("Failed to write file:" + directory + " "
                                     + filename, null);

@@ -6,9 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.cdmdata;
 
 
-
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.client.RepositoryClient;
@@ -172,22 +169,20 @@ public class GridSubsetAction extends MonitorAction {
             CdmDataOutputHandler cdo        = getCDO(monitor.getRepository());
             CdmManager           cdmManager = cdo.getCdmManager();
             if ( !cdmManager.canLoadAsGrid(entry)) {
-                monitor.getRepository().getLogManager().logError(
-                    "Grid Subset Action:" + " Entry is not a grid:" + entry);
-
+                monitor.logError(this,
+				 "Grid Subset Action:" + " Entry is not a grid:" + entry);
                 return;
             }
             Entry group = getGroup(monitor);
             if (group == null) {
-                monitor.getRepository().getLogManager().logError(
-                    "Grid Subset Action:" + " no parent entry specified");
-
+                monitor.logError(this,
+				 "Grid Subset Action:" + " no parent entry specified");
                 return;
             }
 
             if ( !Utils.stringDefined(args)) {
-                monitor.getRepository().getLogManager().logError(
-                    "Grid Subset Action:" + " no args specified");
+                monitor.logError(this,
+				 "Grid Subset Action:" + " no args specified");
 
                 return;
             }
@@ -215,7 +210,7 @@ public class GridSubsetAction extends MonitorAction {
 	    try {
 		cdo.outputGridSubset(request, entry);
 	    } catch(Exception exc) {
-		monitor.getRepository().getLogManager().logError("GridSubsetAction error:" + request,exc);
+		monitor.logError(this,"GridSubsetAction error:" + request,exc);
 		return;
 	    }
 
@@ -229,9 +224,9 @@ public class GridSubsetAction extends MonitorAction {
 								       request, file, group, getPathTemplate(),
 								       newName, "", request.getUser(),
                     gridTypeHandler, null);
-            monitor.getRepository().getLogManager().logInfoAndPrint(
-                "Grid Subset published:" + newEntry.getName() + " id:"
-                + newEntry.getId());
+            monitor.logInfo(this,
+			    "Grid Subset published:" + newEntry.getName() + " id:"
+			    + newEntry.getId());
         } catch (Exception exc) {
             monitor.handleError("Error handling Grid Subset Action", exc);
         }

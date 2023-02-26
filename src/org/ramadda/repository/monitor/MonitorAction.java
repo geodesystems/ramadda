@@ -21,6 +21,9 @@ import org.ramadda.repository.auth.*;
  */
 public abstract class MonitorAction implements Constants, Cloneable {
 
+
+
+
     /** _more_ */
     public static final String macroTooltip =
         "macros: ${entryid} ${resourcepath} ${resourcename} ${fileextension} ${from_day}  ${from_month} ${from_year} ${from_monthname}  <br>"
@@ -69,6 +72,9 @@ public abstract class MonitorAction implements Constants, Cloneable {
     public MonitorAction cloneMe() throws CloneNotSupportedException {
         return (MonitorAction) super.clone();
     }
+
+
+
 
     /**
      * _more_
