@@ -979,7 +979,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                    String type, Entry entry)
             throws Exception {
         return getSelect(request, elementId, label, allEntries, type, entry,
-                         true);
+                         true, true);
     }
 
 
@@ -1048,10 +1048,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
-                                   String type, Entry entry, boolean addClear)
+                                   String type, Entry entry, boolean addView, boolean addClear)
             throws Exception {
         return getSelect(request, elementId, label, allEntries, type, entry,
-                         addClear, "");
+                         addView, addClear, "");
     }
 
     /**
@@ -1073,7 +1073,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
                                    String type, Entry entry,
-                                   boolean addClear, String linkExtra)
+                                   boolean addView, boolean addClear, String linkExtra)
             throws Exception {
 
         boolean hasType    = Utils.stringDefined(type);
@@ -1088,8 +1088,19 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                           linkExtra
                                           + HU.id(selectorId
                                               + "_selectlink"));
+        if (addView) {
+            String viewEvent = HU.call("RamaddaUtils.viewSelect", HU.squote(selectorId));
+            link = link + " "
+                   + HU.mouseClickHref(viewEvent,
+                                       HU.getIconImage("fa-solid fa-link"),
+                                       HU.attr("title", "View selection")
+                                       + HU.id(selectorId + "_selectlink"));
+
+	}
+
+
         if (addClear) {
-            String clearEvent = HU.call("clearSelect", HU.squote(selectorId));
+            String clearEvent = HU.call("RamaddaUtils.clearSelect", HU.squote(selectorId));
             link = link + " "
                    + HU.mouseClickHref(clearEvent,
                                        HU.getIconImage("fas fa-eraser"),
@@ -1289,7 +1300,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
 
         sb.append(HU.mouseClickHref(HU.call(
-					    "selectClick",
+					    "RamaddaUtils.selectClick",
 					    HU.comma(
                         HU.squote(target), HU.squote(entry.getId()),
                         HU.squote(name),
@@ -1910,7 +1921,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         sb.append(HU.formEntry(msgLabel("Folder"),
                                HU.disabledInput(ARG_PUBLISH_ENTRY, entryName,
                                    HU.id(ARG_PUBLISH_ENTRY)
-                                   + HU.SIZE_60) + select + HU.space(2)
+						+ HU.SIZE_60) +HU.space(2)+ select + HU.space(2)
                                        + addMetadata));
 
         if (addNameField) {
