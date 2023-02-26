@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Feb 24 05:06:04 MST 2023";
+var build_date="RAMADDA build date: Sun Feb 26 05:58:21 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -31764,7 +31764,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let ancestor = HU.getUrlArgument(ID_ANCESTOR) ?? this.getProperty("ancestor");
 		let name = HU.getUrlArgument(ID_ANCESTOR_NAME) ?? this.getProperty("ancestorName");		
 		let aid = this.domId(ID_ANCESTOR);
-		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
+		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
 		let input = HU.input("",name||"",["READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		extra += HU.hidden("",ancestor||"",[ID,aid+"_hidden"]);
@@ -55838,6 +55838,10 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
     let myProps = [
 	{label:'3D Plot'},
 	{p:'markerSize',d:6},
+	{p:'axisLineColor',d:'rgb(255,255,255)'},
+	{p:'xaxisBackground',d:'rgb(200, 200, 230)'},
+	{p:'yaxisBackground',d:'#ccc'},	
+	{p:'zaxisBackground',d:'rgb(230, 230,200)'}	
     ];
     defineDisplay(this, SUPER, myProps, {
         initPlot: function(plot, myPlot) {
@@ -55909,25 +55913,25 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
                 type: this.get3DType()
             };
 
-	    let gridColor = this.getProperty('axisLineColor','rgb(255,255,255)');
+	    let gridColor = this.getAxisLineColor();
             let layout = {
                 scene: {
                     xaxis: {
-                        backgroundcolor: 'rgb(200, 200, 230)',
+                        backgroundcolor: this.getXaxisBackground(),
                         gridcolor: gridColor,
                         showbackground: true,
                         zerolinecolor: gridColor,
                         title: this.xField.getLabel(),
                     },
                     yaxis: {
-                        backgroundcolor: 'rgb(230, 200,230)',
+                        backgroundcolor: this.getYaxisBackground(),
                         gridcolor: gridColor,
                         showbackground: true,
                         zerolinecolor: gridColor,
                         title: this.yField.getLabel(),
                     },
                     zaxis: {
-                        backgroundcolor: 'rgb(230, 230,200)',
+                        backgroundcolor: this.getZaxisBackground(),
                         gridcolor: gridColor,
                         showbackground: true,
                         zerolinecolor: gridColor,

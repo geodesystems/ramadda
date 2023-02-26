@@ -302,7 +302,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             all.append(field.getName());
         }
         sb.append("&nbsp;");
-        sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("selectClick",
+        sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("RamaddaUtils.selectClick",
                 HtmlUtils.comma(HtmlUtils.squote(target),
                                 HtmlUtils.squote(entry.getId()),
                                 HtmlUtils.squote(all.toString()),
@@ -314,7 +314,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             sb.append(
                 HtmlUtils.mouseClickHref(
                     HtmlUtils.call(
-                        "selectClick", HtmlUtils.comma(
+				   "RamaddaUtils.selectClick", HtmlUtils.comma(
                             HtmlUtils.squote(target), HtmlUtils.squote(
                                 entry.getId()), HtmlUtils.squote(
                                 field.getName()), HtmlUtils.squote(

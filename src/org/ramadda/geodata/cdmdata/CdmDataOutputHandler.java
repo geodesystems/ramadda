@@ -2767,7 +2767,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             sb.append(
                 HU.mouseClickHref(
                     HU.call(
-                        "selectClick",
+			    "RamaddaUtils.selectClick",
                         HU.comma(
                             HU.squote(target),
                             HU.squote(entry.getId()),
