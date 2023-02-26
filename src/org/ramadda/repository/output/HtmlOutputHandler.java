@@ -1040,6 +1040,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
         boolean       isImage    = Misc.equals(selectType, "image");
+        boolean       isFieldName    = Misc.equals(selectType, "fieldname");	
         String        localeId   = request.getString(ARG_LOCALEID, null);
         String        target     = request.getString(ATTR_TARGET, "");
         StringBuilder sb         = new StringBuilder();
@@ -1150,13 +1151,16 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(sectionDivider);
                 }
 	    }
-            HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
-            String searchId = HU.getUniqueId("search");
-            HU.div(sb, "", HU.attrs("id", searchId));
-            sb.append(HU.script("RamaddaUtils.initEntryPopup('" + searchId
-                                + "','" + target + "');"));
-            HU.close(sb, "div");
-            sb.append(sectionDivider);
+	    if(!isFieldName) {
+		HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
+		String searchId = HU.getUniqueId("search");
+		HU.div(sb, "", HU.attrs("id", searchId));
+		sb.append(HU.script("RamaddaUtils.initEntryPopup('" + searchId
+				    + "','" + target + "');"));
+		HU.close(sb, "div");
+		sb.append(sectionDivider);
+	    }
+
 
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
