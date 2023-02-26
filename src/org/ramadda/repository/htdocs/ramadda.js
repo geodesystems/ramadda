@@ -9,6 +9,24 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     contents:{},
     currentRamaddaBase:null,
 
+    currentSelector:null,
+    selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
+	if(RamaddaUtils.currentSelector) {
+	    RamaddaUtils.currentSelector.cancel();
+	}
+	RamaddaUtils.currentSelector = RamaddaUtils.selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
+	return false;
+    },
+    selectCreate:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
+	let key = selectorId + (baseUrl||"");
+	if (true || !selectors[key]) {
+            return selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
+	} else {
+            return selectors[key].handleClick(event);
+	}
+    },
+
+
     clearSelect:function(id) {
 	selector = selectors[id];
 	if (selector) {
@@ -1235,7 +1253,6 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
 
 var selectors = new Array();
-
 function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl,props) {
     let _this = this;
     this.id = selectorId;
@@ -1387,24 +1404,7 @@ Selector.prototype = {
 
 
 
-function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl,props) {
-    let key = selectorId + (baseUrl||"");
-    if (true || !selectors[key]) {
-        return selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
-    } else {
-        return selectors[key].handleClick(event);
-    }
-}
 
-
-var currentSelector;
-function selectInitialClick(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
-    if(currentSelector) {
-	currentSelector.cancel();
-    }
-    currentSelector = selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props);
-    return false;
-}
 
 
 
@@ -1416,7 +1416,6 @@ function getChildText(node) {
         text = text + node.childNodes[childIdx].nodeValue;
     }
     return text;
-
 }
 
 

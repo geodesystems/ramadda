@@ -1,5 +1,4 @@
 
-
 function  ConvertForm(inputId, entry,params) {
     this.params = params||{};
     const ID_SETTINGS  = "settings";
@@ -197,7 +196,7 @@ function  ConvertForm(inputId, entry,params) {
 
 
 	    this.jq(ID_SELECTFILE).click(function(event){
-		selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid',''+_this.entry,null,null,
+		RamaddaUtils.selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid',''+_this.entry,null,null,
 				   {anchor:$(this),locationMy:'top right',locationAt:'bottom right-50',minWidth:'300px'});
 	    });
 	    this.jq(ID_ALL).click(function(e){
@@ -301,7 +300,7 @@ function  ConvertForm(inputId, entry,params) {
 		    this.jq("menu").find(".ramadda-menubar-button").click(function() {
 			let cat = $(this).attr("category");
 			if(!cat || !menuCategories[cat]) {
-			    selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid','" + this.entry+"');
+			    RamaddaUtils.selectInitialClick(event,'convertcsv_file1',_this.domId('input'),'true','entry:entryid','" + this.entry+"');
 			    return;
 			}
 			let title = $(this).attr("category");
@@ -816,7 +815,6 @@ function  ConvertForm(inputId, entry,params) {
 		url += "&applysiblings=true";
 
 	    let output = this.jq("output");
-
 	    let result;
 	    let writePre =contents=>{
 		contents = HU.pre([STYLE,HU.css('position','relative'),ID,this.domId(ID_PRE)],  contents);
@@ -1035,7 +1033,6 @@ function  ConvertForm(inputId, entry,params) {
 			}
 			return;
 		    } else if(stats || table) {
-//			console.log(result);
 			output.html(result);
 			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,this.domId("addfields")],"Add field ids") + SPACE3;
 			if(table)
@@ -1187,7 +1184,7 @@ function  ConvertForm(inputId, entry,params) {
 			    writePre(result);
 			    return;
 			} 
-		    output.html(html);
+			output.html(html);
 			if(printHeader) {
 			    output.find(".csv_header_field").click(function(event) {
 				let index = $(this).attr("index").replace("#","").trim();

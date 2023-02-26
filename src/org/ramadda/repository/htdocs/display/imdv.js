@@ -1200,7 +1200,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
 		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
-		this.selector = selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
+		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
 	    } 
 	    if(glyphType.getType() == GLYPH_MARKER) {
@@ -2851,7 +2851,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 callback:callback,
 			 'eventSourceId':this.domId(ID_MENU_FILE),
 			 typeLabel:'IMDV Entries'};
-	    this.selector = selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),'geo_imdv',null,props);
+	    this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),'geo_imdv',null,props);
 
 	},
 	

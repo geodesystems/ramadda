@@ -502,7 +502,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.jq(ID_ANCESTOR).click((event) =>{
 		let aid = this.domId(ID_ANCESTOR);
 		let root = this.getRamadda().getRoot();
-		selectInitialClick(event,aid,aid,true,null,null,'',root);
+		RamaddaUtils.selectInitialClick(event,aid,aid,true,null,null,'',root);
 	    });
 
 

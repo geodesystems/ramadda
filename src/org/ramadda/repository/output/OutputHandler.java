@@ -1131,7 +1131,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                            ? ""
                                            : "_" + type);
         String event = HtmlUtils.call(
-                           "selectInitialClick",
+                           "RamaddaUtils.selectInitialClick",
                            HtmlUtils.comma(
                                "event", HtmlUtils.squote(selectorId),
                                HtmlUtils.squote(elementId),
