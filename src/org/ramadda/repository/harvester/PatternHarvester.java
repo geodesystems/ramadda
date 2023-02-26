@@ -472,15 +472,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					   "true",
 						  ignoreErrors,"Ignore errors")));
 
-        sb.append(
-		  HU.colspan(
-			     formHeader("Then create an entry with") + HU.space(2)
-			     + HU.href(getPageHandler().makeHtdocsUrl("/help/harvesters.html"),
-				       "(" + msg("Help") + ")", " target=_HELP"), 2));
+        sb.append(HU.colspan(formHeader("Then create an entry with"),2));
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
+	String folderHelp =
+                    HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html#entry"),
+			    msg("Help"), " target=_HELP");
+
+
         sb.append(HU.formEntry(msgLabel("Folder template"),
 			       HU.input(ATTR_GROUPTEMPLATE,
-					groupTemplate, HU.SIZE_60)));
+					groupTemplate, HU.SIZE_60) +HU.space(2) + folderHelp));
         sb.append(
 		  HU.formEntry(
 			       "",

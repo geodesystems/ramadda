@@ -475,6 +475,7 @@ public class HarvesterManager extends RepositoryManager {
 
         makeFormHeader(request, harvester, sb);
 
+	String space = HU.space(2);
         String xmlLink = HtmlUtils.href(
                              HtmlUtils.url(
                                  URL_HARVESTERS_FORM.toString()
@@ -482,19 +483,23 @@ public class HarvesterManager extends RepositoryManager {
                                      "true", ARG_HARVESTER_ID,
                                      harvester.getId()), msg("Download"));
 
-        String buttons = HtmlUtils.submit(msg("Change"), ARG_CHANGE)
-                         + HtmlUtils.space(1)
-                         + HtmlUtils.submit(msg("Delete"), ARG_DELETE)
-                         + HtmlUtils.space(1)
-                         + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
+        String buttons =
+	    HtmlUtils.submit(msg("Change"), ARG_CHANGE)
+	    + space
+	    + HtmlUtils.submit(msg("Delete"), ARG_DELETE)
+	    + space
+	    + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
 
 
 
         sb.append(buttons);
-        sb.append(HtmlUtils.space(2));
-        sb.append(xmlLink);
-        sb.append(HtmlUtils.space(2));
+        sb.append(space);
 	sb.append(harvester.getRunLink(request,false));
+	String helpLink = HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html"),
+				  msg("Help"), " target=_HELP style='font-weight:normal;'");
+
+        sb.append(space);
+        sb.append(helpLink);
         StringBuffer formSB = new StringBuffer();
         formSB.append(HtmlUtils.formTable());
         harvester.createEditForm(request, formSB);
@@ -502,6 +507,10 @@ public class HarvesterManager extends RepositoryManager {
 
         sb.append(formSB);
         sb.append(buttons);
+        sb.append(space);
+        sb.append(xmlLink);
+
+
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.sectionClose());
 

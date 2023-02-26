@@ -1092,7 +1092,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             String viewEvent = HU.call("RamaddaUtils.viewSelect", HU.squote(selectorId));
             link = link + " "
                    + HU.mouseClickHref(viewEvent,
-                                       HU.getIconImage("fa-solid fa-link"),
+                                       HU.getIconImage("fas fa-link"),
                                        HU.attr("title", "View selection")
                                        + HU.id(selectorId + "_selectlink"));
 
