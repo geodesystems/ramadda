@@ -1037,9 +1037,6 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getSelectXml(Request request, Entry group,
                                List<Entry> children)
             throws Exception {
-	System.err.println(request);
-
-
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
         boolean       isImage    = Misc.equals(selectType, "image");
