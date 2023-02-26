@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb 26 05:58:21 MST 2023";
+var build_date="RAMADDA build date: Sun Feb 26 06:18:11 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -31135,7 +31135,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    this.jq(ID_ANCESTOR).click((event) =>{
 		let aid = this.domId(ID_ANCESTOR);
 		let root = this.getRamadda().getRoot();
-		selectInitialClick(event,aid,aid,true,null,null,'',root);
+		RamaddaUtils.selectInitialClick(event,aid,aid,true,null,null,'',root);
 	    });
 
 
@@ -41542,7 +41542,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			     'eventSourceId':this.domId(ID_MENU_NEW)};
 		let entryType = glyphType.isImage()?'type_image,type_document_pdf,geo_gdal,latlonimage':glyphType.isMap()?Utils.join(MAP_TYPES,','):'';
 		props.typeLabel  = glyphType.isImage()?'Images':glyphType.isMap()?'Maps':'';
-		this.selector = selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
+		this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(''),'',false,'entryid',this.getProperty('entryId'),entryType,null,props);
 		return
 	    } 
 	    if(glyphType.getType() == GLYPH_MARKER) {
@@ -43193,7 +43193,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			 callback:callback,
 			 'eventSourceId':this.domId(ID_MENU_FILE),
 			 typeLabel:'IMDV Entries'};
-	    this.selector = selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),'geo_imdv',null,props);
+	    this.selector = RamaddaUtils.selectCreate(null, HU.getUniqueId(""),"",false,'entryid',this.getProperty('entryId'),'geo_imdv',null,props);
 
 	},
 	
