@@ -7232,17 +7232,17 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
-						  "Entry ID", true, "entryid", entry, false,
+						  "Entry ID", true, "entryid", entry, false, false,
 						  buttonClass);
 
 
 
         String importEntry = OutputHandler.getSelect(request, textAreaId,
-						     "Import Entry", true, "wikilink", entry, false,
+						     "Embed Entry", true, "wikilink", entry, false, false,
 						     buttonClass);
 
         String fieldLink = OutputHandler.getSelect(request, textAreaId,
-						   "Field ID", true, "fieldname", entry, false,
+						   "Field ID", true, "fieldname", entry, false, false,
 						   buttonClass);
 
         HU.open(buttons, "div",

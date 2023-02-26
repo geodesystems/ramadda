@@ -1037,6 +1037,8 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getSelectXml(Request request, Entry group,
                                List<Entry> children)
             throws Exception {
+	System.err.println(request);
+
 
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
@@ -1154,7 +1156,7 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
             String searchId = HU.getUniqueId("search");
             HU.div(sb, "", HU.attrs("id", searchId));
-            sb.append(HU.script("HtmlUtils.initSearchPopup('" + searchId
+            sb.append(HU.script("RamaddaUtils.initEntryPopup('" + searchId
                                 + "','" + target + "');"));
             HU.close(sb, "div");
             sb.append(sectionDivider);

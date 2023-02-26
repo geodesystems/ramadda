@@ -213,8 +213,7 @@ public abstract class MonitorAction implements Constants, Cloneable {
                 group =
                     (Entry) entryMonitor.getRepository().getEntryManager()
 		    .findGroup(entryMonitor.getRepository().getAdminRequest(), parentGroupId);
-		if(group==null)
-		    System.err.println("MonitorAction.getGroup: null group:" + parentGroupId);
+		//		if(group==null)    System.err.println("MonitorAction.getGroup: null group:" + parentGroupId);
             }
             return group;
         } catch (Exception exc) {

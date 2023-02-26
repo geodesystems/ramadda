@@ -444,29 +444,35 @@ public class HarvesterManager extends RepositoryManager {
      */
     public Result processForm(Request request) throws Exception {
 
+        StringBuffer sb = new StringBuffer();
+	if(!haveInited) {
+	    sb.append(getPageHandler().showDialogNote("Harvesters have not been initialized yet"));
+	    return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
+	}
+
         Harvester harvester =
             findHarvester(request.getString(ARG_HARVESTER_ID));
         if (harvester == null) {
-            throw new IllegalArgumentException("Could not find harvester");
+	    sb.append(getPageHandler().showDialogError("Could not find harvester:"+ request.getString(ARG_HARVESTER_ID)));
+	    return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
         }
 
         if (request.get(ARG_HARVESTER_GETXML, false)) {
             String xml = harvester.getContent();
             xml = XmlUtil.tag(Harvester.TAG_HARVESTERS, "", xml);
-
             return new Result("",
                               new StringBuffer(XmlUtil.getHeader() + "\n"
                                   + xml), "text/xml");
         }
 
         if ( !harvester.getIsEditable()) {
-            throw new IllegalArgumentException("Cannot edit harvester");
+	    sb.append(getPageHandler().showDialogError("Cannot edit  harvester:"+ request.getString(ARG_HARVESTER_ID)));
+	    return getAdmin().makeResult(request, msg("RAMADDA-Admin-Harvesters"), sb);
         }
         if (request.exists(ARG_CANCEL)) {
             return new Result(request.makeUrl(URL_HARVESTERS_LIST));
         }
 
-        StringBuffer sb = new StringBuffer();
         makeFormHeader(request, harvester, sb);
 
         String xmlLink = HtmlUtils.href(

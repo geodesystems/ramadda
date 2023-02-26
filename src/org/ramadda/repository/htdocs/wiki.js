@@ -655,7 +655,7 @@ WikiEditor.prototype = {
     },
 
     doGpt:function() {
-	let html=  "Note: any selected text in the editor will have the prompt applied to it<br>" +
+	let html=  HU.center("Note: any selected text in the editor will have the prompt applied to it") +
 	    HU.formTable() +
 	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'Rephrase the following text:',
 						   ['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-prefix')])) +
@@ -664,7 +664,7 @@ WikiEditor.prototype = {
 	    HU.formTableClose() +
 	    HU.span(['id',this.domId('gpt-call')],'Evaluate') +	    
 	    HU.div(['style','position:relative;'],
-		   HU.textarea('','',['id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
 			   HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])))+
 	    HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true',ID,this.domId("ok")],"Replace"),

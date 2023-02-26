@@ -4315,63 +4315,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 	return url;
     },
-    initSearchPopup:function(id,target) {
-        let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
-                                    HU.css("width","200px")]);
-        input = HU.center(input);
-        let html = input +HU.div([CLASS,"ramadda-select-search-results","id",id+"_results"]);
-        $("#" +id).html(html);
-        let results = $("#" + id +"_results");
-        $("#" + id +"_input").keyup(function(event){
-            let value =  $(this).val();
-            if(value=="") {
-                results.hide();
-                results.html("");
-                return;
-            }
-            let keycode = (event.keyCode ? event.keyCode : event.which);
-            if(keycode == 13) {
-                let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
-                results.html(HU.getIconImage(icon_wait) + " Searching...");
-                results.show();
-                var myCallback = {
-                    entryListChanged: function(list) {
-                        let entries = list.getEntries();
-                        if(entries.length==0) {
-                            results.show();
-                            results.html("Nothing found");
-                            return;
-                        }
-                        let html = "";
-
-                        entries.forEach((entry,idx)=>{
-                            html += HU.div(['index',idx, 'class','ramadda-clickable'], entry.getIconImage() +" " + entry.getName());
-                        });
-                        results.html(html);
-			results.find('.ramadda-clickable').click(function() {
-			    let entry = entries[$(this).attr('index')];
-                            selectClick(target, entry.getId(),entry.getName(),{
-				entryName: entry.getName(),
-				icon:entry.getIconUrl(),
-				entryType:entry.getType().id
-			    });
-			});
-			
-                        results.show(400);
-                    },
-                    handleSearchError:function(url, error) {
-                        results.html("An error occurred:" + error);
-                    }
-                };
-                var entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
-                entryList.doSearch();
-            }
-        });
-    },
-
     removeFromDocumentUrl:function(arg) {
         try {
-            var url = String(window.location);
+            let url = String(window.location);
             url = url.replace("\&?" + arg+"=[^\&]+\&?","");
             if (window.history.replaceState)
                 window.history.replaceState("", "", url);
@@ -4464,15 +4410,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     tds: function(attrs, cols) {
 	if(!cols) return "";
 	if(!Array.isArray(cols)) cols = [cols];
-        var html = "";
-        for (var i = 0; i < cols.length; i++) {
+        let html = "";
+        for (let i = 0; i < cols.length; i++) {
             html += this.td(attrs, cols[i]);
         }
         return html;
     },
     ths: function(attrs, cols) {
-        var html = "";
-        for (var i = 0; i < cols.length; i++) {
+        let html = "";
+        for (let i = 0; i < cols.length; i++) {
             html += this.th(attrs, cols[i]);
         }
         return html;
@@ -4480,7 +4426,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     onReturnEvent: function(selector,func) {
         if((typeof selector) == "string") selector = $(selector);
         selector.keyup(function(event) {
-            var keycode = (event.keyCode ? event.keyCode : event.which);
+            let keycode = (event.keyCode ? event.keyCode : event.which);
             if(keycode == 13) {
                 func($(this),event);
             }
@@ -4540,7 +4486,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     scrollToAnchor:function(aid,offset,containerId) {
         if(!Utils.isDefined(offset)) offset=-50;
-        var aTag = $("a[name='"+ aid +"']");
+        let aTag = $("a[name='"+ aid +"']");
         if(!offset) offset=0;
         offset = +offset;
         //Offset a bit
@@ -4727,7 +4673,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (args.length > 0) {
             path += "?";
         }
-        for (var i = 0; i < args.length; i += 2) {
+        for (let i = 0; i < args.length; i += 2) {
             if (i > 0) {
                 path += "&";
             }
@@ -4751,7 +4697,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             inner = attrs;
             attrs = null;
         }
-        var html = "<" + tagName + " " + this.attrs(attrs) + ">";
+        let html = "<" + tagName + " " + this.attrs(attrs) + ">";
         if (inner != null) {
             html += inner;
         }
@@ -4811,13 +4757,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     attrs: function(list) {
         if (!list) return "";
-        var html = "";
+        let html = "";
         if (list == null) return html;
         if (list.length == 1) return list[0];
-        for (var i = 0; i < list.length; i += 2) {
-            var name = list[i];
+        for (let i = 0; i < list.length; i += 2) {
+            let name = list[i];
             if (!name) continue;
-            var value = list[i + 1];
+            let value = list[i + 1];
             if (value == null) {
                 html += " " + name + " ";
             } else {
@@ -4938,7 +4884,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     link: function(url, label, attrs) {
         if (attrs == null) attrs = [];
-        var a = [];
+        let a = [];
         for (i in attrs)
             a.push(attrs[i]);
         attrs = a;

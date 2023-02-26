@@ -1971,7 +1971,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    String select =
 		getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
 								 null,
-								 true, "", ancestorEntry, true);
+								 true, "", ancestorEntry, true,true);
 
 	    String event = OutputHandler.getSelectEvent(request, ARG_ANCESTOR, true, "", ancestorEntry);
 	    sb.append(HU.hidden(ARG_ANCESTOR + "_hidden",

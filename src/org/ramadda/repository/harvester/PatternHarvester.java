@@ -468,9 +468,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					HU.SIZE_5) +" How far down the hierarchy does the harvester go"));	
 
         sb.append(HU.formEntry("",
-			       HU.checkbox(ATTR_IGNORE_ERRORS,
+			       HU.labeledCheckbox(ATTR_IGNORE_ERRORS,
 					   "true",
-					   ignoreErrors) + " Ignore errors"));
+						  ignoreErrors,"Ignore errors")));
 
         sb.append(
 		  HU.colspan(
@@ -484,8 +484,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sb.append(
 		  HU.formEntry(
 			       "",
-			       HU.checkbox(ATTR_NOTREE, "true", noTree)
-			       + " Don't make entry hierarchy from directory tree"));
+			       HU.labeledCheckbox(ATTR_NOTREE, "true", noTree,
+						  "Don't make entry hierarchy from directory tree")));
 
         sb.append(HU.formEntry(msgLabel("Name template"),
 			       HU.input(ATTR_NAMETEMPLATE,

@@ -9,6 +9,132 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     contents:{},
     currentRamaddaBase:null,
 
+    clearSelect:function(id) {
+	selector = selectors[id];
+	if (selector) {
+            selector.clearInput();
+	} else {
+            //In case the user never clicked select
+            let textComp = GuiUtils.getDomObject(id);
+            let hiddenComp = GuiUtils.getDomObject(id + "_hidden");
+            if (hiddenComp) {
+		hiddenComp.obj.value = ""
+            }
+            if (textComp) {
+		textComp.obj.value = ""
+            }
+	}
+    },
+
+    viewSelect:function(id) {
+        let hiddenComp = GuiUtils.getDomObject(id + "_hidden");
+        if (hiddenComp) {
+	    let entryId = hiddenComp.obj.value;
+	    if(Utils.stringDefined(entryId)) {
+		let url = RamaddaUtils.getEntryUrl(entryId);
+		window.open(url,'_blank');
+	    }
+	}
+    },
+
+
+    initEntryPopup:function(id,target) {
+        let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
+                                    HU.css("width","200px")]);
+        input = HU.center(input);
+        let html = input +HU.div([CLASS,"ramadda-select-search-results","id",id+"_results"]);
+        $("#" +id).html(html);
+        let results = $("#" + id +"_results");
+
+
+        $("#" + id +"_input").keyup(function(event){
+            let value =  $(this).val();
+            if(value=="") {
+                results.hide();
+                results.html("");
+                return;
+            }
+            let keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == 13) {
+                let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
+                results.html(HU.getIconImage(icon_wait) + " Searching...");
+                results.show();
+                let myCallback = {
+                    entryListChanged: function(list) {
+                        let entries = list.getEntries();
+                        if(entries.length==0) {
+                            results.show();
+                            results.html("Nothing found");
+                            return;
+                        }
+                        let html = "";
+                        entries.forEach((entry,idx)=>{
+                            html += HU.div(['index',idx, 'class','ramadda-clickable ramadda-entry'], entry.getIconImage() +" " + entry.getName());
+                        });
+                        results.html(html);
+			results.find('.ramadda-entry').click(function() {
+			    let entry = entries[$(this).attr('index')];
+                            RamaddaUtils.selectClick(target, entry.getId(),entry.getName(),{
+				entryName: entry.getName(),
+				icon:entry.getIconUrl(),
+				entryType:entry.getType().id
+			    });
+			});
+			
+                        results.show(400);
+                    },
+                    handleSearchError:function(url, error) {
+                        results.html("An error occurred:" + error);
+                    }
+                };
+                let entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
+                entryList.doSearch();
+            }
+        });
+    },
+
+
+    selectClick:function(id, entryId, value, opts) {
+	selector = selectors[id];
+	let handler = getHandler(id);
+	if(!handler) handler = getHandler(selector.elementId);
+	if (handler) {
+            handler.selectClick(selector.selecttype, id, entryId, value);
+            selector.cancel();
+            return;
+	}
+
+	if (selector.selecttype == "wikilink") {
+	    let args = {entryId: entryId,name:value};
+	    if(opts) $.extend(args, opts);
+            insertAtCursor(selector.elementId, selector.textComp.obj,args);
+	} else   if (selector.selecttype == "fieldname") {
+            insertAtCursor(selector.elementId, selector.textComp.obj,  value);
+	} else   if (selector.selecttype == "image") {
+            insertAtCursor(selector.elementId, selector.textComp.obj,  "{{image entry=\"" + entryId +"\" caption=\"" + value+"\" width=400px align=center}} ");	
+	} else if (selector.selecttype == "entryid") {
+            //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
+	    let editor = HU.getWikiEditor(selector.elementId);
+	    if(editor) {
+		editor.insertTags(entryId, " ", "importtype");
+	    } else {
+		if(selector.props && selector.props.callback) {
+		    selector.props.callback(entryId,opts);
+		} else {
+		    insertText(selector.elementId,entryId);
+		}
+	    }
+	} else if (selector.selecttype == "entry:entryid") {
+            //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
+            HU.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");
+	} else {
+            selector.getHiddenComponent().val(entryId);
+            selector.getTextComponent().val(value);
+	}
+	selector.cancel();
+    },
+
+
     getBaseUrl:function() {
 	return ramaddaBaseUrl;
     },
@@ -1258,45 +1384,6 @@ Selector.prototype = {
 
 
 
-function selectClick(id, entryId, value, opts) {
-    selector = selectors[id];
-    let handler = getHandler(id);
-    if(!handler) handler = getHandler(selector.elementId);
-    if (handler) {
-        handler.selectClick(selector.selecttype, id, entryId, value);
-        selector.cancel();
-        return;
-    }
-
-    if (selector.selecttype == "wikilink") {
-	let args = {entryId: entryId,name:value};
-	if(opts) $.extend(args, opts);
-        insertAtCursor(selector.elementId, selector.textComp.obj,args);
-    } else   if (selector.selecttype == "fieldname") {
-        insertAtCursor(selector.elementId, selector.textComp.obj,  value);
-    } else   if (selector.selecttype == "image") {
-        insertAtCursor(selector.elementId, selector.textComp.obj,  "{{image entry=\"" + entryId +"\" caption=\"" + value+"\" width=400px align=center}} ");	
-    } else if (selector.selecttype == "entryid") {
-        //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
-	let editor = HU.getWikiEditor(selector.elementId);
-	if(editor) {
-	    editor.insertTags(entryId, " ", "importtype");
-	} else {
-	    if(selector.props && selector.props.callback) {
-		selector.props.callback(entryId,opts);
-	    } else {
-		insertText(selector.elementId,entryId);
-	    }
-	}
-    } else if (selector.selecttype == "entry:entryid") {
-        //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
-        HU.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");
-    } else {
-        selector.getHiddenComponent().val(entryId);
-        selector.getTextComponent().val(value);
-    }
-    selector.cancel();
-}
 
 
 
@@ -1320,22 +1407,6 @@ function selectInitialClick(event, selectorId, elementId, allEntries, selecttype
 }
 
 
-function clearSelect(id) {
-    selector = selectors[id];
-    if (selector) {
-        selector.clearInput();
-    } else {
-        //In case the user never clicked select
-        let textComp = GuiUtils.getDomObject(id);
-        let hiddenComp = GuiUtils.getDomObject(id + "_hidden");
-        if (hiddenComp) {
-            hiddenComp.obj.value = ""
-        }
-        if (textComp) {
-            textComp.obj.value = ""
-        }
-    }
-}
 
 
 

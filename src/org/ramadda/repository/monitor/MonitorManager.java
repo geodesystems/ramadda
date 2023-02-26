@@ -416,9 +416,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.sectionOpen(null, false));
-        sb.append(msgLabel("Monitor"));
-        sb.append(HtmlUtils.space(1));
-        sb.append(monitor.getName());
+        sb.append(HtmlUtils.h2(msgLabel("Monitor") + " "
+                               + monitor.getName()));
         request.formPostWithAuthToken(sb,
                                       getAdmin().URL_ADMIN_MONITORS,
                                       HtmlUtils.attr(HtmlUtils.ATTR_NAME,

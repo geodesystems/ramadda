@@ -435,6 +435,10 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
     let myProps = [
 	{label:'3D Plot'},
 	{p:'markerSize',d:6},
+	{p:'axisLineColor',d:'rgb(255,255,255)'},
+	{p:'xaxisBackground',d:'rgb(200, 200, 230)'},
+	{p:'yaxisBackground',d:'#ccc'},	
+	{p:'zaxisBackground',d:'rgb(230, 230,200)'}	
     ];
     defineDisplay(this, SUPER, myProps, {
         initPlot: function(plot, myPlot) {
@@ -506,25 +510,25 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
                 type: this.get3DType()
             };
 
-	    let gridColor = this.getProperty('axisLineColor','rgb(255,255,255)');
+	    let gridColor = this.getAxisLineColor();
             let layout = {
                 scene: {
                     xaxis: {
-                        backgroundcolor: 'rgb(200, 200, 230)',
+                        backgroundcolor: this.getXaxisBackground(),
                         gridcolor: gridColor,
                         showbackground: true,
                         zerolinecolor: gridColor,
                         title: this.xField.getLabel(),
                     },
                     yaxis: {
-                        backgroundcolor: 'rgb(230, 200,230)',
+                        backgroundcolor: this.getYaxisBackground(),
                         gridcolor: gridColor,
                         showbackground: true,
                         zerolinecolor: gridColor,
                         title: this.yField.getLabel(),
                     },
                     zaxis: {
-                        backgroundcolor: 'rgb(230, 230,200)',
+                        backgroundcolor: this.getZaxisBackground(),
                         gridcolor: gridColor,
                         showbackground: true,
                         zerolinecolor: gridColor,

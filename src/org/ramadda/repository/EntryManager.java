@@ -5519,7 +5519,7 @@ public class EntryManager extends RepositoryManager {
 											  HU.image("fas fa-bars")
 											  + HU.SPACE
 											  + msg("Select")
-											  + HU.SPACE), true, "", null, false);
+											  + HU.SPACE), true, "", null, false, false);
 
 
 

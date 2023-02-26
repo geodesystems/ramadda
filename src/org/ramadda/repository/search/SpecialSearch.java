@@ -627,7 +627,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
                     ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
-                    true);
+								 true,true);
 
             formSB.append(HU.hidden(ARG_ANCESTOR + "_hidden",
                                     (ancestor != null)

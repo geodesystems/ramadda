@@ -128,7 +128,7 @@ public class EntryMonitor implements Constants {
         this.id  = repository.getGUID();
         fromDate = new Date();
         toDate = new Date(fromDate.getTime()
-                          + (long) DateUtil.daysToMillis(365));
+                          + (long) DateUtil.daysToMillis(365*5));
     }
 
 

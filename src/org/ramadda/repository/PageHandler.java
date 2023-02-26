@@ -3759,7 +3759,6 @@ public class PageHandler extends RepositoryManager {
             throws Exception {
         String baseSelect = OutputHandler.getGroupSelect(request, selectId);
 
-
         sb.append(HU.hidden(selectId + "_hidden", ((entry != null)
                 ? entry.getId()
                 : ""), HU.id(selectId + "_hidden")));
@@ -3768,7 +3767,7 @@ public class PageHandler extends RepositoryManager {
                 ? entry.getFullName()
                 : ""), HU.id(selectId) + HU.SIZE_60 + ((entry == null)
                 ? HU.cssClass(CSS_CLASS_REQUIRED_DISABLED)
-                : "")) + baseSelect + extra));
+						       : "")) + HU.space(2) + baseSelect + extra));
     }
 
 
