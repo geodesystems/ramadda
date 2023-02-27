@@ -4964,15 +4964,18 @@ public class TypeHandler extends RepositoryManager {
                         String        cbxId  = "iswiki";
                         String        textId = ARG_DESCRIPTION;
                         StringBuilder tmpSB  = new StringBuilder();
+			/*
                         String img = HtmlUtils.getIconImage(
                                          getRepository().getIconUrl(
                                              ICON_WIKI), "title",
                                                  "Wikify text");
+			*/
                         /*
                         //For some reason the FA icon inside the label gets shifted over
                         //So wrap it in a span with margin spacing
-                        //                      String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:16px;"));
                         */
+			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:12px;"));
+
                         String prefix = "";
                         if (getTypeProperty("form.description.showwiki",
                                             true)) {
@@ -5311,7 +5314,7 @@ public class TypeHandler extends RepositoryManager {
 						      5,50),
 					  HU.space(1),
 					  "Date formats to use to extract date from filename. e.g.:" +
-					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy-MM-dd_HHmm"));
+					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy_MM_dd\nyyyyMMddHHmm\nyyyy_MM_dd_HHmm\nyyyy-MM-dd_HHmm"));
 
         String deleteFileWidget = ((entry != null) && entry.isFile())
                                   ? HU.labeledCheckbox(ARG_DELETEFILE,
