@@ -121,11 +121,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                             new WikiTag(WIKI_TAG_ENTRYLINK, null, "link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
                             new WikiTag(WIKI_TAG_THIS,null),
                             new WikiTag(WIKI_TAG_ANCESTOR,null,"type","entry type"), 			    
-                            new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
-                            new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
-                            new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-                            new WikiTag(WIKI_TAG_DATE_CREATE,"Create Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-                            new WikiTag(WIKI_TAG_DATE_CHANGE,"Change Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
                             new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
@@ -159,12 +154,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
                                         "showSnippet","false",
                                         "showSnippetHover","true",
                                         "showLink","false","showHeading","true"), 
-                            new WikiTag(WIKI_TAG_FLIPCARDS, null, 
-                                        "inner","300", 
-					"width","300",
-					"addTags","false",
-					"frontStyle","",
-					"backStyle",""),					
                             new WikiTag(WIKI_TAG_MAP,
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "80vh","listentries","true"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
@@ -183,7 +172,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					+ "footer", "", APPLY_PREFIX
 					+ "border", "0", APPLY_PREFIX
                                         + "bordercolor", "#000")),
-        new WikiTagCategory("Images",
+        new WikiTagCategory("Images & Dates",
                             new WikiTag(WIKI_TAG_IMAGE,null,
                                         "#"+ATTR_SRC, "", ATTR_WIDTH,"100%", "#"+ATTR_ALIGN,"left|center|right"), 
                             new WikiTag(WIKI_TAG_GALLERY,null,
@@ -204,14 +193,24 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 					"#showLink","true",
 					"bordercolor","#efefef",
 					"#" + ATTR_TEXTPOSITION,"top|left|right|bottom"), 
-                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","90%")),
+                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","90%"),
+                            new WikiTag(WIKI_TAG_FLIPCARDS, null, 
+                                        "inner","300", 
+					"width","300",
+					"addTags","false",
+					"frontStyle","",
+					"backStyle",""),					
+
+                            new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
+                            new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
+                            new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
+                            new WikiTag(WIKI_TAG_DATE_CREATE,"Create Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
+                            new WikiTag(WIKI_TAG_DATE_CHANGE,"Change Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
+			    new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
+                            new WikiTag(WIKI_TAG_DATETABLE, null,"byType","false","showTime","false"),			    			                              new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150")),
         new WikiTagCategory("Misc",
                             new WikiTag("counter", null, "key", "key"),
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
-                            new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
-                            new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
-                            new WikiTag(WIKI_TAG_DATETABLE, null,"byType","false","showTime","false"),			    			    
-                            new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150"),
                             new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
                             new WikiTag(WIKI_TAG_USER, null, "users","user1,user2","delimiter"," ","style","","showAvatar","true","showEmail","true"),
                             new WikiTag(WIKI_TAG_COMMENTS),
@@ -7090,6 +7089,7 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
         String        buttonClass = HU.clazz("ramadda-menubar-button");
         StringBuilder help        = new StringBuilder();
+        StringBuilder etc        = new StringBuilder();	
 
 	BiFunction<String,String,String> makeButton = (title,contents)->{
 	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
@@ -7130,8 +7130,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 				  HU.attrs("id", textAreaId+"_rewrite")));
 	}
 	Utils.add(etcLinks,colorButton, wcButton);
-	help.append(Utils.join(etcLinks,"<br>"));
-	help.append("<div class=ramadda-thin-hr></div><b>Help</b><br>");
+	etc.append(Utils.join(etcLinks,"<br>"));
+	//	help.append("<div class=ramadda-thin-hr></div><b>Help</b><br>");
 
 
 	BiConsumer<String,String> makeHelp = (p,title)->{
@@ -7166,7 +7166,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 
 
 
-        String helpButton = makeButton.apply("Etc...", help.toString());
+        String etcButton = makeButton.apply("Etc", etc.toString());
+        String helpButton = makeButton.apply("Help", help.toString());
         String formattingButton = makeButton.apply("Formatting",
 						   HU.hbox(tags1, tags2,tags3,tags4));
 
@@ -7264,8 +7265,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 						    textAreaId);
         }
 
+        buttons.append(etcButton);
         buttons.append(helpButton);
-	//        buttons.append(previewButton);
         HU.close(buttons, "div");
 
         return buttons.toString();
