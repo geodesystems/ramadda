@@ -8867,6 +8867,7 @@ public class EntryManager extends RepositoryManager {
         boolean isSynthEntry = isSynthEntry(group.getId());
         if (group.getTypeHandler().isSynthType() || isSynthEntry) {
             List<String> ids       = new ArrayList<String>();
+	    if(!select.getSyntheticOk()) return ids;
 
             Entry        mainEntry = group;
             String       synthId   = null;
