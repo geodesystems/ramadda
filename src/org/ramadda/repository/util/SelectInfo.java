@@ -48,6 +48,9 @@ public class SelectInfo implements Constants {
 
     boolean hadOrderBy = false;
 
+    boolean syntheticOk = true;
+
+
     /**
      * _more_
      *
@@ -103,13 +106,39 @@ public class SelectInfo implements Constants {
     public SelectInfo(Request request, Entry entry, List<Clause> where,
                       int max) {
         this(request, entry);
-        this.where = where;
-        this.max   = max;
+	this.where = where;
+	this.max   = max;
+    }
+
+    public SelectInfo(Request request, Entry entry, List<Clause> where,
+                      int max, boolean syntheticOk ) {	
+        this(request, entry,where,max);
+        this.syntheticOk =syntheticOk; 
     }
 
 
     /**
      */
+    /**
+       Set the SyntheticOk property.
+
+       @param value The new value for SyntheticOk
+    **/
+    public void setSyntheticOk (boolean value) {
+	syntheticOk = value;
+    }
+
+    /**
+       Get the SyntheticOk property.
+
+       @return The SyntheticOk
+    **/
+    public boolean getSyntheticOk () {
+	return syntheticOk;
+    }
+
+
+
     public void init() {
         if (haveInited) {
             return;
