@@ -675,15 +675,18 @@ WikiEditor.prototype = {
 						   ['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-prefix')])) +
 	    HU.formEntry('Prompt suffix:',
 			 HU.input('',this.lastPromptSuffix??'',['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-suffix')])) +
-	    HU.formTableClose() +
-	    HU.span(['id',this.domId('gpt-call')],'Evaluate');	    
+	    HU.formTableClose();
+	html+=HU.textarea('',gptText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_GPT_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+
 	html+='<br>';
-	html+=HU.textarea('',gptText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_GPT_INPUT), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	html+=HU.span(['id',this.domId('gpt-call')],'Evaluate');	    
 	
 	html+=HU.div(['style','position:relative;'],
-		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
 			  HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])));
+
+
 
 	html += HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true',ID,this.domId("ok")],"Replace"),
 			HU.span(['class','ramadda-dialog-button','append','true',ID,this.domId("ok")],"Append"),
@@ -696,7 +699,7 @@ WikiEditor.prototype = {
 				    header:true,sticky:true,draggable:true,modal:false});	
 
 	let call = () =>{
-	    gptText = this.getEditor().getSelectedText()??'';
+	    gptText = this.jq(this.ID_GPT_INPUT).val()??'';
 	    this.jq('gpt-loading').show();
 	    let url = RamaddaUtils.getUrl("/gpt/rewrite");
 	    $.post(url,{text:gptText,
