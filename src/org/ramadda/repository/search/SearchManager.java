@@ -130,6 +130,8 @@ import org.apache.tika.parser.Parser;
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
+    private static boolean  debugGpt = false;
+
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
@@ -840,8 +842,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private String callGpt(String prompt1,String prompt2,StringBuilder corpus,int tokens,boolean tokenize) throws Exception {
-	boolean debug = true;
-	//	if(debug) System.err.println("corpus:" + corpus);
+	//	if(debugGpt) System.err.println("corpus:" + corpus);
 	String text = corpus.toString();
 	String gptKey = getRepository().getProperty("gpt.api.key");
 	if(gptKey==null) return null;
@@ -867,7 +868,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 	gptCorpus.append("\n\n");
 	gptCorpus.append(prompt2);
-	if(debug) System.err.println("tokens:" + tokens +"\n"+"corpus:" + gptCorpus);
+	if(debugGpt) System.err.println("tokens:" + tokens +"\n"+"corpus:" + gptCorpus);
 	String gptText =  gptCorpus.toString();
 	//	    System.err.println("gpt corpus:" + text);
 	String body = JsonUtil.map(Utils.makeList("prompt",
@@ -886,8 +887,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					 "Content-Type","application/json",
 					 "Authorization","Bearer " +gptKey);
 	JSONObject json = new JSONObject(result);
-	if(debug)
-	    System.err.println("gpt json:" + json);		
+	if(debugGpt)	    System.err.println("gpt json:" + json);		
 	if(json.has("choices")) {
 	    JSONArray choices = json.getJSONArray("choices");
 	    if(choices.length()>0) {

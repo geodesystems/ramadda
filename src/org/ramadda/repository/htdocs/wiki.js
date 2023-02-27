@@ -196,6 +196,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
     this.ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
     this.ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
+    this.ID_GPT_INPUT = "gpt-input";
 
     this.initAttributes();
     var options = {
@@ -261,6 +262,7 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.editor.container.addEventListener("mousemove", (e) => {
 	this.handleMouseMove(e);
     });
+
     this.editor.getSession().on('change', (e)=> {
 	this.editorChanged = true;
 	if(this.previewShown && this.previewLive) {
@@ -655,29 +657,44 @@ WikiEditor.prototype = {
     },
 
     doGpt:function() {
-	let html=  HU.center("Note: any selected text in the editor will have the prompt applied to it") +
+	if(!this.addedGptListener) {
+	    this.editor.getSession().selection.on('changeSelection', ()=> {
+		let text = this.getEditor().getSelectedText();
+		if(Utils.stringDefined(text) && !this.gptReplacing) {
+		    this.jq(this.ID_GPT_INPUT).val(text);
+		}
+	    });
+	}
+	    
+
+
+	let gptText = this.getEditor().getSelectedText()??'';
+	let html= 
 	    HU.formTable() +
 	    HU.formEntry('Prompt prefix:',HU.input('',this.lastPromptPrefix??'Rephrase the following text:',
 						   ['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-prefix')])) +
 	    HU.formEntry('Prompt suffix:',
 			 HU.input('',this.lastPromptSuffix??'',['class','wiki-gpt-input','style','width:500px;','id',this.domId('gpt-prompt-suffix')])) +
 	    HU.formTableClose() +
-	    HU.span(['id',this.domId('gpt-call')],'Evaluate') +	    
-	    HU.div(['style','position:relative;'],
+	    HU.span(['id',this.domId('gpt-call')],'Evaluate');	    
+	html+='<br>';
+	html+=HU.textarea('',gptText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_GPT_INPUT), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	
+	html+=HU.div(['style','position:relative;'],
 		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',5,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('gpt-loading')],
-			   HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])))+
-	    HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true',ID,this.domId("ok")],"Replace"),
+			  HU.image(ramaddaCdn + '/icons/mapprogress.gif',['style','width:100px;'])));
+
+	html += HU.buttons([HU.span(['class','ramadda-dialog-button','replace','true',ID,this.domId("ok")],"Replace"),
 			HU.span(['class','ramadda-dialog-button','append','true',ID,this.domId("ok")],"Append"),
 			HU.span(['class','ramadda-dialog-button',ID,this.domId("cancel")],"Cancel")]);
 	html = HU.div(['class','ramadda-dialog'],html);
-	let dialog = HU.makeDialog({content:html,anchor:this.getScroller(),
+	let dialog = this.gptDialog = HU.makeDialog({content:html,anchor:this.getScroller(),
 				    my: "left bottom",     
 				    at: "left+200" +" top-50",
 				    title:"GPT",
 				    header:true,sticky:true,draggable:true,modal:false});	
 
-	let gptText='';
 	let call = () =>{
 	    gptText = this.getEditor().getSelectedText()??'';
 	    this.jq('gpt-loading').show();
@@ -709,6 +726,7 @@ WikiEditor.prototype = {
 	});
 	let _this = this;
 	dialog.find('.ramadda-dialog-button').button().click(function() {
+	    _this.gptReplacing = true;
 	    let val = _this.jq('rewrite-results').val();
 	    if($(this).attr('replace')) {
 		_this.getEditor().session.replace(_this.getEditor().selection.getRange(), val);
@@ -717,6 +735,7 @@ WikiEditor.prototype = {
 	    } else {
 		dialog.remove();
 	    }
+	    _this.gptReplacing = false;	    
 	});
 
 
