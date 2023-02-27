@@ -2709,6 +2709,7 @@ public class EntryManager extends RepositoryManager {
                                 createDate.getTime(),
                                 theDateRange[0].getTime(),
                                 theDateRange[1].getTime(), null);
+		//		System.err.println("init entry:" + name +" " + theDateRange[0]);
                 if (forUpload) {
                     initUploadedEntry(request, entry, info.parent);
                 }
@@ -2999,8 +3000,7 @@ public class EntryManager extends RepositoryManager {
 			ancestors  = ancestors + "/" + parentName;
 			Entry group = nameToGroup.get(ancestors);
 			if (group == null) {
-			    Request tmpRequest =
-				getRepository().getTmpRequest();
+			    Request tmpRequest = request.cloneMe();
 			    tmpRequest.setUser(user);
 			    group = findGroupUnder(tmpRequest,
 						   parent, parentName, user,testNew);
@@ -6492,7 +6492,6 @@ public class EntryManager extends RepositoryManager {
 		    throw new AccessException("Can't create new entry:" + pathEntry,request);
 		}
 
-		
 		newEntry = makeNewGroup(request,pathEntry, parentName,request.getUser(),
 					null,parentType);
 	    }
@@ -9860,7 +9859,6 @@ public class EntryManager extends RepositoryManager {
         if (template != null) {
             groupType = template.getTypeHandler().getType();
         }
-
         return makeNewGroup(request,parent, name, user, template, groupType);
     }
 
@@ -9904,16 +9902,22 @@ public class EntryManager extends RepositoryManager {
                               EntryInitializer initializer)
 	throws Exception {
         //        synchronized (MUTEX_ENTRY) {
-        Date date = Utils.extractDate(name);
+	Date now = new Date();
+	String datePattern = request.getUnsafeString(ARG_DATE_PATTERN,null);
+        Date date = Utils.extractDate(datePattern, name);
         if (date == null) {
-            date = new Date();
+            date = now;
         }
 
 	if(type==null) type=TypeHandler.TYPE_GROUP;
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       group       = new Entry(getGroupId(parent), typeHandler);
         group.setName(name);
-        group.setDate(date.getTime());
+        group.setDate(now.getTime());
+
+        group.setStartDate(date.getTime());
+        group.setEndDate(date.getTime());	
+
         if (template != null) {
             group.initWith(template, true);
             getRepository().getMetadataManager().initNewEntry(request,group,
@@ -9926,7 +9930,6 @@ public class EntryManager extends RepositoryManager {
         }
         addNewEntry(null, group);
         cacheEntry(group);
-
         return group;
         //        }
     }
