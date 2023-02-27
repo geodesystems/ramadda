@@ -399,6 +399,9 @@ public class CalendarOutputHandler extends OutputHandler {
             jprops.add(entry.getName());
             jprops.add("description");
             jprops.add("");
+            jprops.add("icon");
+            String icon = getPageHandler().getIconUrl(request, entry);
+	    jprops.add(icon);
             jprops.add("link");
             jprops.add(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                         entry));
