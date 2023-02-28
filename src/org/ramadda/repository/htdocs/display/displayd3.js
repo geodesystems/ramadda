@@ -213,10 +213,13 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             //TODO: this results in a double  call to updateUI when first created
             this.updateUI();
         },
+        handleEventRecordSelection: function(source, args) {
+	    this.skewt.highlightRecord(args.record);
+	},
         updateUI: async function() {
 //          console.log("skewt.updateui");
             if(!this.loadedResources) {
-                var time = new Date();
+                let time = new Date();
                 await Utils.importCSS(ramaddaCdn +"/lib/skewt/sounding.css");
                 await Utils.importJS(ramaddaCdn+"/lib/skewt/d3skewt.js");
                 this.loadedResources = true;
@@ -235,7 +238,6 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
 //          console.log("skewt.updateui-2");
-
             let skewtId = this.getDomId(ID_SKEWT);
             let html = HtmlUtils.div(["id", skewtId], "");
             this.setContents(html);
@@ -253,6 +255,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 options.showHodograph = this.getProperty("showHodograph", true);
             if (this.propertyDefined("showText"))
                 options.showText = this.getProperty("showText", true);
+
             if (this.propertyDefined("skewtWidth"))
                 options.skewtWidth = parseInt(this.getProperty("skewtWidth"));
             if (this.propertyDefined("skewtHeight"))
@@ -313,6 +316,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
 
+	    data.records = records;
             if(!data.height) {
                 var pressures = [
                     1013.25, 954.61, 898.76, 845.59, 795.01, 746.91, 701.21,
@@ -395,13 +399,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                         break;
                     }
                 }
-                if(ok) {
+                if(ok || id=='records') {
                     for(id in alldata) {
                         data[id].push(alldata[id][idx]);
                     }
                 }
             });
-
 
             if(data.height.length>1) {
                 if(data.height[0]>data.height[1]) {
@@ -413,29 +416,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 this.displayError(this.getNoDataMessage());
                 return;
             }
-
-            /*
-            if(options.windStride > 1) {
-                
-                var new_wind_speed = [];
-                var new_wind_direction = [];
-                for (var i = 0; i<data.wind_speed.length; i++) {
-		    var pres = data.pressure[i];
-                    if (i%options.windStride == 0) {
-                        new_wind_speed.push(data.wind_speed[i]);
-                        new_wind_direction.push(data.wind_direction[i]);
-                    } else {
-                        new_wind_speed.push(0);
-                        new_wind_direction.push(0);
-		    }
-                }
-                data.wind_speed = new_wind_speed;
-                data.wind_direction = new_wind_direction;
-            }
-            */
-
-
             options.myid = this.getId();
+	    options.mouseDownListener = (record)=>{
+		if(record) {
+		    this.propagateEventRecordSelection({highlight:true,record: record});
+		}
+	    }
             try {
                 this.skewt = new D3Skewt(skewtId, options,data);
             } catch(e) {
