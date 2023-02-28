@@ -548,12 +548,13 @@ public abstract class TextFile extends PointFile {
 		System.err.println("fieldsLine:" + fieldsLine);		
 	    }
             if (fieldsLine != null) {
+                String defaultType      = getProperty("record.type.default", null);
                 String delim      = getProperty(PROP_DELIMITER, ",");
                 String sampleLine = visitInfo.getRecordIO().readLine();
                 visitInfo.getRecordIO().putBackLine(sampleLine);
                 List<String> toks = Utils.tokenizeColumns(fieldsLine, delim);
                 List<String> sampleToks = Utils.tokenizeColumns(sampleLine,
-                                              delim);
+								delim);
                 List<String> cleaned = new ArrayList<String>();
                 boolean      didDate = false;
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
@@ -572,14 +573,18 @@ public abstract class TextFile extends PointFile {
                     if ( !isDate) {
                         isDate = Utils.isDate(sample);
                     }
-
-                    if ( !isDate) {
-                        if (Utils.isNumber(sample)) {
-                            attrs.append(attrType(RecordField.TYPE_DOUBLE));
-                        } else {
-                            attrs.append(attrType(RecordField.TYPE_STRING));
-                        }
-                    }
+		    if(!isDate) {
+			String type = getProperty("record.type." + id,null);
+			if(type==null) type=defaultType;
+			if(type==null) {
+			    if (Utils.isNumber(sample)) {
+				type =RecordField.TYPE_DOUBLE;
+			    } else {
+				type  = RecordField.TYPE_STRING;
+			    }
+			}
+			attrs.append(attrType(type));
+		    }
 
                     if (isDate) {
                         if ( !didDate) {
