@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 27 10:01:23 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 28 08:03:04 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -3538,6 +3538,8 @@ Glyph.prototype = {
 
 var  displayDebug= {
     getProperty:false,
+    loadPointJson:false,
+    pointDataLoaded:false,
     notifyEvent:false,
     notifyEventAll:false,
     handleEventPropertyChanged:false,
@@ -3550,8 +3552,6 @@ var  displayDebug= {
     displayMapUpdateUI:false,
     displayMapCreateMap:false,
     displayMapAddPoints:false,
-    loadPointJson:false,
-    pointDataLoaded:false,
     groupBy:false,
     gridPoints:false,
     setEntry:false,
@@ -3867,7 +3867,7 @@ function getRamaddaDisplay(id) {
 }
 
 function removeRamaddaDisplay(id) {
-    var display = getRamaddaDisplay(id);
+    let display = getRamaddaDisplay(id);
     if (display) {
         display.removeDisplay();
 	Utils.removeDisplay(display);
@@ -3938,7 +3938,7 @@ function DisplayThing(argId, argProperties) {
 
 
     //check for booleans as strings
-    for (var i in argProperties) {
+    for (let i in argProperties) {
         if (typeof argProperties[i] == "string") {
             if (argProperties[i] == "true") argProperties[i] = true;
             else if (argProperties[i] == "false") argProperties[i] = false;
@@ -3947,25 +3947,25 @@ function DisplayThing(argId, argProperties) {
 
 
     //Now look for the structured foo.bar=value
-    for (var key in argProperties) {
-        var toks = key.split(".");
+    for (let key in argProperties) {
+        let toks = key.split(".");
         if (toks.length <= 1) {
             continue;
         }
-	//var map = argProperties;
+	//let map = argProperties;
 	// Don't this for now as it screws up doing something like colorTable.field=...
 	let map = {};
         //graph.axis.foo=bar
-        var v = argProperties[key];
+        let v = argProperties[key];
         if (v == "true") v = true;
         else if (v == "false") v = false;
-        for (var i = 0; i < toks.length; i++) {
-            var tok = toks[i];
+        for (let i = 0; i < toks.length; i++) {
+            let tok = toks[i];
             if (i == toks.length - 1) {
                 map[tok] = v;
                 break;
             }
-            var nextMap = map[tok];
+            let nextMap = map[tok];
             if (nextMap == null) {
                 map[tok] = {};
                 map = map[tok];
@@ -4006,7 +4006,7 @@ function DisplayThing(argId, argProperties) {
 		this.changeEntries = [];
 		let enums = [];
 		entries.forEach(t=>{
-		    var toks = t.split(":");
+		    let toks = t.split(":");
 		    this.changeEntries.push(toks[0]);
 		    enums.push([toks[0],toks[1]]);
 		});
@@ -4048,9 +4048,9 @@ function DisplayThing(argId, argProperties) {
 
         popup: function(srcId, popupId, srcObj, popup) {
             popup = popup || $("#"+popupId);
-            var src = srcObj || $("#"+srcId);
-            var myalign = 'left top';
-            var atalign = 'left bottom';
+            let src = srcObj || $("#"+srcId);
+            let myalign = 'left top';
+            let atalign = 'left bottom';
             popup.show();
 	    //	    console.log(srcObj +" " + srcId + " " + "pop:" + popup.length +" src:" + src.length);
             popup.position({
@@ -4089,11 +4089,11 @@ function DisplayThing(argId, argProperties) {
             if (Utils.isDefined(this.showMenu)) {
 		return this.showMenu;
 	    }
-	    var dflt = false;
+	    let dflt = false;
             if (this.displayParent != null) {
 		dflt = this.displayParent.getProperty("showChildMenu",dflt);
 	    }
-	    var v = this.getProperty(PROP_SHOW_MENU, dflt);
+	    let v = this.getProperty(PROP_SHOW_MENU, dflt);
 	    return v;
         },
 	canEdit:function() {
@@ -4103,7 +4103,7 @@ function DisplayThing(argId, argProperties) {
             if (this.getProperty("showTitle")) {
 		return this.getProperty("showTitle");
 	    }
-	    var dflt = false;
+	    let dflt = false;
             if (this.displayParent != null) {
 		dflt = this.displayParent.getShowChildTitle(dflt);
 	    }
@@ -4149,12 +4149,12 @@ function DisplayThing(argId, argProperties) {
             if (!date.toLocaleDateString) {
                 return String(date);
             }
-            var suffix;
+            let suffix;
             if (args && !Utils.isDefined(args.suffix))
                 suffix = args.suffix;
             else
                 suffix = info.dateSuffix;
-            var timeZone = this.getTimeZone();
+            let timeZone = this.getTimeZone();
             if (!suffix && timeZone) suffix = timeZone;
 	    return Utils.formatDate(date, args?args.options:null, {
                 timeZone: timeZone,
@@ -4259,8 +4259,8 @@ function DisplayThing(argId, argProperties) {
 		macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getDateProps().dateFormat});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
-		var value = row[props.iconField.getIndex()];
-		var icon = props.iconMap[value];
+		let value = row[props.iconField.getIndex()];
+		let icon = props.iconMap[value];
 		if(icon) {
 		    attrs[props.iconField.getId() +"_icon"] =  HU.image(icon,["width",props.iconSize]);
 		}
@@ -4356,7 +4356,7 @@ function DisplayThing(argId, argProperties) {
 		let value = row[f.getIndex()];
 		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
-		    var icon = props.iconMap[f.getId()+"."+value];
+		    let icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
 			s = s.replace("${" + f.getId() +"_icon}", HU.image(icon,["size",props.iconSize]));
 		    }
@@ -4378,7 +4378,7 @@ function DisplayThing(argId, argProperties) {
 			}
 			imageAttrs.push("style");
 			imageAttrs.push("vertical-align:top");
-			var img =  HU.image(value, imageAttrs);
+			let img =  HU.image(value, imageAttrs);
 
 			attrs[f.getId() +"_image"] =  img;
 			attrs[f.getId() +"_url"] =  value;
@@ -4415,7 +4415,7 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    continue;
 		}
-		var color;
+		let color;
 		if(props.colorByMap) {
 		    if(props.colorBy && props.colorBy == f.getId()) {
 			color = props.colorByMap[value];
@@ -4672,7 +4672,7 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    if(field.getType() == "movie" && value!="") {
 			if(!dflt.showMovie) continue;
-			var movieAttrs = [];
+			let movieAttrs = [];
 			movieAttrs.push("width");
 			movieAttrs.push("200");
 			value = HU.movie(value,movieAttrs);
@@ -4743,7 +4743,7 @@ function DisplayThing(argId, argProperties) {
             return label;
         },
         getFormValue: function(what, dflt) {
-            var fromForm = $("#" + this.getDomId(what)).val();
+            let fromForm = $("#" + this.getDomId(what)).val();
             if (fromForm != null) {
                 if (fromForm.length > 0) {
                     this.setProperty(what, fromForm);
@@ -4831,7 +4831,7 @@ function DisplayThing(argId, argProperties) {
             return Utils.isDefined(this.getProperty(key));
         },
         setPropertyOn: function(object, myProperty, objectProperty, dflt) {
-            var prop = this.getProperty(myProperty, dflt);
+            let prop = this.getProperty(myProperty, dflt);
             if (Utils.isDefined(prop) && prop != null) {
                 object[objectProperty] = prop;
             }
@@ -4929,7 +4929,7 @@ function DisplayThing(argId, argProperties) {
 			return this.dynamicProperties[key];
 		    }
 		}
-		var value = this.properties[key];
+		let value = this.properties[key];
 		if (value != null) {
 		    if(debug) console.log("\tgot property from this.properties:" + value);
                     return value;
@@ -4938,7 +4938,7 @@ function DisplayThing(argId, argProperties) {
 	    if(!skipParent) {
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
-		    var fromParent=null;
+		    let fromParent=null;
 		    if (this.displayParent != null) {
 			fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
 		    }
@@ -5560,7 +5560,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return this.colorList;
 	    }
 	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
-		var v = this.getProperty("colors");
+		let v = this.getProperty("colors");
 		if(!Array.isArray(v)) {
 		    v = v.split(",");
 		}
@@ -5587,7 +5587,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
             } else {
-		var colorBy = this.getProperty("colorBy");
+		let colorBy = this.getProperty("colorBy");
 		if(colorBy) {
                     ct = this.getProperty("colorTable." + colorBy);
 		    if(ct && displayDebug.colorTable)
@@ -5662,7 +5662,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return ct;
             }
             if (this.getProperty("colors") && this.getProperty("colors")!="default") {
-                var colors = this.getProperty("colors");
+                let colors = this.getProperty("colors");
                 if ((typeof colors) != "object") colors = colors.split(",");
 		return this.convertColors(colors);
             }
@@ -5673,7 +5673,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    alpha = Utils.isDefined(alpha)?alpha:this.getProperty("colorTableAlpha");
 	    if(!alpha) return colors;
 	    colors=  Utils.cloneList(colors);
-	    var ac = [];
+	    let ac = [];
 	    colors.forEach((c)=>{
 		ac.push(Utils.addAlphaToColor(c,alpha));
 	    });
@@ -5706,27 +5706,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         getColorByColors: function(records, dfltColorTable) {
-            var colorBy = this.getProperty('colorBy');
+            let colorBy = this.getProperty('colorBy');
             if (!colorBy) {
                 return null;
             }
-            var colorByField = this.getFieldById(fields, colorBy);
+            let colorByField = this.getFieldById(fields, colorBy);
             if (!colorByField) {
                 return null;
             }
-            var obj = this.getColumnValues(records, colorByField);
-            var colors = this.getColorTable();
+            let obj = this.getColumnValues(records, colorByField);
+            let colors = this.getColorTable();
             if (!colors) colors = Utils.getColorTable(dfltColorTable || 'blue_white_red');
             if (!colors) return null;
-            var min = parseFloat(this.getProperty('colorByMin', obj.min));
-            var max = parseFloat(this.getProperty('colorByMax', obj.max));
+            let min = parseFloat(this.getProperty('colorByMin', obj.min));
+            let max = parseFloat(this.getProperty('colorByMax', obj.max));
             if (colors.colors) colors = colors.colors;
-            var range = max - min;
-            var colorValues = [];
-            for (var i = 0; i < obj.values.length; i++) {
-                var value = obj.values[i];
-                var percent = (value - min) / range;
-                var index = parseInt(percent * colors.length);
+            let range = max - min;
+            let colorValues = [];
+            for (let i = 0; i < obj.values.length; i++) {
+                let value = obj.values[i];
+                let percent = (value - min) / range;
+                let index = parseInt(percent * colors.length);
                 if (index >= colors.length) index = colors.length - 1;
                 else if (index < 0) index = 0;
                 colorValues.push(colors[index]);
@@ -5764,13 +5764,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return args;
 	},
 	getIconMap: function() {
-	    var iconMap;
-	    var iconMapProp = this.getProperty('iconMap');
+	    let iconMap;
+	    let iconMapProp = this.getProperty('iconMap');
 	    if (iconMapProp) {
-                var toks = iconMapProp.split(',');
+                let toks = iconMapProp.split(',');
 		iconMap = {};
-                for (var i = 0; i < toks.length; i++) {
-		    var toks2 = toks[i].split(':');
+                for (let i = 0; i < toks.length; i++) {
+		    let toks2 = toks[i].split(':');
 		    if (toks2.length > 1) {
                         iconMap[toks2[0]] = toks2[1];
 		    }
@@ -5848,7 +5848,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
 		this.callUpdateUI();
 	    }
-            var title = "";
+            let title = "";
             if (this.getShowTitle()) {
                 this.jq(ID_TITLE).html(entry.getName());
             }
@@ -5858,10 +5858,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.getProperty("textColor", "#000");
         },
         getTitleHtml: function(title) {
-            var titleToShow = "";
+            let titleToShow = "";
             if (this.getShowTitle()) {
-                var titleStyle = HU.css("color" , this.getTextColor("titleColor","#000"));
-                var bg = this.getProperty("titleBackground");
+                let titleStyle = HU.css("color" , this.getTextColor("titleColor","#000"));
+                let bg = this.getProperty("titleBackground");
                 if (bg) titleStyle += HU.css('background', bg,'padding','2px','padding-right','6px','padding-left','6px');
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
 		let entryId = this.getProperty("entryId") || this.entryId;
@@ -5879,8 +5879,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         handleEventMapClick: function(source, args) {
             if (!this.dataCollection) return;
-            var pointData = this.dataCollection.getList();
-            for (var i = 0; i < pointData.length; i++) {
+            let pointData = this.dataCollection.getList();
+            for (let i = 0; i < pointData.length; i++) {
                 pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
             }
         },
@@ -5899,7 +5899,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         handleEventFilterFieldsSelected: function(source, fields) {
 	    if(fields.length>0 && (typeof fields[0] =="string")) {
-		var tmp = [];
+		let tmp = [];
 		fields.forEach(f=>{
 		    f = this.getFieldById(null, f);
 		    if(f) tmp.push(f);
@@ -6140,7 +6140,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         handleEventEntryMouseover: function(source, args) {},
         handleEventEntryMouseout: function(source, args) {},
         handleEventEntrySelection: function(source, args) {
-            var containsEntry = this.getEntries().indexOf(args.entry) >= 0;
+            let containsEntry = this.getEntries().indexOf(args.entry) >= 0;
             if (!containsEntry) {
                 return;
             }
@@ -6157,13 +6157,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.entries;
         },
         getDisplayEntry: async function(callback) {
-            var entries = this.getEntries();
+            let entries = this.getEntries();
             if (entries != null && entries.length > 0) {
                 return Utils.call(callback, entries[0]);
             }
 	    let entryId = this.entryId|| this.getProperty("entryId");
             if (entryId) {
-                var entry;
+                let entry;
                 await this.getRamadda().getEntry(entryId, e => {
                     entry = e
                     Utils.call(callback, entry);
@@ -6237,14 +6237,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("noDataMessage","No data available");
 	},
         getFieldValue: function(id, dflt) {
-            var jq = $("#" + id);
+            let jq = $("#" + id);
             if (jq.length > 0) {
                 return jq.val();
             }
             return dflt;
         },
         getFieldValues: function(id, dflt) {
-            var jq = $("#" + id);
+            let jq = $("#" + id);
             if (jq.length > 0) {
 		let v = [];
 		jq.each(function(){
@@ -6285,7 +6285,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.hasData()) {
                 return;
             }
-            var fixedFields = this.getPropertyFields()
+            let fixedFields = this.getPropertyFields()
             if (fixedFields != null) {
                 if (fixedFields.length == 0) {
                     fixedFields = null;
@@ -6311,20 +6311,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
-            var html = "";
-            var checkboxClass = this.getId() + "_checkbox";
-            var groupByClass = this.getId() + "_groupby";
-            var dataList = this.dataCollection.getList();
+            let html = "";
+            let checkboxClass = this.getId() + "_checkbox";
+            let groupByClass = this.getId() + "_groupby";
+            let dataList = this.dataCollection.getList();
 
             if (argFields != null) {
                 this.overrideFields = [];
             }
-            var seenLabels = {};
+            let seenLabels = {};
 
 
             let badFields = {};
             let flags = null;
-            for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
+            for (let collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 let pointData = dataList[collectionIdx];
                 let fields = this.getFieldsToSelect(pointData);
                 if (this.canDoGroupBy()) {
@@ -6336,13 +6336,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         if (cnt == 0) {
                             html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Group By");
                             html += HU.open(TAG_DIV, [ATTR_CLASS, "display-fields"]);
-                            var on = this.groupBy == null || this.groupBy == "";
+                            let on = this.groupBy == null || this.groupBy == "";
                             html += HU.tag(TAG_DIV, [ATTR_TITLE, "none"],
 					   HU.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
                         }
                         cnt++;
-                        var on = this.groupBy == field.getId();
-                        var idBase = "groupby_" + collectionIdx + "_" + i;
+                        let on = this.groupBy == field.getId();
+                        let idBase = "groupby_" + collectionIdx + "_" + i;
                         field.radioId = this.getDomId(idBase);
                         html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
 				       HU.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
@@ -6371,7 +6371,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         //                            console.log(tupleIdx + " field: " + field.getId() + "has values:" + hasValues);
                         if (argFields != null) {
                             //                                console.log("argFields:" + argFields);
-                            for (var fIdx = 0; fIdx < argFields.length; fIdx++) {
+                            for (let fIdx = 0; fIdx < argFields.length; fIdx++) {
                                 if (argFields[fIdx].getId() == field.getId()) {
                                     on = true;
                                     //                                        console.log("argField:"+ argFields[fIdx].getId()+ " field.id:" + field.getId() +" on:" +on);
@@ -6416,7 +6416,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             if (field.derived) {
                                 label += " (derived)";
                             }
-                            var widget;
+                            let widget;
                             if (this.canDoMultiFields()) {
                                 widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass], on,label);
 				html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
@@ -6475,10 +6475,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
 	    if(this.getBinDate()) {
-		var binType = this.getBinType("total");
-		var binCount = binType=="count";
+		let binType = this.getBinType("total");
+		let binCount = binType=="count";
 		if(binCount) {
-		    var fields = [];
+		    let fields = [];
 		    fields.push(new RecordField({
 			id:binType,
 			label:this.getProperty("binDateLabel", this.getProperty("binCountLabel","Count")),
@@ -6504,7 +6504,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
             this.setDisplayTitle();
 	    if(this.getBinDate()) {
-		var binType = this.getProperty("binType","total");
+		let binType = this.getProperty("binType","total");
 		let fields = [];
 		this.lastSelectedFields.forEach(field=>{
 		    if(!field.isNumeric()) {
@@ -6571,29 +6571,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let aliases= {};
-	    var tmp = this.getFieldAliases();
+	    let tmp = this.getFieldAliases();
 	    if(tmp) {
 		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
 		    aliases[alias] = name;
 		});
 	    }
-            for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                var pointData = dataList[collectionIdx];
+            for (let collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
+                let pointData = dataList[collectionIdx];
 		//A hack in case we already have a pointData set (e.g., in the case of a convertDataPost)
 		if(this.pointData) pointData = this.pointData;
-                var fields = this.getFieldsToSelect(pointData);
+                let fields = this.getFieldsToSelect(pointData);
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
                         console.log("\thave fixed fields:" + fixedFields.length);
 		    let selected = [];
-                    for (var i = 0; i < fixedFields.length; i++) {
+                    for (let i = 0; i < fixedFields.length; i++) {
                         let sfield = fixedFields[i];
 			if(sfield =="*") {
 			    selected  =fields;
 			    break;
 			}
-			var field = this.getFieldById(fields, sfield);
+			let field = this.getFieldById(fields, sfield);
                         if(field) {
 			    selected.push(field);
 			}
@@ -6932,7 +6932,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if ((typeof ids) == "string")
                 ids = ids.split(",");
             if (!fields) {
-                var pointData = this.getData();
+                let pointData = this.getData();
                 if (pointData == null) {
 		    return null;
 		}
@@ -7003,13 +7003,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return dates;
 	},
         getColumnValues: function(records, field) {
-            var values = [];
-            var min = Number.MAX_VALUE;
-            var max = Number.MIN_VALUE;
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var record = records[rowIdx];
-                var row = record.getData();
-                var value = row[field.getIndex()];
+            let values = [];
+            let min = Number.MAX_VALUE;
+            let max = Number.MIN_VALUE;
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let record = records[rowIdx];
+                let row = record.getData();
+                let value = row[field.getIndex()];
                 values.push(value);
                 if (Utils.isNumber(value) && !isNaN(value)) {
                     min = Math.min(min, value);
@@ -7036,8 +7036,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let idToNode = {};
 	    let nodes=[];
 	    let idToRoot = {};
-	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
-	    var nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
+	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    let nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
 	    let treeRootLabel = this.getProperty("treeRoot");
 	    let treeRoot = null;
 	    if(treeRootLabel) {
@@ -7049,7 +7049,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let valueToNode = {};
 		let parentId = "";
 		records.forEach(r=>{
-		    var label= labelField==null?id:r.getValue(labelField.getIndex());		
+		    let label= labelField==null?id:r.getValue(labelField.getIndex());		
 		    let parentId = null;
 		    let parentNode= null;
 		    //		    console.log("record:" + label);
@@ -7076,8 +7076,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			parentId = nodeId;
 			parentNode = tmpNode;
 		    });
-		    var id= "leaf" + (cnt++);
-		    var node = {id:id,label:label,children:[],record:r, parent:parentNode};
+		    let id= "leaf" + (cnt++);
+		    let node = {id:id,label:label,children:[],record:r, parent:parentNode};
 		    parentNode.children.push(node);
 		    idToNode[id] = node;
 		    nodes.push(node);
@@ -7095,10 +7095,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 throw new Error("No id field specified");
 	    }
 	    records.forEach(r=>{
-		var parent = r.getValue(parentField.getIndex());
-		var id = r.getValue(idField.getIndex());
-		var label= labelField==null?id:r.getValue(labelField.getIndex());		
-		var node = {id:id,label:label,children:[],record:r,parentId:parent, parent:null};
+		let parent = r.getValue(parentField.getIndex());
+		let id = r.getValue(idField.getIndex());
+		let label= labelField==null?id:r.getValue(labelField.getIndex());		
+		let node = {id:id,label:label,children:[],record:r,parentId:parent, parent:null};
 		if(treeTemplate) {
 		    node.display = this.getRecordHtml(r, null, treeTemplate);
 		}
@@ -7134,15 +7134,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return roots;
 	},
 	getSegments: function() {
-	    var segments = this.getProperty("timeSegments");
+	    let segments = this.getProperty("timeSegments");
 	    if(!segments) return null;
-	    var result = [];
-	    var segmentList = segments.split(",");
+	    let result = [];
+	    let segmentList = segments.split(",");
 	    segmentList.forEach((tok,segmentIdx)=>{
-		var toks = tok.split(";");
-		var name = toks[0];
-		var start = Utils.parseDate(toks[1],false);
-		var end = Utils.parseDate(toks[2],false);
+		let toks = tok.split(";");
+		let name = toks[0];
+		let start = Utils.parseDate(toks[1],false);
+		let end = Utils.parseDate(toks[2],false);
 		result.push({name: name, start:start,end:end});
 	    });
 	    return  result;
@@ -7172,12 +7172,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterTextMatchers: function() {
 	    let highlight  = [];
 	    if(this.filters) {
-		for(var filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
+		for(let filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
 		    let filter = this.filters[filterIdx];
 		    if(!filter.field)continue;
-		    var widget =$("#" + this.getDomId("filterby_" + filter.field.getId())); 
+		    let widget =$("#" + this.getDomId("filterby_" + filter.field.getId())); 
 		    if(!widget.val || widget.val()==null) continue;
-		    var value = widget.val()||"";
+		    let value = widget.val()||"";
 		    if(value.trim()=="") continue;
 		    highlight.push(new TextMatcher(value));
 		}
@@ -7344,7 +7344,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
-		var maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
+		let maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
 		if(maxSize>0 && records.length>0) {
 		    stride = 1;
 		    while(records.length/stride>maxSize) {
@@ -7354,9 +7354,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             if (stride > 0) {
-                var list = [];
-                var cnt = 0;
-                for (var i = 0; i < records.length; i += (stride + 1)) {
+                let list = [];
+                let cnt = 0;
+                for (let i = 0; i < records.length; i += (stride + 1)) {
                     list.push(records[i]);
                 }
                 records = list;
@@ -7406,34 +7406,34 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let counts ={};
 		this.binRecordToRecords = {};
 		let keyToRecord={};
-		for (var i = 0; i < records.length; i++) {
+		for (let i = 0; i < records.length; i++) {
 		    let record = records[i];
-		    var tuple = this.getDataValues(record);
-		    var key;
-		    var baseDate=null
+		    let tuple = this.getDataValues(record);
+		    let key;
+		    let baseDate=null
 		    if(what=="month") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
 		    } else if(what=="day") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1) +"-" + record.getDate().getUTCDate();
 		    } else if(what=="week") {
-			var week = +Utils.formatDateWeek(record.getDate());
+			let week = +Utils.formatDateWeek(record.getDate());
 			key = record.getDate().getUTCFullYear()+"-"+week;
-			var d =  (1 + (week - 1) * 7);
+			let d =  (1 + (week - 1) * 7);
 			baseDate = new Date(record.getDate().getUTCFullYear(), 0, d);			
 		    } else {
 			key = record.getDate().getUTCFullYear()+"";
 		    }
 		    if(!Utils.isDefined(map[key])) {
 			counts[key]=1;
-			var date = baseDate;
+			let date = baseDate;
 			if(!baseDate) {
 			    date = Utils.parseDate(key);
 			}
-			var data = Utils.cloneList(record.getData());
+			let data = Utils.cloneList(record.getData());
 			if(binCount) {
 			    for(k=0;k<data.length;k++) data[k]=1;
 			}
-			var newRecord = new  PointRecord(fields, record.getLatitude(),record.getLongitude(),
+			let newRecord = new  PointRecord(fields, record.getLatitude(),record.getLongitude(),
 							 record.getElevation(),date,data);
 
 			keyToRecord[key] = newRecord;
@@ -7447,14 +7447,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let newRecord = keyToRecord[key];
 			this.binRecordToRecords[newRecord.getId()].records.push(record);
 			counts[key]++;
-			var tuple1 = map[key];
+			let tuple1 = map[key];
 			if(binCount) {
 			    for(k=0;k<tuple1.length;k++) tuple1[k]++;
 			    continue;
 			} 
-			var tuple2 = record.getData();
-			for(var j=0;j<tuple2.length;j++) {
-			    var v = tuple2[j];
+			let tuple2 = record.getData();
+			for(let j=0;j<tuple2.length;j++) {
+			    let v = tuple2[j];
 			    if((typeof v) !="number") continue;
 			    if(isNaN(v)) continue;
 			    if(isNaN(tuple1[j])) tuple1[j] = v;
@@ -7464,9 +7464,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		if(binType == "average") {
 		    for(key in counts) {
-			var tuple = map[key];
-			for(var j=0;j<tuple.length;j++) {
-			    var v = tuple[j];
+			let tuple = map[key];
+			for(let j=0;j<tuple.length;j++) {
+			    let v = tuple[j];
 			    if((typeof v) !="number") continue;
 			    if(isNaN(v)) continue;
 			    tuple[j] = v/counts[key];
@@ -7494,7 +7494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		console.timeEnd('filters');
 	    }
 	    if(debug)   console.log("filterData-6 #records:" + records.length);
-	    //	    var t2=  new Date();
+	    //	    let t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    records = this.sortRecords(records);
 
@@ -7502,9 +7502,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let ufield =  this.getFieldById(null, this.getProperty("uniqueField"));
 		let umap = {};
 		let ulist = [];
-		for(var i=records.length-1;i>=0;i--) {
-		    var record = records[i];
-		    var v = record.getValue(ufield.getIndex());
+		for(let i=records.length-1;i>=0;i--) {
+		    let record = records[i];
+		    let v = record.getValue(ufield.getIndex());
 		    if(!Utils.isDefined(umap[v])) {
 			umap[v] = true;
 			ulist.push(record);
@@ -7515,8 +7515,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
-	    for(var i=0;i<records.length;i++) {
-		var record = records[i];
+	    for(let i=0;i<records.length;i++) {
+		let record = records[i];
 		this.recordToIndex[record.getId()] = i;
 		this.indexToRecord[i] = record;
 	    }
@@ -7624,7 +7624,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return "getRamaddaDisplay('" + this.getId() + "')";
         },
 	assembleWikiText: function(type) {
-	    var wiki =  "";
+	    let wiki =  "";
 	    if(window.globalDisplayProperties) {
 		for(key in window.globalDisplayProperties) {
 		    wiki += '{{displayProperty name="' + key +'" value="' + window.globalDisplayProperties[key]+'"}}\n';
@@ -7632,8 +7632,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
             wiki += this.getWikiText();
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+            for (let i = 0; i < this.displays.length; i++) {
+                let display = this.displays[i];
                 if (display.getIsLayoutFixed()) {
                     continue;
                 }
@@ -7642,7 +7642,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return wiki;
 	},
         showWikiText: function(type) {
-	    var wiki =  this.assembleWikiText();
+	    let wiki =  this.assembleWikiText();
 	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    wiki = HU.pre([STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
@@ -7654,8 +7654,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         publish: function(type) {
             if (type == null) type = "wikipage";
-            var args = [];
-            var name = prompt("Name", "");
+            let args = [];
+            let name = prompt("Name", "");
             if (name == null) return;
             args.push("name");
             args.push(name);
@@ -7664,11 +7664,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             args.push(type);
 
 
-            var desc = "";
-            //                var desc = prompt("Description", "");
+            let desc = "";
+            //                let desc = prompt("Description", "");
             //                if(desc == null) return;
 
-            var wiki = "";
+            let wiki = "";
             if (type == "wikipage") {
                 wiki += "+section label=\"{{name}}\"\n${extra}\n";
             } else if (type == "blogentry") {
@@ -7679,10 +7679,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (type == "wikipage") {
                 wiki += "-section\n\n";
             } else if (type == "blogentry") {}
-            var from = "";
-            var entries = this.getChildEntries();
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
+            let from = "";
+            let entries = this.getChildEntries();
+            for (let i = 0; i < entries.length; i++) {
+                let entry = entries[i];
                 from += entry.getId() + ",";
             }
 
@@ -7698,21 +7698,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             args.push("description_encoded");
 	    console.log(wiki);
             args.push(window.btoa(wiki));
-            var url = HU.getUrl(ramaddaBaseUrl + "/entry/publish", args);
+            let url = HU.getUrl(ramaddaBaseUrl + "/entry/publish", args);
             window.open(url, '_blank');
         },
         getChildEntries: function(includeFixed) {
-            var seen = {};
-            var allEntries = [];
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+            let seen = {};
+            let allEntries = [];
+            for (let i = 0; i < this.displays.length; i++) {
+                let display = this.displays[i];
                 if (!includeFixed && display.getIsLayoutFixed()) {
                     continue;
                 }
                 if (display.getEntries) {
-                    var entries = display.getEntries();
+                    let entries = display.getEntries();
                     if (entries) {
-                        for (var entryIdx = 0; entryIdx < entries.length; entryIdx++) {
+                        for (let entryIdx = 0; entryIdx < entries.length; entryIdx++) {
                             if (seen[entries[entryIdx].getId()] != null) {
                                 continue;
                             }
@@ -7725,16 +7725,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return allEntries;
         },
         copyDisplayedEntries: function() {
-            var allEntries = [];
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+            let allEntries = [];
+            for (let i = 0; i < this.displays.length; i++) {
+                let display = this.displays[i];
                 if (display.getIsLayoutFixed()) {
                     continue;
                 }
                 if (display.getEntries) {
-                    var entries = display.getEntries();
+                    let entries = display.getEntries();
                     if (entries) {
-                        for (var entryIdx = 0; entryIdx < entries.length; entryIdx++) {
+                        for (let entryIdx = 0; entryIdx < entries.length; entryIdx++) {
                             allEntries.push(entries[entryIdx]);
                         }
                     }
@@ -7743,15 +7743,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.copyEntries(allEntries);
         },
         defineWikiAttributes: function(list) {
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 if (this.wikiAttrs.indexOf(list[i]) < 0) {
                     this.wikiAttrs.push(list[i]);
                 }
             }
         },
         getWikiAttributes: function(attrs) {
-            for (var i = 0; i < this.wikiAttrs.length; i++) {
-                var v = this[this.wikiAttrs[i]];
+            for (let i = 0; i < this.wikiAttrs.length; i++) {
+                let v = this[this.wikiAttrs[i]];
                 if (Utils.isDefined(v)) {
                     attrs.push(this.wikiAttrs[i]);
                     attrs.push(v);
@@ -7759,7 +7759,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getWikiText: function() {
-            var attrs = [
+            let attrs = [
 			 "layoutHere", "false",
 			 "type", this.type,
 			 "column", this.getColumn(),
@@ -7770,9 +7770,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		attrs.push(this.getProperty("entryId"));
 	    }
             this.getWikiAttributes(attrs);
-            var entryId = null;
+            let entryId = null;
             if (this.getEntries) {
-                var entries = this.getEntries();
+                let entries = this.getEntries();
                 if (entries && entries.length > 0) {
                     entryId = entries[0].getId();
                 }
@@ -7784,35 +7784,35 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 attrs.push("entry");
                 attrs.push(entryId);
             }
-            var wiki = "{{display " + HU.attrs(attrs) + "}}\n\n"
+            let wiki = "{{display " + HU.attrs(attrs) + "}}\n\n"
 
             return wiki;
         },
         copyEntries: function(entries) {
-            var allEntries = [];
-            var seen = {};
-            for (var entryIdx = 0; entryIdx < entries.length; entryIdx++) {
-                var entry = entries[entryIdx];
+            let allEntries = [];
+            let seen = {};
+            for (let entryIdx = 0; entryIdx < entries.length; entryIdx++) {
+                let entry = entries[entryIdx];
                 if (seen[entry.getId()] != null) continue;
                 seen[entry.getId()] = entry;
                 allEntries.push(entry);
             }
-            var from = "";
-            for (var i = 0; i < allEntries.length; i++) {
-                var entry = allEntries[i];
+            let from = "";
+            for (let i = 0; i < allEntries.length; i++) {
+                let entry = allEntries[i];
                 from += entry.getId() + ",";
             }
 
 
-            var url = ramaddaBaseUrl + "/entry/copy?action.force=copy&from=" + from;
+            let url = ramaddaBaseUrl + "/entry/copy?action.force=copy&from=" + from;
             window.open(url, '_blank');
 
         },
         entryHtmlHasBeenDisplayed: async function(entry) {
             if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
-                var theDisplay = this;
-                var callback = function(entries) {
-                    var html = HU.open(TAG_OL, [ATTR_CLASS, "display-entrylist-list", ATTR_ID, theDisplay.getDomId(ID_LIST)]);
+                let theDisplay = this;
+                let callback = function(entries) {
+                    let html = HU.open(TAG_OL, [ATTR_CLASS, "display-entrylist-list", ATTR_ID, theDisplay.getDomId(ID_LIST)]);
                     html += theDisplay.getEntriesTree(entries);
                     html += HU.close(TAG_OL);
                     theDisplay.jq(ID_GROUP_CONTENTS + entry.getIdForDom()).html(html);
@@ -7850,7 +7850,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                     html += HU.href(entry.getResourceUrl(), img,["download",null]) + "<br>";
 		} else {
-                    for (var i = 0; i < metadata.length; i++) {
+                    for (let i = 0; i < metadata.length; i++) {
 			if (metadata[i].type == "content.thumbnail") {
                             let image = metadata[i].value.attr1;
                             let url;
@@ -7884,16 +7884,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
 
-            var columns = entry.getAttributes();
+            let columns = entry.getAttributes();
 
             if (entry.getFilesize() > 0) {
                 html += HU.formEntry("File:", entry.getFilename() + " " +
 				     HU.href(entry.getResourceUrl(), HU.image(ramaddaCdn + "/icons/download.png"),["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
-            for (var colIdx = 0; colIdx < columns.length; colIdx++) {
-                var column = columns[colIdx];
-                var columnValue = column.value;
+            for (let colIdx = 0; colIdx < columns.length; colIdx++) {
+                let column = columns[colIdx];
+                let columnValue = column.value;
                 if (column.getCanShow && !column.getCanShow()) {
                     continue;
                 }
@@ -7902,10 +7902,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
                 if (column.isUrl && column.isUrl()) {
-                    var tmp = "";
-                    var toks = columnValue.split("\n");
-                    for (var i = 0; i < toks.length; i++) {
-                        var url = toks[i].trim();
+                    let tmp = "";
+                    let toks = columnValue.split("\n");
+                    for (let i = 0; i < toks.length; i++) {
+                        let url = toks[i].trim();
                         if (url.length == 0) continue;
                         tmp += HU.href(url, url);
                         tmp += "<br>";
@@ -8044,14 +8044,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return html;
         },
         addEntrySelect: function() {
-            var theDisplay = this;
-            var entryRows = $("#" + this.getDomId(ID_DISPLAY_CONTENTS) + "  ." + this.getClass("entry-main"));
+            let theDisplay = this;
+            let entryRows = $("#" + this.getDomId(ID_DISPLAY_CONTENTS) + "  ." + this.getClass("entry-main"));
 
             entryRows.unbind();
             entryRows.mouseover(async function(event) {
                 //TOOLBAR
-                var entryId = $(this).attr(ATTR_ENTRYID);
-                var entry;
+                let entryId = $(this).attr(ATTR_ENTRYID);
+                let entry;
                 await theDisplay.getEntry(entryId, e => {
                     entry = e
                 });
@@ -8065,14 +8065,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
                 if (true) return;
-                var domEntryId = Utils.cleanId(entryId);
-                var toolbarId = theDisplay.getEntryToolbarId(domEntryId);
+                let domEntryId = Utils.cleanId(entryId);
+                let toolbarId = theDisplay.getEntryToolbarId(domEntryId);
 
-                var toolbar = $("#" + toolbarId);
+                let toolbar = $("#" + toolbarId);
                 toolbar.show();
-                var myalign = 'right top+1';
-                var atalign = 'right top';
-                var srcId = theDisplay.getDomId(ID_DETAILS_MAIN + domEntryId);
+                let myalign = 'right top+1';
+                let atalign = 'right top';
+                let srcId = theDisplay.getDomId(ID_DETAILS_MAIN + domEntryId);
                 toolbar.position({
                     of: $("#" + srcId),
                     my: myalign,
@@ -8107,18 +8107,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     //                        filter: 'li',
                     cancel: 'a',
                     selected: async function(event, ui) {
-                        var entryId = ui.selected.getAttribute(ATTR_ENTRYID);
+                        let entryId = ui.selected.getAttribute(ATTR_ENTRYID);
                         theDisplay.toggleEntryDetails(event, entryId);
                         if (true) return;
 
                         theDisplay.hideEntryDetails(entryId);
-                        var entry;
+                        let entry;
                         await this.getEntry(entryId, e => {
                             entry = e
                         });
                         if (entry == null) return;
 
-                        var zoom = null;
+                        let zoom = null;
                         if (event.shiftKey) {
                             zoom = {
                                 zoomIn: true
@@ -8134,12 +8134,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     },
                     unselected: async function(event, ui) {
                         if (true) return;
-                        var entryId = ui.unselected.getAttribute(ATTR_ENTRYID);
-                        var entry;
+                        let entryId = ui.unselected.getAttribute(ATTR_ENTRYID);
+                        let entry;
                         await this.getEntry(entryId, e => {
                             entry = e
                         });
-                        var index = theDisplay.selectedEntries.indexOf(entry);
+                        let index = theDisplay.selectedEntries.indexOf(entry);
                         //                            console.log("remove:" +  index + " " + theDisplay.selectedEntries);
                         if (index > -1) {
                             theDisplay.selectedEntries.splice(index, 1);
@@ -8157,36 +8157,36 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getEntriesTable: function(entries, columns, columnNames) {
             if (this.entriesMap == null)
                 this.entriesMap = {};
-            var columnWidths = this.getProperty("columnWidths", null);
+            let columnWidths = this.getProperty("columnWidths", null);
             if (columnWidths != null) {
                 columnWidths = columnWidths.split(",");
             }
-            var html = HU.open(TAG_TABLE, [ATTR_WIDTH, "100%", "cellpadding", "0", "cellspacing", "0"]);
+            let html = HU.open(TAG_TABLE, [ATTR_WIDTH, "100%", "cellpadding", "0", "cellspacing", "0"]);
             html += HU.open(TAG_TR, ["valign", "top"]);
-            for (var i = 0; i < columnNames.length; i++) {
+            for (let i = 0; i < columnNames.length; i++) {
                 html += HU.td([ATTR_ALIGN, "center", ATTR_CLASS, "display-entrytable-header"], columnNames[i]);
             }
             html += HU.close(TAG_TR);
 
-            for (var i = 0; i < entries.length; i++) {
+            for (let i = 0; i < entries.length; i++) {
                 html += HU.open(TAG_TR, ["valign", "top"]);
-                var entry = entries[i];
+                let entry = entries[i];
                 this.entriesMap[entry.getId()] = entry;
-                for (var j = 0; j < columns.length; j++) {
-                    var columnWidth = null;
+                for (let j = 0; j < columns.length; j++) {
+                    let columnWidth = null;
                     if (columnWidths != null) {
                         columnWidth = columnWidths[j];
                     }
-                    var column = columns[j];
-                    var value = "";
+                    let column = columns[j];
+                    let value = "";
                     if (column == "name") {
                         value = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
                     } else if (column.match(".*property:.*")) {
-                        var type = column.substring("property:".length);
-                        var metadata = entry.getMetadata();
+                        let type = column.substring("property:".length);
+                        let metadata = entry.getMetadata();
                         value = "";
-                        for (var j = 0; j < metadata.length; j++) {
-                            var m = metadata[j];
+                        for (let j = 0; j < metadata.length; j++) {
+                            let m = metadata[j];
                             if (m.type == type) {
                                 if (value != "") {
                                     value += "<br>";
@@ -8205,7 +8205,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     } else {
                         value = entry.getAttributeValue(column);
                     }
-                    var attrs = [ATTR_CLASS, "display-entrytable-cell"];
+                    let attrs = [ATTR_CLASS, "display-entrytable-cell"];
                     if (columnWidth != null) {
                         attrs.push(ATTR_WIDTH);
                         attrs.push(columnWidth);
@@ -8220,9 +8220,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
         makeEntryToolbar: function(entry, handler, handlerId) {
-            var get = this.getGet();
-            var toolbarItems = [];
-	    var props = "{showMenu:true,showTitle:true}";
+            let get = this.getGet();
+            let toolbarItems = [];
+	    let props = "{showMenu:true,showTitle:true}";
             //                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
             //                                                HU.image(ramaddaCdn +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
@@ -8236,7 +8236,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             }
 
-            var jsonUrl = this.getPointUrl(entry);
+            let jsonUrl = this.getPointUrl(entry);
             if (jsonUrl != null) {
                 jsonUrl = jsonUrl.replace(/\'/g, "_");
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," +
@@ -8244,7 +8244,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 						],
 					 HU.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
 
-                var x;
+                let x;
                 toolbarItems.push(x = HU.tag(TAG_A, ["onclick", get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," +
  						     HU.sqt("linechart") + "," + HU.sqt(jsonUrl) + "," + props +");"
 						    ],
@@ -8262,8 +8262,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-            var entryMenuButton = this.getEntryMenuButton(entry);
-            var tmp = [];
+            let entryMenuButton = this.getEntryMenuButton(entry);
+            let tmp = [];
 
 
 
@@ -8271,7 +8271,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 handler.addToToolbar(handlerId, entry, toolbarItems);
             }
 
-            for (var i = 0; i < toolbarItems.length; i++) {
+            for (let i = 0; i < toolbarItems.length; i++) {
                 tmp.push(HU.div([ATTR_CLASS, "display-entry-toolbar-item"], toolbarItems[i]));
             }
             toolbarItems = tmp;
@@ -8281,18 +8281,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			  HU.join(toolbarItems, ""));
         },
         getEntryToolbarId: function(entryId) {
-            var id = entryId.replace(/:/g, "_").replace(/\//g,"_").replace(/[\(\)]/g,"_");
+            let id = entryId.replace(/:/g, "_").replace(/\//g,"_").replace(/[\(\)]/g,"_");
             id = id.replace(/=/g, "_");
             return this.getDomId(ID_TOOLBAR + "_" + id);
         },
 
         hideEntryDetails: function(entryId) {
-            //                var popupId = "#"+ this.getDomId(ID_DETAILS + entryId);
+            //                let popupId = "#"+ this.getDomId(ID_DETAILS + entryId);
             //                $(popupId).hide();
             //                this.currentPopupEntry = null;
         },
         entryHeaderClick: function(event, entryId, suffix) {
-            var target = event.target;
+            let target = event.target;
             //A hack to see if this was the div clicked on or a link in the div
             if (target.outerHTML) {
                 if (target.outerHTML.indexOf("<div") != 0) {
@@ -8460,10 +8460,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	typeTagClicked:function(metadata) {
 	},	
         getSelectedEntriesFromTree: function() {
-            var selected = [];
+            let selected = [];
             if (this.selectedEntriesFromTree) {
-                for (var id in this.selectedEntriesFromTree) {
-                    var entry = this.selectedEntriesFromTree[id];
+                for (let id in this.selectedEntriesFromTree) {
+                    let entry = this.selectedEntriesFromTree[id];
                     if (entry != null) {
                         selected.push(entry);
                     }
@@ -8495,7 +8495,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
         getEntryMenuButton: function(entry) {
-            var menuButton = HU.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
+            let menuButton = HU.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
 					HU.image(ramaddaCdn + "/icons/menu.png",
 						 [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
@@ -8520,13 +8520,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.entriesMap && this.entriesMap[entryId]) {
                 return Utils.call(callback, this.entriesMap[entryId]);
             }
-            var ramadda = this.getRamadda();
-            var toks = entryId.split(",");
+            let ramadda = this.getRamadda();
+            let toks = entryId.split(",");
             if (toks.length == 2) {
                 entryId = toks[1];
                 ramadda = getRamadda(toks[0]);
             }
-            var entry = null;
+            let entry = null;
             if (this.entryList != null) {
                 await this.entryList.getEntry(entryId, e => entry = e);
             }
@@ -8540,7 +8540,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return Utils.call(callback, entry);
         },
         addMapLayer: async function(entryId) {
-            var entry;
+            let entry;
             await this.getEntry(entryId, e => {
                 entry = e
             });
@@ -8554,7 +8554,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             console.log("doit");
         },
         createDisplay: async function(entryId, displayType, jsonUrl, displayProps) {
-            var entry;
+            let entry;
             await this.getEntry(entryId, e => {
                 entry = e
             });
@@ -8562,7 +8562,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 console.log("No entry:" + entryId);
                 return null;
             }
-            var props = {
+            let props = {
                 sourceEntry: entry,
                 entryId: entry.getId(),
 		//                showMenu: false,
@@ -8580,7 +8580,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (jsonUrl == null) {
                     jsonUrl = this.getPointUrl(entry);
                 }
-                var pointDataProps = {
+                let pointDataProps = {
                     entry: entry,
                     entryId: entry.getId()
                 };
@@ -8608,7 +8608,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return null;
         },
         getEntryMenu: async function(entryId, callback) {
-            var entry;
+            let entry;
             await this.getEntry(entryId, e => {
                 entry = e
             });
@@ -8616,11 +8616,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return Utils.call(callback, "null entry");
             }
 
-            var get = this.getGet();
-            var menus = [];
-            var fileMenuItems = [];
-            var viewMenuItems = [];
-            var newMenuItems = [];
+            let get = this.getGet();
+            let menus = [];
+            let fileMenuItems = [];
+            let viewMenuItems = [];
+            let newMenuItems = [];
             viewMenuItems.push(HU.tag(TAG_LI, [], HU.tag(TAG_A, ["href", entry.getEntryUrl(), "target", "_"], "View Entry")));
             if (entry.getFilesize() > 0) {
                 fileMenuItems.push(HU.tag(TAG_LI, [], HU.tag(TAG_A, ["download",null, "href", entry.getResourceUrl()], "Download " + entry.getFilename() + " (" + entry.getFormattedFilesize() + ")")));
@@ -8631,29 +8631,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					  HU.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
-	    var props = "{showMenu:true,showTitle:true}";
-            var newMenu = "<a>New</a><ul>";
+	    let props = "{showMenu:true,showTitle:true}";
+            let newMenu = "<a>New</a><ul>";
             newMenu += HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
             newMenuItems.push(HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
             //check if it has point data
-            var pointUrl = this.getPointUrl(entry);
+            let pointUrl = this.getPointUrl(entry);
             //            console.log("entry:" + entry.getName() + " url:" + pointUrl);
 
             if (pointUrl != null) {
-                var types = window.globalDisplayTypes;
-                var catMap = {};
+                let types = window.globalDisplayTypes;
+                let catMap = {};
                 if (types) {
-                    for (var i = 0; i < types.length; i++) {
-                        var type = types[i];
+                    for (let i = 0; i < types.length; i++) {
+                        let type = types[i];
 
                         if (!type.requiresData || !type.forUser) continue;
                         if (!Utils.isDefined(catMap[type.category])) {
                             catMap[type.category] = "<li> <a>" + type.category + "</a><ul>\n";
                         }
                         pointUrl = pointUrl.replace(/\'/g, "_");
-                        var call = get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," + HU.sqt(type.type) + "," + HU.sqt(pointUrl) + ",null," + props +");";
-                        var li = HU.tag(TAG_LI, [], HU.tag(TAG_A, ["onclick", call], type.label));
+                        let call = get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," + HU.sqt(type.type) + "," + HU.sqt(pointUrl) + ",null," + props +");";
+                        let li = HU.tag(TAG_LI, [], HU.tag(TAG_A, ["onclick", call], type.label));
                         catMap[type.category] += li + "\n";
                         newMenuItems.push(li);
                     }
@@ -8672,22 +8672,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (newMenuItems.length > 0)
                 menus.push(newMenu);
 
-            var topMenus = "";
-            for (var i = 0; i < menus.length; i++) {
+            let topMenus = "";
+            for (let i = 0; i < menus.length; i++) {
                 topMenus += HU.tag(TAG_LI, [], menus[i]);
             }
 
-            var menu = HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER + entry.getIdForDom()), ATTR_CLASS, "sf-menu"],
+            let menu = HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER + entry.getIdForDom()), ATTR_CLASS, "sf-menu"],
 			      topMenus);
             callback(menu);
         },
         showEntryMenu: async function(event, entryId) {
-            var menu;
+            let menu;
             await this.getEntryMenu(entryId, m => {
                 menu = m
             });
             this.writeHtml(ID_MENU_OUTER, menu);
-            var srcId = this.getDomId(ID_MENU_BUTTON + Utils.cleanId(entryId));
+            let srcId = this.getDomId(ID_MENU_BUTTON + Utils.cleanId(entryId));
 	    this.dialog = HU.makeDialog({content:menu,anchor:srcId,draggable:false,header:false});
             $("#" + this.getDomId(ID_MENU_INNER + Utils.cleanId(entryId))).superfish({
                 speed: 'fast',
@@ -8709,20 +8709,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         },
         getDisplayMenuSettings: function() {
-            var get = "getRamaddaDisplay('" + this.getId() + "')";
-            var moveRight = HU.onClick(get + ".moveDisplayRight();", "Right");
-            var moveLeft = HU.onClick(get + ".moveDisplayLeft();", "Left");
-            var moveTop = HU.onClick(get + ".moveDisplayTop();", "Top");
-            var moveUp = HU.onClick(get + ".moveDisplayUp();", "Up");
-            var moveDown = HU.onClick(get + ".moveDisplayDown();", "Down");
+            let get = "getRamaddaDisplay('" + this.getId() + "')";
+            let moveRight = HU.onClick(get + ".moveDisplayRight();", "Right");
+            let moveLeft = HU.onClick(get + ".moveDisplayLeft();", "Left");
+            let moveTop = HU.onClick(get + ".moveDisplayTop();", "Top");
+            let moveUp = HU.onClick(get + ".moveDisplayUp();", "Up");
+            let moveDown = HU.onClick(get + ".moveDisplayDown();", "Down");
 
 
-            var menu = HU.open(TABLE,[CLASS,'formtable']) +
+            let menu = HU.open(TABLE,[CLASS,'formtable']) +
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
                 "<tr><td align=right><b>Row:</b></td><td> " + HU.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HU.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
                 "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
                 "</table>";
-            var tmp =
+            let tmp =
                 HU.checkbox(this.getDomId("showtitle"), [], this.getProperty("showTitle")) + " Title  " +
                 HU.checkbox(this.getDomId("showdetails"), [], this.getProperty("showDetails")) + " Details " +
                 "&nbsp;&nbsp;&nbsp;" +
@@ -8771,8 +8771,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return false;
         },
         askSetTitle: function() {
-            var t = this.getTitle(false);
-            var v = prompt(TITLE, t);
+            let t = this.getTitle(false);
+            let v = prompt(TITLE, t);
             if (v != null) {
                 this.title = v;
                 this.setProperty(ATTR_TITLE, v);
@@ -8805,7 +8805,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             $("#" + this.getDomId(key)).val(value);
         },
         deltaColumn: function(delta) {
-            var column = parseInt(this.getProperty("column", 0));
+            let column = parseInt(this.getProperty("column", 0));
             column += delta;
             if (column < 0) column = 0;
             this.setDisplayProperty("column", column);
@@ -8813,7 +8813,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq("col").val(column);
         },
         deltaRow: function(delta) {
-            var row = parseInt(this.getProperty("row", 0));
+            let row = parseInt(this.getProperty("row", 0));
 	    if(isNaN(row)) row = 0;
             row += delta;
             if (row < 0) row = 0;
@@ -8865,13 +8865,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tabContents.push(html);
 	    }
 
-            var get = this.getGet();
-            var menuItems = [];
+            let get = this.getGet();
+            let menuItems = [];
             this.getMenuItems(menuItems);
-            var form = "<form>";
+            let form = "<form>";
 
             form += this.getDisplayMenuSettings();
-            for (var i = 0; i < menuItems.length; i++) {
+            for (let i = 0; i < menuItems.length; i++) {
                 form += HU.div([ATTR_CLASS, "display-menu-item"], menuItems[i]);
             }
             form += "</form>";
@@ -8894,7 +8894,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         displayData: function() {},
         setDisplayReady: function() {
 //	    console.log("setDisplayReady");
-	    var callUpdate = !this.displayReady;
+	    let callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
 		this.callUpdateUI({force:true});
@@ -8960,7 +8960,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         createUI: function() {
 	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
             if (divId != null) {
-                var html = this.getHtml();
+                let html = this.getHtml();
 		let div = $("#" + divId);
 		let inline = this.getProperty("displayInline");
 		if(inline) {
@@ -9085,7 +9085,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return html;
         },
         getWidthForStyle: function(dflt) {
-            var width = this.getProperty("width", -1);
+            let width = this.getProperty("width", -1);
             if (width == -1) return dflt;
 	    return HU.getDimension(width);
         },
@@ -9183,7 +9183,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!Utils.stringDefined(title)) {
                 title = this.getTitle(false).trim();
             }
-            var text = this.getTitleHtml(title);
+            let text = this.getTitleHtml(title);
             if (this.getShowTitle()) {
                 this.jq(ID_TITLE).show();
             } else {
@@ -9204,10 +9204,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.dataCollection == null) {
                 return prefix;
             }
-            var dataList = this.dataCollection.getList();
+            let dataList = this.dataCollection.getList();
             title = "";
-            for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                var pointData = dataList[collectionIdx];
+            for (let collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
+                let pointData = dataList[collectionIdx];
                 if (collectionIdx > 0) title += "/";
                 title += pointData.getName();
             }
@@ -9219,12 +9219,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
         makeToolbar: function(props) {
-            var toolbar = "";
-            var get = this.getGet();
-            var addLabel = props.addLabel;
-            var images = [];
-            var calls = [];
-            var labels = [];
+            let toolbar = "";
+            let get = this.getGet();
+            let addLabel = props.addLabel;
+            let images = [];
+            let calls = [];
+            let labels = [];
             if (!this.getIsLayoutFixed()) {
                 calls.push("removeRamaddaDisplay('" + this.getId() + "')");
                 images.push("fa-cut");
@@ -9242,8 +9242,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 images.push(ramaddaCdn + "/icons/csv.png");
                 labels.push("Download CSV");
             }
-            for (var i = 0; i < calls.length; i++) {
-                var inner = HU.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+            for (let i = 0; i < calls.length; i++) {
+                let inner = HU.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
                 if (addLabel) inner += " " + labels[i] + "<br>";
                 toolbar += HU.onClick(calls[i], inner);
             }
@@ -9419,7 +9419,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    macros.every(macro=>{
 		let  keyup =function(e,what,val,force) {
-		      var keyCode = e.keyCode || e.which;
+		      let keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
 			  macroChange(macro, val,what,force,true);
 		      }
@@ -9550,7 +9550,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		if(isNaN(minValue)) minValue = range.min;	
 		if(isNaN(maxValue)) maxValue = range.max;
-		var step = 1;
+		let step = 1;
 		if(type == "double" || parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
 		    step = (range.max-range.min)/100000;
 		$( "#filter-range" ).slider({
@@ -9573,7 +9573,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    },
 		    stop: function() {
-			var popup = HtmlUtils.getTooltip();
+			let popup = HtmlUtils.getTooltip();
 			popup.hide();
 			_this.checkFilterField(max);
 			inputFunc(min,max);
@@ -9985,7 +9985,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		if(!Array.isArray(value) && input.attr("isButton")) {
 		    //			console.log(_this.type +" " +Array.isArray(value));
-		    var tmp = [];
+		    let tmp = [];
 		    value.split(",").forEach(v=>{
 			tmp.push(v.replace(/_comma_/g,","));
 		    });
@@ -10542,9 +10542,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
-		//		var t1 = new Date();
+		//		let t1 = new Date();
 		this.dataFilterChanged({source:"animation"});
-		//		var t2 = new Date();
+		//		let t2 = new Date();
 		//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
 	    this.propagateEvent(DisplayEvent.propertyChanged, {
@@ -10554,23 +10554,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	},
         makeDialog: function(text) {
-            var html = "";
+            let html = "";
 	    if(!text) {
-		var tabTitles = [];
-		var tabContents = [];
+		let tabTitles = [];
+		let tabContents = [];
 		this.getDialogContents(tabTitles, tabContents);
 		tabTitles.push("Edit");
 		tabContents.push(this.makeToolbar({
                     addLabel: true
 		}));
-		var tabLinks = "<ul>";
-		var tabs = "";
-		for (var i = 0; i < tabTitles.length; i++) {
-                    var id = this.getDomId("tabs") + i;
+		let tabLinks = "<ul>";
+		let tabs = "";
+		for (let i = 0; i < tabTitles.length; i++) {
+                    let id = this.getDomId("tabs") + i;
                     tabLinks += HU.tag("li", [], HU.tag("a", ["href", "#" + id],
 							tabTitles[i]));
                     tabLinks += "\n";
-                    var contents = HU.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
+                    let contents = HU.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
                     tabs += HU.div([ID, id], contents);
                     tabs += "\n";
 		}
@@ -10580,12 +10580,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return text;
         },
         initDialog: function() {
-            var _this = this;
-            var updateFunc = function(e) {
+            let _this = this;
+            let updateFunc = function(e) {
                 if (e && e.which != 13 && e.which!=0) {
                     return;
                 }
-		var changed = false;
+		let changed = false;
 		["column","row","width","height"].forEach(f=>{
                     if(_this[f] != _this.jq(f).val() && (_this[f] || _this.jq(f).val().trim()!="")) {
 			changed = true;
@@ -10637,10 +10637,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         doingQuickEntrySearch: false,
         doQuickEntrySearch: function(request, callback) {
             if (this.doingQuickEntrySearch) return;
-            var text = request.term;
+            let text = request.term;
             if (text == null || text.length <= 1) return;
             this.doingQuickEntrySearch = true;
-            var searchSettings = new EntrySearchSettings({
+            let searchSettings = new EntrySearchSettings({
                 name: text,
                 max: 10,
             });
@@ -10648,18 +10648,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 searchSettings.clearAndAddType(this.searchSettings.entryType);
             }
 	    let _this = this;
-            var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON);
-            var handler = {
+            let jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON);
+            let handler = {
                 entryListChanged: function(entryList) {
                     _this.doneQuickEntrySearch(entryList, callback);
                 }
             };
-            var entryList = new EntryList(this.getRamadda(), jsonUrl, handler, true);
+            let entryList = new EntryList(this.getRamadda(), jsonUrl, handler, true);
         },
         doneQuickEntrySearch: function(entryList, callback) {
-            var names = [];
-            var entries = entryList.getEntries();
-            for (var i = 0; i < entries.length; i++) {
+            let names = [];
+            let entries = entryList.getEntries();
+            for (let i = 0; i < entries.length; i++) {
                 names.push(entries[i].getName());
             }
             callback(names);
@@ -10742,7 +10742,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.setContents(errorMessage);
                 return;
             }
-            var msg = "";
+            let msg = "";
 	    if(data && data.error) {
 		msg = data.error;
 		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -10754,11 +10754,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (!data) data = this.getNoDataMessage();
                 let error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
-                var tmp = "";
-                var lines = error.split("\n");
-                var seen = {};
-                for (var i = 0; i < lines.length; i++) {
-                    var line = lines[i].trim();
+                let tmp = "";
+                let lines = error.split("\n");
+                let seen = {};
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
                     if (line == "") continue;
                     if (seen[line]) continue;
                     seen[line] = true;
@@ -10839,7 +10839,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         addData: async function(pointData) {
-            var records = pointData.getRecords();
+            let records = pointData.getRecords();
             if (records && records.length > 0) {
                 this.hasElevation = records[0].hasElevation();
             } else {
@@ -10847,7 +10847,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    pointData = this.convertPointData(pointData);
             this.dataCollection.addData (pointData);
-            var entry = pointData.entry;
+            let entry = pointData.entry;
             if (entry == null && pointData.entryId) {
                 await this.getRamadda().getEntry(pointData.entryId, e => {
                     entry = e
@@ -10867,23 +10867,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let newData  =[];
 		let header = [];
 		newData.push(header);
-		var rowIdx = 0; 
+		let rowIdx = 0; 
 		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
 		segments.forEach((segment,segmentIdx)=>{
-		    var name = segment.name;
+		    let name = segment.name;
 		    header.push(name);
-		    var start = segment.start;
-		    var end = segment.end;
-		    var cnt = 1;
+		    let start = segment.start;
+		    let end = segment.end;
+		    let cnt = 1;
 	    	    for (; rowIdx <dataList.length; rowIdx++) {
-			var record = dataList[rowIdx];
+			let record = dataList[rowIdx];
 			if(record.getTime()<start.getTime()) {
 			    continue;
 			}
 			if(record.getTime()>end.getTime()) {
 			    break;
 			}
-			var value = record.getValue(1);
+			let value = record.getValue(1);
 			let row=null;
 			if(cnt>=newData.length) {
 			    row = [];
@@ -11020,11 +11020,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getHasDate: function(records) {
-            var lastDate = null;
+            let lastDate = null;
             this.hasDate = false;
             for (j = 0; j < records.length; j++) {
-                var record = records[j];
-                var date = record.getDate();
+                let record = records[j];
+                let date = record.getDate();
                 if (date == null) {
                     continue;
                 }
@@ -11128,13 +11128,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    records.push(this.indexToRecord[i]);
 		}
 	    }
-	    var closest;
-	    var min  =0;
+	    let closest;
+	    let min  =0;
 	    records.forEach(r=>{
 		if(!r.hasDate()) {
 		    return -1;
 		}
-		var diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
+		let diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
 		if(!closest) {
 		    min = diff;
 		    closest = r;
@@ -11151,13 +11151,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
-            var data = [];
+            let data = [];
             if (dataList[0].getData) {
-                for (var i = 0; i < dataList.length; i++) {
+                for (let i = 0; i < dataList.length; i++) {
 		    data.push(dataList[i].getData()[0]);
 		}
             } else if (dataList[0].tuple) {
-                for (var i = 0; i < dataList.length; i++) {
+                for (let i = 0; i < dataList.length; i++) {
                     data.push(dataList[i].tuple);
 		}
             } else {
@@ -11187,9 +11187,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let showUnit  = this.getProperty("showUnit",this.getProperty("showUnitInSeries",true));
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
-            var pointData = this.getPointData();
-            var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
-            var excludeNan = this.getProperty(PROP_EXCLUDE_NAN, false);	    
+            let pointData = this.getPointData();
+            let excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
+            let excludeNan = this.getProperty(PROP_EXCLUDE_NAN, false);	    
             if (fields == null) {
                 fields = pointData.getRecordFields();
 		if(debug) console.log("\tgetRecordFields: " + fields.length);
@@ -11219,18 +11219,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let groupByDateMap = {};
 	    let groupByDates = [];
 
-            var dataList = [];
+            let dataList = [];
             //The first entry in the dataList is the array of names
             //The first field is the domain, e.g., time or index
-            var fieldNames = [];
-            var fieldsForTuple = [];	    
+            let fieldNames = [];
+            let fieldsForTuple = [];	    
 	    if(this.getProperty("binDate")) {
 		if(debug)
 		    console.log("binning date");
-		var binType = this.getProperty("binType","total");
-		var binCount = binType=="count";
+		let binType = this.getProperty("binType","total");
+		let binCount = binType=="count";
 		if(binCount) {
-		    var f = [];
+		    let f = [];
 		    fields.forEach((field)=>{
 			f.push(new RecordField({
 			    index:0,
@@ -11253,12 +11253,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return f;
 	    });
             for (i = 0; i < fields.length; i++) {
-                var field = fields[i];
+                let field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {
                     //                        console.log("Skipping:" + field.getLabel());
                     //                        continue;
                 }
-                var name = field.getLabel();
+                let name = field.getLabel();
                 if (showUnit && field.getUnit() != null) {
                     name += " (" + field.getUnit() + ")";
                 }
@@ -11315,7 +11315,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let date_formatter = null;
             let rowCnt = -1;
             let indexField = this.getFieldById(null,this.getProperty("indexField"));
-	    var t1 = new Date();
+	    let t1 = new Date();
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 let record = records[rowIdx];
                 let date = record.getDate();
@@ -11327,7 +11327,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.indexToRecord[rowCnt] = record;
                 let values = [];
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
-                    var indexName = null;
+                    let indexName = null;
                     if (indexField) {
 			let value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),rowIdx);
                         values.push(value);
@@ -11358,7 +11358,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if (field.isFieldNumeric() && field.isFieldDate()) {
                         //                            continue;
                     }
-                    var value = record.getValue(field.getIndex());
+                    let value = record.getValue(field.getIndex());
                     if (offset != 0) {
                         value += offset;
                     }
@@ -11393,7 +11393,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 //TODO: when its all null values we get some errors
                 if (groupByIndex >= 0) {
-		    var value = record.getValue(groupByIndex);
+		    let value = record.getValue(groupByIndex);
 		    if(!groupByValues[value]) groupByValues[value] = true;
 		    if(groupByDate)
 			groupByList.push(record.getDate() +"-"+value);
@@ -11413,7 +11413,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 	    }
 
-	    var t2= new Date();
+	    let t2= new Date();
 //	    console.log("#records:" + records.length);
 //	    Utils.displayTimes("chart.standardData loop:",[t1,t2], true);
             if (nonNullRecords == 0) {
@@ -11423,17 +11423,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             if (groupByIndex >= 0) {
-                var groupToTuple = {};
-                var groups = [];
-                var agg = [];
-                var title = [];
+                let groupToTuple = {};
+                let groups = [];
+                let agg = [];
+                let title = [];
 		let groupByCount = this.getProperty("groupByCount");
                 title.push(props.groupByField.getLabel());
 		if(groupByCount) {
 		    title.push(this.getProperty("groupByCountLabel", "Count"));
 		} else {
-                    for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-			var field = fields[fieldIdx];
+                    for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+			let field = fields[fieldIdx];
 			if (field.getIndex() != groupByIndex) {
                             title.push(field.getLabel());
 			}
@@ -11441,15 +11441,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		//                agg.push(title);
 		let groupByValueTuples = {};
-                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
-                    var data = this.getDataValues(dataList[rowIdx]);
+                for (let rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
+                    let data = this.getDataValues(dataList[rowIdx]);
                     if (rowIdx == 0) {
                         continue;
                     }
-                    var groupBy = groupByList[rowIdx];
-		    var record = groupByRecords[rowIdx];
-		    var groupByValue = record.getValue(groupByIndex);
-                    var tuple = groupToTuple[groupBy];
+                    let groupBy = groupByList[rowIdx];
+		    let record = groupByRecords[rowIdx];
+		    let groupByValue = record.getValue(groupByIndex);
+                    let tuple = groupToTuple[groupBy];
                     if (tuple == null) {
                         tuple = new Array();
                         groups.push(groupBy);
@@ -11469,8 +11469,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(groupByCount) {
 			    tuple.push(0);
 			} else {
-                            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-				var field = fields[fieldIdx];
+                            for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+				let field = fields[fieldIdx];
 				if (field.getIndex() == groupByIndex) {
                                     continue;
 				}
@@ -11479,17 +11479,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
                         groupToTuple[groupBy] = tuple;
                     }
-                    var index = 0;
+                    let index = 0;
 		    if(groupByCount) {
 			tuple[1]++;
 			continue;
 		    }
-                    for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                        var field = fields[fieldIdx];
+                    for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                        let field = fields[fieldIdx];
                         if (field.getIndex() == groupByIndex) {
                             continue;
                         }
-                        var dataValue = data[fieldIdx];
+                        let dataValue = data[fieldIdx];
                         index++;
                         if (Utils.isNumber(dataValue)) {
                             if (typeof tuple[index] == "string") {
@@ -11500,7 +11500,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             if (tuple[index] == 0) {
                                 tuple[index] = "";
                             }
-                            var s = tuple[index];
+                            let s = tuple[index];
                             if (!Utils.isDefined(s)) {
                                 s = "";
                             }
@@ -11509,7 +11509,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                 if (!Utils.isDefined(dataValue)) {
                                     dataValue = "";
                                 }
-                                var sv = ("" + dataValue);
+                                let sv = ("" + dataValue);
                                 if (s.indexOf(sv) < 0) {
                                     if (s != "") {
                                         s += ", ";
@@ -11591,7 +11591,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return false;
             }
             if (this.fmt_yyyy) return true;
-            var tz = 0;
+            let tz = 0;
             this.timezone = this.getTimeZone();
             if (Utils.isDefined(this.timezone)) {
                 tz = parseFloat(this.timezone);
@@ -11648,11 +11648,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         //semi-colon delimited list of filter definitions
         //display.filter="filtertype:params;filtertype:params;
         //display.filter="month:0-11;
-        var filters = filter.split(";");
-        for (var i = 0; i < filters.length; i++) {
+        let filters = filter.split(";");
+        for (let i = 0; i < filters.length; i++) {
             filter = filters[i];
-            var toks = filter.split(":");
-            var type = toks[0];
+            let toks = filter.split(":");
+            let type = toks[0];
             if (type == "month") {
                 this.filters.push(new MonthFilter(toks[1]));
             } else {
@@ -11687,7 +11687,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             return this.layout == LAYOUT_COLUMNS;
         },
         getWikiText: function() {
-            var attrs = ["layoutType", this.layout,
+            let attrs = ["layoutType", this.layout,
 			 "layoutColumns",
 			 this.columns,
 			 "showMenu",
@@ -11702,7 +11702,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
 
         walkTree: function(func, data) {
-            for (var i = 0; i < this.displays.length; i++) {
+            for (let i = 0; i < this.displays.length; i++) {
                 let display = this.displays[i];
                 if (display.walkTree != null) {
                     display.walkTree(func, data);
@@ -12167,8 +12167,8 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.lastSelectedFields) {
                 attrs.push(PROP_FIELDS);
-                var v = "";
-                for (var i = 0; i < this.lastSelectedFields.length; i++) {
+                let v = "";
+                for (let i = 0; i < this.lastSelectedFields.length; i++) {
                     v += this.lastSelectedFields[i].getId();
                     v += ",";
                 }
@@ -12180,14 +12180,14 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             this.addFieldsCheckboxes();
         },
         getDialogContents: function(tabTitles, tabContents) {
-            var height = "600";
-//            var html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), STYLE, HU.css("overflow-y","auto","max-height", height + "px")], "");
+            let height = "600";
+//            let html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), STYLE, HU.css("overflow-y","auto","max-height", height + "px")], "");
 //            tabTitles.push("Fields");
 //            tabContents.push(html);
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         handleEventFieldsSelected: function(source, fields) {
-	    var tmp = [];
+	    let tmp = [];
 	    fields.forEach(f=>{
 		let fieldId = f.getId?f.getId():f;
 		f = this.getFieldById(null, fieldId);
@@ -13908,6 +13908,9 @@ PointRecord.prototype =  {
     },
     getId: function() {
 	return this.id;
+    },
+    equals: function(that) {
+	return this.id == that.id;
     },
     getData: function() {
         return this.data;
@@ -18361,6 +18364,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			column:null
 		    }]);
 		}});
+    
         },
         tableHeaderMouseover: function(i, tooltip) {},
 	doAddTooltip: function() {
@@ -20505,6 +20509,16 @@ function TableDisplay(displayManager, id, properties) {
 	getFormatNumbers: function() {
 	    return true;
 	},
+        setChartSelection: function(index) {
+	    SUPER.setChartSelection.call(this,index);
+	    var container = this.jq(ID_CHART).find('.google-visualization-table-table:eq(0)').parent();
+	    var row = this.jq(ID_CHART).find('.google-visualization-table-tr-sel');
+//	    var header = this.jq(ID_CHART).find('.google-visualization-table-table:eq(1)').parent();
+
+	    //The header selector doesn't work so for now just offset by 60
+	    //$(container).prop('scrollTop', $(row).prop('offsetTop') - $(header).height());
+	    $(container).prop('scrollTop', $(row).prop('offsetTop')-60);
+	},
         xxxxmakeDataTable: function(dataList, props, selectedFields) {
             let rows = this.makeDataArray(dataList);
             let data = [];
@@ -21344,7 +21358,6 @@ function GaugeDisplay(displayManager, id, properties) {
             this.index = index;
             let dataTable = this.makeDataTable(this.dataList);
             this.mapCharts(chart=>{
-
                 chart.draw(dataTable, this.chartOptions);
 	    });
         },
@@ -26809,10 +26822,13 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             //TODO: this results in a double  call to updateUI when first created
             this.updateUI();
         },
+        handleEventRecordSelection: function(source, args) {
+	    this.skewt.highlightRecord(args.record);
+	},
         updateUI: async function() {
 //          console.log("skewt.updateui");
             if(!this.loadedResources) {
-                var time = new Date();
+                let time = new Date();
                 await Utils.importCSS(ramaddaCdn +"/lib/skewt/sounding.css");
                 await Utils.importJS(ramaddaCdn+"/lib/skewt/d3skewt.js");
                 this.loadedResources = true;
@@ -26831,7 +26847,6 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
 //          console.log("skewt.updateui-2");
-
             let skewtId = this.getDomId(ID_SKEWT);
             let html = HtmlUtils.div(["id", skewtId], "");
             this.setContents(html);
@@ -26849,6 +26864,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 options.showHodograph = this.getProperty("showHodograph", true);
             if (this.propertyDefined("showText"))
                 options.showText = this.getProperty("showText", true);
+
             if (this.propertyDefined("skewtWidth"))
                 options.skewtWidth = parseInt(this.getProperty("skewtWidth"));
             if (this.propertyDefined("skewtHeight"))
@@ -26909,6 +26925,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
 
+	    data.records = records;
             if(!data.height) {
                 var pressures = [
                     1013.25, 954.61, 898.76, 845.59, 795.01, 746.91, 701.21,
@@ -26991,13 +27008,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                         break;
                     }
                 }
-                if(ok) {
+                if(ok || id=='records') {
                     for(id in alldata) {
                         data[id].push(alldata[id][idx]);
                     }
                 }
             });
-
 
             if(data.height.length>1) {
                 if(data.height[0]>data.height[1]) {
@@ -27009,29 +27025,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 this.displayError(this.getNoDataMessage());
                 return;
             }
-
-            /*
-            if(options.windStride > 1) {
-                
-                var new_wind_speed = [];
-                var new_wind_direction = [];
-                for (var i = 0; i<data.wind_speed.length; i++) {
-		    var pres = data.pressure[i];
-                    if (i%options.windStride == 0) {
-                        new_wind_speed.push(data.wind_speed[i]);
-                        new_wind_direction.push(data.wind_direction[i]);
-                    } else {
-                        new_wind_speed.push(0);
-                        new_wind_direction.push(0);
-		    }
-                }
-                data.wind_speed = new_wind_speed;
-                data.wind_direction = new_wind_direction;
-            }
-            */
-
-
             options.myid = this.getId();
+	    options.mouseDownListener = (record)=>{
+		if(record) {
+		    this.propagateEventRecordSelection({highlight:true,record: record});
+		}
+	    }
             try {
                 this.skewt = new D3Skewt(skewtId, options,data);
             } catch(e) {
@@ -34549,10 +34548,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    }
 		});
 	    }
-            var _this = this;
-            var html = "";
-            var extraStyle="";
-            var height = this.getProperty("height", this.getProperty("mapHeight", 300));
+            let _this = this;
+            let html = "";
+            let extraStyle="";
+            let height = this.getProperty("height", this.getProperty("mapHeight", 300));
             if (height < 0) {
 		height = (-height)+"%";
 	    }
@@ -34575,7 +34574,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
             if (!this.haveCalledUpdateUI) {
 //		if(displayDebug.initMap)  console.log(this.getLogLabel()+" have not calledUpdateUI. setting up callback");
-                var callback = function() {
+                let callback = function() {
 		    _this.updateUICallback = null;
                     _this.updateUI();
                 }
@@ -34733,7 +34732,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (!this.map) {
                 return;
             }
-            var d = this.jq(ID_MAP);
+            let d = this.jq(ID_MAP);
             if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
@@ -34774,7 +34773,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 
             let _this = this;
-            var params = {
+            let params = {
                 defaultMapLayer: this.getDefaultMapLayer(map_default_layer),
 		showLayerSwitcher: this.getShowLayerSwitcher(),
 		showScaleLine: this.getShowScaleLine(),
@@ -34799,7 +34798,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
             };
 	    this.mapParams = params;
-            var displayDiv = this.getProperty("displayDiv", null);
+            let displayDiv = this.getProperty("displayDiv", null);
             if (displayDiv) {
                 params.displayDiv = displayDiv;
 		params.displayDivSticky = this.getProperty("displayDivSticky", false);
@@ -34807,7 +34806,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (!this.getShowLocationSearch(true)) {
                 params.showLocationSearch = false;
             }
-//            var mapLayers = this.getMapLayers(null);
+//            let mapLayers = this.getMapLayers(null);
 //            if (mapLayers) {
 //                params.mapLayers = [mapLayers];
 //            }
@@ -34869,7 +34868,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
                     if (this.getShowBounds()) {
-                        var attrs = {};
+                        let attrs = {};
                         if (this.getBoundsStrokeColor(this.getProperty("boundsColor"))) {
                             attrs.strokeColor = this.getBoundsStrokeColor(this.getProperty("boundsColor"));
                         }
@@ -34956,7 +34955,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
                     if (_this.getProperty("kmlLayer")) {
-			var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
+			let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
 			_this.addBaseMapLayer(url, true);
                     }
                     if (_this.getProperty("geojsonLayer")) {
@@ -35011,7 +35010,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {
                 mapLoadInfo.layer = layer;
-                for (var i = 0; i < mapLoadInfo.otherMaps.length; i++) {
+                for (let i = 0; i < mapLoadInfo.otherMaps.length; i++) {
                     mapLoadInfo.otherMaps[i].cloneLayer(layer);
                 }
                 mapLoadInfo.otherMaps = [];
@@ -35278,7 +35277,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
-            var _this = this;
+            let _this = this;
 	    let legendSide = this.getProperty("sizeByLegendSide");
 	    if(legendSide) {
 		let legend = HU.div([ID,this.domId(ID_SIZEBY_LEGEND)]);
@@ -35300,7 +35299,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.map) {
                 return;
             }
-            var d = this.jq(ID_MAP);
+            let d = this.jq(ID_MAP);
             if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
@@ -35543,14 +35542,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
                 if (animationBounds.length == 4) {
-		    var pause = parseFloat(this.getProperty("animationPause","1000"));
+		    let pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
 			if(_this.didAnimationBounds) {
 			    return;
 			}
 			_this.didAnimationBounds = true;
-			var a = animationBounds;
-			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			let a = animationBounds;
+			let b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
 			_this.map.animateViewToBounds(b);
 		    },pause);
 		}
@@ -35611,7 +35610,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let record = feature.record;
 		if(record) {
 		    if(this.lastHighlightedRecord) {
-			var args = {highlight:false,record: this.lastHighlightedRecord};
+			let args = {highlight:false,record: this.lastHighlightedRecord};
 			this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 			if (this.getAnimationEnabled()) {
 			    this.getAnimation().handleEventRecordHighlight(this, args);
@@ -35621,7 +35620,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(highlight) {
 			this.lastHighlightedRecord = record;
 		    }
-		    var args = {highlight:highlight,record: record};
+		    let args = {highlight:highlight,record: record};
 		    this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 		    if (this.getAnimationEnabled()) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
@@ -35655,19 +35654,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    
-	    var boundsAnimation = this.getProperty("boundsAnimation");
+	    let boundsAnimation = this.getProperty("boundsAnimation");
 	    if(boundsAnimation) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
                 if (animationBounds.length == 4) {
-		    var pause = parseFloat(this.getProperty("animationPause","1000"));
+		    let pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
 			if(_this.didAnimationBounds) {
 			    return;
 			}
 			_this.didAnimationBounds = true;
-			var a = animationBounds;
-			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			let a = animationBounds;
+			let b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
 			_this.map.animateViewToBounds(b);
 		    },pause);
 		}
@@ -35676,7 +35675,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let currentFeatures = this.features;
             this.features = [];
-            for (var i = 0; i < currentFeatures.length; i++) {
+            for (let i = 0; i < currentFeatures.length; i++) {
                 this.addFeature(currentFeatures[i]);
             }
 	    if(this.getProperty("displayEntries",true)) {
@@ -35710,16 +35709,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
             if (this.layerEntries) {
-                var selectCallback = function(feature,layer,event) {
+                let selectCallback = function(feature,layer,event) {
                     _this.handleLayerSelect(layer);
                 }
-                var unselectCallback = function(feature,layer,event) {
+                let unselectCallback = function(feature,layer,event) {
                     _this.handleLayerUnselect(layer);
                 }
-                var toks = this.layerEntries.split(",");
-                for (var i = 0; i < toks.length; i++) {
-                    var tok = toks[i];
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
+                let toks = this.layerEntries.split(",");
+                for (let i = 0; i < toks.length; i++) {
+                    let tok = toks[i];
+                    let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
                     this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
                     //TODO: Center on the kml
                 }
@@ -35819,15 +35818,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let _this = this;
             this.map.hideLoadingImage();
             layer = layer.clone();
-            var features = layer.features;
-            var clonedFeatures = [];
-            for (var j = 0; j < features.length; j++) {
+            let features = layer.features;
+            let clonedFeatures = [];
+            for (let j = 0; j < features.length; j++) {
                 feature = features[j];
                 feature = feature.clone();
                 if (feature.style) {
                     oldStyle = feature.style;
                     feature.style = {};
-                    for (var a in oldStyle) {
+                    for (let a in oldStyle) {
                         feature.style[a] = oldStyle[a];
                     }
                 }
@@ -35852,7 +35851,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
         handleLayerSelect: function(layer) {
 	    if(debugPopup) this.logMsg("handleLayerSelect");
-            var args = this.layerSelectArgs;
+            let args = this.layerSelectArgs;
             if (!this.layerSelectPath) {
                 if (!args) {
                     this.map.onFeatureSelect(layer);
@@ -35861,22 +35860,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 //If args was defined then default to search
                 this.layerSelectPath = "/search/do";
             }
-            var url = ramaddaBaseUrl + this.layerSelectPath;
+            let url = ramaddaBaseUrl + this.layerSelectPath;
             if (args) {
-                var toks = args.split(",");
-                for (var i = 0; i < toks.length; i++) {
-                    var tok = toks[i];
-                    var toktoks = tok.split(":");
-                    var urlArg = toktoks[0];
-                    var layerField = toktoks[1];
-                    var attrs = layer.feature.attributes;
-                    var fieldValue = null;
-                    for (var attr in attrs) {
-                        var attrName = "" + attr;
+                let toks = args.split(",");
+                for (let i = 0; i < toks.length; i++) {
+                    let tok = toks[i];
+                    let toktoks = tok.split(":");
+                    let urlArg = toktoks[0];
+                    let layerField = toktoks[1];
+                    let attrs = layer.feature.attributes;
+                    let fieldValue = null;
+                    for (let attr in attrs) {
+                        let attrName = "" + attr;
                         if (attrName == layerField) {
-                            var attrValue = null;
+                            let attrValue = null;
                             if (typeof attrs[attr] == 'object' || typeof attrs[attr] == 'Object') {
-                                var o = attrs[attr];
+                                let o = attrs[attr];
                                 attrValue = o["value"];
                             } else {
                                 attrValue = attrs[attr];
@@ -35888,13 +35887,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
             url = HU.appendArg(url, "output", "json");
-            var entryList = new EntryList(this.getRamadda(), url, null, false);
+            let entryList = new EntryList(this.getRamadda(), url, null, false);
             entryList.doSearch(this);
             this.getEntryList().showMessage("Searching", HU.div([ATTR_STYLE, HU.css("margin","20px")], this.getWaitImage()));
         },
         getEntryList: function() {
             if (!this.entryListDisplay) {
-                var props = {
+                let props = {
                     showMenu: true,
                     showTitle: true,
                     showDetails: true,
@@ -35902,25 +35901,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     showForm: false,
                     doSearch: false,
                 };
-                var id = this.getUniqueId("display");
+                let id = this.getUniqueId("display");
                 this.entryListDisplay = new RamaddaEntrylistDisplay(this.getDisplayManager(), id, props);
                 this.getDisplayManager().addDisplay(this.entryListDisplay);
             }
             return this.entryListDisplay;
         },
         entryListChanged: function(entryList) {
-            var entries = entryList.getEntries();
+            let entries = entryList.getEntries();
             this.getEntryList().entryListChanged(entryList);
         },
         handleLayerUnselect: function(layer) {
             this.map.onFeatureUnselect(layer);
         },
         addMapLayer: function(source, props) {
-            var _this = this;
-            var entry = props.entry;
+            let _this = this;
+            let entry = props.entry;
             if (!this.addedLayers) this.addedLayers = {};
             if (this.addedLayers[entry.getId()]) {
-                var layer = this.addedLayers[entry.getId()];
+                let layer = this.addedLayers[entry.getId()];
                 if (layer) {
                     this.map.removeKMLLayer(layer);
                     this.addedLayers[entry.getId()] = null;
@@ -35928,38 +35927,38 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var type = entry.getType().getId();
+            let type = entry.getType().getId();
             if (type == "geo_shapefile" || type == "geo_geojson") {
-                var bounds = MapUtils.createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
+                let bounds = MapUtils.createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
                 if (bounds.left < -180 || bounds.right > 180 || bounds.bottom < -90 || bounds.top > 90) {
                     bounds = null;
                 }
 
-                var selectCallback = function(feature,layer,event) {
+                let selectCallback = function(feature,layer,event) {
 		    if(debugPopup) this.logMsg("selectCallback");
                     _this.handleLayerSelect(layer);
                 }
-                var unselectCallback = function(feature,layer,event) {
+                let unselectCallback = function(feature,layer,event) {
                     _this.handleLayerUnselect(layer);
                 }
-                var layer;
+                let layer;
                 if (type == "geo_geojson") {
-                    var url = entry.getRamadda().getEntryDownloadUrl(entry);
+                    let url = entry.getRamadda().getEntryDownloadUrl(entry);
                     layer = this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
+                    let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
                 }
                 this.addedLayers[entry.getId()] = layer;
                 return;
             }
 
-            var baseUrl = entry.getAttributeValue("base_url");
+            let baseUrl = entry.getAttributeValue("base_url");
             if (!Utils.stringDefined(baseUrl)) {
                 console.log("No base url:" + entry.getId());
                 return;
             }
-            var layer = entry.getAttributeValue("layer_name");
+            let layer = entry.getAttributeValue("layer_name");
             if (layer == null) {
                 layer = entry.getName();
             }
@@ -36007,8 +36006,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.removeHighlight();
 	    if(!this.getShowRecordHighlight()) return;
 	    if(highlight) {
-		var point = MapUtils.createLonLat(lon,lat);
-                var attrs = {
+		let point = MapUtils.createLonLat(lon,lat);
+                let attrs = {
                     pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
                     stroke: true,
                     strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
@@ -36017,7 +36016,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
-		    var size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
+		    let size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
 		    this.highlightMarker = this.getMap().createMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
@@ -36178,8 +36177,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         getPosition: function() {
-            var lat = $("#" + this.domId(ID_LATFIELD)).val();
-            var lon = $("#" + this.domId(ID_LONFIELD)).val();
+            let lat = $("#" + this.domId(ID_LATFIELD)).val();
+            let lon = $("#" + this.domId(ID_LONFIELD)).val();
             if (lat == null)
                 return null;
             return [lat, lon];
@@ -36209,26 +36208,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if ((typeof source.forMap) != "undefined" && !source.forMap) {
                 return;
             }
-            var oldEntries = this.sourceToEntries[source.getId()];
+            let oldEntries = this.sourceToEntries[source.getId()];
             if (oldEntries != null) {
-                for (var i = 0; i < oldEntries.length; i++) {
-                    var id = source.getId() + "_" + oldEntries[i].getId();
+                for (let i = 0; i < oldEntries.length; i++) {
+                    let id = source.getId() + "_" + oldEntries[i].getId();
                     this.addOrRemoveEntryMarker(id, oldEntries[i], false);
                 }
             }
 
             this.sourceToEntries[source.getId()] = entries;
             let markers = MapUtils.createLayerMarkers("Markers",{});
-            var lines =  MapUtils.createLayerVector("Lines", {});
-            var north = -90,
+            let lines =  MapUtils.createLayerVector("Lines", {});
+            let north = -90,
                 west = 180,
                 south = 90,
                 east = -180;
-            var didOne = false;
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var id = source.getId() + "_" + entry.getId();
-                var mapEntryInfo = this.addOrRemoveEntryMarker(id, entries[i], true);
+            let didOne = false;
+            for (let i = 0; i < entries.length; i++) {
+                let entry = entries[i];
+                let id = source.getId() + "_" + entry.getId();
+                let mapEntryInfo = this.addOrRemoveEntryMarker(id, entries[i], true);
                 if (entry.hasBounds()) {
                     if (entry.getNorth() > 90 ||
                         entry.getSouth() < -90 ||
@@ -36249,20 +36248,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     didOne = true;
                 }
             }
-            var bounds = (didOne ? MapUtils.createBounds(west, south, east, north) : null);
+            let bounds = (didOne ? MapUtils.createBounds(west, south, east, north) : null);
             //debug                    this.map.centerOnMarkers(bounds, true);
         },
         handleEventEntrySelection: function(source, args) {
             if (!this.map) {
                 return;
             }
-            var _this = this;
-            var entry = args.entry;
+            let _this = this;
+            let entry = args.entry;
             if (entry == null) {
                 this.map.clearSelectionMarker();
                 return;
             }
-            var selected = args.selected;
+            let selected = args.selected;
 
             if (!entry.hasLocation()) {
                 return;
@@ -36275,7 +36274,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!args) {
                 args = {};
             }
-            var dflt = {
+            let dflt = {
                 lineColor: entry.lineColor,
                 fillColor: entry.lineColor,
                 lineWidth: entry.lineWidth,
@@ -36299,7 +36298,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (args.circle)
                 $.extend(dfltCircle, args.circle);
 
-            var mapEntryInfo = this.mapEntryInfos[id];
+            let mapEntryInfo = this.mapEntryInfos[id];
             if (!add) {
                 if (mapEntryInfo != null) {
                     mapEntryInfo.removeFromMap(this.map);
@@ -36310,17 +36309,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     mapEntryInfo = new MapEntryInfo(entry);
                     this.mapEntryInfos[id] = mapEntryInfo;
                     if (entry.hasBounds() && dflt.doRectangle) {
-                        var attrs = {};
+                        let attrs = {};
                         mapEntryInfo.rectangle = this.map.addRectangle(id,
 								       entry.getNorth(), entry.getWest(), entry
 								       .getSouth(), entry.getEast(), attrs);
                     }
-                    var latitude = entry.getLatitude();
-                    var longitude = entry.getLongitude();
+                    let latitude = entry.getLatitude();
+                    let longitude = entry.getLongitude();
                     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
                         return;
                     }
-                    var point = MapUtils.createLonLat(longitude, latitude);
+                    let point = MapUtils.createLonLat(longitude, latitude);
 
                     if (dflt.doCircle) {
                         attrs = {
@@ -36337,17 +36336,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         mapEntryInfo.marker = this.map.addMarker(id, point, entry.getIconUrl(), "", this.getEntryHtml(entry));
                     }
                     if (entry.polygon) {
-                        var points = []
-                        for (var i = 0; i < entry.polygon.length; i += 2) {
+                        let points = []
+                        for (let i = 0; i < entry.polygon.length; i += 2) {
                             points.push(MapUtils.createPoint(entry.polygon[i + 1], entry.polygon[i]));
                         }
-                        var attrs = {
+                        let attrs = {
                             strokeColor: dfltPolygon.lineColor,
                             strokeWidth: Utils.isDefined(dfltPolygon.lineWidth) ? dfltPolygon.lineWidth : 2
                         };
                         mapEntryInfo.polygon = this.map.addPolygon(id, entry.getName(), points, attrs, mapEntryInfo.marker);
                     }
-                    var _this = this;
+                    let _this = this;
                     if (mapEntryInfo.marker) {
                         mapEntryInfo.marker.entry = entry;
                         mapEntryInfo.marker.ramaddaClickHandler = function(marker) {
@@ -37702,7 +37701,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    $("#" + info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
 			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):fillColor;
-			var ctx = canvas.getContext("2d");
+			let ctx = canvas.getContext("2d");
 			if(idx==1) {
 			    ctx.fillStyle= '#fff';
 			    ctx.beginPath();
@@ -37823,7 +37822,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    points.forEach((p,idx)=>{
 		let record = records[idx];
-		var pts = turf.points([[p.x,p.y]]);
+		let pts = turf.points([[p.x,p.y]]);
 		let isIn = false;
 		hexgrid.features.every((feature,fidx)=>{
 		    if(!feature.searchWithin) {
@@ -38398,7 +38397,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			lastRecord = record;
 			if(secondRecord) {
 /*
-			    var angleDeg = Utils.getBearing({x:lastRecord.getLongitude(),
+			    let angleDeg = Utils.getBearing({x:lastRecord.getLongitude(),
 							   
 							   y:lastRecord.getLatitude()},
 							  {x:secondRecord.getLongitude(),
@@ -38414,7 +38413,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
 			if(secondRecord && this.getShowPathEndPoint(false)) {
 			    let shape = this.getProperty("pathEndPointShape",null);
-			    var angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
+			    let angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
 							     lat:secondRecord.getLatitude()},
 							    {lon:lastRecord.getLongitude(),
 							     lat:lastRecord.getLatitude()});							  
@@ -38931,10 +38930,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let keyMap={};
 	    let keyLegend="";
-	    var features =  [];
-            var seen = {};
-	    var colorBy = this.getProperty("colorBy");
-	    var sizeBy = this.getProperty("sizeBy");
+	    let features =  [];
+            let seen = {};
+	    let colorBy = this.getProperty("colorBy");
+	    let sizeBy = this.getProperty("sizeBy");
 	    let keyIndex = 0;
 	    let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 	    let  keys = [];
@@ -38947,9 +38946,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    keys.push(cc);
 		});
 	    }
-            for (var i = 0; i < records.length; i++) {
-		var record = records[i];
-                var point = record.point;
+            for (let i = 0; i < records.length; i++) {
+		let record = records[i];
+                let point = record.point;
 		//For now just set the lat/lon
 		let indexX = Math.floor((record.getLongitude()-bounds.left)/cellWidth);
 		let indexY = Math.floor((record.getLatitude()-bounds.bottom)/cellHeight);		
@@ -38960,9 +38959,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    grid[key] = true;
 		}
 		point = {x:record.getLongitude(),y:record.getLatitude()};
-                var center = MapUtils.createPoint(point.x, point.y);
+                let center = MapUtils.createPoint(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
-                var pointFeature = MapUtils.createVector(center);
+                let pointFeature = MapUtils.createVector(center);
                 pointFeature.noSelect = true;
                 pointFeature.attributes = {
                 };
@@ -38977,8 +38976,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    pointFeature.attributes["_key"] = keyMap[v];
                 }
-		for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
-		    var field = fields[fieldIdx];
+		for (let fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
+		    let field = fields[fieldIdx];
 		    pointFeature.attributes[field.getId()] = field.getValue(record);
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
@@ -39008,11 +39007,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.map) {
                 return;
             }
-            var mapEntryInfo = this.mapEntryInfos[display];
+            let mapEntryInfo = this.mapEntryInfos[display];
             if (mapEntryInfo != null) {
                 mapEntryInfo.removeFromMap(this.map);
             }
-            var feature = this.findFeature(display, true);
+            let feature = this.findFeature(display, true);
             if (feature != null) {
                 if (feature.line != null) {
                     this.map.removePolygon(feature.line);
@@ -39020,8 +39019,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
         findFeature: function(source, andDelete) {
-            for (var i in this.features) {
-                var feature = this.features[i];
+            for (let i in this.features) {
+                let feature = this.features[i];
                 if (feature.source == source) {
                     if (andDelete) {
                         this.features.splice(i, 1);
@@ -39034,7 +39033,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         getMarkerIcon: function() {
             if (this.getProperty("markerIcon")) {
-                var icon = this.getProperty("markerIcon");
+                let icon = this.getProperty("markerIcon");
                 if (icon.startsWith("/"))
                     return ramaddaBaseUrl + icon;
                 else
@@ -39087,17 +39086,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //For now return
 	    if(true) return;
 
-            var record = args.record;
+            let record = args.record;
             if (record.hasLocation()) {
-                var latitude = record.getLatitude();
-                var longitude = record.getLongitude();
+                let latitude = record.getLatitude();
+                let longitude = record.getLongitude();
                 if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
-                var point = MapUtils.createLonLat(longitude, latitude);
-                var marker = this.myMarkers[source];
+                let point = MapUtils.createLonLat(longitude, latitude);
+                let marker = this.myMarkers[source];
                 if (marker != null) {
                     this.map.removeMarker(marker);
                 }
-                var icon = displayMapMarkerIcons[source];
+                let icon = displayMapMarkerIcons[source];
                 if (icon == null) {
                     icon = this.getMarkerIcon();
                     displayMapMarkerIcons[source] = icon;
@@ -39132,7 +39131,7 @@ function MapEntryInfo(entry) {
 }
 
 
-var ramaddaGridState = {
+let ramaddaGridState = {
     grids:{
     },
     loading:{
@@ -39579,7 +39578,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 			    mapFile =ramaddaCdn +"/resources/" + mapFile;
 			}
 		    }
-		    var jqxhr = $.getJSON(mapFile, (data) =>{
+		    $.getJSON(mapFile, (data) =>{
 			this.mapJson = data;
 			this.regionNames=[];
 			this.makeRegions();
