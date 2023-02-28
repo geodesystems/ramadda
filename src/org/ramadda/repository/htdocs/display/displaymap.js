@@ -171,10 +171,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    }
 		});
 	    }
-            var _this = this;
-            var html = "";
-            var extraStyle="";
-            var height = this.getProperty("height", this.getProperty("mapHeight", 300));
+            let _this = this;
+            let html = "";
+            let extraStyle="";
+            let height = this.getProperty("height", this.getProperty("mapHeight", 300));
             if (height < 0) {
 		height = (-height)+"%";
 	    }
@@ -197,7 +197,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
             if (!this.haveCalledUpdateUI) {
 //		if(displayDebug.initMap)  console.log(this.getLogLabel()+" have not calledUpdateUI. setting up callback");
-                var callback = function() {
+                let callback = function() {
 		    _this.updateUICallback = null;
                     _this.updateUI();
                 }
@@ -355,7 +355,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (!this.map) {
                 return;
             }
-            var d = this.jq(ID_MAP);
+            let d = this.jq(ID_MAP);
             if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
@@ -396,7 +396,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 
             let _this = this;
-            var params = {
+            let params = {
                 defaultMapLayer: this.getDefaultMapLayer(map_default_layer),
 		showLayerSwitcher: this.getShowLayerSwitcher(),
 		showScaleLine: this.getShowScaleLine(),
@@ -421,7 +421,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
             };
 	    this.mapParams = params;
-            var displayDiv = this.getProperty("displayDiv", null);
+            let displayDiv = this.getProperty("displayDiv", null);
             if (displayDiv) {
                 params.displayDiv = displayDiv;
 		params.displayDivSticky = this.getProperty("displayDivSticky", false);
@@ -429,7 +429,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (!this.getShowLocationSearch(true)) {
                 params.showLocationSearch = false;
             }
-//            var mapLayers = this.getMapLayers(null);
+//            let mapLayers = this.getMapLayers(null);
 //            if (mapLayers) {
 //                params.mapLayers = [mapLayers];
 //            }
@@ -491,7 +491,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
                     if (this.getShowBounds()) {
-                        var attrs = {};
+                        let attrs = {};
                         if (this.getBoundsStrokeColor(this.getProperty("boundsColor"))) {
                             attrs.strokeColor = this.getBoundsStrokeColor(this.getProperty("boundsColor"));
                         }
@@ -578,7 +578,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
                     if (_this.getProperty("kmlLayer")) {
-			var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
+			let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
 			_this.addBaseMapLayer(url, true);
                     }
                     if (_this.getProperty("geojsonLayer")) {
@@ -633,7 +633,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {
                 mapLoadInfo.layer = layer;
-                for (var i = 0; i < mapLoadInfo.otherMaps.length; i++) {
+                for (let i = 0; i < mapLoadInfo.otherMaps.length; i++) {
                     mapLoadInfo.otherMaps[i].cloneLayer(layer);
                 }
                 mapLoadInfo.otherMaps = [];
@@ -900,7 +900,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
-            var _this = this;
+            let _this = this;
 	    let legendSide = this.getProperty("sizeByLegendSide");
 	    if(legendSide) {
 		let legend = HU.div([ID,this.domId(ID_SIZEBY_LEGEND)]);
@@ -922,7 +922,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.map) {
                 return;
             }
-            var d = this.jq(ID_MAP);
+            let d = this.jq(ID_MAP);
             if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
@@ -1165,14 +1165,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
                 if (animationBounds.length == 4) {
-		    var pause = parseFloat(this.getProperty("animationPause","1000"));
+		    let pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
 			if(_this.didAnimationBounds) {
 			    return;
 			}
 			_this.didAnimationBounds = true;
-			var a = animationBounds;
-			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			let a = animationBounds;
+			let b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
 			_this.map.animateViewToBounds(b);
 		    },pause);
 		}
@@ -1233,7 +1233,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let record = feature.record;
 		if(record) {
 		    if(this.lastHighlightedRecord) {
-			var args = {highlight:false,record: this.lastHighlightedRecord};
+			let args = {highlight:false,record: this.lastHighlightedRecord};
 			this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 			if (this.getAnimationEnabled()) {
 			    this.getAnimation().handleEventRecordHighlight(this, args);
@@ -1243,7 +1243,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(highlight) {
 			this.lastHighlightedRecord = record;
 		    }
-		    var args = {highlight:highlight,record: record};
+		    let args = {highlight:highlight,record: record};
 		    this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 		    if (this.getAnimationEnabled()) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
@@ -1277,19 +1277,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    
-	    var boundsAnimation = this.getProperty("boundsAnimation");
+	    let boundsAnimation = this.getProperty("boundsAnimation");
 	    if(boundsAnimation) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
                 if (animationBounds.length == 4) {
-		    var pause = parseFloat(this.getProperty("animationPause","1000"));
+		    let pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
 			if(_this.didAnimationBounds) {
 			    return;
 			}
 			_this.didAnimationBounds = true;
-			var a = animationBounds;
-			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			let a = animationBounds;
+			let b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
 			_this.map.animateViewToBounds(b);
 		    },pause);
 		}
@@ -1298,7 +1298,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let currentFeatures = this.features;
             this.features = [];
-            for (var i = 0; i < currentFeatures.length; i++) {
+            for (let i = 0; i < currentFeatures.length; i++) {
                 this.addFeature(currentFeatures[i]);
             }
 	    if(this.getProperty("displayEntries",true)) {
@@ -1332,16 +1332,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
             if (this.layerEntries) {
-                var selectCallback = function(feature,layer,event) {
+                let selectCallback = function(feature,layer,event) {
                     _this.handleLayerSelect(layer);
                 }
-                var unselectCallback = function(feature,layer,event) {
+                let unselectCallback = function(feature,layer,event) {
                     _this.handleLayerUnselect(layer);
                 }
-                var toks = this.layerEntries.split(",");
-                for (var i = 0; i < toks.length; i++) {
-                    var tok = toks[i];
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
+                let toks = this.layerEntries.split(",");
+                for (let i = 0; i < toks.length; i++) {
+                    let tok = toks[i];
+                    let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
                     this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
                     //TODO: Center on the kml
                 }
@@ -1441,15 +1441,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let _this = this;
             this.map.hideLoadingImage();
             layer = layer.clone();
-            var features = layer.features;
-            var clonedFeatures = [];
-            for (var j = 0; j < features.length; j++) {
+            let features = layer.features;
+            let clonedFeatures = [];
+            for (let j = 0; j < features.length; j++) {
                 feature = features[j];
                 feature = feature.clone();
                 if (feature.style) {
                     oldStyle = feature.style;
                     feature.style = {};
-                    for (var a in oldStyle) {
+                    for (let a in oldStyle) {
                         feature.style[a] = oldStyle[a];
                     }
                 }
@@ -1474,7 +1474,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
         handleLayerSelect: function(layer) {
 	    if(debugPopup) this.logMsg("handleLayerSelect");
-            var args = this.layerSelectArgs;
+            let args = this.layerSelectArgs;
             if (!this.layerSelectPath) {
                 if (!args) {
                     this.map.onFeatureSelect(layer);
@@ -1483,22 +1483,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 //If args was defined then default to search
                 this.layerSelectPath = "/search/do";
             }
-            var url = ramaddaBaseUrl + this.layerSelectPath;
+            let url = ramaddaBaseUrl + this.layerSelectPath;
             if (args) {
-                var toks = args.split(",");
-                for (var i = 0; i < toks.length; i++) {
-                    var tok = toks[i];
-                    var toktoks = tok.split(":");
-                    var urlArg = toktoks[0];
-                    var layerField = toktoks[1];
-                    var attrs = layer.feature.attributes;
-                    var fieldValue = null;
-                    for (var attr in attrs) {
-                        var attrName = "" + attr;
+                let toks = args.split(",");
+                for (let i = 0; i < toks.length; i++) {
+                    let tok = toks[i];
+                    let toktoks = tok.split(":");
+                    let urlArg = toktoks[0];
+                    let layerField = toktoks[1];
+                    let attrs = layer.feature.attributes;
+                    let fieldValue = null;
+                    for (let attr in attrs) {
+                        let attrName = "" + attr;
                         if (attrName == layerField) {
-                            var attrValue = null;
+                            let attrValue = null;
                             if (typeof attrs[attr] == 'object' || typeof attrs[attr] == 'Object') {
-                                var o = attrs[attr];
+                                let o = attrs[attr];
                                 attrValue = o["value"];
                             } else {
                                 attrValue = attrs[attr];
@@ -1510,13 +1510,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
             url = HU.appendArg(url, "output", "json");
-            var entryList = new EntryList(this.getRamadda(), url, null, false);
+            let entryList = new EntryList(this.getRamadda(), url, null, false);
             entryList.doSearch(this);
             this.getEntryList().showMessage("Searching", HU.div([ATTR_STYLE, HU.css("margin","20px")], this.getWaitImage()));
         },
         getEntryList: function() {
             if (!this.entryListDisplay) {
-                var props = {
+                let props = {
                     showMenu: true,
                     showTitle: true,
                     showDetails: true,
@@ -1524,25 +1524,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     showForm: false,
                     doSearch: false,
                 };
-                var id = this.getUniqueId("display");
+                let id = this.getUniqueId("display");
                 this.entryListDisplay = new RamaddaEntrylistDisplay(this.getDisplayManager(), id, props);
                 this.getDisplayManager().addDisplay(this.entryListDisplay);
             }
             return this.entryListDisplay;
         },
         entryListChanged: function(entryList) {
-            var entries = entryList.getEntries();
+            let entries = entryList.getEntries();
             this.getEntryList().entryListChanged(entryList);
         },
         handleLayerUnselect: function(layer) {
             this.map.onFeatureUnselect(layer);
         },
         addMapLayer: function(source, props) {
-            var _this = this;
-            var entry = props.entry;
+            let _this = this;
+            let entry = props.entry;
             if (!this.addedLayers) this.addedLayers = {};
             if (this.addedLayers[entry.getId()]) {
-                var layer = this.addedLayers[entry.getId()];
+                let layer = this.addedLayers[entry.getId()];
                 if (layer) {
                     this.map.removeKMLLayer(layer);
                     this.addedLayers[entry.getId()] = null;
@@ -1550,38 +1550,38 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var type = entry.getType().getId();
+            let type = entry.getType().getId();
             if (type == "geo_shapefile" || type == "geo_geojson") {
-                var bounds = MapUtils.createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
+                let bounds = MapUtils.createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
                 if (bounds.left < -180 || bounds.right > 180 || bounds.bottom < -90 || bounds.top > 90) {
                     bounds = null;
                 }
 
-                var selectCallback = function(feature,layer,event) {
+                let selectCallback = function(feature,layer,event) {
 		    if(debugPopup) this.logMsg("selectCallback");
                     _this.handleLayerSelect(layer);
                 }
-                var unselectCallback = function(feature,layer,event) {
+                let unselectCallback = function(feature,layer,event) {
                     _this.handleLayerUnselect(layer);
                 }
-                var layer;
+                let layer;
                 if (type == "geo_geojson") {
-                    var url = entry.getRamadda().getEntryDownloadUrl(entry);
+                    let url = entry.getRamadda().getEntryDownloadUrl(entry);
                     layer = this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
+                    let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
                 }
                 this.addedLayers[entry.getId()] = layer;
                 return;
             }
 
-            var baseUrl = entry.getAttributeValue("base_url");
+            let baseUrl = entry.getAttributeValue("base_url");
             if (!Utils.stringDefined(baseUrl)) {
                 console.log("No base url:" + entry.getId());
                 return;
             }
-            var layer = entry.getAttributeValue("layer_name");
+            let layer = entry.getAttributeValue("layer_name");
             if (layer == null) {
                 layer = entry.getName();
             }
@@ -1629,8 +1629,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.removeHighlight();
 	    if(!this.getShowRecordHighlight()) return;
 	    if(highlight) {
-		var point = MapUtils.createLonLat(lon,lat);
-                var attrs = {
+		let point = MapUtils.createLonLat(lon,lat);
+                let attrs = {
                     pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
                     stroke: true,
                     strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
@@ -1639,7 +1639,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
-		    var size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
+		    let size = +this.getProperty("recordHighlightRadius", +this.getRadius(24));
 		    this.highlightMarker = this.getMap().createMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
@@ -1800,8 +1800,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         getPosition: function() {
-            var lat = $("#" + this.domId(ID_LATFIELD)).val();
-            var lon = $("#" + this.domId(ID_LONFIELD)).val();
+            let lat = $("#" + this.domId(ID_LATFIELD)).val();
+            let lon = $("#" + this.domId(ID_LONFIELD)).val();
             if (lat == null)
                 return null;
             return [lat, lon];
@@ -1831,26 +1831,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if ((typeof source.forMap) != "undefined" && !source.forMap) {
                 return;
             }
-            var oldEntries = this.sourceToEntries[source.getId()];
+            let oldEntries = this.sourceToEntries[source.getId()];
             if (oldEntries != null) {
-                for (var i = 0; i < oldEntries.length; i++) {
-                    var id = source.getId() + "_" + oldEntries[i].getId();
+                for (let i = 0; i < oldEntries.length; i++) {
+                    let id = source.getId() + "_" + oldEntries[i].getId();
                     this.addOrRemoveEntryMarker(id, oldEntries[i], false);
                 }
             }
 
             this.sourceToEntries[source.getId()] = entries;
             let markers = MapUtils.createLayerMarkers("Markers",{});
-            var lines =  MapUtils.createLayerVector("Lines", {});
-            var north = -90,
+            let lines =  MapUtils.createLayerVector("Lines", {});
+            let north = -90,
                 west = 180,
                 south = 90,
                 east = -180;
-            var didOne = false;
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var id = source.getId() + "_" + entry.getId();
-                var mapEntryInfo = this.addOrRemoveEntryMarker(id, entries[i], true);
+            let didOne = false;
+            for (let i = 0; i < entries.length; i++) {
+                let entry = entries[i];
+                let id = source.getId() + "_" + entry.getId();
+                let mapEntryInfo = this.addOrRemoveEntryMarker(id, entries[i], true);
                 if (entry.hasBounds()) {
                     if (entry.getNorth() > 90 ||
                         entry.getSouth() < -90 ||
@@ -1871,20 +1871,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     didOne = true;
                 }
             }
-            var bounds = (didOne ? MapUtils.createBounds(west, south, east, north) : null);
+            let bounds = (didOne ? MapUtils.createBounds(west, south, east, north) : null);
             //debug                    this.map.centerOnMarkers(bounds, true);
         },
         handleEventEntrySelection: function(source, args) {
             if (!this.map) {
                 return;
             }
-            var _this = this;
-            var entry = args.entry;
+            let _this = this;
+            let entry = args.entry;
             if (entry == null) {
                 this.map.clearSelectionMarker();
                 return;
             }
-            var selected = args.selected;
+            let selected = args.selected;
 
             if (!entry.hasLocation()) {
                 return;
@@ -1897,7 +1897,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!args) {
                 args = {};
             }
-            var dflt = {
+            let dflt = {
                 lineColor: entry.lineColor,
                 fillColor: entry.lineColor,
                 lineWidth: entry.lineWidth,
@@ -1921,7 +1921,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (args.circle)
                 $.extend(dfltCircle, args.circle);
 
-            var mapEntryInfo = this.mapEntryInfos[id];
+            let mapEntryInfo = this.mapEntryInfos[id];
             if (!add) {
                 if (mapEntryInfo != null) {
                     mapEntryInfo.removeFromMap(this.map);
@@ -1932,17 +1932,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     mapEntryInfo = new MapEntryInfo(entry);
                     this.mapEntryInfos[id] = mapEntryInfo;
                     if (entry.hasBounds() && dflt.doRectangle) {
-                        var attrs = {};
+                        let attrs = {};
                         mapEntryInfo.rectangle = this.map.addRectangle(id,
 								       entry.getNorth(), entry.getWest(), entry
 								       .getSouth(), entry.getEast(), attrs);
                     }
-                    var latitude = entry.getLatitude();
-                    var longitude = entry.getLongitude();
+                    let latitude = entry.getLatitude();
+                    let longitude = entry.getLongitude();
                     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
                         return;
                     }
-                    var point = MapUtils.createLonLat(longitude, latitude);
+                    let point = MapUtils.createLonLat(longitude, latitude);
 
                     if (dflt.doCircle) {
                         attrs = {
@@ -1959,17 +1959,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         mapEntryInfo.marker = this.map.addMarker(id, point, entry.getIconUrl(), "", this.getEntryHtml(entry));
                     }
                     if (entry.polygon) {
-                        var points = []
-                        for (var i = 0; i < entry.polygon.length; i += 2) {
+                        let points = []
+                        for (let i = 0; i < entry.polygon.length; i += 2) {
                             points.push(MapUtils.createPoint(entry.polygon[i + 1], entry.polygon[i]));
                         }
-                        var attrs = {
+                        let attrs = {
                             strokeColor: dfltPolygon.lineColor,
                             strokeWidth: Utils.isDefined(dfltPolygon.lineWidth) ? dfltPolygon.lineWidth : 2
                         };
                         mapEntryInfo.polygon = this.map.addPolygon(id, entry.getName(), points, attrs, mapEntryInfo.marker);
                     }
-                    var _this = this;
+                    let _this = this;
                     if (mapEntryInfo.marker) {
                         mapEntryInfo.marker.entry = entry;
                         mapEntryInfo.marker.ramaddaClickHandler = function(marker) {
@@ -3324,7 +3324,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    $("#" + info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
 			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):fillColor;
-			var ctx = canvas.getContext("2d");
+			let ctx = canvas.getContext("2d");
 			if(idx==1) {
 			    ctx.fillStyle= '#fff';
 			    ctx.beginPath();
@@ -3445,7 +3445,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    points.forEach((p,idx)=>{
 		let record = records[idx];
-		var pts = turf.points([[p.x,p.y]]);
+		let pts = turf.points([[p.x,p.y]]);
 		let isIn = false;
 		hexgrid.features.every((feature,fidx)=>{
 		    if(!feature.searchWithin) {
@@ -4020,7 +4020,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			lastRecord = record;
 			if(secondRecord) {
 /*
-			    var angleDeg = Utils.getBearing({x:lastRecord.getLongitude(),
+			    let angleDeg = Utils.getBearing({x:lastRecord.getLongitude(),
 							   
 							   y:lastRecord.getLatitude()},
 							  {x:secondRecord.getLongitude(),
@@ -4036,7 +4036,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
 			if(secondRecord && this.getShowPathEndPoint(false)) {
 			    let shape = this.getProperty("pathEndPointShape",null);
-			    var angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
+			    let angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
 							     lat:secondRecord.getLatitude()},
 							    {lon:lastRecord.getLongitude(),
 							     lat:lastRecord.getLatitude()});							  
@@ -4553,10 +4553,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let keyMap={};
 	    let keyLegend="";
-	    var features =  [];
-            var seen = {};
-	    var colorBy = this.getProperty("colorBy");
-	    var sizeBy = this.getProperty("sizeBy");
+	    let features =  [];
+            let seen = {};
+	    let colorBy = this.getProperty("colorBy");
+	    let sizeBy = this.getProperty("sizeBy");
 	    let keyIndex = 0;
 	    let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 	    let  keys = [];
@@ -4569,9 +4569,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    keys.push(cc);
 		});
 	    }
-            for (var i = 0; i < records.length; i++) {
-		var record = records[i];
-                var point = record.point;
+            for (let i = 0; i < records.length; i++) {
+		let record = records[i];
+                let point = record.point;
 		//For now just set the lat/lon
 		let indexX = Math.floor((record.getLongitude()-bounds.left)/cellWidth);
 		let indexY = Math.floor((record.getLatitude()-bounds.bottom)/cellHeight);		
@@ -4582,9 +4582,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    grid[key] = true;
 		}
 		point = {x:record.getLongitude(),y:record.getLatitude()};
-                var center = MapUtils.createPoint(point.x, point.y);
+                let center = MapUtils.createPoint(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
-                var pointFeature = MapUtils.createVector(center);
+                let pointFeature = MapUtils.createVector(center);
                 pointFeature.noSelect = true;
                 pointFeature.attributes = {
                 };
@@ -4599,8 +4599,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    pointFeature.attributes["_key"] = keyMap[v];
                 }
-		for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
-		    var field = fields[fieldIdx];
+		for (let fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
+		    let field = fields[fieldIdx];
 		    pointFeature.attributes[field.getId()] = field.getValue(record);
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
@@ -4630,11 +4630,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.map) {
                 return;
             }
-            var mapEntryInfo = this.mapEntryInfos[display];
+            let mapEntryInfo = this.mapEntryInfos[display];
             if (mapEntryInfo != null) {
                 mapEntryInfo.removeFromMap(this.map);
             }
-            var feature = this.findFeature(display, true);
+            let feature = this.findFeature(display, true);
             if (feature != null) {
                 if (feature.line != null) {
                     this.map.removePolygon(feature.line);
@@ -4642,8 +4642,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
         findFeature: function(source, andDelete) {
-            for (var i in this.features) {
-                var feature = this.features[i];
+            for (let i in this.features) {
+                let feature = this.features[i];
                 if (feature.source == source) {
                     if (andDelete) {
                         this.features.splice(i, 1);
@@ -4656,7 +4656,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         getMarkerIcon: function() {
             if (this.getProperty("markerIcon")) {
-                var icon = this.getProperty("markerIcon");
+                let icon = this.getProperty("markerIcon");
                 if (icon.startsWith("/"))
                     return ramaddaBaseUrl + icon;
                 else
@@ -4709,17 +4709,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //For now return
 	    if(true) return;
 
-            var record = args.record;
+            let record = args.record;
             if (record.hasLocation()) {
-                var latitude = record.getLatitude();
-                var longitude = record.getLongitude();
+                let latitude = record.getLatitude();
+                let longitude = record.getLongitude();
                 if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
-                var point = MapUtils.createLonLat(longitude, latitude);
-                var marker = this.myMarkers[source];
+                let point = MapUtils.createLonLat(longitude, latitude);
+                let marker = this.myMarkers[source];
                 if (marker != null) {
                     this.map.removeMarker(marker);
                 }
-                var icon = displayMapMarkerIcons[source];
+                let icon = displayMapMarkerIcons[source];
                 if (icon == null) {
                     icon = this.getMarkerIcon();
                     displayMapMarkerIcons[source] = icon;
@@ -4754,7 +4754,7 @@ function MapEntryInfo(entry) {
 }
 
 
-var ramaddaGridState = {
+let ramaddaGridState = {
     grids:{
     },
     loading:{
@@ -5201,7 +5201,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 			    mapFile =ramaddaCdn +"/resources/" + mapFile;
 			}
 		    }
-		    var jqxhr = $.getJSON(mapFile, (data) =>{
+		    $.getJSON(mapFile, (data) =>{
 			this.mapJson = data;
 			this.regionNames=[];
 			this.makeRegions();
