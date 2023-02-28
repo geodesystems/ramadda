@@ -964,6 +964,9 @@ PointRecord.prototype =  {
     getId: function() {
 	return this.id;
     },
+    equals: function(that) {
+	return this.id == that.id;
+    },
     getData: function() {
         return this.data;
     },
