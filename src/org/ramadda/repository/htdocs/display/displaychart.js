@@ -972,6 +972,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			column:null
 		    }]);
 		}});
+    
         },
         tableHeaderMouseover: function(i, tooltip) {},
 	doAddTooltip: function() {
@@ -3116,6 +3117,16 @@ function TableDisplay(displayManager, id, properties) {
 	getFormatNumbers: function() {
 	    return true;
 	},
+        setChartSelection: function(index) {
+	    SUPER.setChartSelection.call(this,index);
+	    var container = this.jq(ID_CHART).find('.google-visualization-table-table:eq(0)').parent();
+	    var row = this.jq(ID_CHART).find('.google-visualization-table-tr-sel');
+//	    var header = this.jq(ID_CHART).find('.google-visualization-table-table:eq(1)').parent();
+
+	    //The header selector doesn't work so for now just offset by 60
+	    //$(container).prop('scrollTop', $(row).prop('offsetTop') - $(header).height());
+	    $(container).prop('scrollTop', $(row).prop('offsetTop')-60);
+	},
         xxxxmakeDataTable: function(dataList, props, selectedFields) {
             let rows = this.makeDataArray(dataList);
             let data = [];
@@ -3955,7 +3966,6 @@ function GaugeDisplay(displayManager, id, properties) {
             this.index = index;
             let dataTable = this.makeDataTable(this.dataList);
             this.mapCharts(chart=>{
-
                 chart.draw(dataTable, this.chartOptions);
 	    });
         },
