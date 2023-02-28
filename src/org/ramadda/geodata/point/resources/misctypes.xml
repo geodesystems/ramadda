@@ -183,7 +183,7 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
 
 
 
-  <type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
+<type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
 </type>
 
 
@@ -192,27 +192,41 @@ fields=date[type=date format="yyyy-MM-dd'T'HH:mm:ssZ"],humidity[type=double unit
       handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.patterns" value="latitude:lat=(.*?)_comma_,longitude:lon=(.*?)_comma_,date:utc_time=(\d\d\d\d-\d\d-\d\d \d\d:\d\d)"/>
      <property name="icon" value="/point/balloon.png"/>
-
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="record.pattern.date.format" value="yyyy-MM-dd HH:mm"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
+<property name="record.properties">
+<![CDATA[
+record.type.default=double
+]]>
+</property>
 <wiki>
 <![CDATA[
-+section title={{name}}   
++section title={{name}}                                                            
+:navtop fixed=true
+{{description wikify=true}}
+:heading Skew-T
 {{display_download}}
-+row                                                                                                                                      
-+col-9
-<div style="height:600px;">
-{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+<div style="height:600px;position:relative;">
+{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=250 showMenu=false showTitle=false}}
+<div style="position:absolute;left:calc(50% + 300px);bottom:100px;transform: translate(-50%, 0%);">
+{{mapentry hideIfNoLocations=true width="200px" height="200px"}} 
 </div>
--col                                                                                                                                      
-+col-3
-{{mapentry hideIfNoLocations=true}}
--col
--row   
+</div>
 ----
-{{information  details="true"  showTitle="false"  }} 
+:heading Table & Chart
++tabs
++tab Table
+{{display_table}}
+-tab 
++tab Chart
+{{display_linechart showMenu=true fields=".*temp.*,.*humidit.*|.*rh.*"}}
+-tab
+-tabs
+----
+:heading Information
+{{information  details="true"  showTitle="false"  }}
 -section
 ]]>
 </wiki>
