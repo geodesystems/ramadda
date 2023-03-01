@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 28 08:03:04 MST 2023";
+var build_date="RAMADDA build date: Tue Feb 28 19:11:34 MST 2023";
 
 /*
  * Copyright (c) 2008-2023 Geode Systems LLC
@@ -26826,9 +26826,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 	    this.skewt.highlightRecord(args.record);
 	},
         updateUI: async function() {
-//          console.log("skewt.updateui");
             if(!this.loadedResources) {
-                let time = new Date();
+		if(this.loadingSkewt) return;
+		this.loadingSkewt=true;
                 await Utils.importCSS(ramaddaCdn +"/lib/skewt/sounding.css");
                 await Utils.importJS(ramaddaCdn+"/lib/skewt/d3skewt.js");
                 this.loadedResources = true;
@@ -26839,6 +26839,11 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
             SUPER.updateUI.call(this);
+
+	    if(!d3.scaleLinear) {
+                this.setDisplayMessage("Oops, the wrong version of D3 had been loaded");
+		return;
+	    }
 
 //          console.log("skewt.updateui-1");
             let records =  this.filterData();
@@ -34016,7 +34021,7 @@ function RamaddaEntrywikiDisplay(displayManager, id, properties) {
 
     let myProps = [
 	{label:'Entry Wiki'},
-	{p:'wiki',d:'{{import showTitle=false}}',ex:'wiki text'},
+	{p:'wiki',d:'{{import}}',ex:'wiki text'},
 	{p:'wikiStyle',d:'width:100%;max-width:95vw'}
     ];
 
@@ -55537,8 +55542,9 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         },
 	updateUI:function(args) {
 	    if(!window.Plotly) {
-		let url = ramaddaCdn+"/lib/plotly/plotly-2.18.0.min.js";
+		let url = ramaddaCdn+"/lib/plotly/plotly-2.18.2.js";
 		let callback = this.loadingJS?null:   ()=>{
+//		    Utils.loadScript('/repository/lib/d3/d3.js');
 		    this.updateUI(args);
 		};
 		Utils.loadScript(url,callback); 
