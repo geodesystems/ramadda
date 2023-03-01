@@ -217,9 +217,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 	    this.skewt.highlightRecord(args.record);
 	},
         updateUI: async function() {
-//          console.log("skewt.updateui");
             if(!this.loadedResources) {
-                let time = new Date();
+		if(this.loadingSkewt) return;
+		this.loadingSkewt=true;
                 await Utils.importCSS(ramaddaCdn +"/lib/skewt/sounding.css");
                 await Utils.importJS(ramaddaCdn+"/lib/skewt/d3skewt.js");
                 this.loadedResources = true;
@@ -230,6 +230,11 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
             SUPER.updateUI.call(this);
+
+	    if(!d3.scaleLinear) {
+                this.setDisplayMessage("Oops, the wrong version of D3 had been loaded");
+		return;
+	    }
 
 //          console.log("skewt.updateui-1");
             let records =  this.filterData();
