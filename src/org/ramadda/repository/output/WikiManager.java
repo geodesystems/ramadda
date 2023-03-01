@@ -811,9 +811,6 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
     public Entry findEntryFromId(Request request, Entry entry,
 				 WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
-
-
-
         Entry theEntry = null;
 
 	//Check for an alias:
@@ -1014,8 +1011,8 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 	    } else if(tok.startsWith(ENTRY_PREFIX_ASCENDING)) {
 		tok= Utils.clip(tok,ENTRY_PREFIX_ASCENDING);		    
 		ascending = tok.length()==0|| tok.equals("true");
-	    } else if(tok.startsWith(ENTRY_PREFIX_DESCENDENT)) {
-		tok = Utils.clip(tok,ENTRY_PREFIX_DESCENDENT);
+	    } else if(tok.startsWith(ENTRY_PREFIX_DESCENDENT) || tok.startsWith(ENTRY_PREFIX_ANCESTOR)) {
+		tok = Utils.clip(tok,tok.startsWith(ENTRY_PREFIX_ANCESTOR)?ENTRY_PREFIX_ANCESTOR:ENTRY_PREFIX_DESCENDENT);
 		if(tok.length()==0) {
 		    myRequest.put(ARG_ANCESTOR,entry.getId());
 		} else {
@@ -1026,8 +1023,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 			System.err.println("Could not find descendent entry:" + tok);
 		    }
 		}
+	    } else {
+		System.err.println("Unknown entry search token:" + tok);
 	    }
 	}
+
 	myRequest.put(ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
 	if(max>0) 
 	    myRequest.put(ARG_MAX,""+max);
@@ -2843,8 +2843,11 @@ public class WikiManager extends RepositoryManager implements  OutputConstants,W
 		ancestor = getProperty(wikiUtil, props, "ancestor",(String)null);
 		
                 if (ancestor!=null || doSearch) {
+		    String orderBy = ORDERBY_FROMDATE;
+		    boolean ascending =false;
 		    jsonUrl = HU.url(getRepository().getUrlBase()+"/search/do", ARG_OUTPUT,
-				     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+				     JsonOutputHandler.OUTPUT_JSON_POINT.getId(),
+				     ARG_ORDERBY,orderBy+(ascending?"_ascending":"_descending"));
 
 		}
 		if(doSearch) {
